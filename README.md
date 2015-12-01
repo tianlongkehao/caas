@@ -13,8 +13,8 @@
 ### 第一次演示：12月4号 亦庄演示
 
 # 代码使用说明
-1.获取代码
-2.构建项目：mvn eclipse:eclipse
-3.将以下代码目录加入编译路径：src/main/java、src/main/resources、src/main/webapp
-4.编译代码：mvn clean compile install
-5.运行springboot:运行com.bonc.epm.paas.WebAppConfig的main方法或者运行启动命令spring-boot:run
+- 1.获取代码
+- 2.构建项目：mvn eclipse:eclipse
+- 3.将以下代码目录加入编译路径：src/main/java、src/main/resources、src/main/webapp
+- 4.编译代码：mvn clean compile install
+- 5.运行springboot:运行com.bonc.epm.paas.WebAppConfig的main方法或者运行启动命令spring-boot:run
