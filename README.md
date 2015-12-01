@@ -16,4 +16,8 @@
 - 1.获取代码
 - 2.构建项目：mvn eclipse:eclipse
 - 3.编译代码：mvn clean compile install
-- 4.运行springboot:运行com.bonc.epm.paas.WebAppConfig的main方法或者运行启动命令spring-boot:run
+- 4.运行方式:
+- 1）运行打包出来的jar:java -jar 包名
+- 2）如果使用开发工具，可以直接运行com.bonc.epm.paas.WebAppConfig的main方法
+- 3)如果使用开发工具，可以maven运行：mvn spring-boot:run
+- 5.默认访问地址:http//:localhost:8082/
