@@ -14,11 +14,27 @@ $(document).ready(function(){
         $(".item-click").css("background-color","#3c81e0");
     });
 
-    $(".nav-menu>li").on("click",function(){
+    $(".nav-menu .nav-item-hover li").on("click",function(){
         $(".nav-menu>li").removeClass("item-click");
-        $(this).addClass("item-click");
+        $(this).parents("li").addClass("item-click");
+        $("#nav1").html($(this).parents("li").find(".nav-title").html());
+        $("#nav2").html($(this).find("a").html());
+        $(".contentMain").load($(this).attr("action"));
     });
 
-
+    var flag = GetQueryString("flag");
+    if(flag=="ci"){
+    	$("#menuCi").click();
+    }else if(flag=="service"){
+    	$("#menuService").click();
+    }
 
 });
+
+
+function GetQueryString(name)
+{
+     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+     var r = window.location.search.substr(1).match(reg);
+     if(r!=null)return  unescape(r[2]); return null;
+}
