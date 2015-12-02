@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="plugins/bootstrap-3.3.5/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="plugins/Font-Awesome-master/css/font-awesome.css"/>
+    <link rel="stylesheet" type="text/css" href="css/core/base.css"/>
+    <link rel="stylesheet" type="text/css" href="css/core/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="css/mod/docker-registry.css"/>
+</head>
+<body>
+    <header class="header">
+        <div class="navbar navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="javascript:void(0);">
+                        <h2>BONC-PaaS</h2>
+                    </a>
+                </div>
+                <ul class="nav navbar-nav navbar-right navbar-user">
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Admin
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:void(0);"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                            <li><a href="javascript:void(0);"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                            <li class="logout">
+                                <a href="javascript:void(0);"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <aside class="page-sidebar">
+        <ul class="nav-menu">
+            <li class="first-nav-li">
+                <a href="index.html">
+                    <span class="glyphicon glyphicon-th nav-icon" aria-hidden="true"></span>
+                    <span class="nav-title">控制台</span>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0)">
+                    <img class="nav-icon" src="images/service.svg" alt=""/>
+                    <span class="nav-title">服务</span>
+                </a>
+                <ul class="nav-item-hover">
+                   <li>
+                       <a href="">
+                           服务
+                       </a>
+                   </li>
+                    <li>
+                        <a href="">
+                            存储与备份
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="item-click">
+                <a href="javascript:void(0)">
+                    <img class="nav-icon" src="images/service.svg" alt=""/>
+                    <span class="nav-title">镜像</span>
+                </a>
+                <ul class="nav-item-hover">
+                    <li>
+                        <a href="">
+                            镜像中心
+                        </a>
+                    </li>
+                    <li>
+                        <a href="">
+                            我的镜像
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </aside>
+    <div class="page-container">
+        <article>
+            <div class="page-main">
+                <div class="contentTitle">
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                        <li><i class="fa fa-angle-right"></i></li>
+                        <li class="active">镜像服务</li>
+                    </ol>
+                </div>
+                <div class="contentMain">
+                    <div class="content">
+
+                        <div class="search">
+                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;">
+                                <input class="search-img" placeholder="搜索镜像" type="text"><button type="submit" class="btn btn-primary btn-send">搜索</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+
+
+
+    <script type="text/javascript" src="js/plugins/jquery-1.11.3.js"></script>
+    <script type="text/javascript" src="plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
+    <script type="text/javascript" src="js/custom.js"></script>
+
+</body>
+</html>

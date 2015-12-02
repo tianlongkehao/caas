@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="plugins/bootstrap-3.3.5/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="plugins/Font-Awesome-master/css/font-awesome.css"/>
+    <link rel="stylesheet" type="text/css" href="css/core/base.css"/>
+    <link rel="stylesheet" type="text/css" href="css/core/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="css/mod/ci.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="css/layout.css"/>-->
+    <!--<link rel="stylesheet" type="text/css" href="css/common.css"/>-->
+
+</head>
+<body>
+
+<header class="header">
+    <div class="navbar navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="javascript:void(0);">
+                    <h2>BONC-PaaS</h2>
+                </a>
+            </div>
+            <ul class="nav navbar-nav navbar-right navbar-user">
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        Admin
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="javascript:void(0);"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                        <li><a href="javascript:void(0);"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                        <li class="logout">
+                            <a href="javascript:void(0);"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+<aside class="page-sidebar">
+    <ul class="nav-menu">
+        <li class="first-nav-li">
+            <a href="index.html">
+                <span class="glyphicon glyphicon-th nav-icon" aria-hidden="true"></span>
+                <span class="nav-title">控制台</span>
+            </a>
+        </li>
+        <li >
+            <a href="javascript:void(0)">
+                <img class="nav-icon" src="images/service.svg" alt=""/>
+                <span class="nav-title">服务</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li>
+                    <a href="">
+                        服务
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        存储与备份
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="item-click">
+            <a href="javascript:void(0)">
+                <img class="nav-icon" src="images/service.svg" alt=""/>
+                <span class="nav-title">构建</span>
+            </a>
+        </li>
+    </ul>
+</aside>
+<div class="page-container">
+    <article>
+        <div class="page-main">
+            <div class="contentTitle">
+                <ol class="breadcrumb">
+                    <li><a href="#"><li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                    <li><i class="fa fa-angle-right"></i></li>
+                    <li class="active">构建代码</li>
+                </ol>
+            </div>
+            <div class="contentMain">
+                <div class="caption clearfix">
+                    <ul class="toolbox clearfix">
+                        <li><a href="javascript:void(0);"><i class="fa fa-repeat"></i></a></li>
+                        <li><a href="javascript:void(0);">添加源代码</a></li>
+                        <li><a href="ci-add.html">快速构建</a></li>
+                    </ul>
+                    <!--<div class="searchs">-->
+                        <!--<form class="form-inline" action="">-->
+                            <!--<div class="form-group">-->
+                                <!--<div class="input-group">-->
+                                    <!--<input type="text" class="form-control" placeholder="搜索">-->
+                                    <!--<span class="input-group-btn">-->
+                                        <!--<button class="btn btn-default" type="button">-->
+                                            <!--<span class="glyphicon glyphicon-search"></span>-->
+                                        <!--</button>-->
+                                    <!--</span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</form>-->
+                    <!--</div>-->
+                </div>
+                <div class="itemTable">
+                    <table class="table ci-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="table-head">
+                                        <table class="table" style="margin:0px;">
+                                            <thead>
+                                                <tr style="height:40px;">
+                                                    <th style="width: 15%;text-indent:30px;">项目名称</th>
+                                                    <th style="width: 12%;text-indent: 15px;">构建状态</th>
+                                                    <th style="width: 15%;text-indent: 20px;">代码源</th>
+                                                    <th style="width: 12%;">上次构建时间</th>
+                                                    <th style="width: 10%;text-indent: 8px;">持续时间</th>
+                                                    <th style="width: 15%;text-indent: 10px;">镜像</th>
+                                                    <th style="width: 18%;text-indent: 10px;">功能</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody  id="projectsBody">
+                            <tr>
+                                <td>
+                                    <div class="content-table">
+                                        <table class="table tables">
+                                            <tbody>
+                                                <tr class="ci-listTr" style="cursor:auto">
+                                                    <td style="width: 15%; text-indent:22px;">
+                                                        <a href="" title="查看详细信息">test1</a>
+                                                    </td>
+                                                    <td style="width: 12%;">
+                                                        <i class="fa_success"></i>
+                                                        构建中
+                                                        <img src="images/loading4.gif" alt=""/>
+                                                    </td>
+                                                    <td style="width: 15%;">
+                                                        <a data-toggle="tooltip" data-placement="left" title="" target="_blank" href="" data-original-title="查看源代码">
+                                                            <span class="bj-code-source"><i class="fa fa-git-square fa-lg"></i> oschina</span>
+                                                        </a>
+                                                    </td>
+                                                    <td style="width: 12%;">1 小时前</td>
+                                                    <td style="width: 10%;">45分11秒</td>
+                                                    <td style="width: 15%;">
+                                                        <a target="_blank" title="" style="cursor:no-drop">node</a>
+                                                    </td>
+                                                    <td style="width:18%">
+                                                        <span class="bj-green" data-toggle="tooltip" data-placement="right" title="" data-original-title="重新构建">构建&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></span>
+                                                    </td>
+                                                </tr>
+                                                <tr class="ci-listTr" style="cursor:auto">
+                                                    <td style="width: 15%; text-indent:22px;">
+                                                        <a href="" title="查看详细信息">test1</a>
+                                                    </td>
+                                                    <td style="width: 12%;">
+                                                        <i class="fa_stop"></i>
+                                                        失败
+                                                    </td>
+                                                    <td style="width: 15%;">
+                                                        <a data-toggle="tooltip" data-placement="left" title="" target="_blank" href="" data-original-title="查看源代码">
+                                                            <span class="bj-code-source"><i class="fa fa-git-square fa-lg"></i> oschina</span>
+                                                        </a>
+                                                    </td>
+                                                    <td style="width: 12%;">1 小时前</td>
+                                                    <td style="width: 10%;">45分11秒</td>
+                                                    <td style="width: 15%;">
+                                                        <a target="_blank" title="镜像尚未构建成功" style="cursor:no-drop">node</a>
+                                                    </td>
+                                                    <td style="width:18%">
+                                                        <span class="bj-green" data-toggle="tooltip" data-placement="right" title="" data-original-title="重新构建">构建&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+
+
+<script type="text/javascript" src="js/plugins/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
+<script type="text/javascript" src="js/custom.js"></script>
+
+</body>
+</html>

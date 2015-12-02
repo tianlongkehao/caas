@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="plugins/bootstrap-3.3.5/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="plugins/Font-Awesome-master/css/font-awesome.css"/>
+    <link rel="stylesheet" type="text/css" href="css/core/base.css"/>
+    <link rel="stylesheet" type="text/css" href="css/core/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="css/mod/service.css"/>
+<!--    <link rel="stylesheet" type="text/css" href="css/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="css/common.css"/>-->
+
+</head>
+<body>
+    <header class="header">
+        <div class="navbar navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="javascript:void(0);">
+                        <h2>BONC-PaaS</h2>
+                    </a>
+                </div>
+                <ul class="nav navbar-nav navbar-right navbar-user">
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Admin
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:void(0);"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                            <li><a href="javascript:void(0);"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                            <li class="logout">
+                                <a href="javascript:void(0);"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <aside class="page-sidebar">
+        <ul class="nav-menu">
+            <li class="first-nav-li">
+                <a href="index.html">
+                    <span class="glyphicon glyphicon-th nav-icon" aria-hidden="true"></span>
+                    <span class="nav-title">控制台</span>
+                </a>
+            </li>
+            <li class="item-click">
+                <a href="javascript:void(0)">
+                    <img class="nav-icon" src="images/service.svg" alt=""/>
+                    <span class="nav-title">服务</span>
+                </a>
+                <ul class="nav-item-hover">
+                   <li>
+                       <a href="">
+                           服务
+                       </a>
+                   </li>
+                    <li>
+                        <a href="">
+                            存储与备份
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="">
+                <a href="javascript:void(0)">
+                    <img class="nav-icon" src="images/service.svg" alt=""/>
+                    <span class="nav-title">服务</span>
+                </a>
+                <ul class="nav-item-hover">
+                    <li>
+                        <a href="">
+                            服务
+                        </a>
+                    </li>
+                    <li>
+                        <a href="">
+                            存储与备份
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </aside>
+    <div class="page-container">
+        <article>
+            <div class="page-main">
+                <div class="contentTitle">
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                        <li><i class="fa fa-angle-right"></i></li>
+                        <li class="active">服务</li>
+                    </ol>
+                </div>
+                <div class="contentMain">
+                    <aside class="aside-btn">
+                        <div class="btns-group">
+                            <span class="btn btn-defaults btn-white"><i class="icon-map-marker"></i><span class="ic_left">北京一区</span></span>
+                            <span class="btn btn-defaults"><i class="icon-map-marker"></i><span class="ic_left">北京一区</span></span>
+                            <span class="btn btn-defaults"><i class="icon-plus"></i><span class="ic_left">北京一区</span></span>
+                        </div>
+                    </aside>
+                    <div class="caption clearfix">
+                        <ul class="toolbox clearfix">
+                            <li><a href="javascript:void(0);"><i class="fa fa-repeat"></i></a></li>
+                            <li><a href="javascript:void(0);"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
+                            <li class="dropdown">
+                                <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="javascript:void(0)">
+                                            <i class="fa fa-play"></i>
+                                            <span class="ic_left">启动</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="fa fa-power-off"></i>
+                                            <span class="ic_left">停止</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="fa fa-arrows"></i>
+                                            <span class="ic_left">弹性伸缩</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="fa fa-arrow-up"></i>
+                                            <span class="ic_left">灰度升级</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="fa fa-undo"></i>
+                                            <span class="ic_left">重新部署</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="fa fa-cog"></i>
+                                            <span class="ic_left">更改配置</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="fa fa-trash"></i>
+                                            <span class="ic_left">删除</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="searchs">
+                            <form class="form-inline" action="">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="搜索">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button">
+                                                <span class="glyphicon glyphicon-search"></span>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div class="table-head">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 5%;text-indent: 30px;">
+                                                            <input type="checkbox" id="btnCheckAll"/>
+                                                        </th>
+                                                        <th style="width: 20%;padding-left: 5px;">名称</th>
+                                                        <th style="width: 10%;text-indent: 8px;">运行状态</th>
+                                                        <th style="width: 20%;">镜像</th>
+                                                        <th style="width: 34%;">服务地址</th>
+                                                        <th style="width: 10%;">创建于</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <table class="table">
+                                                <tbody>
+                                                    <tr class="clusterId">
+                                                        <td style="width:5%;text-indent: 30px;">
+                                                            <input type="checkbox" name="chkItem" value="" status="" imagename="" imagetag="" />
+                                                        </td>
+                                                        <td style="width:20%;white-space:nowrap;">
+                                                            <b class="caret margin" style="transform: rotate(0deg);"></b>
+                                                            <a href="/containers/tenx_district2/cluster/mysql" class="cluster_mirrer_name">mysql</a>
+                                                            <span class="number-node">1</span>
+                                                            <span class="margin cursor console-code-modal" data-id="#console-code-modal">
+                                                                <i class="fa fa-desktop" onclick="_showConsole('mysql');"></i>
+                                                            </span>
+                                                        </td>
+                                                        <td style="width:10%" id="mysqlstatus">
+                                                            <i class="fa_run"></i>
+                                                            <span style="color: #65BC2C">运行中 </span>
+                                                        </td>
+                                                        <td style="width:20%;">
+                                                            <img src="https://dn-tenxstore.qbox.me/tenxcloud_mysql.png?imageView2/2/h/20" style="max-height:20px;max-width:40px;">
+                                                            <span class="cluster_mirrer">
+                                                                <a title="点击查看镜像" target="_blank" href="https://hub.tenxcloud.com/repos/tenxcloud/mysql">tenxcloud/mysql</a>
+                                                            </span>
+                                                        </td>
+                                                        <td style="width:34%" id="mysqlurl">
+                                                            <span class="url">
+                                                                <a href="http://mysql-lynnxu.tenxapp.com:25314" target="_blank">mysql-lynnxu.tenxapp.com:25314</a>
+                                                            </span>
+                                                        </td>
+                                                        <td style="width:10%" class="tdTimeStrap">
+                                                            <input type="hidden" class="timeStrap" value="2015-11-30T02:23:28.000Z">
+                                                            <i class="fa_time"></i>
+                                                            <span>1 天前</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="border-left:1px solid #eee;">
+                                                        <td colspan="8"><div class="align-center">
+                                                            <table class="table">
+                                                                <thead style="background: #FAFAFA;border-top:1px solid #EDECEC;">
+                                                                    <tr class="tr-row">
+                                                                        <td style="width:5%">&nbsp;</td>
+                                                                        <td style="width:20%;">
+                                                                            <a style="margin-left: 19px;" href="/containers/tenx_district2/instances/mysql-s49b2">mysql-s49b2</a>
+                                                                        </td>
+                                                                        <td colspan="2" style="width:30%">
+                                                                            <i class="fa_run"></i>
+                                                                            <span style="color: #65BC2C">运行中 </span>
+                                                                        </td>
+                                                                        <td style="width:34%">mysql:3306&nbsp; （内网）</td>
+                                                                        <td style="width:10%">
+                                                                            <i class="fa_time"></i>20 分钟前
+                                                                        </td>
+                                                                    </tr>
+                                                                </thead>
+                                                            </table>
+                                                        </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+
+
+
+    <script type="text/javascript" src="js/plugins/jquery-1.11.3.js"></script>
+    <script type="text/javascript" src="plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
+    <script type="text/javascript" src="js/custom.js"></script>
+
+</body>
+</html>

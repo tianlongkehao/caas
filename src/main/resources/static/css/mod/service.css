@@ -1,0 +1,43 @@
+.aside-btn {
+    height: 60px;
+    position: relative;
+    padding: 0 20px;
+    background: #EAEEF1;
+}
+
+.aside-btn .btns-group{
+    position: absolute;
+    bottom: -1px;
+}
+
+.btns-group > span.btn {
+    margin-right: 10px;
+    height: 36px;
+    min-width: 70px;
+    border-radius: 2px;
+    padding: 7px 12px;
+}
+
+.btns-group .btn-white {
+    background: #fff;
+    color: #3C7BCA;
+}
+
+
+
+
+
+.searchs {
+    float: right;
+}
+
+.clusterId {
+    border-bottom: 1px solid #eee;
+    border-left: 1px solid #eee;
+}
+
+.tr-row {
+    background: #eee;
+    border-top: 1px solid #EDECEC;
+    border-left: 1px solid #eee;
+}

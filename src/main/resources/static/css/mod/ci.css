@@ -1,0 +1,123 @@
+.itemTable .ci-table thead {
+    background: #f5f6f6;
+}
+
+.ci-listTr {
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.bj-code-source {
+    background: #EDF4FC;
+    width: 100px;
+    text-align: center;
+    height: 30px;
+    border-radius: 20px;
+    display: inline-block;
+    line-height: 30px;
+    color: #333;
+}
+
+.bj-green {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 2px;
+    background: #13C563;
+    text-indent: 0;
+    cursor: pointer;
+    color: #fff;
+}
+
+
+@media screen and (min-width: 1200px) {
+    .item-obj {
+        padding: 30px 70px 50px;
+    }
+}
+
+.item-obj {
+    background: #fff;
+    overflow: hidden;
+}
+
+.item-obj .container {
+    width:100%;
+}
+
+.item-obj .depot-name .form-group > div {
+    height: 40px;
+    line-height: 40px;
+}
+
+.item-obj .depot-name .name-note{
+    float: left;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    text-indent: 10px;
+    font-size: 16px;
+    background: #F5F6F6;
+}
+
+.item-obj .depot-name .name-input {
+    line-height: 18px;
+    height: 40px;
+    padding: 5px 0;
+    text-indent: 5px;
+    position: relative;
+    left: -1px;
+}
+
+.item-obj .depot-name #tag {
+    background: #F5F6F6;
+}
+
+.item-obj .depot-name .btn-groups {
+    border-radius: 2px;
+    border: 1px solid #4280CB;
+    display: inline-block;
+}
+
+.item-obj .depot-name .btn-groups .btn-public {
+    background: #4280CB;
+    color: #fff;
+}
+.item-obj .depot-name .btn-groups .btns {
+    width: 80px;
+    text-align: center;
+    height: 40px;
+    display: inline-block;
+    float: left;
+    cursor: pointer;
+}
+
+
+.item-obj .registryinfo {
+    border: 1px solid #DADADA;
+    margin-top: 20px;
+    padding: 5px;
+}
+
+.item-obj .registryinfo .registry tr {
+    height: 50px;
+}
+
+.item-obj .registryinfo .registry tr td {
+    line-height: 20px;
+    border: 0;
+}
+
+.item-obj .registryinfo .registry tr td .reg-text,
+.item-obj .registryinfo .registry tr td .code-branch {
+    color: #4E8FDE;
+    text-align: center;
+    display: inline-block;
+}
+
+td .reg-input, li .reg-input {
+    padding: 5px;
+    text-indent: 5px;
+    border-radius: 2px;
+    border: 1px solid #DADADA;
+    height: 36px;
+}
