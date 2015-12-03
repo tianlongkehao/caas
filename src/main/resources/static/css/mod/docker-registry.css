@@ -105,3 +105,170 @@
     display: table-cell;
     vertical-align: middle;
 }
+
+.mirror-head {
+    width: 100%;
+    height: 190px;
+    padding: 0 10px;
+}
+
+.mirror-head .images {
+    float: left;
+    width: 200px;
+    height: 140px;
+    border: 1px solid #DCDCDC;
+    background: #fff;
+    display: table;
+    margin-right: 30px;
+    position: relative;
+}
+
+.img-icon {
+    width: 175px;
+    height: 75px;
+    margin: 32px auto;
+    text-align: center;
+    overflow: hidden;
+}
+
+.mirror-head .type-info {
+    float: left;
+    height: 100%;
+    width: 27%;
+}
+
+.mirror-head .type-info span.title {
+    display: inline-block;
+    width: 100%;
+    height: 36px;
+    font-size: 20px;
+    white-space: nowrap;
+}
+
+.mirror-head .type-info .list-content {
+    height: 80px;
+    width: 95%;
+    display: block;
+    line-height: 20px;
+    font-size: 14px;
+    overflow: hidden;
+}
+
+.mirror-head .type-info .fork {
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.mirror-head .type-info .downloadNumber {
+    margin: 0 10px;
+    font-size: 14px;
+}
+
+.mirror-head .list-download {
+    float: right;
+    height: 100%;
+    width: 48%;
+    min-width: 450px;
+}
+
+.mirror-head .list-download .download-mirror {
+    vertical-align: middle;
+    position: relative;
+    top: 65px;
+}
+
+.mirror-head .list-download .download-mirror .download-src {
+    width: 350px;
+    height: 35px;
+    text-indent: 10px;
+    border: 1px solid #4280CB;
+    color: #4280CB;
+}
+
+.mirror-head .list-download .download-mirror #click-copy,
+.mirror-head .list-download .download-mirror #copy-style {
+    border: 1px solid #4280CB;
+    width: 65px;
+    height: 35px;
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 423px;
+    border-left: 0;
+    cursor: pointer;
+    background: url(../../images/bj_registry_list.png) no-repeat;
+    background-position: 23px 5px;
+}
+
+.table_list {
+    background: #fff;
+    height: 60px;
+    border: 1px solid #DCDCDC;
+    line-height: 60px;
+    margin-bottom: 28px;
+    overflow: hidden;
+}
+
+.table_list .list_info {
+    float: left;
+    width: 110px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.table_list .list_info.active {
+    background: #4280CB;
+    color: #fff;
+}
+
+
+.infoLog,
+.infoTags,
+.infoInterface,
+.infoDockerfile {
+    background: #fff;
+    border: 1px solid #DCDCDC;
+    min-height: 180px;
+    position: relative;
+}
+
+.infoLog .detail-contents,
+.infoTags .detail-contents,
+.infoInterface .detail-contents,
+.infoDockerfile .detail-contents {
+    padding: 30px 15px;
+    padding-top: 50px;
+    width: 100%;
+}
+
+.infoLog .detail-contents .envobj-tr,
+.infoTags .detail-contents .envobj-tr,
+.infoInterface .detail-contents .envobj-tr,
+.infoDockerfile .detail-contents .envobj-tr {
+    border-bottom: 1px solid #eee;
+}
+
+.table>tbody>tr>td,
+.table>tbody>tr>th {
+    padding: 8px;
+}
+
+.registry-attr {
+    border: 1px solid #DCDCDC;
+    border-top: 0;
+    background: #fff;
+}
+
+.registry-attr .li-row {
+    border-top: 1px solid #DCDCDC;
+    line-height: 55px;
+}
+
+.registry-attr .li-row i {
+    display: inline-block;
+    width: 23px;
+    vertical-align: middle;
+    margin-left: 30px;
+    margin-right: 5px;
+    text-align: center;
+}
