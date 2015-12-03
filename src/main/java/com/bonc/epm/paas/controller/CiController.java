@@ -1,8 +1,8 @@
 package com.bonc.epm.paas.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.entity.Ci;
 /**
@@ -53,12 +54,43 @@ public class CiController {
 	@RequestMapping("ci/addCi.do")
 	@ResponseBody
 	public String addCi(Ci ci) {
+		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
+		ci.setCodeType(CiConstant.CODE_TYPE_GIT);
+		ci.setConstructionDate(new Date());
 		ciDao.save(ci);
+		fetchCode(ci);
+		construct(ci);
 		log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");
 		map.put("data", ci);
 		return JSON.toJSONString(map);
+	}
+	
+	@RequestMapping("ci/constructCi.do")
+	@ResponseBody
+	public String constructCi(Ci ci) {
+		fetchCode(ci);
+		construct(ci);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", "200");
+		map.put("data", ci);
+		return JSON.toJSONString(map);
+	}
+	
+	/**
+	 * 获取代码
+	 * @param ci
+	 */
+	private void fetchCode(Ci ci){
+		
+	}
+	/**
+	 * 构建镜像
+	 * @param ci
+	 */
+	private void construct(Ci ci){
+		
 	}
 	
 }
