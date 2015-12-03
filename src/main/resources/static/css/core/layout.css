@@ -158,6 +158,10 @@
     content: "";
 }
 
+.breadcrumb li.active {
+    width:80px;
+}
+
 /* 内容面板部分 */
 .contentMain {
     height: calc(100% - 60px);
