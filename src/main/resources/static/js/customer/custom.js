@@ -22,7 +22,7 @@ $(document).ready(function(){
         $(".contentMain").load($(this).attr("action"));
     });
 
-    var flag = GetQueryString("flag");
+    var flag = getQueryString("flag");
     if(flag=="ci"){
     	$("#menuCi").click();
     }else if(flag=="service"){
@@ -32,8 +32,7 @@ $(document).ready(function(){
 });
 
 
-function GetQueryString(name)
-{
+function getQueryString(name) {
      var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
      var r = window.location.search.substr(1).match(reg);
      if(r!=null)return  unescape(r[2]); return null;

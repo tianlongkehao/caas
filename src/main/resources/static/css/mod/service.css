@@ -24,9 +24,6 @@
 }
 
 
-
-
-
 .searchs {
     float: right;
 }
@@ -40,4 +37,240 @@
     background: #eee;
     border-top: 1px solid #EDECEC;
     border-left: 1px solid #eee;
+}
+
+/* service-create */
+
+.modalCrealApp {
+    background: #fff;
+    min-height: 100%;
+}
+
+.modalCrealApp .steps-main {
+    margin: 0 auto;
+    overflow: hidden;
+    padding-bottom: 10px;
+}
+
+.progre {
+    text-align: center;
+    border-bottom: 2px solid #e2e2e4;
+    width: 570px;
+    margin: 30px auto;
+    height: 45px;
+}
+
+.modalCrealApp .steps-main .progre {
+    width: 100%;
+    border: 0;
+}
+
+.modalCrealApp .steps-main .progre .radius_step {
+    color: #999;
+    height: 45px;
+    width: 33.33%;
+    float: left;
+    border-bottom: 2px solid #e2e2e4;
+}
+
+.modalCrealApp .steps-main .progre .radius_step.action {
+    border-bottom: 2px solid #418ac7;
+}
+
+.radius_step {
+    color: #999;
+    padding: 0 20px;
+    height: 45px;
+    width: 190px;
+    float: left;
+}
+
+.radius_step span {
+    margin: 3px auto;
+    padding: 6px 10px;
+    border-radius: 30px;
+    background: #cbcbcb;
+    color: #fff;
+}
+
+.radius_step.action span {
+    background: #418ac7;
+}
+
+
+.step-inner {
+    position: relative;
+    left: 0;
+    width: 1400px;
+    height: 280px;
+    overflow: hidden;
+}
+
+.modalCrealApp .steps-main .step-inner {
+    position: relative;
+    width: 300%;
+    overflow: hidden;
+    min-height: 300px;
+    height: auto;
+}
+
+
+.host_step1, .host_step2, .host_step3 {
+    float: left;
+    width: 700px;
+}
+
+.modalCrealApp .steps-main .step-inner .host_step1 {
+    height: auto;
+    min-height: 200px;
+}
+
+.modalCrealApp .steps-main .step-inner .host_step1,
+.modalCrealApp .steps-main .step-inner .host_step2,
+.modalCrealApp .steps-main .step-inner .host_step3 {
+    width: 33.33%;
+    padding: 0 4rem;
+}
+
+.select-server {
+    width: 140px;
+    text-align: right;
+    float: left;
+    height: 50px;
+    line-height: 35px;
+}
+
+.select-server>span {
+    padding-right: 10px;
+    text-align: right;
+}
+
+.modalCrealApp .steps-main .step-inner .host_step1 .select-server,
+.modalCrealApp .steps-main .step-inner .host_step2 .select-server,
+.modalCrealApp .steps-main .step-inner .host_step3 .select-server {
+    width: auto;
+    float: left;
+    height: 50px;
+    line-height: 35px;
+}
+
+.info-block,
+.info-system,
+.info-type {
+    display: inline-block;
+    padding: 0 10px;
+    min-width: 60px;
+    line-height: 36px;
+    text-align: center;
+    color: #418ac7;
+    cursor: pointer;
+}
+
+.info-block.primary,
+.info-system.primary,
+.info-type.primary {
+    background: #418ac7;
+    border-radius: 20px;
+    color: #fff;
+}
+
+.search {
+    position: relative;
+    min-width: 230px;
+    display: inline-block;
+    margin:0;
+    min-width: 230px;
+    float:right;
+}
+
+.search #search-img {
+    width:160px;
+    height:36px;
+}
+
+.search .btn-send {
+    height:36px;
+    line-height:22px;
+    position: absolute;
+    top:0px;
+    right: 0;
+    border-radius: 0 2px 2px 0;
+
+}
+
+
+.select-type,
+.stack-type {
+    clear: both;
+    width: 80%;
+    margin: 0 auto;
+}
+
+
+
+.pull-type {
+    float: left;
+    display: inline-block;
+    height: 50px;
+    line-height: 36px;
+    margin-right: 10px;
+}
+
+.open-system {
+    float: left;
+}
+
+
+.blankapp {
+    margin-top: 20px;
+}
+
+.blankapp-list {
+    display: block;
+    clear: both;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.blankapp-list .list-wrapper {
+    border: 1px solid #e2e2e4;
+    border-radius: 2px;
+    min-height: 100px;
+}
+
+.image-item:nth-of-type(1) {
+    border: 0;
+}
+.image-item {
+    height: 99px;
+    border-top: 1px solid #e2e2e4;
+    border-radius: 3px;
+    color: #777;
+    clear: both;
+}
+
+.img_icon {
+    display: inline-block;
+    text-align: center;
+    float: left;
+    margin: 25px 0;
+}
+
+.img_icon>img {
+    height: 50px;
+    max-width: 80%;
+}
+
+.list-item-description {
+    margin-top: 25px;
+}
+
+.image-item .id {
+    width: 150px;
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    top: 15px;
 }
