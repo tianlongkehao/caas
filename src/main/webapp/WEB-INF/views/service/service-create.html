@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="plugins/bootstrap-3.3.5/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="plugins/Font-Awesome-master/css/font-awesome.css"/>
+    <link rel="stylesheet" type="text/css" href="css/core/base.css"/>
+    <link rel="stylesheet" type="text/css" href="css/core/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="css/mod/service.css"/>
+<!--    <link rel="stylesheet" type="text/css" href="css/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="css/common.css"/>-->
+
+</head>
+<body>
+    <header class="header">
+        <div class="navbar navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="javascript:void(0);">
+                        <h2>BONC-PaaS</h2>
+                    </a>
+                </div>
+                <ul class="nav navbar-nav navbar-right navbar-user">
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Admin
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:void(0);"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                            <li><a href="javascript:void(0);"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                            <li class="logout">
+                                <a href="javascript:void(0);"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <aside class="page-sidebar">
+        <ul class="nav-menu">
+            <li class="first-nav-li">
+                <a href="index.html">
+                    <span class="glyphicon glyphicon-th nav-icon" aria-hidden="true"></span>
+                    <span class="nav-title">控制台</span>
+                </a>
+            </li>
+            <li class="item-click">
+                <a href="javascript:void(0)">
+                    <img class="nav-icon" src="images/service.svg" alt=""/>
+                    <span class="nav-title">服务</span>
+                </a>
+                <ul class="nav-item-hover">
+                   <li>
+                       <a href="">
+                           服务
+                       </a>
+                   </li>
+                    <li>
+                        <a href="">
+                            存储与备份
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="">
+                <a href="javascript:void(0)">
+                    <img class="nav-icon" src="images/service.svg" alt=""/>
+                    <span class="nav-title">服务</span>
+                </a>
+                <ul class="nav-item-hover">
+                    <li>
+                        <a href="">
+                            服务
+                        </a>
+                    </li>
+                    <li>
+                        <a href="">
+                            存储与备份
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </aside>
+    <div class="page-container">
+        <article>
+            <div class="page-main">
+                <div class="contentTitle">
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                        <li><i class="fa fa-angle-right"></i></li>
+                        <li class="active">服务</li>
+                        <li><i class="fa fa-angle-right"></i></li>
+                        <li class="active">创建服务</li>
+                    </ol>
+                </div>
+                <div class="contentMain">
+                    <div class="modalCrealApp">
+                        <div class="steps-main">
+                            <div class="progre">
+                                <ul style="padding: 0 4rem;">
+                                    <li class="radius_step action">
+                                        <span>1</span>
+                                        镜像来源
+                                    </li>
+                                    <li class="radius_step">
+                                        <span>2</span>
+                                        容器配置
+                                    </li>
+                                    <li class="radius_step">
+                                        <span>3</span>
+                                        高级设置
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="step-inner" style="left:0%;">
+                                <div class="host_step1">
+                                    <div class="select-server">
+                                        <span>选择镜像:</span>
+                                    </div>
+                                    <section class="info-class">
+                                        <span class="info-system primary" id="system">常用</span>
+                                        <span class="info-system" id="stack">Stack</span>
+                                        <span class="info-block" id="public">公有</span>
+                                        <span class="info-block" id="private">私有</span>
+                                        <span class="info-block" id="favorites">收藏夹</span>
+                                        <span class="info-block" id="docker">Docker/第三方镜像</span>
+                                        <span class="search container-search">
+                                            <form class="search-group-inner">
+                                                <input type="text" id="search-img" placeholder="搜索镜像">
+                                                <button type="submit" class="btn btn-primary btn-send">搜索</button>
+                                            </form>
+                                        </span>
+                                    </section>
+                                    <div class="select-type" style="margin:0;">
+                                        <span class="pull-type">镜像类别:</span>
+                                        <section class="open-system">
+                                            <span class="info-type" type="os">SSH 服务器</span>
+                                            <span class="info-type" type="server">Web 服务器</span>
+                                            <span class="info-type primary" type="database">数据库与缓存</span>
+                                            <span class="info-type" type="docker_library">Library</span>
+                                            <span class="info-type" type="others">其他</span>
+                                        </section>
+                                    </div>
+                                    <div class="blankapp">
+                                        <ul class="blankapp-list">
+                                            <li class="list-wrapper">
+                                                <ul>
+                                                    <li class="image-item">
+                                                        <span class="img_icon span2">
+                                                            <img src="images/tenxcloud_mysql.png">
+                                                        </span>
+                                                        <span class="span5 type" type="database">
+                                                            <div class="list-item-description">
+                                                                <div class="name h4">
+                                                                    tenxcloud/mysql
+                                                                    <a title="点击查看镜像详情" target="_blank" href="">
+                                                                        <i class="fa fa-external-link-square"></i>
+                                                                    </a>
+                                                                </div>
+                                                                <span class="span2">
+                                                                    <i class="cloud_download"></i>
+                                                                    <span class="number">12214</span>
+                                                                </span>
+                                                                <i class="fa fa-star-o"></i>
+                                                                <span class="star">46</span>
+                                                            </div>
+                                                        </span>
+                                                        <span class="span3">
+                                                            <div class="list-item-description">
+                                                                <span class="id h5" title="latest,5.6" value="latest,5.6">版本: latest,5.6</span>
+                                                                <span class="pull-deploy btn btn-primary" data-attr="tenxcloud/mysql">
+                                                                    部署
+                                                                    <i class="fa fa-arrow-circle-o-right margin fa-lg"></i>
+                                                                </span>
+                                                            </div>
+                                                        </span>
+                                                    </li>
+                                                    <li class="image-item">
+                                                        <span class="img_icon span2">
+                                                            <img src="images/tenxcloud_mysql.png">
+                                                        </span>
+                                                        <span class="span5 type" type="database">
+                                                            <div class="list-item-description">
+                                                                <div class="name h4">
+                                                                    tenxcloud/mysql
+                                                                    <a title="点击查看镜像详情" target="_blank" href="">
+                                                                        <i class="fa fa-external-link-square"></i>
+                                                                    </a>
+                                                                </div>
+                                                                <span class="span2">
+                                                                    <i class="cloud_download"></i>
+                                                                    <span class="number">12214</span>
+                                                                </span>
+                                                                <i class="fa fa-star-o"></i>
+                                                                <span class="star">46</span>
+                                                            </div>
+                                                        </span>
+                                                        <span class="span3">
+                                                            <div class="list-item-description">
+                                                                <span class="id h5" title="latest,5.6" value="latest,5.6">版本: latest,5.6</span>
+                                                                <span class="pull-deploy btn btn-primary" data-attr="tenxcloud/mysql">
+                                                                    部署
+                                                                    <i class="fa fa-arrow-circle-o-right margin fa-lg"></i>
+                                                                </span>
+                                                            </div>
+                                                        </span>
+                                                    </li>
+                                                    <li class="image-item">
+                                                        <span class="img_icon span2">
+                                                            <img src="images/tenxcloud_mysql.png">
+                                                        </span>
+                                                        <span class="span5 type" type="database">
+                                                            <div class="list-item-description">
+                                                                <div class="name h4">
+                                                                    tenxcloud/mysql
+                                                                    <a title="点击查看镜像详情" target="_blank" href="">
+                                                                        <i class="fa fa-external-link-square"></i>
+                                                                    </a>
+                                                                </div>
+                                                                <span class="span2">
+                                                                    <i class="cloud_download"></i>
+                                                                    <span class="number">12214</span>
+                                                                </span>
+                                                                <i class="fa fa-star-o"></i>
+                                                                <span class="star">46</span>
+                                                            </div>
+                                                        </span>
+                                                        <span class="span3">
+                                                            <div class="list-item-description">
+                                                                <span class="id h5" title="latest,5.6" value="latest,5.6">版本: latest,5.6</span>
+                                                                <span class="pull-deploy btn btn-primary" data-attr="tenxcloud/mysql">
+                                                                    部署
+                                                                    <i class="fa fa-arrow-circle-o-right margin fa-lg"></i>
+                                                                </span>
+                                                            </div>
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="host_step2">
+                                    <ul class="safeSet">
+                                        <li class="line-h-3">
+                                            <span class="ve_top">镜像名称：</span>
+                                            <span class="imageName">
+                                                <img style="width: 25px" src="images/tenxcloud_mysql.png"> index.tenxcloud.com/<span id="imageName">tenxcloud/mysql</span>:<span class="version-text">latest</span>
+                                            </span>
+                                            <input type="hidden" id="imageType" value="database">
+                                            <input type="hidden" id="getImageName" value="tenxcloud/mysql:latest">
+                                        </li>
+                                        <li class="line-h-3">
+                                            <span class="ve_top">镜像版本：</span>
+                                            <div class="select-versions" data-toggle="dropdown">
+                                                <span class="version-text">latest</span>
+                                                <div class="sign">
+                                                    <i class="fa fa-angle-right"></i>
+                                                </div>
+                                            </div>
+                                            <ul id="imageTag" class="dropdown-menu dropdown-position">
+                                                <li>latest</li>
+                                                <li>5.6</li>
+                                            </ul>
+                                        </li>
+                                        <li class="line-h-3">
+                                            <span class="ve_top">服务名称：</span>
+                                            <input type="text" value="" class="in_style" id="containerName">
+                                        </li>
+                                        <li class="line-h-3">
+                                            <span class="ve_top">选择集群：</span>
+                                            <div class="select-versions" data-toggle="dropdown">
+                                                <span class="clusterText" data="tenx_district2">北京二区</span>
+                                                <div class="sign">
+                                                    <i class="fa fa-angle-right"></i>
+                                                </div>
+                                            </div>
+                                            <ul id="clusterList" class="dropdown-menu dropdown-position">
+                                                <li data="default">北京一区</li>
+                                                <li data="tenx_district2">北京二区</li>
+                                            </ul>
+                                        </li>
+                                        <li class="line-h-3" style="min-height:60px;padding-top: 10px;">
+                                            <span class="ve_top display-block">容器配置：</span>
+                                            <section class="set_container" config="60m,256Mi,10GB">
+                                                <div class="up_style">
+                                                    <span class="radius_type">1x</span>
+                                                </div>
+                                                <div class="text-center parameter">
+                                                    <span>256M 内存</span>
+                                                    <span>10GB 硬盘</span>
+                                                </div>
+                                            </section>
+                                            <section class="set_container x2 active" config="125m,512Mi,10GB">
+                                                <div class="up_style">
+                                                    <i class="fa_check"></i>
+                                                    <span class="radius_type" style="display:none">2x</span>
+                                                </div>
+                                                <div class="text-center parameter">
+                                                    <span>512M 内存</span>
+                                                    <span>10GB 硬盘</span>
+                                                </div>
+                                            </section>
+                                            <section class="set_container" config="250m,1024Mi,10GB">
+                                                <div class="up_style">
+                                                    <span class="radius_type">3x</span>
+                                                </div>
+                                                <div class="text-center parameter">
+                                                    <span>1024M 内存</span>
+                                                    <span>10GB 硬盘</span>
+                                                </div>
+                                            </section>
+                                            <section class="set_container" config="500m,2048Mi,10GB">
+                                                <div class="up_style">
+                                                    <span class="radius_type">4x</span>
+                                                </div>
+                                                <div class="text-center parameter">
+                                                    <span>2048M 内存</span>
+                                                    <span>10GB 硬盘</span>
+                                                </div>
+                                            </section>
+                                        </li>
+                                        <li class="line-h-3" id="instsize">
+                                            <div class="param-set">
+                                                <span class="number-title">实例数量：</span>
+                                                <input type="number" value="1" class="number" min="1" autocomplete="off" placeholder="1">
+                                                <span class="unit">个</span>
+                                            </div>
+                                        </li>
+                                        <li id="service_type">
+                                            <span class="ve_top">服务类型：</span>
+                                            <span class="update-mi"><input type="checkbox" id="state_service" stateless="0"> <label for="state_service"><font color="blue">有状态服务</font></label><span class="mountTips"></span></span>
+                                        </li>
+                                        <li class="hide-set" id="save_roll_dev" style="display: list-item;">
+                                            <ul id="mountPathList">
+                                                <li class="mount line-h-3">
+                                                    <span class="ve_top">&nbsp;</span>
+                                                    <table class="pull-left">
+                                                        <tbody>
+                                                            <tr><!-- <input type='text' disabled/> -->
+                                                                <td>
+                                                                    <span class="ve_top" style="width:150px">/var/lib/mysql</span>
+                                                                </td>
+                                                                <td>
+                                                                    <select class="selectVolume" style="height:30px;width:230px;">
+                                                                        <option value="0">选择一个存储卷</option>
+                                                                        <option uid="" value="test">test ext4 200M</option>
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <ins class="ins">
+                                                                        <input type="checkbox" id="readOnlyOp1" class="isVolumeReadonly">
+                                                                        <label for="readOnlyOp1">只读</label>
+                                                                    </ins>
+                                                                    <a class="refreshVolume" title="刷新" href="javascript:void(0)">
+                                                                        <i class="fa fa-refresh fa-lg" style="font-size: 16px"></i>
+                                                                    </a>
+                                                                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                                                    <a class="delVolume" title="删除" href="javascript:void(0)">
+                                                                        <i class="fa fa-trash-o" style="font-size: 16px"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </li>
+                                                <li class="line-h-3">
+                                                    <span class="ve_top">镜像设置：</span>
+                                                    <span class="update-mi"><input type="checkbox" id="pullPolicy" name="pullPolicy" checked=""> <label for="pullPolicy">更新镜像</label></span>
+                                                </li>
+                                            </ul>
+                                            <div style="height: 80px !important;"></div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="host_step3" style="height: auto;">
+                                    <ul class="advanced">
+                                        <li class="hide-set">
+                                            <span class="ve_top">链接服务：</span>
+                                            <ol class="pull-left" style="width:100%;">
+                                                <li class="hide-select">
+                                                    <select class="col col-4" id="linkcontainers" style="min-width:100px;height:28px;"><option>mysql</option></select>
+                                                    <input id="containernickname" type="text" placeholder="value">
+                                                    <a id="addcontainer" class="cursor">添加</a>
+                                                </li>
+
+                                                <li>
+                                                    <table id="linkcontainertb" class="table table-hover enabled" style="display:none">
+                                                        <thead>
+                                                        <tr>
+                                                            <th style="width40%">服务</th>
+                                                            <th style="width:40%">名称</th>
+                                                            <th style="width:20%">操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody id="linkcontainerbody"></tbody>
+                                                    </table>
+                                                </li>
+                                            </ol>
+                                        </li>
+                                        <li class="hide-set">
+                                            <span class="ve_top">环境变量：</span>
+                                            <ol class="pull-left" style="width:100%;">
+                                                <li class="hide-select">
+                                                    <input type="text" placeholder="name" id="Name">
+                                                    <input type="text" placeholder="value" id="Value">
+                                                    <a id="cratePATH">添加</a>
+                                                </li>
+                                                <li>
+                                                    <table class="table table-hover enabled" id="Path">
+                                                        <thead>
+                                                        <tr>
+                                                            <th style="width:45%">键</th>
+                                                            <th style="width:45%">值</th>
+                                                            <th style="width:10%">操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody id="Path-oper"><tr><td class="keys"><input type="text" style="width:98%" disabled="" value="PATH"></td><td class="vals"><input type="text" placeholder="value" value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"></td><td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"></td></tr><tr><td class="keys"><input type="text" style="width:98%" disabled="" value="DEBIAN_FRONTEND"></td><td class="vals"><input type="text" placeholder="value" value="noninteractive"></td><td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="noninteractive"></td></tr><tr><td class="keys"><input type="text" style="width:98%" disabled="" value="MYSQL_USER"></td><td class="vals"><input type="text" placeholder="value" value="admin"></td><td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="admin"></td></tr><tr><td class="keys"><input type="text" style="width:98%" disabled="" value="MYSQL_PASS"></td><td class="vals"><input type="text" placeholder="value" value="**Random**"></td><td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="**Random**"></td></tr><tr><td class="keys"><input type="text" style="width:98%" disabled="" value="REPLICATION_MASTER"></td><td class="vals"><input type="text" placeholder="value" value="**False**"></td><td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="**False**"></td></tr><tr><td class="keys"><input type="text" style="width:98%" disabled="" value="REPLICATION_SLAVE"></td><td class="vals"><input type="text" placeholder="value" value="**False**"></td><td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="**False**"></td></tr><tr><td class="keys"><input type="text" style="width:98%" disabled="" value="REPLICATION_USER"></td><td class="vals"><input type="text" placeholder="value" value="replica"></td><td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="replica"></td></tr><tr><td class="keys"><input type="text" style="width:98%" disabled="" value="REPLICATION_PASS"></td><td class="vals"><input type="text" placeholder="value" value="replica"></td><td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="replica"></td></tr></tbody>
+                                                    </table>
+                                                </li>
+                                            </ol>
+                                        </li>
+                                        <li class="hide-set">
+                                            <span class="ve_top">端口配置：</span>
+                                            <table class="table enabled">
+                                                <thead style="background:#fafafa">
+                                                    <tr><th style="width:35%">容器端口</th>
+                                                        <th style="width:35%">协议</th>
+                                                        <th style="width:15%">映射端口</th>
+                                                        <th style="vertical-align:middle;width:8.9%">操作</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="BORDER" id="pushPrptpcol">
+                                                    <tr class="plus-row">
+                                                        <td>
+                                                            <input class="port" type="text" disabled="" value="3306">
+                                                        </td>
+                                                        <td>
+                                                            <select class="T-http">
+                                                                <option>TCP</option>
+                                                                <option>HTTP</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <i>动态生成</i>
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" onclick="_deletePortRow(this)" class="gray">
+                                                                <i class="fa fa-trash-o fa-lg"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="plus-row">
+                                                        <td>
+                                                            <input class="port" type="text">
+                                                        </td>
+                                                        <td>
+                                                            <select class="T-http">
+                                                                <option>TCP</option>
+                                                                <option>HTTP</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <i>动态生成</i>
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" onclick="_deletePortRow(this)" class="gray">
+                                                                <i class="fa fa-trash-o fa-lg"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div class="createPort">
+                                                <span><i class="fa fa-plus margin"></i></span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <div style="height: 80px !important;"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="createPadding hide">
+                            <button class="btn btn-default go_backs" style="margin-right:30px;">上一步</button>
+                            <button class="btn btn-success two_step hide">高级设置</button>
+                            <button id="createButton" class="pull-right btn btn-primary pull_confirm">创建</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <script type="text/javascript" src="js/plugins/jquery-1.11.3.js"></script>
+    <script type="text/javascript" src="plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
+    <script type="text/javascript" src="js/custom.js"></script>
+    <script type="text/javascript" src="js/mod/service-create.js"></script>
+
+</body>
+</html>
