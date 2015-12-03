@@ -43,7 +43,7 @@
             <div class="container">
                 <ul class="app-list">
                     <li>
-                        <a class="icon-view" href="service.html">
+                        <a class="icon-view" href="/menu?flag=service">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
                                     <span><img src="images/service.svg" alt=""/></span>
