@@ -12,7 +12,7 @@
                     <div class="">
                         <span class="name-note">test /&nbsp;</span>
                         <input name="imgNameFisrt" type="hidden" value="test">
-                        <input name="imgNameLast" type="text" class="name-input" value=""> :
+                        <input id="imgNameLast" name="imgNameLast" type="text" class="name-input" value=""> :
                         <input name="imgNameVersion" type="text" value="latest" class="name-input" disabled="disabled">
                     </div>
                 </div>
@@ -30,13 +30,13 @@
             <div class="row">
                 <div class="form-group col-md-12">
                     <label for="ciSummary">简介</label>
-                    <input name="description" class="form-control" type="text" required="">
+                    <input id="ciSummary" name="ciSummary" class="form-control" type="text" required="">
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col-md-12">
-                    <label for="ciSummary">代码仓库地址</label>
-                    <input name="codeUrl" class="form-control"  type="text" placeholder="例如：https://github.com/tenxcloud/php-hello-world.git">
+                    <label for="codeUrl">代码仓库地址</label>
+                    <input id="codeUrl" name="codeUrl" class="form-control"  type="text" placeholder="例如：https://github.com/tenxcloud/php-hello-world.git">
                 </div>
             </div>
 

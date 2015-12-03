@@ -6,6 +6,23 @@ $(document).ready(function () {
 		$(".contentMain").load("/ci/add");
 	});
 	loadCiList();
+
+    $(document).on("click", ".bj-green", function(){
+
+        layer.open({
+            title: '快速构建',
+            content: '里面可以写内容',
+            btn: ['确定', '取消'],
+            yes: function(index, layero){ //或者使用btn1
+                //按钮【按钮一】的回调
+            },
+            cancel: function(index){ //或者使用btn2
+                //按钮【按钮二】的回调
+            }
+        });
+
+    });
+
 });
 function loadCiList(){
 	$.ajax({
@@ -60,7 +77,7 @@ function loadCiList(){
             	}
             	$("#ciList").html(html);
             }else{
-            	alert(data.msg);
+                 layer.alert(data.msg);
             }
 		}
 	});
