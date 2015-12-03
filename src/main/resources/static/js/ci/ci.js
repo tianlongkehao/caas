@@ -1,10 +1,13 @@
- $(document).ready(function () {
+$(document).ready(function () {
 	$("#ciReloadBtn").click(function(){
-		$(".contentMain").load("/ci");
+		loadCiList();
 	});
 	$("#ciAddBtn").click(function(){
 		$(".contentMain").load("/ci/add");
 	});
+	loadCiList();
+});
+function loadCiList(){
 	$.ajax({
 		url:"/ci/listCi.do",
 		success:function(data){
@@ -14,24 +17,40 @@
             	if(data.data.length>0){
             		for(var i in data.data){
             			var ci = data.data[i];
+            			var constructionStatusHtml = "";
+            			if(ci.constructionStatus==1){//构建中
+            				constructionStatusHtml = "<i class='fa_success'></i>"+
+										                "构建中"+
+										                "<img src='images/loading4.gif' alt=''/>";
+            			}else if(ci.constructionStatus==2){//完成
+            				constructionStatusHtml = "<i class='fa_stop'></i>"+
+ 							"完成";
+            			}else if(ci.constructionStatus==3){//失败
+                            constructionStatusHtml = "<i class='fa_stop'></i>"+
+			                							"失败";
+            			}
+            			var codeTypeHtml = "";
+            			if(ci.codeType==1){//svn
+            				codeTypeHtml = "<span class='bj-code-source'><i class='fa fa-git-square fa-lg'></i> svn</span>";
+            			}else if(ci.codeType==2){//git
+            				codeTypeHtml = "<span class='bj-code-source'><i class='fa fa-git-square fa-lg'></i> git</span>";
+            			}
             			html += "<tr class='ci-listTr' style='cursor:auto'>"+
 						            "<td style='width: 15%; text-indent:22px;'>"+
-						                "<a href='' title='查看详细信息'>"+ci.projectName+"</a>"+
+						                "<a href='viewCidetail("+ci.id+")' title='查看详细信息'>"+ci.projectName+"</a>"+
 						            "</td>"+
 						            "<td style='width: 12%;'>"+
-						                "<i class='fa_success'></i>"+
-						                "构建中"+
-						                "<img src='images/loading4.gif' alt=''/>"+
+						            	constructionStatusHtml+
 						            "</td>"+
 						            "<td style='width: 15%;'>"+
-						                "<a data-toggle='tooltip' data-placement='left' title='' target='_blank' href='' data-original-title='查看源代码'>"+
-						                    "<span class='bj-code-source'><i class='fa fa-git-square fa-lg'></i> oschina</span>"+
+						                "<a data-toggle='tooltip' data-placement='left' title='' target='_blank' href='"+ci.codeUrl+"' data-original-title='查看源代码'>"+
+						                	codeTypeHtml+
 						                "</a>"+
 						            "</td>"+
-						            "<td style='width: 12%;'>1 小时前</td>"+
-						            "<td style='width: 10%;'>45分11秒</td>"+
+						            "<td style='width: 12%;'>"+ci.constructionDate+"</td>"+
+						            "<td style='width: 10%;'>"+ci.constructionTime+"</td>"+
 						            "<td style='width: 15%;'>"+
-						                "<a target='_blank' title='' style='cursor:no-drop'>node</a>"+
+						                "<a target='_blank' title='' style='cursor:no-drop'>"+ci.imgNameLast+"</a>"+
 						            "</td>"+
 						            "<td style='width:18%'>"+
 						                "<span class='bj-green' data-toggle='tooltip' data-placement='right' title='' data-original-title='重新构建'>构建&nbsp;&nbsp;<i class='fa fa-arrow-circle-right'></i></span>"+
@@ -45,4 +64,4 @@
             }
 		}
 	});
-});
+}

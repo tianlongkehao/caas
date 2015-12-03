@@ -2,16 +2,12 @@ package com.bonc.epm.paas;
 
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 
-@Configuration
-@EnableAutoConfiguration
-@ComponentScan
-public class WebAppConfig extends WebMvcConfigurerAdapter{
+@SpringBootApplication
+public class WebAppConfig extends SpringBootServletInitializer{
 		
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(WebAppConfig.class);

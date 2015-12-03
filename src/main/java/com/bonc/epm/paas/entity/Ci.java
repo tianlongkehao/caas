@@ -74,13 +74,17 @@ public class Ci {
 	 */
 	private Integer constructionNode;
 	/**
-	 * 构建状态：1未完成2完成3失败
+	 * 构建状态：1构建中2完成3失败
 	 */
 	private Integer constructionStatus;
 	/**
 	 * 上次构建日期
 	 */
 	private Date constructionDate;
+	/**
+	 * 构建持续时间
+	 */
+	private long constructionTime;
 	/**
 	 * 镜像id
 	 */
@@ -193,6 +197,12 @@ public class Ci {
 	}
 	public void setConstructionDate(Date constructionDate) {
 		this.constructionDate = constructionDate;
+	}
+	public long getConstructionTime() {
+		return constructionTime;
+	}
+	public void setConstructionTime(long constructionTime) {
+		this.constructionTime = constructionTime;
 	}
 	public long getImgId() {
 		return imgId;
