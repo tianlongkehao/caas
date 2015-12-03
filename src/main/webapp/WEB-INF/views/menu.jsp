@@ -85,7 +85,7 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="javascript:void(0)"><li><a href="javascript:void(0)"><i class="fa fa-home"></i><span>&nbsp;&nbsp;</span><span id="nav1">控制台</span></a></li>
+                    <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active" id="nav2"></li>
                 </ol>
