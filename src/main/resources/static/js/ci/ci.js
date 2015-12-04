@@ -7,23 +7,33 @@ $(document).ready(function () {
 	});
 	loadCiList();
 
-    $(document).on("click", ".bj-green", function(){
-
-        layer.open({
-            title: '快速构建',
-            content: '里面可以写内容',
-            btn: ['确定', '取消'],
-            yes: function(index, layero){ //或者使用btn1
-                //按钮【按钮一】的回调
-            },
-            cancel: function(index){ //或者使用btn2
-                //按钮【按钮二】的回调
-            }
-        });
-
-    });
-
 });
+function constructCi(id){
+	layer.open({
+        title: '快速构建',
+        content: '确定构建镜像？',
+        btn: ['确定', '取消'],
+        yes: function(index, layero){ //或者使用btn1
+        	$.ajax({
+        		url:"/ci/constructCi.do?id="+id,
+        		success:function(data){
+        			data = eval("(" + data + ")");
+       			 	if(data.status=="200"){
+       			 		layer.alert("构建成功");
+       			 		loadCiList();
+       			 	}else{
+       			 		layer.alert(data.msg);
+       			 	}
+        		}
+        	});
+        },
+        cancel: function(index){ //或者使用btn2
+        }
+    });
+}
+function viewCidetail(id){
+	$(".contentMain").load("/ci/detail?id="+id);
+}
 function loadCiList(){
 	$.ajax({
 		url:"/ci/listCi.do",
@@ -54,7 +64,7 @@ function loadCiList(){
             			}
             			html += "<tr class='ci-listTr' style='cursor:auto'>"+
 						            "<td style='width: 15%; text-indent:22px;'>"+
-						                "<a href='viewCidetail("+ci.id+")' title='查看详细信息'>"+ci.projectName+"</a>"+
+						                "<a href='javascript:void(0)' title='查看详细信息' onclick='viewCidetail("+ci.id+")'>"+ci.projectName+"</a>"+
 						            "</td>"+
 						            "<td style='width: 12%;'>"+
 						            	constructionStatusHtml+
@@ -70,7 +80,7 @@ function loadCiList(){
 						                "<a target='_blank' title='' style='cursor:no-drop'>"+ci.imgNameLast+"</a>"+
 						            "</td>"+
 						            "<td style='width:18%'>"+
-						                "<span class='bj-green' data-toggle='tooltip' data-placement='right' title='' data-original-title='重新构建'>构建&nbsp;&nbsp;<i class='fa fa-arrow-circle-right'></i></span>"+
+						                "<span class='bj-green' data-toggle='tooltip' data-placement='right' title='' data-original-title='重新构建' onclick='constructCi("+ci.id+")'>构建&nbsp;&nbsp;<i class='fa fa-arrow-circle-right'></i></span>"+
 						            "</td>"+
 						        "</tr>"
             		}

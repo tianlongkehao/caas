@@ -13,7 +13,7 @@
                         <span class="name-note">test /&nbsp;</span>
                         <input name="imgNameFisrt" type="hidden" value="test">
                         <input id="imgNameLast" name="imgNameLast" type="text" class="name-input" value=""> :
-                        <input name="imgNameVersion" type="text" value="latest" class="name-input" disabled="disabled">
+                        <input id="imgNameVersion" name="imgNameVersion" type="text" value="latest" class="name-input">
                     </div>
                 </div>
                 <div class="form-group col-md-5">
