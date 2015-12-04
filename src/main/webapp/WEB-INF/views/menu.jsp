@@ -83,6 +83,29 @@
                 </li>
             </ul>
         </li>
+        <li>
+            <a href="javascript:void(0)">
+                <img class="nav-icon" src="images/service.svg" alt=""/>
+                <span class="nav-title">镜像</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li id="menuRegistry" action="/registry/0">
+                    <a href="javascript:void(0)">
+                        	镜像中心
+                    </a>
+                </li>
+                <li id="menuRegistry1" action="/registry/1">
+                    <a href="javascript:void(0)">
+                        	我的镜像
+                    </a>
+                </li>
+                <li id="menuRegistry2" action="/registry/2">
+                    <a href="javascript:void(0)">
+                        	我的收藏
+                    </a>
+                </li>
+            </ul>
+        </li>
     </ul>
 </aside>
 <div class="page-container">

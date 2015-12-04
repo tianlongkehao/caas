@@ -63,7 +63,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="icon-view" href="docker-registry.html">
+                        <a class="icon-view" href="/menu?flag=registry">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
                                     <span><img src="images/factory_new.svg" alt=""/></span>

@@ -26,6 +26,8 @@ $(document).ready(function(){
     	$("#menuCi").click();
     }else if(flag=="service"){
     	$("#menuService").click();
+    }else if(flag=="registry"){
+    	$("#menuRegistry").click();
     }
 
 });
