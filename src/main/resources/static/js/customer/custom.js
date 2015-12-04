@@ -22,7 +22,6 @@ $(document).ready(function(){
         $(".contentMain").load($(this).attr("action"));
     });
 
-    var flag = getQueryString("flag");
     if(flag=="ci"){
     	$("#menuCi").click();
     }else if(flag=="service"){

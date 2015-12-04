@@ -30,7 +30,7 @@
             <div class="row">
                 <div class="form-group col-md-12">
                     <label for="ciSummary">简介</label>
-                    <input id="ciSummary" name="ciSummary" class="form-control" type="text" required="">
+                    <input id="description" name="description" class="form-control" type="text" required="">
                 </div>
             </div>
             <div class="row">

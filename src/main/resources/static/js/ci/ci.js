@@ -45,14 +45,17 @@ function loadCiList(){
             		for(var i in data.data){
             			var ci = data.data[i];
             			var constructionStatusHtml = "";
-            			if(ci.constructionStatus==1){//构建中
+            			if(ci.constructionStatus==1){//未构建
+            				constructionStatusHtml = "<i class='fa_stop'></i>"+
+							"未构建";
+            			}else if(ci.constructionStatus==2){//构建中
             				constructionStatusHtml = "<i class='fa_success'></i>"+
 										                "构建中"+
 										                "<img src='images/loading4.gif' alt=''/>";
-            			}else if(ci.constructionStatus==2){//完成
-            				constructionStatusHtml = "<i class='fa_stop'></i>"+
+            			}else if(ci.constructionStatus==3){//完成
+            				constructionStatusHtml = "<i class='fa_success'></i>"+
  							"完成";
-            			}else if(ci.constructionStatus==3){//失败
+            			}else if(ci.constructionStatus==4){//失败
                             constructionStatusHtml = "<i class='fa_stop'></i>"+
 			                							"失败";
             			}

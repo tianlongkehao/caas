@@ -12,6 +12,9 @@
     <script type="text/javascript" src="/js/plugins/jquery-1.11.3.js"></script>
 	<script type="text/javascript" src="/plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
     <script type="text/javascript" src="/plugins/layer/layer.js"></script>
+    <script type="text/javascript">
+    	var flag = "${flag}";
+    </script>
     <script type="text/javascript" src="/js/customer/custom.js"></script>
 </head>
 <body>

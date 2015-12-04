@@ -84,7 +84,7 @@ public class Ci {
 	 */
 	private Integer constructionNode;
 	/**
-	 * 构建状态：1构建中2完成3失败
+	 * 构建状态：1未构建2构建中3完成4失败
 	 */
 	private Integer constructionStatus;
 	/**
