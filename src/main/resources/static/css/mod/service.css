@@ -274,3 +274,273 @@
     position: relative;
     top: 15px;
 }
+
+
+/* detail */
+.detail-succeed {
+    height: 170px;
+    border-bottom: 1px solid #DFDDDD;
+}
+
+.icon-img {
+    width: 130px;
+    height: 130px;
+    background: #fefefe;
+    border-radius: 20px;
+    float: left;
+    text-align: center;
+    margin-left: 1%;
+    color: #fff;
+}
+
+.type-icon {
+    width: 80%;
+    height: 80px;
+    margin: 25px auto;
+    overflow: hidden;
+}
+
+.type-icon>img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.succeed-content,
+.succeed-status {
+    float: left;
+    margin-left: 20px;
+}
+
+.succeed-content li {
+    line-height: 30px;
+}
+
+.applocation {
+    text-align: right;
+    position: relative;
+    top: 35px;
+    width: 30%;
+    float: right;
+    padding-right: 20px;
+}
+
+.detail-succeed .open {
+    width: 180px;
+    height: 60px;
+    background: #2FBA66;
+    color: #fff;
+    text-align: center;
+    line-height: 60px;
+    font-size: 20px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.center-style {
+    width: 98%;
+    margin: 30px auto;
+}
+
+.contentMain .baseInfo {
+    height: 60px;
+    line-height: 60px;
+    border: 1px solid #DDDDDD;
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.contentMain .baseInfo a {
+    width: 110px;
+    text-align: center;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.containerInfo {
+    overflow: hidden;
+    width: 98%;
+    margin-left: 1%;
+    min-height: 200px;
+    background: #fff;
+    margin-bottom: 40px;
+}
+
+.table {
+    margin: 0px;
+    background: #fff;
+}
+
+.containerInstances table thead,
+.containerInfo .table thead {
+    background: #e4eaec;
+}
+
+.containerInfo .table tr,
+.containerInstances .table tr {
+    text-indent: 10px;
+}
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+    padding: 8px;
+    line-height: 1.42857143;
+    border-top: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+
+table.w50 thead tr th {
+    border: 1px solid #e4eaec;
+}
+
+.table .BORDER td {
+    border: 1px solid #eee;
+}
+
+.contentMain table.w50 td {
+    width: 50%;
+}
+
+.containerInstances {
+    overflow: hidden;
+    width: 98%;
+    margin-left: 1%;
+}
+
+.containerEvent,
+.bindDomain,
+.portMapping {
+    width: 98%;
+    margin-left: 1%;
+    background: white;
+    overflow: hidden;
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+}
+
+.paddingrow {
+    padding: 50px;
+}
+
+.orgmain {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.after-info {
+    background: #F7F7F7;
+    padding: 22px 30px;
+}
+
+.w10 {
+    width: 10%;
+    border-right: 1px solid #DDDDDD;
+}
+
+.w15 {
+    width: 15%;
+    border-right: 1px solid #DDDDDD;
+}
+
+.w30 {
+    width: 30%;
+    border-right: 1px solid #DDDDDD;
+}
+
+.w45 {
+    width: 45%;
+    border-right: 1px solid #DDDDDD;
+}
+
+.first-td {
+    background: #FCFBFB;
+    border-right: 1px solid #DDDDDD;
+}
+
+#addorg {
+    border: 1px solid #ddd;
+}
+
+#addorg > tr> td {
+    border-right: 1px solid #DDDDDD;
+}
+
+i.pushOrg {
+    height: 20px;
+    width: 18px;
+    margin-right: 0;
+    cursor: pointer;
+}
+
+
+.data-analysis {
+    width: 100%;
+    min-height: 300px;
+}
+
+.containerLog {
+    background: black;
+    color: #2FBA66;
+    width: 98%;
+    margin-left: 1%;
+    min-height: 300px;
+    position: relative;
+    transition: all 0.5s;
+}
+
+.containerLog .weblogtitle {
+    height: 40px;
+    background: #1C2022;
+    padding-left: 2%;
+    padding-right: 2%;
+}
+
+.weblogtitle .pull_left {
+    width: 59%;
+    line-height: 40px;
+    display: inline-block;
+}
+
+.weblogtitle .pull_right {
+    width: 40%;
+    text-align: right;
+    line-height: 40px;
+    display: inline-block;
+}
+
+.weblogtitle .circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.circle.red {
+    background: #EF3232;
+}
+
+.circle.blue {
+    background: #3F7AC1;
+}
+
+.circle.green {
+    background: #36FD33;
+}
+
+#date_log {
+    background: none;
+    border: 0;
+    width: 220px;
+    text-align: right;
+}
+
+input[type='text']:focus {
+    box-shadow:none;
+    border: none;
+}

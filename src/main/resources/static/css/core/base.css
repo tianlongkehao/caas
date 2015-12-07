@@ -178,6 +178,10 @@ label {
     vertical-align: top;
 }
 
+.btn-prim {
+    background: #3C7BCA !important;
+    color: #fff !important;
+}
 
 .table tr {
     height: 40px;
@@ -274,6 +278,15 @@ i.fa-btn-stop {
 
 i.fa-btn-stop.fail {
     background-position: 0 -22px;
+}
+
+i.fa_btn_plus_gray {
+    background: url(../../images/btn-plus.png) no-repeat -20px 0px;
+    width: 20px;
+    height: 22px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 2px;
 }
 
 .toolbox {
