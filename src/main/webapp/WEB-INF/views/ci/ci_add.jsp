@@ -13,7 +13,7 @@
                         <span class="name-note">test /&nbsp;</span>
                         <input name="imgNameFisrt" type="hidden" value="test">
                         <input id="imgNameLast" name="imgNameLast" type="text" class="name-input" value=""> :
-                        <input name="imgNameVersion" type="text" value="latest" class="name-input" disabled="disabled">
+                        <input id="imgNameVersion" name="imgNameVersion" type="text" value="latest" class="name-input">
                     </div>
                 </div>
                 <div class="form-group col-md-5">
@@ -30,7 +30,7 @@
             <div class="row">
                 <div class="form-group col-md-12">
                     <label for="ciSummary">简介</label>
-                    <input id="ciSummary" name="ciSummary" class="form-control" type="text" required="">
+                    <input id="description" name="description" class="form-control" type="text" required="">
                 </div>
             </div>
             <div class="row">

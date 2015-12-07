@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 @Entity
 public class Ci {
 
@@ -58,6 +60,14 @@ public class Ci {
 	 */
 	private String codeBranch;
 	/**
+	 * 代码位置
+	 */
+	private String codeLocation;
+	/**
+	 * 代码包位置
+	 */
+	private String codePackageLocation;
+	/**
 	 * 程序类型:1java2php3go4node.js5python6other
 	 */
 	private String codeProjectType;
@@ -74,12 +84,13 @@ public class Ci {
 	 */
 	private Integer constructionNode;
 	/**
-	 * 构建状态：1构建中2完成3失败
+	 * 构建状态：1未构建2构建中3完成4失败
 	 */
 	private Integer constructionStatus;
 	/**
 	 * 上次构建日期
 	 */
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date constructionDate;
 	/**
 	 * 构建持续时间
@@ -161,6 +172,18 @@ public class Ci {
 	}
 	public void setCodeBranch(String codeBranch) {
 		this.codeBranch = codeBranch;
+	}
+	public String getCodeLocation() {
+		return codeLocation;
+	}
+	public void setCodeLocation(String codeLocation) {
+		this.codeLocation = codeLocation;
+	}
+	public String getCodePackageLocation() {
+		return codePackageLocation;
+	}
+	public void setCodePackageLocation(String codePackageLocation) {
+		this.codePackageLocation = codePackageLocation;
 	}
 	public String getCodeProjectType() {
 		return codeProjectType;

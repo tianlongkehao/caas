@@ -12,6 +12,9 @@
     <script type="text/javascript" src="/js/plugins/jquery-1.11.3.js"></script>
 	<script type="text/javascript" src="/plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
     <script type="text/javascript" src="/plugins/layer/layer.js"></script>
+    <script type="text/javascript">
+    	var flag = "${flag}";
+    </script>
     <script type="text/javascript" src="/js/customer/custom.js"></script>
 </head>
 <body>
@@ -76,6 +79,29 @@
                 <li id="menuCi" action="/ci">
                     <a href="javascript:void(0)">
                         	构建
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="javascript:void(0)">
+                <img class="nav-icon" src="images/service.svg" alt=""/>
+                <span class="nav-title">镜像</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li id="menuRegistry" action="/registry/0">
+                    <a href="javascript:void(0)">
+                        	镜像中心
+                    </a>
+                </li>
+                <li id="menuRegistry1" action="/registry/1">
+                    <a href="javascript:void(0)">
+                        	我的镜像
+                    </a>
+                </li>
+                <li id="menuRegistry2" action="/registry/2">
+                    <a href="javascript:void(0)">
+                        	我的收藏
                     </a>
                 </li>
             </ul>
