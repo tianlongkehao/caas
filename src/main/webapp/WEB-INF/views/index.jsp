@@ -1,9 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
-<head>
+<head lang="en">
     <meta charset="UTF-8">
-    <title>BONC-PaaS</title>
+    <title>BONC-Paas</title>
     <link rel="stylesheet" type="text/css" href="/plugins/bootstrap-3.3.5/dist/css/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="/plugins/Font-Awesome-master/css/font-awesome.css"/>
     <link rel="stylesheet" type="text/css" href="/css/core/base.css">
@@ -16,5 +16,6 @@
     </script>
 </head>
 <body>
+
 </body>
 </html>

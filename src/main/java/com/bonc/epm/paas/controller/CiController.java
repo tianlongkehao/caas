@@ -140,6 +140,7 @@ public class CiController {
 		ciRecord.setCiId(ci.getId());
 		ciRecord.setCiVersion(ci.getImgNameVersion());
 		ciRecord.setConstructDate(ci.getConstructionDate());
+		ciRecordDao.save(ciRecord);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
@@ -155,7 +156,8 @@ public class CiController {
 		try{
 			constructFlag = construct(ci);
 		}catch(Exception e){
-			e.getStackTrace();
+			e.printStackTrace();
+			log.error("construct error:"+e.getMessage());
 			constructFlag = false;
 		}
 		if(!constructFlag){
@@ -189,14 +191,17 @@ public class CiController {
 				return false;
 			}
 			String nCodeUrl = codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername()+":"+ci.getCodePassword()+"@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length());
+			String rmCommonStr = "rm -rf "+ci.getCodeLocation();
+			log.info("==========rmCommonStr:"+rmCommonStr);
+			CmdUtil.exeCmd(rmCommonStr);
 			String gitCommandStr = "git clone "+nCodeUrl+" "+ci.getCodeLocation();
 			log.info("==========gitCommandStr:"+gitCommandStr);
 			return CmdUtil.exeCmd(gitCommandStr);
 		}
 		return false;
 	}
+	
 	boolean ciFlag = true;
-
 	/**
 	 * 构建镜像
 	 * @param ci
@@ -210,7 +215,6 @@ public class CiController {
 		//构建镜像
 		DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
 		File baseDir = new File(ci.getCodeLocation()+ci.getDockerFileLocation());
-		
 		BuildImageResultCallback callback = new BuildImageResultCallback() {
 		    @Override
 		    public void onNext(BuildResponseItem item) {
@@ -221,10 +225,13 @@ public class CiController {
 		       super.onNext(item);
 		    }
 		};
+		ciFlag = true;
 		String imageId = dockerClient.buildImageCmd(baseDir).exec(callback).awaitImageId();
 		if(!ciFlag){
 			return false;
 		}
+		//修改镜像名称及版本
+		dockerClient.tagImageCmd(imageId, ci.getImgNameFisrt()+"/"+ci.getImgNameLast(), ci.getImgNameVersion()).exec();
 		//排重添加镜像数据
 		boolean hasImgFlag = false;
 		List<Image> imageList = imageDao.findByName(ci.getImgNameFisrt()+"/"+ci.getImgNameLast());

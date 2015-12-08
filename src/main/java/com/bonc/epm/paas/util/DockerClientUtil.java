@@ -1,10 +1,6 @@
 package com.bonc.epm.paas.util;
 
-import java.util.List;
-
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.model.Container;
-import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.jaxrs.DockerCmdExecFactoryImpl;
@@ -22,7 +18,6 @@ public class DockerClientUtil {
 		  .withMaxPerRouteConnections(10);
 
 		DockerClient dockerClient = DockerClientBuilder.getInstance(config)
-		  .withDockerCmdExecFactory(dockerCmdExecFactory)
 		  .build();
 		return dockerClient;
 	}

@@ -75,7 +75,6 @@ public class CiRecord {
 		this.constructResult = constructResult;
 	}
 	
-	
 
 	
 }

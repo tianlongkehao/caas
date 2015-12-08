@@ -131,12 +131,8 @@ function loadCiRecordList(id){
                                               "<div class='buildStatus' style='margin:0px 0px 10px 0px'></div>"+
                                               "<div class='build-logs' style='max-height: 400px; overflow: auto;margin-top:10px;background-color:black;color: #37fc34'>"+
                                                   "<pre class='logs' style='background-color:black;color: #37fc34;border:0'>"+
-"<span>" +
-"<font color='#ffc20e'>[2015年11月30日 16:26:49]</font> =&gt; Starting docker"+
-"<font color='#ffc20e'>[2015年11月30日 16:26:51]</font> =&gt; Checking docker daemon"+
-"<font color='#ffc20e'>[2015年11月30日 16:26:51]</font> =&gt; Checking if the application already exists"+
-"<font color='#ffc20e'>[2015年11月30日 17:11:59]</font> Username for 'https://git.oschina.net': " +
-"</span>"+
+															"<span>" +
+															"</span>"+
                                                         "</pre>"+
                                                     "</div>"+
                                                 "</div>"+

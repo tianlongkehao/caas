@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <link rel="stylesheet" type="text/css" href="/css/mod/ci.css"/>
-<script src="http://malsup.github.io/jquery.form.js"></script>
+<script type="text/javascript" src="js/plugins/jquery.form.js"></script>
 <script type="text/javascript" src="/js/ci/ci_add.js"></script>
 <div class="item-obj">
     <div class="container">
@@ -103,7 +103,7 @@
                                     <option value="6">other</option>
                                 </select>
                             </td>
-                            <td>
+                            <!-- <td>
                                 <span class="reg-text">Docker的版本&nbsp;</span>
                                 <input id="dockerVersion" name="dockerVersion" type="text" class="reg-input" value="1.6" disabled="disabled">
                             </td>
@@ -113,7 +113,7 @@
                                     <option value="2">国际节点</option>
                                     <option value="1">国内节点</option>
                                 </select>
-                            </td>
+                            </td> -->
 
                         </tr>
                     </tbody>

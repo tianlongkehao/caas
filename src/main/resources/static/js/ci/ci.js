@@ -60,6 +60,7 @@ function loadCiList(){
             		for(var i in data.data){
             			var ci = data.data[i];
             			var constructionStatusHtml = "";
+            			var btnStyleHtml = "";
             			if(ci.constructionStatus==1){//未构建
             				constructionStatusHtml = "<i class='fa_stop'></i>"+
 							"未构建";
@@ -67,6 +68,7 @@ function loadCiList(){
             				constructionStatusHtml = "<i class='fa_success'></i>"+
 										                "构建中"+
 										                "<img src='images/loading4.gif' alt=''/>";
+            				btnStyleHtml = "style=cursor:no-drop;";
             			}else if(ci.constructionStatus==3){//完成
             				constructionStatusHtml = "<i class='fa_success'></i>"+
  							"完成";
@@ -98,7 +100,7 @@ function loadCiList(){
 						                "<a target='_blank' title='' style='cursor:no-drop'>"+ci.imgNameLast+"</a>"+
 						            "</td>"+
 						            "<td style='width:18%'>"+
-						                "<span class='bj-green' data-toggle='tooltip' data-placement='right' title='' data-original-title='重新构建' ciId='"+ci.id+"'>构建&nbsp;&nbsp;<i class='fa fa-arrow-circle-right'></i></span>"+
+						                "<span class='bj-green' data-toggle='tooltip' data-placement='right' title='' data-original-title='重新构建' "+btnStyleHtml+" ciId='"+ci.id+"'>构建&nbsp;&nbsp;<i class='fa fa-arrow-circle-right'></i></span>"+
 						            "</td>"+
 						        "</tr>"
             		}
