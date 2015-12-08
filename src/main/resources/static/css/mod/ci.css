@@ -38,6 +38,25 @@
     color: #fff;
 }
 
+.bj-green i{
+    color:#fff;
+    font-size:18px
+}
+
+.bj-drop{
+    display:inline-block;
+    padding:5px 15px;
+    border-radius:2px;
+    background:#999;
+    text-indent:0;
+    cursor:no-drop;
+    color: #fff;
+}
+
+.bj-drop i{
+    color:#fff;
+    font-size:18px;
+}
 
 @media screen and (min-width: 1200px) {
     .item-obj {
