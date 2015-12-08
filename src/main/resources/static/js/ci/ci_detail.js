@@ -62,6 +62,7 @@ function loadCi(id){
 			 if(data.status=="200"){
 				 var ci = data.data;
 				 $("#id").val(id);
+				 $("#projectNameSpan").html(ci.projectName);
 				 $("#codeLocation").html(ci.imgNameLast);
 				 $("#codeLocation").attr("href",ci.codeUrl);
 				 $("#projectName").val(ci.projectName);
@@ -93,10 +94,17 @@ function loadCiRecordList(id){
 		success:function(data){
 			data = eval("(" + data + ")");
 			 if(data.status=="200"){
+				 var ci = data.ci;
             	var html="";
             	if(data.data.length>0){
             		for(var i in data.data){
             			var ciRecord = data.data[i];
+            			var statusHtml = "";
+            			if(ciRecord.constructResult=="1"){
+            				statusHtml =  "<i class='fa_run'></i>成功";
+            			}else if(ciRecord.constructResult=="2"){
+            				statusHtml =  "<i class='fa_stop'></i>失败";
+            			}
             			html += "<div class='event-line' repotype='' status='success'>"+
                               "<div class='event-status success'>"+
                                   "<i class='fa fa-check notes'></i>"+
@@ -105,17 +113,17 @@ function loadCiRecordList(id){
                                   "<div class='time-line-reason event-title'>"+
                                       "<div class='title-name'>"+
                                           "<span class='event-names'>"+
-                                              "test1&nbsp;"+
-                                              "<span class='btn-version'>latest</span>"+
+                                              ci.projectName+
+                                              "<span class='btn-version'>"+ciRecord.ciVersion+"</span>"+
                                           "</span>"+
                                           "<span class='time-on-status'>"+
-                                              "<i class='fa_run'></i>成功"+
+                                              statusHtml+
                                           "</span>"+
                                       "</div>"+
                                       "<div class='time-line-time'>"+
                                           "<div class='event-sign'><i class='fa fa-angle-right fa_caret' style='transform: rotate(90deg);'></i></div>"+
-                                          "<div class='datetimes'><i class='fa fa-calendar margin'></i>2 天前</div>"+
-                                          "<div class='time-on-timeout'><i class='fa fa-time'></i>45分11秒</div>"+
+                                          "<div class='datetimes'><i class='fa fa-calendar margin'></i>"+ciRecord.constructDate+"</div>"+
+                                          "<div class='time-on-timeout'><i class='fa fa-time'></i>"+ciRecord.constructTime+"</div>"+
                                       "</div>"+
                                       "<div class='time-line-message' style='display: block;'>"+
                                           "<div class='buildForm' buildid='' containerid='' buildername='builder2' status='fail'>"+
@@ -123,10 +131,12 @@ function loadCiRecordList(id){
                                               "<div class='buildStatus' style='margin:0px 0px 10px 0px'></div>"+
                                               "<div class='build-logs' style='max-height: 400px; overflow: auto;margin-top:10px;background-color:black;color: #37fc34'>"+
                                                   "<pre class='logs' style='background-color:black;color: #37fc34;border:0'>"+
-"<span><font color='#ffc20e'>[2015年11月30日 16:26:49]</font> =&gt; Starting docker"+
+"<span>" +
+"<font color='#ffc20e'>[2015年11月30日 16:26:49]</font> =&gt; Starting docker"+
 "<font color='#ffc20e'>[2015年11月30日 16:26:51]</font> =&gt; Checking docker daemon"+
 "<font color='#ffc20e'>[2015年11月30日 16:26:51]</font> =&gt; Checking if the application already exists"+
-"<font color='#ffc20e'>[2015年11月30日 17:11:59]</font> Username for 'https://git.oschina.net': </span>"+
+"<font color='#ffc20e'>[2015年11月30日 17:11:59]</font> Username for 'https://git.oschina.net': " +
+"</span>"+
                                                         "</pre>"+
                                                     "</div>"+
                                                 "</div>"+
@@ -137,6 +147,7 @@ function loadCiRecordList(id){
             		}
             	}
             	$("#ciRecordList").html(html);
+            	registerCiRecordEvent();
             }
 		}
 	});

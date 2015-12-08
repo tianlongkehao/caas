@@ -8,28 +8,43 @@ $(document).ready(function () {
 	loadCiList();
 
 });
-function constructCi(id){
-	layer.open({
-        title: '快速构建',
-        content: '确定构建镜像？',
-        btn: ['确定', '取消'],
-        yes: function(index, layero){ //或者使用btn1
-        	$.ajax({
-        		url:"/ci/constructCi.do?id="+id,
-        		success:function(data){
-        			data = eval("(" + data + ")");
-       			 	if(data.status=="200"){
-       			 		layer.alert("构建成功");
-       			 		loadCiList();
-       			 	}else{
-       			 		layer.alert(data.msg);
-       			 	}
-        		}
-        	});
-        },
-        cancel: function(index){ //或者使用btn2
-        }
-    });
+
+
+function registerConstructCiEvent(){
+	$(".bj-green").unbind("click").click(function(){
+		var $this = $(this);
+		var id = $this.attr("ciId");
+		layer.open({
+	        title: '快速构建',
+	        content: '确定构建镜像？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ //或者使用btn1
+	        	$this.css("cursor","no-drop");
+	        	layer.close(index);
+	        	$.ajax({
+	        		url:"/ci/constructCi.do?id="+id,
+	        		success:function(data){
+	        			data = eval("(" + data + ")");
+	       			 	if(data.status=="200"){
+	       			 		layer.alert("构建成功");
+	       			 	}else{
+	       			 		layer.alert(data.msg);
+	       			 	}
+	       			 	loadCiList();
+	        		},
+	        		error:function(){
+	        			layer.alert("系统错误，请联系管理员");
+	   			 		loadCiList();
+	        		}
+	        	});
+	        },
+	        cancel: function(index){ //或者使用btn2
+	        }
+	    });
+	});
+	
+	
+	
 }
 function viewCidetail(id){
 	$(".contentMain").load("/ci/detail?id="+id);
@@ -83,12 +98,13 @@ function loadCiList(){
 						                "<a target='_blank' title='' style='cursor:no-drop'>"+ci.imgNameLast+"</a>"+
 						            "</td>"+
 						            "<td style='width:18%'>"+
-						                "<span class='bj-green' data-toggle='tooltip' data-placement='right' title='' data-original-title='重新构建' onclick='constructCi("+ci.id+")'>构建&nbsp;&nbsp;<i class='fa fa-arrow-circle-right'></i></span>"+
+						                "<span class='bj-green' data-toggle='tooltip' data-placement='right' title='' data-original-title='重新构建' ciId='"+ci.id+"'>构建&nbsp;&nbsp;<i class='fa fa-arrow-circle-right'></i></span>"+
 						            "</td>"+
 						        "</tr>"
             		}
             	}
             	$("#ciList").html(html);
+            	registerConstructCiEvent();
             }else{
                  layer.alert(data.msg);
             }

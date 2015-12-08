@@ -1,23 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>BONC-Paas</title>
-    <link rel="stylesheet" type="text/css" href="/plugins/bootstrap-3.3.5/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="/plugins/Font-Awesome-master/css/font-awesome.css"/>
-    <link rel="stylesheet" type="text/css" href="/plugins/layer/skin/layer.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/core/base.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/core/layout.css"/>
-    <script type="text/javascript" src="/js/plugins/jquery-1.11.3.js"></script>
-	<script type="text/javascript" src="/plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
-    <script type="text/javascript" src="/plugins/layer/layer.js"></script>
-    <script type="text/javascript">
-    	var flag = "${flag}";
-    </script>
-    <script type="text/javascript" src="/js/customer/custom.js"></script>
-</head>
-<body>
+<link rel="stylesheet" type="text/css" href="/plugins/layer/skin/layer.css"/>
+<link rel="stylesheet" type="text/css" href="/css/core/layout.css"/>
+<script type="text/javascript" src="/plugins/layer/layer.js"></script>
+<script type="text/javascript">
+	var flag = "${flag}";
+</script>
+<script type="text/javascript" src="/js/customer/custom.js"></script>
 <header class="header">
     <div class="navbar navbar-fixed-top">
         <div class="container">

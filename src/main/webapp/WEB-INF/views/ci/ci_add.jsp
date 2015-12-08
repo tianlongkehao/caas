@@ -39,7 +39,31 @@
                     <input id="codeUrl" name="codeUrl" class="form-control"  type="text" placeholder="例如：https://github.com/tenxcloud/php-hello-world.git">
                 </div>
             </div>
-
+			<section class="registryinfo">
+                <table class="table registry">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="reg-text">代码库类型</span>
+                                <span class="btns-group">
+                                  <select id="codeType" name="codeType" class="reg-input" style="width:189px;">
+                                      <option value="2">git</option>
+                                      <option value="1">svn</option>
+                                  </select>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="reg-text">代码库用户名</span>
+                                <input id="codeUsername" name="codeUsername" type="text" class="reg-input" value="">
+                            </td>
+                            <td>
+                                <span class="code-branch">代码库密码</span>
+                               <input id="codePassword" name="codePassword" type="password" class="reg-input" value="">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
 
             <section class="registryinfo">
                 <table class="table registry">
@@ -61,6 +85,7 @@
                                 <span class="btns-group">
                                   <select id="codeBranch" name="codeBranch" class="reg-input" style="width:189px;">
                                       <option value="master">master</option>
+                                      <option value="develop">develop</option>
                                   </select>
                                 </span>
                             </td>
