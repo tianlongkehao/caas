@@ -100,6 +100,14 @@ public class Ci {
 	 * 镜像id
 	 */
 	private long imgId;
+	/**
+	 * 创建人
+	 */
+	private long createBy;
+	/**
+	 * 创建时间
+	 */
+	private Date createDate;
 	
 	public long getId() {
 		return id;
@@ -232,6 +240,18 @@ public class Ci {
 	}
 	public void setImgId(long imgId) {
 		this.imgId = imgId;
+	}
+	public long getCreateBy() {
+		return createBy;
+	}
+	public void setCreateBy(long createBy) {
+		this.createBy = createBy;
+	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 	
 	

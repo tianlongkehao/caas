@@ -1,5 +1,6 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,9 +22,15 @@ import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
+import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiRecord;
+import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.util.CmdUtil;
+import com.bonc.epm.paas.util.DockerClientUtil;
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.model.BuildResponseItem;
+import com.github.dockerjava.core.command.BuildImageResultCallback;
 /**
  * 构建
  * @author yangjian
@@ -34,6 +43,8 @@ public class CiController {
 	public CiDao ciDao;
 	@Autowired
 	public CiRecordDao ciRecordDao;
+	@Autowired
+	public ImageDao imageDao;
 	
 	@RequestMapping(value={"ci"},method=RequestMethod.GET)
 	public String index(){
@@ -59,13 +70,10 @@ public class CiController {
 	@RequestMapping("ci/listCiRecord.do")
 	@ResponseBody
 	public String listCiRecord(long id) {
-		List<CiRecord> ciRecordList = new ArrayList<CiRecord>();
-		for(CiRecord ciRecord:ciRecordDao.findAll()){
-			ciRecordList.add(ciRecord);
-		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");
-		map.put("data", ciRecordList);
+		map.put("data", ciRecordDao.findByCiId(id));
+		map.put("ci", ciDao.findOne(id));
 		return JSON.toJSONString(map);
 	}
 	@RequestMapping("ci/findCi.do")
@@ -124,29 +132,43 @@ public class CiController {
 	@ResponseBody
 	public String constructCi(Long id) {
 		Ci ci = ciDao.findOne(id);
+		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
+		ci.setConstructionDate(new Date());
+		ciDao.save(ci);
 		long startTime = System.currentTimeMillis();
 		CiRecord ciRecord = new CiRecord();
 		ciRecord.setCiId(ci.getId());
 		ciRecord.setCiVersion(ci.getImgNameVersion());
 		ciRecord.setConstructDate(ci.getConstructionDate());
-		boolean flag = fetchCode(ci);
-		if(flag){
-			//flag = construct(ci);
-		}
+		ciRecordDao.save(ciRecord);
 		Map<String, Object> map = new HashMap<String, Object>();
-		if(flag){
-			map.put("status", "200");
-			ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
-			ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
-		}else{
+		map.put("status", "200");
+		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
+		ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
+		boolean fetchCodeFlag = fetchCode(ci);
+		if(!fetchCodeFlag){
 			map.put("status", "500");
-			map.put("msg", "系统错误");
+			map.put("msg", "获取代码出错,请检查代码地址和账号密码");
+			ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+			ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+		}
+		boolean constructFlag = true;
+		try{
+			constructFlag = construct(ci);
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error("construct error:"+e.getMessage());
+			constructFlag = false;
+		}
+		if(!constructFlag){
+			map.put("status", "500");
+			map.put("msg", "构建镜像失败，请检查配置是否正确");
 			ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
 			ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
 		}
 		long endTime = System.currentTimeMillis();
 		ci.setConstructionTime(endTime-startTime);
-		ci.setConstructionDate(new Date());
+		ciRecord.setConstructTime(endTime-startTime);
 		ciDao.save(ci);
 		ciRecordDao.save(ciRecord);
 		map.put("data", ci);
@@ -158,20 +180,79 @@ public class CiController {
 	 * @param ci
 	 */
 	private boolean fetchCode(Ci ci){
-		ci.setCodeLocation("/usr/local/codetemp/"+ci.getImgNameFisrt()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
-		String commandStr = "git clone "+ci.getCodeUrl()+" "+ci.getCodeLocation();
-		log.info("==========commandStr:"+commandStr);
-		return CmdUtil.exeCmd(commandStr);
+		ci.setCodeLocation(CiConstant.CODE_TEMP_PATH+"/"+ci.getImgNameFisrt()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+		if(CiConstant.CODE_TYPE_SVN==ci.getCodeType()){
+			String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
+			log.info("==========svnCommandStr:"+svnCommandStr);
+			return CmdUtil.exeCmd(svnCommandStr);
+		}else if(CiConstant.CODE_TYPE_GIT==ci.getCodeType()){
+			String codeUrl = ci.getCodeUrl();
+			if(StringUtils.isEmpty(codeUrl)||codeUrl.indexOf("//")<=0){
+				return false;
+			}
+			String nCodeUrl = codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername()+":"+ci.getCodePassword()+"@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length());
+			String rmCommonStr = "rm -rf "+ci.getCodeLocation();
+			log.info("==========rmCommonStr:"+rmCommonStr);
+			CmdUtil.exeCmd(rmCommonStr);
+			String gitCommandStr = "git clone "+nCodeUrl+" "+ci.getCodeLocation();
+			log.info("==========gitCommandStr:"+gitCommandStr);
+			return CmdUtil.exeCmd(gitCommandStr);
+		}
+		return false;
 	}
+	
+	boolean ciFlag = true;
 	/**
 	 * 构建镜像
 	 * @param ci
 	 */
 	private boolean construct(Ci ci){
 		//docker build -t <镜像名> <Dockerfile路径>
-		String commandStr = "docker build -t "+ci.getImgNameFisrt()+"/"+ci.getImgNameLast()+" "+ci.getCodeLocation()+ci.getDockerFileLocation();
-		log.info("==========commandStr:"+commandStr);
-		return CmdUtil.exeCmd(commandStr);
+		/*String commandStr = "docker build -t "+ci.getImgNameFisrt()+"/"+ci.getImgNameLast()+" "+ci.getCodeLocation()+ci.getDockerFileLocation();
+		log.info("==========constructCommandStr:"+commandStr);
+		return CmdUtil.exeCmd(commandStr);*/
+		
+		//构建镜像
+		DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
+		File baseDir = new File(ci.getCodeLocation()+ci.getDockerFileLocation());
+		BuildImageResultCallback callback = new BuildImageResultCallback() {
+		    @Override
+		    public void onNext(BuildResponseItem item) {
+		       log.info("==========BuildResponseItem:"+item);
+		       if(item.getErrorDetail()!=null){
+		    	   ciFlag = false;
+		       }
+		       super.onNext(item);
+		    }
+		};
+		ciFlag = true;
+		String imageId = dockerClient.buildImageCmd(baseDir).exec(callback).awaitImageId();
+		if(!ciFlag){
+			return false;
+		}
+		//修改镜像名称及版本
+		dockerClient.tagImageCmd(imageId, ci.getImgNameFisrt()+"/"+ci.getImgNameLast(), ci.getImgNameVersion()).exec();
+		//排重添加镜像数据
+		boolean hasImgFlag = false;
+		List<Image> imageList = imageDao.findByName(ci.getImgNameFisrt()+"/"+ci.getImgNameLast());
+		if(!CollectionUtils.isEmpty(imageList)){
+			for(Image image:imageList){
+				if(ci.getImgNameVersion().equals(image.getVersion())){
+					hasImgFlag = true;
+				}
+			}
+		}
+		if(!hasImgFlag){
+			Image img = new Image();
+			img.setName(ci.getImgNameFisrt()+"/"+ci.getImgNameLast());
+			img.setVersion(ci.getImgNameVersion());
+			img.setRemark(ci.getDescription());
+			img.setImageId(imageId);
+			img.setCreateTime(new Date());
+			imageDao.save(img);
+			ci.setImgId(img.getId());
+		}
+		return true;
 	}
 	
 }

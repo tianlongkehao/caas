@@ -7,7 +7,7 @@ var id = "${id}";
 <script type="text/javascript" src="/js/ci/ci_detail.js"></script>
           <div class="ci-body">
               <div class="ci-head">
-                  <span class="ci-name margin">test1</span>
+                  <span class="ci-name margin" id="projectNameSpan"></span>
                   <span class="btn btn-defaulted" style="cursor:auto" data-toggle="tooltip" data-placement="top" id="deploy" title="" data-original-title="构建成功后才能部署项目哦~">快速部署</span>
               </div>
               <div class="ci-content-tabmain">
@@ -20,7 +20,7 @@ var id = "${id}";
                   <div class="code-tabmain">
 
                       <div class="log-details" id="ciRecordList">
-                            </div>
+                      </div>
 
                             <div class="project-details hide">
                                 <div>

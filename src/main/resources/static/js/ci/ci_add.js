@@ -2,8 +2,7 @@ $(document).ready(function () {
 
 
  	$("#buildBtn").click(function(){
-
-        if(checkCiAdd()) {
+        //if(checkCiAdd()) {
             $("#buildForm").ajaxSubmit({
                 type: "post",
                 success: function (data) {
@@ -15,8 +14,8 @@ $(document).ready(function () {
                     }
                 }
             });
-        }
-        return false;
+        //}
+        //return false;
     });
 
     $('#projectName').blur(function(event){

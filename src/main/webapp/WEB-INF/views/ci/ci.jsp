@@ -5,7 +5,7 @@
 <div class="caption clearfix">
     <ul class="toolbox clearfix">
         <li><a href="javascript:void(0);" id="ciReloadBtn"><i class="fa fa-repeat"></i></a></li>
-        <li><a href="javascript:void(0);">添加源代码</a></li>
+        <!-- <li><a href="javascript:void(0);">添加源代码</a></li> -->
         <li><a href="javascript:void(0);" id="ciAddBtn">快速构建</a></li>
     </ul>
 </div>

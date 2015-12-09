@@ -10,4 +10,5 @@ import com.bonc.epm.paas.entity.Image;
 @Transactional
 public interface ImageDao extends CrudRepository<Image, Long>{
 	public List<Image> findAll();
+	public List<Image> findByName(String name);
 }

@@ -30,6 +30,10 @@ public class CiRecord {
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date constructDate;
 	/**
+	 * 构建时长
+	 */
+	private long constructTime;
+	/**
 	 * 构建结果：1成功2失败
 	 */
 	private Integer constructResult;
@@ -58,13 +62,18 @@ public class CiRecord {
 	public void setConstructDate(Date constructDate) {
 		this.constructDate = constructDate;
 	}
+	public long getConstructTime() {
+		return constructTime;
+	}
+	public void setConstructTime(long constructTime) {
+		this.constructTime = constructTime;
+	}
 	public Integer getConstructResult() {
 		return constructResult;
 	}
 	public void setConstructResult(Integer constructResult) {
 		this.constructResult = constructResult;
 	}
-	
 	
 
 	
