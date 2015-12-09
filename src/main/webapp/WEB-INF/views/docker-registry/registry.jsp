@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="css/core/base.css"/>
     <link rel="stylesheet" type="text/css" href="css/core/layout.css"/>
     <link rel="stylesheet" type="text/css" href="css/mod/docker-registry.css"/>
-    <script type="text/javascript" src="/js/registry/registry.js"></script>
+
 </head>
 <body>
     <div class="page-container">
@@ -39,7 +39,7 @@
 
     <script type="text/javascript" src="js/plugins/jquery-1.11.3.js"></script>
     <script type="text/javascript" src="plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
-    <script type="text/javascript" src="js/custom.js"></script>
-    <script type="text/javascript" src="js/mod/docker-registry.js"></script>
+    <script type="text/javascript" src="js/customer/custom.js"></script>
+    <script type="text/javascript" src="js/registry/registry.js"></script>
 </body>
 </html>

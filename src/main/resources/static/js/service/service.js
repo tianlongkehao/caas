@@ -31,7 +31,7 @@
                                      "<a title='点击查看镜像' target='_blank' href=''>tenxcloud/mysql</a>"+
                                      "</span></td>"+
                                      "<td style='width:34%' id='mysqlurl'>"+
-                                     "<span class="url">"+
+                                     "<span class=\"url\">"+
                                       "<a href='' target='_blank'>mysql-lynnxu.tenxapp.com:25314</a>"+
                                       "</span></td>"+
                                      "<td style='width:10%' class='tdTimeStrap'>"+
