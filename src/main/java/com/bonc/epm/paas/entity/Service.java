@@ -55,7 +55,7 @@ public class Service {
 	 */
 	private String serviceAddr;
 	/**
-	 * 运行状态(1启动中 2运行中 3 停止)
+	 * 运行状态(1运行中 2等待中 3创建中 4已停止 5创建失败 6服务异常)
 	 */
 	private Integer status;
 	/**

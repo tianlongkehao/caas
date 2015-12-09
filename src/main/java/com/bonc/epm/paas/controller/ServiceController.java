@@ -2,6 +2,7 @@ package com.bonc.epm.paas.controller;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.entity.Service;
 
@@ -47,6 +49,24 @@ public class ServiceController {
 		Map<String, Object> map = new HashMap<String,Object>();
 		map.put("status", "200");
 		map.put("date", serviceList);
+		return JSON.toJSONString(map);
+	}
+	
+	@RequestMapping(value={"service/add"},method=RequestMethod.GET)
+	public String create(){
+		return "service/service_create.jsp";
+	}
+	
+	@RequestMapping("service/serviceCreate.do")
+	@ResponseBody
+	public String serviceCreate(long id){
+		Service service = serviceDao.findOne(id);
+		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+		service.setCreateDate(new Date());
+		log.debug("createService--id:"+service.getId()+"--servicename:"+service.getServiceName());
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", "200");
+		map.put("data", service);
 		return JSON.toJSONString(map);
 	}
 	
