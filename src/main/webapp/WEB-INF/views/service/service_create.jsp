@@ -62,10 +62,10 @@
 				<ul class="safeSet">
 					<li class="line-h-3">
 					<span class="ve_top">镜像名称：</span> 
-					 <input type="text" value="" class="in_style" id="imgName" name="imgName">
+					 <input type="text" value="" class="in_style" id="imgName" name="imgName" readOnly="readOnly">
 					</li>
 					<li class="line-h-3"><span class="ve_top">镜像版本：</span>
-					  <input type="text" value="" class="in_style" id="imgVersion" name="imgVersion">
+					  <input type="text" value="" class="in_style" id="imgVersion" name="imgVersion" readOnly="readOnly">
 						</li>
 					<li class="line-h-3"><span class="ve_top">服务名称：</span> <input
 						type="text" value="" class="in_style" id="serviceName" name="serviceName">

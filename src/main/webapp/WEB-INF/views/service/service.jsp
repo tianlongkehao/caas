@@ -16,13 +16,13 @@
                                 <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a href="javascript:void(0)">
+                                        <a href="javascript:createContainer()">
                                             <i class="fa fa-play"></i>
                                             <span class="ic_left">启动</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="">
+                                        <a href="javascript:stopContainer()">
                                             <i class="fa fa-power-off"></i>
                                             <span class="ic_left">停止</span>
                                         </a>

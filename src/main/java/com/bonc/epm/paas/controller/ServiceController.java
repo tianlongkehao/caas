@@ -24,6 +24,7 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.DockerClientUtil;
+import com.github.dockerjava.api.command.CreateContainerCmd;
 
 
  
@@ -80,7 +81,7 @@ public class ServiceController {
 	@RequestMapping("service/serviceCreate.do")
 	@ResponseBody
 	public String  serviceCreate(Service service){
-		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_PENDING);
 		service.setCreateDate(new Date());
 		serviceDao.save(service);
 		log.debug("createService--id:"+service.getId()+"--servicename:"+service.getServiceName());
@@ -95,6 +96,27 @@ public class ServiceController {
 		map.put("status", "200");
 		map.put("data", service);
 		return JSON.toJSONString(map);
+	}
+	
+	@RequestMapping("service/createContainer.do")
+	@ResponseBody
+	public String CreateContainer(long id){
+		Service service = serviceDao.findOne(id);
+		Map<String, Object> map = new HashMap<String, Object>();
+		boolean flag = DockerClientUtil.pullImage(service.getImgName(), service.getImgVersion());
+		if(flag){
+			DockerClientUtil.createContainer(service.getImgName(),service.getImgVersion(), service.getServiceName(), 8080, 10001);
+			flag = DockerClientUtil.startContainer(service.getServiceName());
+			if(flag){
+				map.put("status", "200");
+				
+			}else{
+				map.put("status", "500");
+				
+			}
+		}
+		return JSON.toJSONString(map);
+		
 	}
 	
 	@RequestMapping("service/serviceConstruct.do")
