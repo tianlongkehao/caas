@@ -12,6 +12,9 @@ $(document).ready(function () {
 
 function registerConstructCiEvent(){
 	$(".bj-green").unbind("click").click(function(){
+		if($(this).attr("constructionStatus")=="2"){
+			return;
+		}
 		var $this = $(this);
 		var id = $this.attr("ciId");
 		layer.open({
@@ -19,7 +22,12 @@ function registerConstructCiEvent(){
 	        content: '确定构建镜像？',
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ //或者使用btn1
+	        	var cStatusHtml = "<i class='fa_success'></i>"+
+					                "构建中"+
+					                "<img src='images/loading4.gif' alt=''/>";
+	        	$this.parent().parent().find(".cStatusColumn").html(cStatusHtml);
 	        	$this.css("cursor","no-drop");
+	        	$(this).unbind("click");
 	        	layer.close(index);
 	        	$.ajax({
 	        		url:"/ci/constructCi.do?id="+id,
@@ -68,7 +76,7 @@ function loadCiList(){
             				constructionStatusHtml = "<i class='fa_success'></i>"+
 										                "构建中"+
 										                "<img src='images/loading4.gif' alt=''/>";
-            				btnStyleHtml = "style=cursor:no-drop;";
+            				btnStyleHtml = "style='cursor:no-drop;' constructionStatus='2'";
             			}else if(ci.constructionStatus==3){//完成
             				constructionStatusHtml = "<i class='fa_success'></i>"+
  							"完成";
@@ -82,11 +90,17 @@ function loadCiList(){
             			}else if(ci.codeType==2){//git
             				codeTypeHtml = "<span class='bj-code-source'><i class='fa fa-git-square fa-lg'></i> git</span>";
             			}
+            			var imgHtml = "";
+            			if(ci.imgId==null||ci.imgId==0){
+            				imgHtml = "<a href='javascript:void(0);' title='' style='cursor:no-drop'>"+ci.imgNameLast+"</a>";
+            			}else {
+            				imgHtml = "<a href='javascript:void(0);' title='' >"+ci.imgNameLast+"</a>";
+            			}
             			html += "<tr class='ci-listTr' style='cursor:auto'>"+
 						            "<td style='width: 15%; text-indent:22px;'>"+
 						                "<a href='javascript:void(0)' title='查看详细信息' onclick='viewCidetail("+ci.id+")'>"+ci.projectName+"</a>"+
 						            "</td>"+
-						            "<td style='width: 12%;'>"+
+						            "<td style='width: 12%;' class='cStatusColumn'>"+
 						            	constructionStatusHtml+
 						            "</td>"+
 						            "<td style='width: 15%;'>"+
@@ -97,12 +111,12 @@ function loadCiList(){
 						            "<td style='width: 12%;'>"+ci.constructionDate+"</td>"+
 						            "<td style='width: 10%;'>"+ci.constructionTime+"</td>"+
 						            "<td style='width: 15%;'>"+
-						                "<a target='_blank' title='' style='cursor:no-drop'>"+ci.imgNameLast+"</a>"+
+						            	imgHtml+
 						            "</td>"+
 						            "<td style='width:18%'>"+
 						                "<span class='bj-green' data-toggle='tooltip' data-placement='right' title='' data-original-title='重新构建' "+btnStyleHtml+" ciId='"+ci.id+"'>构建&nbsp;&nbsp;<i class='fa fa-arrow-circle-right'></i></span>"+
 						            "</td>"+
-						        "</tr>"
+						        "</tr>";
             		}
             	}
             	$("#ciList").html(html);

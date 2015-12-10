@@ -1,6 +1,5 @@
 package com.bonc.epm.paas.controller;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,9 +27,6 @@ import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.DockerClientUtil;
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.model.BuildResponseItem;
-import com.github.dockerjava.core.command.BuildImageResultCallback;
 /**
  * 构建
  * @author yangjian
@@ -152,14 +148,7 @@ public class CiController {
 			ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
 			ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
 		}
-		boolean constructFlag = true;
-		try{
-			constructFlag = construct(ci);
-		}catch(Exception e){
-			e.printStackTrace();
-			log.error("construct error:"+e.getMessage());
-			constructFlag = false;
-		}
+		boolean constructFlag = construct(ci);
 		if(!constructFlag){
 			map.put("status", "500");
 			map.put("msg", "构建镜像失败，请检查配置是否正确");
@@ -201,58 +190,46 @@ public class CiController {
 		return false;
 	}
 	
-	boolean ciFlag = true;
 	/**
 	 * 构建镜像
 	 * @param ci
 	 */
 	private boolean construct(Ci ci){
-		//docker build -t <镜像名> <Dockerfile路径>
-		/*String commandStr = "docker build -t "+ci.getImgNameFisrt()+"/"+ci.getImgNameLast()+" "+ci.getCodeLocation()+ci.getDockerFileLocation();
-		log.info("==========constructCommandStr:"+commandStr);
-		return CmdUtil.exeCmd(commandStr);*/
-		
 		//构建镜像
-		DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
-		File baseDir = new File(ci.getCodeLocation()+ci.getDockerFileLocation());
-		BuildImageResultCallback callback = new BuildImageResultCallback() {
-		    @Override
-		    public void onNext(BuildResponseItem item) {
-		       log.info("==========BuildResponseItem:"+item);
-		       if(item.getErrorDetail()!=null){
-		    	   ciFlag = false;
-		       }
-		       super.onNext(item);
-		    }
-		};
-		ciFlag = true;
-		String imageId = dockerClient.buildImageCmd(baseDir).exec(callback).awaitImageId();
-		if(!ciFlag){
-			return false;
+		String dockerfilePath = ci.getCodeLocation()+ci.getDockerFileLocation();
+		String imageName = ci.getImgNameFisrt()+"/"+ci.getImgNameLast();
+		String imageVersion = ci.getImgNameVersion();
+		boolean flag = DockerClientUtil.buildImage(dockerfilePath,imageName, imageVersion);
+		if(flag){
+			//上传镜像
+			flag = DockerClientUtil.pushImage(imageName, imageVersion);
 		}
-		//修改镜像名称及版本
-		dockerClient.tagImageCmd(imageId, ci.getImgNameFisrt()+"/"+ci.getImgNameLast(), ci.getImgNameVersion()).exec();
-		//排重添加镜像数据
-		boolean hasImgFlag = false;
-		List<Image> imageList = imageDao.findByName(ci.getImgNameFisrt()+"/"+ci.getImgNameLast());
-		if(!CollectionUtils.isEmpty(imageList)){
-			for(Image image:imageList){
-				if(ci.getImgNameVersion().equals(image.getVersion())){
-					hasImgFlag = true;
+		if(flag){
+			//删除本地镜像
+			flag = DockerClientUtil.removeImage(imageName, imageVersion);
+		}
+		if(flag){
+			//排重添加镜像数据
+			Image img = null;
+			List<Image> imageList = imageDao.findByName(imageName);
+			if(!CollectionUtils.isEmpty(imageList)){
+				for(Image image:imageList){
+					if(ci.getImgNameVersion().equals(imageVersion)){
+						img = image;
+					}
 				}
 			}
-		}
-		if(!hasImgFlag){
-			Image img = new Image();
-			img.setName(ci.getImgNameFisrt()+"/"+ci.getImgNameLast());
-			img.setVersion(ci.getImgNameVersion());
+			if(img==null){
+				img = new Image();
+				img.setName(imageName);
+				img.setVersion(imageVersion);
+			}
 			img.setRemark(ci.getDescription());
-			img.setImageId(imageId);
 			img.setCreateTime(new Date());
 			imageDao.save(img);
 			ci.setImgId(img.getId());
 		}
-		return true;
+		return flag;
 	}
 	
 }
