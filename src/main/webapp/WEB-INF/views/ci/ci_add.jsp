@@ -10,8 +10,8 @@
                 <div class="form-group col-md-7">
                     <label for="repoName">镜像名称</label>
                     <div class="">
-                        <span class="name-note">test /&nbsp;</span>
-                        <input name="imgNameFisrt" type="hidden" value="test">
+                        <span class="name-note">bonc /&nbsp;</span>
+                        <input name="imgNameFisrt" type="hidden" value="bonc">
                         <input id="imgNameLast" name="imgNameLast" type="text" class="name-input" value=""> :
                         <input id="imgNameVersion" name="imgNameVersion" type="text" value="latest" class="name-input">
                     </div>
