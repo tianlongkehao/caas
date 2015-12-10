@@ -18,17 +18,6 @@ $(document).ready(function () {
 
 });
 
-function initImages() {
-    $.ajax({
-        url: "/registry/create",
-        success: function (data) {
-            loadImageList();
-        },
-        error: function (data) {
-        }
-    });
-}
-
 function loadImageList() {
     $.ajax({
         url: "/registry/images",
@@ -64,7 +53,7 @@ function loadImageList() {
                     }
                     $("#imageList").html(html);
                 } else {
-                    initImages();
+                    
                 }
             } else {
             }

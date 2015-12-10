@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,19 +56,13 @@ public class RegistryController {
 	}
 	
 	//for test
-	@RequestMapping(value = {"registry/create"}, method = RequestMethod.GET)
-	@ResponseBody
-	private String createImage(){
+	@PostConstruct
+	public void init(){
 		Image img1 = new Image();
-		img1.setName("Tomcat");
-		img1.setRemark("Tomcat 应用服务器");
+		img1.setName("bonc/tomcat-maven");
+		img1.setRemark("配置Maven环境的Tomcat应用服务器");
+		img1.setVersion("1.0");
 		imageDao.save(img1);
-		
-		Image img2 = new Image();
-		img2.setName("MySQL");
-		img2.setRemark("MySOL 数据库");
-		imageDao.save(img2);
-		
-		return "success";
+		log.debug("init images bonc/tomcat-maven");
 	}
 }

@@ -57,7 +57,7 @@
                                 <div class="icon-img">
                                     <span><img src="images/factory_new.svg" alt=""/></span>
                                 </div>
-                                <div class="icon-name">镜像服务</div>
+                                <div class="icon-name">镜像中心</div>
                             </div>
                         </a>
                     </li>
@@ -67,7 +67,7 @@
                                 <div class="icon-img">
                                     <span><img src="images/factory_new.svg" alt=""/></span>
                                 </div>
-                                <div class="icon-name">代码构建</div>
+                                <div class="icon-name">API中心</div>
                             </div>
                         </a>
                     </li>
@@ -77,17 +77,7 @@
                                 <div class="icon-img">
                                     <span><img src="images/factory_new.svg" alt=""/></span>
                                 </div>
-                                <div class="icon-name">代码构建</div>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="icon-view" href="javascript:void(0);">
-                            <div class="icon-wrapper">
-                                <div class="icon-img">
-                                    <span><img src="images/factory_new.svg" alt=""/></span>
-                                </div>
-                                <div class="icon-name">代码构建</div>
+                                <div class="icon-name">应用中心</div>
                             </div>
                         </a>
                     </li>
