@@ -9,7 +9,7 @@ body {
     padding: 0;
 }*/
 
-ul {
+ul, ol {
     margin-left:0;
     margin-right: 0;
     padding-left: 0;
@@ -56,6 +56,14 @@ label {
     display: none !important;
 }
 
+.cursor {
+    cursor: pointer;
+}
+
+.text-center {
+    text-align: center;
+}
+
 .span2 {
     width: 20%;
     float: left;
@@ -70,15 +78,13 @@ label {
     float: left;
 }
 
+li.line-h-3 {
+    margin: 0 auto;
+    clear: both;
+    position: relative;
+    min-height: 40px;
+}
 
-
-/*.open > .dropdown-toggle,*/
-/*.open > .dropdown-toggle:hover,*/
-/*.open > .dropdown-toggle:focus{*/
-    /*background-color: unset;*/
-    /*border-color: unset;*/
-    /*color: #CCCCFF;*/
-/*}*/
 
 .dropdown .dropdown-menu {
     min-width: 140px;
@@ -178,6 +184,11 @@ label {
     vertical-align: top;
 }
 
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
 .btn-prim {
     background: #3C7BCA !important;
     color: #fff !important;
@@ -190,6 +201,10 @@ label {
 .table>thead>tr>th {
     border: 0;
     line-height: 35px;
+}
+
+.table tr th {
+    font-weight: normal;
 }
 
 .table>tbody>tr>td,
@@ -278,6 +293,35 @@ i.fa-btn-stop {
 
 i.fa-btn-stop.fail {
     background-position: 0 -22px;
+}
+
+i.fa_check {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background: url(../../images/check.png) no-repeat;
+    background-size: 100%;
+    margin-right: 6px;
+    position: relative;
+    top: 6px;
+}
+
+i.fa_attr_s {
+    background: url(../../images/bj_registry_list.png) no-repeat;
+    background-position: 0 -56px;
+    height: 18px;
+}
+
+i.fa_shuxinger {
+    background: url(../../images/bj_registry_list.png) no-repeat;
+    background-position: 0 -72px;
+    height: 18px;
+}
+
+i.fa_datetime {
+    background: url(../../images/bj_registry_list.png) no-repeat;
+    background-position: 0 -88px;
+    height: 18px;
 }
 
 i.fa_btn_plus_gray {
