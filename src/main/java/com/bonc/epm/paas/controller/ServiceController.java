@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tomcat.util.http.ServerCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
+import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
+import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Service;
+import com.bonc.epm.paas.util.CmdUtil;
+import com.bonc.epm.paas.util.DockerClientUtil;
 
 
  
@@ -34,6 +39,9 @@ public class ServiceController {
 	@Autowired
 	public ServiceDao serviceDao;
 	
+	@Autowired
+	private ImageDao imageDao;
+	
 	@RequestMapping(value={"service"},method=RequestMethod.GET)
 	public String index(){
 		return "service/service.jsp";
@@ -48,7 +56,7 @@ public class ServiceController {
 		log.debug("services:==========="+serviceList);
 		Map<String, Object> map = new HashMap<String,Object>();
 		map.put("status", "200");
-		map.put("date", serviceList);
+		map.put("data", serviceList);
 		return JSON.toJSONString(map);
 	}
 	
@@ -57,9 +65,41 @@ public class ServiceController {
 		return "service/service_create.jsp";
 	}
 	
+	@RequestMapping(value={"service/images"},method=RequestMethod.GET)
+	@ResponseBody
+	public String imageList(){
+		
+		Map<String, Object> map = new HashMap<String,Object>();
+		
+		List<Image> images = imageDao.findAll();
+		map.put("data", images);
+		
+		return JSON.toJSONString(map);
+	}
+	
 	@RequestMapping("service/serviceCreate.do")
 	@ResponseBody
-	public String serviceCreate(long id){
+	public String  serviceCreate(Service service){
+		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+		service.setCreateDate(new Date());
+		serviceDao.save(service);
+		log.debug("createService--id:"+service.getId()+"--servicename:"+service.getServiceName());
+		//boolean flag = DockerClientUtil.pullImage(service.getImgName(), service.getImgVersion());
+		//if(flag){
+		//	flag = DockerClientUtil.createContainer(service.getImgName(),service.getImgVersion(), service.getServiceName(), 8080, 10001);
+		//	if(flag){
+		//		DockerClientUtil.startContainer(service.getServiceName());
+		//	}
+		//}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", "200");
+		map.put("data", service);
+		return JSON.toJSONString(map);
+	}
+	
+	@RequestMapping("service/serviceConstruct.do")
+	@ResponseBody
+	public String serviceConstruct(long id){
 		Service service = serviceDao.findOne(id);
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
@@ -68,6 +108,13 @@ public class ServiceController {
 		map.put("status", "200");
 		map.put("data", service);
 		return JSON.toJSONString(map);
+	}
+	
+	private boolean construct(Service service){
+		String runCode = "docker run --name="+service.getServiceName()+" -d -p "+service.getImgName();
+		log.info("===========runCode:" +runCode);
+		return CmdUtil.exeCmd(runCode);
+		
 	}
 	
 

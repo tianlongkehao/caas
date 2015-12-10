@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 @Entity
 public class Service {
 	
@@ -33,7 +35,7 @@ public class Service {
 	/**
 	 * 集群设置
 	 */
-	private String group;
+	private String groupSet;
 	/**
 	 * 容器设置
 	 */
@@ -73,6 +75,7 @@ public class Service {
 	/**
 	 * 创建时间
 	 */
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
 	public String getServiceLink() {
 		return serviceLink;
@@ -128,11 +131,11 @@ public class Service {
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
 	}
-	public String getGroup() {
-		return group;
+	public String getGroupSet() {
+		return groupSet;
 	}
-	public void setGroup(String group) {
-		this.group = group;
+	public void setGroupSet(String groupSet) {
+		this.groupSet = groupSet;
 	}
 	public String getContainerSet() {
 		return containerSet;

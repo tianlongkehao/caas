@@ -1,10 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8"%>
 <link rel="stylesheet" type="text/css" href="/css/mod/service.css" />
-<script src="http://malsup.github.io/jquery.form.js"></script>
+<script type="text/javascript" src="/js/plugins/jquery.form.js"></script>
 <script type="text/javascript" src="/js/mod/service/service-create.js"></script>
 
 <div class="modalCrealApp">
+  <form id="buildService" name="buildService" action="service/serviceCreate.do" method="post">
 	<div class="steps-main">
 		<div class="progre">
 			<ul style="padding: 0 4rem;">
@@ -15,80 +15,22 @@
 		</div>
 		<div class="step-inner" style="left: 0%;">
 			<div class="host_step1">
-				<div class="select-server">
-					<span>选择镜像:</span>
-				</div>
-				<section class="info-class">
-					<span class="info-system primary" id="system">常用</span> <span
-						class="info-system" id="stack">Stack</span> <span
-						class="info-block" id="public">公有</span> <span class="info-block"
-						id="private">私有</span> <span class="info-block" id="favorites">收藏夹</span>
-					<span class="info-block" id="docker">Docker/第三方镜像</span> <span
-						class="search container-search">
-						<form class="search-group-inner">
-							<input type="text" id="search-img" placeholder="搜索镜像">
+				<div class="content">
+					<div class="search">
+						<form class="search-group-inner"
+							style="width: 60%; margin: 0 auto; position: relative;"
+							action="/registry/0">
+							<input name="imageName" class="search-img" placeholder="搜索镜像"
+								type="text">
 							<button type="submit" class="btn btn-primary btn-send">搜索</button>
 						</form>
-					</span>
-				</section>
-				<div class="select-type" style="margin: 0;">
-					<span class="pull-type">镜像类别:</span>
-					<section class="open-system">
-						<span class="info-type" type="os">SSH 服务器</span> <span
-							class="info-type" type="server">Web 服务器</span> <span
-							class="info-type primary" type="database">数据库与缓存</span> <span
-							class="info-type" type="docker_library">Library</span> <span
-							class="info-type" type="others">其他</span>
-					</section>
+					</div>
 				</div>
+
 				<div class="blankapp">
 					<ul class="blankapp-list">
 						<li class="list-wrapper">
-							<ul>
-								<li class="image-item"><span class="img_icon span2">
-										<img src="images/tenxcloud_mysql.png">
-								</span> <span class="span5 type" type="database">
-										<div class="list-item-description">
-											<div class="name h4">
-												tenxcloud/mysql <a title="点击查看镜像详情" target="_blank" href="">
-													<i class="fa fa-external-link-square"></i>
-												</a>
-											</div>
-											<span class="span2"> <i class="cloud_download"></i> <span
-												class="number">12214</span>
-											</span> <i class="fa fa-star-o"></i> <span class="star">46</span>
-										</div>
-								</span> <span class="span3">
-										<div class="list-item-description">
-											<span class="id h5" title="latest,5.6" value="latest,5.6">版本:
-												latest,5.6</span> <span class="pull-deploy btn btn-primary"
-												data-attr="tenxcloud/mysql"> 部署 <i
-												class="fa fa-arrow-circle-o-right margin fa-lg"></i>
-											</span>
-										</div>
-								</span></li>
-								<li class="image-item"><span class="img_icon span2">
-										<img src="images/tenxcloud_mysql.png">
-								</span> <span class="span5 type" type="database">
-										<div class="list-item-description">
-											<div class="name h4">
-												tenxcloud/mysql <a title="点击查看镜像详情" target="_blank" href="">
-													<i class="fa fa-external-link-square"></i>
-												</a>
-											</div>
-											<span class="span2"> <i class="cloud_download"></i> <span
-												class="number">12214</span>
-											</span> <i class="fa fa-star-o"></i> <span class="star">46</span>
-										</div>
-								</span> <span class="span3">
-										<div class="list-item-description">
-											<span class="id h5" title="latest,5.6" value="latest,5.6">版本:
-												latest,5.6</span> <span class="pull-deploy btn btn-primary"
-												data-attr="tenxcloud/mysql"> 部署 <i
-												class="fa fa-arrow-circle-o-right margin fa-lg"></i>
-											</span>
-										</div>
-								</span></li>
+							<ul id="imageList">
 								<li class="image-item"><span class="img_icon span2">
 										<img src="images/tenxcloud_mysql.png">
 								</span> <span class="span5 type" type="database">
@@ -118,28 +60,17 @@
 			</div>
 			<div class="host_step2">
 				<ul class="safeSet">
-					<li class="line-h-3"><span class="ve_top">镜像名称：</span> <span
-						class="imageName"> <img style="width: 25px"
-							src="images/tenxcloud_mysql.png"> index.tenxcloud.com/<span
-							id="imageName">tenxcloud/mysql</span>:<span class="version-text">latest</span>
-					</span> <input type="hidden" id="imageType" value="database"> <input
-						type="hidden" id="getImageName" value="tenxcloud/mysql:latest">
+					<li class="line-h-3">
+					<span class="ve_top">镜像名称：</span> 
+					 <input type="text" value="" class="in_style" id="imgName" name="imgName">
 					</li>
 					<li class="line-h-3"><span class="ve_top">镜像版本：</span>
-						<div class="select-versions" data-toggle="dropdown">
-							<span class="version-text">latest</span>
-							<div class="sign">
-								<i class="fa fa-angle-right"></i>
-							</div>
-						</div>
-						<ul id="imageTag" class="dropdown-menu dropdown-position">
-							<li>latest</li>
-							<li>5.6</li>
-						</ul></li>
+					  <input type="text" value="" class="in_style" id="imgVersion" name="imgVersion">
+						</li>
 					<li class="line-h-3"><span class="ve_top">服务名称：</span> <input
-						type="text" value="" class="in_style" id="containerName">
+						type="text" value="" class="in_style" id="serviceName" name="serviceName">
 					</li>
-					<li class="line-h-3"><span class="ve_top">选择集群：</span>
+					<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
 						<div class="select-versions" data-toggle="dropdown">
 							<span class="clusterText" data="tenx_district2">北京二区</span>
 							<div class="sign">
@@ -150,54 +81,22 @@
 							<li data="default">北京一区</li>
 							<li data="tenx_district2">北京二区</li>
 						</ul></li>
-					<li class="line-h-3" style="min-height: 60px; padding-top: 10px;">
+					 <li class="line-h-3" style="min-height: 60px; padding-top: 10px;">
 						<span class="ve_top display-block">容器配置：</span>
-						<section class="set_container" config="60m,256Mi,10GB">
-							<div class="up_style">
-								<span class="radius_type">1x</span>
-							</div>
-							<div class="text-center parameter">
-								<span>256M 内存</span> <span>10GB 硬盘</span>
-							</div>
-						</section>
-						<section class="set_container x2 active" config="125m,512Mi,10GB">
-							<div class="up_style">
-								<i class="fa_check"></i> <span class="radius_type"
-									style="display: none">2x</span>
-							</div>
-							<div class="text-center parameter">
-								<span>512M 内存</span> <span>10GB 硬盘</span>
-							</div>
-						</section>
-						<section class="set_container" config="250m,1024Mi,10GB">
-							<div class="up_style">
-								<span class="radius_type">3x</span>
-							</div>
-							<div class="text-center parameter">
-								<span>1024M 内存</span> <span>10GB 硬盘</span>
-							</div>
-						</section>
-						<section class="set_container" config="500m,2048Mi,10GB">
-							<div class="up_style">
-								<span class="radius_type">4x</span>
-							</div>
-							<div class="text-center parameter">
-								<span>2048M 内存</span> <span>10GB 硬盘</span>
-							</div>
-						</section>
-					</li>
+						
+					</li> -->
 					<li class="line-h-3" id="instsize">
 						<div class="param-set">
-							<span class="number-title">实例数量：</span> <input type="number"
-								value="1" class="number" min="1" autocomplete="off"
-								placeholder="1"> <span class="unit">个</span>
+							<span class="number-title">实例数量：</span> 
+							<input type="number" value="1" class="number" min="1" autocomplete="off"
+								placeholder="1" id="instanceNum" name="instanceNum"> <span class="unit">个</span>
 						</div>
 					</li>
-					<li id="service_type"><span class="ve_top">服务类型：</span> <span
+					<!--  <li id="service_type"><span class="ve_top">服务类型：</span> <span
 						class="update-mi"><input type="checkbox" id="state_service"
 							stateless="0"> <label for="state_service"><font
-								color="blue">有状态服务</font></label><span class="mountTips"></span></span></li>
-					<li class="hide-set" id="save_roll_dev" style="display: list-item;">
+							color="blue">有状态服务</font></label><span class="mountTips"></span></span></li>-->
+					<li class="hide-set" id="save_roll_dev" style="display:none">
 						<ul id="mountPathList">
 							<li class="mount line-h-3"><span class="ve_top">&nbsp;</span>
 								<table class="pull-left">
@@ -410,4 +309,5 @@
 		<button id="createButton"
 			class="pull-right btn btn-primary pull_confirm">创建</button>
 	</div>
+ </form>	
 </div>
