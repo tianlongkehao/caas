@@ -52,7 +52,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="">
+                                        <a href="javascript:delContainer()">
                                             <i class="fa fa-trash"></i>
                                             <span class="ic_left">删除</span>
                                         </a>

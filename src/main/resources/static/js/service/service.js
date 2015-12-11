@@ -5,7 +5,10 @@
 	$("#serviceCreateBtn").click(function(){
 		$(".contentMain").load("/service/add");
 	});
+	
 	loadService();
+	
+	_refreshCreateTime(60000);
 	
  });
  function loadService(){
@@ -55,7 +58,7 @@
 			"href='http://mysql-lynnxu.tenxapp.com:25314' target='_blank'>bonc</a>"+
 	"</span></td>"+
 	"<td style='width: 10%' class='tdTimeStrap'><input type='hidden'"+
-		"class='timeStrap' value='2015-11-30T02:23:28.000Z'> <i"+
+		"class='timeStrap' value='"+ creationTimestamp +"'> <i"+
 		"class='fa_time'></i> <span>"+ service.createDate + "</span></td>"+
 "</tr>"+
 "<tr style='border-left: 1px solid #eee;'>"+
@@ -68,7 +71,7 @@
 							"href='/containers/tenx_district2/instances/mysql-s49b2'>"+ service.serviceName +"-1</a>"+
 						"</td>"+
 						"<td colspan='2' style='width: 30%'>"+ StatusHtml +
-						"</td><td style='width: 34%' （内网）</td>"+
+						"</td><td style='width: 34%'> bonc（内网）</td>"+
 						"<td style='width: 10%'><i class='fa_time'></i>" +service.createDate+ "</td>"+
 					"</tr>"+
 				"</thead>"+
@@ -86,9 +89,9 @@
  }
  
  function createContainer(){
-	 $("input[name=chkItem]").each(function(){
-			 var id=$(this).val();
-			 alert(id);
+	 $('input[name="chkItem"]:checked').each(function(index, el){
+		 var id = $(el).val();
+			 //alert(id);
 			 $.ajax({
 					url:"service/createContainer.do?id="+id,
 					success:function(data){
@@ -107,10 +110,57 @@
  }
  
  function stopContainer(){
-	 $('input:checkbox').each(function() {
-	        if ($(this).attr('checked') ==true) {
-	                alert($(this).val());
-	        }
-	});
+	 $('input[name="chkItem"]:checked').each(function(index, el){
+	        var id = $(el).val();
+	        //alert(id);
+	        $.ajax({
+	        	url:"service/stopContainer.do?id="+id,
+	        	success:function(data){
+	        		data = eval("(" + data + ")");
+	        		if(data.status=="200"){
+	        			alert("容器已停止");
+	        		}else{
+	        			alert("容器停止失败，请检查服务器连接");
+	        		}
+	        		
+	        	}
+	        })
+	 })
+ }
+ 
+ function delContainer(){
+	 $('input[name="chkItem"]:checked').each(function(index, el){
+		 var id = $(el).val();
+		 $.ajax({
+	        	url:"service/delContainer.do?id="+id,
+	        	success:function(data){
+	        		data = eval("(" + data + ")");
+	        		if(data.status=="200"){
+	        			alert("容器已删除");
+	        		}else{
+	        			alert("容器删除失败，请检查服务器连接");
+	        		}
+	        		
+	        	}
+	        })
+	 })
+	 
+ }
+ 
+ // Refresh create time
+ var creationTimestamp;
+ function _refreshCreateTime(interval){
+   setInterval(function(){
+     $('.tdTimeStrap').each(function(){
+       var self = this;
+       var timebefore = $(self).find('span').text();
+       if (timebefore.indexOf('秒') > -1 || timebefore.indexOf('分钟') > -1) {
+         moment.locale('zh-cn');
+         creationTimestamp = $(self).find('.timeStrap').val();
+         var timeFromNow = moment(creationTimestamp).fromNow();
+         $(self).find('span').text(timeFromNow);
+       }
+     });
+   }, interval);
  }
  

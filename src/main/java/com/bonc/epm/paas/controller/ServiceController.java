@@ -85,13 +85,6 @@ public class ServiceController {
 		service.setCreateDate(new Date());
 		serviceDao.save(service);
 		log.debug("createService--id:"+service.getId()+"--servicename:"+service.getServiceName());
-		//boolean flag = DockerClientUtil.pullImage(service.getImgName(), service.getImgVersion());
-		//if(flag){
-		//	flag = DockerClientUtil.createContainer(service.getImgName(),service.getImgVersion(), service.getServiceName(), 8080, 10001);
-		//	if(flag){
-		//		DockerClientUtil.startContainer(service.getServiceName());
-		//	}
-		//}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");
 		map.put("data", service);
@@ -105,7 +98,7 @@ public class ServiceController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		boolean flag = DockerClientUtil.pullImage(service.getImgName(), service.getImgVersion());
 		if(flag){
-			DockerClientUtil.createContainer(service.getImgName(),service.getImgVersion(), service.getServiceName(), 8080, 10001);
+			DockerClientUtil.createContainer(service.getImgName(),service.getImgVersion(), service.getServiceName(), 8080, 10004);
 			flag = DockerClientUtil.startContainer(service.getServiceName());
 			if(flag){
 				map.put("status", "200");
@@ -117,6 +110,34 @@ public class ServiceController {
 		}
 		return JSON.toJSONString(map);
 		
+	}
+	
+	@RequestMapping("service/stopContainer.do")
+	@ResponseBody
+	public String stopContainer(long id){
+		Service service = serviceDao.findOne(id);
+		Map<String, Object> map = new HashMap<String,Object>();
+		boolean flag = DockerClientUtil.stopContainer(service.getServiceName());
+		if(flag){
+			map.put("status", "200");
+		}else{
+			map.put("status", "500");
+		}
+		return JSON.toJSONString(map);
+	}
+	
+	@RequestMapping("service/delContainer.do")
+	@ResponseBody
+	public String delContainer(long id){
+		Service service = serviceDao.findOne(id);
+		Map<String, Object> map = new HashMap<String,Object>();
+		boolean flag = DockerClientUtil.removeContainer(service.getServiceName());
+		if(flag){
+			map.put("status", "200");
+		}else{
+			map.put("status", "500");
+		}
+		return JSON.toJSONString(map);
 	}
 	
 	@RequestMapping("service/serviceConstruct.do")
@@ -132,12 +153,6 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 	}
 	
-	private boolean construct(Service service){
-		String runCode = "docker run --name="+service.getServiceName()+" -d -p "+service.getImgName();
-		log.info("===========runCode:" +runCode);
-		return CmdUtil.exeCmd(runCode);
-		
-	}
 	
 
 }
