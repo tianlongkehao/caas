@@ -83,16 +83,20 @@ function loadImageList() {
                         $(".pull-deploy").click(function(){
                         	var imageName = $(this).attr("imageName");
                         	var imageVersion = $(this).attr("imageVersion");
-                        	$("#imgName").val(imageName);
-                        	$("#imgVersion").val(imageVersion);
-                            $(".step-inner").css("left","-100%");
-                            $(".createPadding").removeClass("hide");
-                            $(".radius_step").removeClass("action").eq(1).addClass("action");
-                            $(".two_step").removeClass("hide");
 
+                            deploy(imageName, imageVersion);
                         });
                 	}
             }
         }
     })
+}
+
+function deploy(imageName, imageVersion){
+    $("#imgName").val(imageName);
+    $("#imgVersion").val(imageVersion);
+    $(".step-inner").css("left","-100%");
+    $(".createPadding").removeClass("hide");
+    $(".radius_step").removeClass("action").eq(1).addClass("action");
+    $(".two_step").removeClass("hide");
 }

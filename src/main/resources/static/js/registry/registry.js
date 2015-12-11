@@ -9,13 +9,22 @@ $(document).ready(function () {
         $(this).children(".create-item").css("opacity", "0");
     });
 
-
     $(".list_info").click(function () {
         $(".table_list>.list_info").removeClass("active");
         $(".table_list").siblings("section").addClass("hide");
         $(this).addClass("active").parent().siblings("section").eq($(this).index()).removeClass("hide");
     });
-
+    
+    $(document).on("click", ".btn-pull-deploy", function () {
+        var _this = $(this);
+        $("body").load("/menu?flag=service", function() {
+            $(".contentMain").load("/service/add", function(){
+                var imageName = _this.attr("imagename");
+                var imageVersion = _this.attr("imageversion");
+                deploy(imageName,imageVersion);
+            });
+        });
+    });
 });
 
 function loadImageList() {
@@ -40,7 +49,7 @@ function loadImageList() {
                             '<div class="pull-right-text">' + image.name + '</div>' +
                             '<div>' +
                             '<div class="pull-right">' +
-                            '<a href="" class="btn-pull-deploy btn">部署</a>' +
+                            '<a href="javascript:void(0);" class="btn-pull-deploy btn" imageversion='+image.version+' imagename='+image.name+'>部署</a>' +
                             '</div>' +
                             '</div>' +
                             '</div>' +
