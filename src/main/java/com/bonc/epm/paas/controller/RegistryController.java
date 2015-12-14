@@ -63,6 +63,15 @@ public class RegistryController {
 		img1.setRemark("配置Maven环境的Tomcat应用服务器");
 		img1.setVersion("1.0");
 		imageDao.save(img1);
+		Image img2 = new Image();
+		img2.setName("test/hw2");
+		img2.setRemark("helloworld");
+		img2.setVersion("latest");
+		imageDao.save(img2);
+
+		
+		
+		
 		log.debug("init images bonc/tomcat-maven");
 	}
 }

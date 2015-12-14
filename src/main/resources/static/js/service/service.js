@@ -5,7 +5,10 @@
 	$("#serviceCreateBtn").click(function(){
 		$(".contentMain").load("/service/add");
 	});
+	
 	loadService();
+	
+	_refreshCreateTime(60000);
 	
  });
  function loadService(){
@@ -35,7 +38,7 @@
             			}
             			html += "<tr class='clusterId'>"+
 	"<td style='width: 5%; text-indent: 30px;'><input type='checkbox'"+
-		"name='chkItem' value='' status='' imagename='' imagetag='' /></td>"+
+		"name='chkItem' status='' imagename='' imagetag='' value='"+service.id+"'/></td>"+
 	"<td style='width: 20%; white-space: nowrap;'><b"+
 		"class='caret margin' style='transform: rotate(0deg);'></b> <a"+
 		"href='/containers/tenx_district2/cluster/mysql'"+
@@ -52,11 +55,11 @@
 			"href='https://hub.tenxcloud.com/repos/tenxcloud/mysql'>"+ service.imgName +"</a>"+
 	"</span></td>"+
 	"<td style='width: 34%' id='mysqlurl'><span class='url'> <a"+
-			"href='http://mysql-lynnxu.tenxapp.com:25314' target='_blank'>mysql-lynnxu.tenxapp.com:25314</a>"+
+			"href='http://mysql-lynnxu.tenxapp.com:25314' target='_blank'>bonc</a>"+
 	"</span></td>"+
 	"<td style='width: 10%' class='tdTimeStrap'><input type='hidden'"+
-		"class='timeStrap' value='2015-11-30T02:23:28.000Z'> <i"+
-		"class='fa_time'></i> <span>1 天前</span></td>"+
+		"class='timeStrap' value='"+ creationTimestamp +"'> <i"+
+		"class='fa_time'></i> <span>"+ service.createDate + "</span></td>"+
 "</tr>"+
 "<tr style='border-left: 1px solid #eee;'>"+
 	"<td colspan='8'><div class='align-center'>"+
@@ -65,11 +68,11 @@
 					"<tr class='tr-row'>"+
 						"<td style='width: 5%'>&nbsp;</td>"+
 						"<td style='width: 20%;'><a style='margin-left: 19px;'"+
-							"href='/containers/tenx_district2/instances/mysql-s49b2'>mysql-s49b2</a>"+
+							"href='/containers/tenx_district2/instances/mysql-s49b2'>"+ service.serviceName +"-1</a>"+
 						"</td>"+
 						"<td colspan='2' style='width: 30%'>"+ StatusHtml +
-						"</td><td style='width: 34%'>mysql:3306&nbsp; （内网）</td>"+
-						"<td style='width: 10%'><i class='fa_time'></i>20 分钟前</td>"+
+						"</td><td style='width: 34%'> bonc（内网）</td>"+
+						"<td style='width: 10%'><i class='fa_time'></i>" +service.createDate+ "</td>"+
 					"</tr>"+
 				"</thead>"+
 			"</table>"+
@@ -83,5 +86,81 @@
             }
 		}
 	});
+ }
+ 
+ function createContainer(){
+	 $('input[name="chkItem"]:checked').each(function(index, el){
+		 var id = $(el).val();
+			 //alert(id);
+			 $.ajax({
+					url:"service/createContainer.do?id="+id,
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							alert("容器启动成功");
+							}else{
+								alert("容器启动失败");
+							}
+					}
+				
+			 });
+	 })
+	 
+	 
+ }
+ 
+ function stopContainer(){
+	 $('input[name="chkItem"]:checked').each(function(index, el){
+	        var id = $(el).val();
+	        //alert(id);
+	        $.ajax({
+	        	url:"service/stopContainer.do?id="+id,
+	        	success:function(data){
+	        		data = eval("(" + data + ")");
+	        		if(data.status=="200"){
+	        			alert("容器已停止");
+	        		}else{
+	        			alert("容器停止失败，请检查服务器连接");
+	        		}
+	        		
+	        	}
+	        })
+	 })
+ }
+ 
+ function delContainer(){
+	 $('input[name="chkItem"]:checked').each(function(index, el){
+		 var id = $(el).val();
+		 $.ajax({
+	        	url:"service/delContainer.do?id="+id,
+	        	success:function(data){
+	        		data = eval("(" + data + ")");
+	        		if(data.status=="200"){
+	        			alert("容器已删除");
+	        		}else{
+	        			alert("容器删除失败，请检查服务器连接");
+	        		}
+	        		
+	        	}
+	        })
+	 })
+	 
+ }
+ 
+ // Refresh create time
+ var creationTimestamp;
+ function _refreshCreateTime(interval){
+   setInterval(function(){
+     $('.tdTimeStrap').each(function(){
+       var self = this;
+       var timebefore = $(self).find('span').text();
+       if (timebefore.indexOf('秒') > -1 || timebefore.indexOf('分钟') > -1) {
+         moment.locale('zh-cn');
+         creationTimestamp = $(self).find('.timeStrap').val();
+         var timeFromNow = moment(creationTimestamp).fromNow();
+         $(self).find('span').text(timeFromNow);
+       }
+     });
+   }, interval);
  }
  
