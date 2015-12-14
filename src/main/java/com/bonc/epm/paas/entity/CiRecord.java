@@ -1,5 +1,7 @@
 package com.bonc.epm.paas.entity;
 
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -34,9 +36,14 @@ public class CiRecord {
 	 */
 	private long constructTime;
 	/**
-	 * 构建结果：1成功2失败
+	 * 构建结果：1成功2失败3构建中
 	 */
 	private Integer constructResult;
+	
+	/**
+	 * 构建日志
+	 */
+	private Clob logPrint;
 	
 	public long getId() {
 		return id;
@@ -74,7 +81,30 @@ public class CiRecord {
 	public void setConstructResult(Integer constructResult) {
 		this.constructResult = constructResult;
 	}
+	public Clob getLogPrint() {
+		return logPrint;
+	}
+	public void setLogPrint(Clob logPrint) {
+		this.logPrint = logPrint;
+	}
 	
+	public String getLogPrintStr() {
+		try {
+			if(logPrint!=null){
+				return logPrint.getSubString(1,(int)logPrint.length());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public void setLogPrintStr(String str){
+        try {
+			logPrint = new javax.sql.rowset.serial.SerialClob(str.toCharArray());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	
 }
