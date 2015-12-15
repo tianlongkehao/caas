@@ -14,4 +14,5 @@ public class CiConstant {
 	
 	public static final Integer CONSTRUCTION_RESULT_OK = 1;
 	public static final Integer CONSTRUCTION_RESULT_FAIL = 2;
+	public static final Integer CONSTRUCTION_RESULT_ING = 3;
 }
