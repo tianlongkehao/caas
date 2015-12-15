@@ -1,9 +1,4 @@
-<%@ page import="java.util.List" %>
-<%@ page import="com.bonc.epm.paas.entity.Ci" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%
-    List<Ci> ciList = (List<Ci>)request.getAttribute("ciList");
-%>
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -66,75 +61,71 @@
                                 <div class="content-table">
                                     <table class="table tables">
                                         <tbody id="ciList">
+                                        <c:forEach items="${ciList}" var="ci" >
 
-                                        <%
-                                        for(int i=0, len=ciList.size(); i<len; i++){
-                                            Ci ci = ciList.get(i);
-                                            String statusName = "";
-                                            String statusClassName = "";
-                                            String loadingImgShowClass = "hide";
-                                            int codeType = ci.getCodeType();
-                                            String codeTypeName = "";
-                                            Long imgId = ci.getImgId();
-                                            String cursorClass = "";
-                                            String btnCursorClass = "";
-                                            int constructionStatus = ci.getConstructionStatus();
+                                            <c:choose>
+                                                <c:when test="${ci.constructionStatus == 1}">
+                                                    <c:set var="statusName" value="未构建"></c:set>
+                                                    <c:set var="statusClassName" value="fa_stop"></c:set>
+                                                    <c:set var="loadingImgShowClass" value="hide"></c:set>
+                                                </c:when>
+                                                <c:when test="${ci.constructionStatus == 2}">
+                                                    <c:set var="statusName" value="构建中"></c:set>
+                                                    <c:set var="statusClassName" value="fa_success"></c:set>
+                                                    <c:set var="loadingImgShowClass" value=""></c:set>
+                                                    <c:set var="btnCursorClass" value="cursor-no-drop"></c:set>
+                                                </c:when>
+                                                <c:when test="${ci.constructionStatus == 3}">
+                                                    <c:set var="statusName" value="完成"></c:set>
+                                                    <c:set var="statusClassName" value="fa_success"></c:set>
+                                                    <c:set var="loadingImgShowClass" value="hide"></c:set>
+                                                </c:when>
+                                                <c:when test="${ci.constructionStatus == 4}">
+                                                    <c:set var="statusName" value="失败"></c:set>
+                                                    <c:set var="statusClassName" value="fa_stop"></c:set>
+                                                    <c:set var="loadingImgShowClass" value="hide"></c:set>
+                                                </c:when>
+                                            </c:choose>
 
-                                            if(1 == constructionStatus) {
-                                                statusName = "未构建";
-                                                statusClassName = "fa_stop";
-                                            }else if(2 == constructionStatus) {
-                                                statusName = "构建中";
-                                                statusClassName = "fa_success";
-                                                loadingImgShowClass = "";
-                                                btnCursorClass = "cursor-no-drop";
-                                            }else if(3 == constructionStatus) {
-                                                statusName = "完成";
-                                                statusClassName = "fa_success";
-                                            }else if(4 == constructionStatus) {
-                                                statusName = "失败";
-                                                statusClassName = "fa_stop";
-                                            }
+                                            <c:choose>
+                                                <c:when test="${ci.codeType == 1}">
+                                                    <c:set var="codeTypeName" value="svn"></c:set>
+                                                </c:when>
+                                                <c:when test="${ci.codeType == 2}">
+                                                    <c:set var="codeTypeName" value="git"></c:set>
+                                                </c:when>
+                                            </c:choose>
 
-                                            if(1 == codeType) {
-                                                codeTypeName = "svn";
-                                            }else if(2 == codeType) {
-                                                codeTypeName = "git";
-                                            }
+                                            <c:if test="${ci.id == null || ci.id == 0}">
+                                                <c:set var="cursorClass" value="cursor-no-drop"></c:set>
+                                            </c:if>
 
-                                            if(imgId == null || imgId == 0){
-                                                cursorClass = "cursor-no-drop";
-                                            }
+                                            <tr class="ci-listTr" style="cursor:auto">
+                                                <td style="width: 15%; text-indent:22px;">
+                                                    <a href="/ci/detail/${ci.id}" title="查看详细信息">${ci.projectName}</a>
+                                                </td>
+                                                <td style="width: 12%;" class="cStatusColumn">
+                                                    <i class="${statusClassName}"></i> ${statusName}
+                                                    <img src="/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
+                                                </td>
+                                                <td style="width: 15%;">
+                                                    <a data-toggle="tooltip" data-placement="left" title="" target="_blank" href="${ci.codeUrl}" data-original-title="查看源代码">
+                                                        <span class="bj-code-source"><i class="fa fa-git-square fa-lg"></i>
+                                                            ${codeTypeName}
+                                                        </span>
+                                                    </a>
+                                                </td>
+                                                <td style="width: 12%;">${ci.constructionDate}</td>
+                                                <td style="width: 10%;">${ci.constructionTime}</td>
+                                                <td style="width: 15%;">
+                                                    <a target="_blank" title="" class="${cursorClass}">${ci.imgNameLast}</a>
+                                                </td>
+                                                <td style="width:18%">
+                                                    <span class="bj-green ${btnCursorClass}" data-toggle="tooltip" data-placement="right" title="" data-original-title="重新构建" constructionStatus="${ci.constructionStatus}"  ciId="${ci.id}">构建&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></span>
+                                                </td>
+                                            </tr>
 
-                                        %>
-
-                                        <tr class="ci-listTr" style="cursor:auto">
-                                            <td style="width: 15%; text-indent:22px;">
-                                                <a href="/ci/detail/<%=ci.getId()%>" title="查看详细信息"><%=ci.getProjectName()%> </a>
-                                            </td>
-                                            <td style="width: 12%;" class="cStatusColumn">
-                                                <i class="<%=statusClassName%>"></i>
-                                                <%=statusName%>
-                                                <img src="/images/loading4.gif" alt="" class="<%=loadingImgShowClass%>"/>
-                                            </td>
-                                            <td style="width: 15%;">
-                                                <a data-toggle="tooltip" data-placement="left" title="" target="_blank" href="<%=ci.getCodeUrl()%>" data-original-title="查看源代码">
-                                                    <span class="bj-code-source"><i class="fa fa-git-square fa-lg"></i> <%=codeTypeName%></span>
-                                                </a>
-                                            </td>
-                                            <td style="width: 12%;"><%=ci.getConstructionDate()%></td>
-                                            <td style="width: 10%;"><%=ci.getConstructionTime()%></td>
-                                            <td style="width: 15%;">
-                                                <a target="_blank" title="" class="<%=cursorClass%>"><%=ci.getImgNameLast()%></a>
-                                            </td>
-                                            <td style="width:18%">
-                                                <span class="bj-green <%=btnCursorClass%>" data-toggle="tooltip" data-placement="right" title="" data-original-title="重新构建" constructionStatus="<%=constructionStatus%>"  ciId="<%=ci.getId()%>">构建&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></span>
-                                            </td>
-                                        </tr>
-
-                                        <%
-                                            }
-                                        %>
+                                        </c:forEach>
 
                                         </tbody>
                                     </table>
