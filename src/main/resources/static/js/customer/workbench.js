@@ -1,5 +1,5 @@
 $(document).ready(function(){
     $(".app-list a[class=icon-view]").on("click",function(){
-        $("body").load($(this).attr("action"));
+        window.location.href = $(this).attr("action");
     });
 });

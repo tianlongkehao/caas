@@ -16,7 +16,15 @@
     font-weight: 700;
 }
 
-.navbar-user .dropdown .dropdown-toggle {
+.navbar .navbar-info {
+    margin-top: 19px;
+}
+
+.navbar .navbar-info li{
+    margin-right: 10px;
+}
+
+.navbar-info .dropdown .dropdown-toggle {
     margin-right: 30px;
     background-color: unset;
     border-color: unset;
@@ -24,18 +32,18 @@
     transition: .5s;
 }
 
-.navbar-user .dropdown .dropdown-toggle:hover {
+.navbar-info .dropdown .dropdown-toggle:hover {
     color: #000000;
     transition: .5s;
 }
 
-.navbar-user .open > .dropdown-toggle {
+.navbar-info .open > .dropdown-toggle {
     background-color: unset;
     border-color: unset;
     color: #000000;
 }
 
-.navbar-user .dropdown .dropdown-menu::before {
+.navbar-info .dropdown .dropdown-menu::before {
     content: '';
     display: inline-block;
     border-left: 7px solid transparent;
@@ -47,9 +55,9 @@
     right: 70px;
 }
 
-.navbar-user .open > .dropdown-toggle,
-.navbar-user .open > .dropdown-toggle:hover,
-.navbar-user .open > .dropdown-toggle:focus{
+.navbar-info .open > .dropdown-toggle,
+.navbar-info .open > .dropdown-toggle:hover,
+.navbar-info .open > .dropdown-toggle:focus{
     color: #000000;
 }
 
@@ -171,5 +179,23 @@
 
 .caption{
     padding: 15px 20px;
+    background: #fff;
+}
+
+/* 登录页面部分 */
+.login-container {
+    margin-top: 70px;
+}
+
+.sign-container {
+    display: block;
+    margin: 0 auto;
+    padding-top: 40px;
+    width: 380px;
+    border-radius: 2px;
+}
+
+.sign-form {
+    padding: 30px 30px;
     background: #fff;
 }

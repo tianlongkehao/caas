@@ -60,6 +60,10 @@ label {
     cursor: pointer;
 }
 
+.cursor-no-drop {
+    cursor: no-drop;
+}
+
 .text-center {
     text-align: center;
 }
@@ -99,11 +103,7 @@ li.line-h-3 {
 }
 
 
-.navbar-user {
-    padding-top: 19px;
-}
-
-.navbar-user .dropdown .dropdown-toggle {
+.navbar-info .dropdown .dropdown-toggle {
     margin-right: 30px;
     background-color: unset;
     border-color: unset;
@@ -111,12 +111,12 @@ li.line-h-3 {
     transition: .5s;
 }
 
-.navbar-user .dropdown .dropdown-toggle:hover {
+.navbar-info .dropdown .dropdown-toggle:hover {
     color: #ffffff;
     transition: .5s;
 }
 
-.navbar-user .dropdown .dropdown-menu::before {
+.navbar-info .dropdown .dropdown-menu::before {
     content: '';
     display: inline-block;
     border-left: 7px solid transparent;
@@ -128,9 +128,9 @@ li.line-h-3 {
     right: 70px;
 }
 
-.navbar-user .open > .dropdown-toggle,
-.navbar-user .open > .dropdown-toggle:hover,
-.navbar-user .open > .dropdown-toggle:focus{
+.navbar-info .open > .dropdown-toggle,
+.navbar-info .open > .dropdown-toggle:hover,
+.navbar-info .open > .dropdown-toggle:focus{
     background-color: unset;
     border-color: unset;
 

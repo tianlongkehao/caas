@@ -5,7 +5,9 @@ $(document).ready(function () {
 	$("#ciAddBtn").click(function(){
 		$(".contentMain").load("/ci/add");
 	});
-	loadCiList();
+//	loadCiList();
+
+    registerConstructCiEvent();
 
 });
 
@@ -50,13 +52,11 @@ function registerConstructCiEvent(){
 	        }
 	    });
 	});
-	
-	
-	
 }
-function viewCidetail(id){
-	$(".contentMain").load("/ci/detail?id="+id);
-}
+//function viewCidetail(id){
+//	$(".contentMain").load("/ci/detail?id="+id);
+//}
+/*
 function loadCiList(){
 	$.ajax({
 		url:"/ci/listCi.do",
@@ -126,4 +126,4 @@ function loadCiList(){
             }
 		}
 	});
-}
+}*/

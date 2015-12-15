@@ -1,20 +1,23 @@
 $(document).ready(function () {
 
-
  	$("#buildBtn").click(function(){
         //if(checkCiAdd()) {
-            $("#buildForm").ajaxSubmit({
-                type: "post",
-                success: function (data) {
-                    data = eval("(" + data + ")");
-                    if (data.status == "200") {
-                        $(".contentMain").load("/ci");
-                    } else {
-                        layer.alert(data.msg);
-                    }
-                }
-            });
-        //}
+
+//        $("#buildForm").ajaxSubmit({
+//            type: "post",
+//            success: function (data) {
+//                console.log(data);
+//                data = eval("(" + data + ")");
+//                if (data.status == "200") {
+//                    window.location.href = "/ci";
+//                } else {
+//                    layer.alert(data.msg);
+//                }
+//            }
+//        });
+
+        $("#buildForm").submit();
+
         //return false;
     });
 

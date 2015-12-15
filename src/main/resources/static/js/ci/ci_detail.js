@@ -5,26 +5,32 @@ $(document).ready(function(){
         $(".ci-tab").removeClass("active");
         $(this).addClass("active");
     });
-    //加载构建记录
-    loadCiRecordList(id);
-    //加载数据
-    loadCi(id);
+
+    registerCiRecordEvent();
+
     //修改事件
     registerCiEditEvent();
     //删除事件
-    registerCiDelEvent(id);
+    registerCiDelEvent($("#id").val());
+
 });
 function registerCiEditEvent(){
 	$("#editCiBtn").click(function(){
         $("#editCiForm").ajaxSubmit({
+            url: "/ci/modifyCi.do",
             type: "post",
             success: function (data) {
                 data = eval("(" + data + ")");
                 if (data.status == "200") {
                 	layer.alert("修改成功");
+                    console.log($("#projectName").val());
+                    $("#projectNameSpan").text($("#projectName").val());
                 } else {
                     layer.alert(data.msg);
                 }
+            },
+            error: function (e) {
+                layer.alert("请求出错");
             }
         });
     });
@@ -37,16 +43,21 @@ function registerCiDelEvent(id){
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ //或者使用btn1
 	        	$.ajax({
-	        		url:"/ci/delCi.do?id="+id,
+                    type:"post",
+	        		url:"/ci/delCi.do",
+                    data: {"id" : id},
 	        		success:function(data){
 	        			data = eval("(" + data + ")");
 	        			 if(data.status=="200"){
 	        				 layer.alert("删除成功");
-	        				 $(".contentMain").load("/ci");
+                             window.location.href = "/ci";
 	                     } else {
 	                         layer.alert(data.msg);
 	                     }
-	        		}
+	        		},
+                    error: function(e) {
+                        layer.alert("请求出错");
+                    }
 	        	});
 	        },
 	        cancel: function(index){ //或者使用btn2
@@ -54,7 +65,7 @@ function registerCiDelEvent(id){
 	    });
     });
 }
-function loadCi(id){
+/*function loadCi(id){
 	$.ajax({
 		url:"/ci/findCi.do?id="+id,
 		success:function(data){
@@ -74,7 +85,8 @@ function loadCi(id){
 			 }
 		}
 	});
-}
+}*/
+
 function registerCiRecordEvent(){
 	$(".time-line-content").unbind("click").click(function(){
         if($(this).hasClass("lives")){
@@ -88,6 +100,7 @@ function registerCiRecordEvent(){
         }
     });
 }
+/*
 function loadCiRecordList(id){
 	$.ajax({
 		url:"/ci/listCiRecord.do?id="+id,
@@ -147,4 +160,4 @@ function loadCiRecordList(id){
             }
 		}
 	});
-}
+}*/

@@ -2,11 +2,11 @@
 	$("#serviceReloadBtn").click(function(){
 		loadService();
 	});
-	$("#serviceCreateBtn").click(function(){
-		$(".contentMain").load("/service/add");
-	});
+//	$("#serviceCreateBtn").click(function(){
+//		$(".contentMain").load("/service/add");
+//	});
 	
-	loadService();
+//	loadService();
 	
 	_refreshCreateTime(60000);
 	

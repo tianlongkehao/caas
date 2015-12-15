@@ -3,27 +3,92 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>用户登录</title>
+    <title>用户登录</title>
+   <%@include file="frame/dashboard-header.jsp" %>
+    <link rel="stylesheet" type="text/css" href="/css/core/layout.css">
 </head>
-<!-- CSS件 -->
-<link rel="stylesheet" href="/css/bootstrap.min.css">
-<link rel="stylesheet" href="/css/customer/login.css">
 <body>
-	<div class="container">
-		<form class="form-signin" action="login" method="post">
-			<h2 class="form-signin-heading">Please sign in</h2>
-			<div class="error-code">${err_code}</div>
-			<input type="text" class="form-control" placeholder="Email address" required autofocus name="email" value="${user.email}"> 
-			<input type="password" class="form-control" placeholder="Password" required name="password" value="${user.password}"> 
-			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-		</form>
-	</div>
 
-	<script src="http://code.jquery.com/jquery.js"></script>
-	<script src="/js/bootstrap.min.js"></script>
+<header class="header">
+    <div class="navbar navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="javascript:void(0);">
+                    <h2>BONC-PaaS</h2>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <div class="login-container">
+        <div class="sign-container">
+            <h3>登录</h3>
+            <div class="sign-form">
+                <form id="loginForm" class="form" action="/signin" method="post">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-user"></i>
+                            </span>
+                            <input type="text" class="form-control" id="userName" name="userName" placeholder="请输入用户名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-lock"></i>
+                            </span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button id="btn-signin" class="btn btn-primary btn-block" type="button" disabled="disabled">登录</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(function(){
+
+        $("#userName").keyup(function(){
+            var checkFlag = checkEnter();
+            if(checkFlag){
+                $("#btn-signin").removeAttr("disabled");
+            }else{
+                $("#btn-signin").attr("disabled", "disabled");
+            }
+            return false;
+        });
+
+        $("#password").keyup(function(){
+            var checkFlag = checkEnter();
+            if(checkFlag){
+                $("#btn-signin").removeAttr("disabled");
+            }else{
+                $("#btn-signin").attr("disabled", "disabled");
+            }
+            return false;
+        });
+
+        function checkEnter(){
+            if($("#userName").val() && $("#password").val()){
+                return true;
+            }
+            return false;
+        }
+
+        $("#btn-signin").click(function(){
+            $("#loginForm").submit();
+        });
+
+    });
+
+</script>
 </body>
 </html>

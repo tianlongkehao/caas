@@ -1,6 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-<link rel="stylesheet" type="text/css" href="/css/mod/dashboard.css">
-<script type="text/javascript" src="/js/customer/workbench.js"></script>
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>BONC-Paas</title>
+    <%@include file="frame/dashboard-header.jsp" %>
+    <link rel="stylesheet" type="text/css" href="/css/mod/dashboard.css">
+    <script type="text/javascript" src="/js/customer/workbench.js"></script>
+</head>
+<body>
     <div class="dashboard-wrapper">
         <header class="dashboard-header">
             <nav class="navbar dashboard-nav">
@@ -10,7 +18,7 @@
                             <h1>BONC-PaaS</h1>
                         </a>
                     </div>
-                    <ul class="nav navbar-nav navbar-right navbar-user">
+                    <ul class="nav navbar-nav navbar-right navbar-info">
                         <li class="dropdown">
                             <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 Admin
@@ -32,7 +40,7 @@
             <div class="container">
                 <ul class="app-list">
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/menu?flag=service">
+                        <a class="icon-view" href="javascript:void(0);" action="/service">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
                                     <span><img src="images/service.svg" alt=""/></span>
@@ -42,7 +50,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/menu?flag=ci">
+                        <a class="icon-view" href="javascript:void(0);" action="/ci">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
                                     <span><img src="images/factory_new.svg" alt=""/></span>
@@ -52,7 +60,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/menu?flag=registry">
+                        <a class="icon-view" href="javascript:void(0);" action="/registry/0">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
                                     <span><img src="images/factory_new.svg" alt=""/></span>
@@ -84,9 +92,7 @@
                 </ul>
             </div>
         </div>
-
     </div>
     <div class="wallpaper"></div>
 </body>
-
 </html>

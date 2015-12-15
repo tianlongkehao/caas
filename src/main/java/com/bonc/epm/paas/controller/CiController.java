@@ -13,9 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CiConstant;
@@ -43,7 +41,15 @@ public class CiController {
 	public ImageDao imageDao;
 	
 	@RequestMapping(value={"ci"},method=RequestMethod.GET)
-	public String index(){
+	public String index(Model model){
+        List<Ci> ciList = new ArrayList<Ci>();
+        for(Ci ci:ciDao.findAll()){
+            ciList.add(ci);
+        }
+
+        model.addAttribute("ciList", ciList);
+        model.addAttribute("menu_flag", "ci");
+
 		return "ci/ci.jsp";
 	}
 	@RequestMapping("ci/listCi.do")
@@ -58,9 +64,15 @@ public class CiController {
 		map.put("data", ciList);
 		return JSON.toJSONString(map);
 	}
-	@RequestMapping(value={"ci/detail"},method=RequestMethod.GET)
-	public String detail(Model model,long id){
+	@RequestMapping(value={"ci/detail/{id}"},method=RequestMethod.GET)
+	public String detail(Model model,@PathVariable long id){
+        System.out.printf("id: " + id);
+        Ci ci = ciDao.findOne(id);
+        List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id);
+
 		model.addAttribute("id", id);
+        model.addAttribute("ci", ci);
+        model.addAttribute("ciRecordList", ciRecordList);
 		return "ci/ci_detail.jsp";
 	}
 	@RequestMapping("ci/listCiRecord.do")
@@ -94,10 +106,11 @@ public class CiController {
 		map.put("data", ci);
 		return JSON.toJSONString(map);
 	}
-	@RequestMapping("ci/delCi.do")
+	@RequestMapping(value = "ci/delCi.do", method = RequestMethod.POST)
 	@ResponseBody
-	public String delCi(long id) {
-		ciDao.delete(id);
+	public String delCi(@RequestParam String id) {
+        Long idl = Long.parseLong(id);
+		ciDao.delete(idl);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");
 		return JSON.toJSONString(map);
@@ -106,22 +119,26 @@ public class CiController {
 	
 	
 	@RequestMapping(value={"ci/add"},method=RequestMethod.GET)
-	public String addProject(){
+	public String addProject(Model model){
+        model.addAttribute("menu_flag", "ci");
 		return "ci/ci_add.jsp";
 	}
 	
 	@RequestMapping("ci/addCi.do")
-	@ResponseBody
 	public String addCi(Ci ci) {
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setCodeType(CiConstant.CODE_TYPE_GIT);
 		ci.setConstructionDate(new Date());
 		ciDao.save(ci);
 		log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("status", "200");
-		map.put("data", ci);
-		return JSON.toJSONString(map);
+
+//		Map<String, Object> map = new HashMap<String, Object>();
+//		map.put("status", "200");
+//		map.put("data", ci);
+//		return JSON.toJSONString(map);
+
+        return "redirect:/ci";
+
 	}
 	
 	@RequestMapping("ci/constructCi.do")

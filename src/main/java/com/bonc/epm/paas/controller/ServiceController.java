@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -44,7 +45,15 @@ public class ServiceController {
 	private ImageDao imageDao;
 	
 	@RequestMapping(value={"service"},method=RequestMethod.GET)
-	public String index(){
+	public String index(Model model){
+        List<Service> serviceList = new ArrayList<Service>();
+        for(Service service:serviceDao.findAll()){
+            serviceList.add(service);
+        }
+
+        model.addAttribute("serviceList", serviceList);
+        model.addAttribute("menu_flag", "service");
+
 		return "service/service.jsp";
 	}
 	@RequestMapping("service/listService.do")
@@ -63,6 +72,7 @@ public class ServiceController {
 	
 	@RequestMapping(value={"service/add"},method=RequestMethod.GET)
 	public String create(){
+
 		return "service/service_create.jsp";
 	}
 	

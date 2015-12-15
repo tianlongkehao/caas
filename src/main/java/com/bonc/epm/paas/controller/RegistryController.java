@@ -34,7 +34,12 @@ public class RegistryController {
 	private ImageDao imageDao;
 	
 	@RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
-	public String index(@PathVariable int index) {
+	public String index(@PathVariable int index, Model model) {
+
+        List<Image> images = imageDao.findAll();
+        model.addAttribute("images", images);
+        model.addAttribute("menu_flag", "registry");
+
 		return "docker-registry/registry.jsp";
 	}
 	

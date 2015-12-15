@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    loadImageList();
 
     $(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
@@ -27,6 +26,7 @@ $(document).ready(function () {
     });
 });
 
+/*
 function loadImageList() {
     $.ajax({
         url: "/registry/images",
@@ -62,11 +62,11 @@ function loadImageList() {
                     }
                     $("#imageList").html(html);
                 } else {
-                    
+
                 }
             } else {
             }
 
         }
     });
-}
+}*/
