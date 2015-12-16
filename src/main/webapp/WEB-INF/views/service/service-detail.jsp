@@ -12,24 +12,19 @@
 	<jsp:include page="../frame/menu.jsp" flush="true">
 		<jsp:param name="ci" value="" />
 	</jsp:include>
-	<c:forEach items="${serviceList }" var="service" >
-		<c:choose>
-			<c:when test="${service.status == 1 }">
-				<c:set var="statusClass" value="fa_run"></c:set>
-                <c:set var="eventStatusClass" value="fa-check"></c:set>
-                <c:set var="statusName" value="成功"></c:set>
-                <c:set var="eventStatus" value="success"></c:set>
-			</c:when>
-			<c:when test="${container.status == 2 }">
-				<c:set var="statusClass" value="fa_stop"></c:set>
-                <c:set var="eventStatusClass" value="fa-times"></c:set>
-                <c:set var="statusName" value="失败"></c:set>
-                <c:set var="eventStatus" value="error"></c:set>
-			</c:when>
-		</c:choose>
-		
-	</c:forEach>
-
+    <div class="page-container">
+        <article>
+            <div class="page-main">
+                <div class="contentTitle">
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                        <li><i class="fa fa-angle-right"></i></li>
+                        <li class="active">服务</li>
+                        <li><i class="fa fa-angle-right"></i></li>
+                        <li class="active">${container.containerName }</li>
+                    </ol>
+                </div>
+                <div class="contentMain">
 	<section class="detail-succeed">
 		<div class="icon-img">
 			<div class="type-icon">
@@ -39,9 +34,9 @@
 		<ul class="succeed-content pull-left">
 			<li>运行状态：运行中</li>
 			<li>服务地址：<a href="http://mysql-lynnxu.tenxapp.com:25314"
-				target="_blank">mysql-lynnxu.tenxapp.com:25314</a></li>
-			<li>创建时间：2015-11-30 10:23:27</li>
-			<li>更新时间：2015-11-30 10:23:27</li>
+				target="_blank">bonc.com:25314</a></li>
+			<li>创建时间：${container.createDate }</li>
+			<li>更新时间：${container.createDate }</li>
 		</ul>
 		<div class="applocation">
 			<a href="http://mysql-lynnxu.tenxapp.com:25314" target="_blank"
@@ -63,12 +58,12 @@
 			</thead>
 			<tbody class="BORDER">
 				<tr>
-					<td>名称：mysql</td>
-					<td>运行状态：已停止</td>
+					<td>名称：${container.containerName }</td>
+					<td>运行状态：正在运行</td>
 				</tr>
 				<tr>
-					<td>镜像名称：tenxcloud/mysql:latest</td>
-					<td>创建时间：2015-11-30 10:23:27</td>
+					<td>镜像名称：${container.imageName }</td>
+					<td>创建时间：${container.createDate }</td>
 				</tr>
 			</tbody>
 		</table>
@@ -118,7 +113,30 @@
 				</tr>
 			</thead>
 			<tbody class="BORDER-TR">
-
+	<c:forEach items="${serviceList }" var="service" >
+		<c:choose>
+			<c:when test="${service.status == 1 }">
+				<c:set var="statusClass" value="fa_run"></c:set>
+                <c:set var="eventStatusClass" value="fa-check"></c:set>
+                <c:set var="statusName" value="成功"></c:set>
+                <c:set var="eventStatus" value="success"></c:set>
+			</c:when>
+			<c:when test="${service.status == 2 }">
+				<c:set var="statusClass" value="fa_stop"></c:set>
+                <c:set var="eventStatusClass" value="fa-times"></c:set>
+                <c:set var="statusName" value="失败"></c:set>
+                <c:set var="eventStatus" value="error"></c:set>
+			</c:when>
+		</c:choose>
+				<tr>
+                  <td><a href="/containers/tenx_district2/instances/hello-bq2vo">${service.serviceName }</a></td>
+                  <td>Running</td>
+                  <td>${service.imgName }</td>
+                  <td>bonc:8080</td>
+                  <td><a href="http://hello-christ.tenxapp.com" target="_blank">bonc.com</a></td>
+                  <td>${service.createDate }</td>
+                </tr>
+	</c:forEach>
 			</tbody>
 		</table>
 	</div>
@@ -220,5 +238,9 @@
 	<div class="containerEvent hide" style="min-height: 500px;">
 		<div style="text-align: center; margin-top: 40px; font-size: 12px;">结果为空</div>
 	</div>
+	         </div>
+            </div>
+        </article>
+    </div>
 </body>
 </html>

@@ -152,6 +152,11 @@
                                                     	<c:set var="statusClassName" value="fa_stop"></c:set>
                                                     	<c:set var="loadingImgShowClass" value="hide"></c:set>
                                                     </c:when>
+                                                    <c:when test="${container.containerStatus == 5 }">
+                                            			<c:set var="statusName" value="启动失败"></c:set>
+                                                    	<c:set var="statusClassName" value="fa_stop"></c:set>
+                                                    	<c:set var="loadingImgShowClass" value="hide"></c:set>
+                                                    </c:when>
                                            	 	</c:choose>
                                            	 	<c:if test="${container.id == null || container.id == 0}">
                                                 	<c:set var="cursorClass" value="cursor-no-drop"></c:set>

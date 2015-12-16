@@ -14,8 +14,9 @@ $(document).ready(function(){
 //                    }
 //                }
 //            });
-		alert("123");
+		//alert("123");
 		$("#buildService").submit();
+		//containerName();
     });
 
 
@@ -84,7 +85,7 @@ function loadImageList() {
                         $(".pull-deploy").click(function(){
                         	var imageName = $(this).attr("imageName");
                         	var imageVersion = $(this).attr("imageVersion");
-
+                        	//containerName();
                             deploy(imageName, imageVersion);
                         });
                 	}
@@ -100,4 +101,20 @@ function deploy(imageName, imageVersion){
     $(".createPadding").removeClass("hide");
     $(".radius_step").removeClass("action").eq(1).addClass("action");
     $(".two_step").removeClass("hide");
+}
+
+function containerName(){
+			 $.ajax({
+					url:"/service/containerName",
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							$("#buildService").submit();
+							}else{
+								alert("容器名称重复，请重新输入！");
+							}
+					}
+				
+			 });
+	 
 }

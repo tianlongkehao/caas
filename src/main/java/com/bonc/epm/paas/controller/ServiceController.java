@@ -138,7 +138,7 @@ public class ServiceController {
 	@RequestMapping("service/serviceCreate.do")
 	@ResponseBody
 	public String  serviceCreate(Service service){
-		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_PENDING);
+		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
 		serviceDao.save(service);
 		log.debug("createService--id:"+service.getId()+"--servicename:"+service.getServiceName());
@@ -190,6 +190,23 @@ public class ServiceController {
 //		map.put("data", container);
 //		return JSON.toJSONString(map);
 		return "redirect:/services";
+	}
+	
+	@RequestMapping(value={"service/containerName"},method=RequestMethod.GET)
+	@ResponseBody
+	public String containerName(Container container){
+		Map<String, Object> map = new HashMap<String, Object>();
+		String containername = container.getContainerName();
+		for(Container container1:containerDao.findAll()){
+			if(container1.getContainerName()==containername)
+			{
+				map.put("status", "400");
+			}else{
+				map.put("status", "200");
+			}
+			
+		}
+		return JSON.toJSONString(map);
 	}
 	
 	@RequestMapping("service/stopContainer.do")
