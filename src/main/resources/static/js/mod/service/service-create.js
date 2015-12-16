@@ -3,18 +3,19 @@ $(document).ready(function(){
 	
 	$("#createButton").click(function(){
         
-            $("#buildService").ajaxSubmit({
-                type: "post",
-                success: function (data) {
-                    data = eval("(" + data + ")");
-                    if (data.status == "200") {
-                        $(".contentMain").load("/service");
-                    } else {
-                        layer.alert(data.msg);
-                    }
-                }
-            });
-        
+//            $("#buildService").ajaxSubmit({
+//                type: "post",
+//                success: function (data) {
+//                    data = eval("(" + data + ")");
+//                    if (data.status == "200") {
+//                        $(".contentMain").load("/service");
+//                    } else {
+//                        layer.alert(data.msg);
+//                    }
+//                }
+//            });
+		alert("123");
+		$("#buildService").submit();
     });
 
 
@@ -93,7 +94,7 @@ function loadImageList() {
 }
 
 function deploy(imageName, imageVersion){
-    $("#imgName").val(imageName);
+    $("#imageName").val(imageName);
     $("#imgVersion").val(imageVersion);
     $(".step-inner").css("left","-100%");
     $(".createPadding").removeClass("hide");

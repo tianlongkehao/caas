@@ -55,6 +55,6 @@ $(document).ready(function(){
     });
 
 
-    $( "#datePicker" ).datepicker();
+    $( "#datePicker" ).click(function(){});
 
 });

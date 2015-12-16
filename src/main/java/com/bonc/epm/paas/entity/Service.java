@@ -77,6 +77,13 @@ public class Service {
 	 */
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
+	private long containerID;
+	public long getContainerID() {
+		return containerID;
+	}
+	public void setContainerID(long containerID) {
+		this.containerID = containerID;
+	}
 	public String getServiceLink() {
 		return serviceLink;
 	}

@@ -21,6 +21,27 @@ public class Container {
 	private String bindPort;
 	
 	private String containerName;
+	private String imageName;
+	private Integer containerStatus;
+	private Integer serviceNum;
+	public Integer getServiceNum() {
+		return serviceNum;
+	}
+	public void setServiceNum(Integer serviceNum) {
+		this.serviceNum = serviceNum;
+	}
+	public Integer getContainerStatus() {
+		return containerStatus;
+	}
+	public void setContainerStatus(Integer containerStatus) {
+		this.containerStatus = containerStatus;
+	}
+	public String getImageName() {
+		return imageName;
+	}
+	public void setImageName(String imageName) {
+		this.imageName = imageName;
+	}
 	public long getId() {
 		return id;
 	}

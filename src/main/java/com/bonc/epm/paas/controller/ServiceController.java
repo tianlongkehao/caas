@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.controller;
 
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,14 +14,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
+import com.bonc.epm.paas.dao.ContainerDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
+import com.bonc.epm.paas.entity.Ci;
+import com.bonc.epm.paas.entity.CiRecord;
+import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.util.CmdUtil;
@@ -43,6 +49,9 @@ public class ServiceController {
 	
 	@Autowired
 	private ImageDao imageDao;
+	
+	@Autowired
+	private ContainerDao containerDao;
 	
 	@RequestMapping(value={"service"},method=RequestMethod.GET)
 	public String index(Model model){
@@ -68,6 +77,44 @@ public class ServiceController {
 		map.put("status", "200");
 		map.put("data", serviceList);
 		return JSON.toJSONString(map);
+	}
+	
+	@RequestMapping(value={"services"},method=RequestMethod.GET)
+	public String containerLists(Model model){
+		List<Container> containerList = new ArrayList<Container>();
+	    List<Service> serviceList = new ArrayList<Service>();
+		for(Container container:containerDao.findAll()){
+			for(Service service:serviceDao.findByContainerID(container.getId())){
+				serviceList.add(service);
+			}
+			containerList.add(container);
+		}
+		log.debug("containerlist========"+containerList);
+		
+		model.addAttribute("containerList",containerList);
+		model.addAttribute("serviceList", serviceList);
+		model.addAttribute("menu_flag", "service");
+		
+		return "service/service.jsp";
+//		Map<String, Object> map = new HashMap<String,Object>();
+//		map.put("status","200");
+//		map.put("data", serviceList);
+//		map.put("container", containerList);
+//		
+//		return JSON.toJSONString(map);
+		
+	}
+	
+	@RequestMapping(value={"service/detail/{id}"},method=RequestMethod.GET)
+	public String detail(Model model,@PathVariable long id){
+        System.out.printf("id: " + id);
+        Container container = containerDao.findOne(id);
+        List<Service> serviceList = serviceDao.findByContainerID(id);
+
+		model.addAttribute("id", id);
+        model.addAttribute("container", container);
+        model.addAttribute("serviceList", serviceList);
+		return "service/service-detail.jsp";
 	}
 	
 	@RequestMapping(value={"service/add"},method=RequestMethod.GET)
@@ -120,6 +167,29 @@ public class ServiceController {
 		}
 		return JSON.toJSONString(map);
 		
+	}
+	
+	
+	@RequestMapping("service/constructContainer.do")
+	public String constructContainer(Container container,Service service){
+		container.setContainerStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+		container.setCreateDate(new Date());
+		container.setCreateTimestap(new Timestamp(System.currentTimeMillis()));
+		containerDao.save(container);
+		log.debug("Container--ID:"+container.getId()+"Container--Name:"+container.getContainerName());
+		//Service service = new Service();
+		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+		service.setCreateDate(new Date());
+		service.setServiceName(container.getContainerName());
+		service.setContainerID(container.getId());
+		service.setImgName(container.getImageName());
+		serviceDao.save(service);
+		log.debug("service--Name:"+service.getServiceName());
+//		Map<String, Object> map = new HashMap<String,Object>();
+//		map.put("status", "200");
+//		map.put("data", container);
+//		return JSON.toJSONString(map);
+		return "redirect:/services";
 	}
 	
 	@RequestMapping("service/stopContainer.do")

@@ -11,6 +11,7 @@
 	_refreshCreateTime(60000);
 	
  });
+ /*
  function loadService(){
 	$.ajax({
 		url:"service/listService.do",
@@ -86,7 +87,7 @@
             }
 		}
 	});
- }
+ }*/
  
  function createContainer(){
 	 $('input[name="chkItem"]:checked').each(function(index, el){
