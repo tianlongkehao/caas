@@ -124,8 +124,8 @@
                                     <p><i class="fa_datetime"></i><span>创建时间: ${image.createTime }</span></p>
                                 </li>
                             </ul>
-                            <div class="btn-primary btn-block" align="center" style="height:50px;line-height:50px;">
-                                <a href="javascript:void(0);" id="deployImage" class=" btn-pull-deploy btn" style="color:white;width:100%;" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
+                            <div class="btn-block" style="height: 50px;">
+                                <a href="javascript:void(0);" id="deployImage" class=" btn-pull-deploy btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
                             </div>
                         </div>
                     </div>

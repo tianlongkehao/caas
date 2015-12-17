@@ -20,8 +20,6 @@ $(document).ready(function(){
     });
 
 
-
-
     $(".two_step").click(function(){
 
         $(this).addClass("hide");
@@ -44,6 +42,8 @@ $(document).ready(function(){
         }
 
     });
+
+
 
 });
 

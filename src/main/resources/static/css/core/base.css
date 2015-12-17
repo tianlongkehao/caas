@@ -184,11 +184,6 @@ li.line-h-3 {
     vertical-align: top;
 }
 
-.btn-block {
-    display: block;
-    width: 100%;
-}
-
 .btn-prim {
     background: #3C7BCA !important;
     color: #fff !important;

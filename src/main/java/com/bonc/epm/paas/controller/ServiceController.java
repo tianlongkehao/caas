@@ -14,10 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
@@ -118,7 +115,16 @@ public class ServiceController {
 	}
 	
 	@RequestMapping(value={"service/add"},method=RequestMethod.GET)
-	public String create(){
+	public String create(String imageName, String imageVersion, Model model){
+
+		String isDepoly = "";
+		if(imageName != null){
+			isDepoly = "deploy";
+		}
+
+		model.addAttribute("imageName", imageName);
+		model.addAttribute("imageVersion", imageVersion);
+		model.addAttribute("isDepoly",isDepoly);
 
 		return "service/service_create.jsp";
 	}
