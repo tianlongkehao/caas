@@ -107,10 +107,6 @@
     display: inline-block;
 }
 
-.item-obj .depot-name .btn-groups .btn-public {
-    background: #4280CB;
-    color: #fff;
-}
 .item-obj .depot-name .btn-groups .btns {
     width: 80px;
     text-align: center;
@@ -118,6 +114,11 @@
     display: inline-block;
     float: left;
     cursor: pointer;
+}
+
+.item-obj .depot-name .btn-groups .active {
+    background: #4280CB;
+    color: #fff;
 }
 
 

@@ -47,10 +47,10 @@
                                 <div class="form-group col-md-5">
                                     <label>性质</label>
 
-                                    <div class="">
-                                        <span class="btn-groups">
-                                            <span case="public" class="btns btn-public">公有</span>
-                                            <span case="private" class="btns btn-private">私有</span>
+                                    <div>
+                                        <span class="btn-groups btn-imageType">
+                                            <a case="public" class="btns active">公有</a>
+                                            <a case="private" class="btns">私有</a>
                                         </span>
                                         <input type="hidden" name="imgType" value="1">
                                     </div>

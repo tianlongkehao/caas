@@ -3,8 +3,8 @@
 <%@ taglib prefix="fn" uri="/WEB-INF/tlds/fn.tld" %>
 
 <meta charset="utf-8">
-<link rel="stylesheet" type="text/css" href="/plugins/bootstrap-3.3.5/dist/css/bootstrap.css"/>
-<link rel="stylesheet" type="text/css" href="/plugins/Font-Awesome-master/css/font-awesome.css"/>
+<link rel="stylesheet" type="text/css" href="/plugins/bootstrap-3.3.5/dist/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="/plugins/Font-Awesome-master/css/font-awesome.min.css"/>
 <link rel="stylesheet" type="text/css" href="/plugins/layer/skin/layer.css"/>
 <link rel="stylesheet" type="text/css" href="/css/core/base.css">
 <link rel="stylesheet" type="text/css" href="/css/core/layout.css"/>
