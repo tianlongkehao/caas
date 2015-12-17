@@ -40,7 +40,7 @@
             <div class="container">
                 <ul class="app-list">
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/services">
+                        <a class="icon-view" href="javascript:void(0);" action="/service">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
                                     <span><img src="images/service.svg" alt=""/></span>

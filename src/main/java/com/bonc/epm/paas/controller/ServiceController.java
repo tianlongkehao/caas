@@ -53,7 +53,7 @@ public class ServiceController {
 	@Autowired
 	private ContainerDao containerDao;
 	
-	@RequestMapping(value={"service"},method=RequestMethod.GET)
+	@RequestMapping(value={"services"},method=RequestMethod.GET)
 	public String index(Model model){
         List<Service> serviceList = new ArrayList<Service>();
         for(Service service:serviceDao.findAll()){
@@ -79,7 +79,7 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 	}
 	
-	@RequestMapping(value={"services"},method=RequestMethod.GET)
+	@RequestMapping(value={"service"},method=RequestMethod.GET)
 	public String containerLists(Model model){
 		List<Container> containerList = new ArrayList<Container>();
 	    List<Service> serviceList = new ArrayList<Service>();
@@ -194,13 +194,13 @@ public class ServiceController {
 	
 	@RequestMapping(value={"service/containerName"},method=RequestMethod.GET)
 	@ResponseBody
-	public String containerName(Container container){
+	public String containerName(String containerName){
 		Map<String, Object> map = new HashMap<String, Object>();
-		String containername = container.getContainerName();
-		for(Container container1:containerDao.findAll()){
-			if(container1.getContainerName()==containername)
+		for(Container container:containerDao.findAll()){
+			if(container.getContainerName().equals(containerName))
 			{
 				map.put("status", "400");
+				break;
 			}else{
 				map.put("status", "200");
 			}
@@ -230,11 +230,29 @@ public class ServiceController {
 		Map<String, Object> map = new HashMap<String,Object>();
 		boolean flag = DockerClientUtil.removeContainer(service.getServiceName());
 		if(flag){
-			map.put("status", "200");
-		}else{
-			map.put("status", "500");
+			flag = containerDel(id);
+			if(flag){
+				map.put("status", "200");
+			}else {
+				map.put("status", "500");
+			}			
 		}
 		return JSON.toJSONString(map);
+	}
+	
+	private boolean containerDel(long id){
+		try {
+			//Container container = containerDao.findOne(id);
+			for(Service service:serviceDao.findByContainerID(id)){
+				serviceDao.delete(service.getId());
+			}
+			containerDao.delete(id);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return false;
+		}
+		
+		return true;
 	}
 	
 	@RequestMapping("service/serviceConstruct.do")

@@ -15,8 +15,8 @@ $(document).ready(function(){
 //                }
 //            });
 		//alert("123");
-		$("#buildService").submit();
-		//containerName();
+		//$("#buildService").submit();
+		containerName();
     });
 
 
@@ -104,14 +104,15 @@ function deploy(imageName, imageVersion){
 }
 
 function containerName(){
+	var containerName = $("#containerName").val();
 			 $.ajax({
-					url:"/service/containerName",
+					url:"/service/containerName?containerName="+containerName,
 					success:function(data){
 						data = eval("(" + data + ")");
-						if(data.status=="200"){
-							$("#buildService").submit();
+						if(data.status=="400"){
+							alert("容器名称重复，请重新输入！");
 							}else{
-								alert("容器名称重复，请重新输入！");
+								$("#buildService").submit();
 							}
 					}
 				
