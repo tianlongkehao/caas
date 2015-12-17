@@ -7,7 +7,7 @@ $(document).ready(function () {
     $(".images-panel").mouseout(function () {
         $(this).children(".create-item").css("opacity", "0");
     });
-
+   
     $(".list_info").click(function () {
         $(".table_list>.list_info").removeClass("active");
         $(".table_list").siblings("section").addClass("hide");
@@ -15,14 +15,9 @@ $(document).ready(function () {
     });
     
     $(document).on("click", ".btn-pull-deploy", function () {
-        var _this = $(this);
-        $("body").load("/menu?flag=service", function() {
-            $(".contentMain").load("/service/add", function(){
-                var imageName = _this.attr("imagename");
-                var imageVersion = _this.attr("imageversion");
-                deploy(imageName,imageVersion);
-            });
-        });
+        var imageName = $(this).attr("imagename");
+        var imageVersion = $(this).attr("imageversion");
+        window.location.href = "/service/add?imageName="+imageName+"&imageVersion="+imageVersion;
     });
 });
 

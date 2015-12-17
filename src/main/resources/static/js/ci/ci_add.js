@@ -21,6 +21,16 @@ $(document).ready(function () {
         //return false;
     });
 
+
+    $(".btn-imageType .btns").each(function(){
+        $(this).click(function(){
+            $(".btn-imageType .btns").removeClass("active");
+            $(this).addClass("active");
+        });
+    });
+
+
+
     $('#projectName').blur(function(event){
         var projectName = $('#projectName').val().trim();
         if(projectName.length === 0){

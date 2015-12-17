@@ -6,6 +6,17 @@
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="/css/mod/service.css"/>
     <script type="text/javascript" src="/js/mod/service/service-create.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            // 判断是否从镜像点击部署按钮跳转
+            var isDepoly = '${isDepoly}';
+            var imageName = '${imageName}';
+            var imageVersion = '${imageVersion}';
+            if(isDepoly == 'deploy'){
+                deploy(imageName,imageVersion);
+            }
+        });
+    </script>
 </head>
 <body>
 
