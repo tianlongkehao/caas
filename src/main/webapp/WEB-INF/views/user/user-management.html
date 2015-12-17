@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="plugins/bootstrap-3.3.5/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="plugins/Font-Awesome-master/css/font-awesome.css"/>
+    <link rel="stylesheet" type="text/css" href="css/core/base.css"/>
+    <link rel="stylesheet" type="text/css" href="css/core/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="css/mod/user.css"/>
+    <!--    <link rel="stylesheet" type="text/css" href="css/layout.css"/>
+        <link rel="stylesheet" type="text/css" href="css/common.css"/>-->
+
+</head>
+<body>
+<header class="header">
+    <div class="navbar navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="javascript:void(0);">
+                    <h2>BONC-PaaS</h2>
+                </a>
+            </div>
+            <ul class="nav navbar-nav navbar-right navbar-user">
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        Admin
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="user.html"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                        <li><a href="javascript:void(0);"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                        <li class="logout">
+                            <a href="javascript:void(0);"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+<aside class="page-sidebar">
+    <ul class="nav-menu">
+        <li class="first-nav-li">
+            <a href="index.html">
+                <span class="glyphicon glyphicon-th nav-icon" aria-hidden="true"></span>
+                <span class="nav-title">控制台</span>
+            </a>
+        </li>
+        <li class="item-click">
+            <a href="javascript:void(0)">
+                <img class="nav-icon" src="images/service.svg" alt=""/>
+                <span class="nav-title">服务</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li>
+                    <a href="">
+                        服务
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        存储与备份
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="">
+            <a href="javascript:void(0)">
+                <img class="nav-icon" src="images/service.svg" alt=""/>
+                <span class="nav-title">服务</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li>
+                    <a href="">
+                        服务
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        存储与备份
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</aside>
+<div class="page-container">
+    <article>
+        <div class="page-main">
+            <div class="contentTitle">
+                <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                    <li><i class="fa fa-angle-right"></i></li>
+                    <li class="active">用户管理</li>
+                </ol>
+            </div>
+            <div class="contentMain">
+
+                <div class="caption clearfix">
+                    <ul class="toolbox clearfix">
+                        <li><a href="user-add.html">增加用户</a></li>
+                        <li><a href="javascript:void(0);">删除</a></li>
+                        <li><a href="javascript:void(0);">全部删除</a></li>
+                    </ul>
+                </div>
+
+                <div class="itemTable">
+                    <table class="table user-table">
+                        <thead>
+                        <tr>
+                            <th>
+                                <div class="table-head">
+                                    <table class="table" style="margin: 0;">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 10%; text-indent: 30px;"><input type="checkbox" class="chkAll"></th>
+                                            <th style="width: 20%; text-indent: 20px;">用户名</th>
+                                            <th style="width: 20%; text-indent: 0;">邮箱</th>
+                                            <th style="width: 25%; text-indent: 0;">公司</th>
+                                            <th style="width: 25%; text-indent: 0;">操作</th>
+                                        </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="content-table">
+                                    <table class="table tables">
+                                        <tbody>
+                                        <tr class="userTr">
+                                            <td style="width: 10%; text-indent: 30px;"><input type="checkbox" class="chkItem"></td>
+                                            <td style="width: 20%; text-indent: 20px;">Admin</td>
+                                            <td style="width: 20%; text-indent: 0;">admin@admin.com</td>
+                                            <td style="width: 25%; text-indent: 0;">bonc</td>
+                                            <td style="width: 25%; text-indent: 0;">
+                                                <a href="javascript:void(0)">修改密码</a>
+                                                <a href="javascript:void(0)">更新</a>
+                                                <a href="javascript:void(0)">删除</a>
+                                            </td>
+                                        </tr>
+                                        <tr class="userTr">
+                                            <td style="width: 10%; text-indent: 30px;"><input type="checkbox" class="chkItem"></td>
+                                            <td style="width: 20%; text-indent: 20px;">Admin</td>
+                                            <td style="width: 20%; text-indent: 0;">admin@admin.com</td>
+                                            <td style="width: 25%; text-indent: 0;">bonc</td>
+                                            <td style="width: 25%; text-indent: 0;">
+                                                <a href="javascript:void(0)">修改密码</a>
+                                                <a href="javascript:void(0)">更新</a>
+                                                <a href="javascript:void(0)">删除</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </article>
+</div>
+
+
+
+<script type="text/javascript" src="js/plugins/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
+<script type="text/javascript" src="js/custom.js"></script>
+<script type="text/javascript" src="js/mod/user-management.js"></script>
+
+</body>
+</html>

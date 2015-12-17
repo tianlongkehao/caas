@@ -33,3 +33,12 @@
     padding: 40px;
     width: 60%;
 }
+
+.itemTable .user-table .userTr {
+    border-bottom: 1px solid #eee;
+}
+
+.itemTable .user-table .userTr:hover {
+    background:#FAFAFA;
+}
+
