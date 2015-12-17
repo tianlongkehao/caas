@@ -26,7 +26,7 @@
 
                     <div class="content">
                         <div class="search">
-                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="/registry/0">
+                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="/registry/0" method = "post">
                                 <input name="imageName" class="search-img" placeholder="搜索镜像" type="text"><button type="submit" class="btn btn-primary btn-send">搜索</button>
                             </form>
                         </div>
@@ -51,7 +51,7 @@
                                             </div>
                                         </div>
                                         <div class="create-item">
-                                            <a href="docker-registry-detail.html">
+                                            <a href="/registry/detail/${image.id }">
                                                 <span class="note-text" title="${image.remark}" > ${image.remark} </span>
                                             </a>
                                         </div>

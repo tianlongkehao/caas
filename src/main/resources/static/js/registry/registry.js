@@ -7,7 +7,7 @@ $(document).ready(function () {
     $(".images-panel").mouseout(function () {
         $(this).children(".create-item").css("opacity", "0");
     });
-
+   
     $(".list_info").click(function () {
         $(".table_list>.list_info").removeClass("active");
         $(".table_list").siblings("section").addClass("hide");

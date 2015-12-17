@@ -35,28 +35,32 @@ public class RegistryController {
 	
 	@RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
 	public String index(@PathVariable int index, Model model) {
-
-        List<Image> images = imageDao.findAll();
-        model.addAttribute("images", images);
-        model.addAttribute("menu_flag", "registry");
+		if(index == 0){
+			List<Image> images = imageDao.findAll();
+			model.addAttribute("images", images);
+			model.addAttribute("menu_flag", "registry");
+		}else if(index == 1){
+			
+		}else if(index == 2){
+			
+		}
 
 		return "docker-registry/registry.jsp";
 	}
 	
-	@RequestMapping(value = {"registry/images"}, method = RequestMethod.GET)
-	@ResponseBody
-	public String imageList() {
-		Map<String, Object> map = new HashMap<String,Object>();
+	@RequestMapping(value = {"registry/0"},method = RequestMethod.POST)
+	public String findByName(@RequestParam String imageName,Model model) {
+		List<Image> images = imageDao.findByNameCondition("%"+imageName+"%");
+		model.addAttribute("images", images);
 		
-		List<Image> images = imageDao.findAll();
-		map.put("data", images);
-		
-		return JSON.toJSONString(map);
+		return "docker-registry/registry.jsp";
 	}
-	
-	@RequestMapping(value = {"registry/detail"}, method = RequestMethod.GET)
-	public String detail() {
-		
+	@RequestMapping(value = {"registry/detail/{id}"}, method = RequestMethod.GET)
+	public String detail(@PathVariable long id, Model model) {
+		System.out.println(id);
+		Image image = imageDao.findById(id);
+		model.addAttribute("image", image);
+		System.out.println(image.toString());
 		return "docker-registry/detail.jsp";
 	}
 	
