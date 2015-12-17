@@ -83,6 +83,19 @@
 			<version>2.6.3</version>
 		</dependency>
 		<!-- docker-java end-->
+		
+		<!-- kubernetes api依赖jar start -->
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-client</artifactId>
+			<version>3.0.9.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<!-- kubernetes api依赖jar end -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
