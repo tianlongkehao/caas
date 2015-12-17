@@ -8,5 +8,5 @@ import com.bonc.epm.paas.entity.User;
 @Transactional
 public interface UserDao extends CrudRepository<User, Long> {
 	
-	public User findByLoginName(String loginName);
+	public User findByUserName(String userName);
 } 
