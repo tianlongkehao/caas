@@ -17,6 +17,9 @@ public class User {
 	private String email;
 	private String company;
 
+	public User() {
+	}
+
 	public User(String userName) {
 		this.userName = userName;
 	}

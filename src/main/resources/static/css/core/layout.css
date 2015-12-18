@@ -196,6 +196,17 @@
 }
 
 .sign-form {
-    padding: 30px 30px;
+    padding: 40px 30px;
     background: #fff;
+    position: relative;
+}
+
+.loginMsg {
+    position: absolute;
+    height: 20px;
+    width: 100%;
+    top: 15px;
+    left: 0;
+    text-align: center;
+    color: #ff0000;
 }

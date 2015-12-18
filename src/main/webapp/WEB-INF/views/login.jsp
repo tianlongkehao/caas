@@ -25,7 +25,10 @@
         <div class="sign-container">
             <h3>登录</h3>
             <div class="sign-form">
-                <form id="loginForm" class="form" action="/signin" method="post">
+                <div class="loginMsg">
+                    <span class="">用户名错误</span>
+                </div>
+                <form id="loginForm" class="form" action="" method="post">
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-addon">
