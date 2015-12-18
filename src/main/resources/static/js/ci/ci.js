@@ -1,11 +1,10 @@
 $(document).ready(function () {
 	$("#ciReloadBtn").click(function(){
-		loadCiList();
+		window.location.reload();
 	});
 	$("#ciAddBtn").click(function(){
 		$(".contentMain").load("/ci/add");
 	});
-//	loadCiList();
 
     registerConstructCiEvent();
 
@@ -40,11 +39,11 @@ function registerConstructCiEvent(){
 	       			 	}else{
 	       			 		layer.alert(data.msg);
 	       			 	}
-	       			 	loadCiList();
+	       			 	window.location.reload();
 	        		},
 	        		error:function(){
 	        			layer.alert("系统错误，请联系管理员");
-	   			 		loadCiList();
+	        			window.location.reload();
 	        		}
 	        	});
 	        },

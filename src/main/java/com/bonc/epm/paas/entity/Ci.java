@@ -22,7 +22,7 @@ public class Ci {
 	/**
 	 * 镜像名称-前缀
 	 */
-	private String imgNameFisrt;
+	private String imgNameFirst;
 	/**
 	 * 镜像名称-后缀
 	 */
@@ -121,11 +121,11 @@ public class Ci {
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
-	public String getImgNameFisrt() {
-		return imgNameFisrt;
+	public String getImgNameFirst() {
+		return imgNameFirst;
 	}
-	public void setImgNameFisrt(String imgNameFisrt) {
-		this.imgNameFisrt = imgNameFisrt;
+	public void setImgNameFirst(String imgNameFirst) {
+		this.imgNameFirst = imgNameFirst;
 	}
 	public String getImgNameLast() {
 		return imgNameLast;

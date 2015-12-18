@@ -19,9 +19,10 @@ public class Image {
 	private String name;
 	private String version;
 	private String imageId;
-	private String imageType;
+	//1公用2私有
+	private Integer imageType;
 	private String remark;
-	private String creator;
+	private long creator;
 	private Date createTime;
 	
 	public long getId() {
@@ -48,10 +49,10 @@ public class Image {
 	public void setImageId(String imageId) {
 		this.imageId = imageId;
 	}
-	public String getImageType() {
+	public Integer getImageType() {
 		return imageType;
 	}
-	public void setImageType(String imageType) {
+	public void setImageType(Integer imageType) {
 		this.imageType = imageType;
 	}
 	public String getRemark() {
@@ -60,10 +61,10 @@ public class Image {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	public String getCreator() {
+	public long getCreator() {
 		return creator;
 	}
-	public void setCreator(String creator) {
+	public void setCreator(long creator) {
 		this.creator = creator;
 	}
 	public Date getCreateTime() {

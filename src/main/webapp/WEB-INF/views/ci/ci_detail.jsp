@@ -24,18 +24,17 @@
                 </ol>
             </div>
             <div class="contentMain">
-
             <div class="ci-body">
                 <div class="ci-head">
                     <span class="ci-name margin" id="projectNameSpan">${ci.projectName}</span>
-                    <span class="btn btn-defaulted" style="cursor:auto" data-toggle="tooltip" data-placement="top" id="deploy" title="" data-original-title="构建成功后才能部署项目哦~">快速部署</span>
+                    <span class="btn btn-defaulted" style="cursor:auto" data-toggle="tooltip" data-placement="top" imgId="${ci.imgId }" id="deploy" title="" data-original-title="构建成功后才能部署项目哦~">快速部署</span>
                 </div>
                 <div class="ci-content-tabmain">
                     <div class="create-log ci-tab active">构建日志</div>
                     <div class="create-detail ci-tab">项目描述</div>
                     <div class="create-set ci-tab">基本设置</div>
                     <div class="create-other ci-tab">操作</div>
-                    <span class="btn btn-primary pull-right" id="btn-build">构建</span>
+                    <span class="btn btn-primary pull-right" id="buildBtn" ciId="${ci.id }" constructionStatus="${ci.constructionStatus }">构建</span>
 
                         <div class="code-tabmain">
 

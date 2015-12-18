@@ -95,10 +95,15 @@
                                                     <c:set var="codeTypeName" value="git"></c:set>
                                                 </c:when>
                                             </c:choose>
-
-                                            <c:if test="${ci.id == null || ci.id == 0}">
-                                                <c:set var="cursorClass" value="cursor-no-drop"></c:set>
-                                            </c:if>
+                                            
+                                            <c:choose>
+                                                <c:when test="${ci.imgId == null || ci.imgId == 0}">
+                                                     <c:set var="cursorClass" value="cursor-no-drop"></c:set>
+                                                </c:when>
+                                                <c:otherwise>
+                                                	 <c:set var="hrefValue" value="href='/registry/detail/${ci.imgId }'"></c:set>
+                                                </c:otherwise>
+                                            </c:choose>
 
                                             <tr class="ci-listTr" style="cursor:auto">
                                                 <td style="width: 15%; text-indent:22px;">
@@ -118,7 +123,7 @@
                                                 <td style="width: 12%;">${ci.constructionDate}</td>
                                                 <td style="width: 10%;">${ci.constructionTime}</td>
                                                 <td style="width: 15%;">
-                                                    <a target="_blank" title="" class="${cursorClass}">${ci.imgNameLast}</a>
+                                                    <a target="_blank" title="" class="${cursorClass}" ${hrefValue }>${ci.imgNameFirst}/${ci.imgNameLast}</a>
                                                 </td>
                                                 <td style="width:18%">
                                                     <span class="bj-green ${btnCursorClass}" data-toggle="tooltip" data-placement="right" title="" data-original-title="重新构建" constructionStatus="${ci.constructionStatus}"  ciId="${ci.id}">构建&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></span>

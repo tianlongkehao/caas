@@ -36,8 +36,8 @@
                                     <label>镜像名称</label>
 
                                     <div class="">
-                                        <span class="name-note">test /&nbsp;</span>
-                                        <input name="imgNameFisrt" type="hidden" value="test">
+                                        <span class="name-note">${username } /&nbsp;</span>
+                                        <input name="imgNameFirst" type="hidden" value="${username }">
                                         <input id="imgNameLast" name="imgNameLast" type="text" class="name-input"
                                                value=""> :
                                         <input id="imgNameVersion" name="imgNameVersion" type="text" value="latest"
@@ -49,10 +49,10 @@
 
                                     <div>
                                         <span class="btn-groups btn-imageType">
-                                            <a case="public" class="btns active">公有</a>
-                                            <a case="private" class="btns">私有</a>
+                                            <a case="public" class="btns active" onclick="javascript:$('#imgType').val(1)">公有</a>
+                                            <a case="private" class="btns" onclick="javascript:$('#imgType').val(2)">私有</a>
                                         </span>
-                                        <input type="hidden" name="imgType" value="1">
+                                        <input type="hidden" name="imgType" id="imgType" value="1">
                                     </div>
                                 </div>
                             </div>

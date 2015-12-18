@@ -121,7 +121,7 @@ public class CiController {
 	
 	@RequestMapping(value={"ci/add"},method=RequestMethod.GET)
 	public String addProject(Model model){
-        model.addAttribute("menu_flag", "ci");
+        model.addAttribute("username", "bonc");
 		return "ci/ci_add.jsp";
 	}
 	
@@ -170,7 +170,6 @@ public class CiController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");
 		boolean fetchCodeFlag = fetchCode(ci,ciRecord,ciRecordDao);
-		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
 		if(!fetchCodeFlag){
 			map.put("status", "500");
 			map.put("msg", "获取代码出错,请检查代码地址和账号密码");
@@ -189,6 +188,7 @@ public class CiController {
 		ciRecord.setConstructTime(endTime-startTime);
 		if(CiConstant.CONSTRUCTION_RESULT_FAIL!=ciRecord.getConstructResult()){
 			ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
+			ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
 		}
 		ciDao.save(ci);
 		ciRecordDao.save(ciRecord);
@@ -202,7 +202,7 @@ public class CiController {
 	 */
 	private boolean fetchCode(Ci ci,CiRecord ciRecord,CiRecordDao ciRecordDao){
 		try{
-			ci.setCodeLocation(CiConstant.CODE_TEMP_PATH+"/"+ci.getImgNameFisrt()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+			ci.setCodeLocation(CiConstant.CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
 			if(CiConstant.CODE_TYPE_SVN==ci.getCodeType()){
 				String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
 				ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
@@ -240,7 +240,7 @@ public class CiController {
 	private boolean construct(Ci ci,CiRecord ciRecord,CiRecordDao ciRecordDao){
 		//构建镜像
 		String dockerfilePath = ci.getCodeLocation()+ci.getDockerFileLocation();
-		String imageName = ci.getImgNameFisrt()+"/"+ci.getImgNameLast();
+		String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
 		String imageVersion = ci.getImgNameVersion();
 		boolean flag = DockerClientUtil.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao);
 		if(flag){
@@ -268,7 +268,9 @@ public class CiController {
 				img = new Image();
 				img.setName(imageName);
 				img.setVersion(imageVersion);
+				
 			}
+			img.setImageType(ci.getImgType());
 			img.setRemark(ci.getDescription());
 			img.setCreateTime(new Date());
 			imageDao.save(img);

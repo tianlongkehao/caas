@@ -7,13 +7,62 @@ $(document).ready(function(){
     });
 
     registerCiRecordEvent();
-
+    registerDeployEvent();
+    registerConstructCiEvent();
     //修改事件
     registerCiEditEvent();
     //删除事件
     registerCiDelEvent($("#id").val());
+    
+    
 
 });
+
+function registerDeployEvent(){
+	$("#deploy").unbind("click").click(function(){
+		imgId = $(this).attr("imgId");
+		if(imgId!=null&&imgId>0){
+			window.open("/registry/detail/"+imgId);
+		}
+	});
+}
+function registerConstructCiEvent(){
+	$("#buildBtn").unbind("click").click(function(){
+		if($(this).attr("constructionStatus")=="2"){
+			return;
+		}
+		var $this = $(this);
+		var id = $this.attr("ciId");
+		layer.open({
+	        title: '快速构建',
+	        content: '确定构建镜像？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ //或者使用btn1
+	        	$(this).unbind("click");
+	        	layer.close(index);
+	        	$.ajax({
+	        		url:"/ci/constructCi.do?id="+id,
+	        		success:function(data){
+	        			data = eval("(" + data + ")");
+	       			 	if(data.status=="200"){
+	       			 		layer.alert("构建成功");
+	       			 	}else{
+	       			 		layer.alert(data.msg);
+	       			 	}
+	       			 	window.location.reload();
+	        		},
+	        		error:function(){
+	        			layer.alert("系统错误，请联系管理员");
+	        		}
+	        	});
+	        },
+	        cancel: function(index){ //或者使用btn2
+	        }
+	    });
+	});
+}
+
+
 function registerCiEditEvent(){
 	$("#editCiBtn").click(function(){
         $("#editCiForm").ajaxSubmit({
