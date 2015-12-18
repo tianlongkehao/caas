@@ -21,7 +21,7 @@
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">快速构建</li>
+                    <li class="active" id="nav2">服务</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -52,7 +52,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="">
+                                    <a href="javascript:upGradeContainer()">
                                         <i class="fa fa-arrows"></i>
                                         <span class="ic_left">弹性伸缩</span>
                                     </a>
@@ -84,6 +84,21 @@
                             </ul>
                         </li>
                     </ul>
+                    <div id="upgrade" style="display:none">
+                    	<ul class="safeSet">
+                          <li class="line-h-3">
+                            <span class="edit-name-c">服务名称：</span>
+                            <input class="in_style" id="serviceName" disabled="disabled" style="margin-top: 5px;" type="text" value="">
+                          </li>
+                          <li class="line-h-3" id="instsizeChange">
+                            <div class="param-set">
+                              <span class="edit-name-c" style="margin-top: 5px;">实例数量：</span>
+                              <input value="1" id="numberChange" class="in_style" min="1" style="margin-top: 10px;" type="number">
+                              <span class="unit">个</span>
+                            </div>
+                          </li>
+                        </ul>
+                    </div>
                     <div class="searchs">
                         <form class="form-inline" action="">
                             <div class="form-group">
@@ -161,19 +176,19 @@
                                            	 	<c:if test="${container.id == null || container.id == 0}">
                                                 	<c:set var="cursorClass" value="cursor-no-drop"></c:set>
                                            		</c:if>
-                                           		<tr class="clusterId">
+                                           		<tr class="clusterId" containerName="${container.containerName }">
                                                         <td style="width:5%;text-indent: 30px;">
                                                             <input type="checkbox" name="chkItem" value="${container.id }" status="" imagename="" imagetag="" />
                                                         </td>
                                                         <td style="width:20%;white-space:nowrap;">
                                                             <b class="caret margin" style="transform: rotate(0deg);"></b>
                                                             <a href="/service/detail/${container.id}" class="cluster_mirrer_name">${container.containerName}</a>
-                                                            <span class="number-node">${container.serviceNum }</span>
+                                                            <span  class="number-node">${container.serviceNum }</span>
                                                             <span class="margin cursor console-code-modal" data-id="#console-code-modal">
                                                                 <i class="fa fa-desktop" onclick="_showConsole('mysql');"></i>
                                                             </span>
                                                         </td>
-                                                        <td style="width:10%" class="cStatusColumn">
+                                                        <td style="width:10%" class="cStatusColumn" id="containerStatus">
                                                             <i class="${statusClassName}"></i> ${statusName}
                                                    	 		<img src="/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
                                                         </td>

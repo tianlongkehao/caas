@@ -93,20 +93,33 @@
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
 			 //alert(id);
-			 $.ajax({
-					url:"service/createContainer.do?id="+id,
-					success:function(data){
-						data = eval("(" + data + ")");
-						if(data.status=="200"){
-							alert("容器启动成功");
-							}else{
-								alert("容器启动失败");
-							}
-					}
-				
-			 });
-	 })
-	 
+		 layer.open({
+		        title: '启动容器',
+		        content: '确定启动容器？',
+		        btn: ['确定', '取消'],
+		        yes: function(index, layero){ 
+		        	var cStatusHtml = "<i class='fa_success'></i>"+
+	                "启动中"+
+	                "<img src='images/loading4.gif' alt=''/>";
+		        	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
+		        	layer.close(index);
+		        					$.ajax({
+		        						url:"service/createContainer.do?id="+id,
+		        						success:function(data){
+		        							data = eval("(" + data + ")");
+		        							if(data.status=="200"){
+		        								alert("容器启动成功");
+		        							}else{
+		        								alert("容器启动失败");
+		        							}
+		        						}	
+		        					})
+		        }
+		 })
+	 }) 
+ }
+ 
+ function createContainers(){
 	 
  }
  
@@ -114,17 +127,25 @@
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 	        var id = $(el).val();
 	        //alert(id);
-	        $.ajax({
-	        	url:"service/stopContainer.do?id="+id,
-	        	success:function(data){
-	        		data = eval("(" + data + ")");
-	        		if(data.status=="200"){
-	        			alert("容器已停止");
-	        		}else{
-	        			alert("容器停止失败，请检查服务器连接");
-	        		}
+	        layer.open({
+		        title: '停止容器',
+		        content: '确定停止容器？',
+		        btn: ['确定', '取消'],
+		        yes: function(index, layero){ 
+		        	layer.close(index);
+		        						$.ajax({
+		        							url:"service/stopContainer.do?id="+id,
+		        							success:function(data){
+		        								data = eval("(" + data + ")");
+		        								if(data.status=="200"){
+		        									alert("容器已停止");
+		        								}else{
+		        									alert("容器停止失败，请检查服务器连接");
+		        								}
 	        		
-	        	}
+		        							}
+		        						})
+		        }
 	        })
 	 })
  }
@@ -132,22 +153,43 @@
  function delContainer(){
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
-		 $.ajax({
-	        	url:"service/delContainer.do?id="+id,
-	        	success:function(data){
-	        		data = eval("(" + data + ")");
-	        		if(data.status=="200"){
-	        			alert("容器已删除");
-	        		}else{
-	        			alert("容器删除失败，请检查服务器连接");
-	        		}
+		 layer.open({
+		        title: '删除容器',
+		        content: '确定删除容器？',
+		        btn: ['确定', '取消'],
+		        yes: function(index, layero){ 
+		        	layer.close(index);
+		        				$.ajax({
+		        					url:"service/delContainer.do?id="+id,
+		        					success:function(data){
+		        						data = eval("(" + data + ")");
+		        						if(data.status=="200"){
+		        							alert("容器已删除");
+		        						}else{
+		        							alert("容器删除失败，请检查服务器连接");
+		        						}
 	        		
-	        	}
-	        })
+		        					}
+		        				})
+		        }
+		 })
 	 })
 	 
  }
  
+ function upGradeContainer(){
+	 $('input[name="chkItem"]:checked').each(function(index, el){
+		 var id = $(el).val();
+		 var containerName = $(".clusterId").attr('containerName');
+		 $("#serviceName").val(containerName);
+		 layer.open({
+			 type:1,
+			 title: '弹性伸缩',
+			 area: ['300px', '180px'],
+			 content: $("#upgrade")
+		 });
+	 })
+ }
  // Refresh create time
  var creationTimestamp;
  function _refreshCreateTime(interval){

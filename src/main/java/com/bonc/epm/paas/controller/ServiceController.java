@@ -159,20 +159,41 @@ public class ServiceController {
 	public String CreateContainer(long id){
 		Service service = serviceDao.findOne(id);
 		Map<String, Object> map = new HashMap<String, Object>();
-		boolean flag = DockerClientUtil.pullImage(service.getImgName(), service.getImgVersion());
+		boolean flag = modifyStatus(id, ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
 		if(flag){
-			DockerClientUtil.createContainer(service.getImgName(),service.getImgVersion(), service.getServiceName(), 8080, 10004);
-			flag = DockerClientUtil.startContainer(service.getServiceName());
+			flag = DockerClientUtil.pullImage(service.getImgName(), service.getImgVersion());
 			if(flag){
-				map.put("status", "200");
-				
-			}else{
-				map.put("status", "500");
-				
+				DockerClientUtil.createContainer(service.getImgName(),service.getImgVersion(), service.getServiceName(), 8080, 10004);
+				flag = DockerClientUtil.startContainer(service.getServiceName());
+				if(flag){
+					map.put("status", "200");
+					
+				}else{
+					map.put("status", "500");
+					
+				}
 			}
 		}
+		
 		return JSON.toJSONString(map);
 		
+	}
+	
+	public boolean modifyStatus(long id,Integer status){
+		try {
+			Container container = containerDao.findOne(id);
+			container.setContainerStatus(status);
+			containerDao.save(container);
+			for(Service service:serviceDao.findByContainerID(id)){
+				service.setStatus(status);	
+				serviceDao.save(service);
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			return false;
+		}
+		return true;
 	}
 	
 	
@@ -182,20 +203,31 @@ public class ServiceController {
 		container.setCreateDate(new Date());
 		container.setCreateTimestap(new Timestamp(System.currentTimeMillis()));
 		containerDao.save(container);
+		List<Service> serviceList = new ArrayList<Service>();
 		log.debug("Container--ID:"+container.getId()+"Container--Name:"+container.getContainerName());
-		//Service service = new Service();
-		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
-		service.setCreateDate(new Date());
-		service.setServiceName(container.getContainerName());
-		service.setContainerID(container.getId());
-		service.setImgName(container.getImageName());
-		serviceDao.save(service);
+		if(container.getServiceNum()==1){
+			service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+			service.setCreateDate(new Date());
+			service.setServiceName(container.getContainerName());
+			service.setContainerID(container.getId());
+			service.setImgName(container.getImageName());
+			serviceDao.save(service);
+		}else{
+			if(container.getServiceNum()>1){
+				for(Integer i=0;i<container.getServiceNum();i++){
+					service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+					service.setCreateDate(new Date());
+					service.setServiceName(container.getContainerName());
+					service.setContainerID(container.getId());
+					service.setImgName(container.getImageName());
+					serviceList.add(service);
+				}
+				serviceDao.save(serviceList);
+			}
+		}
+		
 		log.debug("service--Name:"+service.getServiceName());
-//		Map<String, Object> map = new HashMap<String,Object>();
-//		map.put("status", "200");
-//		map.put("data", container);
-//		return JSON.toJSONString(map);
-		return "redirect:/services";
+		return "redirect:/service";
 	}
 	
 	@RequestMapping(value={"service/containerName"},method=RequestMethod.GET)
@@ -220,12 +252,16 @@ public class ServiceController {
 	public String stopContainer(long id){
 		Service service = serviceDao.findOne(id);
 		Map<String, Object> map = new HashMap<String,Object>();
-		boolean flag = DockerClientUtil.stopContainer(service.getServiceName());
+		boolean flag = modifyStatus(id, ServiceConstant.CONSTRUCTION_STATUS_STOPPED);
 		if(flag){
-			map.put("status", "200");
-		}else{
-			map.put("status", "500");
+			flag = DockerClientUtil.stopContainer(service.getServiceName());
+			if(flag){
+				map.put("status", "200");
+			}else{
+				map.put("status", "500");
+			}
 		}
+		
 		return JSON.toJSONString(map);
 	}
 	

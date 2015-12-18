@@ -24,6 +24,13 @@ public class Container {
 	private String imageName;
 	private Integer containerStatus;
 	private Integer serviceNum;
+	private String imageVersion;
+	public String getImageVersion() {
+		return imageVersion;
+	}
+	public void setImageVersion(String imageVersion) {
+		this.imageVersion = imageVersion;
+	}
 	public Integer getServiceNum() {
 		return serviceNum;
 	}
