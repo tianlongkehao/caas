@@ -395,6 +395,7 @@
 
 .unit {
     margin-left: -50px;
+    display: inline-block;
 }
 
 .update-mi {
@@ -715,3 +716,31 @@ i.pushOrg {
     text-align: right;
 }
 
+#ramSlider {
+    width: 400px;
+}
+
+#confRamSlider {
+    width: 280px;
+}
+
+#ramSlider .slider-handle,
+#confRamSlider .slider-handle{
+    background: #5cb85c;
+}
+
+#ramSlider .slider-selection,
+#confRamSlider .slider-selection{
+    background: #009933;
+}
+
+#ram, #confRam {
+    width: 70px;
+    text-indent: 8px;
+    margin-left: 20px;
+}
+
+
+.popWin {
+    padding: 30px;
+}

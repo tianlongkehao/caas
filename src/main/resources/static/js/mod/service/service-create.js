@@ -43,8 +43,26 @@ $(document).ready(function(){
 
     });
 
+});
 
+$(function(){
+	var ramSlider = $("#ramSlider").slider({
+		formatter: function(value) {
+			return value;
+		}
+	});
 
+	ramSlider.on("slide", function(slideEvt) {
+		$("#ram").val(slideEvt.value);
+	}).on("change", function(slideEvt){
+		$("#ram").val(slideEvt.value.newValue);
+	});
+
+	$("#ram").on("change",function(){
+		var ramVal = Number($(this).val());
+		console.log(ramVal);
+		ramSlider.slider('setValue', ramVal);
+	});
 });
 
 function loadImageList() {
@@ -59,7 +77,7 @@ function loadImageList() {
                     for (var i in data.data) {
                         var image = data.data[i];
                         html += "<li class='image-item'><span class='img_icon span2'>"+
-						"<img src='images/tenxcloud_mysql.png'>"+
+						"<img src='/images/image-1.png'>"+
 				"</span> <span class='span5 type' type='database'>"+
 						"<div class='list-item-description'>"+
 							"<div class='name h4'>"+

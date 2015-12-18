@@ -125,6 +125,7 @@ public class ServiceController {
 		model.addAttribute("imageName", imageName);
 		model.addAttribute("imageVersion", imageVersion);
 		model.addAttribute("isDepoly",isDepoly);
+		model.addAttribute("menu_flag", "service");
 
 		return "service/service_create.jsp";
 	}

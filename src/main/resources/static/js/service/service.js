@@ -9,8 +9,46 @@
 //	loadService();
 	
 	_refreshCreateTime(60000);
-	
+
+	$(".clusterId").each(function(){
+		$(this).click(function(){
+			$(":checkbox").click(function(e){
+				e.stopPropagation();
+			});
+
+			if($(this).next("tr").hasClass("hide")){
+				$(this).next("tr").removeClass("hide");
+				$(this).children().eq(1).children("b").css("transform","rotate(0deg)");
+			}else{
+				$(this).next("tr").addClass("hide");
+				$(this).children().eq(1).children("b").css("transform","rotate(-90deg)");
+			}
+
+		});
+	});
+
  });
+
+ // 选择内存滑动
+ $(function(){
+	 var confRamSlider = $("#confRamSlider").slider({
+		 formatter: function(value) {
+			 return value;
+		 }
+	 });
+
+	 confRamSlider.on("slide", function(slideEvt) {
+		 $("#confRam").val(slideEvt.value);
+	 }).on("change", function(slideEvt){
+		 $("#confRam").val(slideEvt.value.newValue);
+	 })
+
+	 $("#confRam").on("change",function(){
+		 var ramVal = Number($(this).val());
+		 confRamSlider.slider('setValue', ramVal);
+	 });
+ });
+
  /*
  function loadService(){
 	$.ajax({
@@ -181,15 +219,43 @@
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
 		 var containerName = $(".clusterId").attr('containerName');
-		 $("#serviceName").val(containerName);
+		 $("#upgradeServiceName").val(containerName);
 		 layer.open({
 			 type:1,
 			 title: '弹性伸缩',
-			 area: ['300px', '180px'],
-			 content: $("#upgrade")
+			 content: $("#upgrade"),
+			 btn: ['确定', '取消'],
+			 yes: function(index, layero){ //或者使用btn1
+			 	//按钮【按钮一】的回调
+		 	 },
+			 cancel: function(index){ //或者使用btn2
+			 	//按钮【按钮二】的回调
+		 	 }
 		 });
 	 })
  }
+
+ function changeContainerConf(){
+	 $('input[name="chkItem"]:checked').each(function(index, el){
+		 var id = $(el).val();
+		 var containerName = $(".clusterId").attr('containerName');
+		 $("#confServiceName").val(containerName);
+		 layer.open({
+			 type:1,
+			 title: '更改配置',
+			 area: ['500px', '300px'],
+			 content: $("#changeConf"),
+			 btn: ['确定', '取消'],
+			 yes: function(index, layero){ //或者使用btn1
+				 //按钮【按钮一】的回调
+			 },
+			 cancel: function(index){ //或者使用btn2
+				 //按钮【按钮二】的回调
+			 }
+		 });
+	 })
+ }
+
  // Refresh create time
  var creationTimestamp;
  function _refreshCreateTime(interval){

@@ -48,6 +48,8 @@
                             </ul>
                         </div>
                         <div class="step-inner" style="left: 0%;">
+
+                        <%-- 镜像来源 --%>
                         <div class="host_step1">
                             <div class="content">
                                 <div class="search">
@@ -66,7 +68,7 @@
                                     <li class="list-wrapper">
                                         <ul id="imageList">
                                             <li class="image-item"><span class="img_icon span2">
-                                                                <img src="images/tenxcloud_mysql.png">
+                                                                <img src="/images/image-1.png">
                                                         </span> <span class="span5 type" type="database">
                                                                 <div class="list-item-description">
                                                                     <div class="name h4">
@@ -92,17 +94,21 @@
                                 </ul>
                             </div>
                         </div>
+
+                        <%-- 容器配置 --%>
                         <div class="host_step2">
                             <ul class="safeSet">
                                 <li class="line-h-3">
                                     <span class="ve_top">镜像名称：</span>
                                     <input type="text" value="" class="in_style" id="imageName" name="imageName" readOnly="readOnly">
                                 </li>
-                                <li class="line-h-3"><span class="ve_top">镜像版本：</span>
+                                <li class="line-h-3">
+                                    <span class="ve_top">镜像版本：</span>
                                     <input type="text" value="" class="in_style" id="imgVersion" name="imgVersion" readOnly="readOnly">
                                 </li>
-                                <li class="line-h-3"><span class="ve_top">服务名称：</span> <input
-                                        type="text" value="" class="in_style" id="containerName" name="containerName">
+                                <li class="line-h-3">
+                                    <span class="ve_top">服务名称：</span>
+                                    <input type="text" value="" class="in_style" id="containerName" name="containerName">
                                 </li>
                                 <!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
@@ -126,6 +132,23 @@
                                                placeholder="1" id="serviceNum" name="serviceNum"> <span class="unit">个</span>
                                     </div>
                                 </li>
+                                <li class="line-h-3">
+                                    <div class="param-set">
+                                        <span class="number-title">CPU数量：</span>
+                                        <input type="number" value="1" class="number" min="1" autocomplete="off"
+                                               placeholder="1" id="" name=""> <span class="unit">个</span>
+                                    </div>
+                                </li>
+                                <li class="line-h-3">
+                                    <div class="param-set">
+                                        <span class="number-title">内存：</span>
+                                        <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="2024" data-slider-step="1" data-slider-value="256"/>
+                                        <input type="text" value="256" id="ram" name="ram">
+                                        <span>M</span>
+                                    </div>
+                                </li>
+
+
                                 <!--  <li id="service_type"><span class="ve_top">服务类型：</span> <span
                                     class="update-mi"><input type="checkbox" id="state_service"
                                         stateless="0"> <label for="state_service"><font
@@ -170,6 +193,8 @@
                                 </li>
                             </ul>
                         </div>
+
+                        <%-- 高级设置 --%>
                         <div class="host_step3" style="height: auto;">
                             <ul class="advanced">
                                 <li class="hide-set"><span class="ve_top">链接服务：</span>

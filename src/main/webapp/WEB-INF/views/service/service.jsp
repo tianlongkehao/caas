@@ -70,7 +70,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="">
+                                    <a href="javascript:changeContainerConf();">
                                         <i class="fa fa-cog"></i>
                                         <span class="ic_left">更改配置</span>
                                     </a>
@@ -85,18 +85,42 @@
                         </li>
                     </ul>
                     <div id="upgrade" style="display:none">
-                    	<ul class="safeSet">
+                    	<ul class="popWin">
                           <li class="line-h-3">
                             <span class="edit-name-c">服务名称：</span>
-                            <input class="in_style" id="serviceName" disabled="disabled" style="margin-top: 5px;" type="text" value="">
+                            <input id="upgradeServiceName" disabled="disabled" style="margin-top: 5px;width: 165px;" type="text" value="">
                           </li>
                           <li class="line-h-3" id="instsizeChange">
                             <div class="param-set">
                               <span class="edit-name-c" style="margin-top: 5px;">实例数量：</span>
-                              <input value="1" id="numberChange" class="in_style" min="1" style="margin-top: 10px;" type="number">
+                              <input value="1" id="numberChange" class="" min="1" style="margin-top: 10px;width: 165px;" type="number">
                               <span class="unit">个</span>
                             </div>
                           </li>
+                        </ul>
+                    </div>
+                    <div id="changeConf" style="display:none">
+                    	<ul class="popWin">
+                            <li class="line-h-3">
+                                <span>服务名称：</span>
+                                <input class="" id="confServiceName" disabled="disabled" style="margin-top: 5px;width: 165px;" type="text" value="">
+                            </li>
+                            <li class="line-h-3">
+                                <div class="param-set">
+                                    <span>CPU数量：</span>
+                                    <input type="number" value="1" style="margin-top: 10px;width: 165px;" min="1" autocomplete="off"
+                                           placeholder="1" id="" name="">
+                                    <span class="unit">个</span>
+                                </div>
+                            </li>
+                            <li class="line-h-3">
+                                <div class="param-set">
+                                    <span>内存：</span>
+                                    <input id="confRamSlider" data-slider-id='confRamSlider' type="text" data-slider-min="0" data-slider-max="2024" data-slider-step="1" data-slider-value="256"/>
+                                    <input type="text" value="256" id="confRam" name="confRam">
+                                    <span>M</span>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                     <div class="searchs">
@@ -105,7 +129,7 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="搜索">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button">
+                                        <button class="btn btn-primary" type="button">
                                             <span class="glyphicon glyphicon-search"></span>
                                         </button>
                                     </span>
@@ -124,7 +148,7 @@
                                             <thead>
                                                 <tr>
                                                     <th style="width: 5%;text-indent: 30px;">
-                                                        <input type="checkbox" id="btnCheckAll"/>
+                                                        <input type="checkbox" class="chkAll"/>
                                                     </th>
                                                     <th style="width: 20%;padding-left: 5px;">名称</th>
                                                     <th style="width: 10%;text-indent: 8px;">运行状态</th>
@@ -176,9 +200,16 @@
                                            	 	<c:if test="${container.id == null || container.id == 0}">
                                                 	<c:set var="cursorClass" value="cursor-no-drop"></c:set>
                                            		</c:if>
+
+                                            <tr id="inst_hello1" memory="512MB" class="show-tr">
+                                                <td>
+                                                    <div class="contents-table">
+                                                        <table class="table">
+                                                            <tbody>
+
                                            		<tr class="clusterId" containerName="${container.containerName }">
                                                         <td style="width:5%;text-indent: 30px;">
-                                                            <input type="checkbox" name="chkItem" value="${container.id }" status="" imagename="" imagetag="" />
+                                                            <input type="checkbox" class="chkItem" name="chkItem" value="${container.id }" status="" imagename="" imagetag="" />
                                                         </td>
                                                         <td style="width:20%;white-space:nowrap;">
                                                             <b class="caret margin" style="transform: rotate(0deg);"></b>
@@ -209,12 +240,13 @@
                                                             <span>${container.createDate }</span>
                                                         </td>
                                                     </tr>
-                                                    <c:forEach items="${serviceList}" var="service">
-                                                    	<c:if test="${container.id == service.containerID}">
-                                                    		<tr style="border-left:1px solid #eee;">
+
+                                                    <tr style="border-left:1px solid #eee;">
                                                         <td colspan="8"><div class="align-center">
                                                             <table class="table">
                                                                 <thead style="background: #FAFAFA;border-top:1px solid #EDECEC;">
+                                                                <c:forEach items="${serviceList}" var="service">
+                                                                <c:if test="${container.id == service.containerID}">
                                                                     <tr class="tr-row">
                                                                         <td style="width:5%">&nbsp;</td>
                                                                         <td style="width:20%;">
@@ -229,13 +261,18 @@
                                                                             <i class="fa_time"></i>${service.createDate }
                                                                         </td>
                                                                     </tr>
+                                                                </c:if>
+                                                                </c:forEach>
                                                                 </thead>
                                                             </table>
                                                         </div>
                                                         </td>
                                                     </tr>
-                                                    	</c:if>
-                                                    </c:forEach>
+                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             
                                             </c:forEach>
                                             
