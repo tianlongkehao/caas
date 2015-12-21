@@ -9,11 +9,18 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CiConstant;
@@ -53,46 +60,15 @@ public class CiController {
 
 		return "ci/ci.jsp";
 	}
-	@RequestMapping("ci/listCi.do")
-	@ResponseBody
-	public String list() {
-		List<Ci> ciList = new ArrayList<Ci>();
-		for(Ci ci:ciDao.findAll()){
-			ciList.add(ci);
-		}
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("status", "200");
-		map.put("data", ciList);
-		return JSON.toJSONString(map);
-	}
 	@RequestMapping(value={"ci/detail/{id}"},method=RequestMethod.GET)
 	public String detail(Model model,@PathVariable long id){
         System.out.printf("id: " + id);
         Ci ci = ciDao.findOne(id);
-        List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id);
-
+        List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction. DESC,"constructDate")));
 		model.addAttribute("id", id);
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
 		return "ci/ci_detail.jsp";
-	}
-	@RequestMapping("ci/listCiRecord.do")
-	@ResponseBody
-	public String listCiRecord(long id) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("status", "200");
-		map.put("data", ciRecordDao.findByCiId(id));
-		map.put("ci", ciDao.findOne(id));
-		return JSON.toJSONString(map);
-	}
-	@RequestMapping("ci/findCi.do")
-	@ResponseBody
-	public String findCi(long id) {
-		Ci ci = ciDao.findOne(id);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("status", "200");
-		map.put("data", ci);
-		return JSON.toJSONString(map);
 	}
 	@RequestMapping("ci/modifyCi.do")
 	@ResponseBody
@@ -116,8 +92,6 @@ public class CiController {
 		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
-	
-	
 	
 	@RequestMapping(value={"ci/add"},method=RequestMethod.GET)
 	public String addProject(Model model){
@@ -165,7 +139,7 @@ public class CiController {
 		ciRecord.setCiVersion(ci.getImgNameVersion());
 		ciRecord.setConstructDate(ci.getConstructionDate());
 		ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_ING);
-		ciRecord.setLogPrintStr("["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");
+		ciRecord.setLogPrint("["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");
 		ciRecordDao.save(ciRecord);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");
@@ -205,7 +179,7 @@ public class CiController {
 			ci.setCodeLocation(CiConstant.CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
 			if(CiConstant.CODE_TYPE_SVN==ci.getCodeType()){
 				String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
-				ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
+				ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
 				ciRecordDao.save(ciRecord);
 				log.info("==========svnCommandStr:"+svnCommandStr);
 				return CmdUtil.exeCmd(svnCommandStr);
@@ -219,14 +193,14 @@ public class CiController {
 				log.info("==========rmCommonStr:"+rmCommonStr);
 				CmdUtil.exeCmd(rmCommonStr);
 				String gitCommandStr = "git clone "+nCodeUrl+" "+ci.getCodeLocation();
-				ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"git clone");
+				ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"git clone");
 				ciRecordDao.save(ciRecord);
 				log.info("==========gitCommandStr:"+gitCommandStr);
 				return CmdUtil.exeCmd(gitCommandStr);
 			}
 		}catch(Exception e){
 			e.printStackTrace();
-			ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 			ciRecordDao.save(ciRecord);
 			log.error("==========fetchCode error:"+e.getMessage());
 		}
@@ -251,8 +225,8 @@ public class CiController {
 			//删除本地镜像
 			flag = DockerClientUtil.removeImage(imageName, imageVersion,ciRecord,ciRecordDao);
 		}
-//		ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
-//		ciRecordDao.save(ciRecord);
+		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
+		ciRecordDao.save(ciRecord);
 		if(flag){
 			//排重添加镜像数据
 			Image img = null;

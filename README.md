@@ -15,9 +15,10 @@
 # 代码使用说明
 - 1.获取代码
 - 2.构建项目：mvn eclipse:eclipse
-- 3.编译代码：mvn clean compile install
-- 4.运行方式:
+- 3.修改项目配置：修改application-dev.properties中对应本地的mysql地址及账号密码
+- 4.编译代码：mvn clean compile install
+- 5.运行方式:
 - 1）部署打包出来的war包，放入web容器启动
 - 2）如果使用开发工具，可以直接运行com.bonc.epm.paas.WebAppConfig的main方法
 - 3)如果使用开发工具，可以maven运行：mvn spring-boot:run
-- 5.默认访问地址:http//:localhost:8082/
+- 6.默认访问地址:http//:localhost:8082/

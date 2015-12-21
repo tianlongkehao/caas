@@ -1,13 +1,15 @@
 package com.bonc.epm.paas.entity;
 
-import java.sql.Clob;
-import java.sql.SQLException;
 import java.util.Date;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -43,7 +45,7 @@ public class CiRecord {
 	/**
 	 * 构建日志
 	 */
-	private Clob logPrint;
+	private String logPrint;
 	
 	public long getId() {
 		return id;
@@ -81,30 +83,15 @@ public class CiRecord {
 	public void setConstructResult(Integer constructResult) {
 		this.constructResult = constructResult;
 	}
-	public Clob getLogPrint() {
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	@Column(name="logPrint", columnDefinition="CLOB", nullable=true) 
+	public String getLogPrint() {
 		return logPrint;
 	}
-	public void setLogPrint(Clob logPrint) {
+	public void setLogPrint(String logPrint) {
 		this.logPrint = logPrint;
 	}
 	
-	public String getLogPrintStr() {
-		try {
-			if(logPrint!=null){
-				return logPrint.getSubString(1,(int)logPrint.length());
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	public void setLogPrintStr(String str){
-        try {
-			logPrint = new javax.sql.rowset.serial.SerialClob(str.toCharArray());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
 	
 }
