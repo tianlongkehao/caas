@@ -19,6 +19,24 @@ $(document).ready(function () {
         var imageVersion = $(this).attr("imageversion");
         window.location.href = "/service/add?imageName="+imageName+"&imageVersion="+imageVersion;
     });
+    
+    $(".fork").click(function(){
+    	
+    	var imageId = $("#imageId").val();
+    	$.ajax({
+    		url:"/registry/detail/favor",
+    		type:"post",
+    		data:{"imageId":imageId},
+    		success:function(data){
+    			if(data == "success"){
+    				alert("收藏成功");
+    			}else{
+    				alert("取消收藏");
+    			}
+    		}
+    		
+    	});
+    });
 });
 
 /*
