@@ -36,7 +36,7 @@ public class RegistryController {
 	@RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
 	public String index(@PathVariable int index, Model model) {
 		List<Image> images = null;
-		long creator = 1;   //用户id；
+		long creator = 2;   //用户id；
 		if(index == 0){
 			images = imageDao.findByImageType(1);
 		}else if(index == 1){
@@ -53,12 +53,13 @@ public class RegistryController {
 	@RequestMapping(value = {"registry/{index}"},method = RequestMethod.POST)
 	public String findByName(@PathVariable int index,@RequestParam String imageName,Model model) {
 		List<Image> images = null;
+		long creator = 2;   //用户id；
 		if(index == 0){
-			images = imageDao.findByNameCondition(1,"%"+imageName+"%");
+			images = imageDao.findByNameCondition("%"+imageName+"%");
 		}else if(index == 1){
-			images = imageDao.findByNameCondition(2,"%"+imageName+"%");
+			images = imageDao.findByNameOfUser(creator,"%"+imageName+"%");
 		}else if(index == 2){
-
+			images = userDao.findByNameCondition(creator, "%"+imageName+"%");
 		}
 		model.addAttribute("images", images);
 		return "docker-registry/registry.jsp";
@@ -66,16 +67,21 @@ public class RegistryController {
 	@RequestMapping(value = {"registry/detail/{id}"}, method = RequestMethod.GET)
 	public String detail(@PathVariable long id, Model model) {
 		Image image = imageDao.findById(id);
+		int favorUser = imageDao.findAllUserById(id);
+		User user = userDao.findById(image.getCreator());
+		
 		model.addAttribute("image", image);
+		model.addAttribute("favorUser",favorUser);
+		model.addAttribute("creator", user.getUserName());
 		return "docker-registry/detail.jsp";
 	}
 	
 	@RequestMapping(value = {"registry/detail/favor"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String favor(@RequestParam long imageId) {
-		
+		long creator = 2;   //用户id；
 		Image image = imageDao.findById(imageId);
-		User user = userDao.findById(1);
+		User user = userDao.findById(creator);
 		List<Image> images = user.getFavorImages();
 		boolean flag = false;
 		for(int i = 0 ;i<images.size();i++){
@@ -96,59 +102,5 @@ public class RegistryController {
 		}else{
 			return "delete";
 		}
-	}
-	
-	//for test
-	@PostConstruct
-	public void init(){
-		Image img1 = new Image();
-		img1.setName("bonc/tomcat-maven");
-		img1.setRemark("配置Maven环境的Tomcat应用服务器");
-		img1.setVersion("1.0");
-		img1.setImageType(1);
-		img1.setCreator(1);
-		img1.setId(1);
-		imageDao.save(img1);
-		
-		Image img2 = new Image();
-		img2.setName("test/hw2");
-		img2.setRemark("helloworld");
-		img2.setVersion("latest");
-		img2.setImageType(1);
-		img2.setCreator(2);
-		imageDao.save(img2);
-		
-		Image img3 = new Image();
-		img3.setName("test/hw3");
-		img3.setRemark("helloworld -------3");
-		img3.setVersion("latest");
-		img3.setImageType(2);
-		img3.setCreator(1);
-		imageDao.save(img3);
-		
-		Image img4 = new Image();
-		img4.setName("test/hw4");
-		img4.setRemark("helloworld -------4");
-		img4.setVersion("latest");
-		img4.setImageType(2);
-		img4.setCreator(1);
-		imageDao.save(img4);
-		
-		List<Image> images = new ArrayList<Image>();
-		images.add(img1);
-		User user1 = new User();
-		user1.setId(1);
-		user1.setUserName("张三");
-		user1.setFavorImages(images);
-		userDao.save(user1);
-		User user2 = new User();
-		user2.setId(2);
-		user2.setUserName("lisi");
-		images.add(img2);
-		images.add(img3);
-		user2.setFavorImages(images);
-		userDao.save(user2);
-		 
-		log.debug("init images bonc/tomcat-maven");
 	}
 }

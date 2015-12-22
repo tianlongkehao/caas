@@ -29,9 +29,11 @@ $(document).ready(function () {
     		data:{"imageId":imageId},
     		success:function(data){
     			if(data == "success"){
-    				alert("收藏成功");
+    				$("#collectTxt").text("已收藏");
+    				$(".star-style").removeClass("fa-star-o").addClass("fa-star");
     			}else{
-    				alert("取消收藏");
+    				$("#collectTxt").text("收藏");
+    				$(".star-style").removeClass("fa-star").addClass("fa-star-o");
     			}
     		}
     		

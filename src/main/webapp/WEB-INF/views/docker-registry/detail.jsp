@@ -38,7 +38,7 @@
                             </span>
                             <span class="list-content">${image.remark }</span>
                             <span id="collectImage" class="btn btn-link fork"  title="点击收藏" style="text-decoration: none;">
-                                <i class="fa fa-star-o star-style"></i><span id="collectTxt">&nbsp;收藏</span>
+                                <i class="fa fa-star-o star-style"></i>&nbsp;<span id="collectTxt">收藏</span>
                             </span>
                         </section>
                     </div>
@@ -120,8 +120,8 @@
                             <ul class="registry-attr">
                                 <li class="li-row"><i class="fa_attr_s"></i>属性</li>
                                 <li class="li-row" style="line-height: 35px;">
-                                    <p><i class="fa_shuxinger"></i>贡献者:&nbsp;&nbsp;&nbsp;&nbsp; ${image.name }</p>
-                                    <p><i class="fa fa-star-o"></i><span>收藏数:&nbsp;&nbsp;&nbsp;&nbsp; 0 个人收藏了该镜像</span></p>
+                                    <p><i class="fa_shuxinger"></i>贡献者:&nbsp;&nbsp;&nbsp;&nbsp; ${creator }</p>
+                                    <p><i class="fa fa-star-o"></i><span>收藏数:&nbsp;&nbsp;&nbsp;&nbsp; ${favorUser } 个人收藏了该镜像</span></p>
                                     <p><i class="fa_datetime"></i><span>创建时间: ${image.createTime }</span></p>
                                 </li>
                             </ul>

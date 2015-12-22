@@ -159,6 +159,10 @@
     font-size: 14px;
 }
 
+.mirror-head .type-info .fork:hover {
+	color:#F58A18;
+}
+
 .mirror-head .type-info .downloadNumber {
     margin: 0 10px;
     font-size: 14px;

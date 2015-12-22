@@ -20,13 +20,14 @@ public class User {
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
-	
 	private String userName;
 	private String password;
 	private String email;
 	private String company;
-	
 	@ManyToMany
+	@JoinTable(name="user_favor_images", 
+	joinColumns={@JoinColumn(name="favor_users")},
+	inverseJoinColumns={@JoinColumn(name="favor_images")})
 	private List<Image> favorImages;
 	
 	public List<Image> getFavorImages() {
