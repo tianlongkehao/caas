@@ -42,7 +42,7 @@
                             </span>
                         </section>
                     </div>
-                    <div class="row">
+                    <div class="row" style="padding-bottom: 50px;">
                         <div class="col-md-8">
                             <div class="table_list">
                                 <div class="list_info INFO active">信息</div>
@@ -126,7 +126,10 @@
                                 </li>
                             </ul>
                             <div class="btn-block" style="height: 50px;">
-                                <a href="javascript:void(0);" id="deployImage" class=" btn-pull-deploy btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
+                                <a href="javascript:void(0);" id="deployImage" class="btn-pull-deploy btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
+                            </div>
+                            <div class="btn-block" style="height: 50px;">
+                                <a href="javascript:void(0);" id="deleteImage" class="btn-defaulted btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
                             </div>
                         </div>
                     </div>
