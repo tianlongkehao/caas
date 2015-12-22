@@ -20,6 +20,7 @@ import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 
 /**
  * 镜像
@@ -36,13 +37,13 @@ public class RegistryController {
 	@RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
 	public String index(@PathVariable int index, Model model) {
 		List<Image> images = null;
-		long creator = 2;   //用户id；
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		if(index == 0){
 			images = imageDao.findByImageType(1);
 		}else if(index == 1){
-			images = imageDao.findAllByCreator(2, creator);
+			images = imageDao.findAllByCreator(2, userId);
 		}else if(index == 2){
-			images = userDao.findById(creator).getFavorImages();
+			images = userDao.findAllFavor(userId);
 		}
 		model.addAttribute("images", images);
 		model.addAttribute("menu_flag", "registry");
@@ -53,13 +54,13 @@ public class RegistryController {
 	@RequestMapping(value = {"registry/{index}"},method = RequestMethod.POST)
 	public String findByName(@PathVariable int index,@RequestParam String imageName,Model model) {
 		List<Image> images = null;
-		long creator = 2;   //用户id；
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		if(index == 0){
 			images = imageDao.findByNameCondition("%"+imageName+"%");
 		}else if(index == 1){
-			images = imageDao.findByNameOfUser(creator,"%"+imageName+"%");
+			images = imageDao.findByNameOfUser(userId,"%"+imageName+"%");
 		}else if(index == 2){
-			images = userDao.findByNameCondition(creator, "%"+imageName+"%");
+			images = userDao.findByNameCondition(userId, "%"+imageName+"%");
 		}
 		model.addAttribute("images", images);
 		return "docker-registry/registry.jsp";
@@ -79,9 +80,9 @@ public class RegistryController {
 	@RequestMapping(value = {"registry/detail/favor"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String favor(@RequestParam long imageId) {
-		long creator = 2;   //用户id；
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Image image = imageDao.findById(imageId);
-		User user = userDao.findById(creator);
+		User user = userDao.findById(userId);
 		List<Image> images = user.getFavorImages();
 		boolean flag = false;
 		for(int i = 0 ;i<images.size();i++){

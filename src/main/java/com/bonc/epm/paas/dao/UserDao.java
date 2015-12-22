@@ -16,6 +16,9 @@ public interface UserDao extends CrudRepository<User, Long> {
 	
 	public User findById(long id);
 	
+	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1")
+	public List<Image> findAllFavor(long creator);
+	
 	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 and i.name like ?2")
 	public List<Image> findByNameCondition(long creator,String imageName);
 } 
