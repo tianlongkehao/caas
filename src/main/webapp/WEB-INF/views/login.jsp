@@ -26,15 +26,15 @@
             <h3>登录</h3>
             <div class="sign-form">
                 <div class="loginMsg">
-                    <span class="">用户名错误</span>
+                    <span class="">${err_code }</span>
                 </div>
-                <form id="loginForm" class="form" action="/signin" method="post">
+                <form id="loginForm" class="form" action="signin" method="post">
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <i class="fa fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="userName" name="userName" placeholder="请输入用户名">
+                            <input type="text" class="form-control" id="userName" name="userName" placeholder="请输入用户名" value="${user.userName }">
                         </div>
                     </div>
                     <div class="form-group">
@@ -42,7 +42,7 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-lock"></i>
                             </span>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" value="${user.password }">
                         </div>
                     </div>
                     <div class="form-group">

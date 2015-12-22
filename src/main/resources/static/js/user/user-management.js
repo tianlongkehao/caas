@@ -21,6 +21,10 @@ $(function(){
 
 
     });
+    
+    $("#userAdd").click(function(){
+		$(".contentMain").load("/user/add");
+	});
 
 
 });

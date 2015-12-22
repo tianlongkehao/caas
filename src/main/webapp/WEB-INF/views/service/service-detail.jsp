@@ -80,8 +80,8 @@
 					<td>系统盘：10GB</td>
 				</tr>
 				<tr>
-					<td>CPU：125m</td>
-					<td>内存：512MB</td>
+					<td>CPU：${container.cpuNum }</td>
+					<td>内存：${container.ram }MB</td>
 				</tr>
 			</tbody>
 		</table>
