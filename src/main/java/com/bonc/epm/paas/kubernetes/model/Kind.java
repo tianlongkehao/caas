@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum Kind {
     STATUS("Status"), STATUSDETAILS("StatusDetails"), POD("Pod"), PODLIST("PodList"), REPLICATIONCONTROLLER(
             "ReplicationController"), REPLICATIONCONTROLLERLIST("ReplicationControllerList"), SERVICE("Service"), SERVICELIST(
-            "ServiceList");
+            "ServiceList"), NAMESPACE("Namespace"), NAMESPACELIST(
+                    "NamespaceList");
 
     private final String text;
 

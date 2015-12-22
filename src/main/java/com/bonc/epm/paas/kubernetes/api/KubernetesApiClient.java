@@ -1,11 +1,8 @@
 package com.bonc.epm.paas.kubernetes.api;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
@@ -15,6 +12,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -129,7 +128,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throws KubernetesClientException {
         try {
             ReplicationController controller = api.getReplicationController(namespace,name);
-            //controller.getDesiredState().setReplicas(replicas);
+            controller.getSpec().setReplicas(replicas);
             return api.updateReplicationController(namespace,name, controller);
         } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
@@ -188,5 +187,41 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
     }
+
+	public Namespace getNamespace(String name) throws KubernetesClientException {
+		try {
+            return api.getNamespace(name);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	public NamespaceList getAllNamespaces() throws KubernetesClientException {
+		try {
+            return api.getAllNamespaces();
+        } catch (NotFoundException e) {
+            return new NamespaceList();
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	public Namespace createNamespace(Namespace namespace) throws KubernetesClientException {
+		try {
+            return api.createNamespace(namespace);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	public Status deleteNamespace(String name) throws KubernetesClientException {
+		try {
+            return api.deleteNamespace(name);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
    
 }

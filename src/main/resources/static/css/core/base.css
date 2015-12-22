@@ -182,6 +182,7 @@ li.line-h-3 {
     background: #EEE;
     color: #666;
     vertical-align: top;
+    border:1px solid #ddd;
 }
 
 .btn-prim {
