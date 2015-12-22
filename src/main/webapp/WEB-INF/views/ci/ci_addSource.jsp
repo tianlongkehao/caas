@@ -21,16 +21,16 @@
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">快速构建</li>
+                    <li class="active" id="nav2">代码上传构建</li>
                 </ol>
             </div>
             <div class="contentMain">
 
                 <div class="item-obj">
                     <div class="container">
-                        <h4>快速构建</h4>
+                        <h4>代码上传构建</h4>
 
-                        <form id="buildForm" name="buildForm" action="/ci/addCi.do" method="post">
+                        <form id="buildForm" name="buildForm" action="/ci/addResourceCi.do" method="post" enctype="multipart/form-data">
                             <div class="row depot-name">
                                 <div class="form-group col-md-7">
                                     <label>镜像名称</label>

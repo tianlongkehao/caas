@@ -30,7 +30,7 @@
                         <li><a href="javascript:void(0);" id="ciReloadBtn"><i class="fa fa-repeat"></i></a></li>
                         <!-- <li><a href="javascript:void(0);">添加源代码</a></li> -->
                         <li><a href="/ci/add" id="ciAddBtn">快速构建</a></li>
-                        <li><a href="/ci/addSourceCode" id="ciAddSourceBtn">上传代码</a></li>
+                        <li><a href="/ci/addSource" id="ciAddSourceBtn">代码上传构建</a></li>
                     </ul>
                 </div>
                 <div class="itemTable">
@@ -115,11 +115,17 @@
                                                     <img src="/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
                                                 </td>
                                                 <td style="width: 15%;">
-                                                    <a data-toggle="tooltip" data-placement="left" title="" target="_blank" href="${ci.codeUrl}" data-original-title="查看源代码">
-                                                        <span class="bj-code-source"><i class="fa fa-git-square fa-lg"></i>
-                                                            ${codeTypeName}
-                                                        </span>
-                                                    </a>
+                                                	<c:choose>
+		                                                <c:when test="${ci.type == 2}">
+		                                                </c:when>
+		                                                <c:otherwise>
+		                                                	 <a data-toggle="tooltip" data-placement="left" title="" target="_blank" href="${ci.codeUrl}" data-original-title="查看源代码">
+		                                                        <span class="bj-code-source"><i class="fa fa-lg"></i>
+		                                                            ${codeTypeName}
+		                                                        </span>
+		                                                    </a>
+		                                                </c:otherwise>
+		                                            </c:choose>
                                                 </td>
                                                 <td style="width: 12%;">${ci.constructionDate}</td>
                                                 <td style="width: 10%;">${ci.constructionTime}</td>

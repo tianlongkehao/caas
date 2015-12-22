@@ -175,10 +175,10 @@ public class EncryptUtils {
 		return salt.toString();
 	}
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		System.out.println(EncryptUtils.encryptMD5("123456"));
 		System.out.println(EncryptUtils.encryptSalt("123456"));
 		System.out.println(EncryptUtils.encryptSHA("123456"));
 		System.out.println(EncryptUtils.encryptPBKDF2("123456"));
-	}
+	}*/
 }

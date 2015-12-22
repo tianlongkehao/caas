@@ -1,6 +1,8 @@
 package com.bonc.epm.paas.controller;
 
-import java.util.ArrayList;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CiConstant;
@@ -30,7 +33,9 @@ import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.Image;
+import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.bonc.epm.paas.util.DockerClientUtil;
 /**
@@ -50,19 +55,13 @@ public class CiController {
 	
 	@RequestMapping(value={"ci"},method=RequestMethod.GET)
 	public String index(Model model){
-        List<Ci> ciList = new ArrayList<Ci>();
-        for(Ci ci:ciDao.findAll()){
-            ciList.add(ci);
-        }
-
+		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        List<Ci> ciList = ciDao.findByCreateBy(cuurentUser.getId());
         model.addAttribute("ciList", ciList);
-        model.addAttribute("menu_flag", "ci");
-
 		return "ci/ci.jsp";
 	}
 	@RequestMapping(value={"ci/detail/{id}"},method=RequestMethod.GET)
 	public String detail(Model model,@PathVariable long id){
-        System.out.printf("id: " + id);
         Ci ci = ciDao.findOne(id);
         List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction. DESC,"constructDate")));
 		model.addAttribute("id", id);
@@ -95,23 +94,62 @@ public class CiController {
 	
 	@RequestMapping(value={"ci/add"},method=RequestMethod.GET)
 	public String addProject(Model model){
-        model.addAttribute("username", "bonc");
+		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        model.addAttribute("username", cuurentUser.getUserName());
 		return "ci/ci_add.jsp";
+	}
+	@RequestMapping(value={"ci/addSource"},method=RequestMethod.GET)
+	public String addSourceCode(Model model){
+		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        model.addAttribute("username", cuurentUser.getUserName());
+		return "ci/ci_addSource.jsp";
 	}
 	
 	@RequestMapping("ci/addCi.do")
 	public String addCi(Ci ci) {
+		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        ci.setCreateBy(cuurentUser.getId());
+		ci.setType(CiConstant.TYPE_QUICK);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
-		ci.setCodeType(CiConstant.CODE_TYPE_GIT);
 		ci.setConstructionDate(new Date());
 		ciDao.save(ci);
 		log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+        return "redirect:/ci";
 
-//		Map<String, Object> map = new HashMap<String, Object>();
-//		map.put("status", "200");
-//		map.put("data", ci);
-//		return JSON.toJSONString(map);
-
+	}
+	
+	@RequestMapping("ci/addResourceCi.do")
+	public String addResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,@RequestParam("dockerFile") MultipartFile dockerFile) {
+		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        ci.setCreateBy(cuurentUser.getId());
+		ci.setType(CiConstant.TYPE_CODE);
+		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
+		ci.setConstructionDate(new Date());
+		ci.setCodeLocation(CiConstant.CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        try {
+        	File file = new File(ci.getCodeLocation());
+        	if(!file.exists()){
+        		file.mkdirs();
+        	}
+        	if (!sourceCode.isEmpty()) {
+                byte[] bytes = sourceCode.getBytes();
+                BufferedOutputStream stream =
+                        new BufferedOutputStream(new FileOutputStream(new File(ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename())));
+                stream.write(bytes);
+                stream.close();
+        	}
+        	if (!dockerFile.isEmpty()) {
+                byte[] bytes = dockerFile.getBytes();
+                BufferedOutputStream stream =
+                        new BufferedOutputStream(new FileOutputStream(new File(ci.getCodeLocation()+"/"+dockerFile.getOriginalFilename())));
+                stream.write(bytes);
+                stream.close();
+        	}
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        ciDao.save(ci);
+		log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
         return "redirect:/ci";
 
 	}
@@ -175,15 +213,16 @@ public class CiController {
 	 * @param ci
 	 */
 	private boolean fetchCode(Ci ci,CiRecord ciRecord,CiRecordDao ciRecordDao){
+		//如果是代码上传，不需要重新下载源代码
+		if(CiConstant.TYPE_CODE.equals(ci.getType()))return true;
 		try{
-			ci.setCodeLocation(CiConstant.CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
-			if(CiConstant.CODE_TYPE_SVN==ci.getCodeType()){
+			if(CiConstant.CODE_TYPE_SVN.equals(ci.getCodeType())){
 				String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
 				ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
 				ciRecordDao.save(ciRecord);
 				log.info("==========svnCommandStr:"+svnCommandStr);
 				return CmdUtil.exeCmd(svnCommandStr);
-			}else if(CiConstant.CODE_TYPE_GIT==ci.getCodeType()){
+			}else if(CiConstant.CODE_TYPE_GIT.equals(ci.getCodeType())){
 				String codeUrl = ci.getCodeUrl();
 				if(StringUtils.isEmpty(codeUrl)||codeUrl.indexOf("//")<=0){
 					return false;
