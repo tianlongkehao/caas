@@ -33,6 +33,8 @@ import javax.ws.rs.core.MediaType;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -41,6 +43,59 @@ import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 
 public interface KubernetesAPI {
+	
+	/* Namespace API */
+
+    /**
+     * Get information of a Namespace given the NamespaceID
+     * 
+     * @param podId
+     *            id of the pod
+     * @return {@link Namespace}
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Namespace getNamespace(@PathParam("name") String name) throws KubernetesClientException;
+
+    /**
+     * Get all Namespaces
+     * 
+     * @return Namespaces
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public NamespaceList getAllNamespaces() throws KubernetesClientException;
+
+    /**
+     * Create a new Namespace
+     * 
+     * @param namespace
+     *            Namespace to be created
+     * @throws KubernetesClientException
+     */
+    @POST
+    @Path("/namespaces")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Namespace createNamespace(Namespace namespace) throws KubernetesClientException;
+
+    /**
+     * Delete a Namespace
+     * 
+     * @param namespaceId
+     *            Id of the Namespace to be deleted
+     * @throws KubernetesClientException
+     */
+    @DELETE
+    @Path("/namespaces/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Status deleteNamespace(@PathParam("name") String name) throws KubernetesClientException;
 
     /* Pod API */
 

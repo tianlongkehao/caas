@@ -24,6 +24,8 @@ import java.util.Map;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -34,6 +36,45 @@ import com.bonc.epm.paas.kubernetes.model.ServiceList;
 public interface KubernetesAPIClientInterface {
 
     public static final String VERSION = "v1";
+
+    /* name space API */
+    
+    /**
+     * Get information of a Namespace given the NamespaceID
+     * 
+     * @param name of the namespace
+     * @return {@link Namespace}
+     * @throws KubernetesClientException
+     */
+    public Namespace getNamespace(String name) throws KubernetesClientException;
+
+    /**
+     * Get all Namespaces
+     * 
+     * @return Namespaces
+     * @throws KubernetesClientException
+     */
+    public NamespaceList getAllNamespaces() throws KubernetesClientException;
+
+    /**
+     * Create a new Namespace
+     * 
+     * @param pod
+     *            Namespace to be created
+     * @return
+     * @throws KubernetesClientException
+     */
+    public Namespace createNamespace(Namespace namespace) throws KubernetesClientException;
+
+    /**
+     * Delete a Namespace
+     * 
+     * @param name
+     *            of the Namespace to be deleted
+     * @throws KubernetesClientException
+     */
+    public Status deleteNamespace(String name) throws KubernetesClientException;
+    
 
     /* Pod API */
 
