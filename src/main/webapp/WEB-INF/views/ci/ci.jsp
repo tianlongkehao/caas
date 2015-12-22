@@ -30,6 +30,7 @@
                         <li><a href="javascript:void(0);" id="ciReloadBtn"><i class="fa fa-repeat"></i></a></li>
                         <!-- <li><a href="javascript:void(0);">添加源代码</a></li> -->
                         <li><a href="/ci/add" id="ciAddBtn">快速构建</a></li>
+                        <li><a href="/ci/addSourceCode" id="ciAddSourceBtn">上传代码</a></li>
                     </ul>
                 </div>
                 <div class="itemTable">

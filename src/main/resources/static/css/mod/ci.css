@@ -152,6 +152,11 @@ td .reg-input, li .reg-input {
     height: 36px;
 }
 
+td .dockerfileinput {
+    display: inline-block;
+    margin-left: 5px;
+}
+
 .tables>tbody>tr>th,
 .tables>tbody>tr>td {
     padding: 8px;
