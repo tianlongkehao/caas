@@ -39,6 +39,34 @@ $(document).ready(function () {
     		
     	});
     });
+    
+    $("#deleteImage").click(function(){
+    	var imageId = $("#imageId").val();
+    	var type = $("#type").val();
+    	$.ajax({
+    		url:"/registry/detail/deleteimage",
+    		type:"post",
+    		data:{"imageId":imageId,"type":type},
+    		success:function(data){
+    			if(data == "ok"){
+    				alert("删除成功");
+    				window.location.href = "/registry/1";
+    			}else{
+    				alert("删除失败！");
+    			}
+    		}
+    	});
+    });
+    
+});
+
+$(function(){
+    var type = $("#type").val();
+    if(type == 1) {
+    	$("#deleteImage").removeClass("hide");
+    }else{
+    	$("#deleteImage").addClass("hide");
+    }
 });
 
 /*

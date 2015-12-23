@@ -212,16 +212,19 @@ public class ServiceController {
 			service.setServiceName(container.getContainerName());
 			service.setContainerID(container.getId());
 			service.setImgName(container.getImageName());
+			service.setImgVersion(container.getImageVersion());
 			serviceDao.save(service);
 		}else{
 			if(container.getServiceNum()>1){
 				for(Integer i=0;i<container.getServiceNum();i++){
-					service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
-					service.setCreateDate(new Date());
-					service.setServiceName(container.getContainerName());
-					service.setContainerID(container.getId());
-					service.setImgName(container.getImageName());
-					serviceList.add(service);
+					Service service2 = new Service();
+					service2.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+					service2.setCreateDate(new Date());
+					service2.setServiceName(container.getContainerName());
+					service2.setContainerID(container.getId());
+					service2.setImgName(container.getImageName());
+					service2.setImgVersion(container.getImageVersion());
+					serviceList.add(service2);
 				}
 				serviceDao.save(serviceList);
 			}

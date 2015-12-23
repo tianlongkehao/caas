@@ -38,7 +38,7 @@
 
 
                 <div class="modalCrealApp">
-                    <form id="buildService" name="buildService" action="/service/constructContainer.do" >
+                    
                         <div class="steps-main">
                         <div class="progre">
                             <ul style="padding: 0 4rem;">
@@ -54,7 +54,7 @@
                             <div class="content">
                                 <div class="search">
                                     <form class="search-group-inner"
-                                          style="width: 60%; margin: 0 auto; position: relative;"
+                                          style="margin: 0 auto; position: relative;"
                                           action="/registry/0">
                                         <input name="imageName" class="search-img" placeholder="搜索镜像"
                                                type="text">
@@ -96,6 +96,7 @@
                         </div>
 
                         <%-- 容器配置 --%>
+                        <form id="buildService" name="buildService" action="/service/constructContainer.do" >
                         <div class="host_step2">
                             <ul class="safeSet">
                                 <li class="line-h-3">
@@ -372,6 +373,7 @@
                             </ul>
                             <div style="height: 80px !important;"></div>
                         </div>
+                        </form>
                         </div>
 
                         </div>
@@ -382,7 +384,7 @@
                                     class="pull-right btn btn-primary pull_confirm">创建
                             </button>
                         </div>
-                    </form>
+                    
                 </div>
 
             </div>

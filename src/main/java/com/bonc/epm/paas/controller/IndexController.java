@@ -69,7 +69,7 @@ public class IndexController {
 			return "redirect:login";
 		}
 		
-		CurrentUserUtils.getInstance().serUser(user);
+		CurrentUserUtils.getInstance().setUser(user);
 		redirect.addFlashAttribute("user", user);
 		return "redirect:workbench";
 	}

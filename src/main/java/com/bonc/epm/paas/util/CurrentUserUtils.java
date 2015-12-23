@@ -67,7 +67,7 @@ public class CurrentUserUtils {
 	 * 把当前User对象放置到session里面
 	 * @param user
 	 */
-	public void serUser(User user){
+	public void setUser(User user){
 		getSession().setAttribute(CUR_USER, user);
 	}
 	

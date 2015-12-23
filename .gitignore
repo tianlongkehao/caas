@@ -5,3 +5,7 @@
 .classpath
 .settings/
 /bin/
+/D:/
+.idea
+.idea/
+*.iml
