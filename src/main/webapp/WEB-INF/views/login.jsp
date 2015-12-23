@@ -59,31 +59,23 @@
 
     $(function(){
 
-        $("#userName").keyup(function(){
-            var checkFlag = checkEnter();
-            if(checkFlag){
-                $("#btn-signin").removeAttr("disabled");
-            }else{
-                $("#btn-signin").attr("disabled", "disabled");
-            }
-            return false;
+        checkEnter();
+
+        $("#userName").change(function(){
+            checkEnter();
         });
 
-        $("#password").keyup(function(){
-            var checkFlag = checkEnter();
-            if(checkFlag){
-                $("#btn-signin").removeAttr("disabled");
-            }else{
-                $("#btn-signin").attr("disabled", "disabled");
-            }
-            return false;
+        $("#password").change(function(){
+            checkEnter();
         });
 
         function checkEnter(){
-            if($("#userName").val() && $("#password").val()){
-                return true;
+            var checkFlag = $("#userName").val() && $("#password").val();
+            if(checkFlag){
+                $("#btn-signin").removeAttr("disabled");
+            }else{
+                $("#btn-signin").attr("disabled", "disabled");
             }
-            return false;
         }
 
         $("#btn-signin").click(function(){
