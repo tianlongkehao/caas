@@ -125,11 +125,9 @@
                                                 <th style="width: 5%;text-indent: 30px;">
                                                     <input type="checkbox" class="chkAll"/>
                                                 </th>
-                                                <th style="width: 20%;padding-left: 5px;">登录账号</th>
-                                                <th style="width: 18%;text-indent: 8px;">工号</th>
-                                                <th style="width: 18%;">姓名</th>
-                                                <th style="width: 18%;">部门</th>
-                                                <th style="width: 18%;">角色权限</th>
+                                                <th style="width: 20%;padding-left: 5px;">IP</th>
+                                                <th style="width: 20%;text-indent: 8px;">CPU</th>
+                                                <th style="width: 20%;">内存</th>
                                             </tr>
                                             </thead>
                                         </table>

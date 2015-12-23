@@ -35,7 +35,7 @@ import java.util.*;
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
 	@Autowired
 	public UserDao userDao;
-	
+
 	@RequestMapping(value={"user"},method=RequestMethod.GET)
 	public String index(Model model){
 		List<User> userList = new ArrayList<User>();
@@ -126,8 +126,9 @@ import java.util.*;
 	}
 
 	@RequestMapping(value="/list",method=RequestMethod.GET)
-	public String index(){
+	public String userList(Model model){
 
+		model.addAttribute("menu_flag", "user");
 		return "user/user.jsp";
 	}
 
@@ -135,6 +136,12 @@ import java.util.*;
 	public String create(){
 
 		return "user/user_create.jsp";
+	}
+
+	@RequestMapping(value={"/own"},method=RequestMethod.GET)
+	public String userOwn(Model model){
+		model.addAttribute("menu_flag", "userOwn");
+		return "user/user-own.jsp";
 	}
 
 	/*@RequestMapping("user/constructUser.do")

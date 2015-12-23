@@ -105,6 +105,19 @@
                 </li>
             </ul>
         </li>
+        <li id="menu_userOwn">
+            <a href="/user/own">
+                <img class="nav-icon" src="/images/service.svg" alt=""/>
+                <span class="nav-title">用户</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li id="menuUserOwn" action="">
+                    <a href="/user/own">
+                        用户
+                    </a>
+                </li>
+            </ul>
+        </li>
         <li id="menu_cluster">
             <a href="/cluster/list">
                 <img class="nav-icon" src="/images/service.svg" alt=""/>
@@ -127,6 +140,7 @@
     $(function(){
 
         var menu_flag = '${menu_flag}';
+        debugger;
         $("#menu_"+menu_flag).addClass("item-click");
 
         // 菜单效果

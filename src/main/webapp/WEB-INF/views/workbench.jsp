@@ -102,6 +102,17 @@
                         </a>
                     </li>
                     <li>
+                        <a class="icon-view" href="javascript:void(0);" action="/user/own">
+
+                            <div class="icon-wrapper">
+                                <div class="icon-img">
+                                    <span><img src="images/factory_new.svg" alt=""/></span>
+                                </div>
+                                <div class="icon-name">用户中心</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
                         <a class="icon-view" href="javascript:void(0);" action="/cluster/list">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
