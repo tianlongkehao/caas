@@ -130,6 +130,7 @@ public class CiController {
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
 		ci.setCodeLocation(CiConstant.CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+		ci.setDockerFileLocation("/");
         try {
         	File file = new File(ci.getCodeLocation());
         	if(!file.exists()){
@@ -289,6 +290,7 @@ public class CiController {
 			}
 			img.setImageType(ci.getImgType());
 			img.setRemark(ci.getDescription());
+			img.setCreator(ci.getCreateBy());
 			img.setCreateTime(new Date());
 			imageDao.save(img);
 			ci.setImgId(img.getId());
