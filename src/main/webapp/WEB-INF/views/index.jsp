@@ -6,8 +6,8 @@
     <title>BONC-Paas</title>
 </head>
 <body>
-    <script type="text/javascript">
-        window.location.href = "/login";
-    </script>
+<script type="text/javascript">
+    window.location.href = "/login";
+</script>
 </body>
 </html>

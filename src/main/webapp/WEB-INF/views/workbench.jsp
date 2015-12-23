@@ -89,6 +89,26 @@
                             </div>
                         </a>
                     </li>
+                    <li>
+                        <a class="icon-view" href="javascript:void(0);" action="/user/list">
+                            <div class="icon-wrapper">
+                                <div class="icon-img">
+                                    <span><img src="images/factory_new.svg" alt=""/></span>
+                                </div>
+                                <div class="icon-name">租户管理</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="icon-view" href="javascript:void(0);" action="/cluster/list">
+                            <div class="icon-wrapper">
+                                <div class="icon-img">
+                                    <span><img src="images/factory_new.svg" alt=""/></span>
+                                </div>
+                                <div class="icon-name">集群管理</div>
+                            </div>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

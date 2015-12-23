@@ -92,6 +92,32 @@
                 </li>
             </ul>
         </li>
+        <li id="menu_user">
+            <a href="/user/list">
+                <img class="nav-icon" src="/images/service.svg" alt=""/>
+                <span class="nav-title">租户</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li id="menuUser" action="">
+                    <a href="/user/list">
+                        租户
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li id="menu_cluster">
+            <a href="/cluster/list">
+                <img class="nav-icon" src="/images/service.svg" alt=""/>
+                <span class="nav-title">集群</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li id="menuCluster" action="">
+                    <a href="/cluster/list">
+                        集群
+                    </a>
+                </li>
+            </ul>
+        </li>
     </ul>
 </aside>
 </body>

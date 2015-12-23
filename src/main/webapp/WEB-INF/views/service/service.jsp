@@ -10,7 +10,7 @@
 <body>
 
 <jsp:include page="../frame/menu.jsp" flush="true">
-    <jsp:param name="ci" value=""/>
+    <jsp:param name="service" value=""/>
 </jsp:include>
 
 <div class="page-container">

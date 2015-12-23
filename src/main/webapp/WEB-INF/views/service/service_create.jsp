@@ -38,7 +38,7 @@
 
 
                 <div class="modalCrealApp">
-                    <form id="buildService" name="buildService" action="/service/constructContainer.do" method="post">
+                    <form id="buildService" name="buildService" action="/service/constructContainer.do" >
                         <div class="steps-main">
                         <div class="progre">
                             <ul style="padding: 0 4rem;">
