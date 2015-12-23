@@ -31,4 +31,5 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	
 	@Query("select count(u) from User u join u.favorImages fi where fi.id= ?1 ")
 	public int findAllUserById(long imageId);
+	
 }

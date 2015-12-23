@@ -24,6 +24,7 @@
                         <li class="active">${image.name} </li>
                     </ol>
                     <input type="hidden" id = "imageId" value = "${image.id }" name = "imageId">
+                    <input type="hidden" id = "type" value = "${type }" name = "type">
                 </div>
                 <div class="contentMain">
                     <div class="mirror-head">
@@ -125,11 +126,11 @@
                                     <p><i class="fa_datetime"></i><span>创建时间: ${image.createTime }</span></p>
                                 </li>
                             </ul>
-                            <div class="btn-block" style="height: 50px;">
-                                <a href="javascript:void(0);" id="deployImage" class="btn-pull-deploy btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
+                            <div class="btn-block" style="height: 50px;" id="deployImage">
+                                <a href="javascript:void(0);"  class="btn-pull-deploy btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
                             </div>
-                            <div class="btn-block" style="height: 50px;">
-                                <a href="javascript:void(0);" id="deleteImage" class="btn-defaulted btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
+                            <div class="btn-block hide" style="height: 50px; " id="deleteImage">
+                                <a href="javascript:void(0);"  class="btn-defaulted btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
                             </div>
                         </div>
                     </div>

@@ -1,9 +1,6 @@
 package com.bonc.epm.paas.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,11 +60,12 @@ public class RegistryController {
 		}else if(index == 2){
 			images = userDao.findByNameCondition(userId, "%"+imageName+"%");
 		}
+		model.addAttribute("type", index);
 		model.addAttribute("images", images);
 		return "docker-registry/registry.jsp";
 	}
 	@RequestMapping(value = {"registry/detail/{id}"}, method = RequestMethod.GET)
-	public String detail(@PathVariable long id, Model model) {
+	public String detail(@PathVariable long id, Model model,@RequestParam int type) {
 		Image image = imageDao.findById(id);
 		int favorUser = imageDao.findAllUserById(id);
 		User user = userDao.findById(image.getCreator());
@@ -74,6 +73,8 @@ public class RegistryController {
 		model.addAttribute("image", image);
 		model.addAttribute("favorUser",favorUser);
 		model.addAttribute("creator", user.getUserName());
+		model.addAttribute("type", type);
+		model.addAttribute("menu_flag", "registry");
 		return "docker-registry/detail.jsp";
 	}
 	
@@ -104,4 +105,17 @@ public class RegistryController {
 			return "delete";
 		}
 	}
+	
+	@RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String deleteImage(@RequestParam long imageId,long type){
+		System.out.println(type);
+		if(type == 1){
+			imageDao.delete(imageId);
+			return "ok";
+		}else{
+			return "no";
+		}
+	}
+	
 }

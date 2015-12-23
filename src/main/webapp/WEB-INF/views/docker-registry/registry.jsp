@@ -51,7 +51,7 @@
                                             </div>
                                         </div>
                                         <div class="create-item">
-                                            <a href="/registry/detail/${image.id }">
+                                            <a href="/registry/detail/${image.id }?type=${index }">
                                                 <span class="note-text" title="${image.remark}" > ${image.remark} </span>
                                             </a>
                                         </div>
