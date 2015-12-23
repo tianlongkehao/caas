@@ -64,11 +64,11 @@ public class KubernetesClientUtil {
         return client;
     }
 	
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
     	
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("bonc");
 			
-			/*//更新容器
+			//更新容器
 			client.updateReplicationController("bonctest1", 1);
 			ReplicationControllerList list = client.getAllReplicationControllers();
 			System.out.println("ReplicationControllerList:"+JSON.toJSONString(list));
@@ -100,9 +100,9 @@ public class KubernetesClientUtil {
 			ServiceList serviceList = client.getAllServices();
 			System.out.println("serviceList:"+JSON.toJSONString(serviceList));
 			
-			*/
+			
 		}
-		
+		*/
 	public static Namespace generateSimpleNamespace(String name){
 		Namespace namespace = new Namespace();
 		ObjectMeta meta = new ObjectMeta();
