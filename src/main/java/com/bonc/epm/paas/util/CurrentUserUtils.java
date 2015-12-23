@@ -1,5 +1,7 @@
 package com.bonc.epm.paas.util;
 
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -67,5 +69,18 @@ public class CurrentUserUtils {
 	 */
 	public void serUser(User user){
 		getSession().setAttribute(CUR_USER, user);
+	}
+	
+	/**退出当前用户
+	 * 
+	 * 
+	 */
+	public void loginoutUser(User user){
+		Enumeration<String> em = getSession().getAttributeNames();
+		while (em.hasMoreElements()) {
+			getSession().removeAttribute(em.nextElement().toString());
+		}
+		getSession().removeAttribute(CUR_USER);
+		getSession().invalidate();
 	}
 }

@@ -1,5 +1,6 @@
 package com.bonc.epm.paas.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.*;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,7 +59,7 @@ public class IndexController {
 	 * @return
 	 */
 	@RequestMapping(value="signin",method=RequestMethod.POST)
-	public String login(User user, RedirectAttributes redirect,Model model){
+	public String login(User user, RedirectAttributes redirect){
 		try {
 			user = login(user);
 		} catch (ServiceException e) {
@@ -68,8 +70,15 @@ public class IndexController {
 		}
 		
 		CurrentUserUtils.getInstance().serUser(user);
-		model.addAttribute("user", user);
+		redirect.addFlashAttribute("user", user);
 		return "redirect:workbench";
+	}
+	
+	@RequestMapping(value={"loginout/{id}"},method=RequestMethod.GET)
+	public String loginOut(Model model ,@PathVariable long id){
+		User user = userDao.findById(id);
+		CurrentUserUtils.getInstance().loginoutUser(user);
+		return "redirect:login";
 	}
 	
 	@RequestMapping(value={"index","/"},method=RequestMethod.GET)

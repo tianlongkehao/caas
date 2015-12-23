@@ -6,11 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.bonc.epm.paas.UserSecurityInterceptor;
 
 @SpringBootApplication
-public class WebAppConfig extends SpringBootServletInitializer{
+public class WebAppConfig extends WebMvcConfigurerAdapter{
 		
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(WebAppConfig.class);
@@ -26,7 +27,7 @@ public class WebAppConfig extends SpringBootServletInitializer{
      * @param registry
      */
     public void addInterceptors(InterceptorRegistry registry) {
-    	registry.addInterceptor(new UserSecurityInterceptor()).addPathPatterns("/user/**");
+    	registry.addInterceptor(new UserSecurityInterceptor()).addPathPatterns("/**").excludePathPatterns("/login","/signin");
 	}
     
 }
