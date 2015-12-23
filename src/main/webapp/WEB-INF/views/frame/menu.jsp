@@ -15,14 +15,14 @@
                 <li class="dropdown">
                     <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
                        aria-haspopup="true" aria-expanded="false">
-                        Admin
+                       ${cur_user.userName }
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="javascript:void(0);"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
-                        <li><a href="javascript:void(0);"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                        <li><a href="user/detail/${cur_user.id }"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                        <li><a href="user/detail/${cur_user.id }"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
                         <li class="logout">
-                            <a href="javascript:void(0);"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+                            <a href="loginout/${cur_user.id }"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
                         </li>
                     </ul>
                 </li>

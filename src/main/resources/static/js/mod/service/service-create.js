@@ -114,7 +114,7 @@ function loadImageList() {
 
 function deploy(imageName, imageVersion){
     $("#imageName").val(imageName);
-    $("#imgVersion").val(imageVersion);
+    $("#imageVersion").val(imageVersion);
     $(".step-inner").css("left","-100%");
     $(".createPadding").removeClass("hide");
     $(".radius_step").removeClass("action").eq(1).addClass("action");
