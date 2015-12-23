@@ -1,50 +1,37 @@
 package com.bonc.epm.paas.controller;
 
-<<<<<<< HEAD
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.Service;
-=======
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.xml.soap.Detail;
-
 import org.aspectj.apache.bcel.generic.RET;
 import org.dom4j.util.UserDataElement;
 import org.hibernate.exception.spi.ViolatedConstraintNameExtracter;
->>>>>>> e8300f1392774b66adcd03a467afa71b157065fd
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-<<<<<<< HEAD
-=======
 import org.springframework.web.bind.annotation.PathVariable;
->>>>>>> e8300f1392774b66adcd03a467afa71b157065fd
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.User;
-
 import java.sql.Timestamp;
 import java.util.*;
 
 @Controller
-<<<<<<< HEAD
+
 	@RequestMapping(value="/user")
 	public class UserController {
-=======
-public class UserController {
->>>>>>> e8300f1392774b66adcd03a467afa71b157065fd
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
 	@Autowired
 	public UserDao userDao;
