@@ -22,8 +22,11 @@ import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
-import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerSpec;
+import com.bonc.epm.paas.kubernetes.model.Service;
+import com.bonc.epm.paas.kubernetes.model.ServiceList;
+import com.bonc.epm.paas.kubernetes.model.ServicePort;
+import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 
 public class KubernetesClientUtil {
 	
@@ -61,10 +64,11 @@ public class KubernetesClientUtil {
         return client;
     }
 	
-    /*public static void main(String[] args) {
-			
+    public static void main(String[] args) {
+    	
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("bonc");
-			//更新容器
+			
+			/*//更新容器
 			client.updateReplicationController("bonctest1", 1);
 			ReplicationControllerList list = client.getAllReplicationControllers();
 			System.out.println("ReplicationControllerList:"+JSON.toJSONString(list));
@@ -88,12 +92,17 @@ public class KubernetesClientUtil {
 			
 			PodList podList = client.getAllPods();
 			System.out.println("podList:"+JSON.toJSONString(podList));
+
+			Service service = KubernetesClientUtil.generateService("bonctest1",80,8080);
+			service = client.createService(service);
+			System.out.println("service:"+JSON.toJSONString(service));
 			
 			ServiceList serviceList = client.getAllServices();
 			System.out.println("serviceList:"+JSON.toJSONString(serviceList));
 			
+			*/
 		}
-		*/
+		
 	public static Namespace generateSimpleNamespace(String name){
 		Namespace namespace = new Namespace();
 		ObjectMeta meta = new ObjectMeta();
@@ -105,7 +114,7 @@ public class KubernetesClientUtil {
 	public static ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
-		meta.setName(name);
+		meta.setName(name+"-controller");
 		replicationController.setMetadata(meta);
 		ReplicationControllerSpec spec = new ReplicationControllerSpec();
 		spec.setReplicas(replicas);
@@ -133,5 +142,28 @@ public class KubernetesClientUtil {
 		spec.setTemplate(template);
 		replicationController.setSpec(spec);
 		return replicationController;
+	}
+	
+	public static Service generateService(String appName,Integer port,Integer targetPort){
+		Service service = new Service();
+		ObjectMeta meta = new ObjectMeta();
+		meta.setName(appName+"-service");
+		service.setMetadata(meta);
+		ServiceSpec spec = new ServiceSpec();
+		
+		Map<String,String> selector = new HashMap<String,String>();
+		selector.put("app", appName);
+		spec.setSelector(selector);
+		List<ServicePort> ports = new ArrayList<ServicePort>();
+		ServicePort portObj = new ServicePort();
+		portObj.setName("http");
+		portObj.setProtocol("TCP");
+		portObj.setPort(port);
+		portObj.setTargetPort(targetPort);
+		ports.add(portObj);
+		spec.setPorts(ports);
+		
+		service.setSpec(spec);
+		return service;
 	}
 }

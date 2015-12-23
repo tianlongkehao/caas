@@ -58,6 +58,7 @@ public class CiController {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         List<Ci> ciList = ciDao.findByCreateBy(cuurentUser.getId());
         model.addAttribute("ciList", ciList);
+        model.addAttribute("menu_flag", "ci");
 		return "ci/ci.jsp";
 	}
 	@RequestMapping(value={"ci/detail/{id}"},method=RequestMethod.GET)
@@ -67,6 +68,7 @@ public class CiController {
 		model.addAttribute("id", id);
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
+        model.addAttribute("menu_flag", "ci");
 		return "ci/ci_detail.jsp";
 	}
 	@RequestMapping("ci/modifyCi.do")
@@ -96,12 +98,14 @@ public class CiController {
 	public String addProject(Model model){
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         model.addAttribute("username", cuurentUser.getUserName());
+        model.addAttribute("menu_flag", "ci");
 		return "ci/ci_add.jsp";
 	}
 	@RequestMapping(value={"ci/addSource"},method=RequestMethod.GET)
 	public String addSourceCode(Model model){
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         model.addAttribute("username", cuurentUser.getUserName());
+        model.addAttribute("menu_flag", "ci");
 		return "ci/ci_addSource.jsp";
 	}
 	

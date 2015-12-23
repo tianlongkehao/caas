@@ -4,7 +4,7 @@ public class ServicePort {
 	private String name;
 	private String protocol;
 	private Integer port;
-	private String targetPort;
+	private Integer targetPort;
 	private Integer nodePort;
 	public String getName() {
 		return name;
@@ -24,10 +24,10 @@ public class ServicePort {
 	public void setPort(Integer port) {
 		this.port = port;
 	}
-	public String getTargetPort() {
+	public Integer getTargetPort() {
 		return targetPort;
 	}
-	public void setTargetPort(String targetPort) {
+	public void setTargetPort(Integer targetPort) {
 		this.targetPort = targetPort;
 	}
 	public Integer getNodePort() {

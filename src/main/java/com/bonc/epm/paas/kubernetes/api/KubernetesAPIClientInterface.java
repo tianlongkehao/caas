@@ -73,7 +73,7 @@ public interface KubernetesAPIClientInterface {
      *            of the Namespace to be deleted
      * @throws KubernetesClientException
      */
-    public Status deleteNamespace(String name) throws KubernetesClientException;
+    public Namespace deleteNamespace(String name) throws KubernetesClientException;
     
 
     /* Pod API */
@@ -113,7 +113,7 @@ public interface KubernetesAPIClientInterface {
      *            Id of the Pod to be deleted
      * @throws KubernetesClientException
      */
-    public Status deletePod(String name) throws KubernetesClientException;
+    public Pod deletePod(String name) throws KubernetesClientException;
 
     /* Replication Controller API */
 

@@ -86,7 +86,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
     }
 
-    public Status deletePod(String name) throws KubernetesClientException {
+    public Pod deletePod(String name) throws KubernetesClientException {
         try {
             return api.deletePod(namespace,name);
         } catch (WebApplicationException e) {
@@ -216,7 +216,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
 	}
 
-	public Status deleteNamespace(String name) throws KubernetesClientException {
+	public Namespace deleteNamespace(String name) throws KubernetesClientException {
 		try {
             return api.deleteNamespace(name);
         } catch (WebApplicationException e) {

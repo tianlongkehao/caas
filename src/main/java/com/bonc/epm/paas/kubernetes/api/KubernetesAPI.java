@@ -95,7 +95,7 @@ public interface KubernetesAPI {
     @DELETE
     @Path("/namespaces/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Status deleteNamespace(@PathParam("name") String name) throws KubernetesClientException;
+    public Namespace deleteNamespace(@PathParam("name") String name) throws KubernetesClientException;
 
     /* Pod API */
 
@@ -148,7 +148,7 @@ public interface KubernetesAPI {
     @DELETE
     @Path("/namespaces/{namespace}/pods/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Status deletePod(@PathParam("namespace")String namespace,@PathParam("name") String name) throws KubernetesClientException;
+    public Pod deletePod(@PathParam("namespace")String namespace,@PathParam("name") String name) throws KubernetesClientException;
 
     /* Replication Controller API */
 
