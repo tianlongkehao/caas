@@ -18,17 +18,18 @@
                             <h1>BONC-PaaS</h1>
                         </a>
                     </div>
+                    <%String name= (String) session.getAttribute("user.userName");%>
                     <ul class="nav navbar-nav navbar-right navbar-info">
                         <li class="dropdown">
                             <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                Admin
+                                ${user.userName }
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="javascript:void(0);"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
-                                <li><a href="javascript:void(0);"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                                <li><a href="user/detail/${user.id }"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                                <li><a href="user/detail/${user.id }"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
                                 <li class="logout">
-                                    <a href="javascript:void(0);"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+                                    <a href="loginout/${user.id }"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
                                 </li>
                             </ul>
                         </li>
@@ -91,6 +92,7 @@
                     </li>
                     <li>
                         <a class="icon-view" href="javascript:void(0);" action="/user/list">
+
                             <div class="icon-wrapper">
                                 <div class="icon-img">
                                     <span><img src="images/factory_new.svg" alt=""/></span>

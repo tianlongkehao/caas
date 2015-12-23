@@ -19,6 +19,26 @@ $(document).ready(function () {
         var imageVersion = $(this).attr("imageversion");
         window.location.href = "/service/add?imageName="+imageName+"&imageVersion="+imageVersion;
     });
+    
+    $(".fork").click(function(){
+    	
+    	var imageId = $("#imageId").val();
+    	$.ajax({
+    		url:"/registry/detail/favor",
+    		type:"post",
+    		data:{"imageId":imageId},
+    		success:function(data){
+    			if(data == "success"){
+    				$("#collectTxt").text("已收藏");
+    				$(".star-style").removeClass("fa-star-o").addClass("fa-star");
+    			}else{
+    				$("#collectTxt").text("收藏");
+    				$(".star-style").removeClass("fa-star").addClass("fa-star-o");
+    			}
+    		}
+    		
+    	});
+    });
 });
 
 /*

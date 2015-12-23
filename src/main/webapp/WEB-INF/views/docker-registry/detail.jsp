@@ -23,6 +23,7 @@
                         <li><i class="fa fa-angle-right"></i></li>
                         <li class="active">${image.name} </li>
                     </ol>
+                    <input type="hidden" id = "imageId" value = "${image.id }" name = "imageId">
                 </div>
                 <div class="contentMain">
                     <div class="mirror-head">
@@ -36,12 +37,12 @@
                                  <span style="width:90%;display:inline-block;overflow: hidden;text-overflow: ellipsis;">${image.name }</span>
                             </span>
                             <span class="list-content">${image.remark }</span>
-                            <span id="collectImage" class="btn btn-link fork" title="点击收藏" style="text-decoration: none;">
-                                <i class="fa fa-star-o star-style"></i><span id="collectTxt">&nbsp;收藏</span>
+                            <span id="collectImage" class="btn btn-link fork"  title="点击收藏" style="text-decoration: none;">
+                                <i class="fa fa-star-o star-style"></i>&nbsp;<span id="collectTxt">收藏</span>
                             </span>
                         </section>
                     </div>
-                    <div class="row">
+                    <div class="row" style="padding-bottom: 50px;">
                         <div class="col-md-8">
                             <div class="table_list">
                                 <div class="list_info INFO active">信息</div>
@@ -119,13 +120,16 @@
                             <ul class="registry-attr">
                                 <li class="li-row"><i class="fa_attr_s"></i>属性</li>
                                 <li class="li-row" style="line-height: 35px;">
-                                    <p><i class="fa_shuxinger"></i>贡献者:&nbsp;&nbsp;&nbsp;&nbsp; ${image.creator }</p>
-                                    <p><i class="fa fa-star-o"></i><span>收藏数:&nbsp;&nbsp;&nbsp;&nbsp; 0 个人收藏了该镜像</span></p>
+                                    <p><i class="fa_shuxinger"></i>贡献者:&nbsp;&nbsp;&nbsp;&nbsp; ${creator }</p>
+                                    <p><i class="fa fa-star-o"></i><span>收藏数:&nbsp;&nbsp;&nbsp;&nbsp; ${favorUser } 个人收藏了该镜像</span></p>
                                     <p><i class="fa_datetime"></i><span>创建时间: ${image.createTime }</span></p>
                                 </li>
                             </ul>
                             <div class="btn-block" style="height: 50px;">
-                                <a href="javascript:void(0);" id="deployImage" class=" btn-pull-deploy btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
+                                <a href="javascript:void(0);" id="deployImage" class="btn-pull-deploy btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
+                            </div>
+                            <div class="btn-block" style="height: 50px;">
+                                <a href="javascript:void(0);" id="deleteImage" class="btn-defaulted btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
                             </div>
                         </div>
                     </div>

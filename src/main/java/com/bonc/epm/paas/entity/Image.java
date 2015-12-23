@@ -1,11 +1,14 @@
 package com.bonc.epm.paas.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 /**
  * 镜像
@@ -24,6 +27,9 @@ public class Image {
 	private String remark;
 	private long creator;
 	private Date createTime;
+	
+	@ManyToMany(mappedBy = "favorImages")
+	private List<User> favorUsers;
 	
 	public long getId() {
 		return id;
@@ -72,5 +78,11 @@ public class Image {
 	}
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
+	}
+	public List<User> getFavorUsers() {
+		return favorUsers;
+	}
+	public void setFavorUsers(List<User> favorUsers) {
+		this.favorUsers = favorUsers;
 	}
 }

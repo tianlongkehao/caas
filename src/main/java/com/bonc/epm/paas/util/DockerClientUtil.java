@@ -50,7 +50,7 @@ public class DockerClientUtil {
 			    @Override
 			    public void onNext(BuildResponseItem item) {
 			    	if(item.getStream().contains("Step")||item.getStream().contains("--->")||item.getStream().contains("Downloading")||item.getStream().contains("[INFO]")||item.getStream().contains("Removing")||item.getStream().contains("Successfully")){
-			    		ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getStream());
+			    		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getStream());
 			    	}
 			    	ciRecordDao.save(ciRecord);
 			       log.info("==========BuildResponseItem:"+item);
@@ -60,12 +60,12 @@ public class DockerClientUtil {
 			String imageId = dockerClient.buildImageCmd(baseDir).exec(callback).awaitImageId();
 			//修改镜像名称及版本
 			dockerClient.tagImageCmd(imageId, config.getUsername()+"/"+imageName, imageVersion).withForce().exec();
-			ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"tagImageCmd:"+imageId+":"+config.getUsername()+"/"+imageName+":"+imageVersion);
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"tagImageCmd:"+imageId+":"+config.getUsername()+"/"+imageName+":"+imageVersion);
 	    	ciRecordDao.save(ciRecord);
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
-			ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 	    	ciRecordDao.save(ciRecord);
 			log.error("buildImage error:"+e.getMessage());
 			return false;
@@ -84,7 +84,7 @@ public class DockerClientUtil {
 			PushImageResultCallback callback = new PushImageResultCallback() {
 				@Override
 				public void onNext(PushResponseItem item) {
-					ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getProgress());
+					ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getProgress());
 			    	ciRecordDao.save(ciRecord);
 					log.info("==========PushResponseItem:"+item);
 				    super.onNext(item);
@@ -94,7 +94,7 @@ public class DockerClientUtil {
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
-			ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 	    	ciRecordDao.save(ciRecord);
 			log.error("pushImage error:"+e.getMessage());
 			return false;
@@ -113,12 +113,12 @@ public class DockerClientUtil {
 		try{
 			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
 			dockerClient.removeImageCmd(config.getUsername()+"/"+imageName+":"+imageVersion).withForce().exec();
-			ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+config.getUsername()+"/"+imageName+":"+imageVersion);
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+config.getUsername()+"/"+imageName+":"+imageVersion);
 	    	ciRecordDao.save(ciRecord);
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
-			ciRecord.setLogPrintStr(ciRecord.getLogPrintStr()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 	    	ciRecordDao.save(ciRecord);
 			log.error("removeImage error:"+e.getMessage());
 			return false;

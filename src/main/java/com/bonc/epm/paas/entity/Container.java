@@ -25,6 +25,20 @@ public class Container {
 	private Integer containerStatus;
 	private Integer serviceNum;
 	private String imageVersion;
+	private Integer cpuNum;
+	private String ram;
+	public Integer getCpuNum() {
+		return cpuNum;
+	}
+	public void setCpuNum(Integer cpuNum) {
+		this.cpuNum = cpuNum;
+	}
+	public String getRam() {
+		return ram;
+	}
+	public void setRam(String ram) {
+		this.ram = ram;
+	}
 	public String getImageVersion() {
 		return imageVersion;
 	}

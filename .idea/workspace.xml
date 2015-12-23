@@ -2,18 +2,61 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="390a3321-b60b-4f2f-9507-7a6cd372268b" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/ClusterController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/cluster/cluster.jsp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user.jsp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/resources/static/js/user/user_create.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user_create.jsp" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/util/CurrentUserUtils.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/util/EncryptUtils.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/model/Namespace.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/model/NamespaceList.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/model/NamespaceSpec.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/model/NamespaceStatus.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/util/ServiceException.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/UserSecurityInterceptor.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/ci/ci_addSource.jsp" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user-add.jsp" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user-management.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/entity/Ci.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/entity/Ci.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/constant/CiConstant.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/constant/CiConstant.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/CiController.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/CiController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/dao/CiDao.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/dao/CiDao.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/entity/CiRecord.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/entity/CiRecord.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/dao/CiRecordDao.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/dao/CiRecordDao.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/entity/Container.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/entity/Container.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/util/DockerClientUtil.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/util/DockerClientUtil.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/entity/Image.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/entity/Image.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/dao/ImageDao.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/dao/ImageDao.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/IndexController.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/IndexController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/model/Kind.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/model/Kind.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/api/KubernetesAPI.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/api/KubernetesAPI.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/api/KubernetesAPIClientInterface.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/api/KubernetesAPIClientInterface.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/api/KubernetesApiClient.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/api/KubernetesApiClient.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/util/KubernetesClientUtil.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/util/KubernetesClientUtil.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/RegistryController.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/RegistryController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/model/ServicePort.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/kubernetes/model/ServicePort.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/entity/User.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/entity/User.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/UserController.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/UserController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/index.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/index.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/frame/menu.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/frame/menu.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/service/service.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/service/service.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/dao/UserDao.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/dao/UserDao.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/WebAppConfig.java" afterPath="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/WebAppConfig.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/application-dev.properties" afterPath="$PROJECT_DIR$/src/main/resources/application-dev.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/application-profile.properties" afterPath="$PROJECT_DIR$/src/main/resources/application-profile.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/static/css/core/base.css" afterPath="$PROJECT_DIR$/src/main/resources/static/css/core/base.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/static/css/mod/ci.css" afterPath="$PROJECT_DIR$/src/main/resources/static/css/mod/ci.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/static/js/ci/ci.js" afterPath="$PROJECT_DIR$/src/main/resources/static/js/ci/ci.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/ci/ci.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/ci/ci.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/static/js/ci/ci_detail.js" afterPath="$PROJECT_DIR$/src/main/resources/static/js/ci/ci_detail.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/ci/ci_detail.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/ci/ci_detail.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/docker-registry/detail.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/docker-registry/detail.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/static/css/mod/docker-registry.css" afterPath="$PROJECT_DIR$/src/main/resources/static/css/mod/docker-registry.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/login.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/login.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/static/js/registry/registry.js" afterPath="$PROJECT_DIR$/src/main/resources/static/js/registry/registry.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/docker-registry/registry.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/docker-registry/registry.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/service/service-detail.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/service/service-detail.jsp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/service/service_create.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/service/service_create.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/static/css/mod/user.css" afterPath="$PROJECT_DIR$/src/main/resources/static/css/mod/user.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/static/js/user/user-management.js" afterPath="$PROJECT_DIR$/src/main/resources/static/js/user/user-management.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/static/js/user/user.js" afterPath="$PROJECT_DIR$/src/main/resources/static/js/user/user.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user.jsp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/workbench.jsp" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/workbench.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="paas.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -36,11 +79,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="user.jsp" pinned="false" current-in-tab="false">
+      <file leaf-file-name="user.jsp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.6666667">
-              <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+            <state vertical-scroll-proportion="1.3153639">
+              <caret line="153" column="4" selection-start-line="153" selection-start-column="0" selection-end-line="242" selection-end-column="10" />
               <folding />
             </state>
           </provider>
@@ -56,11 +99,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="user_create.jsp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="user_create.jsp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user_create.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.9294782">
+            <state vertical-scroll-proportion="-22.8">
               <caret line="76" column="71" selection-start-line="76" selection-start-column="71" selection-end-line="76" selection-end-column="71" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="workbench.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/workbench.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-20.148148">
+              <caret line="114" column="18" selection-start-line="114" selection-start-column="18" selection-end-line="114" selection-end-column="18" />
               <folding />
             </state>
           </provider>
@@ -71,6 +124,16 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="792" column="37" selection-start-line="792" selection-start-column="37" selection-end-line="792" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="service_create.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/service/service_create.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-5.4814816">
+              <caret line="366" column="44" selection-start-line="366" selection-start-column="44" selection-end-line="366" selection-end-column="44" />
               <folding />
             </state>
           </provider>
@@ -106,10 +169,8 @@
         <option value="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/UserController.java" />
         <option value="$PROJECT_DIR$/target/classes/static/css/mod/user.css" />
         <option value="$PROJECT_DIR$/target/classes/static/css/mod/service.css" />
-        <option value="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/workbench.jsp" />
         <option value="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/frame/menu.jsp" />
         <option value="$PROJECT_DIR$/src/main/java/com/bonc/epm/paas/controller/ClusterController.java" />
-        <option value="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user.jsp" />
         <option value="$PROJECT_DIR$/target/classes/static/js/mod/service/service-create.js" />
         <option value="$PROJECT_DIR$/src/main/resources/static/js/mod/service/service-create.js" />
         <option value="$PROJECT_DIR$/src/main/resources/static/js/user/user_create.js" />
@@ -117,6 +178,8 @@
         <option value="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/cluster/cluster.jsp" />
         <option value="$PROJECT_DIR$/src/main/resources/static/css/mod/user.css" />
         <option value="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user_create.jsp" />
+        <option value="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/workbench.jsp" />
+        <option value="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user.jsp" />
       </list>
     </option>
   </component>
@@ -1040,16 +1103,16 @@
       <option name="number" value="Default" />
       <updated>1450664641845</updated>
       <workItem from="1450664650638" duration="30081000" />
-      <workItem from="1450747646395" duration="41535000" />
+      <workItem from="1450747646395" duration="42498000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="71616000" />
+    <option name="totallyTimeSpent" value="72579000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="24" width="1375" height="876" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -1062,7 +1125,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32958803" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24150944" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24150944" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -1387,14 +1450,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/workbench.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-18.148148">
-          <caret line="107" column="57" selection-start-line="107" selection-start-column="57" selection-end-line="107" selection-end-column="57" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/frame/menu.jsp">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-34.814816">
@@ -1407,14 +1462,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="29" selection-start-line="14" selection-start-column="4" selection-end-line="15" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/service/service_create.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.6666665">
-          <caret line="7" column="76" selection-start-line="7" selection-start-column="49" selection-end-line="7" selection-end-column="76" />
           <folding />
         </state>
       </provider>
@@ -1483,14 +1530,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.6666667">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/cluster/cluster.jsp">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-20.0">
@@ -1509,8 +1548,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user_create.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.9294782">
+        <state vertical-scroll-proportion="-22.8">
           <caret line="76" column="71" selection-start-line="76" selection-start-column="71" selection-end-line="76" selection-end-column="71" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/workbench.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-20.148148">
+          <caret line="114" column="18" selection-start-line="114" selection-start-column="18" selection-end-line="114" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/service/service_create.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.4814816">
+          <caret line="366" column="44" selection-start-line="366" selection-start-column="44" selection-end-line="366" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/user/user.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.3153639">
+          <caret line="153" column="4" selection-start-line="153" selection-start-column="0" selection-end-line="242" selection-end-column="10" />
           <folding />
         </state>
       </provider>

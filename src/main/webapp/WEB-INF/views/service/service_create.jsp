@@ -136,7 +136,7 @@
                                     <div class="param-set">
                                         <span class="number-title">CPU数量：</span>
                                         <input type="number" value="1" class="number" min="1" autocomplete="off"
-                                               placeholder="1" id="" name=""> <span class="unit">个</span>
+                                               placeholder="1" id="cpuNum" name="cpuNum"> <span class="unit">个</span>
                                     </div>
                                 </li>
                                 <li class="line-h-3">

@@ -26,7 +26,7 @@
 
                     <div class="content">
                         <div class="search">
-                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="/registry/0" method = "post">
+                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="/registry/${index }" method = "post">
                                 <input name="imageName" class="search-img" placeholder="搜索镜像" type="text"><button type="submit" class="btn btn-primary btn-send">搜索</button>
                             </form>
                         </div>

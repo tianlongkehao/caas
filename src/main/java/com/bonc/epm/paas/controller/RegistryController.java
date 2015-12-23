@@ -1,9 +1,7 @@
 package com.bonc.epm.paas.controller;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -18,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.dao.ImageDao;
+import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.Image;
+import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 
 /**
  * 镜像
@@ -32,55 +32,76 @@ public class RegistryController {
 	private static final Logger log = LoggerFactory.getLogger(RegistryController.class);
 	@Autowired
 	private ImageDao imageDao;
-	
+	@Autowired
+	private UserDao userDao;
 	@RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
 	public String index(@PathVariable int index, Model model) {
+		List<Image> images = null;
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		if(index == 0){
-			List<Image> images = imageDao.findAll();
-			model.addAttribute("images", images);
-			model.addAttribute("menu_flag", "registry");
+			images = imageDao.findByImageType(1);
 		}else if(index == 1){
-			
+			images = imageDao.findAllByCreator(2, userId);
 		}else if(index == 2){
-			
+			images = userDao.findAllFavor(userId);
 		}
-
+		model.addAttribute("images", images);
+		model.addAttribute("menu_flag", "registry");
+		model.addAttribute("index", index);
 		return "docker-registry/registry.jsp";
 	}
 	
-	@RequestMapping(value = {"registry/0"},method = RequestMethod.POST)
-	public String findByName(@RequestParam String imageName,Model model) {
-		List<Image> images = imageDao.findByNameCondition("%"+imageName+"%");
+	@RequestMapping(value = {"registry/{index}"},method = RequestMethod.POST)
+	public String findByName(@PathVariable int index,@RequestParam String imageName,Model model) {
+		List<Image> images = null;
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		if(index == 0){
+			images = imageDao.findByNameCondition("%"+imageName+"%");
+		}else if(index == 1){
+			images = imageDao.findByNameOfUser(userId,"%"+imageName+"%");
+		}else if(index == 2){
+			images = userDao.findByNameCondition(userId, "%"+imageName+"%");
+		}
 		model.addAttribute("images", images);
-		
 		return "docker-registry/registry.jsp";
 	}
 	@RequestMapping(value = {"registry/detail/{id}"}, method = RequestMethod.GET)
 	public String detail(@PathVariable long id, Model model) {
-		System.out.println(id);
 		Image image = imageDao.findById(id);
+		int favorUser = imageDao.findAllUserById(id);
+		User user = userDao.findById(image.getCreator());
+		
 		model.addAttribute("image", image);
-		System.out.println(image.toString());
+		model.addAttribute("favorUser",favorUser);
+		model.addAttribute("creator", user.getUserName());
 		return "docker-registry/detail.jsp";
 	}
 	
-	//for test
-	@PostConstruct
-	public void init(){
-		Image img1 = new Image();
-		img1.setName("bonc/tomcat-maven");
-		img1.setRemark("配置Maven环境的Tomcat应用服务器");
-		img1.setVersion("1.0");
-		imageDao.save(img1);
-		Image img2 = new Image();
-		img2.setName("test/hw2");
-		img2.setRemark("helloworld");
-		img2.setVersion("latest");
-		imageDao.save(img2);
-
-		
-		
-		
-		log.debug("init images bonc/tomcat-maven");
+	@RequestMapping(value = {"registry/detail/favor"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String favor(@RequestParam long imageId) {
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		Image image = imageDao.findById(imageId);
+		User user = userDao.findById(userId);
+		List<Image> images = user.getFavorImages();
+		boolean flag = false;
+		for(int i = 0 ;i<images.size();i++){
+			Image img = images.get(i);
+			if(img.getId()==imageId){
+				images.remove(i);
+				flag = true;
+				break;
+			}
+		}
+		if(!flag){
+			images.add(image);
+		}
+		user.setFavorImages(images);
+		userDao.save(user);
+		if(!flag){
+			return "success";
+		}else{
+			return "delete";
+		}
 	}
 }

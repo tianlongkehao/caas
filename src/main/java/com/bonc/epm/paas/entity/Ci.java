@@ -20,6 +20,10 @@ public class Ci {
 	 */
 	private String projectName;
 	/**
+	 * 构建类型：1快速构建2代码上传构建
+	 */
+	private Integer type;
+	/**
 	 * 镜像名称-前缀
 	 */
 	private String imgNameFirst;
@@ -120,6 +124,12 @@ public class Ci {
 	}
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
+	}
+	public Integer getType() {
+		return type;
+	}
+	public void setType(Integer type) {
+		this.type = type;
 	}
 	public String getImgNameFirst() {
 		return imgNameFirst;
