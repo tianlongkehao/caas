@@ -143,6 +143,8 @@ function printLog(){
 						 window.location.reload();
 					 }
 					 $this.html(data.data.logPrint);
+					$this.parent(".logs").parent(".build-logs").scrollTop($this.parent().parent(".build-logs")[0].scrollHeight);
+
 				}
 			});
 		}, 500);
