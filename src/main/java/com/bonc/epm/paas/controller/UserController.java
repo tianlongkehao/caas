@@ -113,17 +113,6 @@ import java.util.*;
 		
 		return JSON.toJSONString(map);
 	}
-	//初始用户
-	@PostConstruct
-	public void init(){
-		User user = new User();
-		user.setId(1);
-		user.setEmail("bonc@bonc.com.cn");
-		user.setCompany("bonc");
-		user.setUserName("admin");
-		user.setPassword("admin");
-		userDao.save(user);
-	}
 
 	@RequestMapping(value="/list",method=RequestMethod.GET)
 	public String userList(Model model){
