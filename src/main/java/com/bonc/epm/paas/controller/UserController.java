@@ -75,7 +75,7 @@ public class UserController {
         User user = userDao.findOne(id);
 
         model.addAttribute("user", user);
-        return "user/user.jsp";
+        return "user/user-own.jsp";
 
     }
 

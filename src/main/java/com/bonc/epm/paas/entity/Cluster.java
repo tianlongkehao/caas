@@ -8,7 +8,7 @@ import java.util.List;
  *
  */
 @Entity
-public class Host {
+public class Cluster {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
