@@ -57,7 +57,7 @@
                                         <span class="ic_left">弹性伸缩</span>
                                     </a>
                                 </li>
-                                <li>
+                               <!--  <li>
                                     <a href="">
                                         <i class="fa fa-arrow-up"></i>
                                         <span class="ic_left">灰度升级</span>
@@ -68,7 +68,7 @@
                                         <i class="fa fa-undo"></i>
                                         <span class="ic_left">重新部署</span>
                                     </a>
-                                </li>
+                                </li> -->
                                 <li>
                                     <a href="javascript:changeContainerConf();">
                                         <i class="fa fa-cog"></i>
@@ -109,7 +109,7 @@
                                 <div class="param-set">
                                     <span>CPU数量：</span>
                                     <input type="number" value="1" style="margin-top: 10px;width: 165px;" min="1" autocomplete="off"
-                                           placeholder="1" id="" name="">
+                                           placeholder="1" id="confCpu" name="confCpu">
                                     <span class="unit">个</span>
                                 </div>
                             </li>
@@ -226,16 +226,16 @@
                                                         <td style="width:20%;">
                                                             <img src="https://dn-tenxstore.qbox.me/tenxcloud_mysql.png?imageView2/2/h/20" style="max-height:20px;max-width:40px;">
                                                             <span class="cluster_mirrer">
-                                                                <a title="点击查看镜像" target="_blank" href="https://hub.tenxcloud.com/repos/tenxcloud/mysql">${container.imageName }</a>
+                                                                <a title="点击查看镜像" target="_blank" href="">${container.imageName }</a>
                                                             </span>
                                                         </td>
                                                         <td style="width:34%" id="mysqlurl">
                                                             <span class="url">
-                                                                <a href="http://mysql-lynnxu.tenxapp.com:25314" target="_blank">bonc</a>
+                                                                <a href="" target="_blank">bonc</a>
                                                             </span>
                                                         </td>
                                                         <td style="width:10%" class="tdTimeStrap">
-                                                            <input type="hidden" class="timeStrap" value="2015-11-30T02:23:28.000Z">
+                                                            <input type="hidden" class="timeStrap" value="${container.createTimestap }">
                                                             <i class="fa_time"></i>
                                                             <span>${container.createDate }</span>
                                                         </td>

@@ -105,7 +105,7 @@
                                 </li>
                                 <li class="line-h-3">
                                     <span class="ve_top">镜像版本：</span>
-                                    <input type="text" value="" class="in_style" id="imgVersion" name="imgVersion" readOnly="readOnly">
+                                    <input type="text" value="" class="in_style" id="imageVersion" name="imageVersion" readOnly="readOnly">
                                 </li>
                                 <li class="line-h-3">
                                     <span class="ve_top">服务名称：</span>
