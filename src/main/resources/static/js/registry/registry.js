@@ -14,12 +14,6 @@ $(document).ready(function () {
         $(this).addClass("active").parent().siblings("section").eq($(this).index()).removeClass("hide");
     });
     
-    $(document).on("click", ".btn-pull-deploy", function () {
-        var imageName = $(this).attr("imagename");
-        var imageVersion = $(this).attr("imageversion");
-        window.location.href = "/service/add?imageName="+imageName+"&imageVersion="+imageVersion;
-    });
-    
     $(".fork").click(function(){
     	
     	var imageId = $("#imageId").val();
@@ -39,6 +33,132 @@ $(document).ready(function () {
     		
     	});
     });
+    
+    $("#deleteImage").click(function(){
+    	var imageId = $("#imageId").val();
+    	var type = $("#type").val();
+    	$.ajax({
+    		url:"/registry/detail/deleteimage",
+    		type:"post",
+    		data:{"imageId":imageId,"type":type},
+    		success:function(data){
+    			if(data == "ok"){
+    				alert("删除成功");
+    				window.location.href = "/registry/1";
+    			}else{
+    				alert("删除失败！");
+    			}
+    		}
+    	});
+    });
+    
+});
+
+$(function(){
+	// 收藏
+    var type = $("#type").val();
+    if(type == 1) {
+    	$("#deleteImage").removeClass("hide");
+    }else{
+    	$("#deleteImage").addClass("hide");
+    }
+});
+
+$(function(){
+
+	// 镜像备注编辑
+	$("#desEdit").on('click', function(){
+		$(".list-content").addClass("hide");
+		$("#contentArea").removeClass("hide");
+		$(this).addClass("hide");
+	});
+
+	$("#desEditCancel").on("click", function () {
+		$(".list-content").removeClass("hide");
+		$("#contentArea").addClass("hide");
+		$("#desEdit").removeClass("hide");
+	});
+
+	// 保存
+	$("#desEditSave").on("click", function(){
+		var remark = $("#desTextarea").text();
+		var url = "";
+		$.post(url, {'remark':remark}, function(data){
+			if(data == 'success') {
+				$(".list-content").text(remark);
+				$(".list-content").removeClass("hide");
+				$("#contentArea").addClass("hide");
+				$("#desEdit").removeClass("hide");
+			}
+		});
+	});
+
+});
+
+$(function(){
+
+	// markdown editor
+	var editor;
+	editor = new Editor();
+
+	$('#detailEditSave').click(function() {
+		var element = $('.infoLog .detail-contents');
+		element.hide();
+		$('#detailEditSave').hide();
+		$('#contentEditor').removeClass('hide');
+		editor.render($('#editor')[0]);
+	});
+
+	$('#cancelEdit').click(function(event) {
+		$('#contentEditor').addClass('hide');
+		$('.infoLog .detail-contents').show();
+		$('#detailEditSave').show();
+	});
+
+	$('#saveContent').click(function(event) {
+		var imageObj = {};
+		var details = editor.codemirror.getValue();
+		var self = this;
+		$(self).text('保存中');
+		$(self).attr('disabled', 'disabled');
+		imageObj.name = $('.type-info .title').attr('imageName');
+		imageObj.detail = details;
+		_saveImageConfigInfo(imageObj, function(result) {
+			$(self).text('保存');
+			$(self).removeAttr('disabled');
+			if (result) {
+				layer.msg(imageObj.name + "保存成功。", {
+					icon: 1
+				});
+				$('#contentEditor').addClass('hide');
+				$('.infoLog .detail-contents').show();
+				$('#detailEditSave').show();
+				var mdContent = marked(details);
+				$('.infoLog .detail-contents').html(mdContent);
+				$('.infoLog .detail-contents a').each(function(index, el) {
+					$(el).attr('target', '_blank');
+				});
+			} else {
+				//
+			}
+		});
+	});
+
+	function _saveImageConfigInfo(imageObj, callback) {
+		$.ajax({
+			url: '',
+			data: imageObj,
+			type: 'POST'
+		}).done(function(resp) {
+			callback(resp);
+			 layer.msg(imageObj.name + " 信息保存成功。", {icon: 1});
+		}).fail(function(err) {
+			layer.msg("服务器错误，请稍后重试。", {
+				icon: 8
+			});
+		});
+	}
+
 });
 
 /*

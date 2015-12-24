@@ -24,6 +24,7 @@
                         <li class="active">${image.name} </li>
                     </ol>
                     <input type="hidden" id = "imageId" value = "${image.id }" name = "imageId">
+                    <input type="hidden" id = "type" value = "${type }" name = "type">
                 </div>
                 <div class="contentMain">
                     <div class="mirror-head">
@@ -33,10 +34,20 @@
                             </div>
                         </section>
                         <section class="type-info">
-                             <span class="title" imagename="tenxcloud/mysql">
+                             <span class="title" imagename="${image.name }">
                                  <span style="width:90%;display:inline-block;overflow: hidden;text-overflow: ellipsis;">${image.name }</span>
+                                 <a id="desEdit" class="btn btn-link" style="font-size: 14px; display: block;"><i class="fa fa-edit"></i> 编辑</a>
                             </span>
                             <span class="list-content">${image.remark }</span>
+
+                            <span class="list-content hide" id="contentArea">
+                                <textarea id="desTextarea" name="description" style="padding:5px;">${image.remark }</textarea>
+                                <span class="pull-right" id="desEditSpan">
+                                    <a id="desEditCancel" class="btn btn-link"><i class="fa fa-close"></i> 取消</a>
+                                    <a id="desEditSave" class="btn btn-link"><i class="fa fa-save"></i> 保存</a>
+                                </span>
+                            </span>
+
                             <span id="collectImage" class="btn btn-link fork"  title="点击收藏" style="text-decoration: none;">
                                 <i class="fa fa-star-o star-style"></i>&nbsp;<span id="collectTxt">收藏</span>
                             </span>
@@ -51,10 +62,19 @@
                                 <div class="list_info Dockerfile">Dockerfile</div> -->
                             </div>
                             <section class="infoLog " style="margin-bottom: 30px">
+                                <span id="detailEditSave" class="editSave-bottom btn btn-link"><i class="fa fa-edit"></i> 编辑</span>
                                 <div class="detail-contents">
                                     <p>
                                         ${image.remark }
                                     </p>
+                                </div>
+                                <div class="hide" id="contentEditor" style="text-indent: 0px;padding:0px 10px;">
+                                    <textarea id="editor" style="display: none;">${image.remark }</textarea>
+                                    <div align="right" style="margin-right:5px">
+                                        <span class="btn btn-primary" id="cancelEdit"><i class="fa fa-times"></i> 取消</span>
+                                        <span class="btn btn-primary" id="saveContent"><i class="fa fa-save"></i> 保存</span>
+                                    </div>
+                                    <br>
                                 </div>
                             </section>
                             <section class="infoTags hide">
@@ -125,11 +145,11 @@
                                     <p><i class="fa_datetime"></i><span>创建时间: ${image.createTime }</span></p>
                                 </li>
                             </ul>
-                            <div class="btn-block" style="height: 50px;">
-                                <a href="javascript:void(0);" id="deployImage" class="btn-pull-deploy btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
+                            <div class="btn-block" style="height: 50px;" id="deployImage">
+                                <a href="/service/add?imageName=${image.name}&imageVersion=${image.version}" class="btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
                             </div>
-                            <div class="btn-block" style="height: 50px;">
-                                <a href="javascript:void(0);" id="deleteImage" class="btn-defaulted btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
+                            <div class="btn-block hide" style="height: 50px; " id="deleteImage">
+                                <a href="javascript:void(0);"  class="btn btn-dangered btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
                             </div>
                         </div>
                     </div>

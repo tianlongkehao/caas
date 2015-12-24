@@ -88,6 +88,10 @@
                                             </div>
                                             <div class="row" style="margin-left: 54px;margin-top: 15px">
                                                 <div class="col-md-4">
+                                                    <label>公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
+                                                    <input type="text" class="form-control" style="width: 78%;display: inline">
+                                                </div>
+                                                <div class="col-md-4">
                                                     <label>权限选择:</label>
                                                     <select class="form-control" style="width: 78%;display: inline">
                                                         <option value="1">管理员</option>

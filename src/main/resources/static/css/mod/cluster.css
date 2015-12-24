@@ -1,49 +1,4 @@
 
-.setTab {
-    width: 100%;
-    height: 45px;
-    background: #EFF4F5;
-    line-height: 45px;
-}
-
-.setTab a {
-    text-align: center;
-    color: #666;
-    cursor: pointer;
-}
-
-.setTab a.Record {
-    width: 110px;
-    height: 100%;
-    display: inline-block;
-}
-
-.setTab a.active {
-    font-weight: 500;
-    border-bottom: 1px solid #B8C4CE;
-    background: #e4ebee;
-}
-
-.account_table {
-    background: #fff;
-    min-height: calc(100% - 130px);
-}
-
-.user_info_form,
-.edit_pwd_form {
-    padding: 40px;
-
-}
-
-.itemTable .user-table .userTr {
-    border-bottom: 1px solid #eee;
-}
-
-.itemTable .user-table .userTr:hover {
-    background:#FAFAFA;
-}
-
-/*service.css中的样式*/
 .aside-btn {
     height: 60px;
     position: relative;
@@ -117,7 +72,7 @@
 .modalCrealApp .steps-main .progre .radius_step {
     color: #999;
     height: 45px;
-    width: 33.33%;
+    width: 24.99%;
     float: left;
     border-bottom: 2px solid #e2e2e4;
 }
@@ -156,13 +111,13 @@
 
 .modalCrealApp .steps-main .step-inner {
     position: relative;
-    width: 300%;
+    width: 400%;
     overflow: hidden;
     min-height: 300px;
     height: auto;
 }
 
-.host_step1, .host_step2, .host_step3 {
+.host_step1, .host_step2, .host_step3 .host_step4{
     float: left;
     width: 700px;
 }
@@ -174,8 +129,9 @@
 
 .modalCrealApp .steps-main .step-inner .host_step1,
 .modalCrealApp .steps-main .step-inner .host_step2,
-.modalCrealApp .steps-main .step-inner .host_step3 {
-    width: 33.33%;
+.modalCrealApp .steps-main .step-inner .host_step3,
+.modalCrealApp .steps-main .step-inner .host_step4 {
+    width: 25%;
     padding: 0 4rem;
 }
 
@@ -194,7 +150,8 @@
 
 .modalCrealApp .steps-main .step-inner .host_step1 .select-server,
 .modalCrealApp .steps-main .step-inner .host_step2 .select-server,
-.modalCrealApp .steps-main .step-inner .host_step3 .select-server {
+.modalCrealApp .steps-main .step-inner .host_step3 .select-server,
+.modalCrealApp .steps-main .step-inner .host_step4 .select-server{
     width: auto;
     float: left;
     height: 50px;

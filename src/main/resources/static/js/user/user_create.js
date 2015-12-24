@@ -21,16 +21,6 @@ $(document).ready(function(){
 
     });
 
-    $(".go_backs").click(function(){
-        if($(".radius_step").eq(1).hasClass("action")){
-            $(".step-inner").css("left","0");
-            $(".radius_step").removeClass("action").eq(0).addClass("action");
-        }else if($(".radius_step").eq(2).hasClass("action")){
-            $(".step-inner").css("left","-100%");
-            $(".radius_step").removeClass("action").eq(1).addClass("action");
-        }
-
-    });
 
 });
 

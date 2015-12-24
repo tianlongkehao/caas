@@ -92,7 +92,7 @@
                 </li>
             </ul>
         </li>
-        <li id="menu_user">
+        <li id="menu_user" class="user-admin">
             <a href="/user/list">
                 <img class="nav-icon" src="/images/service.svg" alt=""/>
                 <span class="nav-title">租户</span>
@@ -101,6 +101,19 @@
                 <li id="menuUser" action="">
                     <a href="/user/list">
                         租户
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li id="menu_userOwn" class="user-own">
+            <a href="/user/own">
+                <img class="nav-icon" src="/images/service.svg" alt=""/>
+                <span class="nav-title">用户</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li id="menuUserOwn" action="">
+                    <a href="/user/own">
+                        用户
                     </a>
                 </li>
             </ul>
@@ -127,6 +140,7 @@
     $(function(){
 
         var menu_flag = '${menu_flag}';
+
         $("#menu_"+menu_flag).addClass("item-click");
 
         // 菜单效果
