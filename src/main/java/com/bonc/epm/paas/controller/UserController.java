@@ -67,12 +67,12 @@ import java.util.*;
 	}
 	
 	@RequestMapping(value={"user/detail/{id}"},method=RequestMethod.GET)
-	public String Detail(Model model,@PathVariable long id){
+	public String userDetail(Model model,@PathVariable long id){
 		System.out.printf("user--id:",id);
 		User user = userDao.findOne(id);
 		
 		model.addAttribute("user", user);
-		return "user/user.jsp";
+		return "user/user-own.jsp";
 		
 	}
 	

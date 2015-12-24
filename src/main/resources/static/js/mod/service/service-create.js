@@ -73,6 +73,7 @@ function loadImageList() {
 
             var html = "";
             if (data != null) {
+
                 if (data['data'].length > 0) {
                     for (var i in data.data) {
                         var image = data.data[i];
@@ -100,7 +101,9 @@ function loadImageList() {
 				"</span></li>";
                     	}
                     	$("#imageList").html(html);
+
                         $(".pull-deploy").click(function(){
+
                         	var imageName = $(this).attr("imageName");
                         	var imageVersion = $(this).attr("imageVersion");
                         	//containerName();
@@ -113,6 +116,7 @@ function loadImageList() {
 }
 
 function deploy(imageName, imageVersion){
+
     $("#imageName").val(imageName);
     $("#imageVersion").val(imageVersion);
     $(".step-inner").css("left","-100%");
