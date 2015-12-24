@@ -137,8 +137,8 @@
 		        btn: ['确定', '取消'],
 		        yes: function(index, layero){ 
 		        	var cStatusHtml = "<i class='fa_success'></i>"+
-	                "启动中"+
-	                "<img src='images/loading4.gif' alt=''/>";
+	                				  "启动中"+
+	                				  "<img src='images/loading4.gif' alt=''/>";
 		        	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
 		        	layer.close(index);
 		        					$.ajax({
@@ -146,9 +146,9 @@
 		        						success:function(data){
 		        							data = eval("(" + data + ")");
 		        							if(data.status=="200"){
-		        								alert("容器启动成功");
+		        								layer.alert("容器启动成功");
 		        							}else{
-		        								alert("容器启动失败");
+		        								layer.alert("容器启动失败");
 		        							}
 		        						}	
 		        					})
@@ -157,9 +157,6 @@
 	 }) 
  }
  
- function createContainers(){
-	 
- }
  
  function stopContainer(){
 	 $('input[name="chkItem"]:checked').each(function(index, el){
@@ -176,13 +173,14 @@
 		        							success:function(data){
 		        								data = eval("(" + data + ")");
 		        								if(data.status=="200"){
-		        									alert("容器已停止");
+		        									layer.alert("容器已停止");
 		        								}else{
-		        									alert("容器停止失败，请检查服务器连接");
+		        									layer.alert("容器停止失败，请检查服务器连接");
 		        								}
 	        		
 		        							}
 		        						})
+		        	refresh();
 		        }
 	        })
 	 })
@@ -202,13 +200,14 @@
 		        					success:function(data){
 		        						data = eval("(" + data + ")");
 		        						if(data.status=="200"){
-		        							alert("容器已删除");
+		        							layer.alert("容器已删除");
 		        						}else{
-		        							alert("容器删除失败，请检查服务器连接");
+		        							layer.alert("容器删除失败，请检查服务器连接");
 		        						}
 	        		
 		        					}
 		        				})
+		        				refresh();
 		        }
 		 })
 	 })
@@ -219,7 +218,9 @@
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
 		 var containerName = $(".clusterId").attr('containerName');
-		 $("#upgradeServiceName").val(containerName);
+		 $('#upgradeServiceName').val(containerName);
+		 var nums = $("#numberChange").val();
+		 //alert(nums);
 		 layer.open({
 			 type:1,
 			 title: '弹性伸缩',
@@ -227,6 +228,22 @@
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){ //或者使用btn1
 			 	//按钮【按钮一】的回调
+				 layer.close(index);
+				 $.ajax({
+ 					url:"service/modifyServiceNum.do?id="+id+"&addservice="+nums,
+ 					success:function(data){
+ 						data = eval("(" + data + ")");
+ 						if(data.status=="200"){
+ 							layer.alert("弹性扩容成功！");
+ 						}else if(data.status=="400"){
+ 							layer.alert("弹性扩容失败，请检查服务器连接");
+ 						}else if(data.status=="300"){
+ 							layer.alert("请填写弹性扩容的数量！");
+ 						}
+		
+ 					}
+ 				})
+ 				refresh();
 		 	 },
 			 cancel: function(index){ //或者使用btn2
 			 	//按钮【按钮二】的回调
@@ -239,7 +256,9 @@
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
 		 var containerName = $(".clusterId").attr('containerName');
-		 $("#confServiceName").val(containerName);
+		 $('#confServiceName').val(containerName);
+		 var cpu = $("#confCpu").val();
+		 var ram = $("#confRam").val();
 		 layer.open({
 			 type:1,
 			 title: '更改配置',
@@ -248,6 +267,20 @@
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){ //或者使用btn1
 				 //按钮【按钮一】的回调
+				 layer.close(index);
+				 $.ajax({
+ 					url:"service/modifyCPU.do?id="+id+"&cpus="+cpu+"&rams="+ram,
+ 					success:function(data){
+ 						data = eval("(" + data + ")");
+ 						if(data.status=="200"){
+ 							layer.alert("更改成功");
+ 						}else{
+ 							layer.alert("更改失败，请检查服务器连接");
+ 						}
+		
+ 					}
+ 				})
+ 				refresh();
 			 },
 			 cancel: function(index){ //或者使用btn2
 				 //按钮【按钮二】的回调
@@ -256,8 +289,11 @@
 	 })
  }
 
+ function refresh(){
+	 window.location.reload();//刷新当前页面.
+ }
+ 
  // Refresh create time
- var creationTimestamp;
  function _refreshCreateTime(interval){
    setInterval(function(){
      $('.tdTimeStrap').each(function(){
@@ -265,7 +301,7 @@
        var timebefore = $(self).find('span').text();
        if (timebefore.indexOf('秒') > -1 || timebefore.indexOf('分钟') > -1) {
          moment.locale('zh-cn');
-         creationTimestamp = $(self).find('.timeStrap').val();
+         var creationTimestamp = $(self).find('.timeStrap').val();
          var timeFromNow = moment(creationTimestamp).fromNow();
          $(self).find('span').text(timeFromNow);
        }
