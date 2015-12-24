@@ -140,7 +140,7 @@
     $(function(){
 
         var menu_flag = '${menu_flag}';
-        debugger;
+
         $("#menu_"+menu_flag).addClass("item-click");
 
         // 菜单效果
