@@ -39,19 +39,13 @@
                                 <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a href="javascript:createContainer()">
+                                        <a href="javascript:userDetail()">
                                             <i class="fa fa-play"></i>
                                             <span class="ic_left">查看</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="javascript:changeContainerConf();">
-                                            <i class="fa fa-cog"></i>
-                                            <span class="ic_left">修改</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:delContainer()">
+                                        <a href="javascript:delUser()">
                                             <i class="fa fa-trash"></i>
                                             <span class="ic_left">删除</span>
                                         </a>
