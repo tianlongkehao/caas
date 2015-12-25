@@ -57,6 +57,7 @@
 		</dependency>
 		
 		<!-- docker-java引用的jackson版本为2.1.2，springboot引用的jackson版本为2.6.3 ，使用时候有冲突，下面处理为统一版本为2.6.3-->
+		<!-- kubernetes api依赖的jersey在dockerjava中已经引用 -->
 		<dependency>
 		      <groupId>com.github.docker-java</groupId>
 		      <artifactId>docker-java</artifactId>
@@ -84,26 +85,6 @@
 		</dependency>
 		<!-- docker-java end-->
 		
-		<!-- kubernetes api依赖jar start  -->
-		<!-- 由于resteasy和dockerjava集成使用时有错误，所以替换为jersey  -->
-		<!-- <dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-client</artifactId>
-			<version>3.0.9.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-joda</artifactId>
-			<version>2.6.3</version>
-		</dependency> -->
-		<dependency>
-		    <groupId>org.glassfish.jersey.core</groupId>
-		    <artifactId>jersey-client</artifactId>
-		    <version>2.22.1</version>
-		</dependency>
-
-		<!-- kubernetes api依赖jar end -->
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
