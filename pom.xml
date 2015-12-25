@@ -84,8 +84,9 @@
 		</dependency>
 		<!-- docker-java end-->
 		
-		<!-- kubernetes api依赖jar start -->
-		<dependency>
+		<!-- kubernetes api依赖jar start  -->
+		<!-- 由于resteasy和dockerjava集成使用时有错误，所以替换为jersey  -->
+		<!-- <dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-client</artifactId>
 			<version>3.0.9.Final</version>
@@ -94,7 +95,13 @@
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-joda</artifactId>
 			<version>2.6.3</version>
+		</dependency> -->
+		<dependency>
+		    <groupId>org.glassfish.jersey.core</groupId>
+		    <artifactId>jersey-client</artifactId>
+		    <version>2.22.1</version>
 		</dependency>
+
 		<!-- kubernetes api依赖jar end -->
 
 		<dependency>

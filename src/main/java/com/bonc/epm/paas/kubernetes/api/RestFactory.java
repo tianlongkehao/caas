@@ -1,26 +1,11 @@
 package com.bonc.epm.paas.kubernetes.api;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
 
 public class RestFactory {
-
+	/* 
     private ClassLoader classLoader;
     private int connectionPoolSize;
 
@@ -41,7 +26,7 @@ public class RestFactory {
         return this;
     }
 
-    public KubernetesAPI createAPI(URI uri, String userName, String password) {
+   public KubernetesAPI createAPI(URI uri, String userName, String password) {
 
         // Configure HttpClient to authenticate preemptively
         // by prepopulating the authentication data cache.
@@ -82,5 +67,21 @@ public class RestFactory {
     public KubernetesAPI createAPI(String url, String userName, String password) throws URISyntaxException {
         URI uri = new URI(url);
         return createAPI(uri, userName, password);
+    }*/
+    
+    public KubernetesAPI createAPI(String url, String userName, String password){
+    	Class<KubernetesAPI> clazz = KubernetesAPI.class;
+    	Class<?>[] intfs =
+		{
+			clazz
+		};
+    	HashMap<Method, MethodInvoker> methodMap = new HashMap<Method, MethodInvoker>();
+    	for (Method method : clazz.getMethods())
+		{
+	         MethodInvoker invoker = new MethodInvoker(url,userName,password,method);
+	         methodMap.put(method, invoker);
+		}
+    	return (KubernetesAPI)Proxy.newProxyInstance(clazz.getClassLoader(),intfs,new ClientProxy(methodMap));
     }
+    
 }

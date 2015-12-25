@@ -1,7 +1,5 @@
 package com.bonc.epm.paas.kubernetes.api;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 import javax.ws.rs.NotFoundException;
@@ -26,22 +24,12 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
     private static final Log LOG = LogFactory.getLog(KubernetesApiClient.class);
 
-    private URI endpointURI;
+    private String endpointURI;
     private KubernetesAPI api;
     private String namespace;
     
     public KubernetesApiClient(String namespace,String endpointUrl, String username, String password, RestFactory factory) {
-        try {
-            if (endpointUrl.matches("/api/v1[a-z0-9]+")) {
-                LOG.warn("Deprecated: KubernetesApiClient endpointUrl should not include the /api/version section in "
-                        + endpointUrl);
-                endpointURI = new URI(endpointUrl);
-            } else {
-                endpointURI = new URI(endpointUrl + "/api/" + KubernetesAPIClientInterface.VERSION);
-            }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+    	this.endpointURI = endpointUrl;
         this.namespace = namespace;
         api = factory.createAPI(endpointURI, username, password);
     }
