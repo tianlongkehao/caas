@@ -37,7 +37,7 @@ function registerConstructCiEvent(){
 	        title: '快速构建',
 	        content: '确定构建镜像？',
 	        btn: ['确定', '取消'],
-	        yes: function(index, layero){ //或者使用btn1
+	        yes: function(index, layero){
 	        	$(this).unbind("click");
 	        	layer.close(index);
 	        	$.ajax({
@@ -57,7 +57,7 @@ function registerConstructCiEvent(){
 	        	});
 	        	window.location.reload();
 	        },
-	        cancel: function(index){ //或者使用btn2
+	        cancel: function(index){
 	        }
 	    });
 	});
@@ -73,7 +73,6 @@ function registerCiEditEvent(){
                 data = eval("(" + data + ")");
                 if (data.status == "200") {
                 	layer.alert("修改成功");
-                    console.log($("#projectName").val());
                     $("#projectNameSpan").text($("#projectName").val());
                 } else {
                     layer.alert(data.msg);
@@ -99,7 +98,6 @@ function registerCiDelEvent(id){
 	        		success:function(data){
 	        			data = eval("(" + data + ")");
 	        			 if(data.status=="200"){
-	        				 layer.alert("删除成功");
                              window.location.href = "/ci";
 	                     } else {
 	                         layer.alert(data.msg);

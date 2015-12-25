@@ -2,9 +2,6 @@ $(document).ready(function () {
 	$("#ciReloadBtn").click(function(){
 		window.location.reload();
 	});
-	$("#ciAddBtn").click(function(){
-		$(".contentMain").load("/ci/add");
-	});
 
     registerConstructCiEvent();
 
@@ -33,17 +30,17 @@ function registerConstructCiEvent(){
 	        	$.ajax({
 	        		url:"/ci/constructCi.do?id="+id,
 	        		success:function(data){
-	        			data = eval("(" + data + ")");
+	        			/*data = eval("(" + data + ")");
 	       			 	if(data.status=="200"){
 	       			 		layer.alert("构建成功");
 	       			 	}else{
 	       			 		layer.alert(data.msg);
 	       			 	}
-	       			 	window.location.reload();
+	       			 	window.location.reload();*/
 	        		},
 	        		error:function(){
-	        			layer.alert("系统错误，请联系管理员");
-	        			window.location.reload();
+	        			/*layer.alert("系统错误，请联系管理员");
+	        			window.location.reload();*/
 	        		}
 	        	});
 	        },
