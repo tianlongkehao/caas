@@ -16,6 +16,7 @@ $(document).ready(function () {
     
     $(".fork").click(function(){
     	var imageId = $("#imageId").val();
+    	var _this = $(this);
     	$.ajax({
     		url:"/registry/detail/favor",
     		type:"post",
@@ -24,9 +25,11 @@ $(document).ready(function () {
     			if(data == "success"){
     				$("#collectTxt").text("已收藏");
     				$(".star-style").removeClass("fa-star-o").addClass("fa-star");
+    				_this.addClass('live');
     			}else{
     				$("#collectTxt").text("收藏");
     				$(".star-style").removeClass("fa-star").addClass("fa-star-o");
+    				_this.removeClass('live');
     			}
     		}
     		

@@ -64,6 +64,7 @@ public class RegistryController {
 		model.addAttribute("images", images);
 		return "docker-registry/registry.jsp";
 	}
+	
 	@RequestMapping(value = {"registry/detail/{id}"}, method = RequestMethod.GET)
 	public String detail(@PathVariable long id, Model model) {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
@@ -71,12 +72,14 @@ public class RegistryController {
 		int favorUser = imageDao.findAllUserById(id);
 		User user = userDao.findById(image.getCreator());
 		long imageCreator = image.getCreator();
+		int  whetherFavor = imageDao.findByUserIdAndImageId(id, userId);
 		if(userId == imageCreator){
 			model.addAttribute("same",1);
 		}else{
 			model.addAttribute("same", 2);
 		}
 		
+		model.addAttribute("whetherFavor", whetherFavor);
 		model.addAttribute("image", image);
 		model.addAttribute("favorUser",favorUser);
 		model.addAttribute("creator", user.getUserName());

@@ -49,10 +49,16 @@
                                     <a id="desEditSave" class="btn btn-link"><i class="fa fa-save"></i> 保存</a>
                                 </span>
                             </span>
-
-                            <span id="collectImage" class="btn btn-link fork"  title="点击收藏" style="text-decoration: none;">
-                                <i class="fa fa-star-o star-style"></i>&nbsp;<span id="collectTxt">收藏</span>
-                            </span>
+							<c:if test="${whetherFavor==0 }">
+	                            <span id="collectImage" class="btn btn-link fork"  title="点击收藏" style="text-decoration: none;">
+	                                <i class="fa fa-star-o star-style"></i>&nbsp;<span id="collectTxt">收藏</span>
+	                            </span>
+                            </c:if>
+                            <c:if test="${whetherFavor==1 }">
+	                            <span id="collectImage" class="btn btn-link fork live"  title="点击收藏" style="text-decoration: none;">
+	                                <i class="fa fa-star star-style"></i>&nbsp;<span id="collectTxt">已收藏</span>
+	                            </span>
+                            </c:if>
                         </section>
                     </div>
                     <div class="row" style="padding-bottom: 50px;">
