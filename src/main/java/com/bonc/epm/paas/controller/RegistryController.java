@@ -38,10 +38,13 @@ public class RegistryController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		if(index == 0){
 			images = imageDao.findByImageType(1);
+			addCurrUserFavor(images);
 		}else if(index == 1){
 			images = imageDao.findAllByCreator(2, userId);
+			addCurrUserFavor(images);
 		}else if(index == 2){
 			images = userDao.findAllFavor(userId);
+			addCurrUserFavor(images);
 		}
 		model.addAttribute("images", images);
 		model.addAttribute("menu_flag", "registry");
@@ -55,10 +58,13 @@ public class RegistryController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		if(index == 0){
 			images = imageDao.findByNameCondition("%"+imageName+"%");
+			addCurrUserFavor(images);
 		}else if(index == 1){
 			images = imageDao.findByNameOfUser(userId,"%"+imageName+"%");
+			addCurrUserFavor(images);
 		}else if(index == 2){
 			images = userDao.findByNameCondition(userId, "%"+imageName+"%");
+			addCurrUserFavor(images);
 		}
 		model.addAttribute("type", index);
 		model.addAttribute("images", images);
@@ -73,10 +79,11 @@ public class RegistryController {
 		User user = userDao.findById(image.getCreator());
 		long imageCreator = image.getCreator();
 		int  whetherFavor = imageDao.findByUserIdAndImageId(id, userId);
+		
 		if(userId == imageCreator){
-			model.addAttribute("same",1);
+			model.addAttribute("editImage",1);
 		}else{
-			model.addAttribute("same", 2);
+			model.addAttribute("editImage", 2);
 		}
 		
 		model.addAttribute("whetherFavor", whetherFavor);
@@ -141,7 +148,13 @@ public class RegistryController {
 		
 		imageDao.delete(imageId);
 		return "ok";
-		
+	}
+	
+	private void addCurrUserFavor(List<Image> images){
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		for(Image image:images){
+			image.setCurrUserFavor(imageDao.findByUserIdAndImageId(image.getId(), userId));
+		}
 	}
 	
 }

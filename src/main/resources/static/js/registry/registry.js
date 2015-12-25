@@ -38,7 +38,7 @@ $(document).ready(function () {
     
     $("#deleteImage").click(function(){
     	var imageId = $("#imageId").val();
-    	var same = $("#same").val();
+    	var editImage = $("#editImage").val();
     	$.ajax({
     		url:"/registry/detail/deleteimage",
     		type:"post",
