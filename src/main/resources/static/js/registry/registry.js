@@ -15,7 +15,6 @@ $(document).ready(function () {
     });
     
     $(".fork").click(function(){
-    	
     	var imageId = $("#imageId").val();
     	$.ajax({
     		url:"/registry/detail/favor",
@@ -36,15 +35,15 @@ $(document).ready(function () {
     
     $("#deleteImage").click(function(){
     	var imageId = $("#imageId").val();
-    	var type = $("#type").val();
+    	var same = $("#same").val();
     	$.ajax({
     		url:"/registry/detail/deleteimage",
     		type:"post",
-    		data:{"imageId":imageId,"type":type},
+    		data:{"imageId":imageId},
     		success:function(data){
     			if(data == "ok"){
     				alert("删除成功");
-    				window.location.href = "/registry/1";
+    				window.location.href = "/registry/0";
     			}else{
     				alert("删除失败！");
     			}
@@ -54,15 +53,6 @@ $(document).ready(function () {
     
 });
 
-$(function(){
-	// 收藏
-    var type = $("#type").val();
-    if(type == 1) {
-    	$("#deleteImage").removeClass("hide");
-    }else{
-    	$("#deleteImage").addClass("hide");
-    }
-});
 
 $(function(){
 
@@ -81,11 +71,12 @@ $(function(){
 
 	// 保存
 	$("#desEditSave").on("click", function(){
-		var remark = $("#desTextarea").text();
-		var url = "";
-		$.post(url, {'remark':remark}, function(data){
+		var summary = $("#desTextarea").val();
+		var imageId = $("#imageId").val();
+		var url = "/registry/detail/summary";
+		$.post(url, {'summary':summary,'imageId':imageId}, function(data){
 			if(data == 'success') {
-				$(".list-content").text(remark);
+				$(".list-content").text(summary);
 				$(".list-content").removeClass("hide");
 				$("#contentArea").addClass("hide");
 				$("#desEdit").removeClass("hide");
@@ -118,11 +109,13 @@ $(function(){
 	$('#saveContent').click(function(event) {
 		var imageObj = {};
 		var details = editor.codemirror.getValue();
+		var imageId = $("#imageId").val();
 		var self = this;
 		$(self).text('保存中');
 		$(self).attr('disabled', 'disabled');
 		imageObj.name = $('.type-info .title').attr('imageName');
 		imageObj.detail = details;
+		imageObj.id = imageId;
 		_saveImageConfigInfo(imageObj, function(result) {
 			$(self).text('保存');
 			$(self).removeAttr('disabled');
@@ -146,8 +139,8 @@ $(function(){
 
 	function _saveImageConfigInfo(imageObj, callback) {
 		$.ajax({
-			url: '',
-			data: imageObj,
+			url: '/registry/detail/remark',
+			data: {"imageId":imageObj.id,"remark":imageObj.detail},
 			type: 'POST'
 		}).done(function(resp) {
 			callback(resp);

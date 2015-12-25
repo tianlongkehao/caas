@@ -65,17 +65,43 @@ public class RegistryController {
 		return "docker-registry/registry.jsp";
 	}
 	@RequestMapping(value = {"registry/detail/{id}"}, method = RequestMethod.GET)
-	public String detail(@PathVariable long id, Model model,@RequestParam int type) {
+	public String detail(@PathVariable long id, Model model) {
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Image image = imageDao.findById(id);
 		int favorUser = imageDao.findAllUserById(id);
 		User user = userDao.findById(image.getCreator());
+		long imageCreator = image.getCreator();
+		if(userId == imageCreator){
+			model.addAttribute("same",1);
+		}else{
+			model.addAttribute("same", 2);
+		}
 		
 		model.addAttribute("image", image);
 		model.addAttribute("favorUser",favorUser);
 		model.addAttribute("creator", user.getUserName());
-		model.addAttribute("type", type);
 		model.addAttribute("menu_flag", "registry");
 		return "docker-registry/detail.jsp";
+	}
+	
+	@RequestMapping(value = {"registry/detail/summary"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String imageSummary(@RequestParam long imageId,String summary){
+		Image image = imageDao.findById(imageId);
+		image.setSummary(summary);
+		imageDao.save(image);
+		
+		return "success";
+	}
+	
+	@RequestMapping(value = {"registry/detail/remark"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String imageRemark(@RequestParam long imageId,String remark){
+		Image image = imageDao.findById(imageId);
+		image.setRemark(remark);
+		imageDao.save(image);
+		
+		return "success";
 	}
 	
 	@RequestMapping(value = {"registry/detail/favor"}, method = RequestMethod.POST)
@@ -108,14 +134,11 @@ public class RegistryController {
 	
 	@RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String deleteImage(@RequestParam long imageId,long type){
-		System.out.println(type);
-		if(type == 1){
-			imageDao.delete(imageId);
-			return "ok";
-		}else{
-			return "no";
-		}
+	public String deleteImage(@RequestParam long imageId){
+		
+		imageDao.delete(imageId);
+		return "ok";
+		
 	}
 	
 }

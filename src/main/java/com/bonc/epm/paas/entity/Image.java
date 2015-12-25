@@ -25,6 +25,7 @@ public class Image {
 	//1公用2私有
 	private Integer imageType;
 	private String remark;
+	private String summary;
 	private long creator;
 	private Date createTime;
 	
@@ -66,6 +67,13 @@ public class Image {
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+	
+	public String getSummary() {
+		return summary;
+	}
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 	public long getCreator() {
 		return creator;
