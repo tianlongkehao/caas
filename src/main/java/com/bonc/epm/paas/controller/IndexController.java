@@ -73,6 +73,8 @@ public class IndexController {
 		redirect.addFlashAttribute("user", user);
 		return "redirect:workbench";
 	}
+
+
 	
 	@RequestMapping(value={"loginout/{id}"},method=RequestMethod.GET)
 	public String loginOut(Model model ,@PathVariable long id){
@@ -85,10 +87,12 @@ public class IndexController {
 	public String index(){
 		return "index.jsp";
 	}
+
 	@RequestMapping(value={"workbench"},method=RequestMethod.GET)
 	public String workbench(){
 		return "workbench.jsp";
 	}
+
 	@RequestMapping(value={"menu"},method=RequestMethod.GET)
 	public String menu(Model model,String flag){
 		model.addAttribute("flag", flag);
