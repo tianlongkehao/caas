@@ -105,17 +105,21 @@ public class IndexController {
 		}
 		
 		User  userEntity = new User();
-		
+
+		log.debug("user.getUserName()="+user.getUserName());
 		if(userDao.findByUserName(user.getUserName()) != null){
 			userEntity = userDao.findByUserName(user.getUserName());
 		}
-		
+
+		log.debug("userEntity="+userEntity.toString());
 		if(null == userEntity){
 			throw new ServiceException("用户名不存在");
 		}
 		
 		//String password = EncryptUtils.encryptMD5(user.getPassword());
 		String password = user.getPassword();
+		log.debug("password="+password);
+		log.debug("userEntity.getPassword()="+userEntity.getPassword());
 		if(!StringUtils.equals(password, userEntity.getPassword())){
 			throw new ServiceException("密码输入错误");
 		}

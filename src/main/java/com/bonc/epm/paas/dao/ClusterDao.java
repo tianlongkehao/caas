@@ -7,4 +7,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface ClusterDao extends CrudRepository<Cluster, Long>{
 
+    public Cluster findByHost(String host);
 }

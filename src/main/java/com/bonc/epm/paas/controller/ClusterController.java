@@ -2,49 +2,51 @@ package com.bonc.epm.paas.controller;
 
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
+import com.bonc.epm.paas.util.SshConnect;
+import com.github.dockerjava.core.DockerClientConfig;
+import com.jcraft.jsch.JSchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.core.Application;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping(value = "/cluster")
 public class ClusterController {
     private static final Logger log = LoggerFactory.getLogger(ClusterController.class);
 
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = {"cluster/list"}, method = RequestMethod.GET)
     public String clusterList(Model model) {
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster.jsp";
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.GET)
+    @RequestMapping(value = {"cluster/add"}, method = RequestMethod.GET)
     public String clusterAdd() {
-
         return "cluster/cluster-create.jsp";
     }
 
     @Autowired
     private ClusterDao clusterDao;
 
-    @RequestMapping(value = "/getClusters", method = RequestMethod.GET)
-    public String getClusters(String ip, Model model) {
+    @RequestMapping(value = {"cluster/getClusters"}, method = RequestMethod.POST)
+    public String getClusters(@RequestParam String ipRange, Model model) {
         List<String> lstIps = new ArrayList<>();
         List<Cluster> lstClusters = new ArrayList<>();
         List<String> existIps = new ArrayList<>();
-        int index = ip.indexOf("[");
+        int index = ipRange.indexOf("[");
         if (index != -1) {
-            String ipHalf = ip.substring(0, index);
-            String ipSect = ip.substring(index + 1, ip.length() - 1);
+            String ipHalf = ipRange.substring(0, index);
+            String ipSect = ipRange.substring(index + 1, ipRange.length() - 1);
             if (ipSect.indexOf("-") != -1) {
                 String[] ipsArray = ipSect.split("-");
                 int ipStart = Integer.valueOf(ipsArray[0]);
@@ -59,7 +61,7 @@ public class ClusterController {
                 }
             }
         } else {
-            String[] ipsArray = ip.split(",");
+            String[] ipsArray = ipRange.split(",");
             for (String ipSon : ipsArray) {
                 lstIps.add(ipSon);
             }
@@ -86,15 +88,43 @@ public class ClusterController {
                 }
             }
         }
-        model.addAttribute("lstIps", lstClusters);
-        return "cluster/Cluster.jsp";
+        model.addAttribute("lstClusters", lstClusters);
+        model.addAttribute("ipRange", ipRange);
+        return "cluster/cluster-create.jsp";
     }
 
-    @RequestMapping(value = "/installCluster", method = RequestMethod.GET)
-    public String installCluster(String ip, Model model) {
+    @RequestMapping(value = {"cluster/installCluster"}, method = RequestMethod.GET)
+    public String installCluster(String user, String pass, String ip, Integer port, Model model)
+            throws IOException, JSchException, InterruptedException {
 
+//        String imageHost = Play.configuration.getString("image.host").getOrElse("127.0.0.1").trim();
+//        String imagePort = Play.configuration.getString("image.port").getOrElse("5000").trim();
+        String imageHost = "";
+        String imagePort = "";
+        DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder().build();
+        System.out.print("config" + config.toString());
+
+        SshConnect.connect(user, pass, ip, port);
+        Integer memLimit = 1000000;
+        //获取主机的内存大小
+        String memCmd = "cat /proc/meminfo | grep MemTotal | awk -F ':' '{print $2}' | awk '{print $1}'";
+        String memRtn = SshConnect.exec(memCmd, 1000);
+        String[] b = memRtn.split("\n");
+        memLimit = Integer.valueOf(b[b.length - 2].trim());
+        //安装环境
+        String cmd = "cd /opt/;unzip rpms.zip;cd /opt/rpms/;nohup ./rpm_inst.sh " + imageHost + ":" + imagePort;
+        SshConnect.exec(cmd, 30000);
+        //关闭SSH连接
+        SshConnect.disconnect();
+        Cluster cluster = clusterDao.findByHost(ip);
+        if (cluster == null) {
+            Cluster newCluster = new Cluster();
+            newCluster.setUsername(user);
+            newCluster.setPassword(pass);
+            newCluster.setHost(ip);
+            newCluster.setPort(port);
+            clusterDao.save(newCluster);
+        }
         return "cluster/installCluster.jsp";
     }
-
-
 }

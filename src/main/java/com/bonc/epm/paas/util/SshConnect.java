@@ -17,13 +17,13 @@ import java.util.Properties;
  */
 public class SshConnect {
 
-    private InputStream inputStream;
-    private OutputStream outputString;
-    private ChannelShell channelShell;
-    private Session session;
+    private static InputStream inputStream;
+    private static OutputStream outputString;
+    private static ChannelShell channelShell;
+    private static Session session;
 
 
-    public String getHosts(String name, String password, String hostIp, Integer port) throws JSchException, IOException {
+    public static String connect(String name, String password, String hostIp, Integer port) throws JSchException, IOException {
         JSch jsch = new JSch();
         session = jsch.getSession(name, hostIp, port);
         Properties config = new Properties();
@@ -41,7 +41,7 @@ public class SshConnect {
         return "";
     }
 
-    public String exec(String cmd, Integer timeout) throws IOException, InterruptedException {
+    public static String exec(String cmd, Integer timeout) throws IOException, InterruptedException {
         // 命令行后面需要补回车
         String command;
         String cmdTrim = cmd.trim();
@@ -87,7 +87,7 @@ public class SshConnect {
         }
     }
 
-    public void disconnect() {
+    public static void disconnect() {
         channelShell.disconnect();
         session.disconnect();
     }
