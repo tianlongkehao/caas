@@ -38,10 +38,13 @@ public class RegistryController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		if(index == 0){
 			images = imageDao.findByImageType(1);
+			addCurrUserFavor(images);
 		}else if(index == 1){
 			images = imageDao.findAllByCreator(2, userId);
+			addCurrUserFavor(images);
 		}else if(index == 2){
 			images = userDao.findAllFavor(userId);
+			addCurrUserFavor(images);
 		}
 		model.addAttribute("images", images);
 		model.addAttribute("menu_flag", "registry");
@@ -55,27 +58,60 @@ public class RegistryController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		if(index == 0){
 			images = imageDao.findByNameCondition("%"+imageName+"%");
+			addCurrUserFavor(images);
 		}else if(index == 1){
 			images = imageDao.findByNameOfUser(userId,"%"+imageName+"%");
+			addCurrUserFavor(images);
 		}else if(index == 2){
 			images = userDao.findByNameCondition(userId, "%"+imageName+"%");
+			addCurrUserFavor(images);
 		}
 		model.addAttribute("type", index);
 		model.addAttribute("images", images);
 		return "docker-registry/registry.jsp";
 	}
+	
 	@RequestMapping(value = {"registry/detail/{id}"}, method = RequestMethod.GET)
-	public String detail(@PathVariable long id, Model model,@RequestParam int type) {
+	public String detail(@PathVariable long id, Model model) {
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Image image = imageDao.findById(id);
 		int favorUser = imageDao.findAllUserById(id);
 		User user = userDao.findById(image.getCreator());
+		long imageCreator = image.getCreator();
+		int  whetherFavor = imageDao.findByUserIdAndImageId(id, userId);
 		
+		if(userId == imageCreator){
+			model.addAttribute("editImage",1);
+		}else{
+			model.addAttribute("editImage", 2);
+		}
+		
+		model.addAttribute("whetherFavor", whetherFavor);
 		model.addAttribute("image", image);
 		model.addAttribute("favorUser",favorUser);
 		model.addAttribute("creator", user.getUserName());
-		model.addAttribute("type", type);
 		model.addAttribute("menu_flag", "registry");
 		return "docker-registry/detail.jsp";
+	}
+	
+	@RequestMapping(value = {"registry/detail/summary"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String imageSummary(@RequestParam long imageId,String summary){
+		Image image = imageDao.findById(imageId);
+		image.setSummary(summary);
+		imageDao.save(image);
+		
+		return "success";
+	}
+	
+	@RequestMapping(value = {"registry/detail/remark"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String imageRemark(@RequestParam long imageId,String remark){
+		Image image = imageDao.findById(imageId);
+		image.setRemark(remark);
+		imageDao.save(image);
+		
+		return "success";
 	}
 	
 	@RequestMapping(value = {"registry/detail/favor"}, method = RequestMethod.POST)
@@ -108,13 +144,16 @@ public class RegistryController {
 	
 	@RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String deleteImage(@RequestParam long imageId,long type){
-		System.out.println(type);
-		if(type == 1){
-			imageDao.delete(imageId);
-			return "ok";
-		}else{
-			return "no";
+	public String deleteImage(@RequestParam long imageId){
+		
+		imageDao.delete(imageId);
+		return "ok";
+	}
+	
+	private void addCurrUserFavor(List<Image> images){
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		for(Image image:images){
+			image.setCurrUserFavor(imageDao.findByUserIdAndImageId(image.getId(), userId));
 		}
 	}
 	

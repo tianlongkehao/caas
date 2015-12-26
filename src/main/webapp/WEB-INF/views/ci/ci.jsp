@@ -100,8 +100,10 @@
                                             <c:choose>
                                                 <c:when test="${ci.imgId == null || ci.imgId == 0}">
                                                      <c:set var="cursorClass" value="cursor-no-drop"></c:set>
+                                                     <c:set var="hrefValue" value=""></c:set>
                                                 </c:when>
                                                 <c:otherwise>
+                                                	<c:set var="cursorClass" value=""></c:set>
                                                 	 <c:set var="hrefValue" value="href='/registry/detail/${ci.imgId }'"></c:set>
                                                 </c:otherwise>
                                             </c:choose>

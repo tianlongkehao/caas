@@ -73,6 +73,35 @@ public class DockerClientUtil {
 	}
 	
 	/**
+	 * 构建镜像
+	 * @param dockerfilePath
+	 * @param imageName
+	 * @param imageVersion
+	 * @return
+	 */
+	public static boolean buildImage(String dockerfilePath,String imageName,String imageVersion){
+		try{
+			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
+			File baseDir = new File(dockerfilePath);
+			BuildImageResultCallback callback = new BuildImageResultCallback() {
+			    @Override
+			    public void onNext(BuildResponseItem item) {
+			       log.info("==========BuildResponseItem:"+item);
+			       super.onNext(item);
+			    }
+			};
+			String imageId = dockerClient.buildImageCmd(baseDir).exec(callback).awaitImageId();
+			//修改镜像名称及版本
+			dockerClient.tagImageCmd(imageId, config.getUsername()+"/"+imageName, imageVersion).withForce().exec();
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error("buildImage error:"+e.getMessage());
+			return false;
+		}
+	}
+	
+	/**
 	 * 上传到镜像仓库
 	 * @param imageName
 	 * @param imageVersion
@@ -219,7 +248,8 @@ public class DockerClientUtil {
 		}
 	}
 	
-/*	public static void main(String[] args) {
+	/*public static void main(String[] args) {
+		System.out.println(DockerClientUtil.buildImage("C:\\Users\\Administrator\\Desktop\\linyiyj-helloworld-master\\helloworld\\war-test\\","admin/hw1", "latest"));
 		System.out.println(DockerClientUtil.pullImage("bonc/helloworld", "latest"));
 		System.out.println(DockerClientUtil.createContainer("bonc/helloworld", "latest","container3",8080,10002));
 		System.out.println(DockerClientUtil.startContainer("container3"));

@@ -24,7 +24,7 @@
                         <li class="active">${image.name} </li>
                     </ol>
                     <input type="hidden" id = "imageId" value = "${image.id }" name = "imageId">
-                    <input type="hidden" id = "type" value = "${type }" name = "type">
+                    <input type="hidden" id = "editImage" value = "${editImage }" name = "editImage">
                 </div>
                 <div class="contentMain">
                     <div class="mirror-head">
@@ -36,21 +36,29 @@
                         <section class="type-info">
                              <span class="title" imagename="${image.name }">
                                  <span style="width:90%;display:inline-block;overflow: hidden;text-overflow: ellipsis;">${image.name }</span>
-                                 <a id="desEdit" class="btn btn-link" style="font-size: 14px; display: block;"><i class="fa fa-edit"></i> 编辑</a>
+                                 <c:if test="${editImage==1 }">
+                                 	<a id="desEdit" class="btn btn-link" style="font-size: 14px; display: block;"><i class="fa fa-edit"></i> 编辑</a>
+                           		 </c:if>
                             </span>
-                            <span class="list-content">${image.remark }</span>
+                            <span class="list-content">${image.summary }</span>
 
                             <span class="list-content hide" id="contentArea">
-                                <textarea id="desTextarea" name="description" style="padding:5px;">${image.remark }</textarea>
+                                <textarea id="desTextarea" name="description" style="padding:5px;">${image.summary }</textarea>
                                 <span class="pull-right" id="desEditSpan">
                                     <a id="desEditCancel" class="btn btn-link"><i class="fa fa-close"></i> 取消</a>
                                     <a id="desEditSave" class="btn btn-link"><i class="fa fa-save"></i> 保存</a>
                                 </span>
                             </span>
-
-                            <span id="collectImage" class="btn btn-link fork"  title="点击收藏" style="text-decoration: none;">
-                                <i class="fa fa-star-o star-style"></i>&nbsp;<span id="collectTxt">收藏</span>
-                            </span>
+							<c:if test="${whetherFavor==0 }">
+	                            <span id="collectImage" class="btn btn-link fork"  title="点击收藏" style="text-decoration: none;">
+	                                <i class="fa fa-star-o star-style"></i>&nbsp;<span id="collectTxt">收藏</span>
+	                            </span>
+                            </c:if>
+                            <c:if test="${whetherFavor==1 }">
+	                            <span id="collectImage" class="btn btn-link fork live"  title="点击收藏" style="text-decoration: none;">
+	                                <i class="fa fa-star star-style"></i>&nbsp;<span id="collectTxt">已收藏</span>
+	                            </span>
+                            </c:if>
                         </section>
                     </div>
                     <div class="row" style="padding-bottom: 50px;">
@@ -62,7 +70,9 @@
                                 <div class="list_info Dockerfile">Dockerfile</div> -->
                             </div>
                             <section class="infoLog " style="margin-bottom: 30px">
-                                <span id="detailEditSave" class="editSave-bottom btn btn-link"><i class="fa fa-edit"></i> 编辑</span>
+                            	<c:if test="${editImage==1 }">
+                                	<span id="detailEditSave" class="editSave-bottom btn btn-link"><i class="fa fa-edit"></i> 编辑</span>
+                                </c:if>
                                 <div class="detail-contents">
                                     <p>
                                         ${image.remark }
@@ -148,9 +158,11 @@
                             <div class="btn-block" style="height: 50px;" id="deployImage">
                                 <a href="/service/add?imageName=${image.name}&imageVersion=${image.version}" class="btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
                             </div>
-                            <div class="btn-block hide" style="height: 50px; " id="deleteImage">
-                                <a href="javascript:void(0);"  class="btn btn-dangered btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
-                            </div>
+                            <c:if test="${editImage==1 }">
+	                            <div class="btn-block " style="height: 50px; " id="deleteImage">
+	                                <a href="javascript:void(0);"  class="btn btn-dangered btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
+	                            </div>
+                            </c:if>
                         </div>
                     </div>
                 </div>

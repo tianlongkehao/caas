@@ -25,8 +25,11 @@ public class Image {
 	//1公用2私有
 	private Integer imageType;
 	private String remark;
+	private String summary;
 	private long creator;
 	private Date createTime;
+	@Transient
+	private Integer currUserFavor;
 	
 	@ManyToMany(mappedBy = "favorImages")
 	private List<User> favorUsers;
@@ -67,6 +70,13 @@ public class Image {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+	
+	public String getSummary() {
+		return summary;
+	}
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
 	public long getCreator() {
 		return creator;
 	}
@@ -79,10 +89,18 @@ public class Image {
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
+	
+	public Integer getCurrUserFavor() {
+		return currUserFavor;
+	}
+	public void setCurrUserFavor(Integer currUserFavor) {
+		this.currUserFavor = currUserFavor;
+	}
 	public List<User> getFavorUsers() {
 		return favorUsers;
 	}
 	public void setFavorUsers(List<User> favorUsers) {
 		this.favorUsers = favorUsers;
 	}
+	
 }

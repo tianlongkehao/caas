@@ -63,7 +63,7 @@
         </li>
         <li id="menu_ci">
             <a href="/ci">
-                <img class="nav-icon" src="/images/service.svg" alt=""/>
+                <img class="nav-icon" src="/images/factory_new.svg" alt=""/>
                 <span class="nav-title">构建</span>
             </a>
             <ul class="nav-item-hover">
@@ -76,7 +76,7 @@
         </li>
         <li id="menu_registry">
             <a href="/registry/0">
-                <img class="nav-icon" src="/images/service.svg" alt=""/>
+                <img class="nav-icon" src="/images/applist3.svg" alt=""/>
                 <span class="nav-title">镜像</span>
             </a>
             <ul class="nav-item-hover">
@@ -103,7 +103,7 @@
             <c:when test="${user.user_autority==1}">
                 <li id="menu_user" class="user-admin">
                     <a href="/user/list">
-                        <img class="nav-icon" src="/images/service.svg" alt=""/>
+                        <img class="nav-icon" src="/images/user.svg" alt=""/>
                         <span class="nav-title">租户</span>
                     </a>
                     <ul class="nav-item-hover">
@@ -116,7 +116,7 @@
                 </li>
                 <li id="menu_cluster">
                     <a href="/cluster/list">
-                        <img class="nav-icon" src="/images/service.svg" alt=""/>
+                        <img class="nav-icon" src="/images/server.svg" alt=""/>
                         <span class="nav-title">集群</span>
                     </a>
                     <ul class="nav-item-hover">
@@ -129,19 +129,7 @@
                 </li>
             </c:when>
             <c:otherwise>
-                <li id="menu_userOwn" class="user-own">
-                    <a href="/user/own">
-                        <img class="nav-icon" src="/images/service.svg" alt=""/>
-                        <span class="nav-title">用户</span>
-                    </a>
-                    <ul class="nav-item-hover">
-                        <li id="menuUserOwn" action="">
-                            <a href="/user/own">
-                                用户
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+
             </c:otherwise>
         </c:choose>
 

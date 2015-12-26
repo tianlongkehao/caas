@@ -11,7 +11,6 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.api.RestFactory;
@@ -24,7 +23,6 @@ import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerSpec;
 import com.bonc.epm.paas.kubernetes.model.Service;
-import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 
@@ -63,7 +61,7 @@ public class KubernetesClientUtil {
         }
         return client;
     }
-	
+    
     /*public static void main(String[] args) {
     	
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("bonc");
@@ -144,12 +142,13 @@ public class KubernetesClientUtil {
 		return replicationController;
 	}
 	
-	public static Service generateService(String appName,Integer port,Integer targetPort){
+	public static Service generateService(String appName,Integer port,Integer targetPort,Integer nodePort){
 		Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(appName+"-service");
 		service.setMetadata(meta);
 		ServiceSpec spec = new ServiceSpec();
+		spec.setType("NodePort");
 		
 		Map<String,String> selector = new HashMap<String,String>();
 		selector.put("app", appName);
@@ -160,6 +159,7 @@ public class KubernetesClientUtil {
 		portObj.setProtocol("TCP");
 		portObj.setPort(port);
 		portObj.setTargetPort(targetPort);
+		portObj.setNodePort(nodePort);
 		ports.add(portObj);
 		spec.setPorts(ports);
 		

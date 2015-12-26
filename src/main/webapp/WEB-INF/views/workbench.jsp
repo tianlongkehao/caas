@@ -63,51 +63,19 @@
                         <a class="icon-view" href="javascript:void(0);" action="/registry/0">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
-                                    <span><img src="images/factory_new.svg" alt=""/></span>
+                                    <span><img src="images/applist3.svg" alt=""/></span>
                                 </div>
                                 <div class="icon-name">镜像中心</div>
                             </div>
                         </a>
                     </li>
                     <li>
-                        <a class="icon-view" href="javascript:void(0);">
-                            <div class="icon-wrapper">
-                                <div class="icon-img">
-                                    <span><img src="images/factory_new.svg" alt=""/></span>
-                                </div>
-                                <div class="icon-name">API中心</div>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="icon-view" href="javascript:void(0);">
-                            <div class="icon-wrapper">
-                                <div class="icon-img">
-                                    <span><img src="images/factory_new.svg" alt=""/></span>
-                                </div>
-                                <div class="icon-name">应用中心</div>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
                         <a class="icon-view" href="javascript:void(0);" action="/user/list/${cur_user.id}">
-
                             <div class="icon-wrapper">
                                 <div class="icon-img">
-                                    <span><img src="images/factory_new.svg" alt=""/></span>
+                                    <span><img src="images/user.svg" alt=""/></span>
                                 </div>
                                 <div class="icon-name">租户管理</div>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/user/own">
-
-                            <div class="icon-wrapper">
-                                <div class="icon-img">
-                                    <span><img src="images/factory_new.svg" alt=""/></span>
-                                </div>
-                                <div class="icon-name">用户中心</div>
                             </div>
                         </a>
                     </li>
@@ -115,7 +83,7 @@
                         <a class="icon-view" href="javascript:void(0);" action="/cluster/list">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
-                                    <span><img src="images/factory_new.svg" alt=""/></span>
+                                    <span><img src="images/server.svg" alt=""/></span>
                                 </div>
                                 <div class="icon-name">集群管理</div>
                             </div>

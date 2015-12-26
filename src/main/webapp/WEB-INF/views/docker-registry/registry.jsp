@@ -37,7 +37,12 @@
 
                                     <li class="images-panel">
                                         <div class="select-img">
-                                            <i class="fa fa-star-o star-style" style="color:#efa421"></i>
+                                        <c:if test="${image.currUserFavor==0 }">
+                                            <i class="fa fa-star-o star-style" style="color:#4280CB"></i>
+                                        </c:if>
+                                        <c:if test="${image.currUserFavor==1 }">
+                                            <i class="fa fa-star star-style" style="color:#efa421"></i>
+                                        </c:if>
                                             <div class="mir-img ">
                                                 <img src="/images/image-1.png">
                                             </div>
@@ -46,13 +51,13 @@
                                             <div class="pull-right-text">${image.name}</div>
                                             <div>
                                                 <div class="pull-right">
-                                                    <a href="javascript:void(0);" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
+                                                    <a href="/service/add?imageName=${image.name}&imageVersion=${image.version}" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="create-item">
-                                            <a href="/registry/detail/${image.id }?type=${index }">
-                                                <span class="note-text" title="${image.remark}" > ${image.remark} </span>
+                                            <a href="/registry/detail/${image.id }">
+                                                <span class="note-text" title="${image.remark}" > ${image.summary} </span>
                                             </a>
                                         </div>
                                     </li>
