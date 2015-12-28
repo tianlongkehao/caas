@@ -856,9 +856,9 @@ i.pushOrg {
 }
 
 
-/*租户资源查看*/
+/*资源查看*/
 .detail-info {
-    clear: both;
+
     height: calc(100% - 242px);
     margin-bottom: 15px;
 }
@@ -866,7 +866,7 @@ i.pushOrg {
     margin-top: 0px;
     background: #fff;
     height: calc(100% - 20px);
-    width: 50%;
+    width: 100%;
     overflow: hidden;
     border-radius: 2px;
     padding: 20px;
@@ -909,17 +909,188 @@ i.pushOrg {
     border-radius: 7px;
     transition: all 1s ease-out;
 }
+/*master-CPU*/
+.detail-info .info-list #masterCpuResourceInfo tbody td .slider_bj {
+    position: relative;
+    background: #DADBDE;
+    border-radius: 7px;
+    height: 15px;
+    width: 95%;
+}
+.detail-info .info-list #masterCpuResourceInfo tbody td .slider_bj .slider_block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 15px;
+    background: #2FBA66;
+    border-radius: 7px;
+    transition: all 1s ease-out;
+}
+
+.detail-info .info-list #masterCpuResourceInfo{
+    text-align: center;
+}
 
 
-
-.detail-info .info-list #table-listing thead .detail-rows {
+.detail-info .info-list #table-listing, #masterCpuResourceInfo thead .detail-rows {
     font-size: 16px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
     background: #FAFAFA;
 }
+/*etcd-CPU*/
+.detail-info .info-list #etcdCpuResourceInfo tbody td .slider_bj {
+    position: relative;
+    background: #DADBDE;
+    border-radius: 7px;
+    height: 15px;
+    width: 95%;
+}
+.detail-info .info-list #etcdCpuResourceInfo tbody td .slider_bj .slider_block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 15px;
+    background: #2FBA66;
+    border-radius: 7px;
+    transition: all 1s ease-out;
+}
+
+.detail-info .info-list #etcdCpuResourceInfo{
+    text-align: center;
+}
 
 
+.detail-info .info-list #table-listing, #etcdCpuResourceInfo thead .detail-rows {
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
+/*slave-CPU*/
+.detail-info .info-list #slaveCpuResourceInfo tbody td .slider_bj {
+    position: relative;
+    background: #DADBDE;
+    border-radius: 7px;
+    height: 15px;
+    width: 95%;
+}
+.detail-info .info-list #slaveCpuResourceInfo tbody td .slider_bj .slider_block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 15px;
+    background: #2FBA66;
+    border-radius: 7px;
+    transition: all 1s ease-out;
+}
+
+.detail-info .info-list #slaveCpuResourceInfo{
+    text-align: center;
+}
+
+
+.detail-info .info-list #table-listing, #slaveCpuResourceInfo thead .detail-rows {
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
+/*内存*/
+
+/*master-内存*/
+.detail-info .info-list #masterMemResourceInfo tbody td .slider_bj {
+    position: relative;
+    background: #DADBDE;
+    border-radius: 7px;
+    height: 15px;
+    width: 95%;
+}
+.detail-info .info-list #masterMemResourceInfo tbody td .slider_bj .slider_block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 15px;
+    background: #2FBA66;
+    border-radius: 7px;
+    transition: all 1s ease-out;
+}
+
+.detail-info .info-list #masterMemResourceInfo{
+    text-align: center;
+}
+
+
+.detail-info .info-list #table-listing, #masterMemResourceInfo thead .detail-rows {
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
+/*etcd-内存*/
+.detail-info .info-list #etcdMemResourceInfo tbody td .slider_bj {
+    position: relative;
+    background: #DADBDE;
+    border-radius: 7px;
+    height: 15px;
+    width: 95%;
+}
+.detail-info .info-list #etcdMemResourceInfo tbody td .slider_bj .slider_block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 15px;
+    background: #2FBA66;
+    border-radius: 7px;
+    transition: all 1s ease-out;
+}
+
+.detail-info .info-list #etcdMemResourceInfo{
+    text-align: center;
+}
+
+
+.detail-info .info-list #table-listing, #etcdMemResourceInfo thead .detail-rows {
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
+/*slave-内存*/
+.detail-info .info-list #slaveMemResourceInfo tbody td .slider_bj {
+    position: relative;
+    background: #DADBDE;
+    border-radius: 7px;
+    height: 15px;
+    width: 95%;
+}
+.detail-info .info-list #slaveMemResourceInfo tbody td .slider_bj .slider_block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 15px;
+    background: #2FBA66;
+    border-radius: 7px;
+    transition: all 1s ease-out;
+}
+
+.detail-info .info-list #slaveMemResourceInfo{
+    text-align: center;
+}
+
+
+.detail-info .info-list #table-listing, #slaveMemResourceInfo thead .detail-rows {
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
 
 
 
