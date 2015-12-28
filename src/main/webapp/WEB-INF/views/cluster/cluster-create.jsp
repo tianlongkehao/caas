@@ -167,13 +167,7 @@
                                             <th style="width: 33%;text-align: center">详细信息</th>
                                         </tr>
                                         </thead>
-                                        <tbody>
-                                        <tr>
-                                            <th style="text-align: center">172.16.71.111</th>
-                                            <td style="text-align: center"></td>
-                                            <td style="text-align: center"></td>
-                                            <td style="text-align: center"></td>
-                                        </tr>
+                                        <tbody id='divResult'>
                                         </tbody>
                                     </table>
                                 </div>

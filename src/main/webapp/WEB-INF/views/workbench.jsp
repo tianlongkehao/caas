@@ -70,32 +70,29 @@
                             </div>
                         </a>
                     </li>
-                    <c:choose>
-                        <c:when test="${user.user_autority==1}">
-                            <li>
-                                <a class="icon-view" href="javascript:void(0);" action="/user/list/${cur_user.id}">
-                                    <div class="icon-wrapper">
-                                        <div class="icon-img">
-                                            <span><img src="images/user.svg" alt=""/></span>
-                                        </div>
-                                        <div class="icon-name">租户管理</div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="icon-view" href="javascript:void(0);" action="/cluster/list">
-                                    <div class="icon-wrapper">
-                                        <div class="icon-img">
-                                            <span><img src="images/server.svg" alt=""/></span>
-                                        </div>
-                                        <div class="icon-name">集群管理</div>
-                                    </div>
-                                </a>
-                            </li>
-                        </c:when>
-                        <c:otherwise></c:otherwise>
-                    </c:choose>
 
+                    <c:if test="${cur_user.user_autority == 1}">
+                    <li>
+                        <a class="icon-view" href="javascript:void(0);" action="/user/list/${cur_user.id}">
+                            <div class="icon-wrapper">
+                                <div class="icon-img">
+                                    <span><img src="images/user.svg" alt=""/></span>
+                                </div>
+                                <div class="icon-name">租户管理</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="icon-view" href="javascript:void(0);" action="/cluster/list">
+                            <div class="icon-wrapper">
+                                <div class="icon-img">
+                                    <span><img src="images/server.svg" alt=""/></span>
+                                </div>
+                                <div class="icon-name">集群管理</div>
+                            </div>
+                        </a>
+                    </li>
+                    </c:if>
 
                 </ul>
             </div>
