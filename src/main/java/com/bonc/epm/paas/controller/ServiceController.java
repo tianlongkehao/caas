@@ -24,7 +24,10 @@ import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Service;
+import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DockerClientUtil;
+import com.bonc.epm.paas.util.TemplateEngine;
 
 
  
@@ -66,17 +69,14 @@ public class ServiceController {
 	 */
 	@RequestMapping(value={"service"},method=RequestMethod.GET)
 	public String containerLists(Model model){
-		List<Container> containerList = new ArrayList<Container>();
+		//List<Container> containerList = new ArrayList<Container>();
 	    List<Service> serviceList = new ArrayList<Service>();
-		for(Container container:containerDao.findAll()){
-			for(Service service:serviceDao.findByContainerID(container.getId())){
-				serviceList.add(service);
-			}
-			containerList.add(container);
+		for(Service service:serviceDao.findAll()){
+			serviceList.add(service);
 		}
-		log.debug("containerlist========"+containerList);
+		//log.debug("containerlist========"+containerList);
 		
-		model.addAttribute("containerList",containerList);
+		//model.addAttribute("containerList",containerList);
 		model.addAttribute("serviceList", serviceList);
 		model.addAttribute("menu_flag", "service");
 		
@@ -92,12 +92,12 @@ public class ServiceController {
 	@RequestMapping(value={"service/detail/{id}"},method=RequestMethod.GET)
 	public String detail(Model model,@PathVariable long id){
         System.out.printf("id: " + id);
-        Container container = containerDao.findOne(id);
-        List<Service> serviceList = serviceDao.findByContainerID(id);
+        Service service = serviceDao.findOne(id);
+        //List<Service> serviceList = serviceDao.findByContainerID(id);
 
 		model.addAttribute("id", id);
-        model.addAttribute("container", container);
-        model.addAttribute("serviceList", serviceList);
+        //model.addAttribute("container", container);
+        model.addAttribute("service", service);
 		return "service/service-detail.jsp";
 	}
 	/**
@@ -146,15 +146,15 @@ public class ServiceController {
 	@RequestMapping("service/createContainer.do")
 	@ResponseBody
 	public String CreateContainer(long id){
-		//Service service = serviceDao.findOne(id);
-		Container container = containerDao.findOne(id);
+		Service service = serviceDao.findOne(id);
+		//Container container = containerDao.findOne(id);
 		Map<String, Object> map = new HashMap<String, Object>();
 		boolean flag = modifyStatus(id, ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
 		if(flag){
-			flag = DockerClientUtil.pullImage(container.getImageName(), container.getImageVersion());
+			flag = DockerClientUtil.pullImage(service.getImgName(), service.getImgVersion());
 			if(flag){
-				DockerClientUtil.createContainer(container.getImageName(),container.getImageVersion(), container.getContainerName(), 8080, 10004);
-				flag = DockerClientUtil.startContainer(container.getContainerName());
+				DockerClientUtil.createContainer(service.getImgName(), service.getImgVersion(), service.getServiceName(), 8080, 10004);
+				flag = DockerClientUtil.startContainer(service.getServiceName());
 				if(flag){
 					map.put("status", "200");
 					
@@ -197,25 +197,34 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
-	public String constructContainer(Container container){
-		container.setContainerStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
-		container.setCreateDate(new Date());
-		container.setCreateTimestap(new Timestamp(System.currentTimeMillis()));
-		containerDao.save(container);
-		List<Service> serviceList = new ArrayList<Service>();
-		log.debug("Container--ID:"+container.getId()+"Container--Name:"+container.getContainerName());
-		for(Integer i=0;i<container.getServiceNum();i++){
-			Service service2 = new Service();
-			service2.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
-			service2.setCreateDate(new Date());
-			service2.setServiceName(container.getContainerName()+"-"+getRandomString(5));
-			service2.setContainerID(container.getId());
-			service2.setImgName(container.getImageName());
-			service2.setImgVersion(container.getImageVersion());
-			serviceList.add(service2);
-		}
-		serviceDao.save(serviceList);		
-		log.debug("container--Name:"+container.getContainerName());
+	public String constructContainer(Service service){
+		User  currentUser = CurrentUserUtils.getInstance().getUser();
+		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+		service.setCreateDate(new Date());
+		service.setCreateBy(currentUser.getId());
+		serviceDao.save(service);
+//		List<Service> serviceList = new ArrayList<Service>();
+//		log.debug("Container--ID:"+container.getId()+"Container--Name:"+container.getContainerName());
+//		for(Integer i=0;i<container.getServiceNum();i++){
+//			Service service2 = new Service();
+//			service2.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+//			service2.setCreateDate(new Date());
+//			service2.setServiceName(container.getContainerName()+"-"+getRandomString(5));
+//			service2.setContainerID(container.getId());
+//			service2.setImgName(container.getImageName());
+//			service2.setImgVersion(container.getImageVersion());
+//			serviceList.add(service2);
+//		}
+//		serviceDao.save(serviceList);
+		/*Map<String, String > app = new HashMap<String, String>();
+		app.put("confName", "myserver");
+		app.put("port", "30000");
+		String path = TemplateEngine.class.getClassLoader().getResource("conf.tpl").getPath();
+		String path1 = TemplateEngine.class.getClassLoader().getResource("").getPath();
+		String template = TemplateEngine.readConf(path); 
+		String datastring = TemplateEngine.replaceArgs(template, app);
+		TemplateEngine.writeConf(path1+"user.conf", datastring, true);*/
+		log.debug("container--Name:"+service.getServiceName());
 		return "redirect:/service";
 	}
 	/**
@@ -225,10 +234,10 @@ public class ServiceController {
 	 */
 	@RequestMapping(value={"service/containerName"},method=RequestMethod.GET)
 	@ResponseBody
-	public String containerName(String containerName){
+	public String containerName(String serviceName){
 		Map<String, Object> map = new HashMap<String, Object>();
-		for(Container container:containerDao.findAll()){
-			if(container.getContainerName().equals(containerName))
+		for(Service service:serviceDao.findAll()){
+			if(service.getServiceName().equals(serviceName))
 			{
 				map.put("status", "400");
 				break;
@@ -272,45 +281,55 @@ public class ServiceController {
 	@ResponseBody
 	public String modifyServiceNum(long id,Integer addservice){
 		Map<String, Object> map = new HashMap<String,Object>();
-		Container container = containerDao.findOne(id);
-		List<Service> serviceList = new ArrayList<Service>();
-		if(container.getServiceNum()<addservice){
-		for(int i=0;i<(addservice-container.getServiceNum());i++){
-			Service service = new Service();
-			service.setContainerID(id);
-			service.setCreateDate(new Date());
-			service.setImgName(container.getImageName());
-			service.setImgVersion(container.getImageVersion());
-			service.setServiceName(container.getContainerName()+"-"+getRandomString(5));
-			service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
-			serviceList.add(service);
-		}
-		try {
-			serviceDao.save(serviceList);
-			container.setServiceNum(addservice);
-			containerDao.save(container);
-			map.put("status", "200");
-		} catch (Exception e) {
-			map.put("status", "400");
-		}
-		}
-		if(container.getServiceNum()>addservice){
-			List<Service> serviceList1 = new ArrayList<Service>();
-			serviceList = serviceDao.findByContainerID(id);
-			serviceList1 = serviceDao.findByContainerID(id);
-			serviceList.remove(container.getServiceNum()-addservice);
+		Service service = serviceDao.findOne(id);
+		
+//		if(service.getInstanceNum()<addservice)
+//		{
+//			for(int i=0;i<(addservice-container.getServiceNum());i++){
+//				Service service = new Service();
+//				service.setContainerID(id);
+//				service.setCreateDate(new Date());
+//				service.setImgName(container.getImageName());
+//				service.setImgVersion(container.getImageVersion());
+//				service.setServiceName(container.getContainerName()+"-"+getRandomString(5));
+//				service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+//				serviceList.add(service);
+//			}
+//			try {
+//				serviceDao.save(serviceList);
+//				container.setServiceNum(addservice);
+//				containerDao.save(container);
+//				map.put("status", "200");
+//			} catch (Exception e) {
+//				map.put("status", "400");
+//			}
+//		}
+//		if(container.getServiceNum()>addservice){
+//			List<Service> serviceList1 = new ArrayList<Service>();
+//			serviceList = serviceDao.findByContainerID(id);
+//			serviceList1 = serviceDao.findByContainerID(id);
+//			serviceList.remove(container.getServiceNum()-addservice);
+//			try {
+//				serviceDao.delete(serviceList1);
+//				serviceDao.save(serviceList);
+//				container.setServiceNum(addservice);
+//				containerDao.save(container);
+//				map.put("status", "200");
+//			} catch (Exception e) {
+//				map.put("status", "400");
+//			}
+//		}
+		if(service.getInstanceNum()==addservice){
+			map.put("status", "300");
+		}else {
+			
 			try {
-				serviceDao.delete(serviceList1);
-				serviceDao.save(serviceList);
-				container.setServiceNum(addservice);
-				containerDao.save(container);
+				service.setInstanceNum(addservice);
+				serviceDao.save(service);
 				map.put("status", "200");
 			} catch (Exception e) {
 				map.put("status", "400");
 			}
-		}
-		if(container.getServiceNum()==addservice){
-			map.put("status", "300");
 		}
 		return JSON.toJSONString(map);
 	}
@@ -325,16 +344,16 @@ public class ServiceController {
 	@ResponseBody
 	public String modifyCPU(long id,Integer cpus,String rams){
 		Map<String, Object> map = new HashMap<String,Object>();
-		Container container = containerDao.findOne(id);
-		container.setCpuNum(cpus);
-		container.setRam(rams);
+		Service service = serviceDao.findOne(id);
+		service.setCpuNum(cpus);
+		service.setRam(rams);
 		try {
-			containerDao.save(container);
+			serviceDao.save(service);
 			map.put("status", "200");
 		} catch (Exception e) {
 			map.put("status", "400");
 		}
-		return JSON.toJSONString(container);
+		return JSON.toJSONString(map);
 	}
 	/**
 	 * delete container and services from dockerfile
@@ -344,10 +363,10 @@ public class ServiceController {
 	@RequestMapping("service/delContainer.do")
 	@ResponseBody
 	public String delContainer(long id){
-		//Service service = serviceDao.findOne(id);
-		Container container = containerDao.findOne(id);
+		Service service = serviceDao.findOne(id);
+		//Container container = containerDao.findOne(id);
 		Map<String, Object> map = new HashMap<String,Object>();
-		boolean flag = DockerClientUtil.removeContainer(container.getContainerName());
+		boolean flag = DockerClientUtil.removeContainer(service.getServiceName());
 		if(flag){
 			flag = containerDel(id);
 			if(flag){
@@ -365,11 +384,8 @@ public class ServiceController {
 	 */
 	private boolean containerDel(long id){
 		try {
-			//Container container = containerDao.findOne(id);
-			for(Service service:serviceDao.findByContainerID(id)){
-				serviceDao.delete(service.getId());
-			}
-			containerDao.delete(id);
+			
+			serviceDao.delete(id);
 		} catch (Exception e) {
 			// TODO: handle exception
 			return false;
@@ -394,6 +410,11 @@ public class ServiceController {
         }  
         return sb.toString();  
     }  
+	
+	public String createConf(){
+		
+		return null;
+	}
 	
 
 }

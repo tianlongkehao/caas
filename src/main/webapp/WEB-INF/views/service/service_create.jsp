@@ -101,15 +101,15 @@
                             <ul class="safeSet">
                                 <li class="line-h-3">
                                     <span class="ve_top">镜像名称：</span>
-                                    <input type="text" value="" class="in_style" id="imageName" name="imageName" readOnly="readOnly">
+                                    <input type="text" value="" class="in_style" id="imgName" name="imgName" readOnly="readOnly">
                                 </li>
                                 <li class="line-h-3">
                                     <span class="ve_top">镜像版本：</span>
-                                    <input type="text" value="" class="in_style" id="imageVersion" name="imageVersion" readOnly="readOnly">
+                                    <input type="text" value="" class="in_style" id="imgVersion" name="imgVersion" readOnly="readOnly">
                                 </li>
                                 <li class="line-h-3">
                                     <span class="ve_top">服务名称：</span>
-                                    <input type="text" value="" class="in_style" id="containerName" name="containerName">
+                                    <input type="text" value="" class="in_style" id="serviceName" name="serviceName">
                                 </li>
                                 <!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
@@ -130,7 +130,7 @@
                                     <div class="param-set">
                                         <span class="number-title">实例数量：</span>
                                         <input type="number" value="1" class="number" min="1" autocomplete="off"
-                                               placeholder="1" id="serviceNum" name="serviceNum"> <span class="unit">个</span>
+                                               placeholder="1" id="instanceNum" name="instanceNum"> <span class="unit">个</span>
                                     </div>
                                 </li>
                                 <li class="line-h-3">

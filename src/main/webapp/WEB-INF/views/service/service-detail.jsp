@@ -21,7 +21,7 @@
                         <li><i class="fa fa-angle-right"></i></li>
                         <li class="active">服务</li>
                         <li><i class="fa fa-angle-right"></i></li>
-                        <li class="active">${container.containerName }</li>
+                        <li class="active">${service.serviceName }</li>
                     </ol>
                 </div>
                 <div class="contentMain">
@@ -35,8 +35,8 @@
 			<li>运行状态：运行中</li>
 			<li>服务地址：<a href="http://mysql-lynnxu.tenxapp.com:25314"
 				target="_blank">bonc.com:25314</a></li>
-			<li>创建时间：${container.createDate }</li>
-			<li>更新时间：${container.createDate }</li>
+			<li>创建时间：${service.createDate }</li>
+			<li>更新时间：${service.createDate }</li>
 		</ul>
 		<div class="applocation">
 			<a href="http://mysql-lynnxu.tenxapp.com:25314" target="_blank"
@@ -58,12 +58,12 @@
 			</thead>
 			<tbody class="BORDER">
 				<tr>
-					<td>名称：${container.containerName }</td>
+					<td>名称：${service.serviceName }</td>
 					<td>运行状态：正在运行</td>
 				</tr>
 				<tr>
-					<td>镜像名称：${container.imageName }</td>
-					<td>创建时间：${container.createDate }</td>
+					<td>镜像名称：${service.imgName }</td>
+					<td>创建时间：${service.createDate }</td>
 				</tr>
 			</tbody>
 		</table>
@@ -80,8 +80,8 @@
 					<td>系统盘：10GB</td>
 				</tr>
 				<tr>
-					<td>CPU：${container.cpuNum }</td>
-					<td>内存：${container.ram }MB</td>
+					<td>CPU：${service.cpuNum }</td>
+					<td>内存：${service.ram }MB</td>
 				</tr>
 			</tbody>
 		</table>
