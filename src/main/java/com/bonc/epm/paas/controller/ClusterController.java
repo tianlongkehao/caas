@@ -94,15 +94,13 @@ public class ClusterController {
     }
 
     @RequestMapping(value = {"cluster/installCluster"}, method = RequestMethod.GET)
-    public String installCluster(String user, String pass, String ip, Integer port, Model model)
+    @ResponseBody
+    public String installCluster(@RequestParam String user, @RequestParam String pass, @RequestParam String ip,
+                                 @RequestParam Integer port, @RequestParam String type)
             throws IOException, JSchException, InterruptedException {
 
-//        String imageHost = Play.configuration.getString("image.host").getOrElse("127.0.0.1").trim();
-//        String imagePort = Play.configuration.getString("image.port").getOrElse("5000").trim();
-        String imageHost = "";
-        String imagePort = "";
         DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder().build();
-        System.out.print("config" + config.toString());
+        String imageHostPort = config.getUsername();
 
         SshConnect.connect(user, pass, ip, port);
         Integer memLimit = 1000000;
@@ -112,8 +110,8 @@ public class ClusterController {
         String[] b = memRtn.split("\n");
         memLimit = Integer.valueOf(b[b.length - 2].trim());
         //安装环境
-        String cmd = "cd /opt/;unzip rpms.zip;cd /opt/rpms/;nohup ./rpm_inst.sh " + imageHost + ":" + imagePort;
-        SshConnect.exec(cmd, 30000);
+        /*String cmd = "cd /opt/;unzip rpms.zip;cd /opt/rpms/;nohup ./rpm_inst.sh " + imageHostPort + " " + type;
+        SshConnect.exec(cmd, 30000);*/
         //关闭SSH连接
         SshConnect.disconnect();
         Cluster cluster = clusterDao.findByHost(ip);
@@ -125,6 +123,6 @@ public class ClusterController {
             newCluster.setPort(port);
             clusterDao.save(newCluster);
         }
-        return "cluster/installCluster.jsp";
+        return "";
     }
 }

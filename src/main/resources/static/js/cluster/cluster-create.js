@@ -21,7 +21,7 @@ $(document).ready(function () {
         var str = '';
         for (var i = 0; i < data.length; i++) {
             str += '<tr>';
-            var tds1 = '<td>' + data[i].host + '</td>';
+            var tds1 = '<td name="rowHost">' + data[i].host + '</td>';
             var tds2 = '<td><input type="checkbox"/></td>';
             var tds3 = '<td><input type="checkbox"/></td>';
             var tds4 = '<td><input type="checkbox"/></td>';
@@ -33,7 +33,40 @@ $(document).ready(function () {
     $(".installBtn").click(function () {
         $(".radius_step").removeClass("action").eq(3).addClass("action");
         $(".step-inner").css("left", "-300%");
-
+        var rowHosts = document.getElementsByName("rowHost");
+        var allRowsChecked = true;
+        var rowsHostType = [];
+        for (var i = 0; i < rowHosts.length; i++) {
+            var rowHost = rowHosts[0];
+            var host = rowHost.innerHTML;
+            var rowMaster = rowHost.nextElementSibling;
+            var masterChecked = rowMaster.childNodes[0].checked;
+            var rowSlave = rowMaster.nextElementSibling;
+            var slaveChecked = rowSlave.childNodes[0].checked;
+            var rowEtcd = rowSlave.nextElementSibling;
+            var etcdChecked = rowEtcd.childNodes[0].checked;
+            if (masterChecked == false && slaveChecked == false && etcdChecked == false) {
+                alert(host + "没有设置节点类型");
+                allRowsChecked = false;
+                return;
+            }
+            var hostType = {};
+            hostType.host = host;
+            if (masterChecked == true) {
+                hostType.type = "master";
+            } else if (slaveChecked == true) {
+                hostType.type = "slave";
+            } else if (etcdChecked == true) {
+                hostType.type = "etcd";
+            }
+            rowsHostType.push(hostType);
+        }
+        if (allRowsChecked == true) {
+            var rowsLength = rowsHostType.length;
+            var rowNum = 0;
+            var hostType = rowsHostType[rowNum];
+            installEnv(hostType.host, hostType.type, rowNum, rowsLength, rowsHostType);
+        }
     });
     $(".last_step").click(function () {
         if ($(".radius_step").eq(1).hasClass("action")) {
@@ -47,13 +80,28 @@ $(document).ready(function () {
             $(".step-inner").css("left", "-200%");
             $(".radius_step").removeClass("action").eq(2).addClass("action");
         }
-
     });
-
-
 });
 
-
-
-
-
+function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
+    rowNum = rowNum + 1;
+    $.ajax({
+        url: "/cluster/installCluster?user=root&pass=a1s2d3&ip=" + host + "&port=22&type=" + type,
+        success: function () {
+            var str = "";
+            str += '<tr>';
+            var tds1 = '<td name="rowHost">' + host + '</td>';
+            var tds2 = '<td>100%</td>';
+            var tds3 = '<td>安装成功</td>';
+            var tds4 = '<td><a href="#">查看详情</a></td>';
+            str += tds1 + tds2 + tds3 + tds4;
+            str += '</tr>';
+            var divResult = $('#divResult')[0].innerHTML.trim();
+            $('#divResult').html(divResult + str);
+            if (rowNum < rowsLength) {
+                var hostType = rowsHostType[rowNum];
+                installEnv(hostType.host, hostType.type, rowNum, rowsLength);
+            }
+        }
+    });
+}

@@ -4,6 +4,8 @@ import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +19,8 @@ import java.util.Properties;
  */
 public class SshConnect {
 
+    private static final Logger log = LoggerFactory.getLogger(SshConnect.class);
+
     private static InputStream inputStream;
     private static OutputStream outputString;
     private static ChannelShell channelShell;
@@ -28,14 +32,15 @@ public class SshConnect {
         session = jsch.getSession(name, hostIp, port);
         Properties config = new Properties();
 
-        channelShell = (ChannelShell) session.openChannel("shell");
-
-
         session.setPassword(password);
         config.put("StrictHostKeyChecking", "no");
         session.setConfig(config);
         session.connect();
+
+        channelShell = (ChannelShell) session.openChannel("shell");
         channelShell.connect(1000);
+        channelShell.isConnected();
+
         inputStream = channelShell.getInputStream();
         outputString = channelShell.getOutputStream();
         return "";
@@ -51,9 +56,9 @@ public class SshConnect {
             Integer index = cmdTrim.length() - 1;
             String a = cmdTrim.substring(index);
             if (Objects.equals("\n", a)) {
-                command = cmd + "\n";
-            } else {
                 command = cmdTrim;
+            } else {
+                command = cmd + "\n";
             }
         }
         String charset = "UTF-8";
@@ -76,6 +81,7 @@ public class SshConnect {
                 case "$":
                     return str;
                 case "#":
+                    return str;
                 case ":":
                     return str;
                 case "?":
