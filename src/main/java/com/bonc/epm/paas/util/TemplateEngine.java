@@ -4,15 +4,22 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.io.OutputStreamWriter;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class TemplateEngine {
+	private static final Log log = LogFactory.getLog(TemplateEngine.class);
 	private static HttpServletRequest   request;    // servlet参数，用于获取WebContent目录下模板路径
 	private static String               confPath;   // 配置文件，包括完整绝对路径
     private static String               enter;      // 换行符
@@ -22,6 +29,36 @@ public class TemplateEngine {
         TemplateEngine.confPath = confPath;
         TemplateEngine.enter = System.getProperty("line.separator");
     }
+    
+    
+    private static String nginxConfPath;
+    private static String nginxCmdPath;
+    private static String template;
+    static{
+    	String path = TemplateEngine.class.getClassLoader().getResource("conf.tpl").getPath();
+    	template = TemplateEngine.readConf(path); 
+    	Properties nginxProperties = new Properties();
+    	InputStream in = TemplateEngine.class.getClassLoader().getResourceAsStream("nginxConf.io.properties");
+    	try {
+    		nginxProperties.load(in);
+			in.close();
+			nginxConfPath = nginxProperties.getProperty("nginxConf.io.confpath");
+			nginxCmdPath = nginxProperties.getProperty("nginxConf.io.cmdpath"); 
+		} catch (IOException e) {
+			log.error("nginxConfPath.init:"+e.getMessage());
+			e.printStackTrace();
+		}
+    }
+    
+    public static void generateConfig(Map<String, String> app,String configName){
+		String datastring = TemplateEngine.replaceArgs(template, app);
+		TemplateEngine.writeConf(nginxConfPath+configName+".conf", datastring, true);
+    }
+    
+    public static boolean cmdReloadConfig(){
+    	return CmdUtil.exeCmd(nginxCmdPath+" -s reload");
+    }
+    
     /**
      * 替换模板变量
      * 
@@ -49,7 +86,7 @@ public class TemplateEngine {
         }catch(Exception e){
             e.printStackTrace();
         }
-        return sb.toString() + enter;   //加一个空行（结束行）
+        return sb.toString();   //加一个空行（结束行）
     }
     
     /**

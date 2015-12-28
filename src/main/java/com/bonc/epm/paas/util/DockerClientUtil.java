@@ -35,6 +35,9 @@ public class DockerClientUtil {
 		  .build();
 		return dockerClient;
 	}
+	public static String generateRegistryImageName(String imageName,String imageVersion){
+		return config.getUsername()+"/"+imageName+":"+imageVersion;
+	}
 	/**
 	 * 构建镜像
 	 * @param dockerfilePath
