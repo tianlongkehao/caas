@@ -168,36 +168,36 @@
                                     <div>
                                         <table class="table">
                                             <tbody id="serviceList">
-                                            <c:forEach items="${containerList}" var="container" >
+                                            <c:forEach items="${serviceList}" var="service" >
                                             	<c:choose>
-                                            		<c:when test="${container.containerStatus == 1 }">
+                                            		<c:when test="${service.status == 1 }">
                                             			<c:set var="statusName" value="未启动"></c:set>
                                                     	<c:set var="statusClassName" value="fa_stop"></c:set>
                                                     	<c:set var="loadingImgShowClass" value="hide"></c:set>
                                                     </c:when>
-                                                    <c:when test="${container.containerStatus == 2 }">
+                                                    <c:when test="${service.status == 2 }">
                                             			<c:set var="statusName" value="启动中"></c:set>
                                                     	<c:set var="statusClassName" value="fa_success"></c:set>
                                                     	<c:set var="loadingImgShowClass" value=""></c:set>
                                                     	<c:set var="loadingImgShowClass" value="hide"></c:set>
                                                     </c:when>
-                                                    <c:when test="${container.containerStatus == 3 }">
+                                                    <c:when test="${service.status == 3 }">
                                             			<c:set var="statusName" value="运行中"></c:set>
                                                     	<c:set var="statusClassName" value="fa_success"></c:set>
                                                     	<c:set var="loadingImgShowClass" value="hide"></c:set>
                                                     </c:when>
-                                                    <c:when test="${container.containerStatus == 4 }">
+                                                    <c:when test="${service.status == 4 }">
                                             			<c:set var="statusName" value="已停止"></c:set>
                                                     	<c:set var="statusClassName" value="fa_stop"></c:set>
                                                     	<c:set var="loadingImgShowClass" value="hide"></c:set>
                                                     </c:when>
-                                                    <c:when test="${container.containerStatus == 5 }">
+                                                    <c:when test="${service.status == 5 }">
                                             			<c:set var="statusName" value="启动失败"></c:set>
                                                     	<c:set var="statusClassName" value="fa_stop"></c:set>
                                                     	<c:set var="loadingImgShowClass" value="hide"></c:set>
                                                     </c:when>
                                            	 	</c:choose>
-                                           	 	<c:if test="${container.id == null || container.id == 0}">
+                                           	 	<c:if test="${service.id == null || service.id == 0}">
                                                 	<c:set var="cursorClass" value="cursor-no-drop"></c:set>
                                            		</c:if>
 
@@ -207,14 +207,14 @@
                                                         <table class="table">
                                                             <tbody>
 
-                                           		<tr class="clusterId" containerName="${container.containerName }">
+                                           		<tr class="clusterId" containerName="${service.serviceName }">
                                                         <td style="width:5%;text-indent: 30px;">
-                                                            <input type="checkbox" class="chkItem" name="chkItem" value="${container.id }" status="" imagename="" imagetag="" />
+                                                            <input type="checkbox" class="chkItem" name="chkItem" value="${service.id }" status="" imagename="" imagetag="" />
                                                         </td>
                                                         <td style="width:20%;white-space:nowrap;">
                                                             <b class="caret margin" style="transform: rotate(0deg);"></b>
-                                                            <a href="/service/detail/${container.id}" class="cluster_mirrer_name">${container.containerName}</a>
-                                                            <span  class="number-node">${container.serviceNum }</span>
+                                                            <a href="/service/detail/${service.id}" class="cluster_mirrer_name">${service.serviceName}</a>
+                                                            <span  class="number-node">${service.instanceNum }</span>
                                                             <span class="margin cursor console-code-modal" data-id="#console-code-modal">
                                                                 <i class="fa fa-desktop" onclick="_showConsole('mysql');"></i>
                                                             </span>
@@ -224,9 +224,8 @@
                                                    	 		<img src="/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
                                                         </td>
                                                         <td style="width:20%;">
-                                                            <img src="https://dn-tenxstore.qbox.me/tenxcloud_mysql.png?imageView2/2/h/20" style="max-height:20px;max-width:40px;">
                                                             <span class="cluster_mirrer">
-                                                                <a title="点击查看镜像" target="_blank" href="">${container.imageName }</a>
+                                                                <a title="点击查看镜像" target="_blank" href="">${service.imgName }</a>
                                                             </span>
                                                         </td>
                                                         <td style="width:34%" id="mysqlurl">
@@ -235,9 +234,9 @@
                                                             </span>
                                                         </td>
                                                         <td style="width:10%" class="tdTimeStrap">
-                                                            <input type="hidden" class="timeStrap" value="${container.createTimestap }">
+                                                            <input type="hidden" class="timeStrap" value="">
                                                             <i class="fa_time"></i>
-                                                            <span>${container.createDate }</span>
+                                                            <span>${service.createDate }</span>
                                                         </td>
                                                     </tr>
 

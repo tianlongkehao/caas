@@ -26,10 +26,16 @@ $(document).ready(function () {
     				$("#collectTxt").text("已收藏");
     				$(".star-style").removeClass("fa-star-o").addClass("fa-star");
     				_this.addClass('live');
+    				layer.msg( "收藏成功。", {
+							icon: 1
+						});
     			}else{
     				$("#collectTxt").text("收藏");
     				$(".star-style").removeClass("fa-star").addClass("fa-star-o");
     				_this.removeClass('live');
+    				layer.msg( "取消收藏。", {
+							icon: 0.5
+						});
     			}
     		}
     		
@@ -37,23 +43,30 @@ $(document).ready(function () {
     });
     
     $("#deleteImage").click(function(){
-    	var imageId = $("#imageId").val();
-    	var editImage = $("#editImage").val();
-    	$.ajax({
-    		url:"/registry/detail/deleteimage",
-    		type:"post",
-    		data:{"imageId":imageId},
-    		success:function(data){
-    			if(data == "ok"){
-    				alert("删除成功");
-    				window.location.href = "/registry/0";
-    			}else{
-    				alert("删除失败！");
-    			}
-    		}
-    	});
-    });
-    
+   		var imageId = $("#imageId").val();
+   		 layer.open({
+   		        title: '删除镜像',
+   		        content: '确定删除镜像？',
+   		        btn: ['确定', '取消'],
+   		        yes: function(index){ 
+   		        	layer.close(index);
+   		        	$.ajax({
+		   		     		url:"/registry/detail/deleteimage",
+		   		     		type:"post",
+		   		     		data:{"imageId":imageId},
+		   		     		success:function(data){
+		   		     			if(data == "ok"){
+		   		     				window.location.href = "/registry/0";
+		   		     				alert("删除成功");
+		   		     			}else{
+			   		     			alert("删除失败");
+		   		     			}
+		   		     		}
+		   		     	});
+   		        	refresh();
+   		        }
+   		 })
+    })
 });
 
 
@@ -79,6 +92,9 @@ $(function(){
 		var url = "/registry/detail/summary";
 		$.post(url, {'summary':summary,'imageId':imageId}, function(data){
 			if(data == 'success') {
+				layer.msg( "保存成功。", {
+					icon: 1
+				});
 				$(".list-content").text(summary);
 				$(".list-content").removeClass("hide");
 				$("#contentArea").addClass("hide");
