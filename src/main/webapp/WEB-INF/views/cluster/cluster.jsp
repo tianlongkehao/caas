@@ -39,7 +39,7 @@
                                 <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a href="javascript:createContainer()">
+                                        <a href="/cluster/detail">
                                             <i class="fa fa-play"></i>
                                             <span class="ic_left">查看</span>
                                         </a>

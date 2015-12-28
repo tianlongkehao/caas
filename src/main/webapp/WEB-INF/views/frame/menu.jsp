@@ -1,12 +1,9 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="/WEB-INF/tlds/c.tld" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
 </head>
 <body>
-<jsp:include page="" flush="true">
-    <jsp:param name="user" value=""/>
-</jsp:include>
 
 <header class="header">
     <div class="navbar navbar-fixed-top">

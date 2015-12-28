@@ -60,7 +60,7 @@
                                             <table class="table table-hover enabled" style="margin-top: 25px">
                                                 <thead>
                                                 <tr style="text-align: center">
-                                                    <th style="width: 5%;text-indent: 30px;">
+                                                    <th style="width: 5%;text-align: center;">
                                                         <input type="checkbox" class="chkAll"/>
                                                     </th>
                                                     <th style="width: 33%;text-align: center">IP</th>

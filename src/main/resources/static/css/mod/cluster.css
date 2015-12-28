@@ -1,3 +1,46 @@
+.setTab {
+    width: 100%;
+    height: 45px;
+    background: #EFF4F5;
+    line-height: 45px;
+}
+
+.setTab a {
+    text-align: center;
+    color: #666;
+    cursor: pointer;
+}
+
+.setTab a.Record {
+    width: 110px;
+    height: 100%;
+    display: inline-block;
+}
+
+.setTab a.active {
+    font-weight: 500;
+    border-bottom: 1px solid #B8C4CE;
+    background: #e4ebee;
+}
+
+.account_table {
+    background: #fff;
+    min-height: calc(100% - 130px);
+}
+
+.user_info_form,
+.edit_pwd_form {
+    padding: 40px;
+
+}
+
+.itemTable .user-table .userTr {
+    border-bottom: 1px solid #eee;
+}
+
+.itemTable .user-table .userTr:hover {
+    background:#FAFAFA;
+}
 
 .aside-btn {
     height: 60px;
@@ -750,6 +793,132 @@ i.pushOrg {
 .host_step1 .blankapp .row .col-md-4{
     display: inline;
 }
+
+/*服务详情*/
+.container-count {
+    margin-top: 25px;
+    margin-bottom: 20px;
+    min-width: 180px;
+    overflow: hidden;
+    height: 260px;
+    border-radius: 2px;
+    float: left;
+    padding-left: 20px;
+    width: 40%;
+}
+.container-count .padding {
+    background: #fff;
+    height: 100%;
+    width: 100%;
+}
+.row-title, .container-count .row-title {
+    line-height: 40px;
+    background: #FAFAFA;
+    border-bottom: 1px solid #EFF2F7;
+    padding-left: 30px;
+    font-size: 16px;
+}
+.container-count .server-list {
+    padding: 0 30px;
+    margin-top: 20px;
+}
+.container-count .server-list li {
+    height: 50px;
+}
+.container-count .server-list li a {
+    color: #333;
+}
+.container-count .server-list li .server-info-icon {
+    float: left;
+}
+.server_icon_1, .server-info-icon .server_icon_1 {
+    background-position: 0 2px;
+}
+.container-count .server-list .green {
+    background: #2FBA66;
+}
+.container-count .server-list .big {
+    padding: 5px 12px;
+    display: inline-block;
+    border-radius: 10px;
+    color: #fff;
+    text-align: center;
+    min-width: 70px;
+}
+.container-count .server-list .blue {
+    background: #5F93D3;
+}
+.container-count .server-list .yellow {
+    background: #FCB322
+}
+.container-count .server-list .purple {
+    background: #8075C4;
+}
+
+
+/*租户资源查看*/
+.detail-info {
+    clear: both;
+    height: calc(100% - 242px);
+    margin-bottom: 15px;
+}
+.detail-info .info-list {
+    margin-top: 0px;
+    background: #fff;
+    height: calc(100% - 20px);
+    width: 50%;
+    overflow: hidden;
+    border-radius: 2px;
+    padding: 20px;
+}
+.detail-info .info-list #table-listing {
+    text-align: center;
+}
+.detail-info .info-list #table-listing thead tr {
+    height: 40px;
+}
+.detail-info .info-list #table-listing thead .detail-rows {
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+}
+.detail-info .info-list #table-listing tbody tr {
+    height: 40px;
+    border-bottom: 1px solid #E7E7E7;
+}
+.table>tbody>tr>td {
+    vertical-align: middle;
+}
+.table>tbody>tr>td {
+    vertical-align: middle;
+}
+.detail-info .info-list #table-listing tbody td .slider_bj {
+    position: relative;
+    background: #DADBDE;
+    border-radius: 7px;
+    height: 15px;
+    width: 95%;
+}
+.detail-info .info-list #table-listing tbody td .slider_bj .slider_block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 15px;
+    background: #2FBA66;
+    border-radius: 7px;
+    transition: all 1s ease-out;
+}
+
+
+
+.detail-info .info-list #table-listing thead .detail-rows {
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
+
 
 
 
