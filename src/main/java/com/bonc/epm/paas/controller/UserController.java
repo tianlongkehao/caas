@@ -117,12 +117,16 @@ public class UserController {
         return JSON.toJSONString(map);
     }
 
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public String userList(Model model) {
+    @RequestMapping(value = "/list/{id}", method = RequestMethod.GET)
+    public String userList(Model model, @PathVariable long id) {
+        System.out.printf("user--id:", id);
+        User user = userDao.findOne(id);
 
+        model.addAttribute("user", user);
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
+
 
     @RequestMapping(value = {"/add"}, method = RequestMethod.GET)
     public String create() {

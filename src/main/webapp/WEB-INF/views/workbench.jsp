@@ -70,8 +70,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/user/list">
-
+                        <a class="icon-view" href="javascript:void(0);" action="/user/list/${cur_user.id}">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
                                     <span><img src="images/user.svg" alt=""/></span>
