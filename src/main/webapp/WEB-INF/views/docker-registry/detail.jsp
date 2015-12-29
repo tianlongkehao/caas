@@ -59,10 +59,11 @@
 	                                <i class="fa fa-star star-style"></i>&nbsp;<span id="collectTxt">已收藏</span>
 	                            </span>
                             </c:if>
-                            <span class="btn btn-link lock">
-                                <i class="fa fa-lock"></i></span>
-                            </span>
-
+                            <c:if test="${image.imageType==2 }">
+	                            <span class="btn btn-link lock">
+	                                <i class="fa fa-lock"></i>
+	                            </span>
+	                        </c:if>
                         </section>
                     </div>
                     <div class="row" style="padding-bottom: 50px;">
@@ -94,7 +95,6 @@
                             <section class="infoTags hide">
                                 <div class="detail-contents">
                                     <p><i class="fa fa-tag"></i> ${image.version }</p>
-                                    <p><i class="fa fa-tag"></i> ${image.imageType }</p>
                                 </div>
                             </section>
                             <!-- <section class="infoInterface hide">

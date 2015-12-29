@@ -131,9 +131,10 @@ public class ServiceController {
 	@RequestMapping(value={"service/images"},method=RequestMethod.GET)
 	@ResponseBody
 	public String imageList(){
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> map = new HashMap<String,Object>();
 //		List<Image> images = imageDao.findAllByCreator(CiConstant.IMG_TYPE_PUBLIC,CurrentUserUtils.getInstance().getUser().getId());
-		List<Image> images = imageDao.findAll();
+		List<Image> images = imageDao.findAll(userId);
 		map.put("data", images);
 		return JSON.toJSONString(map);
 	}

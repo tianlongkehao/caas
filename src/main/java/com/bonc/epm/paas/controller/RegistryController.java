@@ -36,43 +36,51 @@ public class RegistryController {
 	@RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
 	public String index(@PathVariable int index, Model model) {
 		List<Image> images = null;
+		String active = null;
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
-		
 		if(index == 0){
 			images = imageDao.findByImageType(1);
 			addCurrUserFavor(images);
+			active = "镜像中心";
 		}else if(index == 1){
-			images = imageDao.findAllByCreator(2, userId);
+			images = imageDao.findAllByCreator(userId);
 			addCurrUserFavor(images);
+			active = "我的镜像";
 		}else if(index == 2){
 			images = userDao.findAllFavor(userId);
 			addCurrUserFavor(images);
+			active = "我的收藏";
 		}
 		
 		model.addAttribute("images", images);
 		model.addAttribute("menu_flag", "registry");
 		model.addAttribute("index", index);
+		model.addAttribute("active",active);
 		return "docker-registry/registry.jsp";
 	}
 	
 	@RequestMapping(value = {"registry/{index}"},method = RequestMethod.POST)
 	public String findByName(@PathVariable int index,@RequestParam String imageName,Model model) {
 		List<Image> images = null;
+		String active = null;
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
-		
 		if(index == 0){
 			images = imageDao.findByNameCondition("%"+imageName+"%");
 			addCurrUserFavor(images);
+			active = "镜像中心";
 		}else if(index == 1){
 			images = imageDao.findByNameOfUser(userId,"%"+imageName+"%");
 			addCurrUserFavor(images);
+			active = "我的镜像";
 		}else if(index == 2){
 			images = userDao.findByNameCondition(userId, "%"+imageName+"%");
 			addCurrUserFavor(images);
+			active = "我的收藏";
 		}
 		
 		model.addAttribute("type", index);
 		model.addAttribute("images", images);
+		model.addAttribute("active",active);
 		return "docker-registry/registry.jsp";
 	}
 	
@@ -141,6 +149,7 @@ public class RegistryController {
 		}
 		user.setFavorImages(images);
 		userDao.save(user);
+		
 		if(!flag){
 			return "success";
 		}else{
