@@ -28,9 +28,13 @@
 
                     <aside class="aside-btn">
                         <div class="btns-group">
-                            <span class="btn btn-defaults btn-white"><i class="icon-map-marker"></i><span class="ic_left">集群管理</span></span>
+                            <a id="clusterResource" class="Record"><span class="btn btn-defaults btn-white"><span class="ic_left">集群资源</span></span></a>
+                            <a id="clusterManage" class="Record action"><span class="btn btn-defaults btn-white"><span class="ic_left">集群管理</span></span></a>
                         </div>
                     </aside>
+
+                <div>
+                    <div id="clusterManage_wrap" class="tab_wrap hide">
                     <div class="caption clearfix">
                         <ul class="toolbox clearfix">
                             <li><a href="javascript:void(0);" id="userReloadBtn"><i class="fa fa-repeat"></i></a></li>
@@ -113,7 +117,9 @@
                             </form>
                         </div>
                     </div>
-             <%--       <div class="itemTable">
+
+
+                    <div class="itemTable">
                         <table class="table service-table">
                             <thead>
                             <tr>
@@ -131,6 +137,17 @@
                                                 <th style="width: 20%;">网络</th>
                                             </tr>
                                             </thead>
+                                            <tbody>
+                                            <tr>
+                                                <th style="width: 5%;text-indent: 30px;">
+                                                    <input type="checkbox" class="chkAll"/>
+                                                </th>
+                                                <th style="width: 20%;padding-left: 5px;">172.16.71.146</th>
+                                                <th style="width: 20%;text-indent: 8px;">111</th>
+                                                <th style="width: 20%;">222</th>
+                                                <th style="width: 20%;">333</th>
+                                            </tr>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </th>
@@ -142,10 +159,12 @@
                             </tr>
                             </tbody>
                         </table>
-                    </div>--%>
+                    </div>
+                    </div>
 
+                    <div id="clusterResource_wrap" class="tab_wrap">
                     <div class="detail-info">
-                        <div class="info-list" style="margin-top: 0px">
+                        <div class="info-list">
                             <table class="table" id="table-listing">
                                 <thead>
                                 <tr>
@@ -315,6 +334,9 @@
                             </table>
                         </div>
                     </div>
+                    </div>
+                </div>
+
 
                 </div>
             </div>
