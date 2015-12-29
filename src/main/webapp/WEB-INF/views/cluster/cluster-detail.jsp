@@ -6,7 +6,7 @@
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="/css/mod/cluster.css"/>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-    <script type="text/javascript" src="/js/user/user-own.js"></script>
+    <script type="text/javascript" src="/js/cluster/cluster-detail.js"></script>
 </head>
 <body>
 

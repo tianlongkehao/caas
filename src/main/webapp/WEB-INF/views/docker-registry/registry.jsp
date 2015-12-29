@@ -48,7 +48,10 @@
                                             </div>
                                         </div>
                                         <div class="select-info">
-                                            <div class="pull-right-text">${image.name}</div>
+                                            <div class="pull-right-text">
+                                                <span class="image-name">${image.name}</span>
+                                                <span class="lock"><i class="fa fa-lock"></i></span> <!-- 解锁样式  <i class="fa fa-unlock"></i> -->
+                                            </div>
                                             <div>
                                                 <div class="pull-right">
                                                     <a href="/service/add?imageName=${image.name}&imageVersion=${image.version}" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
