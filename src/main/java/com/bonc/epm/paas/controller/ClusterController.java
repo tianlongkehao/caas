@@ -4,21 +4,19 @@ import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DockerClientConfig;
-import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import javax.ws.rs.core.Application;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 @Controller
 public class ClusterController {
@@ -103,15 +101,16 @@ public class ClusterController {
         String imageHostPort = config.getUsername();
 
         SshConnect.connect(user, pass, ip, port);
-        Integer memLimit = 1000000;
         //获取主机的内存大小
+        Integer memLimit = 1000000;
         String memCmd = "cat /proc/meminfo | grep MemTotal | awk -F ':' '{print $2}' | awk '{print $1}'";
         String memRtn = SshConnect.exec(memCmd, 1000);
         String[] b = memRtn.split("\n");
         memLimit = Integer.valueOf(b[b.length - 2].trim());
         //安装环境
-        /*String cmd = "cd /opt/;unzip rpms.zip;cd /opt/rpms/;nohup ./rpm_inst.sh " + imageHostPort + " " + type;
-        SshConnect.exec(cmd, 30000);*/
+        String hostName = "centos-minion" + ip.split(".")[3];
+        String cmd = "cd /opt/;nohup ./envInstall.sh " + imageHostPort + " " + type + " 172.16.71.171 " + hostName;
+        SshConnect.exec(cmd, 30000);
         //关闭SSH连接
         SshConnect.disconnect();
         Cluster cluster = clusterDao.findByHost(ip);
@@ -124,5 +123,30 @@ public class ClusterController {
             clusterDao.save(newCluster);
         }
         return "";
+    }
+
+    @RequestMapping(value = {"cluster/copyFile"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String copyFile(@RequestParam String user, @RequestParam String pass, @RequestParam String ip,
+                           @RequestParam Integer port)
+            throws IOException, JSchException, InterruptedException {
+        JSch jsch = new JSch();
+        Session session = jsch.getSession(user, ip, port);
+        session.setPassword(pass);
+        Properties sshConfig = new Properties();
+        sshConfig.put("StrictHostKeyChecking", "no");
+        session.setConfig(sshConfig);
+        session.connect(30000);
+        ChannelSftp sftpConn = (ChannelSftp) session.openChannel("sftp");
+        sftpConn.connect(1000);
+        try {
+            String lpwdPath = sftpConn.lpwd();
+            //创建目录并拷贝文件
+            sftpConn.put(lpwdPath + "/src/main/resources/static/bin/envInstall.sh", "/opt/");
+        } catch (SftpException e) {
+            e.printStackTrace();
+        }
+        return "安装文件拷贝成功";
+
     }
 }
