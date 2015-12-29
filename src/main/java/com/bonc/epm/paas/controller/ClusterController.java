@@ -5,7 +5,7 @@ import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DockerClientConfig;
-import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +13,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.core.Application;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 @Controller
 public class ClusterController {
@@ -30,6 +29,7 @@ public class ClusterController {
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster.jsp";
     }
+
     @RequestMapping(value = {"cluster/detail"}, method = RequestMethod.GET)
     public String clusterDetail(Model model) {
         model.addAttribute("menu_flag", "cluster");
@@ -57,7 +57,7 @@ public class ClusterController {
                 String[] ipsArray = ipSect.split("-");
                 int ipStart = Integer.valueOf(ipsArray[0]);
                 int ipEnd = Integer.valueOf(ipsArray[1]);
-                for (int i = ipStart; i < ipEnd; i++) {
+                for (int i = ipStart; i < ipEnd + 1; i++) {
                     lstIps.add(ipHalf + i);
                 }
             } else {
@@ -102,24 +102,46 @@ public class ClusterController {
     @RequestMapping(value = {"cluster/installCluster"}, method = RequestMethod.GET)
     @ResponseBody
     public String installCluster(@RequestParam String user, @RequestParam String pass, @RequestParam String ip,
-                                 @RequestParam Integer port, @RequestParam String type)
-            throws IOException, JSchException, InterruptedException {
+                                 @RequestParam Integer port, @RequestParam String type) {
 
+        try {
+            //拷贝安装脚本
+            copyFile(user, pass, ip, port);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return "拷贝安装脚本失败";
+        }
+        //读取私有仓库地址
         DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder().build();
         String imageHostPort = config.getUsername();
-
-        SshConnect.connect(user, pass, ip, port);
-        Integer memLimit = 1000000;
-        //获取主机的内存大小
-        String memCmd = "cat /proc/meminfo | grep MemTotal | awk -F ':' '{print $2}' | awk '{print $1}'";
-        String memRtn = SshConnect.exec(memCmd, 1000);
-        String[] b = memRtn.split("\n");
-        memLimit = Integer.valueOf(b[b.length - 2].trim());
-        //安装环境
-        /*String cmd = "cd /opt/;unzip rpms.zip;cd /opt/rpms/;nohup ./rpm_inst.sh " + imageHostPort + " " + type;
-        SshConnect.exec(cmd, 30000);*/
-        //关闭SSH连接
-        SshConnect.disconnect();
+        //ssh连接
+        try {
+            SshConnect.connect(user, pass, ip, port);
+            //获取主机的内存大小
+            /*Integer memLimit = 1000000;
+            String memCmd = "cat /proc/meminfo | grep MemTotal | awk -F ':' '{print $2}' | awk '{print $1}'";
+            String memRtn = SshConnect.exec(memCmd, 1000);
+            String[] b = memRtn.split("\n");
+            memLimit = Integer.valueOf(b[b.length - 2].trim());*/
+            //安装环境
+            String masterName = "centos-master";
+            String hostName = "centos-minion" + ip.split("\\.")[3];
+            String yumSource = "172.16.71.171";
+            String cmd = "cd /opt/;chmod +x ./envInstall.sh;nohup ./envInstall.sh " + imageHostPort + " " + yumSource + " " + type + " " + masterName + " " + hostName;
+            log.debug("cmd-----------------------------------------------------------------------------------"+cmd);
+            SshConnect.exec(cmd, 300000);
+            //关闭SSH连接
+            SshConnect.disconnect();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return "执行command失败";
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return "ssh连接失败";
+        }
         Cluster cluster = clusterDao.findByHost(ip);
         if (cluster == null) {
             Cluster newCluster = new Cluster();
@@ -129,6 +151,26 @@ public class ClusterController {
             newCluster.setPort(port);
             clusterDao.save(newCluster);
         }
-        return "";
+        return "安装成功";
+    }
+
+    private void copyFile(String user, String pass, String ip, Integer port)
+            throws IOException, JSchException, InterruptedException {
+        JSch jsch = new JSch();
+        Session session = jsch.getSession(user, ip, port);
+        session.setPassword(pass);
+        Properties sshConfig = new Properties();
+        sshConfig.put("StrictHostKeyChecking", "no");
+        session.setConfig(sshConfig);
+        session.connect(30000);
+        ChannelSftp sftpConn = (ChannelSftp) session.openChannel("sftp");
+        sftpConn.connect(1000);
+        try {
+            String lpwdPath = sftpConn.lpwd();
+            //创建目录并拷贝文件
+            sftpConn.put(lpwdPath + "/src/main/resources/static/bin/envInstall.sh", "/opt/");
+        } catch (SftpException e) {
+            e.printStackTrace();
+        }
     }
 }
