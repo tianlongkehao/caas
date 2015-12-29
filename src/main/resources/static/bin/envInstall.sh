@@ -3,9 +3,10 @@
 set -e
 
 DOCKER_REGISTRY=$1
-HOST_TYPE=$2
-YUM_SOURCE=$3
-HOST_NAME=$4
+YUM_SOURCE=$2
+HOST_TYPE=$3
+MASTER_NAME=$4
+HOST_NAME=$5
 
 function set_yumEnv(){
         mkdir /etc/yum.repos.d/old
@@ -75,16 +76,16 @@ systemctl stop firewalld.service
 systemctl disable firewalld.service
 
 #修改k8s配置文件,启动服务
-echo "KUBE_ETCD_SERVERS=\"--etcd_servers=http://centos-master:2379\"" >> /etc/kubernetes/config
+echo "KUBE_ETCD_SERVERS=\"--etcd_servers=http://${MASTER_NAME}:2379\"" >> /etc/kubernetes/config
 sed -i "/KUBE_ALLOW_PRIV/c KUBE_ALLOW_PRIV=\"--allow_privileged=false\"" /etc/kubernetes/config
-sed -i "/KUBE_MASTER/c KUBE_MASTER=\"--master=http://centos-master:8080\"" /etc/kubernetes/config
+sed -i "/KUBE_MASTER/c KUBE_MASTER=\"--master=http://${MASTER_NAME}:8080\"" /etc/kubernetes/config
 
 if [ ${HOST_TYPE} = 'master' ];then
 	echo "master"
         sed -i "/KUBE_API_ADDRESS/c KUBE_API_ADDRESS=\"--address=0.0.0.0\"" /etc/kubernetes/apiserver
         sed -i "/# KUBE_API_PORT/c KUBE_API_PORT=\"--port=8080\"" /etc/kubernetes/apiserver
         sed -i "/# KUBELET_PORT/c KUBELET_PORT=\"--kubelet_port=10250\"" /etc/kubernetes/apiserver
-        sed -i "/KUBE_ETCD_SERVERS/c KUBE_ETCD_SERVERS=\"--etcd_servers=http://centos-master:2379\"" /etc/kubernetes/apiserver
+        sed -i "/KUBE_ETCD_SERVERS/c KUBE_ETCD_SERVERS=\"--etcd_servers=http://${MASTER_NAME}:2379\"" /etc/kubernetes/apiserver
         sed -i "/KUBE_ADMISSION_CONTROL/c KUBE_ADMISSION_CONTROL=\"--admission_control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ResourceQuota\"" /etc/kubernetes/apiserver
 
         sed -i "/ETCD_LISTEN_CLIENT_URLS/c ETCD_LISTEN_CLIENT_URLS=\"http://0.0.0.0:2379\"" /etc/etcd/etcd.conf
@@ -115,11 +116,11 @@ else
 	echo "slaver"
         sed -i "/KUBELET_ADDRESS/c KUBELET_ADDRESS=\"--address=0.0.0.0\"" /etc/kubernetes/kubelet
         sed -i "/# KUBELET_PORT/c KUBELET_PORT=\"--port=10250\"" /etc/kubernetes/kubelet
-        sed -i "/KUBELET_HOSTNAME/c KUBELET_HOSTNAME=\"--hostname_override=centos-minion${HOST_NAME}\"" /etc/kubernetes/kubelet
-        sed -i "/KUBELET_API_SERVER/c KUBELET_API_SERVER=\"--api_servers=http://centos-master:8080\"" /etc/kubernetes/kubelet
+        sed -i "/KUBELET_HOSTNAME/c KUBELET_HOSTNAME=\"--hostname_override=${HOST_NAME}\"" /etc/kubernetes/kubelet
+        sed -i "/KUBELET_API_SERVER/c KUBELET_API_SERVER=\"--api_servers=http://${MASTER_NAME}:8080\"" /etc/kubernetes/kubelet
         sed -i "/KUBELET_ARGS/c KUBELET_ARGS=\"--pod-infra-container-image=${DOCKER_REGISTRY}/pause:0.8.0\"" /etc/kubernetes/kubelet
 
-        sed -i "/FLANNEL_ETCD=/c FLANNEL_ETCD=\"http://centos-master:2379\"" /etc/sysconfig/flanneld
+        sed -i "/FLANNEL_ETCD=/c FLANNEL_ETCD=\"http://${MASTER_NAME}:2379\"" /etc/sysconfig/flanneld
         sed -i "/FLANNEL_ETCD_KEY=/c FLANNEL_ETCD_KEY=\"/coreos.com/network\"" /etc/sysconfig/flanneld
         #启动k8s服务
         systemctl restart kube-proxy
