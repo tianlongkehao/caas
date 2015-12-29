@@ -19,7 +19,7 @@
                     <ol class="breadcrumb">
                         <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
                         <li><i class="fa fa-angle-right"></i></li>
-                        <li class="active" id="nav2">镜像中心</li>
+                        <li class="active" id="nav2">镜像服务</li>
                     </ol>
                 </div>
                 <div class="contentMain">

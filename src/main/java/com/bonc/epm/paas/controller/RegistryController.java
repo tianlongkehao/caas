@@ -37,7 +37,6 @@ public class RegistryController {
 	public String index(@PathVariable int index, Model model) {
 		List<Image> images = null;
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
-		
 		if(index == 0){
 			images = imageDao.findByImageType(1);
 			addCurrUserFavor(images);
@@ -59,7 +58,6 @@ public class RegistryController {
 	public String findByName(@PathVariable int index,@RequestParam String imageName,Model model) {
 		List<Image> images = null;
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
-		
 		if(index == 0){
 			images = imageDao.findByNameCondition("%"+imageName+"%");
 			addCurrUserFavor(images);
@@ -141,6 +139,7 @@ public class RegistryController {
 		}
 		user.setFavorImages(images);
 		userDao.save(user);
+		
 		if(!flag){
 			return "success";
 		}else{

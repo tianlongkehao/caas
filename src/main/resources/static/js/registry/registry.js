@@ -38,7 +38,6 @@ $(document).ready(function () {
 						});
     			}
     		}
-    		
     	});
     });
     
@@ -56,17 +55,23 @@ $(document).ready(function () {
 		   		     		data:{"imageId":imageId},
 		   		     		success:function(data){
 		   		     			if(data == "ok"){
-		   		     				window.location.href = "/registry/0";
-		   		     				alert("删除成功");
-		   		     			}else{
-			   		     			alert("删除失败");
+			   		     			layer.msg( "删除成功！", {
+				   						icon: 1
+				   					},function(){
+				   						window.location.href = "/registry/0";
+				   					});
 		   		     			}
+		   		     		},
+		   		     		error:function(){
+			   		     		layer.msg( "删除失败，镜像被收藏", {
+			   						icon: 1
+			   					});
 		   		     		}
 		   		     	});
    		        	refresh();
    		        }
-   		 })
-    })
+   		 });
+    });
 });
 
 
