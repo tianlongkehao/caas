@@ -61,11 +61,11 @@
 
         checkEnter();
 
-        $("#userName").change(function(){
+        $("#userName").on("keyup", function(){
             checkEnter();
         });
 
-        $("#password").change(function(){
+        $("#password").on("keyup", function(){
             checkEnter();
         });
 
@@ -73,10 +73,20 @@
             var checkFlag = $("#userName").val() && $("#password").val();
             if(checkFlag){
                 $("#btn-signin").removeAttr("disabled");
+                return true;
             }else{
                 $("#btn-signin").attr("disabled", "disabled");
+                return false;
             }
         }
+
+        $(window).keydown(function(e){
+            if(e.keyCode==13){
+                if(checkEnter()) {
+                    $("#loginForm").submit();
+                }
+            }
+        });
 
         $("#btn-signin").click(function(){
             $("#loginForm").submit();
