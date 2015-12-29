@@ -19,7 +19,7 @@
                     <ol class="breadcrumb">
                         <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
                         <li><i class="fa fa-angle-right"></i></li>
-                        <li class="active" id="nav2">镜像服务</li>
+                        <li class="active" id="nav2">${active }</li>
                     </ol>
                 </div>
                 <div class="contentMain">
@@ -48,9 +48,12 @@
                                             </div>
                                         </div>
                                         <div class="select-info">
-                                            <div class="pull-right-text">
-                                                <span class="image-name">${image.name}</span>
-                                                <span class="lock"><i class="fa fa-lock"></i></span> <!-- 解锁样式  <i class="fa fa-unlock"></i> -->
+                                            <div class="pull-right-text">${image.name}
+                                             	<c:if test="${image.imageType==2 }">
+	                                            	<span class="btn btn-link lock">
+	                                            		<i class="fa fa-lock"></i>
+	                               					</span>
+                               					</c:if>
                                             </div>
                                             <div>
                                                 <div class="pull-right">
