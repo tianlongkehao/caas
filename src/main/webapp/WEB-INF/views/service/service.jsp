@@ -201,7 +201,7 @@
                                                 	<c:set var="cursorClass" value="cursor-no-drop"></c:set>
                                            		</c:if>
 
-                                            <tr id="inst_hello1" memory="512MB" class="show-tr">
+                                            <tr id="inst_${service.id }" memory="512MB" class="show-tr">
                                                 <td>
                                                     <div class="contents-table">
                                                         <table class="table">
