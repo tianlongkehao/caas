@@ -10,12 +10,16 @@ import org.apache.commons.logging.LogFactory;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.LimitRange;
+import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.google.common.base.Joiner;
@@ -211,5 +215,98 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
 	}
-   
+
+	public LimitRange getLimitRange(String name) throws KubernetesClientException {
+        try {
+            return api.getLimitRange(namespace,name);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public LimitRangeList getAllLimitRanges() throws KubernetesClientException {
+        try {
+            return api.getAllLimitRanges(namespace);
+        } catch (NotFoundException e) {
+            return new LimitRangeList();
+        } catch (WebApplicationException e) {
+        	e.printStackTrace();
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public LimitRange createLimitRange(LimitRange limitRange)
+            throws KubernetesClientException {
+        try {
+            return api.createLimitRange(namespace,limitRange);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public LimitRange updateLimitRange(String name, LimitRange limitRange)
+            throws KubernetesClientException {
+        try {
+            return api.updateLimitRange(namespace,name, limitRange);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public Status deleteLimitRange(String name) throws KubernetesClientException {
+        try {
+            return api.deleteLimitRange(namespace,name);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+    
+    public ResourceQuota getResourceQuota(String name) throws KubernetesClientException {
+        try {
+            return api.getResourceQuota(namespace,name);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public ResourceQuotaList getAllResourceQuotas() throws KubernetesClientException {
+        try {
+            return api.getAllResourceQuotas(namespace);
+        } catch (NotFoundException e) {
+            return new ResourceQuotaList();
+        } catch (WebApplicationException e) {
+        	e.printStackTrace();
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public ResourceQuota createResourceQuota(ResourceQuota resourceQuota)
+            throws KubernetesClientException {
+        try {
+            return api.createResourceQuota(namespace,resourceQuota);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public ResourceQuota updateResourceQuota(String name, ResourceQuota resourceQuota)
+            throws KubernetesClientException {
+        try {
+            return api.updateResourceQuota(namespace,name, resourceQuota);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public Status deleteResourceQuota(String name) throws KubernetesClientException {
+        try {
+            return api.deleteResourceQuota(namespace,name);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
 }
