@@ -129,7 +129,7 @@
                                             <thead>
                                             <tr>
                                                 <th style="width: 5%;text-indent: 30px;">
-                                                    <input type="checkbox" class="chkAll"/>
+                                                    <input type="checkbox" class="chkAll" />
                                                 </th>
                                                 <th style="width: 20%;padding-left: 5px;">IP</th>
                                                 <th style="width: 20%;text-indent: 8px;">CPU</th>
