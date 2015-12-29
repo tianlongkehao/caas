@@ -490,6 +490,7 @@
 #Path tr, .enabled tr {
     border: 1px solid #eee;
     text-indent: 5px;
+    text-align: center;
 }
 
 .createPort {
@@ -1091,7 +1092,4 @@ i.pushOrg {
     padding-left: 25px;
     background: #FAFAFA;
 }
-
-
-
 

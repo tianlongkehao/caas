@@ -13,6 +13,21 @@ $(document).ready(function () {
         });
         $("#checkedClusters").val(JSON.stringify(checkedClusters));
     });
+
+    $("#checkAllBox").click(function() {
+        var checkAll= document.getElementsByName("checkAll");
+        var checkbox= document.getElementsByName("checkbox");
+        if(checkAll[0].checked==true){
+            for(var i=0;i<checkbox.length;i++){
+                checkbox[i].checked = true;
+            }
+        }else {
+            for (var i = 0; i < checkbox.length; i++) {
+                checkbox[i].checked = false;
+            }
+        }
+    });
+
     $(".checkBtn").click(function () {
         $(".radius_step").removeClass("action").eq(2).addClass("action");
         $(".step-inner").css("left", "-200%");
@@ -22,14 +37,19 @@ $(document).ready(function () {
         for (var i = 0; i < data.length; i++) {
             str += '<tr>';
             var tds1 = '<td name="rowHost">' + data[i].host + '</td>';
-            var tds2 = '<td><input type="checkbox"/></td>';
-            var tds3 = '<td><input type="checkbox"/></td>';
-            var tds4 = '<td><input type="checkbox"/></td>';
-            str += tds1 + tds2 + tds3 + tds4;
+            var tds2 = '<td><input type="checkbox" onclick="chkMaster(this)"/></td>';
+            var tds3 = '<td><input type="checkbox" onclick="chkSlave(this)"/></td>';
+            /*var tds4 = '<td><input type="checkbox"/></td>';*/
+            str += tds1 + tds2 + tds3;
             str += '</tr>';
         }
         $('#divId').html(str);
+
+
+
     });
+
+
     $(".installBtn").click(function () {
         $(".radius_step").removeClass("action").eq(3).addClass("action");
         $(".step-inner").css("left", "-300%");
@@ -82,6 +102,13 @@ $(document).ready(function () {
         }
     });
 });
+function chkMaster(ddd){
+    var d = ddd.parentElement.nextElementSibling.children[0].checked;
+    if(d == true){
+        alert(222)
+        ddd.checked = false;
+    }
+};
 
 function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
     rowNum = rowNum + 1;
