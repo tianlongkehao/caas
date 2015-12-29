@@ -32,10 +32,12 @@ public class RegistryController {
 	private ImageDao imageDao;
 	@Autowired
 	private UserDao userDao;
+	
 	@RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
 	public String index(@PathVariable int index, Model model) {
 		List<Image> images = null;
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		
 		if(index == 0){
 			images = imageDao.findByImageType(1);
 			addCurrUserFavor(images);
@@ -46,6 +48,7 @@ public class RegistryController {
 			images = userDao.findAllFavor(userId);
 			addCurrUserFavor(images);
 		}
+		
 		model.addAttribute("images", images);
 		model.addAttribute("menu_flag", "registry");
 		model.addAttribute("index", index);
@@ -56,6 +59,7 @@ public class RegistryController {
 	public String findByName(@PathVariable int index,@RequestParam String imageName,Model model) {
 		List<Image> images = null;
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		
 		if(index == 0){
 			images = imageDao.findByNameCondition("%"+imageName+"%");
 			addCurrUserFavor(images);
@@ -66,6 +70,7 @@ public class RegistryController {
 			images = userDao.findByNameCondition(userId, "%"+imageName+"%");
 			addCurrUserFavor(images);
 		}
+		
 		model.addAttribute("type", index);
 		model.addAttribute("images", images);
 		return "docker-registry/registry.jsp";
@@ -121,6 +126,7 @@ public class RegistryController {
 		Image image = imageDao.findById(imageId);
 		User user = userDao.findById(userId);
 		List<Image> images = user.getFavorImages();
+		
 		boolean flag = false;
 		for(int i = 0 ;i<images.size();i++){
 			Image img = images.get(i);
@@ -145,7 +151,6 @@ public class RegistryController {
 	@RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteImage(@RequestParam long imageId){
-		
 		imageDao.delete(imageId);
 		return "ok";
 	}
@@ -156,5 +161,4 @@ public class RegistryController {
 			image.setCurrUserFavor(imageDao.findByUserIdAndImageId(image.getId(), userId));
 		}
 	}
-	
 }

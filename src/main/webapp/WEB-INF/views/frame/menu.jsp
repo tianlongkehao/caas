@@ -1,12 +1,9 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="/WEB-INF/tlds/c.tld" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
 </head>
 <body>
-<jsp:include page="" flush="true">
-    <jsp:param name="user" value=""/>
-</jsp:include>
 
 <header class="header">
     <div class="navbar navbar-fixed-top">
@@ -99,39 +96,34 @@
         </li>
 
 
-        <c:choose>
-            <c:when test="${user.user_autority==1}">
-                <li id="menu_user" class="user-admin">
-                    <a href="/user/list">
-                        <img class="nav-icon" src="/images/user.svg" alt=""/>
-                        <span class="nav-title">租户</span>
-                    </a>
-                    <ul class="nav-item-hover">
-                        <li id="menuUser" action="">
-                            <a href="/user/list">
-                                租户
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li id="menu_cluster">
-                    <a href="/cluster/list">
-                        <img class="nav-icon" src="/images/server.svg" alt=""/>
-                        <span class="nav-title">集群</span>
-                    </a>
-                    <ul class="nav-item-hover">
-                        <li id="menuCluster" action="">
-                            <a href="/cluster/list">
-                                集群
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </c:when>
-            <c:otherwise>
-
-            </c:otherwise>
-        </c:choose>
+        <c:if test="${cur_user.user_autority == 1}">
+            <li id="menu_user" class="user-admin">
+                <a href="/user/list/1">
+                    <img class="nav-icon" src="/images/user.svg" alt=""/>
+                    <span class="nav-title">租户</span>
+                </a>
+                <ul class="nav-item-hover">
+                    <li id="menuUser" action="">
+                        <a href="/user/list/1">
+                            租户
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li id="menu_cluster">
+                <a href="/cluster/list">
+                    <img class="nav-icon" src="/images/server.svg" alt=""/>
+                    <span class="nav-title">集群</span>
+                </a>
+                <ul class="nav-item-hover">
+                    <li id="menuCluster" action="">
+                        <a href="/cluster/list">
+                            集群
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </c:if>
 
     </ul>
 </aside>

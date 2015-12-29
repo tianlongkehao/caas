@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+
 import com.alibaba.fastjson.annotation.JSONField;
 
 @Entity
@@ -78,6 +79,27 @@ public class Service {
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
 	private long containerID;
+	private long createBy;
+	private Integer cpuNum;
+	public Integer getCpuNum() {
+		return cpuNum;
+	}
+	public void setCpuNum(Integer cpuNum) {
+		this.cpuNum = cpuNum;
+	}
+	public String getRam() {
+		return ram;
+	}
+	public void setRam(String ram) {
+		this.ram = ram;
+	}
+	private String ram;
+	public long getCreateBy() {
+		return createBy;
+	}
+	public void setCreateBy(long createBy) {
+		this.createBy = createBy;
+	}
 	public long getContainerID() {
 		return containerID;
 	}

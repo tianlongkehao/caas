@@ -24,21 +24,126 @@ import java.util.Map;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.LimitRange;
+import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 
 public interface KubernetesAPIClientInterface {
 
     public static final String VERSION = "v1";
-
-    /* name space API */
     
+    /* resourcequota API */
+
+    /**
+     * Get a resourcequota Info
+     * 
+     * @param name
+     *            id of the resourcequota
+     * @return {@link ResourceQuota}
+     * @throws KubernetesClientException
+     */
+    public ResourceQuota getResourceQuota(String name) throws KubernetesClientException;
+
+    /**
+     * Get all resourcequotas.
+     * 
+     * @return {@link ResourceQuota}s
+     * @throws KubernetesClientException
+     */
+    public ResourceQuotaList getAllResourceQuotas() throws KubernetesClientException;
+
+    /**
+     * Create a new resourcequota
+     * 
+     * @param limitRange
+     *            resourceQuota to be created
+     * @throws KubernetesClientException
+     */
+    public ResourceQuota createResourceQuota(ResourceQuota resourceQuota)
+            throws KubernetesClientException;
+
+    /**
+     * Update a resourcequota (update the number of replicas).
+     * 
+     * @param name
+     *            id of the resourceQuota to be updated
+     * @param replicas
+     *            update the replicas count of the current controller.
+     * @throws KubernetesClientException
+     */
+    public ResourceQuota updateResourceQuota(String name, ResourceQuota resourceQuota)
+            throws KubernetesClientException;
+
+    /**
+     * Delete a resourcequota.
+     * 
+     * @param 
+     *            resourceQuota id resourceQuota id to be deleted.
+     * @throws KubernetesClientException
+     */
+    public Status deleteResourceQuota(String name) throws KubernetesClientException;
+
+    /* limitrange API */
+
+    /**
+     * Get a limitrange Info
+     * 
+     * @param name
+     *            id of the limitrange
+     * @return {@link LimitRange}
+     * @throws KubernetesClientException
+     */
+    public LimitRange getLimitRange(String name) throws KubernetesClientException;
+
+    /**
+     * Get all limitranges.
+     * 
+     * @return {@link LimitRange}s
+     * @throws KubernetesClientException
+     */
+    public LimitRangeList getAllLimitRanges() throws KubernetesClientException;
+
+    /**
+     * Create a new limitrange
+     * 
+     * @param limitRange
+     *            limitRange to be created
+     * @throws KubernetesClientException
+     */
+    public LimitRange createLimitRange(LimitRange limitRange)
+            throws KubernetesClientException;
+
+    /**
+     * Update a limitrange (update the number of replicas).
+     * 
+     * @param name
+     *            id of the limitRange to be updated
+     * @param replicas
+     *            update the replicas count of the current controller.
+     * @throws KubernetesClientException
+     */
+    public LimitRange updateLimitRange(String name, LimitRange limitRange)
+            throws KubernetesClientException;
+
+    /**
+     * Delete a limitrange.
+     * 
+     * @param 
+     *            limitRange id limitRange id to be deleted.
+     * @throws KubernetesClientException
+     */
+    public Status deleteLimitRange(String name) throws KubernetesClientException;
+    
+    /* name space API */
     /**
      * Get information of a Namespace given the NamespaceID
      * 

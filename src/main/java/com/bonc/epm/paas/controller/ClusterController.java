@@ -2,6 +2,7 @@ package com.bonc.epm.paas.controller;
 
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
+import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.jcraft.jsch.*;
@@ -26,6 +27,11 @@ public class ClusterController {
     public String clusterList(Model model) {
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster.jsp";
+    }
+    @RequestMapping(value = {"cluster/detail"}, method = RequestMethod.GET)
+    public String clusterDetail(Model model) {
+        model.addAttribute("menu_flag", "cluster");
+        return "cluster/cluster-detail.jsp";
     }
 
     @RequestMapping(value = {"cluster/add"}, method = RequestMethod.GET)

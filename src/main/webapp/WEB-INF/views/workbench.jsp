@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="/WEB-INF/tlds/c.tld" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -69,6 +70,8 @@
                             </div>
                         </a>
                     </li>
+
+                    <c:if test="${cur_user.user_autority == 1}">
                     <li>
                         <a class="icon-view" href="javascript:void(0);" action="/user/list/${cur_user.id}">
                             <div class="icon-wrapper">
@@ -89,6 +92,8 @@
                             </div>
                         </a>
                     </li>
+                    </c:if>
+
                 </ul>
             </div>
         </div>

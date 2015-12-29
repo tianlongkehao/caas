@@ -793,6 +793,7 @@ i.pushOrg {
 .host_step1 .blankapp .row .col-md-4{
     display: inline;
 }
+
 /*服务详情*/
 .container-count {
     margin-top: 25px;
@@ -865,7 +866,10 @@ i.pushOrg {
     background: #fff;
     height: calc(100% - 20px);
     width: 100%;
-    float: left;
+    margin-top: 10px;
+    overflow: hidden;
+    border-radius: 2px;
+    padding: 20px;
 }
 .detail-info .info-list #table-listing {
     text-align: center;
@@ -914,4 +918,5 @@ i.pushOrg {
     padding-left: 25px;
     background: #FAFAFA;
 }
+
 

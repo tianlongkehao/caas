@@ -16,15 +16,21 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.api.RestFactory;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
+import com.bonc.epm.paas.kubernetes.model.LimitRange;
+import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
+import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerSpec;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 
 public class KubernetesClientUtil {
 	
@@ -51,17 +57,16 @@ public class KubernetesClientUtil {
 	private static KubernetesAPIClientInterface client;
 	
 	public static KubernetesAPIClientInterface getClient() {
-		
-        return getClient("default");
+		String namespace = CurrentUserUtils.getInstance().getUser().getUserName();
+        return getClient(namespace);
     }
-
+	
     public static KubernetesAPIClientInterface getClient(String namespace) {
         if (client == null) {
             client = new KubernetesApiClient(namespace,endpoint, username, password,new RestFactory());
         }
         return client;
     }
-    
     /*public static void main(String[] args) {
     	
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("bonc");
@@ -98,9 +103,34 @@ public class KubernetesClientUtil {
 			ServiceList serviceList = client.getAllServices();
 			System.out.println("serviceList:"+JSON.toJSONString(serviceList));
 			
-			
+			Map<String,String> map = new HashMap<String,String>();
+	    	map.put("memory", "1Gi");
+	    	map.put("cpu", "20");
+	    	map.put("pods", "10");
+	    	map.put("services", "5");
+	    	map.put("replicationcontrollers", "20");
+	    	map.put("resourcequotas", "1");
+	    	ResourceQuota quota = KubernetesClientUtil.generateSimpleResourceQuota("quota",map);
+	    	System.out.println("quota1:"+JSON.toJSONString(quota));		
+	    	quota = client.createResourceQuota(quota);
+	    	System.out.println("quota:"+JSON.toJSONString(quota));
+	    	
+	    	Map<String,String> map = new HashMap<String,String>();
+	    	map.put("memory", "128Mi");
+	    	map.put("cpu", "100m");
+	    	LimitRange limitRange = KubernetesClientUtil.generateSimpleLimitRange("limits",map);
+	    	System.out.println("limitRange1:"+JSON.toJSONString(limitRange));		
+	    	limitRange = client.createLimitRange(limitRange);
+	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
+	    	
+	    	LimitRangeList limitRangeList = client.getAllLimitRanges();
+    		System.out.println("limitRangeList:"+JSON.toJSONString(limitRangeList));
+    		
+    		LimitRange limitRange = client.getLimitRange("limits");
+		System.out.println("limitRange:"+JSON.toJSONString(limitRange));
 		}
 		*/
+    
 	public static Namespace generateSimpleNamespace(String name){
 		Namespace namespace = new Namespace();
 		ObjectMeta meta = new ObjectMeta();
@@ -109,10 +139,37 @@ public class KubernetesClientUtil {
 		return namespace;
 	}
 	
+	public static ResourceQuota generateSimpleResourceQuota(String name,Map<String,String> hard){
+		ResourceQuota resourceQuota = new ResourceQuota();
+		ObjectMeta meta = new ObjectMeta();
+		meta.setName(name);
+		resourceQuota.setMetadata(meta);
+		ResourceQuotaSpec spec = new ResourceQuotaSpec();
+		spec.setHard(hard);
+		resourceQuota.setSpec(spec);
+		return resourceQuota;
+	}
+	
+	public static LimitRange generateSimpleLimitRange(String name,Map<String,String> defaultVal){
+		LimitRange limitRange = new LimitRange();
+		ObjectMeta meta = new ObjectMeta();
+		meta.setName(name);
+		limitRange.setMetadata(meta);
+		
+		LimitRangeSpec spec = new LimitRangeSpec();
+		List<LimitRangeItem> limits = new ArrayList<LimitRangeItem>();
+		LimitRangeItem limitRangeItem = new LimitRangeItem();
+		limitRangeItem.setDefaultVal(defaultVal);
+		limits.add(limitRangeItem);
+		spec.setLimits(limits);
+		limitRange.setSpec(spec);
+		return limitRange;
+	}
+	
 	public static ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
-		meta.setName(name+"-controller");
+		meta.setName(name);
 		replicationController.setMetadata(meta);
 		ReplicationControllerSpec spec = new ReplicationControllerSpec();
 		spec.setReplicas(replicas);
@@ -145,7 +202,7 @@ public class KubernetesClientUtil {
 	public static Service generateService(String appName,Integer port,Integer targetPort,Integer nodePort){
 		Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
-		meta.setName(appName+"-service");
+		meta.setName(appName);
 		service.setMetadata(meta);
 		ServiceSpec spec = new ServiceSpec();
 		spec.setType("NodePort");

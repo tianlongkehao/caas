@@ -60,8 +60,8 @@
                                             <table class="table table-hover enabled" style="margin-top: 25px">
                                                 <thead>
                                                 <tr style="text-align: center">
-                                                    <th style="width: 5%;text-indent: 30px;">
-                                                        <input type="checkbox" class="chkAll"/>
+                                                    <th style="width: 5%;text-align: center;">
+                                                        <input type="checkbox" class="chkAll" name="checkAll" id="checkAllBox"/>
                                                     </th>
                                                     <th style="width: 33%;text-align: center">IP</th>
                                                 </tr>
@@ -70,7 +70,7 @@
                                                 <c:forEach items="${lstClusters}" var="Cluster">
                                                     <tr>
                                                         <td style="text-align: center">
-                                                            <input type="checkbox" name="checked"/>
+                                                            <input type="checkbox" name="checkbox" id="checkbox"/>
                                                             <input type="hidden" name="aaa" value="${Cluster.host}">
                                                         </td>
                                                         <td style="text-align: center">${Cluster.host}</td>
@@ -140,9 +140,9 @@
                                         <thead>
                                         <tr style="text-align: center">
                                             <th style="width: 20%;text-align: center">IP</th>
-                                            <th style="width: 33%;text-align: center">Master</th>
+                                            <th style="width: 33%;text-align: center">Master + Etcd</th>
                                             <th style="width: 33%;text-align: center">slave</th>
-                                            <th style="width: 33%;text-align: center">etcd</th>
+                                            <%--<th style="width: 33%;text-align: center">etcd</th>--%>
                                         </tr>
                                         </thead>
                                         <tbody id='divId'>

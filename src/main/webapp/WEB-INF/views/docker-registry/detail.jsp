@@ -59,6 +59,10 @@
 	                                <i class="fa fa-star star-style"></i>&nbsp;<span id="collectTxt">已收藏</span>
 	                            </span>
                             </c:if>
+                            <span class="btn btn-link lock">
+                                <i class="fa fa-lock"></i></span>
+                            </span>
+
                         </section>
                     </div>
                     <div class="row" style="padding-bottom: 50px;">

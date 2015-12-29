@@ -71,6 +71,22 @@
     white-space: nowrap;
 }
 
+.images-panel .select-info .pull-right-text span.image-name {
+    display: block;
+    float: left;
+    width: 80%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.images-panel .select-info .pull-right-text span.lock {
+    display: block;
+    float: right;
+    width: 10%;
+    color: #337ab7;
+}
+
 .images-panel .create-item {
     opacity: 0;
     width: 100%;
@@ -144,6 +160,12 @@
     height: 36px;
     font-size: 20px;
     white-space: nowrap;
+}
+
+.mirror-head .type-info span.lock {
+    color: #337ab7;
+    font-size: 14px;
+    cursor: pointer;
 }
 
 .mirror-head .type-info #desEdit {

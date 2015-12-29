@@ -33,17 +33,157 @@ import javax.ws.rs.core.MediaType;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.LimitRange;
+import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 
 public interface KubernetesAPI {
 	
+	/* resourcequota API */
+	/**
+     * Get a resourcequota Info
+     * 
+     * @param controllerId
+     *            id of the resourcequota
+     * @return {@link ResourceQuota}
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/resourcequotas/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ResourceQuota getResourceQuota(@PathParam("namespace")String namespace,@PathParam("name") String name)
+            throws KubernetesClientException;
+
+    /**
+     * Get all resourcequotas.
+     * 
+     * @return {@link ResourceQuota}s
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/resourcequotas")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ResourceQuotaList getAllResourceQuotas(@PathParam("namespace")String namespace) throws KubernetesClientException;
+
+    /**
+     * Create a new resourcequota
+     * 
+     * @param controller
+     *            controller to be created
+     * @throws KubernetesClientException
+     */
+    @POST
+    @Path("/namespaces/{namespace}/resourcequotas")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ResourceQuota createResourceQuota(@PathParam("namespace")String namespace,ResourceQuota resourceQuota)
+            throws KubernetesClientException;
+
+    /**
+     * Update a resourcequota
+     * 
+     * @param controllerId
+     *            id of the controller to be updated
+     * @param controller
+     *            controller to update (only the number of replicas can be
+     *            updated).
+     * @throws KubernetesClientException
+     */
+    @PUT
+    @Path("/namespaces/{namespace}/resourcequotas/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ResourceQuota updateResourceQuota(@PathParam("namespace")String namespace,@PathParam("name") String name,
+            ResourceQuota resourceQuota) throws KubernetesClientException;
+
+    /**
+     * Delete a resourcequota.
+     * 
+     * @param replication
+     *            controller id controller id to be deleted.
+     * @throws KubernetesClientException
+     */
+    @DELETE
+    @Path("/namespaces/{namespace}/resourcequotas/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Status deleteResourceQuota(@PathParam("namespace")String namespace,@PathParam("name") String name)
+            throws KubernetesClientException;
+	
+	/* limitrange API */
+	/**
+     * Get a limitrange Info
+     * 
+     * @param controllerId
+     *            id of the limitrange
+     * @return {@link LimitRange}
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/limitranges/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public LimitRange getLimitRange(@PathParam("namespace")String namespace,@PathParam("name") String name)
+            throws KubernetesClientException;
+
+    /**
+     * Get all limitranges.
+     * 
+     * @return {@link LimitRange}s
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/limitranges")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public LimitRangeList getAllLimitRanges(@PathParam("namespace")String namespace) throws KubernetesClientException;
+
+    /**
+     * Create a new limitrange
+     * 
+     * @param controller
+     *            controller to be created
+     * @throws KubernetesClientException
+     */
+    @POST
+    @Path("/namespaces/{namespace}/limitranges")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public LimitRange createLimitRange(@PathParam("namespace")String namespace,LimitRange limitRange)
+            throws KubernetesClientException;
+
+    /**
+     * Update a limitrange
+     * 
+     * @param controllerId
+     *            id of the controller to be updated
+     * @param controller
+     *            controller to update (only the number of replicas can be
+     *            updated).
+     * @throws KubernetesClientException
+     */
+    @PUT
+    @Path("/namespaces/{namespace}/limitranges/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public LimitRange updateLimitRange(@PathParam("namespace")String namespace,@PathParam("name") String name,
+            LimitRange limitRange) throws KubernetesClientException;
+
+    /**
+     * Delete a limitrange.
+     * 
+     * @param replication
+     *            controller id controller id to be deleted.
+     * @throws KubernetesClientException
+     */
+    @DELETE
+    @Path("/namespaces/{namespace}/limitranges/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Status deleteLimitRange(@PathParam("namespace")String namespace,@PathParam("name") String name)
+            throws KubernetesClientException;
+    
 	/* Namespace API */
 
     /**
