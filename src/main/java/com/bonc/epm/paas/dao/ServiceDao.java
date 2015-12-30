@@ -10,5 +10,6 @@ import com.bonc.epm.paas.entity.Service;
 @Transactional
 public interface ServiceDao extends CrudRepository<Service, Long>{
 	public List<Service> findByContainerID(long containerID);
+	public List<Service> findByCreateBy(long createBy);
 
 }

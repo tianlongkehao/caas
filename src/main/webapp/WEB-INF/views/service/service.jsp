@@ -225,12 +225,12 @@
                                                         </td>
                                                         <td style="width:20%;">
                                                             <span class="cluster_mirrer">
-                                                                <a title="点击查看镜像" target="_blank" href="">${service.imgName }</a>
+                                                                <a title="点击查看镜像" target="_blank" href="../registry/detail/${service.imgID }">${service.imgName }</a>
                                                             </span>
                                                         </td>
                                                         <td style="width:34%" id="mysqlurl">
                                                             <span class="url">
-                                                                <a href="" target="_blank">bonc</a>
+                                                                <a href="${service.serviceAddr }:${service.portSet}" target="_blank">bonc</a>
                                                             </span>
                                                         </td>
                                                         <td style="width:10%" class="tdTimeStrap">
@@ -244,12 +244,12 @@
                                                         <td colspan="8"><div class="align-center">
                                                             <table class="table">
                                                                 <thead style="background: #FAFAFA;border-top:1px solid #EDECEC;">
-                                                                <c:forEach items="${serviceList}" var="service">
-                                                                <c:if test="${container.id == service.containerID}">
+                                                                <c:forEach items="${containerList}" var="container">
+                                                                   <c:if test="${container.serviceid == service.id}">
                                                                     <tr class="tr-row">
                                                                         <td style="width:5%">&nbsp;</td>
                                                                         <td style="width:20%;">
-                                                                            <a style="margin-left: 19px;" href="/containers/tenx_district2/instances/mysql-s49b2">${service.serviceName }</a>
+                                                                            <a style="margin-left: 19px;" href="/containers/tenx_district2/instances/mysql-s49b2">${container.containerName }</a>
                                                                         </td>
                                                                         <td colspan="2" style="width:30%">
                                                                             <i class="${statusClassName}"></i> ${statusName}
@@ -260,7 +260,7 @@
                                                                             <i class="fa_time"></i>${service.createDate }
                                                                         </td>
                                                                     </tr>
-                                                                </c:if>
+                                                                 	</c:if>
                                                                 </c:forEach>
                                                                 </thead>
                                                             </table>

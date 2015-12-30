@@ -10,10 +10,11 @@
         $(function(){
             // 判断是否从镜像点击部署按钮跳转
             var isDepoly = '${isDepoly}';
+            var imgID = '${imgID}';
             var imageName = '${imageName}';
             var imageVersion = '${imageVersion}';
             if(isDepoly == 'deploy'){
-                deploy(imageName,imageVersion);
+                deploy(imgID,imageName,imageVersion);
             }
         });
     </script>
@@ -102,6 +103,7 @@
                                 <li class="line-h-3">
                                     <span class="ve_top">镜像名称：</span>
                                     <input type="text" value="" class="in_style" id="imgName" name="imgName" readOnly="readOnly">
+                                    <input type="text" value="" class="in_style" id="imgID" name="imgID" readOnly="readOnly" style="display:none">
                                 </li>
                                 <li class="line-h-3">
                                     <span class="ve_top">镜像版本：</span>
