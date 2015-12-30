@@ -24,7 +24,7 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
  * 镜像
  * @author shangvven
  *
- */
+ */	
 @Controller
 public class RegistryController {
 	private static final Logger log = LoggerFactory.getLogger(RegistryController.class);
