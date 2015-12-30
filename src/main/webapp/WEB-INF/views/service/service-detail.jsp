@@ -28,7 +28,7 @@
 	<section class="detail-succeed">
 		<div class="icon-img">
 			<div class="type-icon">
-				<img src="images/tenxcloud_mysql.png" height="100%">
+				<img src="/images/image-1.png" height="100%">
 			</div>
 		</div>
 		<ul class="succeed-content pull-left">
@@ -196,12 +196,12 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td>mysql</td>
+						<td>${service.serviceName }</td>
 						<td>3306</td>
 						<td>TCP</td>
-						<td>25314</td>
-						<td><a href="http://mysql-lynnxu.tenxapp.com:25314"
-							target="_blank">mysql-lynnxu.tenxapp.com:25314</a></td>
+						<td>3000${service.id }</td>
+						<td><a href="http://10.0.93.3:300${service.id }"
+							target="_blank">10.0.93.3:300${service.id }</a></td>
 					</tr>
 				</tbody>
 			</table>

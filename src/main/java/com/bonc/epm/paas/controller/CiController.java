@@ -237,7 +237,7 @@ public class CiController {
 				log.info("==========rmCommonStr:"+rmCommonStr);
 				CmdUtil.exeCmd(rmCommonStr);
 				String gitCommandStr = "git clone "+nCodeUrl+" "+ci.getCodeLocation();
-				ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"git clone");
+				ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+gitCommandStr);
 				ciRecordDao.save(ciRecord);
 				log.info("==========gitCommandStr:"+gitCommandStr);
 				return CmdUtil.exeCmd(gitCommandStr);

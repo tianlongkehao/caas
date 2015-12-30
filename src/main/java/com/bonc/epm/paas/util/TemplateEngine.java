@@ -33,6 +33,7 @@ public class TemplateEngine {
     
     private static String nginxConfPath;
     private static String nginxCmdPath;
+    private static String nginxConfUrl;
     private static String template;
     static{
     	String path = TemplateEngine.class.getClassLoader().getResource("conf.tpl").getPath();
@@ -44,6 +45,7 @@ public class TemplateEngine {
 			in.close();
 			nginxConfPath = nginxProperties.getProperty("nginxConf.io.confpath");
 			nginxCmdPath = nginxProperties.getProperty("nginxConf.io.cmdpath"); 
+			nginxConfUrl = nginxProperties.getProperty("nginxConf.io.confurl");
 		} catch (IOException e) {
 			log.error("nginxConfPath.init:"+e.getMessage());
 			e.printStackTrace();
@@ -57,6 +59,10 @@ public class TemplateEngine {
     
     public static boolean cmdReloadConfig(){
     	return CmdUtil.exeCmd(nginxCmdPath+" -s reload");
+    }
+    
+    public static String getConfUrl(){
+    	return nginxConfUrl;
     }
     
     /**

@@ -39,6 +39,7 @@ public class KubernetesClientUtil {
 	private static String endpoint;
     private static String username;
     private static String password;
+    private static String startPort;
     static{
     	Properties k8sProperties = new Properties();
     	InputStream in = KubernetesClientUtil.class.getClassLoader().getResourceAsStream("kubernetes.api.properties");
@@ -48,6 +49,7 @@ public class KubernetesClientUtil {
 			endpoint = k8sProperties.getProperty("kubernetes.api.endpoint");
 			username = k8sProperties.getProperty("kubernetes.api.username");
 			password = k8sProperties.getProperty("kubernetes.api.password");
+			startPort = k8sProperties.getProperty("kubernetes.api.startport");
 		} catch (IOException e) {
 			log.error("KubernetesUtil.init:"+e.getMessage());
 			e.printStackTrace();
@@ -55,6 +57,10 @@ public class KubernetesClientUtil {
     }
     
 	private static KubernetesAPIClientInterface client;
+	
+	public static int getK8sStartPort(){
+		return Integer.valueOf(startPort);
+	}
 	
 	public static KubernetesAPIClientInterface getClient() {
 		String namespace = CurrentUserUtils.getInstance().getUser().getUserName();

@@ -51,13 +51,13 @@
                                         <span class="ic_left">停止</span>
                                     </a>
                                 </li>
-                                <li>
+                                <!--  <li>
                                     <a href="javascript:upGradeContainer()">
                                         <i class="fa fa-arrows"></i>
                                         <span class="ic_left">弹性伸缩</span>
                                     </a>
                                 </li>
-                               <!--  <li>
+                               <li>
                                     <a href="">
                                         <i class="fa fa-arrow-up"></i>
                                         <span class="ic_left">灰度升级</span>
@@ -68,13 +68,14 @@
                                         <i class="fa fa-undo"></i>
                                         <span class="ic_left">重新部署</span>
                                     </a>
-                                </li> -->
+                                </li>
                                 <li>
                                     <a href="javascript:changeContainerConf();">
                                         <i class="fa fa-cog"></i>
                                         <span class="ic_left">更改配置</span>
                                     </a>
                                 </li>
+                                 -->
                                 <li>
                                     <a href="javascript:delContainer()">
                                         <i class="fa fa-trash"></i>
@@ -212,7 +213,7 @@
                                                             <input type="checkbox" class="chkItem" name="chkItem" value="${service.id }" status="" imagename="" imagetag="" />
                                                         </td>
                                                         <td style="width:20%;white-space:nowrap;">
-                                                            <b class="caret margin" style="transform: rotate(0deg);"></b>
+                                                            <b class="caret margin" style="transform: rotate(-90deg);"></b>
                                                             <a href="/service/detail/${service.id}" class="cluster_mirrer_name">${service.serviceName}</a>
                                                             <span  class="number-node">${service.instanceNum }</span>
                                                             <span class="margin cursor console-code-modal" data-id="#console-code-modal">
@@ -225,12 +226,14 @@
                                                         </td>
                                                         <td style="width:20%;">
                                                             <span class="cluster_mirrer">
-                                                                <a title="点击查看镜像" target="_blank" href="">${service.imgName }</a>
+                                                                <a title="点击查看镜像" target="_blank" href="../registry/detail/${service.imgID }">${service.imgName }</a>
                                                             </span>
                                                         </td>
                                                         <td style="width:34%" id="mysqlurl">
                                                             <span class="url">
-                                                                <a href="" target="_blank">bonc</a>
+                                                            	<c:if test="${service.serviceAddr!=null&&service.serviceAddr!='' }">
+                                                                	<a href="${service.serviceAddr }:${service.portSet}" target="_blank">${service.serviceAddr }:${service.portSet}</a>
+                                                                </c:if>
                                                             </span>
                                                         </td>
                                                         <td style="width:10%" class="tdTimeStrap">
@@ -240,27 +243,27 @@
                                                         </td>
                                                     </tr>
 
-                                                    <tr style="border-left:1px solid #eee;">
+                                                    <tr style="border-left:1px solid #eee;" class="hide">
                                                         <td colspan="8"><div class="align-center">
                                                             <table class="table">
                                                                 <thead style="background: #FAFAFA;border-top:1px solid #EDECEC;">
-                                                                <c:forEach items="${serviceList}" var="service">
-                                                                <c:if test="${container.id == service.containerID}">
+                                                                <c:forEach items="${containerList}" var="container">
+                                                                   <c:if test="${container.serviceid == service.id}">
                                                                     <tr class="tr-row">
                                                                         <td style="width:5%">&nbsp;</td>
                                                                         <td style="width:20%;">
-                                                                            <a style="margin-left: 19px;" href="/containers/tenx_district2/instances/mysql-s49b2">${service.serviceName }</a>
+                                                                            <a style="margin-left: 19px;" href="javascript:void(0)">${container.containerName }</a>
                                                                         </td>
                                                                         <td colspan="2" style="width:30%">
                                                                             <i class="${statusClassName}"></i> ${statusName}
                                                    	 						<img src="/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
                                                                         </td>
-                                                                        <td style="width:34%">bonc&nbsp; （内网）</td>
+                                                                        <td style="width:34%"></td>
                                                                         <td style="width:10%">
-                                                                            <i class="fa_time"></i>${service.createDate }
+                                                                            
                                                                         </td>
                                                                     </tr>
-                                                                </c:if>
+                                                                 	</c:if>
                                                                 </c:forEach>
                                                                 </thead>
                                                             </table>

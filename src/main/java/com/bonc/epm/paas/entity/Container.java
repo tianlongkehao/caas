@@ -27,6 +27,13 @@ public class Container {
 	private String imageVersion;
 	private Integer cpuNum;
 	private String ram;
+	private long serviceid;
+	public long getServiceid() {
+		return serviceid;
+	}
+	public void setServiceid(long serviceid) {
+		this.serviceid = serviceid;
+	}
 	public Integer getCpuNum() {
 		return cpuNum;
 	}

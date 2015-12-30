@@ -95,7 +95,7 @@ function loadImageList() {
 				"</span> <span class='span3'>"+
 						"<div class='list-item-description'>"+
 							"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
-								""+ image.version +"</span> <span imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
+								""+ image.version +"</span> <span imgID='"+image.id+"' imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
 								"data-attr='tenxcloud/mysql'> 部署 <i"+
 								"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
 							"</span>"+
@@ -108,8 +108,9 @@ function loadImageList() {
 
                         	var imageName = $(this).attr("imageName");
                         	var imageVersion = $(this).attr("imageVersion");
+                        	var imgID = $(this).attr("imgID");
                         	//containerName();
-                            deploy(imageName, imageVersion);
+                            deploy(imgID,imageName, imageVersion);
                         });
                 	}
             }
@@ -117,10 +118,11 @@ function loadImageList() {
     })
 }
 
-function deploy(imageName, imageVersion){
+function deploy(imgID,imageName, imageVersion){
 
     $("#imgName").val(imageName);
     $("#imgVersion").val(imageVersion);
+    $("#imgID").val(imgID);
     $(".step-inner").css("left","-100%");
     $(".createPadding").removeClass("hide");
     $(".radius_step").removeClass("action").eq(1).addClass("action");
