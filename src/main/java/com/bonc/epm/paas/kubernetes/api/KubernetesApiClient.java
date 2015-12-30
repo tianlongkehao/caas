@@ -48,21 +48,20 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
     }
 
-    public PodList getAllPods() throws KubernetesClientException {
+    public PodList getLabelSelectorPods(Map<String, String> labelSelector) throws KubernetesClientException {
+    	String param = Joiner.on(",").withKeyValueSeparator("=").join(labelSelector);
         try {
-            return api.getAllPods(namespace);
+            return api.getLabelSelectorPods(namespace,param);
         } catch (NotFoundException e) {
             return new PodList();
         } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
         }
     }
-
-    public PodList getSelectedPods(Map<String, String> labels) throws KubernetesClientException {
-        String param = Joiner.on(",").withKeyValueSeparator("=").join(labels);
-
+    
+    public PodList getAllPods() throws KubernetesClientException {
         try {
-            return api.getSelectedPods(namespace,param);
+            return api.getAllPods(namespace);
         } catch (NotFoundException e) {
             return new PodList();
         } catch (WebApplicationException e) {

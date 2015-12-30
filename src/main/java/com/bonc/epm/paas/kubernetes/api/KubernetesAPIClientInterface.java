@@ -200,6 +200,14 @@ public interface KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     public PodList getAllPods() throws KubernetesClientException;
+    
+    /**
+     * Get labelSelector Pods
+     * 
+     * @return Pods
+     * @throws KubernetesClientException
+     */
+    public PodList getLabelSelectorPods(Map<String, String> labelSelector) throws KubernetesClientException;
 
     /**
      * Create a new Pod
@@ -309,13 +317,4 @@ public interface KubernetesAPIClientInterface {
      */
     public Status deleteService(String name) throws KubernetesClientException;
 
-    /**
-     * Run a label query and retrieve a sub set of Pods.
-     * 
-     * @param label
-     *            of labels for the label query
-     * @return Pods selected Pods by executing the label query.
-     * @throws KubernetesClientException
-     */
-    public PodList getSelectedPods(Map<String, String> labels) throws KubernetesClientException;
 }

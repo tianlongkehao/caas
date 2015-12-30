@@ -67,9 +67,16 @@ public class KubernetesClientUtil {
         }
         return client;
     }
+    
     /*public static void main(String[] args) {
     	
-			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("bonc");
+			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("admin");
+			
+			//获取特殊条件的pods
+			Map<String,String> map = new HashMap<String,String>();
+	    	map.put("app", "helloworld001");
+	    	PodList podList = client.getLabelSelectorPods(map);
+	    	System.out.println("podList:"+JSON.toJSONString(podList));
 			
 			//更新容器
 			client.updateReplicationController("bonctest1", 1);
@@ -128,6 +135,43 @@ public class KubernetesClientUtil {
     		
     		LimitRange limitRange = client.getLimitRange("limits");
 		System.out.println("limitRange:"+JSON.toJSONString(limitRange));
+		
+		
+			//删除
+			 PodList podList = client.getAllPods();
+    			System.out.println("podList:"+JSON.toJSONString(podList));
+    			if(podList.getItems().size()>0){
+    				for(Pod pod:podList.getItems()){
+    					client.deletePod(pod.getMetadata().getName());
+    					System.out.println("pod:"+JSON.toJSONString(pod));
+    				}
+    			}
+    			ReplicationControllerList list = client.getAllReplicationControllers();
+    			if(list.getItems().size()>0){
+    				for(ReplicationController controller:list.getItems()){
+    					client.deleteReplicationController(controller.getMetadata().getName());
+    				}
+    			}
+    			ServiceList serviceList = client.getAllServices();
+    			if(serviceList.getItems().size()>0){
+    				for(Service service:serviceList.getItems()){
+    					client.deleteService(service.getMetadata().getName());
+    				}
+    			}
+    			ResourceQuotaList quotaList = client.getAllResourceQuotas();
+    			if(quotaList!=null&&quotaList.getItems().size()>0){
+    				for(ResourceQuota quota:quotaList.getItems()){
+    					client.deleteResourceQuota(quota.getMetadata().getName());
+    				}
+    			}
+    			LimitRangeList limitRangeList = client.getAllLimitRanges();
+    			if(limitRangeList!=null&&limitRangeList.getItems().size()>0){
+    				for(LimitRange limitRange:limitRangeList.getItems()){
+    					client.deleteLimitRange(limitRange.getMetadata().getName());
+    				}
+    			}
+		
+		
 		}
 		*/
     
