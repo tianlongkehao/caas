@@ -78,10 +78,15 @@
                             	<c:if test="${editImage==1 }">
                                 	<span id="detailEditSave" class="editSave-bottom btn btn-link"><i class="fa fa-edit"></i> 编辑</span>
                                 </c:if>
+                                <input type="hidden" id="remark" value="${image.remark }">
                                 <div class="detail-contents">
-                                    <p>
-                                        ${image.remark }
-                                    </p>
+                                    <script type="text/javascript">
+                                    	$(function(){
+		                                     var remark = $("#remark").val();
+		                                     var mdContent = marked(remark);
+		                                     $('.infoLog .detail-contents').html(mdContent);
+                                    	});
+                                    </script>
                                 </div>
                                 <div class="hide" id="contentEditor" style="text-indent: 0px;padding:0px 10px;">
                                     <textarea id="editor" style="display: none;">${image.remark }</textarea>
