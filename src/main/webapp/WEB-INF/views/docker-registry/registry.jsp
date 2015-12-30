@@ -37,12 +37,12 @@
 
                                     <li class="images-panel">
                                         <div class="select-img">
-                                        <c:if test="${image.currUserFavor==0 }">
-                                            <i class="fa fa-star-o star-style" style="color:#4280CB"></i>
-                                        </c:if>
-                                        <c:if test="${image.currUserFavor==1 }">
-                                            <i class="fa fa-star star-style" style="color:#efa421"></i>
-                                        </c:if>
+	                                        <c:if test="${image.currUserFavor==0 }">
+	                                            <i class="fa fa-star-o star-style" style="color:#4280CB"></i>
+	                                        </c:if>
+	                                        <c:if test="${image.currUserFavor==1 }">
+	                                            <i class="fa fa-star star-style" style="color:#efa421"></i>
+	                                        </c:if>
                                             <div class="mir-img ">
                                                 <img src="/images/image-1.png">
                                             </div>
