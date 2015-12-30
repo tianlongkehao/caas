@@ -231,6 +231,7 @@ public class ServiceController {
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
 		service.setCreateBy(currentUser.getId());
+		serviceDao.save(service);
 		Map<String, String > app = new HashMap<String, String>();
 		app.put("confName", service.getServiceName());
 		app.put("port", String.valueOf(service.getId()+KubernetesClientUtil.getK8sStartPort()));
