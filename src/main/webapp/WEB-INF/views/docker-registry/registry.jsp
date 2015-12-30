@@ -56,6 +56,7 @@
                                					</c:if>
                                             </div>
                                             <div>
+                                            	<i class="fa fa-tag"></i> ${image.version }
                                                 <div class="pull-right">
                                                     <a href="/service/add?imageName=${image.name}&imageVersion=${image.version}" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
                                                 </div>

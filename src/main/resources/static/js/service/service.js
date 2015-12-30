@@ -180,7 +180,7 @@
 	        		
 		        							}
 		        						})
-		        	//refresh();
+		        	refresh1(id);
 		        }
 	        })
 	 })
@@ -207,7 +207,7 @@
 	        		
 		        					}
 		        				})
-		        				refresh();
+		        				refresh1(id);
 		        }
 		 })
 	 })
@@ -243,7 +243,7 @@
 		
  					}
  				})
- 				refresh();
+ 				refresh1(id);
 		 	 },
 			 cancel: function(index){ //或者使用btn2
 			 	//按钮【按钮二】的回调
@@ -280,7 +280,7 @@
 		
  					}
  				})
- 				refresh();
+ 				refresh1(id);
 			 },
 			 cancel: function(index){ //或者使用btn2
 				 //按钮【按钮二】的回调
@@ -307,5 +307,15 @@
        }
      });
    }, interval);
+ }
+ 
+ function refresh1(id){
+	
+	var url = "service/" + Math.random();
+	//create random number
+	setTimeout(function() {
+	$("#inst_"+id).load(url+id,"");
+		  }, 500); //wait one second to run function
+	
  }
  

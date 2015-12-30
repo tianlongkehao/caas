@@ -51,11 +51,11 @@
                         服务
                     </a>
                 </li>
-                <li>
+               <!--  <li>
                     <a href="/service">
                         存储与备份
                     </a>
-                </li>
+                </li> -->
             </ul>
         </li>
         <li id="menu_ci">

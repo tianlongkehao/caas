@@ -86,6 +86,20 @@ public class ServiceController {
 		
 	}
 	/**
+	 * 展示container和services
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value={"service/{id}"},method=RequestMethod.GET)
+	public String service(Model model,@PathVariable long id){
+		Service service = serviceDao.findOne(id);
+		model.addAttribute("service", service);
+		model.addAttribute("menu_flag", "service");
+		
+		return "service/service.jsp";
+		
+	}
+	/**
 	 * 根据id查找container和services
 	 * @param model
 	 * @param id

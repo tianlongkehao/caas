@@ -33,13 +33,13 @@
 		</div>
 		<ul class="succeed-content pull-left">
 			<li>运行状态：运行中</li>
-			<li>服务地址：<a href="http://mysql-lynnxu.tenxapp.com:25314"
+			<li>服务地址：<a href=""
 				target="_blank">bonc.com:25314</a></li>
 			<li>创建时间：${service.createDate }</li>
 			<li>更新时间：${service.createDate }</li>
 		</ul>
 		<div class="applocation">
-			<a href="http://mysql-lynnxu.tenxapp.com:25314" target="_blank"
+			<a href="" target="_blank"
 				class="open">打开应用</a>
 		</div>
 	</section>
@@ -133,7 +133,7 @@
                   <td>Running</td>
                   <td>${service.imgName }</td>
                   <td>bonc:8080</td>
-                  <td><a href="http://hello-christ.tenxapp.com" target="_blank">bonc.com</a></td>
+                  <td><a href="" target="_blank">bonc.com</a></td>
                   <td>${service.createDate }</td>
                 </tr>
 	</c:forEach>
