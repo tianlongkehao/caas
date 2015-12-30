@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
-import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.dao.ContainerDao;
 import com.bonc.epm.paas.dao.ImageDao;
@@ -206,7 +205,7 @@ public class ServiceController {
 		}
 		com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
 		if(k8sService==null){
-			k8sService = KubernetesClientUtil.generateService(service.getServiceName(),80,8080,(int)service.getId()+30000);
+			k8sService = KubernetesClientUtil.generateService(service.getServiceName(),80,8080,(int)service.getId()+KubernetesClientUtil.getK8sStartPort());
 			k8sService = client.createService(k8sService);
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -234,11 +233,11 @@ public class ServiceController {
 		service.setCreateBy(currentUser.getId());
 		Map<String, String > app = new HashMap<String, String>();
 		app.put("confName", service.getServiceName());
-		app.put("port", String.valueOf(service.getId()+30000));
+		app.put("port", String.valueOf(service.getId()+KubernetesClientUtil.getK8sStartPort()));
 		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName());
 		TemplateEngine.cmdReloadConfig();
-		service.setServiceAddr(TemplateEngine.getConfip());
-		service.setPortSet(String.valueOf(service.getId()+30000));
+		service.setServiceAddr(TemplateEngine.getConfUrl());
+		service.setPortSet(String.valueOf(service.getId()+KubernetesClientUtil.getK8sStartPort()));
 		serviceDao.save(service);
 		log.debug("container--Name:"+service.getServiceName());
 		return "redirect:/service";
@@ -346,9 +345,12 @@ public class ServiceController {
 	public String delContainer(long id){
 		Service service = serviceDao.findOne(id);
 		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
-		client.updateReplicationController(service.getServiceName(), 0);
-		client.deleteReplicationController(service.getServiceName());
-		client.deleteService(service.getServiceName());
+		ReplicationController controller = client.getReplicationController(service.getServiceName());
+		if(controller!=null){
+			client.updateReplicationController(service.getServiceName(), 0);
+			client.deleteReplicationController(service.getServiceName());
+			client.deleteService(service.getServiceName());
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");
 		serviceDao.delete(id);
