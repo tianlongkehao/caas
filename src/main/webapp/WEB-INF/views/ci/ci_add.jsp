@@ -120,7 +120,7 @@
                                             <span class="btns-group">
                                               <select id="codeBranch" name="codeBranch" class="reg-input" style="width:189px;">
                                                   <option value="master">master</option>
-                                                  <option value="develop">develop</option>
+                                                  <!-- <option value="develop">develop</option> -->
                                               </select>
                                             </span>
                                         </td>
