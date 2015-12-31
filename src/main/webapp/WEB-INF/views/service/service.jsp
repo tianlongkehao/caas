@@ -51,13 +51,13 @@
                                         <span class="ic_left">停止</span>
                                     </a>
                                 </li>
-                                <!--  <li>
+                                  <li>
                                     <a href="javascript:upGradeContainer()">
                                         <i class="fa fa-arrows"></i>
                                         <span class="ic_left">弹性伸缩</span>
                                     </a>
                                 </li>
-                               <li>
+                               <!--<li>
                                     <a href="">
                                         <i class="fa fa-arrow-up"></i>
                                         <span class="ic_left">灰度升级</span>

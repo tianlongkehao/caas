@@ -33,8 +33,8 @@
 		</div>
 		<ul class="succeed-content pull-left">
 			<li>运行状态：运行中</li>
-			<li>服务地址：<a href=""
-				target="_blank">bonc.com:25314</a></li>
+			<li>服务地址：<a href="${service.serviceAddr }:${service.portSet}"
+				target="_blank">bonc:${service.portSet}</a></li>
 			<li>创建时间：${service.createDate }</li>
 			<li>更新时间：${service.createDate }</li>
 		</ul>
@@ -44,9 +44,9 @@
 		</div>
 	</section>
 	<div class="baseInfo center-style">
-		<a class="BASE btn-prim">基本信息</a> <a class="INSTANCES">容器实例</a> <a
-			class="DOMAIN">绑定域名</a> <a class="PORTS">端口</a> <a class="MONITOR">监控</a>
-		<a class="LOG">日志</a> <a class="EVENT">事件</a>
+		<a class="BASE btn-prim">基本信息</a> <a class="INSTANCES">容器实例</a> <!-- <a
+			class="DOMAIN">绑定域名</a>  --><a class="PORTS">端口</a> <!--<a class="MONITOR">监控</a>
+		<a class="LOG">日志</a> <a class="EVENT">事件</a> -->
 	</div>
 	<div class="containerInfo">
 		<table class="table w50">
@@ -113,15 +113,15 @@
 				</tr>
 			</thead>
 			<tbody class="BORDER-TR">
-	<c:forEach items="${serviceList }" var="service" >
+	<c:forEach items="${containerList }" var="container" >
 		<c:choose>
-			<c:when test="${service.status == 1 }">
+			<c:when test="${service.status == 2 }">
 				<c:set var="statusClass" value="fa_run"></c:set>
                 <c:set var="eventStatusClass" value="fa-check"></c:set>
                 <c:set var="statusName" value="成功"></c:set>
                 <c:set var="eventStatus" value="success"></c:set>
 			</c:when>
-			<c:when test="${service.status == 2 }">
+			<c:when test="${service.status == 4 }">
 				<c:set var="statusClass" value="fa_stop"></c:set>
                 <c:set var="eventStatusClass" value="fa-times"></c:set>
                 <c:set var="statusName" value="失败"></c:set>
@@ -129,11 +129,11 @@
 			</c:when>
 		</c:choose>
 				<tr>
-                  <td><a href="/containers/tenx_district2/instances/hello-bq2vo">${service.serviceName }</a></td>
+                  <td><a href="">${container.containerName }</a></td>
                   <td>Running</td>
                   <td>${service.imgName }</td>
                   <td>bonc:8080</td>
-                  <td><a href="" target="_blank">bonc.com</a></td>
+                  <td><a href="${service.serviceAddr }:${service.portSet}" target="_blank">bonc:${service.portSet }</a></td>
                   <td>${service.createDate }</td>
                 </tr>
 	</c:forEach>
@@ -197,11 +197,11 @@
 				<tbody>
 					<tr>
 						<td>${service.serviceName }</td>
-						<td>3306</td>
+						<td>8080</td>
 						<td>TCP</td>
-						<td>3000${service.id }</td>
-						<td><a href="http://10.0.93.3:300${service.id }"
-							target="_blank">10.0.93.3:300${service.id }</a></td>
+						<td>${service.portSet }</td>
+						<td><a href="${service.serviceAddr }:${service.portSet }"
+							target="_blank">bonc:${service.portSet }</a></td>
 					</tr>
 				</tbody>
 			</table>

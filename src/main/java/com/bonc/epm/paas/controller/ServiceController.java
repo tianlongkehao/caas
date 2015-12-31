@@ -80,7 +80,6 @@ public class ServiceController {
 		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
 	    List<Service> serviceList = new ArrayList<Service>();
 	    List<Container> containerList = new ArrayList<Container>();
-	    List<String> podNames = new ArrayList<String>();
 	  //获取特殊条件的pods
 		for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
 			
@@ -92,16 +91,11 @@ public class ServiceController {
 	    		if(!CollectionUtils.isEmpty(pods)){
 	    			for(Pod pod:pods){
 	    				String podName = pod.getMetadata().getName();
-	    				podNames.add(podName);
 	    				Container container = new Container();
 		    			container.setContainerName(podName);
 		    			container.setServiceid(service.getId());
-		    			containerDao.save(container);
 		    			containerList.add(container);
 	    			}
-	    			//service.setPodName(podNames);
-	    			
-	    			//serviceDao.save(service);
 	    		}
 	    	}
 	    	serviceList.add(service);
@@ -138,10 +132,26 @@ public class ServiceController {
 	public String detail(Model model,@PathVariable long id){
         System.out.printf("id: " + id);
         Service service = serviceDao.findOne(id);
-        //List<Service> serviceList = serviceDao.findByContainerID(id);
+        KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+        List<Container> containerList = new ArrayList<Container>();
+        Map<String,String> map = new HashMap<String,String>();
+    	map.put("app", service.getServiceName());
+    	PodList podList = client.getLabelSelectorPods(map);
+    	if(podList!=null){
+    		List<Pod> pods = podList.getItems();
+    		if(!CollectionUtils.isEmpty(pods)){
+    			for(Pod pod:pods){
+    				String podName = pod.getMetadata().getName();
+    				Container container = new Container();
+	    			container.setContainerName(podName);
+	    			container.setServiceid(service.getId());
+	    			containerList.add(container);
+    			}
+    		}
+    	}
 
 		model.addAttribute("id", id);
-        //model.addAttribute("container", container);
+        model.addAttribute("containerList", containerList);
         model.addAttribute("service", service);
 		return "service/service-detail.jsp";
 	}
