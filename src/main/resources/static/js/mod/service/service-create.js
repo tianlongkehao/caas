@@ -130,7 +130,7 @@ function deploy(imgID,imageName, imageVersion){
 }
 
 function containerName(){
-	var containerName = $("#containerName").val();
+	var containerName = $("#serviceName").val();
 			 $.ajax({
 					url:"/service/containerName?containerName="+containerName,
 					success:function(data){
