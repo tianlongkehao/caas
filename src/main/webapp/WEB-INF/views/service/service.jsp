@@ -232,7 +232,7 @@
                                                         <td style="width:34%" id="mysqlurl">
                                                             <span class="url">
                                                             	<c:if test="${service.serviceAddr!=null&&service.serviceAddr!='' }">
-                                                                	<a href="${service.serviceAddr }:${service.portSet}" target="_blank">${service.serviceAddr }:${service.portSet}</a>
+                                                                	<a href="${service.serviceAddr }:${service.portSet}${service.serviceLink}" target="_blank">${service.serviceAddr }:${service.portSet}${service.serviceLink}</a>
                                                                 </c:if>
                                                             </span>
                                                         </td>

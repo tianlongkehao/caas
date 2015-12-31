@@ -41,13 +41,13 @@
 			<c:if test="${service.status==4 }">
 				<li>运行状态：已停止</li>
 			</c:if>
-			<li>服务地址：<a href="${service.serviceAddr }:${service.portSet}"
-				target="_blank">${service.serviceName}:${service.portSet}</a></li>
+			<li>服务地址：<a href="${service.serviceAddr }:${service.portSet}${service.serviceLink}"
+				target="_blank">${service.serviceName}:${service.portSet}${service.serviceLink}</a></li>
 			<li>创建时间：${service.createDate }</li>
 			<li>更新时间：${service.createDate }</li>
 		</ul>
 		<div class="applocation">
-			<a href="${service.serviceAddr }:${service.portSet}" target="_blank"
+			<a href="${service.serviceAddr }:${service.portSet}${service.serviceLink}" target="_blank"
 				class="open">打开应用</a>
 		</div>
 	</section>
@@ -158,7 +158,7 @@
                   
                   <td>${service.imgName }</td>
                   <td>bonc:8080</td>
-                  <td><a href="${service.serviceAddr }:${service.portSet}" target="_blank">${service.serviceName}:${service.portSet }</a></td>
+                  <td><a href="${service.serviceAddr }:${service.portSet}${service.serviceLink}" target="_blank">${service.serviceName}:${service.portSet }</a></td>
                   <td>${service.createDate }</td>
                 </tr>
 	</c:forEach>
@@ -225,7 +225,7 @@
 						<td>8080</td>
 						<td>TCP</td>
 						<td>${service.portSet }</td>
-						<td><a href="${service.serviceAddr }:${service.portSet }"
+						<td><a href="${service.serviceAddr }:${service.portSet }${service.serviceLink}"
 							target="_blank">${service.serviceName}:${service.portSet }</a></td>
 					</tr>
 				</tbody>
