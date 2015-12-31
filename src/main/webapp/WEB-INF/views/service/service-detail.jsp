@@ -32,14 +32,22 @@
 			</div>
 		</div>
 		<ul class="succeed-content pull-left">
-			<li>运行状态：运行中</li>
+			<c:if test="${service.status==1 }">
+				<li>运行状态：未启动</li>
+			</c:if>
+			<c:if test="${service.status==2||service.status==3 }">
+				<li>运行状态：正在运行</li>
+			</c:if>
+			<c:if test="${service.status==4 }">
+				<li>运行状态：已停止</li>
+			</c:if>
 			<li>服务地址：<a href="${service.serviceAddr }:${service.portSet}"
-				target="_blank">bonc:${service.portSet}</a></li>
+				target="_blank">${service.serviceName}:${service.portSet}</a></li>
 			<li>创建时间：${service.createDate }</li>
 			<li>更新时间：${service.createDate }</li>
 		</ul>
 		<div class="applocation">
-			<a href="" target="_blank"
+			<a href="${service.serviceAddr }:${service.portSet}" target="_blank"
 				class="open">打开应用</a>
 		</div>
 	</section>
@@ -59,7 +67,15 @@
 			<tbody class="BORDER">
 				<tr>
 					<td>名称：${service.serviceName }</td>
-					<td>运行状态：正在运行</td>
+					<c:if test="${service.status==1 }">
+						<td>运行状态：未启动</td>
+					</c:if>
+					<c:if test="${service.status==2||service.status==3 }">
+						<td>运行状态：正在运行</td>
+					</c:if>
+					<c:if test="${service.status==4 }">
+						<td>运行状态：已停止</td>
+					</c:if>
 				</tr>
 				<tr>
 					<td>镜像名称：${service.imgName }</td>
@@ -75,17 +91,17 @@
 				</tr>
 			</thead>
 			<tbody class="BORDER">
-				<tr>
+				<!-- <tr>
 					<td>带宽：10 MB（公有网络）</td>
 					<td>系统盘：10GB</td>
-				</tr>
+				</tr> -->
 				<tr>
 					<td>CPU：${service.cpuNum }</td>
 					<td>内存：${service.ram }MB</td>
 				</tr>
 			</tbody>
 		</table>
-		<table class="table basicInfo w50">
+		<!-- <table class="table basicInfo w50">
 			<thead>
 				<tr>
 					<th>环境变量</th>
@@ -98,7 +114,7 @@
 					<td>变量值</td>
 				</tr>
 			</tbody>
-		</table>
+		</table> -->
 	</div>
 	<div class="containerInstances hide" style="min-height: 300px;">
 		<table class="table">
@@ -130,10 +146,19 @@
 		</c:choose>
 				<tr>
                   <td><a href="">${container.containerName }</a></td>
-                  <td>Running</td>
+                  <c:if test="${service.status==4 }">
+					<td>waiting</td>
+				</c:if>
+                  <c:if test="${service.status==2||service.status==3 }">
+					<td>Running</td>
+					</c:if>
+				<c:if test="${service.status==4 }">
+					<td>stopping</td>
+				</c:if>
+                  
                   <td>${service.imgName }</td>
                   <td>bonc:8080</td>
-                  <td><a href="${service.serviceAddr }:${service.portSet}" target="_blank">bonc:${service.portSet }</a></td>
+                  <td><a href="${service.serviceAddr }:${service.portSet}" target="_blank">${service.serviceName}:${service.portSet }</a></td>
                   <td>${service.createDate }</td>
                 </tr>
 	</c:forEach>
@@ -201,7 +226,7 @@
 						<td>TCP</td>
 						<td>${service.portSet }</td>
 						<td><a href="${service.serviceAddr }:${service.portSet }"
-							target="_blank">bonc:${service.portSet }</a></td>
+							target="_blank">${service.serviceName}:${service.portSet }</a></td>
 					</tr>
 				</tbody>
 			</table>
