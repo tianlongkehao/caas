@@ -1093,3 +1093,16 @@ i.pushOrg {
     background: #FAFAFA;
 }
 
+/*.host_step4, .enabled, #divResult td, .processcontainer{
+    width:200px;
+    border:1px solid #6C9C2C;
+    height:25px;
+}
+.host_step4, .enabled, #divResult td, .processcontainer, #processbar{
+    width:0%;
+    background:#95CA0D;
+    float:left;
+    height:100%;
+    text-align:center;
+    line-height:150%;
+}*/

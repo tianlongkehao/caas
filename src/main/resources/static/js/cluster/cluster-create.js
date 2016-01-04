@@ -1,4 +1,11 @@
 $(document).ready(function () {
+    document.onkeydown=function(){
+        var a = window.event.keyCode;
+        if( a == 9){
+            window.event.returnValue = false;
+        }
+    };
+
     $(".nextTwo").click(function () {
         $(".radius_step").removeClass("action").eq(1).addClass("action");
         $(".step-inner").css("left", "-100%");
@@ -48,7 +55,6 @@ $(document).ready(function () {
 
 
     });
-
 
     $(".installBtn").click(function () {
         $(".radius_step").removeClass("action").eq(3).addClass("action");
@@ -103,11 +109,30 @@ $(document).ready(function () {
     });
 });
 function chkMaster(ddd){
-    var d = ddd.parentElement.nextElementSibling.children[0].checked;
-    if(d == true){
-        alert(222)
-        ddd.checked = false;
+    var d = ddd.parentElement.nextElementSibling.children[0];
+    if(ddd.checked == true){
+        d.checked = false;
     }
+};
+function chkSlave(ccc){
+
+    var c = ccc.parentElement.previousElementSibling.children[0];
+    if(ccc.checked == true){
+        c.checked = false;
+    }
+};
+
+function setProcess(){
+    var processbar = document.getElementById("processbar");
+    processbar.style.width = parseInt(processbar.style.width) + 1 + "%";
+    processbar.innerHTML = processbar.style.width;
+    if(processbar.style.width == "100%"){
+        window.clearInterval(bartimer);
+    }
+}
+var bartimer = window.setInterval(function(){setProcess();},400);
+window.onload = function(){
+    bartimer;
 };
 
 function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
@@ -118,7 +143,9 @@ function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
             var str = "";
             str += '<tr>';
             var tds1 = '<td name="rowHost">' + host + '</td>';
-            var tds2 = '<td>100%</td>';
+            var tds2 = '<td><div class="processcontainer" style="width:200px; border:1px solid #6C9C2C; height:25px;">'+
+                '<div id="processbar" style="width:0%;background:#95CA0D;float:left;height:100%; text-align:center; line-height:150%;"></div>'+
+                '</div></td>';
             var tds3 = '<td>安装成功</td>';
             var tds4 = '<td><a href="#">查看详情</a></td>';
             str += tds1 + tds2 + tds3 + tds4;

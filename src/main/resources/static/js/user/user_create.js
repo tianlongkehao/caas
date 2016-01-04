@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    document.onkeydown=function(){
+        var b = window.event.keyCode;
+        if( b == 9){
+            window.event.returnValue = false;
+        }
+    };
 
     $(".next2").click(function(){
         $(".radius_step").removeClass("action").eq(1).addClass("action");
@@ -23,6 +29,7 @@ $(document).ready(function(){
 
 
 });
+
 
 $(function(){
     var ramSlider = $("#ramSlider").slider({
