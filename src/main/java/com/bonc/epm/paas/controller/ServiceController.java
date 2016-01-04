@@ -12,21 +12,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
-import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.dao.ContainerDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
+import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.model.Pod;
+import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -47,6 +50,8 @@ public class ServiceController {
 	@Autowired
 	public ServiceDao serviceDao;
 	
+	@Autowired
+	private ContainerDao containerDao;
 	@Autowired
 	private ImageDao imageDao;
 	
@@ -71,15 +76,47 @@ public class ServiceController {
 	 */
 	@RequestMapping(value={"service"},method=RequestMethod.GET)
 	public String containerLists(Model model){
-		//List<Container> containerList = new ArrayList<Container>();
+		User  currentUser = CurrentUserUtils.getInstance().getUser();
+		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
 	    List<Service> serviceList = new ArrayList<Service>();
-		for(Service service:serviceDao.findAll()){
-			serviceList.add(service);
+	    List<Container> containerList = new ArrayList<Container>();
+	  //获取特殊条件的pods
+		for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
+			
+			Map<String,String> map = new HashMap<String,String>();
+	    	map.put("app", service.getServiceName());
+	    	PodList podList = client.getLabelSelectorPods(map);
+	    	if(podList!=null){
+	    		List<Pod> pods = podList.getItems();
+	    		if(!CollectionUtils.isEmpty(pods)){
+	    			for(Pod pod:pods){
+	    				String podName = pod.getMetadata().getName();
+	    				Container container = new Container();
+		    			container.setContainerName(podName);
+		    			container.setServiceid(service.getId());
+		    			containerList.add(container);
+	    			}
+	    		}
+	    	}
+	    	serviceList.add(service);
 		}
-		//log.debug("containerlist========"+containerList);
-		
-		//model.addAttribute("containerList",containerList);
+
+		model.addAttribute("containerList", containerList);
 		model.addAttribute("serviceList", serviceList);
+		model.addAttribute("menu_flag", "service");
+		
+		return "service/service.jsp";
+		
+	}
+	/**
+	 * 展示container和services
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value={"service/{id}"},method=RequestMethod.GET)
+	public String service(Model model,@PathVariable long id){
+		Service service = serviceDao.findOne(id);
+		model.addAttribute("service", service);
 		model.addAttribute("menu_flag", "service");
 		
 		return "service/service.jsp";
@@ -95,10 +132,26 @@ public class ServiceController {
 	public String detail(Model model,@PathVariable long id){
         System.out.printf("id: " + id);
         Service service = serviceDao.findOne(id);
-        //List<Service> serviceList = serviceDao.findByContainerID(id);
+        KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+        List<Container> containerList = new ArrayList<Container>();
+        Map<String,String> map = new HashMap<String,String>();
+    	map.put("app", service.getServiceName());
+    	PodList podList = client.getLabelSelectorPods(map);
+    	if(podList!=null){
+    		List<Pod> pods = podList.getItems();
+    		if(!CollectionUtils.isEmpty(pods)){
+    			for(Pod pod:pods){
+    				String podName = pod.getMetadata().getName();
+    				Container container = new Container();
+	    			container.setContainerName(podName);
+	    			container.setServiceid(service.getId());
+	    			containerList.add(container);
+    			}
+    		}
+    	}
 
 		model.addAttribute("id", id);
-        //model.addAttribute("container", container);
+        model.addAttribute("containerList", containerList);
         model.addAttribute("service", service);
 		return "service/service-detail.jsp";
 	}
@@ -110,13 +163,14 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping(value={"service/add"},method=RequestMethod.GET)
-	public String create(String imageName, String imageVersion, Model model){
+	public String create(String imgID,String imageName, String imageVersion, Model model){
 
 		String isDepoly = "";
 		if(imageName != null){
 			isDepoly = "deploy";
 		}
-
+		
+		model.addAttribute("imgID", imgID);
 		model.addAttribute("imageName", imageName);
 		model.addAttribute("imageVersion", imageVersion);
 		model.addAttribute("isDepoly",isDepoly);
@@ -131,9 +185,10 @@ public class ServiceController {
 	@RequestMapping(value={"service/images"},method=RequestMethod.GET)
 	@ResponseBody
 	public String imageList(){
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> map = new HashMap<String,Object>();
 //		List<Image> images = imageDao.findAllByCreator(CiConstant.IMG_TYPE_PUBLIC,CurrentUserUtils.getInstance().getUser().getId());
-		List<Image> images = imageDao.findAll();
+		List<Image> images = imageDao.findAll(userId);
 		map.put("data", images);
 		return JSON.toJSONString(map);
 	}
@@ -160,7 +215,7 @@ public class ServiceController {
 		}
 		com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
 		if(k8sService==null){
-			k8sService = KubernetesClientUtil.generateService(service.getServiceName(),80,8080,(int)service.getId()+30000);
+			k8sService = KubernetesClientUtil.generateService(service.getServiceName(),80,8080,(int)service.getId()+KubernetesClientUtil.getK8sStartPort());
 			k8sService = client.createService(k8sService);
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -189,9 +244,12 @@ public class ServiceController {
 		serviceDao.save(service);
 		Map<String, String > app = new HashMap<String, String>();
 		app.put("confName", service.getServiceName());
-		app.put("port", String.valueOf(service.getId()+30000));
+		app.put("port", String.valueOf(service.getId()+KubernetesClientUtil.getK8sStartPort()));
 		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName());
 		TemplateEngine.cmdReloadConfig();
+		service.setServiceAddr(TemplateEngine.getConfUrl());
+		service.setPortSet(String.valueOf(service.getId()+KubernetesClientUtil.getK8sStartPort()));
+		serviceDao.save(service);
 		log.debug("container--Name:"+service.getServiceName());
 		return "redirect:/service";
 	}
@@ -257,8 +315,13 @@ public class ServiceController {
 				service.setInstanceNum(addservice);
 				serviceDao.save(service);
 				KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
-				client.updateReplicationController(service.getServiceName(), addservice);
-				map.put("status", "200");
+				ReplicationController controller = client.updateReplicationController(service.getServiceName(), addservice);
+				if(controller!=null){
+					map.put("status", "200");
+				}else {
+					map.put("status", "400");
+				}
+				
 			} catch (Exception e) {
 				map.put("status", "400");
 			}
@@ -287,6 +350,7 @@ public class ServiceController {
 		}
 		return JSON.toJSONString(map);
 	}
+	
 	/**
 	 * delete container and services from dockerfile
 	 * @param id
@@ -297,16 +361,15 @@ public class ServiceController {
 	public String delContainer(long id){
 		Service service = serviceDao.findOne(id);
 		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
-		ReplicationController controller = client.updateReplicationController(service.getServiceName(), 0);
-		client.deleteReplicationController(service.getServiceName());
-		client.deleteService(service.getServiceName());
-		Map<String, Object> map = new HashMap<String, Object>();
-		if(controller==null){
-			map.put("status", "500");
-		}else{
-			map.put("status", "200");
-			serviceDao.delete(id);
+		ReplicationController controller = client.getReplicationController(service.getServiceName());
+		if(controller!=null){
+			client.updateReplicationController(service.getServiceName(), 0);
+			client.deleteReplicationController(service.getServiceName());
+			client.deleteService(service.getServiceName());
 		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", "200");
+		serviceDao.delete(id);
 		return JSON.toJSONString(map);
 	}
 

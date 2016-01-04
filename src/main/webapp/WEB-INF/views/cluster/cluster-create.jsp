@@ -164,7 +164,7 @@
                                             <th style="width: 20%;text-align: center">IP</th>
                                             <th style="width: 33%;text-align: center">安装进度</th>
                                             <th style="width: 33%;text-align: center">状态</th>
-                                            <th style="width: 33%;text-align: center">详细信息</th>
+                                            <%--<th style="width: 33%;text-align: center">详细信息</th>--%>
                                         </tr>
                                         </thead>
                                         <tbody id='divResult'>

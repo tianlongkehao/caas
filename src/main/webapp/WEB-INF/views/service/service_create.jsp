@@ -10,10 +10,11 @@
         $(function(){
             // 判断是否从镜像点击部署按钮跳转
             var isDepoly = '${isDepoly}';
+            var imgID = '${imgID}';
             var imageName = '${imageName}';
             var imageVersion = '${imageVersion}';
             if(isDepoly == 'deploy'){
-                deploy(imageName,imageVersion);
+                deploy(imgID,imageName,imageVersion);
             }
         });
     </script>
@@ -44,7 +45,7 @@
                             <ul style="padding: 0 4rem;">
                                 <li class="radius_step action"><span>1</span> 镜像来源</li>
                                 <li class="radius_step"><span>2</span> 容器配置</li>
-                                <li class="radius_step"><span>3</span> 高级设置</li>
+                                <!-- <li class="radius_step"><span>3</span> 高级设置</li> -->
                             </ul>
                         </div>
                         <div class="step-inner" style="left: 0%;">
@@ -67,7 +68,7 @@
                                 <ul class="blankapp-list">
                                     <li class="list-wrapper">
                                         <ul id="imageList">
-                                            <li class="image-item"><span class="img_icon span2">
+                                           <!--  <li class="image-item"><span class="img_icon span2">
                                                                 <img src="/images/image-1.png">
                                                         </span> <span class="span5 type" type="database">
                                                                 <div class="list-item-description">
@@ -88,7 +89,7 @@
                                                                         class="fa fa-arrow-circle-o-right margin fa-lg"></i>
                                                                     </span>
                                                                 </div>
-                                                        </span></li>
+                                                        </span></li> -->
                                         </ul>
                                     </li>
                                 </ul>
@@ -102,6 +103,7 @@
                                 <li class="line-h-3">
                                     <span class="ve_top">镜像名称：</span>
                                     <input type="text" value="" class="in_style" id="imgName" name="imgName" readOnly="readOnly">
+                                    <input type="text" value="" class="in_style" id="imgID" name="imgID" readOnly="readOnly" style="display:none">
                                 </li>
                                 <li class="line-h-3">
                                     <span class="ve_top">镜像版本：</span>
@@ -110,6 +112,10 @@
                                 <li class="line-h-3">
                                     <span class="ve_top">服务名称：</span>
                                     <input type="text" value="" class="in_style" id="serviceName" name="serviceName">
+                                </li>
+                                <li class="line-h-3">
+                                    <span class="ve_top">服务地址：</span>
+                                    <input type="text" value="" class="in_style" id="serviceLink" name="serviceLink" placeholder="例如：/index">
                                 </li>
                                 <!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
@@ -379,7 +385,7 @@
                         </div>
                         <div class="createPadding hide">
                             <button class="btn btn-default go_backs" style="margin-right: 30px;">上一步</button>
-                            <button class="btn btn-success two_step hide">高级设置</button>
+                            <!-- <button class="btn btn-success two_step hide">高级设置</button> -->
                             <button id="createButton"
                                     class="pull-right btn btn-primary pull_confirm">创建
                             </button>

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>镜像中心</title>
+    <title>上传构建</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="/css/mod/ci.css"/>
     <script type="text/javascript" src="/js/ci/ci_add.js"></script>
@@ -21,7 +21,7 @@
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">代码上传构建</li>
+                    <li class="active" id="nav2">上传构建</li>
                 </ol>
             </div>
             <div class="contentMain">

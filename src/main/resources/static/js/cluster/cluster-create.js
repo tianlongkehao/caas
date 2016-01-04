@@ -21,14 +21,14 @@ $(document).ready(function () {
         $("#checkedClusters").val(JSON.stringify(checkedClusters));
     });
 
-    $("#checkAllBox").click(function() {
-        var checkAll= document.getElementsByName("checkAll");
-        var checkbox= document.getElementsByName("checkbox");
-        if(checkAll[0].checked==true){
-            for(var i=0;i<checkbox.length;i++){
+    $("#checkAllBox").click(function () {
+        var checkAll = document.getElementsByName("checkAll");
+        var checkbox = document.getElementsByName("checkbox");
+        if (checkAll[0].checked == true) {
+            for (var i = 0; i < checkbox.length; i++) {
                 checkbox[i].checked = true;
             }
-        }else {
+        } else {
             for (var i = 0; i < checkbox.length; i++) {
                 checkbox[i].checked = false;
             }
@@ -53,7 +53,6 @@ $(document).ready(function () {
         $('#divId').html(str);
 
 
-
     });
 
     $(".installBtn").click(function () {
@@ -69,9 +68,9 @@ $(document).ready(function () {
             var masterChecked = rowMaster.childNodes[0].checked;
             var rowSlave = rowMaster.nextElementSibling;
             var slaveChecked = rowSlave.childNodes[0].checked;
-            var rowEtcd = rowSlave.nextElementSibling;
-            var etcdChecked = rowEtcd.childNodes[0].checked;
-            if (masterChecked == false && slaveChecked == false && etcdChecked == false) {
+            /*var rowEtcd = rowSlave.nextElementSibling;
+            var etcdChecked = rowEtcd.childNodes[0].checked;*/
+            if (masterChecked == false && slaveChecked == false) {
                 alert(host + "没有设置节点类型");
                 allRowsChecked = false;
                 return;
@@ -82,9 +81,9 @@ $(document).ready(function () {
                 hostType.type = "master";
             } else if (slaveChecked == true) {
                 hostType.type = "slave";
-            } else if (etcdChecked == true) {
+            } /*else if (etcdChecked == true) {
                 hostType.type = "etcd";
-            }
+            }*/
             rowsHostType.push(hostType);
         }
         if (allRowsChecked == true) {
@@ -134,12 +133,11 @@ var bartimer = window.setInterval(function(){setProcess();},400);
 window.onload = function(){
     bartimer;
 };
-
 function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
     rowNum = rowNum + 1;
     $.ajax({
         url: "/cluster/installCluster?user=root&pass=a1s2d3&ip=" + host + "&port=22&type=" + type,
-        success: function () {
+        success: function (data) {
             var str = "";
             str += '<tr>';
             var tds1 = '<td name="rowHost">' + host + '</td>';
@@ -147,8 +145,8 @@ function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
                 '<div id="processbar" style="width:0%;background:#95CA0D;float:left;height:100%; text-align:center; line-height:150%;"></div>'+
                 '</div></td>';
             var tds3 = '<td>安装成功</td>';
-            var tds4 = '<td><a href="#">查看详情</a></td>';
-            str += tds1 + tds2 + tds3 + tds4;
+            /*var tds4 = '<td><a href="#">查看详情</a></td>';*/
+            str += tds1 + tds2 + tds3;
             str += '</tr>';
             var divResult = $('#divResult')[0].innerHTML.trim();
             $('#divResult').html(divResult + str);

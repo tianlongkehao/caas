@@ -147,6 +147,7 @@
 		        							data = eval("(" + data + ")");
 		        							if(data.status=="200"){
 		        								layer.alert("容器启动成功");
+		        								window.location.reload();
 		        							}else{
 		        								layer.alert("容器启动失败");
 		        							}
@@ -174,13 +175,14 @@
 		        								data = eval("(" + data + ")");
 		        								if(data.status=="200"){
 		        									layer.alert("容器已停止");
+		        									window.location.reload();
 		        								}else{
 		        									layer.alert("容器停止失败，请检查服务器连接");
 		        								}
 	        		
 		        							}
 		        						})
-		        	//refresh();
+		        	
 		        }
 	        })
 	 })
@@ -201,13 +203,13 @@
 		        						data = eval("(" + data + ")");
 		        						if(data.status=="200"){
 		        							layer.alert("容器已删除");
+		        							window.location.reload();
 		        						}else{
 		        							layer.alert("容器删除失败，请检查服务器连接");
 		        						}
 	        		
 		        					}
 		        				})
-		        				refresh();
 		        }
 		 })
 	 })
@@ -235,6 +237,7 @@
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
  							layer.alert("弹性扩容成功！");
+ 							window.location.reload();
  						}else if(data.status=="400"){
  							layer.alert("弹性扩容失败，请检查服务器连接");
  						}else if(data.status=="300"){
@@ -243,7 +246,6 @@
 		
  					}
  				})
- 				refresh();
 		 	 },
 			 cancel: function(index){ //或者使用btn2
 			 	//按钮【按钮二】的回调
@@ -274,13 +276,13 @@
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
  							layer.alert("更改成功");
+ 							window.location.reload();
  						}else{
  							layer.alert("更改失败，请检查服务器连接");
  						}
 		
  					}
  				})
- 				refresh();
 			 },
 			 cancel: function(index){ //或者使用btn2
 				 //按钮【按钮二】的回调
@@ -307,5 +309,15 @@
        }
      });
    }, interval);
+ }
+ 
+ function refresh1(id){
+	
+	var url = "service/" + Math.random();
+	//create random number
+	setTimeout(function() {
+	$("#inst_"+id).load(url+id,"");
+		  }, 500); //wait one second to run function
+	
  }
  

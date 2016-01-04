@@ -19,7 +19,7 @@
                     <ol class="breadcrumb">
                         <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
                         <li><i class="fa fa-angle-right"></i></li>
-                        <li class="active" id="nav2">镜像中心</li>
+                        <li class="active" id="nav2">${active }</li>
                     </ol>
                 </div>
                 <div class="contentMain">
@@ -37,22 +37,26 @@
 
                                     <li class="images-panel">
                                         <div class="select-img">
-                                        <c:if test="${image.currUserFavor==0 }">
-                                            <i class="fa fa-star-o star-style" style="color:#4280CB"></i>
-                                        </c:if>
-                                        <c:if test="${image.currUserFavor==1 }">
-                                            <i class="fa fa-star star-style" style="color:#efa421"></i>
-                                        </c:if>
+	                                        <c:if test="${image.currUserFavor==0 }">
+	                                            <i class="fa fa-star-o star-style" style="color:#4280CB"></i>
+	                                        </c:if>
+	                                        <c:if test="${image.currUserFavor==1 }">
+	                                            <i class="fa fa-star star-style" style="color:#efa421"></i>
+	                                        </c:if>
                                             <div class="mir-img ">
                                                 <img src="/images/image-1.png">
                                             </div>
                                         </div>
                                         <div class="select-info">
-                                            <div class="pull-right-text">
-                                                <span class="image-name">${image.name}</span>
-                                                <span class="lock"><i class="fa fa-lock"></i></span> <!-- 解锁样式  <i class="fa fa-unlock"></i> -->
+                                            <div class="pull-right-text">${image.name}
+                                             	<c:if test="${image.imageType==2 }">
+	                                            	<span class="btn btn-link lock">
+	                                            		<i class="fa fa-lock"></i>
+	                               					</span>
+                               					</c:if>
                                             </div>
                                             <div>
+                                            	<i class="fa fa-tag"></i> ${image.version }
                                                 <div class="pull-right">
                                                     <a href="/service/add?imageName=${image.name}&imageVersion=${image.version}" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
                                                 </div>
@@ -60,7 +64,7 @@
                                         </div>
                                         <div class="create-item">
                                             <a href="/registry/detail/${image.id }">
-                                                <span class="note-text" title="${image.remark}" > ${image.summary} </span>
+                                                <span class="note-text" > ${image.summary } </span>
                                             </a>
                                         </div>
                                     </li>

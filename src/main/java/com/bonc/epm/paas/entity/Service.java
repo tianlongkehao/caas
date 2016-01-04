@@ -1,14 +1,16 @@
 package com.bonc.epm.paas.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+import javax.persistence.OneToMany;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Service {
@@ -81,6 +83,21 @@ public class Service {
 	private long containerID;
 	private long createBy;
 	private Integer cpuNum;
+	private long imgID;
+	
+//	private List<String> podName;
+//	public List<String> getPodName() {
+//		return podName;
+//	}
+//	public void setPodName(List<String> podName) {
+//		this.podName = podName;
+//	}
+	public long getImgID() {
+		return imgID;
+	}
+	public void setImgID(long imgID) {
+		this.imgID = imgID;
+	}
 	public Integer getCpuNum() {
 		return cpuNum;
 	}

@@ -45,6 +45,8 @@ public class CiRecord {
 	/**
 	 * 构建日志
 	 */
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String logPrint;
 	
 	public long getId() {
@@ -83,9 +85,7 @@ public class CiRecord {
 	public void setConstructResult(Integer constructResult) {
 		this.constructResult = constructResult;
 	}
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@Column(name="logPrint", columnDefinition="CLOB", nullable=true) 
+	
 	public String getLogPrint() {
 		return logPrint;
 	}

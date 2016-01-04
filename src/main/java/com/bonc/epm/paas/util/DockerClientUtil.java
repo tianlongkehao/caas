@@ -54,8 +54,8 @@ public class DockerClientUtil {
 			    public void onNext(BuildResponseItem item) {
 			    	if(item.getStream().contains("Step")||item.getStream().contains("--->")||item.getStream().contains("Downloading")||item.getStream().contains("[INFO]")||item.getStream().contains("Removing")||item.getStream().contains("Successfully")){
 			    		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getStream());
+			    		ciRecordDao.save(ciRecord);
 			    	}
-			    	ciRecordDao.save(ciRecord);
 			       log.info("==========BuildResponseItem:"+item);
 			       super.onNext(item);
 			    }
@@ -76,35 +76,6 @@ public class DockerClientUtil {
 	}
 	
 	/**
-	 * 构建镜像
-	 * @param dockerfilePath
-	 * @param imageName
-	 * @param imageVersion
-	 * @return
-	 */
-	public static boolean buildImage(String dockerfilePath,String imageName,String imageVersion){
-		try{
-			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
-			File baseDir = new File(dockerfilePath);
-			BuildImageResultCallback callback = new BuildImageResultCallback() {
-			    @Override
-			    public void onNext(BuildResponseItem item) {
-			       log.info("==========BuildResponseItem:"+item);
-			       super.onNext(item);
-			    }
-			};
-			String imageId = dockerClient.buildImageCmd(baseDir).exec(callback).awaitImageId();
-			//修改镜像名称及版本
-			dockerClient.tagImageCmd(imageId, config.getUsername()+"/"+imageName, imageVersion).withForce().exec();
-			return true;
-		}catch(Exception e){
-			e.printStackTrace();
-			log.error("buildImage error:"+e.getMessage());
-			return false;
-		}
-	}
-	
-	/**
 	 * 上传到镜像仓库
 	 * @param imageName
 	 * @param imageVersion
@@ -116,8 +87,10 @@ public class DockerClientUtil {
 			PushImageResultCallback callback = new PushImageResultCallback() {
 				@Override
 				public void onNext(PushResponseItem item) {
-					ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getProgress());
-			    	ciRecordDao.save(ciRecord);
+					if(!item.getStream().contains("null")){
+						ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getProgress());
+				    	ciRecordDao.save(ciRecord);
+					}
 					log.info("==========PushResponseItem:"+item);
 				    super.onNext(item);
 				}

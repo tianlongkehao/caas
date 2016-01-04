@@ -59,10 +59,11 @@
 	                                <i class="fa fa-star star-style"></i>&nbsp;<span id="collectTxt">已收藏</span>
 	                            </span>
                             </c:if>
-                            <span class="btn btn-link lock">
-                                <i class="fa fa-lock"></i></span>
-                            </span>
-
+                            <c:if test="${image.imageType==2 }">
+	                            <span class="btn btn-link lock">
+	                                <i class="fa fa-lock"></i>
+	                            </span>
+	                        </c:if>
                         </section>
                     </div>
                     <div class="row" style="padding-bottom: 50px;">
@@ -77,10 +78,15 @@
                             	<c:if test="${editImage==1 }">
                                 	<span id="detailEditSave" class="editSave-bottom btn btn-link"><i class="fa fa-edit"></i> 编辑</span>
                                 </c:if>
+                                <input type="hidden" id="remark" value="${image.remark }">
                                 <div class="detail-contents">
-                                    <p>
-                                        ${image.remark }
-                                    </p>
+                                    <script type="text/javascript">
+                                    	$(function(){
+		                                     var remark = $("#remark").val();
+		                                     var mdContent = marked(remark);
+		                                     $('.infoLog .detail-contents').html(mdContent);
+                                    	});
+                                    </script>
                                 </div>
                                 <div class="hide" id="contentEditor" style="text-indent: 0px;padding:0px 10px;">
                                     <textarea id="editor" style="display: none;">${image.remark }</textarea>
@@ -94,7 +100,6 @@
                             <section class="infoTags hide">
                                 <div class="detail-contents">
                                     <p><i class="fa fa-tag"></i> ${image.version }</p>
-                                    <p><i class="fa fa-tag"></i> ${image.imageType }</p>
                                 </div>
                             </section>
                             <!-- <section class="infoInterface hide">
