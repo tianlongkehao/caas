@@ -1,22 +1,23 @@
 package com.bonc.epm.paas.kubernetes.model;
 
+import java.util.Map;
+
 public class ResourceQuotaStatus {
 	
-	private String hard;
-	private String used;
+	private Map<String, String> hard;
+	private Map<String, String> used;
 	
-	public String getHard() {
+	public Map<String, String> getHard() {
 		return hard;
 	}
-	public void setHard(String hard) {
+	public void setHard(Map<String, String> hard) {
 		this.hard = hard;
 	}
-	public String getUsed() {
+	public Map<String, String> getUsed() {
 		return used;
 	}
-	public void setUsed(String used) {
+	public void setUsed(Map<String, String> used) {
 		this.used = used;
 	}
-	
 	
 }

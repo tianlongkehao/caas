@@ -99,7 +99,7 @@
 
         <c:if test="${cur_user.user_autority == 1}">
             <li id="menu_user" class="user-admin">
-                <a href="/user/list/1">
+                <a href="/user/list">
                     <img class="nav-icon" src="/images/user.svg" alt=""/>
                     <span class="nav-title">租户</span>
                 </a>

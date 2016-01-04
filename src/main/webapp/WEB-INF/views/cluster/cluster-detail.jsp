@@ -25,9 +25,9 @@
             </div>
             <div class="contentMain">
 
-                <div class="setTab">
-                    <a id="resourceinfo" class="Record action">172.16.71.146</a>
-                    <a id="pwd" class="Record">172.16.71.233</a>
+                <div class="setTab" id="resourceTab">
+                    <%--<a id="resourceinfo" class="Record action">172.16.71.146</a>
+                    <a id="pwd" class="Record">172.16.71.233</a>--%>
                 </div>
 
                 <div class="account_table">
@@ -41,8 +41,8 @@
                                         <th colspan="6" class="detail-rows">资源使用情况</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    <tr>
+                                    <tbody id='divResultInfo'>
+                                    <%--<tr>
                                         <td style="width:15%">CPU（核）</td>
                                         <td style="width:25%">
                                             <div class="slider_bj">
@@ -50,13 +50,6 @@
                                             </div>
                                         </td>
                                         <td style="width:10%"><span id="detailCpu">-</span>（核）</td>
-                                        <%--<td>网络（M）</td>
-                                        <td>
-                                            <div class="slider_bj">
-                                                <div class="slider_block network"></div>
-                                            </div>
-                                        </td>
-                                        <td>10M</td>--%>
                                     </tr>
                                     <tr>
                                         <td style="width:15%">网络（M）</td>
@@ -75,7 +68,7 @@
                                             </div>
                                         </td>
                                         <td><span id="detailMemory">-</span>/<span id="totalMemory">-</span>（G）</td>
-                                    </tr>
+                                    </tr>--%>
                                     </tbody>
                                 </table>
                             </div>

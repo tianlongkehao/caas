@@ -33,19 +33,25 @@
                     </aside>
                     <div class="caption clearfix">
                         <ul class="toolbox clearfix">
-                            <li><a href="javascript:void(0);" id="userReloadBtn"><i class="fa fa-repeat"></i></a></li>
+                            <li><a href="javascript:window.location.reload(true);" id="userReloadBtn"><i class="fa fa-repeat"></i></a></li>
                             <li><a href="/user/add" id="userCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
                             <li class="dropdown">
                                 <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a href="javascript:userDetail()">
+                                        <a href="javascript:tenement_detail()">
                                             <i class="fa fa-play"></i>
                                             <span class="ic_left">查看</span>
                                         </a>
                                     </li>
+                            <!--    <li>
+                                        <a href="javascript:changeContainerConf();">
+                                            <i class="fa fa-cog"></i>
+                                            <span class="ic_left">修改</span>
+                                        </a>
+                                    </li> -->
                                     <li>
-                                        <a href="javascript:delUser()">
+                                        <a href="javascript:delTenement()">
                                             <i class="fa fa-trash"></i>
                                             <span class="ic_left">删除</span>
                                         </a>
@@ -53,77 +59,58 @@
                                 </ul>
                             </li>
                         </ul>
-                        <div id="upgrade" style="display:none">
-                            <ul class="popWin">
-                                <li class="line-h-3">
-                                    <span class="edit-name-c">服务名称：</span>
-                                    <input id="upgradeServiceName" disabled="disabled" style="margin-top: 5px;width: 165px;" type="text" value="">
-                                </li>
-                                <li class="line-h-3" id="instsizeChange">
-                                    <div class="param-set">
-                                        <span class="edit-name-c" style="margin-top: 5px;">实例数量：</span>
-                                        <input value="1" id="numberChange" class="" min="1" style="margin-top: 10px;width: 165px;" type="number">
-                                        <span class="unit">个</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div id="changeConf" style="display:none">
-                            <ul class="popWin">
-                                <li class="line-h-3">
-                                    <span>服务名称：</span>
-                                    <input class="" id="confServiceName" disabled="disabled" style="margin-top: 5px;width: 165px;" type="text" value="">
-                                </li>
-                                <li class="line-h-3">
-                                    <div class="param-set">
-                                        <span>CPU数量：</span>
-                                        <input type="number" value="1" style="margin-top: 10px;width: 165px;" min="1" autocomplete="off"
-                                               placeholder="1" id="" name="">
-                                        <span class="unit">个</span>
-                                    </div>
-                                </li>
-                                <li class="line-h-3">
-                                    <div class="param-set">
-                                        <span>内存：</span>
-                                        <input id="confRamSlider" data-slider-id='confRamSlider' type="text" data-slider-min="0" data-slider-max="2024" data-slider-step="1" data-slider-value="256"/>
-                                        <input type="text" value="256" id="confRam" name="confRam">
-                                        <span>M</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="searchs">
-                            <form class="form-inline" action="">
+                        <form id="search_form" class="form-inline" action="/user/searchByCondition" method="post">
+                        	<div class="col-md-2 " style="width: 25%; " align="right">
+                                <label style="line-height: 35px">姓名:</label>
+                                <input name="search_userName" type="text" class="form-control" style="float: right;width:70%" placeholder="搜索姓名关键字">
+                            </div>
+                            <div class="col-md-2 " style="width: 25%; " align="right">
+                                <label style="line-height: 35px">公司:</label>
+                                <input type="text" class="form-control" style="display: inline; width: 70%" placeholder="搜索公司关键字"
+                                       name="search_company">
+                            </div>
+                        	<div class="col-md-2" style="width: 20%; " align="right" hidden="hidden">
+                                <label style="line-height: 35px">部门:</label>
+                                <input type="text" class="form-control" style="display: inline; width: 80%" 
+                                		name="search_department">
+                            </div>
+                            <div class="col-md-2" class="form-control" align="right">
+                                <label style="line-height: 40px">权限:</label>
+                           		<input style="line-height: 40px" type="checkbox"  name="search_autority" value="1">管理员
+                               	<input style="line-height: 40px" type="checkbox" name="search_autority" value="2">普通用户
+                                <input type="hidden" name="search_autority">
+                            </div>
+           					<div class="searchs" align="right">
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="搜索">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-primary" type="button">
+                                    	<span class="input-group-btn">
+                                        <button class="btn btn-primary" type="submit">
                                             <span class="glyphicon glyphicon-search"></span>
                                         </button>
                                     </span>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
+	                        </div>
+	                    </form>
                     </div>
                     <div class="itemTable">
-                        <table class="table service-table">
+                        <table class="table user-table">
                             <thead>
                             <tr>
                                 <th>
                                     <div class="table-head">
-                                        <table class="table">
+                                        <table class="table"  style="margin: 0;">
                                             <thead>
                                             <tr>
                                                 <th style="width: 5%;text-indent: 30px;">
                                                     <input type="checkbox" class="chkAll"/>
                                                 </th>
-                                                <th style="width: 20%;padding-left: 5px;">登录账号</th>
-                                                <th style="width: 18%;text-indent: 8px;">工号</th>
-                                                <th style="width: 18%;">姓名</th>
-                                                <th style="width: 18%;">部门</th>
-                                                <th style="width: 18%;">角色权限</th>
+                                                <th style="width: 15%;padding-left: 5px;">登录账号</th>
+                                                <th style="width: 15%;">姓名</th>
+                                                <th style="width: 18%;">公司</th>
+                                                <th style="width: 15%;">部门</th>
+                                                <th style="width: 15%;text-indent: 8px;">工号</th>
+                                                <th style="width: 10%;">角色权限</th>
                                             </tr>
                                             </thead>
                                         </table>
@@ -131,11 +118,39 @@
                                 </th>
                             </tr>
                             </thead>
-                            <tbody id = "serviceBody">
-                            <tr>
-
-                            </tr>
-                            </tbody>
+                            <tbody>
+	                        <tr>
+	                            <td>
+	                                <div class="content-table">
+	                                    <table class="table tables">
+	                                        <tbody>
+	                                        <c:forEach items="${userList }" var="user">
+	                                        <c:if test="${user.id == null || user.id == 0}">
+	                                                	<c:set var="cursorClass" value="cursor-no-drop"></c:set>
+	                                        </c:if>
+						<c:if test="${cur_user.id != user.id}">
+		                                        <tr class="userTr" id="${user.id }">
+		                                            <td style="width: 5%; text-indent: 30px;">
+		                                            	<input type="checkbox" class="chkItem" name="ids" value="${user.id }" >
+		                                            </td>
+		                                            <td style="width: 15%;">${user.userName }</td>
+		                                            <td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
+		                                            <td style="width: 18%; text-indent: 0;">${user.company }</td>
+		                                            <td style="width: 15%; text-indent: 0;">${user.user_department }</td>
+		                                            <td style="width: 15%; text-indent: 0;">${user.user_employee_id}</td>
+		                                            <td style="width: 10%; text-indent: 0;">
+		                                            	<c:if test='${user.user_autority == "1"}'>管理员</c:if>
+		                                            	<c:if test='${user.user_autority == "2"}'>普通用户</c:if>
+		                                            </td>
+		                                        </tr>
+	                                        </c:if>
+	                                        </c:forEach>
+	                                        </tbody>
+	                                    </table>
+	                                </div>
+	                            </td>
+	                        </tr>
+	                        </tbody>
                         </table>
                     </div>
 
@@ -143,7 +158,53 @@
             </div>
         </article>
     </div>
+    <input id="create_flag" value="${creatFlag}" type="hidden">
+    <input id="update_flag" value="${updateFlag}" type="hidden">
 
-
+<script type="text/javascript" >
+	$(document).ready(function(){
+		var create_flag = $.trim($("#create_flag").val());
+		var update_flag = $.trim($("#update_flag").val());
+		
+		if(create_flag == '200'){
+			if(onfirm("创建用户成功！")) {
+				location.href="/user/list";
+			}
+			//window.location.reload;
+			else{
+				$("#create_flag").attr("value", '');
+			}
+			return;
+		}
+		if(create_flag == '400'){
+			if(confirm("创建用户失败！")) {
+				location.href="/user/list";
+			}
+			else {
+				$("#create_flag").attr("value", '');
+			}
+			return;
+		}
+		
+		if(update_flag === '400'){
+			if(confirm("用户信息更新失败！")) {
+				location.href="/user/list";
+			}
+			else {
+				$("#update_flag").attr("value", '');
+			}
+			return;
+		}
+		if(update_flag === '200'){
+			if(confirm("用户信息更新成功！")) {
+				location.href="/user/list";
+			}
+			else {
+				$("#update_flag").attr("value", '');			
+			}
+			return;
+		}
+	});
+</script>
 </body>
 </html>

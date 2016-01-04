@@ -45,7 +45,7 @@
                                     <li>
                                         <a href="/cluster/detail">
                                             <i class="fa fa-play"></i>
-                                            <span class="ic_left">查看</span>
+                                            <span class="ic_left" id="detailInfo">查看</span>
                                         </a>
                                     </li>
                                     <li>
