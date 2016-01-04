@@ -343,7 +343,6 @@ public class ServiceController {
 		service.setCpuNum(cpus);
 		service.setRam(rams);
 		try {
-			serviceDao.save(service);
 			map.put("status", "200");
 		} catch (Exception e) {
 			map.put("status", "400");
@@ -360,12 +359,15 @@ public class ServiceController {
 	@ResponseBody
 	public String delContainer(long id){
 		Service service = serviceDao.findOne(id);
+		String confName = service.getServiceName();
+		String configName = CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName();
 		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
 		ReplicationController controller = client.getReplicationController(service.getServiceName());
 		if(controller!=null){
 			client.updateReplicationController(service.getServiceName(), 0);
 			client.deleteReplicationController(service.getServiceName());
 			client.deleteService(service.getServiceName());
+			TemplateEngine.deleteConfig(confName, configName);
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");

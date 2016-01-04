@@ -219,9 +219,13 @@
  function upGradeContainer(){
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
-		 var containerName = $(".clusterId").attr('containerName');
+		 var containerName = $(el).attr('serviceName');
 		 $('#upgradeServiceName').val(containerName);
-		 var nums = $("#numberChange").val();
+		 var nums = $(el).attr('serviceNum');
+		 $('#numberChange').val(nums);
+		 
+		 
+		 
 		 //alert(nums);
 		 layer.open({
 			 type:1,
@@ -231,8 +235,10 @@
 			 yes: function(index, layero){ //或者使用btn1
 			 	//按钮【按钮一】的回调
 				 layer.close(index);
+				 var num = $('#numberChange').val();
+				// alert(num);
 				 $.ajax({
- 					url:"service/modifyServiceNum.do?id="+id+"&addservice="+nums,
+ 					url:"service/modifyServiceNum.do?id="+id+"&addservice="+num,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
@@ -257,10 +263,14 @@
  function changeContainerConf(){
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
-		 var containerName = $(".clusterId").attr('containerName');
+		 var containerName = $(el).attr('serviceName');
+		 //alert(containerName);
 		 $('#confServiceName').val(containerName);
-		 var cpu = $("#confCpu").val();
-		 var ram = $("#confRam").val();
+		 var cpu = $(el).attr('confCpu');
+		 var ram = $(el).attr('confRam');
+		 $('#confCpu').val(cpu);
+		 $('#confRam').val(ram);
+		 
 		 layer.open({
 			 type:1,
 			 title: '更改配置',
@@ -270,8 +280,10 @@
 			 yes: function(index, layero){ //或者使用btn1
 				 //按钮【按钮一】的回调
 				 layer.close(index);
+				 var cpus = $('#confCpu').val();
+				 var rams = $('#confRam').val();
 				 $.ajax({
- 					url:"service/modifyCPU.do?id="+id+"&cpus="+cpu+"&rams="+ram,
+ 					url:"service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
