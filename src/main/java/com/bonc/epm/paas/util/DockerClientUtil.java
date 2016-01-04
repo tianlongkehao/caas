@@ -52,9 +52,11 @@ public class DockerClientUtil {
 			BuildImageResultCallback callback = new BuildImageResultCallback() {
 			    @Override
 			    public void onNext(BuildResponseItem item) {
-			    	if(item.getStream().contains("Step")||item.getStream().contains("--->")||item.getStream().contains("Downloading")||item.getStream().contains("[INFO]")||item.getStream().contains("Removing")||item.getStream().contains("Successfully")){
-			    		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getStream());
-			    		ciRecordDao.save(ciRecord);
+			    	if(item!=null&&item.getStream()!=null){
+				    	if(item.getStream().contains("Step")||item.getStream().contains("--->")||item.getStream().contains("Downloading")||item.getStream().contains("[INFO]")||item.getStream().contains("Removing")||item.getStream().contains("Successfully")){
+				    		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getStream());
+				    		ciRecordDao.save(ciRecord);
+				    	}
 			    	}
 			       log.info("==========BuildResponseItem:"+item);
 			       super.onNext(item);
@@ -87,15 +89,19 @@ public class DockerClientUtil {
 			PushImageResultCallback callback = new PushImageResultCallback() {
 				@Override
 				public void onNext(PushResponseItem item) {
-					if(!item.getStream().contains("null")){
-						ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getProgress());
-				    	ciRecordDao.save(ciRecord);
+					if(item!=null&&item.getStream()!=null){
+						if(!item.getStream().contains("null")){
+							ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getProgress());
+					    	ciRecordDao.save(ciRecord);
+						}
 					}
 					log.info("==========PushResponseItem:"+item);
 				    super.onNext(item);
 				}
 			};
 			dockerClient.pushImageCmd(config.getUsername()+"/"+imageName).withTag(imageVersion).exec(callback).awaitSuccess();
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"push image complete");
+	    	ciRecordDao.save(ciRecord);
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
