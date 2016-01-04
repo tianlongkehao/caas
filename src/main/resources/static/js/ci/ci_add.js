@@ -1,24 +1,10 @@
 $(document).ready(function () {
 
  	$("#buildBtn").click(function(){
-        //if(checkCiAdd()) {
-
-//        $("#buildForm").ajaxSubmit({
-//            type: "post",
-//            success: function (data) {
-//                console.log(data);
-//                data = eval("(" + data + ")");
-//                if (data.status == "200") {
-//                    window.location.href = "/ci";
-//                } else {
-//                    layer.alert(data.msg);
-//                }
-//            }
-//        });
-
-        $("#buildForm").submit();
-
-        //return false;
+        if(checkCiAdd()) {
+        	$("#buildForm").submit();
+        }
+        return false;
     });
 
 
@@ -40,10 +26,10 @@ $(document).ready(function () {
         }
     });
 
-    $('#ciSummary').blur(function(event){
-        var ciSummary = $('#ciSummary').val().trim();
-        if(ciSummary.length === 0){
-            layer.tips('项目简介不能为空', '#ciSummary', {
+    $('#description').blur(function(event){
+        var description = $('#description').val().trim();
+        if(description.length === 0){
+            layer.tips('项目简介不能为空', '#description', {
                 tips: [1, '#0FA6D8'] //还可配置颜色
             });
         }
@@ -61,9 +47,8 @@ $(document).ready(function () {
 
     function checkCiAdd(){
         var imgNameLast = $("#imgNameLast").val().trim();
-        var codeUrl = $('#codeUrl').val().trim();
         var projectName = $('#projectName').val().trim();
-        var ciSummary = $('#ciSummary').val().trim();
+        var description = $('#description').val().trim();
 
         // 验证仓库名称
         imgNameLast = imgNameLast.toLowerCase();
@@ -89,23 +74,27 @@ $(document).ready(function () {
             $('#imgNameLast').focus();
             return false;
         }
-        // 验证cloneurl
-        if ($('#codeUrl').attr('type') !== 'hidden') {
-            if(codeUrl.length === 0){
-                layer.tips('代码仓库地址不能为空', '#codeUrl', {
-                    tips: [1, '#0FA6D8'] //还可配置颜色
-                });
-                $('#codeUrl').focus();
-                return false;
-            }
+        
+       //如果有codeUrl 则 验证codeUrl
+        if($('#codeUrl').length>0){
+	        var codeUrl = $('#codeUrl').val().trim();
+	        if ($('#codeUrl').attr('type') !== 'hidden') {
+	            if(codeUrl.length === 0){
+	                layer.tips('代码仓库地址不能为空', '#codeUrl', {
+	                    tips: [1, '#0FA6D8'] //还可配置颜色
+	                });
+	                $('#codeUrl').focus();
+	                return false;
+	            }
+	        }
         }
         // 验证简介
-        if(ciSummary.length === 0){
-            layer.tips('项目简介不能为空', '#ciSummary', {
+        if(description.length === 0){
+            layer.tips('项目简介不能为空', '#description', {
                 tips: [1, '#0FA6D8'] //还可配置颜色
             });
             return false;
-            $('#ciSummary').focus();
+            $('#description').focus();
         }
         // 验证项目名称
         if(projectName.length === 0){

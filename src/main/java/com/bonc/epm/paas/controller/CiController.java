@@ -43,6 +43,8 @@ import com.bonc.epm.paas.util.DockerClientUtil;
  * @author yangjian
  *
  */
+
+import ch.qos.logback.core.net.SyslogOutputStream;
 @Controller
 public class CiController {
 	private static final Logger log = LoggerFactory.getLogger(CiController.class);
@@ -233,7 +235,17 @@ public class CiController {
 				if(StringUtils.isEmpty(codeUrl)||codeUrl.indexOf("//")<=0){
 					return false;
 				}
-				String nCodeUrl = codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername()+":"+ci.getCodePassword()+"@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length());
+				String nCodeUrl = codeUrl;
+				String codeUsername = ci.getCodeUsername();
+				String codePassword = ci.getCodePassword();
+				if(!StringUtils.isEmpty(codeUsername)&&!StringUtils.isEmpty(codePassword)){
+					//如果有账号密码
+					if(ci.getCodeUsername().indexOf("@")>0){
+						//如果git用户名是带@邮箱格式的，则去掉邮箱后缀
+						codeUsername = codeUsername.substring(0, codeUsername.indexOf("@"));
+					}
+					nCodeUrl = codeUrl.substring(0,codeUrl.indexOf("//")+2)+codeUsername+":"+codePassword+"@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length());
+				}
 				String rmCommonStr = "rm -rf "+ci.getCodeLocation();
 				log.info("==========rmCommonStr:"+rmCommonStr);
 				CmdUtil.exeCmd(rmCommonStr);
@@ -252,7 +264,6 @@ public class CiController {
 		}
 		return false;
 	}
-	
 	/**
 	 * 构建镜像
 	 * @param ci
