@@ -1,11 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <title>集群</title>
-    <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/cluster.css"/>
-    <script type="text/javascript" src="/js/cluster/cluster-create.js"></script>
+< lang="en">
+<title>集群</title>
+<%@include file="../frame/header.jsp" %>
+<link rel="stylesheet" type="text/css" href="/css/mod/cluster.css"/>
+<script type="text/javascript" src="/js/cluster/cluster-create.js"></script>
 </head>
 <body>
 
@@ -61,7 +61,8 @@
                                                 <thead>
                                                 <tr style="text-align: center">
                                                     <th style="width: 5%;text-align: center;">
-                                                        <input type="checkbox" class="chkAll" name="checkAll" id="checkAllBox"/>
+                                                        <input type="checkbox" class="chkAll" name="checkAll"
+                                                               id="checkAllBox"/>
                                                     </th>
                                                     <th style="width: 33%;text-align: center">IP</th>
                                                 </tr>
