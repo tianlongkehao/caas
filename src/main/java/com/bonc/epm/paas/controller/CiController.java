@@ -39,7 +39,7 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.bonc.epm.paas.util.DockerClientUtil;
 /**
- * 构建
+ * 构建controller
  * @author yangjian
  *
  */
@@ -238,7 +238,7 @@ public class CiController {
 				log.info("==========rmCommonStr:"+rmCommonStr);
 				CmdUtil.exeCmd(rmCommonStr);
 				String gitCommandStr = "git clone "+nCodeUrl+" "+ci.getCodeLocation();
-				String logmsg = "git clone "+codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername()+":****@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length())+" "+ci.getCodeLocation();;
+				String logmsg = "git clone "+codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername()+":******@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length())+" "+ci.getCodeLocation();;
 				ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+logmsg);
 				ciRecordDao.save(ciRecord);
 				log.info("==========gitCommandStr:"+gitCommandStr);
