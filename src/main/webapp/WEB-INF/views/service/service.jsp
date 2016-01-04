@@ -74,8 +74,8 @@
                                         <i class="fa fa-cog"></i>
                                         <span class="ic_left">更改配置</span>
                                     </a>
-                                </li>
-                                 -->
+                                </li>-->
+                                 
                                 <li>
                                     <a href="javascript:delContainer()">
                                         <i class="fa fa-trash"></i>
@@ -184,7 +184,7 @@
                                                     </c:when>
                                                     <c:when test="${service.status == 3 }">
                                             			<c:set var="statusName" value="运行中"></c:set>
-                                                    	<c:set var="statusClassName" value="fa_success"></c:set>
+                                                    	<c:set var="statusClassName" value="fa_run"></c:set>
                                                     	<c:set var="loadingImgShowClass" value="hide"></c:set>
                                                     </c:when>
                                                     <c:when test="${service.status == 4 }">
@@ -210,7 +210,7 @@
 
                                            		<tr class="clusterId" containerName="${service.serviceName }">
                                                         <td style="width:5%;text-indent: 30px;">
-                                                            <input type="checkbox" class="chkItem" name="chkItem" value="${service.id }" status="" imagename="" imagetag="" />
+                                                            <input type="checkbox" class="chkItem" name="chkItem" value="${service.id }" serviceName="${service.serviceName }" serviceNum="${service.instanceNum }" confRam="${service.ram }"status="" imagename="" imagetag="" confCpu="${service.cpuNum }"/>
                                                         </td>
                                                         <td style="width:20%;white-space:nowrap;">
                                                             <b class="caret margin" style="transform: rotate(-90deg);"></b>

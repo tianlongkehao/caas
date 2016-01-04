@@ -127,9 +127,9 @@ public class ClusterController {
             //安装环境
             String masterName = "centos-master";
             String hostName = "centos-minion" + ip.split("\\.")[3];
-            String yumSource = "172.16.71.171";
+            String yumSource = "172.16.71.172";
             String cmd = "cd /opt/;chmod +x ./envInstall.sh;nohup ./envInstall.sh " + imageHostPort + " " + yumSource + " " + type + " " + masterName + " " + hostName;
-            log.debug("cmd-----------------------------------------------------------------------------------"+cmd);
+            log.debug("cmd-----------------------------------------------------------------------------------" + cmd);
             SshConnect.exec(cmd, 300000);
             //关闭SSH连接
             SshConnect.disconnect();

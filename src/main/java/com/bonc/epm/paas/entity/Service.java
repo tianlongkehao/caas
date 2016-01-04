@@ -83,6 +83,7 @@ public class Service {
 	private long containerID;
 	private long createBy;
 	private Integer cpuNum;
+	private String ram;
 	private long imgID;
 	
 //	private List<String> podName;
@@ -110,7 +111,7 @@ public class Service {
 	public void setRam(String ram) {
 		this.ram = ram;
 	}
-	private String ram;
+	
 	public long getCreateBy() {
 		return createBy;
 	}
