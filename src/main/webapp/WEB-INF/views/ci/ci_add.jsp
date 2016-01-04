@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>镜像中心</title>
+    <title>快速构建</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="/css/mod/ci.css"/>
     <script type="text/javascript" src="/js/ci/ci_add.js"></script>
@@ -120,7 +120,7 @@
                                             <span class="btns-group">
                                               <select id="codeBranch" name="codeBranch" class="reg-input" style="width:189px;">
                                                   <option value="master">master</option>
-                                                  <option value="develop">develop</option>
+                                                  <!-- <option value="develop">develop</option> -->
                                               </select>
                                             </span>
                                         </td>

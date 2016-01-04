@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title></title>
+    <title>构建</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="/css/mod/ci.css"/>
     <script type="text/javascript" src="/js/ci/ci.js"></script>
@@ -30,7 +30,7 @@
                         <li><a href="javascript:void(0);" id="ciReloadBtn"><i class="fa fa-repeat"></i></a></li>
                         <!-- <li><a href="javascript:void(0);">添加源代码</a></li> -->
                         <li><a href="/ci/add" id="ciAddBtn">快速构建</a></li>
-                        <li><a href="/ci/addSource" id="ciAddSourceBtn">代码上传构建</a></li>
+                        <li><a href="/ci/addSource" id="ciAddSourceBtn">上传构建</a></li>
                     </ul>
                 </div>
                 <div class="itemTable">
@@ -129,8 +129,8 @@
 		                                                </c:otherwise>
 		                                            </c:choose>
                                                 </td>
-                                                <td style="width: 12%;">${ci.constructionDate}</td>
-                                                <td style="width: 10%;">${ci.constructionTime}</td>
+                                                <td style="width: 12%;"><fmt:formatDate value="${ci.constructionDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                                <td style="width: 10%;"><fmt:formatNumber type="number" value="${ci.constructionTime/1000}" maxFractionDigits="0"/>s</td>
                                                 <td style="width: 15%;">
                                                     <a target="_blank" title="" class="${cursorClass}" ${hrefValue }>${ci.imgNameFirst}/${ci.imgNameLast}</a>
                                                 </td>

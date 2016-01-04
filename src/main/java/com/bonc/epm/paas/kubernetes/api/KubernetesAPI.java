@@ -264,6 +264,18 @@ public interface KubernetesAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PodList getAllPods(@PathParam("namespace")String namespace) throws KubernetesClientException;
+    
+    /**
+     * Get labelSelector Pods
+     * 
+     * @return Pods
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/pods")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PodList getLabelSelectorPods(@PathParam("namespace")String namespace,@QueryParam("labelSelector")String labelSelector) throws KubernetesClientException;
 
     /**
      * Create a new Pod
@@ -425,16 +437,4 @@ public interface KubernetesAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     public Status deleteService(@PathParam("namespace")String namespace,@PathParam("name") String name) throws KubernetesClientException;
 
-    /**
-     * Run a label query and retrieve a sub set of Pods.
-     * 
-     * @param labels
-     *            parameter label=label1,label2,label3
-     * @return Pods selected Pods by executing the label query.
-     * @throws KubernetesClientException
-     */
-    @GET
-    @Path("/pods")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public PodList getSelectedPods(@PathParam("namespace")String namespace,@QueryParam("labels") String labels) throws KubernetesClientException;
 }

@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="/WEB-INF/tlds/c.tld" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <html>
 <head>
 </head>
@@ -21,10 +22,10 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="user/detail/${cur_user.id }"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
-                        <li><a href="user/detail/${cur_user.id }"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                        <li><a href="${ctx}/user/detail/${cur_user.id }"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                        <li><a href="${ctx}/user/detail/${cur_user.id }"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
                         <li class="logout">
-                            <a href="loginout/${cur_user.id }"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+                            <a href="${ctx}/loginout/${cur_user.id }"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
                         </li>
                     </ul>
                 </li>
@@ -51,11 +52,11 @@
                         服务
                     </a>
                 </li>
-                <li>
+               <!--  <li>
                     <a href="/service">
                         存储与备份
                     </a>
-                </li>
+                </li> -->
             </ul>
         </li>
         <li id="menu_ci">

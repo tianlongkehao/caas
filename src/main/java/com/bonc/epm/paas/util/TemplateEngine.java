@@ -33,6 +33,7 @@ public class TemplateEngine {
     
     private static String nginxConfPath;
     private static String nginxCmdPath;
+    private static String nginxConfUrl;
     private static String template;
     static{
     	String path = TemplateEngine.class.getClassLoader().getResource("conf.tpl").getPath();
@@ -44,6 +45,7 @@ public class TemplateEngine {
 			in.close();
 			nginxConfPath = nginxProperties.getProperty("nginxConf.io.confpath");
 			nginxCmdPath = nginxProperties.getProperty("nginxConf.io.cmdpath"); 
+			nginxConfUrl = nginxProperties.getProperty("nginxConf.io.confurl");
 		} catch (IOException e) {
 			log.error("nginxConfPath.init:"+e.getMessage());
 			e.printStackTrace();
@@ -57,6 +59,28 @@ public class TemplateEngine {
     
     public static boolean cmdReloadConfig(){
     	return CmdUtil.exeCmd(nginxCmdPath+" -s reload");
+    }
+    
+    public static String getConfUrl(){
+    	return nginxConfUrl;
+    }
+    
+    public static boolean deleteConfig(String confName,String configName){
+    	try {
+    		// 读取配置文件
+            String data = readConf(nginxConfPath+configName+".conf");
+//    		//test
+//            String data = readConf(configName);
+//            data = data.replace(getObject(confName,configName), "");
+//            writeConf(configName, data, false);
+            // 过滤删除内容
+            data = data.replace(getObject(confName,nginxConfPath+configName+".conf"), "");
+            // 重新写回文件
+            writeConf(nginxConfPath+configName+".conf", data, false);
+		} catch (Exception e) {
+			return false;
+		}
+    	return true;
     }
     
     /**
@@ -136,25 +160,25 @@ public class TemplateEngine {
     }
     
     /**
-     * 根据中括号内的ID查询对象
+     * 根据中括号内的confName查询对象
      * 
-     * @param id
+     * @param confName
      * @return
      */
-    public String getObject(String id){
+    public static String getObject(String confName,String path){
         StringBuffer sb = new StringBuffer();
         try{
-            FileReader fr = new FileReader(confPath);
+            FileReader fr = new FileReader(path);
             LineNumberReader nr = new LineNumberReader(fr);
             String line = "";
             int startLineNumber = -1;
             while((line = nr.readLine()) != null){
                 // 匹配到开头
-                if(line.indexOf("[" + id + "]") >= 0){
+                if(line.indexOf("upstream " + confName + "{") >= 0){
                     startLineNumber = nr.getLineNumber();
                 }
                 if(startLineNumber != -1 && nr.getLineNumber() >= startLineNumber){
-                    sb.append(line + enter);
+                    sb.append(line);
                     // 匹配到结束，以换行符结束
                     if(line.trim().equals("")){
                         break;

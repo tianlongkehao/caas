@@ -147,6 +147,7 @@
 		        							data = eval("(" + data + ")");
 		        							if(data.status=="200"){
 		        								layer.alert("容器启动成功");
+		        								window.location.reload();
 		        							}else{
 		        								layer.alert("容器启动失败");
 		        							}
@@ -174,13 +175,14 @@
 		        								data = eval("(" + data + ")");
 		        								if(data.status=="200"){
 		        									layer.alert("容器已停止");
+		        									window.location.reload();
 		        								}else{
 		        									layer.alert("容器停止失败，请检查服务器连接");
 		        								}
 	        		
 		        							}
 		        						})
-		        	//refresh();
+		        	
 		        }
 	        })
 	 })
@@ -201,13 +203,13 @@
 		        						data = eval("(" + data + ")");
 		        						if(data.status=="200"){
 		        							layer.alert("容器已删除");
+		        							window.location.reload();
 		        						}else{
 		        							layer.alert("容器删除失败，请检查服务器连接");
 		        						}
 	        		
 		        					}
 		        				})
-		        				refresh();
 		        }
 		 })
 	 })
@@ -217,9 +219,13 @@
  function upGradeContainer(){
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
-		 var containerName = $(".clusterId").attr('containerName');
+		 var containerName = $(el).attr('serviceName');
 		 $('#upgradeServiceName').val(containerName);
-		 var nums = $("#numberChange").val();
+		 var nums = $(el).attr('serviceNum');
+		 $('#numberChange').val(nums);
+		 
+		 
+		 
 		 //alert(nums);
 		 layer.open({
 			 type:1,
@@ -229,12 +235,15 @@
 			 yes: function(index, layero){ //或者使用btn1
 			 	//按钮【按钮一】的回调
 				 layer.close(index);
+				 var num = $('#numberChange').val();
+				// alert(num);
 				 $.ajax({
- 					url:"service/modifyServiceNum.do?id="+id+"&addservice="+nums,
+ 					url:"service/modifyServiceNum.do?id="+id+"&addservice="+num,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
  							layer.alert("弹性扩容成功！");
+ 							window.location.reload();
  						}else if(data.status=="400"){
  							layer.alert("弹性扩容失败，请检查服务器连接");
  						}else if(data.status=="300"){
@@ -243,7 +252,6 @@
 		
  					}
  				})
- 				refresh();
 		 	 },
 			 cancel: function(index){ //或者使用btn2
 			 	//按钮【按钮二】的回调
@@ -255,10 +263,14 @@
  function changeContainerConf(){
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
-		 var containerName = $(".clusterId").attr('containerName');
+		 var containerName = $(el).attr('serviceName');
+		 //alert(containerName);
 		 $('#confServiceName').val(containerName);
-		 var cpu = $("#confCpu").val();
-		 var ram = $("#confRam").val();
+		 var cpu = $(el).attr('confCpu');
+		 var ram = $(el).attr('confRam');
+		 $('#confCpu').val(cpu);
+		 $('#confRam').val(ram);
+		 
 		 layer.open({
 			 type:1,
 			 title: '更改配置',
@@ -268,19 +280,21 @@
 			 yes: function(index, layero){ //或者使用btn1
 				 //按钮【按钮一】的回调
 				 layer.close(index);
+				 var cpus = $('#confCpu').val();
+				 var rams = $('#confRam').val();
 				 $.ajax({
- 					url:"service/modifyCPU.do?id="+id+"&cpus="+cpu+"&rams="+ram,
+ 					url:"service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
  							layer.alert("更改成功");
+ 							window.location.reload();
  						}else{
  							layer.alert("更改失败，请检查服务器连接");
  						}
 		
  					}
  				})
- 				refresh();
 			 },
 			 cancel: function(index){ //或者使用btn2
 				 //按钮【按钮二】的回调
@@ -307,5 +321,15 @@
        }
      });
    }, interval);
+ }
+ 
+ function refresh1(id){
+	
+	var url = "service/" + Math.random();
+	//create random number
+	setTimeout(function() {
+	$("#inst_"+id).load(url+id,"");
+		  }, 500); //wait one second to run function
+	
  }
  

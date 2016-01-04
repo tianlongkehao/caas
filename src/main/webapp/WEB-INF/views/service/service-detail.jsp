@@ -28,25 +28,33 @@
 	<section class="detail-succeed">
 		<div class="icon-img">
 			<div class="type-icon">
-				<img src="images/tenxcloud_mysql.png" height="100%">
+				<img src="/images/image-1.png" height="100%">
 			</div>
 		</div>
 		<ul class="succeed-content pull-left">
-			<li>运行状态：运行中</li>
-			<li>服务地址：<a href="http://mysql-lynnxu.tenxapp.com:25314"
-				target="_blank">bonc.com:25314</a></li>
+			<c:if test="${service.status==1 }">
+				<li>运行状态：未启动</li>
+			</c:if>
+			<c:if test="${service.status==2||service.status==3 }">
+				<li>运行状态：正在运行</li>
+			</c:if>
+			<c:if test="${service.status==4 }">
+				<li>运行状态：已停止</li>
+			</c:if>
+			<li>服务地址：<a href="${service.serviceAddr }:${service.portSet}${service.serviceLink}"
+				target="_blank">${service.serviceName}:${service.portSet}${service.serviceLink}</a></li>
 			<li>创建时间：${service.createDate }</li>
 			<li>更新时间：${service.createDate }</li>
 		</ul>
 		<div class="applocation">
-			<a href="http://mysql-lynnxu.tenxapp.com:25314" target="_blank"
+			<a href="${service.serviceAddr }:${service.portSet}${service.serviceLink}" target="_blank"
 				class="open">打开应用</a>
 		</div>
 	</section>
 	<div class="baseInfo center-style">
-		<a class="BASE btn-prim">基本信息</a> <a class="INSTANCES">容器实例</a> <a
-			class="DOMAIN">绑定域名</a> <a class="PORTS">端口</a> <a class="MONITOR">监控</a>
-		<a class="LOG">日志</a> <a class="EVENT">事件</a>
+		<a class="BASE btn-prim">基本信息</a> <a class="INSTANCES">容器实例</a> <!-- <a
+			class="DOMAIN">绑定域名</a>  --><a class="PORTS">端口</a> <!--<a class="MONITOR">监控</a>
+		<a class="LOG">日志</a> <a class="EVENT">事件</a> -->
 	</div>
 	<div class="containerInfo">
 		<table class="table w50">
@@ -59,7 +67,15 @@
 			<tbody class="BORDER">
 				<tr>
 					<td>名称：${service.serviceName }</td>
-					<td>运行状态：正在运行</td>
+					<c:if test="${service.status==1 }">
+						<td>运行状态：未启动</td>
+					</c:if>
+					<c:if test="${service.status==2||service.status==3 }">
+						<td>运行状态：正在运行</td>
+					</c:if>
+					<c:if test="${service.status==4 }">
+						<td>运行状态：已停止</td>
+					</c:if>
 				</tr>
 				<tr>
 					<td>镜像名称：${service.imgName }</td>
@@ -75,17 +91,17 @@
 				</tr>
 			</thead>
 			<tbody class="BORDER">
-				<tr>
+				<!-- <tr>
 					<td>带宽：10 MB（公有网络）</td>
 					<td>系统盘：10GB</td>
-				</tr>
+				</tr> -->
 				<tr>
 					<td>CPU：${service.cpuNum }</td>
 					<td>内存：${service.ram }MB</td>
 				</tr>
 			</tbody>
 		</table>
-		<table class="table basicInfo w50">
+		<!-- <table class="table basicInfo w50">
 			<thead>
 				<tr>
 					<th>环境变量</th>
@@ -98,7 +114,7 @@
 					<td>变量值</td>
 				</tr>
 			</tbody>
-		</table>
+		</table> -->
 	</div>
 	<div class="containerInstances hide" style="min-height: 300px;">
 		<table class="table">
@@ -113,15 +129,15 @@
 				</tr>
 			</thead>
 			<tbody class="BORDER-TR">
-	<c:forEach items="${serviceList }" var="service" >
+	<c:forEach items="${containerList }" var="container" >
 		<c:choose>
-			<c:when test="${service.status == 1 }">
+			<c:when test="${service.status == 2 }">
 				<c:set var="statusClass" value="fa_run"></c:set>
                 <c:set var="eventStatusClass" value="fa-check"></c:set>
                 <c:set var="statusName" value="成功"></c:set>
                 <c:set var="eventStatus" value="success"></c:set>
 			</c:when>
-			<c:when test="${service.status == 2 }">
+			<c:when test="${service.status == 4 }">
 				<c:set var="statusClass" value="fa_stop"></c:set>
                 <c:set var="eventStatusClass" value="fa-times"></c:set>
                 <c:set var="statusName" value="失败"></c:set>
@@ -129,11 +145,20 @@
 			</c:when>
 		</c:choose>
 				<tr>
-                  <td><a href="/containers/tenx_district2/instances/hello-bq2vo">${service.serviceName }</a></td>
-                  <td>Running</td>
+                  <td><a href="">${container.containerName }</a></td>
+                  <c:if test="${service.status==4 }">
+					<td>waiting</td>
+				</c:if>
+                  <c:if test="${service.status==2||service.status==3 }">
+					<td>Running</td>
+					</c:if>
+				<c:if test="${service.status==4 }">
+					<td>stopping</td>
+				</c:if>
+                  
                   <td>${service.imgName }</td>
                   <td>bonc:8080</td>
-                  <td><a href="http://hello-christ.tenxapp.com" target="_blank">bonc.com</a></td>
+                  <td><a href="${service.serviceAddr }:${service.portSet}${service.serviceLink}" target="_blank">${service.serviceName}:${service.portSet }</a></td>
                   <td>${service.createDate }</td>
                 </tr>
 	</c:forEach>
@@ -196,12 +221,12 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td>mysql</td>
-						<td>3306</td>
+						<td>${service.serviceName }</td>
+						<td>8080</td>
 						<td>TCP</td>
-						<td>25314</td>
-						<td><a href="http://mysql-lynnxu.tenxapp.com:25314"
-							target="_blank">mysql-lynnxu.tenxapp.com:25314</a></td>
+						<td>${service.portSet }</td>
+						<td><a href="${service.serviceAddr }:${service.portSet }${service.serviceLink}"
+							target="_blank">${service.serviceName}:${service.portSet }</a></td>
 					</tr>
 				</tbody>
 			</table>

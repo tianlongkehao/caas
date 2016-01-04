@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title></title>
+    <title>构建信息</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="/css/mod/ci.css"/>
     <script type="text/javascript" src="/js/ci/ci_detail.js"></script>
@@ -34,14 +34,14 @@
                     <div class="create-detail ci-tab">项目描述</div>
                     <div class="create-set ci-tab">基本设置</div>
                     <div class="create-other ci-tab">操作</div>
-                    <span class="btn btn-primary pull-right" id="buildBtn" ciId="${ci.id }" constructionStatus="${ci.constructionStatus }">构建</span>
+                    <%-- <span class="btn btn-primary pull-right" id="buildBtn" ciId="${ci.id }" constructionStatus="${ci.constructionStatus }">构建</span> --%>
 
                         <div class="code-tabmain">
 
                             <%-- 构建日志 --%>
                             <div class="log-details" id="ciRecordList">
 
-                                <c:forEach items="${ciRecordList}" var="ciRecord">
+                                <c:forEach items="${ciRecordList}" var="ciRecord" varStatus="status">
 
                                     <c:choose>
                                         <c:when test="${ciRecord.constructResult == 1}">
@@ -55,15 +55,27 @@
                                             <c:set var="eventStatusClass" value="fa-times"></c:set>
                                             <c:set var="statusName" value="失败"></c:set>
                                             <c:set var="eventStatus" value="error"></c:set>
-
                                         </c:when>
                                     </c:choose>
-
-                                    <div class='event-line' repotype='' status='${eventStatus}'>
+                                    
+                                    <c:choose>
+                                        <c:when test="${status.index==0 }">
+                                            <c:set var="liveClass" value="lives"></c:set>
+                                            <c:set var="transformClass" value="90deg"></c:set>
+                                            <c:set var="displayClass" value="block"></c:set>
+                                        </c:when>
+                                        <c:otherwise>
+                                        	<c:set var="liveClass" value=""></c:set>
+                                            <c:set var="transformClass" value="0deg"></c:set>
+                                            <c:set var="displayClass" value="none"></c:set>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    
+                                    <div class='event-line ${liveClass}' repotype='' status='${eventStatus}'>
                                         <div class='event-status ${eventStatus}'>
                                             <i class='fa ${eventStatusClass} notes'></i>
                                         </div>
-                                        <div class='time-line-content lives'>
+                                        <div class='time-line-content'>
                                             <div class='time-line-reason event-title'>
                                                 <div class='title-name ${eventStatus}'>
                                                 <span class='event-names'>
@@ -75,11 +87,11 @@
                                                 </span>
                                                 </div>
                                                 <div class='time-line-time'>
-                                                    <div class='event-sign'><i class='fa fa-angle-right fa_caret' style='transform: rotate(90deg);'></i></div>
-                                                    <div class='datetimes'><i class='fa fa-calendar margin'></i>${ciRecord.constructDate}</div>
-                                                    <div class='time-on-timeout'><i class='fa fa-time'></i>${ciRecord.constructTime}</div>
+                                                    <div class='event-sign'><i class='fa fa-angle-right fa_caret' style='transform: rotate(${transformClass});'></i></div>
+                                                    <div class='datetimes'><i class='fa fa-calendar margin'></i><fmt:formatDate value="${ciRecord.constructDate}" pattern="yyyy-MM-dd HH:mm:ss"/></div>
+                                                    <div class='time-on-timeout'><i class='fa fa-time'></i><fmt:formatNumber type="number" value="${ciRecord.constructTime/1000}" maxFractionDigits="0"/>s</div>
                                                 </div>
-                                                <div class='time-line-message' style='display: block;'>
+                                                <div class='time-line-message' style='display: ${displayClass};'>
                                                     <div class='buildForm' buildid='' containerid='' buildername='builder2' status='fail'>
                                                         <div style='clear:both;'></div>
                                                         <div class='buildStatus' style='margin:0px 0px 10px 0px'></div>
