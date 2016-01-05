@@ -128,7 +128,7 @@
 	                                        <c:if test="${user.id == null || user.id == 0}">
 	                                                	<c:set var="cursorClass" value="cursor-no-drop"></c:set>
 	                                        </c:if>
-						<c:if test="${cur_user.id != user.id}">
+						                    <c:if test="${cur_user.id != user.id}">
 		                                        <tr class="userTr" id="${user.id }">
 		                                            <td style="width: 5%; text-indent: 30px;">
 		                                            	<input type="checkbox" class="chkItem" name="ids" value="${user.id }" >

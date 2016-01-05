@@ -9,7 +9,7 @@
 </head>
 <body>
     <jsp:include page="../frame/menu.jsp" flush="true">
-        <jsp:param name="user" value=""/>
+        <jsp:param name="cluster" value=""/>
     </jsp:include>
 
     <div class="page-container">
@@ -28,8 +28,8 @@
 
                     <aside class="aside-btn">
                         <div class="btns-group">
-                            <a id="clusterResource" class="Record"><span class="btn btn-defaults btn-white"><span class="ic_left">集群资源</span></span></a>
-                            <a id="clusterManage" class="Record action"><span class="btn btn-defaults btn-white"><span class="ic_left">集群管理</span></span></a>
+                            <a id="clusterResource" class="Record action"><span class="btn btn-defaults btn-white"><span class="ic_left">集群资源</span></span></a>
+                            <a id="clusterManage" class="Record "><span class="btn btn-defaults btn-white"><span class="ic_left">集群管理</span></span></a>
                         </div>
                     </aside>
 
@@ -45,7 +45,7 @@
                                     <li>
                                         <a href="/cluster/detail">
                                             <i class="fa fa-play"></i>
-                                            <span class="ic_left" id="detailInfo">查看</span>
+                                            <span class="ic_left" id="resource_detail()">查看</span>
                                         </a>
                                     </li>
                                     <li>
@@ -138,15 +138,22 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr>
-                                                <th style="width: 5%;text-indent: 30px;">
-                                                    <input type="checkbox" class="chkAll"/>
-                                                </th>
-                                                <th style="width: 20%;padding-left: 5px;">172.16.71.146</th>
-                                                <th style="width: 20%;text-indent: 8px;">111</th>
-                                                <th style="width: 20%;">222</th>
-                                                <th style="width: 20%;">333</th>
-                                            </tr>
+                                            <c:forEach items="${lstClusters}" var="cluster">
+                                                <c:if test="${cluster.host == null || cluster.host == '0'}">
+                                                    <c:set var="cursorClass" value="cursor-no-drop"></c:set>
+                                                </c:if>
+                                                <c:if test="${cur_cluster.host != cluster.host}">
+                                                    <tr class="clusterTr" id="${cluster.host }">
+                                                        <td style="width: 5%;text-indent: 30px;">
+                                                            <input type="checkbox" class="chkItem" name="ids" value="${cluster.id}" >
+                                                        </td>
+                                                        <td sstyle="width: 20%;padding-left: 5px;">${cluster.host }</td>
+                                                        <td style="width: 20%;text-indent: 8px;">${cluster.cpu}</td>
+                                                        <td style="width: 20%;">${cluster.memory}</td>
+                                                        <td style="width: 20%;">${cluster.net}</td>
+                                                    </tr>
+                                                </c:if>
+                                            </c:forEach>
                                             </tbody>
                                         </table>
                                     </div>
