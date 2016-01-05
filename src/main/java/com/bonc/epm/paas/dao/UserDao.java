@@ -21,4 +21,22 @@ public interface UserDao extends CrudRepository<User, Long> {
 	
 	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 and i.name like ?2 order by  i.name,i.createTime")
 	public List<Image> findByNameCondition(long creator,String imageName);
+	
+	@Query("select u from User u "
+			+ "where 1=1 "
+			+ "and u.company like %?1% "
+			+ "and u.user_department like %?2% "
+			+ "and u.user_autority= ?3 "
+			+ "and u.user_realname like %?4% ")
+	public List<User> findBy4(String company, String user_department, String user_autority, String user_realname);
+	
+	@Query("select u from User u "
+			+ "where 1=1 "
+			+ "and u.company like %?1% "
+			+ "and u.user_department like %?2% "
+			+ "and u.user_realname like %?3% ")
+	public List<User> findBy3(String company, String user_department, String user_realname);
+	
+	@Query("select u.userName from User u where u.userName = ?1")
+	public List<String> checkUsername(String userName);
 } 

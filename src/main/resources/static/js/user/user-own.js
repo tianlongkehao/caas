@@ -14,6 +14,99 @@ $(function(){
 
     });
 
+    $("#basicInfo").click(function(){
+    	var id = $("#user_id").val();
+    	var company = $.trim($("#company").val());
+    	var user_department = $.trim($("#user_department").val());
+    	var user_employee_id = $.trim($("#user_employee_id").val());
+    	var user_cellphone = $.trim($("#user_cellphone").val());
+    	var user_phone = $.trim($("#user_phone").val());
+        var email = $.trim($("#email").val());
+        
+    	var flag = checkBasicInfo();
+    	if(flag === false){
+    		return;
+    	}
+    	$.ajax({
+			url:"/user/userModifyBasic.do?id="+id
+										+"&company="+company
+										+"&user_department="+user_department
+										+"&user_employee_id="+user_employee_id
+										+"&user_cellphone="+user_cellphone
+										+"&user_phone="+user_phone
+										+"&email="+email ,
+			success:function(data){
+				data = eval("(" + data + ")");
+				if(data.status === '200'){
+					alert("信息修改成功");
+				}else{
+					alert("信息修改失败");
+				}
+			}
+    	});
+    });
+    
+    $("#modifyPwd").click(function(){
+    	var id = $("#user_id").val();
+    	var pwd = $.trim($("#originalPwd").val());
+    	var newpwd = $.trim($("#newPwd").val());
+    	
+    	var flag = checkpwd();
+    	if(flag === false){
+    		return;
+    	}
+    	$.ajax({
+			url:"/user/userModifyPsw.do?id="+id+"&password="+pwd+"&newpwd="+newpwd,
+			success:function(data){
+				data = eval("(" + data + ")");
+				if(data.status === '200'){
+					alert("密码修改成功");
+				}else{
+					alert("密码修改失败");
+				}
+			}
+    	});
+    });
+    
+   function checkpwd (){
+	   
+	   var pwd = $.trim($("#originalPwd").val());
+	   var newpwd = $.trim($("#newPwd").val());
+	   var confirmpwd = $.trim($("#confirmNewPwd").val());
+	   
+	   if(pwd === ''){
+		   alert("请输入原密码");
+		   return false;
+	   }
+	   if(newpwd !== confirmpwd){
+		   alert("新密码与确认密码不一致，请重新输入");
+		   $("#newPwd").focus();
+		   return false;
+	   }
+    		 
+    };
+    
+    function checkBasicInfo(){
+        var email = $.trim($("#email").val());
+       
+        if (email.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) !== -1) {
+            if (email.length > 50) {
+             layer.tips('邮箱长度不能大于50', $('#email'),{tips: [1, '#EF6578']});
+              $('#email').focus();
+              return false;
+            }
+        } else {
+            if (email === '') {
+              layer.tips('邮箱不能为空', $('#email'),{tips: [1, '#EF6578']});
+              $('#email').focus();
+              return false;
+            } else {
+              layer.tips('请输入合法的邮箱', $('#email'),{tips: [1, '#EF6578']});
+              $('#email').focus();
+              return false;
+            }
+        }
+    }
 
     var data = [
         {
@@ -38,21 +131,19 @@ $(function(){
         }
 
     ];
-    var piectx = $(".pieChart").getContext("2d");
-    new Chart(piectx).Doughnut(data);
-
-    //容器运行状态的环状图下图注
-    var stoppedctx = $("#redPie").getContext("2d");
-    stoppedctx.fillStyle = "#F7464A";
-    stoppedctx.fillRect(0,0,15,15);
-    var runningctx = $("#greenPie").getContext("2d");
-    runningctx.fillStyle = "green";
-    runningctx.fillRect(0,0,15,15);
-    var grostctx = document.getElementById("grayPie").getContext("2d");
-    grostctx.fillStyle = "#D4CCC5";
-    grostctx.fillRect(0,0,15,15);
-
-
+//    var piectx = $(".pieChart").getContext("2d");
+//    new Chart(piectx).Doughnut(data);
+//
+//    //容器运行状态的环状图下图注
+//    var stoppedctx = $("#redPie").getContext("2d");
+//    stoppedctx.fillStyle = "#F7464A";
+//    stoppedctx.fillRect(0,0,15,15);
+//    var runningctx = $("#greenPie").getContext("2d");
+//    runningctx.fillStyle = "green";
+//    runningctx.fillRect(0,0,15,15);
+//    var grostctx = document.getElementById("grayPie").getContext("2d");
+//    grostctx.fillStyle = "#D4CCC5";
+//    grostctx.fillRect(0,0,15,15);
 
 });
 
