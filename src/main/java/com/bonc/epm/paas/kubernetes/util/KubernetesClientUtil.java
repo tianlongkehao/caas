@@ -56,8 +56,6 @@ public class KubernetesClientUtil {
 		}
     }
     
-	private static KubernetesAPIClientInterface client;
-	
 	public static int getK8sStartPort(){
 		return Integer.valueOf(startPort);
 	}
@@ -68,10 +66,7 @@ public class KubernetesClientUtil {
     }
 	
     public static KubernetesAPIClientInterface getClient(String namespace) {
-        if (client == null) {
-            client = new KubernetesApiClient(namespace,endpoint, username, password,new RestFactory());
-        }
-        return client;
+        return new KubernetesApiClient(namespace,endpoint, username, password,new RestFactory());
     }
     
     /*public static void main(String[] args) {

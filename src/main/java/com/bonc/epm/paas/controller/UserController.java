@@ -373,11 +373,13 @@ public class UserController {
 	
 /**********************************************************************
 	
+
 //	/**
 //	 * 展示所有用户列表
 //	 * @param
 //	 * @return
 //	 */
+
 //	@RequestMapping(value={"user"},method=RequestMethod.GET)
 //	public String index(Model model){
 //		List<User> userList = new ArrayList<User>();
@@ -420,6 +422,7 @@ public class UserController {
      * @param id
      * @return
      */
+	
     @RequestMapping(value = {"/detail/{id}"}, method = RequestMethod.GET)
     public String detail(Model model, @PathVariable long id) {
         System.out.printf("user--id:", id);

@@ -66,6 +66,7 @@
                                                     </select>
                                                 </div>
                                             </div>
+
                                             <div class="row" style="margin-top: 15px">
                                                 
                                                 <div class="col-md-4" align="left">
@@ -102,6 +103,7 @@
                                                     		id="email" name="email">
                                                 </div>
                                             </div>
+
                                             <div class="row" style="margin-top: 15px">
                                                  <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;line-height: 35px" >登陆密码:</label>

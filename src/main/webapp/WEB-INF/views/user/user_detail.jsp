@@ -79,6 +79,7 @@
                                                 </div>
                                        
                                             </div>
+
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left ;" >公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
@@ -97,6 +98,7 @@
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-top: 15px">
+
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;" >手机号码:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 

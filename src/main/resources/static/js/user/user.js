@@ -230,7 +230,6 @@ function delTenement (){
 function tenement_detail() {
 	var id = "";
 	var count = 0;
-
 	$(":checked[name='ids']").each(function(){
 		id = jQuery(this).val();
 		count = count + 1;

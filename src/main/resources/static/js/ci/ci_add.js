@@ -3,6 +3,7 @@ $(document).ready(function () {
  	$("#buildBtn").click(function(){
         if(checkCiAdd()) {
         	$("#buildForm").submit();
+        	layer.load(0, {shade: [0.3, '#000']});
         }
         return false;
     });
@@ -76,6 +77,7 @@ $(document).ready(function () {
         }
         
        //如果有codeUrl 则 验证codeUrl
+
         if($('#codeUrl').length>0){
 	        var codeUrl = $('#codeUrl').val().trim();
 	        if ($('#codeUrl').attr('type') !== 'hidden') {

@@ -60,6 +60,7 @@
                             </li>
                         </ul>
                         <form id="search_form" class="form-inline" action="/user/searchByCondition" method="post">
+<<<<<<< HEAD
                         	<div class="col-md-2 " style="width: 25%; " align="right">
                                 <label style="line-height: 35px">姓名:</label>
                                 <input name="search_userName" type="text" class="form-control" style="float: right;width:70%" placeholder="搜索姓名关键字">
@@ -71,10 +72,20 @@
                             </div>
                         	<div class="col-md-2" style="width: 20%; " align="right" hidden="hidden">
                                 <label style="line-height: 35px">部门:</label>
+=======
+                        	<div class="col-md-2" style="width: 25%; " align="right">
+                                <label>公司:</label>
+                                <input type="text" class="form-control" style="display: inline; width: 80%" 
+                                		name="search_company">
+                            </div>
+                        	<div class="col-md-2" style="width: 20%; " align="right" hidden="hidden">
+                                <label>部门:</label>
+>>>>>>> c61a255360d85d59ff512a7b7bc849b31993c262
                                 <input type="text" class="form-control" style="display: inline; width: 80%" 
                                 		name="search_department">
                             </div>
                             <div class="col-md-2" class="form-control" align="right">
+<<<<<<< HEAD
                                 <label style="line-height: 40px">权限:</label>
                            		<input style="line-height: 40px" type="checkbox"  name="search_autority" value="1">管理员
                                	<input style="line-height: 40px" type="checkbox" name="search_autority" value="2">普通用户
@@ -83,6 +94,18 @@
            					<div class="searchs" align="right">
                                 <div class="form-group">
                                     <div class="input-group">
+=======
+                                <label>权限:</label>
+                           		<input type="checkbox"  name="search_autority" value="1">管理员  
+                               	<input type="checkbox" name="search_autority" value="2">普通用户
+                                <input type="hidden" name="search_autority">
+                            </div>
+           					<div class="searchs" align="right">
+		                        <label>姓名:</label>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input name="search_userName" type="text" class="form-control" style="float: right;" placeholder="搜索">
+>>>>>>> c61a255360d85d59ff512a7b7bc849b31993c262
                                     	<span class="input-group-btn">
                                         <button class="btn btn-primary" type="submit">
                                             <span class="glyphicon glyphicon-search"></span>
