@@ -170,6 +170,7 @@
 			if(confirm("创建用户成功！")) {
 				location.href="/user/list";
 			}
+			//window.location.reload;
 			else{
 				$("#create_flag").attr("value", '');
 			}
