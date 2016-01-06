@@ -10,6 +10,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.reflect.MethodDelegate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
@@ -31,6 +32,7 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DockerClientUtil;
@@ -100,7 +102,7 @@ public class ServiceController {
 	    	}
 	    	serviceList.add(service);
 		}
-
+		getleftResource(model);
 		model.addAttribute("containerList", containerList);
 		model.addAttribute("serviceList", serviceList);
 		model.addAttribute("menu_flag", "service");
@@ -149,7 +151,7 @@ public class ServiceController {
     			}
     		}
     	}
-
+    	
 		model.addAttribute("id", id);
         model.addAttribute("containerList", containerList);
         model.addAttribute("service", service);
@@ -170,13 +172,76 @@ public class ServiceController {
 			isDepoly = "deploy";
 		}
 		
-		model.addAttribute("imgID", imgID);
-		model.addAttribute("imageName", imageName);
-		model.addAttribute("imageVersion", imageVersion);
-		model.addAttribute("isDepoly",isDepoly);
-		model.addAttribute("menu_flag", "service");
+//		Integer usedcpu = 0;
+//		Integer usedram = 0;
+//		Integer usedpod = 0;
+//		User currentUser = CurrentUserUtils.getInstance().getUser();
+//		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+	    //获取对应租户的cpu和ram
+		try {
+//			ResourceQuota rq = client.getResourceQuota(currentUser.getUserName());
+//		    String cpus = rq.getSpec().getHard().get("cpu");
+//		    String rams = rq.getSpec().getHard().get("memory").replace("M", "");
+//		    String pods = rq.getSpec().getHard().get("pods");
+//		    for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
+//		    	Integer cpu = service.getCpuNum();
+//		    	String ram = service.getRam();
+//		    	Integer pod = service.getInstanceNum();
+//		    	usedram = usedram + Integer.valueOf(ram);
+//		    	usedcpu = usedcpu + cpu;
+//		    	usedpod = usedpod + pod;
+//		    }
+//		    Integer leftcpu = Integer.valueOf(cpus) - usedcpu;
+//			Integer leftram = Integer.valueOf(rams) - usedram;
+//			Integer leftpod = Integer.valueOf(pods) - usedpod;
+//			model.addAttribute("leftpod",leftpod);
+//		    model.addAttribute("leftcpu",leftcpu);
+//		    model.addAttribute("leftram",leftram);
+			getleftResource(model);
+			model.addAttribute("imgID", imgID);
+			model.addAttribute("imageName", imageName);
+			model.addAttribute("imageVersion", imageVersion);
+			model.addAttribute("isDepoly",isDepoly);
+			model.addAttribute("menu_flag", "service");
+		} catch (Exception e) {
+			model.addAttribute("msg","请创建租户！");
+			return "service/service.jsp";
+		}
+	    
 
 		return "service/service_create.jsp";
+	}
+	
+	public boolean getleftResource(Model model){
+		Integer usedcpu = 0;
+		Integer usedram = 0;
+		Integer usedpod = 0;
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+		try {
+			ResourceQuota rq = client.getResourceQuota(currentUser.getUserName());
+		    String cpus = rq.getSpec().getHard().get("cpu");
+		    String rams = rq.getSpec().getHard().get("memory").replace("M", "");
+		    String pods = rq.getSpec().getHard().get("pods");
+		    for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
+		    	Integer cpu = service.getCpuNum();
+		    	String ram = service.getRam();
+		    	Integer pod = service.getInstanceNum();
+		    	usedram = usedram + Integer.valueOf(ram);
+		    	usedcpu = usedcpu + cpu;
+		    	usedpod = usedpod + pod;
+		    }
+		    Integer leftcpu = Integer.valueOf(cpus) - usedcpu;
+			Integer leftram = Integer.valueOf(rams) - usedram;
+			Integer leftpod = Integer.valueOf(pods) - usedpod;
+			model.addAttribute("leftpod",leftpod);
+		    model.addAttribute("leftcpu",leftcpu);
+		    model.addAttribute("leftram",leftram);
+		} catch (Exception e) {
+			return false;
+		}
+		
+		return true;
 	}
 	/**
 	 * 展示镜像

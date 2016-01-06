@@ -5,7 +5,7 @@
     <title>服务</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="/css/mod/service.css"/>
-    <script type="text/javascript" src="/js/mod/service/service-create.js"></script>
+    <script type="text/javascript" src="/js/service/service_create.js"></script>
     <script type="text/javascript">
         $(function(){
             // 判断是否从镜像点击部署按钮跳转
@@ -32,7 +32,7 @@
                 <ol class="breadcrumb">
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">快速构建</li>
+                    <li class="active" id="nav2">创建服务</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -135,23 +135,29 @@
                                 <li class="line-h-3" id="instsize">
                                     <div class="param-set">
                                         <span class="number-title">实例数量：</span>
-                                        <input type="number" value="1" class="number" min="1" autocomplete="off"
-                                               placeholder="1" id="instanceNum" name="instanceNum"> <span class="unit">个</span>
+                                        <input type="number" value="1" class="number" min="1" autocomplete="off" max="${leftpod }"
+                                               placeholder="1" id="instanceNum" name="instanceNum"> 
+                                               <span class="unit">个</span>
+                                               <span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span>
                                     </div>
                                 </li>
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">CPU数量：</span>
-                                        <input type="number" value="1" class="number" min="1" autocomplete="off"
-                                               placeholder="1" id="cpuNum" name="cpuNum"> <span class="unit">个</span>
+                                        <input type="number" value="1" class="number" min="1" autocomplete="off" max="${leftcpu }"
+                                               placeholder="1" id="cpuNum" name="cpuNum"> 
+                                               <span class="unit">个</span>
+                                               <span style="color: grey;margin-left: 50px;">当前可用cpu数量：${leftcpu }</span>
                                     </div>
+                                    
                                 </li>
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">内存：</span>
-                                        <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="2024" data-slider-step="1" data-slider-value="256"/>
+                                        <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftram }" data-slider-step="1" data-slider-value="256"/>
                                         <input type="text" value="256" id="ram" name="ram">
                                         <span>M</span>
+                                        <span style="color: grey;">当前可用ram：${leftram }M</span>
                                     </div>
                                 </li>
 

@@ -2,20 +2,25 @@ $(document).ready(function(){
 	loadImageList();
 	
 	$("#createButton").click(function(){
-        
-//            $("#buildService").ajaxSubmit({
-//                type: "post",
-//                success: function (data) {
-//                    data = eval("(" + data + ")");
-//                    if (data.status == "200") {
-//                        $(".contentMain").load("/service");
-//                    } else {
-//                        layer.alert(data.msg);
-//                    }
-//                }
-//            });
-		//alert("123");
-		//$("#buildService").submit();
+		var name = $('#serviceName').val();
+		// check the name of container
+	    if(!name || name.length < 1){
+	      layer.tips('服务名称不能为空','#serviceName',{tips: [1, '#3595CC']});
+	      $('#serviceName').focus();
+	      return;
+	    }
+	    name = name.toLowerCase();
+	    if(name.search(/^[a-z][a-z0-9-]*$/) === -1){
+	      layer.tips('服务名称只能由字母、数字及横线组成，且首字母不能为数字及横线。','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+	      $('#serviceName').focus();
+	      return;
+	    }
+	    if(name.length > 50 || name.length < 3){
+	      layer.tips('服务名称为3~50个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+	      $('#serviceName').focus();
+	      return;
+	    }
+
 		containerName();
     });
 
@@ -73,6 +78,7 @@ function loadImageList() {
 
             var html = "";
             if (data != null) {
+
                 if (data['data'].length > 0) {
                     for (var i in data.data) {
                         var image = data.data[i];
@@ -81,18 +87,15 @@ function loadImageList() {
 				"</span> <span class='span5 type' type='database'>"+
 						"<div class='list-item-description'>"+
 							"<div class='name h4'>"+
-								""+ image.name +" <a title='点击查看镜像详情' target='_blank' href=''>"+
+								""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='../registry/detail/"+image.id+"'>"+
 									"<i class='fa fa-external-link-square'></i>"+
 								"</a>"+
 							"</div>"+
-							"<span class='span2'> <i class='cloud_download'></i> <span"+
-								"class='number'>12214</span>"+
-							"</span> <i class='fa fa-star-o'></i> <span class='star'>46</span>"+
 						"</div>"+
 				"</span> <span class='span3'>"+
 						"<div class='list-item-description'>"+
 							"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
-								""+ image.version +"</span> <span imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
+								""+ image.version +"</span> <span imgID='"+image.id+"' imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
 								"data-attr='tenxcloud/mysql'> 部署 <i"+
 								"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
 							"</span>"+
@@ -100,11 +103,14 @@ function loadImageList() {
 				"</span></li>";
                     	}
                     	$("#imageList").html(html);
+
                         $(".pull-deploy").click(function(){
+
                         	var imageName = $(this).attr("imageName");
                         	var imageVersion = $(this).attr("imageVersion");
+                        	var imgID = $(this).attr("imgID");
                         	//containerName();
-                            deploy(imageName, imageVersion);
+                            deploy(imgID,imageName, imageVersion);
                         });
                 	}
             }
@@ -112,9 +118,11 @@ function loadImageList() {
     })
 }
 
-function deploy(imageName, imageVersion){
-    $("#imageName").val(imageName);
-    $("#imageVersion").val(imageVersion);
+function deploy(imgID,imageName, imageVersion){
+
+    $("#imgName").val(imageName);
+    $("#imgVersion").val(imageVersion);
+    $("#imgID").val(imgID);
     $(".step-inner").css("left","-100%");
     $(".createPadding").removeClass("hide");
     $(".radius_step").removeClass("action").eq(1).addClass("action");
@@ -122,7 +130,7 @@ function deploy(imageName, imageVersion){
 }
 
 function containerName(){
-	var containerName = $("#containerName").val();
+	var containerName = $("#serviceName").val();
 			 $.ajax({
 					url:"/service/containerName?containerName="+containerName,
 					success:function(data){

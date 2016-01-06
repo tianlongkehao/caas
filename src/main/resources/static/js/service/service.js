@@ -223,7 +223,11 @@
 		 $('#upgradeServiceName').val(containerName);
 		 var nums = $(el).attr('serviceNum');
 		 $('#numberChange').val(nums);
-		 
+		 var total = 0;
+		 total = parseInt($('#numberChange').attr('max'))+parseInt(nums);
+		 //alert(total);
+		 $('#numberChange').attr("max",total);
+		 $('#leftpod').text(total);
 		 
 		 
 		 //alert(nums);
@@ -270,7 +274,17 @@
 		 var ram = $(el).attr('confRam');
 		 $('#confCpu').val(cpu);
 		 $('#confRam').val(ram);
+		 var totalcpu = 0;
+		 var totalram = 0;
+		 totalcpu = parseInt($('#confCpu').attr('max'))+parseInt(cpu);
+		 totalram = parseInt($('#confRam').attr('left'))+parseInt(ram);
 		 
+		 $('#confCpu').attr("max",totalcpu);
+		 $("input[id='confRamSlider']").attr("data-slider-max",totalram);
+		 $("div[id='confRamSlider']").attr("data-slider-max",totalram);
+		 //alert($("input[id='confRamSlider']").attr("data-slider-max"));
+		 $('#leftcpu').text(totalcpu);
+		 $('#leftram').text(totalram);
 		 layer.open({
 			 type:1,
 			 title: '更改配置',
