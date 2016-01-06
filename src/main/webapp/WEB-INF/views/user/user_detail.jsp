@@ -22,7 +22,7 @@
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active" id="nav2" style="text-align: center">租户</li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav3">创建用户</li>
+                    <li class="active" id="nav3">租户详情</li>
                 </ol>
             </div>
             <div class="contentMain">
