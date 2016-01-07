@@ -54,13 +54,11 @@
                         <div class="host_step1">
                             <div class="content">
                                 <div class="search">
-                                    <form class="search-group-inner"
-                                          style="margin: 0 auto; position: relative;"
-                                          action="/registry/0">
-                                        <input name="imageName" class="search-img" placeholder="搜索镜像"
+                                    
+                                        <input id="imageName" name="imageName" class="search-img" placeholder="搜索镜像"
                                                type="text">
-                                        <button type="submit" class="btn btn-primary btn-send">搜索</button>
-                                    </form>
+                                        <button id="searchimage" class="btn btn-primary btn-send">搜索</button>
+                                    
                                 </div>
                             </div>
 

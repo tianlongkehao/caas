@@ -128,18 +128,18 @@
                         </ul>
                     </div>
                     <div class="searchs">
-                        <form class="form-inline" action="">
+                        
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="搜索">
+                                    <input id="searchName" type="text" class="form-control" placeholder="搜索">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-primary" type="button">
+                                        <button id="serviceSearch" class="btn btn-primary" type="button">
                                             <span class="glyphicon glyphicon-search"></span>
                                         </button>
                                     </span>
                                 </div>
                             </div>
-                        </form>
+                        
                     </div>
                 </div>
                 <div class="itemTable">

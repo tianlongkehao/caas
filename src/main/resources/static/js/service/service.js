@@ -9,6 +9,14 @@
 //	loadService();
 	
 	_refreshCreateTime(60000);
+	
+	$("#serviceSearch").click(function(){
+		var serviceName = $('#searchName').val();
+		$.ajax({
+			url:"findservice/"+serviceName,
+			success:function(){}
+		})
+	})
 
 	$(".clusterId").each(function(){
 		$(this).click(function(){

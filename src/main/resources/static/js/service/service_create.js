@@ -23,6 +23,55 @@ $(document).ready(function(){
 
 		containerName();
     });
+	
+	$("#searchimage").click(function(){
+		var imageName = $('#imageName').val();
+		$.ajax({
+	        url: "/service/findimages.do?imageName="+imageName,
+	        success: function (data) {
+	            data = eval("(" + data + ")");
+
+	            var html = "";
+	            if (data != null) {
+
+	                if (data['data'].length > 0) {
+	                    for (var i in data.data) {
+	                        var image = data.data[i];
+	                        html += "<li class='image-item'><span class='img_icon span2'>"+
+							"<img src='/images/image-1.png'>"+
+					"</span> <span class='span5 type' type='database'>"+
+							"<div class='list-item-description'>"+
+								"<div class='name h4'>"+
+									""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='../registry/detail/"+image.id+"'>"+
+										"<i class='fa fa-external-link-square'></i>"+
+									"</a>"+
+								"</div>"+
+							"</div>"+
+					"</span> <span class='span3'>"+
+							"<div class='list-item-description'>"+
+								"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
+									""+ image.version +"</span> <span imgID='"+image.id+"' imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
+									"data-attr='tenxcloud/mysql'> 部署 <i"+
+									"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
+								"</span>"+
+							"</div>"+
+					"</span></li>";
+	                    	}
+	                    	$("#imageList").html(html);
+
+	                        $(".pull-deploy").click(function(){
+
+	                        	var imageName = $(this).attr("imageName");
+	                        	var imageVersion = $(this).attr("imageVersion");
+	                        	var imgID = $(this).attr("imgID");
+	                        	//containerName();
+	                            deploy(imgID,imageName, imageVersion);
+	                        });
+	                	}
+	            }
+	        }
+	    })
+	})
 
 
     $(".two_step").click(function(){

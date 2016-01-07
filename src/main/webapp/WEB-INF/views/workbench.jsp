@@ -99,5 +99,16 @@
         </div>
     </div>
     <div class="wallpaper"></div>
+<c:if test="${msg != null}">
+    <input type="hidden" id="errorMsg" value="${msg}">
+    <script type="text/javascript">
+    $(function(){
+    	var errorMsg = $("#errorMsg").val();
+    	alert(errorMsg);
+        layer.alert(errorMsg);
+    });
+        
+    </script>
+</c:if>
 </body>
 </html>

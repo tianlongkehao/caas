@@ -29,6 +29,9 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	@Query("select i from Image i where i.imageType = 1 and i.name like ?1 order by  i.name,i.createTime")
 	public List<Image> findByNameCondition(String name);
 	
+	@Query("select i from Image i where (i.imageType = 1 or i.creator = ?1) and i.name like ?2 order by  i.name,i.createTime")
+	public List<Image> findByNameOf(long creator,String name);
+	
 	@Query("select i from Image i where (i.imageType = 2 or i.creator = ?1) and i.name like ?2 order by  i.name,i.createTime")
 	public List<Image> findByNameOfUser(long creator,String name);
 	
