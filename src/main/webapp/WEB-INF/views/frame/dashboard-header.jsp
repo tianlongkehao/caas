@@ -4,5 +4,5 @@
 <link rel="stylesheet" type="text/css" href="/css/core/base.css">
 <script type="text/javascript" src="/js/plugins/jquery-1.11.3.js"></script>
 <script type="text/javascript" src="/plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
-<script type="text/javascript" src=/plugins/chartjs-1.0.2/Chart.js"></script>
+<script type="text/javascript" src="/plugins/chartjs-1.0.2/Chart.js"></script>
 

@@ -119,8 +119,8 @@
                             <li class="line-h-3">
                                 <div class="param-set">
                                     <span>内存：</span>
-                                    <input id="confRamSlider" data-slider-id='confRamSlider' type="text" data-slider-min="0" data-slider-max="${leftram }" data-slider-step="1" data-slider-value="256"/>
-                                    <input type="text" left="${leftram }" value="256" id="confRam" name="confRam">
+                                    <input id="confRamSlider" data-slider-id='confRamSliderData' type="text" data-slider-min="0" data-slider-step="1" />
+                                    <input type="text" left="${leftram }" value="" id="confRamSlider_input" name="confRam">
                                     <span>M</span>
                                     <span style="color: grey;">当前可用ram：<label id="leftram" ></label>M</span>
                                 </div>
@@ -294,6 +294,14 @@
         </div>
     </article>
 </div>
+
+<c:if test="${msg} != null">
+    <input type="hidden" id="errorMsg" value="${msg}">
+    <script type="text/javascript">
+        var errorMsg = $("#errorMsg").val();
+        layer.alert(errorMsg);
+    </script>
+</c:if>
 
 </body>
 </html>

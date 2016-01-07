@@ -30,24 +30,40 @@
  });
 
  // 选择内存滑动
- $(function(){
-	 var confRamSlider = $("#confRamSlider").slider({
+ //$(function(){
+	// //sliderFn("confRamSlider", 2024, 0);
+ //});
+
+ function sliderFn(sliderId, max, min, value){
+
+	 if(value == undefined){
+		 value = 10;
+	 }
+
+	 var sliderObj = $("#"+sliderId).slider({
 		 formatter: function(value) {
 			 return value;
-		 }
+		 },
+		 max:max,
+		 min:min,
+		 value : value,
+		 tooltip:'hide'
 	 });
 
-	 confRamSlider.on("slide", function(slideEvt) {
-		 $("#confRam").val(slideEvt.value);
+	 sliderObj.on("slide", function(slideEvt) {
+		 $("#"+sliderId+'_input').val(slideEvt.value);
 	 }).on("change", function(slideEvt){
-		 $("#confRam").val(slideEvt.value.newValue);
-	 })
-
-	 $("#confRam").on("change",function(){
-		 var ramVal = Number($(this).val());
-		 confRamSlider.slider('setValue', ramVal);
+		 $("#"+sliderId+'_input').val(slideEvt.value.newValue);
 	 });
- });
+
+	 $("#"+sliderId+'_input').on("change",function(){
+		 var sliderVal = Number($(this).val());
+		 //sliderObj.setValue(sliderVal);
+		 sliderObj.slider('setValue', sliderVal);
+	 });
+
+	 return sliderObj;
+ }
 
  /*
  function loadService(){
@@ -273,18 +289,17 @@
 		 var cpu = $(el).attr('confCpu');
 		 var ram = $(el).attr('confRam');
 		 $('#confCpu').val(cpu);
-		 $('#confRam').val(ram);
+		 $('#confRamSlider_input').val(ram);
 		 var totalcpu = 0;
 		 var totalram = 0;
 		 totalcpu = parseInt($('#confCpu').attr('max'))+parseInt(cpu);
-		 totalram = parseInt($('#confRam').attr('left'))+parseInt(ram);
-		 
+		 totalram = parseInt($('#confRamSlider_input').attr('left'))+parseInt(ram);
+
 		 $('#confCpu').attr("max",totalcpu);
-		 $("input[id='confRamSlider']").attr("data-slider-max",totalram);
-		 $("div[id='confRamSlider']").attr("data-slider-max",totalram);
-		 //alert($("input[id='confRamSlider']").attr("data-slider-max"));
 		 $('#leftcpu').text(totalcpu);
 		 $('#leftram').text(totalram);
+		 var confRamSlider = sliderFn('confRamSlider', totalram,0, Number(ram));
+
 		 layer.open({
 			 type:1,
 			 title: '更改配置',
@@ -295,7 +310,7 @@
 				 //按钮【按钮一】的回调
 				 layer.close(index);
 				 var cpus = $('#confCpu').val();
-				 var rams = $('#confRam').val();
+				 var rams = $('#confRamSlider_input').val();
 				 $.ajax({
  					url:"service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
  					success:function(data){
