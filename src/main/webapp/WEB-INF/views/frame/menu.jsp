@@ -112,14 +112,19 @@
                 </ul>
             </li>
             <li id="menu_cluster">
-                <a href="/cluster/list">
+                <a href="/cluster/resource">
                     <img class="nav-icon" src="/images/server.svg" alt=""/>
                     <span class="nav-title">集群</span>
                 </a>
                 <ul class="nav-item-hover">
-                    <li id="menuCluster" action="">
-                        <a href="/cluster/list">
-                            集群
+                    <li id="resourceCluster" action="">
+                        <a href="/cluster/resource">
+                            集群资源
+                        </a>
+                    </li>
+                    <li id="manageCluster" action="">
+                        <a href="/cluster/management">
+                            集群管理
                         </a>
                     </li>
                 </ul>

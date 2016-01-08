@@ -83,7 +83,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/cluster/list">
+                        <a class="icon-view" href="javascript:void(0);" action="/cluster/resource">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
                                     <span><img src="images/server.svg" alt=""/></span>
@@ -104,7 +104,6 @@
     <script type="text/javascript">
     $(function(){
     	var errorMsg = $("#errorMsg").val();
-    	alert(errorMsg);
         layer.alert(errorMsg);
     });
         

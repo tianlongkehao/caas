@@ -34,11 +34,11 @@
 
 }
 
-.itemTable .user-table .userTr {
+.itemTable .cluster-table .clusterTr {
     border-bottom: 1px solid #eee;
 }
 
-.itemTable .user-table .userTr:hover {
+.itemTable .cluster-table .clusterTr:hover {
     background:#FAFAFA;
 }
 

@@ -174,7 +174,7 @@
                                 </div>
                                 <div class="" style="padding-top: 100px">
                                     <button class="btn btn-default last_step" style="margin-right: 30px;">上一步</button>
-                                    <a href="/cluster/list"><button id="finishBtn" class="pull-right btn btn-primary pull_confirm">完成</button></a>
+                                    <a href="/cluster/management"><button id="finishBtn" class="pull-right btn btn-primary pull_confirm">完成</button></a>
                                 </div>
                             </div>
                         </div>
