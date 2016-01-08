@@ -10,6 +10,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.reflect.MethodDelegate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
@@ -31,6 +32,7 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DockerClientUtil;
@@ -80,27 +82,81 @@ public class ServiceController {
 		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
 	    List<Service> serviceList = new ArrayList<Service>();
 	    List<Container> containerList = new ArrayList<Container>();
+	    if(client.getNamespace(currentUser.getUserName()) == null){
+	    	model.addAttribute("msg", "请规范创建租户！");
+			return "workbench.jsp";
+	    }
 	  //获取特殊条件的pods
-		for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
-			
-			Map<String,String> map = new HashMap<String,String>();
-	    	map.put("app", service.getServiceName());
-	    	PodList podList = client.getLabelSelectorPods(map);
-	    	if(podList!=null){
-	    		List<Pod> pods = podList.getItems();
-	    		if(!CollectionUtils.isEmpty(pods)){
-	    			for(Pod pod:pods){
-	    				String podName = pod.getMetadata().getName();
-	    				Container container = new Container();
-		    			container.setContainerName(podName);
-		    			container.setServiceid(service.getId());
-		    			containerList.add(container);
-	    			}
+		
+	    	try {
+	    		for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
+	    			Map<String,String> map = new HashMap<String,String>();
+	    	    	map.put("app", service.getServiceName());
+	    	    	PodList podList = client.getLabelSelectorPods(map);
+	    	    	if(podList!=null){
+	    	    		List<Pod> pods = podList.getItems();
+	    	    		if(!CollectionUtils.isEmpty(pods)){
+	    	    			for(Pod pod:pods){
+	    	    				String podName = pod.getMetadata().getName();
+	    	    				Container container = new Container();
+	    	    				container.setContainerName(podName);
+	    	    				container.setServiceid(service.getId());
+	    	    				containerList.add(container);
+	    	    			}
+	    	    		}
+	    	    	}
+	    	    	serviceList.add(service);
 	    		}
-	    	}
-	    	serviceList.add(service);
-		}
-
+	    		getleftResource(model);
+			} catch (Exception e) {
+				model.addAttribute("msg", "请检查K8S服务器连接！");
+				return "workbench.jsp";
+			}
+		model.addAttribute("containerList", containerList);
+		model.addAttribute("serviceList", serviceList);
+		model.addAttribute("menu_flag", "service");
+		
+		return "service/service.jsp";
+		
+	}
+	
+	/**
+	 * 展示container和services
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value={"findservice/{servName}"},method=RequestMethod.GET)
+	public String searchService(Model model,@PathVariable String servName){
+		User  currentUser = CurrentUserUtils.getInstance().getUser();
+		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+	    List<Service> serviceList = new ArrayList<Service>();
+	    List<Container> containerList = new ArrayList<Container>();
+	  //获取特殊条件的pods
+		
+	    	try {
+	    		for(Service service:serviceDao.findByNameOf(currentUser.getId(),"%"+servName+"%")){
+	    			Map<String,String> map = new HashMap<String,String>();
+	    	    	map.put("app", service.getServiceName());
+	    	    	PodList podList = client.getLabelSelectorPods(map);
+	    	    	if(podList!=null){
+	    	    		List<Pod> pods = podList.getItems();
+	    	    		if(!CollectionUtils.isEmpty(pods)){
+	    	    			for(Pod pod:pods){
+	    	    				String podName = pod.getMetadata().getName();
+	    	    				Container container = new Container();
+	    	    				container.setContainerName(podName);
+	    	    				container.setServiceid(service.getId());
+	    	    				containerList.add(container);
+	    	    			}
+	    	    		}
+	    	    	}
+	    	    	serviceList.add(service);
+	    		}
+	    		getleftResource(model);
+			} catch (Exception e) {
+				model.addAttribute("msg", "请检查K8S服务器连接！");
+				return "workbench.jsp";
+			}
 		model.addAttribute("containerList", containerList);
 		model.addAttribute("serviceList", serviceList);
 		model.addAttribute("menu_flag", "service");
@@ -149,7 +205,7 @@ public class ServiceController {
     			}
     		}
     	}
-
+    	
 		model.addAttribute("id", id);
         model.addAttribute("containerList", containerList);
         model.addAttribute("service", service);
@@ -170,13 +226,52 @@ public class ServiceController {
 			isDepoly = "deploy";
 		}
 		
-		model.addAttribute("imgID", imgID);
-		model.addAttribute("imageName", imageName);
-		model.addAttribute("imageVersion", imageVersion);
-		model.addAttribute("isDepoly",isDepoly);
-		model.addAttribute("menu_flag", "service");
+		try {
+			getleftResource(model);
+			model.addAttribute("imgID", imgID);
+			model.addAttribute("imageName", imageName);
+			model.addAttribute("imageVersion", imageVersion);
+			model.addAttribute("isDepoly",isDepoly);
+			model.addAttribute("menu_flag", "service");
+		} catch (Exception e) {
+			model.addAttribute("msg","请创建租户！");
+			return "service/service.jsp";
+		}
+	    
 
 		return "service/service_create.jsp";
+	}
+	
+	public boolean getleftResource(Model model){
+		Integer usedcpu = 0;
+		Integer usedram = 0;
+		Integer usedpod = 0;
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+		try {
+			ResourceQuota rq = client.getResourceQuota(currentUser.getUserName());
+		    String cpus = rq.getSpec().getHard().get("cpu");
+		    String rams = rq.getSpec().getHard().get("memory").replace("M", "");
+		    String pods = rq.getSpec().getHard().get("pods");
+		    for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
+		    	Integer cpu = service.getCpuNum();
+		    	String ram = service.getRam();
+		    	Integer pod = service.getInstanceNum();
+		    	usedram = usedram + Integer.valueOf(ram);
+		    	usedcpu = usedcpu + cpu;
+		    	usedpod = usedpod + pod;
+		    }
+		    Integer leftcpu = Integer.valueOf(cpus) - usedcpu;
+			Integer leftram = Integer.valueOf(rams) - usedram;
+			Integer leftpod = Integer.valueOf(pods) - usedpod;
+			model.addAttribute("leftpod",leftpod);
+		    model.addAttribute("leftcpu",leftcpu);
+		    model.addAttribute("leftram",leftram);
+		} catch (Exception e) {
+			return false;
+		}
+		
+		return true;
 	}
 	/**
 	 * 展示镜像
@@ -189,6 +284,20 @@ public class ServiceController {
 		Map<String, Object> map = new HashMap<String,Object>();
 //		List<Image> images = imageDao.findAllByCreator(CiConstant.IMG_TYPE_PUBLIC,CurrentUserUtils.getInstance().getUser().getId());
 		List<Image> images = imageDao.findAll(userId);
+		map.put("data", images);
+		return JSON.toJSONString(map);
+	}
+	/**
+	 * 展示镜像
+	 * @return
+	 */
+	@RequestMapping("service/findimages.do")
+	@ResponseBody
+	public String findimages(String imageName){
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		Map<String, Object> map = new HashMap<String,Object>();
+//		List<Image> images = imageDao.findAllByCreator(CiConstant.IMG_TYPE_PUBLIC,CurrentUserUtils.getInstance().getUser().getId());
+		List<Image> images = imageDao.findByNameOf(userId, "%"+imageName+"%");
 		map.put("data", images);
 		return JSON.toJSONString(map);
 	}

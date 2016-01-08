@@ -279,17 +279,24 @@
 				alert("请填写登陆帐号");
 			}
 			else{
+				var un = username.toLowerCase();
+				console.info(un);
+				$("#userName").val(un);				
 				//console.info("name: "+username);
 				 $.get(
-					 "/user/checkUsername/"+username,
+					 "/user/checkUsername/"+un,
 					 function(data,status){
 				    	console.info("Data: " + data + "\nStatus: " + status);
 				    	var data = eval("(" + data + ")");
 						if(data.status=="400"){
 							alert("登陆帐号已经被使用，请输入新的帐号！");
 							$("#userName").focus();
-					 }
-				});
+					 	}
+						if(data.status=="300"){
+							alert("k8s已经建立此名称的namespace，请输入新的帐号！");
+							$("#userName").focus();
+					 	}
+					});
 			}
 		});
 	});

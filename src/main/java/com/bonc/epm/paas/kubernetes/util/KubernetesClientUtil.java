@@ -251,6 +251,7 @@ public class KubernetesClientUtil {
 		service.setMetadata(meta);
 		ServiceSpec spec = new ServiceSpec();
 		spec.setType("NodePort");
+		spec.setSessionAffinity("ClientIP");
 		
 		Map<String,String> selector = new HashMap<String,String>();
 		selector.put("app", appName);

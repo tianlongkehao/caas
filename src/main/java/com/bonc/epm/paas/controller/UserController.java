@@ -101,15 +101,14 @@ public class UserController {
 	 */
 	@RequestMapping(value={"/save.do"}, method=RequestMethod.POST)
 	public String userSave(User user, Resource resource, Restriction restriction, Model model){
-
 		try {
 			//以用户名(登陆帐号)为name，创建client
-			KubernetesAPIClientInterface client = getClient(user.getUserName());
+			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
 			
 			//以用户名(登陆帐号)为name，为client创建Namespace
 			Namespace namespace = KubernetesClientUtil.generateSimpleNamespace(user.getUserName());
 			namespace = client.createNamespace(namespace);
-			System.out.println("namespace:"+JSON.toJSONString(namespace));
+//			System.out.println("namespace:"+JSON.toJSONString(namespace));
 			
 			//为client创建资源配额
 			Map<String,String> map = new HashMap<String,String>();
@@ -120,23 +119,13 @@ public class UserController {
 	    	map.put("replicationcontrollers", resource.getImage_control()+"");//副本控制器
 	    	map.put("resourcequotas", "1");//资源配额数量
 	    	ResourceQuota quota = KubernetesClientUtil.generateSimpleResourceQuota(user.getUserName(), map);
-	    	System.out.println("quota1:"+JSON.toJSONString(quota));	
 	    	quota = client.createResourceQuota(quota);
-	    	System.out.println("quota:"+JSON.toJSONString(quota));
+//	    	System.out.println("quota:"+JSON.toJSONString(quota));
 
 	    	//为client创建资源限制
 	    	LimitRange limitRange = generateLimitRange(user.getUserName(), restriction);
-	    	System.out.println("limitRange1:"+JSON.toJSONString(limitRange));		
 	    	limitRange = client.createLimitRange(limitRange);
-	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
-	    	
-    		//查看
-    		Namespace ns = client.getNamespace(user.getUserName());
-    		System.out.println("namespace"+JSON.toJSONString(ns));
-    		ResourceQuota rq = client.getResourceQuota(user.getUserName());
-    		System.out.println("resourceQuota:"+JSON.toJSONString(rq));
-    		LimitRange lr = client.getLimitRange(user.getUserName());
-    		System.out.println("limitRange:"+JSON.toJSONString(lr));
+//	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
 	    	
 			//DB保存用户信息
 			userDao.save(user);
@@ -153,7 +142,6 @@ public class UserController {
 		}
 		model.addAttribute("userList",userList);
 		model.addAttribute("menu_flag", "user");
-//		return "/user/list";
 		return "user/user.jsp";
 	}
 	
@@ -164,8 +152,9 @@ public class UserController {
 	 */
 	@RequestMapping(value={"/update.do"}, method=RequestMethod.POST)
 	public String userUpdate(User user, Resource resource, Restriction restriction, Model model){
+
 		//以用户名(登陆帐号)为name，创建client
-		KubernetesAPIClientInterface client = getClient(user.getUserName());
+		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
 		
 		ResourceQuota quota = updateQuota(client, user.getUserName(), resource);
 		LimitRange limit = updateLimitRange(client, user.getUserName(), restriction);
@@ -214,7 +203,7 @@ public class UserController {
 			userDao.delete(users);
 			for(String name : userNameList){
 				//以用户名(登陆帐号)为name，创建client
-				KubernetesAPIClientInterface client = getClient(name);
+				KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(name);
 				if(client.getNamespace(name) != null){
 					client.deleteLimitRange(name);
 					client.deleteResourceQuota(name);
@@ -238,14 +227,12 @@ public class UserController {
 	 */
 	@RequestMapping(value={"user/detail/{id}"},method=RequestMethod.GET)
 	public String Detail(Model model,@PathVariable long id){
-		System.out.printf("user--id:",id);
 		User user = userDao.findOne(id);
 		Resource resource = new Resource();
 		Restriction restriction = new Restriction();
 		
 		//以用户名(登陆帐号)为name，创建client
-		KubernetesAPIClientInterface client = getClient(user.getUserName());
-		
+		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
 		Namespace ns = client.getNamespace(user.getUserName());
 		
 		if(ns != null){
@@ -293,7 +280,7 @@ public class UserController {
 			}
 		}
 		else {
-			System.out.println("用户 "+ user.getUserName() +" 没有定义Namespace ");
+			System.out.println("用户 "+ user.getUserName() +" 没有定义名称为 " + user.getUserName() + " 的Namespace ");
 		}
 		model.addAttribute("restriction", restriction);
 		model.addAttribute("resource", resource);
@@ -321,18 +308,17 @@ public class UserController {
 			user_realname = search_userName.trim();
 		}
 		
-		System.out.println("search_autority: "+search_autority);
 		if(search_autority.trim().length()>0){
 			String[] arr = search_autority.trim().substring(0, search_autority.trim().length()-1).split(",");
 			if(arr.length == 1){
-				System.out.println("findby4");
+//				System.out.println("findby4");
 				user_autority = arr[0].trim();
 				for(User user : userDao.findBy4(company, user_department, user_autority, user_realname)){
 					userList.add(user);
 				}
 			}
 			else {
-				System.out.println("findby3");
+//				System.out.println("findby3");
 				for(User user : userDao.findBy3(company, user_department, user_realname)){
 					userList.add(user);
 				}
@@ -340,12 +326,11 @@ public class UserController {
 			}
 		}
 		else{
-			System.out.println("findby3");
+//			System.out.println("findby3");
 			for(User user : userDao.findBy3(company, user_department, user_realname)){
 				userList.add(user);
 			}
 		}
-		
 		model.addAttribute("userList",userList);
 		model.addAttribute("menu_flag", "user");
 		return "user/user.jsp";
@@ -359,37 +344,25 @@ public class UserController {
 	@RequestMapping(value={"/checkUsername/{username}"},method=RequestMethod.GET)
 	@ResponseBody
 	public String checkUsername(@PathVariable String username){
-		System.out.println("param.username: "+username);
 		Map<String, String> map = new HashMap<String, String>();
 			List<String> names = userDao.checkUsername(username);
 			if(names.size()>0){
 				map.put("status", "400");
 			}
 			else {
-				map.put("status", "200");
+				KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(username);
+				Namespace namespace = client.getNamespace(username);
+				if(namespace != null){
+					map.put("status", "300");
+				}
+				else {
+					map.put("status", "200");
+				}
 			}
 		return JSON.toJSONString(map);
 	}
 	
-/**********************************************************************
-	
-
-//	/**
-//	 * 展示所有用户列表
-//	 * @param
-//	 * @return
-//	 */
-
-//	@RequestMapping(value={"user"},method=RequestMethod.GET)
-//	public String index(Model model){
-//		List<User> userList = new ArrayList<User>();
-//		for(User user:userDao.findAll()){
-//			userList.add(user);
-//		}
-//		model.addAttribute("userList",userList);
-//		model.addAttribute("menu_flag", "user");
-//		return "user/user-management.jsp";
-//	}
+/**********************************************************************/
 	
 	@RequestMapping("user/add.do")
 	public String userAdd(User user){
@@ -433,7 +406,7 @@ public class UserController {
   		String usedMemoryNum = "";//已使用内存
         
         //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
-  		KubernetesAPIClientInterface client = getClient(user.getUserName());
+  		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
   		Namespace ns = client.getNamespace(user.getUserName());
   		System.out.println("namespace:"+JSON.toJSONString(ns));
   		
@@ -521,12 +494,6 @@ public class UserController {
         model.addAttribute("menu_flag", "userOwn");
         return "user/user-own.jsp";
     }
-
-	/*@RequestMapping("user/constructUser.do")
-    public String constructUser(){
-
-		return "redirect:/user";
-	}*/
 
 	/**
 	 * <!-- 工具方法 -->
@@ -671,39 +638,4 @@ public class UserController {
 		
 		return quota;
 	}
-	
-	/**
-	 * <!-- 工具方法 -->
-	 * 获取k8s client
-	 * @param namespace
-	 * @return
-	 */
-	private KubernetesAPIClientInterface getClient(String namespace){
-		if(clientMap == null){
-			clientMap = new HashMap<String, KubernetesAPIClientInterface>();
-		}
-		if(clientMap.containsKey(namespace)){
-			System.out.println("get client from map : "+namespace);
-			return clientMap.get(namespace);
-		} else {
-			System.out.println("create new client : "+namespace);
-			Properties k8sProperties = new Properties();
-			KubernetesAPIClientInterface client = null;
-			InputStream in = KubernetesClientUtil.class.getClassLoader().getResourceAsStream("kubernetes.api.properties");
-			try {
-				k8sProperties.load(in);
-				in.close();
-				String endpoint = k8sProperties.getProperty("kubernetes.api.endpoint");
-				String username = k8sProperties.getProperty("kubernetes.api.username");
-				String password = k8sProperties.getProperty("kubernetes.api.password");
-				client = new KubernetesApiClient(namespace,endpoint, username, password,new RestFactory());
-			} catch (IOException e) {
-				log.error("KubernetesUtil.init:"+e.getMessage());
-				e.printStackTrace();
-			}
-			clientMap.put(namespace, client);
-			return client;
-		}
-	}
-
 }

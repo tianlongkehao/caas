@@ -56,5 +56,21 @@ $(document).ready(function(){
 
 
     $( "#datePicker" ).click(function(){});
+    
+    ServiceEvent();
 
 });
+
+function ServiceEvent(){
+	$(".time-line-content").unbind("click").click(function(){
+        if($(this).hasClass("lives")){
+            $(this).children(".event-title").children(".time-line-message").css("display","none");
+            $(this).children(".event-title").children(".time-line-time").children(".event-sign").children(".fa_caret").css("transform","rotate(0deg)");
+            $(this).removeClass("lives");
+        }else{
+            $(this).children(".event-title").children(".time-line-message").css("display","block");
+            $(this).children(".event-title").children(".time-line-time").children(".event-sign").children(".fa_caret").css("transform","rotate(90deg)");
+            $(this).addClass("lives");
+        }
+    });
+}

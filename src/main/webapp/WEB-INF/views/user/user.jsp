@@ -167,7 +167,7 @@
 		var update_flag = $.trim($("#update_flag").val());
 		
 		if(create_flag == '200'){
-			if(onfirm("创建用户成功！")) {
+			if(confirm("创建用户成功！")) {
 				location.href="/user/list";
 			}
 			//window.location.reload;
