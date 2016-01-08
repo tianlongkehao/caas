@@ -131,8 +131,17 @@ public class ClusterController {
             String cmd = "cd /opt/;chmod +x ./envInstall.sh;nohup ./envInstall.sh " + imageHostPort + " " + yumSource + " " + type + " " + masterName + " " + hostName;
             log.debug("cmd-----------------------------------------------------------------------------------" + cmd);
             SshConnect.exec(cmd, 300000);
-            //关闭SSH连接
-            SshConnect.disconnect();
+            //插入主机数据
+            Cluster cluster = clusterDao.findByHost(ip);
+            if (cluster == null) {
+                Cluster newCluster = new Cluster();
+                newCluster.setUsername(user);
+                newCluster.setPassword(pass);
+                newCluster.setHost(ip);
+                newCluster.setPort(port);
+                clusterDao.save(newCluster);
+            }
+            return "安装成功";
         } catch (InterruptedException e) {
             e.printStackTrace();
             log.error(e.getMessage());
@@ -141,17 +150,10 @@ public class ClusterController {
             e.printStackTrace();
             log.error(e.getMessage());
             return "ssh连接失败";
+        } finally {
+            //关闭SSH连接
+            SshConnect.disconnect();
         }
-        Cluster cluster = clusterDao.findByHost(ip);
-        if (cluster == null) {
-            Cluster newCluster = new Cluster();
-            newCluster.setUsername(user);
-            newCluster.setPassword(pass);
-            newCluster.setHost(ip);
-            newCluster.setPort(port);
-            clusterDao.save(newCluster);
-        }
-        return "安装成功";
     }
 
     private void copyFile(String user, String pass, String ip, Integer port)
