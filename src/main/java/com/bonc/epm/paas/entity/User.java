@@ -1,5 +1,7 @@
 package com.bonc.epm.paas.entity;
 
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +33,8 @@ public class User {
 	private String user_employee_id;//工号
 	private String user_cellphone;//手机号码
 	private String user_phone;//固定电话
-	
+
+
 	@ManyToMany
 	@JoinTable(name="user_favor_images", 
 	joinColumns={@JoinColumn(name="favor_users")},

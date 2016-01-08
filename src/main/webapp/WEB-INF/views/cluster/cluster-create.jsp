@@ -83,10 +83,10 @@
                                     </div>
                                 </div>
                                 <div class="list-item-description" style="padding-top: 100px">
-                                    <a href="/cluster/list"><span class="btn btn-default go_user"
-                                                                  style="margin-right: 30px;">返回</span></a>
-                                        <span class="nextTwo pull-right btn btn-primary pull_confirm"
-                                              data-attr="tenxcloud/mysql">下一步</span>
+                                    <a href="/cluster/list"><button class="btn btn-default go_user"
+                                                                  style="margin-right: 30px;">返回</button></a>
+                                        <button class="nextTwo pull-right btn btn-primary pull_confirm"
+                                              data-attr="tenxcloud/mysql">下一步</button>
                                 </div>
                             </div>
 
@@ -127,9 +127,9 @@
                                     </li>
                                 </ul>
                                 <div class="" style="padding-top: 100px">
-                                    <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>
-                                        <span id="checkBtn"
-                                              class="checkBtn pull-right btn btn-primary pull_confirm">下一步</span>
+                                    <button class="btn btn-default last_step" style="margin-right: 30px;">上一步</button>
+                                        <button id="checkBtn"
+                                              class="checkBtn pull-right btn btn-primary pull_confirm">下一步</button>
                                 </div>
                             </div>
 
@@ -151,9 +151,9 @@
                                     </table>
                                 </div>
                                 <div class="" style="padding-top: 100px">
-                                    <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>
-                                        <span id="installBtn"
-                                              class="installBtn pull-right btn btn-primary pull_confirm">安装</span>
+                                    <button class="btn btn-default last_step" style="margin-right: 30px;">上一步</button>
+                                        <button id="installBtn"
+                                              class="installBtn pull-right btn btn-primary pull_confirm" onclick="setProcess()">安装</button>
                                 </div>
                             </div>
                             <%--4.配置集群节点--%>
@@ -173,9 +173,8 @@
                                     </table>
                                 </div>
                                 <div class="" style="padding-top: 100px">
-                                    <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>
-                                    <a href="/cluster/list"><span id="finishBtn"
-                                                                  class="pull-right btn btn-primary pull_confirm">完成</span></a>
+                                    <button class="btn btn-default last_step" style="margin-right: 30px;">上一步</button>
+                                    <a href="/cluster/list"><button id="finishBtn" class="pull-right btn btn-primary pull_confirm">完成</button></a>
                                 </div>
                             </div>
                         </div>

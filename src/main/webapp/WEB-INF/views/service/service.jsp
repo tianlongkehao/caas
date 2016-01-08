@@ -68,13 +68,13 @@
                                         <i class="fa fa-undo"></i>
                                         <span class="ic_left">重新部署</span>
                                     </a>
-                                </li>
+                                </li>-->
                                 <li>
                                     <a href="javascript:changeContainerConf();">
                                         <i class="fa fa-cog"></i>
                                         <span class="ic_left">更改配置</span>
                                     </a>
-                                </li>-->
+                                </li>
                                  
                                 <li>
                                     <a href="javascript:delContainer()">
@@ -94,8 +94,9 @@
                           <li class="line-h-3" id="instsizeChange">
                             <div class="param-set">
                               <span class="edit-name-c" style="margin-top: 5px;">实例数量：</span>
-                              <input value="1" id="numberChange" class="" min="1" style="margin-top: 10px;width: 165px;" type="number">
+                              <input value="1" id="numberChange" class="" min="1" max="${leftpod }" style="margin-top: 10px;width: 165px;" type="number">
                               <span class="unit">个</span>
+							  <span  style="color: grey;margin-left: 50px;">可用实例数量：<label id="leftpod" ></label></span>
                             </div>
                           </li>
                         </ul>
@@ -109,34 +110,36 @@
                             <li class="line-h-3">
                                 <div class="param-set">
                                     <span>CPU数量：</span>
-                                    <input type="number" value="1" style="margin-top: 10px;width: 165px;" min="1" autocomplete="off"
+                                    <input type="number" value="1" style="margin-top: 10px;width: 165px;" min="1" max="${leftcpu }" autocomplete="off"
                                            placeholder="1" id="confCpu" name="confCpu">
                                     <span class="unit">个</span>
+                                    <span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" ></label></span>
                                 </div>
                             </li>
                             <li class="line-h-3">
                                 <div class="param-set">
                                     <span>内存：</span>
-                                    <input id="confRamSlider" data-slider-id='confRamSlider' type="text" data-slider-min="0" data-slider-max="2024" data-slider-step="1" data-slider-value="256"/>
-                                    <input type="text" value="256" id="confRam" name="confRam">
+                                    <input id="confRamSlider" data-slider-id='confRamSliderData' type="text" data-slider-min="0" data-slider-step="1" />
+                                    <input type="text" left="${leftram }" value="" id="confRamSlider_input" name="confRam">
                                     <span>M</span>
+                                    <span style="color: grey;">当前可用ram：<label id="leftram" ></label>M</span>
                                 </div>
                             </li>
                         </ul>
                     </div>
                     <div class="searchs">
-                        <form class="form-inline" action="">
+                        
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="搜索">
+                                    <input id="searchName" type="text" class="form-control" placeholder="搜索">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-primary" type="button">
+                                        <button id="serviceSearch" class="btn btn-primary" type="button">
                                             <span class="glyphicon glyphicon-search"></span>
                                         </button>
                                     </span>
                                 </div>
                             </div>
-                        </form>
+                        
                     </div>
                 </div>
                 <div class="itemTable">
@@ -291,6 +294,14 @@
         </div>
     </article>
 </div>
+
+<c:if test="${msg} != null">
+    <input type="hidden" id="errorMsg" value="${msg}">
+    <script type="text/javascript">
+        var errorMsg = $("#errorMsg").val();
+        layer.alert(errorMsg);
+    </script>
+</c:if>
 
 </body>
 </html>

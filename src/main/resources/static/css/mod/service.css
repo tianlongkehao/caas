@@ -720,21 +720,21 @@ i.pushOrg {
     width: 400px;
 }
 
-#confRamSlider {
+#confRamSliderData,#confRamSlider {
     width: 280px;
 }
 
 #ramSlider .slider-handle,
-#confRamSlider .slider-handle{
+#confRamSliderData .slider-handle{
     background: #5cb85c;
 }
 
 #ramSlider .slider-selection,
-#confRamSlider .slider-selection{
+#confRamSliderData .slider-selection{
     background: #009933;
 }
 
-#ram, #confRam {
+#ram, #confRamSlider_input {
     width: 70px;
     text-indent: 8px;
     margin-left: 20px;

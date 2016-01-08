@@ -16,6 +16,10 @@ public class Cluster {
 	private Integer port;
 	private String username;
 	private String password;
+	private Integer cpu;
+	private Integer memory;
+	private Integer net;
+
 	
 	@ManyToMany(mappedBy = "favorImages")
 	private List<User> favorUsers;
@@ -65,4 +69,16 @@ public class Cluster {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-}
+
+	public Integer getCpu() { return cpu; }
+
+	public void setCpu(Integer cpu) { this.cpu = cpu; }
+
+	public Integer getMemory() { return memory; }
+
+	public void setMemory(Integer memory) { this.memory = memory; }
+
+	public Integer getNet() { return net; }
+
+	public void setNet(Integer net) { this.net = net; }
+ }

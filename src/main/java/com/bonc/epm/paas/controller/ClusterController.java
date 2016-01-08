@@ -21,11 +21,19 @@ import java.util.List;
 import java.util.Properties;
 
 @Controller
+@RequestMapping(value = "/cluster")
 public class ClusterController {
     private static final Logger log = LoggerFactory.getLogger(ClusterController.class);
 
-    @RequestMapping(value = {"cluster/list"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/list"}, method = RequestMethod.GET)
     public String clusterList(Model model) {
+
+        List<Cluster> lstClusters = new ArrayList<>();
+        for(Cluster cluster : clusterDao.findAll()){
+            lstClusters.add(cluster);
+        }
+
+        model.addAttribute("lstClusters",lstClusters);
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster.jsp";
     }

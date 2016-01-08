@@ -73,7 +73,7 @@
 
                     <c:if test="${cur_user.user_autority == 1}">
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/user/list/${cur_user.id}">
+                        <a class="icon-view" href="javascript:void(0);" action="/user/list">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
                                     <span><img src="images/user.svg" alt=""/></span>
@@ -99,5 +99,16 @@
         </div>
     </div>
     <div class="wallpaper"></div>
+<c:if test="${msg != null}">
+    <input type="hidden" id="errorMsg" value="${msg}">
+    <script type="text/javascript">
+    $(function(){
+    	var errorMsg = $("#errorMsg").val();
+    	alert(errorMsg);
+        layer.alert(errorMsg);
+    });
+        
+    </script>
+</c:if>
 </body>
 </html>
