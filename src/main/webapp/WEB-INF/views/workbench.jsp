@@ -104,7 +104,6 @@
     <script type="text/javascript">
     $(function(){
     	var errorMsg = $("#errorMsg").val();
-    	alert(errorMsg);
         layer.alert(errorMsg);
     });
         
