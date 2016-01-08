@@ -38,13 +38,13 @@ public class ClusterController {
         return "cluster/cluster.jsp";
     }
 
-    @RequestMapping(value = {"cluster/detail"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/detail"}, method = RequestMethod.GET)
     public String clusterDetail(Model model) {
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster-detail.jsp";
     }
 
-    @RequestMapping(value = {"cluster/add"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/add"}, method = RequestMethod.GET)
     public String clusterAdd() {
         return "cluster/cluster-create.jsp";
     }
@@ -52,7 +52,7 @@ public class ClusterController {
     @Autowired
     private ClusterDao clusterDao;
 
-    @RequestMapping(value = {"cluster/getClusters"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/getClusters"}, method = RequestMethod.POST)
     public String getClusters(@RequestParam String ipRange, Model model) {
         List<String> lstIps = new ArrayList<>();
         List<Cluster> lstClusters = new ArrayList<>();
@@ -107,7 +107,7 @@ public class ClusterController {
         return "cluster/cluster-create.jsp";
     }
 
-    @RequestMapping(value = {"cluster/installCluster"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/installCluster"}, method = RequestMethod.GET)
     @ResponseBody
     public String installCluster(@RequestParam String user, @RequestParam String pass, @RequestParam String ip,
                                  @RequestParam Integer port, @RequestParam String type) {
