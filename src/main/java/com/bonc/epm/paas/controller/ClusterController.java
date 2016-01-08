@@ -1,8 +1,10 @@
 package com.bonc.epm.paas.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.jcraft.jsch.*;
@@ -16,35 +18,48 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "/cluster")
 public class ClusterController {
     private static final Logger log = LoggerFactory.getLogger(ClusterController.class);
 
-    @RequestMapping(value = {"/list"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/resource"}, method = RequestMethod.GET)
+    public String resourceCluster(Model model) {
+
+        List<Cluster> lstClusters = new ArrayList<>();
+        for(Cluster cluster : clusterDao.findAll()){
+            lstClusters.add(cluster);
+        }
+        model.addAttribute("lstClusters",lstClusters);
+        model.addAttribute("menu_flag", "cluster");
+        return "cluster/cluster.jsp";
+    }
+    @RequestMapping(value = {"/management"}, method = RequestMethod.GET)
     public String clusterList(Model model) {
 
         List<Cluster> lstClusters = new ArrayList<>();
         for(Cluster cluster : clusterDao.findAll()){
             lstClusters.add(cluster);
         }
-
         model.addAttribute("lstClusters",lstClusters);
         model.addAttribute("menu_flag", "cluster");
-        return "cluster/cluster.jsp";
+        return "cluster/cluster-management.jsp";
     }
 
     @RequestMapping(value = {"cluster/detail"}, method = RequestMethod.GET)
     public String clusterDetail(Model model) {
+        List<Cluster> lstClusters = new ArrayList<>();
+        for(Cluster cluster : clusterDao.findAll()){
+            lstClusters.add(cluster);
+        }
+        model.addAttribute("lstClusters",lstClusters);
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster-detail.jsp";
     }
 
-    @RequestMapping(value = {"cluster/add"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/add"}, method = RequestMethod.GET)
     public String clusterAdd() {
         return "cluster/cluster-create.jsp";
     }
@@ -52,7 +67,7 @@ public class ClusterController {
     @Autowired
     private ClusterDao clusterDao;
 
-    @RequestMapping(value = {"cluster/getClusters"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/getClusters"}, method = RequestMethod.POST)
     public String getClusters(@RequestParam String ipRange, Model model) {
         List<String> lstIps = new ArrayList<>();
         List<Cluster> lstClusters = new ArrayList<>();
@@ -107,7 +122,9 @@ public class ClusterController {
         return "cluster/cluster-create.jsp";
     }
 
-    @RequestMapping(value = {"cluster/installCluster"}, method = RequestMethod.GET)
+
+
+    @RequestMapping(value = {"/installCluster"}, method = RequestMethod.GET)
     @ResponseBody
     public String installCluster(@RequestParam String user, @RequestParam String pass, @RequestParam String ip,
                                  @RequestParam Integer port, @RequestParam String type) {

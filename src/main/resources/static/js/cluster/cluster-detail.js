@@ -4,30 +4,27 @@ $(function(){
 
         $(".Record").removeClass("active");
         $(this).addClass("active");
-
         $(".tab_wrap").addClass("hide");
+
+
+        /*document.getElementById("id").removeClass("hide");*/
+        /*$("#"+document.getElementsByName('clusterHost')).removeClass("hide");*/
+        debugger
         $("#"+$(this).attr("id")+"_wrap").removeClass("hide");
-
+        debugger
     });
 
 
-    $("#detailInfo").click(function () {
-        var data = $("#checkedClusters").val();
-        data = JSON.parse(data);
-        var str = '';
-        for (var i = 0; i < data.length; i++) {
-            str += '<div>';
-            var tds1 = '<a id="resourceinfo" class="Record action">172.16.71.146</a>';
-            str += tds1;
-            str += '</div>';
-        }
-        $('#resourceTab').html(str);
 
-    });
+
+
+
 
 });
 
-function resourceInfo(host, type, rowNum, rowsLength, rowsHostType) {
+
+
+/*function resourceInfo(host, type, rowNum, rowsLength, rowsHostType) {
     rowNum = rowNum + 1;
     $.ajax({
         url: "/cluster/installCluster?user=root&pass=a1s2d3&ip=" + host + "&port=22&type=" + type,
@@ -72,7 +69,7 @@ function resourceInfo(host, type, rowNum, rowsLength, rowsHostType) {
             }
         }
     });
-}
+}*/
 
 
 

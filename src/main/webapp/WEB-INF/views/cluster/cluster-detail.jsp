@@ -7,12 +7,14 @@
     <link rel="stylesheet" type="text/css" href="/css/mod/cluster.css"/>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <script type="text/javascript" src="/js/cluster/cluster-detail.js"></script>
+
 </head>
 <body>
 
 <jsp:include page="../frame/menu.jsp" flush="true">
     <jsp:param name="user" value=""/>
 </jsp:include>
+
 <div class="page-container">
     <article>
         <div class="page-main">
@@ -25,14 +27,15 @@
             </div>
             <div class="contentMain">
 
-                <div class="setTab" id="resourceTab">
-                    <%--<a id="resourceinfo" class="Record action">172.16.71.146</a>
-                    <a id="pwd" class="Record">172.16.71.233</a>--%>
+                <div class="setTab" id='resourceTab'>
+                    <c:forEach items="${lstClusters}" var="cluster">
+                        <a name="hosts" class="Record action active" value="${cluster.host}">${cluster.host}</a>
+                    </c:forEach>
                 </div>
 
                 <div class="account_table">
-
-                    <div id="resourceinfo_wrap" class="tab_wrap ">
+                    <c:forEach items="${lstClusters}" var="cluster">
+                    <div class="tab_wrap" name="clusterHost">
                         <div class="detail-info">
                             <div class="info-list" style="margin-top: 0px">
                                 <table class="table" id="table-listing">
@@ -42,7 +45,7 @@
                                     </tr>
                                     </thead>
                                     <tbody id='divResultInfo'>
-                                    <%--<tr>
+                                    <tr>
                                         <td style="width:15%">CPU（核）</td>
                                         <td style="width:25%">
                                             <div class="slider_bj">
@@ -68,24 +71,15 @@
                                             </div>
                                         </td>
                                         <td><span id="detailMemory">-</span>/<span id="totalMemory">-</span>（G）</td>
-                                    </tr>--%>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-
-
-                    <div id="pwd_wrap" class="tab_wrap hide">
-                        <div class="detail-info">
-                            <div class="info-list" style="margin-top:0px;">
-                                22222222222222222222222222222222222
-                            </div>
-                        </div>
-                    </div>
+                    </c:forEach>
 
                 </div>
-
 
             </div>
         </div>
@@ -93,4 +87,16 @@
 </div>
 
 </body>
+
+<script type="text/javascript">
+    debugger
+    /*var str = '<a name="hosts" class="Record action active">  </a>';*/
+    var aaa = document.getElementsByName('hosts').length;
+    for(var i=0; i < aaa; i++){
+        debugger
+        var bbb = document.getElementsByName('hosts')[i].getAttribute("value");
+        document.getElementsByName('hosts')[i].id = bbb.substring(10,13);
+        document.getElementsByName('clusterHost')[i].id = bbb.substring(10,13)+'_wrap';
+    }
+</script>
 </html>
