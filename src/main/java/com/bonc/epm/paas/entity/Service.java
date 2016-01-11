@@ -82,7 +82,7 @@ public class Service {
 	private Date createDate;
 	private long containerID;
 	private long createBy;
-	private Integer cpuNum;
+	private double cpuNum;
 	private String ram;
 	private long imgID;
 	
@@ -99,10 +99,10 @@ public class Service {
 	public void setImgID(long imgID) {
 		this.imgID = imgID;
 	}
-	public Integer getCpuNum() {
+	public double getCpuNum() {
 		return cpuNum;
 	}
-	public void setCpuNum(Integer cpuNum) {
+	public void setCpuNum(double cpuNum) {
 		this.cpuNum = cpuNum;
 	}
 	public String getRam() {
