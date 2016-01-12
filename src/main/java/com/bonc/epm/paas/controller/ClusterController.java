@@ -3,11 +3,17 @@ package com.bonc.epm.paas.controller;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
+import com.bonc.epm.paas.entity.ClusterUse;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientUtil;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.jcraft.jsch.*;
+import org.influxdb.InfluxDB;
+import org.influxdb.InfluxDBFactory;
+import org.influxdb.dto.Query;
+import org.influxdb.dto.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,32 +35,89 @@ public class ClusterController {
     public String resourceCluster(Model model) {
 
         List<Cluster> lstClusters = new ArrayList<>();
-        for(Cluster cluster : clusterDao.findAll()){
+        for (Cluster cluster : clusterDao.findAll()) {
             lstClusters.add(cluster);
         }
-        model.addAttribute("lstClusters",lstClusters);
+        model.addAttribute("lstClusters", lstClusters);
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster.jsp";
     }
+
     @RequestMapping(value = {"/management"}, method = RequestMethod.GET)
     public String clusterList(Model model) {
 
         List<Cluster> lstClusters = new ArrayList<>();
-        for(Cluster cluster : clusterDao.findAll()){
+        for (Cluster cluster : clusterDao.findAll()) {
             lstClusters.add(cluster);
         }
-        model.addAttribute("lstClusters",lstClusters);
+        model.addAttribute("lstClusters", lstClusters);
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster-management.jsp";
     }
 
     @RequestMapping(value = {"/detail"}, method = RequestMethod.GET)
-    public String clusterDetail(Model model) {
-        List<Cluster> lstClusters = new ArrayList<>();
-        for(Cluster cluster : clusterDao.findAll()){
-            lstClusters.add(cluster);
+    public String clusterDetail(@RequestParam String hostIps, Model model) {
+
+        InfluxDB influxDB = InfluxDBFactory.connect("http://172.16.71.173:58111", "root", "root");
+        String dbName = "k8s";
+        List<ClusterUse> lstClustersUse = new ArrayList<>();
+        String[] strHostIps = hostIps.split(",");
+        for (String hostIp : strHostIps) {
+            ClusterUse clusterUse = new ClusterUse();
+            //设置主机IP
+            clusterUse.setHost(hostIp);
+            //取得主机hostName
+            String hostName = "centos-minion" + hostIp.split("\\.")[3];
+            //查询主机cpu使用值
+            Query query_cpu_use = new Query("SELECT derivative(value)/10000000 FROM \"cpu/usage_ns_cumulative\" WHERE \"container_name\" = 'machine' AND \"hostname\" =~ /" + hostName + "/ AND time > now() - 30s GROUP BY time(10s)", dbName);
+            QueryResult result_cpu_use = influxDB.query(query_cpu_use);
+            //取得value列表
+            List<List<Object>> result_cpu_values = result_cpu_use.getResults().get(0).getSeries().get(0).getValues();
+            //value个数
+            int result_cpu_size = result_cpu_values.size();
+            //取得最后一个value
+            String cpu_use = result_cpu_values.get(result_cpu_size - 1).get(1).toString();
+            //取小数点后两位
+            clusterUse.setCpuUse(cpu_use.substring(0, cpu_use.indexOf(".") + 3));
+            //查询主机的CPU
+            Query query_cpu_limit = new Query("SELECT value FROM \"cpu/limit_gauge\" WHERE \"container_name\" = 'machine' AND \"hostname\" =~ /" + hostName + "/ order by time desc limit 1", dbName);
+            QueryResult result_cpu_limit = influxDB.query(query_cpu_limit);
+            //取得主机CPU
+            String cpu_limit = result_cpu_limit.getResults().get(0).getSeries().get(0).getValues().get(0).get(1).toString();
+            //去掉小数点
+            clusterUse.setCpuLimit(cpu_limit.substring(0, cpu_limit.indexOf(".")));
+            //查询内存使用量
+            Query query_mem_use = new Query("SELECT last(value)/1024/1024 FROM \"memory/usage_bytes_gauge\" WHERE \"hostname\" =~ /" + hostName + "/ AND \"container_name\" = 'machine' AND time > now() - 30s GROUP BY time(10s)", dbName);
+            QueryResult result_mem_use = influxDB.query(query_mem_use);
+            //取得value列表
+            List<List<Object>> result_mem_use_values = result_mem_use.getResults().get(0).getSeries().get(0).getValues();
+            //value个数
+            int result_mem_use_size = result_mem_use_values.size();
+            //取得最后一个value
+            String mem_use = result_mem_use_values.get(result_mem_use_size - 2).get(1).toString();
+            //取小数点后两位
+            clusterUse.setMemUse(mem_use.substring(0, mem_use.indexOf(".") + 3));
+            //查询内存Working Set
+            Query query_mem_set = new Query("SELECT last(value)/1024/1024 FROM \"memory/working_set_bytes_gauge\" WHERE \"hostname\" =~ /" + hostName + "/ AND \"container_name\" = 'machine' AND time > now() - 30s GROUP BY time(10s)", dbName);
+            QueryResult result_mem_set = influxDB.query(query_mem_set);
+            //取得value列表
+            List<List<Object>> result_mem_set_values = result_mem_set.getResults().get(0).getSeries().get(0).getValues();
+            //value个数
+            int result_mem_set_size = result_mem_set_values.size();
+            //取得最后一个value
+            String mem_set = result_mem_set_values.get(result_mem_set_size - 2).get(1).toString();
+            //取小数点后两位
+            clusterUse.setMemSet(mem_set.substring(0, mem_set.indexOf(".") + 3));
+            //查询主机内存
+            Query query_mem_limit = new Query("SELECT value/1024/1024 FROM \"memory/limit_bytes_gauge\" WHERE \"container_name\" = 'machine' AND \"hostname\" =~ /" + hostName + "/ order by time desc limit 1", dbName);
+            QueryResult result_mem_limit = influxDB.query(query_mem_limit);
+            //取得主机CPU
+            String mem_limit = result_mem_limit.getResults().get(0).getSeries().get(0).getValues().get(0).get(1).toString();
+            //去掉小数点
+            clusterUse.setMemLimit(mem_limit.substring(0, mem_limit.indexOf(".") + 3));
+            lstClustersUse.add(clusterUse);
         }
-        model.addAttribute("lstClusters",lstClusters);
+        model.addAttribute("lstClustersUse", lstClustersUse);
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster-detail.jsp";
     }
