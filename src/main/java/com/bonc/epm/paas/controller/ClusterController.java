@@ -127,8 +127,8 @@ public class ClusterController {
             List<List<Object>> result_mem_use_values = result_mem_use.getResults().get(0).getSeries().get(0).getValues();
             //value个数
             int result_mem_use_size = result_mem_use_values.size();
-            //取得最后一个value
-            String mem_use = result_mem_use_values.get(result_mem_use_size - 2).get(1).toString();
+            //取得value(防止取到NULL,所以从后面取第三个值)
+            String mem_use = result_mem_use_values.get(result_mem_use_size - 3).get(1).toString();
             //取小数点后两位
             clusterUse.setMemUse(mem_use.substring(0, mem_use.indexOf(".") + 3));
             //查询内存Working Set
@@ -138,7 +138,7 @@ public class ClusterController {
             List<List<Object>> result_mem_set_values = result_mem_set.getResults().get(0).getSeries().get(0).getValues();
             //value个数
             int result_mem_set_size = result_mem_set_values.size();
-            //取得最后一个value
+            //取得value(防止取到NULL,所以从后面取第二个值)
             String mem_set = result_mem_set_values.get(result_mem_set_size - 2).get(1).toString();
             //取小数点后两位
             clusterUse.setMemSet(mem_set.substring(0, mem_set.indexOf(".") + 3));
