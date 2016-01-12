@@ -49,11 +49,11 @@
                                             <td style="width:15%">CPU（Usage）</td>
                                             <td style="width:25%">
                                                 <div class="slider_bj">
-                                                    <div class="slider_block detailCpu"></div>
+                                                    <div class="slider_block detailCpu cpuPercents" style="width:0%"></div>
                                                 </div>
                                             </td>
-                                            <td style="width:10%"><span id="detailCpu">${clusterUse.cpuUse}</span>/<span
-                                                    id="totalCpu">${clusterUse.cpuLimit}</span>（ms）
+                                            <td style="width:10%"><span id="detailCpu" class="detailCpus">${clusterUse.cpuUse}</span>/<span
+                                                    id="totalCpu" class="totalCpus">${clusterUse.cpuLimit}</span>（ms）
                                             </td>
                                         </tr>
                                             <%--<tr>
@@ -69,11 +69,11 @@
                                             <td>内存（Usage）</td>
                                             <td>
                                                 <div class="slider_bj">
-                                                    <div class="slider_block detailMemory"></div>
+                                                    <div class="slider_block detailMemory memPercents" style="width: 0%"></div>
                                                 </div>
                                             </td>
-                                            <td><span id="detailMemoryUse">${clusterUse.memUse}</span>/<span
-                                                    id="totalMemoryUse">${clusterUse.memLimit}</span>（M）
+                                            <td><span id="detailMemoryUse" class="detailMems">${clusterUse.memUse}</span>/<span
+                                                    id="totalMemoryUse" class="totalMems">${clusterUse.memLimit}</span>（M）
                                             </td>
                                         </tr>
                                         </tbody>
@@ -81,11 +81,11 @@
                                             <td>内存（Working Set）</td>
                                             <td>
                                                 <div class="slider_bj">
-                                                    <div class="slider_block detailMemory"></div>
+                                                    <div class="slider_block detailMemory workDetailMems" style="width: 0%"></div>
                                                 </div>
                                             </td>
-                                            <td><span id="detailMemorySet">${clusterUse.memSet}</span>/<span
-                                                    id="totalMemorySet">${clusterUse.memLimit}</span>（M）
+                                            <td><span id="detailMemorySet" class="detailMemsSet">${clusterUse.memSet}</span>/<span
+                                                    id="totalMemorySet" class="totalMemsSet">${clusterUse.memLimit}</span>（M）
                                             </td>
                                         </tr>
                                         </tbody>
