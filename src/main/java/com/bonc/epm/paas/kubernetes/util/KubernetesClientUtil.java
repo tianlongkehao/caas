@@ -11,6 +11,8 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.api.RestFactory;
@@ -27,6 +29,7 @@ import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerSpec;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
+import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
@@ -176,6 +179,13 @@ public class KubernetesClientUtil {
 		}
 		*/
     
+//    public static void main(String[] args) {
+//    	//创建容器
+//    	KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("feng");
+//		ReplicationController controller = KubernetesClientUtil.generateSimpleReplicationController("bonctest1",3,"10.0.93.25:5000/bonc/hw8:latest",8080,1.0f,"512");
+//		controller = client.createReplicationController(controller);
+//		System.out.println("controller:"+JSON.toJSONString(controller));
+//	}
 	public static Namespace generateSimpleNamespace(String name){
 		Namespace namespace = new Namespace();
 		ObjectMeta meta = new ObjectMeta();
@@ -211,6 +221,69 @@ public class KubernetesClientUtil {
 		return limitRange;
 	}
 	
+	public static Map<String,Object> getlimit(Map<String,Object> limit){
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+		
+		LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
+	    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
+	    String cpuMax = limitRangeItem.getMax().get("cpu").replace("m", "");
+	    String memoryMax = limitRangeItem.getMax().get("memory").replace("M", "");
+	    double icpuMax = Double.valueOf(cpuMax)/1024;
+	    limit.put("cpu", icpuMax);
+		limit.put("memory", memoryMax+"Mi");
+		return limit;
+	    
+	}
+	
+	public static ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram){
+		ReplicationController replicationController = new ReplicationController();
+		ObjectMeta meta = new ObjectMeta();
+		meta.setName(name);
+		replicationController.setMetadata(meta);
+		ReplicationControllerSpec spec = new ReplicationControllerSpec();
+		spec.setReplicas(replicas);
+		
+		PodTemplateSpec template = new PodTemplateSpec();
+		ObjectMeta podMeta = new ObjectMeta();
+		podMeta.setName(name);
+		Map<String,String> labels = new HashMap<String,String>();
+		labels.put("app", name);
+		podMeta.setLabels(labels);
+		template.setMetadata(podMeta);
+		PodSpec podSpec = new PodSpec();
+		List<Container> containers = new ArrayList<Container>();
+		Container container = new Container();
+		container.setName(name);
+		container.setImage(image);
+		
+		
+	
+		ResourceRequirements requirements = new ResourceRequirements();
+		requirements.getLimits();
+		Map<String,Object> def = new HashMap<String,Object>();
+		//float fcpu = cpu*1024;
+		def.put("cpu", cpu);
+		def.put("memory", ram+"Mi");
+		Map<String,Object> limit = new HashMap<String,Object>();
+		limit = getlimit(limit);
+		requirements.setRequests(def);
+		requirements.setLimits(limit);
+		container.setResources(requirements);
+		
+		List<ContainerPort> ports = new ArrayList<ContainerPort>();
+		ContainerPort port = new ContainerPort();
+		port.setContainerPort(containerPort);
+		ports.add(port);
+		container.setPorts(ports);
+		containers.add(container);
+		podSpec.setContainers(containers);
+		template.setSpec(podSpec);
+		spec.setTemplate(template);
+		replicationController.setSpec(spec);
+		return replicationController;
+	}
+	
 	public static ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
@@ -231,6 +304,16 @@ public class KubernetesClientUtil {
 		Container container = new Container();
 		container.setName(name);
 		container.setImage(image);
+		
+//		ResourceRequirements requirements = new ResourceRequirements();
+//		requirements.getLimits();
+//		Map<String,String> def = new HashMap<String,String>();
+//		//float fcpu = cpu*1024;
+//		def.put("cpu", String.valueOf(cpu));
+//		def.put("memory", ram+"Mi");
+//		requirements.setRequests(def);
+//		container.setResources(requirements);
+		
 		List<ContainerPort> ports = new ArrayList<ContainerPort>();
 		ContainerPort port = new ContainerPort();
 		port.setContainerPort(containerPort);
