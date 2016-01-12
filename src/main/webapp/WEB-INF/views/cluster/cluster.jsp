@@ -26,7 +26,6 @@
             </div>
             <div class="contentMain">
 
-
                 <aside class="aside-btn">
                     <div class="btns-group">
                         <a id="clusterResource" class="Record action"><span class="btn btn-defaults btn-white"><span
@@ -53,8 +52,8 @@
                                                 <div class="slider_block detailCpu"></div>
                                             </div>
                                         </td>
-                                        <td style="width:10%"><span id="detailCpu">-</span>/<span
-                                                id="totalCpu">-（核）</span></td>
+                                        <td style="width:10%"><span id="detailCpu">${allClusterCpuUse}</span>/<span
+                                                id="totalCpu">${allClusterCpuLimit}（ms）</span></td>
                                     </tr>
                                     <tr>
                                         <td>内存（G）</td>
@@ -63,9 +62,11 @@
                                                 <div class="slider_block detailMemory"></div>
                                             </div>
                                         </td>
-                                        <td><span id="detailMemory">-</span>/<span id="totalMemory">-</span>（G）</td>
+                                        <td><span id="detailMemory">${allClusterMemUse}</span>/<span
+                                                id="totalMemory">${allClusterMemLimit}</span>（M）
+                                        </td>
                                     </tr>
-                                    <tr>
+                                    <%--<tr>
                                         <td style="width:15%">网络（M）</td>
                                         <td style="width:25%">
                                             <div class="slider_bj">
@@ -73,7 +74,7 @@
                                             </div>
                                         </td>
                                         <td style="width:10%"><span id="detailNetwork">-</span>10M</td>
-                                    </tr>
+                                    </tr>--%>
                                     </tbody>
                                 </table>
                             </div>

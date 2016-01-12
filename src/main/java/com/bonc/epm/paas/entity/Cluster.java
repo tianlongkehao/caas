@@ -19,8 +19,8 @@ public class Cluster {
 	private Integer cpu;
 	private Integer memory;
 	private Integer net;
+	private String hostType;
 
-	
 	@ManyToMany(mappedBy = "favorImages")
 	private List<User> favorUsers;
 	
@@ -81,4 +81,12 @@ public class Cluster {
 	public Integer getNet() { return net; }
 
 	public void setNet(Integer net) { this.net = net; }
- }
+
+	public String getHostType() {
+		return hostType;
+	}
+
+	public void setHostType(String hostType) {
+		this.hostType = hostType;
+	}
+}
