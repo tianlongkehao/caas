@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.aspectj.weaver.ast.And;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.model.LimitRange;
+import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -82,7 +85,7 @@ public class ServiceController {
 		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
 	    List<Service> serviceList = new ArrayList<Service>();
 	    List<Container> containerList = new ArrayList<Container>();
-	    if(client.getNamespace(currentUser.getUserName()) == null){
+	    if((client.getNamespace(currentUser.getUserName()) == null)&( client.getResourceQuota(currentUser.getUserName())== null)){
 	    	model.addAttribute("msg", "请规范创建租户！");
 			return "workbench.jsp";
 	    }
@@ -107,7 +110,11 @@ public class ServiceController {
 	    	    	}
 	    	    	serviceList.add(service);
 	    		}
-	    		getleftResource(model);
+	    		boolean flag = getleftResource(model);
+	    		if(!flag){
+	    			model.addAttribute("msg", "请检查K8S服务器连接！");
+					return "workbench.jsp";
+	    		}
 			} catch (Exception e) {
 				model.addAttribute("msg", "请检查K8S服务器连接！");
 				return "workbench.jsp";
@@ -243,7 +250,7 @@ public class ServiceController {
 	}
 	
 	public boolean getleftResource(Model model){
-		Integer usedcpu = 0;
+		double usedcpu = 0;
 		Integer usedram = 0;
 		Integer usedpod = 0;
 		User currentUser = CurrentUserUtils.getInstance().getUser();
@@ -253,15 +260,29 @@ public class ServiceController {
 		    String cpus = rq.getSpec().getHard().get("cpu");
 		    String rams = rq.getSpec().getHard().get("memory").replace("M", "");
 		    String pods = rq.getSpec().getHard().get("pods");
+		    
+		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
+		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
+		    String cpuMax = limitRangeItem.getMax().get("cpu").replace("m", "");
+		    float icpuMax = Float.valueOf(cpuMax)/1024;
+		    String cpudefault = limitRangeItem.getDefaultVal().get("cpu").replace("m", "");
+		    float icpudefault = Float.valueOf(cpudefault)/1024;
+		    String cpuMin = limitRangeItem.getMin().get("cpu").replace("m", "");
+		    float icpuMin = Float.valueOf(cpuMin)/1024;
+		    String memoryMax = limitRangeItem.getMax().get("memory").replace("M", "");
+		    String memorydefault = limitRangeItem.getDefaultVal().get("memory").replace("M", "");
+		    String memoryMin = limitRangeItem.getMin().get("memory").replace("M", "");
+		    System.out.println("icpudefault======="+icpudefault);
+		    System.out.println("limitRange======="+limitRange.getSpec().getLimits());
 		    for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
-		    	Integer cpu = service.getCpuNum();
+		    	double cpu = service.getCpuNum();
 		    	String ram = service.getRam();
 		    	Integer pod = service.getInstanceNum();
 		    	usedram = usedram + Integer.valueOf(ram);
 		    	usedcpu = usedcpu + cpu;
 		    	usedpod = usedpod + pod;
 		    }
-		    Integer leftcpu = Integer.valueOf(cpus) - usedcpu;
+		    double leftcpu = Float.valueOf(cpus) - usedcpu;
 			Integer leftram = Integer.valueOf(rams) - usedram;
 			Integer leftpod = Integer.valueOf(pods) - usedpod;
 			model.addAttribute("leftpod",leftpod);
@@ -317,7 +338,8 @@ public class ServiceController {
 		//如果没有则新增
 		ReplicationController controller = client.getReplicationController(service.getServiceName());
 		if(controller==null){
-			controller = KubernetesClientUtil.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080);
+			controller = KubernetesClientUtil.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080,service.getCpuNum(),service.getRam());
+			//controller = KubernetesClientUtil.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080);
 			controller = client.createReplicationController(controller);
 		}else{
 			controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
