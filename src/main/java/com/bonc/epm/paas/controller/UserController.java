@@ -524,11 +524,11 @@ public class UserController {
 		Map<String, String> podDefault = new HashMap<String, String>();
 		
 		podMax.put("memory", restriction.getPod_memory_max()+"G");
-		podMax.put("cpu", restriction.getPod_cpu_max()+"个");
+		podMax.put("cpu", restriction.getPod_cpu_max());
 		podMin.put("memory", restriction.getPod_memory_min()+"G");
-		podMin.put("cpu", restriction.getPod_cpu_min()+"个");
+		podMin.put("cpu", restriction.getPod_cpu_min());
 		podDefault.put("memory", restriction.getPod_memory_default()+"G");
-		podDefault.put("cpu", restriction.getPod_cpu_default()+"个");
+		podDefault.put("cpu", restriction.getPod_cpu_default());
 		
 		podLimitRangeItem.setDefaultVal(podDefault);
 		podLimitRangeItem.setMax(podMax);
@@ -541,11 +541,11 @@ public class UserController {
 		Map<String, String> containerDefault = new HashMap<String, String>();
 		
 		containerMax.put("memory", restriction.getContainer_memory_max()+"G");
-		containerMax.put("cpu", restriction.getContainer_cpu_max()+"个");
+		containerMax.put("cpu", restriction.getContainer_cpu_max());
 		containerMin.put("memory", restriction.getContainer_memory_min()+"G");
-		containerMin.put("cpu", restriction.getContainer_cpu_min()+"个");
+		containerMin.put("cpu", restriction.getContainer_cpu_min());
 		containerDefault.put("memory", restriction.getContainer_memory_default()+"G");
-		containerDefault.put("cpu", restriction.getContainer_cpu_default()+"个");
+		containerDefault.put("cpu", restriction.getContainer_cpu_default());
 		
 		containerLimitRangeItem.setMax(containerMax);
 		containerLimitRangeItem.setMin(containerMin);
@@ -584,9 +584,9 @@ public class UserController {
 		podMax.put("memory", restriction.getPod_memory_max()+"G");
 		podMin.put("memory", restriction.getPod_memory_min()+"G");
 		podDefault.put("memory", restriction.getPod_memory_default()+"G");
-		podMax.put("cpu", restriction.getPod_cpu_max()+"个");
-		podMin.put("cpu", restriction.getPod_cpu_min()+"个");
-		podDefault.put("cpu", restriction.getPod_cpu_default()+"个");
+		podMax.put("cpu", restriction.getPod_cpu_max());
+		podMin.put("cpu", restriction.getPod_cpu_min());
+		podDefault.put("cpu", restriction.getPod_cpu_default());
 		
 		podLimitRangeItem.setDefaultVal(podDefault);
 		podLimitRangeItem.setMax(podMax);
@@ -601,9 +601,9 @@ public class UserController {
 		containerMax.put("memory", restriction.getContainer_memory_max()+"G");
 		containerMin.put("memory", restriction.getContainer_memory_min()+"G");
 		containerDefault.put("memory", restriction.getContainer_memory_default()+"G");
-		containerMax.put("cpu", restriction.getContainer_cpu_max()+"个");
-		containerMin.put("cpu", restriction.getContainer_cpu_min()+"个");
-		containerDefault.put("cpu", restriction.getContainer_cpu_default()+"个");
+		containerMax.put("cpu", restriction.getContainer_cpu_max());
+		containerMin.put("cpu", restriction.getContainer_cpu_min());
+		containerDefault.put("cpu", restriction.getContainer_cpu_default());
 		
 		containerLimitRangeItem.setMax(containerMax);
 		containerLimitRangeItem.setMin(containerMin);
