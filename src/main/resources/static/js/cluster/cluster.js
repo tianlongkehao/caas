@@ -46,22 +46,24 @@ function delCluster (){
             title: '删除集群节点',
             content:'确定删除多个节点吗？',
             btn: ['确定', '取消'],
-            /*yes: function(index, layero){ //或者使用btn1
+            yes: function(index, layero){ //或者使用btn1
+                debugger
                 layer.close(index);
                 $.ajax({
-                    url:"/user/delMul.do?ids="+id,
+                    url:"/cluster/delMul.do?hosts="+id,
                     success:function(data){
+                        debugger
                         data = eval("(" + data + ")");
                         if(data.status=="200"){
-                            alert("用户信息删除成功");
+                            alert("节点信息删除成功");
                         }else{
-                            alert("用户信息删除失败，请检查服务器连接");
+                            alert("节点信息删除失败，请检查服务器连接");
                         }
-                        location.href = "redirect:/user/list";
+                        location.href = "redirect:/cluster/management";
                     }
                 })
 
-            },*/
+            },
             cancel: function(index){ //或者使用btn2
                 //按钮【按钮二】的回调
             }

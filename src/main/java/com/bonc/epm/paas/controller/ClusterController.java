@@ -5,6 +5,7 @@ import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientUtil;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.jcraft.jsch.*;
@@ -155,7 +156,7 @@ public class ClusterController {
             String yumSource = "172.16.71.172";
             String cmd = "cd /opt/;chmod +x ./envInstall.sh;nohup ./envInstall.sh " + imageHostPort + " " + yumSource + " " + type + " " + masterName + " " + hostName;
             log.debug("cmd-----------------------------------------------------------------------------------" + cmd);
-            SshConnect.exec(cmd, 300000);
+            SshConnect.exec(cmd, 30000);
             //关闭SSH连接
             SshConnect.disconnect();
         } catch (InterruptedException e) {
@@ -198,4 +199,34 @@ public class ClusterController {
             e.printStackTrace();
         }
     }
+
+    /**
+     * 局部刷新，批量删除用户
+     * @return
+     */
+    /*@RequestMapping("/delMul.do")
+    @ResponseBody
+    public String clusterDelMul(String hosts){
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Cluster> clusters = new ArrayList<Cluster>();
+        List<Long> idList = new ArrayList<Long>();
+        List<String> clusterHostList = new ArrayList<String>();
+        try{
+            String[] idArr = hosts.split(",");
+            for(int i=0; i<idArr.length; i++){
+                idList.add(Long.parseLong(idArr[i]));
+            }
+            for(Cluster cluster : clusterDao.findAll(idList)){
+                clusters.add(cluster);
+                clusterHostList.add(cluster.getHost());
+            }
+            clusterDao.delete(clusters);
+            map.put("status", "200");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
+    }*/
 }

@@ -108,13 +108,13 @@
                                                  <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;line-height: 35px" >登陆密码:</label>
                                                     <label style="width: 2%; float: left;"><font color="red">*</font></label>
-                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
+                                                    <input type="password" class="form-control" style="width: 75%;display: inline; float: right;"
                                                     		id="pwd" name="password">
                                                 </div>
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;line-height: 35px" >确认密码:</label>
                                                     <label style="width: 2%; float: left;"><font color="red">*</font></label>
-                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
+                                                    <input type="password" class="form-control" style="width: 75%;display: inline; float: right;"
                                                     		id="confirm_pwd">
                                                 </div>
                                             </div>
@@ -127,7 +127,7 @@
 
                                 <%--资源配额--%>
                                 <div class="host_step2" >
-                                    <ul class="safeSet" style="margin-left: 100px">
+                                    <ul class="safeSet" style="margin-left: 200px">
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">CPU数量：</span>
@@ -139,9 +139,13 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">内存：</span>
-                                                <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="2024" data-slider-step="1" data-slider-value="256"/>
-                                                <input type="text" value="256" id="ram" name="ram" >
-                                                <span>MB</span>
+                                                <input type="text" value="1" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="ram" name="ram" style="width:350px" >
+                                                <span class="unit">GB</span>
+
+                                                <%--<input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="2024" data-slider-step="1" data-slider-value="256"/>
+                                                <input type="text" value="256" id="ram" name="ram" >--%>
+
                                             </div>
                                         </li>
                                        
@@ -172,19 +176,21 @@
 										<li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">卷组挂载数量：</span>
-                                                <input type="number" value="1" class="number" min="1" autocomplete="off" disabled="disabled"
-                                                       placeholder="1" id="vol_count" name="vol_count" style="width:350px" > 
+                                                <input type="number" value="1" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="vol_count" name="vol_count" style="width:350px" disabled>
                                                 <span class="unit">个</span>
                                             </div>
                                         </li>
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">卷组容量：</span>
-                                                <input id="volSlider" data-slider-id='volSlider' type="text" disabled="disabled"
+                                                <input type="text" value="1" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="vol" name="vol" style="width:350px" disabled>
+                                                <span class="unit">GB</span>
+                                                <%--<input  data-slider-id='volSlider' disabled="disabled"
                                                 		data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="1"/>
 <!--                                                 		data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="1"/> -->
-                                                <input type="text" value="1" id="vol" name="vol" disabled="disabled">
-                                                <span>GB</span>
+                                                <input type="text" value="1" id="vol" name="vol" disabled="disabled">--%>
                                             </div>
                                         </li>
                                     </ul>
@@ -202,8 +208,8 @@
                                             <thead>
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Pod</th>
-                                                <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（MB）</th>
+                                                <th style="width: 33%;text-align: center">CPU（个）</th>
+                                                <th style="width: 33%;text-align: center">内存（GB）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="pod-limit">
@@ -231,8 +237,8 @@
                                             <thead>
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Container</th>
-                                                <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（MB）</th>
+                                                <th style="width: 33%;text-align: center">CPU（个）</th>
+                                                <th style="width: 33%;text-align: center">内存（GB）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="container-limit">

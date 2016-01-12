@@ -817,7 +817,7 @@ i.pushOrg {
     background: #FAFAFA;
     border-bottom: 1px solid #EFF2F7;
     padding-left: 30px;
-    font-size: 16px;
+    font-size: 14px;
 }
 .container-count .server-list {
     padding: 0 30px;
@@ -879,7 +879,7 @@ i.pushOrg {
     height: 40px;
 }
 .detail-info .info-list #table-listing thead .detail-rows {
-    font-size: 16px;
+    font-size: 14px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
 }
@@ -935,7 +935,7 @@ i.pushOrg {
 
 
 .detail-info .info-list #table-listing, #masterCpuResourceInfo thead .detail-rows {
-    font-size: 16px;
+    font-size: 14px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
     background: #FAFAFA;
@@ -965,7 +965,7 @@ i.pushOrg {
 
 
 .detail-info .info-list #table-listing, #etcdCpuResourceInfo thead .detail-rows {
-    font-size: 16px;
+    font-size: 14px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
     background: #FAFAFA;
@@ -995,7 +995,7 @@ i.pushOrg {
 
 
 .detail-info .info-list #table-listing, #slaveCpuResourceInfo thead .detail-rows {
-    font-size: 16px;
+    font-size: 14px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
     background: #FAFAFA;
@@ -1027,7 +1027,7 @@ i.pushOrg {
 
 
 .detail-info .info-list #table-listing, #masterMemResourceInfo thead .detail-rows {
-    font-size: 16px;
+    font-size: 14px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
     background: #FAFAFA;
@@ -1057,7 +1057,7 @@ i.pushOrg {
 
 
 .detail-info .info-list #table-listing, #etcdMemResourceInfo thead .detail-rows {
-    font-size: 16px;
+    font-size: 14px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
     background: #FAFAFA;
@@ -1087,7 +1087,7 @@ i.pushOrg {
 
 
 .detail-info .info-list #table-listing, #slaveMemResourceInfo thead .detail-rows {
-    font-size: 16px;
+    font-size: 14px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
     background: #FAFAFA;

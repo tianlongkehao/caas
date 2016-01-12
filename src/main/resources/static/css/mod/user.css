@@ -783,7 +783,6 @@ i.pushOrg {
 #ram, #confRam, #vol, #confVol {
     width: 70px;
     text-indent: 8px;
-    margin-left: 20px;
 }
 
 .popWin {
