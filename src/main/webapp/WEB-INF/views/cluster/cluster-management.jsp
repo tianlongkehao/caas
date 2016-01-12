@@ -51,12 +51,12 @@
                                                 <span class="ic_left">查看</span>
                                             </a>
                                         </li>
-                                        <li>
+                                        <%--<li>
                                             <a href="javascript:delCluster()">
                                                 <i class="fa fa-trash"></i>
                                                 <span class="ic_left">删除</span>
                                             </a>
-                                        </li>
+                                        </li>--%>
                                     </ul>
                                 </li>
                             </ul>

@@ -34,11 +34,29 @@ public class ClusterController {
     @RequestMapping(value = {"/resource"}, method = RequestMethod.GET)
     public String resourceCluster(Model model) {
 
-        List<Cluster> lstClusters = new ArrayList<>();
-        for (Cluster cluster : clusterDao.findAll()) {
-            lstClusters.add(cluster);
+        Float allClusterCpuUse = 0F;
+        Float allClusterCpuLimit = 0F;
+        Float allClusterMemUse = 0F;
+        Float allClusterMemLimit = 0F;
+
+        List<ClusterUse> lstClustersUse = new ArrayList<>();
+        List<Cluster> lstClusters = (List<Cluster>) clusterDao.findAll();
+        for (Cluster cluster : lstClusters) {
+            if ("slave".equals(cluster.getHostType())) {
+                ClusterUse clusterUse = getClusterUse(cluster.getHost());
+                lstClustersUse.add(clusterUse);
+                allClusterCpuUse = allClusterCpuUse + Float.valueOf(clusterUse.getCpuUse());
+                allClusterCpuLimit = allClusterCpuLimit + Float.valueOf(clusterUse.getCpuLimit());
+                allClusterMemUse = allClusterMemUse + Float.valueOf(clusterUse.getMemUse());
+                allClusterMemLimit = allClusterMemLimit + Float.valueOf(clusterUse.getMemLimit());
+            }
         }
-        model.addAttribute("lstClusters", lstClusters);
+
+        model.addAttribute("allClusterCpuUse", allClusterCpuUse);
+        model.addAttribute("allClusterCpuLimit", allClusterCpuLimit);
+        model.addAttribute("allClusterMemUse", allClusterMemUse);
+        model.addAttribute("allClusterMemLimit", allClusterMemLimit);
+        model.addAttribute("lstClusters", lstClustersUse);
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster.jsp";
     }
@@ -58,12 +76,28 @@ public class ClusterController {
     @RequestMapping(value = {"/detail"}, method = RequestMethod.GET)
     public String clusterDetail(@RequestParam String hostIps, Model model) {
 
-        InfluxDB influxDB = InfluxDBFactory.connect("http://172.16.71.173:58111", "root", "root");
-        String dbName = "k8s";
         List<ClusterUse> lstClustersUse = new ArrayList<>();
         String[] strHostIps = hostIps.split(",");
         for (String hostIp : strHostIps) {
-            ClusterUse clusterUse = new ClusterUse();
+            ClusterUse clusterUse = getClusterUse(hostIp);
+            lstClustersUse.add(clusterUse);
+        }
+        model.addAttribute("lstClustersUse", lstClustersUse);
+        model.addAttribute("menu_flag", "cluster");
+        return "cluster/cluster-detail.jsp";
+    }
+
+    /**
+     * 取得单一主机资源使用情况
+     *
+     * @param hostIp
+     * @return
+     */
+    private ClusterUse getClusterUse(String hostIp) {
+        ClusterUse clusterUse = new ClusterUse();
+        try {
+            InfluxDB influxDB = InfluxDBFactory.connect("http://172.16.71.173:58111", "root", "root");
+            String dbName = "k8s";
             //设置主机IP
             clusterUse.setHost(hostIp);
             //取得主机hostName
@@ -115,11 +149,10 @@ public class ClusterController {
             String mem_limit = result_mem_limit.getResults().get(0).getSeries().get(0).getValues().get(0).get(1).toString();
             //去掉小数点
             clusterUse.setMemLimit(mem_limit.substring(0, mem_limit.indexOf(".") + 3));
-            lstClustersUse.add(clusterUse);
+        } catch (Exception e) {
+            log.debug(e.getMessage());
         }
-        model.addAttribute("lstClustersUse", lstClustersUse);
-        model.addAttribute("menu_flag", "cluster");
-        return "cluster/cluster-detail.jsp";
+        return clusterUse;
     }
 
     @RequestMapping(value = {"/add"}, method = RequestMethod.GET)
@@ -226,6 +259,7 @@ public class ClusterController {
                 newCluster.setPassword(pass);
                 newCluster.setHost(ip);
                 newCluster.setPort(port);
+                newCluster.setHostType(type);
                 clusterDao.save(newCluster);
             }
             return "安装成功";
@@ -262,34 +296,4 @@ public class ClusterController {
             e.printStackTrace();
         }
     }
-
-    /**
-     * 局部刷新，批量删除用户
-     * @return
-     */
-    /*@RequestMapping("/delMul.do")
-    @ResponseBody
-    public String clusterDelMul(String hosts){
-        Map<String, Object> map = new HashMap<String, Object>();
-        List<Cluster> clusters = new ArrayList<Cluster>();
-        List<Long> idList = new ArrayList<Long>();
-        List<String> clusterHostList = new ArrayList<String>();
-        try{
-            String[] idArr = hosts.split(",");
-            for(int i=0; i<idArr.length; i++){
-                idList.add(Long.parseLong(idArr[i]));
-            }
-            for(Cluster cluster : clusterDao.findAll(idList)){
-                clusters.add(cluster);
-                clusterHostList.add(cluster.getHost());
-            }
-            clusterDao.delete(clusters);
-            map.put("status", "200");
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            map.put("status", "400");
-        }
-        return JSON.toJSONString(map);
-    }*/
 }
