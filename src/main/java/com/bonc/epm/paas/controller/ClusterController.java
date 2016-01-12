@@ -25,11 +25,15 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "/cluster")
 public class ClusterController {
     private static final Logger log = LoggerFactory.getLogger(ClusterController.class);
+
+    @Autowired
+    private ClusterDao clusterDao;
 
     @RequestMapping(value = {"/resource"}, method = RequestMethod.GET)
     public String resourceCluster(Model model) {
@@ -160,8 +164,14 @@ public class ClusterController {
         return "cluster/cluster-create.jsp";
     }
 
-    @Autowired
-    private ClusterDao clusterDao;
+    @RequestMapping(value = {"/searchCluster"}, method = RequestMethod.POST)
+    public String searchCluster(@RequestParam String searchIP, Model model) {
+
+        List<Cluster> lstClusters = clusterDao.findByHostLike(searchIP);
+        model.addAttribute("lstClusters", lstClusters);
+        model.addAttribute("menu_flag", "cluster");
+        return "cluster/cluster-management.jsp";
+    }
 
     @RequestMapping(value = {"/getClusters"}, method = RequestMethod.POST)
     public String getClusters(@RequestParam String ipRange, Model model) {

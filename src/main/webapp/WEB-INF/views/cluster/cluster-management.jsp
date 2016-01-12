@@ -106,12 +106,12 @@
                                 </ul>
                             </div>
                             <div class="searchs">
-                                <form class="form-inline" action="">
+                                <form class="form-inline" action="/cluster/searchCluster" method="post">
                                     <div class="form-group">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="搜索">
+                                            <input type="text" class="form-control" placeholder="搜索IP地址关键字" name="searchIP">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-primary" type="button">
+                                        <button class="btn btn-primary" type="submit">
                                             <span class="glyphicon glyphicon-search"></span>
                                         </button>
                                     </span>
