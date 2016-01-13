@@ -25,21 +25,6 @@ $(function () {
 
 });
 
-function resource_detail() {
-    var count = 0;
-    var hostIp = "";
-    $(":checked[name='hosts']").each(function () {
-        count = count + 1;
-        var ip = jQuery(this)[0].parentElement.nextElementSibling.innerHTML;
-        hostIp = hostIp + "," + ip;
-    });
-    if (count == 0) {
-        alert("请至少选择一个节点");
-        return;
-    }
-    location.href = "detail?hostIps=" + hostIp.substr(1);
-}
-
 /**
  * 删除选中集群
  */

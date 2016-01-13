@@ -76,7 +76,7 @@
                                                     id="totalMemoryUse" class="totalMems">${clusterUse.memLimit}</span>（M）
                                             </td>
                                         </tr>
-                                        </tbody>
+
                                         <tr>
                                             <td>内存（Working Set）</td>
                                             <td>

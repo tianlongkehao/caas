@@ -136,7 +136,7 @@
                                                     <th style="width: 20%;padding-left: 5px;">IP</th>
                                                     <th style="width: 20%;text-indent: 8px;">CPU</th>
                                                     <th style="width: 20%;">内存</th>
-                                                    <th style="width: 20%;">网络</th>
+                                                    <th style="width: 20%;">状态</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -150,8 +150,11 @@
                                                                 <input type="checkbox" class="chkItem" name="hosts"
                                                                        value="${cluster.id}">
                                                             </td>
-                                                            <td style="width: 20%;padding-left: 5px;"
-                                                                value="${cluster.host }">${cluster.host }</td>
+                                                            <td style="width: 20%;padding-left: 5px;" value="${cluster.host }">
+                                                                <a href="/cluster/detail?hostIps=${cluster.host }" title="查看详细信息"
+                                                                   onmousemove="style.textDecoration='underline'"
+                                                                   onmouseout="style.textDecoration='none'">${cluster.host }</a>
+                                                            </td>
                                                             <td style="width: 20%;text-indent: 8px;">${cluster.cpu}</td>
                                                             <td style="width: 20%;">${cluster.memory}</td>
                                                             <td style="width: 20%;">${cluster.net}</td>

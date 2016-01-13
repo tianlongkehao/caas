@@ -133,7 +133,9 @@
 		                                            <td style="width: 5%; text-indent: 30px;">
 		                                            	<input type="checkbox" class="chkItem" name="ids" value="${user.id }" >
 		                                            </td>
-		                                            <td style="width: 15%;">${user.userName }</td>
+		                                            <td style="width: 15%;">
+                                                        <a href="/user/detail/${user.id }" title="查看详细信息" onmousemove="style.textDecoration='underline'" onmouseout="style.textDecoration='none'">${user.userName }</a>
+                                                    </td>
 		                                            <td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
 		                                            <td style="width: 18%; text-indent: 0;">${user.company }</td>
 		                                            <td style="width: 15%; text-indent: 0;">${user.user_department }</td>

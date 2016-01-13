@@ -87,6 +87,7 @@ public class ClusterController {
             lstClustersUse.add(clusterUse);
         }
         model.addAttribute("lstClustersUse", lstClustersUse);
+
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster-detail.jsp";
     }
