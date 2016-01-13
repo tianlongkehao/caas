@@ -25,11 +25,15 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "/cluster")
 public class ClusterController {
     private static final Logger log = LoggerFactory.getLogger(ClusterController.class);
+
+    @Autowired
+    private ClusterDao clusterDao;
 
     @RequestMapping(value = {"/resource"}, method = RequestMethod.GET)
     public String resourceCluster(Model model) {
@@ -127,8 +131,8 @@ public class ClusterController {
             List<List<Object>> result_mem_use_values = result_mem_use.getResults().get(0).getSeries().get(0).getValues();
             //value个数
             int result_mem_use_size = result_mem_use_values.size();
-            //取得最后一个value
-            String mem_use = result_mem_use_values.get(result_mem_use_size - 2).get(1).toString();
+            //取得value(防止取到NULL,所以从后面取第三个值)
+            String mem_use = result_mem_use_values.get(result_mem_use_size - 3).get(1).toString();
             //取小数点后两位
             clusterUse.setMemUse(mem_use.substring(0, mem_use.indexOf(".") + 3));
             //查询内存Working Set
@@ -138,7 +142,7 @@ public class ClusterController {
             List<List<Object>> result_mem_set_values = result_mem_set.getResults().get(0).getSeries().get(0).getValues();
             //value个数
             int result_mem_set_size = result_mem_set_values.size();
-            //取得最后一个value
+            //取得value(防止取到NULL,所以从后面取第二个值)
             String mem_set = result_mem_set_values.get(result_mem_set_size - 2).get(1).toString();
             //取小数点后两位
             clusterUse.setMemSet(mem_set.substring(0, mem_set.indexOf(".") + 3));
@@ -160,8 +164,14 @@ public class ClusterController {
         return "cluster/cluster-create.jsp";
     }
 
-    @Autowired
-    private ClusterDao clusterDao;
+    @RequestMapping(value = {"/searchCluster"}, method = RequestMethod.POST)
+    public String searchCluster(@RequestParam String searchIP, Model model) {
+
+        List<Cluster> lstClusters = clusterDao.findByHostLike(searchIP);
+        model.addAttribute("lstClusters", lstClusters);
+        model.addAttribute("menu_flag", "cluster");
+        return "cluster/cluster-management.jsp";
+    }
 
     @RequestMapping(value = {"/getClusters"}, method = RequestMethod.POST)
     public String getClusters(@RequestParam String ipRange, Model model) {
