@@ -27,23 +27,37 @@ $(function(){
     	if(flag === false){
     		return;
     	}
-    	$.ajax({
-			url:"/user/userModifyBasic.do?id="+id
-										+"&company="+company
-										+"&user_department="+user_department
-										+"&user_employee_id="+user_employee_id
-										+"&user_cellphone="+user_cellphone
-										+"&user_phone="+user_phone
-										+"&email="+email ,
-			success:function(data){
-				data = eval("(" + data + ")");
-				if(data.status === '200'){
-					alert("信息修改成功");
-				}else{
-					alert("信息修改失败");
-				}
-			}
-    	});
+        layer.open({
+            title: '修改信息',
+            content: '确定修改基本信息吗？',
+            btn: ['确定', '取消'],
+            yes: function(index, layero){ //或者使用btn1
+                //按钮【按钮一】的回调
+                layer.close(index);
+                $.ajax({
+                    url:"/user/userModifyBasic.do?id="+id
+                    +"&company="+company
+                    +"&user_department="+user_department
+                    +"&user_employee_id="+user_employee_id
+                    +"&user_cellphone="+user_cellphone
+                    +"&user_phone="+user_phone
+                    +"&email="+email ,
+                    success:function(data){
+                        data = eval("(" + data + ")");
+                        if(data.status === '200'){
+                            layer.alert("信息修改成功");
+                        }else{
+                            layer.alert("信息修改失败");
+                        }
+                    }
+                });
+            },
+            cancel: function(index){ //或者使用btn2
+                //按钮【按钮二】的回调
+            }
+        });
+
+
     });
     
     $("#modifyPwd").click(function(){
@@ -55,17 +69,29 @@ $(function(){
     	if(flag === false){
     		return;
     	}
-    	$.ajax({
-			url:"/user/userModifyPsw.do?id="+id+"&password="+pwd+"&newpwd="+newpwd,
-			success:function(data){
-				data = eval("(" + data + ")");
-				if(data.status === '200'){
-					alert("密码修改成功");
-				}else{
-					alert("密码修改失败");
-				}
-			}
-    	});
+        layer.open({
+            title: '修改密码',
+            content: '确定修改密码吗？',
+            btn: ['确定', '取消'],
+            yes: function(index, layero){ //或者使用btn1
+                //按钮【按钮一】的回调
+                layer.close(index);
+                $.ajax({
+                    url:"/user/userModifyPsw.do?id="+id+"&password="+pwd+"&newpwd="+newpwd,
+                    success:function(data){
+                        data = eval("(" + data + ")");
+                        if(data.status === '200'){
+                            layer.alert("密码修改成功");
+                        }else{
+                            layer.alert("密码修改失败");
+                        }
+                    }
+                });
+            },
+            cancel: function(index){ //或者使用btn2
+                //按钮【按钮二】的回调
+            }
+        });
     });
     
    function checkpwd (){
@@ -108,76 +134,4 @@ $(function(){
         }
     }
 
-    var data = [
-        {
-            value: 30,
-            color:"#F7464A"
-        },
-        {
-            value : 50,
-            color : "#E2EAE9"
-        },
-        {
-            value : 100,
-            color : "#D4CCC5"
-        },
-        {
-            value : 40,
-            color : "#949FB1"
-        },
-        {
-            value : 120,
-            color : "#4D5360"
-        }
-
-    ];
-//    var piectx = $(".pieChart").getContext("2d");
-//    new Chart(piectx).Doughnut(data);
-//
-//    //容器运行状态的环状图下图注
-//    var stoppedctx = $("#redPie").getContext("2d");
-//    stoppedctx.fillStyle = "#F7464A";
-//    stoppedctx.fillRect(0,0,15,15);
-//    var runningctx = $("#greenPie").getContext("2d");
-//    runningctx.fillStyle = "green";
-//    runningctx.fillRect(0,0,15,15);
-//    var grostctx = document.getElementById("grayPie").getContext("2d");
-//    grostctx.fillStyle = "#D4CCC5";
-//    grostctx.fillRect(0,0,15,15);
-
 });
-
-
-
-
-/*
-var runningPie = 0;
-var stoppedPie = 0;
-var ghostPie = 0;
-data.forEach(function(value){
-    if (value.status == 1){
-        $scope.containers.push(value);
-        $scope.changePage("init");
-        runningPie += 1
-    }else if (value.status == 2){
-        stoppedPie += 1
-    }else{
-        ghostPie += 1
-    }
-});
-var piedata  = [
-    {
-        value: runningPie,
-        color: "green"
-    },
-    {
-        value : stoppedPie,
-        color : "#F7464A"
-    },
-    {
-        value : ghostPie,
-        color : "#D4CCC5"
-    }
-];
-var piectx = document.getElementById("pieChart").getContext("2d");
-new Chart(piectx).Doughnut(piedata);*/

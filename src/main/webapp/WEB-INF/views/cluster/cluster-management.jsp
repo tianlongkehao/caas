@@ -41,7 +41,7 @@
                                 </li>
                                 <li><a href="/cluster/add" id="userCreateBtn"><i
                                         class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
-                                <li class="dropdown">
+                                <%--<li class="dropdown">
                                     <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i
                                             class="fa fa-caret-down"></i></a>
                                     <ul class="dropdown-menu">
@@ -51,14 +51,8 @@
                                                 <span class="ic_left">查看</span>
                                             </a>
                                         </li>
-                                        <%--<li>
-                                            <a href="javascript:delCluster()">
-                                                <i class="fa fa-trash"></i>
-                                                <span class="ic_left">删除</span>
-                                            </a>
-                                        </li>--%>
                                     </ul>
-                                </li>
+                                </li>--%>
                             </ul>
                             <div id="upgrade" style="display:none">
                                 <ul class="popWin">

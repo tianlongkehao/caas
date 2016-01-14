@@ -208,8 +208,8 @@
                                             <thead>
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Pod</th>
-                                                <th style="width: 33%;text-align: center">CPU（个）</th>
-                                                <th style="width: 33%;text-align: center">内存（GB）</th>
+                                                <th style="width: 33%;text-align: center">CPU（m）</th>
+                                                <th style="width: 33%;text-align: center">内存（M）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="pod-limit">
@@ -237,8 +237,8 @@
                                             <thead>
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Container</th>
-                                                <th style="width: 33%;text-align: center">CPU（个）</th>
-                                                <th style="width: 33%;text-align: center">内存（GB）</th>
+                                                <th style="width: 33%;text-align: center">CPU（m）</th>
+                                                <th style="width: 33%;text-align: center">内存（M）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="container-limit">
@@ -276,18 +276,13 @@
         </div>
     </article>
 </div>
-
-<script type="text/javascript" >
+<%--<script type="text/javascript" >
 	$(document).ready(function(){
 		$("#userName").blur(function(){
 			var username = $.trim($("#userName").val());
-			if(username === ''){
-				alert("请填写登陆帐号");
-			}
-			else{
 				var un = username.toLowerCase();
 				console.info(un);
-				$("#userName").val(un);				
+				$("#userName").val(un);
 				//console.info("name: "+username);
 				 $.get(
 					 "/user/checkUsername/"+un,
@@ -295,17 +290,24 @@
 				    	console.info("Data: " + data + "\nStatus: " + status);
 				    	var data = eval("(" + data + ")");
 						if(data.status=="400"){
-							alert("登陆帐号已经被使用，请输入新的帐号！");
-							$("#userName").focus();
+                            layer.tips('登陆帐号已经被使用，请输入新的帐号！','#userName',{
+                                tips: [1, '#0FA6D8']
+                            });
+                            $('#userName').focus();
+                            return false;
+//                            $("#userName").focus();
+//							layer.alert("登陆帐号已经被使用，请输入新的帐号！");
+
 					 	}
 						if(data.status=="300"){
-							alert("k8s已经建立此名称的namespace，请输入新的帐号！");
+							layer.alert("k8s已经建立此名称的namespace，请输入新的帐号！");
+                            closeBtn(0);
 							$("#userName").focus();
 					 	}
 					});
-			}
+
 		});
 	});
-</script>
+</script>--%>
 </body>
 </html>

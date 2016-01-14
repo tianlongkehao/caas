@@ -69,7 +69,7 @@ $(document).ready(function () {
             /*var rowEtcd = rowSlave.nextElementSibling;
             var etcdChecked = rowEtcd.childNodes[0].checked;*/
             if (masterChecked == false && slaveChecked == false) {
-                alert(host + "没有设置节点类型");
+                layer.alert(host + "没有设置节点类型");
                 allRowsChecked = false;
                 return;
             }

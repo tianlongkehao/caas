@@ -197,7 +197,6 @@ function delTenement (){
 	else {
 		id = id.substring(0, id.length - 1);
 		layer.open({
-			 type:1,
 			 title: '删除用户',
 			 content:'确定删除多个用户吗？',
 			 btn: ['确定', '取消'],
@@ -208,9 +207,9 @@ function delTenement (){
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
-								alert("用户信息删除成功");
+								layer.alert("用户信息删除成功");
 							}else{
-								alert("用户信息删除失败，请检查服务器连接");
+								layer.alert("用户信息删除失败，请检查服务器连接");
 							}
 							//location.href = "redirect:/user/list";
 							location.reload(true);
@@ -226,23 +225,23 @@ function delTenement (){
 }
 
 
-function tenement_detail() {
-	var id = "";
-	var count = 0;
-	$(":checked[name='ids']").each(function(){
-		id = jQuery(this).val();
-		count = count + 1;
-	});
-	if ("" == id) {
-		alert("请选择一个用户");
-		return;
-	}
-	if(count > 1){
-		alert("只能选择一个用户");
-		return;
-	}
-	location.href = "user/detail/"+id;
-}
+//function tenement_detail() {
+//	var id = "";
+//	var count = 0;
+//	$(":checked[name='ids']").each(function(){
+//		id = jQuery(this).val();
+//		count = count + 1;
+//	});
+//	if ("" == id) {
+//		alert("请选择一个用户");
+//		return;
+//	}
+//	if(count > 1){
+//		alert("只能选择一个用户");
+//		return;
+//	}
+//	location.href = "user/detail/"+id;
+//}
 
 
 //检测密码强度
