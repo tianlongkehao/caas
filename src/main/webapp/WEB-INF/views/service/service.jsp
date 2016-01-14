@@ -38,9 +38,9 @@
                         <li><a href="/service/add" id="serviceCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
                         <li class="dropdown">
                             <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu serviceOperation">
                                 <li>
-                                    <a href="javascript:createContainer()">
+                                    <a class="no-drop" href="javascript:createContainer()">
                                         <i class="fa fa-play"></i>
                                         <span class="ic_left">启动</span>
                                     </a>
