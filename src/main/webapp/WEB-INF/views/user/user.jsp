@@ -60,11 +60,11 @@
                             </li>
                         </ul>
                         <form id="search_form" class="form-inline" action="/user/searchByCondition" method="post">
-                        	<div class="col-md-2 " style="width: 25%; " align="right">
-                                <label style="line-height: 35px">姓名:</label>
+                        	<div class=" " style="width: 25%;float: left;margin-left:60px; margin-right:-35px " align="right" >
+                                <label style="line-height: 35px;">姓名:</label>
                                 <input name="search_userName" type="text" class="form-control" style="float: right;width:70%" placeholder="搜索姓名关键字">
                             </div>
-                            <div class="col-md-2 " style="width: 25%; " align="right">
+                            <div class=" " style="width: 25%;float: left; " align="right">
                                 <label style="line-height: 35px">公司:</label>
                                 <input type="text" class="form-control" style="display: inline; width: 70%" placeholder="搜索公司关键字"
                                        name="search_company">

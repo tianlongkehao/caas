@@ -396,7 +396,7 @@ public class UserController {
      * @return
      */
 
-    @RequestMapping(value = {"/detail/{id}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/detail/{id}/a","/detail/{id}/b"}, method = RequestMethod.GET)
     public String detail(Model model, @PathVariable long id) {
         System.out.printf("user--id:", id);
         User user = userDao.findOne(id);

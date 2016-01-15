@@ -2,7 +2,28 @@
  * Created by cuidong on 15-12-24.
  */
 
+
 $(function(){
+
+    var p=window.location.href;
+    var reg = new RegExp("b", "");
+    if (reg.test(p)){
+            $("#pwd").addClass("active");
+            $("#pwd_wrap").removeClass("hide");
+
+            $("#baseinfo").removeClass("active");
+            $("#baseinfo_wrap").addClass("hide");
+        }
+
+
+
+
+
+
+
+
+
+
 
     $(".Record").click(function(){
 
@@ -11,6 +32,7 @@ $(function(){
 
         $(".tab_wrap").addClass("hide");
         $("#"+$(this).attr("id")+"_wrap").removeClass("hide");
+
 
     });
 

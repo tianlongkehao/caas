@@ -22,8 +22,8 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="${ctx}/user/detail/${cur_user.id }"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
-                        <li><a href="${ctx}/user/detail/${cur_user.id }"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                        <li><a href="${ctx}/user/detail/${cur_user.id }/a"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                        <li><a href="${ctx}/user/detail/${cur_user.id }/b"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
                         <li class="logout">
                             <a href="${ctx}/loginout/${cur_user.id }"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
                         </li>
