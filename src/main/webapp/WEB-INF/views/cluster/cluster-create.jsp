@@ -22,9 +22,7 @@
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2" style="text-align: center">集群</li>
-                    <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav3">创建集群</li>
+                    <li class="active" id="nav2">创建节点</li>
                 </ol>
             </div>
             <div class="contentMain">

@@ -20,7 +20,7 @@
                 <ol class="breadcrumb">
                     <li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active">用户</li>
+                    <li class="active">用户信息</li>
                 </ol>
             </div>
             <div class="contentMain">

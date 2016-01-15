@@ -20,9 +20,7 @@
                 <ol class="breadcrumb">
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2" style="text-align: center">租户</li>
-                    <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav3">创建租户</li>
+                    <li class="active" id="nav2">创建租户</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -215,18 +213,18 @@
                                             <tbody id="pod-limit">
                                             <tr>
                                                 <th style="text-align: center">默认值</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_default" id="pod_cpu_default" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_default" id="pod_memory_default" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_default" id="pod_cpu_default" value="200"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_default" id="pod_memory_default" value="6"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">上限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_max" id="pod_cpu_max" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_max" id="pod_memory_max" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_max" id="pod_cpu_max" value="2048" placeholder="2048"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_max" id="pod_memory_max" value="1024" placeholder="1024"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">下限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_min" id="pod_cpu_min" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_min" id="pod_memory_min" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_min" id="pod_cpu_min" value="200" placeholder="200"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_min" id="pod_memory_min" value="6" placeholder="6"/></td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -244,18 +242,18 @@
                                             <tbody id="container-limit">
                                             <tr>
                                                 <th style="text-align: center">默认值</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_default" id="container_cpu_default" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_default" id="container_memory_default" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_default" id="container_cpu_default" value="250" placeholder="250"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_default" id="container_memory_default" value="100" placeholder="100"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">上限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_max" id="container_cpu_max" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_max" id="container_memory_max" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_max" id="container_cpu_max" value="2048" placeholder="2048"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_max" id="container_memory_max" value="1024" placeholder="1024"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">下限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_min" id="container_cpu_min" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_min" id="container_memory_min" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_min" id="container_cpu_min" value="100" placeholder="100"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_min" id="container_memory_min" value="3" placeholder="3"/></td>
                                             </tr>
                                             </tbody>
                                         </table>
