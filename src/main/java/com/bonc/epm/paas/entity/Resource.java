@@ -2,14 +2,7 @@ package com.bonc.epm.paas.entity;
 
 
 public class Resource {
-//	private Integer cpu_account ;//CPU数量
-//	private Integer ram ;//内存
-//	private Integer vol_count ;//卷组挂载数量
-//	private Integer vol ;//卷组容量
-//	private Integer pod_count ;//Pod数量
-//	private Integer image_control ;//副本控制器
-//	private Integer server_count ;//服务
-	
+
 	private String cpu_account ;//CPU数量
 	private String ram ;//内存
 	private String vol_count ;//卷组挂载数量
@@ -17,7 +10,7 @@ public class Resource {
 	private String pod_count ;//Pod数量
 	private String image_control ;//副本控制器
 	private String server_count ;//服务
-	
+
 	public String getCpu_account() {
 		return cpu_account;
 	}

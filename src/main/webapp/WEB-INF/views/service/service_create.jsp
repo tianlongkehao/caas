@@ -133,19 +133,19 @@
                                 <li class="line-h-3" id="instsize">
                                     <div class="param-set">
                                         <span class="number-title">实例数量：</span>
-                                        <input type="number" value="1" class="number" min="1" autocomplete="off" max="${leftpod }"
+                                        <input type="number" value="1" class="number" min="1" autocomplete="off" max=""
                                                placeholder="1" id="instanceNum" name="instanceNum"> 
                                                <span class="unit">个</span>
-                                               <span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span>
+                                               <!-- <span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span> -->
                                     </div>
                                 </li>
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">CPU数量：</span>
-                                        <input type="number" value="1" class="number" min="1" autocomplete="off" max="${leftcpu }"
-                                               placeholder="1" id="cpuNum" name="cpuNum"> 
+                                        <input type="number" value="" class="number" min="0.1" step ="0.1" autocomplete="off" max=""
+                                               placeholder="" id="cpuNum" name="cpuNum"> 
                                                <span class="unit">个</span>
-                                               <span style="color: grey;margin-left: 50px;">当前可用cpu数量：${leftcpu }</span>
+                                              <!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：${leftcpu }</span> -->
                                     </div>
                                     
                                 </li>
@@ -155,7 +155,7 @@
                                         <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftram }" data-slider-step="1" data-slider-value="256"/>
                                         <input type="text" value="256" id="ram" name="ram">
                                         <span>M</span>
-                                        <span style="color: grey;">当前可用ram：${leftram }M</span>
+                                        <!--<span style="color: grey;">当前可用ram：${leftram }M</span> -->
                                     </div>
                                 </li>
 

@@ -101,6 +101,7 @@ public class UserController {
 	 */
 	@RequestMapping(value={"/save.do"}, method=RequestMethod.POST)
 	public String userSave(User user, Resource resource, Restriction restriction, Model model){
+		System.out.println("save.do=============================================");
 		try {
 			//以用户名(登陆帐号)为name，创建client
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
@@ -108,19 +109,21 @@ public class UserController {
 			//以用户名(登陆帐号)为name，为client创建Namespace
 			Namespace namespace = KubernetesClientUtil.generateSimpleNamespace(user.getUserName());
 			namespace = client.createNamespace(namespace);
-//			System.out.println("namespace:"+JSON.toJSONString(namespace));
+			System.out.println("namespace:"+JSON.toJSONString(namespace));
 			
 			//为client创建资源配额
 			Map<String,String> map = new HashMap<String,String>();
-	    	map.put("memory", resource.getRam()+"M");	//内存
-	    	map.put("cpu", resource.getCpu_account()+"");//CPU数量
+	    	map.put("memory", resource.getRam()+"G");	//内存
+//	    	map.put("cpu", Integer.valueOf(resource.getCpu_account())*1024+"");//CPU数量
+			map.put("cpu", resource.getCpu_account()+"");//CPU数量
 	    	map.put("pods", resource.getPod_count()+"");//POD数量
 	    	map.put("services", resource.getServer_count()+"");//服务
 	    	map.put("replicationcontrollers", resource.getImage_control()+"");//副本控制器
 	    	map.put("resourcequotas", "1");//资源配额数量
 	    	ResourceQuota quota = KubernetesClientUtil.generateSimpleResourceQuota(user.getUserName(), map);
+			System.out.println("before quota: "+JSON.toJSONString(quota));
 	    	quota = client.createResourceQuota(quota);
-//	    	System.out.println("quota:"+JSON.toJSONString(quota));
+	    	System.out.println("quota:"+JSON.toJSONString(quota));
 
 	    	//为client创建资源限制
 	    	LimitRange limitRange = generateLimitRange(user.getUserName(), restriction);
@@ -225,8 +228,9 @@ public class UserController {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value={"user/detail/{id}"},method=RequestMethod.GET)
+	@RequestMapping(value={"detail/{id}"},method=RequestMethod.GET)
 	public String Detail(Model model,@PathVariable long id){
+		System.out.println("/user/user/detail========================================");
 		User user = userDao.findOne(id);
 		Resource resource = new Resource();
 		Restriction restriction = new Restriction();
@@ -243,7 +247,9 @@ public class UserController {
 			
 			if(quota != null){
 				Map<String, String> map = quota.getSpec().getHard();
-	    		resource.setCpu_account(map.get("cpu"));//CPU数量
+//				Integer a=Integer.valueOf(map.get("cpu"))/1024;
+//	    		resource.setCpu_account(a.toString());//CPU数量
+				resource.setCpu_account(map.get("cpu"));//CPU数量
 	    		resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
 	    		resource.setPod_count(map.get("pods"));//POD数量
 	    		resource.setRam(map.get("memory").substring(0, map.get("memory").length()-1));//内存
@@ -251,6 +257,7 @@ public class UserController {
 			}
 			
 			LimitRange lr = client.getLimitRange(user.getUserName());
+			System.out.println("UserName:"+user.getUserName());
 			System.out.println("limitRange:"+JSON.toJSONString(lr));
 			
 			if(lr != null && lr.getSpec().getLimits().size()>0){
@@ -261,19 +268,19 @@ public class UserController {
 					Map<String, String> min = limit.getMin();
 					
 					if(type.trim().equals("pod")){
-	    				restriction.setPod_cpu_default(def.get("cpu").substring(0, def.get("cpu").length()-1));
+	    				restriction.setPod_cpu_default(def.get("cpu"));
 	    				restriction.setPod_memory_default(def.get("memory").substring(0, def.get("memory").length()-1));
-	    				restriction.setPod_cpu_max(max.get("cpu").substring(0, max.get("cpu").length()-1));
+	    				restriction.setPod_cpu_max(max.get("cpu"));
 	    				restriction.setPod_memory_max(max.get("memory").substring(0, max.get("memory").length()-1));
-	    				restriction.setPod_cpu_min(min.get("cpu").substring(0, min.get("cpu").length()-1));
+	    				restriction.setPod_cpu_min(min.get("cpu"));
 	    				restriction.setPod_memory_min(min.get("memory").substring(0, min.get("memory").length()-1));
 					}
 					if(type.trim().equals("Container")){
-						restriction.setContainer_cpu_default(def.get("cpu").substring(0, def.get("cpu").length()-1));
+						restriction.setContainer_cpu_default(def.get("cpu"));
 						restriction.setContainer_memory_default(def.get("memory").substring(0, def.get("memory").length()-1));
-						restriction.setContainer_cpu_max(max.get("cpu").substring(0, max.get("cpu").length()-1));
+						restriction.setContainer_cpu_max(max.get("cpu"));
 						restriction.setContainer_memory_max(max.get("memory").substring(0, max.get("memory").length()-1));
-						restriction.setContainer_cpu_min(min.get("cpu").substring(0, min.get("cpu").length()-1));
+						restriction.setContainer_cpu_min(min.get("cpu"));
 						restriction.setContainer_memory_min(min.get("memory").substring(0, min.get("memory").length()-1));
 					}
 				}
@@ -395,7 +402,7 @@ public class UserController {
      * @param id
      * @return
      */
-
+	
     @RequestMapping(value = {"/detail/{id}/a","/detail/{id}/b"}, method = RequestMethod.GET)
     public String detail(Model model, @PathVariable long id) {
         System.out.printf("user--id:", id);
@@ -520,11 +527,11 @@ public class UserController {
 		Map<String, String> podDefault = new HashMap<String, String>();
 		
 		podMax.put("memory", restriction.getPod_memory_max()+"M");
-		podMax.put("cpu", restriction.getPod_cpu_max()+"m");
+		podMax.put("cpu", restriction.getPod_cpu_max());
 		podMin.put("memory", restriction.getPod_memory_min()+"M");
-		podMin.put("cpu", restriction.getPod_cpu_min()+"m");
+		podMin.put("cpu", restriction.getPod_cpu_min());
 		podDefault.put("memory", restriction.getPod_memory_default()+"M");
-		podDefault.put("cpu", restriction.getPod_cpu_default()+"m");
+		podDefault.put("cpu", restriction.getPod_cpu_default());
 		
 		podLimitRangeItem.setDefaultVal(podDefault);
 		podLimitRangeItem.setMax(podMax);
@@ -537,11 +544,11 @@ public class UserController {
 		Map<String, String> containerDefault = new HashMap<String, String>();
 		
 		containerMax.put("memory", restriction.getContainer_memory_max()+"M");
-		containerMax.put("cpu", restriction.getContainer_cpu_max()+"m");
+		containerMax.put("cpu", restriction.getContainer_cpu_max());
 		containerMin.put("memory", restriction.getContainer_memory_min()+"M");
-		containerMin.put("cpu", restriction.getContainer_cpu_min()+"m");
+		containerMin.put("cpu", restriction.getContainer_cpu_min());
 		containerDefault.put("memory", restriction.getContainer_memory_default()+"M");
-		containerDefault.put("cpu", restriction.getContainer_cpu_default()+"m");
+		containerDefault.put("cpu", restriction.getContainer_cpu_default());
 		
 		containerLimitRangeItem.setMax(containerMax);
 		containerLimitRangeItem.setMin(containerMin);
@@ -580,9 +587,9 @@ public class UserController {
 		podMax.put("memory", restriction.getPod_memory_max()+"M");
 		podMin.put("memory", restriction.getPod_memory_min()+"M");
 		podDefault.put("memory", restriction.getPod_memory_default()+"M");
-		podMax.put("cpu", restriction.getPod_cpu_max()+"m");
-		podMin.put("cpu", restriction.getPod_cpu_min()+"m");
-		podDefault.put("cpu", restriction.getPod_cpu_default()+"m");
+		podMax.put("cpu", restriction.getPod_cpu_max());
+		podMin.put("cpu", restriction.getPod_cpu_min());
+		podDefault.put("cpu", restriction.getPod_cpu_default());
 		
 		podLimitRangeItem.setDefaultVal(podDefault);
 		podLimitRangeItem.setMax(podMax);
@@ -597,9 +604,9 @@ public class UserController {
 		containerMax.put("memory", restriction.getContainer_memory_max()+"M");
 		containerMin.put("memory", restriction.getContainer_memory_min()+"M");
 		containerDefault.put("memory", restriction.getContainer_memory_default()+"M");
-		containerMax.put("cpu", restriction.getContainer_cpu_max()+"m");
-		containerMin.put("cpu", restriction.getContainer_cpu_min()+"m");
-		containerDefault.put("cpu", restriction.getContainer_cpu_default()+"m");
+		containerMax.put("cpu", restriction.getContainer_cpu_max());
+		containerMin.put("cpu", restriction.getContainer_cpu_min());
+		containerDefault.put("cpu", restriction.getContainer_cpu_default());
 		
 		containerLimitRangeItem.setMax(containerMax);
 		containerLimitRangeItem.setMin(containerMin);
@@ -626,7 +633,7 @@ public class UserController {
 		ResourceQuotaSpec spec = quota.getSpec();
 		Map<String, String> hard = quota.getSpec().getHard();
 		
-		hard.put("memory", resource.getRam()+"M");	//内存
+		hard.put("memory", resource.getRam()+"G");	//内存
 		hard.put("cpu", resource.getCpu_account()+"");//CPU数量
 		hard.put("pods", resource.getPod_count()+"");//POD数量
 		hard.put("services", resource.getServer_count()+"");//服务

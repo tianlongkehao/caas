@@ -754,4 +754,13 @@ i.pushOrg {
     background: #fbfbfb;
 }
 
+.serviceOperation a.no-drop,
+.serviceOperation a.no-drop:focus,
+.serviceOperation a.no-drop:hover,
+.serviceOperation a.no-drop:active
+{
+    cursor: no-drop;
+    color: #BFBFBF;
+}
+
 

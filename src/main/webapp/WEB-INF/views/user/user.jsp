@@ -20,7 +20,7 @@
                         <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                                 id="nav1">控制台</span></a></li>
                         <li><i class="fa fa-angle-right"></i></li>
-                        <li class="active" id="nav2">租户</li>
+                        <li class="active" id="nav2">租户管理</li>
                     </ol>
                 </div>
                 <div class="contentMain">
@@ -38,12 +38,12 @@
                             <li class="dropdown">
                                 <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                                 <ul class="dropdown-menu">
-                                    <li>
+                                    <%--<li>
                                         <a href="javascript:tenement_detail()">
                                             <i class="fa fa-play"></i>
                                             <span class="ic_left">查看</span>
                                         </a>
-                                    </li>
+                                    </li>--%>
                             <!--    <li>
                                         <a href="javascript:changeContainerConf();">
                                             <i class="fa fa-cog"></i>
@@ -133,7 +133,10 @@
 		                                            <td style="width: 5%; text-indent: 30px;">
 		                                            	<input type="checkbox" class="chkItem" name="ids" value="${user.id }" >
 		                                            </td>
-		                                            <td style="width: 15%;">${user.userName }</td>
+		                                            <td style="width: 15%;">
+                                                        <a href="/user/detail/${user.id }" title="查看详细信息" onmousemove="style.textDecoration='underline'"
+                                                           onmouseout="style.textDecoration='none'">${user.userName }</a>
+                                                    </td>
 		                                            <td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
 		                                            <td style="width: 18%; text-indent: 0;">${user.company }</td>
 		                                            <td style="width: 15%; text-indent: 0;">${user.user_department }</td>
@@ -167,42 +170,50 @@
 		var update_flag = $.trim($("#update_flag").val());
 		
 		if(create_flag == '200'){
-			if(confirm("创建用户成功！")) {
+			/*if(confirm("创建用户成功！")) {
 				location.href="/user/list";
 			}
 			//window.location.reload;
 			else{
 				$("#create_flag").attr("value", '');
 			}
-			return;
+			return;*/
+            location.href="/user/list";
+            layer.alert("创建用户成功！");
 		}
 		if(create_flag == '400'){
-			if(confirm("创建用户失败！")) {
+			/*if(confirm("创建用户失败！")) {
 				location.href="/user/list";
 			}
 			else {
 				$("#create_flag").attr("value", '');
 			}
-			return;
+			return;*/
+            location.href="/user/list";
+            layer.alert("创建用户失败！");
 		}
 		
 		if(update_flag === '400'){
-			if(confirm("用户信息更新失败！")) {
+			/*if(confirm("用户信息更新失败！")) {
 				location.href="/user/list";
 			}
 			else {
 				$("#update_flag").attr("value", '');
 			}
-			return;
+			return;*/
+            location.href="/user/list";
+            layer.alert("用户信息更新失败！");
 		}
 		if(update_flag === '200'){
-			if(confirm("用户信息更新成功！")) {
+			/*if(confirm("用户信息更新成功！")) {
 				location.href="/user/list";
 			}
 			else {
 				$("#update_flag").attr("value", '');			
 			}
-			return;
+			return;*/
+            location.href="/user/list";
+            layer.alert("用户信息更新成功！");
 		}
 	});
 </script>

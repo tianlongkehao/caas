@@ -20,9 +20,7 @@
                 <ol class="breadcrumb">
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2" style="text-align: center">租户</li>
-                    <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav3">创建租户</li>
+                    <li class="active" id="nav2">创建租户</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -108,13 +106,13 @@
                                                  <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;line-height: 35px" >登陆密码:</label>
                                                     <label style="width: 2%; float: left;"><font color="red">*</font></label>
-                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
+                                                    <input type="password" class="form-control" style="width: 75%;display: inline; float: right;"
                                                     		id="pwd" name="password">
                                                 </div>
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;line-height: 35px" >确认密码:</label>
                                                     <label style="width: 2%; float: left;"><font color="red">*</font></label>
-                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
+                                                    <input type="password" class="form-control" style="width: 75%;display: inline; float: right;"
                                                     		id="confirm_pwd">
                                                 </div>
                                             </div>
@@ -127,7 +125,7 @@
 
                                 <%--资源配额--%>
                                 <div class="host_step2" >
-                                    <ul class="safeSet" style="margin-left: 100px">
+                                    <ul class="safeSet" style="margin-left: 200px">
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">CPU数量：</span>
@@ -139,9 +137,13 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">内存：</span>
-                                                <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="2024" data-slider-step="1" data-slider-value="256"/>
-                                                <input type="text" value="256" id="ram" name="ram" >
-                                                <span>MB</span>
+                                                <input type="text" value="1" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="ram" name="ram" style="width:350px" >
+                                                <span class="unit">GB</span>
+
+                                                <%--<input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="2024" data-slider-step="1" data-slider-value="256"/>
+                                                <input type="text" value="256" id="ram" name="ram" >--%>
+
                                             </div>
                                         </li>
                                        
@@ -172,19 +174,21 @@
 										<li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">卷组挂载数量：</span>
-                                                <input type="number" value="1" class="number" min="1" autocomplete="off" disabled="disabled"
-                                                       placeholder="1" id="vol_count" name="vol_count" style="width:350px" > 
+                                                <input type="number" value="1" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="vol_count" name="vol_count" style="width:350px" disabled>
                                                 <span class="unit">个</span>
                                             </div>
                                         </li>
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">卷组容量：</span>
-                                                <input id="volSlider" data-slider-id='volSlider' type="text" disabled="disabled"
+                                                <input type="text" value="1" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="vol" name="vol" style="width:350px" disabled>
+                                                <span class="unit">GB</span>
+                                                <%--<input  data-slider-id='volSlider' disabled="disabled"
                                                 		data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="1"/>
 <!--                                                 		data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="1"/> -->
-                                                <input type="text" value="1" id="vol" name="vol" disabled="disabled">
-                                                <span>GB</span>
+                                                <input type="text" value="1" id="vol" name="vol" disabled="disabled">--%>
                                             </div>
                                         </li>
                                     </ul>
@@ -203,24 +207,24 @@
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Pod</th>
                                                 <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（MB）</th>
+                                                <th style="width: 33%;text-align: center">内存（M）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="pod-limit">
                                             <tr>
                                                 <th style="text-align: center">默认值</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_default" id="pod_cpu_default" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_default" id="pod_memory_default" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_default" id="pod_cpu_default" value="200"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_default" id="pod_memory_default" value="6"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">上限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_max" id="pod_cpu_max" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_max" id="pod_memory_max" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_max" id="pod_cpu_max" value="2048" placeholder="2048"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_max" id="pod_memory_max" value="1024" placeholder="1024"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">下限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_min" id="pod_cpu_min" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_min" id="pod_memory_min" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_min" id="pod_cpu_min" value="200" placeholder="200"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_min" id="pod_memory_min" value="6" placeholder="6"/></td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -232,24 +236,24 @@
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Container</th>
                                                 <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（MB）</th>
+                                                <th style="width: 33%;text-align: center">内存（M）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="container-limit">
                                             <tr>
                                                 <th style="text-align: center">默认值</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_default" id="container_cpu_default" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_default" id="container_memory_default" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_default" id="container_cpu_default" value="250" placeholder="250"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_default" id="container_memory_default" value="100" placeholder="100"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">上限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_max" id="container_cpu_max" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_max" id="container_memory_max" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_max" id="container_cpu_max" value="2048" placeholder="2048"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_max" id="container_memory_max" value="1024" placeholder="1024"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">下限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_min" id="container_cpu_min" value=""/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_min" id="container_memory_min" value=""/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_min" id="container_cpu_min" value="100" placeholder="100"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_min" id="container_memory_min" value="3" placeholder="3"/></td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -270,18 +274,13 @@
         </div>
     </article>
 </div>
-
-<script type="text/javascript" >
+<%--<script type="text/javascript" >
 	$(document).ready(function(){
 		$("#userName").blur(function(){
 			var username = $.trim($("#userName").val());
-			if(username === ''){
-				alert("请填写登陆帐号");
-			}
-			else{
 				var un = username.toLowerCase();
 				console.info(un);
-				$("#userName").val(un);				
+				$("#userName").val(un);
 				//console.info("name: "+username);
 				 $.get(
 					 "/user/checkUsername/"+un,
@@ -289,17 +288,24 @@
 				    	console.info("Data: " + data + "\nStatus: " + status);
 				    	var data = eval("(" + data + ")");
 						if(data.status=="400"){
-							alert("登陆帐号已经被使用，请输入新的帐号！");
-							$("#userName").focus();
+                            layer.tips('登陆帐号已经被使用，请输入新的帐号！','#userName',{
+                                tips: [1, '#0FA6D8']
+                            });
+                            $('#userName').focus();
+                            return false;
+//                            $("#userName").focus();
+//							layer.alert("登陆帐号已经被使用，请输入新的帐号！");
+
 					 	}
 						if(data.status=="300"){
-							alert("k8s已经建立此名称的namespace，请输入新的帐号！");
+							layer.alert("k8s已经建立此名称的namespace，请输入新的帐号！");
+                            closeBtn(0);
 							$("#userName").focus();
 					 	}
 					});
-			}
+
 		});
 	});
-</script>
+</script>--%>
 </body>
 </html>

@@ -46,7 +46,6 @@ $(document).ready(function(){
     		return;
     	}
     	layer.open({
-			 type:1,
 			 title: '用户信息',
 			 content:'确定修改用户信息？',
 			 btn: ['确定', '取消'],

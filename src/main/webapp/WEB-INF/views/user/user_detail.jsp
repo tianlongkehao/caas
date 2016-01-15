@@ -20,9 +20,7 @@
                 <ol class="breadcrumb">
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2" style="text-align: center">租户</li>
-                    <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav3">租户详情</li>
+                    <li class="active" id="nav2">租户详情</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -135,11 +133,11 @@
 
                                 <%--资源配额--%>
                                 <div class="host_step2" >
-                                    <ul class="safeSet" style="margin-left: 100px">
+                                    <ul class="safeSet" style="margin-left: 200px">
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">CPU数量：</span>
-                                                <input type="number" value="${resource.cpu_account }" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="${resource.cpu_account}" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="cpu_account" name="cpu_account" style="width:350px"> 
                                                 <span class="unit">个</span>
                                             </div>
@@ -147,30 +145,30 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">内存：</span>
-                                                <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="2024" data-slider-step="1" data-slider-value="256"/>
-                                                <input type="text" value="${resource.ram }" id="ram" name="ram">
-                                                <span>MB</span>
+                                                <input type="text" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="ram" name="ram" style="width:350px" value="${resource.ram }">
+                                                <span class="unit">GB</span>
                                             </div>
                                         </li>
                                         
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">Pod数量：</span>
-                                                <input type="number" value="${resource.pod_count }" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="${resource.pod_count}" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="pod_count" name="pod_count" style="width:350px"> <span class="unit">个</span>
                                             </div>
                                         </li>
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">副本控制器：</span>
-                                                <input type="number" value="${resource.image_control }" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="${resource.image_control}" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="image_control" name="image_control" style="width:350px"> <span class="unit">个</span>
                                             </div>
                                         </li>
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">服务：</span>
-                                                <input type="number" value="${resource.server_count }" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="${resource.server_count}" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="server_count" name="server_count"  style="width:350px"> <span class="unit">个</span>
                                             </div>
                                         </li>
@@ -185,11 +183,9 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">卷组容量：</span>
-                                                <input id="volSlider" data-slider-id='volSlider' type="text" disabled="disabled"
-                                                		data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="1"/>
-<!--                                                 		data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="1"/> -->
-                                                <input type="text" value="1" id="vol" name="vol" disabled="disabled">
-                                                <span>GB</span>
+                                                <input type="text" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="vol" name="server_count" style="width:350px" disabled="disabled">
+                                                <span class="unit">GB</span>
                                             </div>
                                         </li>
                                     </ul>
@@ -208,7 +204,7 @@
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Pod</th>
                                                 <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（MB）</th>
+                                                <th style="width: 33%;text-align: center">内存（M）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="pod-limit">
@@ -243,7 +239,7 @@
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Container</th>
                                                 <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（MB）</th>
+                                                <th style="width: 33%;text-align: center">内存（M）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="container-limit">

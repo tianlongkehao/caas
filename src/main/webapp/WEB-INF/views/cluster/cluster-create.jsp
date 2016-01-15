@@ -22,9 +22,7 @@
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2" style="text-align: center">集群</li>
-                    <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav3">创建集群</li>
+                    <li class="active" id="nav2">创建节点</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -52,7 +50,7 @@
                                                        style="width: 78%;display: inline" value="${ipRange}">--%>
                                                 <input type="text" name="ipRange" class="form-control"
                                                        placeholder="请输入要查找的IP"
-                                                       style="width: 78%;display: inline" value="172.16.71.[171-173]">
+                                                       style="width: 78%;display: inline" value="172.16.71.[171-175]">
                                                 <button type="submit" class="btn btn-primary btn-send">查找</button>
                                             </form>
                                         </div>
@@ -153,7 +151,7 @@
                                 <div class="" style="padding-top: 100px">
                                     <button class="btn btn-default last_step" style="margin-right: 30px;">上一步</button>
                                         <button id="installBtn"
-                                              class="installBtn pull-right btn btn-primary pull_confirm" onclick="setProcess()">安装</button>
+                                              class="installBtn pull-right btn btn-primary pull_confirm">安装</button>
                                 </div>
                             </div>
                             <%--4.配置集群节点--%>
@@ -163,8 +161,8 @@
                                         <thead>
                                         <tr style="text-align: center">
                                             <th style="width: 20%;text-align: center">IP</th>
-                                            <th style="width: 33%;text-align: center">安装进度</th>
-                                            <th style="width: 33%;text-align: center">状态</th>
+                                            <th style="width: 40%;text-align: center">安装进度</th>
+                                            <th style="width: 26%;text-align: center">状态</th>
                                             <%--<th style="width: 33%;text-align: center">详细信息</th>--%>
                                         </tr>
                                         </thead>

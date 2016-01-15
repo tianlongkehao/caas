@@ -51,8 +51,6 @@ $(document).ready(function () {
             str += '</tr>';
         }
         $('#divId').html(str);
-
-
     });
 
     $(".installBtn").click(function () {
@@ -71,7 +69,7 @@ $(document).ready(function () {
             /*var rowEtcd = rowSlave.nextElementSibling;
             var etcdChecked = rowEtcd.childNodes[0].checked;*/
             if (masterChecked == false && slaveChecked == false) {
-                alert(host + "没有设置节点类型");
+                layer.alert(host + "没有设置节点类型");
                 allRowsChecked = false;
                 return;
             }
@@ -91,7 +89,11 @@ $(document).ready(function () {
             var rowNum = 0;
             var hostType = rowsHostType[rowNum];
             installEnv(hostType.host, hostType.type, rowNum, rowsLength, rowsHostType);
+            layer.load(0, {shade: [0.3, '#000']});
         }
+
+        return false
+
     });
     $(".last_step").click(function () {
         if ($(".radius_step").eq(1).hasClass("action")) {
@@ -121,7 +123,7 @@ function chkSlave(ccc){
     }
 };
 
-function setProcess(){
+/*function setProcess(){
     var processbar = document.getElementById("processbar");
     processbar.style.width = parseInt(processbar.style.width) + 1 + "%";
     processbar.innerHTML = processbar.style.width;
@@ -129,31 +131,64 @@ function setProcess(){
         window.clearInterval(bartimer);
     }
 }
-var bartimer = window.setInterval(function(){setProcess();},400);
+var bartimer = window.setInterval(function(){setProcess();},300);
 window.onload = function(){
+    debugger
     bartimer;
-};
+};*/
 function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
     rowNum = rowNum + 1;
+    var str = "";
+    str += '<tr>';
+    var tds1 = '<td name="rowHost">' + host + '</td>';
+    var tds2 = '<td><div class="processcontainer" style="border:1px solid #6C9C2C; height:25px">'+
+        '<div id="processbar" style="width:0%;background:#95CA0D;float:left;height:100%;text-align:center;line-height:150%;"></div>'+
+        '</div></td>';
+    var tds3 = '<td id="qqq">安装进行中...</td>';
+    /*var tds4 = '<td><a href="#">查看详情</a></td>';*/
+    str += tds1 + tds2 + tds3;
+    str += '</tr>';
+    var divResult = $('#divResult')[0].innerHTML.trim();
+    $('#divResult').html(divResult + str);
+
+    var bartimer = window.setInterval(function(){setProcess();},300);
+    window.onload = function(){
+        bartimer;
+    };
+    function setProcess(){
+        var processbar = document.getElementById("processbar");
+        if(processbar.style.width > "90%"){
+            window.clearInterval(bartimer);
+        }
+        processbar.style.width = parseInt(processbar.style.width) + 1 + "%";
+        processbar.innerHTML = processbar.style.width;
+    }
     $.ajax({
         url: "/cluster/installCluster?user=root&pass=a1s2d3&ip=" + host + "&port=22&type=" + type,
         success: function (data) {
-            var str = "";
-            str += '<tr>';
-            var tds1 = '<td name="rowHost">' + host + '</td>';
-            var tds2 = '<td><div class="processcontainer" style="width:200px; border:1px solid #6C9C2C; height:25px;">'+
-                '<div id="processbar" style="width:0%;background:#95CA0D;float:left;height:100%; text-align:center; line-height:150%;"></div>'+
-                '</div></td>';
-            var tds3 = '<td>安装成功</td>';
-            /*var tds4 = '<td><a href="#">查看详情</a></td>';*/
-            str += tds1 + tds2 + tds3;
-            str += '</tr>';
-            var divResult = $('#divResult')[0].innerHTML.trim();
-            $('#divResult').html(divResult + str);
+            if(data == "安装成功"){
+                setTimeout(function(){
+                    layer.closeAll('loading');
+                },2000);
+                window.clearInterval(bartimer);
+                var processbar = document.getElementById("processbar");
+                processbar.style.width = "100%";
+                processbar.innerHTML = processbar.style.width;
+            }else{
+                setTimeout(function(){
+                    layer.closeAll('loading');
+                },2000);
+                window.clearInterval(bartimer);
+                var processbar = document.getElementById("processbar");
+                processbar.style.width = "0%";
+                processbar.innerHTML = processbar.style.width;
+            }
+            $("#qqq")[0].innerHTML = data;
             if (rowNum < rowsLength) {
                 var hostType = rowsHostType[rowNum];
                 installEnv(hostType.host, hostType.type, rowNum, rowsLength);
             }
+
         }
     });
 }

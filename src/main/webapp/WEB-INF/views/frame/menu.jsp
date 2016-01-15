@@ -106,7 +106,7 @@
                 <ul class="nav-item-hover">
                     <li id="menuUser" action="">
                         <a href="/user/list/1">
-                            租户
+                            租户管理
                         </a>
                     </li>
                 </ul>
