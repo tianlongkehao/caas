@@ -15,16 +15,6 @@ $(function(){
             $("#baseinfo_wrap").addClass("hide");
         }
 
-
-
-
-
-
-
-
-
-
-
     $(".Record").click(function(){
 
         $(".Record").removeClass("active");
@@ -78,8 +68,7 @@ $(function(){
                 //按钮【按钮二】的回调
             }
         });
-
-
+        
     });
     
     $("#modifyPwd").click(function(){
