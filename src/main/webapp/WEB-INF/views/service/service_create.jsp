@@ -142,7 +142,7 @@
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">CPU数量：</span>
-                                        <input type="number" value="" class="number" min="0.1" step ="0.1" autocomplete="off" max=""
+                                        <input type="number" value="" class="number" min="${cpumin }" step ="0.1" autocomplete="off" max="${cpumax }"
                                                placeholder="" id="cpuNum" name="cpuNum"> 
                                                <span class="unit">个</span>
                                               <!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：${leftcpu }</span> -->
@@ -152,7 +152,7 @@
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">内存：</span>
-                                        <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftram }" data-slider-step="1" data-slider-value="256"/>
+                                        <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="${memorymin }" data-slider-max="${memorymax }" data-slider-step="1" data-slider-value="256"/>
                                         <input type="text" value="256" id="ram" name="ram">
                                         <span>M</span>
                                         <!--<span style="color: grey;">当前可用ram：${leftram }M</span> -->

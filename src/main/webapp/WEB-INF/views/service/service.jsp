@@ -40,7 +40,7 @@
                             <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                             <ul class="dropdown-menu serviceOperation">
                                 <li>
-                                    <a class="no-drop" href="javascript:createContainer()">
+                                    <a  href="javascript:createContainer()">
                                         <i class="fa fa-play"></i>
                                         <span class="ic_left">启动</span>
                                     </a>
@@ -57,13 +57,13 @@
                                         <span class="ic_left">弹性伸缩</span>
                                     </a>
                                 </li>
-                               <!--<li>
-                                    <a href="">
+                               <li>
+                                    <a href="javascript:versionUpgrade()">
                                         <i class="fa fa-arrow-up"></i>
-                                        <span class="ic_left">灰度升级</span>
+                                        <span class="ic_left">版本升级</span>
                                     </a>
                                 </li>
-                                <li>
+                               <!-- <li>
                                     <a href="">
                                         <i class="fa fa-undo"></i>
                                         <span class="ic_left">重新部署</span>
@@ -101,6 +101,25 @@
                           </li>
                         </ul>
                     </div>
+                    <div id="versionUpgrade" style="display:none">
+                    	<ul class="popWin">
+                          <li class="line-h-3">
+                            <span class="edit-name-c">服务名称：</span>
+                            <input id="upgradeVersionServiceName" disabled="disabled" style="margin-top: 5px;width: 165px;" type="text" value="">
+                          </li>
+                          <li class="line-h-3">
+                            <span class="edit-name-c">镜像名称：</span>
+                            <input id="upgradeimgName" disabled="disabled" style="margin-top: 5px;width: 165px;" type="text" value="">
+                          </li>
+                          <li class="line-h-3" id="instsizeChange">
+                            <div class="param-set">
+                              <span class="edit-name-c" style="margin-top: 5px;">镜像版本：</span>
+                              <input value="" id="imgVersionName" class=""  style="margin-top: 10px;width: 165px;" type="text">
+							  <!-- <span  style="color: grey;margin-left: 50px;">可用实例数量：<label id="leftpod" ></label></span> -->
+                            </div>
+                          </li>
+                        </ul>
+                    </div>
                     <div id="changeConf" style="display:none">
                     	<ul class="popWin">
                             <li class="line-h-3">
@@ -110,8 +129,8 @@
                             <li class="line-h-3">
                                 <div class="param-set">
                                     <span>CPU数量：</span>
-                                    <input type="number" value="1" style="margin-top: 10px;width: 165px;" min="1" max="" autocomplete="off"
-                                           placeholder="1" id="confCpu" name="confCpu">
+                                    <input type="number" value="" style="margin-top: 10px;width: 165px;" min="${cpumin }" max="${cpumax }" autocomplete="off" step="0.1"
+                                           placeholder="" id="confCpu" name="confCpu">
                                     <span class="unit">个</span>
                                    <!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" ></label></span> -->
                                 </div>
@@ -119,7 +138,7 @@
                             <li class="line-h-3">
                                 <div class="param-set">
                                     <span>内存：</span>
-                                    <input id="confRamSlider" data-slider-id='confRamSliderData' type="text" data-slider-min="0" data-slider-step="1" />
+                                    <input id="confRamSlider" data-slider-id='confRamSliderData' type="text" data-slider-min="${memorymin }" data-slider-max="${memorymax }" data-slider-step="1" />
                                     <input type="text" left="" value="" id="confRamSlider_input" name="confRam">
                                     <span>M</span>
                                    <!-- <span style="color: grey;">当前可用ram：<label id="leftram" ></label>M</span>-->
@@ -213,7 +232,7 @@
 
                                            		<tr class="clusterId" containerName="${service.serviceName }">
                                                         <td style="width:5%;text-indent: 30px;">
-                                                            <input type="checkbox" class="chkItem" name="chkItem" value="${service.id }" serviceName="${service.serviceName }" serviceNum="${service.instanceNum }" confRam="${service.ram }"status="" imagename="" imagetag="" confCpu="${service.cpuNum }"/>
+                                                            <input type="checkbox" class="chkItem" name="chkItem" value="${service.id }" serviceName="${service.serviceName }" serviceNum="${service.instanceNum }" confRam="${service.ram }"status="" imagename="${service.imgName }" imageversion="${service.imgVersion }" confCpu="${service.cpuNum }"/>
                                                         </td>
                                                         <td style="width:20%;white-space:nowrap;">
                                                             <b class="caret margin" style="transform: rotate(-90deg);"></b>
@@ -295,7 +314,7 @@
     </article>
 </div>
 
-<c:if test="${msg} != null">
+<c:if test="${msg!= null} ">
     <input type="hidden" id="errorMsg" value="${msg}">
     <script type="text/javascript">
         var errorMsg = $("#errorMsg").val();

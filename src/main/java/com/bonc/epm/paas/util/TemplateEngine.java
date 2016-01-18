@@ -54,10 +54,13 @@ public class TemplateEngine {
     
     public static void generateConfig(Map<String, String> app,String configName){
 		String datastring = TemplateEngine.replaceArgs(template, app);
+		log.debug("datastring======="+datastring);
+		log.debug("nginxConfPathName"+nginxConfPath+configName);
 		TemplateEngine.writeConf(nginxConfPath+configName+".conf", datastring, true);
     }
     
     public static boolean cmdReloadConfig(){
+    	log.debug("nginxcmdString====="+nginxCmdPath);
     	return CmdUtil.exeCmd(nginxCmdPath+" -s reload");
     }
     
@@ -78,6 +81,7 @@ public class TemplateEngine {
             // 重新写回文件
             writeConf(nginxConfPath+configName+".conf", data, false);
 		} catch (Exception e) {
+			log.error("读取删除文件路径"+nginxConfPath+configName);
 			return false;
 		}
     	return true;
