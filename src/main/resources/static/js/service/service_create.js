@@ -20,6 +20,13 @@ $(document).ready(function(){
 	      $('#serviceName').focus();
 	      return;
 	    }
+	    
+	    var cpuNum = $('#cpuNum').val();
+	    if(!cpuNum || cpuNum.length < 1){
+		      layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
+		      $('#cpuNum').focus();
+		      return;
+		    }
 
 		containerName();
     });
@@ -179,13 +186,13 @@ function deploy(imgID,imageName, imageVersion){
 }
 
 function containerName(){
-	var containerName = $("#serviceName").val();
+	var serviceName = $("#serviceName").val();
 			 $.ajax({
-					url:"/service/containerName?containerName="+containerName,
+					url:"/service/serviceName.do?serviceName="+serviceName,
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="400"){
-							alert("容器名称重复，请重新输入！");
+							layer.alert("容器名称重复，请重新输入！");
 							}else{
 								$("#buildService").submit();
 							}

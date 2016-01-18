@@ -58,27 +58,69 @@
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left ;" >权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
+                                                    <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
-                                                    			name="user_autority" id="user_autority" >
-                                                    	<c:if test="${user.user_autority=='2' }">
-	                                                        <option name="option" value="2" selected="selected">普通用户</option>
+                                                    			name="user_autority" id="user_autority" disabled>
+                                                        <option name="option" value="2" >租户</option>
+                                                        <option name="option" value="1" >管理员</option>
+                                                    	<%--<c:if test="${user.user_autority=='2' }">
+	                                                        <option name="option" value="2" selected="selected">租户</option>
 	                                                        <option name="option"value="1" >管理员</option>
 														</c:if>                                                    	
                                                     	<c:if test="${user.user_autority=='1' }">
-	                                                        <option name="option" value="2" >普通用户</option>
+	                                                        <option name="option" value="2" >租户</option>
 	                                                        <option name="option" value="1" selected="selected">管理员</option>
                                                     	</c:if>
                                                     	<c:if test="${user.user_autority==null || user.user_autority=='' }">
                                                     		<option>-- 请选择 --</option>
-	                                                        <option name="option" value="2" >普通用户</option>
+	                                                        <option name="option" value="2" >租户</option>
 	                                                        <option name="option" value="1" >管理员</option>
-	                                                    </c:if>
+	                                                    </c:if>--%>
                                                     </select>
                                                 </div>
                                        
                                             </div>
 
                                             <div class="row" style="margin-top: 15px">
+                                                <div class="col-md-4" align="left">
+                                                    <label style="width: 20%; float: left ;" >省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
+                                                    <label style="width: 2%; float: left ;"><font color="red">*</font></label>
+                                                    <input type="hidden" id="user_province_hidden" value="${user.user_province}">
+                                                    <select class="form-control" style="width: 75%;display: inline; float: right;"
+                                                            name="province" id="user_province" disabled>
+                                                        <option name="user_province" value="1">北京</option>
+                                                        <option name="user_province" value="2">天津</option>
+                                                        <option name="user_province" value="3">上海</option>
+                                                        <option name="user_province" value="4">河北</option>
+                                                        <option name="user_province" value="5">河南</option>
+                                                        <option name="user_province" value="6">山西</option>
+                                                        <option name="user_province" value="7">内蒙古</option>
+                                                        <option name="user_province" value="8">辽宁</option>
+                                                        <option name="user_province" value="9">吉林</option>
+                                                        <option name="user_province" value="10">黑龙江</option>
+                                                        <option name="user_province" value="11">江苏</option>
+                                                        <option name="user_province" value="12">浙江</option>
+                                                        <option name="user_province" value="13">安徽</option>
+                                                        <option name="user_province" value="14">福建</option>
+                                                        <option name="user_province" value="15">江西</option>
+                                                        <option name="user_province" value="16">山东</option>
+                                                        <option name="user_province" value="17">湖南</option>
+                                                        <option name="user_province" value="18">湖北</option>
+                                                        <option name="user_province" value="19">广东</option>
+                                                        <option name="user_province" value="20">广西</option>
+                                                        <option name="user_province" value="21">海南</option>
+                                                        <option name="user_province" value="22">重庆</option>
+                                                        <option name="user_province" value="23">四川</option>
+                                                        <option name="user_province" value="24">贵州</option>
+                                                        <option name="user_province" value="25">云南</option>
+                                                        <option name="user_province" value="26">西藏</option>
+                                                        <option name="user_province" value="27">陕西</option>
+                                                        <option name="user_province" value="28">甘肃</option>
+                                                        <option name="user_province" value="29">青海</option>
+                                                        <option name="user_province" value="30">宁夏</option>
+                                                        <option name="user_province" value="31">新疆</option>
+                                                    </select>
+                                                </div>
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left ;" >公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
@@ -89,14 +131,13 @@
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_department" name="user_department" value="${user.user_department }">
                                                 </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;" >工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
-                                                    		id="user_employee_id" name="user_employee_id" value="${user.user_employee_id }">
+                                                           id="user_employee_id" name="user_employee_id" value="${user.user_employee_id }">
                                                 </div>
-                                            </div>
-                                            <div class="row" style="margin-top: 15px">
-
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;" >手机号码:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
@@ -107,16 +148,15 @@
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_phone" name="user_phone" value="${user.user_phone }">
                                                 </div>
-
+                                            </div>
+                                            <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;" >电子邮箱:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
-                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
-                                                    		id="email" name="email" value="${user.email }">
+                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
+                                                           id="email" name="email" value="${user.email }">
                                                 </div>
-                                            </div>
-                                            <div class="row" style="margin-top: 15px">
-                                            <div class="col-md-4" align="left">
+                                                <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;" >密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 

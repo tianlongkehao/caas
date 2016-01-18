@@ -33,6 +33,7 @@ public class User {
 	private String user_employee_id;//工号
 	private String user_cellphone;//手机号码
 	private String user_phone;//固定电话
+	private String user_province;//省份
 
 
 	@ManyToMany
@@ -146,6 +147,14 @@ public class User {
 
 	public void setUser_phone(String user_phone) {
 		this.user_phone = user_phone;
+	}
+
+	public String getUser_province() {
+		return user_province;
+	}
+
+	public void setUser_province(String user_province) {
+		this.user_province = user_province;
 	}
 
 }

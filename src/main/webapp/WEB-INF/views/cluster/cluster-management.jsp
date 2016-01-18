@@ -128,8 +128,7 @@
                                                         <input type="checkbox" class="chkAll"/>
                                                     </th>
                                                     <th style="width: 20%;padding-left: 5px;">IP</th>
-                                                    <th style="width: 20%;text-indent: 8px;">CPU</th>
-                                                    <th style="width: 20%;">内存</th>
+                                                    <th style="width: 20%;text-indent: 8px;">节点类型</th>
                                                     <th style="width: 20%;">状态</th>
                                                 </tr>
                                                 </thead>
@@ -149,8 +148,7 @@
                                                                    onmousemove="style.textDecoration='underline'"
                                                                    onmouseout="style.textDecoration='none'">${cluster.host }</a>
                                                             </td>
-                                                            <td style="width: 20%;text-indent: 8px;">${cluster.cpu}</td>
-                                                            <td style="width: 20%;">${cluster.memory}</td>
+                                                            <td style="width: 20%;text-indent: 8px;">${cluster.hostType}</td>
                                                             <td style="width: 20%;">${cluster.net}</td>
                                                         </tr>
                                                     </c:if>

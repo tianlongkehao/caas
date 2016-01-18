@@ -1,11 +1,16 @@
 package com.bonc.epm.paas.controller;
 
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.jws.soap.SOAPBinding.Use;
 
 import org.aspectj.weaver.ast.And;
 import org.slf4j.Logger;
@@ -36,9 +41,11 @@ import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DockerClientUtil;
+import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
 
 
@@ -110,11 +117,6 @@ public class ServiceController {
 	    	    	}
 	    	    	serviceList.add(service);
 	    		}
-	    		boolean flag = getleftResource(model);
-	    		if(!flag){
-	    			model.addAttribute("msg", "请检查K8S服务器连接！");
-					return "workbench.jsp";
-	    		}
 			} catch (Exception e) {
 				model.addAttribute("msg", "请检查K8S服务器连接！");
 				return "workbench.jsp";
@@ -159,7 +161,6 @@ public class ServiceController {
 	    	    	}
 	    	    	serviceList.add(service);
 	    		}
-	    		getleftResource(model);
 			} catch (Exception e) {
 				model.addAttribute("msg", "请检查K8S服务器连接！");
 				return "workbench.jsp";
@@ -233,61 +234,52 @@ public class ServiceController {
 			isDepoly = "deploy";
 		}
 		
-		try {
-			getleftResource(model);
-			model.addAttribute("imgID", imgID);
-			model.addAttribute("imageName", imageName);
-			model.addAttribute("imageVersion", imageVersion);
-			model.addAttribute("isDepoly",isDepoly);
-			model.addAttribute("menu_flag", "service");
-		} catch (Exception e) {
+		boolean flag = getleftResource(model);
+		if(!flag){
 			model.addAttribute("msg","请创建租户！");
 			return "service/service.jsp";
 		}
-	    
+
+		model.addAttribute("imgID", imgID);
+		model.addAttribute("imageName", imageName);
+		model.addAttribute("imageVersion", imageVersion);
+		model.addAttribute("isDepoly",isDepoly);
+		model.addAttribute("menu_flag", "service");
 
 		return "service/service_create.jsp";
 	}
 	
 	public boolean getleftResource(Model model){
-		double usedcpu = 0;
-		Integer usedram = 0;
-		Integer usedpod = 0;
+
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
 		try {
-			ResourceQuota rq = client.getResourceQuota(currentUser.getUserName());
-		    String cpus = rq.getSpec().getHard().get("cpu");
-		    String rams = rq.getSpec().getHard().get("memory").replace("M", "");
-		    String pods = rq.getSpec().getHard().get("pods");
+//			ResourceQuota rq = client.getResourceQuota(currentUser.getUserName());
+//		    String cpus = rq.getSpec().getHard().get("cpu");
+//		    String rams = rq.getSpec().getHard().get("memory").replace("G", "");
+//		    Integer irams = Integer.valueOf(rams)*1024;
+//		    String pods = rq.getSpec().getHard().get("pods");
 		    
 		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
 		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
 		    String cpuMax = limitRangeItem.getMax().get("cpu").replace("m", "");
-		    float icpuMax = Float.valueOf(cpuMax)/1024;
+		    double icpuMax = Double.valueOf(cpuMax)/1024;
 		    String cpudefault = limitRangeItem.getDefaultVal().get("cpu").replace("m", "");
-		    float icpudefault = Float.valueOf(cpudefault)/1024;
+		    double icpudefault = Double.valueOf(cpudefault)/1024;
 		    String cpuMin = limitRangeItem.getMin().get("cpu").replace("m", "");
-		    float icpuMin = Float.valueOf(cpuMin)/1024;
+		    double icpuMin = Double.valueOf(cpuMin)/1024;
 		    String memoryMax = limitRangeItem.getMax().get("memory").replace("M", "");
+		    //Integer imemoryMax = Integer.valueOf(memoryMax)*1024;
 		    String memorydefault = limitRangeItem.getDefaultVal().get("memory").replace("M", "");
+		    //Integer imemorydefault = Integer.valueOf(memorydefault)*1024;
 		    String memoryMin = limitRangeItem.getMin().get("memory").replace("M", "");
-		    System.out.println("icpudefault======="+icpudefault);
+		    //Integer imemoryMin = Integer.valueOf(memoryMin)*1024;
+		    System.out.println("icpudefault======="+cpudefault);
 		    System.out.println("limitRange======="+limitRange.getSpec().getLimits());
-		    for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
-		    	double cpu = service.getCpuNum();
-		    	String ram = service.getRam();
-		    	Integer pod = service.getInstanceNum();
-		    	usedram = usedram + Integer.valueOf(ram);
-		    	usedcpu = usedcpu + cpu;
-		    	usedpod = usedpod + pod;
-		    }
-		    double leftcpu = Float.valueOf(cpus) - usedcpu;
-			Integer leftram = Integer.valueOf(rams) - usedram;
-			Integer leftpod = Integer.valueOf(pods) - usedpod;
-			model.addAttribute("leftpod",leftpod);
-		    model.addAttribute("leftcpu",leftcpu);
-		    model.addAttribute("leftram",leftram);
+			model.addAttribute("memorymin", memoryMin);
+			model.addAttribute("memorymax", memoryMax);
+			model.addAttribute("cpumin", icpuMin);
+			model.addAttribute("cpumax", icpuMax);
 		} catch (Exception e) {
 			return false;
 		}
@@ -385,11 +377,11 @@ public class ServiceController {
 		return "redirect:/service";
 	}
 	/**
-	 * containerName 判重
-	 * @param containerName
+	 * serviceName 判重
+	 * @param serviceName
 	 * @return
 	 */
-	@RequestMapping(value={"service/containerName"},method=RequestMethod.GET)
+	@RequestMapping("service/serviceName.do")
 	@ResponseBody
 	public String containerName(String serviceName){
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -427,6 +419,95 @@ public class ServiceController {
 		}
 		return JSON.toJSONString(map);
 	}
+	@RequestMapping("service/modifyimgVersion.do")
+	@ResponseBody
+	public String modifyimgVersion(long id,String serviceName,String imgVersion,String imgName){
+		Map<String, Object> map = new HashMap<String,Object>();
+		Service service = serviceDao.findOne(id);
+		if(service.getImgVersion().equals(imgVersion)){
+			map.put("status", "500");
+		}else{
+			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+			ReplicationController controller = client.getReplicationController(serviceName);
+			String NS = controller.getMetadata().getNamespace();
+			String cmd = "kubectl rolling-update "+serviceName+" --namespace="+NS+" --update-period=10s  --image="+getDockerip()+"/"+imgName+":"+imgVersion;
+			boolean flag = cmdexec(cmd);
+			if (flag) {
+				service.setImgVersion(imgVersion);
+				serviceDao.save(service);
+				map.put("status", "200");
+			}else{
+				map.put("status", "400");
+			}
+		}
+		return JSON.toJSONString(map);
+	}
+	
+	public static String getDockerip(){
+		String dockerip = null;
+		Properties DockerProperties = new Properties();
+		InputStream in = ServiceController.class.getClassLoader().getResourceAsStream("docker.io.properties");
+		try {
+			DockerProperties.load(in);
+			in.close();
+			dockerip = DockerProperties.getProperty("docker.io.username");
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.error("Docker.io.init:"+e.getMessage());
+			e.printStackTrace();
+		}
+		return dockerip;
+	}
+	/**
+	 * ssh cmd
+	 * @param cmd
+	 * @return
+	 */
+	public static boolean cmdexec(String cmd){
+		String hostIp = null;
+		String name = null;
+		String password = null;
+		Properties kubernetesProperties = new Properties();
+    	InputStream in = ServiceController.class.getClassLoader().getResourceAsStream("kubernetes.api.properties");
+    	try {
+    		kubernetesProperties.load(in);
+			in.close();
+			hostIp = kubernetesProperties.getProperty("kubernetes.api.address");
+			name = kubernetesProperties.getProperty("kubernetes.api.username"); 
+			password = kubernetesProperties.getProperty("kubernetes.api.password");
+		} catch (IOException e) {
+			log.error("kubernetes.api.init:"+e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
+		
+		try {
+			SshConnect.connect(name, password, hostIp, 22);
+			//String str = SshConnect.exec("echo $?", 1000);
+			boolean b = false;
+			SshConnect.exec(cmd, 1000);
+			while(!b){
+				String str = SshConnect.exec("echo $?", 1000);
+				b = str.endsWith("#");
+			}
+			
+		} catch (InterruptedException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            log.error("error:执行command失败");
+            return false;
+        } catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+            log.error(e.getMessage());
+            log.error("error:ssh连接失败");
+            return false;
+		}finally {
+			SshConnect.disconnect();
+		}
+		return true;
+	}
+	
 	/**
 	 * 修改服务数量
 	 * @param id
@@ -468,17 +549,50 @@ public class ServiceController {
 	 */
 	@RequestMapping("service/modifyCPU.do")
 	@ResponseBody
-	public String modifyCPU(long id,Integer cpus,String rams){
+	public String modifyCPU(long id,Double cpus,String rams){
 		Map<String, Object> map = new HashMap<String,Object>();
 		Service service = serviceDao.findOne(id);
-		service.setCpuNum(cpus);
-		service.setRam(rams);
 		try {
+			service.setCpuNum(cpus);
+			service.setRam(rams);
+			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+			Map<String,String> app = new HashMap<String,String>();
+			map.put("app", service.getServiceName());
+			PodList podList = client.getLabelSelectorPods(app);
+			if(podList!=null){
+				List<Pod> pods = podList.getItems();
+				if(!CollectionUtils.isEmpty(pods)){
+					for(Pod pod:pods){
+						List<com.bonc.epm.paas.kubernetes.model.Container> containers = new ArrayList<com.bonc.epm.paas.kubernetes.model.Container>();
+						containers = pod.getSpec().getContainers();
+						for(com.bonc.epm.paas.kubernetes.model.Container container:containers){
+							setContainer(container, cpus, rams);
+						}
+					}
+				}
+			}
+			serviceDao.save(service);
 			map.put("status", "200");
 		} catch (Exception e) {
 			map.put("status", "400");
 		}
 		return JSON.toJSONString(map);
+	}
+	
+	public static com.bonc.epm.paas.kubernetes.model.Container  setContainer(com.bonc.epm.paas.kubernetes.model.Container container,Double cpus,String rams){
+		ResourceRequirements requirements = new ResourceRequirements();
+		requirements.getLimits();
+		Map<String,Object> def = new HashMap<String,Object>();
+		//float fcpu = cpu*1024;
+		def.put("cpu", cpus);
+		def.put("memory", rams+"Mi");
+		Map<String,Object> limit = new HashMap<String,Object>();
+		limit = KubernetesClientUtil.getlimit(limit);
+		requirements.setRequests(def);
+		requirements.setLimits(limit);
+		container.setResources(requirements);
+		
+		return container;
 	}
 	
 	/**

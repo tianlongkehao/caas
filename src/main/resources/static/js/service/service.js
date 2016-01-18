@@ -370,3 +370,44 @@
 	
  }
  
+ function versionUpgrade(){
+	 $('input[name="chkItem"]:checked').each(function(index, el){
+		 var id = $(el).val();
+		 var serviceName = $(el).attr('serviceName');
+		 $('#upgradeVersionServiceName').val(serviceName);
+		 var imgName = $(el).attr('imagename');
+		 var imgVersion = $(el).attr('imageversion');
+		 $('#upgradeimgName').val(imgName);
+		 $('#imgVersionName').val(imgVersion);
+		 layer.open({
+			 type:1,
+			 title: '更改镜像版本',
+			 content: $("#versionUpgrade"),
+			 btn: ['确定', '取消'],
+			 yes: function(index, layero){
+				 layer.close(index);
+				 var imgVersion1 = $('#imgVersionName').val();
+				 $.ajax({
+					 url:"service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
+					 success:function(data){
+	 						data = eval("(" + data + ")");
+	 						if(data.status=="200"){
+	 							layer.alert("更改成功");
+	 							window.location.reload();
+	 						}else if(data.status=="500"){
+	 							layer.alert("请选择需要升级的版本号！");
+	 						}else{
+	 							layer.alert("请检查配置服务！");
+	 						}
+			
+	 					}
+				 })
+			 },
+			 cancel: function(index){ //或者使用btn2
+				 //按钮【按钮二】的回调
+			 }
+		 });
+		 
+	 })
+ }
+ 

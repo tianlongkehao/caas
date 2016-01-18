@@ -75,7 +75,7 @@
                             <div class="col-md-2" class="form-control" align="right">
                                 <label style="line-height: 40px">权限:</label>
                            		<input style="line-height: 40px" type="checkbox"  name="search_autority" value="1">管理员
-                               	<input style="line-height: 40px" type="checkbox" name="search_autority" value="2">普通用户
+                               	<input style="line-height: 40px" type="checkbox" name="search_autority" value="2">租户
                                 <input type="hidden" name="search_autority">
                             </div>
            					<div class="searchs" align="right">
@@ -141,7 +141,7 @@
 		                                            <td style="width: 15%; text-indent: 0;">${user.user_employee_id}</td>
 		                                            <td style="width: 10%; text-indent: 0;">
 		                                            	<c:if test='${user.user_autority == "1"}'>管理员</c:if>
-		                                            	<c:if test='${user.user_autority == "2"}'>普通用户</c:if>
+		                                            	<c:if test='${user.user_autority == "2"}'>租户</c:if>
 		                                            </td>
 		                                        </tr>
 	                                        </c:if>

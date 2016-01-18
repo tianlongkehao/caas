@@ -10,7 +10,7 @@
 <body>
 
 <jsp:include page="../frame/menu.jsp" flush="true">
-    <jsp:param name="ci" value=""/>
+    <jsp:param name="user" value=""/>
 </jsp:include>
 <div class="page-container">
     <article>
@@ -22,30 +22,78 @@
                     <li class="active">用户管理</li>
                 </ol>
             </div>
+
+
             <div class="contentMain">
 
+
+                <aside class="aside-btn">
+                    <div class="btns-group">
+                        <span class="btn btn-defaults btn-white"><i class="icon-map-marker"></i><span class="ic_left">用户管理</span></span>
+                    </div>
+                </aside>
                 <div class="caption clearfix">
                     <ul class="toolbox clearfix">
-                        <li><a href="user/add" id="userAdd">增加用户</a></li>
-                        <li><a href="javascript:void(0);">删除</a></li>
-                        <li><a href="javascript:void(0);">全部删除</a></li>
+                        <li><a href="javascript:window.location.reload(true);" id="userReloadBtn"><i class="fa fa-repeat"></i></a></li>
+                        <li><a href="/user/manage/add" id="userCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="javascript:delUser()">
+                                        <i class="fa fa-trash"></i>
+                                        <span class="ic_left">删除</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
+                    <form id="search_form" class="form-inline" action="/user/searchByCondition" method="post">
+                        <div class="col-md-2 " style="width: 25%; " align="right">
+                            <label style="line-height: 35px">姓名:</label>
+                            <input name="search_userName" type="text" class="form-control" style="float: right;width:70%" placeholder="搜索姓名关键字">
+                        </div>
+                        <%--<div class="col-md-2 " style="width: 25%; " align="right">
+                            <label style="line-height: 35px">公司:</label>
+                            <input type="text" class="form-control" style="display: inline; width: 70%" placeholder="搜索公司关键字"
+                                   name="search_company">
+                        </div>--%>
+                        <div class="col-md-2" style="width: 25%; " align="right">
+                            <label style="line-height: 35px">部门:</label>
+                            <input type="text" class="form-control" style="display: inline; width: 70%"
+                                   name="search_department">
+                        </div>
+                        <div class="searchs" align="right">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    	<span class="input-group-btn">
+                                        <button class="btn btn-primary" type="submit">
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-
                 <div class="itemTable">
                     <table class="table user-table">
                         <thead>
                         <tr>
                             <th>
                                 <div class="table-head">
-                                    <table class="table" style="margin: 0;">
+                                    <table class="table"  style="margin: 0;">
                                         <thead>
                                         <tr>
-                                            <th style="width: 10%; text-indent: 30px;"><input type="checkbox" class="chkAll"></th>
-                                            <th style="width: 20%; text-indent: 20px;">用户名</th>
-                                            <th style="width: 20%; text-indent: 0;">邮箱</th>
-                                            <th style="width: 25%; text-indent: 0;">公司</th>
-                                            <th style="width: 25%; text-indent: 0;">操作</th>
+                                            <th style="width: 5%;text-indent: 30px;">
+                                                <input type="checkbox" class="chkAll"/>
+                                            </th>
+                                            <th style="width: 15%;padding-left: 5px;">登录账号</th>
+                                            <th style="width: 15%;">姓名</th>
+                                            <th style="width: 18%;">公司</th>
+                                            <th style="width: 15%;">部门</th>
+                                            <th style="width: 15%;text-indent: 8px;">工号</th>
+                                            <th style="width: 10%;">角色权限</th>
                                         </tr>
                                         </thead>
                                     </table>
@@ -60,19 +108,27 @@
                                     <table class="table tables">
                                         <tbody>
                                         <c:forEach items="${userList }" var="user">
-                                        <c:if test="${user.id == null || user.id == 0}">
-                                                	<c:set var="cursorClass" value="cursor-no-drop"></c:set>
-                                        </c:if>
-                                        <tr class="userTr" id="${user.id }">
-                                            <td style="width: 10%; text-indent: 30px;"><input type="checkbox" class="chkItem"></td>
-                                            <td href="user/detail/${user.id }" style="width: 20%; text-indent: 20px;">${user.userName }</td>
-                                            <td style="width: 20%; text-indent: 0;">${user.email }</td>
-                                            <td style="width: 25%; text-indent: 0;">${user.company }</td>
-                                            <td style="width: 25%; text-indent: 0;">
-                                                <a href="user/detail/${user.id }">信息修改</a>
-                                                <a href="user/del/${user.id }">删除</a>
-                                            </td>
-                                        </tr>
+                                            <c:if test="${user.id == null || user.id == 0}">
+                                                <c:set var="cursorClass" value="cursor-no-drop"></c:set>
+                                            </c:if>
+                                            <c:if test="${cur_user.id != user.id}">
+                                                <tr class="userTr" id="${user.id }">
+                                                    <td style="width: 5%; text-indent: 30px;">
+                                                        <input type="checkbox" class="chkItem" name="ids" value="${user.id }" >
+                                                    </td>
+                                                    <td style="width: 15%;">
+                                                        <a href="/user/detail/${user.id }" title="查看详细信息" onmousemove="style.textDecoration='underline'"
+                                                           onmouseout="style.textDecoration='none'">${user.userName }</a>
+                                                    </td>
+                                                    <td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
+                                                    <td style="width: 18%; text-indent: 0;">${user.company }</td>
+                                                    <td style="width: 15%; text-indent: 0;">${user.user_department }</td>
+                                                    <td style="width: 15%; text-indent: 0;">${user.user_employee_id}</td>
+                                                    <td style="width: 10%; text-indent: 0;">
+                                                        <c:if test='${user.user_autority == "3"}'>普通用户</c:if>
+                                                    </td>
+                                                </tr>
+                                            </c:if>
                                         </c:forEach>
                                         </tbody>
                                     </table>
@@ -84,6 +140,8 @@
                 </div>
 
             </div>
+
+
         </div>
     </article>
 </div>
