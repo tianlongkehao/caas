@@ -317,13 +317,13 @@ function checkBasicInfo(){
 		layer.tips('登陆名称不能为空', '#userName', {
 			tips: [1, '#0FA6D8'] //还可配置颜色
 		});
-		$('#userName').focus;
+		$("#userName").focus();
 		return false;
     } else if(username.length < 4){
 		layer.tips('登陆名称过短','#userName',{
 			tips: [1, '#0FA6D8']
 		});
-		$('#userName').focus;
+		$('#userName').focus();
 		return false;
 	} else{
 		var un = username.toLowerCase();
@@ -338,29 +338,61 @@ function checkBasicInfo(){
 					layer.tips('登陆帐号已经被使用，请输入新的帐号！','#userName',{
 						tips: [1, '#0FA6D8']
 					});
-					$('#userName').focus;
+					$('#userName').focus();
 					return false;
 				}
 				if(data.status=="300"){
 					layer.tips('k8s已经建立此名称的namespace，请输入新的帐号！','#userName',{
 						tips: [1, '#0FA6D8']
 					});
-					$('#userName').focus;
+					$('#userName').focus();
 					return false;
 				}
 			});
+	}
+	if(realname === ''){
+		if(realname.length === 0){
+			layer.tips('真实姓名不能为空', '#user_realname', {
+				tips: [1, '#0FA6D8'] //还可配置颜色
+			});
+		}
+		$("#user_realname").focus();
+		return false;
+	}
+	if (email.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) !== -1) {
+		if (email.length > 50) {
+			layer.tips('邮箱长度不能大于50', '#email',{
+				tips: [1, '#0FA6D8']
+			});
+			$('#email').focus();
+			return false;
+		}
+	} else {
+		if (email === '') {
+			layer.tips('邮箱不能为空', '#email',{
+				tips: [1, '#0FA6D8']
+			});
+			$('#email').focus();
+			return false;
+		} else {
+			layer.tips('请输入合法的邮箱', '#email',{
+				tips: [1, '#0FA6D8']
+			});
+			$('#email').focus();
+			return false;
+		}
 	}
     if (password == '') {
 		layer.tips('密码不能为空', '#pwd', {
 			tips: [1, '#0FA6D8'] //还可配置颜色
 		});
-		$('#pwd').focus;
+		$('#pwd').focus();
 		return false;
     } else if (password.length < 6 || checkStrong(password) < 2){
 		layer.tips('密码过于简单，密码必须是数字、字母、特殊字符两种及以上的组合', '#pwd', {
 			tips: [1, '#0FA6D8'] //还可配置颜色
 		});
-		$('#pwd').focus;
+		$('#pwd').focus();
 		return false;
 	}
     /*if (password.length < 6 || username.length < 4 || username.length > 18) {
@@ -368,43 +400,13 @@ function checkBasicInfo(){
 	   return false;
     }*/
     if(password !== confirmNewPwd){
-      layer.tips('两次密码不一致',$('#confirm_pwd'),{tips: [1, '#EF6578']});
+      layer.tips('两次密码不一致','#confirm_pwd',{
+		  tips: [1, '#0FA6D8']
+	  });
       $('#confirm_pwd').focus();
       return false;
     }
 
-    if(realname === ''){
-		if(realname.length === 0){
-			layer.tips('真实姓名不能为空', '#user_realname', {
-				tips: [1, '#0FA6D8'] //还可配置颜色
-			});
-		}
-    	$("#user_realname").focus();
-        return false;
-    }
-    if (email.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) !== -1) {
-        if (email.length > 50) {
-			layer.tips('邮箱长度不能大于50', '#email',{
-				tips: [1, '#0FA6D8']
-			});
-          $('#email').focus();
-          return false;
-        }
-    } else {
-        if (email === '') {
-			layer.tips('邮箱不能为空', '#email',{
-				tips: [1, '#0FA6D8']
-			});
-          $('#email').focus();
-          return false;
-        } else {
-			layer.tips('请输入合法的邮箱', '#email',{
-				tips: [1, '#0FA6D8']
-			});
-          $('#email').focus();
-          return false;
-        }
-    }
     $("#userName").attr("value", userName);
     $("#user_realname").attr("value", user_realname);
     $("#company").attr("value", company);

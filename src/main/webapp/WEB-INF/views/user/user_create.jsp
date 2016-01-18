@@ -59,14 +59,51 @@
                                                     <label style="width: 2%; float: left;"><font color="red">*</font></label>
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     			id="user_autority" name="user_autority">
-                                                        <option name="user_autority" value="2">普通用户</option>
+                                                        <option name="user_autority" value="2">租户</option>
                                                         <option name="user_autority" value="1">管理员</option>
                                                     </select>
                                                 </div>
                                             </div>
 
                                             <div class="row" style="margin-top: 15px">
-                                                
+                                                <div class="col-md-4" align="left">
+                                                    <label style="width: 20%; float: left;line-height: 35px" >省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
+                                                    <label style="width: 2%; float: left;"><font color="red">*</font></label>
+                                                    <select class="form-control" style="width: 75%;display: inline; float: right;"
+                                                            id="province" name="user_province">
+                                                        <option name="user_province" value="1">北京</option>
+                                                        <option name="user_province" value="2">天津</option>
+                                                        <option name="user_province" value="3">上海</option>
+                                                        <option name="user_province" value="4">河北</option>
+                                                        <option name="user_province" value="5">河南</option>
+                                                        <option name="user_province" value="6">山西</option>
+                                                        <option name="user_province" value="7">内蒙古</option>
+                                                        <option name="user_province" value="8">辽宁</option>
+                                                        <option name="user_province" value="9">吉林</option>
+                                                        <option name="user_province" value="10">黑龙江</option>
+                                                        <option name="user_province" value="11">江苏</option>
+                                                        <option name="user_province" value="12">浙江</option>
+                                                        <option name="user_province" value="13">安徽</option>
+                                                        <option name="user_province" value="14">福建</option>
+                                                        <option name="user_province" value="15">江西</option>
+                                                        <option name="user_province" value="16">山东</option>
+                                                        <option name="user_province" value="17">湖南</option>
+                                                        <option name="user_province" value="18">湖北</option>
+                                                        <option name="user_province" value="19">广东</option>
+                                                        <option name="user_province" value="20">广西</option>
+                                                        <option name="user_province" value="21">海南</option>
+                                                        <option name="user_province" value="22">重庆</option>
+                                                        <option name="user_province" value="23">四川</option>
+                                                        <option name="user_province" value="24">贵州</option>
+                                                        <option name="user_province" value="25">云南</option>
+                                                        <option name="user_province" value="26">西藏</option>
+                                                        <option name="user_province" value="27">陕西</option>
+                                                        <option name="user_province" value="28">甘肃</option>
+                                                        <option name="user_province" value="29">青海</option>
+                                                        <option name="user_province" value="30">宁夏</option>
+                                                        <option name="user_province" value="31">新疆</option>
+                                                    </select>
+                                                </div>
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;line-height: 35px" >公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
@@ -77,13 +114,13 @@
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_department" name="user_department">
                                                 </div>
-                                                <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;line-height: 35px" >工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
-                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
-                                                    		id="user_employee_id" name="user_employee_id">
-                                                </div>
                                             </div>
                                             <div class="row" style="margin-top: 15px">
+                                                <div class="col-md-4" align="left">
+                                                    <label style="width: 20%; float: left;line-height: 35px" >工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
+                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
+                                                           id="user_employee_id" name="user_employee_id">
+                                                </div>
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;line-height: 35px" >手机号码:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
@@ -94,15 +131,15 @@
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_phone" name="user_phone">
                                                 </div>
-                                                <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;line-height: 35px" >电子邮箱:</label>
-                                                    <label style="width: 2%; float: left ;"><font color="red">*</font></label>
-                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
-                                                    		id="email" name="email">
-                                                </div>
                                             </div>
 
                                             <div class="row" style="margin-top: 15px">
+                                                <div class="col-md-4" align="left">
+                                                    <label style="width: 20%; float: left;line-height: 35px" >电子邮箱:</label>
+                                                    <label style="width: 2%; float: left ;"><font color="red">*</font></label>
+                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
+                                                           id="email" name="email">
+                                                </div>
                                                  <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;line-height: 35px" >登陆密码:</label>
                                                     <label style="width: 2%; float: left;"><font color="red">*</font></label>
@@ -213,18 +250,18 @@
                                             <tbody id="pod-limit">
                                             <tr>
                                                 <th style="text-align: center">默认值</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_default" id="pod_cpu_default" value="200"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_default" id="pod_memory_default" value="6"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_default" id="pod_cpu_default" value="1"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_default" id="pod_memory_default" value="1"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">上限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_max" id="pod_cpu_max" value="2048" placeholder="2048"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_max" id="pod_memory_max" value="1024" placeholder="1024"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_max" id="pod_cpu_max" value="1" placeholder="2048"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_max" id="pod_memory_max" value="1" placeholder="1024"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">下限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_min" id="pod_cpu_min" value="200" placeholder="200"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_min" id="pod_memory_min" value="6" placeholder="6"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_min" id="pod_cpu_min" value="1" placeholder="200"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_min" id="pod_memory_min" value="1" placeholder="6"/></td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -242,18 +279,18 @@
                                             <tbody id="container-limit">
                                             <tr>
                                                 <th style="text-align: center">默认值</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_default" id="container_cpu_default" value="250" placeholder="250"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_default" id="container_memory_default" value="100" placeholder="100"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_default" id="container_cpu_default" value="1" placeholder="250"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_default" id="container_memory_default" value="1" placeholder="100"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">上限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_max" id="container_cpu_max" value="2048" placeholder="2048"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_max" id="container_memory_max" value="1024" placeholder="1024"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_max" id="container_cpu_max" value="1" placeholder="2048"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_max" id="container_memory_max" value="1" placeholder="1024"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">下限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_min" id="container_cpu_min" value="100" placeholder="100"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_min" id="container_memory_min" value="3" placeholder="3"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_min" id="container_cpu_min" value="1" placeholder="100"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_min" id="container_memory_min" value="1" placeholder="3"/></td>
                                             </tr>
                                             </tbody>
                                         </table>

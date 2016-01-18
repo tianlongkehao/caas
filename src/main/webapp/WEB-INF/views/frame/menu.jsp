@@ -95,7 +95,21 @@
                 </li>
             </ul>
         </li>
-
+        <c:if test="${cur_user.user_autority == 2}">
+        <li id="menu_usermanage" class="user-admin">
+            <a href="/user/manage/list/${cur_user.id }">
+                <img class="nav-icon" src="/images/user.svg" alt=""/>
+                <span class="nav-title">用户</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li id="menuUserUser" action="">
+                    <a href="/user/manage/list">
+                        用户管理
+                    </a>
+                </li>
+            </ul>
+        </li>
+        </c:if>
 
         <c:if test="${cur_user.user_autority == 1}">
             <li id="menu_user" class="user-admin">
@@ -105,7 +119,7 @@
                 </a>
                 <ul class="nav-item-hover">
                     <li id="menuUser" action="">
-                        <a href="/user/list/1">
+                        <a href="/user/list">
                             租户管理
                         </a>
                     </li>
@@ -130,6 +144,7 @@
                 </ul>
             </li>
         </c:if>
+
 
     </ul>
 </aside>

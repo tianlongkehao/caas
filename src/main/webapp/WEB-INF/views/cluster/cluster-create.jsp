@@ -81,7 +81,7 @@
                                     </div>
                                 </div>
                                 <div class="list-item-description" style="padding-top: 100px">
-                                    <a href="/cluster/list"><button class="btn btn-default go_user"
+                                    <a href="/cluster/management"><button class="btn btn-default go_user"
                                                                   style="margin-right: 30px;">返回</button></a>
                                         <button class="nextTwo pull-right btn btn-primary pull_confirm"
                                               data-attr="tenxcloud/mysql">下一步</button>
