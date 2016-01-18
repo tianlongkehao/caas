@@ -230,10 +230,18 @@ public class KubernetesClientUtil {
 	    String cpuMax = limitRangeItem.getMax().get("cpu").replace("m", "");
 	    String memoryMax = limitRangeItem.getMax().get("memory").replace("M", "");
 	    double icpuMax = Double.valueOf(cpuMax)/1024;
+	    Integer imemoryMax = Integer.valueOf(memoryMax);
 	    limit.put("cpu", icpuMax);
-		limit.put("memory", memoryMax+"Mi");
+		limit.put("memory", imemoryMax+"Mi");
 		return limit;
 	    
+	}
+	
+	public static ReplicationController updateResource(String name,Double cpu,String ram){
+		ReplicationController replicationController = new ReplicationController();
+		ObjectMeta meta =  replicationController.getMetadata();
+		meta.getName();
+		return null;
 	}
 	
 	public static ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram){
