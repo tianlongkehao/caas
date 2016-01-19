@@ -5,7 +5,7 @@
     <title>创建用户</title>
     <%@include file="../frame/header.jsp" %> 
     <link rel="stylesheet" type="text/css" href="/css/mod/user.css"/>
-    <script type="text/javascript" src="/js/user/user_create.js"></script>
+    <script type="text/javascript" src="/js/user/user-management.js"></script>
 </head>
 <body>
 
@@ -65,8 +65,41 @@
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;line-height: 35px" >省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
-                                                    <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
-                                                           id="province" name="province">
+                                                    <input type="hidden" id="user_province_hidden" name="user_province" value="${cur_user.user_province }">
+                                                    <select class="form-control" style="width: 75%;display: inline; float: right;"
+                                                            id="user_province" disabled>
+                                                        <option name="user_province" value="1">北京</option>
+                                                        <option name="user_province" value="2">天津</option>
+                                                        <option name="user_province" value="3">上海</option>
+                                                        <option name="user_province" value="4">河北</option>
+                                                        <option name="user_province" value="5">河南</option>
+                                                        <option name="user_province" value="6">山西</option>
+                                                        <option name="user_province" value="7">内蒙古</option>
+                                                        <option name="user_province" value="8">辽宁</option>
+                                                        <option name="user_province" value="9">吉林</option>
+                                                        <option name="user_province" value="10">黑龙江</option>
+                                                        <option name="user_province" value="11">江苏</option>
+                                                        <option name="user_province" value="12">浙江</option>
+                                                        <option name="user_province" value="13">安徽</option>
+                                                        <option name="user_province" value="14">福建</option>
+                                                        <option name="user_province" value="15">江西</option>
+                                                        <option name="user_province" value="16">山东</option>
+                                                        <option name="user_province" value="17">湖南</option>
+                                                        <option name="user_province" value="18">湖北</option>
+                                                        <option name="user_province" value="19">广东</option>
+                                                        <option name="user_province" value="20">广西</option>
+                                                        <option name="user_province" value="21">海南</option>
+                                                        <option name="user_province" value="22">重庆</option>
+                                                        <option name="user_province" value="23">四川</option>
+                                                        <option name="user_province" value="24">贵州</option>
+                                                        <option name="user_province" value="25">云南</option>
+                                                        <option name="user_province" value="26">西藏</option>
+                                                        <option name="user_province" value="27">陕西</option>
+                                                        <option name="user_province" value="28">甘肃</option>
+                                                        <option name="user_province" value="29">青海</option>
+                                                        <option name="user_province" value="30">宁夏</option>
+                                                        <option name="user_province" value="31">新疆</option>
+                                                    </select>
                                                 </div>
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left;line-height: 35px" >公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
@@ -119,8 +152,9 @@
                                             </div>
                                         </div>
                                         <div class="list-item-description" style="padding-top: 100px;">
-                                            <a href="/user/manage/list"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
-                                            <a href="/user/manage/list"><span class="userSave pull-right btn btn-primary pull_confirm" data-attr="tenxcloud/mysql" id="user_create_save">保存</span></a>
+                                            <a href="/user/manage/list/${cur_user.id }"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
+                                            <span class="saveInfo pull-right btn btn-primary pull_confirm" data-attr="tenxcloud/mysql" id="saveInfo_btn">保存</span>
+                                            <%--<span class="next2 pull-right btn btn-primary" id="user_save_finishBtn"></span>--%>
                                         </div>
                                     </div>
 
@@ -136,38 +170,5 @@
         </div>
     </article>
 </div>
-<%--<script type="text/javascript" >
-	$(document).ready(function(){
-		$("#userName").blur(function(){
-			var username = $.trim($("#userName").val());
-				var un = username.toLowerCase();
-				console.info(un);
-				$("#userName").val(un);
-				//console.info("name: "+username);
-				 $.get(
-					 "/user/checkUsername/"+un,
-					 function(data,status){
-				    	console.info("Data: " + data + "\nStatus: " + status);
-				    	var data = eval("(" + data + ")");
-						if(data.status=="400"){
-                            layer.tips('登陆帐号已经被使用，请输入新的帐号！','#userName',{
-                                tips: [1, '#0FA6D8']
-                            });
-                            $('#userName').focus();
-                            return false;
-//                            $("#userName").focus();
-//							layer.alert("登陆帐号已经被使用，请输入新的帐号！");
-
-					 	}
-						if(data.status=="300"){
-							layer.alert("k8s已经建立此名称的namespace，请输入新的帐号！");
-                            closeBtn(0);
-							$("#userName").focus();
-					 	}
-					});
-
-		});
-	});
-</script>--%>
 </body>
 </html>
