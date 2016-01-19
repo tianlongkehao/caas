@@ -1,5 +1,5 @@
 $(function(){
-	
+
     $(".Record").click(function(){
 
         $(".Record").removeClass("active");
