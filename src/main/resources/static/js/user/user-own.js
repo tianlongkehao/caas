@@ -8,9 +8,12 @@ $(function(){
     var p=window.location.href;
     var reg = new RegExp("b", "");
     if (reg.test(p)){
+            $("#pwd").removeClass("hide");
             $("#pwd").addClass("active");
             $("#pwd_wrap").removeClass("hide");
 
+            $("#baseinfo").addClass("hide");
+            $("#resourceinfo").addClass("hide");
             $("#baseinfo").removeClass("active");
             $("#baseinfo_wrap").addClass("hide");
         }

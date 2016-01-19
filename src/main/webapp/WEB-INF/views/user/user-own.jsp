@@ -28,7 +28,7 @@
                 <div class="setTab">
                     <a id="baseinfo" class="Record active">基本信息</a>
                     <a id="resourceinfo" class="Record">资源信息</a>
-                    <a id="pwd" class="Record">修改密码</a>
+                    <a id="pwd" class="Record hide">修改密码</a>
                 </div>
 
                 <div class="account_table" userID="${user.id }">
