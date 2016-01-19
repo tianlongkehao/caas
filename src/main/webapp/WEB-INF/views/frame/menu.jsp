@@ -103,7 +103,7 @@
             </a>
             <ul class="nav-item-hover">
                 <li id="menuUserUser" action="">
-                    <a href="/user/manage/list">
+                    <a href="/user/manage/list/${cur_user.id }">
                         用户管理
                     </a>
                 </li>

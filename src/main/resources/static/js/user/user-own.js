@@ -5,6 +5,25 @@
 
 $(function(){
 
+    var user_autority_val = document.getElementById("user_autority_hidden").value;
+    var autority_options = document.getElementById("user_autority").options;
+    for(var i = 0; i < autority_options.length; i++){
+        if (autority_options[i].value == user_autority_val){
+            autority_options.selectedIndex = i;
+            break;
+        }
+    }
+
+    var user_province_val = document.getElementById("user_province_hidden").value;
+    var province_options = document.getElementById("user_province").options;
+    for(var i = 0; i < province_options.length; i++){
+        if (province_options[i].value == user_province_val){
+            province_options.selectedIndex = i;
+            break;
+        }
+    }
+
+
     var p=window.location.href;
     var reg = new RegExp("b", "");
     if (reg.test(p)){

@@ -65,8 +65,9 @@ public class UserController {
     private static Map<String, KubernetesAPIClientInterface> clientMap;
     @Autowired
     public UserDao userDao;
+	private Model model;
 
-    /**
+	/**
 	 * 展示所有用户信息、
 	 * 1、租户、管理员无差别？
 	 * @param model
@@ -87,12 +88,12 @@ public class UserController {
 	@RequestMapping(value="/manage/list/{id}",method=RequestMethod.GET)
 	public String userIndex(Model model,@PathVariable long id){
 		User userManger = userDao.findOne(id);
-		List<User> userManageList = new ArrayList<User>();
-		for(User user:userDao.findAll()){
+		List<User> userManageList = new ArrayList<>();
+		for(User user:userDao.checkUsermanage("3", userManger.getUser_province())){
 			userManageList.add(user);
 		}
 		model.addAttribute("userManageList",userManageList);
-		model.addAttribute("menu_flag", "user");
+		model.addAttribute("menu_flag", "usermanage");
 		return "user/user-management.jsp";
 	}
 	
@@ -105,8 +106,10 @@ public class UserController {
 		return "user/user_create.jsp";
 	}
 
-	@RequestMapping(value={"/manage/add"},method=RequestMethod.GET)
-	public String userCreate(){
+	@RequestMapping(value={"/manage/add/{id}"},method=RequestMethod.GET)
+	public String userCreate(Model model, @PathVariable long id){
+		User userMangerCreat = userDao.findOne(id);
+		model.addAttribute("menu_flag", "user");
 		return "user/user_manage_create.jsp";
 	}
 	
@@ -163,6 +166,30 @@ public class UserController {
 		model.addAttribute("userList",userList);
 		model.addAttribute("menu_flag", "user");
 		return "user/user.jsp";
+	}
+
+	@RequestMapping(value={"/savemanage.do"}, method=RequestMethod.POST)
+	public String userManageSave(User user, Model model, @PathVariable long id){
+		System.out.println("savemanage.do=============================================");
+		try {
+
+			//DB保存用户信息
+			userDao.save(user);
+			model.addAttribute("creatFlag", "200");
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("creatFlag", "400");
+		}
+
+		//返回 user.jsp 页面，展示所用用户信息
+		User userManger = userDao.findOne(id);
+		List<User> userManageList = new ArrayList<>();
+		for(User uu:userDao.checkUsermanage("3", userManger.getUser_province())){
+			userManageList.add(uu);
+		}
+		model.addAttribute("userManageList",userManageList);
+		model.addAttribute("menu_flag", "user");
+		return "user/user-management.jsp";
 	}
 	
 	/**
@@ -336,6 +363,15 @@ public class UserController {
 		model.addAttribute("resource", resource);
 		model.addAttribute("user", user);
 		return "user/user_detail.jsp";
+	}
+
+	@RequestMapping(value={"manage/detail/{id}"},method=RequestMethod.GET)
+	public String manageDetail(Model model,@PathVariable long id){
+		this.model = model;
+		System.out.println("/user/user/detail========================================");
+		User user = userDao.findOne(id);
+		model.addAttribute("user", user);
+		return "user/user-manage-detail.jsp";
 	}
 	
 	@RequestMapping(value={"/searchByCondition"},method=RequestMethod.POST)

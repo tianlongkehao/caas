@@ -1,5 +1,14 @@
 $(document).ready(function(){
 
+	/*var user_province_val = document.getElementById("user_province_hidden").value;
+	var province_options = document.getElementById("user_province").options;
+	for(var i = 0; i < province_options.length; i++){
+		if (province_options[i].value == user_province_val){
+			province_options.selectedIndex = i;
+			break;
+		}
+	}*/
+
     $(".next2").click(function(){
     	var flag = checkBasicInfo();
     	if(flag === false){
@@ -39,15 +48,15 @@ $(document).ready(function(){
         }
 
     });
-    
+
     $("#user_save_finishBtn").click(function(){
     	var flag = checkRestriction();
     	if(flag == false){
     		return;
     	}
     	layer.open({
-			 title: '用户信息',
-			 content:'确定创建新用户？',
+			 title: '租户信息',
+			 content:'确定创建新租户？',
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){ //或者使用btn1
 			 	//按钮【按钮一】的回调
@@ -59,8 +68,12 @@ $(document).ready(function(){
 			 	//按钮【按钮二】的回调
 		 	 }
 		 });
-    	
+
     });
+
+
+
+
 	/**
 	 * 填写时用户基本信息 表单验证
 	 */
@@ -91,7 +104,6 @@ $(document).ready(function(){
 					}
 					if(data.status=="300"){
 						layer.alert("k8s已经建立此名称的namespace，请输入新的帐号！");
-						closeBtn(0);
 					}
 				});
 		}
@@ -110,7 +122,7 @@ $(document).ready(function(){
 			layer.tips('登陆密码不能为空', '#pwd', {
 				tips: [1, '#0FA6D8'] //还可配置颜色
 			});
-		}else if(pwd.length < 6 || checkStrong(password) < 2){
+		}else if(pwd.length < 6 || checkStrong(pwd) < 2){
 			layer.tips('密码过于简单，密码必须是数字、字母、特殊字符两种及以上的组合', '#pwd', {
 				tips: [1, '#0FA6D8'] //还可配置颜色
 			});

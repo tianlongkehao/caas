@@ -105,9 +105,10 @@
                                                 </th>
                                                 <th style="width: 15%;padding-left: 5px;">登录账号</th>
                                                 <th style="width: 15%;">姓名</th>
-                                                <th style="width: 18%;">公司</th>
+                                                <th style="width: 15%;">省份</th>
+                                                <th style="width: 15%;">公司</th>
                                                 <th style="width: 15%;">部门</th>
-                                                <th style="width: 15%;text-indent: 8px;">工号</th>
+                                                <th style="width: 13%;text-indent: 8px;">工号</th>
                                                 <th style="width: 10%;">角色权限</th>
                                             </tr>
                                             </thead>

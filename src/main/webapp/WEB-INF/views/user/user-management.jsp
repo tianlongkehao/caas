@@ -5,7 +5,7 @@
     <title>用户管理</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="/css/mod/user.css"/>
-    <script type="text/javascript" src="/js/user/user-management.js"></script>
+    <script type="text/javascript" src="/js/user/user_create.js"></script>
 </head>
 <body>
 
@@ -35,7 +35,7 @@
                 <div class="caption clearfix">
                     <ul class="toolbox clearfix">
                         <li><a href="javascript:window.location.reload(true);" id="userReloadBtn"><i class="fa fa-repeat"></i></a></li>
-                        <li><a href="/user/manage/add" id="userCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
+                        <li><a href="/user/manage/add/${cur_user.id }" id="userCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
                         <li class="dropdown">
                             <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                             <ul class="dropdown-menu">
@@ -107,17 +107,17 @@
                                 <div class="content-table">
                                     <table class="table tables">
                                         <tbody>
-                                        <c:forEach items="${userList }" var="user">
-                                            <c:if test="${user.id == null || user.id == 0}">
+                                        <c:forEach items="${userManageList }" var="user">
+                                            <%--<c:if test="${user.id == null || user.id == 0}">
                                                 <c:set var="cursorClass" value="cursor-no-drop"></c:set>
-                                            </c:if>
+                                            </c:if>--%>
                                             <c:if test="${cur_user.id != user.id}">
                                                 <tr class="userTr" id="${user.id }">
                                                     <td style="width: 5%; text-indent: 30px;">
                                                         <input type="checkbox" class="chkItem" name="ids" value="${user.id }" >
                                                     </td>
                                                     <td style="width: 15%;">
-                                                        <a href="/user/detail/${user.id }" title="查看详细信息" onmousemove="style.textDecoration='underline'"
+                                                        <a href="/user/manage/detail/${user.id }" title="查看详细信息" onmousemove="style.textDecoration='underline'"
                                                            onmouseout="style.textDecoration='none'">${user.userName }</a>
                                                     </td>
                                                     <td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
