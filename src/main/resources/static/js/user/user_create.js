@@ -246,12 +246,20 @@ $(document).ready(function(){
 			layer.tips('请填写POD CPU 下限', '#pod_cpu_min',{
 				tips: [1, '#0FA6D8']
 			});
+		}else if(pod_cpu_min > pod_cpu_default.value){
+			layer.tips('POD CPU 下限应不大于POD CPU默认值', '#pod_cpu_min',{
+				tips: [1, '#0FA6D8']
+			});
 		}
 	});
 	$('#pod_memory_min').blur(function(event){
 		var pod_memory_min = $('#pod_memory_min').val().trim();
 		if(pod_memory_min === ''){
 			layer.tips('请填写POD内存下限', '#pod_memory_min',{
+				tips: [1, '#0FA6D8']
+			});
+		}else if(pod_memory_min > pod_memory_default.value){
+			layer.tips('POD内存下限应不大于POD内存默认值', '#pod_memory_min',{
 				tips: [1, '#0FA6D8']
 			});
 		}
@@ -294,12 +302,20 @@ $(document).ready(function(){
 			layer.tips('请填写容器 CPU 下限', '#container_cpu_min',{
 				tips: [1, '#0FA6D8']
 			});
+		}else if(container_cpu_min > container_cpu_default.value){
+			layer.tips('容器CPU下限应不大于容器CPU默认值', '#container_cpu_min',{
+				tips: [1, '#0FA6D8']
+			});
 		}
 	});
 	$('#container_memory_min').blur(function(event){
 		var container_memory_min = $('#container_memory_min').val().trim();
 		if(container_memory_min === ''){
 			layer.tips('请填写容器内存下限', '#container_memory_min',{
+				tips: [1, '#0FA6D8']
+			});
+		}else if(container_memory_min > container_memory_default.value){
+			layer.tips('容器内存下限应不大于容器内存默认值', '#container_memory_min',{
 				tips: [1, '#0FA6D8']
 			});
 		}
@@ -533,6 +549,12 @@ function checkRestriction() {
 		});
 		$("#pod_cpu_min").focus();
 		return false;
+	}else if(pod_cpu_min > pod_cpu_default){
+		layer.tips('POD CPU下限应不大于POD CPU默认值', '#pod_cpu_min',{
+			tips: [1, '#0FA6D8']
+		});
+		$("#pod_cpu_min").focus();
+		return false;
 	}
 	if(pod_memory_min === ''){
 		layer.tips('请填写POD内存下限', '#pod_memory_min',{
@@ -540,8 +562,14 @@ function checkRestriction() {
 		});
 		$("#pod_memory_min").focus();
 		return false;
+	}else if(pod_memory_min > pod_memory_default){
+		layer.tips('POD内存下限应大于POD内存默认值', '#pod_memory_min',{
+			tips: [1, '#0FA6D8']
+		});
+		$("#pod_memory_min").focus();
+		return false;
 	}
-	
+
 	if(container_cpu_default === ''){
 		layer.tips('请填写 容器CPU默认值', '#container_cpu_default',{
 			tips: [1, '#0FA6D8']
@@ -576,9 +604,21 @@ function checkRestriction() {
 		});
 		$("#container_cpu_min").focus();
 		return false;
+	}else if(container_cpu_min > container_cpu_default){
+		layer.tips('容器CPU下限应不大于容器CPU默认值', '#container_cpu_min',{
+			tips: [1, '#0FA6D8']
+		});
+		$("#container_cpu_min").focus();
+		return false;
 	}
 	if(container_memory_min === ''){
 		layer.tips('请填写容器内存下限', '#container_memory_min',{
+			tips: [1, '#0FA6D8']
+		});
+		$("#container_memory_min").focus();
+		return false;
+	}else if(container_memory_min > container_memory_default){
+		layer.tips('容器内存下限应不大于容器内存默认值', '#container_memory_min',{
 			tips: [1, '#0FA6D8']
 		});
 		$("#container_memory_min").focus();

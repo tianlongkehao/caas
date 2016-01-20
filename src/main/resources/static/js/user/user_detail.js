@@ -82,8 +82,7 @@ $(document).ready(function(){
 
 });
 
-
-$(function(){
+/*$(function(){
     var ramSlider = $("#ramSlider").slider({
         formatter: function(value) {
             return value;
@@ -122,7 +121,7 @@ $(function(){
         console.log(volVal);
         volSlider.slider('setValue', volVal);
     });
-});
+});*/
 
 function checkBasicInfo(){
 
@@ -182,32 +181,42 @@ function checkResourceQuota (){
 	 var server_count = $.trim($("#server_count").val());
 //	 var vol_count = $.trim($("#vol_count").val());
 //	 var vol = $.trim($("#vol").val());
-	 
-	 if(cpu_account === ''){
-    	layer.msg('请填写CPU数量', {icon: 5});
-    	$("#cpu_account").focus();
-        return false;
-	 }
-	 if(ram === ''){
-		 layer.msg('请填写内存', {icon: 5});
-		 $("#ram").focus();
-		 return false;
-	 }
-	 if(pod_count === ''){
-		 layer.msg('请填写Pod数量', {icon: 5});
-		 $("#pod_count").focus();
-		 return false;
-	 }
-	 if(image_control === ''){
-		 layer.msg('请填写副本控制器', {icon: 5});
-		 $("#image_control").focus();
-		 return false;
-	 }
-	 if(server_count === ''){
-		 layer.msg('请填写服务', {icon: 5});
-		 $("#server_count").focus();
-		 return false;
-	 }
+
+	if(cpu_account === ''){
+		layer.tips('请填写CPU数量', '#cpu_account',{
+			tips: [1, '#EF6578']
+		});
+		$("#cpu_account").focus();
+		return false;
+	}
+	if(ram === ''){
+		layer.tips('请填写内存', '#ram',{
+			tips: [1, '#EF6578']
+		});
+		$("#ram").focus();
+		return false;
+	}
+	if(pod_count === ''){
+		layer.tips('请填写Pod数量', '#pod_count',{
+			tips: [1, '#EF6578']
+		});
+		$("#pod_count").focus();
+		return false;
+	}
+	if(image_control === ''){
+		layer.tips('请填写副本控制器', '#image_control',{
+			tips: [1, '#EF6578']
+		});
+		$("#image_control").focus();
+		return false;
+	}
+	if(server_count === ''){
+		layer.tips('请填写服务', '#server_count',{
+			tips: [1, '#EF6578']
+		});
+		$("#server_count").focus();
+		return false;
+	}
 	 $("#ram").attr("value", ram);
 }
 
@@ -233,65 +242,113 @@ function checkRestriction() {
 	var container_memory_min = $.trim($("#container_memory_min").val());
 	
 	console.info(" pod_memory_default: "+pod_memory_default);
-	
+
 	if(pod_cpu_default === ''){
-    	alert('请填写 POD CPU默认值');
-    	$("#pod_cpu_default").focus();
-        return false;
+		layer.tips('请填写 POD CPU默认值', '#pod_cpu_default',{
+			tips: [1, '#EF6578']
+		});
+		$("#pod_cpu_default").focus();
+		return false;
 	}
 	if(pod_memory_default === ''){
-		alert('请填写 POD内存 默认值');
+		layer.tips('请填写 POD内存 默认值', '#pod_memory_default',{
+			tips: [1, '#EF6578']
+		});
 		$("#pod_memory_default").focus();
 		return false;
 	}
 	if(pod_cpu_max === ''){
-		alert('请填写 POD CPU 上限');
+		layer.tips('请填写 POD CPU 上限', '#pod_cpu_max',{
+			tips: [1, '#EF6578']
+		});
 		$("#pod_cpu_max").focus();
 		return false;
 	}
 	if(pod_memory_max === ''){
-		alert('请填写 POD内存上限');
+		layer.tips('请填写 POD内存上限', '#pod_memory_max',{
+			tips: [1, '#EF6578']
+		});
 		$("#pod_memory_max").focus();
 		return false;
 	}
 	if(pod_cpu_min === ''){
-		alert('请填写POD CPU 下限');
+		layer.tips('请填写POD CPU 下限', '#pod_cpu_min',{
+			tips: [1, '#EF6578']
+		});
+		$("#pod_cpu_min").focus();
+		return false;
+	}else if(pod_cpu_min > pod_cpu_default){
+		layer.tips('POD CPU下限应不大于POD CPU默认值', '#pod_cpu_min',{
+			tips: [1, '#EF6578']
+		});
 		$("#pod_cpu_min").focus();
 		return false;
 	}
 	if(pod_memory_min === ''){
-		alert('请填写POD内存下限');
+		layer.tips('请填写POD内存下限', '#pod_memory_min',{
+			tips: [1, '#EF6578']
+		});
+		$("#pod_memory_min").focus();
+		return false;
+	}else if(pod_memory_min > pod_memory_default){
+		layer.tips('POD内存下限应大于POD内存默认值', '#pod_memory_min',{
+			tips: [1, '#EF6578']
+		});
 		$("#pod_memory_min").focus();
 		return false;
 	}
-	
+
 	if(container_cpu_default === ''){
-		alert('请填写 容器CPU默认值');
+		layer.tips('请填写 容器CPU默认值', '#container_cpu_default',{
+			tips: [1, '#EF6578']
+		});
 		$("#container_cpu_default").focus();
 		return false;
 	}
 	if(container_memory_default === ''){
-		alert('请填写 容器内存 默认值');
+		layer.tips('请填写 容器内存 默认值', '#container_memory_default',{
+			tips: [1, '#EF6578']
+		});
 		$("#container_memory_default").focus();
 		return false;
 	}
 	if(container_cpu_max === ''){
-		alert('请填写容器 CPU 上限');
+		layer.tips('请填写容器 CPU 上限', '#container_cpu_max',{
+			tips: [1, '#EF6578']
+		});
 		$("#container_cpu_max").focus();
 		return false;
 	}
 	if(container_memory_max === ''){
-		alert('请填 容器内存上限');
+		layer.tips('请填 容器内存上限', '#container_memory_max',{
+			tips: [1, '#EF6578']
+		});
 		$("#container_memory_max").focus();
 		return false;
 	}
 	if(container_cpu_min === ''){
-		alert('请填写容器 CPU 下限');
+		layer.tips('请填写容器 CPU 下限', '#container_cpu_min',{
+			tips: [1, '#EF6578']
+		});
+		$("#container_cpu_min").focus();
+		return false;
+	}else if(container_cpu_min > container_cpu_default){
+		layer.tips('容器CPU下限应不大于容器CPU默认值', '#container_cpu_min',{
+			tips: [1, '#EF6578']
+		});
 		$("#container_cpu_min").focus();
 		return false;
 	}
 	if(container_memory_min === ''){
-		alert('请填写容器内存下限');
+		layer.tips('请填写容器内存下限', '#container_memory_min',{
+			tips: [1, '#EF6578']
+		});
+		$("#container_memory_min").focus();
+		return false;
+	}else if(container_memory_min > container_memory_default){
+		layer.tips('容器内存下限应不大于容器内存默认值', '#container_memory_min',{
+			tips: [1, '#EF6578']
+		});
 		$("#container_memory_min").focus();
 		return false;
 	}

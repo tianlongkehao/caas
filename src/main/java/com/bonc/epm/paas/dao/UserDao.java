@@ -45,4 +45,7 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ " and u.user_autority= ?1"
 			+ " and u.user_province = ?2")
 	public List<User> checkUsermanage(String user_autority, String user_province);
+
+	@Query("select u from User u where u.user_autority != ?1")
+	public List<User> checkUser(String user_autority);
 } 

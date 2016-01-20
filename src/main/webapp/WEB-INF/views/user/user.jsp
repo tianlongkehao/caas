@@ -137,12 +137,51 @@
                                                            onmouseout="style.textDecoration='none'">${user.userName }</a>
                                                     </td>
 		                                            <td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
-		                                            <td style="width: 18%; text-indent: 0;">${user.company }</td>
+                                                    <td style="width: 15%; text-indent: 0;" id="user.user_province">
+                                                        <input type="hidden" id="user_province_hidden" value="${user.user_province}">
+                                                        <select class="hidden" name="province" id="user_province">
+                                                            <option name="user_province" value="1">北京</option>
+                                                            <option name="user_province" value="2">天津</option>
+                                                            <option name="user_province" value="3">上海</option>
+                                                            <option name="user_province" value="4">河北</option>
+                                                            <option name="user_province" value="5">河南</option>
+                                                            <option name="user_province" value="6">山西</option>
+                                                            <option name="user_province" value="7">内蒙古</option>
+                                                            <option name="user_province" value="8">辽宁</option>
+                                                            <option name="user_province" value="9">吉林</option>
+                                                            <option name="user_province" value="10">黑龙江</option>
+                                                            <option name="user_province" value="11">江苏</option>
+                                                            <option name="user_province" value="12">浙江</option>
+                                                            <option name="user_province" value="13">安徽</option>
+                                                            <option name="user_province" value="14">福建</option>
+                                                            <option name="user_province" value="15">江西</option>
+                                                            <option name="user_province" value="16">山东</option>
+                                                            <option name="user_province" value="17">湖南</option>
+                                                            <option name="user_province" value="18">湖北</option>
+                                                            <option name="user_province" value="19">广东</option>
+                                                            <option name="user_province" value="20">广西</option>
+                                                            <option name="user_province" value="21">海南</option>
+                                                            <option name="user_province" value="22">重庆</option>
+                                                            <option name="user_province" value="23">四川</option>
+                                                            <option name="user_province" value="24">贵州</option>
+                                                            <option name="user_province" value="25">云南</option>
+                                                            <option name="user_province" value="26">西藏</option>
+                                                            <option name="user_province" value="27">陕西</option>
+                                                            <option name="user_province" value="28">甘肃</option>
+                                                            <option name="user_province" value="29">青海</option>
+                                                            <option name="user_province" value="30">宁夏</option>
+                                                            <option name="user_province" value="31">新疆</option>
+                                                        </select>
+                                                    </td>
+		                                            <td style="width: 15%; text-indent: 0;">${user.company }</td>
 		                                            <td style="width: 15%; text-indent: 0;">${user.user_department }</td>
-		                                            <td style="width: 15%; text-indent: 0;">${user.user_employee_id}</td>
-		                                            <td style="width: 10%; text-indent: 0;">
-		                                            	<c:if test='${user.user_autority == "1"}'>管理员</c:if>
-		                                            	<c:if test='${user.user_autority == "2"}'>租户</c:if>
+		                                            <td style="width: 13%; text-indent: 0;">${user.user_employee_id}</td>
+		                                            <td style="width: 10%; text-indent: 0;" id="user.user_autority">
+                                                        <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
+                                                        <select class="hidden" id="user_autority" name="user_autority">
+                                                            <option name="user_autority" value="2">租户</option>
+                                                            <option name="user_autority" value="1">管理员</option>
+                                                        </select>
 		                                            </td>
 		                                        </tr>
 	                                        </c:if>

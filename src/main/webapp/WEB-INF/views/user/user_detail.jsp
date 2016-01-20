@@ -243,8 +243,8 @@
                                             <thead>
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Pod</th>
-                                                <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（M）</th>
+                                                <th style="width: 33%;text-align: center">CPU（个）</th>
+                                                <th style="width: 33%;text-align: center">内存（G）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="pod-limit">
@@ -278,8 +278,8 @@
                                             <thead>
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Container</th>
-                                                <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（M）</th>
+                                                <th style="width: 33%;text-align: center">CPU（个）</th>
+                                                <th style="width: 33%;text-align: center">内存（G）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="container-limit">
