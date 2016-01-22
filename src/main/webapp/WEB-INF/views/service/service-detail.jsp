@@ -262,10 +262,9 @@
 							</div>
 						</div>
 						<div class="weblog">
-							<pre id="serviceLogs"
-								style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有日志产生。</pre>
-							<input id="serviceInstances" type="hidden" value=""> <input
-								id="creationTime" type="hidden" value="2015-11-30 10:23:27">
+							<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">${logList }</pre>
+							<input id="serviceInstances" type="hidden" value=""> 
+							<input id="creationTime" type="hidden" value="2015-11-30 10:23:27">
 						</div>
 					</div>
 					<div class="containerEvent hide" style="min-height: 500px;">

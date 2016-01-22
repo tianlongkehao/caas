@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.jws.soap.SOAPBinding.Use;
+import javax.print.DocFlavor.STRING;
 
 import org.aspectj.weaver.ast.And;
 import org.slf4j.Logger;
@@ -47,6 +48,8 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DockerClientUtil;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
+
+import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 
 
  
@@ -106,10 +109,11 @@ public class ServiceController {
 	    	    	if(podList!=null){
 	    	    		List<Pod> pods = podList.getItems();
 	    	    		if(!CollectionUtils.isEmpty(pods)){
+	    	    			int i=0;
 	    	    			for(Pod pod:pods){
 	    	    				String podName = pod.getMetadata().getName();
 	    	    				Container container = new Container();
-	    	    				container.setContainerName(podName);
+	    	    				container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
 	    	    				container.setServiceid(service.getId());
 	    	    				containerList.add(container);
 	    	    			}
@@ -150,10 +154,11 @@ public class ServiceController {
 	    	    	if(podList!=null){
 	    	    		List<Pod> pods = podList.getItems();
 	    	    		if(!CollectionUtils.isEmpty(pods)){
+	    	    			int i=0;
 	    	    			for(Pod pod:pods){
 	    	    				String podName = pod.getMetadata().getName();
 	    	    				Container container = new Container();
-	    	    				container.setContainerName(podName);
+	    	    				container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
 	    	    				container.setServiceid(service.getId());
 	    	    				containerList.add(container);
 	    	    			}
@@ -198,24 +203,30 @@ public class ServiceController {
         Service service = serviceDao.findOne(id);
         KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
         List<Container> containerList = new ArrayList<Container>();
+        List<String> logList = new ArrayList<String>();
         Map<String,String> map = new HashMap<String,String>();
     	map.put("app", service.getServiceName());
     	PodList podList = client.getLabelSelectorPods(map);
     	if(podList!=null){
     		List<Pod> pods = podList.getItems();
     		if(!CollectionUtils.isEmpty(pods)){
+    			int i=0;
     			for(Pod pod:pods){
     				String podName = pod.getMetadata().getName();
+    				String s  = client.getPodLog(podName);
     				Container container = new Container();
-	    			container.setContainerName(podName);
+	    			container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
 	    			container.setServiceid(service.getId());
 	    			containerList.add(container);
+	    			logList.add(s);
     			}
     		}
     	}
     	
+    	
 		model.addAttribute("id", id);
         model.addAttribute("containerList", containerList);
+        model.addAttribute("logList", logList);
         model.addAttribute("service", service);
 		return "service/service-detail.jsp";
 	}

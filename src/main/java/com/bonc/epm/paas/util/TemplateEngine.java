@@ -112,6 +112,7 @@ public class TemplateEngine {
             }
             matcher.appendTail(sb);
         }catch(Exception e){
+        	log.error("sb:"+sb);
             e.printStackTrace();
         }
         return sb.toString();   //加一个空行（结束行）
@@ -137,6 +138,7 @@ public class TemplateEngine {
             osw.close();
             fos.close();
         }catch(Exception e){
+        	log.error(e);
             e.printStackTrace();
         }
     }
@@ -158,6 +160,7 @@ public class TemplateEngine {
             br.close();
             fr.close();
         }catch(Exception e){
+        	log.error(e);
             e.printStackTrace();
         }
         return sb.toString();
@@ -192,6 +195,7 @@ public class TemplateEngine {
             nr.close();
             fr.close();
         }catch(Exception e){
+        	log.error(e);
             e.printStackTrace();
         }
         return sb.toString();

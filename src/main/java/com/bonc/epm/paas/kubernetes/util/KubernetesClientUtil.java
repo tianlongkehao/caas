@@ -244,6 +244,8 @@ public class KubernetesClientUtil {
 		return null;
 	}
 	
+
+	
 	public static ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();

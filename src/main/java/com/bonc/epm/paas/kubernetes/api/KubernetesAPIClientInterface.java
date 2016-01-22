@@ -227,6 +227,14 @@ public interface KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     public Pod deletePod(String name) throws KubernetesClientException;
+    
+    /**
+     * get pod log
+     * @param name
+     * @return
+     * @throws KubernetesClientException
+     */
+    public String getPodLog(String name) throws KubernetesClientException;
 
     /* Replication Controller API */
 

@@ -214,6 +214,14 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
 	}
+	
+	public String getPodLog(String name) throws KubernetesClientException {
+		try {
+			return api.getPodLog(namespace, name);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
 
 	public LimitRange getLimitRange(String name) throws KubernetesClientException {
         try {
