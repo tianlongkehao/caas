@@ -2,7 +2,7 @@ package com.bonc.epm.paas.kubernetes.exceptions;
 
 import com.google.common.base.MoreObjects;
 
-public class StatusDetailsCause {
+public class StatusCause {
     private String reason, message, field;
 
     public String getReason() {

@@ -32,6 +32,11 @@ public class KubernetesClientException extends RuntimeException {
         super(message, exception);
         this.setStatus(getResponse(exception));
     }
+    
+    public KubernetesClientException(String msg,Status status) {
+    	super(msg);
+    	this.setStatus(status);
+    }
 
     public KubernetesClientException(Exception exception) {
         this(buildMessage(exception), exception);

@@ -2,6 +2,7 @@ package com.bonc.epm.paas.kubernetes.exceptions;
 
 import com.bonc.epm.paas.kubernetes.model.AbstractKubernetesModel;
 import com.bonc.epm.paas.kubernetes.model.Kind;
+import com.bonc.epm.paas.kubernetes.model.ListMeta;
 import com.google.common.base.MoreObjects;
 
 public class Status extends AbstractKubernetesModel {
@@ -9,6 +10,7 @@ public class Status extends AbstractKubernetesModel {
     private String status, message, reason;
     private int code;
     private StatusDetails details;
+    private ListMeta metadata;
 
     public Status() {
         super(Kind.STATUS);
@@ -54,10 +56,18 @@ public class Status extends AbstractKubernetesModel {
         this.details = details;
     }
 
-    @Override
+    public ListMeta getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(ListMeta metadata) {
+		this.metadata = metadata;
+	}
+
+	@Override
     public String toString() {
         return MoreObjects.toStringHelper(this).add("status", status).add("message", message).add("reason", reason)
-                .add("code", code).add("details", details).toString();
+                .add("code", code).add("details", details).add("metadata", metadata).toString();
     }
 
 }

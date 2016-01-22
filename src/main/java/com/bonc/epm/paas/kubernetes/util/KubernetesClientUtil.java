@@ -16,6 +16,7 @@ import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.api.RestFactory;
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
@@ -26,6 +27,7 @@ import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
+import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerSpec;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
@@ -72,9 +74,21 @@ public class KubernetesClientUtil {
         return new KubernetesApiClient(namespace,endpoint, username, password,new RestFactory());
     }
     
+    public static void main(String[] args) {
+    	
+	}
+    
     /*public static void main(String[] args) {
     	
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("admin");
+			
+	    	try{
+	    		client.updateReplicationController("bonctest1", 1);
+				ReplicationControllerList list = client.getAllReplicationControllers();
+				System.out.println("ReplicationControllerList:"+JSON.toJSONString(list));
+	    	}catch(KubernetesClientException e){
+	    		System.out.println(e.getMessage()+":"+JSON.toJSONString(e.getStatus()));
+	    	}
 			
 			//获取特殊条件的pods
 			Map<String,String> map = new HashMap<String,String>();
