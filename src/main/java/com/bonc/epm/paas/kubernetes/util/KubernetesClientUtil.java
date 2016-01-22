@@ -74,10 +74,6 @@ public class KubernetesClientUtil {
         return new KubernetesApiClient(namespace,endpoint, username, password,new RestFactory());
     }
     
-    public static void main(String[] args) {
-    	
-	}
-    
     /*public static void main(String[] args) {
     	
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("admin");
