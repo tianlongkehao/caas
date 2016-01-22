@@ -58,8 +58,8 @@
 						<!-- <a class="DOMAIN">绑定域名</a>  -->
 						<a class="PORTS">端口</a>
 						<!--<a class="MONITOR">监控</a>-->
-						<!--<a class="LOG">日志</a>
-		 				<a class="EVENT">事件</a> -->
+						<a class="LOG">日志</a>
+		 				<!--<a class="EVENT">事件</a> -->
 					</div>
 					<div class="containerInfo">
 						<table class="table w50">
