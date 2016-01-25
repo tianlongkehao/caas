@@ -1,15 +1,12 @@
 package com.bonc.epm.paas.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.bonc.epm.paas.dao.ClusterDao;
-import com.bonc.epm.paas.entity.Cluster;
-import com.bonc.epm.paas.entity.ClusterUse;
-import com.bonc.epm.paas.entity.User;
-import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
-import com.bonc.epm.paas.kubernetes.util.KubernetesClientUtil;
-import com.bonc.epm.paas.util.SshConnect;
-import com.github.dockerjava.core.DockerClientConfig;
-import com.jcraft.jsch.*;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Query;
@@ -19,13 +16,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.bonc.epm.paas.dao.ClusterDao;
+import com.bonc.epm.paas.entity.Cluster;
+import com.bonc.epm.paas.entity.ClusterUse;
+import com.bonc.epm.paas.util.SshConnect;
+import com.github.dockerjava.core.DockerClientConfig;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 @Controller
 @RequestMapping(value = "/cluster")
@@ -102,6 +107,7 @@ public class ClusterController {
         ClusterUse clusterUse = new ClusterUse();
         try {
             InfluxDB influxDB = InfluxDBFactory.connect("http://172.16.71.172:30002", "root", "root");
+
             String dbName = "k8s";
             //设置主机IP
             clusterUse.setHost(hostIp);

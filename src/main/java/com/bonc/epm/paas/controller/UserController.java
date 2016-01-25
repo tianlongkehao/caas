@@ -1,30 +1,13 @@
 package com.bonc.epm.paas.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.bonc.epm.paas.constant.ServiceConstant;
-import com.bonc.epm.paas.entity.Container;
-import com.bonc.epm.paas.entity.Resource;
-import com.bonc.epm.paas.entity.Restriction;
-import com.bonc.epm.paas.entity.Service;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-import javax.xml.soap.Detail;
-
-import org.aspectj.apache.bcel.generic.RET;
-import org.dom4j.util.UserDataElement;
-import org.hibernate.exception.spi.ViolatedConstraintNameExtracter;
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.data.repository.query.Parameter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,30 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import sun.misc.Cleaner;
-
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.entity.Resource;
+import com.bonc.epm.paas.entity.Restriction;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
-import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
-import com.bonc.epm.paas.kubernetes.api.RestFactory;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
-import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
-import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
-import com.bonc.epm.paas.kubernetes.util.KubernetesClientUtil;
-import com.mysql.fabric.xmlrpc.base.Param;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Timestamp;
-import java.util.*;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 
 @Controller
 
@@ -65,6 +38,8 @@ public class UserController {
     private static Map<String, KubernetesAPIClientInterface> clientMap;
     @Autowired
     public UserDao userDao;
+	@Autowired
+	private KubernetesClientService kubernetesClientService;
     private Model model;
 
     /**
@@ -102,8 +77,10 @@ public class UserController {
      *
      * @return
      */
+
     @RequestMapping(value = {"/add"}, method = RequestMethod.GET)
-    public String create() {
+    public String useradd(Model model) {
+        model.addAttribute("menu_flag", "user");
         return "user/user_create.jsp";
     }
 
@@ -115,7 +92,7 @@ public class UserController {
     }
 
     /**
-     * 创建新用户
+     * 创建新租户
      * 以用户登陆帐号（用户名）为名称，创建Namespace
      *
      * @param user
@@ -126,10 +103,10 @@ public class UserController {
         System.out.println("save.do=============================================");
         try {
             //以用户名(登陆帐号)为name，创建client
-            KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
 
             //以用户名(登陆帐号)为name，为client创建Namespace
-            Namespace namespace = KubernetesClientUtil.generateSimpleNamespace(user.getUserName());
+            Namespace namespace = kubernetesClientService.generateSimpleNamespace(user.getUserName());
             namespace = client.createNamespace(namespace);
             System.out.println("namespace:" + JSON.toJSONString(namespace));
 
@@ -142,7 +119,7 @@ public class UserController {
             map.put("services", resource.getServer_count() + "");//服务
             map.put("replicationcontrollers", resource.getImage_control() + "");//副本控制器
             map.put("resourcequotas", "1");//资源配额数量
-            ResourceQuota quota = KubernetesClientUtil.generateSimpleResourceQuota(user.getUserName(), map);
+            ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getUserName(), map);
             System.out.println("before quota: " + JSON.toJSONString(quota));
             quota = client.createResourceQuota(quota);
             System.out.println("quota:" + JSON.toJSONString(quota));
@@ -169,7 +146,9 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-
+    /**
+     * 创建新用户
+     */
     @RequestMapping(value = {"/savemanage.do"}, method = RequestMethod.POST)
     public String userManageSave(User user, Model model) {
         System.out.println("savemanage.do=============================================");
@@ -211,14 +190,16 @@ public class UserController {
     public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
 
         //以用户名(登陆帐号)为name，创建client
-        KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
 
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+user.getUserName());
         ResourceQuota quota = updateQuota(client, user.getUserName(), resource);
         LimitRange limit = updateLimitRange(client, user.getUserName(), restriction);
 
         try {
             ResourceQuota updateQuota = client.updateResourceQuota(user.getUserName(), quota);
             LimitRange updateLimitRange = client.updateLimitRange(user.getUserName(), limit);
+            System.out.println("+++++++++++++++++++++++++"+user.getUser_autority());
             userDao.save(user);
             model.addAttribute("updateFlag", "200");
             //返回 user.jsp 页面，展示所用用户信息
@@ -226,13 +207,16 @@ public class UserController {
             e.printStackTrace();
             model.addAttribute("updateFlag", "400");
         }
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+"updateFlag");
 
         List<User> userList = new ArrayList<User>();
         for (User uu : userDao.findAll()) {
             userList.add(uu);
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+uu);
         }
         model.addAttribute("userList", userList);
         model.addAttribute("menu_flag", "user");
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+"??????????????????????????");
         return "user/user.jsp";
     }
 
@@ -260,7 +244,7 @@ public class UserController {
             userDao.delete(users);
             for (String name : userNameList) {
                 //以用户名(登陆帐号)为name，创建client
-                KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(name);
+                KubernetesAPIClientInterface client = kubernetesClientService.getClient(name);
                 if (client.getNamespace(name) != null) {
                     client.deleteLimitRange(name);
                     client.deleteResourceQuota(name);
@@ -290,7 +274,7 @@ public class UserController {
         Restriction restriction = new Restriction();
 
         //以用户名(登陆帐号)为name，创建client
-        KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
         Namespace ns = client.getNamespace(user.getUserName());
 
         if (ns != null) {
@@ -380,18 +364,23 @@ public class UserController {
     @RequestMapping(value = {"/searchByCondition"}, method = RequestMethod.POST)
     public String searchByCondition(String search_company, String search_department,
                                     String search_autority, String search_userName,
+                                    String search_province,
                                     Model model) {
         List<User> userList = new ArrayList<User>();
         String company = "";
         String user_department = "";
         String user_autority = "";
         String user_realname = "";
+        String user_province = "";
 
         if (search_company != null && !search_company.trim().equals("")) {
             company = search_company.trim();
         }
         if (search_department != null && !search_department.trim().equals("")) {
             user_department = search_department.trim();
+        }
+        if (search_province != null && !search_province.trim().equals("")) {
+            user_province = search_province.trim();
         }
         if (search_userName != null && !search_userName.trim().equals("")) {
             user_realname = search_userName.trim();
@@ -402,19 +391,19 @@ public class UserController {
             if (arr.length == 1) {
 //				System.out.println("findby4");
                 user_autority = arr[0].trim();
-                for (User user : userDao.findBy4(company, user_department, user_autority, user_realname)) {
+                for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province)) {
                     userList.add(user);
                 }
             } else {
 //				System.out.println("findby3");
-                for (User user : userDao.findBy3(company, user_department, user_realname)) {
+                for (User user : userDao.find12By3(company, user_department, user_realname, user_province)) {
                     userList.add(user);
                 }
 
             }
         } else {
-//			System.out.println("findby3");
-            for (User user : userDao.findBy3(company, user_department, user_realname)) {
+//			System.out.println("find12By3");
+            for (User user : userDao.find12By3(company, user_department, user_realname, user_province)) {
                 userList.add(user);
             }
         }
@@ -437,7 +426,7 @@ public class UserController {
         if (names.size() > 0) {
             map.put("status", "400");
         } else {
-            KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(username);
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(username);
             Namespace namespace = client.getNamespace(username);
             if (namespace != null) {
                 map.put("status", "300");
@@ -494,7 +483,7 @@ public class UserController {
         String usedMemoryNum = "";//已使用内存
 
         //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
-        KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
         Namespace ns = client.getNamespace(user.getUserName());
         System.out.println("namespace:" + JSON.toJSONString(ns));
 
@@ -521,10 +510,6 @@ public class UserController {
         return "user/user-own.jsp";
     }
 
-    @RequestMapping(value = {"user/add"}, method = RequestMethod.GET)
-    public String useradd(Model model) {
-        return "user/user-add.jsp";
-    }
 
     @RequestMapping("/userModifyPsw.do")
     @ResponseBody
@@ -686,12 +671,12 @@ public class UserController {
         Map<String, String> podMin = new HashMap<String, String>();
         Map<String, String> podDefault = new HashMap<String, String>();
 
-        podMax.put("memory", Integer.valueOf(restriction.getPod_memory_max()) * 1024 + "M");
-        podMin.put("memory", Integer.valueOf(restriction.getPod_memory_min()) * 1024 + "M");
-        podDefault.put("memory", Integer.valueOf(restriction.getPod_memory_default()) * 1024 + "M");
-        podMax.put("cpu", Integer.valueOf(restriction.getPod_cpu_max()) * 1000 + "m");
-        podMin.put("cpu", Integer.valueOf(restriction.getPod_cpu_min()) * 1000 + "m");
-        podDefault.put("cpu", Integer.valueOf(restriction.getPod_cpu_default()) * 1000 + "m");
+        podMax.put("memory", computeMemory(restriction.getPod_memory_max()));
+        podMax.put("cpu", computeCpu(restriction.getPod_cpu_max()));
+        podMin.put("memory", computeMemory(restriction.getPod_memory_min()));
+        podMin.put("cpu", computeCpu(restriction.getPod_cpu_min()));
+        podDefault.put("memory", computeMemory(restriction.getPod_memory_default()));
+        podDefault.put("cpu", computeCpu(restriction.getPod_cpu_default()));
 
         podLimitRangeItem.setDefaultVal(podDefault);
         podLimitRangeItem.setMax(podMax);
@@ -703,12 +688,12 @@ public class UserController {
         Map<String, String> containerMin = new HashMap<String, String>();
         Map<String, String> containerDefault = new HashMap<String, String>();
 
-        containerMax.put("memory", Integer.valueOf(restriction.getContainer_memory_max()) * 1024 + "M");
-        containerMin.put("memory", Integer.valueOf(restriction.getContainer_memory_min()) * 1024 + "M");
-        containerDefault.put("memory", Integer.valueOf(restriction.getContainer_memory_default()) * 1024 + "M");
-        containerMax.put("cpu", Integer.valueOf(restriction.getContainer_cpu_max()) * 1000 + "m");
-        containerMin.put("cpu", Integer.valueOf(restriction.getContainer_cpu_min()) * 1000 + "m");
-        containerDefault.put("cpu", Integer.valueOf(restriction.getContainer_cpu_default()) * 1000 + "m");
+        containerMax.put("memory", computeMemory(restriction.getContainer_memory_max()));
+        containerMax.put("cpu", computeCpu(restriction.getContainer_cpu_max()));
+        containerMin.put("memory", computeMemory(restriction.getContainer_memory_min()));
+        containerMin.put("cpu", computeCpu(restriction.getContainer_cpu_min()));
+        containerDefault.put("memory", computeMemory(restriction.getContainer_memory_default()));
+        containerDefault.put("cpu", computeCpu(restriction.getContainer_cpu_default()));
 
         containerLimitRangeItem.setMax(containerMax);
         containerLimitRangeItem.setMin(containerMin);
@@ -733,6 +718,8 @@ public class UserController {
      */
     private ResourceQuota updateQuota(KubernetesAPIClientInterface client, String username, Resource resource) {
         ResourceQuota quota = client.getResourceQuota(username);
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"+quota);
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"+username);
         ResourceQuotaSpec spec = quota.getSpec();
         Map<String, String> hard = quota.getSpec().getHard();
 

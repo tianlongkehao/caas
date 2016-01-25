@@ -58,27 +58,61 @@
                             </li>
                         </ul>
                         <form id="search_form" class="form-inline" action="/user/searchByCondition" method="post">
-                        	<div class=" " style="width: 25%;float: left;margin-left:60px; margin-right:-35px " align="right" >
+                        	<div class="searchFun" style=" float: left; text-align: center;margin-left: 160px" align="right" >
                                 <label style="line-height: 35px;">姓名:</label>
-                                <input name="search_userName" type="text" class="form-control" style="float: right;width:70%" placeholder="搜索姓名关键字">
+                                <input name="search_userName" type="text" class="form-control" style="display: inline;width:60%" placeholder="搜索姓名关键字">
                             </div>
-                            <div class=" " style="width: 25%;float: left; " align="right">
+                            <div class="searchFun" style="float: left; text-align: center" align="right">
+                                <label style="line-height: 35px">省份:</label>
+                                <%--<input type="hidden" class="form-control" style="display: inline; width: 60%" placeholder="搜索省份关键字"
+                                       name="search_province">--%>
+                                <select name="search_province" id="search_province" style="height: 30px;display: inline;">
+                                    <option name="search_province" ></option>
+                                    <option name="search_province" value="1">北京</option>
+                                    <option name="search_province" value="2">天津</option>
+                                    <option name="search_province" value="3">上海</option>
+                                    <option name="search_province" value="4">河北</option>
+                                    <option name="search_province" value="5">河南</option>
+                                    <option name="search_province" value="6">山西</option>
+                                    <option name="search_province" value="7">内蒙古</option>
+                                    <option name="search_province" value="8">辽宁</option>
+                                    <option name="search_province" value="9">吉林</option>
+                                    <option name="search_province" value="10">黑龙江</option>
+                                    <option name="search_province" value="11">江苏</option>
+                                    <option name="search_province" value="12">浙江</option>
+                                    <option name="search_province" value="13">安徽</option>
+                                    <option name="search_province" value="14">福建</option>
+                                    <option name="search_province" value="15">江西</option>
+                                    <option name="search_province" value="16">山东</option>
+                                    <option name="search_province" value="17">湖南</option>
+                                    <option name="search_province" value="18">湖北</option>
+                                    <option name="search_province" value="19">广东</option>
+                                    <option name="search_province" value="20">广西</option>
+                                    <option name="search_province" value="21">海南</option>
+                                    <option name="search_province" value="22">重庆</option>
+                                    <option name="search_province" value="23">四川</option>
+                                    <option name="search_province" value="24">贵州</option>
+                                    <option name="search_province" value="25">云南</option>
+                                    <option name="search_province" value="26">西藏</option>
+                                    <option name="search_province" value="27">陕西</option>
+                                    <option name="search_province" value="28">甘肃</option>
+                                    <option name="search_province" value="29">青海</option>
+                                    <option name="search_province" value="30">宁夏</option>
+                                    <option name="search_province" value="31">新疆</option>
+                                </select>
+                            </div>
+                            <div class="searchFun" style="float: left; text-align: center" align="right">
                                 <label style="line-height: 35px">公司:</label>
-                                <input type="text" class="form-control" style="display: inline; width: 70%" placeholder="搜索公司关键字"
+                                <input type="text" class="form-control" style="display: inline; width: 60%" placeholder="搜索公司关键字"
                                        name="search_company">
                             </div>
-                        	<div class="col-md-2" style="width: 20%; " align="right" hidden="hidden">
-                                <label style="line-height: 35px">部门:</label>
-                                <input type="text" class="form-control" style="display: inline; width: 80%" 
-                                		name="search_department">
-                            </div>
-                            <div class="col-md-2" class="form-control" align="right">
+                            <div class="searchFun" class="form-control" align="right" style="float: left; text-align: center">
                                 <label style="line-height: 40px">权限:</label>
                            		<input style="line-height: 40px" type="checkbox"  name="search_autority" value="1">管理员
                                	<input style="line-height: 40px" type="checkbox" name="search_autority" value="2">租户
                                 <input type="hidden" name="search_autority">
                             </div>
-           					<div class="searchs" align="right">
+           					<div class="searchs" align="right" style="float: left; text-align: center;margin-left: 15px">
                                 <div class="form-group">
                                     <div class="input-group">
                                     	<span class="input-group-btn">
@@ -137,9 +171,10 @@
                                                            onmouseout="style.textDecoration='none'">${user.userName }</a>
                                                     </td>
 		                                            <td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
-                                                    <td style="width: 15%; text-indent: 0;" id="user.user_province">
-                                                        <input type="hidden" id="user_province_hidden" value="${user.user_province}">
-                                                        <select class="hidden" name="province" id="user_province">
+                                                    <td style="width: 15%; text-indent: 0;" id="user.user_province" name="user.user_province">
+                                                        <input type="hidden" id="user_province_hidden"
+                                                               value="${user.user_province}">
+                                                        <select class="hidden" name="user_province" id="user_province">
                                                             <option name="user_province" value="1">北京</option>
                                                             <option name="user_province" value="2">天津</option>
                                                             <option name="user_province" value="3">上海</option>
@@ -176,7 +211,7 @@
 		                                            <td style="width: 15%; text-indent: 0;">${user.company }</td>
 		                                            <td style="width: 15%; text-indent: 0;">${user.user_department }</td>
 		                                            <td style="width: 13%; text-indent: 0;">${user.user_employee_id}</td>
-		                                            <td style="width: 10%; text-indent: 0;" id="user.user_autority">
+		                                            <td style="width: 10%; text-indent: 0;" id="user.user_autority" name="user.user_autority">
                                                         <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
                                                         <select class="hidden" id="user_autority" name="user_autority">
                                                             <option name="user_autority" value="2">租户</option>

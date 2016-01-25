@@ -1,4 +1,4 @@
-package com.bonc.epm.paas.util;
+package com.bonc.epm.paas.docker.util;
 
 import java.io.File;
 import java.util.Date;
@@ -6,9 +6,11 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.entity.CiRecord;
+import com.bonc.epm.paas.util.DateFormatUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.BuildResponseItem;
 import com.github.dockerjava.api.model.ExposedPort;
@@ -25,38 +27,39 @@ import com.github.dockerjava.core.command.PushImageResultCallback;
  * @author yangjian
  *
  */
-public class DockerClientUtil {
+@Service
+public class DockerClientService {
 	
 	@Value("${docker.io.url}")
-	private static String url;
+	private String url;
 	@Value("${docker.io.dockerCertPath}")
-	private static String dockerCertPath;
+	private String dockerCertPath;
 	@Value("${docker.io.username}")
-	private static String username;
+	private String username;
 	@Value("${docker.io.password}")
-	private static String password;
+	private String password;
 	@Value("${docker.io.email}")
-	private static String email;
+	private String email;
 	@Value("${docker.io.serverAddress}")
-	private static String serverAddress;
+	private String serverAddress;
 	
-	private static final Logger log = LoggerFactory.getLogger(DockerClientUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(DockerClientService.class);
 	
-	private static final DockerClientConfig config = DockerClientConfig
-			.createDefaultConfigBuilder()
-			.withUri(url)
-			.withDockerCertPath(dockerCertPath)
-			.withUsername(username)
-			.withPassword(password)
-			.withEmail(email)
-			.withServerAddress(serverAddress)
-			.build();
-	public static DockerClient getDockerClientInstance(){
+	public DockerClient getDockerClientInstance(){
+		DockerClientConfig config = DockerClientConfig
+				.createDefaultConfigBuilder()
+				.withUri(url)
+				.withDockerCertPath(dockerCertPath)
+				.withUsername(username)
+				.withPassword(password)
+				.withEmail(email)
+				.withServerAddress(serverAddress)
+				.build();
 		DockerClient dockerClient = DockerClientBuilder.getInstance(config)
 		  .build();
 		return dockerClient;
 	}
-	public static String generateRegistryImageName(String imageName,String imageVersion){
+	public String generateRegistryImageName(String imageName,String imageVersion){
 		return username+"/"+imageName+":"+imageVersion;
 	}
 	/**
@@ -66,9 +69,9 @@ public class DockerClientUtil {
 	 * @param imageVersion
 	 * @return
 	 */
-	public static boolean buildImage(String dockerfilePath,String imageName,String imageVersion,final CiRecord ciRecord,final CiRecordDao ciRecordDao){
+	public boolean buildImage(String dockerfilePath,String imageName,String imageVersion,final CiRecord ciRecord,final CiRecordDao ciRecordDao){
 		try{
-			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
+			DockerClient dockerClient = this.getDockerClientInstance();
 			File baseDir = new File(dockerfilePath);
 			BuildImageResultCallback callback = new BuildImageResultCallback() {
 			    @Override
@@ -104,10 +107,11 @@ public class DockerClientUtil {
 	 * @param imageVersion
 	 * @return
 	 */
-	public static boolean pushImage(String imageName,String imageVersion,final CiRecord ciRecord,final CiRecordDao ciRecordDao){
+	public boolean pushImage(String imageName,String imageVersion,final CiRecord ciRecord,final CiRecordDao ciRecordDao){
 		try{
-			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
+			DockerClient dockerClient = this.getDockerClientInstance();
 			PushImageResultCallback callback = new PushImageResultCallback() {
+				@SuppressWarnings("deprecation")
 				@Override
 				public void onNext(PushResponseItem item) {
 					if(item!=null&&item.getStream()!=null){
@@ -141,9 +145,9 @@ public class DockerClientUtil {
 	 * @param ciRecord 
 	 * @return
 	 */
-	public static boolean removeImage(String imageName,String imageVersion, CiRecord ciRecord, CiRecordDao ciRecordDao){
+	public boolean removeImage(String imageName,String imageVersion, CiRecord ciRecord, CiRecordDao ciRecordDao){
 		try{
-			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
+			DockerClient dockerClient = this.getDockerClientInstance();
 			dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce().exec();
 			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);
 	    	ciRecordDao.save(ciRecord);
@@ -163,9 +167,9 @@ public class DockerClientUtil {
 	 * @param imageVersion
 	 * @return
 	 */
-	public static boolean pullImage(String imageName,String imageVersion){
+	public boolean pullImage(String imageName,String imageVersion){
 		try{
-			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
+			DockerClient dockerClient = this.getDockerClientInstance();
 			dockerClient.pullImageCmd(username+"/"+imageName).withTag(imageVersion).exec(new PullImageResultCallback()).awaitSuccess();
 			return true;
 		}catch(Exception e){
@@ -184,9 +188,9 @@ public class DockerClientUtil {
 	 * @param bindPort
 	 * @return
 	 */
-	public static boolean createContainer(String imageName,String imageVersion,String containerName,Integer exposedPort,Integer bindPort){
+	public boolean createContainer(String imageName,String imageVersion,String containerName,Integer exposedPort,Integer bindPort){
 		try{
-			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
+			DockerClient dockerClient = this.getDockerClientInstance();
 	        ExposedPort tcp = ExposedPort.tcp(exposedPort);
 	        Ports portBindings = new Ports();
 	        portBindings.bind(tcp, Ports.Binding(bindPort));
@@ -205,9 +209,9 @@ public class DockerClientUtil {
 	 * @param containerName
 	 * @return
 	 */
-	public static boolean startContainer(String containerName){
+	public boolean startContainer(String containerName){
 		try{
-			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
+			DockerClient dockerClient = this.getDockerClientInstance();
 			dockerClient.startContainerCmd(containerName).exec();
 			return true;
 		}catch(Exception e){
@@ -222,9 +226,9 @@ public class DockerClientUtil {
 	 * @param containerName
 	 * @return
 	 */
-	public static boolean stopContainer(String containerName){
+	public boolean stopContainer(String containerName){
 		try{
-			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
+			DockerClient dockerClient = this.getDockerClientInstance();
 			dockerClient.stopContainerCmd(containerName).exec();
 			return true;
 		}catch(Exception e){
@@ -239,9 +243,9 @@ public class DockerClientUtil {
 	 * @param containerName
 	 * @return
 	 */
-	public static boolean removeContainer(String containerName){
+	public boolean removeContainer(String containerName){
 		try{
-			DockerClient dockerClient = DockerClientUtil.getDockerClientInstance();
+			DockerClient dockerClient = this.getDockerClientInstance();
 			dockerClient.removeContainerCmd(containerName).exec();
 			return true;
 		}catch(Exception e){
@@ -251,7 +255,7 @@ public class DockerClientUtil {
 		}
 	}
 	
-	/*public static void main(String[] args) {
+	/*public void main(String[] args) {
 		System.out.println(DockerClientUtil.buildImage("C:\\Users\\Administrator\\Desktop\\linyiyj-helloworld-master\\helloworld\\war-test\\","admin/hw1", "latest"));
 		System.out.println(DockerClientUtil.pullImage("bonc/helloworld", "latest"));
 		System.out.println(DockerClientUtil.createContainer("bonc/helloworld", "latest","container3",8080,10002));

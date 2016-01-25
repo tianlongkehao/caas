@@ -153,6 +153,12 @@
     height: 280px;
     overflow: hidden;
 }
+.step-inner #update_tenement .host_step1 .blankapp .row .stepLabel{
+    line-height: 34px;
+    margin-bottom: 0px;
+    width: 20%;
+    float: left ;
+}
 
 .modalCrealApp .steps-main .step-inner {
     position: relative;
@@ -799,7 +805,7 @@ i.pushOrg {
     margin-bottom: 20px;
     min-width: 180px;
     overflow: hidden;
-    height: 260px;
+    height: 200px;
     border-radius: 2px;
     float: left;
     padding-left: 20px;
