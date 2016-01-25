@@ -53,9 +53,39 @@ $(document).ready(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".containerEvent").removeClass("hide");
     });
+    
+    $('#datePicker').click(function(event) {
+        /* Act on the event */
+        laydate({
+          elem: '#date_log',
+          // event: 'focus',
+          issure: false, // 是否显示确认
+          min: $('#creationTime').val(),
+          max: laydate.now(+0),
+          zIndex: 99999999, //css z-index
+          choose: function(dates){ //选择好日期的回调
+            logPage = 1;
+            getPodLogs(dates);
+          }
+        });
+      });
+      $('#refreshLog').click(function (event) {
+        var date = $('#date_log').val();
+        logPage = 1;
+        getPodLogs(date);
+      });
+       $('#fullScreen').click(function () {
+        $('.containerLog').toggleClass('all');
+        var title = $(this).attr('title');
+        if(title == '满屏'){
+          $(this).addClass('fa-compress').attr('title','退出满屏').removeClass('fa-exprend');
+        }else{
+          $(this).addClass('fa-exprend').attr('title','满屏').removeClass('fa-compress');
+        }
+      });
 
 
-    $( "#datePicker" ).click(function(){});
+
     
     ServiceEvent();
 

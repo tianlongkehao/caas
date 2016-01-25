@@ -6,6 +6,7 @@
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css" href="/css/mod/service.css" />
 <script type="text/javascript" src="/js/service/service-detail.js"></script>
+<script type="text/javascript" src="/js/service/laydate/laydate.js"></script>
 </head>
 <body>
 
@@ -54,7 +55,8 @@
 						</div>
 					</section>
 					<div class="baseInfo center-style">
-						<a class="BASE btn-prim">基本信息</a> <a class="INSTANCES">容器实例</a>
+						<a class="BASE btn-prim">基本信息</a> 
+						<a class="INSTANCES">容器实例</a>
 						<!-- <a class="DOMAIN">绑定域名</a>  -->
 						<a class="PORTS">端口</a>
 						<!--<a class="MONITOR">监控</a>-->
@@ -262,9 +264,14 @@
 							</div>
 						</div>
 						<div class="weblog">
+						<c:if test="${logList=='[]' }">
+							<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>
+						</c:if>
+						<c:if test="${logList!='[]' }">
 							<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">${logList }</pre>
+						</c:if>
 							<input id="serviceInstances" type="hidden" value=""> 
-							<input id="creationTime" type="hidden" value="2015-11-30 10:23:27">
+							<input id="creationTime" type="hidden" value="${service.createDate }">
 						</div>
 					</div>
 					<div class="containerEvent hide" style="min-height: 500px;">
