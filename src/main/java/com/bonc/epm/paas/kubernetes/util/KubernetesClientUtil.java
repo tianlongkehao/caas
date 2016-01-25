@@ -74,11 +74,11 @@ public class KubernetesClientUtil {
         return new KubernetesApiClient(namespace,endpoint, username, password,new RestFactory());
     }
     
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
     	
 	}
     
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
     	
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("admin");
 			
@@ -280,9 +280,9 @@ public class KubernetesClientUtil {
 		Container container = new Container();
 		container.setName(name);
 		container.setImage(image);
-		
-		
-	
+
+
+
 		ResourceRequirements requirements = new ResourceRequirements();
 		requirements.getLimits();
 		Map<String,Object> def = new HashMap<String,Object>();
