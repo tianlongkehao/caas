@@ -1,17 +1,14 @@
 package com.bonc.epm.paas.kubernetes.util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 
-import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
@@ -39,26 +36,30 @@ public class KubernetesClientUtil {
 	
 	private static final Log log = LogFactory.getLog(KubernetesClientUtil.class);
 	
+	@Value("${kubernetes.api.endpoint}")
 	private static String endpoint;
+	@Value("${kubernetes.api.username}")
     private static String username;
+	@Value("${kubernetes.api.password}")
     private static String password;
+	@Value("${kubernetes.api.startport}")
     private static String startPort;
-    static{
-    	Properties k8sProperties = new Properties();
-    	InputStream in = KubernetesClientUtil.class.getClassLoader().getResourceAsStream("kubernetes.api.properties");
-    	try {
-			k8sProperties.load(in);
-			in.close();
-			endpoint = k8sProperties.getProperty("kubernetes.api.endpoint");
-			username = k8sProperties.getProperty("kubernetes.api.username");
-			password = k8sProperties.getProperty("kubernetes.api.password");
-			startPort = k8sProperties.getProperty("kubernetes.api.startport");
-		} catch (IOException e) {
-			log.error("KubernetesUtil.init:"+e.getMessage());
-			e.printStackTrace();
-		}
-    }
-    
+	@Value("${kubernetes.api.address}")
+	private static String address;
+	
+	
+    public static String getK8sEndpoint(){
+		return endpoint;
+	}
+	public static String getK8sUsername(){
+		return username;
+	}
+	public static String getK8sPasswrod(){
+		return password;
+	}
+	public static String getK8sAddress(){
+		return address;
+	}
 	public static int getK8sStartPort(){
 		return Integer.valueOf(startPort);
 	}
@@ -75,6 +76,14 @@ public class KubernetesClientUtil {
     /*public static void main(String[] args) {
     	
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("admin");
+			
+	    	try{
+	    		client.updateReplicationController("bonctest1", 1);
+				ReplicationControllerList list = client.getAllReplicationControllers();
+				System.out.println("ReplicationControllerList:"+JSON.toJSONString(list));
+	    	}catch(KubernetesClientException e){
+	    		System.out.println(e.getMessage()+":"+JSON.toJSONString(e.getStatus()));
+	    	}
 			
 			//获取特殊条件的pods
 			Map<String,String> map = new HashMap<String,String>();
@@ -243,6 +252,8 @@ public class KubernetesClientUtil {
 		meta.getName();
 		return null;
 	}
+	
+
 	
 	public static ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram){
 		ReplicationController replicationController = new ReplicationController();

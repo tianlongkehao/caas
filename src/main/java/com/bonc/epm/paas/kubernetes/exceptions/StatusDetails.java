@@ -5,36 +5,53 @@ import java.util.List;
 import com.google.common.base.MoreObjects;
 
 public class StatusDetails {
-    private String id;
+    private String name;
     private String kind;
-    private List<StatusDetailsCause> causes;
+    private int retryAfterSeconds;
+    private List<StatusCause> causes;
 
-    public String getId() {
-        return id;
-    }
+    public String getName() {
+		return name;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
-    public String getKind() {
-        return kind;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setKind(String kind) {
-        this.kind = kind;
-    }
 
-    public List<StatusDetailsCause> getCauses() {
-        return causes;
-    }
+	public String getKind() {
+		return kind;
+	}
 
-    public void setCauses(List<StatusDetailsCause> causes) {
-        this.causes = causes;
-    }
 
-    @Override
+	public void setKind(String kind) {
+		this.kind = kind;
+	}
+
+
+	public int getRetryAfterSeconds() {
+		return retryAfterSeconds;
+	}
+
+
+	public void setRetryAfterSeconds(int retryAfterSeconds) {
+		this.retryAfterSeconds = retryAfterSeconds;
+	}
+
+
+	public List<StatusCause> getCauses() {
+		return causes;
+	}
+
+
+	public void setCauses(List<StatusCause> causes) {
+		this.causes = causes;
+	}
+
+
+	@Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("id", id).add("causes", causes).toString();
+        return MoreObjects.toStringHelper(this).add("name", name).add("causes", causes).toString();
     }
 }

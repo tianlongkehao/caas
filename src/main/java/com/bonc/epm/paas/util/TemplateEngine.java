@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 public class TemplateEngine {
 	private static final Log log = LogFactory.getLog(TemplateEngine.class);
@@ -30,26 +31,17 @@ public class TemplateEngine {
         TemplateEngine.enter = System.getProperty("line.separator");
     }
     
-    
+    @Value("${nginxConf.io.confpath}")
     private static String nginxConfPath;
+    @Value("${nginxConf.io.cmdpath}")
     private static String nginxCmdPath;
+    @Value("${nginxConf.io.confurl}")
     private static String nginxConfUrl;
+    
     private static String template;
     static{
     	String path = TemplateEngine.class.getClassLoader().getResource("conf.tpl").getPath();
     	template = TemplateEngine.readConf(path); 
-    	Properties nginxProperties = new Properties();
-    	InputStream in = TemplateEngine.class.getClassLoader().getResourceAsStream("nginxConf.io.properties");
-    	try {
-    		nginxProperties.load(in);
-			in.close();
-			nginxConfPath = nginxProperties.getProperty("nginxConf.io.confpath");
-			nginxCmdPath = nginxProperties.getProperty("nginxConf.io.cmdpath"); 
-			nginxConfUrl = nginxProperties.getProperty("nginxConf.io.confurl");
-		} catch (IOException e) {
-			log.error("nginxConfPath.init:"+e.getMessage());
-			e.printStackTrace();
-		}
     }
     
     public static void generateConfig(Map<String, String> app,String configName){
@@ -112,6 +104,7 @@ public class TemplateEngine {
             }
             matcher.appendTail(sb);
         }catch(Exception e){
+        	log.error("sb:"+sb);
             e.printStackTrace();
         }
         return sb.toString();   //加一个空行（结束行）
@@ -137,6 +130,7 @@ public class TemplateEngine {
             osw.close();
             fos.close();
         }catch(Exception e){
+        	log.error(e);
             e.printStackTrace();
         }
     }
@@ -158,6 +152,7 @@ public class TemplateEngine {
             br.close();
             fr.close();
         }catch(Exception e){
+        	log.error(e);
             e.printStackTrace();
         }
         return sb.toString();
@@ -192,6 +187,7 @@ public class TemplateEngine {
             nr.close();
             fr.close();
         }catch(Exception e){
+        	log.error(e);
             e.printStackTrace();
         }
         return sb.toString();
