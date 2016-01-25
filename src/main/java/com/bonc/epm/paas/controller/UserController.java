@@ -102,8 +102,10 @@ public class UserController {
      *
      * @return
      */
+
     @RequestMapping(value = {"/add"}, method = RequestMethod.GET)
-    public String create() {
+    public String useradd(Model model) {
+        model.addAttribute("menu_flag", "user");
         return "user/user_create.jsp";
     }
 
@@ -115,7 +117,7 @@ public class UserController {
     }
 
     /**
-     * 创建新用户
+     * 创建新租户
      * 以用户登陆帐号（用户名）为名称，创建Namespace
      *
      * @param user
@@ -169,7 +171,9 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-
+    /**
+     * 创建新用户
+     */
     @RequestMapping(value = {"/savemanage.do"}, method = RequestMethod.POST)
     public String userManageSave(User user, Model model) {
         System.out.println("savemanage.do=============================================");
@@ -213,12 +217,14 @@ public class UserController {
         //以用户名(登陆帐号)为name，创建client
         KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
 
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+user.getUserName());
         ResourceQuota quota = updateQuota(client, user.getUserName(), resource);
         LimitRange limit = updateLimitRange(client, user.getUserName(), restriction);
 
         try {
             ResourceQuota updateQuota = client.updateResourceQuota(user.getUserName(), quota);
             LimitRange updateLimitRange = client.updateLimitRange(user.getUserName(), limit);
+            System.out.println("+++++++++++++++++++++++++"+user.getUser_autority());
             userDao.save(user);
             model.addAttribute("updateFlag", "200");
             //返回 user.jsp 页面，展示所用用户信息
@@ -226,13 +232,16 @@ public class UserController {
             e.printStackTrace();
             model.addAttribute("updateFlag", "400");
         }
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+"updateFlag");
 
         List<User> userList = new ArrayList<User>();
         for (User uu : userDao.findAll()) {
             userList.add(uu);
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+uu);
         }
         model.addAttribute("userList", userList);
         model.addAttribute("menu_flag", "user");
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+"??????????????????????????");
         return "user/user.jsp";
     }
 
@@ -380,18 +389,23 @@ public class UserController {
     @RequestMapping(value = {"/searchByCondition"}, method = RequestMethod.POST)
     public String searchByCondition(String search_company, String search_department,
                                     String search_autority, String search_userName,
+                                    String search_province,
                                     Model model) {
         List<User> userList = new ArrayList<User>();
         String company = "";
         String user_department = "";
         String user_autority = "";
         String user_realname = "";
+        String user_province = "";
 
         if (search_company != null && !search_company.trim().equals("")) {
             company = search_company.trim();
         }
         if (search_department != null && !search_department.trim().equals("")) {
             user_department = search_department.trim();
+        }
+        if (search_province != null && !search_province.trim().equals("")) {
+            user_province = search_province.trim();
         }
         if (search_userName != null && !search_userName.trim().equals("")) {
             user_realname = search_userName.trim();
@@ -402,19 +416,19 @@ public class UserController {
             if (arr.length == 1) {
 //				System.out.println("findby4");
                 user_autority = arr[0].trim();
-                for (User user : userDao.findBy4(company, user_department, user_autority, user_realname)) {
+                for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province)) {
                     userList.add(user);
                 }
             } else {
 //				System.out.println("findby3");
-                for (User user : userDao.findBy3(company, user_department, user_realname)) {
+                for (User user : userDao.find12By3(company, user_department, user_realname, user_province)) {
                     userList.add(user);
                 }
 
             }
         } else {
-//			System.out.println("findby3");
-            for (User user : userDao.findBy3(company, user_department, user_realname)) {
+//			System.out.println("find12By3");
+            for (User user : userDao.find12By3(company, user_department, user_realname, user_province)) {
                 userList.add(user);
             }
         }
@@ -521,10 +535,6 @@ public class UserController {
         return "user/user-own.jsp";
     }
 
-    @RequestMapping(value = {"user/add"}, method = RequestMethod.GET)
-    public String useradd(Model model) {
-        return "user/user-add.jsp";
-    }
 
     @RequestMapping("/userModifyPsw.do")
     @ResponseBody
@@ -686,12 +696,12 @@ public class UserController {
         Map<String, String> podMin = new HashMap<String, String>();
         Map<String, String> podDefault = new HashMap<String, String>();
 
-        podMax.put("memory", Integer.valueOf(restriction.getPod_memory_max()) * 1024 + "M");
-        podMin.put("memory", Integer.valueOf(restriction.getPod_memory_min()) * 1024 + "M");
-        podDefault.put("memory", Integer.valueOf(restriction.getPod_memory_default()) * 1024 + "M");
-        podMax.put("cpu", Integer.valueOf(restriction.getPod_cpu_max()) * 1000 + "m");
-        podMin.put("cpu", Integer.valueOf(restriction.getPod_cpu_min()) * 1000 + "m");
-        podDefault.put("cpu", Integer.valueOf(restriction.getPod_cpu_default()) * 1000 + "m");
+        podMax.put("memory", computeMemory(restriction.getPod_memory_max()));
+        podMax.put("cpu", computeCpu(restriction.getPod_cpu_max()));
+        podMin.put("memory", computeMemory(restriction.getPod_memory_min()));
+        podMin.put("cpu", computeCpu(restriction.getPod_cpu_min()));
+        podDefault.put("memory", computeMemory(restriction.getPod_memory_default()));
+        podDefault.put("cpu", computeCpu(restriction.getPod_cpu_default()));
 
         podLimitRangeItem.setDefaultVal(podDefault);
         podLimitRangeItem.setMax(podMax);
@@ -703,12 +713,12 @@ public class UserController {
         Map<String, String> containerMin = new HashMap<String, String>();
         Map<String, String> containerDefault = new HashMap<String, String>();
 
-        containerMax.put("memory", Integer.valueOf(restriction.getContainer_memory_max()) * 1024 + "M");
-        containerMin.put("memory", Integer.valueOf(restriction.getContainer_memory_min()) * 1024 + "M");
-        containerDefault.put("memory", Integer.valueOf(restriction.getContainer_memory_default()) * 1024 + "M");
-        containerMax.put("cpu", Integer.valueOf(restriction.getContainer_cpu_max()) * 1000 + "m");
-        containerMin.put("cpu", Integer.valueOf(restriction.getContainer_cpu_min()) * 1000 + "m");
-        containerDefault.put("cpu", Integer.valueOf(restriction.getContainer_cpu_default()) * 1000 + "m");
+        containerMax.put("memory", computeMemory(restriction.getContainer_memory_max()));
+        containerMax.put("cpu", computeCpu(restriction.getContainer_cpu_max()));
+        containerMin.put("memory", computeMemory(restriction.getContainer_memory_min()));
+        containerMin.put("cpu", computeCpu(restriction.getContainer_cpu_min()));
+        containerDefault.put("memory", computeMemory(restriction.getContainer_memory_default()));
+        containerDefault.put("cpu", computeCpu(restriction.getContainer_cpu_default()));
 
         containerLimitRangeItem.setMax(containerMax);
         containerLimitRangeItem.setMin(containerMin);
@@ -733,6 +743,8 @@ public class UserController {
      */
     private ResourceQuota updateQuota(KubernetesAPIClientInterface client, String username, Resource resource) {
         ResourceQuota quota = client.getResourceQuota(username);
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"+quota);
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"+username);
         ResourceQuotaSpec spec = quota.getSpec();
         Map<String, String> hard = quota.getSpec().getHard();
 

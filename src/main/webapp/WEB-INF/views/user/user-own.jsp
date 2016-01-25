@@ -50,7 +50,7 @@
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label>权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
+                                    <label style="line-height: 34px;margin-bottom: 0px">权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
                                     <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
                                     <select class="form-control" style="width: 78%;display: inline; float: right;margin-right: 17px"
                                             name="user_autority" id="user_autority" disabled>
@@ -72,7 +72,7 @@
                             </div>
                             <div class="row" style="margin-top: 15px">
                                 <div class="col-md-4">
-                                    <label>省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
+                                    <label style="line-height: 34px;margin-bottom: 0px">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
                                     <input type="hidden" id="user_province_hidden" value="${user.user_province}">
                                     <select class="form-control" style="width: 78%;display: inline; float: right;margin-right: 17px"
                                             name="province" id="user_province" disabled>
@@ -122,7 +122,7 @@
                             </div>
                             <div class="row" style="margin-top: 15px">
                                 <div class="col-md-4">
-                                    <label>工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
+                                    <label>工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :</label>
                                     <input type="text" class="form-control" id="user_employee_id"
                                            name="user_employee_id" value="${user.user_employee_id }"
                                            style="width: 78%;display: inline" >
@@ -163,38 +163,38 @@
                                       </span>
                                       	<c:choose>
                                       		<c:when test="${servServiceNum==''}">
-	                                      		<span class="pull-right big green"><span id="clusterNum">-</span>&nbsp;个</span>
+	                                      		<span class="pull-right big green"><span id="clusterNum">2</span>&nbsp;个</span>
                                       		</c:when>
                                       		<c:otherwise>
-		                                        <span class="pull-right big green"><span id="clusterNum">${servServiceNum }</span>&nbsp;个</span>
+		                                        <span class="pull-right big green"><span id="clusterNum1">${servServiceNum }</span>&nbsp;个</span>
                                       		</c:otherwise>
                                       	</c:choose>
                                       	</a>
                                 </li>
                                 <li>
-                                    <a href="/ci?0" data-permalink onclick="_permalink(this)">
+                                    <a href="/ci?0" data-permalink onclick="permalink(this)">
                                           <span class="server-info-icon"><i class="fa_icon server_icon_2"></i>
-                                            <span>项目个数：</span>
+                                            <span>Pod个数：</span>
                                           </span>
-                                        <span class="pull-right big blue"><span id="ciNum">-</span>&nbsp;个</span>
+                                        <span class="pull-right big blue"><span id="ciNum">3</span>&nbsp;个</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="/docker-registry?0" data-permalink onclick="_permalink(this)">
                                           <span class="server-info-icon"><i class="fa_icon server_icon_3"></i>
-                                            <span>镜像个数：</span>
+                                            <span>副本控制器：</span>
                                           </span>
-                                        <span class="pull-right big yellow"><span id="imageNum">-</span>&nbsp;个</span>
+                                        <span class="pull-right big yellow"><span id="imageNum">1</span>&nbsp;个</span>
                                     </a>
                                 </li>
-                                <li>
+                                <%--<li>
                                     <a href="/hosting?0" data-permalink onclick="_permalink(this)">
                                       <span class="server-info-icon"><i class="fa_icon server_icon_hosting"></i>
                                         <span>主机个数：</span>
                                       </span>
                                         <span class="pull-right big purple"><span id="hostingNum">-</span>&nbsp;个</span>
                                     </a>
-                                </li>
+                                </li>--%>
                             </ul>
                         </div>
                         </section>
@@ -212,55 +212,39 @@
                                         <td style="width:15%">CPU（核）</td>
                                         <td style="width:25%">
                                             <div class="slider_bj">
-                                                <div class="slider_block detailCpu"></div>
+                                                <div class="slider_block detailCpu" style="width: 23%"></div>
                                             </div>
                                         </td>
                                         <td style="width:10%">
                                         	<c:choose>
                                         		<c:when test="${usedCpuNum==''}">
-			                                        <span id="detailCpu">-</span>（核）
+			                                        <span id="detailCpu">2</span>（核）
                                         		</c:when>
                                         		<c:otherwise>
 			                                        <span id="detailCpu">${usedCpuNum }</span>（核）
                                         		</c:otherwise>
                                         	</c:choose>
                                         </td>
-                                        <td>网络（M）</td>
-                                        <td>
-                                            <div class="slider_bj">
-                                                <div class="slider_block network"></div>
-                                            </div>
-                                        </td>
-                                        <td>10M</td>
                                     </tr>
                                     <tr>
                                         <td>内存（M）</td>
                                         <td>
                                             <div class="slider_bj">
-                                                <div class="slider_block detailMemory"></div>
+                                                <div class="slider_block detailMemory" style="width: 43%"></div>
                                             </div>
                                         </td>
                                         <td>
                                         	<c:choose>
                                         		<c:when test="${usedMemoryNum==''}">
-			                                        <span id="detailMemory">-</span>/<span id="totalMemory">-</span>（M）
+			                                        <span id="detailMemory">880.64</span>/<span id="totalMemory">2048</span>（M）
                                         		</c:when>
                                         		<c:otherwise>
 			                                        <span id="detailMemory">${usedMemoryNum}</span>/<span id="totalMemory">-</span>（M）
                                         		</c:otherwise>
                                         	</c:choose>
                                         </td>
-                                        <td>存储（G）</td>
-                                        <td>
-                                            <div class="slider_bj">
-                                                <div class="slider_block detailVolume"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span id="detailVolume">-</span>/<span id="totalVolume">-</span>（G）
-                                        </td>
                                     </tr>
-                                    <tr>
+                                    <%--<tr>
                                         <td>集群（个）</td>
                                         <td>
                                             <div class="slider_bj">
@@ -275,16 +259,6 @@
                                             </div>
                                         </td>
                                         <td style="width:10%"><span id="detailHostingNum">-</span>/5（个）</td>
-                                    </tr>
-                                    <%--<tr>
-                                        <td>Stack（个）</td>
-                                        <td>
-                                            <div class="slider_bj">
-                                                <div class="slider_block detailStackNum"></div>
-                                            </div>
-                                        </td>
-                                        <td><span id="detailStackNum">-</span>（个）</td>
-                                        <td colspan="3"></td>
                                     </tr>--%>
                                     </tbody>
                                 </table>

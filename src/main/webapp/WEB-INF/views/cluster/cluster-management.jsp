@@ -5,7 +5,7 @@
     <title>集群</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="/css/mod/cluster.css"/>
-    <script type="text/javascript" src="/js/cluster/cluster.js"></script>
+    <script type="text/javascript" src="/js/cluster/cluster-management.js"></script>
 </head>
 <body>
 <jsp:include page="../frame/menu.jsp" flush="true">
@@ -48,7 +48,7 @@
                                         <li>
                                             <a href="javascript:resource_detail();">
                                                 <i class="fa fa-play"></i>
-                                                <span class="ic_left">查看</span>
+                                                <span class="ic_left">删除</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -124,8 +124,8 @@
                                             <table class="table">
                                                 <thead>
                                                 <tr>
-                                                    <th style="width: 5%;text-indent: 30px;">
-                                                        <input type="checkbox" class="chkAll"/>
+                                                    <th style="width: 3%;text-indent: 30px;">
+                                                        <%--<input type="checkbox" class="chkAll"/>--%>
                                                     </th>
                                                     <th style="width: 20%;padding-left: 5px;">IP</th>
                                                     <th style="width: 20%;text-indent: 8px;">节点类型</th>
@@ -139,9 +139,9 @@
                                                     </c:if>
                                                     <c:if test="${cur_cluster.host != cluster.host}">
                                                         <tr class="clusterTr" id="${cluster.host }">
-                                                            <td style="width: 5%;text-indent: 30px;">
-                                                                <input type="checkbox" class="chkItem" name="hosts"
-                                                                       value="${cluster.id}">
+                                                            <td style="width: 3%;text-indent: 30px;">
+                                                                <%--<input type="checkbox" class="chkItem" name="hosts"
+                                                                       value="${cluster.id}">--%>
                                                             </td>
                                                             <td style="width: 20%;padding-left: 5px;" value="${cluster.host }">
                                                                 <a href="/cluster/detail?hostIps=${cluster.host }" title="查看详细信息"
@@ -149,7 +149,7 @@
                                                                    onmouseout="style.textDecoration='none'">${cluster.host }</a>
                                                             </td>
                                                             <td style="width: 20%;text-indent: 8px;">${cluster.hostType}</td>
-                                                            <td style="width: 20%;">${cluster.net}</td>
+                                                            <td style="width: 20%;">连接正常</td>
                                                         </tr>
                                                     </c:if>
                                                 </c:forEach>

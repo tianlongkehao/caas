@@ -10,18 +10,6 @@ $(function () {
 
     });
 
-    var clusterCpuPer = $("#detailCpu")[0].textContent/$("#totalCpu")[0].textContent*100+"%";
-    $("#clusterCpu")[0].style.width = clusterCpuPer;
-    var clusterMemPer = $("#detailMemory")[0].textContent/$("#totalMemory")[0].textContent*100+"%";
-    $("#clusterMem")[0].style.width = clusterMemPer;
-
-    for(var i = 0; i < document.getElementsByName("clusterUseInfo").length; i++){
-        var clustersCpuPer = $(".clusterDetCpuUse")[i].textContent/$(".clusterTotCpuLimit")[i].textContent*100+"%";
-        $(".clusterCpuUse")[i].style.width = clustersCpuPer;
-        var clustersMemPer = $(".clusterDetMemUse")[i].textContent/$(".clusterTotMemLimit")[i].textContent*100+"%";
-        $(".clusterMemUse")[i].style.width = clustersMemPer;
-    }
-
 });
 
 
