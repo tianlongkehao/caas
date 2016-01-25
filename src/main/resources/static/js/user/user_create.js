@@ -1,3 +1,52 @@
+/**
+ * 删除选中用户
+ */
+function delUser(){
+	var id = "";
+	$(":checked[name='ids']").each(function(){
+		id = id + jQuery(this).val() + ",";
+	});
+	if ("" == id) {
+		alert("请选择至少一个用户");
+		return;
+	}
+	else {
+		id = id.substring(0, id.length - 1);
+		layer.open({
+			title: '删除用户',
+			content:'确定删除多个用户吗？',
+			btn: ['确定', '取消'],
+			yes: function(index, layero){ //或者使用btn1
+				layer.close(index);
+				$.ajax({
+					url:"/user/delMul.do?ids="+id,
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("用户信息删除成功");
+						}else{
+							layer.alert("用户信息删除失败，请检查服务器连接");
+						}
+						location.reload(true);
+					}
+				})
+
+			},
+			cancel: function(index){ //或者使用btn2
+				//按钮【按钮二】的回调
+			}
+		});
+	}
+}
+
+$(function(){
+	var p=window.location.href;
+	var reg = new RegExp("savemanage.do", "");
+	if (reg.test(p)){
+		window.location="/user/manage/list/6";
+	}
+});
+
 $(document).ready(function(){
 
 	/*var user_province_val = document.getElementById("user_province_hidden").value;

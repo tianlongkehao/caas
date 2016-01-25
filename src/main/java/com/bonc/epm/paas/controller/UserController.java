@@ -75,7 +75,7 @@ public class UserController {
 	 */
 	@RequestMapping(value="/list",method=RequestMethod.GET)
 	public String index(Model model){
-		
+
 		List<User> userList = new ArrayList<User>();
 		for(User user:userDao.findAll()){
 			userList.add(user);
@@ -90,6 +90,9 @@ public class UserController {
 		User userManger = userDao.findOne(id);
 		List<User> userManageList = new ArrayList<>();
 		for(User user:userDao.checkUsermanage("3", userManger.getUser_province())){
+			userManageList.add(user);
+		}
+		for(User user:userDao.checkUsermanage("4", userManger.getUser_province())){
 			userManageList.add(user);
 		}
 		model.addAttribute("userManageList",userManageList);
@@ -157,7 +160,7 @@ public class UserController {
 			e.printStackTrace();
 			model.addAttribute("creatFlag", "400");
 		}
-		
+
 		//返回 user.jsp 页面，展示所用用户信息
 		List<User> userList = new ArrayList<User>();
 		for(User uu : userDao.findAll()){
@@ -169,7 +172,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value={"/savemanage.do"}, method=RequestMethod.POST)
-	public String userManageSave(User user, Model model, @PathVariable long id){
+	public String userManageSave(User user, Model model){
 		System.out.println("savemanage.do=============================================");
 		try {
 
@@ -182,12 +185,11 @@ public class UserController {
 		}
 
 		//返回 user.jsp 页面，展示所用用户信息
-		User userManger = userDao.findOne(id);
-		List<User> userManageList = new ArrayList<>();
-		for(User uu:userDao.checkUsermanage("3", userManger.getUser_province())){
-			userManageList.add(uu);
+		List<User> userList = new ArrayList<User>();
+		for(User uu : userDao.findAll()){
+			userList.add(uu);
 		}
-		model.addAttribute("userManageList",userManageList);
+		model.addAttribute("userList",userList);
 		model.addAttribute("menu_flag", "user");
 		return "user/user-management.jsp";
 	}
@@ -383,7 +385,6 @@ public class UserController {
 		String user_department = "";
 		String user_autority = "";
 		String user_realname = "";
-
 		if(search_company != null && !search_company.trim().equals("")){
 			company = search_company.trim();
 		}
@@ -393,18 +394,17 @@ public class UserController {
 		if(search_userName != null && !search_userName.trim().equals("")){
 			user_realname = search_userName.trim();
 		}
-		
 		if(search_autority.trim().length()>0){
 			String[] arr = search_autority.trim().substring(0, search_autority.trim().length()-1).split(",");
 			if(arr.length == 1){
-//				System.out.println("findby4");
+				System.out.println("findby4");
 				user_autority = arr[0].trim();
 				for(User user : userDao.findBy4(company, user_department, user_autority, user_realname)){
 					userList.add(user);
 				}
 			}
 			else {
-//				System.out.println("findby3");
+				System.out.println("findby3");
 				for(User user : userDao.findBy3(company, user_department, user_realname)){
 					userList.add(user);
 				}
@@ -412,7 +412,7 @@ public class UserController {
 			}
 		}
 		else{
-//			System.out.println("findby3");
+			System.out.println("findby3");
 			for(User user : userDao.findBy3(company, user_department, user_realname)){
 				userList.add(user);
 			}
@@ -420,6 +420,58 @@ public class UserController {
 		model.addAttribute("userList",userList);
 		model.addAttribute("menu_flag", "user");
 		return "user/user.jsp";
+	}
+
+//租户搜查
+	@RequestMapping(value={"/manage/searchByCondition/{id}"},method=RequestMethod.POST)
+	public String searchByConditionS(String search_company, String search_department,
+									String search_autority, String search_userName,
+									Model model){
+		List<User> userManageList = new ArrayList<User>();
+		String company = "";
+		String user_department = "";
+		String user_autority = "3";
+		String user_realname = "";
+		if(search_company != null && !search_company.trim().equals("")){
+			company = search_company.trim();
+		}
+		if(search_department != null && !search_department.trim().equals("")){
+			user_department = search_department.trim();
+		}
+		if(search_userName != null && !search_userName.trim().equals("")){
+			user_realname = search_userName.trim();
+		}
+		if(search_autority.trim().length()>0){
+			String[] arr = search_autority.trim().substring(0, search_autority.trim().length()-1).split(",");
+			if(arr.length == 1){
+				System.out.println("findby4");
+				user_autority = arr[0].trim();
+				for(User user : userDao.findBy4(company, user_department, user_autority, user_realname)){
+					userManageList.add(user);
+				}
+			}
+			else {
+				System.out.println("findby3");
+				for(User user : userDao.findBy3(company, user_department, user_realname)){
+					userManageList.add(user);
+				}
+
+			}
+		}
+		else{
+			for(User user : userDao.findBy4(company, user_department, user_autority, user_realname)){
+				userManageList.add(user);
+			}
+			user_autority = "4";
+			for(User user : userDao.findBy4(company, user_department, user_autority, user_realname)){
+				userManageList.add(user);
+			}
+		}
+
+
+		model.addAttribute("userManageList",userManageList);
+		model.addAttribute("menu_flag", "user");
+		return "user/user-management.jsp";
 	}
 	
 	/**
