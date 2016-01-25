@@ -4,8 +4,8 @@
 <head lang="en">
     <title>快速构建</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/ci.css"/>
-    <script type="text/javascript" src="/js/ci/ci_add.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
+    <script type="text/javascript" src="<%=path %>/js/ci/ci_add.js"></script>
 </head>
 <body>
 
@@ -30,7 +30,7 @@
                     <div class="container">
                         <h4>快速构建</h4>
 
-                        <form id="buildForm" name="buildForm" action="/ci/addCi.do" method="post">
+                        <form id="buildForm" name="buildForm" action="<%=path %>/ci/addCi.do" method="post">
                             <div class="row depot-name">
                                 <div class="form-group col-md-7">
                                     <label>镜像名称</label>

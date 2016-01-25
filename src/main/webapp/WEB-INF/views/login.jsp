@@ -5,7 +5,7 @@
 <head>
     <title>用户登录</title>
    <%@include file="frame/dashboard-header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/core/layout.css">
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/layout.css">
 </head>
 <body>
 
@@ -28,7 +28,7 @@
                 <div class="loginMsg">
                     <span class="">${err_code }</span>
                 </div>
-                <form id="loginForm" class="form" action="signin" method="post">
+                <form id="loginForm" class="form" action="<%=path %>/signin" method="post">
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-addon">
