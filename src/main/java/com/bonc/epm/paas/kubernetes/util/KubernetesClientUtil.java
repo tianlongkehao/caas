@@ -1,22 +1,18 @@
 package com.bonc.epm.paas.kubernetes.util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 
-import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.api.RestFactory;
-import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
@@ -27,7 +23,6 @@ import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
-import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerSpec;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
@@ -41,26 +36,30 @@ public class KubernetesClientUtil {
 	
 	private static final Log log = LogFactory.getLog(KubernetesClientUtil.class);
 	
+	@Value("${kubernetes.api.endpoint}")
 	private static String endpoint;
+	@Value("${kubernetes.api.username}")
     private static String username;
+	@Value("${kubernetes.api.password}")
     private static String password;
+	@Value("${kubernetes.api.startport}")
     private static String startPort;
-    static{
-    	Properties k8sProperties = new Properties();
-    	InputStream in = KubernetesClientUtil.class.getClassLoader().getResourceAsStream("kubernetes.api.properties");
-    	try {
-			k8sProperties.load(in);
-			in.close();
-			endpoint = k8sProperties.getProperty("kubernetes.api.endpoint");
-			username = k8sProperties.getProperty("kubernetes.api.username");
-			password = k8sProperties.getProperty("kubernetes.api.password");
-			startPort = k8sProperties.getProperty("kubernetes.api.startport");
-		} catch (IOException e) {
-			log.error("KubernetesUtil.init:"+e.getMessage());
-			e.printStackTrace();
-		}
-    }
-    
+	@Value("${kubernetes.api.address}")
+	private static String address;
+	
+	
+    public static String getK8sEndpoint(){
+		return endpoint;
+	}
+	public static String getK8sUsername(){
+		return username;
+	}
+	public static String getK8sPasswrod(){
+		return password;
+	}
+	public static String getK8sAddress(){
+		return address;
+	}
 	public static int getK8sStartPort(){
 		return Integer.valueOf(startPort);
 	}
@@ -75,6 +74,7 @@ public class KubernetesClientUtil {
     }
     
     /*public static void main(String[] args) {
+
     	
 	}
     

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->  
-    <property name="LOG_HOME" value="/usr/local/logback/paas"/>  
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径     使用spring-boot的配置项LOG_PATH-->  
+    <property name="LOG_HOME" value="${LOG_PATH}"/>  
     <property name="LOG_LEVEL" value="INFO" />  
     <!-- 控制台输出 -->   
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
