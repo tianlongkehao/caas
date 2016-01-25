@@ -1,30 +1,13 @@
 package com.bonc.epm.paas.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.bonc.epm.paas.constant.ServiceConstant;
-import com.bonc.epm.paas.entity.Container;
-import com.bonc.epm.paas.entity.Resource;
-import com.bonc.epm.paas.entity.Restriction;
-import com.bonc.epm.paas.entity.Service;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-import javax.xml.soap.Detail;
-
-import org.aspectj.apache.bcel.generic.RET;
-import org.dom4j.util.UserDataElement;
-import org.hibernate.exception.spi.ViolatedConstraintNameExtracter;
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.data.repository.query.Parameter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,30 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import sun.misc.Cleaner;
-
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.entity.Resource;
+import com.bonc.epm.paas.entity.Restriction;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
-import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
-import com.bonc.epm.paas.kubernetes.api.RestFactory;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
-import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
-import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
-import com.bonc.epm.paas.kubernetes.util.KubernetesClientUtil;
-import com.mysql.fabric.xmlrpc.base.Param;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Timestamp;
-import java.util.*;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 
 @Controller
 
@@ -65,6 +38,8 @@ public class UserController {
     private static Map<String, KubernetesAPIClientInterface> clientMap;
     @Autowired
     public UserDao userDao;
+	@Autowired
+	private KubernetesClientService kubernetesClientService;
     private Model model;
 
     /**
@@ -128,10 +103,10 @@ public class UserController {
         System.out.println("save.do=============================================");
         try {
             //以用户名(登陆帐号)为name，创建client
-            KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
 
             //以用户名(登陆帐号)为name，为client创建Namespace
-            Namespace namespace = KubernetesClientUtil.generateSimpleNamespace(user.getUserName());
+            Namespace namespace = kubernetesClientService.generateSimpleNamespace(user.getUserName());
             namespace = client.createNamespace(namespace);
             System.out.println("namespace:" + JSON.toJSONString(namespace));
 
@@ -144,7 +119,7 @@ public class UserController {
             map.put("services", resource.getServer_count() + "");//服务
             map.put("replicationcontrollers", resource.getImage_control() + "");//副本控制器
             map.put("resourcequotas", "1");//资源配额数量
-            ResourceQuota quota = KubernetesClientUtil.generateSimpleResourceQuota(user.getUserName(), map);
+            ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getUserName(), map);
             System.out.println("before quota: " + JSON.toJSONString(quota));
             quota = client.createResourceQuota(quota);
             System.out.println("quota:" + JSON.toJSONString(quota));
@@ -215,7 +190,7 @@ public class UserController {
     public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
 
         //以用户名(登陆帐号)为name，创建client
-        KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+user.getUserName());
         ResourceQuota quota = updateQuota(client, user.getUserName(), resource);
@@ -269,7 +244,7 @@ public class UserController {
             userDao.delete(users);
             for (String name : userNameList) {
                 //以用户名(登陆帐号)为name，创建client
-                KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(name);
+                KubernetesAPIClientInterface client = kubernetesClientService.getClient(name);
                 if (client.getNamespace(name) != null) {
                     client.deleteLimitRange(name);
                     client.deleteResourceQuota(name);
@@ -299,7 +274,7 @@ public class UserController {
         Restriction restriction = new Restriction();
 
         //以用户名(登陆帐号)为name，创建client
-        KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
         Namespace ns = client.getNamespace(user.getUserName());
 
         if (ns != null) {
@@ -451,7 +426,7 @@ public class UserController {
         if (names.size() > 0) {
             map.put("status", "400");
         } else {
-            KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(username);
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(username);
             Namespace namespace = client.getNamespace(username);
             if (namespace != null) {
                 map.put("status", "300");
@@ -508,7 +483,7 @@ public class UserController {
         String usedMemoryNum = "";//已使用内存
 
         //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
-        KubernetesAPIClientInterface client = KubernetesClientUtil.getClient(user.getUserName());
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
         Namespace ns = client.getNamespace(user.getUserName());
         System.out.println("namespace:" + JSON.toJSONString(ns));
 

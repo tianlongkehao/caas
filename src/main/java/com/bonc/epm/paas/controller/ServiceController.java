@@ -10,14 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.jws.soap.SOAPBinding.Use;
-import javax.print.DocFlavor.STRING;
-
-import org.aspectj.weaver.ast.And;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.reflect.MethodDelegate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
@@ -31,6 +26,7 @@ import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.dao.ContainerDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
+import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Service;
@@ -41,15 +37,11 @@ import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
-import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
-import com.bonc.epm.paas.kubernetes.util.KubernetesClientUtil;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.DockerClientUtil;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
-
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 
 
  
@@ -69,6 +61,10 @@ public class ServiceController {
 	private ContainerDao containerDao;
 	@Autowired
 	private ImageDao imageDao;
+	@Autowired
+	public DockerClientService dockerClientService;
+	@Autowired
+	private KubernetesClientService kubernetesClientService;
 	
 	
 	@RequestMapping("service/listService.do")
@@ -92,7 +88,7 @@ public class ServiceController {
 	@RequestMapping(value={"service"},method=RequestMethod.GET)
 	public String containerLists(Model model){
 		User  currentUser = CurrentUserUtils.getInstance().getUser();
-		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 	    List<Service> serviceList = new ArrayList<Service>();
 	    List<Container> containerList = new ArrayList<Container>();
 	    if((client.getNamespace(currentUser.getUserName()) == null)&( client.getResourceQuota(currentUser.getUserName())== null)){
@@ -141,7 +137,7 @@ public class ServiceController {
 	@RequestMapping(value={"findservice/{servName}"},method=RequestMethod.GET)
 	public String searchService(Model model,@PathVariable String servName){
 		User  currentUser = CurrentUserUtils.getInstance().getUser();
-		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 	    List<Service> serviceList = new ArrayList<Service>();
 	    List<Container> containerList = new ArrayList<Container>();
 	  //获取特殊条件的pods
@@ -201,7 +197,7 @@ public class ServiceController {
 	public String detail(Model model,@PathVariable long id){
         System.out.printf("id: " + id);
         Service service = serviceDao.findOne(id);
-        KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         List<Container> containerList = new ArrayList<Container>();
         List<String> logList = new ArrayList<String>();
         Map<String,String> map = new HashMap<String,String>();
@@ -263,7 +259,7 @@ public class ServiceController {
 	public boolean getleftResource(Model model){
 
 		User currentUser = CurrentUserUtils.getInstance().getUser();
-		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		try {
 //			ResourceQuota rq = client.getResourceQuota(currentUser.getUserName());
 //		    String cpus = rq.getSpec().getHard().get("cpu");
@@ -335,21 +331,21 @@ public class ServiceController {
 	@ResponseBody
 	public String CreateContainer(long id){
 		Service service = serviceDao.findOne(id);
-		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		//使用k8s管理服务
-		String registryImgName = DockerClientUtil.generateRegistryImageName(service.getImgName(), service.getImgVersion());
+		String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(), service.getImgVersion());
 		//如果没有则新增
 		ReplicationController controller = client.getReplicationController(service.getServiceName());
 		if(controller==null){
-			controller = KubernetesClientUtil.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080,service.getCpuNum(),service.getRam());
-			//controller = KubernetesClientUtil.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080);
+			controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080,service.getCpuNum(),service.getRam());
+			//controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080);
 			controller = client.createReplicationController(controller);
 		}else{
 			controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
 		}
 		com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
 		if(k8sService==null){
-			k8sService = KubernetesClientUtil.generateService(service.getServiceName(),80,8080,(int)service.getId()+KubernetesClientUtil.getK8sStartPort());
+			k8sService = kubernetesClientService.generateService(service.getServiceName(),80,8080,(int)service.getId()+kubernetesClientService.getK8sStartPort());
 			k8sService = client.createService(k8sService);
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -378,11 +374,11 @@ public class ServiceController {
 		serviceDao.save(service);
 		Map<String, String > app = new HashMap<String, String>();
 		app.put("confName", service.getServiceName());
-		app.put("port", String.valueOf(service.getId()+KubernetesClientUtil.getK8sStartPort()));
+		app.put("port", String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
 		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName());
 		TemplateEngine.cmdReloadConfig();
 		service.setServiceAddr(TemplateEngine.getConfUrl());
-		service.setPortSet(String.valueOf(service.getId()+KubernetesClientUtil.getK8sStartPort()));
+		service.setPortSet(String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
 		serviceDao.save(service);
 		log.debug("container--Name:"+service.getServiceName());
 		return "redirect:/service";
@@ -418,7 +414,7 @@ public class ServiceController {
 	public String stopContainer(long id){
 		Service service = serviceDao.findOne(id);
 		log.debug("service:========="+service);
-		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		ReplicationController controller = client.updateReplicationController(service.getServiceName(), 0);
 		Map<String, Object> map = new HashMap<String, Object>();
 		if(controller==null){
@@ -438,7 +434,7 @@ public class ServiceController {
 		if(service.getImgVersion().equals(imgVersion)){
 			map.put("status", "500");
 		}else{
-			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 			ReplicationController controller = client.getReplicationController(serviceName);
 			String NS = controller.getMetadata().getNamespace();
 			String cmd = "kubectl rolling-update "+serviceName+" --namespace="+NS+" --update-period=10s  --image="+getDockerip()+"/"+imgName+":"+imgVersion;
@@ -537,7 +533,7 @@ public class ServiceController {
 			try {
 				service.setInstanceNum(addservice);
 				serviceDao.save(service);
-				KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 				ReplicationController controller = client.updateReplicationController(service.getServiceName(), addservice);
 				if(controller!=null){
 					map.put("status", "200");
@@ -566,7 +562,7 @@ public class ServiceController {
 		try {
 			service.setCpuNum(cpus);
 			service.setRam(rams);
-			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 			Map<String,String> app = new HashMap<String,String>();
 			map.put("app", service.getServiceName());
 			PodList podList = client.getLabelSelectorPods(app);
@@ -590,7 +586,7 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 	}
 	
-	public static com.bonc.epm.paas.kubernetes.model.Container  setContainer(com.bonc.epm.paas.kubernetes.model.Container container,Double cpus,String rams){
+	public com.bonc.epm.paas.kubernetes.model.Container  setContainer(com.bonc.epm.paas.kubernetes.model.Container container,Double cpus,String rams){
 		ResourceRequirements requirements = new ResourceRequirements();
 		requirements.getLimits();
 		Map<String,Object> def = new HashMap<String,Object>();
@@ -598,7 +594,7 @@ public class ServiceController {
 		def.put("cpu", cpus);
 		def.put("memory", rams+"Mi");
 		Map<String,Object> limit = new HashMap<String,Object>();
-		limit = KubernetesClientUtil.getlimit(limit);
+		limit = kubernetesClientService.getlimit(limit);
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
 		container.setResources(requirements);
@@ -617,7 +613,7 @@ public class ServiceController {
 		Service service = serviceDao.findOne(id);
 		String confName = service.getServiceName();
 		String configName = CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName();
-		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		ReplicationController controller = client.getReplicationController(service.getServiceName());
 		if(controller!=null){
 			client.updateReplicationController(service.getServiceName(), 0);
