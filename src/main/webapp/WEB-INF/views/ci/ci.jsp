@@ -31,6 +31,7 @@
                         <!-- <li><a href="javascript:void(0);">添加源代码</a></li> -->
                         <li><a href="/ci/add" id="ciAddBtn">快速构建</a></li>
                         <li><a href="/ci/addSource" id="ciAddSourceBtn">上传构建</a></li>
+                        <!-- <li><a href="/file/downloadTemplate?fileName=Dockerfile">下载dockerfile示例</a></li> -->
                     </ul>
                 </div>
                 <div class="itemTable">
