@@ -24,6 +24,8 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 public class MethodInvoker {
@@ -91,10 +93,11 @@ public class MethodInvoker {
     	}else if(put!=null){
     		response = invocationBuilder.put(entity);
     	}
+    	response.bufferEntity();
     	try{
     		return response.readEntity(method.getReturnType());
     	}catch(Exception e){
-    		return null;
+    		throw new KubernetesClientException("unexpect k8s response",response.readEntity(Status.class));
     	}
 	}
 }

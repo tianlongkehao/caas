@@ -27,15 +27,17 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ "and u.company like %?1% "
 			+ "and u.user_department like %?2% "
 			+ "and u.user_autority= ?3 "
-			+ "and u.user_realname like %?4% ")
-	public List<User> findBy4(String company, String user_department, String user_autority, String user_realname);
+			+ "and u.user_realname like %?4% "
+			+ "and u.user_province like %?5% ")
+	public List<User> findBy4(String company, String user_department, String user_autority, String user_realname, String user_province);
 	
 	@Query("select u from User u "
 			+ "where 1=1 "
 			+ "and u.company like %?1% "
 			+ "and u.user_department like %?2% "
-			+ "and u.user_realname like %?3% ")
-	public List<User> findBy3(String company, String user_department, String user_realname);
+			+ "and u.user_realname like %?3% "
+			+ "and u.user_province like %?4% ")
+	public List<User> findBy3(String company, String user_department, String user_realname,  String user_province);
 	
 	@Query("select u.userName from User u where u.userName = ?1")
 	public List<String> checkUsername(String userName);
@@ -45,4 +47,16 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ " and u.user_autority= ?1"
 			+ " and u.user_province = ?2")
 	public List<User> checkUsermanage(String user_autority, String user_province);
+
+	@Query("select u from User u where u.user_autority != ?1")
+	public List<User> checkUser(String user_autority);
+
+	@Query("select u from User u "
+			+ "where 1=1 "
+			+ "and u.user_autority in(1,2)"
+			+ "and u.company like %?1% "
+			+ "and u.user_department like %?2% "
+			+ "and u.user_realname like %?3% "
+			+ "and u.user_province like %?4% ")
+	public List<User> find12By3(String company, String user_department, String user_realname, String user_province);
 } 

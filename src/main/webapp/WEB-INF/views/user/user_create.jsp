@@ -162,7 +162,7 @@
 
                                 <%--资源配额--%>
                                 <div class="host_step2" >
-                                    <ul class="safeSet" style="margin-left: 200px">
+                                    <ul class="safeSet" style="margin-left: 270px">
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">CPU数量：</span>
@@ -174,7 +174,7 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">内存：</span>
-                                                <input type="text" value="1" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="1" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="ram" name="ram" style="width:350px" >
                                                 <span class="unit">GB</span>
 
@@ -219,7 +219,7 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">卷组容量：</span>
-                                                <input type="text" value="1" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="1" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="vol" name="vol" style="width:350px" disabled>
                                                 <span class="unit">GB</span>
                                                 <%--<input  data-slider-id='volSlider' disabled="disabled"
@@ -243,25 +243,25 @@
                                             <thead>
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Pod</th>
-                                                <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（M）</th>
+                                                <th style="width: 33%;text-align: center">CPU（个）</th>
+                                                <th style="width: 33%;text-align: center">内存（G）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="pod-limit">
                                             <tr>
                                                 <th style="text-align: center">默认值</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_default" id="pod_cpu_default" value="1"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_default" id="pod_memory_default" value="1"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="pod_cpu_default" id="pod_cpu_default" value="0.5"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="pod_memory_default" id="pod_memory_default" value="1"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">上限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_max" id="pod_cpu_max" value="1" placeholder="2048"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_max" id="pod_memory_max" value="1" placeholder="1024"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="pod_cpu_max" id="pod_cpu_max"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="pod_memory_max" id="pod_memory_max"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">下限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_cpu_min" id="pod_cpu_min" value="1" placeholder="200"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="pod_memory_min" id="pod_memory_min" value="1" placeholder="6"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="pod_cpu_min" id="pod_cpu_min" value="0.2" /></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="pod_memory_min" id="pod_memory_min" value="0.5"/></td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -272,25 +272,25 @@
                                             <thead>
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Container</th>
-                                                <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（M）</th>
+                                                <th style="width: 33%;text-align: center">CPU（个）</th>
+                                                <th style="width: 33%;text-align: center">内存（G）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="container-limit">
                                             <tr>
                                                 <th style="text-align: center">默认值</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_default" id="container_cpu_default" value="1" placeholder="250"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_default" id="container_memory_default" value="1" placeholder="100"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="container_cpu_default" id="container_cpu_default" value="0.5"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="container_memory_default" id="container_memory_default" value="0.5"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">上限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_max" id="container_cpu_max" value="1" placeholder="2048"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_max" id="container_memory_max" value="1" placeholder="1024"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="container_cpu_max" id="container_cpu_max" /></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="container_memory_max" id="container_memory_max" /></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">下限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_cpu_min" id="container_cpu_min" value="1" placeholder="100"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" name="container_memory_min" id="container_memory_min" value="1" placeholder="3"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="container_cpu_min" id="container_cpu_min" value="0.1"/></td>
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal" name="container_memory_min" id="container_memory_min" value="0.5"/></td>
                                             </tr>
                                             </tbody>
                                         </table>

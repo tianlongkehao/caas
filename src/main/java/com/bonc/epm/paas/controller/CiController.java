@@ -30,6 +30,7 @@ import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.dao.ImageDao;
+import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.Image;
@@ -37,14 +38,6 @@ import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
-import com.bonc.epm.paas.util.DockerClientUtil;
-/**
- * 构建controller
- * @author yangjian
- *
- */
-
-import ch.qos.logback.core.net.SyslogOutputStream;
 @Controller
 public class CiController {
 	private static final Logger log = LoggerFactory.getLogger(CiController.class);
@@ -54,6 +47,8 @@ public class CiController {
 	public CiRecordDao ciRecordDao;
 	@Autowired
 	public ImageDao imageDao;
+	@Autowired
+	public DockerClientService dockerClientService;
 	
 	@RequestMapping(value={"ci"},method=RequestMethod.GET)
 	public String index(Model model){
@@ -273,14 +268,14 @@ public class CiController {
 		String dockerfilePath = ci.getCodeLocation()+ci.getDockerFileLocation();
 		String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
 		String imageVersion = ci.getImgNameVersion();
-		boolean flag = DockerClientUtil.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao);
+		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao);
 		if(flag){
 			//上传镜像
-			flag = DockerClientUtil.pushImage(imageName, imageVersion,ciRecord,ciRecordDao);
+			flag = dockerClientService.pushImage(imageName, imageVersion,ciRecord,ciRecordDao);
 		}
 		if(flag){
 			//删除本地镜像
-			flag = DockerClientUtil.removeImage(imageName, imageVersion,ciRecord,ciRecordDao);
+			flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao);
 		}
 		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
 		ciRecordDao.save(ciRecord);

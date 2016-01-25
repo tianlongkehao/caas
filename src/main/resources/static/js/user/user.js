@@ -1,5 +1,25 @@
 $(function(){
 
+	for(var j=0; j<document.getElementsByClassName("userTr").length; j++){
+		var user_autority_val = document.getElementById("user_autority_hidden").value;
+		var autority_options = document.getElementById("user_autority").options;
+		for(var i = 0; i < autority_options.length; i++){
+			if (autority_options[i].value == user_autority_val){
+				document.getElementsByName("user.user_autority")[j].textContent = autority_options[i].textContent;
+				break;
+			}
+		}
+
+		var user_province_val = document.getElementById("user_province_hidden").value;
+		var province_options = document.getElementById("user_province").options;
+		for(var i = 0; i < province_options.length; i++){
+			if (province_options[i].value == user_province_val){
+				document.getElementsByName("user.user_province")[j].textContent = province_options[i].textContent;
+				break;
+			}
+		}
+	}
+
     $(".Record").click(function(){
 
         $(".Record").removeClass("active");
@@ -68,8 +88,7 @@ $(function(){
 		 });
     	
     })
-    
-    
+
     $('#passwordInfo').click(function(){
     	var id = $('.account_table').attr('userID');
     	var password = $('#originalPwd').val();
@@ -112,8 +131,7 @@ $(function(){
 		 	 }
 		 });
     })
-    
-    
+
     $("#basicInfo").click(function(){
     	var id = $('.account_table').attr('userID');
     	var email = $('#email').val();
@@ -161,7 +179,6 @@ $(function(){
 		 	 }
 		 });
     });
-    
     
     // 用户名验证
     $('#userName').blur(function (event) {

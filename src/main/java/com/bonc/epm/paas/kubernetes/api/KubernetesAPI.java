@@ -63,6 +63,7 @@ public interface KubernetesAPI {
     public ResourceQuota getResourceQuota(@PathParam("namespace")String namespace,@PathParam("name") String name)
             throws KubernetesClientException;
 
+
     /**
      * Get all resourcequotas.
      * 
@@ -301,6 +302,19 @@ public interface KubernetesAPI {
     @Path("/namespaces/{namespace}/pods/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Pod deletePod(@PathParam("namespace")String namespace,@PathParam("name") String name) throws KubernetesClientException;
+    
+    /**
+     * get pod log
+     * @param namespace
+     * @param name
+     * @return
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/pods/{name}/log")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name) 
+    		throws KubernetesClientException;
 
     /* Replication Controller API */
 

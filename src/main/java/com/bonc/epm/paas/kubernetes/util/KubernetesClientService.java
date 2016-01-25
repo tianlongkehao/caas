@@ -1,17 +1,14 @@
 package com.bonc.epm.paas.kubernetes.util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 
-import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
@@ -35,46 +32,59 @@ import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
-public class KubernetesClientUtil {
+@org.springframework.stereotype.Service
+public class KubernetesClientService {
 	
-	private static final Log log = LogFactory.getLog(KubernetesClientUtil.class);
+	private static final Log log = LogFactory.getLog(KubernetesClientService.class);
 	
-	private static String endpoint;
-    private static String username;
-    private static String password;
-    private static String startPort;
-    static{
-    	Properties k8sProperties = new Properties();
-    	InputStream in = KubernetesClientUtil.class.getClassLoader().getResourceAsStream("kubernetes.api.properties");
-    	try {
-			k8sProperties.load(in);
-			in.close();
-			endpoint = k8sProperties.getProperty("kubernetes.api.endpoint");
-			username = k8sProperties.getProperty("kubernetes.api.username");
-			password = k8sProperties.getProperty("kubernetes.api.password");
-			startPort = k8sProperties.getProperty("kubernetes.api.startport");
-		} catch (IOException e) {
-			log.error("KubernetesUtil.init:"+e.getMessage());
-			e.printStackTrace();
-		}
-    }
-    
-	public static int getK8sStartPort(){
+	@Value("${kubernetes.api.endpoint}")
+	private String endpoint;
+	@Value("${kubernetes.api.username}")
+    private String username;
+	@Value("${kubernetes.api.password}")
+    private String password;
+	@Value("${kubernetes.api.startport}")
+    private String startPort;
+	@Value("${kubernetes.api.address}")
+	private String address;
+	
+	
+    public String getK8sEndpoint(){
+		return endpoint;
+	}
+	public String getK8sUsername(){
+		return username;
+	}
+	public String getK8sPasswrod(){
+		return password;
+	}
+	public String getK8sAddress(){
+		return address;
+	}
+	public int getK8sStartPort(){
 		return Integer.valueOf(startPort);
 	}
 	
-	public static KubernetesAPIClientInterface getClient() {
+	public KubernetesAPIClientInterface getClient() {
 		String namespace = CurrentUserUtils.getInstance().getUser().getUserName();
         return getClient(namespace);
     }
 	
-    public static KubernetesAPIClientInterface getClient(String namespace) {
+    public KubernetesAPIClientInterface getClient(String namespace) {
         return new KubernetesApiClient(namespace,endpoint, username, password,new RestFactory());
     }
     
-    /*public static void main(String[] args) {
+    /*public void main(String[] args) {
     	
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("admin");
+			
+	    	try{
+	    		client.updateReplicationController("bonctest1", 1);
+				ReplicationControllerList list = client.getAllReplicationControllers();
+				System.out.println("ReplicationControllerList:"+JSON.toJSONString(list));
+	    	}catch(KubernetesClientException e){
+	    		System.out.println(e.getMessage()+":"+JSON.toJSONString(e.getStatus()));
+	    	}
 			
 			//获取特殊条件的pods
 			Map<String,String> map = new HashMap<String,String>();
@@ -179,14 +189,14 @@ public class KubernetesClientUtil {
 		}
 		*/
     
-//    public static void main(String[] args) {
+//    public void main(String[] args) {
 //    	//创建容器
 //    	KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("feng");
 //		ReplicationController controller = KubernetesClientUtil.generateSimpleReplicationController("bonctest1",3,"10.0.93.25:5000/bonc/hw8:latest",8080,1.0f,"512");
 //		controller = client.createReplicationController(controller);
 //		System.out.println("controller:"+JSON.toJSONString(controller));
 //	}
-	public static Namespace generateSimpleNamespace(String name){
+	public Namespace generateSimpleNamespace(String name){
 		Namespace namespace = new Namespace();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -194,7 +204,7 @@ public class KubernetesClientUtil {
 		return namespace;
 	}
 	
-	public static ResourceQuota generateSimpleResourceQuota(String name,Map<String,String> hard){
+	public ResourceQuota generateSimpleResourceQuota(String name,Map<String,String> hard){
 		ResourceQuota resourceQuota = new ResourceQuota();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -205,7 +215,7 @@ public class KubernetesClientUtil {
 		return resourceQuota;
 	}
 	
-	public static LimitRange generateSimpleLimitRange(String name,Map<String,String> defaultVal){
+	public LimitRange generateSimpleLimitRange(String name,Map<String,String> defaultVal){
 		LimitRange limitRange = new LimitRange();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -221,9 +231,9 @@ public class KubernetesClientUtil {
 		return limitRange;
 	}
 	
-	public static Map<String,Object> getlimit(Map<String,Object> limit){
+	public Map<String,Object> getlimit(Map<String,Object> limit){
 		User currentUser = CurrentUserUtils.getInstance().getUser();
-		KubernetesAPIClientInterface client = KubernetesClientUtil.getClient();
+		KubernetesAPIClientInterface client = this.getClient();
 		
 		LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
 	    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
@@ -237,14 +247,16 @@ public class KubernetesClientUtil {
 	    
 	}
 	
-	public static ReplicationController updateResource(String name,Double cpu,String ram){
+	public ReplicationController updateResource(String name,Double cpu,String ram){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta =  replicationController.getMetadata();
 		meta.getName();
 		return null;
 	}
 	
-	public static ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram){
+
+	
+	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -292,7 +304,7 @@ public class KubernetesClientUtil {
 		return replicationController;
 	}
 	
-	public static ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort){
+	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -335,7 +347,7 @@ public class KubernetesClientUtil {
 		return replicationController;
 	}
 	
-	public static Service generateService(String appName,Integer port,Integer targetPort,Integer nodePort){
+	public Service generateService(String appName,Integer port,Integer targetPort,Integer nodePort){
 		Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(appName);

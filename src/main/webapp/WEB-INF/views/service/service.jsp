@@ -40,44 +40,44 @@
                             <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                             <ul class="dropdown-menu serviceOperation">
                                 <li>
-                                    <a  href="javascript:createContainer()">
+                                    <a id="startContainer" class="no-drop" href="javascript:createContainer()">
                                         <i class="fa fa-play"></i>
                                         <span class="ic_left">启动</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="javascript:stopContainer()">
+                                    <a id="stopContainer" class="no-drop" href="javascript:stopContainer()">
                                         <i class="fa fa-power-off"></i>
                                         <span class="ic_left">停止</span>
                                     </a>
                                 </li>
                                   <li>
-                                    <a href="javascript:upGradeContainer()">
+                                    <a id="scaleCluster" class="no-drop" href="javascript:upGradeContainer()">
                                         <i class="fa fa-arrows"></i>
                                         <span class="ic_left">弹性伸缩</span>
                                     </a>
                                 </li>
                                <li>
-                                    <a href="javascript:versionUpgrade()">
+                                    <a id="upgradeCluster" class="no-drop" href="javascript:versionUpgrade()">
                                         <i class="fa fa-arrow-up"></i>
                                         <span class="ic_left">版本升级</span>
                                     </a>
                                 </li>
                                <!-- <li>
-                                    <a href="">
+                                    <a id="redeployContainer" class="no-drop" href="">
                                         <i class="fa fa-undo"></i>
                                         <span class="ic_left">重新部署</span>
                                     </a>
-                                </li>
+                                </li>-->
                                 <li>
-                                    <a href="javascript:changeContainerConf();">
+                                    <a id="changeConfiguration" class="no-drop" href="javascript:changeContainerConf();">
                                         <i class="fa fa-cog"></i>
                                         <span class="ic_left">更改配置</span>
                                     </a>
-                                </li>-->
+                                </li>
                                  
                                 <li>
-                                    <a href="javascript:delContainer()">
+                                    <a id="deleteButton" class="no-drop" href="javascript:delContainer()">
                                         <i class="fa fa-trash"></i>
                                         <span class="ic_left">删除</span>
                                     </a>
@@ -114,6 +114,10 @@
                           <li class="line-h-3" id="instsizeChange">
                             <div class="param-set">
                               <span class="edit-name-c" style="margin-top: 5px;">镜像版本：</span>
+                              <!--<select class="form-control" style="margin-top: 10px;width: 165px;display: inline; float: right;" id="imgVersionName" name="user_autority">
+                                     <option name="user_autority" value="2">租户</option>
+                                     <option name="user_autority" value="1">管理员</option>
+                                                    </select>  -->
                               <input value="" id="imgVersionName" class=""  style="margin-top: 10px;width: 165px;" type="text">
 							  <!-- <span  style="color: grey;margin-left: 50px;">可用实例数量：<label id="leftpod" ></label></span> -->
                             </div>
@@ -232,7 +236,7 @@
 
                                            		<tr class="clusterId" containerName="${service.serviceName }">
                                                         <td style="width:5%;text-indent: 30px;">
-                                                            <input type="checkbox" class="chkItem" name="chkItem" value="${service.id }" serviceName="${service.serviceName }" serviceNum="${service.instanceNum }" confRam="${service.ram }"status="" imagename="${service.imgName }" imageversion="${service.imgVersion }" confCpu="${service.cpuNum }"/>
+                                                            <input type="checkbox" class="chkItem" name="chkItem" value="${service.id }" serviceName="${service.serviceName }" serviceNum="${service.instanceNum }" confRam="${service.ram }"status="${service.status }" imagename="${service.imgName }" imageversion="${service.imgVersion }" confCpu="${service.cpuNum }"/>
                                                         </td>
                                                         <td style="width:20%;white-space:nowrap;">
                                                             <b class="caret margin" style="transform: rotate(-90deg);"></b>

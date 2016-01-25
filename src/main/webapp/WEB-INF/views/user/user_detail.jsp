@@ -42,40 +42,26 @@
                                         
                                             <div class="row">
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left ;" >登录账号:</label>
+                                                    <label class="stepLabel">登录账号:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="userName" name="userName" value="${user.userName }" readonly="readonly">
-													<input type="hidden" id="user_id" name="id" value="${user.id}">                                                   
+													<input type="hidden" id="user_id" name="id" value="${user.id}">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left ;" >姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
+                                                    <label class="stepLabel">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_realname" name="user_realname" value="${user.user_realname }" readonly="readonly">
-													                                                    
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left ;" >权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
+                                                    <label class="stepLabel">权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
-                                                    <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
+                                                    <input type="hidden" id="user_autority_hidden" name="user_autority" value="${user.user_autority}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
-                                                    			name="user_autority" id="user_autority" disabled>
+                                                    			 id="user_autority" disabled>
                                                         <option name="option" value="2" >租户</option>
                                                         <option name="option" value="1" >管理员</option>
-                                                    	<%--<c:if test="${user.user_autority=='2' }">
-	                                                        <option name="option" value="2" selected="selected">租户</option>
-	                                                        <option name="option"value="1" >管理员</option>
-														</c:if>                                                    	
-                                                    	<c:if test="${user.user_autority=='1' }">
-	                                                        <option name="option" value="2" >租户</option>
-	                                                        <option name="option" value="1" selected="selected">管理员</option>
-                                                    	</c:if>
-                                                    	<c:if test="${user.user_autority==null || user.user_autority=='' }">
-                                                    		<option>-- 请选择 --</option>
-	                                                        <option name="option" value="2" >租户</option>
-	                                                        <option name="option" value="1" >管理员</option>
-	                                                    </c:if>--%>
                                                     </select>
                                                 </div>
                                        
@@ -83,11 +69,11 @@
 
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left ;" >省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
+                                                    <label class="stepLabel">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
-                                                    <input type="hidden" id="user_province_hidden" value="${user.user_province}">
+                                                    <input type="hidden" id="user_province_hidden" name="user_province" value="${user.user_province}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
-                                                            name="province" id="user_province" disabled>
+                                                             id="user_province" readonly="readonly">
                                                         <option name="user_province" value="1">北京</option>
                                                         <option name="user_province" value="2">天津</option>
                                                         <option name="user_province" value="3">上海</option>
@@ -122,42 +108,42 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left ;" >公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
+                                                    <label class="stepLabel">公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="company" name="company" value="${user.company }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >所属部门:</label>
+                                                    <label class="stepLabel">所属部门:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_department" name="user_department" value="${user.user_department }">
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
+                                                    <label class="stepLabel">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
                                                            id="user_employee_id" name="user_employee_id" value="${user.user_employee_id }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >手机号码:</label>
+                                                    <label class="stepLabel">手机号码:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_cellphone" name="user_cellphone" value="${user.user_cellphone }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >固定电话:</label>
+                                                    <label class="stepLabel">固定电话:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_phone" name="user_phone" value="${user.user_phone }">
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >电子邮箱:</label>
+                                                    <label class="stepLabel">电子邮箱:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
                                                            id="email" name="email" value="${user.email }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
+                                                    <label class="stepLabel">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="pwd" name="password"  value="${user.password}" readonly="readonly">
@@ -173,12 +159,12 @@
 
                                 <%--资源配额--%>
                                 <div class="host_step2" >
-                                    <ul class="safeSet" style="margin-left: 200px">
+                                    <ul class="safeSet" style="margin-left: 270px">
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">CPU数量：</span>
-                                                <input type="number" value="${resource.cpu_account}" class="number" min="1" autocomplete="off"
-                                                       placeholder="1" id="cpu_account" name="cpu_account" style="width:350px"> 
+                                                <input type="text" value="${resource.cpu_account}" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="cpu_account" name="cpu_account" style="width:350px">
                                                 <span class="unit">个</span>
                                             </div>
                                         </li>
@@ -194,28 +180,28 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">Pod数量：</span>
-                                                <input type="number" value="${resource.pod_count}" class="number" min="1" autocomplete="off"
+                                                <input type="text" value="${resource.pod_count}" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="pod_count" name="pod_count" style="width:350px"> <span class="unit">个</span>
                                             </div>
                                         </li>
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">副本控制器：</span>
-                                                <input type="number" value="${resource.image_control}" class="number" min="1" autocomplete="off"
+                                                <input type="text" value="${resource.image_control}" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="image_control" name="image_control" style="width:350px"> <span class="unit">个</span>
                                             </div>
                                         </li>
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">服务：</span>
-                                                <input type="number" value="${resource.server_count}" class="number" min="1" autocomplete="off"
+                                                <input type="text" value="${resource.server_count}" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="server_count" name="server_count"  style="width:350px"> <span class="unit">个</span>
                                             </div>
                                         </li>
 										<li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">卷组挂载数量：</span>
-                                                <input type="number" value="1" class="number" min="1" autocomplete="off" disabled="disabled"
+                                                <input type="text" value="1" class="number" min="1" autocomplete="off" disabled="disabled"
                                                        placeholder="1" id="vol_count" name="vol_count" style="width:350px" > 
                                                 <span class="unit">个</span>
                                             </div>
@@ -243,30 +229,30 @@
                                             <thead>
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Pod</th>
-                                                <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（M）</th>
+                                                <th style="width: 33%;text-align: center">CPU（个）</th>
+                                                <th style="width: 33%;text-align: center">内存（G）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="pod-limit">
                                             <tr>
                                                 <th style="text-align: center">默认值</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 									name="pod_cpu_default" id="pod_cpu_default" value="${restriction.pod_cpu_default }"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 									name="pod_memory_default" id="pod_memory_default" value="${restriction.pod_memory_default}"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">上限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 									name="pod_cpu_max" id="pod_cpu_max" value="${restriction.pod_cpu_max}"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 									name="pod_memory_max" id="pod_memory_max" value="${restriction.pod_memory_max }"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">下限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 									name="pod_cpu_min" id="pod_cpu_min" value="${restriction.pod_cpu_min}"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 									name="pod_memory_min" id="pod_memory_min" value="${restriction.pod_memory_min}"/></td>
                                             </tr>
                                             </tbody>
@@ -278,30 +264,30 @@
                                             <thead>
                                             <tr style="text-align: center">
                                                 <th style="width: 20%;text-align: center">Container</th>
-                                                <th style="width: 33%;text-align: center">CPU（m）</th>
-                                                <th style="width: 33%;text-align: center">内存（M）</th>
+                                                <th style="width: 33%;text-align: center">CPU（个）</th>
+                                                <th style="width: 33%;text-align: center">内存（G）</th>
                                             </tr>
                                             </thead>
                                             <tbody id="container-limit">
                                             <tr>
                                                 <th style="text-align: center">默认值</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 										name="container_cpu_default" id="container_cpu_default" value="${restriction.container_cpu_default}"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 										name="container_memory_default" id="container_memory_default" value="${restriction.container_memory_default}"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">上限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 										name="container_cpu_max" id="container_cpu_max" value="${restriction.container_cpu_max}"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 										name="container_memory_max" id="container_memory_max" value="${restriction.container_memory_max}"/></td>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">下限</th>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 										name="container_cpu_min" id="container_cpu_min" value="${restriction.container_cpu_min}"/></td>
-                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" 
+                                                <td style="text-align: center"><input data-slider-id='volSlider' type="text"  style="width:350px" class="restrictionVal"
                                                 										name="container_memory_min" id="container_memory_min" value="${restriction.container_memory_min}"/></td>
                                             </tr>
                                             </tbody>

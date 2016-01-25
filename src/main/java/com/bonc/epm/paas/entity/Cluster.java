@@ -18,7 +18,7 @@ public class Cluster {
 	private String password;
 	private Integer cpu;
 	private Integer memory;
-	private Integer net;
+	private Integer status;
 	private String hostType;
 
 	@ManyToMany(mappedBy = "favorImages")
@@ -78,9 +78,9 @@ public class Cluster {
 
 	public void setMemory(Integer memory) { this.memory = memory; }
 
-	public Integer getNet() { return net; }
+	public Integer getStatus() { return status; }
 
-	public void setNet(Integer net) { this.net = net; }
+	public void setStatus(Integer status) { this.status = status; }
 
 	public String getHostType() {
 		return hostType;

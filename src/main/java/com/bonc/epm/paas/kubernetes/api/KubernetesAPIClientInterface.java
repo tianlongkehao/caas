@@ -227,6 +227,14 @@ public interface KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     public Pod deletePod(String name) throws KubernetesClientException;
+    
+    /**
+     * get pod log
+     * @param name
+     * @return
+     * @throws KubernetesClientException
+     */
+    public String getPodLog(String name) throws KubernetesClientException;
 
     /* Replication Controller API */
 
@@ -259,6 +267,14 @@ public interface KubernetesAPIClientInterface {
             throws KubernetesClientException;
 
     /**
+     * 
+     * @param name
+     * @return
+     * @throws KubernetesClientException
+     */
+    public ReplicationController updateReplicationController(String name,ReplicationController controller)
+    		throws KubernetesClientException;
+    /**
      * Update a Replication Controller (update the number of replicas).
      * 
      * @param name
@@ -267,6 +283,7 @@ public interface KubernetesAPIClientInterface {
      *            update the replicas count of the current controller.
      * @throws KubernetesClientException
      */
+    
     public ReplicationController updateReplicationController(String name, int replicas)
             throws KubernetesClientException;
 
