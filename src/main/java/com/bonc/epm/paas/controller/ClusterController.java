@@ -106,7 +106,8 @@ public class ClusterController {
     private ClusterUse getClusterUse(String hostIp) {
         ClusterUse clusterUse = new ClusterUse();
         try {
-            InfluxDB influxDB = InfluxDBFactory.connect("http://172.16.71.173:49967", "root", "root");
+            InfluxDB influxDB = InfluxDBFactory.connect("http://172.16.71.172:30002", "root", "root");
+
             String dbName = "k8s";
             //设置主机IP
             clusterUse.setHost(hostIp);
