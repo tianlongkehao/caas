@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class UserController {
 	private static Map<String, KubernetesAPIClientInterface> clientMap;
 	@Autowired
 	public UserDao userDao;
+	@Autowired
 	private KubernetesClientService kubernetesClientService;
 	private Model model;
 
@@ -218,11 +220,11 @@ public class UserController {
 				List<User> userList = new ArrayList<User>();
 				for (User uu : userDao.findAll()) {
 					userList.add(uu);
-					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+uu);
+					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~" + uu);
 				}
 				model.addAttribute("userList", userList);
 				model.addAttribute("menu_flag", "user");
-				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+"??????????????????????????");
+				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~" + "??????????????????????????");
 				return "user/user.jsp";
 			}
 
@@ -500,12 +502,13 @@ public class UserController {
 		if (names.size() > 0) {
 			map.put("status", "400");
 		} else {
-			KubernetesAPIClientInterface client = kubernetesClientService.getClient(username);
-			Namespace namespace = client.getNamespace(username);
-			if (namespace != null) {
-				map.put("status", "300");
-			} else {
-				map.put("status", "200");
+			try {
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient(username);
+				client.getNamespace(username);
+                map.put("status", "300");
+			}catch (KubernetesClientException e){
+				System.out.print(e.getMessage()+":"+JSON.toJSON(e.getStatus()));
+                map.put("status", "200");
 			}
 		}
 		return JSON.toJSONString(map);
