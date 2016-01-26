@@ -159,7 +159,6 @@ public class UserController {
 			public String userManageSave(User user, Model model) {
 				System.out.println("savemanage.do=============================================");
 				try {
-
 					//DB保存用户信息
 					userDao.save(user);
 					model.addAttribute("creatFlag", "200");
@@ -168,7 +167,7 @@ public class UserController {
 					model.addAttribute("creatFlag", "400");
 				}
 
-				//返回 user.jsp 页面，展示所用用户信息
+				//返回 user-management.jsp 页面，展示该租户所创建的所有用户信息
 				List<User> userList = new ArrayList<User>();
 				for (User uuuu : userDao.findAll()) {
 					userList.add(uuuu);
@@ -286,7 +285,7 @@ public class UserController {
 				//以用户名(登陆帐号)为name，创建client
 				KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
 				Namespace ns = client.getNamespace(user.getUserName());
-
+				System.out.println("user.getUserName()========================================");
 				if (ns != null) {
 					System.out.println("namespace:" + JSON.toJSONString(ns));
 

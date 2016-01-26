@@ -58,10 +58,11 @@
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
-                                                    			name="user_autority" id="user_autority" disabled>
+                                                    			name="user_autority" id="user_autority" readonly="readonly">
                                                         <option name="option" value="2" >租户</option>
                                                         <option name="option" value="1" >管理员</option>
                                                         <option name="option" value="3" >普通用户</option>
+                                                        <option name="option" value="4" >超级用户</option>
                                                     </select>
                                                 </div>
                                        
@@ -73,7 +74,7 @@
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="hidden" id="user_province_hidden" value="${user.user_province}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
-                                                            name="province" id="user_province" disabled>
+                                                            name="user_province" id="user_province" readonly="readonly">
                                                         <option name="user_province" value="1">北京</option>
                                                         <option name="user_province" value="2">天津</option>
                                                         <option name="user_province" value="3">上海</option>
@@ -151,7 +152,7 @@
                                             </div>
                                         </div>
                                         <div class="list-item-description" style="padding-top: 100px">
-                                            <a href="/user/list"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
+                                            <a href="/user/manage/list/${user.id}"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
                                             <span class="next2 pull-right btn btn-primary pull_confirm" data-attr="tenxcloud/mysql" id="user_create_next2">修改</span>
                                         </div>
                                     </div>
