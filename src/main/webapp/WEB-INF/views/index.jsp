@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%String path=request.getContextPath(); %>
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -7,7 +8,7 @@
 </head>
 <body>
 <script type="text/javascript">
-    window.location.href = "/login";
+    window.location.href = "<%=path%>/login";
 </script>
 </body>
 </html>

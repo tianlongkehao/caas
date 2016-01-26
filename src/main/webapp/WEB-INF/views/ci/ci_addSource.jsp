@@ -4,8 +4,8 @@
 <head lang="en">
     <title>上传构建</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/ci.css"/>
-    <script type="text/javascript" src="/js/ci/ci_add.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
+    <script type="text/javascript" src="<%=path %>/js/ci/ci_add.js"></script>
 </head>
 <body>
 
@@ -30,7 +30,7 @@
                     <div class="container">
                         <h4>代码上传构建</h4>
 
-                        <form id="buildForm" name="buildForm" action="/ci/addResourceCi.do" method="post" enctype="multipart/form-data">
+                        <form id="buildForm" name="buildForm" action="<%=path %>/ci/addResourceCi.do" method="post" enctype="multipart/form-data">
                             <div class="row depot-name">
                                 <div class="form-group col-md-7">
                                     <label>镜像名称</label>

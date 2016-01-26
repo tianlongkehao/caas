@@ -4,8 +4,8 @@
 <head lang="en">
     <title>构建</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/ci.css"/>
-    <script type="text/javascript" src="/js/ci/ci.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
+    <script type="text/javascript" src="<%=path %>/js/ci/ci.js"></script>
 </head>
 <body>
 <jsp:include page="../frame/menu.jsp" flush="true">
@@ -28,10 +28,9 @@
                 <div class="caption clearfix">
                     <ul class="toolbox clearfix">
                         <li><a href="javascript:void(0);" id="ciReloadBtn"><i class="fa fa-repeat"></i></a></li>
-                        <!-- <li><a href="javascript:void(0);">添加源代码</a></li> -->
-                        <li><a href="/ci/add" id="ciAddBtn">快速构建</a></li>
-                        <li><a href="/ci/addSource" id="ciAddSourceBtn">上传构建</a></li>
-                        <!-- <li><a href="/file/downloadTemplate?fileName=Dockerfile">下载dockerfile示例</a></li> -->
+                        <li><a href="<%=path %>/ci/add" id="ciAddBtn">快速构建</a></li>
+                        <li><a href="<%=path %>/ci/addSource" id="ciAddSourceBtn">上传构建</a></li>
+                        <!-- <li><a href="<%=path %>/file/downloadTemplate?fileName=Dockerfile">下载dockerfile示例</a></li> -->
                     </ul>
                 </div>
                 <div class="itemTable">
@@ -105,17 +104,17 @@
                                                 </c:when>
                                                 <c:otherwise>
                                                 	<c:set var="cursorClass" value=""></c:set>
-                                                	 <c:set var="hrefValue" value="href='/registry/detail/${ci.imgId }'"></c:set>
+                                                	 <c:set var="hrefValue" value="href='<%=path %>/registry/detail/${ci.imgId }'"></c:set>
                                                 </c:otherwise>
                                             </c:choose>
 
                                             <tr class="ci-listTr" style="cursor:auto">
                                                 <td style="width: 15%; text-indent:22px;">
-                                                    <a href="/ci/detail/${ci.id}" title="查看详细信息">${ci.projectName}</a>
+                                                    <a href="<%=path %>/ci/detail/${ci.id}" title="查看详细信息">${ci.projectName}</a>
                                                 </td>
                                                 <td style="width: 12%;" class="cStatusColumn">
                                                     <i class="${statusClassName}"></i> ${statusName}
-                                                    <img src="/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
+                                                    <img src="<%=path %>/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
                                                 </td>
                                                 <td style="width: 15%;">
                                                 	<c:choose>

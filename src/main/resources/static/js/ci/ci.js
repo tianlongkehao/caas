@@ -22,13 +22,13 @@ function registerConstructCiEvent(){
 	        yes: function(index, layero){ //或者使用btn1
 	        	var cStatusHtml = "<i class='fa_success'></i>"+
 					                "构建中"+
-					                "<img src='images/loading4.gif' alt=''/>";
+					                "<img src='"+ctx+"/images/loading4.gif' alt=''/>";
 	        	$this.parent().parent().find(".cStatusColumn").html(cStatusHtml);
 	        	$this.css("cursor","no-drop");
 	        	$(this).unbind("click");
 	        	layer.close(index);
 	        	$.ajax({
-	        		url:"/ci/constructCi.do?id="+id,
+	        		url:ctx+"/ci/constructCi.do?id="+id,
 	        		success:function(data){
 	        			/*data = eval("(" + data + ")");
 	       			 	if(data.status=="200"){

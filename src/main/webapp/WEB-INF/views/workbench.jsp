@@ -6,8 +6,8 @@
     <meta charset="UTF-8">
     <title>BONC-Paas</title>
     <%@include file="frame/dashboard-header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/dashboard.css">
-    <script type="text/javascript" src="/js/customer/workbench.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/dashboard.css">
+    <script type="text/javascript" src="<%=path %>/js/customer/workbench.js"></script>
 </head>
 <body>
     <div class="dashboard-wrapper">
@@ -26,10 +26,10 @@
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="user/detail/${cur_user.id }/a"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
-                                <li><a href="user/detail/${cur_user.id }/b"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                                <li><a href="<%=path %>/user/detail/${cur_user.id }/a"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                                <li><a href="<%=path %>/user/detail/${cur_user.id }/b"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
                                 <li class="logout">
-                                    <a href="loginout/${cur_user.id }"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+                                    <a href="<%=path %>/loginout/${cur_user.id }"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
                                 </li>
                             </ul>
                         </li>
@@ -41,30 +41,30 @@
             <div class="container">
                 <ul class="app-list">
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/service">
+                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/service">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
-                                    <span><img src="images/service.svg" alt=""/></span>
+                                    <span><img src="<%=path %>/images/service.svg" alt=""/></span>
                                 </div>
                                 <div class="icon-name">服务集成</div>
                             </div>
                         </a>
                     </li>
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/ci">
+                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/ci">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
-                                    <span><img src="images/factory_new.svg" alt=""/></span>
+                                    <span><img src="<%=path %>/images/factory_new.svg" alt=""/></span>
                                 </div>
                                 <div class="icon-name">代码构建</div>
                             </div>
                         </a>
                     </li>
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/registry/0">
+                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/registry/0">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
-                                    <span><img src="images/applist3.svg" alt=""/></span>
+                                    <span><img src="<%=path %>/images/applist3.svg" alt=""/></span>
                                 </div>
                                 <div class="icon-name">镜像中心</div>
                             </div>
@@ -72,10 +72,10 @@
                     </li>
                     <c:if test="${cur_user.user_autority == 2}">
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/user/manage/list/${cur_user.id }">
+                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/user/manage/list/${cur_user.id }">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
-                                    <span><img src="images/user.svg" alt=""/></span>
+                                    <span><img src="<%=path %>/images/user.svg" alt=""/></span>
                                 </div>
                                 <div class="icon-name">用户管理</div>
                             </div>
@@ -85,20 +85,20 @@
 
                     <c:if test="${cur_user.user_autority == 1}">
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/user/list">
+                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/user/list">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
-                                    <span><img src="images/user.svg" alt=""/></span>
+                                    <span><img src="<%=path %>/images/user.svg" alt=""/></span>
                                 </div>
                                 <div class="icon-name">租户管理</div>
                             </div>
                         </a>
                     </li>
                     <li>
-                        <a class="icon-view" href="javascript:void(0);" action="/cluster/resource">
+                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/cluster/resource">
                             <div class="icon-wrapper">
                                 <div class="icon-img">
-                                    <span><img src="images/server.svg" alt=""/></span>
+                                    <span><img src="<%=path %>/images/server.svg" alt=""/></span>
                                 </div>
                                 <div class="icon-name">集群管理</div>
                             </div>
