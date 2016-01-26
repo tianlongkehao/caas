@@ -114,7 +114,7 @@ $(function(){
 			 	//按钮【按钮一】的回调
 				 layer.close(index);
 				 $.ajax({
-						url:"../userModifyPsw.do?id="+id+"&password="+password+"&newPwd="+newPwd,
+						url:ctx+"../userModifyPsw.do?id="+id+"&password="+password+"&newPwd="+newPwd,
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
@@ -162,7 +162,7 @@ $(function(){
 			 	//按钮【按钮一】的回调
 				 layer.close(index);
 				 $.ajax({
-						url:"../userModifyBasic.do?id="+id+"&email="+email+"&company="+company,
+						url:ctx+"../userModifyBasic.do?id="+id+"&email="+email+"&company="+company,
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
@@ -220,7 +220,7 @@ function delTenement (){
 			 yes: function(index, layero){ //或者使用btn1
 				 layer.close(index);
 				 $.ajax({
-						url:"/user/delMul.do?ids="+id,
+						url:ctx+"/user/delMul.do?ids="+id,
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
@@ -228,7 +228,7 @@ function delTenement (){
 							}else{
 								layer.alert("用户信息删除失败，请检查服务器连接");
 							}
-							//location.href = "redirect:/user/list";
+							//location.href = ctx+"redirect:/user/list";
 							location.reload(true);
 						}
 				 })
@@ -257,7 +257,7 @@ function delTenement (){
 //		alert("只能选择一个用户");
 //		return;
 //	}
-//	location.href = "user/detail/"+id;
+//	location.href = ctx+"user/detail/"+id;
 //}
 
 

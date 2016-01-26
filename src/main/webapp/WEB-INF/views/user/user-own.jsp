@@ -4,9 +4,9 @@
 <head lang="en">
     <title>用户</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/user.css"/>
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-    <script type="text/javascript" src="/js/user/user-own.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
+    <link rel="icon" type="image/x-icon" href="<%=path %>/images/favicon.ico">
+    <script type="text/javascript" src="<%=path %>/js/user/user-own.js"></script>
 </head>
 <body>
 
@@ -157,7 +157,7 @@
                             <div class="row-title">服务详情</div>
                             <ul class="server-list">
                                 <li>
-                                    <a href="/containers?0" data-permalink onclick="_permalink(this)">
+                                    <a href="<%=path %>/containers?0" data-permalink onclick="_permalink(this)">
                                       <span class="server-info-icon"><i class="fa_icon server_icon_1"></i>
                                         <span>服务个数：</span>
                                       </span>
@@ -172,7 +172,7 @@
                                       	</a>
                                 </li>
                                 <li>
-                                    <a href="/ci?0" data-permalink onclick="permalink(this)">
+                                    <a href="<%=path %>/ci?0" data-permalink onclick="permalink(this)">
                                           <span class="server-info-icon"><i class="fa_icon server_icon_2"></i>
                                             <span>Pod个数：</span>
                                           </span>
@@ -180,7 +180,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="/docker-registry?0" data-permalink onclick="_permalink(this)">
+                                    <a href="<%=path %>/docker-registry?0" data-permalink onclick="_permalink(this)">
                                           <span class="server-info-icon"><i class="fa_icon server_icon_3"></i>
                                             <span>副本控制器：</span>
                                           </span>
@@ -188,7 +188,7 @@
                                     </a>
                                 </li>
                                 <%--<li>
-                                    <a href="/hosting?0" data-permalink onclick="_permalink(this)">
+                                    <a href="<%=path %>/hosting?0" data-permalink onclick="_permalink(this)">
                                       <span class="server-info-icon"><i class="fa_icon server_icon_hosting"></i>
                                         <span>主机个数：</span>
                                       </span>

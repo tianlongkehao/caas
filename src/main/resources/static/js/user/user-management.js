@@ -24,7 +24,7 @@ $(document).ready(function(){
                 //按钮【按钮一】的回调
 
                 layer.close(index);
-                $('#add_tenement').attr("action", '/user/savemanage.do');
+                $('#add_tenement').attr("action", ctx+'/user/savemanage.do');
                 $('#add_tenement').submit();
             },
             cancel: function(index){ //或者使用btn2
