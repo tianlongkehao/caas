@@ -1,8 +1,6 @@
 package com.bonc.epm.paas.controller;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -38,6 +37,7 @@ import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
+import com.bonc.epm.paas.util.FileUtils;
 @Controller
 public class CiController {
 	private static final Logger log = LoggerFactory.getLogger(CiController.class);
@@ -49,6 +49,9 @@ public class CiController {
 	public ImageDao imageDao;
 	@Autowired
 	public DockerClientService dockerClientService;
+	
+	@Value("${paas.codetemp.path}")
+	public String CODE_TEMP_PATH = "./codetemp";
 	
 	@RequestMapping(value={"ci"},method=RequestMethod.GET)
 	public String index(Model model){
@@ -113,7 +116,7 @@ public class CiController {
 		ci.setType(CiConstant.TYPE_QUICK);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
-		ci.setCodeLocation(CiConstant.CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+		ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
 		ciDao.save(ci);
 		log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
         return "redirect:/ci";
@@ -127,7 +130,7 @@ public class CiController {
 		ci.setType(CiConstant.TYPE_CODE);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
-		ci.setCodeLocation(CiConstant.CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+		ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
 		ci.setDockerFileLocation("/");
         try {
         	File file = new File(ci.getCodeLocation());
@@ -135,18 +138,10 @@ public class CiController {
         		file.mkdirs();
         	}
         	if (!sourceCode.isEmpty()) {
-                byte[] bytes = sourceCode.getBytes();
-                BufferedOutputStream stream =
-                        new BufferedOutputStream(new FileOutputStream(new File(ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename())));
-                stream.write(bytes);
-                stream.close();
+        		FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
         	}
         	if (!dockerFile.isEmpty()) {
-                byte[] bytes = dockerFile.getBytes();
-                BufferedOutputStream stream =
-                        new BufferedOutputStream(new FileOutputStream(new File(ci.getCodeLocation()+"/"+dockerFile.getOriginalFilename())));
-                stream.write(bytes);
-                stream.close();
+        		FileUtils.storeFile(dockerFile.getInputStream(), ci.getCodeLocation()+"/"+dockerFile.getOriginalFilename());
         	}
         } catch (Exception e) {
         	e.printStackTrace();

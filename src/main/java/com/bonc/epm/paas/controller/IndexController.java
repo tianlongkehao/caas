@@ -1,9 +1,6 @@
 package com.bonc.epm.paas.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,21 +9,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.EncryptUtils;
 import com.bonc.epm.paas.util.ServiceException;
 
 @Controller
 public class IndexController {
 	private static final Logger log = LoggerFactory.getLogger(IndexController.class);
-	
-	@Autowired
-	private HttpSession session;
 	
 	@Autowired
 	private  UserDao userDao;
@@ -41,15 +33,6 @@ public class IndexController {
 		return "login.jsp";
 	}
 
-    @RequestMapping(value={"signinworkbench"},method=RequestMethod.POST)
-    public String signIn(@RequestParam String userName, @RequestParam String password){
-
-        System.out.println("username;-----------" + userName);
-        System.out.println("password;-----------" + password);
-
-        return "workbench.jsp";
-    }
-    
     /**
 	 * 登录成功后跳转页面
 	 * @author fengtao
@@ -68,7 +51,6 @@ public class IndexController {
 			redirect.addFlashAttribute("user", user);
 			return "redirect:login";
 		}
-		
 		CurrentUserUtils.getInstance().setUser(user);
 		redirect.addFlashAttribute("user", user);
 		return "redirect:workbench";
@@ -103,23 +85,15 @@ public class IndexController {
 		if(StringUtils.isBlank(user.getUserName())) {
 			throw new ServiceException("用户名不能为空");
 		}
-		
 		if(StringUtils.isBlank(user.getPassword())) {
 			throw new ServiceException("密码不能为空");
 		}
-		
-		User  userEntity = new User();
-
+		User userEntity = userDao.findByUserName(user.getUserName());
 		log.debug("user.getUserName()="+user.getUserName());
-		if(userDao.findByUserName(user.getUserName()) != null){
-			userEntity = userDao.findByUserName(user.getUserName());
-		}
-
-		log.debug("userEntity="+userEntity.toString());
-		if(null == userEntity){
+		if(userEntity == null){
 			throw new ServiceException("用户名不存在");
 		}
-		
+		log.debug("userEntity="+userEntity.toString());
 		//String password = EncryptUtils.encryptMD5(user.getPassword());
 		String password = user.getPassword();
 		log.debug("password="+password);
@@ -127,7 +101,6 @@ public class IndexController {
 		if(!StringUtils.equals(password, userEntity.getPassword())){
 			throw new ServiceException("密码输入错误");
 		}
-		
 		return userEntity;
 	}
 

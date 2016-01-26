@@ -2,8 +2,6 @@ package com.bonc.epm.paas.constant;
 
 public class CiConstant {
 	
-	public static final String CODE_TEMP_PATH = "/usr/local/codetemp";
-	
 	public static final Integer TYPE_QUICK = 1;
 	public static final Integer TYPE_CODE = 2;
 	

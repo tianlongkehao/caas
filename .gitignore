@@ -9,6 +9,7 @@
 /D:/logback/paas/*.*
 /logback/
 /h2/
+/codetemp/
 .idea
 .idea/*.*
 *.iml

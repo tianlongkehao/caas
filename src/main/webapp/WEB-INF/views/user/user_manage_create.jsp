@@ -58,6 +58,7 @@
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     			id="user_autority" name="user_autority">
                                                         <option name="user_autority" value="3">普通用户</option>
+                                                        <option name="user_autority" value="4">超级用户</option>
                                                     </select>
                                                 </div>
                                             </div>

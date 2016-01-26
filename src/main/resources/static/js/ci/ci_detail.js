@@ -22,7 +22,7 @@ function registerDeployEvent(){
 	$("#deploy").unbind("click").click(function(){
 		imgId = $(this).attr("imgId");
 		if(imgId!=null&&imgId>0){
-			window.open("/registry/detail/"+imgId);
+			window.open(ctx+"/registry/detail/"+imgId);
 		}
 	});
 }
@@ -41,7 +41,7 @@ function registerConstructCiEvent(){
 	        	$(this).unbind("click");
 	        	layer.close(index);
 	        	$.ajax({
-	        		url:"/ci/constructCi.do?id="+id,
+	        		url:ctx+"/ci/constructCi.do?id="+id,
 	        		success:function(data){
 	        			data = eval("(" + data + ")");
 	       			 	if(data.status=="200"){
@@ -67,7 +67,7 @@ function registerConstructCiEvent(){
 function registerCiEditEvent(){
 	$("#editCiBtn").click(function(){
         $("#editCiForm").ajaxSubmit({
-            url: "/ci/modifyCi.do",
+            url: ctx+"/ci/modifyCi.do",
             type: "post",
             success: function (data) {
                 data = eval("(" + data + ")");
@@ -93,12 +93,12 @@ function registerCiDelEvent(id){
 	        yes: function(index, layero){ //或者使用btn1
 	        	$.ajax({
                     type:"post",
-	        		url:"/ci/delCi.do",
+	        		url:ctx+"/ci/delCi.do",
                     data: {"id" : id},
 	        		success:function(data){
 	        			data = eval("(" + data + ")");
 	        			 if(data.status=="200"){
-                             window.location.href = "/ci";
+                             window.location.href = ctx+"/ci";
 	                     } else {
 	                         layer.alert(data.msg);
 	                     }
@@ -133,7 +133,7 @@ function printLog(){
 		var $this = $(this);
 		var timer = setInterval(function(){
 			$.ajax({
-				url:"/ci/printCiRecordLog.do?id="+$this.attr("ciRecordId"),
+				url:ctx+"/ci/printCiRecordLog.do?id="+$this.attr("ciRecordId"),
 				success:function(data){
 					data = eval("(" + data + ")");
 					 if(data.data.constructResult!="3"){

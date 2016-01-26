@@ -304,14 +304,14 @@ public interface KubernetesAPI {
     public Pod deletePod(@PathParam("namespace")String namespace,@PathParam("name") String name) throws KubernetesClientException;
     
     /**
-     * 
+     * get pod log
      * @param namespace
      * @param name
      * @return
      * @throws KubernetesClientException
      */
     @GET
-    @Path("/namespace/{namespace}/pods/{name}/log")
+    @Path("/namespaces/{namespace}/pods/{name}/log")
     @Consumes(MediaType.APPLICATION_JSON)
     public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name) 
     		throws KubernetesClientException;

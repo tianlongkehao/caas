@@ -267,6 +267,14 @@ public interface KubernetesAPIClientInterface {
             throws KubernetesClientException;
 
     /**
+     * 
+     * @param name
+     * @return
+     * @throws KubernetesClientException
+     */
+    public ReplicationController updateReplicationController(String name,ReplicationController controller)
+    		throws KubernetesClientException;
+    /**
      * Update a Replication Controller (update the number of replicas).
      * 
      * @param name
@@ -275,6 +283,7 @@ public interface KubernetesAPIClientInterface {
      *            update the replicas count of the current controller.
      * @throws KubernetesClientException
      */
+    
     public ReplicationController updateReplicationController(String name, int replicas)
             throws KubernetesClientException;
 

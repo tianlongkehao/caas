@@ -48,7 +48,7 @@
                             </ul>
                         </li>
                     </ul>
-                    <form id="search_form" class="form-inline" action="/user/searchByCondition" method="post">
+                    <form id="search_form" class="form-inline" action="/user/manage/searchByCondition/${cur_user.id }" method="post">
                         <div class="col-md-2 " style="width: 25%; " align="right">
                             <label style="line-height: 35px">姓名:</label>
                             <input name="search_userName" type="text" class="form-control" style="float: right;width:70%" placeholder="搜索姓名关键字">
@@ -62,6 +62,12 @@
                             <label style="line-height: 35px">部门:</label>
                             <input type="text" class="form-control" style="display: inline; width: 70%"
                                    name="search_department">
+                        </div>
+                        <div class="col-md-2" class="form-control" align="right">
+                            <label style="line-height: 40px; margin-left: -10px">权限:</label>
+                            <input style="line-height: 40px" type="checkbox" name="search_autority" value="3">普通用户
+                            <input style="line-height: 40px" type="checkbox" name="search_autority" value="4">超级用户
+                            <input type="hidden" name="search_autority">
                         </div>
                         <div class="searchs" align="right">
                             <div class="form-group">
@@ -126,7 +132,11 @@
                                                     <td style="width: 15%; text-indent: 0;">${user.user_employee_id}</td>
                                                     <td style="width: 10%; text-indent: 0;">
                                                         <c:if test='${user.user_autority == "3"}'>普通用户</c:if>
+                                                        <c:if test='${user.user_autority == "4"}'>超级用户</c:if>
                                                     </td>
+                                                    <%--<td style="width: 10%; text-indent: 0;">
+                                                        <c:if test='${user.user_autority == "4"}'>超级用户</c:if>
+                                                    </td>--%>
                                                 </tr>
                                             </c:if>
                                         </c:forEach>
