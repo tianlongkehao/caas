@@ -34,7 +34,7 @@ $(document).ready(function(){
 	$("#searchimage").click(function(){
 		var imageName = $('#imageName').val();
 		$.ajax({
-	        url: "/service/findimages.do?imageName="+imageName,
+	        url: ""+ctx+"/service/findimages.do?imageName="+imageName,
 	        success: function (data) {
 	            data = eval("(" + data + ")");
 
@@ -45,11 +45,11 @@ $(document).ready(function(){
 	                    for (var i in data.data) {
 	                        var image = data.data[i];
 	                        html += "<li class='image-item'><span class='img_icon span2'>"+
-							"<img src='/images/image-1.png'>"+
+							"<img src='"+ctx+"/images/image-1.png'>"+
 					"</span> <span class='span5 type' type='database'>"+
 							"<div class='list-item-description'>"+
 								"<div class='name h4'>"+
-									""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='../registry/detail/"+image.id+"'>"+
+									""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"../registry/detail/"+image.id+"'>"+
 										"<i class='fa fa-external-link-square'></i>"+
 									"</a>"+
 								"</div>"+
@@ -128,7 +128,7 @@ $(function(){
 
 function loadImageList() {
     $.ajax({
-        url: "/service/images",
+        url: ""+ctx+"/service/images",
         success: function (data) {
             data = eval("(" + data + ")");
 
@@ -139,11 +139,11 @@ function loadImageList() {
                     for (var i in data.data) {
                         var image = data.data[i];
                         html += "<li class='image-item'><span class='img_icon span2'>"+
-						"<img src='/images/image-1.png'>"+
+						"<img src='"+ctx+"/images/image-1.png'>"+
 				"</span> <span class='span5 type' type='database'>"+
 						"<div class='list-item-description'>"+
 							"<div class='name h4'>"+
-								""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='../registry/detail/"+image.id+"'>"+
+								""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"../registry/detail/"+image.id+"'>"+
 									"<i class='fa fa-external-link-square'></i>"+
 								"</a>"+
 							"</div>"+
@@ -188,7 +188,7 @@ function deploy(imgID,imageName, imageVersion){
 function containerName(){
 	var serviceName = $("#serviceName").val();
 			 $.ajax({
-					url:"/service/serviceName.do?serviceName="+serviceName,
+					url:""+ctx+"/service/serviceName.do?serviceName="+serviceName,
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="400"){

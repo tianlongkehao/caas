@@ -65,7 +65,7 @@
 	$("#serviceSearch").click(function(){
 		var serviceName = $('#searchName').val();
 		$.ajax({
-			url:"findservice/"+serviceName,
+			url:""+ctx+"findservice/"+serviceName,
 			success:function(){}
 		})
 	})
@@ -140,11 +140,11 @@
 		        yes: function(index, layero){ 
 		        	var cStatusHtml = "<i class='fa_success'></i>"+
 	                				  "启动中"+
-	                				  "<img src='images/loading4.gif' alt=''/>";
+	                				  "<img src='"+ctx+"images/loading4.gif' alt=''/>";
 		        	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
 		        	layer.close(index);
 					$.ajax({
-						url:"service/createContainer.do?id="+id,
+						url:""+ctx+"service/createContainer.do?id="+id,
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
@@ -172,7 +172,7 @@
 		        yes: function(index, layero){ 
 		        	layer.close(index);
 		        						$.ajax({
-		        							url:"service/stopContainer.do?id="+id,
+		        							url:""+ctx+"service/stopContainer.do?id="+id,
 		        							success:function(data){
 		        								data = eval("(" + data + ")");
 		        								if(data.status=="200"){
@@ -200,7 +200,7 @@
 		        yes: function(index, layero){ 
 		        	layer.close(index);
 		        				$.ajax({
-		        					url:"service/delContainer.do?id="+id,
+		        					url:""+ctx+"service/delContainer.do?id="+id,
 		        					success:function(data){
 		        						data = eval("(" + data + ")");
 		        						if(data.status=="200"){
@@ -244,7 +244,7 @@
 				 var num = $('#numberChange').val();
 				// alert(num);
 				 $.ajax({
- 					url:"service/modifyServiceNum.do?id="+id+"&addservice="+num,
+ 					url:""+ctx+"service/modifyServiceNum.do?id="+id+"&addservice="+num,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
@@ -298,7 +298,7 @@
 				 var cpus = $('#confCpu').val();
 				 var rams = $('#confRamSlider_input').val();
 				 $.ajax({
- 					url:"service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
+ 					url:""+ctx+"service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
@@ -366,7 +366,7 @@
 				 layer.close(index);
 				 var imgVersion1 = $('#imgVersionName').val();
 				 $.ajax({
-					 url:"service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
+					 url:""+ctx+"service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
 					 success:function(data){
 	 						data = eval("(" + data + ")");
 	 						if(data.status=="200"){

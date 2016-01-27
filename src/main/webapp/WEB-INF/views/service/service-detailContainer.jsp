@@ -4,9 +4,8 @@
 <head lang="en">
 <title>服务</title>
 <%@include file="../frame/header.jsp"%>
-<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/service.css" />
-<script type="text/javascript" src="<%=path %>/js/service/service-detail.js"></script>
-<script type="text/javascript" src="<%=path %>/js/service/laydate/laydate.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/mod/service.css" />
+<script type="text/javascript" src="/js/service/service-detail.js"></script>
 </head>
 <body>
 
@@ -29,7 +28,7 @@
 					<section class="detail-succeed">
 						<div class="icon-img">
 							<div class="type-icon">
-								<img src="<%=path %>/images/image-1.png" height="100%">
+								<img src="/images/image-1.png" height="100%">
 							</div>
 						</div>
 						<ul class="succeed-content pull-left">
@@ -43,22 +42,22 @@
 								<li>运行状态：已停止</li>
 							</c:if>
 							<li>服务地址：<a
-								href="<%=path %>${service.serviceAddr }:${service.portSet}${service.serviceLink}"
+								href="${service.serviceAddr }:${service.portSet}${service.serviceLink}"
 								target="_blank">${service.serviceName}:${service.portSet}${service.serviceLink}</a></li>
 							<li>创建时间：${service.createDate }</li>
 							<li>更新时间：${service.createDate }</li>
 						</ul>
 						<div class="applocation">
 							<a
-								href="<%=path %>${service.serviceAddr }:${service.portSet}${service.serviceLink}"
+								href="${service.serviceAddr }:${service.portSet}${service.serviceLink}"
 								target="_blank" class="open">打开应用</a>
 						</div>
 					</section>
 					<div class="baseInfo center-style">
-						<a class="BASE btn-prim">基本信息</a> 
-						<a class="INSTANCES">容器实例</a>
-						<!-- <a class="DOMAIN">绑定域名</a>  -->
-						<a class="PORTS">端口</a>
+						<a class="BASE btn-prim">基本信息</a>
+						<!-- <a class="INSTANCES">容器实例</a>
+						 <a class="DOMAIN">绑定域名</a>  -->
+						<!--<a class="PORTS">端口</a>
 						<!--<a class="MONITOR">监控</a>-->
 						<a class="LOG">日志</a>
 		 				<!--<a class="EVENT">事件</a> -->
@@ -166,7 +165,7 @@
 										<td>${service.imgName }</td>
 										<td>bonc:8080</td>
 										<td><a
-											href="<%=path %>${service.serviceAddr }:${service.portSet}${service.serviceLink}"
+											href="${service.serviceAddr }:${service.portSet}${service.serviceLink}"
 											target="_blank">${service.serviceName}:${service.portSet }</a></td>
 										<td>${service.createDate }</td>
 									</tr>
@@ -235,7 +234,7 @@
 										<td>TCP</td>
 										<td>${service.portSet }</td>
 										<td><a
-											href="<%=path %>${service.serviceAddr }:${service.portSet }${service.serviceLink}"
+											href="${service.serviceAddr }:${service.portSet }${service.serviceLink}"
 											target="_blank">${service.serviceName}:${service.portSet }</a></td>
 									</tr>
 								</tbody>
@@ -264,14 +263,9 @@
 							</div>
 						</div>
 						<div class="weblog">
-						<c:if test="${logList=='[]' }">
-							<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>
-						</c:if>
-						<c:if test="${logList!='[]' }">
 							<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">${logList }</pre>
-						</c:if>
 							<input id="serviceInstances" type="hidden" value=""> 
-							<input id="creationTime" type="hidden" value="${service.createDate }">
+							<input id="creationTime" type="hidden" value="2015-11-30 10:23:27">
 						</div>
 					</div>
 					<div class="containerEvent hide" style="min-height: 500px;">

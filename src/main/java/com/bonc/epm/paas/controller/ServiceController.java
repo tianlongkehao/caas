@@ -35,9 +35,11 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
+import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
+import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -600,15 +602,16 @@ public class ServiceController {
 		String confName = service.getServiceName();
 		String configName = CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName();
 		try {
-			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-			ReplicationController controller = client.getReplicationController(service.getServiceName());
-			if(controller!=null){
-				client.updateReplicationController(service.getServiceName(), 0);
-				client.deleteReplicationController(service.getServiceName());
-				client.deleteService(service.getServiceName());
-				TemplateEngine.deleteConfig(confName, configName);
+			if (service.getStatus()!=1) {
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+				ReplicationController controller = client.getReplicationController(service.getServiceName());
+				if(controller!=null){
+					client.updateReplicationController(service.getServiceName(), 0);
+					client.deleteReplicationController(service.getServiceName());
+					client.deleteService(service.getServiceName());
+					TemplateEngine.deleteConfig(confName, configName);
+				}
 			}
-			
 			map.put("status", "200");
 			serviceDao.delete(id);
 		} catch (KubernetesClientException e) {
