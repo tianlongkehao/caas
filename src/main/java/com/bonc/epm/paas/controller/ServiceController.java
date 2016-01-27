@@ -1,14 +1,11 @@
 package com.bonc.epm.paas.controller;
 
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
+import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.dao.ContainerDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
@@ -35,11 +33,9 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
-import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
-import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -68,6 +64,8 @@ public class ServiceController {
 	public DockerClientService dockerClientService;
 	@Autowired
 	private KubernetesClientService kubernetesClientService;
+	@Autowired
+	private TemplateConf templateConf;
 	
 	
 	@RequestMapping("service/listService.do")
@@ -376,9 +374,9 @@ public class ServiceController {
 		Map<String, String > app = new HashMap<String, String>();
 		app.put("confName", service.getServiceName());
 		app.put("port", String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
-		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName());
-		TemplateEngine.cmdReloadConfig();
-		service.setServiceAddr(TemplateEngine.getConfUrl());
+		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(),templateConf);
+		TemplateEngine.cmdReloadConfig(templateConf);
+		service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
 		service.setPortSet(String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
 		serviceDao.save(service);
 		log.debug("container--Name:"+service.getServiceName());
@@ -609,7 +607,7 @@ public class ServiceController {
 					client.updateReplicationController(service.getServiceName(), 0);
 					client.deleteReplicationController(service.getServiceName());
 					client.deleteService(service.getServiceName());
-					TemplateEngine.deleteConfig(confName, configName);
+					TemplateEngine.deleteConfig(confName, configName,templateConf);
 				}
 			}
 			map.put("status", "200");
