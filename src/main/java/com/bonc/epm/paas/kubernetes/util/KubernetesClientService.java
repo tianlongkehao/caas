@@ -234,17 +234,40 @@ public class KubernetesClientService {
 	public Map<String,Object> getlimit(Map<String,Object> limit){
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = this.getClient();
-		
 		LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
 	    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
-	    String cpuMax = limitRangeItem.getMax().get("cpu").replace("m", "");
-	    String memoryMax = limitRangeItem.getMax().get("memory").replace("M", "");
-	    double icpuMax = Double.valueOf(cpuMax)/1024;
-	    Integer imemoryMax = Integer.valueOf(memoryMax);
+	    double icpuMax = transCpu(limitRangeItem.getMax().get("cpu"));
+	    Integer imemoryMax = transMemory(limitRangeItem.getMax().get("memory"));
 	    limit.put("cpu", icpuMax);
 		limit.put("memory", imemoryMax+"Mi");
 		return limit;
 	    
+	}
+	
+	public Integer transMemory(String memory){
+		if(memory.endsWith("M")){
+			memory = memory.replace("M", "");
+		}else if(memory.endsWith("Mi")) {
+			memory = memory.replace("Mi", "");
+		}else if(memory.endsWith("G")){
+			memory = memory.replace("G", "");
+			 int memoryG = Integer.valueOf(memory)*1024;
+			 return memoryG;
+		}else if(memory.endsWith("Gi")){
+			memory = memory.replace("Gi", "");
+			int memoryG = Integer.valueOf(memory)*1024;
+			return memoryG;
+		}
+		return Integer.valueOf(memory);
+	}
+	
+	public Double transCpu(String cpu) {
+		if(cpu.endsWith("m")){
+			cpu = cpu.replace("m", "");
+			double icpu = Double.valueOf(cpu)/1000;
+			return icpu;
+		}
+		return Double.valueOf(cpu);
 	}
 	
 	public ReplicationController updateResource(String name,Double cpu,String ram){

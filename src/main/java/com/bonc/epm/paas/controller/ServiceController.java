@@ -264,11 +264,11 @@ public class ServiceController {
 		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
 		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
 		    System.out.println(JSON.toJSON(limitRangeItem));
-		    double icpuMax = transCpu(limitRangeItem.getMax().get("cpu"));
-		    double icpuMin = transCpu(limitRangeItem.getMin().get("cpu"));
+		    double icpuMax = kubernetesClientService.transCpu(limitRangeItem.getMax().get("cpu"));
+		    double icpuMin = kubernetesClientService.transCpu(limitRangeItem.getMin().get("cpu"));
 
-		    Object memoryMin = transMemory(limitRangeItem.getMin().get("memory"));
-		    Object memoryMax = transMemory(limitRangeItem.getMax().get("memory"));
+		    Object memoryMin = kubernetesClientService.transMemory(limitRangeItem.getMin().get("memory"));
+		    Object memoryMax = kubernetesClientService.transMemory(limitRangeItem.getMax().get("memory"));
 			model.addAttribute("memorymin", memoryMin);
 			model.addAttribute("memorymax", memoryMax);
 			model.addAttribute("cpumin", icpuMin);
@@ -281,31 +281,7 @@ public class ServiceController {
 		return true;
 	}
 	
-	public Object transMemory(String memory){
-		if(memory.endsWith("M")){
-			memory = memory.replace("M", "");
-		}else if(memory.endsWith("Mi")) {
-			memory = memory.replace("Mi", "");
-		}else if(memory.endsWith("G")){
-			memory = memory.replace("G", "");
-			 int memoryG = Integer.valueOf(memory)*1024;
-			 return memoryG;
-		}else if(memory.endsWith("Gi")){
-			memory = memory.replace("Gi", "");
-			int memoryG = Integer.valueOf(memory)*1024;
-			return memoryG;
-		}
-		return memory;
-	}
 	
-	public Double transCpu(String cpu) {
-		if(cpu.endsWith("m")){
-			cpu = cpu.replace("m", "");
-			double icpu = Double.valueOf(cpu)/1000;
-			return icpu;
-		}
-		return Double.valueOf(cpu);
-	}
 	/**
 	 * 展示镜像
 	 * @return
