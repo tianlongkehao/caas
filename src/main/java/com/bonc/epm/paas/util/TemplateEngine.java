@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 
 import com.bonc.epm.paas.constant.TemplateConf;
 
@@ -38,8 +39,13 @@ public class TemplateEngine {
     
     public static void generateConfig(Map<String, String> app,String configName,TemplateConf templateConf){
     	String [] strings = templateConf.getServerIP().split(",");
-    	app.put("serverIP1",strings[0]);
-    	app.put("serverIP2",strings[1]);
+    	if(strings!=null&&strings.length>0){
+    		String serverStr = "";
+    		for(String str:strings){
+    			serverStr +="server "+str+":"+app.get("port")+";";
+    		}
+    		app.put("server",serverStr);
+    	}
 		String datastring = TemplateEngine.replaceArgs(template, app);
 		log.debug("datastring======="+datastring);
 		log.debug("templateConf.getConfpath()Name"+templateConf.getConfpath()+configName);

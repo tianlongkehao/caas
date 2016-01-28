@@ -1,7 +1,6 @@
 upstream ${userName}-${confName}{
     ip_hash;
-    server ${serverIP1}:${port};
-    server ${serverIP2}:${port};
+    ${server}
 }
 
 server {
