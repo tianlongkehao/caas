@@ -299,7 +299,7 @@ public class KubernetesClientService {
 		Container container = new Container();
 		container.setName(name);
 		container.setImage(image);
-
+		container.setImagePullPolicy("Always");
 
 
 		ResourceRequirements requirements = new ResourceRequirements();
