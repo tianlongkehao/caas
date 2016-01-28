@@ -37,6 +37,9 @@ public class TemplateEngine {
     }
     
     public static void generateConfig(Map<String, String> app,String configName,TemplateConf templateConf){
+    	String [] strings = templateConf.getServerIP().split(",");
+    	app.put("serverIP1",strings[0]);
+    	app.put("serverIP2",strings[1]);
 		String datastring = TemplateEngine.replaceArgs(template, app);
 		log.debug("datastring======="+datastring);
 		log.debug("templateConf.getConfpath()Name"+templateConf.getConfpath()+configName);

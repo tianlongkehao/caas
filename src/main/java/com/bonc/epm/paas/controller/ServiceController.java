@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
-import com.bonc.epm.paas.dao.ContainerDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
@@ -57,8 +57,6 @@ public class ServiceController {
 	public ServiceDao serviceDao;
 	
 	@Autowired
-	private ContainerDao containerDao;
-	@Autowired
 	private ImageDao imageDao;
 	@Autowired
 	public DockerClientService dockerClientService;
@@ -92,10 +90,6 @@ public class ServiceController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 	    List<Service> serviceList = new ArrayList<Service>();
 	    List<Container> containerList = new ArrayList<Container>();
-//	    if((client.getNamespace(currentUser.getUserName()) == null)&( client.getResourceQuota(currentUser.getUserName())== null)){
-//	    	model.addAttribute("msg", "请规范创建租户！");
-//			return "workbench.jsp";
-//	    }
 	  //获取特殊条件的pods
 		
 	    	try {
@@ -121,6 +115,7 @@ public class ServiceController {
 	    		getleftResource(model);
 			} catch (KubernetesClientException e) {
 				model.addAttribute("msg",e.getStatus().getMessage());
+				log.debug("service show:"+e.getStatus().getMessage());
 				return "workbench.jsp";
 			}
 		model.addAttribute("containerList", containerList);
@@ -211,7 +206,9 @@ public class ServiceController {
     			int i=1;
     			for(Pod pod:pods){
     				String podName = pod.getMetadata().getName();
-    				String s  = client.getPodLog(podName);
+    				String s = client.getPodLog(podName);
+    				String add = "["+"App-"+i++ +"] ["+podName+"]：";
+    				s = add + s.replaceAll("\n", "\n"+add);
     				Container container = new Container();
 	    			container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
 	    			container.setServiceid(service.getId());
@@ -267,8 +264,8 @@ public class ServiceController {
 		    double icpuMax = kubernetesClientService.transCpu(limitRangeItem.getMax().get("cpu"));
 		    double icpuMin = kubernetesClientService.transCpu(limitRangeItem.getMin().get("cpu"));
 
-		    Object memoryMin = kubernetesClientService.transMemory(limitRangeItem.getMin().get("memory"));
-		    Object memoryMax = kubernetesClientService.transMemory(limitRangeItem.getMax().get("memory"));
+		    int memoryMin = kubernetesClientService.transMemory(limitRangeItem.getMin().get("memory"));
+		    int memoryMax = kubernetesClientService.transMemory(limitRangeItem.getMax().get("memory"));
 			model.addAttribute("memorymin", memoryMin);
 			model.addAttribute("memorymax", memoryMax);
 			model.addAttribute("cpumin", icpuMin);
@@ -338,7 +335,6 @@ public class ServiceController {
 			//如果没有则新增
 			if(controller==null){
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080,service.getCpuNum(),service.getRam());
-				//controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080);
 				controller = client.createReplicationController(controller);
 			}else{
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
@@ -377,6 +373,7 @@ public class ServiceController {
 		service.setCreateBy(currentUser.getId());
 		serviceDao.save(service);
 		Map<String, String > app = new HashMap<String, String>();
+		app.put("userName", currentUser.getUserName());
 		app.put("confName", service.getServiceName());
 		app.put("port", String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
 		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(),templateConf);
@@ -396,7 +393,8 @@ public class ServiceController {
 	@ResponseBody
 	public String containerName(String serviceName){
 		Map<String, Object> map = new HashMap<String, Object>();
-		for(Service service:serviceDao.findAll()){
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		for(Service service:serviceDao.findByCreateBy(cUser.getId())){
 			if(service.getServiceName().equals(serviceName))
 			{
 				map.put("status", "400");
@@ -488,13 +486,10 @@ public class ServiceController {
 			}
 			
 		} catch (InterruptedException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
             log.error("error:执行command失败");
             return false;
         } catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
             log.error(e.getMessage());
             log.error("error:ssh连接失败");
             return false;
