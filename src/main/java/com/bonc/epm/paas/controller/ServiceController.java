@@ -323,12 +323,23 @@ public class ServiceController {
 	public String CreateContainer(long id){
 		Service service = serviceDao.findOne(id);
 		Map<String, Object> map = new HashMap<String, Object>();
+		//使用k8s管理服务
+		String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(), service.getImgVersion());
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		ReplicationController controller = null;
+		com.bonc.epm.paas.kubernetes.model.Service k8sService =null;
+		try{
+			controller = client.getReplicationController(service.getServiceName());
+		}catch (KubernetesClientException e) {
+			controller = null;
+		}
+		try{
+			k8sService =  client.getService(service.getServiceName());
+		}catch (KubernetesClientException e) {
+			k8sService = null;
+		}
 		try {
-			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-			//使用k8s管理服务
-			String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(), service.getImgVersion());
 			//如果没有则新增
-			ReplicationController controller = client.getReplicationController(service.getServiceName());
 			if(controller==null){
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080,service.getCpuNum(),service.getRam());
 				//controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080);
@@ -336,12 +347,10 @@ public class ServiceController {
 			}else{
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
 			}
-			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
 			if(k8sService==null){
 				k8sService = kubernetesClientService.generateService(service.getServiceName(),80,8080,(int)service.getId()+kubernetesClientService.getK8sStartPort());
 				k8sService = client.createService(k8sService);
 			}
-			
 			if(controller==null||k8sService==null){
 				map.put("status", "500");
 			}else{
