@@ -7,6 +7,13 @@ public class TemplateConf {
 	    private String confpath;
 	    private String cmdpath;
 	    private String confurl;
+	    private String serverIP;
+	    public String getServerIP() {
+			return serverIP;
+		}
+		public void setServerIP(String serverIP) {
+			this.serverIP = serverIP;
+		}		
 		public String getConfpath() {
 			return confpath;
 		}

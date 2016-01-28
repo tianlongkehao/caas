@@ -134,8 +134,8 @@
 		 var $chkItem = $(this);
 			 //alert(id);
 		 layer.open({
-		        title: '启动容器',
-		        content: '确定启动容器？',
+		        title: '启动服务',
+		        content: '确定启动服务？',
 		        btn: ['确定', '取消'],
 		        yes: function(index, layero){ 
 		        	var cStatusHtml = "<i class='fa_success'></i>"+
@@ -148,10 +148,10 @@
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
-								layer.alert("容器启动成功");
+								layer.alert("服务启动成功");
 								window.location.reload();
 							}else{
-								layer.alert("容器启动失败");
+								layer.alert("服务启动失败");
 							}
 						}	
 					})
@@ -166,8 +166,8 @@
 	        var id = $(el).val();
 	        //alert(id);
 	        layer.open({
-		        title: '停止容器',
-		        content: '确定停止容器？',
+		        title: '停止服务',
+		        content: '确定停止服务？',
 		        btn: ['确定', '取消'],
 		        yes: function(index, layero){ 
 		        	layer.close(index);
@@ -176,10 +176,10 @@
 		        							success:function(data){
 		        								data = eval("(" + data + ")");
 		        								if(data.status=="200"){
-		        									layer.alert("容器已停止");
+		        									layer.alert("服务已停止");
 		        									window.location.reload();
 		        								}else{
-		        									layer.alert("容器停止失败，请检查服务器连接");
+		        									layer.alert("服务停止失败，请检查服务器连接");
 		        								}
 	        		
 		        							}
@@ -194,8 +194,8 @@
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
 		 layer.open({
-		        title: '删除容器',
-		        content: '确定删除容器？',
+		        title: '删除服务',
+		        content: '确定删除服务？',
 		        btn: ['确定', '取消'],
 		        yes: function(index, layero){ 
 		        	layer.close(index);
@@ -204,10 +204,10 @@
 		        					success:function(data){
 		        						data = eval("(" + data + ")");
 		        						if(data.status=="200"){
-		        							layer.alert("容器已删除");
+		        							layer.alert("服务已删除");
 		        							window.location.reload();
 		        						}else{
-		        							layer.alert("容器删除失败，请检查服务器连接");
+		        							layer.alert("服务删除失败，请检查服务器连接");
 		        						}
 	        		
 		        					}
