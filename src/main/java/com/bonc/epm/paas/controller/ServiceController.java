@@ -263,18 +263,12 @@ public class ServiceController {
 		try {	    
 		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
 		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
-		    String cpuMax = limitRangeItem.getMax().get("cpu").replace("m", "");
-		    double icpuMax = Double.valueOf(cpuMax)/1024;
-		    String cpudefault = limitRangeItem.getDefaultVal().get("cpu").replace("m", "");
-		    double icpudefault = Double.valueOf(cpudefault)/1024;
-		    String cpuMin = limitRangeItem.getMin().get("cpu").replace("m", "");
-		    double icpuMin = Double.valueOf(cpuMin)/1024;
-		    String memoryMax = limitRangeItem.getMax().get("memory").replace("M", "");
-		    //Integer imemoryMax = Integer.valueOf(memoryMax)*1024;
-		    String memorydefault = limitRangeItem.getDefaultVal().get("memory").replace("M", "");
-		    //Integer imemorydefault = Integer.valueOf(memorydefault)*1024;
-		    String memoryMin = limitRangeItem.getMin().get("memory").replace("M", "");
-		    //Integer imemoryMin = Integer.valueOf(memoryMin)*1024;
+		    System.out.println(JSON.toJSON(limitRangeItem));
+		    double icpuMax = transCpu(limitRangeItem.getMax().get("cpu"));
+		    double icpuMin = transCpu(limitRangeItem.getMin().get("cpu"));
+
+		    Object memoryMin = transMemory(limitRangeItem.getMin().get("memory"));
+		    Object memoryMax = transMemory(limitRangeItem.getMax().get("memory"));
 			model.addAttribute("memorymin", memoryMin);
 			model.addAttribute("memorymax", memoryMax);
 			model.addAttribute("cpumin", icpuMin);
@@ -285,6 +279,32 @@ public class ServiceController {
 		}
 		
 		return true;
+	}
+	
+	public Object transMemory(String memory){
+		if(memory.endsWith("M")){
+			memory = memory.replace("M", "");
+		}else if(memory.endsWith("Mi")) {
+			memory = memory.replace("Mi", "");
+		}else if(memory.endsWith("G")){
+			memory = memory.replace("G", "");
+			 int memoryG = Integer.valueOf(memory)*1024;
+			 return memoryG;
+		}else if(memory.endsWith("Gi")){
+			memory = memory.replace("Gi", "");
+			int memoryG = Integer.valueOf(memory)*1024;
+			return memoryG;
+		}
+		return memory;
+	}
+	
+	public Double transCpu(String cpu) {
+		if(cpu.endsWith("m")){
+			cpu = cpu.replace("m", "");
+			double icpu = Double.valueOf(cpu)/1000;
+			return icpu;
+		}
+		return Double.valueOf(cpu);
 	}
 	/**
 	 * 展示镜像
