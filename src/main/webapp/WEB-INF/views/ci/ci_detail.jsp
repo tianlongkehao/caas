@@ -119,41 +119,81 @@
 
                             <%-- 基本设置 --%>
                             <div class="config-details hide">
-                            <form id="editCiForm" class="form-horizontal" method="post" action="" role="form">
-                              <br>
-                              <div class="form-group">
-                                  <label class="col-2x control-label">项目名称：</label>
-                                  <div class="col-sm-9">
-                                      <input type="text" class="form-control" id="projectName" name="projectName" value="${ci.projectName}">
-                                  </div>
-                              </div>
-                              <div class="form-group">
-                                  <label class="col-2x control-label">简介：</label>
-                                  <div class="col-sm-9">
-                                      <input type="text" class="form-control" id="description" name="description" value="${ci.description}">
-                                  </div>
-                              </div>
-                              <div class="form-group">
-                                  <label for="dockerfileLocation" class="col-2x control-label">Dockerfile位置：</label>
-                                  <div class="col-sm-9">
-                                      <input type="text" class="form-control" id="dockerFileLocation" name="dockerFileLocation" value="/">
-                                  </div>
-                              </div>
-                              <div class="form-group">
-                                  <label class="col-2x control-label">默认代码分支：</label>
-                                  <div class="col-sm-9">
-                                      <input type="text" class="form-control" id="codeBranch" name="codeBranch" value="master" disabled="">
-                                  </div>
-                              </div>
-                              <div class="form-group">
-                                  <label class="col-2x control-label"></label>
-                                  <div class="col-sm-9">
-                                      <!-- <textarea class="form-control" id="ciDetail" name="ciDetail">...</textarea> -->
-                                      <br><input type="button" id="editCiBtn" class="btn btn-primary pull-right" value="确认修改">
-                                  </div>
-                              </div>
-                              <input type="hidden" id="id" name="id" value="${ci.id}">
-                            </form>
+                                <c:if test="${ci.type == 1}">
+                                    <form id="editCiForm" class="form-horizontal" method="post" action="" role="form">
+                                        <br>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">项目名称：</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="projectName" name="projectName" value="${ci.projectName}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">简介：</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="description" name="description" value="${ci.description}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="dockerfileLocation" class="col-2x control-label">Dockerfile位置：</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="dockerFileLocation" name="dockerFileLocation" value="/">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">默认代码分支：</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="codeBranch" name="codeBranch" value="master" disabled="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label"></label>
+                                            <div class="col-sm-9">
+                                                <!-- <textarea class="form-control" id="ciDetail" name="ciDetail">...</textarea> -->
+                                                <br><input type="button" id="editCiBtn" class="btn btn-primary pull-right" value="确认修改">
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="id" name="id" value="${ci.id}">
+                                    </form>
+                                </c:if>
+
+                                <c:if test="${ci.type == 2}">
+                                    <form id="editCiUploadForm" class="form-horizontal" method="post" action="" role="form" enctype="multipart/form-data">
+                                        <br>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">项目名称：</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="projectName" name="projectName" value="${ci.projectName}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">简介：</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="description" name="description" value="${ci.description}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">重新上传代码文件：</label>
+                                            <div class="col-sm-9">
+                                                <input type="file" class="" id="sourceCode" name="sourceCode" style="margin:6px 0;">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">重新上传Dockfile：</label>
+                                            <div class="col-sm-9">
+                                                <input type="file" class="" id="dockerFile" name="dockerFile" style="margin:6px 0;">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label"></label>
+                                            <div class="col-sm-9">
+                                                <!-- <textarea class="form-control" id="ciDetail" name="ciDetail">...</textarea> -->
+                                                <br><input type="button" id="editCiUploadBtn" class="btn btn-primary pull-right" value="确认修改">
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="id" name="id" value="${ci.id}">
+                                    </form>
+                                </c:if>
                             </div>
 
                             <%-- 操作 --%>
