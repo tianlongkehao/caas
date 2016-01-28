@@ -56,7 +56,7 @@ public class CiController {
 	@RequestMapping(value={"ci"},method=RequestMethod.GET)
 	public String index(Model model){
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        List<Ci> ciList = ciDao.findByCreateBy(cuurentUser.getId());
+        List<Ci> ciList = ciDao.findByCreateBy(cuurentUser.getId(), new Sort(new Order(Direction.DESC,"createDate")));
         model.addAttribute("ciList", ciList);
         model.addAttribute("menu_flag", "ci");
 		return "ci/ci.jsp";
@@ -64,7 +64,7 @@ public class CiController {
 	@RequestMapping(value={"ci/detail/{id}"},method=RequestMethod.GET)
 	public String detail(Model model,@PathVariable long id){
         Ci ci = ciDao.findOne(id);
-        List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction. DESC,"constructDate")));
+        List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction.DESC,"constructDate")));
 		model.addAttribute("id", id);
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
@@ -84,6 +84,38 @@ public class CiController {
 		map.put("data", ci);
 		return JSON.toJSONString(map);
 	}
+	
+	@RequestMapping("ci/modifyResourceCi.do")
+	@ResponseBody
+	public String modifyResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,@RequestParam("dockerFile") MultipartFile dockerFile) {
+		Ci originCi = ciDao.findOne(ci.getId());
+		originCi.setProjectName(ci.getProjectName());
+		originCi.setDescription(ci.getDescription());
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+        	File file = new File(originCi.getCodeLocation());
+        	if(!file.exists()){
+        		file.mkdirs();
+        	}
+        	if (sourceCode!=null&&!sourceCode.isEmpty()) {
+        		FileUtils.storeFile(sourceCode.getInputStream(), originCi.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
+        	}
+        	if (dockerFile!=null&&!dockerFile.isEmpty()) {
+        		FileUtils.storeFile(dockerFile.getInputStream(), originCi.getCodeLocation()+"/"+dockerFile.getOriginalFilename());
+        	}
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	log.error("modifyResourceCi error:"+e.getMessage());
+        	map.put("status", "500");
+    		map.put("msg","上传文件出错");
+    		return JSON.toJSONString(map);
+        }
+		ciDao.save(originCi);
+		map.put("status", "200");
+		map.put("data", ci);
+		return JSON.toJSONString(map);
+	}
+	
 	@RequestMapping(value = "ci/delCi.do", method = RequestMethod.POST)
 	@ResponseBody
 	public String delCi(@RequestParam String id) {
@@ -113,6 +145,7 @@ public class CiController {
 	public String addCi(Ci ci) {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         ci.setCreateBy(cuurentUser.getId());
+        ci.setCreateDate(new Date());
 		ci.setType(CiConstant.TYPE_QUICK);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
@@ -127,6 +160,7 @@ public class CiController {
 	public String addResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,@RequestParam("dockerFile") MultipartFile dockerFile) {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         ci.setCreateBy(cuurentUser.getId());
+        ci.setCreateDate(new Date());
 		ci.setType(CiConstant.TYPE_CODE);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
@@ -144,7 +178,8 @@ public class CiController {
         		FileUtils.storeFile(dockerFile.getInputStream(), ci.getCodeLocation()+"/"+dockerFile.getOriginalFilename());
         	}
         } catch (Exception e) {
-        	e.printStackTrace();
+        	log.error("modifyResourceCi error:"+e.getMessage());
+        	return "redirect:/error"; 
         }
         ciDao.save(ci);
 		log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
@@ -247,7 +282,6 @@ public class CiController {
 				return CmdUtil.exeCmd(gitCommandStr);
 			}
 		}catch(Exception e){
-			e.printStackTrace();
 			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 			ciRecordDao.save(ciRecord);
 			log.error("==========fetchCode error:"+e.getMessage());
