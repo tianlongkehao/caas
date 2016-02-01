@@ -39,14 +39,6 @@ function delUser(){
 	}
 }
 
-//租户创建页面完成自动跳转
-/*$(function(){
-	var p=window.location.href;
-	var reg = new RegExp("savemanage.do", "");
-	if (reg.test(p)){
-		window.location=ctx+"/user/manage/list/6";
-	}
-});*/
 
 $(document).ready(function(){
 

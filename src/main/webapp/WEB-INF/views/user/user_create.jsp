@@ -320,7 +320,7 @@
 				$("#userName").val(un);
 				//console.info("name: "+username);
 				 $.get(
-					 "/user/checkUsername/"+un,
+					 "<%=path %>/user/checkUsername/"+un,
 					 function(data,status){
 				    	console.info("Data: " + data + "\nStatus: " + status);
 				    	var data = eval("(" + data + ")");
