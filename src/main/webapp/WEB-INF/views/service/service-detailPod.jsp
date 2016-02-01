@@ -22,6 +22,8 @@
 						<li class="active">服务</li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">${service.serviceName }</li>
+						<li><i class="fa fa-angle-right"></i></li>
+						<li class="active">${service.serviceName }</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -54,7 +56,7 @@
 						</div>
 					</section>
 					<div class="baseInfo center-style">
-						<a class="BASE btn-prim">基本信息</a>
+						<a class="BASE btn-prim">容器</a>
 						<!-- <a class="INSTANCES">容器实例</a>
 						 <a class="DOMAIN">绑定域名</a>  -->
 						<!--<a class="PORTS">端口</a>

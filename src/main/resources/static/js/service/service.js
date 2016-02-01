@@ -2,11 +2,11 @@
 	$("#serviceReloadBtn").click(function(){
 		loadService();
 	});
-//	$("#serviceCreateBtn").click(function(){
-//		$(".contentMain").load("/service/add");
-//	});
 	
-//	loadService();
+	$(document).on('click','.no-drop',function(){
+		  return false;
+		});
+
 	$('input[name="chkItem"').click(function(){
 			if($(this).prop("checked")){
 				$('#startContainer').removeClass('no-drop').addClass('a-live');
@@ -23,7 +23,6 @@
 					}
 				});
 				var statusStr = status.toString();
-				//alert(statusStr);
 				var runIndex = statusStr.indexOf('3');
 				var stopIndex = statusStr.indexOf('4');
 				if(status.length > 1){
@@ -59,7 +58,7 @@
 			}
 	
 	})
-	
+
 	_refreshCreateTime(60000);
 	
 	$("#serviceSearch").click(function(){

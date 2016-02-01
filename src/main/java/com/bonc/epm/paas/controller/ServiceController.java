@@ -87,43 +87,45 @@ public class ServiceController {
 	@RequestMapping(value={"service"},method=RequestMethod.GET)
 	public String containerLists(Model model){
 		User  currentUser = CurrentUserUtils.getInstance().getUser();
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-	    List<Service> serviceList = new ArrayList<Service>();
-	    List<Container> containerList = new ArrayList<Container>();
-	  //获取特殊条件的pods
-		
-	    	try {
-	    		for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
-	    			Map<String,String> map = new HashMap<String,String>();
-	    	    	map.put("app", service.getServiceName());
-	    	    	PodList podList = client.getLabelSelectorPods(map);
-	    	    	if(podList!=null){
-	    	    		List<Pod> pods = podList.getItems();
-	    	    		if(!CollectionUtils.isEmpty(pods)){
-	    	    			int i=1;
-	    	    			for(Pod pod:pods){
-	    	    				String podName = pod.getMetadata().getName();
-	    	    				Container container = new Container();
-	    	    				container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
-	    	    				container.setServiceid(service.getId());
-	    	    				containerList.add(container);
-	    	    			}
-	    	    		}
-	    	    	}
-	    	    	serviceList.add(service);
-	    		}
-	    		getleftResource(model);
-			} catch (KubernetesClientException e) {
-				model.addAttribute("msg",e.getStatus().getMessage());
-				log.debug("service show:"+e.getStatus().getMessage());
-				return "workbench.jsp";
-			}
-		model.addAttribute("containerList", containerList);
-		model.addAttribute("serviceList", serviceList);
+		//获取特殊条件的pods
+		try {
+			getServiceSource(model, currentUser.getId());
+			getleftResource(model);
+		} catch (KubernetesClientException e) {
+			model.addAttribute("msg",e.getStatus().getMessage());
+			log.debug("service show:"+e.getStatus().getMessage());
+			return "workbench.jsp";
+		}	
 		model.addAttribute("menu_flag", "service");
 		
 		return "service/service.jsp";
 		
+	}
+	public void getServiceSource(Model model,long id) {
+		List<Service> serviceList = new ArrayList<Service>();
+	    List<Container> containerList = new ArrayList<Container>();
+	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+	    for(Service service:serviceDao.findByCreateBy(id)){
+			Map<String,String> map = new HashMap<String,String>();
+	    	map.put("app", service.getServiceName());
+	    	PodList podList = client.getLabelSelectorPods(map);
+	    	if(podList!=null){
+	    		List<Pod> pods = podList.getItems();
+	    		if(!CollectionUtils.isEmpty(pods)){
+	    			int i=1;
+	    			for(Pod pod:pods){
+	    				String podName = pod.getMetadata().getName();
+	    				Container container = new Container();
+	    				container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
+	    				container.setServiceid(service.getId());
+	    				containerList.add(container);
+	    			}
+	    		}
+	    	}
+	    	serviceList.add(service);
+		}
+	    model.addAttribute("containerList", containerList);
+		model.addAttribute("serviceList", serviceList);
 	}
 	
 	/**
@@ -170,6 +172,7 @@ public class ServiceController {
 		return "service/service.jsp";
 		
 	}
+	
 	/**
 	 * 展示container和services
 	 * @param model
@@ -223,6 +226,7 @@ public class ServiceController {
         model.addAttribute("service", service);
 		return "service/service-detail.jsp";
 	}
+	
 	/**
 	 * 响应“部署”按钮
 	 * @param imageName
@@ -260,7 +264,6 @@ public class ServiceController {
 		try {	    
 		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
 		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
-		    System.out.println(JSON.toJSON(limitRangeItem));
 		    double icpuMax = kubernetesClientService.transCpu(limitRangeItem.getMax().get("cpu"));
 		    double icpuMin = kubernetesClientService.transCpu(limitRangeItem.getMin().get("cpu"));
 
