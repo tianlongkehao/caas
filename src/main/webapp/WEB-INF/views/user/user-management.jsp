@@ -134,9 +134,6 @@
                                                         <c:if test='${user.user_autority == "3"}'>普通用户</c:if>
                                                         <c:if test='${user.user_autority == "4"}'>超级用户</c:if>
                                                     </td>
-                                                    <%--<td style="width: 10%; text-indent: 0;">
-                                                        <c:if test='${user.user_autority == "4"}'>超级用户</c:if>
-                                                    </td>--%>
                                                 </tr>
                                             </c:if>
                                         </c:forEach>
@@ -155,6 +152,5 @@
         </div>
     </article>
 </div>
-
 </body>
 </html>
