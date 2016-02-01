@@ -83,6 +83,28 @@ function registerCiEditEvent(){
             }
         });
     });
+	$("#editCiUploadBtn").click(function(){
+		var index = layer.load(0, {shade: [0.3, '#000']});
+        $("#editCiUploadForm").ajaxSubmit({
+            url: ctx+"/ci/modifyResourceCi.do",
+            type: "post",
+            success: function (data) {
+            	layer.close(index);
+                data = eval("(" + data + ")");
+                if (data.status == "200") {
+                	layer.alert("修改成功");
+                    $("#projectNameSpan").text($("#projectName").val());
+                } else {
+                    layer.alert(data.msg);
+                }
+            },
+            error: function (e) {
+            	layer.close(index);
+                layer.alert("请求出错");
+            }
+        });
+        
+    });
 }
 function registerCiDelEvent(id){
 	 $("#delCiBtn").click(function(){
@@ -145,6 +167,6 @@ function printLog(){
 
 				}
 			});
-		}, 500);
+		}, 1000);
 	});
 }

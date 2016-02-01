@@ -192,7 +192,7 @@ function containerName(){
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="400"){
-							layer.alert("容器名称重复，请重新输入！");
+							layer.alert("服务名称重复，请重新输入！");
 							}else{
 								$("#buildService").submit();
 							}

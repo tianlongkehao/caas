@@ -1,7 +1,6 @@
-upstream ${confName}{
+upstream ${userName}-${confName}{
     ip_hash;
-    server 10.0.93.242:${port};
-    server 10.0.93.243:${port};
+    ${server}
 }
 
 server {
@@ -12,6 +11,6 @@ server {
   		proxy_set_header X-Forwarded-Host $host;
         proxy_set_header X-Forwarded-Server $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_pass http://${confName}/;
+        proxy_pass http://${userName}-${confName}/;
   	}
 }
