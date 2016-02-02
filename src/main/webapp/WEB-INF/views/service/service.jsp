@@ -175,7 +175,7 @@
                                             <thead>
                                                 <tr>
                                                     <th style="width: 5%;text-indent: 30px;">
-                                                        <input type="checkbox" class="chkAll"/>
+                                                        <input type="checkbox" autocomplete="off" class="chkAll"/>
                                                     </th>
                                                     <th style="width: 20%;padding-left: 5px;">名称</th>
                                                     <th style="width: 10%;text-indent: 8px;">运行状态</th>
@@ -236,7 +236,7 @@
 
                                            		<tr class="clusterId" containerName="${service.serviceName }">
                                                         <td style="width:5%;text-indent: 30px;">
-                                                            <input type="checkbox" class="chkItem" name="chkItem" value="${service.id }" serviceName="${service.serviceName }" serviceNum="${service.instanceNum }" confRam="${service.ram }"status="${service.status }" imagename="${service.imgName }" imageversion="${service.imgVersion }" confCpu="${service.cpuNum }"/>
+                                                            <input type="checkbox" class="chkItem" name="chkItem" autocomplete="off" id="checkboxID" value="${service.id }" serviceName="${service.serviceName }" serviceNum="${service.instanceNum }" confRam="${service.ram }"status="${service.status }" imagename="${service.imgName }" imageversion="${service.imgVersion }" confCpu="${service.cpuNum }"/>
                                                         </td>
                                                         <td style="width:20%;white-space:nowrap;">
                                                             <b class="caret margin" style="transform: rotate(-90deg);"></b>
