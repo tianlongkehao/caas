@@ -4,8 +4,8 @@
 <head lang="en">
     <title>用户</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/user.css"/>
-    <script type="text/javascript" src="/js/user/user.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
+    <script type="text/javascript" src="<%=path %>/js/user/user.js"></script>
 </head>
 <body>
 
@@ -25,7 +25,7 @@
             <div class="contentMain">
 
                 <div class="account_table">
-                    <form class="form-horizontal user_info_form" id="addUser" name="addUser" action="/user/add.do" method="post">
+                    <form class="form-horizontal user_info_form" id="addUser" name="addUser" action="<%=path %>/user/add.do" method="post">
                         <div class="form-group">
                             <label for="username" class="col-md-offset-1 col-md-3">用户名：</label>
                             <div class="col-md-5">

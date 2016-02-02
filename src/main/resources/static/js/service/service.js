@@ -2,11 +2,11 @@
 	$("#serviceReloadBtn").click(function(){
 		loadService();
 	});
-//	$("#serviceCreateBtn").click(function(){
-//		$(".contentMain").load("/service/add");
-//	});
 	
-//	loadService();
+	$(document).on('click','.no-drop',function(){
+		  return false;
+		});
+
 	$('input[name="chkItem"').click(function(){
 			if($(this).prop("checked")){
 				$('#startContainer').removeClass('no-drop').addClass('a-live');
@@ -23,7 +23,6 @@
 					}
 				});
 				var statusStr = status.toString();
-				//alert(statusStr);
 				var runIndex = statusStr.indexOf('3');
 				var stopIndex = statusStr.indexOf('4');
 				if(status.length > 1){
@@ -59,13 +58,13 @@
 			}
 	
 	})
-	
+
 	_refreshCreateTime(60000);
 	
 	$("#serviceSearch").click(function(){
 		var serviceName = $('#searchName').val();
 		$.ajax({
-			url:"findservice/"+serviceName,
+			url:""+ctx+"findservice/"+serviceName,
 			success:function(){}
 		})
 	})
@@ -134,24 +133,24 @@
 		 var $chkItem = $(this);
 			 //alert(id);
 		 layer.open({
-		        title: '启动容器',
-		        content: '确定启动容器？',
+		        title: '启动服务',
+		        content: '确定启动服务？',
 		        btn: ['确定', '取消'],
 		        yes: function(index, layero){ 
 		        	var cStatusHtml = "<i class='fa_success'></i>"+
 	                				  "启动中"+
-	                				  "<img src='images/loading4.gif' alt=''/>";
+	                				  "<img src='"+ctx+"images/loading4.gif' alt=''/>";
 		        	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
 		        	layer.close(index);
 					$.ajax({
-						url:"service/createContainer.do?id="+id,
+						url:""+ctx+"service/createContainer.do?id="+id,
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
-								layer.alert("容器启动成功");
+								layer.alert("服务启动成功");
 								window.location.reload();
 							}else{
-								layer.alert("容器启动失败");
+								layer.alert("服务启动失败");
 							}
 						}	
 					})
@@ -166,20 +165,20 @@
 	        var id = $(el).val();
 	        //alert(id);
 	        layer.open({
-		        title: '停止容器',
-		        content: '确定停止容器？',
+		        title: '停止服务',
+		        content: '确定停止服务？',
 		        btn: ['确定', '取消'],
 		        yes: function(index, layero){ 
 		        	layer.close(index);
 		        						$.ajax({
-		        							url:"service/stopContainer.do?id="+id,
+		        							url:""+ctx+"service/stopContainer.do?id="+id,
 		        							success:function(data){
 		        								data = eval("(" + data + ")");
 		        								if(data.status=="200"){
-		        									layer.alert("容器已停止");
+		        									layer.alert("服务已停止");
 		        									window.location.reload();
 		        								}else{
-		        									layer.alert("容器停止失败，请检查服务器连接");
+		        									layer.alert("服务停止失败，请检查服务器连接");
 		        								}
 	        		
 		        							}
@@ -194,20 +193,20 @@
 	 $('input[name="chkItem"]:checked').each(function(index, el){
 		 var id = $(el).val();
 		 layer.open({
-		        title: '删除容器',
-		        content: '确定删除容器？',
+		        title: '删除服务',
+		        content: '确定删除服务？',
 		        btn: ['确定', '取消'],
 		        yes: function(index, layero){ 
 		        	layer.close(index);
 		        				$.ajax({
-		        					url:"service/delContainer.do?id="+id,
+		        					url:""+ctx+"service/delContainer.do?id="+id,
 		        					success:function(data){
 		        						data = eval("(" + data + ")");
 		        						if(data.status=="200"){
-		        							layer.alert("容器已删除");
+		        							layer.alert("服务已删除");
 		        							window.location.reload();
 		        						}else{
-		        							layer.alert("容器删除失败，请检查服务器连接");
+		        							layer.alert("服务删除失败，请检查服务器连接");
 		        						}
 	        		
 		        					}
@@ -244,7 +243,7 @@
 				 var num = $('#numberChange').val();
 				// alert(num);
 				 $.ajax({
- 					url:"service/modifyServiceNum.do?id="+id+"&addservice="+num,
+ 					url:""+ctx+"service/modifyServiceNum.do?id="+id+"&addservice="+num,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
@@ -298,7 +297,7 @@
 				 var cpus = $('#confCpu').val();
 				 var rams = $('#confRamSlider_input').val();
 				 $.ajax({
- 					url:"service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
+ 					url:""+ctx+"service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
@@ -366,7 +365,7 @@
 				 layer.close(index);
 				 var imgVersion1 = $('#imgVersionName').val();
 				 $.ajax({
-					 url:"service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
+					 url:""+ctx+"service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
 					 success:function(data){
 	 						data = eval("(" + data + ")");
 	 						if(data.status=="200"){

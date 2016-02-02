@@ -4,9 +4,9 @@
 <head lang="en">
     <title>集群</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/cluster.css"/>
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-    <script type="text/javascript" src="/js/cluster/cluster-detail.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
+    <link rel="icon" type="image/x-icon" href="<%=path %>/images/favicon.ico">
+    <script type="text/javascript" src="<%=path %>/js/cluster/cluster-detail.js"></script>
 
 </head>
 <body>

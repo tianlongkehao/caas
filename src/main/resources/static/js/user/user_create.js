@@ -19,7 +19,7 @@ function delUser(){
 			yes: function(index, layero){ //或者使用btn1
 				layer.close(index);
 				$.ajax({
-					url:"/user/delMul.do?ids="+id,
+					url:ctx+"/user/delMul.do?ids="+id,
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
@@ -40,14 +40,6 @@ function delUser(){
 	}
 }
 
-//租户创建页面完成自动跳转
-/*$(function(){
-	var p=window.location.href;
-	var reg = new RegExp("savemanage.do", "");
-	if (reg.test(p)){
-		window.location="/user/manage/list/6";
-	}
-});*/
 
 $(document).ready(function(){
 
@@ -113,7 +105,7 @@ $(document).ready(function(){
             yes: function (index, layero) { //或者使用btn1
                 //按钮【按钮一】的回调
                 layer.close(index);
-                $('#add_tenement').attr("action", '/user/save.do');
+                $('#add_tenement').attr("action", ctx+'/user/save.do');
                 $('#add_tenement').submit();
             },
             cancel: function (index) { //或者使用btn2

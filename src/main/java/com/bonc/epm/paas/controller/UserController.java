@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import org.hibernate.validator.internal.util.privilegedactions.GetAnnotationParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,10 +69,7 @@ public class UserController {
 	public String userIndex(Model model,@PathVariable long id){
 		User userManger = userDao.findOne(id);
 		List<User> userManageList = new ArrayList<>();
-		for(User user:userDao.checkUsermanage("3", userManger.getUser_province())){
-			userManageList.add(user);
-		}
-		for(User user:userDao.checkUsermanage("4", userManger.getUser_province())){
+		for(User user:userDao.checkUsermanage34(userManger.getUser_province())){
 			userManageList.add(user);
 		}
 		model.addAttribute("userManageList",userManageList);
@@ -97,7 +95,6 @@ public class UserController {
 		model.addAttribute("menu_flag", "user");
 		return "user/user_manage_create.jsp";
 	}
-
 
 			/**
 			 * 创建新租户
@@ -175,19 +172,13 @@ public class UserController {
 					model.addAttribute("creatFlag", "400");
 				}
 
-				//返回 user-management.jsp 页面，展示该租户所创建的所有用户信息
-				List<User> userList = new ArrayList<User>();
-				for (User uuuu : userDao.findAll()) {
-					userList.add(uuuu);
-				}
-				model.addAttribute("userList", userList);
-
-				/*User userManger = userDao.findOne(id);
+				Long userid = CurrentUserUtils.getInstance().getUser().getId();
+				User userManger = userDao.findOne(userid);
 				List<User> userManageList = new ArrayList<>();
-				for(User uu:userDao.checkUsermanage("3", userManger.getUser_province())){
-					userManageList.add(uu);
+				for(User user1:userDao.checkUsermanage34( userManger.getUser_province())){
+					userManageList.add(user1);
 				}
-				model.addAttribute("userManageList",userManageList);*/
+				model.addAttribute("userManageList",userManageList);
 
 				model.addAttribute("menu_flag", "user");
 				return "user/user-management.jsp";
@@ -202,9 +193,12 @@ public class UserController {
 			 */
 			@RequestMapping(value = {"/update.do"}, method = RequestMethod.POST)
 			public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
+				//1try
+				try {
+					//以用户名(登陆帐号)为name，创建client
+					KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
+					client.getNamespace(user.getUserName());
 
-				//以用户名(登陆帐号)为name，创建client
-				KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
 
 				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+user.getUserName());
 				ResourceQuota quota = updateQuota(client, user.getUserName(), resource);
@@ -222,6 +216,10 @@ public class UserController {
 					model.addAttribute("updateFlag", "400");
 				}
 				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~"+"updateFlag");
+
+				}catch (KubernetesClientException e){
+					System.out.println(e.getMessage()+":"+JSON.toJSON(e.getStatus()));
+				}
 
 				List<User> userList = new ArrayList<User>();
 				for (User uu : userDao.findAll()) {
@@ -258,12 +256,20 @@ public class UserController {
 					}
 					userDao.delete(users);
 					for (String name : userNameList) {
-						//以用户名(登陆帐号)为name，创建client
-						KubernetesAPIClientInterface client = kubernetesClientService.getClient(name);
+						//2try
+						try {
+							//以用户名(登陆帐号)为name，创建client
+							KubernetesAPIClientInterface client = kubernetesClientService.getClient(name);
+							client.getNamespace(name);
+
+
 						if (client.getNamespace(name) != null) {
 							client.deleteLimitRange(name);
 							client.deleteResourceQuota(name);
 							client.deleteNamespace(name);
+						}
+						}catch (KubernetesClientException e){
+							System.out.println(e.getMessage()+":"+JSON.toJSON(e.getStatus()));
 						}
 					}
 					map.put("status", "200");
@@ -290,10 +296,11 @@ public class UserController {
 				Resource resource = new Resource();
 				Restriction restriction = new Restriction();
 
-				//以用户名(登陆帐号)为name，创建client
-				KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
-				Namespace ns = client.getNamespace(user.getUserName());
-				System.out.println("user.getUserName()========================================");
+				//3try
+				try {
+					//以用户名(登陆帐号)为name，创建client
+					KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
+					Namespace ns = client.getNamespace(user.getUserName());
 				if (ns != null) {
 					System.out.println("namespace:" + JSON.toJSONString(ns));
 
@@ -342,6 +349,9 @@ public class UserController {
 					}
 				} else {
 					System.out.println("用户 " + user.getUserName() + " 没有定义名称为 " + user.getUserName() + " 的Namespace ");
+				}
+				}catch (KubernetesClientException e){
+					System.out.println(e.getMessage()+":"+JSON.toJSON(e.getStatus()));
 				}
 				model.addAttribute("restriction", restriction);
 				model.addAttribute("resource", resource);
@@ -436,7 +446,7 @@ public class UserController {
 
 	//租户搜查
 			@RequestMapping(value={"/manage/searchByCondition/{id}"},method=RequestMethod.POST)
-			public String searchByConditionS(
+			public String searchByCondition2(
 					String search_company, String search_department,
 					String search_autority, String search_userName,
 					String search_province,
@@ -483,10 +493,6 @@ public class UserController {
 					for(User user : userDao.find34By3(company, user_department, user_realname, user_province, parent_id)){
 						userManageList.add(user);
 					}
-//					user_autority = "4";
-//					for(User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province)){
-//						userManageList.add(user);
-//					}
 				}
 
 
@@ -575,6 +581,8 @@ public class UserController {
 		String usedServiceNum = "";//已经使用的服务个数
 		String usedControllerNum = "";//已经使用的副本控制器个数
 
+		//4try
+		try{
 		//以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
 		Namespace ns = client.getNamespace(user.getUserName());
@@ -603,6 +611,9 @@ public class UserController {
 			}
 		} else {
 			System.out.println("用户 " + user.getUserName() + " 还没有定义服务！");
+		}
+		}catch (KubernetesClientException e){
+			System.out.println(e.getMessage()+":"+JSON.toJSON(e.getStatus()));
 		}
 		model.addAttribute("user", user);
 		model.addAttribute("servCpuNum", servCpuNum);

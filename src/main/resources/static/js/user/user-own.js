@@ -74,7 +74,7 @@ $(function(){
                 //按钮【按钮一】的回调
                 layer.close(index);
                 $.ajax({
-                    url:"/user/userModifyBasic.do?id="+id
+                    url:ctx+"/user/userModifyBasic.do?id="+id
                     +"&company="+company
                     +"&user_department="+user_department
                     +"&user_employee_id="+user_employee_id
@@ -115,7 +115,7 @@ $(function(){
                 //按钮【按钮一】的回调
                 layer.close(index);
                 $.ajax({
-                    url:"/user/userModifyPsw.do?id="+id+"&password="+pwd+"&newpwd="+newpwd,
+                    url:ctx+"/user/userModifyPsw.do?id="+id+"&password="+pwd+"&newpwd="+newpwd,
                     success:function(data){
                         data = eval("(" + data + ")");
                         if(data.status === '200'){

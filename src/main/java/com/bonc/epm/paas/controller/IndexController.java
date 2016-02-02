@@ -1,5 +1,7 @@
 package com.bonc.epm.paas.controller;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,4 +106,18 @@ public class IndexController {
 		return userEntity;
 	}
 
+	/**
+	 * 初始化一个User
+	 */
+	@PostConstruct
+	public void init(){
+		User user = new User();
+		user.setUserName("admin");
+		user.setPassword("admin");
+		user.setUser_autority("1");
+		if(userDao.findByUserName(user.getUserName()) == null) {
+			userDao.save(user);
+		}
+		log.info("User init success:"+user.toString());
+	}
 }

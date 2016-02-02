@@ -63,10 +63,14 @@
 
         $("#userName").on("keyup", function(){
             checkEnter();
+        }).on("change", function(){
+        	checkEnter();
         });
 
         $("#password").on("keyup", function(){
             checkEnter();
+        }).on("change", function(){
+        	checkEnter();
         });
 
         function checkEnter(){

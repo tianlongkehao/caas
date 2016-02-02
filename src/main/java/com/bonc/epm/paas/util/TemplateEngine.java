@@ -4,12 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.io.OutputStreamWriter;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
+
+import com.bonc.epm.paas.constant.TemplateConf;
 
 public class TemplateEngine {
 	private static final Log log = LogFactory.getLog(TemplateEngine.class);
@@ -31,49 +31,50 @@ public class TemplateEngine {
         TemplateEngine.enter = System.getProperty("line.separator");
     }
     
-    @Value("${nginxConf.io.confpath}")
-    private static String nginxConfPath;
-    @Value("${nginxConf.io.cmdpath}")
-    private static String nginxCmdPath;
-    @Value("${nginxConf.io.confurl}")
-    private static String nginxConfUrl;
-    
     private static String template;
     static{
     	String path = TemplateEngine.class.getClassLoader().getResource("conf.tpl").getPath();
     	template = TemplateEngine.readConf(path); 
     }
     
-    public static void generateConfig(Map<String, String> app,String configName){
+    public static void generateConfig(Map<String, String> app,String configName,TemplateConf templateConf){
+    	String [] strings = templateConf.getServerIP().split(",");
+    	if(strings!=null&&strings.length>0){
+    		String serverStr = "";
+    		for(String str:strings){
+    			serverStr +="server "+str+":"+app.get("port")+";";
+    		}
+    		app.put("server",serverStr);
+    	}
 		String datastring = TemplateEngine.replaceArgs(template, app);
 		log.debug("datastring======="+datastring);
-		log.debug("nginxConfPathName"+nginxConfPath+configName);
-		TemplateEngine.writeConf(nginxConfPath+configName+".conf", datastring, true);
+		log.debug("templateConf.getConfpath()Name"+templateConf.getConfpath()+configName);
+		TemplateEngine.writeConf(templateConf.getConfpath()+configName+".conf", datastring, true);
     }
     
-    public static boolean cmdReloadConfig(){
-    	log.debug("nginxcmdString====="+nginxCmdPath);
-    	return CmdUtil.exeCmd(nginxCmdPath+" -s reload");
+    public static boolean cmdReloadConfig(TemplateConf templateConf){
+    	log.debug("nginxcmdString====="+templateConf.getCmdpath());
+    	return CmdUtil.exeCmd(templateConf.getCmdpath()+" -s reload");
     }
     
-    public static String getConfUrl(){
-    	return nginxConfUrl;
+    public static String getConfUrl(TemplateConf templateConf){
+    	return templateConf.getConfurl();
     }
     
-    public static boolean deleteConfig(String confName,String configName){
+    public static boolean deleteConfig(String confName,String configName,TemplateConf templateConf){
     	try {
     		// 读取配置文件
-            String data = readConf(nginxConfPath+configName+".conf");
+            String data = readConf(templateConf.getConfpath()+configName+".conf");
 //    		//test
 //            String data = readConf(configName);
 //            data = data.replace(getObject(confName,configName), "");
 //            writeConf(configName, data, false);
             // 过滤删除内容
-            data = data.replace(getObject(confName,nginxConfPath+configName+".conf"), "");
+            data = data.replace(getObject(confName,templateConf.getConfpath()+configName+".conf"), "");
             // 重新写回文件
-            writeConf(nginxConfPath+configName+".conf", data, false);
+            writeConf(templateConf.getConfpath()+configName+".conf", data, false);
 		} catch (Exception e) {
-			log.error("读取删除文件路径"+nginxConfPath+configName);
+			log.error("读取删除文件路径"+templateConf.getConfpath()+configName);
 			return false;
 		}
     	return true;

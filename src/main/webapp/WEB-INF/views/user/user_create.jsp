@@ -4,8 +4,8 @@
 <head lang="en">
     <title>创建租户</title>
     <%@include file="../frame/header.jsp" %> 
-    <link rel="stylesheet" type="text/css" href="/css/mod/user.css"/>
-    <script type="text/javascript" src="/js/user/user_create.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
+    <script type="text/javascript" src="<%=path %>/js/user/user_create.js"></script>
 </head>
 <body>
 
@@ -155,7 +155,7 @@
                                             </div>
                                         </div>
                                         <div class="list-item-description" style="padding-top: 100px;">
-                                            <a href="/user/list"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
+                                            <a href="<%=path %>/user/list"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
                                             <span class="next2 pull-right btn btn-primary pull_confirm" data-attr="tenxcloud/mysql" id="user_create_next2">下一步</span>
                                         </div>
                                     </div>
@@ -320,7 +320,7 @@
 				$("#userName").val(un);
 				//console.info("name: "+username);
 				 $.get(
-					 "/user/checkUsername/"+un,
+					 "<%=path %>/user/checkUsername/"+un,
 					 function(data,status){
 				    	console.info("Data: " + data + "\nStatus: " + status);
 				    	var data = eval("(" + data + ")");

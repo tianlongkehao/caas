@@ -1,14 +1,12 @@
 package com.bonc.epm.paas.controller;
 
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
-import com.bonc.epm.paas.dao.ContainerDao;
+import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
@@ -59,13 +57,13 @@ public class ServiceController {
 	public ServiceDao serviceDao;
 	
 	@Autowired
-	private ContainerDao containerDao;
-	@Autowired
 	private ImageDao imageDao;
 	@Autowired
 	public DockerClientService dockerClientService;
 	@Autowired
 	private KubernetesClientService kubernetesClientService;
+	@Autowired
+	private TemplateConf templateConf;
 	
 	
 	@RequestMapping("service/listService.do")
@@ -89,46 +87,45 @@ public class ServiceController {
 	@RequestMapping(value={"service"},method=RequestMethod.GET)
 	public String containerLists(Model model){
 		User  currentUser = CurrentUserUtils.getInstance().getUser();
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-	    List<Service> serviceList = new ArrayList<Service>();
-	    List<Container> containerList = new ArrayList<Container>();
-//	    if((client.getNamespace(currentUser.getUserName()) == null)&( client.getResourceQuota(currentUser.getUserName())== null)){
-//	    	model.addAttribute("msg", "请规范创建租户！");
-//			return "workbench.jsp";
-//	    }
-	  //获取特殊条件的pods
-		
-	    	try {
-	    		for(Service service:serviceDao.findByCreateBy(currentUser.getId())){
-	    			Map<String,String> map = new HashMap<String,String>();
-	    	    	map.put("app", service.getServiceName());
-	    	    	PodList podList = client.getLabelSelectorPods(map);
-	    	    	if(podList!=null){
-	    	    		List<Pod> pods = podList.getItems();
-	    	    		if(!CollectionUtils.isEmpty(pods)){
-	    	    			int i=1;
-	    	    			for(Pod pod:pods){
-	    	    				String podName = pod.getMetadata().getName();
-	    	    				Container container = new Container();
-	    	    				container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
-	    	    				container.setServiceid(service.getId());
-	    	    				containerList.add(container);
-	    	    			}
-	    	    		}
-	    	    	}
-	    	    	serviceList.add(service);
-	    		}
-	    		getleftResource(model);
-			} catch (KubernetesClientException e) {
-				model.addAttribute("msg",e.getStatus().getMessage());
-				return "workbench.jsp";
-			}
-		model.addAttribute("containerList", containerList);
-		model.addAttribute("serviceList", serviceList);
+		//获取特殊条件的pods
+		try {
+			getServiceSource(model, currentUser.getId());
+			getleftResource(model);
+		} catch (KubernetesClientException e) {
+			model.addAttribute("msg",e.getStatus().getMessage());
+			log.debug("service show:"+e.getStatus().getMessage());
+			return "workbench.jsp";
+		}	
 		model.addAttribute("menu_flag", "service");
 		
 		return "service/service.jsp";
 		
+	}
+	public void getServiceSource(Model model,long id) {
+		List<Service> serviceList = new ArrayList<Service>();
+	    List<Container> containerList = new ArrayList<Container>();
+	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+	    for(Service service:serviceDao.findByCreateBy(id)){
+			Map<String,String> map = new HashMap<String,String>();
+	    	map.put("app", service.getServiceName());
+	    	PodList podList = client.getLabelSelectorPods(map);
+	    	if(podList!=null){
+	    		List<Pod> pods = podList.getItems();
+	    		if(!CollectionUtils.isEmpty(pods)){
+	    			int i=1;
+	    			for(Pod pod:pods){
+	    				String podName = pod.getMetadata().getName();
+	    				Container container = new Container();
+	    				container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
+	    				container.setServiceid(service.getId());
+	    				containerList.add(container);
+	    			}
+	    		}
+	    	}
+	    	serviceList.add(service);
+		}
+	    model.addAttribute("containerList", containerList);
+		model.addAttribute("serviceList", serviceList);
 	}
 	
 	/**
@@ -175,6 +172,7 @@ public class ServiceController {
 		return "service/service.jsp";
 		
 	}
+	
 	/**
 	 * 展示container和services
 	 * @param model
@@ -211,7 +209,9 @@ public class ServiceController {
     			int i=1;
     			for(Pod pod:pods){
     				String podName = pod.getMetadata().getName();
-    				String s  = client.getPodLog(podName);
+    				String s = client.getPodLog(podName);
+    				String add = "["+"App-"+i++ +"] ["+podName+"]：";
+    				s = add + s.replaceAll("\n", "\n"+add);
     				Container container = new Container();
 	    			container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
 	    			container.setServiceid(service.getId());
@@ -226,6 +226,7 @@ public class ServiceController {
         model.addAttribute("service", service);
 		return "service/service-detail.jsp";
 	}
+	
 	/**
 	 * 响应“部署”按钮
 	 * @param imageName
@@ -263,18 +264,11 @@ public class ServiceController {
 		try {	    
 		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
 		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
-		    String cpuMax = limitRangeItem.getMax().get("cpu").replace("m", "");
-		    double icpuMax = Double.valueOf(cpuMax)/1024;
-		    String cpudefault = limitRangeItem.getDefaultVal().get("cpu").replace("m", "");
-		    double icpudefault = Double.valueOf(cpudefault)/1024;
-		    String cpuMin = limitRangeItem.getMin().get("cpu").replace("m", "");
-		    double icpuMin = Double.valueOf(cpuMin)/1024;
-		    String memoryMax = limitRangeItem.getMax().get("memory").replace("M", "");
-		    //Integer imemoryMax = Integer.valueOf(memoryMax)*1024;
-		    String memorydefault = limitRangeItem.getDefaultVal().get("memory").replace("M", "");
-		    //Integer imemorydefault = Integer.valueOf(memorydefault)*1024;
-		    String memoryMin = limitRangeItem.getMin().get("memory").replace("M", "");
-		    //Integer imemoryMin = Integer.valueOf(memoryMin)*1024;
+		    double icpuMax = kubernetesClientService.transCpu(limitRangeItem.getMax().get("cpu"));
+		    double icpuMin = kubernetesClientService.transCpu(limitRangeItem.getMin().get("cpu"));
+
+		    int memoryMin = kubernetesClientService.transMemory(limitRangeItem.getMin().get("memory"));
+		    int memoryMax = kubernetesClientService.transMemory(limitRangeItem.getMax().get("memory"));
 			model.addAttribute("memorymin", memoryMin);
 			model.addAttribute("memorymax", memoryMax);
 			model.addAttribute("cpumin", icpuMin);
@@ -286,6 +280,8 @@ public class ServiceController {
 		
 		return true;
 	}
+	
+	
 	/**
 	 * 展示镜像
 	 * @return
@@ -323,25 +319,33 @@ public class ServiceController {
 	public String CreateContainer(long id){
 		Service service = serviceDao.findOne(id);
 		Map<String, Object> map = new HashMap<String, Object>();
+		//使用k8s管理服务
+		String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(), service.getImgVersion());
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		ReplicationController controller = null;
+		com.bonc.epm.paas.kubernetes.model.Service k8sService =null;
+		try{
+			controller = client.getReplicationController(service.getServiceName());
+		}catch (KubernetesClientException e) {
+			controller = null;
+		}
+		try{
+			k8sService =  client.getService(service.getServiceName());
+		}catch (KubernetesClientException e) {
+			k8sService = null;
+		}
 		try {
-			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-			//使用k8s管理服务
-			String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(), service.getImgVersion());
 			//如果没有则新增
-			ReplicationController controller = client.getReplicationController(service.getServiceName());
 			if(controller==null){
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080,service.getCpuNum(),service.getRam());
-				//controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080);
 				controller = client.createReplicationController(controller);
 			}else{
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
 			}
-			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
 			if(k8sService==null){
 				k8sService = kubernetesClientService.generateService(service.getServiceName(),80,8080,(int)service.getId()+kubernetesClientService.getK8sStartPort());
 				k8sService = client.createService(k8sService);
 			}
-			
 			if(controller==null||k8sService==null){
 				map.put("status", "500");
 			}else{
@@ -372,11 +376,12 @@ public class ServiceController {
 		service.setCreateBy(currentUser.getId());
 		serviceDao.save(service);
 		Map<String, String > app = new HashMap<String, String>();
+		app.put("userName", currentUser.getUserName());
 		app.put("confName", service.getServiceName());
 		app.put("port", String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
-		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName());
-		TemplateEngine.cmdReloadConfig();
-		service.setServiceAddr(TemplateEngine.getConfUrl());
+		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(),templateConf);
+		TemplateEngine.cmdReloadConfig(templateConf);
+		service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
 		service.setPortSet(String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
 		serviceDao.save(service);
 		log.debug("container--Name:"+service.getServiceName());
@@ -391,7 +396,8 @@ public class ServiceController {
 	@ResponseBody
 	public String containerName(String serviceName){
 		Map<String, Object> map = new HashMap<String, Object>();
-		for(Service service:serviceDao.findAll()){
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		for(Service service:serviceDao.findByCreateBy(cUser.getId())){
 			if(service.getServiceName().equals(serviceName))
 			{
 				map.put("status", "400");
@@ -483,13 +489,10 @@ public class ServiceController {
 			}
 			
 		} catch (InterruptedException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
             log.error("error:执行command失败");
             return false;
         } catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
             log.error(e.getMessage());
             log.error("error:ssh连接失败");
             return false;
@@ -600,15 +603,16 @@ public class ServiceController {
 		String confName = service.getServiceName();
 		String configName = CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName();
 		try {
-			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-			ReplicationController controller = client.getReplicationController(service.getServiceName());
-			if(controller!=null){
-				client.updateReplicationController(service.getServiceName(), 0);
-				client.deleteReplicationController(service.getServiceName());
-				client.deleteService(service.getServiceName());
-				TemplateEngine.deleteConfig(confName, configName);
+			if (service.getStatus()!=1) {
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+				ReplicationController controller = client.getReplicationController(service.getServiceName());
+				if(controller!=null){
+					client.updateReplicationController(service.getServiceName(), 0);
+					client.deleteReplicationController(service.getServiceName());
+					client.deleteService(service.getServiceName());
+					TemplateEngine.deleteConfig(confName, configName,templateConf);
+				}
 			}
-			
 			map.put("status", "200");
 			serviceDao.delete(id);
 		} catch (KubernetesClientException e) {

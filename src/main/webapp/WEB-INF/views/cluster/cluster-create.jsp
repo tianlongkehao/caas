@@ -4,8 +4,8 @@
 < lang="en">
 <title>集群</title>
 <%@include file="../frame/header.jsp" %>
-<link rel="stylesheet" type="text/css" href="/css/mod/cluster.css"/>
-<script type="text/javascript" src="/js/cluster/cluster-create.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
+<script type="text/javascript" src="<%=path %>/js/cluster/cluster-create.js"></script>
 </head>
 <body>
 
@@ -45,7 +45,7 @@
                                         <div>
                                             <form class="search-group-inner"
                                                   style="width:60%;margin: 0 auto;position: relative;"
-                                                  action="/cluster/getClusters" method="post">
+                                                  action="<%=path %>/cluster/getClusters" method="post">
                                                 <%--<input type="text" name="ipRange" class="form-control" placeholder="请输入要查找的IP"
                                                        style="width: 78%;display: inline" value="${ipRange}">--%>
                                                 <input type="text" name="ipRange" class="form-control"
@@ -81,7 +81,7 @@
                                     </div>
                                 </div>
                                 <div class="list-item-description" style="padding-top: 100px">
-                                    <a href="/cluster/management"><button class="btn btn-default go_user"
+                                    <a href="<%=path %>/cluster/management"><button class="btn btn-default go_user"
                                                                   style="margin-right: 30px;">返回</button></a>
                                         <button class="nextTwo pull-right btn btn-primary pull_confirm"
                                               data-attr="tenxcloud/mysql">下一步</button>
@@ -172,7 +172,7 @@
                                 </div>
                                 <div class="" style="padding-top: 100px">
                                     <button class="btn btn-default last_step" style="margin-right: 30px;">上一步</button>
-                                    <a href="/cluster/management"><button id="finishBtn" class="pull-right btn btn-primary pull_confirm">完成</button></a>
+                                    <a href="<%=path %>/cluster/management"><button id="finishBtn" class="pull-right btn btn-primary pull_confirm">完成</button></a>
                                 </div>
                             </div>
                         </div>

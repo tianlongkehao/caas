@@ -4,8 +4,8 @@
 <head lang="en">
     <title>用户管理</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/user.css"/>
-    <script type="text/javascript" src="/js/user/user_create.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
+    <script type="text/javascript" src="<%=path %>/js/user/user_create.js"></script>
 </head>
 <body>
 
@@ -35,7 +35,7 @@
                 <div class="caption clearfix">
                     <ul class="toolbox clearfix">
                         <li><a href="javascript:window.location.reload(true);" id="userReloadBtn"><i class="fa fa-repeat"></i></a></li>
-                        <li><a href="/user/manage/add/${cur_user.id }" id="userCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
+                        <li><a href="<%=path %>/user/manage/add/${cur_user.id }" id="userCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
                         <li class="dropdown">
                             <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                             <ul class="dropdown-menu">
@@ -48,7 +48,7 @@
                             </ul>
                         </li>
                     </ul>
-                    <form id="search_form" class="form-inline" action="/user/manage/searchByCondition/${cur_user.id }" method="post">
+                    <form id="search_form" class="form-inline" action="<%=path %>/user/manage/searchByCondition/${cur_user.id }" method="post">
                         <div class="col-md-2 " style="width: 25%; " align="right">
                             <label style="line-height: 35px">姓名:</label>
                             <input name="search_userName" type="text" class="form-control" style="float: right;width:70%" placeholder="搜索姓名关键字">
@@ -123,7 +123,7 @@
                                                         <input type="checkbox" class="chkItem" name="ids" value="${user.id }" >
                                                     </td>
                                                     <td style="width: 15%;">
-                                                        <a href="/user/manage/detail/${user.id }" title="查看详细信息" onmousemove="style.textDecoration='underline'"
+                                                        <a href="<%=path %>/user/manage/detail/${user.id }" title="查看详细信息" onmousemove="style.textDecoration='underline'"
                                                            onmouseout="style.textDecoration='none'">${user.userName }</a>
                                                     </td>
                                                     <td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
@@ -134,9 +134,6 @@
                                                         <c:if test='${user.user_autority == "3"}'>普通用户</c:if>
                                                         <c:if test='${user.user_autority == "4"}'>超级用户</c:if>
                                                     </td>
-                                                    <%--<td style="width: 10%; text-indent: 0;">
-                                                        <c:if test='${user.user_autority == "4"}'>超级用户</c:if>
-                                                    </td>--%>
                                                 </tr>
                                             </c:if>
                                         </c:forEach>
@@ -155,6 +152,5 @@
         </div>
     </article>
 </div>
-
 </body>
 </html>

@@ -4,8 +4,8 @@
 <head lang="en">
     <title>服务</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/service.css"/>
-    <script type="text/javascript" src="/js/service/service.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/service.css"/>
+    <script type="text/javascript" src="<%=path %>/js/service/service.js"></script>
 </head>
 <body>
 
@@ -35,7 +35,7 @@
                 <div class="caption clearfix">
                     <ul class="toolbox clearfix">
                         <li><a href="javascript:void(0);" id="serviceReloadBtn"><i class="fa fa-repeat"></i></a></li>
-                        <li><a href="/service/add" id="serviceCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
+                        <li><a href="<%=path %>/service/add" id="serviceCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
                         <li class="dropdown">
                             <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                             <ul class="dropdown-menu serviceOperation">
@@ -240,7 +240,7 @@
                                                         </td>
                                                         <td style="width:20%;white-space:nowrap;">
                                                             <b class="caret margin" style="transform: rotate(-90deg);"></b>
-                                                            <a href="/service/detail/${service.id}" class="cluster_mirrer_name">${service.serviceName}</a>
+                                                            <a href="<%=path %>/service/detail/${service.id}" class="cluster_mirrer_name">${service.serviceName}</a>
                                                             <span  class="number-node">${service.instanceNum }</span>
                                                             <span class="margin cursor console-code-modal" data-id="#console-code-modal">
                                                                 <i class="fa fa-desktop" onclick="_showConsole('mysql');"></i>
@@ -248,11 +248,11 @@
                                                         </td>
                                                         <td style="width:10%" class="cStatusColumn" id="containerStatus">
                                                             <i class="${statusClassName}"></i> ${statusName}
-                                                   	 		<img src="/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
+                                                   	 		<img src="<%=path %>/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
                                                         </td>
                                                         <td style="width:20%;">
                                                             <span class="cluster_mirrer">
-                                                                <a title="点击查看镜像" target="_blank" href="../registry/detail/${service.imgID }">${service.imgName }</a>
+                                                                <a title="点击查看镜像" target="_blank" href="<%=path %>../registry/detail/${service.imgID }">${service.imgName }</a>
                                                             </span>
                                                         </td>
                                                         <td style="width:34%" id="mysqlurl">
@@ -282,7 +282,7 @@
                                                                         </td>
                                                                         <td colspan="2" style="width:30%">
                                                                             <i class="${statusClassName}"></i> ${statusName}
-                                                   	 						<img src="/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
+                                                   	 						<img src="<%=path %>/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
                                                                         </td>
                                                                         <td style="width:34%"></td>
                                                                         <td style="width:10%">

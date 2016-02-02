@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -23,12 +24,17 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 public class MethodInvoker {
+	
+	private static final Logger log = LoggerFactory.getLogger(MethodInvoker.class);
+	
 	private String url;
 	private String userName;
 	private String password;
@@ -97,7 +103,13 @@ public class MethodInvoker {
     	try{
     		return response.readEntity(method.getReturnType());
     	}catch(Exception e){
-    		throw new KubernetesClientException("unexpect k8s response",response.readEntity(Status.class));
+        	log.info(pathValue+"========"+response.readEntity(String.class));
+    		Status status = response.readEntity(Status.class);
+    		if(404==status.getCode()){
+    			throw new NotFoundException(e);
+    		}else{
+    			throw new KubernetesClientException("unexpect k8s response",status);
+    		}
     	}
 	}
 }

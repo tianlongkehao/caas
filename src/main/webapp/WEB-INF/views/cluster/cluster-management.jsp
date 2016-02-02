@@ -4,8 +4,8 @@
 <head lang="en">
     <title>集群</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/cluster.css"/>
-    <script type="text/javascript" src="/js/cluster/cluster-management.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
+    <script type="text/javascript" src="<%=path %>/js/cluster/cluster-management.js"></script>
 </head>
 <body>
 <jsp:include page="../frame/menu.jsp" flush="true">
@@ -39,7 +39,7 @@
                             <ul class="toolbox clearfix">
                                 <li><a href="javascript:void(0);" id="userReloadBtn"><i class="fa fa-repeat"></i></a>
                                 </li>
-                                <li><a href="/cluster/add" id="userCreateBtn"><i
+                                <li><a href="<%=path %>/cluster/add" id="userCreateBtn"><i
                                         class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
                                 <%--<li class="dropdown">
                                     <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i
@@ -100,7 +100,7 @@
                                 </ul>
                             </div>
                             <div class="searchs">
-                                <form class="form-inline" action="/cluster/searchCluster" method="post">
+                                <form class="form-inline" action="<%=path %>/cluster/searchCluster" method="post">
                                     <div class="form-group">
                                         <div class="input-group">
                                             <input type="text" class="form-control" placeholder="搜索IP地址关键字" name="searchIP">
@@ -144,7 +144,7 @@
                                                                        value="${cluster.id}">--%>
                                                             </td>
                                                             <td style="width: 20%;padding-left: 5px;" value="${cluster.host }">
-                                                                <a href="/cluster/detail?hostIps=${cluster.host }" title="查看详细信息"
+                                                                <a href="<%=path %>/cluster/detail?hostIps=${cluster.host }" title="查看详细信息"
                                                                    onmousemove="style.textDecoration='underline'"
                                                                    onmouseout="style.textDecoration='none'">${cluster.host }</a>
                                                             </td>

@@ -37,7 +37,7 @@ function delCluster() {
                 debugger
                 layer.close(index);
                 $.ajax({
-                    url:"/cluster/delMul.do?hosts="+id,
+                    url:ctx+"/cluster/delMul.do?hosts="+id,
                     success:function(data){
                         debugger
                         data = eval("(" + data + ")");
@@ -46,7 +46,7 @@ function delCluster() {
                         }else{
                             alert("节点信息删除失败，请检查服务器连接");
                         }
-                        location.href = "redirect:/cluster/management";
+                        location.href = ctx+"redirect:/cluster/management";
                     }
                 })
 

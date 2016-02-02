@@ -71,7 +71,7 @@ $(document).ready(function(){
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){ //或者使用btn1
 				 layer.close(index);
-				 $("#update_tenement").attr("action", '/user/update.do');
+				 $("#update_tenement").attr("action", ctx+'/user/update.do');
 				 debugger
 				 $("#update_tenement").submit();
 		 	 },

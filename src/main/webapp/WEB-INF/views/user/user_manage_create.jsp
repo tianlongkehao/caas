@@ -4,8 +4,8 @@
 <head lang="en">
     <title>创建用户</title>
     <%@include file="../frame/header.jsp" %> 
-    <link rel="stylesheet" type="text/css" href="/css/mod/user.css"/>
-    <script type="text/javascript" src="/js/user/user-management.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
+    <script type="text/javascript" src="<%=path %>/js/user/user-management.js"></script>
 </head>
 <body>
 
@@ -153,7 +153,7 @@
                                             </div>
                                         </div>
                                         <div class="list-item-description" style="padding-top: 100px;">
-                                            <a href="/user/manage/list/${cur_user.id }"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
+                                            <a href="<%=path %>/user/manage/list/${cur_user.id }"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
                                             <span class="saveInfo pull-right btn btn-primary pull_confirm" data-attr="tenxcloud/mysql" id="saveInfo_btn">保存</span>
                                             <%--<span class="next2 pull-right btn btn-primary" id="user_save_finishBtn"></span>--%>
                                         </div>
@@ -171,5 +171,38 @@
         </div>
     </article>
 </div>
+<script type="text/javascript" >
+	$(document).ready(function(){
+		$("#userName").blur(function(){
+			var username = $.trim($("#userName").val());
+				var un = username.toLowerCase();
+				console.info(un);
+				$("#userName").val(un);
+				console.info("name: "+username);
+				 $.get(
+					 "<%=path %>/user/checkUsername/"+un,
+					 function(data,status){
+				    	console.info("Data: " + data + "\nStatus: " + status);
+				    	var data = eval("(" + data + ")");
+						if(data.status=="400"){
+                            layer.tips('登陆帐号已经被使用，请输入新的帐号！','#userName',{
+                                tips: [1, '#0FA6D8']
+                            });
+                            $('#userName').focus();
+                            return false;
+                            $("#userName").focus();
+							layer.alert("登陆帐号已经被使用，请输入新的帐号！");
+
+					 	}
+						if(data.status=="300"){
+							layer.alert("k8s已经建立此名称的namespace，请输入新的帐号！");
+                            closeBtn(0);
+							$("#userName").focus();
+					 	}
+					});
+
+		});
+	});
+</script>
 </body>
 </html>

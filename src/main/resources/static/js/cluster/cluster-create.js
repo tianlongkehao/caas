@@ -164,7 +164,7 @@ function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
         processbar.innerHTML = processbar.style.width;
     }
     $.ajax({
-        url: "/cluster/installCluster?user=root&pass=a1s2d3&ip=" + host + "&port=22&type=" + type,
+        url:ctx+"/cluster/installCluster?user=root&pass=a1s2d3&ip=" + host + "&port=22&type=" + type,
         success: function (data) {
             if(data == "安装成功"){
                 setTimeout(function(){

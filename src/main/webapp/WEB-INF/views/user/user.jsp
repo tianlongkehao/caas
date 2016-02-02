@@ -4,8 +4,8 @@
 <head lang="en">
     <title>用户</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="/css/mod/user.css"/>
-    <script type="text/javascript" src="/js/user/user.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
+    <script type="text/javascript" src="<%=path %>/js/user/user.js"></script>
 </head>
 <body>
     <jsp:include page="../frame/menu.jsp" flush="true">
@@ -32,7 +32,7 @@
                     <div class="caption clearfix">
                         <ul class="toolbox clearfix">
                             <li><a href="javascript:window.location.reload(true);" id="userReloadBtn"><i class="fa fa-repeat"></i></a></li>
-                            <li><a href="/user/add" id="userCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
+                            <li><a href="<%=path %>/user/add" id="userCreateBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>
                             <li class="dropdown">
                                 <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                                 <ul class="dropdown-menu">
@@ -57,7 +57,7 @@
                                 </ul>
                             </li>
                         </ul>
-                        <form id="search_form" class="form-inline" action="/user/searchByCondition" method="post">
+                        <form id="search_form" class="form-inline" action="<%=path %>/user/searchByCondition" method="post">
                         	<div class="searchFun" style=" float: left; text-align: center;margin-left: 160px" align="right" >
                                 <label style="line-height: 35px;">姓名:</label>
                                 <input name="search_userName" type="text" class="form-control" style="display: inline;width:60%" placeholder="搜索姓名关键字">
@@ -167,7 +167,7 @@
 		                                            	<input type="checkbox" class="chkItem" name="ids" value="${user.id }" >
 		                                            </td>
 		                                            <td style="width: 15%;">
-                                                        <a href="/user/detail/${user.id }" title="查看详细信息" onmousemove="style.textDecoration='underline'"
+                                                        <a href="<%=path %>/user/detail/${user.id }" title="查看详细信息" onmousemove="style.textDecoration='underline'"
                                                            onmouseout="style.textDecoration='none'">${user.userName }</a>
                                                     </td>
 		                                            <td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
@@ -244,48 +244,48 @@
 		
 		if(create_flag == '200'){
 			/*if(confirm("创建用户成功！")) {
-				location.href="/user/list";
+				location.href="<%=path %>/user/list";
 			}
 			//window.location.reload;
 			else{
 				$("#create_flag").attr("value", '');
 			}
 			return;*/
-            location.href="/user/list";
+            location.href="<%=path %>/user/list";
             layer.alert("创建用户成功！");
 		}
 		if(create_flag == '400'){
 			/*if(confirm("创建用户失败！")) {
-				location.href="/user/list";
+				location.href="<%=path %>/user/list";
 			}
 			else {
 				$("#create_flag").attr("value", '');
 			}
 			return;*/
-            location.href="/user/list";
+            location.href="<%=path %>/user/list";
             layer.alert("创建用户失败！");
 		}
 		
 		if(update_flag === '400'){
 			/*if(confirm("用户信息更新失败！")) {
-				location.href="/user/list";
+				location.href="<%=path %>/user/list";
 			}
 			else {
 				$("#update_flag").attr("value", '');
 			}
 			return;*/
-            location.href="/user/list";
+            location.href="<%=path %>/user/list";
             layer.alert("用户信息更新失败！");
 		}
 		if(update_flag === '200'){
 			/*if(confirm("用户信息更新成功！")) {
-				location.href="/user/list";
+				location.href="<%=path %>/user/list";
 			}
 			else {
 				$("#update_flag").attr("value", '');			
 			}
 			return;*/
-            location.href="/user/list";
+            location.href="<%=path %>/user/list";
             layer.alert("用户信息更新成功！");
 		}
 	});

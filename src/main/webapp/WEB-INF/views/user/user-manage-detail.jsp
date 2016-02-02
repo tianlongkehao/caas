@@ -4,8 +4,8 @@
 <head lang="en">
     <title>租户信息</title>
     <%@include file="../frame/header.jsp" %> 
-    <link rel="stylesheet" type="text/css" href="/css/mod/user.css"/>
-    <script type="text/javascript" src="/js/user/user_detail.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
+    <script type="text/javascript" src="<%=path %>/js/user/user_detail.js"></script>
 </head>
 <body>
 
@@ -152,7 +152,7 @@
                                             </div>
                                         </div>
                                         <div class="list-item-description" style="padding-top: 100px">
-                                            <a href="/user/manage/list/${user.id}"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
+                                            <a href="<%=path %>/user/list"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
                                             <span class="next2 pull-right btn btn-primary pull_confirm" data-attr="tenxcloud/mysql" id="user_create_next2">修改</span>
                                         </div>
                                     </div>
