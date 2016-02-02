@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,11 +52,13 @@ public class UserController {
 	 */
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public String index(Model model) {
+	public String index(Model model,@PathVariable long id) {
+		User users = userDao.findOne(id);
 		List<User> userList = new ArrayList<User>();
-		for (User user : userDao.checkUser("3")) {
+		for (User user : userDao.checkUser(users.getParent_id())) {
 			userList.add(user);
 		}
+		System.out.println(users.getParent_id()+"========1111111111=====================");
 		model.addAttribute("userList", userList);
 		model.addAttribute("menu_flag", "user");
 		return "user/user.jsp";
@@ -117,7 +120,7 @@ public class UserController {
 
 					//为client创建资源配额
 					Map<String, String> map = new HashMap<String, String>();
-					map.put("memory", resource.getRam() + "G");    //内存
+					map.put("memory", resource.getRam() + "");    //内存
 
 //	    	map.put("cpu", Integer.valueOf(resource.getCpu_account())*1024+"");//CPU数量
 					map.put("cpu", resource.getCpu_account() + "");//CPU数量(个)
@@ -136,6 +139,7 @@ public class UserController {
 //	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
 
 					//DB保存用户信息
+					user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
 					userDao.save(user);
 					model.addAttribute("creatFlag", "200");
 				} catch (Exception e) {
@@ -162,6 +166,8 @@ public class UserController {
 				System.out.println("savemanage.do=============================================");
 				try {
 					//DB保存用户信息
+					System.out.println("============"+CurrentUserUtils.getInstance().getUser().getId());
+					user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
 					userDao.save(user);
 					model.addAttribute("creatFlag", "200");
 				} catch (Exception e) {
@@ -301,7 +307,7 @@ public class UserController {
 						resource.setCpu_account(map.get("cpu"));//CPU数量
 						resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
 						resource.setPod_count(map.get("pods"));//POD数量
-						resource.setRam(map.get("memory").substring(0, map.get("memory").length() - 1));//内存
+						resource.setRam(map.get("memory").replace("G",""));//内存
 						resource.setServer_count(map.get("services"));//服务
 					}
 
@@ -385,6 +391,7 @@ public class UserController {
 				String user_autority = "";
 				String user_realname = "";
 				String user_province = "";
+				Long parent_id = CurrentUserUtils.getInstance().getUser().getId();
 
 				if (search_company != null && !search_company.trim().equals("")) {
 					company = search_company.trim();
@@ -409,14 +416,14 @@ public class UserController {
 						}
 					} else {
 		//				System.out.println("findby3");
-						for (User user : userDao.find12By3(company, user_department, user_realname, user_province)) {
+						for (User user : userDao.find12By3(company, user_department, user_realname, user_province, parent_id)) {
 							userList.add(user);
 						}
 
 					}
 				} else {
 		//			System.out.println("find12By3");
-					for (User user : userDao.find12By3(company, user_department, user_realname, user_province)) {
+					for (User user : userDao.find12By3(company, user_department, user_realname, user_province, parent_id)) {
 						userList.add(user);
 					}
 				}
@@ -440,6 +447,7 @@ public class UserController {
 				String user_autority = "";
 				String user_realname = "";
 				String user_province = "";
+				Long parent_id=CurrentUserUtils.getInstance().getUser().getId();
 				if(search_company != null && !search_company.trim().equals("")){
 					company = search_company.trim();
 				}
@@ -464,7 +472,7 @@ public class UserController {
 					}
 					else {
 						System.out.println("find12by3");
-						for(User user : userDao.find12By3(company, user_department, user_realname, user_province)){
+						for(User user : userDao.find12By3(company, user_department, user_realname, user_province, parent_id)){
 							userManageList.add(user);
 						}
 
@@ -472,7 +480,7 @@ public class UserController {
 				}
 				else{
 					System.out.println("find34by3");
-					for(User user : userDao.find34By3(company, user_department, user_realname, user_province)){
+					for(User user : userDao.find34By3(company, user_department, user_realname, user_province, parent_id)){
 						userManageList.add(user);
 					}
 //					user_autority = "4";
@@ -555,9 +563,17 @@ public class UserController {
 		System.out.printf("user--id:", id);
 		User user = userDao.findOne(id);
 
-		String servServiceNum = "";//服务个数
+		String servCpuNum = "";//服务个数"
+		String servMemoryNum = "";//内存个数"
+		String servPodNum = "";//POD个数"
+		String servServiceNum = "";//服务个数"
+		String servControllerNum = "";//副本个数"
+
 		String usedCpuNum = "";//已使用CPU个数
 		String usedMemoryNum = "";//已使用内存
+		String usedPodNum = "";//已经使用的POD个数
+		String usedServiceNum = "";//已经使用的服务个数
+		String usedControllerNum = "";//已经使用的副本控制器个数
 
 		//以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
@@ -570,9 +586,17 @@ public class UserController {
 			if (quota != null) {
 				Map<String, String> hard = quota.getStatus().getHard();
 				Map<String, String> used = quota.getStatus().getUsed();
+				servCpuNum = hard.get("cpu");//cpu个数
+				servMemoryNum = hard.get("memory");//内存个数
+				servPodNum = hard.get("pods");//pod个数
 				servServiceNum = hard.get("services");//服务个数
+				servControllerNum = hard.get("replicationcontrollers");//副本控制数
+
 				usedCpuNum = used.get("cpu");//已使用CPU个数
 				usedMemoryNum = used.get("memory");//已使用内存
+				usedPodNum = used.get("pods");//已经使用的POD个数
+				usedServiceNum = used.get("services");//已经使用的服务个数
+				usedControllerNum = used.get("replicationcontrollers");//已经使用的副本控制器个数
 				/*******************************************************************/
             /* 					添加其它资源信息									   */
 				/*******************************************************************/
@@ -581,9 +605,16 @@ public class UserController {
 			System.out.println("用户 " + user.getUserName() + " 还没有定义服务！");
 		}
 		model.addAttribute("user", user);
+		model.addAttribute("servCpuNum", servCpuNum);
+		model.addAttribute("servMemoryNum", servMemoryNum);
+		model.addAttribute("servPodNum", servPodNum);
 		model.addAttribute("servServiceNum", servServiceNum);
+		model.addAttribute("servControllerNum", servControllerNum);
 		model.addAttribute("usedCpuNum", usedCpuNum);
 		model.addAttribute("usedMemoryNum", usedMemoryNum);
+		model.addAttribute("usedPodNum", usedPodNum);
+		model.addAttribute("usedControllerNum", usedControllerNum);
+		model.addAttribute("usedServiceNum", usedServiceNum);
 		return "user/user-own.jsp";
 	}
 
@@ -800,7 +831,7 @@ public class UserController {
 		ResourceQuotaSpec spec = quota.getSpec();
 		Map<String, String> hard = quota.getSpec().getHard();
 
-		hard.put("memory", resource.getRam() + "G");    //内存
+		hard.put("memory", resource.getRam() + "");    //内存
 		hard.put("cpu", resource.getCpu_account() + "");//CPU数量
 		hard.put("pods", resource.getPod_count() + "");//POD数量
 		hard.put("services", resource.getServer_count() + "");//服务

@@ -24,6 +24,7 @@ function delUser(){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
 							layer.alert("用户信息删除成功");
+                            window.location.reload();
 						}else{
 							layer.alert("用户信息删除失败，请检查服务器连接");
 						}
