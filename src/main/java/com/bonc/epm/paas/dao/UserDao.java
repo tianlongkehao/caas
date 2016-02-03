@@ -42,6 +42,9 @@ public interface UserDao extends CrudRepository<User, Long> {
 	@Query("select u.userName from User u where u.userName = ?1")
 	public List<String> checkUsername(String userName);
 
+	@Query("select count(u.userName) from User u where u.userName = ?1 group by u.userName")
+	public Integer checkUsername1(String userName);
+
 	@Query("select u from User u"
 			+ " where 1=1 "
 			+ " and u.user_autority= ?1"

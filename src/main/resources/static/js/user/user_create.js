@@ -39,6 +39,24 @@ function delUser(){
 	}
 }
 
+function user_detail() {
+    var id = "";
+    var count = 0;
+    $(":checked[name='ids']").each(function(){
+        id = jQuery(this).val();
+        count = count + 1;
+    });
+    if ("" == id) {
+        alert("请选择一个用户");
+        return;
+    }
+    if(count > 1){
+        alert("只能选择一个用户");
+        return;
+    }
+    location.href = ctx+"/user/detail/"+id;
+}
+
 
 $(document).ready(function(){
 

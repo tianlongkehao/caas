@@ -90,6 +90,16 @@ public class UserController {
 	@RequestMapping(value={"/manage/add/{id}"},method=RequestMethod.GET)
 	public String userCreate(Model model, @PathVariable long id){
 		User userMangerCreat = userDao.findOne(id);
+		List<User> userManageList = new ArrayList<>();
+		User userManger = userDao.findOne(id);
+		for(User user1:userDao.checkUsermanage34( userManger.getUser_province())){
+			userManageList.add(user1);
+			System.out.println("======================="+userMangerCreat.getUserName());
+			System.out.println("======================="+user1.getUserName());
+			if(userMangerCreat.getUserName().equals(user1.getUserName())){
+
+			}
+		}
 		model.addAttribute("menu_flag", "user");
 		return "user/user_manage_create.jsp";
 	}
@@ -158,24 +168,25 @@ public class UserController {
 			@RequestMapping(value = {"/savemanage.do"}, method = RequestMethod.POST)
 			public String userManageSave(User user, Model model) {
 				System.out.println("savemanage.do=============================================");
+				Long userid = CurrentUserUtils.getInstance().getUser().getId();
+				User userManger = userDao.findOne(userid);
+				List<User> userManageList = new ArrayList<>();
 				try {
 
-					//DB保存用户信息
-					userDao.save(user);
+					if(userDao.checkUsername1(user.getUserName())==null) {
+						//DB保存用户信息
+						userDao.save(user);
+					}
 					model.addAttribute("creatFlag", "200");
 				} catch (Exception e) {
 					e.printStackTrace();
 					model.addAttribute("creatFlag", "400");
 				}
-
-				Long userid = CurrentUserUtils.getInstance().getUser().getId();
-				User userManger = userDao.findOne(userid);
-				List<User> userManageList = new ArrayList<>();
 				for(User user1:userDao.checkUsermanage34( userManger.getUser_province())){
 					userManageList.add(user1);
+
 				}
 				model.addAttribute("userManageList",userManageList);
-
 				model.addAttribute("menu_flag", "user");
 				return "user/user-management.jsp";
 			}
