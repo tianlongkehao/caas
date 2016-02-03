@@ -161,22 +161,23 @@
                                       <span class="server-info-icon"><i class="fa_icon server_icon_1"></i>
                                         <span>服务个数：</span>
                                       </span>
-                                      	<c:choose>
+                                      <span class="pull-right big green"><span>${usedServiceNum}</span>/<span>${servServiceNum}</span>&nbsp;个</span>
+                                      	<%--<c:choose>
                                       		<c:when test="${servServiceNum==''}">
-	                                      		<span class="pull-right big green"><span id="clusterNum">2</span>&nbsp;个</span>
+	                                      		<span class="pull-right big green"><span id="clusterNum"></span>&nbsp;个</span>
                                       		</c:when>
                                       		<c:otherwise>
 		                                        <span class="pull-right big green"><span id="clusterNum1">${servServiceNum }</span>&nbsp;个</span>
                                       		</c:otherwise>
-                                      	</c:choose>
-                                      	</a>
+                                      	</c:choose>--%>
+                                    </a>
                                 </li>
                                 <li>
                                     <a href="<%=path %>/ci?0" data-permalink onclick="permalink(this)">
                                           <span class="server-info-icon"><i class="fa_icon server_icon_2"></i>
                                             <span>Pod个数：</span>
                                           </span>
-                                        <span class="pull-right big blue"><span id="ciNum">3</span>&nbsp;个</span>
+                                        <span class="pull-right big blue"><span>${usedPodNum}</span>/<span>${servPodNum}</span>&nbsp;个</span>
                                     </a>
                                 </li>
                                 <li>
@@ -184,17 +185,9 @@
                                           <span class="server-info-icon"><i class="fa_icon server_icon_3"></i>
                                             <span>副本控制器：</span>
                                           </span>
-                                        <span class="pull-right big yellow"><span id="imageNum">1</span>&nbsp;个</span>
+                                        <span class="pull-right big yellow"><span>${usedControllerNum}</span>/<span>${servControllerNum}</span>&nbsp;个</span>
                                     </a>
                                 </li>
-                                <%--<li>
-                                    <a href="<%=path %>/hosting?0" data-permalink onclick="_permalink(this)">
-                                      <span class="server-info-icon"><i class="fa_icon server_icon_hosting"></i>
-                                        <span>主机个数：</span>
-                                      </span>
-                                        <span class="pull-right big purple"><span id="hostingNum">-</span>&nbsp;个</span>
-                                    </a>
-                                </li>--%>
                             </ul>
                         </div>
                         </section>
@@ -209,39 +202,41 @@
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td style="width:15%">CPU（核）</td>
+                                        <td style="width:15%">CPU（个）</td>
                                         <td style="width:25%">
                                             <div class="slider_bj">
-                                                <div class="slider_block detailCpu" style="width: 23%"></div>
+                                                <div class="slider_block detailCpu" id="usedCpu"></div>
                                             </div>
                                         </td>
                                         <td style="width:10%">
-                                        	<c:choose>
+                                            <span id="detailCpu">${usedCpuNum}</span>/<span id="totalCpu">${servCpuNum}</span>（个）
+                                        	<%--<c:choose>
                                         		<c:when test="${usedCpuNum==''}">
-			                                        <span id="detailCpu">2</span>（核）
+			                                        <span id="detailCpu">&nbsp;</span>/<span id="totalCpu">&nbsp;</span>（个）
                                         		</c:when>
                                         		<c:otherwise>
-			                                        <span id="detailCpu">${usedCpuNum }</span>（核）
+			                                        <span id="detailCpu">${usedCpuNum}</span>/<span id="totalCpu">${servCpuNum}</span>（个）
                                         		</c:otherwise>
-                                        	</c:choose>
+                                        	</c:choose>--%>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>内存（M）</td>
+                                        <td>内存（G）</td>
                                         <td>
                                             <div class="slider_bj">
-                                                <div class="slider_block detailMemory" style="width: 43%"></div>
+                                                <div class="slider_block detailMemory" id="usedMemory"></div>
                                             </div>
                                         </td>
                                         <td>
-                                        	<c:choose>
+                                            <span id="detailMemory">${usedMemoryNum}</span>/<span id="totalMemory">${servMemoryNum}</span>（G）
+                                        	<%--<c:choose>
                                         		<c:when test="${usedMemoryNum==''}">
-			                                        <span id="detailMemory">880.64</span>/<span id="totalMemory">2048</span>（M）
+			                                        <span id="detailMemory">&nbsp;</span>/<span id="totalMemory">&nbsp;</span>（G）
                                         		</c:when>
                                         		<c:otherwise>
-			                                        <span id="detailMemory">${usedMemoryNum}</span>/<span id="totalMemory">-</span>（M）
+			                                        <span id="detailMemory">${usedMemoryNum}</span>/<span id="totalMemory">${servMemoryNum}</span>（G）
                                         		</c:otherwise>
-                                        	</c:choose>
+                                        	</c:choose>--%>
                                         </td>
                                     </tr>
                                     <%--<tr>
@@ -264,15 +259,6 @@
                                 </table>
                             </div>
                         </div>
-
-                        <%--<div>
-                            <canvas id="pieChart" class="pieChart" width="200" height="200"></canvas>
-                            <div style="margin-top: 15px">
-                                <canvas id="greenPie" width="15" height="15"></canvas>运行中
-                                <canvas id="redPie" width="15" height="15"></canvas>停止
-                                <canvas id="grayPie" width="15" height="15"></canvas>其他
-                            </div>
-                        </div>--%>
 
                     </div>
 

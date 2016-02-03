@@ -68,7 +68,7 @@
                                                     <label style="width: 20%; float: left;line-height: 35px" >省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
                                                     <input type="hidden" id="user_province_hidden" name="user_province" value="${cur_user.user_province }">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
-                                                            id="user_province" disabled>
+                                                            id="user_province" readonly="readonly">
                                                         <option name="user_province" value="1">北京</option>
                                                         <option name="user_province" value="2">天津</option>
                                                         <option name="user_province" value="3">上海</option>

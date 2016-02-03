@@ -6,60 +6,12 @@
 	$(document).on('click','.no-drop',function(){
 		  return false;
 		});
-
-	$('input[name="chkItem"').click(function(){
-			if($(this).prop("checked")){
-				$('#startContainer').removeClass('no-drop').addClass('a-live');
-				$('#stopContainer').removeClass('no-drop').addClass('a-live');
-				$('#scaleCluster').removeClass('no-drop').addClass('a-live');
-				$('#upgradeCluster').removeClass('no-drop').addClass('a-live');
-				$('#redeployContainer').removeClass('no-drop').addClass('a-live');
-				$('#changeConfiguration').removeClass('no-drop').addClass('a-live');
-				$('#deleteButton').removeClass('no-drop').addClass('a-live');
-				var status = [];
-				$('.clusterId').find("input[name='chkItem']").each(function(el) {
-					if($(this).is(':checked')){
-						status.push($(this).attr('status'));
-					}
-				});
-				var statusStr = status.toString();
-				var runIndex = statusStr.indexOf('3');
-				var stopIndex = statusStr.indexOf('4');
-				if(status.length > 1){
-					$('#changeConfiguration').removeClass('a-live').addClass('no-drop');
-					$('#scaleCluster').removeClass('a-live').addClass('no-drop');
-					$('#upgradeCluster').removeClass('a-live').addClass('no-drop');
-				}
-				if(statusStr.indexOf('Initialization') > -1){
-					$('#startContainer').removeClass('a-live').addClass('no-drop');
-					$('#stopContainer').removeClass('a-live').addClass('no-drop');
-					$('#changeConfiguration').removeClass('a-live').addClass('no-drop');
-					$('#scaleCluster').removeClass('a-live').addClass('no-drop');
-					$('#upgradeCluster').removeClass('a-live').addClass('no-drop');
-				}
-				if(runIndex > -1 && stopIndex < 0){
-					$('#startContainer').removeClass('a-live').addClass('no-drop');
-				}
-				if(runIndex < 0 && stopIndex > -1){
-					$('#stopContainer').removeClass('a-live').addClass('no-drop');
-				}
-				if(runIndex > -1 && stopIndex > -1){
-					$('#startContainer').removeClass('a-live').addClass('no-drop');
-					$('#stopContainer').removeClass('a-live').addClass('no-drop');
-				}
-			} else {
-				$('#startContainer').removeClass('a-live').addClass('no-drop');
-				$('#stopContainer').removeClass('a-live').addClass('no-drop');
-				$('#scaleCluster').removeClass('a-live').addClass('no-drop');
-				$('#upgradeCluster').removeClass('a-live').addClass('no-drop');
-				$('#redeployContainer').removeClass('a-live').addClass('no-drop');
-				$('#changeConfiguration').removeClass('a-live').addClass('no-drop');
-				$('#deleteButton').removeClass('a-live').addClass('no-drop');
-			}
 	
-	})
+	
 
 	_refreshCreateTime(60000);
+	
+	checkbox();
 	
 	$("#serviceSearch").click(function(){
 		var serviceName = $('#searchName').val();
@@ -321,6 +273,59 @@
 	 window.location.reload();//刷新当前页面.
  }
  
+ function checkbox(){
+	 $('input[name="chkItem"').click(function(){
+			if($(this).prop("checked")){
+				$('#startContainer').removeClass('no-drop').addClass('a-live');
+				$('#stopContainer').removeClass('no-drop').addClass('a-live');
+				$('#scaleCluster').removeClass('no-drop').addClass('a-live');
+				$('#upgradeCluster').removeClass('no-drop').addClass('a-live');
+				$('#redeployContainer').removeClass('no-drop').addClass('a-live');
+				$('#changeConfiguration').removeClass('no-drop').addClass('a-live');
+				$('#deleteButton').removeClass('no-drop').addClass('a-live');
+				var status = [];
+				$('.clusterId').find("input[name='chkItem']").each(function(el) {
+					if($(this).is(':checked')){
+						status.push($(this).attr('status'));
+					}
+				});
+				var statusStr = status.toString();
+				var runIndex = statusStr.indexOf('3');
+				var stopIndex = statusStr.indexOf('4');
+				if(status.length > 1){
+					$('#changeConfiguration').removeClass('a-live').addClass('no-drop');
+					$('#scaleCluster').removeClass('a-live').addClass('no-drop');
+					$('#upgradeCluster').removeClass('a-live').addClass('no-drop');
+				}
+				if(statusStr.indexOf('Initialization') > -1){
+					$('#startContainer').removeClass('a-live').addClass('no-drop');
+					$('#stopContainer').removeClass('a-live').addClass('no-drop');
+					$('#changeConfiguration').removeClass('a-live').addClass('no-drop');
+					$('#scaleCluster').removeClass('a-live').addClass('no-drop');
+					$('#upgradeCluster').removeClass('a-live').addClass('no-drop');
+				}
+				if(runIndex > -1 && stopIndex < 0){
+					$('#startContainer').removeClass('a-live').addClass('no-drop');
+				}
+				if(runIndex < 0 && stopIndex > -1){
+					$('#stopContainer').removeClass('a-live').addClass('no-drop');
+				}
+				if(runIndex > -1 && stopIndex > -1){
+					$('#startContainer').removeClass('a-live').addClass('no-drop');
+					$('#stopContainer').removeClass('a-live').addClass('no-drop');
+				}
+			} else {
+				$('#startContainer').removeClass('a-live').addClass('no-drop');
+				$('#stopContainer').removeClass('a-live').addClass('no-drop');
+				$('#scaleCluster').removeClass('a-live').addClass('no-drop');
+				$('#upgradeCluster').removeClass('a-live').addClass('no-drop');
+				$('#redeployContainer').removeClass('a-live').addClass('no-drop');
+				$('#changeConfiguration').removeClass('a-live').addClass('no-drop');
+				$('#deleteButton').removeClass('a-live').addClass('no-drop');
+			}
+	
+	})
+ }
  // Refresh create time
  function _refreshCreateTime(interval){
    setInterval(function(){

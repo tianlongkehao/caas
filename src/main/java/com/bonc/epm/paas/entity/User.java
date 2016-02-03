@@ -22,6 +22,7 @@ public class User {
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;//索引
+	private long parent_id;
 	private String password;//登陆密码
 	private String userName;//登陆名
 	private String company;//公司名称
@@ -56,7 +57,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", userName=" + userName + ", password="
+		return "User [id=" + id + ", parent_id=" + parent_id +", userName=" + userName + ", password="
 				+ password + ", email=" + email + ", company=" + company
 				+ ", favorImages=" + favorImages + "]";
 	}
@@ -67,6 +68,14 @@ public class User {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public long getParent_id() {
+		return parent_id;
+	}
+
+	public void setParent_id(long parent_id) {
+		this.parent_id = parent_id;
 	}
 
 	public String getPassword() {

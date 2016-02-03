@@ -48,6 +48,11 @@ $(function(){
 
     });
 
+    var userCpuPer = $("#detailCpu")[0].textContent/$("#totalCpu")[0].textContent*100+"%";
+    $("#clusterCpu")[0].style.width = userCpuPer;
+    var userMemPer = $("#detailMemory")[0].textContent/$("#totalMemory")[0].textContent*100+"%";
+    $("#clusterMem")[0].style.width = userMemPer;
+
     $("#basicInfo").click(function(){
     	var id = $("#user_id").val();
     	var company = $.trim($("#company").val());
