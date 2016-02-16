@@ -63,9 +63,9 @@ public class UserController {
 
 	@RequestMapping(value="/manage/list/{id}",method=RequestMethod.GET)
 	public String userIndex(Model model,@PathVariable long id){
-		User userManger = userDao.findOne(id);
+//		User userManger = userDao.findOne(id);
 		List<User> userManageList = new ArrayList<>();
-		for(User user:userDao.checkUsermanage34(userManger.getUser_province())){
+		for(User user:userDao.checkUser1manage34(id)){
 			userManageList.add(user);
 		}
 		model.addAttribute("userManageList",userManageList);
@@ -85,17 +85,6 @@ public class UserController {
 		return "user/user_create.jsp";
 	}
 
-//	@RequestMapping(value={"/manage/add/{id}"},method=RequestMethod.GET)
-//	public String userCreate(Model model, @PathVariable long id){
-//		User userMangerCreat = userDao.findOne(id);
-//		List<User> userManageList = new ArrayList<>();
-//		User userManger = userDao.findOne(id);
-//		for(User user1:userDao.checkUsermanage34( userManger.getUser_province())){
-//			userManageList.add(user1);
-//		}
-//		model.addAttribute("menu_flag", "user");
-//		return "user/user_manage_create.jsp";
-//	}
 
 	@RequestMapping(value = {"/manage/add/{id}"}, method = RequestMethod.GET)
 	public String userCreate(Model model, @PathVariable long id) {
@@ -203,7 +192,6 @@ public class UserController {
 			 */
 			@RequestMapping(value = {"/update.do"}, method = RequestMethod.POST)
 			public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
-				//1try
 				try {
 					//以用户名(登陆帐号)为name，创建client
 					KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
@@ -275,7 +263,6 @@ public class UserController {
 
 					userDao.delete(users);
 					for (String name : userNameList) {
-						//2try
 						try {
 							//以用户名(登陆帐号)为name，创建client
 							KubernetesAPIClientInterface client = kubernetesClientService.getClient(name);
@@ -318,7 +305,6 @@ public class UserController {
 				Resource resource = new Resource();
 				Restriction restriction = new Restriction();
 
-				//3try
 				try {
 					//以用户名(登陆帐号)为name，创建client
 					KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
@@ -411,7 +397,8 @@ public class UserController {
 			}
 
 			@RequestMapping(value = {"/searchByCondition"}, method = RequestMethod.POST)
-			public String searchByCondition(String search_company, String search_department,
+			public String searchByCondition(
+											String search_company, String search_department,
 											String search_autority, String search_userName,
 											String search_province,
 											Model model) {
@@ -443,7 +430,7 @@ public class UserController {
 
 
 						user_autority = arr[0].trim();
-						for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province)) {
+						for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province,parent_id)) {
 							userList.add(user);
 						}
 					} else {
@@ -500,7 +487,7 @@ public class UserController {
 						System.out.println("findby4");
 						user_autority = arr[0].trim();
 						System.out.println(user_autority);
-						for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province)) {
+						for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province,parent_id)) {
 							userManageList.add(user);
 						}
 					} else {
@@ -608,7 +595,6 @@ public class UserController {
         String usedServiceNum = "";//已经使用的服务个数
         String usedControllerNum = "";//已经使用的副本控制器个数
 
-        //4try
         try {
             //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
