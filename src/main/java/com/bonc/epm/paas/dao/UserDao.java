@@ -28,8 +28,9 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ "and u.user_department like %?2% "
 			+ "and u.user_autority= ?3 "
 			+ "and u.user_realname like %?4% "
-			+ "and u.user_province like %?5% ")
-	public List<User> findBy4(String company, String user_department, String user_autority, String user_realname, String user_province);
+			+ "and u.user_province like %?5% "
+			+ "and u.parent_id= ?6 ")
+	public List<User> findBy4(String company, String user_department, String user_autority, String user_realname, String user_province, Long parent_id);
 	
 	@Query("select u from User u "
 			+ "where 1=1 "
@@ -41,6 +42,9 @@ public interface UserDao extends CrudRepository<User, Long> {
 	
 	@Query("select u.userName from User u where u.userName = ?1")
 	public List<String> checkUsername(String userName);
+
+	@Query("select count(u.userName) from User u where u.userName = ?1 group by u.userName")
+	public Integer checkUsername1(String userName);
 
 	@Query("select u from User u"
 			+ " where 1=1 "
@@ -65,6 +69,12 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ " and u.user_province = ?1")
 	public List<User> checkUsermanage34(String user_province);
 
+	@Query("select u from User u"
+			+ " where 1=1 "
+			+ " and u.user_autority in(3,4)"
+			+ " and u.parent_id = ?1")
+	public List<User> checkUser1manage34(Long parent_id);
+
 	@Query("select u from User u "
 			+ "where 1=1 "
 			+ "and u.user_autority in(1,2)"
@@ -72,7 +82,7 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ "and u.user_department like %?2% "
 			+ "and u.user_realname like %?3% "
 			+ "and u.user_province like %?4% "
-			+ "and u.parent_id like %?5% ")
+			+ "and u.parent_id = ?5 ")
 	public List<User> find12By3(String company, String user_department, String user_realname, String user_province, Long parent_id);
 
 	@Query("select u from User u "
@@ -82,6 +92,6 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ "and u.user_department like %?2% "
 			+ "and u.user_realname like %?3% "
 			+ "and u.user_province like %?4% "
-			+ "and u.parent_id like %?5% ")
+			+ "and u.parent_id = ?5 ")
 	public List<User> find34By3(String company, String user_department, String user_realname, String user_province, Long parent_id);
 } 

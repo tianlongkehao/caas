@@ -47,11 +47,9 @@ public class UserController {
     /**
      * 展示所有用户信息、
      * 1、租户、管理员无差别？
-     *
      * @param model
      * @return
      */
-
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String index(Model model) {
         List<User> userList = new ArrayList<User>();
@@ -63,14 +61,14 @@ public class UserController {
         return "user/user.jsp";
     }
 
-    @RequestMapping(value = "/manage/list/{id}", method = RequestMethod.GET)
-    public String userIndex(Model model, @PathVariable long id) {
-        User userManger = userDao.findOne(id);
+    @RequestMapping(value="/manage/list/{id}",method=RequestMethod.GET)
+    public String userIndex(Model model,@PathVariable long id){
+//		User userManger = userDao.findOne(id);
         List<User> userManageList = new ArrayList<>();
-        for (User user : userDao.checkUsermanage34(userManger.getUser_province())) {
+        for(User user:userDao.checkUser1manage34(id)){
             userManageList.add(user);
         }
-        model.addAttribute("userManageList", userManageList);
+        model.addAttribute("userManageList",userManageList);
         model.addAttribute("menu_flag", "usermanage");
         return "user/user-management.jsp";
     }
@@ -80,7 +78,6 @@ public class UserController {
      *
      * @return
      */
-
     @RequestMapping(value = {"/add"}, method = RequestMethod.GET)
     public String useradd(Model model) {
         model.addAttribute("menu_flag", "user");
@@ -116,7 +113,6 @@ public class UserController {
             //为client创建资源配额
             Map<String, String> map = new HashMap<String, String>();
             map.put("memory", resource.getRam() + "");    //内存
-
 //	    	map.put("cpu", Integer.valueOf(resource.getCpu_account())*1024+"");//CPU数量
             map.put("cpu", resource.getCpu_account() + "");//CPU数量(个)
             map.put("pods", resource.getPod_count() + "");//POD数量
@@ -131,8 +127,7 @@ public class UserController {
             //为client创建资源限制
             LimitRange limitRange = generateLimitRange(user.getUserName(), restriction);
             limitRange = client.createLimitRange(limitRange);
-//	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
-
+	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
             //DB保存用户信息
             user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
             userDao.save(user);
@@ -151,38 +146,35 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-
-
     /**
      * 创建新用户
      */
     @RequestMapping(value = {"/savemanage.do"}, method = RequestMethod.POST)
     public String userManageSave(User user, Model model) {
         System.out.println("savemanage.do=============================================");
+        Long userid = CurrentUserUtils.getInstance().getUser().getId();
+        User userManger = userDao.findOne(userid);
+        List<User> userManageList = new ArrayList<>();
         try {
-            //DB保存用户信息
-            System.out.println("============" + CurrentUserUtils.getInstance().getUser().getId());
-            user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
-            userDao.save(user);
+
+            if(userDao.checkUsername1(user.getUserName())==null) {
+                //DB保存用户信息
+                user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
+                userDao.save(user);
+            }
             model.addAttribute("creatFlag", "200");
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("creatFlag", "400");
         }
-
-        Long userid = CurrentUserUtils.getInstance().getUser().getId();
-        User userManger = userDao.findOne(userid);
-
-        List<User> userManageList = new ArrayList<>();
-        for (User user1 : userDao.checkUsermanage34(userManger.getUser_province())) {
+        for(User user1:userDao.checkUsermanage34( userManger.getUser_province())){
             userManageList.add(user1);
+
         }
-        model.addAttribute("userManageList", userManageList);
+        model.addAttribute("userManageList",userManageList);
         model.addAttribute("menu_flag", "usermanage");
         return "user/user-management.jsp";
     }
-
-
     /**
      * 更新用户信息
      *
@@ -191,7 +183,6 @@ public class UserController {
      */
     @RequestMapping(value = {"/update.do"}, method = RequestMethod.POST)
     public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
-        //1try
         try {
             //以用户名(登陆帐号)为name，创建client
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
@@ -222,8 +213,6 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-
-
     /**
      * 局部刷新，批量删除用户
      *
@@ -256,7 +245,6 @@ public class UserController {
 
             userDao.delete(users);
             for (String name : userNameList) {
-                //2try
                 try {
                     //以用户名(登陆帐号)为name，创建client
                     KubernetesAPIClientInterface client = kubernetesClientService.getClient(name);
@@ -282,8 +270,6 @@ public class UserController {
         }
         return JSON.toJSONString(map);
     }
-
-
     /**
      * 根据用户id查询用户信息
      *
@@ -297,8 +283,6 @@ public class UserController {
         User user = userDao.findOne(id);
         Resource resource = new Resource();
         Restriction restriction = new Restriction();
-
-        //3try
         try {
             //以用户名(登陆帐号)为name，创建client
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
@@ -381,7 +365,6 @@ public class UserController {
         }
     }
 
-
     @RequestMapping(value = {"manage/detail/{id}"}, method = RequestMethod.GET)
     public String manageDetail(Model model, @PathVariable long id) {
         this.model = model;
@@ -391,12 +374,12 @@ public class UserController {
         return "user/user-manage-detail.jsp";
     }
 
-
     @RequestMapping(value = {"/searchByCondition"}, method = RequestMethod.POST)
-    public String searchByCondition(String search_company, String search_department,
-                                    String search_autority, String search_userName,
-                                    String search_province,
-                                    Model model) {
+    public String searchByCondition(
+            String search_company, String search_department,
+            String search_autority, String search_userName,
+            String search_province,
+            Model model) {
         List<User> userList = new ArrayList<User>();
         String company = "";
         String user_department = "";
@@ -423,7 +406,7 @@ public class UserController {
             if (arr.length == 1) {
                 //				System.out.println("findby4");
                 user_autority = arr[0].trim();
-                for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province)) {
+                for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province,parent_id)) {
                     userList.add(user);
                 }
             } else {
@@ -443,7 +426,6 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-
 
     //租户搜查
     @RequestMapping(value = {"/manage/searchByCondition/{id}"}, method = RequestMethod.POST)
@@ -477,7 +459,7 @@ public class UserController {
                 System.out.println("findby4");
                 user_autority = arr[0].trim();
                 System.out.println(user_autority);
-                for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province)) {
+                for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province,parent_id)) {
                     userManageList.add(user);
                 }
             } else {
@@ -499,8 +481,6 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user-management.jsp";
     }
-
-
     /**
      * 查询用户名是存在
      *
@@ -584,7 +564,6 @@ public class UserController {
         String usedServiceNum = "";//已经使用的服务个数
         String usedControllerNum = "";//已经使用的副本控制器个数
 
-        //4try
         try {
             //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());

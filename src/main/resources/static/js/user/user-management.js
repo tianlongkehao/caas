@@ -47,15 +47,15 @@ $(document).ready(function(){
             });
         } else {
             var un = userName.toLowerCase();
-            console.info(un);
+            //console.info(un);
             $("#userName").val(un);
             $.get(
                 "/user/checkUsername/"+un,
                 function(data,status){
-                    console.info("Data: " + data + "\nStatus: " + status);
+                    //console.info("Data: " + data + "\nStatus: " + status);
                     var data = eval("(" + data + ")");
                     if(data.status=="400"){
-                        //layer.alert("登陆帐号已经被使用，请输入新的帐号！");
+                        layer.alert("登陆帐号已经被使用，请输入新的帐号！");
                         layer.tips('登陆帐号已经被使用，请输入新的帐号！','#userName',{
                             tips: [1, '#0FA6D8']
                         });
