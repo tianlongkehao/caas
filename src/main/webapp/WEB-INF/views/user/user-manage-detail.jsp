@@ -152,7 +152,7 @@
                                             </div>
                                         </div>
                                         <div class="list-item-description" style="padding-top: 100px">
-                                            <a href="<%=path %>/user/list"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
+                                            <a href="<%=path %>/user/list/${cur_user.id}"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
                                             <span class="next2 pull-right btn btn-primary pull_confirm" data-attr="tenxcloud/mysql" id="user_create_next2">修改</span>
                                         </div>
                                     </div>

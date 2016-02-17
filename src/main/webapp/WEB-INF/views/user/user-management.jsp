@@ -152,5 +152,32 @@
         </div>
     </article>
 </div>
+<input id="create_flag" value="${creatFlag}" type="hidden">
+<input id="update_flag" value="${updateFlag}" type="hidden">
+
+<script type="text/javascript" >
+    $(document).ready(function(){
+        var create_flag = $.trim($("#create_flag").val());
+        var update_flag = $.trim($("#update_flag").val());
+
+        if(create_flag == '200'){
+            location.href="<%=path %>/user/manage/list/${cur_user.id }";
+            layer.alert("创建用户成功！");
+        }
+        if(create_flag == '400'){
+            location.href="<%=path %>/user/manage/list/${cur_user.id }";
+            layer.alert("创建用户失败！");
+        }
+
+        if(update_flag === '400'){
+            location.href="<%=path %>/user/manage/list/${cur_user.id }";
+            layer.alert("用户信息更新失败！");
+        }
+        if(update_flag === '200'){
+            location.href="<%=path %>/user/manage/list/${cur_user.id }";
+            layer.alert("用户信息更新成功！");
+        }
+    });
+</script>
 </body>
 </html>

@@ -90,7 +90,7 @@ public class UserController {
     @RequestMapping(value = {"/manage/add/{id}"}, method = RequestMethod.GET)
     public String userCreate(Model model, @PathVariable long id) {
         User userMangerCreat = userDao.findOne(id);
-        model.addAttribute("menu_flag", "user");
+        model.addAttribute("menu_flag", "usermanage");
         return "user/user_manage_create.jsp";
     }
 
@@ -172,13 +172,13 @@ public class UserController {
 
         Long userid = CurrentUserUtils.getInstance().getUser().getId();
         User userManger = userDao.findOne(userid);
+
         List<User> userManageList = new ArrayList<>();
         for (User user1 : userDao.checkUsermanage34(userManger.getUser_province())) {
             userManageList.add(user1);
         }
         model.addAttribute("userManageList", userManageList);
-
-        model.addAttribute("menu_flag", "user");
+        model.addAttribute("menu_flag", "usermanage");
         return "user/user-management.jsp";
     }
 
@@ -196,16 +196,12 @@ public class UserController {
             //以用户名(登陆帐号)为name，创建client
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
             client.getNamespace(user.getUserName());
-
-
-            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~" + user.getUserName());
             ResourceQuota quota = updateQuota(client, user.getUserName(), resource);
             LimitRange limit = updateLimitRange(client, user.getUserName(), restriction);
 
             try {
                 ResourceQuota updateQuota = client.updateResourceQuota(user.getUserName(), quota);
                 LimitRange updateLimitRange = client.updateLimitRange(user.getUserName(), limit);
-                System.out.println("+++++++++++++++++++++++++" + user.getUser_autority());
                 userDao.save(user);
                 model.addAttribute("updateFlag", "200");
                 //返回 user.jsp 页面，展示所用用户信息
@@ -213,7 +209,6 @@ public class UserController {
                 e.printStackTrace();
                 model.addAttribute("updateFlag", "400");
             }
-            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~" + "updateFlag");
 
         } catch (KubernetesClientException e) {
             System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
@@ -222,11 +217,9 @@ public class UserController {
         List<User> userList = new ArrayList<User>();
         for (User uu : userDao.findAll()) {
             userList.add(uu);
-            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~" + uu);
         }
         model.addAttribute("userList", userList);
         model.addAttribute("menu_flag", "user");
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~" + "??????????????????????????");
         return "user/user.jsp";
     }
 
