@@ -210,7 +210,7 @@ public class ServiceController {
     			for(Pod pod:pods){
     				String podName = pod.getMetadata().getName();
     				String s = client.getPodLog(podName);
-    				String add = "["+"App-"+i++ +"] ["+podName+"]：";
+    				String add = "["+"App-"+i +"] ["+podName+"]：";
     				s = add + s.replaceAll("\n", "\n"+add);
     				Container container = new Container();
 	    			container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
