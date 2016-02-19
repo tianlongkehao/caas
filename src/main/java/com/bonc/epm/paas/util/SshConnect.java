@@ -74,23 +74,7 @@ public class SshConnect {
             builder.append(str);
         }
         String str = builder.toString().trim();
-        if (str.isEmpty()) {
-            return "未知错误:命令执行结果为空";
-        } else {
-            switch (str) {
-                case "$":
-                    return str;
-                case "#":
-                    return str;
-                case ":":
-                    return str;
-                case "?":
-                    return str;
-                default:
-                    return str;
-
-            }
-        }
+        return str;
     }
 
     public static void disconnect() {
