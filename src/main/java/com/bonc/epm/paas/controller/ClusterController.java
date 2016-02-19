@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.controller;
 
 import java.io.IOException;
+import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import org.influxdb.dto.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +42,9 @@ public class ClusterController {
     @Autowired
     private ClusterDao clusterDao;
 
+    @Value("${yumConf.io.address}")
+    private String yumSource;
+
     @RequestMapping(value = {"/resource"}, method = RequestMethod.GET)
     public String resourceCluster(Model model) {
 
@@ -53,11 +58,13 @@ public class ClusterController {
         for (Cluster cluster : lstClusters) {
             if ("slave".equals(cluster.getHostType())) {
                 ClusterUse clusterUse = getClusterUse(cluster.getHost());
-                lstClustersUse.add(clusterUse);
-                allClusterCpuUse = allClusterCpuUse + Float.valueOf(clusterUse.getCpuUse());
-                allClusterCpuLimit = allClusterCpuLimit + Float.valueOf(clusterUse.getCpuLimit());
-                allClusterMemUse = allClusterMemUse + Float.valueOf(clusterUse.getMemUse());
-                allClusterMemLimit = allClusterMemLimit + Float.valueOf(clusterUse.getMemLimit());
+                if (clusterUse.getHost() != null) {
+                    lstClustersUse.add(clusterUse);
+                    allClusterCpuUse = allClusterCpuUse + Float.valueOf(clusterUse.getCpuUse());
+                    allClusterCpuLimit = allClusterCpuLimit + Float.valueOf(clusterUse.getCpuLimit());
+                    allClusterMemUse = allClusterMemUse + Float.valueOf(clusterUse.getMemUse());
+                    allClusterMemLimit = allClusterMemLimit + Float.valueOf(clusterUse.getMemLimit());
+                }
             }
         }
 
@@ -100,17 +107,16 @@ public class ClusterController {
     /**
      * 取得单一主机资源使用情况
      *
-     * @param hostIp
-     * @return
+     * @param hostIp hostIp
+     * @return ClusterUse
      */
     private ClusterUse getClusterUse(String hostIp) {
-        ClusterUse clusterUse = new ClusterUse();
+        ClusterUse clusterUse = null;
         try {
             InfluxDB influxDB = InfluxDBFactory.connect("http://172.16.71.172:30002", "root", "root");
 
+            clusterUse = new ClusterUse();
             String dbName = "k8s";
-            //设置主机IP
-            clusterUse.setHost(hostIp);
             //取得主机hostName
             String hostName = "centos-minion" + hostIp.split("\\.")[3];
             //查询主机cpu使用值
@@ -160,6 +166,8 @@ public class ClusterController {
             String mem_limit = result_mem_limit.getResults().get(0).getSeries().get(0).getValues().get(0).get(1).toString();
             //去掉小数点
             clusterUse.setMemLimit(mem_limit.substring(0, mem_limit.indexOf(".") + 3));
+            //设置主机IP
+            clusterUse.setHost(hostIp);
         } catch (Exception e) {
             log.debug(e.getMessage());
         }
@@ -189,7 +197,7 @@ public class ClusterController {
         if (index != -1) {
             String ipHalf = ipRange.substring(0, index);
             String ipSect = ipRange.substring(index + 1, ipRange.length() - 1);
-            if (ipSect.indexOf("-") != -1) {
+            if (ipSect.contains("-")) {
                 String[] ipsArray = ipSect.split("-");
                 int ipStart = Integer.valueOf(ipsArray[0]);
                 int ipEnd = Integer.valueOf(ipsArray[1]);
@@ -223,8 +231,10 @@ public class ClusterController {
                         conCluster.setPort(22);
                         lstClusters.add(conCluster);
                     }
+                } catch (NoRouteToHostException e) {
+                    log.error("无法SSH到目标主机:" + ipSon);
                 } catch (UnknownHostException e) {
-                    e.printStackTrace();
+                    log.error("未知主机:" + ipSon);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -264,10 +274,13 @@ public class ClusterController {
             //安装环境
             String masterName = "centos-master";
             String hostName = "centos-minion" + ip.split("\\.")[3];
-            String yumSource = "172.16.71.172";
             String cmd = "cd /opt/;chmod +x ./envInstall.sh;nohup ./envInstall.sh " + imageHostPort + " " + yumSource + " " + type + " " + masterName + " " + hostName;
-            log.debug("cmd-----------------------------------------------------------------------------------" + cmd);
-            SshConnect.exec(cmd, 300000);
+            Boolean endFlg = false;
+            SshConnect.exec(cmd, 10000);
+            while (!endFlg) {
+                String strRtn = SshConnect.exec("echo $?", 1000);
+                endFlg = strRtn.endsWith("#");
+            }
             //插入主机数据
             Cluster cluster = clusterDao.findByHost(ip);
             if (cluster == null) {
