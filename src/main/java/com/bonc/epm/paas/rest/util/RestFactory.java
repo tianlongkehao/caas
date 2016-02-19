@@ -1,8 +1,11 @@
-package com.bonc.epm.paas.kubernetes.api;
+package com.bonc.epm.paas.rest.util;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
+
+import com.bonc.epm.paas.docker.api.DockerRegistryAPI;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPI;
 
 public class RestFactory {
 	/* 
@@ -69,7 +72,7 @@ public class RestFactory {
         return createAPI(uri, userName, password);
     }*/
     
-    public KubernetesAPI createAPI(String url, String userName, String password){
+    public KubernetesAPI createKubernetesAPI(String url, String userName, String password){
     	Class<KubernetesAPI> clazz = KubernetesAPI.class;
     	Class<?>[] intfs =
 		{
@@ -82,6 +85,21 @@ public class RestFactory {
 	         methodMap.put(method, invoker);
 		}
     	return (KubernetesAPI)Proxy.newProxyInstance(clazz.getClassLoader(),intfs,new ClientProxy(methodMap));
+    }
+    
+    public DockerRegistryAPI createDockerRegistryAPI(String url, String userName, String password){
+    	Class<DockerRegistryAPI> clazz = DockerRegistryAPI.class;
+    	Class<?>[] intfs =
+		{
+			clazz
+		};
+    	HashMap<Method, MethodInvoker> methodMap = new HashMap<Method, MethodInvoker>();
+    	for (Method method : clazz.getMethods())
+		{
+	         MethodInvoker invoker = new MethodInvoker(url,userName,password,method);
+	         methodMap.put(method, invoker);
+		}
+    	return (DockerRegistryAPI)Proxy.newProxyInstance(clazz.getClassLoader(),intfs,new ClientProxy(methodMap));
     }
     
 }
