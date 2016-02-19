@@ -22,6 +22,7 @@ import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
+import com.bonc.epm.paas.rest.util.RestFactory;
 import com.google.common.base.Joiner;
 
 public class KubernetesApiClient implements KubernetesAPIClientInterface {
@@ -33,9 +34,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     private String namespace;
     
     public KubernetesApiClient(String namespace,String endpointUrl, String username, String password, RestFactory factory) {
-    	this.endpointURI = endpointUrl;
+    	this.endpointURI = endpointUrl+"/api/" + KubernetesAPIClientInterface.VERSION;
         this.namespace = namespace;
-        api = factory.createAPI(endpointURI, username, password);
+        api = factory.createKubernetesAPI(endpointURI, username, password);
     }
 
     public Pod getPod(String name) throws KubernetesClientException {

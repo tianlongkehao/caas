@@ -1,4 +1,4 @@
-package com.bonc.epm.paas.kubernetes.api;
+package com.bonc.epm.paas.rest.util;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -76,7 +76,7 @@ public class MethodInvoker {
     		}
     	}
     	
-    	WebTarget pathWebTarget = webTarget.path("/api/" + KubernetesAPIClientInterface.VERSION+pathValue);
+    	WebTarget pathWebTarget = webTarget.path(pathValue);
     	if(queryParamMap.size()>0){
     		for(Entry<String,String> queryParam:queryParamMap.entrySet()){
     			pathWebTarget = pathWebTarget.queryParam(queryParam.getKey(), queryParam.getValue());

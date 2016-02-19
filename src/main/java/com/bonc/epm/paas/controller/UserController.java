@@ -36,62 +36,60 @@ import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 @Controller
 @RequestMapping(value = "/user")
 public class UserController {
-	private static final Logger log = LoggerFactory.getLogger(UserController.class);
-	private static Map<String, KubernetesAPIClientInterface> clientMap;
-	@Autowired
-	public UserDao userDao;
-	@Autowired
-	private KubernetesClientService kubernetesClientService;
-	private Model model;
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private static Map<String, KubernetesAPIClientInterface> clientMap;
+    @Autowired
+    public UserDao userDao;
+    @Autowired
+    private KubernetesClientService kubernetesClientService;
+    private Model model;
 
-	/**
-	 * 展示所有用户信息、
-	 * 1、租户、管理员无差别？
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public String index(Model model) {
-		List<User> userList = new ArrayList<User>();
-		for (User user : userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId())) {
-			userList.add(user);
-		}
-		model.addAttribute("userList", userList);
-		model.addAttribute("menu_flag", "user");
-		return "user/user.jsp";
-	}
+    /**
+     * 展示所有用户信息、
+     * 1、租户、管理员无差别？
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public String index(Model model) {
+        List<User> userList = new ArrayList<User>();
+        for (User user : userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId())) {
+            userList.add(user);
+        }
+        model.addAttribute("userList", userList);
+        model.addAttribute("menu_flag", "user");
+        return "user/user.jsp";
+    }
 
-	@RequestMapping(value="/manage/list/{id}",method=RequestMethod.GET)
-	public String userIndex(Model model,@PathVariable long id){
+    @RequestMapping(value="/manage/list/{id}",method=RequestMethod.GET)
+    public String userIndex(Model model,@PathVariable long id){
 //		User userManger = userDao.findOne(id);
-		List<User> userManageList = new ArrayList<>();
-		for(User user:userDao.checkUser1manage34(id)){
-			userManageList.add(user);
-		}
-		model.addAttribute("userManageList",userManageList);
-		model.addAttribute("menu_flag", "usermanage");
-		return "user/user-management.jsp";
-	}
+        List<User> userManageList = new ArrayList<>();
+        for(User user:userDao.checkUser1manage34(id)){
+            userManageList.add(user);
+        }
+        model.addAttribute("userManageList",userManageList);
+        model.addAttribute("menu_flag", "usermanage");
+        return "user/user-management.jsp";
+    }
 
-	/**
-	 * 跳转到租户创建页面： user/user_create.jsp
-	 *
-	 * @return
-	 */
+    /**
+     * 跳转到租户创建页面： user/user_create.jsp
+     *
+     * @return
+     */
+    @RequestMapping(value = {"/add"}, method = RequestMethod.GET)
+    public String useradd(Model model) {
+        model.addAttribute("menu_flag", "user");
+        return "user/user_create.jsp";
+    }
 
-	@RequestMapping(value = {"/add"}, method = RequestMethod.GET)
-	public String useradd(Model model) {
-		model.addAttribute("menu_flag", "user");
-		return "user/user_create.jsp";
-	}
-
-
-	@RequestMapping(value = {"/manage/add/{id}"}, method = RequestMethod.GET)
-	public String userCreate(Model model, @PathVariable long id) {
-		User userMangerCreat = userDao.findOne(id);
-		model.addAttribute("menu_flag", "user");
-		return "user/user_manage_create.jsp";
-	}
+    @RequestMapping(value = {"/manage/add/{id}"}, method = RequestMethod.GET)
+    public String userCreate(Model model, @PathVariable long id) {
+        User userMangerCreat = userDao.findOne(id);
+        model.addAttribute("menu_flag", "usermanage");
+        return "user/user_manage_create.jsp";
+    }
 
     /**
      * 创建新租户
@@ -115,8 +113,6 @@ public class UserController {
             //为client创建资源配额
             Map<String, String> map = new HashMap<String, String>();
             map.put("memory", resource.getRam() + "");    //内存
-
-
 //	    	map.put("cpu", Integer.valueOf(resource.getCpu_account())*1024+"");//CPU数量
             map.put("cpu", resource.getCpu_account() + "");//CPU数量(个)
             map.put("pods", resource.getPod_count() + "");//POD数量
@@ -131,411 +127,384 @@ public class UserController {
             //为client创建资源限制
             LimitRange limitRange = generateLimitRange(user.getUserName(), restriction);
             limitRange = client.createLimitRange(limitRange);
-//	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
+	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
+            //DB保存用户信息
+            user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
+            userDao.save(user);
+            model.addAttribute("creatFlag", "200");
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("creatFlag", "400");
+        }
 
-			//DB保存用户信息
-			user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
-			userDao.save(user);
-			model.addAttribute("creatFlag", "200");
-		} catch (Exception e) {
-				e.printStackTrace();
-				model.addAttribute("creatFlag", "400");
-				}
+        //返回 user.jsp 页面，展示所用用户信息
+        List<User> userList = new ArrayList<User>();
+        for (User uu : userDao.findAll()) {
+            userList.add(uu);
+        }
+        model.addAttribute("userList", userList);
+        model.addAttribute("menu_flag", "user");
+        return "user/user.jsp";
+    }
+    /**
+     * 创建新用户
+     */
+    @RequestMapping(value = {"/savemanage.do"}, method = RequestMethod.POST)
+    public String userManageSave(User user, Model model) {
+        System.out.println("savemanage.do=============================================");
+        Long userid = CurrentUserUtils.getInstance().getUser().getId();
+        User userManger = userDao.findOne(userid);
+        List<User> userManageList = new ArrayList<>();
+        try {
 
-				//返回 user.jsp 页面，展示所用用户信息
-				List<User> userList = new ArrayList<User>();
-				for (User uu : userDao.findAll()) {
-				userList.add(uu);
-				}
-				model.addAttribute("userList", userList);
-				model.addAttribute("menu_flag", "user");
-				return "user/user.jsp";
-				}
+            if(userDao.checkUsername1(user.getUserName())==null) {
+                //DB保存用户信息
+                user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
+                userDao.save(user);
+            }
+            model.addAttribute("creatFlag", "200");
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("creatFlag", "400");
+        }
+        for(User user1:userDao.checkUsermanage34( userManger.getUser_province())){
+            userManageList.add(user1);
 
+        }
+        model.addAttribute("userManageList",userManageList);
+        model.addAttribute("menu_flag", "usermanage");
+        return "user/user-management.jsp";
+    }
+    /**
+     * 更新用户信息
+     *
+     * @param user
+     * @return
+     */
+    @RequestMapping(value = {"/update.do"}, method = RequestMethod.POST)
+    public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
+        try {
+            //以用户名(登陆帐号)为name，创建client
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
+            client.getNamespace(user.getUserName());
+            ResourceQuota quota = updateQuota(client, user.getUserName(), resource);
+            LimitRange limit = updateLimitRange(client, user.getUserName(), restriction);
 
-			/**
-			 * 创建新用户
-			 */
-			@RequestMapping(value = {"/savemanage.do"}, method = RequestMethod.POST)
-			public String userManageSave(User user, Model model) {
-				System.out.println("savemanage.do=============================================");
-				Long userid = CurrentUserUtils.getInstance().getUser().getId();
-				User userManger = userDao.findOne(userid);
-				List<User> userManageList = new ArrayList<>();
-				try {
+            try {
+                ResourceQuota updateQuota = client.updateResourceQuota(user.getUserName(), quota);
+                LimitRange updateLimitRange = client.updateLimitRange(user.getUserName(), limit);
+                userDao.save(user);
+                model.addAttribute("updateFlag", "200");
+                //返回 user.jsp 页面，展示所用用户信息
+            } catch (Exception e) {
+                e.printStackTrace();
+                model.addAttribute("updateFlag", "400");
+            }
 
-					if(userDao.checkUsername1(user.getUserName())==null) {
-						//DB保存用户信息
-						System.out.println("============" + CurrentUserUtils.getInstance().getUser().getId());
-						user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
-						userDao.save(user);
-					}
-					model.addAttribute("creatFlag", "200");
-				} catch (Exception e) {
-					e.printStackTrace();
-					model.addAttribute("creatFlag", "400");
-				}
-				for(User user1:userDao.checkUsermanage34( userManger.getUser_province())){
-					userManageList.add(user1);
+        } catch (KubernetesClientException e) {
+            System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+        }
 
-				}
-				model.addAttribute("userManageList",userManageList);
-				model.addAttribute("menu_flag", "user");
-				return "user/user-management.jsp";
-			}
+        List<User> userList = new ArrayList<User>();
+        for (User uu : userDao.findAll()) {
+            userList.add(uu);
+        }
+        model.addAttribute("userList", userList);
+        model.addAttribute("menu_flag", "user");
+        return "user/user.jsp";
+    }
+    /**
+     * 局部刷新，批量删除用户
+     *
+     * @return
+     */
+    @RequestMapping("/delMul.do")
+    @ResponseBody
+    public String userDelMul(String ids) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<User> users = new ArrayList<User>();
+        List<Long> idList = new ArrayList<Long>();
+        List<String> userNameList = new ArrayList<String>();
+        try {
+            String[] idArr = ids.split(",");
+            for (int i = 0; i < idArr.length; i++) {
+                idList.add(Long.parseLong(idArr[i]));
+            }
+            for (User user : userDao.findAll(idList)) {
+                users.add(user);
+                userNameList.add(user.getUserName());
+                //如果删除的为租户
+                if ("2".equals(user.getUser_autority())) {
+                    Long userId = user.getId();
+                    //取得用户
+                    for (User sonUser : userDao.getByParentId(userId)) {
+                        users.add(sonUser);
+                    }
+                }
+            }
 
-			/**
-			 * 更新用户信息
-			 *
-			 * @param user
-			 * @return
-			 */
-			@RequestMapping(value = {"/update.do"}, method = RequestMethod.POST)
-			public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
-				try {
-					//以用户名(登陆帐号)为name，创建client
-					KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
-					client.getNamespace(user.getUserName());
+            userDao.delete(users);
+            for (String name : userNameList) {
+                try {
+                    //以用户名(登陆帐号)为name，创建client
+                    KubernetesAPIClientInterface client = kubernetesClientService.getClient(name);
+                    client.getNamespace(name);
 
+                    if (client.getNamespace(name) != null) {
+                        client.deleteLimitRange(name);
+                        try {
+                            client.deleteResourceQuota(name);
+                        } catch (javax.ws.rs.ProcessingException e) {
+                            System.out.println(e.getMessage());
+                        }
+                        client.deleteNamespace(name);
+                    }
+                } catch (KubernetesClientException e) {
+                    System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+                }
+            }
+            map.put("status", "200");
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
+    }
+    /**
+     * 根据用户id查询用户信息
+     *
+     * @param model
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = {"detail/{id}"}, method = RequestMethod.GET)
+    public String Detail(Model model, @PathVariable long id) {
+        System.out.println("/user/user/detail========================================");
+        User user = userDao.findOne(id);
+        Resource resource = new Resource();
+        Restriction restriction = new Restriction();
+        try {
+            //以用户名(登陆帐号)为name，创建client
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
+            Namespace ns = client.getNamespace(user.getUserName());
+            if (ns != null) {
+                System.out.println("namespace:" + JSON.toJSONString(ns));
 
-					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~" + user.getUserName());
-					ResourceQuota quota = updateQuota(client, user.getUserName(), resource);
-					LimitRange limit = updateLimitRange(client, user.getUserName(), restriction);
+                ResourceQuota quota = client.getResourceQuota(user.getUserName());
+                System.out.println("resourceQuota:" + JSON.toJSONString(quota));
 
-					try {
-						ResourceQuota updateQuota = client.updateResourceQuota(user.getUserName(), quota);
-						LimitRange updateLimitRange = client.updateLimitRange(user.getUserName(), limit);
-						System.out.println("+++++++++++++++++++++++++" + user.getUser_autority());
-						userDao.save(user);
-						model.addAttribute("updateFlag", "200");
-						//返回 user.jsp 页面，展示所用用户信息
-					} catch (Exception e) {
-						e.printStackTrace();
-						model.addAttribute("updateFlag", "400");
-					}
-					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~" + "updateFlag");
+                if (quota != null) {
+                    Map<String, String> map = quota.getSpec().getHard();
+                    //				Integer a=Integer.valueOf(map.get("cpu"))/1024;
+                    //	    		resource.setCpu_account(a.toString());//CPU数量
+                    resource.setCpu_account(map.get("cpu"));//CPU数量
+                    resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
+                    resource.setPod_count(map.get("pods"));//POD数量
+                    resource.setRam(map.get("memory").replace("G", ""));//内存
+                    resource.setServer_count(map.get("services"));//服务
+                }
 
-				} catch (KubernetesClientException e) {
-					System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
-				}
+                LimitRange lr = client.getLimitRange(user.getUserName());
+                System.out.println("UserName:" + user.getUserName());
+                System.out.println("limitRange:" + JSON.toJSONString(lr));
 
-				List<User> userList = new ArrayList<User>();
-				for (User uu : userDao.findAll()) {
-					userList.add(uu);
-					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~" + uu);
-				}
-				model.addAttribute("userList", userList);
-				model.addAttribute("menu_flag", "user");
-				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~" + "??????????????????????????");
-				return "user/user.jsp";
-			}
+                if (lr != null && lr.getSpec().getLimits().size() > 0) {
+                    for (LimitRangeItem limit : lr.getSpec().getLimits()) {
+                        String type = limit.getType();
+                        Map<String, String> def = limit.getDefaultVal();
+                        Map<String, String> max = limit.getMax();
+                        Map<String, String> min = limit.getMin();
 
+                        if (type.trim().equals("pod")) {
+                            restriction.setPod_cpu_default(computeCpuOut(def));
+                            restriction.setPod_memory_default(computeMemoryOut(def));
+                            restriction.setPod_cpu_max(computeCpuOut(max));
+                            restriction.setPod_memory_max(computeMemoryOut(max));
+                            restriction.setPod_cpu_min(computeCpuOut(min));
+                            restriction.setPod_memory_min(computeMemoryOut(min));
+                        }
+                        if (type.trim().equals("Container")) {
+                            restriction.setContainer_cpu_default(computeCpuOut(def));
+                            restriction.setContainer_memory_default(computeMemoryOut(def));
+                            restriction.setContainer_cpu_max(computeCpuOut(max));
+                            restriction.setContainer_memory_max(computeMemoryOut(max));
+                            restriction.setContainer_cpu_min(computeCpuOut(min));
+                            restriction.setContainer_memory_min(computeMemoryOut(min));
+                        }
+                    }
+                }
+            } else {
+                System.out.println("用户 " + user.getUserName() + " 没有定义名称为 " + user.getUserName() + " 的Namespace ");
+            }
+        } catch (KubernetesClientException e) {
+            System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+        }
+        model.addAttribute("restriction", restriction);
+        model.addAttribute("resource", resource);
+        model.addAttribute("user", user);
+        return "user/user_detail.jsp";
+    }
 
-			/**
-			 * 局部刷新，批量删除用户
-			 *
-			 * @return
-			 */
-			@RequestMapping("/delMul.do")
-			@ResponseBody
-			public String userDelMul(String ids) {
-				Map<String, Object> map = new HashMap<String, Object>();
-				List<User> users = new ArrayList<User>();
-				List<Long> idList = new ArrayList<Long>();
-				List<String> userNameList = new ArrayList<String>();
-				try {
-					String[] idArr = ids.split(",");
-					for (int i = 0; i < idArr.length; i++) {
-						idList.add(Long.parseLong(idArr[i]));
-					}
-					for (User user : userDao.findAll(idList)) {
-						users.add(user);
-						userNameList.add(user.getUserName());
-						//如果删除的为租户
-						if ("2".equals(user.getUser_autority())) {
-							Long userId = user.getId();
-							//取得用户
-							for (User sonUser : userDao.getByParentId(userId)) {
-								users.add(sonUser);
-							}
-						}
-					}
+    private String computeMemoryOut(Map<String, String> val) {
+        String memVal = val.get("memory");
+        if (memVal.contains("Mi")) {
+            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
+            return a1.toString();
+        } else {
+            return memVal.replace("Gi", "");
+        }
+    }
 
-					userDao.delete(users);
-					for (String name : userNameList) {
-						try {
-							//以用户名(登陆帐号)为name，创建client
-							KubernetesAPIClientInterface client = kubernetesClientService.getClient(name);
-							client.getNamespace(name);
+    private String computeCpuOut(Map<String, String> val) {
+        String cpuVal = val.get("cpu");
+        if (cpuVal.contains("m")) {
+            Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
+            return a1.toString();
+        } else {
+            return cpuVal;
+        }
+    }
 
-							if (client.getNamespace(name) != null) {
-								client.deleteLimitRange(name);
-								try {
-									client.deleteResourceQuota(name);
-								} catch (javax.ws.rs.ProcessingException e) {
-									System.out.println(e.getMessage());
-								}
-								client.deleteNamespace(name);
-							}
-						} catch (KubernetesClientException e) {
-							System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
-						}
-					}
-					map.put("status", "200");
-				} catch (Exception e) {
-					e.printStackTrace();
-					map.put("status", "400");
-				}
-				return JSON.toJSONString(map);
-			}
+    @RequestMapping(value = {"manage/detail/{id}"}, method = RequestMethod.GET)
+    public String manageDetail(Model model, @PathVariable long id) {
+        this.model = model;
+        System.out.println("/user/user/detail========================================");
+        User user = userDao.findOne(id);
+        model.addAttribute("user", user);
+        return "user/user-manage-detail.jsp";
+    }
 
+    @RequestMapping(value = {"/searchByCondition"}, method = RequestMethod.POST)
+    public String searchByCondition(
+            String search_company, String search_department,
+            String search_autority, String search_userName,
+            String search_province,
+            Model model) {
+        List<User> userList = new ArrayList<User>();
+        String company = "";
+        String user_department = "";
+        String user_autority = "";
+        String user_realname = "";
+        String user_province = "";
+        Long parent_id = CurrentUserUtils.getInstance().getUser().getId();
 
+        if (search_company != null && !search_company.trim().equals("")) {
+            company = search_company.trim();
+        }
+        if (search_department != null && !search_department.trim().equals("")) {
+            user_department = search_department.trim();
+        }
+        if (search_province != null && !search_province.trim().equals("")) {
+            user_province = search_province.trim();
+        }
+        if (search_userName != null && !search_userName.trim().equals("")) {
+            user_realname = search_userName.trim();
+        }
 
-			/**
-			 * 根据用户id查询用户信息
-			 *
-			 * @param model
-			 * @param id
-			 * @return
-			 */
-			@RequestMapping(value = {"detail/{id}"}, method = RequestMethod.GET)
-			public String Detail(Model model, @PathVariable long id) {
-				System.out.println("/user/user/detail========================================");
-				User user = userDao.findOne(id);
-				Resource resource = new Resource();
-				Restriction restriction = new Restriction();
+        if (search_autority.trim().length() > 0) {
+            String[] arr = search_autority.trim().substring(0, search_autority.trim().length() - 1).split(",");
+            if (arr.length == 1) {
+                //				System.out.println("findby4");
+                user_autority = arr[0].trim();
+                for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province,parent_id)) {
+                    userList.add(user);
+                }
+            } else {
+                //				System.out.println("findby3");
+                for (User user : userDao.find12By3(company, user_department, user_realname, user_province, parent_id)) {
+                    userList.add(user);
+                }
 
-				try {
-					//以用户名(登陆帐号)为name，创建client
-					KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
-					Namespace ns = client.getNamespace(user.getUserName());
-					if (ns != null) {
-						System.out.println("namespace:" + JSON.toJSONString(ns));
+            }
+        } else {
+            //			System.out.println("find12By3");
+            for (User user : userDao.find12By3(company, user_department, user_realname, user_province, parent_id)) {
+                userList.add(user);
+            }
+        }
+        model.addAttribute("userList", userList);
+        model.addAttribute("menu_flag", "user");
+        return "user/user.jsp";
+    }
 
-						ResourceQuota quota = client.getResourceQuota(user.getUserName());
-						System.out.println("resourceQuota:" + JSON.toJSONString(quota));
+    //租户搜查
+    @RequestMapping(value = {"/manage/searchByCondition/{id}"}, method = RequestMethod.POST)
+    public String searchByCondition2(
+            String search_company, String search_department,
+            String search_autority, String search_userName,
+            String search_province,
+            Model model) {
+        List<User> userManageList = new ArrayList<User>();
+        String company = "";
+        String user_department = "";
+        String user_autority = "";
+        String user_realname = "";
+        String user_province = "";
+        Long parent_id = CurrentUserUtils.getInstance().getUser().getId();
+        if (search_company != null && !search_company.trim().equals("")) {
+            company = search_company.trim();
+        }
+        if (search_department != null && !search_department.trim().equals("")) {
+            user_department = search_department.trim();
+        }
+        if (search_userName != null && !search_userName.trim().equals("")) {
+            user_realname = search_userName.trim();
+        }
+        if (search_province != null && !search_province.trim().equals("")) {
+            user_province = search_province.trim();
+        }
+        if (search_autority.trim().length() > 0) {
+            String[] arr = search_autority.trim().substring(0, search_autority.trim().length() - 1).split(",");
+            if (arr.length == 1) {
+                System.out.println("findby4");
+                user_autority = arr[0].trim();
+                System.out.println(user_autority);
+                for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province,parent_id)) {
+                    userManageList.add(user);
+                }
+            } else {
+                System.out.println("find12by3");
+                for (User user : userDao.find12By3(company, user_department, user_realname, user_province, parent_id)) {
+                    userManageList.add(user);
+                }
 
-						if (quota != null) {
-							Map<String, String> map = quota.getSpec().getHard();
-							//				Integer a=Integer.valueOf(map.get("cpu"))/1024;
-							//	    		resource.setCpu_account(a.toString());//CPU数量
-							resource.setCpu_account(map.get("cpu"));//CPU数量
-							resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
-							resource.setPod_count(map.get("pods"));//POD数量
-							resource.setRam(map.get("memory").replace("G", ""));//内存
-							resource.setServer_count(map.get("services"));//服务
-						}
-
-						LimitRange lr = client.getLimitRange(user.getUserName());
-						System.out.println("UserName:" + user.getUserName());
-						System.out.println("limitRange:" + JSON.toJSONString(lr));
-
-						if (lr != null && lr.getSpec().getLimits().size() > 0) {
-							for (LimitRangeItem limit : lr.getSpec().getLimits()) {
-								String type = limit.getType();
-								Map<String, String> def = limit.getDefaultVal();
-								Map<String, String> max = limit.getMax();
-								Map<String, String> min = limit.getMin();
-
-								if (type.trim().equals("pod")) {
-									restriction.setPod_cpu_default(computeCpuOut(def));
-									restriction.setPod_memory_default(computeMemoryOut(def));
-									restriction.setPod_cpu_max(computeCpuOut(max));
-									restriction.setPod_memory_max(computeMemoryOut(max));
-									restriction.setPod_cpu_min(computeCpuOut(min));
-									restriction.setPod_memory_min(computeMemoryOut(min));
-								}
-								if (type.trim().equals("Container")) {
-									restriction.setContainer_cpu_default(computeCpuOut(def));
-									restriction.setContainer_memory_default(computeMemoryOut(def));
-									restriction.setContainer_cpu_max(computeCpuOut(max));
-									restriction.setContainer_memory_max(computeMemoryOut(max));
-									restriction.setContainer_cpu_min(computeCpuOut(min));
-									restriction.setContainer_memory_min(computeMemoryOut(min));
-								}
-							}
-						}
-					} else {
-						System.out.println("用户 " + user.getUserName() + " 没有定义名称为 " + user.getUserName() + " 的Namespace ");
-					}
-				} catch (KubernetesClientException e) {
-					System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
-				}
-				model.addAttribute("restriction", restriction);
-				model.addAttribute("resource", resource);
-				model.addAttribute("user", user);
-				return "user/user_detail.jsp";
-			}
-
-			private String computeMemoryOut(Map<String, String> val) {
-				String memVal = val.get("memory");
-				if (memVal.contains("Mi")) {
-					Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
-					return a1.toString();
-				} else {
-					return memVal.replace("Gi", "");
-				}
-			}
-
-			private String computeCpuOut(Map<String, String> val) {
-				String cpuVal = val.get("cpu");
-				if (cpuVal.contains("m")) {
-					Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
-					return a1.toString();
-				} else {
-					return cpuVal;
-				}
-			}
-
-			@RequestMapping(value = {"manage/detail/{id}"}, method = RequestMethod.GET)
-			public String manageDetail(Model model, @PathVariable long id) {
-				this.model = model;
-				System.out.println("/user/user/detail========================================");
-				User user = userDao.findOne(id);
-				model.addAttribute("user", user);
-				return "user/user-manage-detail.jsp";
-			}
-
-			@RequestMapping(value = {"/searchByCondition"}, method = RequestMethod.POST)
-			public String searchByCondition(
-											String search_company, String search_department,
-											String search_autority, String search_userName,
-											String search_province,
-											Model model) {
-				List<User> userList = new ArrayList<User>();
-				String company = "";
-				String user_department = "";
-				String user_autority = "";
-				String user_realname = "";
-				String user_province = "";
-				Long parent_id = CurrentUserUtils.getInstance().getUser().getId();
-
-				if (search_company != null && !search_company.trim().equals("")) {
-					company = search_company.trim();
-				}
-				if (search_department != null && !search_department.trim().equals("")) {
-					user_department = search_department.trim();
-				}
-				if (search_province != null && !search_province.trim().equals("")) {
-					user_province = search_province.trim();
-				}
-				if (search_userName != null && !search_userName.trim().equals("")) {
-					user_realname = search_userName.trim();
-				}
-
-				if (search_autority.trim().length() > 0) {
-					String[] arr = search_autority.trim().substring(0, search_autority.trim().length() - 1).split(",");
-					if (arr.length == 1) {
-						//				System.out.println("findby4");
-
-
-						user_autority = arr[0].trim();
-						for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province,parent_id)) {
-							userList.add(user);
-						}
-					} else {
-						//				System.out.println("findby3");
-
-
-						for (User user : userDao.find12By3(company, user_department, user_realname, user_province, parent_id)) {
-							userList.add(user);
-						}
-
-					}
-				} else {
-					//			System.out.println("find12By3");
-
-
-					for (User user : userDao.find12By3(company, user_department, user_realname, user_province, parent_id)) {
-						userList.add(user);
-					}
-				}
-				model.addAttribute("userList", userList);
-				model.addAttribute("menu_flag", "user");
-				return "user/user.jsp";
-			}
-
-			//租户搜查
-			@RequestMapping(value = {"/manage/searchByCondition/{id}"}, method = RequestMethod.POST)
-			public String searchByCondition2(
-					String search_company, String search_department,
-					String search_autority, String search_userName,
-					String search_province,
-					Model model) {
-				List<User> userManageList = new ArrayList<User>();
-				String company = "";
-				String user_department = "";
-				String user_autority = "";
-				String user_realname = "";
-				String user_province = "";
-				Long parent_id = CurrentUserUtils.getInstance().getUser().getId();
-				if (search_company != null && !search_company.trim().equals("")) {
-					company = search_company.trim();
-				}
-				if (search_department != null && !search_department.trim().equals("")) {
-					user_department = search_department.trim();
-				}
-				if (search_userName != null && !search_userName.trim().equals("")) {
-					user_realname = search_userName.trim();
-				}
-				if (search_province != null && !search_province.trim().equals("")) {
-					user_province = search_province.trim();
-				}
-				if (search_autority.trim().length() > 0) {
-					String[] arr = search_autority.trim().substring(0, search_autority.trim().length() - 1).split(",");
-					if (arr.length == 1) {
-						System.out.println("findby4");
-						user_autority = arr[0].trim();
-						System.out.println(user_autority);
-						for (User user : userDao.findBy4(company, user_department, user_autority, user_realname, user_province,parent_id)) {
-							userManageList.add(user);
-						}
-					} else {
-						System.out.println("find12by3");
-						for (User user : userDao.find12By3(company, user_department, user_realname, user_province, parent_id)) {
-							userManageList.add(user);
-						}
-
-					}
-				} else {
-					System.out.println("find34by3");
-					for (User user : userDao.find34By3(company, user_department, user_realname, user_province, parent_id)) {
-						userManageList.add(user);
-					}
-				}
+            }
+        } else {
+            System.out.println("find34by3");
+            for (User user : userDao.find34By3(company, user_department, user_realname, user_province, parent_id)) {
+                userManageList.add(user);
+            }
+        }
 
 
-				model.addAttribute("userManageList", userManageList);
-				model.addAttribute("menu_flag", "user");
-				return "user/user-management.jsp";
-			}
-
-
-
-	/**
-	 * 查询用户名是存在
-	 *
-	 * @param username
-	 * @return
-	 */
-	@RequestMapping(value = {"/checkUsername/{username}"}, method = RequestMethod.GET)
-	@ResponseBody
-	public String checkUsername(@PathVariable String username) {
-		Map<String, String> map = new HashMap<String, String>();
-		List<String> names = userDao.checkUsername(username);
-		if (names.size() > 0) {
-			map.put("status", "400");
-		} else {
-			try {
-				KubernetesAPIClientInterface client = kubernetesClientService.getClient(username);
-				Namespace namespace = client.getNamespace(username);
-				if (namespace != null) {
-					map.put("status", "300");
-				} else {
-					map.put("status", "200");
-				}
-			} catch (KubernetesClientException e) {
-				System.out.print(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+        model.addAttribute("userManageList", userManageList);
+        model.addAttribute("menu_flag", "user");
+        return "user/user-management.jsp";
+    }
+    /**
+     * 查询用户名是存在
+     *
+     * @param username
+     * @return
+     */
+    @RequestMapping(value = {"/checkUsername/{username}"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String checkUsername(@PathVariable String username) {
+        Map<String, String> map = new HashMap<String, String>();
+        List<String> names = userDao.checkUsername(username);
+        if (names.size() > 0) {
+            map.put("status", "400");
+        } else {
+            try {
+                KubernetesAPIClientInterface client = kubernetesClientService.getClient(username);
+                Namespace namespace = client.getNamespace(username);
+                if (namespace != null) {
+                    map.put("status", "300");
+                } else {
+                    map.put("status", "200");
+                }
+            } catch (KubernetesClientException e) {
+                System.out.print(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
                 map.put("status", "200");
             }
         }

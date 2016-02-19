@@ -22,7 +22,6 @@ $(document).ready(function(){
             btn: ['确定', '取消'],
             yes: function(index, layero){ //或者使用btn1
                 //按钮【按钮一】的回调
-
                 layer.close(index);
                 $('#add_tenement').attr("action", ctx+'/user/savemanage.do');
                 $('#add_tenement').submit();
