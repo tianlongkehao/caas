@@ -142,3 +142,5 @@ ifconfig docker0 ${flanneldIp/.0/.1} netmask 255.255.255.0
 systemctl restart docker
 systemctl enable docker
 
+echo "install success"
+

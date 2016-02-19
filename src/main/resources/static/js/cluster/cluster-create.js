@@ -1,7 +1,7 @@
 $(document).ready(function () {
-    document.onkeydown=function(){
+    document.onkeydown = function () {
         var a = window.event.keyCode;
-        if( a == 9){
+        if (a == 9) {
             window.event.returnValue = false;
         }
     };
@@ -67,7 +67,7 @@ $(document).ready(function () {
             var rowSlave = rowMaster.nextElementSibling;
             var slaveChecked = rowSlave.childNodes[0].checked;
             /*var rowEtcd = rowSlave.nextElementSibling;
-            var etcdChecked = rowEtcd.childNodes[0].checked;*/
+             var etcdChecked = rowEtcd.childNodes[0].checked;*/
             if (masterChecked == false && slaveChecked == false) {
                 layer.alert(host + "没有设置节点类型");
                 allRowsChecked = false;
@@ -79,9 +79,10 @@ $(document).ready(function () {
                 hostType.type = "master";
             } else if (slaveChecked == true) {
                 hostType.type = "slave";
-            } /*else if (etcdChecked == true) {
-                hostType.type = "etcd";
-            }*/
+            }
+            /*else if (etcdChecked == true) {
+             hostType.type = "etcd";
+             }*/
             rowsHostType.push(hostType);
         }
         if (allRowsChecked == true) {
@@ -109,40 +110,40 @@ $(document).ready(function () {
         }
     });
 });
-function chkMaster(ddd){
+function chkMaster(ddd) {
     var d = ddd.parentElement.nextElementSibling.children[0];
-    if(ddd.checked == true){
+    if (ddd.checked == true) {
         d.checked = false;
     }
 };
-function chkSlave(ccc){
+function chkSlave(ccc) {
 
     var c = ccc.parentElement.previousElementSibling.children[0];
-    if(ccc.checked == true){
+    if (ccc.checked == true) {
         c.checked = false;
     }
 };
 
 /*function setProcess(){
-    var processbar = document.getElementById("processbar");
-    processbar.style.width = parseInt(processbar.style.width) + 1 + "%";
-    processbar.innerHTML = processbar.style.width;
-    if(processbar.style.width == "100%"){
-        window.clearInterval(bartimer);
-    }
-}
-var bartimer = window.setInterval(function(){setProcess();},300);
-window.onload = function(){
-    debugger
-    bartimer;
-};*/
+ var processbar = document.getElementById("processbar");
+ processbar.style.width = parseInt(processbar.style.width) + 1 + "%";
+ processbar.innerHTML = processbar.style.width;
+ if(processbar.style.width == "100%"){
+ window.clearInterval(bartimer);
+ }
+ }
+ var bartimer = window.setInterval(function(){setProcess();},300);
+ window.onload = function(){
+ debugger
+ bartimer;
+ };*/
 function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
     rowNum = rowNum + 1;
     var str = "";
     str += '<tr>';
     var tds1 = '<td name="rowHost">' + host + '</td>';
-    var tds2 = '<td><div class="processcontainer" style="border:1px solid #6C9C2C; height:25px">'+
-        '<div id="processbar" style="width:0%;background:#95CA0D;float:left;height:100%;text-align:center;line-height:150%;"></div>'+
+    var tds2 = '<td><div class="processcontainer" style="border:1px solid #6C9C2C; height:25px">' +
+        '<div id="processbar" style="width:0%;background:#95CA0D;float:left;height:100%;text-align:center;line-height:150%;"></div>' +
         '</div></td>';
     var tds3 = '<td id="qqq">安装进行中...</td>';
     /*var tds4 = '<td><a href="#">查看详情</a></td>';*/
@@ -151,39 +152,43 @@ function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
     var divResult = $('#divResult')[0].innerHTML.trim();
     $('#divResult').html(divResult + str);
 
-    var bartimer = window.setInterval(function(){setProcess();},300);
-    window.onload = function(){
+    var bartimer = window.setInterval(function () {
+        setProcess();
+    }, 300);
+    window.onload = function () {
         bartimer;
     };
-    function setProcess(){
+    function setProcess() {
         var processbar = document.getElementById("processbar");
-        if(processbar.style.width > "90%"){
+        if (processbar.style.width > "90%") {
             window.clearInterval(bartimer);
         }
         processbar.style.width = parseInt(processbar.style.width) + 1 + "%";
         processbar.innerHTML = processbar.style.width;
     }
+
     $.ajax({
-        url:ctx+"/cluster/installCluster?user=root&pass=a1s2d3&ip=" + host + "&port=22&type=" + type,
+        url: ctx + "/cluster/installCluster?user=root&pass=a1s2d3&ip=" + host + "&port=22&type=" + type,
         success: function (data) {
-            if(data == "安装成功"){
-                setTimeout(function(){
+            if (data.indexOf("install success") != -1) {
+                setTimeout(function () {
                     layer.closeAll('loading');
-                },2000);
+                }, 2000);
                 window.clearInterval(bartimer);
                 var processbar = document.getElementById("processbar");
                 processbar.style.width = "100%";
                 processbar.innerHTML = processbar.style.width;
-            }else{
-                setTimeout(function(){
+                $("#qqq")[0].innerHTML = "安装成功";
+            } else {
+                setTimeout(function () {
                     layer.closeAll('loading');
-                },2000);
+                }, 2000);
                 window.clearInterval(bartimer);
                 var processbar = document.getElementById("processbar");
                 processbar.style.width = "0%";
                 processbar.innerHTML = processbar.style.width;
+                $("#qqq")[0].innerHTML = "安装失败";
             }
-            $("#qqq")[0].innerHTML = data;
             if (rowNum < rowsLength) {
                 var hostType = rowsHostType[rowNum];
                 installEnv(hostType.host, hostType.type, rowNum, rowsLength);

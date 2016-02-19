@@ -272,7 +272,7 @@ public class ClusterController {
             String[] b = memRtn.split("\n");
             memLimit = Integer.valueOf(b[b.length - 2].trim());*/
             //安装环境
-            String masterName = "centos-master";
+            /*String masterName = "centos-master";
             String hostName = "centos-minion" + ip.split("\\.")[3];
             String cmd = "cd /opt/;chmod +x ./envInstall.sh;nohup ./envInstall.sh " + imageHostPort + " " + yumSource + " " + type + " " + masterName + " " + hostName;
             Boolean endFlg = false;
@@ -280,7 +280,7 @@ public class ClusterController {
             while (!endFlg) {
                 String strRtn = SshConnect.exec("echo $?", 1000);
                 endFlg = strRtn.endsWith("#");
-            }
+            }*/
             //插入主机数据
             Cluster cluster = clusterDao.findByHost(ip);
             if (cluster == null) {
@@ -292,7 +292,8 @@ public class ClusterController {
                 newCluster.setHostType(type);
                 clusterDao.save(newCluster);
             }
-            return "安装成功";
+            String ins_detail = SshConnect.exec("tail -n 5 /opt/nohup.out", 10000);
+            return ins_detail;
         } catch (InterruptedException e) {
             e.printStackTrace();
             log.error(e.getMessage());
