@@ -105,14 +105,14 @@
                                     <li class="line-h-3">
                                         <div class="param-set">
                                             <span class="number-title">输入密码：</span>
-                                            <input type="text" class="form-control"
+                                            <input type="password" class="form-control"
                                                    style="width: 78%;display: inline">
                                         </div>
                                     </li>
                                     <li class="line-h-3">
                                         <div class="param-set">
                                             <span class="number-title">确认密码：</span>
-                                            <input type="text" class="form-control"
+                                            <input type="password" class="form-control"
                                                    style="width: 78%;display: inline">
                                         </div>
                                     </li>

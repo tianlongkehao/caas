@@ -145,7 +145,7 @@ function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
     var tds2 = '<td><div class="processcontainer" style="border:1px solid #6C9C2C; height:25px">' +
         '<div id="processbar" style="width:0%;background:#95CA0D;float:left;height:100%;text-align:center;line-height:150%;"></div>' +
         '</div></td>';
-    var tds3 = '<td id="qqq">安装进行中...</td>';
+    var tds3 = '<td><a id="installStatus" >安装进行中...</a></td>';
     /*var tds4 = '<td><a href="#">查看详情</a></td>';*/
     str += tds1 + tds2 + tds3;
     str += '</tr>';
@@ -170,6 +170,8 @@ function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
     $.ajax({
         url: ctx + "/cluster/installCluster?user=root&pass=a1s2d3&ip=" + host + "&port=22&type=" + type,
         success: function (data) {
+
+
             if (data.indexOf("install success") != -1) {
                 setTimeout(function () {
                     layer.closeAll('loading');
@@ -178,7 +180,7 @@ function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
                 var processbar = document.getElementById("processbar");
                 processbar.style.width = "100%";
                 processbar.innerHTML = processbar.style.width;
-                $("#qqq")[0].innerHTML = "安装成功";
+                $("#installStatus")[0].innerHTML = "安装成功";
             } else {
                 setTimeout(function () {
                     layer.closeAll('loading');
@@ -187,8 +189,11 @@ function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
                 var processbar = document.getElementById("processbar");
                 processbar.style.width = "0%";
                 processbar.innerHTML = processbar.style.width;
-                $("#qqq")[0].innerHTML = "安装失败";
+                $("#installStatus")[0].innerHTML = "安装失败";
             }
+            $("#installStatus")[0].onclick = function (){
+                layer.tips(data,'#installStatus',{tips:4, time:3000,area:['400px','auto']});
+            };
             if (rowNum < rowsLength) {
                 var hostType = rowsHostType[rowNum];
                 installEnv(hostType.host, hostType.type, rowNum, rowsLength);
