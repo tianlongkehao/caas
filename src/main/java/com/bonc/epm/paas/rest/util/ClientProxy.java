@@ -1,4 +1,4 @@
-package com.bonc.epm.paas.kubernetes.api;
+package com.bonc.epm.paas.rest.util;
 
 
 import java.lang.reflect.InvocationHandler;
