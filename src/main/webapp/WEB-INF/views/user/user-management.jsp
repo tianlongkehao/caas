@@ -39,12 +39,6 @@
                         <li class="dropdown">
                             <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                             <ul class="dropdown-menu">
-                                <li>
-                                    <a href="javascript:user_detail()">
-                                        <i class="fa fa-play"></i>
-                                        <span class="ic_left">查看</span>
-                                    </a>
-                                </li>
                                 <%--<li>
                                     <a href="javascript:changeContainerConf();">
                                         <i class="fa fa-cog"></i>
@@ -61,27 +55,27 @@
                         </li>
                     </ul>
                     <form id="search_form" class="form-inline" action="<%=path %>/user/manage/searchByCondition/${cur_user.id }" method="post">
-                        <div class="col-md-2 " style="width: 25%; " align="right">
+                        <div class="searchFun" style=" float: left; text-align: center;margin-left: 210px;" >
                             <label style="line-height: 35px">姓名:</label>
-                            <input name="search_userName" type="text" class="form-control" style="float: right;width:70%" placeholder="搜索姓名关键字">
+                            <input name="search_userName" type="text" class="form-control" style="display: inline;width: 70%" placeholder="搜索姓名关键字">
                         </div>
-                        <%--<div class="col-md-2 " style="width: 25%; " align="right">
+                        <div class="searchFun" style="float: left; text-align: center;" >
                             <label style="line-height: 35px">公司:</label>
                             <input type="text" class="form-control" style="display: inline; width: 70%" placeholder="搜索公司关键字"
                                    name="search_company">
-                        </div>--%>
-                        <div class="col-md-2" style="width: 25%; " align="right">
-                            <label style="line-height: 35px">部门:</label>
-                            <input type="text" class="form-control" style="display: inline; width: 70%"
-                                   name="search_department">
                         </div>
-                        <div class="col-md-2" class="form-control" align="right">
-                            <label style="line-height: 40px; margin-left: -10px">权限:</label>
+                        <%--<div class="searchFun" style="float: left; text-align: center" >
+                            <label style="line-height: 35px">部门:</label>
+                            <input type="text" class="form-control" style="display: inline; width: 70%" placeholder="搜索部门关键字"
+                                   name="search_department">
+                        </div>--%>
+                        <div class="searchFun" style="float: left; text-align: center" >
+                            <label style="line-height: 40px">权限:</label>
                             <input style="line-height: 40px" type="checkbox" name="search_autority" value="3">普通用户
                             <input style="line-height: 40px" type="checkbox" name="search_autority" value="4">超级用户
                             <input type="hidden" name="search_autority">
                         </div>
-                        <div class="searchs" align="right">
+                        <div class="searchs" style="float: left; text-align: center;margin-left: 15px">
                             <div class="form-group">
                                 <div class="input-group">
                                     	<span class="input-group-btn">
@@ -174,7 +168,7 @@
 
         if(create_flag == '200'){
             location.href="<%=path %>/user/manage/list/${cur_user.id }";
-            layer.alert("创建用户成功！");
+            layer.alert("创建用户成功！",50000);
         }
         if(create_flag == '400'){
             location.href="<%=path %>/user/manage/list/${cur_user.id }";

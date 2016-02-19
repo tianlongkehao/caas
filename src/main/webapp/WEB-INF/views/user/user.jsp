@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>用户</title>
+    <title>租户</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
     <script type="text/javascript" src="<%=path %>/js/user/user.js"></script>
@@ -36,12 +36,6 @@
                             <li class="dropdown">
                                 <a data-toggle="dropdown" href="javascript:void(0);">更多操作&nbsp;&nbsp;<i class="fa fa-caret-down"></i></a>
                                 <ul class="dropdown-menu">
-                                    <li>
-                                        <a href="javascript:tenement_detail()">
-                                            <i class="fa fa-play"></i>
-                                            <span class="ic_left">查看</span>
-                                        </a>
-                                    </li>
                                 <%--<li>
                                         <a href="javascript:changeContainerConf();">
                                             <i class="fa fa-cog"></i>
@@ -106,7 +100,7 @@
                                 <input type="text" class="form-control" style="display: inline; width: 60%" placeholder="搜索公司关键字"
                                        name="search_company">
                             </div>
-                            <div class="searchFun" class="form-control" align="right" style="float: left; text-align: center">
+                            <div class="searchFun" align="right" style="float: left; text-align: center">
                                 <label style="line-height: 40px">权限:</label>
                            		<input style="line-height: 40px" type="checkbox"  name="search_autority" value="1">管理员
                                	<input style="line-height: 40px" type="checkbox" name="search_autority" value="2">租户
