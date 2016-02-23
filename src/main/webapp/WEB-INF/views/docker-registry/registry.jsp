@@ -4,8 +4,8 @@
 <head lang="en">
     <title>镜像中心</title>
     <%@include file="../frame/header.jsp"%>
-    <link rel="stylesheet" type="text/css" href="/css/mod/docker-registry.css"/>
-    <script type="text/javascript" src="/js/registry/registry.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/docker-registry.css"/>
+    <script type="text/javascript" src="<%=path %>/js/registry/registry.js"></script>
 </head>
 <body>
     <jsp:include page="../frame/menu.jsp" flush="true" >
@@ -26,7 +26,7 @@
 
                     <div class="content">
                         <div class="search">
-                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="/registry/${index }" method = "post">
+                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="<%=path %>/registry/${index }" method = "post">
                                 <input name="imageName" class="search-img" placeholder="搜索镜像" type="text"><button type="submit" class="btn btn-primary btn-send">搜索</button>
                             </form>
                         </div>
@@ -58,7 +58,7 @@
                                             <div>
                                             	<i class="fa fa-tag"></i> ${image.version }
                                                 <div class="pull-right">
-                                                    <a href="/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
+                                                    <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
                                                 </div>
                                             </div>
                                         </div>

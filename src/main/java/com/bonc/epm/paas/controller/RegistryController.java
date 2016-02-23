@@ -28,13 +28,20 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
  */	
 @Controller
 public class RegistryController {
-	private static final Logger log = LoggerFactory.getLogger(RegistryController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RegistryController.class);
 	@Autowired
 	private ImageDao imageDao;
 	@Autowired
 	private UserDao userDao;
 	@Autowired
 	private FavorDao favorDao;
+	
+	/**
+	 * 响应镜像查询按钮
+	 * @param index
+	 * @param model
+	 * @return
+	 */
 	
 	@RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
 	public String index(@PathVariable int index, Model model) {
@@ -63,6 +70,13 @@ public class RegistryController {
 		return "docker-registry/registry.jsp";
 	}
 	
+	/**
+	 * 镜像搜索
+	 * @param index
+	 * @param imageName
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = {"registry/{index}"},method = RequestMethod.POST)
 	public String findByName(@PathVariable int index,@RequestParam String imageName,Model model) {
 		List<Image> images = null;
@@ -89,6 +103,12 @@ public class RegistryController {
 		return "docker-registry/registry.jsp";
 	}
 	
+	/**
+	 * 显示当前镜像详细信息
+	 * @param id
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = {"registry/detail/{id}"}, method = RequestMethod.GET)
 	public String detail(@PathVariable long id, Model model) {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
@@ -113,6 +133,13 @@ public class RegistryController {
 		return "docker-registry/detail.jsp";
 	}
 	
+	/**
+	 * 编辑当前镜像的简介
+	 * @param imageId
+	 * @param summary
+	 * @return
+	 */
+	
 	@RequestMapping(value = {"registry/detail/summary"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String imageSummary(@RequestParam long imageId,String summary){
@@ -123,6 +150,13 @@ public class RegistryController {
 		return "success";
 	}
 	
+	/**
+	 * 编辑当前镜像的详细信息
+	 * @param imageId
+	 * @param remark
+	 * @return
+	 */
+	
 	@RequestMapping(value = {"registry/detail/remark"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String imageRemark(@RequestParam long imageId,String remark){
@@ -132,6 +166,12 @@ public class RegistryController {
 		
 		return "success";
 	}
+	
+	/**
+	 * 响应镜像的收藏按钮
+	 * @param imageId
+	 * @return
+	 */
 	
 	@RequestMapping(value = {"registry/detail/favor"}, method = RequestMethod.POST)
 	@ResponseBody
@@ -149,6 +189,12 @@ public class RegistryController {
 			return "success";
 		}
 	}
+	
+	/**删除当前镜像
+	 * 
+	 * @param imageId
+	 * @return
+	 */
 	
 	@RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody

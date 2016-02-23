@@ -18,7 +18,7 @@ $(document).ready(function () {
     	var imageId = $("#imageId").val();
     	var _this = $(this);
     	$.ajax({
-    		url:"/registry/detail/favor",
+    		url:""+ctx+"/registry/detail/favor",
     		type:"post",
     		data:{"imageId":imageId},
     		success:function(data){
@@ -50,7 +50,7 @@ $(document).ready(function () {
    		        yes: function(index){ 
    		        	layer.close(index);
    		        	$.ajax({
-		   		     		url:"/registry/detail/deleteimage",
+		   		     		url:""+ctx+"/registry/detail/deleteimage",
 		   		     		type:"post",
 		   		     		data:{"imageId":imageId},
 		   		     		success:function(data){
@@ -94,7 +94,7 @@ $(function(){
 	$("#desEditSave").on("click", function(){
 		var summary = $("#desTextarea").val();
 		var imageId = $("#imageId").val();
-		var url = "/registry/detail/summary";
+		var url = ""+ctx+"/registry/detail/summary";
 		$.post(url, {'summary':summary,'imageId':imageId}, function(data){
 			if(data == 'success') {
 				layer.msg( "保存成功。", {
@@ -163,7 +163,7 @@ $(function(){
 
 	function _saveImageConfigInfo(imageObj, callback) {
 		$.ajax({
-			url: '/registry/detail/remark',
+			url: ""+ctx+"/registry/detail/remark",
 			data: {"imageId":imageObj.id,"remark":imageObj.detail},
 			type: 'POST'
 		}).done(function(resp) {
