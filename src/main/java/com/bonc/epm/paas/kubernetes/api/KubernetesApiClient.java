@@ -34,7 +34,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     private String namespace;
     
     public KubernetesApiClient(String namespace,String endpointUrl, String username, String password, RestFactory factory) {
-    	this.endpointURI = endpointUrl+"/api/" + KubernetesAPIClientInterface.VERSION;
+    	this.endpointURI = endpointUrl+"api/" + KubernetesAPIClientInterface.VERSION;
         this.namespace = namespace;
         api = factory.createKubernetesAPI(endpointURI, username, password);
     }
