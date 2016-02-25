@@ -37,7 +37,7 @@
                     <div id="clusterManage_wrap" class="tab_wrap">
                         <div class="caption clearfix">
                             <ul class="toolbox clearfix">
-                                <li><a href="javascript:void(0);" id="userReloadBtn"><i class="fa fa-repeat"></i></a>
+                                <li><a href="javascript:window.location.reload(true);" id="clusterReloadBtn"><i class="fa fa-repeat"></i></a>
                                 </li>
                                 <li><a href="<%=path %>/cluster/add" id="userCreateBtn"><i
                                         class="fa fa-plus"></i>&nbsp;&nbsp;创建</a></li>

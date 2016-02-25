@@ -112,22 +112,22 @@ public class UserController {
 
             //为client创建资源配额
             Map<String, String> map = new HashMap<String, String>();
-            map.put("memory", resource.getRam() + "");    //内存
-//	    	map.put("cpu", Integer.valueOf(resource.getCpu_account())*1024+"");//CPU数量
+            map.put("memory", resource.getRam() + "G");    //内存
+//	    	map.put("cpu", Integer.valueOf(resource.getCpu_account())*1000");//CPU数量
             map.put("cpu", resource.getCpu_account() + "");//CPU数量(个)
-            map.put("pods", resource.getPod_count() + "");//POD数量
-            map.put("services", resource.getServer_count() + "");//服务
-            map.put("replicationcontrollers", resource.getImage_control() + "");//副本控制器
-            map.put("resourcequotas", "1");//资源配额数量
+//            map.put("pods", resource.getPod_count() + "");//POD数量
+//            map.put("services", resource.getServer_count() + "");//服务
+//            map.put("replicationcontrollers", resource.getImage_control() + "");//副本控制器
+//            map.put("resourcequotas", "1");//资源配额数量
             ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getUserName(), map);
             System.out.println("before quota: " + JSON.toJSONString(quota));
             quota = client.createResourceQuota(quota);
             System.out.println("quota:" + JSON.toJSONString(quota));
 
             //为client创建资源限制
-            LimitRange limitRange = generateLimitRange(user.getUserName(), restriction);
-            limitRange = client.createLimitRange(limitRange);
-	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
+//            LimitRange limitRange = generateLimitRange(user.getUserName(), restriction);
+//            limitRange = client.createLimitRange(limitRange);
+//	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
             //DB保存用户信息
             user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
             userDao.save(user);
@@ -188,11 +188,11 @@ public class UserController {
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
             client.getNamespace(user.getUserName());
             ResourceQuota quota = updateQuota(client, user.getUserName(), resource);
-            LimitRange limit = updateLimitRange(client, user.getUserName(), restriction);
+//            LimitRange limit = updateLimitRange(client, user.getUserName(), restriction);
 
             try {
                 ResourceQuota updateQuota = client.updateResourceQuota(user.getUserName(), quota);
-                LimitRange updateLimitRange = client.updateLimitRange(user.getUserName(), limit);
+//                LimitRange updateLimitRange = client.updateLimitRange(user.getUserName(), limit);
                 userDao.save(user);
                 model.addAttribute("updateFlag", "200");
                 //返回 user.jsp 页面，展示所用用户信息
@@ -298,41 +298,41 @@ public class UserController {
                     //				Integer a=Integer.valueOf(map.get("cpu"))/1024;
                     //	    		resource.setCpu_account(a.toString());//CPU数量
                     resource.setCpu_account(map.get("cpu"));//CPU数量
-                    resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
-                    resource.setPod_count(map.get("pods"));//POD数量
                     resource.setRam(map.get("memory").replace("G", ""));//内存
-                    resource.setServer_count(map.get("services"));//服务
+//                    resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
+//                    resource.setPod_count(map.get("pods"));//POD数量
+//                    resource.setServer_count(map.get("services"));//服务
                 }
 
-                LimitRange lr = client.getLimitRange(user.getUserName());
-                System.out.println("UserName:" + user.getUserName());
-                System.out.println("limitRange:" + JSON.toJSONString(lr));
-
-                if (lr != null && lr.getSpec().getLimits().size() > 0) {
-                    for (LimitRangeItem limit : lr.getSpec().getLimits()) {
-                        String type = limit.getType();
-                        Map<String, String> def = limit.getDefaultVal();
-                        Map<String, String> max = limit.getMax();
-                        Map<String, String> min = limit.getMin();
-
-                        if (type.trim().equals("pod")) {
-                            restriction.setPod_cpu_default(computeCpuOut(def));
-                            restriction.setPod_memory_default(computeMemoryOut(def));
-                            restriction.setPod_cpu_max(computeCpuOut(max));
-                            restriction.setPod_memory_max(computeMemoryOut(max));
-                            restriction.setPod_cpu_min(computeCpuOut(min));
-                            restriction.setPod_memory_min(computeMemoryOut(min));
-                        }
-                        if (type.trim().equals("Container")) {
-                            restriction.setContainer_cpu_default(computeCpuOut(def));
-                            restriction.setContainer_memory_default(computeMemoryOut(def));
-                            restriction.setContainer_cpu_max(computeCpuOut(max));
-                            restriction.setContainer_memory_max(computeMemoryOut(max));
-                            restriction.setContainer_cpu_min(computeCpuOut(min));
-                            restriction.setContainer_memory_min(computeMemoryOut(min));
-                        }
-                    }
-                }
+//                LimitRange lr = client.getLimitRange(user.getUserName());
+//                System.out.println("UserName:" + user.getUserName());
+//                System.out.println("limitRange:" + JSON.toJSONString(lr));
+//
+//                if (lr != null && lr.getSpec().getLimits().size() > 0) {
+//                    for (LimitRangeItem limit : lr.getSpec().getLimits()) {
+//                        String type = limit.getType();
+//                        Map<String, String> def = limit.getDefaultVal();
+//                        Map<String, String> max = limit.getMax();
+//                        Map<String, String> min = limit.getMin();
+//
+//                        if (type.trim().equals("pod")) {
+//                            restriction.setPod_cpu_default(computeCpuOut(def));
+//                            restriction.setPod_memory_default(computeMemoryOut(def));
+//                            restriction.setPod_cpu_max(computeCpuOut(max));
+//                            restriction.setPod_memory_max(computeMemoryOut(max));
+//                            restriction.setPod_cpu_min(computeCpuOut(min));
+//                            restriction.setPod_memory_min(computeMemoryOut(min));
+//                        }
+//                        if (type.trim().equals("Container")) {
+//                            restriction.setContainer_cpu_default(computeCpuOut(def));
+//                            restriction.setContainer_memory_default(computeMemoryOut(def));
+//                            restriction.setContainer_cpu_max(computeCpuOut(max));
+//                            restriction.setContainer_memory_max(computeMemoryOut(max));
+//                            restriction.setContainer_cpu_min(computeCpuOut(min));
+//                            restriction.setContainer_memory_min(computeMemoryOut(min));
+//                        }
+//                    }
+//                }
             } else {
                 System.out.println("用户 " + user.getUserName() + " 没有定义名称为 " + user.getUserName() + " 的Namespace ");
             }
@@ -342,28 +342,29 @@ public class UserController {
         model.addAttribute("restriction", restriction);
         model.addAttribute("resource", resource);
         model.addAttribute("user", user);
+        model.addAttribute("menu_flag", "user");
         return "user/user_detail.jsp";
     }
 
-    private String computeMemoryOut(Map<String, String> val) {
-        String memVal = val.get("memory");
-        if (memVal.contains("Mi")) {
-            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
-            return a1.toString();
-        } else {
-            return memVal.replace("Gi", "");
-        }
-    }
-
-    private String computeCpuOut(Map<String, String> val) {
-        String cpuVal = val.get("cpu");
-        if (cpuVal.contains("m")) {
-            Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
-            return a1.toString();
-        } else {
-            return cpuVal;
-        }
-    }
+//    private String computeMemoryOut(Map<String, String> val) {
+//        String memVal = val.get("memory");
+//        if (memVal.contains("Mi")) {
+//            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
+//            return a1.toString();
+//        } else {
+//            return memVal.replace("Gi", "");
+//        }
+//    }
+//
+//    private String computeCpuOut(Map<String, String> val) {
+//        String cpuVal = val.get("cpu");
+//        if (cpuVal.contains("m")) {
+//            Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
+//            return a1.toString();
+//        } else {
+//            return cpuVal;
+//        }
+//    }
 
     @RequestMapping(value = {"manage/detail/{id}"}, method = RequestMethod.GET)
     public String manageDetail(Model model, @PathVariable long id) {
@@ -676,77 +677,77 @@ public class UserController {
      * @param restriction
      * @return
      */
-    private LimitRange generateLimitRange(String name, Restriction restriction) {
-        LimitRange limitRange = new LimitRange();
-        ObjectMeta meta = new ObjectMeta();
-        meta.setName(name);
-        limitRange.setMetadata(meta);
-
-        LimitRangeSpec spec = new LimitRangeSpec();
-        List<LimitRangeItem> limits = new ArrayList<LimitRangeItem>();
-        LimitRangeItem podLimitRangeItem = new LimitRangeItem();
-        LimitRangeItem containerLimitRangeItem = new LimitRangeItem();
-
-        //创建POD资源限制 LimitRangeItem
-        podLimitRangeItem.setType("pod");
-        Map<String, String> podMax = new HashMap<String, String>();
-        Map<String, String> podMin = new HashMap<String, String>();
-        Map<String, String> podDefault = new HashMap<String, String>();
-
-        podMax.put("memory", computeMemory(restriction.getPod_memory_max()));
-        podMax.put("cpu", computeCpu(restriction.getPod_cpu_max()));
-        podMin.put("memory", computeMemory(restriction.getPod_memory_min()));
-        podMin.put("cpu", computeCpu(restriction.getPod_cpu_min()));
-        podDefault.put("memory", computeMemory(restriction.getPod_memory_default()));
-        podDefault.put("cpu", computeCpu(restriction.getPod_cpu_default()));
-
-        podLimitRangeItem.setDefaultVal(podDefault);
-        podLimitRangeItem.setMax(podMax);
-        podLimitRangeItem.setMin(podMin);
-
-        //创建Container资源限制 LimitRangeItem
-        containerLimitRangeItem.setType("Container");
-        Map<String, String> containerMax = new HashMap<String, String>();
-        Map<String, String> containerMin = new HashMap<String, String>();
-        Map<String, String> containerDefault = new HashMap<String, String>();
-
-        containerMax.put("memory", computeMemory(restriction.getContainer_memory_max()));
-        containerMax.put("cpu", computeCpu(restriction.getContainer_cpu_max()));
-        containerMin.put("memory", computeMemory(restriction.getContainer_memory_min()));
-        containerMin.put("cpu", computeCpu(restriction.getContainer_cpu_min()));
-        containerDefault.put("memory", computeMemory(restriction.getContainer_memory_default()));
-        containerDefault.put("cpu", computeCpu(restriction.getContainer_cpu_default()));
-
-        containerLimitRangeItem.setMax(containerMax);
-        containerLimitRangeItem.setMin(containerMin);
-        containerLimitRangeItem.setDefaultVal(containerDefault);
-
-        limits.add(podLimitRangeItem);
-        limits.add(containerLimitRangeItem);
-        spec.setLimits(limits);
-        limitRange.setSpec(spec);
-        return limitRange;
-    }
-
-    private String computeMemory(String memory) {
-        Float a = Float.valueOf(memory) * 1024;
-        String b = a.toString();
-        if (b.contains(".")) {
-            return b.substring(0, b.indexOf(".")) + "Mi";
-        } else {
-            return b + "Mi";
-        }
-    }
-
-    private String computeCpu(String cpu) {
-        Float a = Float.valueOf(cpu) * 1000;
-        String b = a.toString();
-        if (b.contains(".")) {
-            return b.substring(0, b.indexOf(".")) + "m";
-        } else {
-            return b + "m";
-        }
-    }
+//    private LimitRange generateLimitRange(String name, Restriction restriction) {
+//        LimitRange limitRange = new LimitRange();
+//        ObjectMeta meta = new ObjectMeta();
+//        meta.setName(name);
+//        limitRange.setMetadata(meta);
+//
+//        LimitRangeSpec spec = new LimitRangeSpec();
+//        List<LimitRangeItem> limits = new ArrayList<LimitRangeItem>();
+//        LimitRangeItem podLimitRangeItem = new LimitRangeItem();
+//        LimitRangeItem containerLimitRangeItem = new LimitRangeItem();
+//
+//        //创建POD资源限制 LimitRangeItem
+//        podLimitRangeItem.setType("pod");
+//        Map<String, String> podMax = new HashMap<String, String>();
+//        Map<String, String> podMin = new HashMap<String, String>();
+//        Map<String, String> podDefault = new HashMap<String, String>();
+//
+//        podMax.put("memory", computeMemory(restriction.getPod_memory_max()));
+//        podMax.put("cpu", computeCpu(restriction.getPod_cpu_max()));
+//        podMin.put("memory", computeMemory(restriction.getPod_memory_min()));
+//        podMin.put("cpu", computeCpu(restriction.getPod_cpu_min()));
+//        podDefault.put("memory", computeMemory(restriction.getPod_memory_default()));
+//        podDefault.put("cpu", computeCpu(restriction.getPod_cpu_default()));
+//
+//        podLimitRangeItem.setDefaultVal(podDefault);
+//        podLimitRangeItem.setMax(podMax);
+//        podLimitRangeItem.setMin(podMin);
+//
+//        //创建Container资源限制 LimitRangeItem
+//        containerLimitRangeItem.setType("Container");
+//        Map<String, String> containerMax = new HashMap<String, String>();
+//        Map<String, String> containerMin = new HashMap<String, String>();
+//        Map<String, String> containerDefault = new HashMap<String, String>();
+//
+//        containerMax.put("memory", computeMemory(restriction.getContainer_memory_max()));
+//        containerMax.put("cpu", computeCpu(restriction.getContainer_cpu_max()));
+//        containerMin.put("memory", computeMemory(restriction.getContainer_memory_min()));
+//        containerMin.put("cpu", computeCpu(restriction.getContainer_cpu_min()));
+//        containerDefault.put("memory", computeMemory(restriction.getContainer_memory_default()));
+//        containerDefault.put("cpu", computeCpu(restriction.getContainer_cpu_default()));
+//
+//        containerLimitRangeItem.setMax(containerMax);
+//        containerLimitRangeItem.setMin(containerMin);
+//        containerLimitRangeItem.setDefaultVal(containerDefault);
+//
+//        limits.add(podLimitRangeItem);
+//        limits.add(containerLimitRangeItem);
+//        spec.setLimits(limits);
+//        limitRange.setSpec(spec);
+//        return limitRange;
+//    }
+//
+//    private String computeMemory(String memory) {
+//        Float a = Float.valueOf(memory) * 1024;
+//        String b = a.toString();
+//        if (b.contains(".")) {
+//            return b.substring(0, b.indexOf(".")) + "Mi";
+//        } else {
+//            return b + "Mi";
+//        }
+//    }
+//
+//    private String computeCpu(String cpu) {
+//        Float a = Float.valueOf(cpu) * 1000;
+//        String b = a.toString();
+//        if (b.contains(".")) {
+//            return b.substring(0, b.indexOf(".")) + "m";
+//        } else {
+//            return b + "m";
+//        }
+//    }
 
     /**
      * <!-- 工具方法 -->
@@ -767,38 +768,38 @@ public class UserController {
         LimitRangeItem containerLimitRangeItem = new LimitRangeItem();
 
         //创建POD资源限制 LimitRangeItem
-        podLimitRangeItem.setType("pod");
-        Map<String, String> podMax = new HashMap<String, String>();
-        Map<String, String> podMin = new HashMap<String, String>();
-        Map<String, String> podDefault = new HashMap<String, String>();
-
-        podMax.put("memory", computeMemory(restriction.getPod_memory_max()));
-        podMax.put("cpu", computeCpu(restriction.getPod_cpu_max()));
-        podMin.put("memory", computeMemory(restriction.getPod_memory_min()));
-        podMin.put("cpu", computeCpu(restriction.getPod_cpu_min()));
-        podDefault.put("memory", computeMemory(restriction.getPod_memory_default()));
-        podDefault.put("cpu", computeCpu(restriction.getPod_cpu_default()));
-
-        podLimitRangeItem.setDefaultVal(podDefault);
-        podLimitRangeItem.setMax(podMax);
-        podLimitRangeItem.setMin(podMin);
-
-        //创建Container资源限制 LimitRangeItem
-        containerLimitRangeItem.setType("Container");
-        Map<String, String> containerMax = new HashMap<String, String>();
-        Map<String, String> containerMin = new HashMap<String, String>();
-        Map<String, String> containerDefault = new HashMap<String, String>();
-
-        containerMax.put("memory", computeMemory(restriction.getContainer_memory_max()));
-        containerMax.put("cpu", computeCpu(restriction.getContainer_cpu_max()));
-        containerMin.put("memory", computeMemory(restriction.getContainer_memory_min()));
-        containerMin.put("cpu", computeCpu(restriction.getContainer_cpu_min()));
-        containerDefault.put("memory", computeMemory(restriction.getContainer_memory_default()));
-        containerDefault.put("cpu", computeCpu(restriction.getContainer_cpu_default()));
-
-        containerLimitRangeItem.setMax(containerMax);
-        containerLimitRangeItem.setMin(containerMin);
-        containerLimitRangeItem.setDefaultVal(containerDefault);
+//        podLimitRangeItem.setType("pod");
+//        Map<String, String> podMax = new HashMap<String, String>();
+//        Map<String, String> podMin = new HashMap<String, String>();
+//        Map<String, String> podDefault = new HashMap<String, String>();
+//
+//        podMax.put("memory", computeMemory(restriction.getPod_memory_max()));
+//        podMax.put("cpu", computeCpu(restriction.getPod_cpu_max()));
+//        podMin.put("memory", computeMemory(restriction.getPod_memory_min()));
+//        podMin.put("cpu", computeCpu(restriction.getPod_cpu_min()));
+//        podDefault.put("memory", computeMemory(restriction.getPod_memory_default()));
+//        podDefault.put("cpu", computeCpu(restriction.getPod_cpu_default()));
+//
+//        podLimitRangeItem.setDefaultVal(podDefault);
+//        podLimitRangeItem.setMax(podMax);
+//        podLimitRangeItem.setMin(podMin);
+//
+//        //创建Container资源限制 LimitRangeItem
+//        containerLimitRangeItem.setType("Container");
+//        Map<String, String> containerMax = new HashMap<String, String>();
+//        Map<String, String> containerMin = new HashMap<String, String>();
+//        Map<String, String> containerDefault = new HashMap<String, String>();
+//
+//        containerMax.put("memory", computeMemory(restriction.getContainer_memory_max()));
+//        containerMax.put("cpu", computeCpu(restriction.getContainer_cpu_max()));
+//        containerMin.put("memory", computeMemory(restriction.getContainer_memory_min()));
+//        containerMin.put("cpu", computeCpu(restriction.getContainer_cpu_min()));
+//        containerDefault.put("memory", computeMemory(restriction.getContainer_memory_default()));
+//        containerDefault.put("cpu", computeCpu(restriction.getContainer_cpu_default()));
+//
+//        containerLimitRangeItem.setMax(containerMax);
+//        containerLimitRangeItem.setMin(containerMin);
+//        containerLimitRangeItem.setDefaultVal(containerDefault);
 
         limits.add(podLimitRangeItem);
         limits.add(containerLimitRangeItem);
@@ -826,10 +827,10 @@ public class UserController {
 
         hard.put("memory", resource.getRam() + "");    //内存
         hard.put("cpu", resource.getCpu_account() + "");//CPU数量
-        hard.put("pods", resource.getPod_count() + "");//POD数量
-        hard.put("services", resource.getServer_count() + "");//服务
-        hard.put("replicationcontrollers", resource.getImage_control() + "");//副本控制器
-        hard.put("resourcequotas", "1");//资源配额数量
+//        hard.put("pods", resource.getPod_count() + "");//POD数量
+//        hard.put("services", resource.getServer_count() + "");//服务
+//        hard.put("replicationcontrollers", resource.getImage_control() + "");//副本控制器
+//        hard.put("resourcequotas", "1");//资源配额数量
 
         spec.setHard(hard);
         quota.setSpec(spec);

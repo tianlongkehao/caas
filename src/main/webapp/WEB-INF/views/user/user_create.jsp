@@ -32,7 +32,7 @@
                                 <ul style="padding: 0 4rem;">
                                     <li class="radius_step action"><span>1</span> 基本信息</li>
                                     <li class="radius_step"><span>2</span> 资源配额</li>
-                                    <li class="radius_step"><span>3</span> 资源限制</li>
+                                    <%--<li class="radius_step"><span>3</span> 资源限制</li>--%>
                                 </ul>
                             </div>
 		                    <form id="add_tenement" name="add_tenement" action="" method="post" >
@@ -188,7 +188,7 @@
                                             <div class="param-set">
                                                 <span class="number-title">Pod数量：</span>
                                                 <input type="number" value="1" class="number" min="1" autocomplete="off"
-                                                       placeholder="1" id="pod_count" name="pod_count" style="width:350px" > 
+                                                       placeholder="1" id="pod_count" name="pod_count" style="width:350px" disabled>
                                                 <span class="unit">个</span>
                                             </div>
                                         </li>
@@ -196,7 +196,7 @@
                                             <div class="param-set">
                                                 <span class="number-title">副本控制器：</span>
                                                 <input type="number" value="1" class="number" min="1" autocomplete="off"
-                                                       placeholder="1" id="image_control" name="image_control" style="width:350px" > 
+                                                       placeholder="1" id="image_control" name="image_control" style="width:350px" disabled>
                                                 <span class="unit">个</span>
                                             </div>
                                         </li>
@@ -204,7 +204,7 @@
                                             <div class="param-set">
                                                 <span class="number-title">服务：</span>
                                                 <input type="number" value="1" class="number" min="1" autocomplete="off"
-                                                       placeholder="1" id="server_count" name="server_count" style="width:350px" > 
+                                                       placeholder="1" id="server_count" name="server_count" style="width:350px" disabled>
                                                 <span class="unit">个</span>
                                             </div>
                                         </li>
@@ -231,12 +231,16 @@
                                     </ul>
                                     <div class="" style="padding-top: 100px">
                                         <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>
-                                        <span id="nextBtn3" class="next3 pull-right btn btn-primary pull_confirm" id="user_create_next3">下一步</span>
+                                        <span id="user_save_finishBtn" class="pull-right btn btn-primary pull_confirm">完成</span>
                                     </div>
+                                    <%--<div class="" style="padding-top: 100px">
+                                        <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>
+                                        <span id="nextBtn3" class="next3 pull-right btn btn-primary pull_confirm" id="user_create_next3">下一步</span>
+                                    </div>--%>
                                 </div>
 
                                 <%--3.资源限制--%>
-                                <div class="host_step3" style="height: auto;" >
+                                <%--<div class="host_step3" style="height: auto;" >
                                     <div>
                                         <div style="padding: 10px;text-align: center"><span >Pod资源限制值</span></div>
                                         <table class="table table-hover enabled" id="pod" >
@@ -299,7 +303,7 @@
                                         <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>
                                         <span id="user_save_finishBtn" class="pull-right btn btn-primary pull_confirm">完成</span>
                                     </div>
-                                </div>
+                                </div>--%>
                             </div>
                             </form>
 
