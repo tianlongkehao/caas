@@ -4,8 +4,8 @@
 <head lang="en">
     <title>镜像中心</title>
     <%@include file="../frame/header.jsp"%>
-    <link rel="stylesheet" type="text/css" href="/css/mod/docker-registry.css"/>
-    <script type="text/javascript" src="/js/registry/registry.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/docker-registry.css"/>
+    <script type="text/javascript" src="<%=path %>/js/registry/registry.js"></script>
 </head>
 <body>
 	<jsp:include page="../frame/menu.jsp" flush="true" >
@@ -165,7 +165,7 @@
                                 </li>
                             </ul>
                             <div class="btn-block" style="height: 50px;" id="deployImage">
-                                <a href="/service/add?imageName=${image.name}&imageVersion=${image.version}" class="btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
+                                <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}" class="btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
                             </div>
                             <c:if test="${editImage==1 }">
 	                            <div class="btn-block " style="height: 50px; " id="deleteImage">
