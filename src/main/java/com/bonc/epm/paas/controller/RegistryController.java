@@ -203,6 +203,7 @@ public class RegistryController {
 		return "ok";
 	}
 	
+	
 	private void addCurrUserFavor(List<Image> images){
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		for(Image image:images){

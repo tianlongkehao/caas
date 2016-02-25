@@ -52,11 +52,11 @@
                         服务
                     </a>
                 </li>
-               <!--  <li>
-                    <a href="/service">
+                 <li>
+                    <a href="<%=path %>/service/storage">
                         存储与备份
                     </a>
-                </li> -->
+                </li>
             </ul>
         </li>
         <li id="menu_ci">
