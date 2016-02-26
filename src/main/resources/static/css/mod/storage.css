@@ -482,3 +482,39 @@ td .dockerfileinput {
 .other-details .col-9x .other-hint {
     color: #666;
 }
+
+#buildForm{
+    margin-top:20px;
+}
+
+.edit-name-c {
+    display: inline-block;
+    width: 80px;
+}
+
+#storageSizeSliderData{
+    width:400px;
+}
+
+#storageSizeUpdateSliderData {
+    width: 230px;
+}
+
+.slider.slider-horizontal .slider-handle{
+    background: #5cb85c;
+}
+
+.slider.slider-horizontal .slider-selection{
+    background: #009933;
+}
+
+#storageSize_input,
+#storageSizeUpdateSlider_input{
+    width: 70px;
+    text-indent: 8px;
+    margin-left: 20px;
+}
+
+.popWin {
+    padding: 30px;
+}

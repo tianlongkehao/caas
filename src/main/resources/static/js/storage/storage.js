@@ -41,71 +41,47 @@ $(document).ready(function () {
     
 });
 
-$(document).ready(function () {
-	
-	$("#storageName").blur(function(){
-		var storageName = $("#storageName").val(); 
-		if (storageName === '') {
-			 layer.tips('存储名称不能为空', $('#storageName'),{tips: [1, '#EF6578']});
-             $('#storageName').focus();
-             return;
-          }
-		var url = ""+ctx+"/service/storage/build/judge";
-		$.post(url, {'storageName':storageName}, function(data){
-			if(data == 'ok') {
-				return;
-			}else{
-				 layer.tips('存储名称重复', $('#storageName'),{tips: [1, '#EF6578']});
-	             $('#storageName').focus();
-	             return;
+$(function(){
+	dilatationStorage();
+});
+
+function dilatationStorage(){
+	$(".dilatationStorage").on("click",function(){
+
+		var storageId = $(this).attr("storageId");
+		var storageSize = $(this).attr("storageSize");
+		var storageName = $(this).attr("storageName");
+
+		$("#upgradeStorageName").val(storageName);
+		var storageSizeUpdateSlider = sliderFn('storageSizeUpdateSlider', 1024, 0, 250);
+
+		layer.open({
+			type:1,
+			title: '扩容',
+			area: ['500px', '300px'],
+			content: $("#storageUpdate"),
+			btn: ['确定', '取消'],
+			yes: function(index, layero){ //或者使用btn1
+				//按钮【按钮一】的回调
+				layer.close(index);
+				$.ajax({
+					url:"",
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("更改成功");
+							window.location.reload();
+						}else{
+							layer.alert("更改失败，请检查服务器连接");
+						}
+
+					}
+				})
+			},
+			cancel: function(index){ //或者使用btn2
+				//按钮【按钮二】的回调
 			}
 		});
-	});	
-	
-	$("#storageSize").blur(function(){
-		 var storageSize = $("#storageSize").val();
-		 if(storageSize == ""){
-			 layer.tips('存储大小不能为空', $('#storageSize'),{tips: [1, '#EF6578']});
-             $('#storageSize').focus();
-             return;
-		 }
+
 	});
-	
-	 $("#buildStorage").click(function(){
-		 var storageName = $("#storageName").val();
-		 var storageSize = $("#storageSize").val();
-		 var options=$("#format option:selected"); 
-		 var format = options.text();
-		 
-		 if (storageName === '') {
-			 layer.tips('存储名称不能为空', $('#storageName'),{tips: [1, '#EF6578']});
-             $('#storageName').focus();
-             return;
-          }
-		 if(storageSize == ""){
-			 layer.tips('存储大小不能为空', $('#storageSize'),{tips: [1, '#EF6578']});
-             $('#storageSize').focus();
-             return;
-		 }
-		 
-		 var url = ""+ctx+"/service/storage/build";
-			$.post(url, {'storageName':storageName,'storageSize':storageSize,'format':format}, function(data){
-				if(data == 'success') {
-					layer.msg( "创建成功！", {
-   						icon: 1
-   					},function(){
-   						window.location.href = "/service/storage";
-   					});
-				}
-				else if(data == 'error'){
-					layer.msg( "保存失败。名称相同，请重命名", {
-						icon: 0.5
-					});
-				}else{
-					layer.msg( "保存失败。", {
-						icon: 0.5
-					});
-				}
-			}); 
-	 });
-});
+}

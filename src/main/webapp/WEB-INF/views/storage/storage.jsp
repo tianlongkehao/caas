@@ -22,7 +22,7 @@
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active" id="nav2">服务</li>
                      <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">存储和备份</li>
+                    <li class="active">存储和备份</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -96,9 +96,9 @@
                                                 	${storage.createDate }
                                                 </td>
                                                 <td style="width:23%">	
-                                                 <span class="btn btn-primary format" id="formatStorage">格式化</span>
-                                       			 <span class="btn btn-primary dilation" id="dilatationStorage" storageId = "${storage.id }" storageSize = "${storage.storageSize }" storageName = "${storage.storageName }">扩容</span>
-                                       			 <span class="btn btn-primary deleteStorage" id="deleteStorage" storageId = "${storage.id }">删除</span>
+                                                 <span class="btn btn-primary format formatStorage">格式化</span>
+                                       			 <span class="btn btn-primary dilation dilatationStorage" storageId="${storage.id }" storageSize="${storage.storageSize }" storageName="${storage.storageName }">扩容</span>
+                                       			 <span class="btn btn-primary deleteStorage deleteStorage" storageI="${storage.id }" >删除</span>
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -116,6 +116,24 @@
             </div>
         </div>
     </article>
+</div>
+
+<div id="storageUpdate" style="display:none">
+    <ul class="popWin">
+        <li class="line-h-3">
+            <span class="edit-name-c">名称：</span>
+            <input id="upgradeStorageName" disabled="disabled" style="margin-top: 5px;width: 165px;" type="text" value="">
+        </li>
+        <li class="line-h-3">
+            <div class="param-set">
+                <span class="edit-name-c">存储大小：</span>
+                <input id="storageSizeUpdateSlider" data-slider-id='storageSizeUpdateSliderData' type="text" data-slider-min="0" data-slider-max="1024" data-slider-step="1" />
+                <input type="text" left="" value="250" id="storageSizeUpdateSlider_input" name="storageSize">
+                <span>M</span>
+                <!-- <span style="color: grey;">当前可用ram：<label id="leftram" ></label>M</span>-->
+            </div>
+        </li>
+    </ul>
 </div>
 
 </body>
