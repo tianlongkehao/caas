@@ -231,7 +231,7 @@ public class KubernetesClientService {
 		return limitRange;
 	}
 	
-	public Map<String,Object> getlimit(Map<String,Object> limit){
+	/*public Map<String,Object> getlimit(Map<String,Object> limit){
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = this.getClient();
 		LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
@@ -242,7 +242,7 @@ public class KubernetesClientService {
 		limit.put("memory", imemoryMax+"Mi");
 		return limit;
 	    
-	}
+	}*/
 	
 	public Integer transMemory(String memory){
 		if(memory.endsWith("M")){
@@ -308,10 +308,12 @@ public class KubernetesClientService {
 		//float fcpu = cpu*1024;
 		def.put("cpu", cpu);
 		def.put("memory", ram+"Mi");
-		//Map<String,Object> limit = new HashMap<String,Object>();
+		Map<String,Object> limit = new HashMap<String,Object>();
 		//limit = getlimit(limit);
+		limit.put("cpu", cpu);
+		limit.put("memory", ram+"Mi");
 		requirements.setRequests(def);
-		//requirements.setLimits(limit);
+		requirements.setLimits(limit);
 		container.setResources(requirements);
 		
 		List<ContainerPort> ports = new ArrayList<ContainerPort>();

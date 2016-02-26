@@ -582,7 +582,9 @@ public class ServiceController {
 		def.put("cpu", cpus);
 		def.put("memory", rams+"Mi");
 		Map<String,Object> limit = new HashMap<String,Object>();
-		limit = kubernetesClientService.getlimit(limit);
+		//limit = kubernetesClientService.getlimit(limit);
+		limit.put("cpu", cpus);
+		limit.put("memory", rams+"Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
 		container.setResources(requirements);
