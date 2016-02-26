@@ -90,7 +90,7 @@ public class ServiceController {
 		//获取特殊条件的pods
 		try {
 			getServiceSource(model, currentUser.getId());
-			getleftResource(model);
+			//getleftResource(model);
 		} catch (KubernetesClientException e) {
 			model.addAttribute("msg",e.getStatus().getMessage());
 			log.debug("service show:"+e.getStatus().getMessage());
@@ -242,11 +242,11 @@ public class ServiceController {
 			isDepoly = "deploy";
 		}
 		
-		boolean flag = getleftResource(model);
+		/*boolean flag = getleftResource(model);
 		if(!flag){
 			model.addAttribute("msg","请创建租户！");
 			return "service/service.jsp";
-		}
+		}*/
 
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("imageName", imageName);
@@ -257,7 +257,7 @@ public class ServiceController {
 		return "service/service_create.jsp";
 	}
 	
-	public boolean getleftResource(Model model){
+	/*public boolean getleftResource(Model model){
 
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -279,7 +279,7 @@ public class ServiceController {
 		}
 		
 		return true;
-	}
+	}*/
 	
 	
 	/**

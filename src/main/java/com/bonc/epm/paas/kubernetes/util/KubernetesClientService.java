@@ -308,10 +308,10 @@ public class KubernetesClientService {
 		//float fcpu = cpu*1024;
 		def.put("cpu", cpu);
 		def.put("memory", ram+"Mi");
-		Map<String,Object> limit = new HashMap<String,Object>();
-		limit = getlimit(limit);
+		//Map<String,Object> limit = new HashMap<String,Object>();
+		//limit = getlimit(limit);
 		requirements.setRequests(def);
-		requirements.setLimits(limit);
+		//requirements.setLimits(limit);
 		container.setResources(requirements);
 		
 		List<ContainerPort> ports = new ArrayList<ContainerPort>();
