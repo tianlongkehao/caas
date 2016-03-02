@@ -1,3 +1,7 @@
+.contentMain {
+	margin-bottom:30px;
+}
+
 .aside-btn {
     height: 60px;
     position: relative;
@@ -517,4 +521,94 @@ td .dockerfileinput {
 
 .popWin {
     padding: 30px;
+}
+
+.detail-succeed {
+    height: 180px;
+    border-bottom: 1px solid #DFDDDD;
+    position: relative;
+    margin-top: 2%;
+}
+
+.icon-img {
+    width: 130px;
+    height: 130px;
+    background: rgba(123, 105, 105, 0.3);
+    border-radius: 20px;
+    float: left;
+    text-align: center;
+    margin-left: 3%;
+    margin-right: 3%;
+    color: #fff;
+}
+
+.type-icon {
+    width: 80%;
+    height: 80px;
+    margin: 25px auto;
+    overflow: hidden;
+}
+
+.type-icon>i {
+    font-size: 60px;
+    color: #666;
+    line-height: 80px;
+}
+
+ul.succeed-content.pull-left {
+    float: left;
+    margin-left: 20px;
+}
+
+.pull-left {
+    float: left!important;
+}
+
+ol, ul {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+li {
+    display: list-item;
+    text-align: -webkit-match-parent;
+}
+
+.succeed-content li {
+    line-height: 30px;
+}
+
+.parameter-list {
+    position: relative;
+    width: 400px;
+}
+
+.pull-right {
+    float: right!important;
+}
+
+.param-text {
+    position: absolute;
+    width: 50%;
+    left: 150px;
+    top: 40px;
+}
+p {
+    margin: 0 0 10px;
+}
+
+span.i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #D5D5D5;
+    margin-right: 15px;
+}
+
+.param-used span.i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #3D8DDB;
+    margin-right: 15px;
 }

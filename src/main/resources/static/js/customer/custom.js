@@ -6,19 +6,14 @@ $(function(){
     });
 
     // 每条数据 checkbox class设为 chkItem
-    $(".chkItem").each(function(){
-
-        $(this).click(function(){
-
-            if($(this).is(":checked")){
-                if ($(".chkItem:checked").length == $(".chkItem").length) {
-                    $(".chkAll").prop("checked", "checked");
-                }
-            }else{
-                $(".chkAll").prop('checked', $(this).is(":checked"));
+    $(document).on("click",".chkItem", function(){
+        if($(this).is(":checked")){
+            if ($(".chkItem:checked").length == $(".chkItem").length) {
+                $(".chkAll").prop("checked", "checked");
             }
-
-        });
+        }else{
+            $(".chkAll").prop('checked', $(this).is(":checked"));
+        }
     });
 
 });

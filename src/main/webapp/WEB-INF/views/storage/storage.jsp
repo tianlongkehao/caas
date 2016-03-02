@@ -5,7 +5,7 @@
     <title>服务</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/storage.css"/>
-    <script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script>
+  	<script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script> 
 </head>
 <body>
 <jsp:include page="../frame/menu.jsp" flush="true">
@@ -37,7 +37,6 @@
                     <ul class="toolbox clearfix">
                         <li><a href="javascript:void(0);" id="storageReloadBtn"><i class="fa fa-repeat"></i></a></li>
                         <li><a href="<%=path %>/service/storage/add" id="storageAdd">创建</a></li>
-                        <%-- <li><a href="<%=path %>/ci/addSource" id="ciAddSourceBtn">删除</a></li> --%>
                         <!-- <li><a href="<%=path %>/file/downloadTemplate?fileName=Dockerfile">下载dockerfile示例</a></li> -->
                     </ul>
                 </div>
@@ -52,11 +51,11 @@
                                         <tr style="height:40px;">
                                             <th style="width: 15%;text-indent:30px;">名称</th>
                                             <th style="width: 10%;text-indent: 15px;">使用状态</th>
-                                            <th style="width: 12%;text-indent: 20px;">格式</th>
+                                            <th style="width: 10%;text-indent: 20px;">格式</th>
                                             <th style="width: 10%;text-indent: 8px;">挂载点</th>
                                             <th style="width: 15%;text-indent: 10px;">大小</th>
                                             <th style="width: 12%;">创建时间</th>
-                                            <th style="width: 23%;text-indent: 10px;">功能</th>
+                                            <th style="width: 20%;text-indent: 10px;">功能</th>
                                         </tr>
                                         </thead>
                                     </table>
@@ -69,8 +68,8 @@
                             <td>
                                 <div class="content-table">
                                     <table class="table tables">
-                                        <tbody id="ciList">
-                                        <c:forEach items="${storages}" var="storage" >
+                                        <tbody id="storageList">
+                                      <%--   <c:forEach items="${storages}" var="storage" >
                                             <tr class="ci-listTr" style="cursor:auto">
                                                 <td style="width: 15%; text-indent:22px;" id = "storageName">
                                                 	${storage.storageName}
@@ -91,6 +90,7 @@
                                                 </td>
                                                 <td style="width: 15%;">
                                                 	${storage.storageSize } 
+                                                	<span>M</span>
                                                 </td>
                                                 <td style="width: 12%;">
                                                 	${storage.createDate }
@@ -98,10 +98,10 @@
                                                 <td style="width:23%">	
                                                  <span class="btn btn-primary format formatStorage">格式化</span>
                                        			 <span class="btn btn-primary dilation dilatationStorage" storageId="${storage.id }" storageSize="${storage.storageSize }" storageName="${storage.storageName }">扩容</span>
-                                       			 <span class="btn btn-primary deleteStorage deleteStorage" storageI="${storage.id }" >删除</span>
+                                       			 <span class="btn btn-primary deleteStorage deleteStorage" storageId="${storage.id }" >删除</span>
                                                 </td>
                                             </tr>
-                                        </c:forEach>
+                                        </c:forEach> --%>
 
                                         </tbody>
                                     </table>
@@ -111,7 +111,7 @@
                         </tbody>
                     </table>
                 </div>
-          		
+          		<div id="pagination"></div>
           		
             </div>
         </div>

@@ -1,0 +1,11 @@
+.pagelist .btn{
+    padding:2px 12px;
+    border-radius: 2px;
+    height:28px;
+    min-width:0;
+}
+
+.pagelist #pageSize,
+.pagelist #pageNo{
+    text-align:center;
+}

@@ -36,7 +36,7 @@ public class Storage {
 	/**
 	 * 存储大小
 	 */
-	private Integer storageSize;
+	private long storageSize;
 	/**
 	 * 创建时间
 	 */
@@ -45,7 +45,13 @@ public class Storage {
 	/**
 	 * 创建用户
 	 */
-	private long userId;
+	private long createBy;
+	public long getCreateBy() {
+		return createBy;
+	}
+	public void setCreateBy(long createBy) {
+		this.createBy = createBy;
+	}
 	public long getId() {
 		return id;
 	}
@@ -76,10 +82,10 @@ public class Storage {
 	public void setMountPoint(String mountPoint) {
 		this.mountPoint = mountPoint;
 	}
-	public Integer getStorageSize() {
+	public long getStorageSize() {
 		return storageSize;
 	}
-	public void setStorageSize(Integer storageSize) {
+	public void setStorageSize(long storageSize) {
 		this.storageSize = storageSize;
 	}
 	public Date getCreateDate() {
@@ -88,12 +94,7 @@ public class Storage {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-	public long getUserId() {
-		return userId;
-	}
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
+	
 	
 	
 }

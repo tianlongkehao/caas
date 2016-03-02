@@ -1,12 +1,18 @@
 package com.bonc.epm.paas.controller;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +20,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.dao.StorageDao;
+import com.bonc.epm.paas.entity.Ci;
+import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
@@ -25,76 +35,138 @@ public class StorageController {
 	private StorageDao storageDao;
 	
 	/**
-	 * 查询当前用户的存储卷组
+	 * 进入存储卷组页面
 	 * @param model
 	 * @return
 	 */
 	
 	@RequestMapping(value={"service/storage"}, method = RequestMethod.GET)
-	public String findByUser( Model model){
-		long userId = CurrentUserUtils.getInstance().getUser().getId();
-		List<Storage> storages = storageDao.findByUserId(userId);
+	public String findStorages(Model model){
+//		long createBy = CurrentUserUtils.getInstance().getUser().getId();
+//		List<Storage> storages = storageDao.findByCreateBy(createBy);
+//		model.addAttribute("storages",storages);
+		model.addAttribute("menu_flag", "service");
 		
-		model.addAttribute("storages",storages);
 		return "storage/storage.jsp";
 	}
 	
-	@RequestMapping(value={"service/storage/add"}, method = RequestMethod.GET)
-	public String stirageAdd( Model model){
+	/**
+	 * 根据分页配置查询当前存储卷组
+	 * @param pageable
+	 * @return
+	 */
+	@RequestMapping(value={"service/storageList"},method = RequestMethod.POST)
+	@ResponseBody
+	public String findStorageList(Pageable pageable){
+		Map<String, Object> map = new HashMap<String, Object>();
+		long createBy = CurrentUserUtils.getInstance().getUser().getId();
+		List<Storage> storages = storageDao.findAllByCreateByOrderByCreateDateDesc(createBy, pageable);
+		map.put("storages", storages);
+		map.put("status", "200");
+		map.put("count", storageDao.countByCreateBy(createBy));
+		return JSON.toJSONString(map);
 		
+	}
+	
+	/**
+	 * 根据存储卷id跳转进入存储卷组详细页面
+	 * @param model
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value={"service/storage/detail/{id}"},method = RequestMethod.GET)
+	public String detail(Model model,@PathVariable long id){
+		Storage storage= storageDao.findOne(id);
+		model.addAttribute("id", id);
+        model.addAttribute("storage", storage);
+        model.addAttribute("menu_flag", "service");
+		return "storage/storage_detail.jsp";
+	}
+	
+	/**
+	 * 跳转进入新建卷组页面
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value={"service/storage/add"}, method = RequestMethod.GET)
+	public String storageAdd(Model model){
+		model.addAttribute("menu_flag", "service");
 		return "storage/storage_add.jsp";
 	}
 	
+	/**
+	 * 新建存储
+	 * @param storage
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = {"service/storage/build"},method=RequestMethod.POST)
 	@ResponseBody
-	public String create(@RequestParam String storageName,String format,Integer storageSize,Model model){
-		long userId = CurrentUserUtils.getInstance().getUser().getId();
-		Storage storage = new Storage();
-		
-		storage.setStorageName(storageName);
-		storage.setFormat(format);
-		storage.setStorageSize(storageSize);
+	public String buildStorage(Storage storage,Model model){
+		Map<String, Object> map = new HashMap<String, Object>();
+		long createBy = CurrentUserUtils.getInstance().getUser().getId();
 		storage.setCreateDate(new Date());
-		storage.setUseType(0);
-		storage.setUserId(userId);
-		
-		int judge = storageDao.findByName(userId, storageName);
-		
-		if(judge == 0){
+		storage.setUseType(StorageConstant.NOT_USER);
+		storage.setCreateBy(createBy);
+		Storage StorageValidate = storageDao.findByCreateByAndStorageName(createBy, storage.getStorageName());
+		if(StorageValidate == null){
 			storageDao.save(storage);
-			return "success";
+			map.put("status", "200");
 		}else{
-			return "error";
+			map.put("status", "500");
 		}
 		
+		return JSON.toJSONString(map);
 	}
 	
-	@RequestMapping(value = {"service/storage/build/judge"},method=RequestMethod.POST)
+	/**
+	 * 新建存储时，对存储名进行查重；
+	 * @param storageName
+	 * @return
+	 */
+	@RequestMapping(value = {"service/storage/build/validate"},method=RequestMethod.POST)
 	@ResponseBody
-	public String judge(@RequestParam String storageName,Model model){
-		long userId = CurrentUserUtils.getInstance().getUser().getId();
-		int judge = storageDao.findByName(userId, storageName);
-		if(judge == 0){
-			return "ok";
+	public String validate( String storageName){
+		Map<String, Object> map = new HashMap<String, Object>();
+		long createBy = CurrentUserUtils.getInstance().getUser().getId();
+		Storage StorageValidate = storageDao.findByCreateByAndStorageName(createBy, storageName);
+		if(StorageValidate == null){
+			map.put("status", "200");
 		}else{
-			return "no";
+			map.put("status", "500");
 		}
+		
+		return JSON.toJSONString(map);
 	}	
+	
+	/**
+	 * 根据存储卷组Id修改存储卷组的存储大小；
+	 * @param storageId
+	 * @param storageUpdateSize
+	 * @return
+	 */
 	@RequestMapping(value = {"service/storage/dilatation"},method = RequestMethod.POST)
 	@ResponseBody
-	public String dilatationStorage(@RequestParam long id,Integer storageSize){
-		Storage storage = storageDao.findOne(id);
-		storage.setStorageSize(storageSize);
+	public String dilatationStorage(long storageId,Integer storageUpdateSize){
+		Map<String, Object> map = new HashMap<String, Object>();
+		Storage storage = storageDao.findOne(storageId);
+		storage.setStorageSize(storageUpdateSize);
 		storageDao.save(storage);
-		
-		return "success";
+		map.put("status", "200");
+		return JSON.toJSONString(map);
 	}
 	
-	@RequestMapping(value = {"service/storage/delete"},method = RequestMethod.POST)
+	/**
+	 * 删除选定的存储卷组；
+	 * @param storageId
+	 * @return
+	 */
+	@RequestMapping(value = {"service/storage/delete"})
 	@ResponseBody
 	public String deleteStorage(@RequestParam long storageId){
+		Map<String, Object> map = new HashMap<String, Object>();
 		storageDao.delete(storageId);
-		
-		return "success";
+		map.put("status", "200");
+		return JSON.toJSONString(map);
 	}
 }

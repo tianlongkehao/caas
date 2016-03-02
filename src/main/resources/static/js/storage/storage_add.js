@@ -28,9 +28,10 @@ $(document).ready(function () {
             $('#storageName').focus();
             return;
         }
-        var url = ""+ctx+"/service/storage/build/judge";
+        var url = ""+ctx+"/service/storage/build/validate";
         $.post(url, {'storageName':storageName}, function(data){
-            if(data == 'ok') {
+        	data = eval("(" + data + ")");
+        	if(data.status=="200"){
                 return;
             }else{
                 layer.tips('存储名称重复', $('#storageName'),{tips: [1, '#EF6578']});
@@ -40,47 +41,35 @@ $(document).ready(function () {
         });
     });
 
-    $("#storageSize").blur(function(){
-        var storageSize = $("#storageSize").val();
-        if(storageSize == ""){
-            layer.tips('存储大小不能为空', $('#storageSize'),{tips: [1, '#EF6578']});
-            $('#storageSize').focus();
-            return;
-        }
-    });
 
     $("#buildStorage").click(function(){
         var storageName = $("#storageName").val();
-        var storageSize = $("#storageSize").val();
+        var storageSize = $("#storageSizeSlider").val();
         var options=$("#format option:selected");
         var format = options.text();
-
+        
         if (storageName === '') {
             layer.tips('存储名称不能为空', $('#storageName'),{tips: [1, '#EF6578']});
             $('#storageName').focus();
             return;
         }
-        if(storageSize == ""){
-            layer.tips('存储大小不能为空', $('#storageSize'),{tips: [1, '#EF6578']});
+        if(storageSize == 0){
+            layer.tips('存储大小只能为数字并且不能为0', $('#storageSize_input'),{tips: [1, '#EF6578']});
             $('#storageSize').focus();
             return;
         }
 
         var url = ""+ctx+"/service/storage/build";
         $.post(url, {'storageName':storageName,'storageSize':storageSize,'format':format}, function(data){
-            if(data == 'success') {
+        	data = eval("(" + data + ")");
+        	if(data.status=="200"){
                 layer.msg( "创建成功！", {
                     icon: 1
                 },function(){
-                    window.location.href = "/service/storage";
-                });
-            }
-            else if(data == 'error'){
-                layer.msg( "保存失败。名称相同，请重命名", {
-                    icon: 0.5
+                    window.location.href = ""+ctx+"/service/storage";
                 });
             }else{
-                layer.msg( "保存失败。", {
+                layer.msg( "创建失败", {
                     icon: 0.5
                 });
             }
