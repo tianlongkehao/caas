@@ -116,6 +116,46 @@ public class CiController {
 		return JSON.toJSONString(map);
 	}
 	
+	@RequestMapping("ci/modifyCodeResourceCi.do")
+	@ResponseBody
+	public String modifyCodeResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode) {
+		Ci originCi = ciDao.findOne(ci.getId());
+		originCi.setProjectName(ci.getProjectName());
+		originCi.setDescription(ci.getDescription());
+		originCi.setBaseImageName(ci.getBaseImageName());
+		originCi.setBaseImageVersion(ci.getBaseImageVersion());
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+        	File file = new File(originCi.getCodeLocation());
+        	if(!file.exists()){
+        		file.mkdirs();
+        	}
+        	if (sourceCode!=null&&!sourceCode.isEmpty()) {
+        		originCi.setResourceName(sourceCode.getOriginalFilename());
+        		FileUtils.storeFile(sourceCode.getInputStream(), originCi.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
+        	}
+        	
+        	String fileTemplate = FileUtils.class.getClassLoader().getResource("Dockerfile").getPath();
+        	String toFile = originCi.getCodeLocation()+"/"+"Dockerfile";
+        	Map<String,String> data = new HashMap<String, String>();
+        	data.put("${baseImage}", originCi.getBaseImageName()+":"+originCi.getBaseImageVersion());
+        	data.put("${fileName}", sourceCode.getOriginalFilename());
+        	FileUtils.writeFileByLines(fileTemplate, data, toFile);
+        	
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	log.error("modifyResourceCi error:"+e.getMessage());
+        	map.put("status", "500");
+    		map.put("msg","上传文件出错");
+    		return JSON.toJSONString(map);
+        }
+		ciDao.save(originCi);
+		map.put("status", "200");
+		map.put("data", ci);
+		return JSON.toJSONString(map);
+	}
+	
+	
 	@RequestMapping(value = "ci/delCi.do", method = RequestMethod.POST)
 	@ResponseBody
 	public String delCi(@RequestParam String id) {
@@ -133,27 +173,36 @@ public class CiController {
         model.addAttribute("menu_flag", "ci");
 		return "ci/ci_add.jsp";
 	}
+	
 	@RequestMapping(value={"ci/addSource"},method=RequestMethod.GET)
-	public String addSourceCode(Model model){
+	public String addSource(Model model){
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         model.addAttribute("username", cuurentUser.getUserName());
         model.addAttribute("menu_flag", "ci");
 		return "ci/ci_addSource.jsp";
 	}
 	
+	@RequestMapping(value={"ci/addCodeSource"},method=RequestMethod.GET)
+	public String addCodeSource(Model model){
+		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        model.addAttribute("username", cuurentUser.getUserName());
+        model.addAttribute("menu_flag", "ci");
+		return "ci/ci_addCodeSource.jsp";
+	}
+	
 	@RequestMapping("ci/addCi.do")
 	public String addCi(Ci ci) {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        ci.setCreateBy(cuurentUser.getId());
-        ci.setCreateDate(new Date());
+		ci.setCreateBy(cuurentUser.getId());
+		ci.setCreateDate(new Date());
 		ci.setType(CiConstant.TYPE_QUICK);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
 		ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
 		ciDao.save(ci);
 		log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
-        return "redirect:/ci";
-
+		return "redirect:/ci";
+		
 	}
 	
 	@RequestMapping("ci/addResourceCi.do")
@@ -161,7 +210,7 @@ public class CiController {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         ci.setCreateBy(cuurentUser.getId());
         ci.setCreateDate(new Date());
-		ci.setType(CiConstant.TYPE_CODE);
+		ci.setType(CiConstant.TYPE_RESOURCE);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
 		ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
@@ -186,6 +235,40 @@ public class CiController {
         return "redirect:/ci";
 
 	}
+	@RequestMapping("ci/addCodeResourceCi.do")
+	public String addCodeResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode) {
+		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        ci.setCreateBy(cuurentUser.getId());
+        ci.setCreateDate(new Date());
+		ci.setType(CiConstant.TYPE_CODE);
+		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
+		ci.setConstructionDate(new Date());
+		ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+		ci.setDockerFileLocation("/");
+        try {
+        	File file = new File(ci.getCodeLocation());
+        	if(!file.exists()){
+        		file.mkdirs();
+        	}
+        	if (!sourceCode.isEmpty()) {
+        		ci.setResourceName(sourceCode.getOriginalFilename());
+        		FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
+        	}
+        	String fileTemplate = FileUtils.class.getClassLoader().getResource("Dockerfile").getPath();
+        	String toFile = ci.getCodeLocation()+"/"+"Dockerfile";
+        	Map<String,String> data = new HashMap<String, String>();
+        	data.put("${baseImage}", ci.getBaseImageName()+":"+ci.getBaseImageVersion());
+        	data.put("${fileName}", sourceCode.getOriginalFilename());
+        	FileUtils.writeFileByLines(fileTemplate, data, toFile);
+       } catch (Exception e) {
+        	log.error("modifyResourceCi error:"+e.getMessage());
+        	return "redirect:/error"; 
+        }
+        ciDao.save(ci);
+		log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+        return "redirect:/ci";
+	}
+		
 	
 	@RequestMapping("ci/printCiRecordLog.do")
 	@ResponseBody
@@ -334,5 +417,8 @@ public class CiController {
 		}
 		return flag;
 	}
+	
+	
+	
 	
 }

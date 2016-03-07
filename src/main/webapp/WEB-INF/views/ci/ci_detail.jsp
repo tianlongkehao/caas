@@ -194,6 +194,45 @@
                                         <input type="hidden" id="id" name="id" value="${ci.id}">
                                     </form>
                                 </c:if>
+                                <c:if test="${ci.type == 3}">
+                                    <form id="editCiUploadCodeForm" class="form-horizontal" method="post" action="" role="form" enctype="multipart/form-data">
+                                        <br>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">项目名称：</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="projectName" name="projectName" value="${ci.projectName}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">简介：</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="description" name="description" value="${ci.description}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">重新上传代码文件：</label>
+                                            <div class="col-sm-9">
+                                                <input type="file" class="" id="sourceCode" name="sourceCode" style="margin:6px 0;">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label">基础镜像：</label>
+                                            <div class="col-sm-9">
+                                                <input id="baseImageName" name="baseImageName" type="text" 
+                                               value="${ci.baseImageName}" style="width:218px"> :
+                                        <input id="baseImageVersion" name="baseImageVersion" type="text" value="${ci.baseImageVersion}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-2x control-label"></label>
+                                            <div class="col-sm-9">
+                                                <!-- <textarea class="form-control" id="ciDetail" name="ciDetail">...</textarea> -->
+                                                <br><input type="button" id="editCiUploadCodeBtn" class="btn btn-primary pull-right" value="确认修改">
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="id" name="id" value="${ci.id}">
+                                    </form>
+                                </c:if>
                             </div>
 
                             <%-- 操作 --%>

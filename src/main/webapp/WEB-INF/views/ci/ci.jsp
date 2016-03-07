@@ -29,7 +29,8 @@
                     <ul class="toolbox clearfix">
                         <li><a href="javascript:void(0);" id="ciReloadBtn"><i class="fa fa-repeat"></i></a></li>
                         <li><a href="<%=path %>/ci/add" id="ciAddBtn">快速构建</a></li>
-                        <li><a href="<%=path %>/ci/addSource" id="ciAddSourceBtn">上传构建</a></li>
+                        <%-- <li><a href="<%=path %>/ci/addSource" id="ciAddSourceBtn">上传构建</a></li> --%>
+                        <li><a href="<%=path %>/ci/addCodeSource" id="ciAddCodeSourceBtn">代码构建</a></li>
                         <!-- <li><a href="<%=path %>/file/downloadTemplate?fileName=Dockerfile">下载dockerfile示例</a></li> -->
                     </ul>
                 </div>
@@ -118,7 +119,7 @@
                                                 </td>
                                                 <td style="width: 15%;">
                                                 	<c:choose>
-		                                                <c:when test="${ci.type == 2}">
+		                                                <c:when test="${ci.type == 2||ci.type == 3}">
 		                                                </c:when>
 		                                                <c:otherwise>
 		                                                	 <a data-toggle="tooltip" data-placement="left" title="" target="_blank" href="${ci.codeUrl}" data-original-title="查看源代码">
