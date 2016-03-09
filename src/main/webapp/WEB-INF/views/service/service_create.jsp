@@ -89,10 +89,10 @@
                                     <span class="ve_top">服务名称：</span>
                                     <input type="text" value="" class="in_style" id="serviceName" name="serviceName">
                                 </li>
-                                <li class="line-h-3">
+                                <!--<li class="line-h-3">
                                     <span class="ve_top">服务地址：</span>
                                     <input type="text" value="" class="in_style" id="serviceLink" name="serviceLink" placeholder="例如：/index">
-                                </li>
+                                </li>  -->
                                 <!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
                                         <span class="clusterText" data="tenx_district2">北京二区</span>

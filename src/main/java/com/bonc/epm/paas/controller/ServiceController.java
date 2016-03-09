@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.controller;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -261,7 +263,9 @@ public class ServiceController {
 
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-		try {	    
+		try {	 
+			ResourceQuota quota = client.getResourceQuota(currentUser.getUserName());
+			quota.getSpec().getHard();
 		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
 		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
 		    double icpuMax = kubernetesClientService.transCpu(limitRangeItem.getMax().get("cpu"));
@@ -379,7 +383,11 @@ public class ServiceController {
 		app.put("userName", currentUser.getUserName());
 		app.put("confName", service.getServiceName());
 		app.put("port", String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
+		//判断配置文件是否存在并删除
+		TemplateEngine.fileDel(CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(), templateConf);
+		//将ip、端口等信息写入模版并保存到nginx config文件路径
 		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(),templateConf);
+		//重新启动nginx服务器
 		TemplateEngine.cmdReloadConfig(templateConf);
 		service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
 		service.setPortSet(String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
