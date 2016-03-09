@@ -379,12 +379,18 @@ public class ServiceController {
 		service.setCreateDate(new Date());
 		service.setCreateBy(currentUser.getId());
 		serviceDao.save(service);
+		//app为修改nginx配置文件的配置项
 		Map<String, String > app = new HashMap<String, String>();
 		app.put("userName", currentUser.getUserName());
 		app.put("confName", service.getServiceName());
 		app.put("port", String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
 		//判断配置文件是否存在并删除
-		TemplateEngine.fileDel(CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(), templateConf);
+		if(TemplateEngine.fileIsExist(CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(), templateConf)){
+			//清空配置文件内容
+			TemplateEngine.deleteConfig(service.getServiceName(), CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(), templateConf);
+			//删除配置文件
+			TemplateEngine.fileDel(CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(), templateConf);
+		}
 		//将ip、端口等信息写入模版并保存到nginx config文件路径
 		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(),templateConf);
 		//重新启动nginx服务器

@@ -70,9 +70,22 @@ public class TemplateEngine {
     public static void fileDel(String configName,TemplateConf templateConf){
     	File nginxFile = new File(templateConf.getConfpath()+configName+".conf");
     	if(nginxFile.exists()){
-    		nginxFile.delete();
-    		log.debug(templateConf.getConfpath()+configName+".conf"+"文件删除成功！");
+    		if(nginxFile.delete()){
+    			log.debug(templateConf.getConfpath()+configName+".conf"+"文件删除成功！");
+    		}
+    		log.debug(templateConf.getConfpath()+configName+".conf"+"文件删除失败！");
     	}
+    }
+    
+    /**
+     * 判断文件是否存在
+     * @param configName
+     * @param templateConf
+     * @return
+     */
+    public static boolean fileIsExist(String configName,TemplateConf templateConf){
+    	File nginxFile = new File(templateConf.getConfpath()+configName+".conf");
+    	return nginxFile.exists();
     }
     /**
      * 删除文件 IO没有对文本直接删除的方法，先读出所有内容，过滤删除内容，重新写回文件。
