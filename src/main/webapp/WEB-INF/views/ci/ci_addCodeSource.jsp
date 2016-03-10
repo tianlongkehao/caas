@@ -36,8 +36,8 @@
 									<label>基础镜像</label>
 									<div class="">
 										<input id="baseImageName" name="baseImageName" type="text" 
-                                               value="10.0.93.25:5000/bonc/tomcat" style="width:218px"> :
-                                        <input id="baseImageVersion" name="baseImageVersion" type="text" value="8.0.28-jre8">
+                                               value="10.0.93.205:5000/bonc/tomcat" style="width:218px"> :
+                                        <input id="baseImageVersion" name="baseImageVersion" type="text" value="8-jre7">
 									</div>
 								</div>
 								<div class="form-group col-md-7">
