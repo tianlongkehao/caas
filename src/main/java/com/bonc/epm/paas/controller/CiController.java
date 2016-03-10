@@ -139,7 +139,7 @@ public class CiController {
         	String toFile = originCi.getCodeLocation()+"/"+"Dockerfile";
         	Map<String,String> data = new HashMap<String, String>();
         	data.put("${baseImage}", originCi.getBaseImageName()+":"+originCi.getBaseImageVersion());
-        	data.put("${fileName}", sourceCode.getOriginalFilename());
+        	data.put("${fileName}", originCi.getResourceName());
         	FileUtils.writeFileByLines(fileTemplate, data, toFile);
         	
         } catch (Exception e) {
@@ -258,7 +258,7 @@ public class CiController {
         	String toFile = ci.getCodeLocation()+"/"+"Dockerfile";
         	Map<String,String> data = new HashMap<String, String>();
         	data.put("${baseImage}", ci.getBaseImageName()+":"+ci.getBaseImageVersion());
-        	data.put("${fileName}", sourceCode.getOriginalFilename());
+        	data.put("${fileName}", ci.getResourceName());
         	FileUtils.writeFileByLines(fileTemplate, data, toFile);
        } catch (Exception e) {
         	log.error("modifyResourceCi error:"+e.getMessage());
