@@ -98,8 +98,10 @@ public class TemplateEngine {
     	try {
     		// 读取配置文件
             String data = readConf(templateConf.getConfpath()+configName+".conf");
+            log.debug("过滤前－nginx配置文件内容："+data);
             // 过滤删除内容
             data = data.replace(getObject(confName,templateConf.getConfpath()+configName+".conf"), "");
+            log.debug("过滤后－nginx配置文件内容："+data);
             // 重新写回文件
             writeConf(templateConf.getConfpath()+configName+".conf", data, false);
 		} catch (Exception e) {

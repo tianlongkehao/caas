@@ -130,8 +130,8 @@
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">内存：</span>
-                                        <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="512" data-slider-max="2048" data-slider-step="1" data-slider-value="512"/>
-                                        <input type="text" value="512" id="ram" name="ram">
+                                        <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftmemory }" data-slider-step="1" data-slider-value="0"/>
+                                        <input type="text" value="0" id="ram" name="ram">
                                         <span>M</span>
                                         <!--<span style="color: grey;">当前可用ram：${leftram }M</span> -->
                                     </div>

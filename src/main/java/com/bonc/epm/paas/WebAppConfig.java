@@ -8,8 +8,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.bonc.epm.paas.constant.TemplateConf;
+import com.bonc.epm.paas.constant.esConf;
 
-@EnableConfigurationProperties(TemplateConf.class)
+@EnableConfigurationProperties({TemplateConf.class,esConf.class})
 @SpringBootApplication
 public class WebAppConfig extends WebMvcConfigurerAdapter{
 		

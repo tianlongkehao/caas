@@ -2,6 +2,7 @@ package com.bonc.epm.paas.controller;
 
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
+import com.bonc.epm.paas.constant.esConf;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
@@ -41,6 +43,7 @@ import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.ESClient;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
 
@@ -66,6 +69,9 @@ public class ServiceController {
 	private KubernetesClientService kubernetesClientService;
 	@Autowired
 	private TemplateConf templateConf;
+	@Autowired
+	private esConf esConf;
+	
 	
 	
 	@RequestMapping("service/listService.do")
@@ -204,14 +210,23 @@ public class ServiceController {
         List<String> logList = new ArrayList<String>();
         Map<String,String> map = new HashMap<String,String>();
     	map.put("app", service.getServiceName());
+    	//通过服务名获取pod列表
     	PodList podList = client.getLabelSelectorPods(map);
     	if(podList!=null){
     		List<Pod> pods = podList.getItems();
     		if(!CollectionUtils.isEmpty(pods)){
     			int i=1;
     			for(Pod pod:pods){
+    				//获取pod名称
     				String podName = pod.getMetadata().getName();
-    				String s = client.getPodLog(podName);
+    				//初始化es客户端
+    				ESClient esClient = new ESClient();
+    				esClient.initESClient(esConf.getHost());
+    				//设置es查询日期，数据格式，查询的pod名称
+    				String s = esClient.search("logstash-"+dateToString(new Date()), "fluentd", podName);
+    				//关闭es客户端
+    				esClient.closeESClient();
+    				//拼接日志格式
     				String add = "["+"App-"+i +"] ["+podName+"]：";
     				s = add + s.replaceAll("\n", "\n"+add);
     				Container container = new Container();
@@ -229,6 +244,14 @@ public class ServiceController {
 		return "service/service-detail.jsp";
 	}
 	
+	public static String dateToString(Date time){ 
+	    SimpleDateFormat formatter; 
+	    formatter = new SimpleDateFormat ("yyyy.MM.dd"); 
+	    String ctime = formatter.format(time); 
+
+	    return ctime; 
+	} 
+	
 	/**
 	 * 响应“部署”按钮
 	 * @param imageName
@@ -244,11 +267,11 @@ public class ServiceController {
 			isDepoly = "deploy";
 		}
 		
-		/*boolean flag = getleftResource(model);
+		boolean flag = getleftResource(model);
 		if(!flag){
 			model.addAttribute("msg","请创建租户！");
 			return "service/service.jsp";
-		}*/
+		}
 
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("imageName", imageName);
@@ -259,31 +282,37 @@ public class ServiceController {
 		return "service/service_create.jsp";
 	}
 	
-	/*public boolean getleftResource(Model model){
+	public boolean getleftResource(Model model){
 
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		try {	 
 			ResourceQuota quota = client.getResourceQuota(currentUser.getUserName());
-			quota.getSpec().getHard();
-		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
-		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
-		    double icpuMax = kubernetesClientService.transCpu(limitRangeItem.getMax().get("cpu"));
-		    double icpuMin = kubernetesClientService.transCpu(limitRangeItem.getMin().get("cpu"));
-
-		    int memoryMin = kubernetesClientService.transMemory(limitRangeItem.getMin().get("memory"));
-		    int memoryMax = kubernetesClientService.transMemory(limitRangeItem.getMax().get("memory"));
-			model.addAttribute("memorymin", memoryMin);
-			model.addAttribute("memorymax", memoryMax);
-			model.addAttribute("cpumin", icpuMin);
-			model.addAttribute("cpumax", icpuMax);
+			System.out.println(quota);
+			int hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
+			int used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
+			int leftmemory = hard - used;
+			
+			System.out.println(hard+"  "+used);
+//		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
+//		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
+//		    double icpuMax = kubernetesClientService.transCpu(limitRangeItem.getMax().get("cpu"));
+//		    double icpuMin = kubernetesClientService.transCpu(limitRangeItem.getMin().get("cpu"));
+//
+//		    int memoryMin = kubernetesClientService.transMemory(limitRangeItem.getMin().get("memory"));
+//		    int memoryMax = kubernetesClientService.transMemory(limitRangeItem.getMax().get("memory"));
+//			model.addAttribute("memorymin", memoryMin);
+//			model.addAttribute("memorymax", memoryMax);
+//			model.addAttribute("cpumin", icpuMin);
+//			model.addAttribute("cpumax", icpuMax);
+			model.addAttribute("leftmemory", leftmemory);
 		} catch (Exception e) {
 			log.error("getleftResource error:"+e);
 			return false;
 		}
 		
 		return true;
-	}*/
+	}
 	
 	
 	/**
