@@ -910,6 +910,13 @@ i.pushOrg {
     border-radius: 7px;
     transition: all 1s ease-out;
 }
+/*////////////////////////*/
+
+/*.table-lists {
+    border: 1px solid #dddddd;
+}*/
+
+
 /*////////////*/
 .detail-info .info-list #cluster-listing {
     text-align: center;
@@ -979,6 +986,12 @@ i.pushOrg {
     padding-left: 25px;
     background: #FAFAFA;
 }
+.detail-info .info-list .table-lists, #masterCpuResourceInfo thead .detail-rows {
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
 .detail-info .info-list #cluster-listing, #masterCpuResourceInfo thead .detail-rows {
     font-size: 14px;
     border-bottom: 1px solid #ddd;
@@ -1015,6 +1028,12 @@ i.pushOrg {
     padding-left: 25px;
     background: #FAFAFA;
 }
+.detail-info .info-list .table-lists, #etcdCpuResourceInfo thead .detail-rows {
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
 /*slave-CPU*/
 .detail-info .info-list #slaveCpuResourceInfo tbody td .slider_bj {
     position: relative;
@@ -1040,6 +1059,12 @@ i.pushOrg {
 
 
 .detail-info .info-list #table-listing, #slaveCpuResourceInfo thead .detail-rows {
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
+.detail-info .info-list .table-lists, #slaveCpuResourceInfo thead .detail-rows {
     font-size: 14px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
@@ -1077,6 +1102,12 @@ i.pushOrg {
     padding-left: 25px;
     background: #FAFAFA;
 }
+.detail-info .info-list .table-lists, #masterMemResourceInfo thead .detail-rows {
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
 /*etcd-内存*/
 .detail-info .info-list #etcdMemResourceInfo tbody td .slider_bj {
     position: relative;
@@ -1102,6 +1133,12 @@ i.pushOrg {
 
 
 .detail-info .info-list #table-listing, #etcdMemResourceInfo thead .detail-rows {
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
+.detail-info .info-list .table-lists, #etcdMemResourceInfo thead .detail-rows {
     font-size: 14px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
@@ -1137,6 +1174,12 @@ i.pushOrg {
     padding-left: 25px;
     background: #FAFAFA;
 }
+.detail-info .info-list .table-lists, #slaveMemResourceInfo thead .detail-rows {
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: #FAFAFA;
+}
 
 /*.host_step4, .enabled, #divResult td, .processcontainer{
     width:200px;
@@ -1151,3 +1194,31 @@ i.pushOrg {
     text-align:center;
     line-height:150%;
 }*/
+.graph-legend-series{
+    float: left;
+    white-space: nowrap;
+    padding-left: 10px;
+    padding-top: 6px;
+}
+
+.graph-legend-icon, .graph-legend-alias, .graph-legend-value{
+    float: left;
+    white-space: nowrap;
+    font-size: 85%;
+    text-align: left;
+}
+.graph-legend-icon{
+    position: relative;
+    padding-right: 4px;
+    top: 1px;
+}
+.graph-legend-value.current{
+    float: left;
+    white-space: nowrap;
+    font-size: 85%;
+    text-align: left;
+}
+.graph-legend-wrapper{
+    margin-left: 50px;
+}
+

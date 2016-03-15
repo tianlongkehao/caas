@@ -6,7 +6,12 @@
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
     <script type="text/javascript" src="<%=path %>/js/cluster/cluster.js"></script>
+    <script type="text/javascript" src="<%=path %>/plugins/bower-angular-master/angular.js"></script>
+    <script type="text/javascript" src="<%=path %>/plugins/echarts/src/echarts.js"></script>
+
+
 </head>
+
 <body>
 <jsp:include page="../frame/menu.jsp" flush="true">
     <jsp:param name="cluster" value=""/>
@@ -29,92 +34,45 @@
                 <aside class="aside-btn">
                     <div class="btns-group">
                         <a id="clusterResource" class="Record action"><span class="btn btn-defaults btn-white"><span
-                                class="ic_left">集群资源</span></span></a>
+                                class="ic_left">集群监控</span></span></a>
                     </div>
                 </aside>
 
                 <div>
-
                     <div id="clusterResource_wrap" class="tab_wrap">
                         <div class="detail-info">
-                            <div class="info-list">
-                                <table class="table" id="table-listing">
-                                    <thead>
-                                    <tr>
-                                        <th colspan="6" class="detail-rows">集群资源总览</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td style="width:10%">CPU</td>
-                                        <td style="width:30%">
-                                            <div class="slider_bj">
-                                                <div class="slider_block detailCpu" id="clusterCpu" style="width: 0%"></div>
-                                            </div>
-                                        </td>
-                                        <td style="width:10%"><span id="detailCpu">${allClusterCpuUse}</span>/<span
-                                                id="totalCpu">${allClusterCpuLimit}</span>（ms）</td>
-                                    </tr>
-                                    <tr>
-                                        <td>内存</td>
-                                        <td>
-                                            <div class="slider_bj">
-                                                <div class="slider_block detailMemory" id="clusterMem" style="width: 0%"></div>
-                                            </div>
-                                        </td>
-                                        <td><span id="detailMemory">${allClusterMemUse}</span>/<span
-                                                id="totalMemory">${allClusterMemLimit}</span>（M）
-                                        </td>
-                                    </tr>
-                                    <%--<tr>
-                                        <td style="width:15%">网络（M）</td>
-                                        <td style="width:25%">
-                                            <div class="slider_bj">
-                                                <div class="slider_block detailNetwork"></div>
-                                            </div>
-                                        </td>
-                                        <td style="width:10%"><span id="detailNetwork">-</span>10M</td>
-                                    </tr>--%>
-                                    </tbody>
-                                </table>
-                                <table class="table" id="cluster-listing" style="margin-top: 20px">
-                                    <thead>
-                                    <tr>
-                                        <th class="detail-rows" style="width:13%">集群主机资源一览</th>
-                                        <th  class="detail-rows" style="text-align: center;width:33%">CPU</th>
-                                        <th class="detail-rows" style="text-align: center;width:33%">内存</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <c:forEach items="${lstClusters}" var="clusterUse">
-                                        <%--<c:if test="${clusterUse.host == null || clusterUse.host == '0'}">
-                                            <c:set var="cursorClass" value="cursor-no-drop"></c:set>
-                                        </c:if>--%>
-                                        <c:if test="${cur_cluster.host != clusterUse.host}">
-                                            <tr name="clusterUseInfo">
-                                                <td>${clusterUse.host}</td>
-                                                <td style="border-right: 1px solid #ddd;border-left: 1px solid #ddd;">
-                                                    <div class="slider_bj" style="width:50%; float: left;margin-left: 40px">
-                                                        <div class="slider_block detailCpu clusterCpuUse" style="width: 0%"></div>
-                                                    </div>
-                                                    <div><span id="clusterDetailCpu" class="clusterDetCpuUse">${clusterUse.cpuUse}</span>/<span
-                                                            id="clusterTotalCup" class="clusterTotCpuLimit">${clusterUse.cpuLimit}</span>（ms）</div>
-                                                </td>
-                                                <td>
-                                                    <div class="slider_bj" style="width:50%; float: left;margin-left: 40px">
-                                                        <div class="slider_block detailMemory clusterMemUse" style="width: 0%"></div>
+                            <div class="info-list" id="resourceImg">
+                                <div class="table-lists" style="margin-top: 10px">
+                                    <div style="width: 1115px;height:260px;"></div>
+                                </div>
 
-                                                    </div>
-                                                    <div><span id="clusterDetailMemory" class="clusterDetMemUse">${clusterUse.memUse}</span>/<span
-                                                            id="clustertotalMemory" class="clusterTotMemLimit">${clusterUse.memLimit}</span>（M）</div>
-                                                </td>
-                                            </tr>
-                                        </c:if>
+                                <div class="table-lists" style="margin-top: 10px">
+                                    <div style="width: 1115px;height:260px;"></div>
+                                </div>
 
-                                    </c:forEach>
-                                    </tbody>
-                                </table>
+                                <div class="table-lists" style="margin-top: 10px; float: left">
+                                    <div style="width: 563px;height:260px;"></div>
+                                </div>
+                                <div class="table-lists" style="margin-top: 10px; float: right">
+                                    <div style="width: 563px;height:260px;"></div>
+                                </div>
+
+                                <div class="table-lists" style="margin-top: 10px;float: left ">
+                                    <div style="width: 1115px;height:260px;"></div>
+                                </div>
+
+                                <div class="table-lists" style="margin-top: 10px;float: left">
+                                    <div style="width: 1115px;height:260px;"></div>
+                                </div>
+
+                                <div class="table-lists" style="margin-top: 10px; float: left">
+                                    <div style="width: 563px;height:260px;"></div>
+                                </div>
+                                <div class="table-lists" style="margin-top: 10px; float: right">
+                                    <div style="width: 563px;height:260px;"></div>
+                                </div>
                             </div>
+
                         </div>
 
                     </div>
@@ -126,5 +84,244 @@
     </article>
 </div>
 
+<script type="text/javascript">
+    var colorData = ['#c5e1d2','#abd4bd','#91c7a9','#77ba95'];
+
+    var  clusterData = [
+        {
+            'xAxis':['2014-11-19','2014-11-20','2014-11-21','2014-11-22','2014-11-23','2014-11-24','2014-11-25','2014-11-26','2014-11-27'],
+            'memoryVal':{'titleTitle':'OverAll Cluster Memory USAGE',
+                'val': [{'legendName':'Limit Current',
+                    'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330]},
+                {'legendName':'Usage Current',
+                    'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
+                {'legendName':'Working Set Current',
+                    'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]},
+
+            'cpuVal':{'titleTitle':'OverAll Cluster Cpu USAGE',
+                 'val':[{'legendName':'cLimit Current',
+                'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330]},
+                {'legendName':'cUsage Current',
+                    'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
+                {'legendName':'cWorking Set Current',
+                    'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]}
+        },
+
+        {
+            'xAxis':['2014-11-19','2014-11-20','2014-11-21','2014-11-22','2014-11-23','2014-11-24','2014-11-25','2014-11-26','2014-11-27',
+                '2014-11-28','2014-11-29','2014-11-30','2014-12-01','2014-12-02','2014-12-03','2014-12-04','2014-12-05','2014-12-06'],
+            'memoryVal':{'titleTitle':'Memory Usage Group By Node',
+                'val':[{'legendName':'111',
+                    'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330, 220, 182, 191, 234, 290, 330, 310, 290, 330]},
+                    {'legendName':'222',
+                        'yAxis':[120, 132, 101, 134, 101, 230, 210, 101, 134, 120, 132, 101, 134, 101, 230, 210, 101, 134]},
+                    {'legendName':'333',
+                        'yAxis':[98, 90, 96, 96, 93, 95, 86, 89, 85, 98, 90, 96, 96, 93, 95, 86, 89, 85]},
+                    {'legendName':'444',
+                        'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12, 10, 11, 10, 12, 12, 12, 12, 12, 12]}]
+            },
+            'cpuVal':{
+                'titleTitle':'cpu Usage Group By Node',
+                'val':[{'legendName':'111',
+                    'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330, 220, 182, 191, 234, 290, 330, 310, 290, 330]},
+                    {'legendName':'222',
+                        'yAxis':[120, 132, 101, 134, 101, 230, 210, 101, 134, 120, 132, 101, 134, 101, 230, 210, 101, 134]},
+                    {'legendName':'333',
+                        'yAxis':[98, 90, 96, 96, 93, 95, 86, 89, 85, 98, 90, 96, 96, 93, 95, 86, 89, 85]},
+                    {'legendName':'444',
+                        'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12, 10, 11, 10, 12, 12, 12, 12, 12, 12]}]}
+        },
+        {
+            'xAxis':['2014-11-19','2014-11-20','2014-11-21','2014-11-22','2014-11-23','2014-11-24','2014-11-25','2014-11-26','2014-11-27'],
+            'memoryVal':{
+                'titleTitle':'memory Minion01',
+                'val':[{'legendName':'Limit Current',
+                    'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330]},
+                    {'legendName':'Usage Current',
+                        'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
+                    {'legendName':'Working Set Current',
+                        'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]
+            },
+            'cpuVal':{
+                'titleTitle':'cpu Minion01',
+                'val':[{'legendName':'Limit Current',
+                    'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330]},
+                    {'legendName':'Usage Current',
+                        'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
+                    {'legendName':'Working Set Current',
+                        'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]}
+        },
+        {
+            'xAxis':['2014-11-19','2014-11-20','2014-11-21','2014-11-22','2014-11-23','2014-11-24','2014-11-25','2014-11-26','2014-11-27'],
+            'memoryVal':{
+                'titleTitle':'memory Minion02',
+                'val':[{'legendName':'Limit Current',
+                    'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330]},
+                    {'legendName':'Usage Current',
+                        'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
+                    {'legendName':'Working Set Current',
+                        'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]
+            },
+            'cpuVal':{
+                'titleTitle':'cpu Minion02',
+                'val':[{'legendName':'Limit Current',
+                    'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330]},
+                    {'legendName':'Usage Current',
+                        'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
+                    {'legendName':'Working Set Current',
+                        'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]}
+        }
+    ];
+
+
+    for(var j = 0; j < clusterData.length; j++){
+        var option = {
+            title: {
+                text: ''
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                bottom: '1%',
+                data: [],
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '10%',
+                containLabel: true
+            },
+            xAxis : [
+
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    scale:true,
+                    axisLabel : {
+                        formatter: '{value} Gib'
+                    },
+                }
+            ],
+            series : []
+        };
+        var xAxis = {
+            type : 'category',
+            boundaryGap : false,
+            data : clusterData[j].xAxis
+        };
+        option.xAxis.push(xAxis);
+
+        for(var i = 0; i < clusterData[j].memoryVal.val.length; i++){
+            var a = {
+                name: clusterData[j].memoryVal.val[i].legendName,
+                icon: 'roundRect'
+            };
+            var b = {
+                name:clusterData[j].memoryVal.val[i].legendName,
+                type:'line',
+                barWidth : 5,
+                barHeight : 2,
+                itemStyle: {
+                    normal: {
+                        color: colorData[i],
+                    }
+                },
+                areaStyle: {normal: {},color: colorData[i]},
+                data:clusterData[j].memoryVal.val[i].yAxis
+            };
+
+            var titleText = clusterData[j].memoryVal.titleTitle;
+            option.title.text= titleText;
+
+            option.legend.data.push(a);
+            option.series.push(b);
+
+        }
+        var clusters = echarts.init(document.getElementById('resourceImg').children[j].children[0]);
+        clusters.setOption(option);
+
+        option.legend.data = [];
+        option.series = [];
+
+    }
+
+
+    for(var j = 0; j < clusterData.length; j++){
+        var option = {
+            title: {
+                text: ''
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                bottom: '1%',
+                data: [],
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '10%',
+                containLabel: true
+            },
+            xAxis : [
+
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    scale:true,
+                    axisLabel : {
+                        formatter: '{value} ms'
+                    },
+                }
+            ],
+            series : []
+        };
+
+        var xAxis = {
+            type : 'category',
+            boundaryGap : false,
+            data : clusterData[j].xAxis
+        };
+        option.xAxis.push(xAxis);
+
+
+        for(var k = 0; k < clusterData[j].cpuVal.val.length; k++){
+         var a = {
+         name: clusterData[j].cpuVal.val[k].legendName,
+         icon: 'roundRect'
+         };
+         var b = {
+         name:clusterData[j].cpuVal.val[k].legendName,
+         type:'line',
+         barWidth : 5,
+         barHeight : 2,
+         itemStyle: {
+         normal: {
+         color: colorData[k],
+         }
+         },
+         areaStyle: {normal: {},color: colorData[k]},
+         data:clusterData[j].cpuVal.val[k].yAxis
+         };
+
+         option.legend.data.push(a);
+         option.series.push(b);
+
+         var titleText = clusterData[j].cpuVal.titleTitle;
+         option.title.text= titleText;
+
+         }
+         var clusters = echarts.init(document.getElementById('resourceImg').children[j+4].children[0]);
+         clusters.setOption(option);
+    }
+
+</script>
+
 </body>
+
+
 </html>

@@ -10,17 +10,21 @@ $(function () {
 
     });
 
-    var clusterCpuPer = $("#detailCpu")[0].textContent/$("#totalCpu")[0].textContent*100+"%";
-    $("#clusterCpu")[0].style.width = clusterCpuPer;
-    var clusterMemPer = $("#detailMemory")[0].textContent/$("#totalMemory")[0].textContent*100+"%";
-    $("#clusterMem")[0].style.width = clusterMemPer;
+    //var clusterCpuPer = $("#detailCpu")[0].textContent/$("#totalCpu")[0].textContent*100+"%";
+    //$("#clusterCpu")[0].style.width = clusterCpuPer;
+    //var clusterMemPer = $("#detailMemory")[0].textContent/$("#totalMemory")[0].textContent*100+"%";
+    //$("#clusterMem")[0].style.width = clusterMemPer;
+    //
+    //for(var i = 0; i < document.getElementsByName("clusterUseInfo").length; i++){
+    //    var clustersCpuPer = $(".clusterDetCpuUse")[i].textContent/$(".clusterTotCpuLimit")[i].textContent*100+"%";
+    //    $(".clusterCpuUse")[i].style.width = clustersCpuPer;
+    //    var clustersMemPer = $(".clusterDetMemUse")[i].textContent/$(".clusterTotMemLimit")[i].textContent*100+"%";
+    //    $(".clusterMemUse")[i].style.width = clustersMemPer;
+    //}
 
-    for(var i = 0; i < document.getElementsByName("clusterUseInfo").length; i++){
-        var clustersCpuPer = $(".clusterDetCpuUse")[i].textContent/$(".clusterTotCpuLimit")[i].textContent*100+"%";
-        $(".clusterCpuUse")[i].style.width = clustersCpuPer;
-        var clustersMemPer = $(".clusterDetMemUse")[i].textContent/$(".clusterTotMemLimit")[i].textContent*100+"%";
-        $(".clusterMemUse")[i].style.width = clustersMemPer;
-    }
+
+
+
 
 });
 
@@ -69,4 +73,42 @@ function delCluster() {
         });
     }
 }
+
+function searchContainer(){
+    for(var i = 0; i < document.getElementById('resourceContainer').childElementCount; i++){
+        var searchFactor = document.getElementById('resourceContainer').children[i];
+        if($("#search_service")[0].children[0].selected == true && $("#search_container")[0].children[0].selected == true){
+            $(searchFactor).removeClass('hide');
+        }else if (searchFactor.classList.contains($("#search_container")[0].value) == false ) {
+            $(searchFactor).addClass('hide');
+        }else if(searchFactor.classList.contains($("#search_container")[0].value) == true){
+            $(searchFactor).removeClass('hide');
+        }
+    }
+
+}
+function searchService(){
+    $("#search_container")[0].children[0].selected = true;
+    for(var i = 0; i < document.getElementById('resourceContainer').childElementCount; i++){
+        var searchFactor = document.getElementById('resourceContainer').children[i];
+        if($("#search_service")[0].children[0].selected == true && $("#search_container")[0].children[0].selected == true){
+            $(searchFactor).removeClass('hide');
+        }else if (searchFactor.classList.contains($("#search_service")[0].value) == false) {
+            $(searchFactor).addClass('hide');
+
+        }else if(searchFactor.classList.contains($("#search_service")[0].value) == true ){
+            $(searchFactor).removeClass('hide');
+        }
+    }
+    for(var j = 1; j < document.getElementById('search_container').length; j++){
+        var serviceLink = document.getElementById('search_container').children[j];
+        if (serviceLink.classList.contains($("#search_service")[0].value) == false) {
+            $(serviceLink).addClass('hide');
+        }else if(serviceLink.classList.contains($("#search_service")[0].value) == true ){
+            $(serviceLink).removeClass('hide');
+        }
+    }
+
+}
+
 

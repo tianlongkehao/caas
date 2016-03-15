@@ -5,7 +5,11 @@
     <title>创建租户</title>
     <%@include file="../frame/header.jsp" %> 
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
-    <script type="text/javascript" src="<%=path %>/js/user/user_create.js"></script>
+    <script type="text/javascript" src="<%=path %>/plugins/zabbix/datasource.js"></script>
+    <script type="text/javascript" src="<%=path %>/plugins/zabbix/directives.js"></script>
+    <script type="text/javascript" src="<%=path %>/plugins/zabbix/helperFunctions.js"></script>
+    <script type="text/javascript" src="<%=path %>/plugins/zabbix/queryCtrl.js"></script>
+    <script type="text/javascript" src="<%=path %>/plugins/zabbix/zabbixAPIWrapper.js"></script>
 </head>
 <body>
 

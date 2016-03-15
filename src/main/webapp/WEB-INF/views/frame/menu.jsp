@@ -133,7 +133,12 @@
                 <ul class="nav-item-hover">
                     <li id="resourceCluster" action="">
                         <a href="<%=path %>/cluster/resource">
-                            集群资源
+                            集群监控
+                        </a>
+                    </li>
+                    <li id="resourceContainers" action="">
+                        <a href="<%=path %>/cluster/containers">
+                            容器监控
                         </a>
                     </li>
                     <li id="manageCluster" action="">

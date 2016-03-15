@@ -48,33 +48,43 @@ public class ClusterController {
     @RequestMapping(value = {"/resource"}, method = RequestMethod.GET)
     public String resourceCluster(Model model) {
 
-        Float allClusterCpuUse = 0F;
-        Float allClusterCpuLimit = 0F;
-        Float allClusterMemUse = 0F;
-        Float allClusterMemLimit = 0F;
-
-        List<ClusterUse> lstClustersUse = new ArrayList<>();
-        List<Cluster> lstClusters = (List<Cluster>) clusterDao.findAll();
-        for (Cluster cluster : lstClusters) {
-            if ("slave".equals(cluster.getHostType())) {
-                ClusterUse clusterUse = getClusterUse(cluster.getHost());
-                if (clusterUse.getHost() != null) {
-                    lstClustersUse.add(clusterUse);
-                    allClusterCpuUse = allClusterCpuUse + Float.valueOf(clusterUse.getCpuUse());
-                    allClusterCpuLimit = allClusterCpuLimit + Float.valueOf(clusterUse.getCpuLimit());
-                    allClusterMemUse = allClusterMemUse + Float.valueOf(clusterUse.getMemUse());
-                    allClusterMemLimit = allClusterMemLimit + Float.valueOf(clusterUse.getMemLimit());
-                }
-            }
-        }
-
-        model.addAttribute("allClusterCpuUse", allClusterCpuUse);
-        model.addAttribute("allClusterCpuLimit", allClusterCpuLimit);
-        model.addAttribute("allClusterMemUse", allClusterMemUse);
-        model.addAttribute("allClusterMemLimit", allClusterMemLimit);
-        model.addAttribute("lstClusters", lstClustersUse);
+//        Float allClusterCpuUse = 0F;
+//        Float allClusterCpuLimit = 0F;
+//        Float allClusterMemUse = 0F;
+//        Float allClusterMemLimit = 0F;
+//
+//        List<ClusterUse> lstClustersUse = new ArrayList<>();
+//        List<Cluster> lstClusters = (List<Cluster>) clusterDao.findAll();
+//        for (Cluster cluster : lstClusters) {
+//            if ("slave".equals(cluster.getHostType())) {
+//                ClusterUse clusterUse = getClusterUse(cluster.getHost());
+//                if (clusterUse.getHost() != null) {
+//                    lstClustersUse.add(clusterUse);
+//                    allClusterCpuUse = allClusterCpuUse + Float.valueOf(clusterUse.getCpuUse());
+//                    allClusterCpuLimit = allClusterCpuLimit + Float.valueOf(clusterUse.getCpuLimit());
+//                    allClusterMemUse = allClusterMemUse + Float.valueOf(clusterUse.getMemUse());
+//                    allClusterMemLimit = allClusterMemLimit + Float.valueOf(clusterUse.getMemLimit());
+//                }
+//            }
+//        }
+//
+//        model.addAttribute("allClusterCpuUse", allClusterCpuUse);
+//        model.addAttribute("allClusterCpuLimit", allClusterCpuLimit);
+//        model.addAttribute("allClusterMemUse", allClusterMemUse);
+//        model.addAttribute("allClusterMemLimit", allClusterMemLimit);
+//        model.addAttribute("lstClusters", lstClustersUse);
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster.jsp";
+    }
+//    @RequestMapping(value = {"/resourceService"}, method = RequestMethod.GET)
+//    public String resourceService(Model model) {
+//        model.addAttribute("menu_flag", "resourceService");
+//        return "cluster/resourceService.jsp";
+//    }
+    @RequestMapping(value = {"/containers"}, method = RequestMethod.GET)
+    public String resourceContainers(Model model) {
+        model.addAttribute("menu_flag", "containers");
+        return "cluster/containers.jsp";
     }
 
     @RequestMapping(value = {"/management"}, method = RequestMethod.GET)

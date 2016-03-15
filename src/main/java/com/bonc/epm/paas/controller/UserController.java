@@ -299,6 +299,7 @@ public class UserController {
                     //	    		resource.setCpu_account(a.toString());//CPU数量
                     resource.setCpu_account(map.get("cpu"));//CPU数量
                     resource.setRam(map.get("memory").replace("G", ""));//内存
+                    System.out.println("+++++++++++++" + map.get("cpu")+"------"+map.get("memory"));
 //                    resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
 //                    resource.setPod_count(map.get("pods"));//POD数量
 //                    resource.setServer_count(map.get("services"));//服务
