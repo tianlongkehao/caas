@@ -103,6 +103,27 @@ function registerCiEditEvent(){
                 layer.alert("请求出错");
             }
         });
+    });
+	$("#editCiUploadCodeBtn").click(function(){
+		var index = layer.load(0, {shade: [0.3, '#000']});
+        $("#editCiUploadCodeForm").ajaxSubmit({
+        	url: ctx+"/ci/modifyCodeResourceCi.do",
+        	type: "post",
+        	success: function (data) {
+        		layer.close(index);
+        		data = eval("(" + data + ")");
+        		if (data.status == "200") {
+        			layer.alert("修改成功");
+        			$("#projectNameSpan").text($("#projectName").val());
+        		} else {
+        			layer.alert(data.msg);
+        		}
+        	},
+        	error: function (e) {
+        		layer.close(index);
+        		layer.alert("请求出错");
+        	}
+        });
         
     });
 }

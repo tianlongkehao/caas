@@ -8,9 +8,14 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.bonc.epm.paas.constant.TemplateConf;
+import com.bonc.epm.paas.constant.esConf;
+import com.bonc.epm.paas.sso.conf.CasClientConfigProperties;
 
-@EnableConfigurationProperties(TemplateConf.class)
+@EnableConfigurationProperties({TemplateConf.class,esConf.class,CasClientConfigProperties.class})
 @SpringBootApplication
+//单点登录，打开下面两个注解。Todo：通过配置项启动单点
+//@ServletComponentScan
+//@EnableCasClient(validationType = EnableCasClient.ValidationType.CAS)
 public class WebAppConfig extends WebMvcConfigurerAdapter{
 		
     public static void main(String[] args) {

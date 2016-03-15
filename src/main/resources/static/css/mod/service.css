@@ -25,6 +25,7 @@
 
 .searchs {
     float: right;
+    width: 230px;
 }
 
 .searchs input {

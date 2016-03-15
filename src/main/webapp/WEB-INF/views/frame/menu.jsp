@@ -25,7 +25,14 @@
                         <li><a href="<%=path %>/user/detail/${cur_user.id }/a"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
                         <li><a href="<%=path %>/user/detail/${cur_user.id }/b"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
                         <li class="logout">
-                            <a href="<%=path %>/loginout/${cur_user.id }"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+	                        <c:choose>
+		                       	<c:when test="${ssoConfig.enable}">
+		                       		<a href="${ssoConfig.serverLogoutUrl}"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+		                       	</c:when>
+		                       	<c:otherwise>
+		                       		<a href="<%=path %>/loginout/${cur_user.id }"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
+		                       	</c:otherwise>
+		                  	</c:choose>
                         </li>
                     </ul>
                 </li>
@@ -52,11 +59,11 @@
                         服务
                     </a>
                 </li>
-               <!--  <li>
-                    <a href="/service">
+                 <li>
+                    <a href="<%=path %>/service/storage">
                         存储与备份
                     </a>
-                </li> -->
+                </li>
             </ul>
         </li>
         <li id="menu_ci">

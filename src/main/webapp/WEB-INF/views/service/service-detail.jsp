@@ -43,14 +43,14 @@
 								<li>运行状态：已停止</li>
 							</c:if>
 							<li>服务地址：<a
-								href="<%=path %>${service.serviceAddr }:${service.portSet}${service.serviceLink}"
-								target="_blank">${service.serviceName}:${service.portSet}${service.serviceLink}</a></li>
+								href="<%=path %>${service.serviceAddr }:${service.portSet}"
+								target="_blank">${service.serviceName}:${service.portSet}</a></li>
 							<li>创建时间：${service.createDate }</li>
 							<li>更新时间：${service.createDate }</li>
 						</ul>
 						<div class="applocation">
 							<a
-								href="<%=path %>${service.serviceAddr }:${service.portSet}${service.serviceLink}"
+								href="<%=path %>${service.serviceAddr }:${service.portSet}"
 								target="_blank" class="open">打开应用</a>
 						</div>
 					</section>
@@ -166,7 +166,7 @@
 										<td>${service.imgName }</td>
 										<td>bonc:8080</td>
 										<td><a
-											href="<%=path %>${service.serviceAddr }:${service.portSet}${service.serviceLink}"
+											href="<%=path %>${service.serviceAddr }:${service.portSet}"
 											target="_blank">${service.serviceName}:${service.portSet }</a></td>
 										<td>${service.createDate }</td>
 									</tr>
@@ -235,7 +235,7 @@
 										<td>TCP</td>
 										<td>${service.portSet }</td>
 										<td><a
-											href="<%=path %>${service.serviceAddr }:${service.portSet }${service.serviceLink}"
+											href="<%=path %>${service.serviceAddr }:${service.portSet }"
 											target="_blank">${service.serviceName}:${service.portSet }</a></td>
 									</tr>
 								</tbody>

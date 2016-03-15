@@ -63,7 +63,7 @@
                                             </div>
                                         </div>
                                         <div class="create-item">
-                                            <a href="/registry/detail/${image.id }">
+                                            <a href="<%=path %>/registry/detail/${image.id }">
                                                 <span class="note-text" > ${image.summary } </span>
                                             </a>
                                         </div>

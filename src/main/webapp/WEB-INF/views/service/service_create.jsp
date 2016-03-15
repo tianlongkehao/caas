@@ -79,7 +79,7 @@
                                 <li class="line-h-3">
                                     <span class="ve_top">镜像名称：</span>
                                     <input type="text" value="" class="in_style" id="imgName" name="imgName" readOnly="readOnly">
-                                    <input type="text" value="" class="in_style" id="imgID" name="imgID" readOnly="readOnly" style="display:none">
+                                    <input type="hidden" value="" id="imgID" name="imgID" >
                                 </li>
                                 <li class="line-h-3">
                                     <span class="ve_top">镜像版本：</span>
@@ -89,10 +89,10 @@
                                     <span class="ve_top">服务名称：</span>
                                     <input type="text" value="" class="in_style" id="serviceName" name="serviceName">
                                 </li>
-                                <li class="line-h-3">
+                                <!--<li class="line-h-3">
                                     <span class="ve_top">服务地址：</span>
                                     <input type="text" value="" class="in_style" id="serviceLink" name="serviceLink" placeholder="例如：/index">
-                                </li>
+                                </li>  -->
                                 <!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
                                         <span class="clusterText" data="tenx_district2">北京二区</span>
@@ -120,7 +120,7 @@
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">CPU数量：</span>
-                                        <input type="number" value="${cpumin }" class="number" min="${cpumin }" step ="0.1" autocomplete="off" max="${cpumax }"
+                                        <input type="number" value="0.2" class="number" min="0.2" step ="0.1" autocomplete="off" max="2"
                                                placeholder="" id="cpuNum" name="cpuNum"> 
                                                <span class="unit">个</span>
                                               <!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：${leftcpu }</span> -->
@@ -130,8 +130,8 @@
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">内存：</span>
-                                        <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="${memorymin }" data-slider-max="${memorymax }" data-slider-step="1" data-slider-value="${memorymin }"/>
-                                        <input type="text" value="${memorymin }" id="ram" name="ram">
+                                        <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftmemory }" data-slider-step="1" data-slider-value="0"/>
+                                        <input type="text" value="0" id="ram" name="ram">
                                         <span>M</span>
                                         <!--<span style="color: grey;">当前可用ram：${leftram }M</span> -->
                                     </div>

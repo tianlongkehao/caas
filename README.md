@@ -21,5 +21,5 @@
 
 # 代码使用说明
 - 1.获取代码
-- 2.构建项目：mvn eclipse:eclipse
+- 2.构建项目：mvn eclipse:eclipsec
 - 3.编译打包：mvn clean package -P dev（开发）或者yq（叶青配置）或者profile（正式）

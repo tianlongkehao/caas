@@ -1,6 +1,8 @@
 package com.bonc.epm.paas.controller;
 
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
+import com.bonc.epm.paas.constant.esConf;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
@@ -36,9 +39,11 @@ import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.ESClient;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
 
@@ -64,6 +69,9 @@ public class ServiceController {
 	private KubernetesClientService kubernetesClientService;
 	@Autowired
 	private TemplateConf templateConf;
+	@Autowired
+	private esConf esConf;
+	
 	
 	
 	@RequestMapping("service/listService.do")
@@ -90,7 +98,7 @@ public class ServiceController {
 		//获取特殊条件的pods
 		try {
 			getServiceSource(model, currentUser.getId());
-			getleftResource(model);
+			//getleftResource(model);
 		} catch (KubernetesClientException e) {
 			model.addAttribute("msg",e.getStatus().getMessage());
 			log.debug("service show:"+e.getStatus().getMessage());
@@ -202,14 +210,23 @@ public class ServiceController {
         List<String> logList = new ArrayList<String>();
         Map<String,String> map = new HashMap<String,String>();
     	map.put("app", service.getServiceName());
+    	//通过服务名获取pod列表
     	PodList podList = client.getLabelSelectorPods(map);
     	if(podList!=null){
     		List<Pod> pods = podList.getItems();
     		if(!CollectionUtils.isEmpty(pods)){
     			int i=1;
     			for(Pod pod:pods){
+    				//获取pod名称
     				String podName = pod.getMetadata().getName();
-    				String s = client.getPodLog(podName);
+    				//初始化es客户端
+    				ESClient esClient = new ESClient();
+    				esClient.initESClient(esConf.getHost());
+    				//设置es查询日期，数据格式，查询的pod名称
+    				String s = esClient.search("logstash-"+dateToString(new Date()), "fluentd", podName);
+    				//关闭es客户端
+    				esClient.closeESClient();
+    				//拼接日志格式
     				String add = "["+"App-"+i +"] ["+podName+"]：";
     				s = add + s.replaceAll("\n", "\n"+add);
     				Container container = new Container();
@@ -226,6 +243,14 @@ public class ServiceController {
         model.addAttribute("service", service);
 		return "service/service-detail.jsp";
 	}
+	
+	public static String dateToString(Date time){ 
+	    SimpleDateFormat formatter; 
+	    formatter = new SimpleDateFormat ("yyyy.MM.dd"); 
+	    String ctime = formatter.format(time); 
+
+	    return ctime; 
+	} 
 	
 	/**
 	 * 响应“部署”按钮
@@ -261,18 +286,26 @@ public class ServiceController {
 
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-		try {	    
-		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
-		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
-		    double icpuMax = kubernetesClientService.transCpu(limitRangeItem.getMax().get("cpu"));
-		    double icpuMin = kubernetesClientService.transCpu(limitRangeItem.getMin().get("cpu"));
-
-		    int memoryMin = kubernetesClientService.transMemory(limitRangeItem.getMin().get("memory"));
-		    int memoryMax = kubernetesClientService.transMemory(limitRangeItem.getMax().get("memory"));
-			model.addAttribute("memorymin", memoryMin);
-			model.addAttribute("memorymax", memoryMax);
-			model.addAttribute("cpumin", icpuMin);
-			model.addAttribute("cpumax", icpuMax);
+		try {	 
+			ResourceQuota quota = client.getResourceQuota(currentUser.getUserName());
+			System.out.println(quota);
+			int hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
+			int used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
+			int leftmemory = hard - used;
+			
+			System.out.println(hard+"  "+used);
+//		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
+//		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
+//		    double icpuMax = kubernetesClientService.transCpu(limitRangeItem.getMax().get("cpu"));
+//		    double icpuMin = kubernetesClientService.transCpu(limitRangeItem.getMin().get("cpu"));
+//
+//		    int memoryMin = kubernetesClientService.transMemory(limitRangeItem.getMin().get("memory"));
+//		    int memoryMax = kubernetesClientService.transMemory(limitRangeItem.getMax().get("memory"));
+//			model.addAttribute("memorymin", memoryMin);
+//			model.addAttribute("memorymax", memoryMax);
+//			model.addAttribute("cpumin", icpuMin);
+//			model.addAttribute("cpumax", icpuMax);
+			model.addAttribute("leftmemory", leftmemory);
 		} catch (Exception e) {
 			log.error("getleftResource error:"+e);
 			return false;
@@ -375,11 +408,21 @@ public class ServiceController {
 		service.setCreateDate(new Date());
 		service.setCreateBy(currentUser.getId());
 		serviceDao.save(service);
+		//app为修改nginx配置文件的配置项
 		Map<String, String > app = new HashMap<String, String>();
 		app.put("userName", currentUser.getUserName());
 		app.put("confName", service.getServiceName());
 		app.put("port", String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
+		//判断配置文件是否存在并删除
+		if(TemplateEngine.fileIsExist(CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(), templateConf)){
+			//清空配置文件内容
+			TemplateEngine.deleteConfig(service.getServiceName(), CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(), templateConf);
+			//删除配置文件
+			TemplateEngine.fileDel(CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(), templateConf);
+		}
+		//将ip、端口等信息写入模版并保存到nginx config文件路径
 		TemplateEngine.generateConfig(app, CurrentUserUtils.getInstance().getUser().getUserName()+"-"+service.getServiceName(),templateConf);
+		//重新启动nginx服务器
 		TemplateEngine.cmdReloadConfig(templateConf);
 		service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
 		service.setPortSet(String.valueOf(service.getId()+kubernetesClientService.getK8sStartPort()));
@@ -582,7 +625,9 @@ public class ServiceController {
 		def.put("cpu", cpus);
 		def.put("memory", rams+"Mi");
 		Map<String,Object> limit = new HashMap<String,Object>();
-		limit = kubernetesClientService.getlimit(limit);
+		//limit = kubernetesClientService.getlimit(limit);
+		limit.put("cpu", cpus);
+		limit.put("memory", rams+"Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
 		container.setResources(requirements);

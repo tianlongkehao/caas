@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -231,7 +233,7 @@ public class KubernetesClientService {
 		return limitRange;
 	}
 	
-	public Map<String,Object> getlimit(Map<String,Object> limit){
+	/*public Map<String,Object> getlimit(Map<String,Object> limit){
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = this.getClient();
 		LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
@@ -242,7 +244,7 @@ public class KubernetesClientService {
 		limit.put("memory", imemoryMax+"Mi");
 		return limit;
 	    
-	}
+	}*/
 	
 	public Integer transMemory(String memory){
 		if(memory.endsWith("M")){
@@ -257,9 +259,21 @@ public class KubernetesClientService {
 			memory = memory.replace("Gi", "");
 			int memoryG = Integer.valueOf(memory)*1024;
 			return memoryG;
+		}else if (isNumeric(memory)) {
+			int memoryBit = Integer.valueOf(memory)/(1024*1024);
+			return memoryBit;
 		}
 		return Integer.valueOf(memory);
 	}
+	
+	public boolean isNumeric(String str){ 
+		   Pattern pattern = Pattern.compile("[0-9]*"); 
+		   Matcher isNum = pattern.matcher(str);
+		   if( !isNum.matches() ){
+		       return false; 
+		   } 
+		   return true; 
+		}
 	
 	public Double transCpu(String cpu) {
 		if(cpu.endsWith("m")){
@@ -309,7 +323,9 @@ public class KubernetesClientService {
 		def.put("cpu", cpu);
 		def.put("memory", ram+"Mi");
 		Map<String,Object> limit = new HashMap<String,Object>();
-		limit = getlimit(limit);
+		//limit = getlimit(limit);
+		limit.put("cpu", cpu);
+		limit.put("memory", ram+"Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
 		container.setResources(requirements);

@@ -16,11 +16,23 @@ public class Ci {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
 	/**
+	 * 代码名称（war包名称）
+	 */
+	private String resourceName;
+	/**
+	 * 基础镜像名称
+	 */
+	private String baseImageName;
+	/**
+	 * 基础镜像版本
+	 */
+	private String baseImageVersion;
+	/**
 	 * 项目名称
 	 */
 	private String projectName;
 	/**
-	 * 构建类型：1快速构建2代码上传构建
+	 * 构建类型：1快速构建2上传构建3代码构建
 	 */
 	private Integer type;
 	/**
@@ -263,6 +275,23 @@ public class Ci {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-	
+	public String getBaseImageName() {
+		return baseImageName;
+	}
+	public void setBaseImageName(String baseImageName) {
+		this.baseImageName = baseImageName;
+	}
+	public String getBaseImageVersion() {
+		return baseImageVersion;
+	}
+	public void setBaseImageVersion(String baseImageVersion) {
+		this.baseImageVersion = baseImageVersion;
+	}
+	public String getResourceName() {
+		return resourceName;
+	}
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
 	
 }

@@ -101,6 +101,22 @@
 			<artifactId>influxdb-java</artifactId>
 			<version>2.1</version>
 		</dependency>
+		<!-- elasticsearch -->
+		<dependency>
+    		<groupId>org.elasticsearch</groupId>
+    		<artifactId>elasticsearch</artifactId>
+    		<version>2.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+		</dependency>
+		<dependency>
+			<groupId>net.unicon.cas</groupId>
+			<artifactId>cas-client-autoconfig-support</artifactId>
+			<version>1.1.0-GA</version>
+		</dependency>
 	</dependencies>
 <profiles>
 		<profile>

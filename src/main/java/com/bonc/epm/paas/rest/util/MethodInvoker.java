@@ -105,11 +105,7 @@ public class MethodInvoker {
     		return response.readEntity(method.getReturnType());
     	}catch(Exception e){
     		Status status = response.readEntity(Status.class);
-    		if(404==status.getCode()){
-    			throw new NotFoundException(e);
-    		}else{
-    			throw new KubernetesClientException("unexpect k8s response",status);
-    		}
+    		throw new KubernetesClientException("unexpect k8s response",status);
     	}
 	}
 }

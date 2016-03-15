@@ -27,6 +27,13 @@ $(document).ready(function(){
 		      $('#cpuNum').focus();
 		      return;
 		    }
+	    
+	    var ram = $('#ram').val();
+	    if(!ram || ram < 1){
+		      layer.tips('内存不能为零','#ram',{tips: [1, '#3595CC']});
+		      $('#ram').focus();
+		      return;
+		    }
 
 		containerName();
     });

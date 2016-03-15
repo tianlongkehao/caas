@@ -61,16 +61,47 @@ public class TemplateEngine {
     	return templateConf.getConfurl();
     }
     
+    /**
+     * 判断文件是否存在并删除
+     * @param configName
+     * @param templateConf
+     * @return
+     */
+    public static void fileDel(String configName,TemplateConf templateConf){
+    	File nginxFile = new File(templateConf.getConfpath()+configName+".conf");
+    	if(nginxFile.exists()){
+    		if(nginxFile.delete()){
+    			log.debug(templateConf.getConfpath()+configName+".conf"+"文件删除成功！");
+    		}
+    		log.debug(templateConf.getConfpath()+configName+".conf"+"文件删除失败！");
+    	}
+    }
+    
+    /**
+     * 判断文件是否存在
+     * @param configName
+     * @param templateConf
+     * @return
+     */
+    public static boolean fileIsExist(String configName,TemplateConf templateConf){
+    	File nginxFile = new File(templateConf.getConfpath()+configName+".conf");
+    	return nginxFile.exists();
+    }
+    /**
+     * 删除文件 IO没有对文本直接删除的方法，先读出所有内容，过滤删除内容，重新写回文件。
+     * @param confName
+     * @param configName
+     * @param templateConf
+     * @return
+     */
     public static boolean deleteConfig(String confName,String configName,TemplateConf templateConf){
     	try {
     		// 读取配置文件
             String data = readConf(templateConf.getConfpath()+configName+".conf");
-//    		//test
-//            String data = readConf(configName);
-//            data = data.replace(getObject(confName,configName), "");
-//            writeConf(configName, data, false);
+            log.debug("过滤前－nginx配置文件内容："+data);
             // 过滤删除内容
             data = data.replace(getObject(confName,templateConf.getConfpath()+configName+".conf"), "");
+            log.debug("过滤后－nginx配置文件内容："+data);
             // 重新写回文件
             writeConf(templateConf.getConfpath()+configName+".conf", data, false);
 		} catch (Exception e) {
