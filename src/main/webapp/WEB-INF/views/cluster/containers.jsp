@@ -6,7 +6,6 @@
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
     <script type="text/javascript" src="<%=path %>/js/cluster/cluster.js"></script>
-    <script type="text/javascript" src="<%=path %>/plugins/bower-angular-master/angular.js"></script>
     <script type="text/javascript" src="<%=path %>/plugins/echarts/src/echarts.js"></script>
 </head>
 
@@ -38,33 +37,44 @@
 
                 <div class="caption clearfix" style="padding-bottom: 0px">
                     <ul class="toolbox clearfix">
-                        <li><a href="javascript:window.location.reload(true);" id="userReloadBtn"><i class="fa fa-repeat"></i></a></li>
+                        <li><a href="javascript:window.location.reload(true);" id="userReloadBtn"><i
+                                class="fa fa-repeat"></i></a></li>
                     </ul>
                     <form id="search_form" class="form-inline" action="<%=path %>/user/searchByCondition" method="post">
                         <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">
                             <label style="line-height: 35px">服务:</label>
                             <select name="search_service" id="search_service" onchange="searchService()"
                                     style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
-                                <option name="search_service" ></option>
-                                <option name="search_service" value="service01">service01</option>
-                                <option name="search_service" value="service02">service02</option>
+                                <option name="search_service" value="0"></option>
+                                <%--<option name="search_service" value="service01">service01</option>--%>
+                                <%--<option name="search_service" value="service02">service02</option>--%>
                             </select>
                         </div>
                         <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">
                             <label style="line-height: 35px">容器:</label>
                             <select name="search_container" id="search_container" onchange="searchContainer()"
                                     style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
-                                <option name="search_container" selected=""></option>
-                                <option name="search_container" class="service01 container01" value="container01">container01</option>
-                                <option name="search_container" class="service01 container02" value="container02">container02</option>
-                                <option name="search_container" class="service02 container03" value="container03">container03</option>
-                                <option name="search_container" class="service02 container04" value="container04">container04</option>
+                                <option name="search_container" selected="" value="0"></option>
+                                <%--<option name="search_container" class="service01 container01" value="container01">--%>
+                                <%--container01--%>
+                                <%--</option>--%>
+                                <%--<option name="search_container" class="service01 container02" value="container02">--%>
+                                <%--container02--%>
+                                <%--</option>--%>
+                                <%--<option name="search_container" class="service02 container03" value="container03">--%>
+                                <%--container03--%>
+                                <%--</option>--%>
+                                <%--<option name="search_container" class="service02 container04" value="container04">--%>
+                                <%--container04--%>
+                                <%--</option>--%>
                             </select>
                         </div>
-                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; float: right" align="right">
+                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; float: right"
+                             align="right">
                             <label style="line-height: 35px">时间:</label>
-                            <select name="search_province" id="search_time" style="height: 30px;display: inline; width: 140px; border-radius: 5px;" >
-                                <option name="search_time" ></option>
+                            <select name="search_province" id="search_time"
+                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
+                                <option name="search_time"></option>
                                 <option name="search_time" value="1">最近6个小时</option>
                                 <option name="search_time" value="2">最近一天</option>
                                 <option name="search_time" value="2">最近三天</option>
@@ -81,7 +91,7 @@
                         <div class="detail-info">
                             <div class="info-list" id="resourceContainer">
 
-                                <div class="table-lists service01 container01"  style="margin-top: 10px; float: left">
+                                <%--<div class="table-lists service01 container01"  style="margin-top: 10px; float: left">
                                     <div style="width: 563px;height:260px;"></div>
                                 </div>
                                 <div  class="table-lists service01 container01"  style="margin-top: 10px; float: right">
@@ -104,7 +114,7 @@
                                 </div>
                                 <div  class="table-lists service02 container04" style="margin-top: 10px; float: right">
                                     <div style="width: 563px;height:260px;"></div>
-                                </div>
+                                </div>--%>
                             </div>
 
                         </div>
@@ -120,203 +130,326 @@
 
 <script type="text/javascript">
 
-    var colorData = ['#c5e1d2','#abd4bd','#91c7a9'];
-    var containerData =[{
-        'xAxis':['2014-11-19','2014-11-20','2014-11-21','2014-11-22','2014-11-23','2014-11-24','2014-11-25','2014-11-26','2014-11-27'],
-        'memoryVal':{'titleText':'container01 memory',
-            'val':[{'legendName' : 'memory Limit Current',
-            'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330]},
-            {'legendName' : 'memory Usage Current',
-                'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
-            {'legendName' : 'memory Working Set Current',
-                'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]},
-
-
-        'cpuVal':{'titleText':'container01 cpu',
-            'val':[{'legendName' : 'cpu Limit Current',
-            'yAxis':[320, 182, 391, 234, 390, 330, 310, 290, 330]},
-            {'legendName' : 'cpu Usage Current',
-                'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
-            {'legendName' : 'cpu Working Set Current',
-                'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]}
-
-    },
-        {
-            'xAxis':['2014-11-19','2014-11-20','2014-11-21','2014-11-22','2014-11-23','2014-11-24','2014-11-25','2014-11-26','2014-11-27',
-                '2014-11-28','2014-11-29','2014-11-30','2014-12-01','2014-12-02','2014-12-03','2014-12-04','2014-12-05','2014-12-06'],
-            'memoryVal':{'titleText':'container02 memory',
-                'val':[{'legendName' : 'Limit Current',
-                'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330, 220, 182, 191, 234, 290, 330, 310, 290, 330]},
-                {'legendName' : 'Usage Current',
-                    'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134, 120, 132, 101, 134, 90, 230, 210, 101, 134]},
-                {'legendName' : 'Working Set Current',
-                    'yAxis':[98, 90, 96, 96, 93, 95, 86, 89, 85, 98, 90, 96, 96, 93, 95, 86, 89, 85]}]},
-            'cpuVal':{'titleText':'container02 cpu',
-                'val':[{'legendName' : 'cLimit Current',
-                'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330, 220, 182, 191, 234, 290, 330, 310, 290, 330]},
-                {'legendName' : 'cUsage Current',
-                    'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134, 120, 132, 101, 134, 90, 230, 210, 101, 134]},
-                {'legendName' : 'cWorking Set Current',
-                    'yAxis':[98, 90, 96, 96, 93, 95, 86, 89, 85, 98, 90, 96, 96, 93, 95, 86, 89, 85]}]}
+    var colorData = ['#c5e1d2', '#abd4bd', '#91c7a9'];
+    var containerData = {
+        'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
+        'yValue': [{
+            'name': 'service01', 'val': [{
+                'titleText': 'container01', 'val': [{
+                    'memoryVal': {
+                        'title': 'memory',
+                        'val': [{
+                            'legendName': 'memory Limit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'memory Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'memory Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    },
+                    'cpuVal': {
+                        'title': 'cpu',
+                        'val': [{
+                            'legendName': 'cpu Limit Current',
+                            'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'cpu Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'cpu Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    }
+                }]
+            },
+                {
+                    'titleText': 'container02', 'val': [{
+                    'memoryVal': {
+                        'title': 'memory',
+                        'val': [{
+                            'legendName': 'Limit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'Working Set Current',
+                                'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
+                            }]
+                    },
+                    'cpuVal': {
+                        'title': 'cpu',
+                        'val': [{
+                            'legendName': 'cLimit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'cUsage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'cWorking Set Current',
+                                'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
+                            }]
+                    }
+                }]
+                }]
         },
-        {
-            'xAxis':['2014-11-19','2014-11-20','2014-11-21','2014-11-22','2014-11-23','2014-11-24','2014-11-25','2014-11-26','2014-11-27'],
-            'memoryVal':{'titleText':'container03 memory',
-                'val':[{'legendName' : 'memory Limit Current',
-                    'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330]},
-                    {'legendName' : 'memory Usage Current',
-                        'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
-                    {'legendName' : 'memory Working Set Current',
-                        'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]},
+            {
+                'name': 'service02', 'val': [{
+                'titleText': 'container03', 'val': [{
+                    'memoryVal': {
+                        'title': 'memory',
+                        'val': [{
+                            'legendName': 'memory Limit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'memory Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'memory Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    },
+                    'cpuVal': {
+                        'title': 'cpu',
+                        'val': [{
+                            'legendName': 'cpu Limit Current',
+                            'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'cpu Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'cpu Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    }
+
+                }]
+            }, {
+                'titleText': 'container04', 'val': [{
+                    'memoryVal': {
+                        'title': 'memory',
+                        'val': [{
+                            'legendName': 'memory Limit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'memory Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'memory Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    },
+                    'cpuVal': {
+                        'title': 'cpu',
+                        'val': [{
+                            'legendName': 'cpu Limit Current',
+                            'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'cpu Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'cpu Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    }
+
+                }]
+            }]
+            }
+        ]
+    };
+    showContainerImg(containerData);
+
+    function addContainerMemImg() {
+        var memTxt = '<div class="table-lists"  style="margin-top: 10px; float: left;width: 563px;height:260px;">'
+                + '</div>';
+        $("#resourceContainer").append(memTxt);
+    }
+    function addContainerCpuImg() {
+        var cpuTxt = '<div class="table-lists"  style="margin-top: 10px; float: right;width: 563px;height:260px;">'
+                + '</div>';
+        $("#resourceContainer").append(cpuTxt);
+    }
+
+    function addContainerSerOpt() {
+        var serOpt = '<option name="search_service" value=""></option>'
+        $("#search_service").append(serOpt);
+    }
+    function addContainerConOpt() {
+        var conOpt = '<option name="search_container" value=""></option>'
+        $("#search_container").append(conOpt);
+    }
+
+    function showContainerImg(containerData) {
+        var count = 0;
+        var containerNum = 0;
+        for (var s = 0; s < containerData.yValue.length; s++) {
+            var containerDataYval = containerData.yValue[s];
+            //search_service_options
+            addContainerSerOpt();
+            var serviceOpt = document.getElementById('search_service').children[s + 1];
+            serviceOpt.value = containerDataYval.name;
+            serviceOpt.innerHTML = containerDataYval.name;
 
 
-            'cpuVal':{'titleText':'container03 cpu',
-                'val':[{'legendName' : 'cpu Limit Current',
-                    'yAxis':[320, 182, 391, 234, 390, 330, 310, 290, 330]},
-                    {'legendName' : 'cpu Usage Current',
-                        'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
-                    {'legendName' : 'cpu Working Set Current',
-                        'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]}
+            for (var j = 0; j < containerDataYval.val.length; j++) {
+                //search_container_options
+                addContainerConOpt();
+                containerNum ++;
+                var containerOpt = document.getElementById('search_container').children[containerNum];
+                containerOpt.value = containerDataYval.val[j].titleText;
+                containerOpt.innerHTML = containerDataYval.val[j].titleText;
+                $(containerOpt).addClass(containerDataYval.name);
+                $(containerOpt).addClass(containerDataYval.val[j].titleText);
 
-        },{
-            'xAxis':['2014-11-19','2014-11-20','2014-11-21','2014-11-22','2014-11-23','2014-11-24','2014-11-25','2014-11-26','2014-11-27'],
-            'memoryVal':{'titleText':'container04 memory',
-                'val':[{'legendName' : 'memory Limit Current',
-                    'yAxis':[220, 182, 191, 234, 290, 330, 310, 290, 330]},
-                    {'legendName' : 'memory Usage Current',
-                        'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
-                    {'legendName' : 'memory Working Set Current',
-                        'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]},
+                var option = {
+                    title: {
+                        text: ''
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        bottom: '1%',
+                        data: [],
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '10%',
+                        containLabel: true
+                    },
+                    xAxis: [],
+                    yAxis: [],
+                    series: []
+                };
 
-
-            'cpuVal':{'titleText':'container04 cpu',
-                'val':[{'legendName' : 'cpu Limit Current',
-                    'yAxis':[320, 182, 391, 234, 390, 330, 310, 290, 330]},
-                    {'legendName' : 'cpu Usage Current',
-                        'yAxis':[120, 132, 101, 134, 90, 230, 210, 101, 134]},
-                    {'legendName' : 'cpu Working Set Current',
-                        'yAxis':[10, 11, 10, 12, 12, 12, 12, 12, 12]}]}
+                var xAxis = {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: containerData.xValue
+                };
+                option.xAxis.push(xAxis);
+                count = showContainerMemImg(count, containerDataYval, j, option);
+                count = showContainerCpuImg(count, containerDataYval, j, option);
+            }
 
         }
-    ];
 
-    for(var j = 0; j< containerData.length; j++){
-        var option = {
-            title: {
-                text: ''
-            },
-            tooltip : {
-                trigger: 'axis'
-            },
-            legend: {
-                bottom: '1%',
-                data: [],
-            },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '10%',
-                containLabel: true
-            },
-            xAxis : [],
-            yAxis : [],
-            series : []
-        };
-
-        var xAxis = {
-            type : 'category',
-            boundaryGap : false,
-            data : containerData[j].xAxis
-        };
-        option.xAxis.push(xAxis);
-
+    }
+    function showContainerMemImg(count, containerDataYval, j, option) {
         var c = {
-            type : 'value',
-            scale:true,
-            axisLabel : {
+            type: 'value',
+            scale: true,
+            axisLabel: {
                 formatter: '{value} Gib'
             },
         };
         option.yAxis.push(c);
+        var containerDataYmem = containerDataYval.val[j].val[0].memoryVal;
 
-        for(var i = 0; i< containerData[j].memoryVal.val.length; i++){
+        for (var i = 0; i < containerDataYmem.val.length; i++) {
             var a = {
-                name: containerData[j].memoryVal.val[i].legendName,
+                name: containerDataYmem.val[i].legendName,
                 icon: 'roundRect'
             };
             var b = {
-                name:containerData[j].memoryVal.val[i].legendName,
-                type:'line',
-                barWidth : 5,
-                barHeight : 2,
+                name: containerDataYmem.val[i].legendName,
+                type: 'line',
+                barWidth: 5,
+                barHeight: 2,
                 itemStyle: {
                     normal: {
                         color: colorData[i],
                     }
                 },
-                areaStyle: {normal: {},color: colorData[i]},
-                data: containerData[j].memoryVal.val[i].yAxis
+                areaStyle: {normal: {}, color: colorData[i]},
+                data: containerDataYmem.val[i].yAxis
             };
             option.legend.data.push(a);
             option.series.push(b);
 
-            var titleText = containerData[j].memoryVal.titleText;
-            option.title.text= titleText;
-
+            var titleText = containerDataYval.name + " " + containerDataYval.val[j].titleText + " " + containerDataYmem.title;
+            option.title.text = titleText;
         }
-        var containers = echarts.init(document.getElementById('resourceContainer').children[j*2].children[0]);
-        containers.setOption(option);
+        addContainerMemImg();
+        var containersMemImg = document.getElementById('resourceContainer').children[count];
+        $(containersMemImg).addClass(containerDataYval.name);
+        $(containersMemImg).addClass(containerDataYval.val[j].titleText);
+        var containersMem = echarts.init(containersMemImg);
+        containersMem.setOption(option);
+        count++;
         option.legend.data = [];
         option.series = [];
         option.yAxis = [];
+        return count;
+    }
 
-
+    function showContainerCpuImg(count, containerDataYval, j, option) {
         var f = {
-            type : 'value',
-            scale:true,
-            axisLabel : {
+            type: 'value',
+            scale: true,
+            axisLabel: {
                 formatter: '{value} ms'
             },
         };
         option.yAxis.push(f);
+        var containerDataYcpu = containerDataYval.val[j].val[0].cpuVal;
 
-        for(var k = 0; k< containerData[j].cpuVal.val.length; k++){
+        for (var k = 0; k < containerDataYcpu.val.length; k++) {
             var d = {
-                name: containerData[j].cpuVal.val[k].legendName,
+                name: containerDataYcpu.val[k].legendName,
                 icon: 'roundRect'
             };
             var e = {
-                name:containerData[j].cpuVal.val[k].legendName,
-                type:'line',
-                barWidth : 5,
-                barHeight : 2,
+                name: containerDataYcpu.val[k].legendName,
+                type: 'line',
+                barWidth: 5,
+                barHeight: 2,
                 itemStyle: {
                     normal: {
                         color: colorData[k],
                     }
                 },
-                areaStyle: {normal: {},color: colorData[k]},
-                data: containerData[j].cpuVal.val[k].yAxis
+                areaStyle: {normal: {}, color: colorData[k]},
+                data: containerDataYcpu.val[k].yAxis
             };
 
             option.legend.data.push(d);
             option.series.push(e);
 
-            var titleText01 = containerData[j].cpuVal.titleText;
-            option.title.text= titleText01;
+            var titleTextCpu = containerDataYval.name + " " + containerDataYval.val[j].titleText + " " + containerDataYcpu.title;
+            option.title.text = titleTextCpu;
 
         }
-        var containers = echarts.init(document.getElementById('resourceContainer').children[j*2+1].children[0]);
-        containers.setOption(option);
-
+        addContainerCpuImg();
+        var containersCpuImg = document.getElementById('resourceContainer').children[count];
+        $(containersCpuImg).addClass(containerDataYval.name);
+        $(containersCpuImg).addClass(containerDataYval.val[j].titleText);
+        var containersCpu = echarts.init(containersCpuImg);
+        containersCpu.setOption(option);
+        count++;
+        return count;
     }
 
-
-
-
 </script>
-
 </body>
-
-
 </html>

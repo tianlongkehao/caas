@@ -6,7 +6,6 @@
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
     <script type="text/javascript" src="<%=path %>/js/cluster/cluster.js"></script>
-    <script type="text/javascript" src="<%=path %>/plugins/bower-angular-master/angular.js"></script>
     <script type="text/javascript" src="<%=path %>/plugins/echarts/src/echarts.js"></script>
 
 
@@ -87,6 +86,151 @@
 <script type="text/javascript">
     var colorData = ['#c5e1d2','#abd4bd','#91c7a9','#77ba95'];
 
+    var containerData = {
+        'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
+        'yValue': [{
+            'name': 'service01', 'val': [{
+                'titleText': 'container01', 'val': [{
+                    'memoryVal': {
+                        'title': 'memory',
+                        'val': [{
+                            'legendName': 'memory Limit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'memory Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'memory Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    },
+                    'cpuVal': {
+                        'title': 'cpu',
+                        'val': [{
+                            'legendName': 'cpu Limit Current',
+                            'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'cpu Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'cpu Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    }
+                }]
+            },
+                {
+                    'titleText': 'container02', 'val': [{
+                    'memoryVal': {
+                        'title': 'memory',
+                        'val': [{
+                            'legendName': 'Limit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'Working Set Current',
+                                'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
+                            }]
+                    },
+                    'cpuVal': {
+                        'title': 'cpu',
+                        'val': [{
+                            'legendName': 'cLimit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'cUsage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'cWorking Set Current',
+                                'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
+                            }]
+                    }
+                }]
+                }]
+        },
+            {
+                'name': 'service02', 'val': [{
+                'titleText': 'container03', 'val': [{
+                    'memoryVal': {
+                        'title': 'memory',
+                        'val': [{
+                            'legendName': 'memory Limit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'memory Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'memory Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    },
+                    'cpuVal': {
+                        'title': 'cpu',
+                        'val': [{
+                            'legendName': 'cpu Limit Current',
+                            'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'cpu Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'cpu Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    }
+
+                }]
+            }, {
+                'titleText': 'container04', 'val': [{
+                    'memoryVal': {
+                        'title': 'memory',
+                        'val': [{
+                            'legendName': 'memory Limit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'memory Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'memory Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    },
+                    'cpuVal': {
+                        'title': 'cpu',
+                        'val': [{
+                            'legendName': 'cpu Limit Current',
+                            'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'cpu Usage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            },
+                            {
+                                'legendName': 'cpu Working Set Current',
+                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                            }]
+                    }
+
+                }]
+            }]
+            }
+        ]
+    };
     var  clusterData = [
         {
             'xAxis':['2014-11-19','2014-11-20','2014-11-21','2014-11-22','2014-11-23','2014-11-24','2014-11-25','2014-11-26','2014-11-27'],
