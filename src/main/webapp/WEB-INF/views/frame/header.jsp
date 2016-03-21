@@ -25,7 +25,6 @@ var ctx = "<%=path%>";
 <script type="text/javascript" src="<%=path %>/plugins/editor/editor.js"></script>
 <script type="text/javascript" src="<%=path %>/plugins/editor/marked.js"></script>
 <script type="text/javascript" src="<%=path %>/js/customer/custom.js"></script>
-<script type="text/javascript" src="<%=path %>/plugins/chartjs-1.0.2/Chart.js"></script>
 <script type="text/javascript" src="<%=path %>/plugins/jq-pagination/jquery.list.js"></script>
 
 

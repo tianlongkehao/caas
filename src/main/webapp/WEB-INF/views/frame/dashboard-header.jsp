@@ -10,5 +10,5 @@ var ctx = "<%=path%>";
 <script type="text/javascript" src="<%=path %>/js/plugins/jquery-1.11.3.js"></script>
 <script type="text/javascript" src="<%=path %>/plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
 <script type="text/javascript" src="<%=path %>/plugins/layer/layer.js" ></script>
-<script type="text/javascript" src="<%=path %>/plugins/chartjs-1.0.2/Chart.js"></script>
+
 
