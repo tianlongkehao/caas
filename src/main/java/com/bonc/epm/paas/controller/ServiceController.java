@@ -1,14 +1,12 @@
 package com.bonc.epm.paas.controller;
 
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +32,6 @@ import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
-import com.bonc.epm.paas.kubernetes.model.LimitRange;
-import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -229,6 +225,8 @@ public class ServiceController {
     				//拼接日志格式
     				String add = "["+"App-"+i +"] ["+podName+"]：";
     				s = add + s.replaceAll("\n", "\n"+add);
+    				
+    				s = s.substring(0, s.length()-add.length());
     				Container container = new Container();
 	    			container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
 	    			container.setServiceid(service.getId());
@@ -242,6 +240,58 @@ public class ServiceController {
         model.addAttribute("logList", logList);
         model.addAttribute("service", service);
 		return "service/service-detail.jsp";
+	}
+	
+	@RequestMapping("service/detail/getlogs.do")
+	@ResponseBody
+	public String getServiceLogs(long id,String date){
+		System.out.printf("id: " + id);
+		System.out.printf(date.replaceAll("-","."));
+        Service service = serviceDao.findOne(id);
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        List<String> logList = new ArrayList<String>();
+        String logStr = "";
+        Map<String,String> map = new HashMap<String,String>();
+        Map<String, Object> datamap = new HashMap<String,Object>();
+    	map.put("app", service.getServiceName());
+    	PodList podList = client.getLabelSelectorPods(map);
+    	if(podList!=null){
+    		List<Pod> pods = podList.getItems();
+    		if(!CollectionUtils.isEmpty(pods)){
+    			int i=1;
+    			for(Pod pod:pods){
+    				//获取pod名称
+    				String podName = pod.getMetadata().getName();
+    				//初始化es客户端
+    				ESClient esClient = new ESClient();
+    				esClient.initESClient(esConf.getHost());
+    				String s = null;
+    				if (date != "") {
+    					//设置es查询日期，数据格式，查询的pod名称
+        				s = esClient.search("logstash-"+date.replaceAll("-","."), "fluentd", podName);
+					}else {
+						//设置es查询日期，数据格式，查询的pod名称
+	    				s = esClient.search("logstash-"+dateToString(new Date()), "fluentd", podName);
+					}
+    				
+    				//关闭es客户端
+    				esClient.closeESClient();
+    				//拼接日志格式
+    				String add = "["+"App-"+i +"] ["+podName+"]：";
+    				s = add + s.replaceAll("\n", "\n"+add);
+    				
+    				s = s.substring(0, s.length()-add.length());
+    				logStr = logStr.concat(s);
+	    			logList.add(s);
+    			}
+    		}
+    	}   
+    	System.out.println("logstr:"+logStr);
+//    	datamap.put("logList", logList);
+    	datamap.put("logStr", logStr);
+    	datamap.put("status", "200");
+    	return JSON.toJSONString(datamap);
+    	
 	}
 	
 	public static String dateToString(Date time){ 
@@ -288,24 +338,24 @@ public class ServiceController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		try {	 
 			ResourceQuota quota = client.getResourceQuota(currentUser.getUserName());
-			System.out.println(quota);
-			int hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
-			int used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
-			int leftmemory = hard - used;
+			if(quota.getStatus() != null){
+				long hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
+				long used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
+				
+				System.out.println(quota.getStatus().getHard().get("cpu"));
+				System.out.println(quota.getStatus().getUsed().get("cpu"));
+				
+				
+				double leftCpu = kubernetesClientService.transCpu(quota.getStatus().getHard().get("cpu")) -
+						kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu"));
+				
+				long leftmemory = hard - used;
+				
+				System.out.println(hard+"  "+used);
+				model.addAttribute("leftcpu", leftCpu);
+				model.addAttribute("leftmemory", leftmemory);
+			}
 			
-			System.out.println(hard+"  "+used);
-//		    LimitRange limitRange = client.getLimitRange(currentUser.getUserName());
-//		    LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
-//		    double icpuMax = kubernetesClientService.transCpu(limitRangeItem.getMax().get("cpu"));
-//		    double icpuMin = kubernetesClientService.transCpu(limitRangeItem.getMin().get("cpu"));
-//
-//		    int memoryMin = kubernetesClientService.transMemory(limitRangeItem.getMin().get("memory"));
-//		    int memoryMax = kubernetesClientService.transMemory(limitRangeItem.getMax().get("memory"));
-//			model.addAttribute("memorymin", memoryMin);
-//			model.addAttribute("memorymax", memoryMax);
-//			model.addAttribute("cpumin", icpuMin);
-//			model.addAttribute("cpumax", icpuMax);
-			model.addAttribute("leftmemory", leftmemory);
 		} catch (Exception e) {
 			log.error("getleftResource error:"+e);
 			return false;
@@ -668,5 +718,33 @@ public class ServiceController {
 		
 		return JSON.toJSONString(map);
 	}
+	
+	@RequestMapping("service/delServices.do")
+	@ResponseBody
+	public String delServices(String serviceIDs){
+		//解析获取的id List
+		ArrayList<Long> ids = new ArrayList<Long>(); 
+		String [] str = serviceIDs.split(",");
+		if (str!=null&&str.length>0) {
+			for(String id:str){
+				ids.add(Long.valueOf(id));
+			}
+		}
+		Map<String, Object> maps = new HashMap<String, Object>();
+		try {
+			for(long id:ids){
+				delContainer(id);
+			}
+			maps.put("status", "200");
+		} catch (Exception e) {
+			maps.put("status", "400");
+			log.error("服务删除错误！");
+		}
+		return JSON.toJSONString(maps);
+		
+	}
+	
+	
+	
 
 }

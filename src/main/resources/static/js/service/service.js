@@ -111,8 +111,10 @@
  }
  
  function delContainer(){
-	 $('input[name="chkItem"]:checked').each(function(index, el){
-		 var id = $(el).val();
+	 var serviceIDs = [];
+	 $('input[name="chkItem"]:checked').each(function(){
+	      var containerId = $(this).val();
+	      serviceIDs.push(containerId);
 		 layer.open({
 		        title: '删除服务',
 		        content: '确定删除服务？',
@@ -120,7 +122,7 @@
 		        yes: function(index, layero){ 
 		        	layer.close(index);
 		        				$.ajax({
-		        					url:""+ctx+"service/delContainer.do?id="+id,
+		        					url:""+ctx+"service/delServices.do?serviceIDs="+serviceIDs,
 		        					success:function(data){
 		        						data = eval("(" + data + ")");
 		        						if(data.status=="200"){
@@ -134,6 +136,7 @@
 		        				})
 		        }
 		 })
+		 
 	 })
 	 
  }
@@ -339,7 +342,7 @@
 				 layer.close(index);
 				 var imgVersion1 = $('#imgVersionName').val();
 				 $.ajax({
-					 url:""+ctx+"service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
+					 url:ctx+"/service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
 					 success:function(data){
 	 						data = eval("(" + data + ")");
 	 						if(data.status=="200"){

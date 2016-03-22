@@ -246,24 +246,24 @@ public class KubernetesClientService {
 	    
 	}*/
 	
-	public Integer transMemory(String memory){
+	public Long transMemory(String memory){
 		if(memory.endsWith("M")){
 			memory = memory.replace("M", "");
 		}else if(memory.endsWith("Mi")) {
 			memory = memory.replace("Mi", "");
 		}else if(memory.endsWith("G")){
 			memory = memory.replace("G", "");
-			 int memoryG = Integer.valueOf(memory)*1024;
+			 long memoryG = Long.valueOf(memory)*1024;
 			 return memoryG;
 		}else if(memory.endsWith("Gi")){
 			memory = memory.replace("Gi", "");
-			int memoryG = Integer.valueOf(memory)*1024;
+			long memoryG = Long.valueOf(memory)*1024;
 			return memoryG;
 		}else if (isNumeric(memory)) {
-			int memoryBit = Integer.valueOf(memory)/(1024*1024);
+			long memoryBit = Long.valueOf(memory)/(1024*1024);
 			return memoryBit;
 		}
-		return Integer.valueOf(memory);
+		return Long.valueOf(memory);
 	}
 	
 	public boolean isNumeric(String str){ 
