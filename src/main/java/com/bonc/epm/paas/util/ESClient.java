@@ -106,7 +106,7 @@ public class ESClient {
 //		ESClient esc = new ESClient();
 //		esc.initESClient("10.0.93.205:9300");
 ////		esc.createIndex();
-//		esc.search("logstash-2016.03.11","fluentd","fluentd-elasticsearch");
+//		esc.search("logstash-2016.03.11","fluentd","epmfeng-d94xr");
 ////		esc.getIndex();
 ////		esc.get();
 ////		esc.delete();
@@ -120,58 +120,40 @@ public class ESClient {
 	 */
 	@SuppressWarnings("rawtypes")
 	public String search(String index,String type,String keyWord){
-		
-		SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index);
-		
-		searchRequestBuilder.setTypes(type);
-		
-		//1.SearchType.DFS_QUERY_THEN_FETCH 
-		// 2.SearchType.SCAN 
-		// 3.SearchType.COUNT 
-		searchRequestBuilder.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-		
-		
-		//searchRequestBuilder.setQuery(QueryBuilders.termQuery("kubernetes.container_name", keyWord));
-		searchRequestBuilder.setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord));
-		
-		
-		
-//		/** 多条件 **/
-//		 BoolQueryBuilder qb = QueryBuilders.boolQuery()
-//		 .must(new QueryStringQueryBuilder(keyWord).field(table))
-//		 .should(new QueryStringQueryBuilder(serviceName).field("kubernetes.container_name"));
-//		 searchRequestBuilder.setQuery(qb);
-
-		// SearchResponse response = searchRequestBuilder.execute().actionGet();
-		 
-		searchRequestBuilder.addSort("@timestamp", SortOrder.ASC);
-		
-		searchRequestBuilder.setFrom(0);
-		
-		searchRequestBuilder.setSize(60);
-		
-		searchRequestBuilder.setExplain(true);
-		
-		SearchResponse response = searchRequestBuilder.execute().actionGet();
-		//System.out.println(response.getHits().getTotalHits());
-		//System.out.println(response);
-		
-		
-		SearchHits searchHits = response.getHits();
-		SearchHit[] hits = searchHits.getHits();
-		//System.out.println(hits.length);
-		Map result = null ;
 		String string ="";
-		for (int i = 0; i < hits.length; i++) {
-			SearchHit hit = hits[i];
-			result = hit.getSource();
-			//System.out.println(result);
+		try {
+			SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index);
 			
-			string = string + result.get("log");
-			//System.out.println(result.get("log"));
+			searchRequestBuilder.setTypes(type);
+			
+			searchRequestBuilder.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+			
+			searchRequestBuilder.setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord));
+			 
+			searchRequestBuilder.addSort("@timestamp", SortOrder.ASC);
+			
+			searchRequestBuilder.setFrom(0);
+			
+			searchRequestBuilder.setSize(60);
+			
+			searchRequestBuilder.setExplain(true);
+			
+			SearchResponse response = searchRequestBuilder.execute().actionGet();
+				
+			SearchHits searchHits = response.getHits();
+			SearchHit[] hits = searchHits.getHits();
+			Map result = null ;
+			
+			for (int i = 0; i < hits.length; i++) {
+				SearchHit hit = hits[i];
+				result = hit.getSource();			
+				string = string + result.get("log");
+			}
+		} catch (Exception e) {
+			log.error(keyWord+"日志出错！");
 		}
-		//System.out.println(string);
-		//System.out.println(result.get("log"));
+		
+
 		log.debug("pod{"+keyWord+"}日志:"+string);
 		return string;
 		

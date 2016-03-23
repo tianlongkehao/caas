@@ -54,6 +54,8 @@ $(document).ready(function(){
         $(".containerEvent").removeClass("hide");
     });
     
+//    setInterval("getServiceLogs()",3000);
+    setTimeout("getServiceLogs()",3000);
     $('#datePicker').click(function(event) {
         /* Act on the event */
         laydate({
@@ -65,14 +67,12 @@ $(document).ready(function(){
           zIndex: 99999999, //css z-index
           choose: function(dates){ //选择好日期的回调
             logPage = 1;
-            getPodLogs(dates);
+            getServiceLogs();
           }
         });
       });
       $('#refreshLog').click(function (event) {
-        var date = $('#date_log').val();
-        logPage = 1;
-        getPodLogs(date);
+    	  getServiceLogs();
       });
        $('#fullScreen').click(function () {
         $('.containerLog').toggleClass('all');
@@ -90,6 +90,34 @@ $(document).ready(function(){
     ServiceEvent();
 
 });
+//console.log($("#logList"))
+
+function getServiceLogs(){
+	var id = $('#datePicker').attr('serviceid');
+	var date = $('#date_log').val();
+	$.ajax({
+		url:ctx+"/service/detail/getlogs.do?id="+id+"&date="+date,
+		success:function(data){
+//			data = eval("(" + data + ")");
+			console.log(data);
+			var html = "";
+			if(data.status == '200'){
+//				console.log(data["logStr"])
+//				if(data["logStr"].length > 0){
+					var logs = data.logStr;
+					console.log(logs)
+					html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">'+
+						logStr+'<br></pre>'+
+						'<input id="serviceInstances" type="hidden" value="">'+
+						'<input id="creationTime" type="hidden" value="'+date+'">';
+					
+					$("#logList").html(html);
+//				}
+			}
+		}	
+	})
+}
+
 
 function ServiceEvent(){
 	$(".time-line-content").unbind("click").click(function(){

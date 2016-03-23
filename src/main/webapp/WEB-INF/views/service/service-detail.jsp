@@ -253,9 +253,9 @@
 							</div>
 							<div class="pull_right">
 								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
-								<input id="date_log" type="text" value="历史记录" readonly>
+								<input id="date_log" type="text" value="" readonly>
 								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
-								<i id="datePicker" class="fa fa-calendar margin cursor"></i>
+								<i id="datePicker" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i>
 								<!--</div>-->
 								<i id="refreshLog" class="fa fa-refresh margin cursor"
 									data-toggle="tooltip" data-placement="top" title=""
@@ -263,7 +263,7 @@
 									class="fa fa-expand margin cursor" title="满屏"></i>
 							</div>
 						</div>
-						<div class="weblog">
+						<div id="logList" class="weblog">
 						<c:if test="${logList=='[]' }">
 							<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>
 						</c:if>

@@ -120,8 +120,8 @@
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">CPU数量：</span>
-                                        <input type="number" value="0.2" class="number" min="0.2" step ="0.1" autocomplete="off" max="2"
-                                               placeholder="" id="cpuNum" name="cpuNum"> 
+                                        <input type="number" value="0.1" class="number" min="0.1" step ="0.1" autocomplete="off" max="${leftcpu }"
+                                               placeholder="当前可用cpu数量：${leftcpu }个" id="cpuNum" name="cpuNum"> 
                                                <span class="unit">个</span>
                                               <!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：${leftcpu }</span> -->
                                     </div>
