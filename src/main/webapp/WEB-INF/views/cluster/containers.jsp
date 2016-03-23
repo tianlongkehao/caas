@@ -131,6 +131,7 @@
 <script type="text/javascript">
 
     var colorData = ['#c5e1d2', '#abd4bd', '#91c7a9'];
+
     var containerData = {
         'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
         'yValue': [{
@@ -313,7 +314,7 @@
             for (var j = 0; j < containerDataYval.val.length; j++) {
                 //search_container_options
                 addContainerConOpt();
-                containerNum ++;
+                containerNum++;
                 var containerOpt = document.getElementById('search_container').children[containerNum];
                 containerOpt.value = containerDataYval.val[j].titleText;
                 containerOpt.innerHTML = containerDataYval.val[j].titleText;
@@ -394,8 +395,10 @@
         var containersMemImg = document.getElementById('resourceContainer').children[count];
         $(containersMemImg).addClass(containerDataYval.name);
         $(containersMemImg).addClass(containerDataYval.val[j].titleText);
+
         var containersMem = echarts.init(containersMemImg);
         containersMem.setOption(option);
+
         count++;
         option.legend.data = [];
         option.series = [];
