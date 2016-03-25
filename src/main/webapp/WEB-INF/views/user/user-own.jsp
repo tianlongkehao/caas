@@ -161,7 +161,7 @@
                                       <span class="server-info-icon"><i class="fa_icon server_icon_1"></i>
                                         <span>服务个数：</span>
                                       </span>
-                                      <span class="pull-right big green"><span>${usedServiceNum}</span>/<span>${servServiceNum}</span>&nbsp;个</span>
+                                      <span class="pull-right big green"><span>${usedServiceNum}</span>/<span>未限制${servServiceNum}</span>&nbsp;个</span>
                                       	<%--<c:choose>
                                       		<c:when test="${servServiceNum==''}">
 	                                      		<span class="pull-right big green"><span id="clusterNum"></span>&nbsp;个</span>
@@ -175,19 +175,19 @@
                                 <li>
                                     <a href="<%=path %>/ci?0" data-permalink onclick="permalink(this)">
                                           <span class="server-info-icon"><i class="fa_icon server_icon_2"></i>
-                                            <span>Pod个数：</span>
+                                            <span>实例个数：</span>
                                           </span>
-                                        <span class="pull-right big blue"><span>${usedPodNum}</span>/<span>${servPodNum}</span>&nbsp;个</span>
+                                        <span class="pull-right big blue"><span>${usedPodNum}</span>/<span>未限制${servPodNum}</span>&nbsp;个</span>
                                     </a>
                                 </li>
-                                <li>
+                                <%--<li>
                                     <a href="<%=path %>/docker-registry?0" data-permalink onclick="_permalink(this)">
                                           <span class="server-info-icon"><i class="fa_icon server_icon_3"></i>
                                             <span>副本控制器：</span>
                                           </span>
-                                        <span class="pull-right big yellow"><span>${usedControllerNum}</span>/<span>${servControllerNum}</span>&nbsp;个</span>
+                                        <span class="pull-right big yellow"><span>${usedControllerNum}</span>/<span>未限制${servControllerNum}</span>&nbsp;个</span>
                                     </a>
-                                </li>
+                                </li>--%>
                             </ul>
                         </div>
                         </section>

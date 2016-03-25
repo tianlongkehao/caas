@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.model.*;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import org.hibernate.validator.internal.util.privilegedactions.GetAnnotationParameter;
 import org.slf4j.Logger;
@@ -24,13 +25,6 @@ import com.bonc.epm.paas.entity.Resource;
 import com.bonc.epm.paas.entity.Restriction;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
-import com.bonc.epm.paas.kubernetes.model.LimitRange;
-import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
-import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
-import com.bonc.epm.paas.kubernetes.model.Namespace;
-import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
-import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
-import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 
 @Controller
@@ -125,9 +119,9 @@ public class UserController {
             System.out.println("quota:" + JSON.toJSONString(quota));
 
             //为client创建资源限制
-//            LimitRange limitRange = generateLimitRange(user.getUserName(), restriction);
-//            limitRange = client.createLimitRange(limitRange);
-//	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
+            //LimitRange limitRange = generateLimitRange(user.getUserName(), restriction);
+            //limitRange = client.createLimitRange(limitRange);
+	    	//System.out.println("limitRange:"+JSON.toJSONString(limitRange));
             //DB保存用户信息
             user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
             userDao.save(user);
@@ -305,9 +299,9 @@ public class UserController {
 //                    resource.setServer_count(map.get("services"));//服务
                 }
 
-//                LimitRange lr = client.getLimitRange(user.getUserName());
-//                System.out.println("UserName:" + user.getUserName());
-//                System.out.println("limitRange:" + JSON.toJSONString(lr));
+                LimitRange lr = client.getLimitRange(user.getUserName());
+                System.out.println("UserName:" + user.getUserName());
+                System.out.println("limitRange:" + JSON.toJSONString(lr));
 //
 //                if (lr != null && lr.getSpec().getLimits().size() > 0) {
 //                    for (LimitRangeItem limit : lr.getSpec().getLimits()) {
@@ -554,23 +548,29 @@ public class UserController {
         System.out.printf("user--id:", id);
         User user = userDao.findOne(id);
 
+
         String servCpuNum = "";//服务个数"
         String servMemoryNum = "";//内存个数"
         String servPodNum = "";//POD个数"
         String servServiceNum = "";//服务个数"
         String servControllerNum = "";//副本个数"
 
-        String usedCpuNum = "";//已使用CPU个数
-        String usedMemoryNum = "";//已使用内存
-        String usedPodNum = "";//已经使用的POD个数
-        String usedServiceNum = "";//已经使用的服务个数
-        String usedControllerNum = "";//已经使用的副本控制器个数
+        Float usedCpuNum = 0f;//已使用CPU个数
+        Float usedMemoryNum = 0f;//已使用内存
+        int usedPodNum = 0;//已经使用的POD个数
+        int usedServiceNum = 0;//已经使用的服务个数
+        //String usedControllerNum = "";//已经使用的副本控制器个数
 
         try {
             //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getUserName());
             Namespace ns = client.getNamespace(user.getUserName());
             System.out.println("namespace:" + JSON.toJSONString(ns));
+
+            ReplicationControllerList a = client.getAllReplicationControllers();
+            PodList b = client.getAllPods();
+            int RCcount = a.size();
+            int PodCount = b.size();
 
             if (ns != null) {
                 ResourceQuota quota = client.getResourceQuota(user.getUserName());
@@ -579,16 +579,17 @@ public class UserController {
                     Map<String, String> hard = quota.getStatus().getHard();
                     Map<String, String> used = quota.getStatus().getUsed();
                     servCpuNum = hard.get("cpu");//cpu个数
-                    servMemoryNum = hard.get("memory");//内存个数
+                    servMemoryNum = hard.get("memory").replace('G',' ');//内存个数
                     servPodNum = hard.get("pods");//pod个数
                     servServiceNum = hard.get("services");//服务个数
                     servControllerNum = hard.get("replicationcontrollers");//副本控制数
 
-                    usedCpuNum = used.get("cpu");//已使用CPU个数
-                    usedMemoryNum = used.get("memory");//已使用内存
-                    usedPodNum = used.get("pods");//已经使用的POD个数
-                    usedServiceNum = used.get("services");//已经使用的服务个数
-                    usedControllerNum = used.get("replicationcontrollers");//已经使用的副本控制器个数
+                    Float cpuNum = Float.valueOf(used.get("cpu").replace("m",""))/1000;
+                    usedCpuNum = Float.valueOf(cpuNum) ;//已使用CPU个数
+                    Float memNum = Float.valueOf(used.get("memory").replace("k",""))/(1024*1024*1024);
+                    usedMemoryNum = Float.valueOf(memNum);//已使用内存
+                    usedPodNum = PodCount;//已经使用的POD个数
+                    usedServiceNum = RCcount;//已经使用的服务个数
                     /*******************************************************************/
             /* 					添加其它资源信息									   */
                     /*******************************************************************/
@@ -608,7 +609,7 @@ public class UserController {
         model.addAttribute("usedCpuNum", usedCpuNum);
         model.addAttribute("usedMemoryNum", usedMemoryNum);
         model.addAttribute("usedPodNum", usedPodNum);
-        model.addAttribute("usedControllerNum", usedControllerNum);
+       // model.addAttribute("usedControllerNum", usedControllerNum);
         model.addAttribute("usedServiceNum", usedServiceNum);
         return "user/user-own.jsp";
     }

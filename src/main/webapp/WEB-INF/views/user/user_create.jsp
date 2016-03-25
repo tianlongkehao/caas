@@ -187,7 +187,7 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">Pod数量：</span>
-                                                <input type="number" value="1" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="0" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="pod_count" name="pod_count" style="width:350px" disabled>
                                                 <span class="unit">个</span>
                                             </div>
@@ -195,7 +195,7 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">副本控制器：</span>
-                                                <input type="number" value="1" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="0" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="image_control" name="image_control" style="width:350px" disabled>
                                                 <span class="unit">个</span>
                                             </div>
@@ -203,7 +203,7 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">服务：</span>
-                                                <input type="number" value="1" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="0" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="server_count" name="server_count" style="width:350px" disabled>
                                                 <span class="unit">个</span>
                                             </div>
@@ -211,7 +211,7 @@
 										<li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">卷组挂载数量：</span>
-                                                <input type="number" value="1" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="0" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="vol_count" name="vol_count" style="width:350px" disabled>
                                                 <span class="unit">个</span>
                                             </div>
@@ -219,7 +219,7 @@
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">卷组容量：</span>
-                                                <input type="number" value="1" class="number" min="1" autocomplete="off"
+                                                <input type="number" value="0" class="number" min="1" autocomplete="off"
                                                        placeholder="1" id="vol" name="vol" style="width:350px" disabled>
                                                 <span class="unit">GB</span>
                                                 <%--<input  data-slider-id='volSlider' disabled="disabled"
