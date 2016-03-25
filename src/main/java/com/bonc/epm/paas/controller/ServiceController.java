@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.esConf;
@@ -137,44 +138,41 @@ public class ServiceController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value={"findservice/{servName}"},method=RequestMethod.GET)
-	public String searchService(Model model,@PathVariable String servName){
+	@RequestMapping(value={"service/findservice"},method = RequestMethod.POST)
+	public String findService(Model model, String searchNames){
 		User  currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 	    List<Service> serviceList = new ArrayList<Service>();
 	    List<Container> containerList = new ArrayList<Container>();
 	  //获取特殊条件的pods
-		
-	    	try {
-	    		for(Service service:serviceDao.findByNameOf(currentUser.getId(),"%"+servName+"%")){
-	    			Map<String,String> map = new HashMap<String,String>();
-	    	    	map.put("app", service.getServiceName());
-	    	    	PodList podList = client.getLabelSelectorPods(map);
-	    	    	if(podList!=null){
-	    	    		List<Pod> pods = podList.getItems();
-	    	    		if(!CollectionUtils.isEmpty(pods)){
-	    	    			int i=1;
-	    	    			for(Pod pod:pods){
-	    	    				String podName = pod.getMetadata().getName();
-	    	    				Container container = new Container();
-	    	    				container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
-	    	    				container.setServiceid(service.getId());
-	    	    				containerList.add(container);
-	    	    			}
-	    	    		}
-	    	    	}
-	    	    	serviceList.add(service);
-	    		}
-			} catch (KubernetesClientException e) {
-				model.addAttribute("msg", e.getStatus().getMessage());
-				return "workbench.jsp";
-			}
-		model.addAttribute("containerList", containerList);
-		model.addAttribute("serviceList", serviceList);
-		model.addAttribute("menu_flag", "service");
-		
-		return "service/service.jsp";
-		
+	    try {
+	    	for(Service service:serviceDao.findByNameOf(currentUser.getId(),"%"+searchNames+"%")){
+    			Map<String,String> map = new HashMap<String,String>();
+    	    	map.put("app", service.getServiceName());
+    	    	PodList podList = client.getLabelSelectorPods(map);
+    	    	if(podList!=null){
+    	    		List<Pod> pods = podList.getItems();
+    	    		if(!CollectionUtils.isEmpty(pods)){
+    	    			int i=1;
+    	    			for(Pod pod:pods){
+    	    				String podName = pod.getMetadata().getName();
+    	    				Container container = new Container();
+    	    				container.setContainerName(service.getServiceName()+"-"+service.getImgVersion()+"-"+i++);
+    	    				container.setServiceid(service.getId());
+    	    				containerList.add(container);
+    	    			}
+    	    		}
+    	    	}
+    	    	serviceList.add(service);
+    	    	log.debug("service========="+service);
+    		}
+		} catch (Exception e) {
+			log.error("服务查询错误："+e);
+		}
+	    model.addAttribute("serviceList", serviceList);
+	    model.addAttribute("containerList", containerList);
+	    
+	    return "service/service.jsp";
 	}
 	
 	/**
@@ -290,6 +288,9 @@ public class ServiceController {
 //    	datamap.put("logList", logList);
     	datamap.put("logStr", logStr);
     	datamap.put("status", "200");
+    	JSONObject jsonObject = new JSONObject();
+    	jsonObject.put("logStr", logStr);
+    	jsonObject.put("status", "200");
     	return JSON.toJSONString(datamap);
     	
 	}

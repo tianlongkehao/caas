@@ -670,6 +670,40 @@ i.pushOrg {
     transition: all 0.5s;
 }
 
+
+.containerLog.all{
+    z-index: 1000000;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top:0;
+    left: 0;
+    margin-left:0;
+    transition:all 0.5s;
+}
+.containerLog.all .weblog{
+	height: calc(100% - 40px)
+}
+
+.containerLog .weblog{
+	padding:5px 10px;
+	height:500px;
+	margin-bottom: 
+	50px;overflow-y:auto
+}
+
+#date_log{
+	background: none;
+	border:0;
+	width: 220px;
+	text-align: right;
+}
+#date_log:focus{
+	border:0;
+	box-shadow: none;
+}
+
+
 .containerLog .weblogtitle {
     height: 40px;
     background: #1C2022;
