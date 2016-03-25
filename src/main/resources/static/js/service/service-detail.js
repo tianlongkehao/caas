@@ -54,8 +54,8 @@ $(document).ready(function(){
         $(".containerEvent").removeClass("hide");
     });
     
-//    setInterval("getServiceLogs()",3000);
-    setTimeout("getServiceLogs()",3000);
+    setInterval("getServiceLogs()",6000);
+
     $('#datePicker').click(function(event) {
         /* Act on the event */
         laydate({
@@ -74,7 +74,8 @@ $(document).ready(function(){
       $('#refreshLog').click(function (event) {
     	  getServiceLogs();
       });
-       $('#fullScreen').click(function () {
+       
+      $('#fullScreen').click(function () {
         $('.containerLog').toggleClass('all');
         var title = $(this).attr('title');
         if(title == '满屏'){
@@ -90,7 +91,6 @@ $(document).ready(function(){
     ServiceEvent();
 
 });
-//console.log($("#logList"))
 
 function getServiceLogs(){
 	var id = $('#datePicker').attr('serviceid');
@@ -98,21 +98,18 @@ function getServiceLogs(){
 	$.ajax({
 		url:ctx+"/service/detail/getlogs.do?id="+id+"&date="+date,
 		success:function(data){
-//			data = eval("(" + data + ")");
-			console.log(data);
+			data = $.parseJSON(data);
+			data.logStr = "";
 			var html = "";
-			if(data.status == '200'){
-//				console.log(data["logStr"])
-//				if(data["logStr"].length > 0){
+			if(data.status == '200' && data.logStr != ""){
 					var logs = data.logStr;
 					console.log(logs)
 					html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">'+
-						logStr+'<br></pre>'+
+						logs+'<br></pre>'+
 						'<input id="serviceInstances" type="hidden" value="">'+
 						'<input id="creationTime" type="hidden" value="'+date+'">';
 					
 					$("#logList").html(html);
-//				}
 			}
 		}	
 	})

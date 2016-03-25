@@ -262,6 +262,10 @@ public class KubernetesClientService {
 		}else if (isNumeric(memory)) {
 			long memoryBit = Long.valueOf(memory)/(1024*1024);
 			return memoryBit;
+		}else if (memory.endsWith("k")) {
+			memory = memory.replace("k", "");
+			long memoryk = Long.valueOf(memory)/1024;
+			return memoryk;
 		}
 		return Long.valueOf(memory);
 	}
