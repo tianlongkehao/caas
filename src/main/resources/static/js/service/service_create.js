@@ -38,6 +38,11 @@ $(document).ready(function(){
 		containerName();
     });
 	
+	$("#cpuNum").click(function(){
+		var tips = $(this).attr("placeholder");
+		layer.tips(tips,'#cpuNum',{tips: [1, '#3595CC']});
+	})
+	
 	$("#searchimage").click(function(){
 		var imageName = $('#imageName').val();
 		$.ajax({
