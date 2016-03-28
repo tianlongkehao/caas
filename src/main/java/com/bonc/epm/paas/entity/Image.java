@@ -22,6 +22,10 @@ public class Image {
 	private String name;
 	private String version;
 	private String imageId;
+	/**
+	 * 代码名称（war包名称，冗余ci的字段）
+	 */
+	private String resourceName;
 	//1公用2私有
 	private Integer imageType;
 	private String remark;
@@ -101,6 +105,12 @@ public class Image {
 	}
 	public void setFavorUsers(List<User> favorUsers) {
 		this.favorUsers = favorUsers;
+	}
+	public String getResourceName() {
+		return resourceName;
+	}
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
 	}
 	
 }

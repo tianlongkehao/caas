@@ -9,13 +9,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.esConf;
-import com.bonc.epm.paas.sso.conf.CasClientConfigProperties;
+import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
+import com.bonc.epm.paas.sso.casclient.EnableCasClient;
 
-@EnableConfigurationProperties({TemplateConf.class,esConf.class,CasClientConfigProperties.class})
+
+@EnableConfigurationProperties({TemplateConf.class,esConf.class,CasClientConfigurationProperties.class})
 @SpringBootApplication
-//单点登录，打开下面两个注解。Todo：通过配置项启动单点
-//@ServletComponentScan
-//@EnableCasClient(validationType = EnableCasClient.ValidationType.CAS)
+@EnableCasClient
 public class WebAppConfig extends WebMvcConfigurerAdapter{
 		
     public static void main(String[] args) {
