@@ -46,8 +46,6 @@
                             <select name="search_service" id="search_service" onchange="searchService()"
                                     style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
                                 <option name="search_service" value="0"></option>
-                                <%--<option name="search_service" value="service01">service01</option>--%>
-                                <%--<option name="search_service" value="service02">service02</option>--%>
                             </select>
                         </div>
                         <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">
@@ -55,29 +53,21 @@
                             <select name="search_container" id="search_container" onchange="searchContainer()"
                                     style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
                                 <option name="search_container" selected="" value="0"></option>
-                                <%--<option name="search_container" class="service01 container01" value="container01">--%>
-                                <%--container01--%>
-                                <%--</option>--%>
-                                <%--<option name="search_container" class="service01 container02" value="container02">--%>
-                                <%--container02--%>
-                                <%--</option>--%>
-                                <%--<option name="search_container" class="service02 container03" value="container03">--%>
-                                <%--container03--%>
-                                <%--</option>--%>
-                                <%--<option name="search_container" class="service02 container04" value="container04">--%>
-                                <%--container04--%>
-                                <%--</option>--%>
                             </select>
                         </div>
                         <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; float: right"
                              align="right">
                             <label style="line-height: 35px">时间:</label>
-                            <select name="search_province" id="search_time"
+                            <select name="search_time" id="search_time"
                                     style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
-                                <option name="search_time"></option>
-                                <option name="search_time" value="1">最近6个小时</option>
-                                <option name="search_time" value="2">最近一天</option>
-                                <option name="search_time" value="2">最近三天</option>
+                                <option name="search_time" value="5m">最近5分钟</option>
+                                <option name="search_time" value="30m">最近30分钟</option>
+                                <option name="search_time" value="1h">最近1小时</option>
+                                <option name="search_time" value="6h">最近6个小时</option>
+                                <option name="search_time" value="12h">最近12小时</option>
+                                <option name="search_time" value="24h">最近24小时</option>
+                                <option name="search_time" value="7d">最近7天</option>
+                                <option name="search_time" value="30d">最近30天</option>
                             </select>
                         </div>
 
