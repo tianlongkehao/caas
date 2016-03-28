@@ -408,6 +408,7 @@ public class CiController {
 				img.setVersion(imageVersion);
 				
 			}
+			img.setResourceName(ci.getResourceName());
 			img.setImageType(ci.getImgType());
 			img.setRemark(ci.getDescription());
 			img.setCreator(ci.getCreateBy());
