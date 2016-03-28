@@ -285,12 +285,8 @@ public class ServiceController {
     		}
     	}   
     	System.out.println("logstr:"+logStr);
-//    	datamap.put("logList", logList);
     	datamap.put("logStr", logStr);
     	datamap.put("status", "200");
-    	JSONObject jsonObject = new JSONObject();
-    	jsonObject.put("logStr", logStr);
-    	jsonObject.put("status", "200");
     	return JSON.toJSONString(datamap);
     	
 	}
@@ -311,7 +307,7 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping(value={"service/add"},method=RequestMethod.GET)
-	public String create(String imgID,String imageName, String imageVersion, Model model){
+	public String create(String imgID,String imageName, String imageVersion,String resourceName, Model model){
 
 		String isDepoly = "";
 		if(imageName != null){
@@ -323,8 +319,13 @@ public class ServiceController {
 			model.addAttribute("msg","请创建租户！");
 			return "service/service.jsp";
 		}
+		if (resourceName != null) {
+			resourceName = resourceName.substring(0, resourceName.length()-4);
+		}
+		
 
 		model.addAttribute("imgID", imgID);
+		model.addAttribute("resourceName", resourceName);
 		model.addAttribute("imageName", imageName);
 		model.addAttribute("imageVersion", imageVersion);
 		model.addAttribute("isDepoly",isDepoly);
