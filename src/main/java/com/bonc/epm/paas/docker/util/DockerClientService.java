@@ -65,6 +65,9 @@ public class DockerClientService {
 		  .build();
 		return dockerClient;
 	}
+	public String getDockerRegistryAddress(){
+		return username;
+	}
 	public String generateRegistryImageName(String imageName,String imageVersion){
 		return username+"/"+imageName+":"+imageVersion;
 	}
