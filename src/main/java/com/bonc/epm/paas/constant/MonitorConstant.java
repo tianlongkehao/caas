@@ -23,7 +23,4 @@ public class MonitorConstant {
 
     public static final String NET_TX = " \"network/tx_bytes_cumulative\" ";
     public static final String NET_RX = " \"network/rx_bytes_cumulative\" ";
-
-    public static final String CONTAINER_NAME_MACHINE = " \"container_name\" = 'machine' ";
-    public static final String HOSTNAME_PARA = "WHERE \"hostname\" =~ /" + "hostName" + "/ ";
 }
