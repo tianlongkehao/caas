@@ -47,13 +47,13 @@ public class ClusterController {
     @Value("${yumConf.io.address}")
     private String yumSource;
 
-    @Value("${cc.url}")
+    @Value("${monitor.url}")
     private String url;
-    @Value("${cc.username}")
+    @Value("${monitor.username}")
     private String username;
-    @Value("${cc.password}")
+    @Value("${monitor.password}")
     private String password;
-    @Value("${cc.dbName}")
+    @Value("${monitor.dbName}")
     private String dbName;
 
     @RequestMapping(value = {"/resource"}, method = RequestMethod.GET)
