@@ -58,7 +58,7 @@
                                             <div>
                                             	<i class="fa fa-tag"></i> ${image.version }
                                                 <div class="pull-right">
-                                                    <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
+                                                    <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
                                                 </div>
                                             </div>
                                         </div>
