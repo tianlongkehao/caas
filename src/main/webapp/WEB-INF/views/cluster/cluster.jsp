@@ -87,10 +87,6 @@
                                 {
                                     'legendName': 'Usage Current',
                                     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                },
-                                {
-                                    'legendName': 'Working Set Current',
-                                    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                                 }]
                         }
                     ]
