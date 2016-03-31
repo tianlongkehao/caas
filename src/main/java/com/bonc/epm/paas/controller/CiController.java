@@ -187,6 +187,7 @@ public class CiController {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         model.addAttribute("username", cuurentUser.getUserName());
         model.addAttribute("menu_flag", "ci");
+        model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
 		return "ci/ci_addCodeSource.jsp";
 	}
 	
@@ -408,6 +409,7 @@ public class CiController {
 				img.setVersion(imageVersion);
 				
 			}
+			img.setResourceName(ci.getResourceName());
 			img.setImageType(ci.getImgType());
 			img.setRemark(ci.getDescription());
 			img.setCreator(ci.getCreateBy());

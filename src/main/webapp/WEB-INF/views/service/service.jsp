@@ -258,7 +258,7 @@
                                                         <td style="width:34%" id="mysqlurl">
                                                             <span class="url">
                                                             	<c:if test="${service.serviceAddr!=null&&service.serviceAddr!='' }">
-                                                                	<a href="${service.serviceAddr }:${service.portSet}" target="_blank">${service.serviceAddr }:${service.portSet}</a>
+                                                                	<a href="${service.serviceAddr }:${service.portSet}/${service.serviceLink}" target="_blank">${service.serviceAddr }:${service.portSet}/${service.serviceLink}</a>
                                                                 </c:if>
                                                             </span>
                                                         </td>
@@ -318,11 +318,14 @@
     </article>
 </div>
 
+${msg}
 <c:if test="${msg!= null} ">
     <input type="hidden" id="errorMsg" value="${msg}">
     <script type="text/javascript">
-        var errorMsg = $("#errorMsg").val();
-        layer.alert(errorMsg);
+    	
+        //var errorMsg = $("#errorMsg").val();
+        var errorMsg = '${msg}';
+        alert(errorMsg);
     </script>
 </c:if>
 

@@ -13,8 +13,9 @@
             var imgID = '${imgID}';
             var imageName = '${imageName}';
             var imageVersion = '${imageVersion}';
+            var resourceName = '${resourceName}';
             if(isDepoly == 'deploy'){
-                deploy(imgID,imageName,imageVersion);
+                deploy(imgID,imageName,imageVersion,resourceName);
             }
         });
     </script>
@@ -22,7 +23,7 @@
 <body>
 
 <jsp:include page="../frame/menu.jsp" flush="true">
-    <jsp:param name="ci" value=""/>
+    <jsp:param name="" value=""/>
 </jsp:include>
 
 <div class="page-container">
@@ -88,11 +89,9 @@
                                 <li class="line-h-3">
                                     <span class="ve_top">服务名称：</span>
                                     <input type="text" value="" class="in_style" id="serviceName" name="serviceName">
+                                    <input type="hidden" value="" class="in_style" id="resourceName" name="resourceName">
                                 </li>
-                                <!--<li class="line-h-3">
-                                    <span class="ve_top">服务地址：</span>
-                                    <input type="text" value="" class="in_style" id="serviceLink" name="serviceLink" placeholder="例如：/index">
-                                </li>  -->
+                                
                                 <!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
                                         <span class="clusterText" data="tenx_district2">北京二区</span>
@@ -131,7 +130,7 @@
                                     <div class="param-set">
                                         <span class="number-title">内存：</span>
                                         <c:if test="${leftmemory>512 }">
-                                        	<input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftmemory }" data-slider-step="1" data-slider-value="0"/>
+                                        	<input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftmemory }" data-slider-step="1" data-slider-value="512"/>
                                         	<input type="text" value="512" id="ram" name="ram">
                                         </c:if>
                                         <c:if test="${leftmemory<512 }">
