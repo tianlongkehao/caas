@@ -4,11 +4,7 @@ import java.io.IOException;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import com.alibaba.fastjson.JSONObject;
 import org.influxdb.InfluxDB;
@@ -51,13 +47,13 @@ public class ClusterController {
     @Value("${yumConf.io.address}")
     private String yumSource;
 
-    @Value("${cc.url}")
+    @Value("${monitor.url}")
     private String url;
-    @Value("${cc.username}")
+    @Value("${monitor.username}")
     private String username;
-    @Value("${cc.password}")
+    @Value("${monitor.password}")
     private String password;
-    @Value("${cc.dbName}")
+    @Value("${monitor.dbName}")
     private String dbName;
 
     @RequestMapping(value = {"/resource"}, method = RequestMethod.GET)
@@ -126,47 +122,35 @@ public class ClusterController {
         try {
             clusterUse = new ClusterUse();
             MonitorController monCon = new MonitorController();
-
             /*//取得主机hostName
             //String hostName = "minion" + hostIp.split("\\.")[3];
-
             //查询主机cpu使用值
             List<String> cpuUseList = monCon.getMinionCpuUse(timePeriod);
             clusterUse.setCpuUse(cpuUseList);
-
             //查询主机的cpuLimit
             List<String> cpuLimitList = monCon.getMinionCpuLimit();
             clusterUse.setCpuLimit(cpuLimitList);
-
             //查询内存使用量memUse
             List<String> memUseList = monCon.getMinionMemUse(timePeriod);
             clusterUse.setMemUse(memUseList);
-
             //查询内存memWorking Set
             List<String> memSetList = monCon.getMinionMemSet(timePeriod);
-
             clusterUse.setMemSet(memSetList);
-
             //查询主机内存memLimit
             List<String> memLimitList = monCon.getMinionMemLimit();
             clusterUse.setMemLimit(memLimitList);
-
             //查询disk_use
             List<String> diskUseList = monCon.getMinionDiskUse(timePeriod);
             clusterUse.setDiskUse(diskUseList);
-
             //查询disk_limit
             List<String> diskLimitList = monCon.getMinionDiskLimit();
             clusterUse.setDiskLimit(diskLimitList);
-
             //查询网络上行值tx
             List<String> networkTxList = monCon.getMinionTxUse(timePeriod);
             clusterUse.setNetworkTx(networkTxList);
-
             //查询网络下行值rx
             List<String> networkRxList = monCon.getMinionRxUse(timePeriod);
             clusterUse.setNetworkRx(networkRxList);
-
             //设置主机IP
             clusterUse.setHost(hostIp);*/
         } catch (Exception e) {
@@ -275,7 +259,6 @@ public class ClusterController {
         } catch (Exception e) {
             log.debug(e.getMessage());
         }
-
         return null;
     }
 
@@ -283,13 +266,14 @@ public class ClusterController {
     /**
      * 根据pod_namespace、pod_name、container_name取得资源使用情况;
      *
-     * @param pod_namespace
-     * @param pod_name
-     * @param container_name
+     * @param pod_namespace  pod_namespace
+     * @param pod_name       pod_name
+     * @param container_name container_name
      * @return ContainerUse
      */
-    public List<ContainerUse> getContainerUse(String pod_namespace, String pod_name, String container_name, String timePeriod, String timeGroup) {
-        List<ContainerUse> containerUseList = null;
+    public List<ContainerUse> getContainerUse(String pod_namespace, String pod_name,
+                                              String container_name, String timePeriod, String timeGroup) {
+        List<ContainerUse> containerUseList = new ArrayList<>();
 
         try {
             InfluxDB influxDB = InfluxDBFactory.connect(url, username, password);
@@ -376,11 +360,11 @@ public class ClusterController {
             List<Series> mem_set_values = result_mem_set.getResults().get(0).getSeries();//.get(0).getValues();
 
 
-            List<List<Object>> cpu_use_list = null;
-            List<List<Object>> cpu_limit_list = null;
-            List<List<Object>> mem_use_list = null;
-            List<List<Object>> mem_limit_list = null;
-            List<List<Object>> mem_set_list = null;
+            List<List<Object>> cpu_use_list;
+            List<List<Object>> cpu_limit_list;
+            List<List<Object>> mem_use_list;
+            List<List<Object>> mem_limit_list;
+            List<List<Object>> mem_set_list;
             for (int i = 0; i < cpu_use_values.size(); i++) {
 
                 cpu_use_list = cpu_use_values.get(i).getValues();
@@ -389,11 +373,11 @@ public class ClusterController {
                 mem_limit_list = mem_limit_values.get(i).getValues();
                 mem_set_list = mem_set_values.get(i).getValues();
 
-                List<String> cpuUseList = null;
-                List<String> cpuLimitList = null;
-                List<String> memUseList = null;
-                List<String> memLimitList = null;
-                List<String> memSetList = null;
+                List<String> cpuUseList = new ArrayList<>();
+                List<String> cpuLimitList = new ArrayList<>();
+                List<String> memUseList = new ArrayList<>();
+                List<String> memLimitList = new ArrayList<>();
+                List<String> memSetList = new ArrayList<>();
                 for (int j = 0; j < cpu_use_values.size(); j++) {
 
                     String strCpuUse = cpu_use_list.get(j).get(1).toString();
@@ -409,7 +393,7 @@ public class ClusterController {
                     memSetList.add(strMemSet);
 
                 }
-                ContainerUse containerUse = null;
+                ContainerUse containerUse = new ContainerUse();
                 containerUse.setCpuUse(cpuUseList);
                 containerUse.setCpuLimit(cpuLimitList);
                 containerUse.setMemUse(memUseList);
@@ -463,9 +447,7 @@ public class ClusterController {
             }
         } else {
             String[] ipsArray = ipRange.split(",");
-            for (String ipSon : ipsArray) {
-                lstIps.add(ipSon);
-            }
+            Collections.addAll(lstIps, ipsArray);
         }
         Iterable<Cluster> a = clusterDao.findAll();
         for (Cluster b : a) {
