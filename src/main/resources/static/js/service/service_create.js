@@ -69,7 +69,7 @@ $(document).ready(function(){
 					"</span> <span class='span3'>"+
 							"<div class='list-item-description'>"+
 								"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
-									""+ image.version +"</span> <span imgID='"+image.id+"' imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
+									""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
 									"data-attr='tenxcloud/mysql'> 部署 <i"+
 									"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
 								"</span>"+
@@ -83,8 +83,9 @@ $(document).ready(function(){
 	                        	var imageName = $(this).attr("imageName");
 	                        	var imageVersion = $(this).attr("imageVersion");
 	                        	var imgID = $(this).attr("imgID");
+	                        	var resourceName = $(this).attr("resourceName");
 	                        	//containerName();
-	                            deploy(imgID,imageName, imageVersion);
+	                            deploy(imgID,imageName, imageVersion,resourceName);
 	                        });
 	                	}
 	            }
@@ -192,7 +193,7 @@ function deploy(imgID,imageName, imageVersion,resourceName){
     $("#imgName").val(imageName);
     $("#imgVersion").val(imageVersion);
     $("#imgID").val(imgID);
-    $("#serviceLink").val(resourceName);
+    $("#resourceName").val(resourceName);
     $(".step-inner").css("left","-100%");
     $(".createPadding").removeClass("hide");
     $(".radius_step").removeClass("action").eq(1).addClass("action");

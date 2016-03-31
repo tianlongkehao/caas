@@ -8,12 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -454,11 +456,15 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
-	public String constructContainer(Service service){
+	public String constructContainer(Service service,String resourceName){
 		User  currentUser = CurrentUserUtils.getInstance().getUser();
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
 		service.setCreateBy(currentUser.getId());
+		if (!StringUtils.isEmpty(resourceName)) {
+			resourceName = resourceName.substring(0, resourceName.indexOf("."));
+			service.setServiceLink(resourceName);
+		}
 		serviceDao.save(service);
 		//app为修改nginx配置文件的配置项
 		Map<String, String > app = new HashMap<String, String>();
