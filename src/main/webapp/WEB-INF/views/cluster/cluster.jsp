@@ -104,10 +104,6 @@
                                 {
                                     'legendName': 'Usage Current',
                                     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                },
-                                {
-                                    'legendName': 'Working Set Current',
-                                    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                                 }]
                             }
                         ]
@@ -121,10 +117,6 @@
                                 {
                                     'legendName': 'Usage Current',
                                     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                },
-                                {
-                                    'legendName': 'Working Set Current',
-                                    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                                 }]
                             }, {
                                 'title': 'DISK USAGE GROUP BY NODE', 'val': [{
@@ -134,10 +126,6 @@
                                     {
                                         'legendName': 'Usage Current',
                                         'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                    },
-                                    {
-                                        'legendName': 'Working Set Current',
-                                        'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                                     }]
                             }
                         ]
@@ -151,10 +139,6 @@
                                 {
                                     'legendName': 'Usage Current',
                                     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                },
-                                {
-                                    'legendName': 'Working Set Current',
-                                    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                                 }]
                             }
                         ]
@@ -184,10 +168,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'disk', 'val': [{
@@ -197,10 +177,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'network', 'val': [{
@@ -210,10 +186,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }]
             }, {
@@ -238,10 +210,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'disk', 'val': [{
@@ -251,10 +219,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'network', 'val': [{
@@ -264,10 +228,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }]
             },{
@@ -292,10 +252,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'disk', 'val': [{
@@ -305,10 +261,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'network', 'val': [{
@@ -318,10 +270,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }]
             }]
