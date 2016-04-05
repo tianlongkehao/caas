@@ -16,4 +16,11 @@ public interface ClusterDao extends CrudRepository<Cluster, Long> {
             + "where 1=1 "
             + "and c.host like %?1% ")
     public List<Cluster> findByHostLike(String host);
+    
+    @Query("select c from Cluster c "
+            + "where 1=1 "
+            + "and c.hostType = ?1 "
+            + "order by length(c.host),c.host ")
+    public List<Cluster> getByHostType(String hostType);
+    
 }

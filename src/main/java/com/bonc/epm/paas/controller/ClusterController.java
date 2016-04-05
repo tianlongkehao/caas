@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
 
-import com.alibaba.fastjson.JSONObject;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Query;
@@ -22,9 +21,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.alibaba.fastjson.JSONArray;
 import com.bonc.epm.paas.entity.ContainerUse;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.model.AbstractKubernetesModelList;
+import com.bonc.epm.paas.kubernetes.model.Pod;
+import com.bonc.epm.paas.kubernetes.model.PodList;
+import com.bonc.epm.paas.kubernetes.model.Service;
+import com.bonc.epm.paas.kubernetes.model.ServiceList;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
@@ -42,6 +46,9 @@ public class ClusterController {
     private static final Logger log = LoggerFactory.getLogger(ClusterController.class);
 
     @Autowired
+    private KubernetesClientService kubernetesClientService;
+    
+    @Autowired
     private ClusterDao clusterDao;
 
     @Value("${yumConf.io.address}")
@@ -55,31 +62,17 @@ public class ClusterController {
     private String password;
     @Value("${monitor.dbName}")
     private String dbName;
-
+    
+    private InfluxDB influxDB;
+ 
     @RequestMapping(value = {"/resource"}, method = RequestMethod.GET)
     public String resourceCluster(Model model) {
-
-//    	List<Cluster> clusterlst=(List<Cluster>) clusterDao.findAll();
-//    	Cluster cluster=null;
-//    	JSONObject json=null;
-//    	for(int i=0;i<clusterlst.size();i++){
-//    		cluster=clusterlst.get(i);
-//    		ClusterUse clusterUse=this.getClusterUse(cluster.getHost());
-//    		json=new JSONObject(clusterUse);
-//    		model.addAttribute("clusterUse"+i,json);
-//    	}
-//    	
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster.jsp";
     }
 
     @RequestMapping(value = {"/containers"}, method = RequestMethod.GET)
     public String resourceContainers(Model model) {
-        /**
-         * containers.jsp
-         */
-
-
         model.addAttribute("menu_flag", "containers");
         return "cluster/containers.jsp";
     }
@@ -103,6 +96,7 @@ public class ClusterController {
         String[] strHostIps = hostIps.split(",");
         for (String hostIp : strHostIps) {
             ClusterUse clusterUse = getClustersUse("");
+            clusterUse.setHost(hostIp);
             lstClustersUse.add(clusterUse);
         }
         model.addAttribute("lstClustersUse", lstClustersUse);
@@ -118,295 +112,350 @@ public class ClusterController {
      * @return ClusterUse
      */
     private ClusterUse getClustersUse(String timePeriod) {
-        ClusterUse clusterUse;
         try {
-            clusterUse = new ClusterUse();
-            MonitorController monCon = new MonitorController();
-            /*//取得主机hostName
-            //String hostName = "minion" + hostIp.split("\\.")[3];
-            //查询主机cpu使用值
-            List<String> cpuUseList = monCon.getMinionCpuUse(timePeriod);
-            clusterUse.setCpuUse(cpuUseList);
-            //查询主机的cpuLimit
-            List<String> cpuLimitList = monCon.getMinionCpuLimit();
-            clusterUse.setCpuLimit(cpuLimitList);
-            //查询内存使用量memUse
-            List<String> memUseList = monCon.getMinionMemUse(timePeriod);
-            clusterUse.setMemUse(memUseList);
-            //查询内存memWorking Set
-            List<String> memSetList = monCon.getMinionMemSet(timePeriod);
-            clusterUse.setMemSet(memSetList);
-            //查询主机内存memLimit
-            List<String> memLimitList = monCon.getMinionMemLimit();
-            clusterUse.setMemLimit(memLimitList);
-            //查询disk_use
-            List<String> diskUseList = monCon.getMinionDiskUse(timePeriod);
-            clusterUse.setDiskUse(diskUseList);
-            //查询disk_limit
-            List<String> diskLimitList = monCon.getMinionDiskLimit();
-            clusterUse.setDiskLimit(diskLimitList);
-            //查询网络上行值tx
-            List<String> networkTxList = monCon.getMinionTxUse(timePeriod);
-            clusterUse.setNetworkTx(networkTxList);
-            //查询网络下行值rx
-            List<String> networkRxList = monCon.getMinionRxUse(timePeriod);
-            clusterUse.setNetworkRx(networkRxList);
-            //设置主机IP
-            clusterUse.setHost(hostIp);*/
         } catch (Exception e) {
             log.debug(e.getMessage());
         }
         return null;
     }
-
-    public Object getClusterUse2(String timePeriod) {
-        MonitorController monCon = new MonitorController();
-        Map<String, Object> map = new HashMap<String, Object>();
+    
+    /**
+     * 取得集群监控数据
+     * 
+     * @param timePeriod
+     * @return
+     */
+    @RequestMapping(value = {"/getClusterMonitor"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String getClusterMonitor(String timePeriod) {
+        StringBuilder xValue = new StringBuilder();
+        StringBuilder yValue = new StringBuilder();
         try {
+            influxDB = InfluxDBFactory.connect(url, username, password);
+            
+            xValue.append("\"xValue\": [");
+            
+            //xValue
+            xValue = joinXValue(xValue, timePeriod);
+            
+            //yValue
+            yValue.append("\"yValue\": [");
+
+            //cluster
+            yValue.append("{\"name\": \"cluster\",\"val\": [");
+            
+            //memory
+            yValue.append("{\"titleText\": \"memory\",\"val\": [");
+            
+            //OVERALL CLUSTER MEMORY USAGE
+            yValue.append("{\"title\": \"OVERALL CLUSTER MEMORY USAGE\",\"val\": [");
+            
             //overall cluster memory usage:mem_limit
-            List<String> memLimitAllList = monCon.getMemLimitOverAll(timePeriod);
-            JSONObject json1 = new JSONObject();
-            json1.put("yAxis", memLimitAllList);
-            JSONArray jsonArr1 = new JSONArray();
-            jsonArr1.add(0, memLimitAllList);
-            map.put("yAxis", memLimitAllList);
-
+            yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitOverAll");
+            
             //overall cluster memory usage:mem_use
-            List<String> memUseAllList = monCon.getMemUseOverAll(timePeriod);
-            map.put("yAxis", memUseAllList);
-
+            yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseOverAll");
 
             //overall cluster memory usage:mem_workingSet
-            List<String> memWorkingSetAllList = monCon.getMemSetOverAll(timePeriod);
-            map.put("yAxis", memWorkingSetAllList);
+            yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetOverAll");
 
-            //memory usage group by node:memory_limit
-            List<String> memLimitNodeList = monCon.getMemSetNode(timePeriod);
-            map.put("yAxis", memLimitNodeList);
+            //去掉最后一个逗号
+            yValue.deleteCharAt(yValue.length() - 1);
+            yValue.append("]},");
 
-            //memory usage group by node:memory_use
-            List<String> memUseNodeList = monCon.getMemUseNode(timePeriod);
-            map.put("yAxis", memUseNodeList);
+            //MEMORY USAGE GROUP BY NODE
+            yValue.append("{\"title\": \"MEMORY USAGE GROUP BY NODE\",\"val\": [");
+            
+            /*//memory usage group by node:memory_limit
+            yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitNode");
+            
+            //memory usage group by node:memory_use(workding_set表取)
+            yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseNode");
+            
+            //去掉最后一个逗号
+            yValue.deleteCharAt(yValue.length() - 1);*/
+            
+            //MEM NODE结束,MEM结束
+            yValue.append("]}]},");
+            
+            //CPU
+            yValue.append("{\"titleText\": \"CPU\",\"val\": [");
 
-            //individual node memory usage： mem_limit
-            List<String> memLimitMinionList = monCon.getMemLimitMinion(timePeriod);
-            map.put("yAxis", memLimitMinionList);
+            //CPU USAGE GROUP BY NODE
+            yValue.append("{\"title\": \"CPU USAGE GROUP BY NODE\",\"val\": [");
+            
+            /*//CPU use group by node:cpu_limit
+            yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getCpuLimitNode");
 
-            //individual node memory usage:memUse
-            List<String> memUseMinionList = monCon.getMemUseMinion(timePeriod);
-            map.put("yAxis", memUseMinionList);
+            //CPU use group by node:cpu_use
+            yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseNode");
 
-            //individual node memory usage:memory_working_set
-            List<String> memSetMinionList = monCon.getMemSetMinion(timePeriod);
-            map.put("yAxis", memSetMinionList);
+            //去掉最后一个逗号
+            yValue.deleteCharAt(yValue.length() - 1);*/
+            
+            //CPU结束
+            yValue.append("]}]},");
+            
+            //DISK
+            yValue.append("{\"titleText\": \"DISK\",\"val\": [");
 
-            //cpu use group by node:cpu_limit
-            List<String> cpuLimitNodeList = monCon.getCpuLimitNode(timePeriod);
-            map.put("yAxis", cpuLimitNodeList);
-
-            //cpu use group by node:cpu_use
-            List<String> cpuUseNodeList = monCon.getCpuUseNode(timePeriod);
-            map.put("yAxis", cpuUseNodeList);
-
-            //individual node cpu usage:cpu_limit
-            List<String> cpuLimitMinionList = monCon.getCpuLimitMinion(timePeriod);
-            map.put("yAxis", cpuLimitMinionList);
-
-            //individual node cpu usage:cpu_use
-            List<String> cpuUseMinionList = monCon.getCpuUseMinion(timePeriod);
-            map.put("yAxis", cpuUseMinionList);
-
+            //OVERALL CLUSTER DISK USAGE
+            yValue.append("{\"title\": \"OVERALL CLUSTER DISK USAGE\",\"val\": [");
+            
             //overall cluster disk usage:disk_limit
-            List<String> diskLimitAllList = monCon.getDiskLimitOverAll(timePeriod);
-            map.put("yAxis", diskLimitAllList);
-
+            yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitOverAll");
+            
             //overall cluster disk usage:disk_use
-            List<String> diskUseAllList = monCon.getDiskUseOverAll(timePeriod);
-            map.put("yAxis", diskUseAllList);
+            yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseOverAll");
 
-            //disk usage group by node:disk_limit
-            List<String> diskLimitNodeList = monCon.getDiskLimitNode(timePeriod);
-            map.put("yAxis", diskLimitNodeList);
+            //去掉最后一个逗号
+            yValue.deleteCharAt(yValue.length() - 1);
+            yValue.append("]},");
+
+            //DISK USAGE GROUP BY NODE
+            yValue.append("{\"title\": \"DISK USAGE GROUP BY NODE\",\"val\": [");
+            
+            /*//disk usage group by node:disk_limit
+            yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitNode");
 
             //disk usage group by node:disk_use
-            List<String> diskUseNodeList = monCon.getDiskUseNode(timePeriod);
-            map.put("yAxis", diskUseNodeList);
+            yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseNode");
 
-            //individual node disk usage:disk_limit
-            List<String> diskLimitMinionList = monCon.getDiskLimitMinion(timePeriod);
-            map.put("yAxis", diskLimitMinionList);
+            //去掉最后一个逗号
+            yValue.deleteCharAt(yValue.length() - 1);*/
+            
+            //DISK结束
+            yValue.append("]}]},");
+            
+            //NETWORK
+            yValue.append("{\"titleText\": \"NETWORK\",\"val\": [");
 
-            //individual node disk usage:disk_use
-            List<String> diskUseIndList = monCon.getDiskUseMinion(timePeriod);
-            map.put("yAxis", diskUseIndList);
-
-            //network usage group by node:tx
-            List<String> networkTxNodeList = monCon.getTxNode(timePeriod);
-            map.put("yAxis", networkTxNodeList);
+            //NETWORK USAGE GROUP BY NODE
+            yValue.append("{\"title\": \"NETWORK USAGE GROUP BY NODE\",\"val\": [");
+            
+            /*//network usage group by node:tx
+            yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getTxNode");
 
             //network usage group by node:rx
-            List<String> networkRxNodeList = monCon.getRxNode(timePeriod);
-            map.put("yAxis", networkRxNodeList);
+            yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getRxNode");
 
+            //去掉最后一个逗号
+            yValue.deleteCharAt(yValue.length() - 1);*/
+            
+            //NET结束
+            yValue.append("]}]}]},");
+            
+            //minion
+            yValue.append("{\"name\": \"minmon\",\"val\": [");
+            
+            //从表中取出所有slave节点
+            List<Cluster> clusterLst = (List<Cluster>) clusterDao.getByHostType("slave");
+            
+            //循环处理minion的监控信息
+            for ( int i = 0 ; i < clusterLst.size() ; i++ ) {
+                //memory
+                yValue.append("{\"titleText\": \"").append("minion" + clusterLst.get(i).getHost().split("\\.")[3]).append("\",\"val\": [");
+                
+                //memory
+                yValue.append("{\"title\": \"memory\",\"val\": [");
+                
+                //individual node memory usage： mem_limit
+                yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitMinion");
 
-            //individual node network usage:tx
-            List<String> networkTxMinionList = monCon.getTxMinion(timePeriod);
-            map.put("yAxis", networkTxMinionList);
+                //individual node memory usage:memUse
+                yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseMinion");
+                
+                //individual node memory usage:memory_working_set
+                yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetMinion");
 
-            //individual node network usage:rx
-            List<String> networkRxMinionList = monCon.getRxMinion(timePeriod);
-            map.put("yAxis", networkRxMinionList);
+                //去掉最后一个逗号
+                yValue.deleteCharAt(yValue.length() - 1);
+                //memory结束
+                yValue.append("]},");
+
+                //CPU
+                yValue.append("{\"title\": \"cpu\",\"val\": [");
+                
+                //individual node CPU usage:cpu_limit
+                yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getCpuLimitMinion");
+
+                //individual node CPU usage:cpu_use
+                yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseMinion");
+                
+                //去掉最后一个逗号
+                yValue.deleteCharAt(yValue.length() - 1);
+                //CPU结束
+                yValue.append("]},");
+
+                //disk
+                yValue.append("{\"title\": \"disk\",\"val\": [");
+
+                //individual node disk usage:disk_limit
+                yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitMinion");
+                
+                //individual node disk usage:disk_use
+                yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseMinion");
+
+                //去掉最后一个逗号
+                yValue.deleteCharAt(yValue.length() - 1);
+                //disk结束
+                yValue.append("]},");
+
+                //network
+                yValue.append("{\"title\": \"network\",\"val\": [");
+                
+                //individual node network usage:tx
+                yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getTxMinion");
+
+                //individual node network usage:rx
+                yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getRxMinion");
+                
+                //去掉最后一个逗号
+                yValue.deleteCharAt(yValue.length() - 1);
+                //network结束
+                yValue.append("]},");
+                
+                //去掉最后一个逗号
+                yValue.deleteCharAt(yValue.length() - 1);
+                
+                //minion节点串结束
+                yValue.append("]},");
+            }
+            //去掉最后一个逗号
+            yValue.deleteCharAt(yValue.length() - 1);
+            //所有minion结束
+            yValue.append("]}");
+            
+            //yValue结束
+            yValue.append("]");
         } catch (Exception e) {
             log.debug(e.getMessage());
+            System.out.println(e.getMessage());
         }
-        return null;
+        //拼接总串
+        return "{" + xValue.toString() + yValue.toString() + "}";
     }
 
 
     /**
-     * 根据pod_namespace、pod_name、container_name取得资源使用情况;
+     * 根据podNamespace、pod_name、container_name取得资源使用情况;
      *
-     * @param pod_namespace  pod_namespace
-     * @param pod_name       pod_name
-     * @param container_name container_name
+     * @param podNamespace  podNamespace
+     * @param podName podName
+     * @param containerName containerName
      * @return ContainerUse
      */
-    public List<ContainerUse> getContainerUse(String pod_namespace, String pod_name,
-                                              String container_name, String timePeriod, String timeGroup) {
-        List<ContainerUse> containerUseList = new ArrayList<>();
+    @RequestMapping(value = {"/getContainerMonitor"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String getContainerMonitor(String namespace, String svcName,
+                                              String podName, String timePeriod) {
 
+        StringBuilder xValue = new StringBuilder();
+        StringBuilder yValue = new StringBuilder();
+        
         try {
-            InfluxDB influxDB = InfluxDBFactory.connect(url, username, password);
+            influxDB = InfluxDBFactory.connect(url, username, password);
 
-            String cpuUse_sql = "SELECT non_negative_derivative(max(value),1u) FROM \"cpu/usage_ns_cumulative\" WHERE 1=1 ";
-            if (pod_namespace != null && !"".equals(pod_namespace)) {
-                cpuUse_sql += "and \"pod_namespace\" = \'" + pod_namespace + "\'";
-            }
-            if (pod_name != null && !"".equals(pod_name)) {
-                cpuUse_sql += " AND  \"pod_name\" =  \'" + pod_name + "\'";
-            }
-            if (container_name != null && !"".equals(container_name)) {
-                cpuUse_sql += " and \"container_name\" = \'" + container_name + "\'";
-            }
-            cpuUse_sql += " AND time > now() - 30m GROUP BY  pod_namespace ,pod_name ,container_name,time(30s) fill(null)";
-            Query query_cpu_use = new Query(cpuUse_sql, dbName);
-            QueryResult result_cpu_use = influxDB.query(query_cpu_use);//Returns:  a List of Series which matched the query.
-            //取得series列表
-            List<Series> cpu_use_values = result_cpu_use.getResults().get(0).getSeries();//.get(0).getValues();
+            xValue.append("\"xValue\": [");
+            
+            //xValue
+            xValue = joinXValue(xValue, timePeriod);
+            
+            //yValue
+            yValue.append("\"yValue\": [");
 
-
-            String cpuLimit_sql = "SELECT last(\"value\") FROM \"cpu/limit_gauge\" WHERE 1=1 ";
-            if (pod_namespace != null && !"".equals(pod_namespace)) {
-                cpuLimit_sql += " and \"pod_namespace\" = \'" + pod_namespace + "\'";
-            }
-            if (pod_name != null && !"".equals(pod_name)) {
-                cpuLimit_sql += " AND  \"pod_name\" = \'" + pod_name + "\'";
-            }
-            if (container_name != null && !"".equals(container_name)) {
-                cpuLimit_sql += " and \"container_name\" =\'" + container_name + "\'";
-            }
-            cpuLimit_sql += " AND time > now() - 30m GROUP BY pod_namespace ,pod_name ,container_name, time(30s) fill(null)";
-            Query query_cpu_limit = new Query(cpuLimit_sql, dbName);
-            QueryResult result_cpu_limit = influxDB.query(query_cpu_limit);
-            List<Series> cpu_limit_values = result_cpu_limit.getResults().get(0).getSeries();//.get(0).getValues().get(0).get(1).toString();
-
-
-            String memUse_sql = "SELECT max(\"value\") FROM \"memory/usage_bytes_gauge\" WHERE  1=1 ";
-            if (pod_namespace != null && !"".equals(pod_namespace)) {
-                memUse_sql += " and \"pod_namespace\" =\'" + pod_namespace + "\'";
-            }
-            if (pod_name != null && !"".equals(pod_name)) {
-                memUse_sql += " AND  \"pod_name\" = \'" + pod_name + "\'";
-            }
-            if (container_name != null && !"".equals(container_name)) {
-                memUse_sql += " and \"container_name\" =\'" + container_name + "\'";
-            }
-            memUse_sql += " AND time > now() - 30m GROUP BY  pod_namespace ,pod_name ,container_name,time(30s) fill(null)";
-            Query query_mem_use = new Query(memUse_sql, dbName);
-            QueryResult result_mem_use = influxDB.query(query_mem_use);
-            List<Series> mem_use_values = result_mem_use.getResults().get(0).getSeries();//.get(0).getValues();
-
-
-            String memLimit_sql = "SELECT last(\"value\") FROM \"memory/limit_bytes_gauge\" WHERE 1=1  ";
-            if (pod_namespace != null && !"".equals(pod_namespace)) {
-                memLimit_sql += "and \"pod_namespace\" =\'" + pod_namespace + "\'";
-            }
-            if (pod_name != null && !"".equals(pod_name)) {
-                memLimit_sql += " AND  \"pod_name\" =\'" + pod_name + "\'";
-            }
-            if (container_name != null && !"".equals(container_name)) {
-                memLimit_sql += " and \"container_name\" =\'" + container_name + "\'";
-            }
-            memLimit_sql += " AND time > now() - 30m GROUP BY pod_namespace ,pod_name ,container_name, time(30s) fill(null)";
-            Query query_mem_limit = new Query(memLimit_sql, dbName);
-            QueryResult result_mem_limit = influxDB.query(query_mem_limit);
-            List<Series> mem_limit_values = result_mem_limit.getResults().get(0).getSeries();
-
-
-            String memWorkingSet_sql = "SELECT max(\"value\") FROM \"memory/working_set_bytes_gauge\" WHERE  1=1 ";
-            if (pod_namespace != null && !"".equals(pod_namespace)) {
-                memWorkingSet_sql += " and \"pod_namespace\" =\'" + pod_namespace + "\'";
-            }
-            if (pod_name != null & !"".equals(pod_name)) {
-                memWorkingSet_sql += " AND  \"pod_name\" = \'" + pod_name + "\'";
-
-            }
-            if (container_name != null && !"".equals(container_name)) {
-                memWorkingSet_sql += " and \"container_name\" =\'" + container_name + "\'";
-            }
-            memWorkingSet_sql += " AND time > now() - 30m GROUP BY pod_namespace ,pod_name ,container_name, time(30s) fill(null)";
-            Query query_mem_set = new Query(memWorkingSet_sql, dbName);
-            QueryResult result_mem_set = influxDB.query(query_mem_set);
-            List<Series> mem_set_values = result_mem_set.getResults().get(0).getSeries();//.get(0).getValues();
-
-
-            List<List<Object>> cpu_use_list;
-            List<List<Object>> cpu_limit_list;
-            List<List<Object>> mem_use_list;
-            List<List<Object>> mem_limit_list;
-            List<List<Object>> mem_set_list;
-            for (int i = 0; i < cpu_use_values.size(); i++) {
-
-                cpu_use_list = cpu_use_values.get(i).getValues();
-                cpu_limit_list = cpu_limit_values.get(i).getValues();
-                mem_use_list = mem_use_values.get(i).getValues();
-                mem_limit_list = mem_limit_values.get(i).getValues();
-                mem_set_list = mem_set_values.get(i).getValues();
-
-                List<String> cpuUseList = new ArrayList<>();
-                List<String> cpuLimitList = new ArrayList<>();
-                List<String> memUseList = new ArrayList<>();
-                List<String> memLimitList = new ArrayList<>();
-                List<String> memSetList = new ArrayList<>();
-                for (int j = 0; j < cpu_use_values.size(); j++) {
-
-                    String strCpuUse = cpu_use_list.get(j).get(1).toString();
-                    String strCpuLimit = cpu_limit_list.get(j).get(1).toString();
-                    String strMemUse = mem_use_list.get(j).get(1).toString();
-                    String strMemLimit = mem_limit_list.get(j).get(1).toString();
-                    String strMemSet = mem_set_list.get(j).get(1).toString();
-
-                    cpuUseList.add(strCpuUse);
-                    cpuLimitList.add(strCpuLimit);
-                    memUseList.add(strMemUse);
-                    memLimitList.add(strMemLimit);
-                    memSetList.add(strMemSet);
-
+            //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient("default");
+            
+            //取得所有POD
+            PodList podLst = client.getAllPods();
+            
+            String oldSvcName = podLst.get(0).getMetadata().getName();
+            String newSvcName = "";
+            
+            for ( int i=0 ; i < podLst.size() ; i++ ) {
+            	Pod pod = podLst.get(i);
+            	//服务名称
+            	newSvcName = pod.getMetadata().getName();
+            	//实例名称
+            	String indexPodName = pod.getMetadata().getName();
+            	//拼接JSON数据
+            	if(i==0){
+                	//SERVICE
+                    yValue.append("{\"name\": \"" + newSvcName + "\",\"val\": [");
+            	} else if (!newSvcName.equals(oldSvcName)) {
+                    //去掉上一个SERVICE的最后一个逗号
+                    yValue.deleteCharAt(yValue.length() - 1);
+                    //SERVICE结束
+                    yValue.append("]},");
+                	//新一个SERVICE
+                    yValue.append("{\"name\": \"" + newSvcName + "\",\"val\": [");
                 }
-                ContainerUse containerUse = new ContainerUse();
-                containerUse.setCpuUse(cpuUseList);
-                containerUse.setCpuLimit(cpuLimitList);
-                containerUse.setMemUse(memUseList);
-                containerUse.setMemLimit(memLimitList);
-                containerUse.setMemWorkingSet(memSetList);
+            	
+                //POD
+                yValue.append("{\"titleText\": \"" + pod.getMetadata().getGenerateName() + "\",\"val\": [");
+                
+                //memory
+                yValue.append("{\"title\": \"memory\",\"val\": [");
 
-                containerUseList.add(containerUse);
+                //MEM LIMIT
+                yValue = joinContainerYValue(yValue, "memoryLimitCurrent", timePeriod, "getMemLimit", namespace, svcName, podName);
+                
+                //去掉最后一个逗号
+                yValue.deleteCharAt(yValue.length() - 1);
+                yValue.append("]},");
+
+                //MEM USE
+                yValue = joinContainerYValue(yValue, "memoryUsageCurrent", timePeriod, "getMemUse", namespace, svcName, podName);
+                
+                //去掉最后一个逗号
+                yValue.deleteCharAt(yValue.length() - 1);
+                yValue.append("]},");
+              
+                //MEM WORKING SET
+                yValue = joinContainerYValue(yValue, "memoryWorkingSetCurrent", timePeriod, "getMemSet", namespace, svcName, podName);
+                
+                //去掉最后一个逗号
+                yValue.deleteCharAt(yValue.length() - 1);
+                yValue.append("]}");
+                
+                //MEM结束
+                yValue.append("]},");
+
+                //CPU
+                yValue.append("{\"title\": \"cpu\",\"val\": [");
+                
+                //CPU LIMIT
+                yValue = joinContainerYValue(yValue, "cpuLimitCurrent", timePeriod, "getCpuLimit", namespace, svcName, podName);
+                
+                //去掉最后一个逗号
+                yValue.deleteCharAt(yValue.length() - 1);
+                yValue.append("]},");
+
+                //CPU USE
+                yValue = joinContainerYValue(yValue, "cpuUsageCurrent", timePeriod, "getCpuUse", namespace, svcName, podName);
+                
+                //去掉最后一个逗号
+                yValue.deleteCharAt(yValue.length() - 1);
+                yValue.append("]}");
+                
+                //CPU结束,POD结束
+                yValue.append("]}]},");
             }
+            
+            //去掉最后一个逗号
+            yValue.deleteCharAt(yValue.length() - 1);
+            //最后一个SERVICE结束
+            yValue.append("]},");
 
+            //yValue结束
+            yValue.append("]");
         } catch (Exception e) {
             log.debug(e.getMessage());
+            System.out.println(e.getMessage());
         }
-        return containerUseList;
+        //拼接总串
+        return "{" + xValue.toString() + yValue.toString() + "}";
     }
 
     @RequestMapping(value = {"/add"}, method = RequestMethod.GET)
@@ -559,5 +608,70 @@ public class ClusterController {
         } catch (SftpException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 从数据库中读取时间轴数据,并进行拼接
+     * @param val val
+     * @param timePeriod timePeriod
+     * @return
+     */
+    private StringBuilder joinXValue(StringBuilder val, String timePeriod){
+    	MonitorController monCon = new MonitorController();
+        List<String> lst = monCon.getXValue(influxDB, dbName, timePeriod);
+        for (int i=0;i < lst.size();i++){
+        	val.append("\"").append(lst.get(i)).append("\",");
+        }
+        //去掉最后一个逗号
+        val.deleteCharAt(val.length() - 1);
+        val.append("],");
+        return val;
+    }
+    
+    /**
+     * 从数据库中读取监控数据,并进行拼接
+     * @param val val
+     * @param legendName legendName
+     * @param timePeriod timePeriod
+     * @param dataType dataType
+     * @return
+     */
+    private StringBuilder joinClusterYValue(StringBuilder val, String legendName, String timePeriod, String dataType){
+        MonitorController monCon = new MonitorController();
+    	val.append("{\"legendName\": \"");
+    	val.append(legendName);
+    	val.append("\",\"yAxis\": [");
+        List<String> lst = monCon.getClusterData(influxDB, dbName, timePeriod, dataType);
+        for (int i=0;i < lst.size();i++){
+        	val.append("\"").append(lst.get(i)).append("\",");
+        }
+        //去掉最后一个逗号
+        val.deleteCharAt(val.length() - 1);
+        val.append("]},");
+        return val;
+    }
+    
+    /**
+     * 从数据库中读取监控数据,并进行拼接
+     * @param val val
+     * @param legendName legendName
+     * @param timePeriod timePeriod
+     * @param dataType dataType
+     * @return
+     */
+    private StringBuilder joinContainerYValue(StringBuilder val, String legendName, String timePeriod, 
+    		String dataType, String namespace, String svcName, String podName){
+        MonitorController monCon = new MonitorController();
+    	val.append("{\"legendName\": \"");
+    	val.append(legendName);
+    	val.append("\",\"yAxis\": [");
+        List<String> lst = monCon.getContainerData(influxDB, dbName, timePeriod, dataType, namespace, svcName, podName);
+        for (int i=0;i < lst.size();i++){
+        	val.append("\"").append(lst.get(i)).append("\",");
+        }
+        //去掉最后一个逗号
+        val.deleteCharAt(val.length() - 1);
+        val.append("]},");
+        return val;
     }
 }

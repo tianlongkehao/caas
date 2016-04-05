@@ -96,8 +96,21 @@
 
 <script type="text/javascript">
 
+
     var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
     //var colorData = ['#61a0a8', '#d48265', '#749f83',  '#ca8622', '#bda29a','#2f4554','#00BFFF','#61a0a8','#61a0a8','#749f83' ,'#91c7ae','#6e7074'];
+
+	//默认监控5分钟
+	getContainerMonitor("5m");
+	//获取监控数据
+	function getContainerMonitor(timePeriod){
+	    $.ajax({
+	        url:ctx+"/cluster/getContainerMonitor?timePeriod=" + timePeriod,
+	        success:function(data){
+	        	showContainerImg($.parseJSON(data));
+	        }
+	    })
+	}
 
     var containerData = {
         'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
@@ -226,6 +239,8 @@
             }
         ]
     };
+    
+    //显示容器IMG
     showContainerImg(containerData);
 
     function addContainerMemImg() {
@@ -305,6 +320,7 @@
         }
 
     }
+    
     function showContainerMemImg(count, containerDataYval, j, option) {
         var c = {
             type: 'value',

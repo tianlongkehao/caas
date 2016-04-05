@@ -56,7 +56,20 @@
 </div>
 
 <script type="text/javascript">
-    var colorData = ['#7EB26D', '#EAB839', '#6ED0E0','#61a0a8', '#d48265', '#749f83',  '#ca8622', '#bda29a','#2f4554','#00BFFF','#61a0a8','#61a0a8','#749f83' ,'#91c7ae','#6e7074'];
+
+    var colorData = ['#7EB26D', '#EAB839', '#6ED0E0', '#61a0a8', '#d48265', '#749f83', '#ca8622', '#bda29a', '#2f4554', '#00BFFF', '#61a0a8', '#61a0a8', '#749f83', '#91c7ae', '#6e7074'];
+
+    //默认监控5分钟
+    getClusterMonitor("5m");
+    //获取监控数据
+    function getClusterMonitor(timePeriod) {
+        $.ajax({
+            url: ctx + "/cluster/getClusterMonitor?timePeriod=" + timePeriod,
+            success: function (data) {
+                createChart($.parseJSON(data));
+            }
+        })
+    }
 
     var clusterData = {
         'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
@@ -101,27 +114,13 @@
                                     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
                                 }]
                             }, {
-                                'title': 'DISK USAGE GROUP BY NODE', 'val': [{
-                                    'legendName': 'Limit Current',
-                                    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                                },
-                                    {
-                                        'legendName': 'Usage Current',
-                                        'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                    }]
+                                'title': 'DISK USAGE GROUP BY NODE', 'val': []
                             }
                         ]
                     }, {
                         'titleText': 'NETWORK', 'val': [
                             {
-                                'title': 'NETWORK USAGE GROUP BY NODE', 'val': [{
-                                'legendName': 'Limit Current',
-                                'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                            },
-                                {
-                                    'legendName': 'Usage Current',
-                                    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                }]
+                                'title': 'NETWORK USAGE GROUP BY NODE', 'val': []
                             }
                         ]
                     }
@@ -274,196 +273,196 @@
         $("#resourceImg").append(clusterTxt);
     }
 
-    var count = 0;
-    for (var j = 0; j < 4; j++) {
-        var clusterDataYval = clusterData.yValue[0].val[j];
-        for (var i = 0; i < clusterDataYval.val.length; i++) {
-            var option = {
-                title: {
-                    text: ''
-                },
-                tooltip: {
-                    trigger: 'axis'
-                },
-                legend: {
-                    bottom: '1%',
-                    data: [],
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '10%',
-                    containLabel: true
-                },
-                xAxis: [
-                    {
-                        type: 'category',
-                        boundaryGap: false,
-                        data: clusterData.xValue
-                    }
-                ],
-                yAxis: [],
-                series: []
-            };
-
-
-            var titleText = clusterDataYval.val[i].title;
-            option.title.text = titleText;
-            if (titleText.indexOf("CPU") != -1) {
-                var a1 = {
-                    type: 'value',
-                    scale: true,
-                    axisLabel: {
-                        formatter: '{value} ms'
-                    }
-                };
-                option.yAxis.push(a1);
-            } else if (titleText.indexOf("NETWORK") != -1) {
-                var b1 = {
-                    type: 'value',
-                    scale: true,
-                    axisLabel: {
-                        formatter: '{value} KBps'
-                    }
-                };
-                option.yAxis.push(b1);
-            } else {
-                var c1 = {
-                    type: 'value',
-                    scale: true,
-                    axisLabel: {
-                        formatter: '{value} Gib'
-                    }
-                };
-                option.yAxis.push(c1);
-            }
-
-            var memNodeNum = 0;
-            var cpuNodeNum = 0;
-            var diskNodeNum = 0;
-            var netNodeNum = 0;
-            for (var minToCluster = 0; minToCluster < clusterData.yValue[1].val.length; minToCluster++) {
-                for (var minNum = 0; minNum < 2; minNum++) {
-                    var titleText = clusterData.yValue[1].val[minToCluster].titleText;
-                    var memoryNode = {
-                        'legendName': clusterData.yValue[1].val[minToCluster].val[0].val[minNum].legendName + "{" + titleText + "}",
-                        'yAxis': clusterData.yValue[1].val[minToCluster].val[0].val[minNum].yAxis
-                    };
-                    var cpuNode = {
-                        'legendName': clusterData.yValue[1].val[minToCluster].val[1].val[minNum].legendName + "{" + titleText + "}",
-                        'yAxis': clusterData.yValue[1].val[minToCluster].val[1].val[minNum].yAxis
-                    };
-                    var diskNode = {
-                        'legendName': clusterData.yValue[1].val[minToCluster].val[2].val[minNum].legendName + "{" + titleText + "}",
-                        'yAxis': clusterData.yValue[1].val[minToCluster].val[2].val[minNum].yAxis
-                    };
-                    var netNode = {
-                        'legendName': clusterData.yValue[1].val[minToCluster].val[3].val[minNum].legendName + "{" + titleText + "}",
-                        'yAxis': clusterData.yValue[1].val[minToCluster].val[3].val[minNum].yAxis
-                    };
-                    clusterData.yValue[0].val[0].val[1].val[memNodeNum] = memoryNode;
-                    clusterData.yValue[0].val[1].val[0].val[cpuNodeNum] = cpuNode;
-                    clusterData.yValue[0].val[2].val[0].val[cpuNodeNum] = diskNode;
-                    clusterData.yValue[0].val[3].val[0].val[netNodeNum] = netNode;
-                    memNodeNum++;
-                    cpuNodeNum++;
-                    diskNodeNum++;
-                    netNodeNum++;
-                }
-            }
-
-            for (var minToCluster = 0; minToCluster < clusterData.yValue[1].val.length; minToCluster++) {
-                for (var memNum = 0; memNum < 2; memNum++) {
-
-
-                    clusterData.yValue[0].val[0].val[1].val[cpuNode] = memoryNode;
-                    cpuNode++;
-                }
-            }
-
-            var clusterDataMinVal = clusterDataYval.val[i];
-            for (var m = 0; m < clusterDataMinVal.val.length; m++) {
-
-                var clusterYval = clusterDataMinVal.val[m].yAxis;
-
-                var a = {
-                    name: clusterDataMinVal.val[m].legendName,
-                    icon: 'roundRect'
-                };
-                var b = {
-                    name: clusterDataMinVal.val[m].legendName,
-                    type: 'line',
-                    barWidth: 5,
-                    barHeight: 2,
-                    itemStyle: {
-                        normal: {
-                            color: colorData[m],
-                        }
+    function createChart(clusterData) {
+        var count = 0;
+        for (var j = 0; j < 4; j++) {
+            var clusterDataYval = clusterData.yValue[0].val[j];
+            for (var i = 0; i < clusterDataYval.val.length; i++) {
+                var option = {
+                    title: {
+                        text: ''
                     },
-                    stack: '总量',
-                    areaStyle: {normal: {}, color: colorData[m]},
-                    data: clusterYval
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        bottom: '1%',
+                        data: [],
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '10%',
+                        containLabel: true
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: clusterData.xValue
+                        }
+                    ],
+                    yAxis: [],
+                    series: []
                 };
-                option.legend.data.push(a);
-                option.series.push(b);
-            }
-            addClusterImg();
-            var clustersImg = echarts.init(document.getElementById('resourceImg').children[count]);
-            clustersImg.setOption(option);
-            count++;
-            option.legend.data = [];
-            option.series = [];
-        }
-        var clusterDataYVal1 = clusterData.yValue[1];
-        for (var min = 0; min < clusterDataYVal1.val.length; min++) {
-            var titleTextMin = clusterDataYVal1.val[min].titleText + " " + clusterDataYVal1.val[min].val[j].title;
-            option.title.text = titleTextMin;
 
-//            for(var memNum = 0; memNum < 2; memNum++){
-//                var memoryNode = {
-//                    'legendName': clusterDataYVal1.val[min].val[0].val[memNum].legendName + "{" + clusterDataYVal1.val[min].titleText + "}",
-//                    'yAxis': clusterDataYVal1.val[min].val[0].val[memNum].yAxis
-//                };
-//                for(var memNode = 0; memNode < clusterDataYVal1.val.length*2; memNode++){
-//                    clusterData.yValue[0].val[0].val[1].val[memNode] = memoryNode;
+
+                var titleText = clusterDataYval.val[i].title;
+                option.title.text = titleText;
+                if (titleText.indexOf("CPU") != -1) {
+                    var a1 = {
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value} ms'
+                        }
+                    };
+                    option.yAxis.push(a1);
+                } else if (titleText.indexOf("NETWORK") != -1) {
+                    var b1 = {
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value} KBps'
+                        }
+                    };
+                    option.yAxis.push(b1);
+                } else {
+                    var c1 = {
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value} Gib'
+                        }
+                    };
+                    option.yAxis.push(c1);
+                }
+
+                var memNodeNum = 0;
+                var cpuNodeNum = 0;
+                var diskNodeNum = 0;
+                var netNodeNum = 0;
+                for (var minToCluster = 0; minToCluster < clusterData.yValue[1].val.length; minToCluster++) {
+                    for (var minNum = 0; minNum < 2; minNum++) {
+                        var titleText = clusterData.yValue[1].val[minToCluster].titleText;
+                        var memoryNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[0].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[0].val[minNum].yAxis
+                        };
+                        var cpuNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[1].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[1].val[minNum].yAxis
+                        };
+                        var diskNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[2].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[2].val[minNum].yAxis
+                        };
+                        var netNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[3].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[3].val[minNum].yAxis
+                        };
+                        clusterData.yValue[0].val[0].val[1].val[memNodeNum] = memoryNode;
+                        clusterData.yValue[0].val[1].val[0].val[cpuNodeNum] = cpuNode;
+                        clusterData.yValue[0].val[2].val[0].val[cpuNodeNum] = diskNode;
+                        clusterData.yValue[0].val[3].val[0].val[netNodeNum] = netNode;
+                        memNodeNum++;
+                        cpuNodeNum++;
+                        diskNodeNum++;
+                        netNodeNum++;
+                    }
+                }
+
+                for (var minToCluster = 0; minToCluster < clusterData.yValue[1].val.length; minToCluster++) {
+                    for (var memNum = 0; memNum < 2; memNum++) {
+
+
+                        clusterData.yValue[0].val[0].val[1].val[cpuNode] = memoryNode;
+                        cpuNode++;
+                    }
+                }
+
+                var clusterDataMinVal = clusterDataYval.val[i];
+                for (var m = 0; m < clusterDataMinVal.val.length; m++) {
+
+                    var clusterYval = clusterDataMinVal.val[m].yAxis;
+
+                    var a = {
+                        name: clusterDataMinVal.val[m].legendName,
+                        icon: 'roundRect'
+                    };
+                    var b = {
+                        name: clusterDataMinVal.val[m].legendName,
+                        type: 'line',
+                        barWidth: 5,
+                        barHeight: 2,
+                        itemStyle: {
+                            normal: {
+                                color: colorData[m],
+                            }
+                        },
+                        stack: '总量',
+                        areaStyle: {normal: {}, color: colorData[m]},
+                        data: clusterYval
+                    };
+                    option.legend.data.push(a);
+                    option.series.push(b);
+                }
+                addClusterImg();
+                var clustersImg = echarts.init(document.getElementById('resourceImg').children[count]);
+                clustersImg.setOption(option);
+                count++;
+                option.legend.data = [];
+                option.series = [];
+            }
+            var clusterDataYVal1 = clusterData.yValue[1];
+            for (var min = 0; min < clusterDataYVal1.val.length; min++) {
+                var titleTextMin = clusterDataYVal1.val[min].titleText + " " + clusterDataYVal1.val[min].val[j].title;
+                option.title.text = titleTextMin;
+
+//                for(var memNum = 0; memNum < 2; memNum++){
+//                    var memoryNode = {
+//                        'legendName': clusterDataYVal1.val[min].val[0].val[memNum].legendName + "{" + clusterDataYVal1.val[min].titleText + "}",
+//                        'yAxis': clusterDataYVal1.val[min].val[0].val[memNum].yAxis
+//                    };
+//                    for(var memNode = 0; memNode < clusterDataYVal1.val.length*2; memNode++){
+//                        clusterData.yValue[0].val[0].val[1].val[memNode] = memoryNode;
+//                    }
 //                }
-//            }
+                for (var minxx = 0; minxx < clusterDataYVal1.val[min].val[j].val.length; minxx++) {
+                    var clusterYVal = clusterDataYVal1.val[min].val[j].val[minxx].yAxis;
+                    var mina = {
+                        name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
+                        icon: 'roundRect'
+                    };
+                    var minb = {
+                        name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
+                        type: 'line',
+                        barWidth: 5,
+                        barHeight: 2,
+                        itemStyle: {
+                            normal: {
+                                color: colorData[minxx],
+                            }
+                        },
+                        stack: '总量',
+                        areaStyle: {normal: {}, color: colorData[minxx]},
+                        data: clusterYVal
+                    };
+                    option.legend.data.push(mina);
+                    option.series.push(minb);
+                }
 
-            for (var minxx = 0; minxx < clusterDataYVal1.val[min].val[j].val.length; minxx++) {
-                var clusterYVal = clusterDataYVal1.val[min].val[j].val[minxx].yAxis;
-                var mina = {
-                    name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
-                    icon: 'roundRect'
-                };
-                var minb = {
-                    name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
-                    type: 'line',
-                    barWidth: 5,
-                    barHeight: 2,
-                    itemStyle: {
-                        normal: {
-                            color: colorData[minxx],
-                        }
-                    },
-                    stack: '总量',
-                    areaStyle: {normal: {}, color: colorData[minxx]},
-                    data: clusterYVal
-                };
-                option.legend.data.push(mina);
-                option.series.push(minb);
+                if (min % 2 == 0) {
+                    addMinImgLeft();
+                } else {
+                    addMinImgRight();
+                }
+                var minionImg = echarts.init(document.getElementById('resourceImg').children[count]);
+                minionImg.setOption(option);
+                count++;
+                option.legend.data = [];
+                option.series = [];
             }
-
-
-            if (min % 2 == 0) {
-                addMinImgLeft();
-            } else {
-                addMinImgRight();
-            }
-            var minionImg = echarts.init(document.getElementById('resourceImg').children[count]);
-            minionImg.setOption(option);
-            count++;
-            option.legend.data = [];
-            option.series = [];
         }
     }
 
