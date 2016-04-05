@@ -57,7 +57,19 @@
 
 <script type="text/javascript">
     var colorData = ['#c5e1d2', '#abd4bd', '#91c7a9', '#77ba95'];
-
+    
+    //默认监控5分钟
+    getClusterMonitor("5m");
+    //获取监控数据
+    function getClusterMonitor(timePeriod){
+        $.ajax({
+            url:ctx+"/cluster/getClusterMonitor?timePeriod=" + timePeriod,
+            success:function(data){
+            	createChart($.parseJSON(data));
+            }
+        })
+    }
+    
     var clusterData = {
         'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
         'yValue': [
@@ -328,6 +340,7 @@
             }
         ]
     };
+    
     function addClusterImg() {
         var clusterTxt = '<div class="table-lists"  style="margin-top: 10px;width: 1115px;height:260px; float: left">'
                 + '</div>';
@@ -344,142 +357,145 @@
         $("#resourceImg").append(clusterTxt);
     }
 
-    var count = 0;
-    for (var j = 0; j < 4; j++) {
-        var clusterDataYval = clusterData.yValue[0].val[j];
-        for (var i = 0; i < clusterDataYval.val.length; i++) {
-            var option = {
-                title: {
-                    text: ''
-                },
-                tooltip: {
-                    trigger: 'axis'
-                },
-                legend: {
-                    bottom: '1%',
-                    data: [],
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '10%',
-                    containLabel: true
-                },
-                xAxis: [
-                    {
-                        type: 'category',
-                        boundaryGap: false,
-                        data: clusterData.xValue
-                    }
-                ],
-                yAxis: [
-
-                ],
-                series: []
-            };
-
-
-            var titleText = clusterDataYval.val[i].title;
-            option.title.text = titleText;
-            if(titleText.indexOf("CPU") != -1){
-                var a1 = {
-                    type: 'value',
-                    scale: true,
-                    axisLabel: {
-                        formatter: '{value} ms'
-                    }
-                };
-                option.yAxis.push(a1);
-            }else if(titleText.indexOf("NETWORK") != -1){
-                var b1 = {
-                    type: 'value',
-                    scale: true,
-                    axisLabel: {
-                        formatter: '{value} KBps'
-                    }
-                };
-                option.yAxis.push(b1);
-            }else {
-                var c1 = {
-                    type: 'value',
-                    scale: true,
-                    axisLabel: {
-                        formatter: '{value} Gib'
-                    }
-                };
-                option.yAxis.push(c1);
-            }
-
-            var clusterDataMinVal = clusterDataYval.val[i];
-            for (var m = 0; m < clusterDataMinVal.val.length; m++) {
-
-                var a = {
-                    name: clusterDataMinVal.val[m].legendName,
-                    icon: 'roundRect'
-                };
-                var b = {
-                    name: clusterDataMinVal.val[m].legendName,
-                    type: 'line',
-                    barWidth: 5,
-                    barHeight: 2,
-                    itemStyle: {
-                        normal: {
-                            color: colorData[m],
-                        }
+    function createChart(clusterData){
+    	var count = 0;
+        for (var j = 0; j < 4; j++) {
+            var clusterDataYval = clusterData.yValue[0].val[j];
+            for (var i = 0; i < clusterDataYval.val.length; i++) {
+                var option = {
+                    title: {
+                        text: ''
                     },
-                    areaStyle: {normal: {}, color: colorData[m]},
-                    data: clusterDataMinVal.val[m].yAxis
-                };
-                option.legend.data.push(a);
-                option.series.push(b);
-            }
-            addClusterImg();
-            var clustersImg = echarts.init(document.getElementById('resourceImg').children[count]);
-            clustersImg.setOption(option);
-            count++;
-            option.legend.data = [];
-            option.series = [];
-
-        }
-        var clusterDataYVal1 = clusterData.yValue[1];
-        for (var min = 0; min < clusterDataYVal1.val.length; min++) {
-            var titleTextMin = clusterDataYVal1.val[min].titleText+" " + clusterDataYVal1.val[min].val[j].title;
-            option.title.text = titleTextMin;
-
-            for (var minxx = 0; minxx < clusterDataYVal1.val[min].val[j].val.length; minxx++) {
-                var mina = {
-                    name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
-                    icon: 'roundRect'
-                };
-                var minb = {
-                    name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
-                    type: 'line',
-                    barWidth: 5,
-                    barHeight: 2,
-                    itemStyle: {
-                        normal: {
-                            color: colorData[minxx],
-                        }
+                    tooltip: {
+                        trigger: 'axis'
                     },
-                    areaStyle: {normal: {}, color: colorData[minxx]},
-                    data: clusterDataYVal1.val[min].val[j].val[minxx].yAxis
+                    legend: {
+                        bottom: '1%',
+                        data: [],
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '10%',
+                        containLabel: true
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: clusterData.xValue
+                        }
+                    ],
+                    yAxis: [
+
+                    ],
+                    series: []
                 };
-                option.legend.data.push(mina);
-                option.series.push(minb);
+
+
+                var titleText = clusterDataYval.val[i].title;
+                option.title.text = titleText;
+                if(titleText.indexOf("CPU") != -1){
+                    var a1 = {
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value} ms'
+                        }
+                    };
+                    option.yAxis.push(a1);
+                }else if(titleText.indexOf("NETWORK") != -1){
+                    var b1 = {
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value} KBps'
+                        }
+                    };
+                    option.yAxis.push(b1);
+                }else {
+                    var c1 = {
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value} Gib'
+                        }
+                    };
+                    option.yAxis.push(c1);
+                }
+
+                var clusterDataMinVal = clusterDataYval.val[i];
+                for (var m = 0; m < clusterDataMinVal.val.length; m++) {
+
+                    var a = {
+                        name: clusterDataMinVal.val[m].legendName,
+                        icon: 'roundRect'
+                    };
+                    var b = {
+                        name: clusterDataMinVal.val[m].legendName,
+                        type: 'line',
+                        barWidth: 5,
+                        barHeight: 2,
+                        itemStyle: {
+                            normal: {
+                                color: colorData[m],
+                            }
+                        },
+                        areaStyle: {normal: {}, color: colorData[m]},
+                        data: clusterDataMinVal.val[m].yAxis
+                    };
+                    option.legend.data.push(a);
+                    option.series.push(b);
+                }
+                addClusterImg();
+                var clustersImg = echarts.init(document.getElementById('resourceImg').children[count]);
+                clustersImg.setOption(option);
+                count++;
+                option.legend.data = [];
+                option.series = [];
 
             }
-            if(min%2 == 0){
-                addMinImgLeft();
-            }else{
-                addMinImgRight();
+            var clusterDataYVal1 = clusterData.yValue[1];
+            for (var min = 0; min < clusterDataYVal1.val.length; min++) {
+                var titleTextMin = clusterDataYVal1.val[min].titleText+" " + clusterDataYVal1.val[min].val[j].title;
+                option.title.text = titleTextMin;
+
+                for (var minxx = 0; minxx < clusterDataYVal1.val[min].val[j].val.length; minxx++) {
+                    var mina = {
+                        name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
+                        icon: 'roundRect'
+                    };
+                    var minb = {
+                        name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
+                        type: 'line',
+                        barWidth: 5,
+                        barHeight: 2,
+                        itemStyle: {
+                            normal: {
+                                color: colorData[minxx],
+                            }
+                        },
+                        areaStyle: {normal: {}, color: colorData[minxx]},
+                        data: clusterDataYVal1.val[min].val[j].val[minxx].yAxis
+                    };
+                    option.legend.data.push(mina);
+                    option.series.push(minb);
+
+                }
+                if(min%2 == 0){
+                    addMinImgLeft();
+                }else{
+                    addMinImgRight();
+                }
+                var minionImg = echarts.init(document.getElementById('resourceImg').children[count]);
+                minionImg.setOption(option);
+                count++;
+                option.legend.data = [];
+                option.series = [];
             }
-            var minionImg = echarts.init(document.getElementById('resourceImg').children[count]);
-            minionImg.setOption(option);
-            count++;
-            option.legend.data = [];
-            option.series = [];
-        }
+        }	
     }
+    
 
 
 </script>

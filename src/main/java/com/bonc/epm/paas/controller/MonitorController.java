@@ -6,6 +6,8 @@ import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,55 +16,89 @@ import java.util.List;
  * Created by chiwenguang on 16-3-28.
  */
 public class MonitorController {
-    @Value("${monitor.url}")
-    private String url;
-    @Value("${monitor.username}")
-    private String username;
-    @Value("${monitor.password}")
-    private String password;
-    @Value("${monitor.dbName}")
-    private String dbName;
-    private InfluxDB influxDB = InfluxDBFactory.connect(url, username, password);
-
-    //根据条件拼接SQL
-    private String joinSQL(String timePeriod, String selCol, String tabName, String hostWhere) {
+    
+	private InfluxDB influxDB;
+	private String timePeriod;
+	private String dbName;
+	
+	//根据timePeriod计算timeGroup
+	private String getTimeGroup(String timePeriod){
+		String timeGroup;
+		switch (timePeriod) {
+	        case "5m":
+	            timeGroup = "30s";
+	            break;
+	        case "30m":
+	            timeGroup = "2m";
+	            break;
+	        case "1h":
+	            timeGroup = "5m";
+	            break;
+	        case "6h":
+	            timeGroup = "30m";
+	            break;
+	        case "12h":
+	            timeGroup = "1h";
+	            break;
+	        case "24h":
+	            timeGroup = "2h";
+	            break;
+	        case "7d":
+	            timeGroup = "12h";
+	            break;
+	        case "30d":
+	            timeGroup = "3d";
+	            break;
+	        default:
+	            timeGroup = "5s";
+		}
+		return timeGroup;
+	}
+    /**
+     * 根据Cluster条件拼接SQL
+     * 
+     * @param selCol
+     * @param tabName
+     * @param hostWhere
+     * @return
+     */
+    private String joinClusterSQL(String selCol, String tabName, String hostWhere) {
         //根据查询时间段取得间隔时间
-        String timeGroup;
-        switch (timePeriod) {
-            case "5m":
-                timeGroup = "30s";
-                break;
-            case "30m":
-                timeGroup = "2m";
-                break;
-            case "1h":
-                timeGroup = "5m";
-                break;
-            case "6h":
-                timeGroup = "30m";
-                break;
-            case "12h":
-                timeGroup = "1h";
-                break;
-            case "24h":
-                timeGroup = "2h";
-                break;
-            case "7d":
-                timeGroup = "12h";
-                break;
-            case "30d":
-                timeGroup = "3d";
-                break;
-            default:
-                timePeriod = "5m";
-                timeGroup = "5s";
-        }
+        String timeGroup = getTimeGroup(timePeriod);
         //拼SQL
         String sql = "SELECT " + selCol + " FROM " + tabName + " WHERE \"container_name\" = 'machine' ";
-        if ("".equals(hostWhere)) {
-            sql = sql + " ORDER BY length(hostname),hostName ";
-        }
+        
         sql = sql + " AND time > now() - " + timePeriod + " GROUP BY time(" + timeGroup + ")";
+        return sql;
+    }
+    /**
+     * 根据Container条件拼接SQL
+     * 
+     * @param selCol
+     * @param tabName
+     * @param hostWhere
+     * @param namespace
+     * @param svcName
+     * @param podName
+     * @return
+     */
+    private String joinContainerSQL(String selCol, String tabName, String hostWhere, String namespace, String svcName, String podName) {
+        //根据查询时间段取得间隔时间
+        String timeGroup = getTimeGroup(timePeriod);
+        
+        //拼SQL
+        String sql = "SELECT " + selCol + " FROM " + tabName + " WHERE 1=1 ";
+        
+        if (namespace != null && !"".equals(namespace)) {
+        	sql += " and \"pod_namespace\" =\'" + namespace + "\'";
+        }
+        if (svcName != null && !"".equals(svcName)) {
+        	sql += " AND  \"pod_name\" = \'" + svcName + "\'";
+        }
+        if (podName != null && !"".equals(podName)) {
+        	sql += " and \"container_name\" =\'" + podName + "\'";
+        }
+        sql = sql + " AND time > now() - " + timePeriod + " GROUP BY pod_namespace ,pod_name ,container_name, time(" + timeGroup + ") fill(null)";
         return sql;
     }
 
@@ -72,143 +108,171 @@ public class MonitorController {
         List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
         List<String> listString = new ArrayList<>();
         for (List<Object> aListObject : listObject) {
-            if (aListObject.get(1) != null) {
+            //判断值是否为null
+        	if (aListObject.get(1) != null) {
                 String str = aListObject.get(1).toString();
-                listString.add(str.substring(0, str.indexOf(".") + 3));
+                //判断小数点位数
+                if(str.length() <= str.indexOf(".") + 3){
+                	listString.add(str);
+                } else {
+                    listString.add(str.substring(0, str.indexOf(".") + 3));
+                }
+            }else{
+            	listString.add(null);
             }
         }
         return listString;
     }
 
-    //overall cluster memory usage:mem_limit
-    public List<String> getMemLimitOverAll(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_LIMIT, "");
-        return dbSearch(sql);
+    
+    /**
+     *  取得集群监控数据
+     * 
+     * @param influxDB
+     * @param dbName
+     * @param timePeriod
+     * @param dataType
+     * @return
+     */
+    public List<String> getContainerData(InfluxDB influxDB,String dbName, String timePeriod, String dataType, String namespace, String svcName, String podName){
+    	this.influxDB = influxDB;
+    	this.timePeriod = timePeriod;
+    	this.dbName = dbName;
+    	switch (dataType) {
+        case "getMemLimit":
+            //mem_limit
+        	return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.MEMORY_LIMIT, "", namespace, svcName, podName));
+        case "getMemUse":
+            //mem_use
+        	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_USAGE, "", namespace, svcName, podName));
+        case "getMemSet":
+            //mem_set
+        	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, "", namespace, svcName, podName));
+        case "getCpuLimit":
+            //cpu_limit
+        	return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, "", namespace, svcName, podName));
+        case "getCpuUse":
+            //cpu_use
+        	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.CPU_USAGE, "", namespace, svcName, podName));
+		default:
+            return new ArrayList<String>(); 
+    	}
     }
 
-    //overall cluster memory usage:mem_use
-    public List<String> getMemUseOverAll(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_USAGE, "");
-        return dbSearch(sql);
+    /**
+     * 取得X轴横坐标
+     * 
+     * @param influxDB
+     * @param dbName
+     * @param timePeriod
+     * @return
+     */
+    public List<String> getXValue(InfluxDB influxDB,String dbName, String timePeriod){
+    	this.influxDB = influxDB;
+    	this.timePeriod = timePeriod;
+    	this.dbName = dbName;
+    	String sql = joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_LIMIT, "");
+    	Query sqlQuery = new Query(sql, dbName);
+        QueryResult result_mem_limit = influxDB.query(sqlQuery);
+        List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
+        List<String> listString = new ArrayList<>();
+        for (List<Object> aListObject : listObject) {
+                listString.add(aListObject.get(0).toString().replace("T", " ").replace("Z", ""));
+        }
+        return listString;
     }
-
-    //overall cluster memory usage:mem_workingSet
-    public List<String> getMemSetOverAll(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_WORKING_SET, "");
-        return dbSearch(sql);
-    }
-
-    //memory usage group by node:memory_limit
-    public List<String> getMemSetNode(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_LIMIT, "");
-        return dbSearch(sql);
-    }
-
-    //memory usage group by node:memory_use
-    public List<String> getMemUseNode(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, "");
-        return dbSearch(sql);
-    }
-
-    //individual node memory usage： mem_limit
-    public List<String> getMemLimitMinion(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_LIMIT, "host");
-        return dbSearch(sql);
-    }
-
-    //individual node memory usage:memUse
-    public List<String> getMemUseMinion(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_USAGE, "host");
-        return dbSearch(sql);
-    }
-
-    //individual node memory usage:memory_working_set
-    public List<String> getMemSetMinion(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, "host");
-        return dbSearch(sql);
-    }
-
-    //cpu use group by node:cpu_limit
-    public List<String> getCpuLimitNode(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, "");
-        return dbSearch(sql);
-    }
-
-    //cpu use group by node:cpu_use
-    public List<String> getCpuUseNode(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.NEGATIVE_VALUE_U, MonitorConstant.CPU_USAGE, "");
-        return dbSearch(sql);
-    }
-
-    //individual node cpu usage:cpu_limit
-    public List<String> getCpuLimitMinion(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, "host");
-        return dbSearch(sql);
-    }
-
-    //individual node cpu usage:cpu_use
-    public List<String> getCpuUseMinion(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.NEGATIVE_VALUE_U, MonitorConstant.CPU_USAGE, "host");
-        return dbSearch(sql);
-    }
-
-    //overall cluster disk usage:disk_limit
-    public List<String> getDiskLimitOverAll(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.SUN_VALUE, MonitorConstant.FILE_LIMIT, "");
-        return dbSearch(sql);
-    }
-
-    //overall cluster disk usage:disk_use
-    public List<String> getDiskUseOverAll(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.SUN_VALUE, MonitorConstant.FILE_USAGE, "");
-        return dbSearch(sql);
-    }
-
-    //disk usage group by node:disk_limit
-    public List<String> getDiskLimitNode(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.LAST_VALUE, MonitorConstant.FILE_LIMIT, "");
-        return dbSearch(sql);
-    }
-
-    //disk usage group by node:disk_use
-    public List<String> getDiskUseNode(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.LAST_VALUE, MonitorConstant.FILE_USAGE, "");
-        return dbSearch(sql);
-    }
-
-    //individual node disk usage:disk_limit
-    public List<String> getDiskLimitMinion(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.LAST_VALUE, MonitorConstant.FILE_LIMIT, "host");
-        return dbSearch(sql);
-    }
-
-    //individual node disk usage:disk_use
-    public List<String> getDiskUseMinion(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.LAST_VALUE, MonitorConstant.FILE_USAGE, "host");
-        return dbSearch(sql);
-    }
-
-    //network usage group by node:tx
-    public List<String> getTxNode(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_TX, "");
-        return dbSearch(sql);
-    }
-
-    //network usage group by node:rx
-    public List<String> getRxNode(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_RX, "");
-        return dbSearch(sql);
-    }
-
-    //individual node network usage:tx
-    public List<String> getTxMinion(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_TX, "");
-        return dbSearch(sql);
-    }
-
-    //individual node network usage:rx
-    public List<String> getRxMinion(String timePeriod) {
-        String sql = joinSQL(timePeriod, MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_RX, "");
-        return dbSearch(sql);
+    
+    /**
+     *  取得集群监控数据
+     * 
+     * @param influxDB
+     * @param dbName
+     * @param timePeriod
+     * @param dataType
+     * @return
+     */
+    public List<String> getClusterData(InfluxDB influxDB,String dbName, String timePeriod, String dataType){
+    	this.influxDB = influxDB;
+    	this.timePeriod = timePeriod;
+    	this.dbName = dbName;
+    	switch (dataType) {
+        case "getMemLimitOverAll":
+            //overall cluster memory usage:mem_limit
+        	return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_LIMIT, ""));
+        case "getMemUseOverAll":
+            //overall cluster memory usage:mem_use
+            return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_USAGE, ""));
+        case "getMemSetOverAll":
+            //overall cluster memory usage:mem_workingSet
+            return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_WORKING_SET, ""));
+            
+        case "getMemLimitNode":
+            //memory usage group by node:memory_limit
+        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_LIMIT, ""));
+        case "getMemUseNode":
+            //memory usage group by node:memory_use
+        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, ""));
+        	
+        case "getMemLimitMinion":
+        	//individual node memory usage： mem_limit
+        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_LIMIT, "host"));
+        case "getMemUseMinion":
+        	//individual node memory usage:memUse
+        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_USAGE, "host"));
+        case "getMemSetMinion":
+        	//individual node memory usage:memory_working_set
+        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, "host"));
+        	
+        case "getCpuLimitNode":
+        	//cpu use group by node:cpu_limit
+        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, ""));
+        case "getCpuUseNode":
+        	//cpu use group by node:cpu_use
+        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_U, MonitorConstant.CPU_USAGE, ""));
+        	
+        case "getCpuLimitMinion":
+        	//individual node cpu usage:cpu_limit
+        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, "host"));
+        case "getCpuUseMinion":
+        	//individual node cpu usage:cpu_use
+        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_U, MonitorConstant.CPU_USAGE, "host"));
+        	
+        case "getDiskLimitOverAll":
+        	//overall cluster disk usage:disk_limit
+        	return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.FILE_LIMIT, ""));
+        case "getDiskUseOverAll":
+        	//overall cluster disk usage:disk_use
+        	return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.FILE_USAGE, ""));
+        	
+        case "getDiskLimitNode":
+        	//disk usage group by node:disk_limit
+        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.FILE_LIMIT, ""));
+        case "getDiskUseNode":
+        	//disk usage group by node:disk_use
+        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.FILE_USAGE, ""));
+        	
+        case "getDiskLimitMinion":
+        	//individual node disk usage:disk_limit
+        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.FILE_LIMIT, "host"));
+        case "getDiskUseMinion":
+        	//individual node disk usage:disk_use
+        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.FILE_USAGE, "host"));
+        	
+        case "getTxNode":
+        	//network usage group by node:tx
+        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_TX, ""));
+        case "getRxNode":
+        	//network usage group by node:rx
+        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_RX, ""));
+        case "getTxMinion":
+        	//individual node network usage:tx
+        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_TX, ""));
+        case "getRxMinion":
+        	//individual node network usage:rx
+        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_RX, ""));
+        	
+		default:
+            return new ArrayList<String>(); 
+    	}
     }
 }
