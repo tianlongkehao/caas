@@ -8,12 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -243,50 +245,54 @@ public class ServiceController {
 	@RequestMapping("service/detail/getlogs.do")
 	@ResponseBody
 	public String getServiceLogs(long id,String date){
-		System.out.printf("id: " + id);
-		System.out.printf(date.replaceAll("-","."));
         Service service = serviceDao.findOne(id);
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         List<String> logList = new ArrayList<String>();
         String logStr = "";
         Map<String,String> map = new HashMap<String,String>();
         Map<String, Object> datamap = new HashMap<String,Object>();
-    	map.put("app", service.getServiceName());
-    	PodList podList = client.getLabelSelectorPods(map);
-    	if(podList!=null){
-    		List<Pod> pods = podList.getItems();
-    		if(!CollectionUtils.isEmpty(pods)){
-    			int i=1;
-    			for(Pod pod:pods){
-    				//获取pod名称
-    				String podName = pod.getMetadata().getName();
-    				//初始化es客户端
-    				ESClient esClient = new ESClient();
-    				esClient.initESClient(esConf.getHost());
-    				String s = null;
-    				if (date != "") {
-    					//设置es查询日期，数据格式，查询的pod名称
-        				s = esClient.search("logstash-"+date.replaceAll("-","."), "fluentd", podName);
-					}else {
-						//设置es查询日期，数据格式，查询的pod名称
-	    				s = esClient.search("logstash-"+dateToString(new Date()), "fluentd", podName);
-					}
-    				
-    				//关闭es客户端
-    				esClient.closeESClient();
-    				//拼接日志格式
-    				String add = "["+"App-"+i +"] ["+podName+"]：";
-    				s = add + s.replaceAll("\n", "\n"+add);
-    				
-    				s = s.substring(0, s.length()-add.length());
-    				logStr = logStr.concat(s);
-	    			logList.add(s);
-    			}
-    		}
-    	}   
-    	System.out.println("logstr:"+logStr);
-    	datamap.put("logStr", logStr);
-    	datamap.put("status", "200");
+    	
+    	try {
+    		map.put("app", service.getServiceName());
+    		PodList podList = client.getLabelSelectorPods(map);
+        	if(podList!=null){
+        		List<Pod> pods = podList.getItems();
+        		if(!CollectionUtils.isEmpty(pods)){
+        			int i=1;
+        			for(Pod pod:pods){
+        				//获取pod名称
+        				String podName = pod.getMetadata().getName();
+        				//初始化es客户端
+        				ESClient esClient = new ESClient();
+        				esClient.initESClient(esConf.getHost());
+        				String s = null;
+        				if (date != "") {
+        					//设置es查询日期，数据格式，查询的pod名称
+            				s = esClient.search("logstash-"+date.replaceAll("-","."), "fluentd", podName);
+    					}else {
+    						//设置es查询日期，数据格式，查询的pod名称
+    	    				s = esClient.search("logstash-"+dateToString(new Date()), "fluentd", podName);
+    					}
+        				
+        				//关闭es客户端
+        				esClient.closeESClient();
+        				//拼接日志格式
+        				String add = "["+"App-"+i +"] ["+podName+"]：";
+        				s = add + s.replaceAll("\n", "\n"+add);
+        				
+        				s = s.substring(0, s.length()-add.length());
+        				logStr = logStr.concat(s);
+    	    			logList.add(s);
+        			}
+        		}
+        	}   
+        	datamap.put("logStr", logStr);
+        	datamap.put("status", "200");
+		} catch (Exception e) {
+			datamap.put("status", "400");
+			log.error("日志读取错误："+e);
+		}
+    	
     	return JSON.toJSONString(datamap);
     	
 	}
@@ -319,11 +325,7 @@ public class ServiceController {
 			model.addAttribute("msg","请创建租户！");
 			return "service/service.jsp";
 		}
-		if (resourceName != null) {
-			resourceName = resourceName.substring(0, resourceName.length()-4);
-		}
 		
-
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
 		model.addAttribute("imageName", imageName);
@@ -454,11 +456,15 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
-	public String constructContainer(Service service){
+	public String constructContainer(Service service,String resourceName){
 		User  currentUser = CurrentUserUtils.getInstance().getUser();
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
 		service.setCreateBy(currentUser.getId());
+		if (!StringUtils.isEmpty(resourceName)) {
+			resourceName = resourceName.substring(0, resourceName.indexOf("."));
+			service.setServiceLink(resourceName);
+		}
 		serviceDao.save(service);
 		//app为修改nginx配置文件的配置项
 		Map<String, String > app = new HashMap<String, String>();

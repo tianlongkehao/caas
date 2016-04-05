@@ -56,20 +56,21 @@
 </div>
 
 <script type="text/javascript">
-    var colorData = ['#c5e1d2', '#abd4bd', '#91c7a9', '#77ba95'];
-    
-    //默认监控5分钟
-    getClusterMonitor("5m");
-    //获取监控数据
-    function getClusterMonitor(timePeriod){
-        $.ajax({
-            url:ctx+"/cluster/getClusterMonitor?timePeriod=" + timePeriod,
-            success:function(data){
-            	createChart($.parseJSON(data));
-            }
-        })
-    }
-    
+
+	//默认监控5分钟
+	getClusterMonitor("5m");
+	//获取监控数据
+	function getClusterMonitor(timePeriod){
+	    $.ajax({
+	        url:ctx+"/cluster/getClusterMonitor?timePeriod=" + timePeriod,
+	        success:function(data){
+	        	createChart($.parseJSON(data));
+	        }
+	    })
+	}
+
+    var colorData = ['#c5e1d2', '#abd4bd', '#91c7ae','#749f83','#61a0a8', '#B0E0E6'];
+
     var clusterData = {
         'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
         'yValue': [
@@ -92,35 +93,13 @@
                                 'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                             }]
                         }, {
-                            'title': 'MEMORY USAGE GROUP BY NODE', 'val': [{
-                                'legendName': 'Limit Current',
-                                'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                            },
-                                {
-                                    'legendName': 'Usage Current',
-                                    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                },
-                                {
-                                    'legendName': 'Working Set Current',
-                                    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                                }]
+                            'title': 'MEMORY USAGE GROUP BY NODE', 'val': []
                         }
                     ]
                     }, {
                         'titleText': 'CPU', 'val': [
                             {
-                                'title': 'CPU USAGE GROUP BY NODE', 'val': [{
-                                'legendName': 'Limit Current',
-                                'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                            },
-                                {
-                                    'legendName': 'Usage Current',
-                                    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                },
-                                {
-                                    'legendName': 'Working Set Current',
-                                    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                                }]
+                                'title': 'CPU USAGE GROUP BY NODE', 'val': []
                             }
                         ]
                     }, {
@@ -133,41 +112,15 @@
                                 {
                                     'legendName': 'Usage Current',
                                     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                },
-                                {
-                                    'legendName': 'Working Set Current',
-                                    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                                 }]
                             }, {
-                                'title': 'DISK USAGE GROUP BY NODE', 'val': [{
-                                    'legendName': 'Limit Current',
-                                    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                                },
-                                    {
-                                        'legendName': 'Usage Current',
-                                        'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                    },
-                                    {
-                                        'legendName': 'Working Set Current',
-                                        'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                                    }]
+                                'title': 'DISK USAGE GROUP BY NODE', 'val': []
                             }
                         ]
                     }, {
                         'titleText': 'NETWORK', 'val': [
                             {
-                                'title': 'NETWORK USAGE GROUP BY NODE', 'val': [{
-                                'legendName': 'Limit Current',
-                                'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                            },
-                                {
-                                    'legendName': 'Usage Current',
-                                    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                },
-                                {
-                                    'legendName': 'Working Set Current',
-                                    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                                }]
+                                'title': 'NETWORK USAGE GROUP BY NODE', 'val': []
                             }
                         ]
                     }
@@ -196,10 +149,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'disk', 'val': [{
@@ -209,10 +158,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'network', 'val': [{
@@ -222,21 +167,17 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }]
             }, {
                 'titleText': 'minion02', 'val': [{
                     'title': 'memory', 'val': [{
                         'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        'yAxis': [200, 162, 171, 214, 270, 310, 290, 270, 310]
                     },
                         {
                             'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            'yAxis': [100, 112, 81, 114, 70, 210, 190, 81, 114]
                         },
                         {
                             'legendName': 'Working Set Current',
@@ -250,10 +191,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'disk', 'val': [{
@@ -263,10 +200,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'network', 'val': [{
@@ -276,21 +209,17 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }]
-            },{
+            }, {
                 'titleText': 'minion03', 'val': [{
                     'title': 'memory', 'val': [{
                         'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        'yAxis': [180, 142, 151, 194, 250, 290, 270, 250, 290]
                     },
                         {
                             'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            'yAxis': [80, 92, 61, 94, 50, 190, 170, 61, 94]
                         },
                         {
                             'legendName': 'Working Set Current',
@@ -304,10 +233,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'disk', 'val': [{
@@ -317,10 +242,6 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }, {
                     'title': 'network', 'val': [{
@@ -330,17 +251,12 @@
                         {
                             'legendName': 'Usage Current',
                             'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                         }]
                 }]
             }]
             }
         ]
     };
-    
     function addClusterImg() {
         var clusterTxt = '<div class="table-lists"  style="margin-top: 10px;width: 1115px;height:260px; float: left">'
                 + '</div>';
@@ -358,7 +274,7 @@
     }
 
     function createChart(clusterData){
-    	var count = 0;
+        var count = 0;
         for (var j = 0; j < 4; j++) {
             var clusterDataYval = clusterData.yValue[0].val[j];
             for (var i = 0; i < clusterDataYval.val.length; i++) {
@@ -386,16 +302,14 @@
                             data: clusterData.xValue
                         }
                     ],
-                    yAxis: [
-
-                    ],
+                    yAxis: [],
                     series: []
                 };
 
 
                 var titleText = clusterDataYval.val[i].title;
                 option.title.text = titleText;
-                if(titleText.indexOf("CPU") != -1){
+                if (titleText.indexOf("CPU") != -1) {
                     var a1 = {
                         type: 'value',
                         scale: true,
@@ -404,7 +318,7 @@
                         }
                     };
                     option.yAxis.push(a1);
-                }else if(titleText.indexOf("NETWORK") != -1){
+                } else if (titleText.indexOf("NETWORK") != -1) {
                     var b1 = {
                         type: 'value',
                         scale: true,
@@ -413,7 +327,7 @@
                         }
                     };
                     option.yAxis.push(b1);
-                }else {
+                } else {
                     var c1 = {
                         type: 'value',
                         scale: true,
@@ -424,8 +338,53 @@
                     option.yAxis.push(c1);
                 }
 
+                var memNodeNum = 0;
+                var cpuNodeNum = 0;
+                var diskNodeNum = 0;
+                var netNodeNum = 0;
+                for (var minToCluster = 0; minToCluster < clusterData.yValue[1].val.length; minToCluster++) {
+                    for (var minNum = 0; minNum < 2; minNum++) {
+                        var titleText = clusterData.yValue[1].val[minToCluster].titleText;
+                        var memoryNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[0].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[0].val[minNum].yAxis
+                        };
+                        var cpuNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[1].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[1].val[minNum].yAxis
+                        };
+                        var diskNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[2].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[2].val[minNum].yAxis
+                        };
+                        var netNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[3].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[3].val[minNum].yAxis
+                        };
+                        clusterData.yValue[0].val[0].val[1].val[memNodeNum] = memoryNode;
+                        clusterData.yValue[0].val[1].val[0].val[cpuNodeNum] = cpuNode;
+                        clusterData.yValue[0].val[2].val[0].val[cpuNodeNum] = diskNode;
+                        clusterData.yValue[0].val[3].val[0].val[netNodeNum] = netNode;
+                        memNodeNum++;
+                        cpuNodeNum++;
+                        diskNodeNum++;
+                        netNodeNum++;
+                    }
+                }
+
+                for (var minToCluster = 0; minToCluster < clusterData.yValue[1].val.length; minToCluster++) {
+                    for (var memNum = 0; memNum < 2; memNum++) {
+
+
+                        clusterData.yValue[0].val[0].val[1].val[cpuNode] = memoryNode;
+                        cpuNode++;
+                    }
+                }
+
                 var clusterDataMinVal = clusterDataYval.val[i];
                 for (var m = 0; m < clusterDataMinVal.val.length; m++) {
+
+                    var clusterYval = clusterDataMinVal.val[m].yAxis;
 
                     var a = {
                         name: clusterDataMinVal.val[m].legendName,
@@ -442,7 +401,7 @@
                             }
                         },
                         areaStyle: {normal: {}, color: colorData[m]},
-                        data: clusterDataMinVal.val[m].yAxis
+                        data: clusterYval
                     };
                     option.legend.data.push(a);
                     option.series.push(b);
@@ -453,14 +412,24 @@
                 count++;
                 option.legend.data = [];
                 option.series = [];
-
             }
             var clusterDataYVal1 = clusterData.yValue[1];
             for (var min = 0; min < clusterDataYVal1.val.length; min++) {
-                var titleTextMin = clusterDataYVal1.val[min].titleText+" " + clusterDataYVal1.val[min].val[j].title;
+                var titleTextMin = clusterDataYVal1.val[min].titleText + " " + clusterDataYVal1.val[min].val[j].title;
                 option.title.text = titleTextMin;
 
+//                for(var memNum = 0; memNum < 2; memNum++){
+//                    var memoryNode = {
+//                        'legendName': clusterDataYVal1.val[min].val[0].val[memNum].legendName + "{" + clusterDataYVal1.val[min].titleText + "}",
+//                        'yAxis': clusterDataYVal1.val[min].val[0].val[memNum].yAxis
+//                    };
+//                    for(var memNode = 0; memNode < clusterDataYVal1.val.length*2; memNode++){
+//                        clusterData.yValue[0].val[0].val[1].val[memNode] = memoryNode;
+//                    }
+//                }
+
                 for (var minxx = 0; minxx < clusterDataYVal1.val[min].val[j].val.length; minxx++) {
+                    var clusterYVal = clusterDataYVal1.val[min].val[j].val[minxx].yAxis;
                     var mina = {
                         name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
                         icon: 'roundRect'
@@ -476,15 +445,16 @@
                             }
                         },
                         areaStyle: {normal: {}, color: colorData[minxx]},
-                        data: clusterDataYVal1.val[min].val[j].val[minxx].yAxis
+                        data: clusterYVal
                     };
                     option.legend.data.push(mina);
                     option.series.push(minb);
-
                 }
-                if(min%2 == 0){
+
+
+                if (min % 2 == 0) {
                     addMinImgLeft();
-                }else{
+                } else {
                     addMinImgRight();
                 }
                 var minionImg = echarts.init(document.getElementById('resourceImg').children[count]);
@@ -493,9 +463,8 @@
                 option.legend.data = [];
                 option.series = [];
             }
-        }	
+        }
     }
-    
 
 
 </script>

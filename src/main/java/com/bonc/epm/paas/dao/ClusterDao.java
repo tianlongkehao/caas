@@ -20,7 +20,7 @@ public interface ClusterDao extends CrudRepository<Cluster, Long> {
     @Query("select c from Cluster c "
             + "where 1=1 "
             + "and c.hostType = ?1 "
-            + "order by length(c.hostName),c.hostName ")
+            + "order by length(c.host),c.host ")
     public List<Cluster> getByHostType(String hostType);
     
 }

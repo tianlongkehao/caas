@@ -89,7 +89,7 @@
                                 <li class="line-h-3">
                                     <span class="ve_top">服务名称：</span>
                                     <input type="text" value="" class="in_style" id="serviceName" name="serviceName">
-                                    <input type="hidden" value="" class="in_style" id="serviceLink" name="serviceLink" placeholder="例如：/index">
+                                    <input type="hidden" value="" class="in_style" id="resourceName" name="resourceName">
                                 </li>
                                 
                                 <!--<li class="line-h-3"><span class="ve_top">选择集群：</span>

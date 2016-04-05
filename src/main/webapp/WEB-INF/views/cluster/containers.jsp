@@ -81,30 +81,6 @@
                         <div class="detail-info">
                             <div class="info-list" id="resourceContainer">
 
-                                <%--<div class="table-lists service01 container01"  style="margin-top: 10px; float: left">
-                                    <div style="width: 563px;height:260px;"></div>
-                                </div>
-                                <div  class="table-lists service01 container01"  style="margin-top: 10px; float: right">
-                                    <div style="width: 563px;height:260px;"></div>
-                                </div>
-                                <div  class="table-lists service01 container02"  style="margin-top: 10px; float: left">
-                                    <div style="width: 563px;height:260px;"></div>
-                                </div>
-                                <div  class="table-lists service01 container02" style="margin-top: 10px; float: right">
-                                    <div style="width: 563px;height:260px;"></div>
-                                </div>
-                                <div class="table-lists service02 container03"  style="margin-top: 10px; float: left">
-                                    <div style="width: 563px;height:260px;"></div>
-                                </div>
-                                <div  class="table-lists service02 container03"  style="margin-top: 10px; float: right">
-                                    <div style="width: 563px;height:260px;"></div>
-                                </div>
-                                <div  class="table-lists service02 container04"  style="margin-top: 10px; float: left">
-                                    <div style="width: 563px;height:260px;"></div>
-                                </div>
-                                <div  class="table-lists service02 container04" style="margin-top: 10px; float: right">
-                                    <div style="width: 563px;height:260px;"></div>
-                                </div>--%>
                             </div>
 
                         </div>
@@ -120,48 +96,86 @@
 
 <script type="text/javascript">
 
+	//默认监控5分钟
+	getContainerMonitor("5m");
+	//获取监控数据
+	function getContainerMonitor(timePeriod){
+	    $.ajax({
+	        url:ctx+"/cluster/getContainerMonitor?timePeriod=" + timePeriod,
+	        success:function(data){
+	        	showContainerImg($.parseJSON(data));
+	        }
+	    })
+	}
+	
     var colorData = ['#c5e1d2', '#abd4bd', '#91c7a9'];
 
     var containerData = {
         'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
         'yValue': [{
             'name': 'service01', 'val': [{
-                'titleText': 'container01', 'val': [{
-                    'memoryVal': {
-                        'title': 'memory',
-                        'val': [{
-                            'legendName': 'memory Limit Current',
-                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                        },
-                            {
-                                'legendName': 'memory Usage Current',
-                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            },
-                            {
-                                'legendName': 'memory Working Set Current',
-                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                            }]
+                'titleText': 'container01',
+                'val': [{
+                    'title': 'memory',
+                    'val': [{
+                        'legendName': 'Limit Current',
+                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
                     },
-                    'cpuVal': {
+                        {
+                            'legendName': 'Usage Current',
+                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                        },
+                        {
+                            'legendName': 'Working Set Current',
+                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                        }]
+                },
+                    {
                         'title': 'cpu',
                         'val': [{
-                            'legendName': 'cpu Limit Current',
+                            'legendName': 'Limit Current',
                             'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
                         },
                             {
-                                'legendName': 'cpu Usage Current',
+                                'legendName': 'Usage Current',
                                 'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            },
-                            {
-                                'legendName': 'cpu Working Set Current',
-                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                             }]
-                    }
-                }]
+                    }]
             },
                 {
                     'titleText': 'container02', 'val': [{
-                    'memoryVal': {
+
+                    'title': 'memory',
+                    'val': [{
+                        'legendName': 'Limit Current',
+                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                    },
+                        {
+                            'legendName': 'Usage Current',
+                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                        },
+                        {
+                            'legendName': 'Working Set Current',
+                            'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
+                        }]},
+                    {
+                        'title': 'cpu',
+                        'val': [{
+                            'legendName': 'cLimit Current',
+                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                        },
+                            {
+                                'legendName': 'cUsage Current',
+                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+                            }]
+
+                    }]
+                }]
+        },
+            {
+                'name': 'service02', 'val': [{
+                'titleText': 'container03', 'val': [{
+
                         'title': 'memory',
                         'val': [{
                             'legendName': 'Limit Current',
@@ -173,47 +187,11 @@
                             },
                             {
                                 'legendName': 'Working Set Current',
-                                'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
-                            }]
-                    },
-                    'cpuVal': {
-                        'title': 'cpu',
-                        'val': [{
-                            'legendName': 'cLimit Current',
-                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                        },
-                            {
-                                'legendName': 'cUsage Current',
-                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            },
-                            {
-                                'legendName': 'cWorking Set Current',
-                                'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
-                            }]
-                    }
-                }]
-                }]
-        },
-            {
-                'name': 'service02', 'val': [{
-                'titleText': 'container03', 'val': [{
-                    'memoryVal': {
-                        'title': 'memory',
-                        'val': [{
-                            'legendName': 'memory Limit Current',
-                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                        },
-                            {
-                                'legendName': 'memory Usage Current',
-                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            },
-                            {
-                                'legendName': 'memory Working Set Current',
                                 'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                            }]
-                    },
-                    'cpuVal': {
-                        'title': 'cpu',
+                            }]}
+                    ,
+
+                    {'title': 'cpu',
                         'val': [{
                             'legendName': 'cpu Limit Current',
                             'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
@@ -221,52 +199,46 @@
                             {
                                 'legendName': 'cpu Usage Current',
                                 'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            },
-                            {
-                                'legendName': 'cpu Working Set Current',
-                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                             }]
-                    }
+
 
                 }]
             }, {
                 'titleText': 'container04', 'val': [{
-                    'memoryVal': {
+
                         'title': 'memory',
                         'val': [{
-                            'legendName': 'memory Limit Current',
+                            'legendName': 'Limit Current',
                             'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
                         },
                             {
-                                'legendName': 'memory Usage Current',
+                                'legendName': 'Usage Current',
                                 'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
                             },
                             {
-                                'legendName': 'memory Working Set Current',
+                                'legendName': 'Working Set Current',
                                 'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                            }]
-                    },
-                    'cpuVal': {
-                        'title': 'cpu',
+                            }]}
+                    ,
+
+                    {'title': 'cpu',
                         'val': [{
-                            'legendName': 'cpu Limit Current',
+                            'legendName': 'Limit Current',
                             'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
                         },
                             {
-                                'legendName': 'cpu Usage Current',
+                                'legendName': 'Usage Current',
                                 'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            },
-                            {
-                                'legendName': 'cpu Working Set Current',
-                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
                             }]
-                    }
+
 
                 }]
             }]
             }
         ]
     };
+    
+    //显示容器IMG
     showContainerImg(containerData);
 
     function addContainerMemImg() {
@@ -346,6 +318,7 @@
         }
 
     }
+    
     function showContainerMemImg(count, containerDataYval, j, option) {
         var c = {
             type: 'value',
@@ -355,9 +328,10 @@
             },
         };
         option.yAxis.push(c);
-        var containerDataYmem = containerDataYval.val[j].val[0].memoryVal;
+        var containerDataYmem = containerDataYval.val[j].val[0];
 
         for (var i = 0; i < containerDataYmem.val.length; i++) {
+            var containerYval = containerDataYmem.val[i].yAxis;
             var a = {
                 name: containerDataYmem.val[i].legendName,
                 icon: 'roundRect'
@@ -369,11 +343,11 @@
                 barHeight: 2,
                 itemStyle: {
                     normal: {
-                        color: colorData[i],
+                        color: colorData[i]
                     }
                 },
                 areaStyle: {normal: {}, color: colorData[i]},
-                data: containerDataYmem.val[i].yAxis
+                data: containerYval
             };
             option.legend.data.push(a);
             option.series.push(b);
@@ -405,9 +379,10 @@
             },
         };
         option.yAxis.push(f);
-        var containerDataYcpu = containerDataYval.val[j].val[0].cpuVal;
+        var containerDataYcpu = containerDataYval.val[j].val[0];
 
         for (var k = 0; k < containerDataYcpu.val.length; k++) {
+            var containerYCpuval = containerDataYcpu.val[k].yAxis;
             var d = {
                 name: containerDataYcpu.val[k].legendName,
                 icon: 'roundRect'
@@ -419,11 +394,11 @@
                 barHeight: 2,
                 itemStyle: {
                     normal: {
-                        color: colorData[k],
+                        color: colorData[k]
                     }
                 },
                 areaStyle: {normal: {}, color: colorData[k]},
-                data: containerDataYcpu.val[k].yAxis
+                data: containerYCpuval
             };
 
             option.legend.data.push(d);

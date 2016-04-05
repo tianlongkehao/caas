@@ -119,6 +119,12 @@ public class ClusterController {
         return null;
     }
     
+    /**
+     * 取得集群监控数据
+     * 
+     * @param timePeriod
+     * @return
+     */
     @RequestMapping(value = {"/getClusterMonitor"}, method = RequestMethod.GET)
     @ResponseBody
     public String getClusterMonitor(String timePeriod) {
@@ -160,14 +166,16 @@ public class ClusterController {
             //MEMORY USAGE GROUP BY NODE
             yValue.append("{\"title\": \"MEMORY USAGE GROUP BY NODE\",\"val\": [");
             
-            //memory usage group by node:memory_limit
+            /*//memory usage group by node:memory_limit
             yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitNode");
             
             //memory usage group by node:memory_use(workding_set表取)
             yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseNode");
             
             //去掉最后一个逗号
-            yValue.deleteCharAt(yValue.length() - 1);
+            yValue.deleteCharAt(yValue.length() - 1);*/
+            
+            //MEM NODE结束,MEM结束
             yValue.append("]}]},");
             
             //CPU
@@ -176,14 +184,16 @@ public class ClusterController {
             //CPU USAGE GROUP BY NODE
             yValue.append("{\"title\": \"CPU USAGE GROUP BY NODE\",\"val\": [");
             
-            //CPU use group by node:cpu_limit
+            /*//CPU use group by node:cpu_limit
             yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getCpuLimitNode");
 
             //CPU use group by node:cpu_use
             yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseNode");
 
             //去掉最后一个逗号
-            yValue.deleteCharAt(yValue.length() - 1);
+            yValue.deleteCharAt(yValue.length() - 1);*/
+            
+            //CPU结束
             yValue.append("]}]},");
             
             //DISK
@@ -205,14 +215,16 @@ public class ClusterController {
             //DISK USAGE GROUP BY NODE
             yValue.append("{\"title\": \"DISK USAGE GROUP BY NODE\",\"val\": [");
             
-            //disk usage group by node:disk_limit
+            /*//disk usage group by node:disk_limit
             yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitNode");
 
             //disk usage group by node:disk_use
             yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseNode");
 
             //去掉最后一个逗号
-            yValue.deleteCharAt(yValue.length() - 1);
+            yValue.deleteCharAt(yValue.length() - 1);*/
+            
+            //DISK结束
             yValue.append("]}]},");
             
             //NETWORK
@@ -221,14 +233,16 @@ public class ClusterController {
             //NETWORK USAGE GROUP BY NODE
             yValue.append("{\"title\": \"NETWORK USAGE GROUP BY NODE\",\"val\": [");
             
-            //network usage group by node:tx
+            /*//network usage group by node:tx
             yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getTxNode");
 
             //network usage group by node:rx
             yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getRxNode");
 
             //去掉最后一个逗号
-            yValue.deleteCharAt(yValue.length() - 1);
+            yValue.deleteCharAt(yValue.length() - 1);*/
+            
+            //NET结束
             yValue.append("]}]}]},");
             
             //minion
@@ -331,6 +345,8 @@ public class ClusterController {
      * @param containerName containerName
      * @return ContainerUse
      */
+    @RequestMapping(value = {"/getContainerMonitor"}, method = RequestMethod.GET)
+    @ResponseBody
     public String getContainerMonitor(String namespace, String svcName,
                                               String podName, String timePeriod) {
 
@@ -350,6 +366,7 @@ public class ClusterController {
 
             //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
             KubernetesAPIClientInterface client = kubernetesClientService.getClient("default");
+            
             //取得所有POD
             PodList podLst = client.getAllPods();
             
