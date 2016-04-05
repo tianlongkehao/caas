@@ -56,7 +56,7 @@
 </div>
 
 <script type="text/javascript">
-    var colorData = ['#c5e1d2', '#abd4bd', '#91c7ae','#749f83','#61a0a8', '#B0E0E6'];
+    var colorData = ['#7EB26D', '#EAB839', '#6ED0E0','#61a0a8', '#d48265', '#749f83',  '#ca8622', '#bda29a','#2f4554','#00BFFF','#61a0a8','#61a0a8','#749f83' ,'#91c7ae','#6e7074'];
 
     var clusterData = {
         'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
@@ -400,6 +400,7 @@
                             color: colorData[m],
                         }
                     },
+                    stack: '总量',
                     areaStyle: {normal: {}, color: colorData[m]},
                     data: clusterYval
                 };
@@ -444,6 +445,7 @@
                             color: colorData[minxx],
                         }
                     },
+                    stack: '总量',
                     areaStyle: {normal: {}, color: colorData[minxx]},
                     data: clusterYVal
                 };

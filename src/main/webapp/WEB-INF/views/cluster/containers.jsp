@@ -96,7 +96,8 @@
 
 <script type="text/javascript">
 
-    var colorData = ['#c5e1d2', '#abd4bd', '#91c7a9'];
+    var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
+    //var colorData = ['#61a0a8', '#d48265', '#749f83',  '#ca8622', '#bda29a','#2f4554','#00BFFF','#61a0a8','#61a0a8','#749f83' ,'#91c7ae','#6e7074'];
 
     var containerData = {
         'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
@@ -331,6 +332,7 @@
                         color: colorData[i]
                     }
                 },
+                stack: '总量',
                 areaStyle: {normal: {}, color: colorData[i]},
                 data: containerYval
             };
@@ -382,6 +384,7 @@
                         color: colorData[k]
                     }
                 },
+                stack: '总量',
                 areaStyle: {normal: {}, color: colorData[k]},
                 data: containerYCpuval
             };
