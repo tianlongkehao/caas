@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.bonc.epm.paas.entity.ContainerUse;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.model.AbstractKubernetesModelList;
+import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.Service;
@@ -338,17 +340,15 @@ public class ClusterController {
 
 
     /**
-     * 根据podNamespace、pod_name、container_name取得资源使用情况;
+     * 取得容器资源使用情况;
      *
-     * @param podNamespace  podNamespace
+     * @param nameSpace  nameSpace
      * @param podName podName
-     * @param containerName containerName
-     * @return ContainerUse
+     * @return String
      */
     @RequestMapping(value = {"/getContainerMonitor"}, method = RequestMethod.GET)
     @ResponseBody
-    public String getContainerMonitor(String namespace, String svcName,
-                                              String podName, String timePeriod) {
+    public String getContainerMonitor(String nameSpace, String podName, String timePeriod) {
 
         StringBuilder xValue = new StringBuilder();
         StringBuilder yValue = new StringBuilder();
@@ -363,91 +363,33 @@ public class ClusterController {
             
             //yValue
             yValue.append("\"yValue\": [");
+            
+            //判断是否单一NAMESPACE
+            if ("".equals(nameSpace) || nameSpace == null) {
+                //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
+                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+                
+                //取得所有NAMESPACE
+                NamespaceList namespaceLst = client.getAllNamespaces();
 
-            //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
-            KubernetesAPIClientInterface client = kubernetesClientService.getClient("default");
-            
-            //取得所有POD
-            PodList podLst = client.getAllPods();
-            
-            String oldSvcName = podLst.get(0).getMetadata().getName();
-            String newSvcName = "";
-            
-            for ( int i=0 ; i < podLst.size() ; i++ ) {
-            	Pod pod = podLst.get(i);
-            	//服务名称
-            	newSvcName = pod.getMetadata().getName();
-            	//实例名称
-            	String indexPodName = pod.getMetadata().getName();
-            	//拼接JSON数据
-            	if(i==0){
-                	//SERVICE
-                    yValue.append("{\"name\": \"" + newSvcName + "\",\"val\": [");
-            	} else if (!newSvcName.equals(oldSvcName)) {
-                    //去掉上一个SERVICE的最后一个逗号
-                    yValue.deleteCharAt(yValue.length() - 1);
-                    //SERVICE结束
-                    yValue.append("]},");
-                	//新一个SERVICE
-                    yValue.append("{\"name\": \"" + newSvcName + "\",\"val\": [");
+                //循环处理每个NAMESPACE
+                for ( int i=0 ; i < namespaceLst.size() ; i++ ) {
+                	//服务名称
+                	String namespaceName = namespaceLst.get(i).getMetadata().getName();
+
+                	//取得单一NAMESPACE的JSON数据
+                	yValue = createNamespaceJson(yValue, timePeriod, namespaceName, "");
                 }
-            	
-                //POD
-                yValue.append("{\"titleText\": \"" + pod.getMetadata().getGenerateName() + "\",\"val\": [");
-                
-                //memory
-                yValue.append("{\"title\": \"memory\",\"val\": [");
-
-                //MEM LIMIT
-                yValue = joinContainerYValue(yValue, "memoryLimitCurrent", timePeriod, "getMemLimit", namespace, svcName, podName);
-                
-                //去掉最后一个逗号
+                //去掉最后一个NAMESPACE的逗号
                 yValue.deleteCharAt(yValue.length() - 1);
-                yValue.append("]},");
-
-                //MEM USE
-                yValue = joinContainerYValue(yValue, "memoryUsageCurrent", timePeriod, "getMemUse", namespace, svcName, podName);
-                
-                //去掉最后一个逗号
-                yValue.deleteCharAt(yValue.length() - 1);
-                yValue.append("]},");
-              
-                //MEM WORKING SET
-                yValue = joinContainerYValue(yValue, "memoryWorkingSetCurrent", timePeriod, "getMemSet", namespace, svcName, podName);
-                
-                //去掉最后一个逗号
-                yValue.deleteCharAt(yValue.length() - 1);
-                yValue.append("]}");
-                
-                //MEM结束
-                yValue.append("]},");
-
-                //CPU
-                yValue.append("{\"title\": \"cpu\",\"val\": [");
-                
-                //CPU LIMIT
-                yValue = joinContainerYValue(yValue, "cpuLimitCurrent", timePeriod, "getCpuLimit", namespace, svcName, podName);
-                
-                //去掉最后一个逗号
-                yValue.deleteCharAt(yValue.length() - 1);
-                yValue.append("]},");
-
-                //CPU USE
-                yValue = joinContainerYValue(yValue, "cpuUsageCurrent", timePeriod, "getCpuUse", namespace, svcName, podName);
-                
-                //去掉最后一个逗号
-                yValue.deleteCharAt(yValue.length() - 1);
-                yValue.append("]}");
-                
-                //CPU结束,POD结束
-                yValue.append("]}]},");
+            } else if ("".equals(podName) || podName == null){
+            	//取得单一NAMESPACE的JSON数据
+            	yValue = createNamespaceJson(yValue, timePeriod, nameSpace, "");
+            } else {
+            	//取得单一POD的JSON数据
+            	yValue = createNamespaceJson(yValue, timePeriod, nameSpace, podName);
             }
             
-            //去掉最后一个逗号
-            yValue.deleteCharAt(yValue.length() - 1);
-            //最后一个SERVICE结束
-            yValue.append("]},");
-
             //yValue结束
             yValue.append("]");
         } catch (Exception e) {
@@ -456,6 +398,110 @@ public class ClusterController {
         }
         //拼接总串
         return "{" + xValue.toString() + yValue.toString() + "}";
+    }
+    
+    /**
+     * 拼接单一NAMESPACE串
+     * 
+     * @param yValue yValue
+     * @param timePeriod timePeriod
+     * @param namespace nameSpace
+     * @param podName podName
+     * @return StringBuilder
+     */
+    private StringBuilder createNamespaceJson(StringBuilder yValue, String timePeriod, 
+    		String nameSpace, String podName){
+
+    	//判断podName是否为空
+    	if ("".equals(podName)){
+            //以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
+            KubernetesAPIClientInterface clientNamespace = kubernetesClientService.getClient(nameSpace);
+            
+            //取得所有此NAMESPACE下的POD
+            PodList podLst = clientNamespace.getAllPods();
+
+            //循环所有POD
+            for (int i = 0 ; i < podLst.size() ; i++) {
+            	//POD
+            	Pod indexPod = podLst.get(i);
+            	//实例名称
+            	String indexPodName = indexPod.getMetadata().getName();
+            	//拼接POD的JSON数据
+            	yValue = createPodJson(yValue, timePeriod, nameSpace, indexPodName);
+            }
+    	} else {
+        	//拼接POD的JSON串
+        	yValue = createPodJson(yValue, timePeriod, nameSpace, podName);
+    	}
+        return yValue;
+    }
+    /**
+     * 拼接POD的JSON串
+     * 
+     * @param yValue
+     * @param timePeriod
+     * @param namespace
+     * @param svcName
+     * @param podName
+     * @return
+     */
+    private StringBuilder createPodJson(StringBuilder yValue, String timePeriod, String namespace, String podName){
+
+    	//POD开始
+        yValue.append("{\"name\": \"" + podName + "\",\"val\": [");
+        
+    	//取得CONTAINER_NAME
+    	List<String> containerNameLst = getAllContainerName(namespace, podName);
+    	
+    	//循环处理所有container
+    	for (String containerName : containerNameLst) {
+
+        	//CONTAINER开始
+            yValue.append("{\"titleText\": \"" + containerName + "\",\"val\": [");
+            
+            //memory开始
+            yValue.append("{\"title\": \"memory\",\"val\": [");
+
+            //MEM LIMIT
+            yValue = joinContainerYValue(yValue, "memoryLimitCurrent", timePeriod, "getMemLimit", namespace, podName, containerName);
+            
+            //MEM USE
+            yValue = joinContainerYValue(yValue, "memoryUsageCurrent", timePeriod, "getMemUse", namespace, podName, containerName);
+
+            //MEM WORKING SET
+            yValue = joinContainerYValue(yValue, "memoryWorkingSetCurrent", timePeriod, "getMemSet", namespace, podName, containerName);
+
+            //去掉最后一个逗号
+            yValue.deleteCharAt(yValue.length() - 1);
+            
+            //MEM结束
+            yValue.append("]},");
+
+            //CPU开始
+            yValue.append("{\"title\": \"cpu\",\"val\": [");
+            
+            //CPU LIMIT
+            yValue = joinContainerYValue(yValue, "cpuLimitCurrent", timePeriod, "getCpuLimit", namespace, podName, containerName);
+            
+            //CPU USE
+            yValue = joinContainerYValue(yValue, "cpuUsageCurrent", timePeriod, "getCpuUse", namespace, podName, containerName);
+            
+            //去掉最后一个逗号
+            yValue.deleteCharAt(yValue.length() - 1);
+            
+            //CPU结束
+            yValue.append("]}");
+            
+            //CONTAINER结束
+            yValue.append("]},");
+    	}
+    	
+        //去掉最后一个逗号
+        yValue.deleteCharAt(yValue.length() - 1);
+        //POD结束
+        yValue.append("]},");
+        
+        return yValue;
     }
 
     @RequestMapping(value = {"/add"}, method = RequestMethod.GET)
@@ -660,12 +706,12 @@ public class ClusterController {
      * @return
      */
     private StringBuilder joinContainerYValue(StringBuilder val, String legendName, String timePeriod, 
-    		String dataType, String namespace, String svcName, String podName){
+    		String dataType, String namespace, String podName, String containerName){
         MonitorController monCon = new MonitorController();
     	val.append("{\"legendName\": \"");
     	val.append(legendName);
     	val.append("\",\"yAxis\": [");
-        List<String> lst = monCon.getContainerData(influxDB, dbName, timePeriod, dataType, namespace, svcName, podName);
+        List<String> lst = monCon.getContainerData(influxDB, dbName, timePeriod, dataType, namespace, podName, containerName);
         for (int i=0;i < lst.size();i++){
         	val.append("\"").append(lst.get(i)).append("\",");
         }
@@ -673,5 +719,30 @@ public class ClusterController {
         val.deleteCharAt(val.length() - 1);
         val.append("]},");
         return val;
+    }
+    
+    /**
+     * 取得所有容器名称
+     * 
+     * @param namespace
+     * @param podName
+     * @return
+     */
+    private List<String> getAllContainerName(String namespace, String podName){
+
+        List<String> listString = new ArrayList<>();
+        
+    	String sql = "SELECT  container_name, last(\"value\")  FROM  \"memory/limit_bytes_gauge\"  WHERE 1=1  and " + 
+    	        "\"pod_namespace\" = \'" + namespace + 
+    			"\'  AND \"pod_name\" = \'" + podName + 
+    			"\' AND time > now() - 5m GROUP BY pod_namespace ,pod_name ,container_name, time(1m) fill(null)";
+        Query sqlQuery = new Query(sql, dbName);
+        QueryResult result_mem_limit = influxDB.query(sqlQuery);
+        List<Series> seriesLst = result_mem_limit.getResults().get(0).getSeries();
+        for (Series series : seriesLst){
+        	List<List<Object>> listObject = series.getValues();
+        	listString.add(listObject.get(1).get(1).toString());
+        }
+        return listString;
     }
 }

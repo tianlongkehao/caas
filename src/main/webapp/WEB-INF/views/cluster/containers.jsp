@@ -101,7 +101,7 @@
 	//获取监控数据
 	function getContainerMonitor(timePeriod){
 	    $.ajax({
-	        url:ctx+"/cluster/getContainerMonitor?timePeriod=" + timePeriod,
+	        url:ctx+"/cluster/getContainerMonitor?timePeriod=" + timePeriod + "&namespace=&svcName=&podName=",
 	        success:function(data){
 	        	showContainerImg($.parseJSON(data));
 	        }
