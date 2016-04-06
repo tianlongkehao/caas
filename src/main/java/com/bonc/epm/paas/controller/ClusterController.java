@@ -421,8 +421,6 @@ public class ClusterController {
 					// 取得单一NAMESPACE的JSON数据
 					yValue = createNamespaceJson(yValue, timePeriod, namespaceName, "");
 				}
-				// 去掉最后一个NAMESPACE的逗号
-				yValue.deleteCharAt(yValue.length() - 1);
 			} else if ("".equals(podName) || podName == null) {
 				// 取得单一NAMESPACE的JSON数据
 				yValue = createNamespaceJson(yValue, timePeriod, nameSpace, "");
@@ -430,6 +428,8 @@ public class ClusterController {
 				// 取得单一POD的JSON数据
 				yValue = createNamespaceJson(yValue, timePeriod, nameSpace, podName);
 			}
+			// 去掉最后一个NAMESPACE的逗号
+			yValue.deleteCharAt(yValue.length() - 1);
 
 			// yValue结束
 			yValue.append("]");

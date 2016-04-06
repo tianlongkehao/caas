@@ -106,6 +106,7 @@
 	var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
 
 	//默认监控5分钟
+
 	getContainerMonitor("5m", "", "");
 	getAllNamespace();
 
