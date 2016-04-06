@@ -105,11 +105,9 @@
 
 	var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
 
-	var namespaceData = [];
-
 	//默认监控5分钟
 	getContainerMonitor("5m");
-	//getAllNamespace();
+	getAllNamespace();
 	
 	//获取监控数据
 	function getContainerMonitor(timePeriod){
@@ -126,12 +124,12 @@
 	    $.ajax({
 	        url:ctx+"/cluster/getAllNamespace",
 	        success:function(data){
-	        	namespaceData = $.parseJSON(data);
+	            showNamespceOpt($.parseJSON(data));
 	        }
 	    })
 	}
 
-    var containerData = {
+    /* var containerData = {
         'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
         'yValue': [{
             'name': 'pod01', 'val': [{
@@ -262,10 +260,8 @@
             }]
             }
         ]
-    };
-
-    //显示容器IMG
-    showContainerImg(containerData);
+    }; */
+    
     //添加container memory画布
     function addContainerMemImg() {
         var memTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: left;width: 563px;height:260px;">'
@@ -293,9 +289,8 @@
     //        var conOpt = '<option name="search_container" value=""></option>'
     //        $("#search_container").append(conOpt);
     //    }
-    showNamespceOpt();
     //由namespaceData得到租户的option下拉选项
-    function showNamespceOpt() {
+    function showNamespceOpt(namespaceData) {
         for (var namespaceVal = 0; namespaceVal < namespaceData.length; namespaceVal++) {
             addNamespacesOpt();
             var namespaceOpt = document.getElementById('search_namespace').children[namespaceVal + 1];
@@ -304,7 +299,7 @@
         }
     }
     //由containerData得到pod的option下拉选项
-    function showPodOpt(s) {
+    function showPodOpt(s, containerData) {
         var containerDataYval = containerData.yValue[s];
         //search_pod_options
         addPodOpt();
@@ -344,7 +339,7 @@
         //var containerNum = 0;
         for (var s = 0; s < containerData.yValue.length; s++) {
             var containerDataYval = containerData.yValue[s];
-            showPodOpt(s);
+            showPodOpt(s, containerData);
             for (var j = 0; j < containerDataYval.val.length; j++) {
                 //search_container_options
 //                addContainerConOpt();
