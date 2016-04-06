@@ -106,13 +106,13 @@
 	var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
 
 	//默认监控5分钟
-	getContainerMonitor("5m");
+	getContainerMonitor("5m","kube-system","influxdb-grafana-q6o2k");
 	getAllNamespace();
 	
 	//获取监控数据
-	function getContainerMonitor(timePeriod){
+	function getContainerMonitor(timePeriod, nameSpace, podName){
 	    $.ajax({
-	        url:ctx+"/cluster/getContainerMonitor?timePeriod=" + timePeriod + "&namespace=&svcName=&podName=",
+	        url:ctx+"/cluster/getContainerMonitor?timePeriod=" + timePeriod + "&nameSpace="+ nameSpace+ "&podName="+podName,
 	        success:function(data){
 	        	showContainerImg($.parseJSON(data));
 	        }
