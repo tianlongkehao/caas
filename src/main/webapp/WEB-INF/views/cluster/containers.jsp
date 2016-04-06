@@ -106,13 +106,13 @@
 	var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
 
 	//默认监控5分钟
-	getContainerMonitor("5m");
+	getContainerMonitor("5m", "", "");
 	getAllNamespace();
-	
+
 	//获取监控数据
-	function getContainerMonitor(timePeriod){
+	function getContainerMonitor(timePeriod,nameSpace,podName){
 	    $.ajax({
-	        url:ctx+"/cluster/getContainerMonitor?timePeriod=" + timePeriod + "&namespace=&svcName=&podName=",
+	        url:ctx+"/cluster/getContainerMonitor?timePeriod=" + timePeriod + "&nameSpace=&"+nameSpace+"podName="+podName,
 	        success:function(data){
 	        	showContainerImg($.parseJSON(data));
 	        }
@@ -315,9 +315,27 @@
             $("#search_pod").attr("disabled","disabled");
             $(".pod").removeClass("hide")
         }
+        var resourceCon = $("#resourceContainer")[0];
+        var imgLst = document.getElementById("resourceContainer");
+        var count = imgLst.childNodes.length;
+        for(var i=0;i < count; i++ ) {
+            imgLst.removeChild(imgLst.childNodes[0]);
+        }
+        var namespace0val = $("#search_namespace")[0].value;
+        getContainerMonitor("5m",namespace0val,"");
 
     }
     //筛选pod
+    function searchPod(){
+        var pod0val = $("#search_pod")[0].value;
+        var namespace0val = $("#search_namespace")[0].value;
+        var resourceCon = $("#resourceContainer")[0];
+        var t = document.getElementsByClassName("pod");
+        if(resourceCon.children != null){
+            resourceCon.removeChild(t);
+        }
+        getContainerMonitor("5m",namespace0val,pod0val);
+    }
     function searchPod(){
         var pod0val = $("#search_pod")[0].value;
         for (var i = 0; i < document.getElementById('resourceContainer').childElementCount; i++){
@@ -447,7 +465,7 @@
             },
         };
         option.yAxis.push(f);
-        var containerDataYcpu = containerDataYval.val[j].val[0];
+        var containerDataYcpu = containerDataYval.val[j].val[1];
 
         for (var k = 0; k < containerDataYcpu.val.length; k++) {
             var containerYCpuval = containerDataYcpu.val[k].yAxis;

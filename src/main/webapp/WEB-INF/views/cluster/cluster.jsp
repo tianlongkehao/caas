@@ -364,7 +364,7 @@
                         };
                         clusterData.yValue[0].val[0].val[1].val[memNodeNum] = memoryNode;
                         clusterData.yValue[0].val[1].val[0].val[cpuNodeNum] = cpuNode;
-                        clusterData.yValue[0].val[2].val[0].val[cpuNodeNum] = diskNode;
+                        clusterData.yValue[0].val[2].val[1].val[diskNodeNum] = diskNode;
                         clusterData.yValue[0].val[3].val[0].val[netNodeNum] = netNode;
                         memNodeNum++;
                         cpuNodeNum++;
