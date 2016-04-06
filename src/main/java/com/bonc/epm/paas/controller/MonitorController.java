@@ -2,12 +2,9 @@ package com.bonc.epm.paas.controller;
 
 import com.bonc.epm.paas.constant.MonitorConstant;
 import org.influxdb.InfluxDB;
-import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.influxdb.dto.QueryResult.Series;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +18,12 @@ public class MonitorController {
 	private String timePeriod;
 	private String dbName;
 	
-	//根据timePeriod计算timeGroup
+	/**
+	 * 根据timePeriod计算timeGroup
+	 * 
+	 * @param timePeriod
+	 * @return
+	 */
 	private String getTimeGroup(String timePeriod){
 		String timeGroup;
 		switch (timePeriod) {
@@ -54,6 +56,7 @@ public class MonitorController {
 		}
 		return timeGroup;
 	}
+	
     /**
      * 根据Cluster条件拼接SQL
      * 
@@ -71,6 +74,7 @@ public class MonitorController {
         sql = sql + " AND time > now() - " + timePeriod + " GROUP BY time(" + timeGroup + ")";
         return sql;
     }
+    
     /**
      * 根据Container条件拼接SQL
      * 
@@ -101,7 +105,13 @@ public class MonitorController {
         sql = sql + " AND time > now() - " + timePeriod + " GROUP BY pod_namespace ,pod_name ,container_name, time(" + timeGroup + ") fill(null)";
         return sql;
     }
-
+    
+    /**
+     * 查詢INFLUXDB
+     * 
+     * @param sql
+     * @return
+     */
     private List<String> dbSearch(String sql) {
         Query sqlQuery = new Query(sql, dbName);
         QueryResult result_mem_limit = influxDB.query(sqlQuery);
@@ -126,7 +136,7 @@ public class MonitorController {
 
     
     /**
-     *  取得集群监控数据
+     *  取得CONTAINER监控数据
      * 
      * @param influxDB
      * @param dbName
@@ -184,7 +194,7 @@ public class MonitorController {
     }
     
     /**
-     *  取得集群监控数据
+     *  取得CLUSTER监控数据
      * 
      * @param influxDB
      * @param dbName
@@ -276,4 +286,28 @@ public class MonitorController {
             return new ArrayList<String>(); 
     	}
     }
+
+	/**
+	 * 取得所有容器名称
+	 * 
+	 * @param namespace
+	 * @param podName
+	 * @return
+	 */
+	public List<String> getAllContainerName(String namespace, String podName) {
+
+		List<String> listString = new ArrayList<>();
+
+		String sql = "SELECT  container_name, last(\"value\")  FROM  \"memory/limit_bytes_gauge\"  WHERE 1=1  and "
+				+ "\"pod_namespace\" = \'" + namespace + "\'  AND \"pod_name\" = \'" + podName
+				+ "\' AND time > now() - 5m GROUP BY pod_namespace ,pod_name ,container_name, time(1m) fill(null)";
+		Query sqlQuery = new Query(sql, dbName);
+		QueryResult result_mem_limit = influxDB.query(sqlQuery);
+		List<Series> seriesLst = result_mem_limit.getResults().get(0).getSeries();
+		for (Series series : seriesLst) {
+			List<List<Object>> listObject = series.getValues();
+			listString.add(listObject.get(1).get(1).toString());
+		}
+		return listString;
+	}
 }

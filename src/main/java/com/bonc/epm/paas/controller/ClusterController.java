@@ -8,9 +8,6 @@ import java.util.*;
 
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
-import org.influxdb.dto.Query;
-import org.influxdb.dto.QueryResult;
-import org.influxdb.dto.QueryResult.Series;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.bonc.epm.paas.entity.ContainerUse;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
-import com.bonc.epm.paas.kubernetes.model.AbstractKubernetesModelList;
-import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
-import com.bonc.epm.paas.kubernetes.model.Service;
-import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
@@ -45,6 +37,7 @@ import com.jcraft.jsch.SftpException;
 @Controller
 @RequestMapping(value = "/cluster")
 public class ClusterController {
+	
 	private static final Logger log = LoggerFactory.getLogger(ClusterController.class);
 
 	@Autowired
@@ -58,27 +51,48 @@ public class ClusterController {
 
 	@Value("${monitor.url}")
 	private String url;
+	
 	@Value("${monitor.username}")
 	private String username;
+	
 	@Value("${monitor.password}")
 	private String password;
+	
 	@Value("${monitor.dbName}")
 	private String dbName;
 
 	private InfluxDB influxDB;
 
+	/**
+	 * resource
+	 * 
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/resource" }, method = RequestMethod.GET)
 	public String resourceCluster(Model model) {
 		model.addAttribute("menu_flag", "cluster");
 		return "cluster/cluster.jsp";
 	}
 
+	/**
+	 * containers
+	 * 
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/containers" }, method = RequestMethod.GET)
 	public String resourceContainers(Model model) {
 		model.addAttribute("menu_flag", "containers");
 		return "cluster/containers.jsp";
 	}
 
+	/**
+	 * management
+	 * 
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/management" }, method = RequestMethod.GET)
 	public String clusterList(Model model) {
 
@@ -91,6 +105,13 @@ public class ClusterController {
 		return "cluster/cluster-management.jsp";
 	}
 
+	/**
+	 * detail
+	 * 
+	 * @param hostIps
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/detail" }, method = RequestMethod.GET)
 	public String clusterDetail(@RequestParam String hostIps, Model model) {
 
@@ -352,6 +373,11 @@ public class ClusterController {
 		return "{" + xValue.toString() + yValue.toString() + "}";
 	}
 
+	/**
+	 * 取得所有NAMESPACE
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = { "/getAllNamespace" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getAllNamespace() {
@@ -382,9 +408,7 @@ public class ClusterController {
 	 * 取得容器资源使用情况;
 	 *
 	 * @param nameSpace
-	 *            nameSpace
 	 * @param podName
-	 *            podName
 	 * @return String
 	 */
 	@RequestMapping(value = { "/getContainerMonitor" }, method = RequestMethod.GET)
@@ -445,13 +469,9 @@ public class ClusterController {
 	 * 拼接单一NAMESPACE串
 	 * 
 	 * @param yValue
-	 *            yValue
 	 * @param timePeriod
-	 *            timePeriod
 	 * @param namespace
-	 *            nameSpace
 	 * @param podName
-	 *            podName
 	 * @return StringBuilder
 	 */
 	private StringBuilder createNamespaceJson(StringBuilder yValue, String timePeriod, String nameSpace,
@@ -497,7 +517,8 @@ public class ClusterController {
 		yValue.append("{\"name\": \"" + podName + "\",\"val\": [");
 
 		// 取得CONTAINER_NAME
-		List<String> containerNameLst = getAllContainerName(namespace, podName);
+		MonitorController monCon = new MonitorController();
+		List<String> containerNameLst = monCon.getAllContainerName(namespace, podName);
 
 		// 循环处理所有container
 		for (String containerName : containerNameLst) {
@@ -555,11 +576,23 @@ public class ClusterController {
 		return yValue;
 	}
 
+	/**
+	 * add
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = { "/add" }, method = RequestMethod.GET)
 	public String clusterAdd() {
 		return "cluster/cluster-create.jsp";
 	}
 
+	/**
+	 * searchCluster
+	 * 
+	 * @param searchIP
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/searchCluster" }, method = RequestMethod.POST)
 	public String searchCluster(@RequestParam String searchIP, Model model) {
 
@@ -569,6 +602,13 @@ public class ClusterController {
 		return "cluster/cluster-management.jsp";
 	}
 
+	/**
+	 * getClusters
+	 * 
+	 * @param ipRange
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/getClusters" }, method = RequestMethod.POST)
 	public String getClusters(@RequestParam String ipRange, Model model) {
 		List<String> lstIps = new ArrayList<>();
@@ -609,6 +649,7 @@ public class ClusterController {
 						conCluster.setHost(ipSon);
 						conCluster.setPort(22);
 						lstClusters.add(conCluster);
+						socket.close();
 					}
 				} catch (NoRouteToHostException e) {
 					log.error("无法SSH到目标主机:" + ipSon);
@@ -624,6 +665,16 @@ public class ClusterController {
 		return "cluster/cluster-create.jsp";
 	}
 
+	/**
+	 * installCluster
+	 * 
+	 * @param user
+	 * @param pass
+	 * @param ip
+	 * @param port
+	 * @param type
+	 * @return
+	 */
 	@RequestMapping(value = { "/installCluster" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String installCluster(@RequestParam String user, @RequestParam String pass, @RequestParam String ip,
@@ -689,6 +740,17 @@ public class ClusterController {
 		}
 	}
 
+	/**
+	 * copyFile
+	 * 
+	 * @param user
+	 * @param pass
+	 * @param ip
+	 * @param port
+	 * @throws IOException
+	 * @throws JSchException
+	 * @throws InterruptedException
+	 */
 	private void copyFile(String user, String pass, String ip, Integer port)
 			throws IOException, JSchException, InterruptedException {
 		JSch jsch = new JSch();
@@ -713,9 +775,7 @@ public class ClusterController {
 	 * 从数据库中读取时间轴数据,并进行拼接
 	 * 
 	 * @param val
-	 *            val
 	 * @param timePeriod
-	 *            timePeriod
 	 * @return
 	 */
 	private StringBuilder joinXValue(StringBuilder val, String timePeriod) {
@@ -734,13 +794,9 @@ public class ClusterController {
 	 * 从数据库中读取监控数据,并进行拼接
 	 * 
 	 * @param val
-	 *            val
 	 * @param legendName
-	 *            legendName
 	 * @param timePeriod
-	 *            timePeriod
 	 * @param dataType
-	 *            dataType
 	 * @return
 	 */
 	private StringBuilder joinClusterYValue(StringBuilder val, String legendName, String timePeriod, String dataType) {
@@ -762,13 +818,9 @@ public class ClusterController {
 	 * 从数据库中读取监控数据,并进行拼接
 	 * 
 	 * @param val
-	 *            val
 	 * @param legendName
-	 *            legendName
 	 * @param timePeriod
-	 *            timePeriod
 	 * @param dataType
-	 *            dataType
 	 * @return
 	 */
 	private StringBuilder joinContainerYValue(StringBuilder val, String legendName, String timePeriod, String dataType,
@@ -786,29 +838,5 @@ public class ClusterController {
 		val.deleteCharAt(val.length() - 1);
 		val.append("]},");
 		return val;
-	}
-
-	/**
-	 * 取得所有容器名称
-	 * 
-	 * @param namespace
-	 * @param podName
-	 * @return
-	 */
-	private List<String> getAllContainerName(String namespace, String podName) {
-
-		List<String> listString = new ArrayList<>();
-
-		String sql = "SELECT  container_name, last(\"value\")  FROM  \"memory/limit_bytes_gauge\"  WHERE 1=1  and "
-				+ "\"pod_namespace\" = \'" + namespace + "\'  AND \"pod_name\" = \'" + podName
-				+ "\' AND time > now() - 5m GROUP BY pod_namespace ,pod_name ,container_name, time(1m) fill(null)";
-		Query sqlQuery = new Query(sql, dbName);
-		QueryResult result_mem_limit = influxDB.query(sqlQuery);
-		List<Series> seriesLst = result_mem_limit.getResults().get(0).getSeries();
-		for (Series series : seriesLst) {
-			List<List<Object>> listObject = series.getValues();
-			listString.add(listObject.get(1).get(1).toString());
-		}
-		return listString;
 	}
 }
