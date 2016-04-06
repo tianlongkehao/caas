@@ -71,192 +71,193 @@
         })
     }
 
-    var clusterData = {
-        'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
-        'yValue': [
-            {
-                'name': 'cluster',
-                'val': [
-                    {
-                        'titleText': 'memory', 'val': [
-                        {
-                            'title': 'OVERALL CLUSTER MEMORY USAGE', 'val': [{
-                            'legendName': 'Limit Current',
-                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                        },
-                            {
-                                'legendName': 'Usage Current',
-                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            },
-                            {
-                                'legendName': 'Working Set Current',
-                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                            }]
-                        }, {
-                            'title': 'MEMORY USAGE GROUP BY NODE', 'val': []
-                        }
-                    ]
-                    }, {
-                        'titleText': 'CPU', 'val': [
-                            {
-                                'title': 'CPU USAGE GROUP BY NODE', 'val': []
-                            }
-                        ]
-                    }, {
-                        'titleText': 'DISK', 'val': [
-                            {
-                                'title': 'OVERALL CLUSTER DISK USAGE', 'val': [{
-                                'legendName': 'Limit Current',
-                                'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                            },
-                                {
-                                    'legendName': 'Usage Current',
-                                    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                                }]
-                            }, {
-                                'title': 'DISK USAGE GROUP BY NODE', 'val': []
-                            }
-                        ]
-                    }, {
-                        'titleText': 'NETWORK', 'val': [
-                            {
-                                'title': 'NETWORK USAGE GROUP BY NODE', 'val': []
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                'name': 'minmon', 'val': [{
-                'titleText': 'minion01', 'val': [{
-                    'title': 'memory', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                        }]
-                }, {
-                    'title': 'cpu', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        }]
-                }, {
-                    'title': 'disk', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        }]
-                }, {
-                    'title': 'network', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        }]
-                }]
-            }, {
-                'titleText': 'minion02', 'val': [{
-                    'title': 'memory', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [200, 162, 171, 214, 270, 310, 290, 270, 310]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [100, 112, 81, 114, 70, 210, 190, 81, 114]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                        }]
-                }, {
-                    'title': 'cpu', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        }]
-                }, {
-                    'title': 'disk', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        }]
-                }, {
-                    'title': 'network', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        }]
-                }]
-            }, {
-                'titleText': 'minion03', 'val': [{
-                    'title': 'memory', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [180, 142, 151, 194, 250, 290, 270, 250, 290]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [80, 92, 61, 94, 50, 190, 170, 61, 94]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                        }]
-                }, {
-                    'title': 'cpu', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        }]
-                }, {
-                    'title': 'disk', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        }]
-                }, {
-                    'title': 'network', 'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        }]
-                }]
-            }]
-            }
-        ]
-    };
+//    var clusterData = {
+//        'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
+//        'yValue': [
+//            {
+//                'name': 'cluster',
+//                'val': [
+//                    {
+//                        'titleText': 'memory', 'val': [
+//                        {
+//                            'title': 'OVERALL CLUSTER MEMORY USAGE', 'val': [{
+//                            'legendName': 'Limit Current',
+//                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                        },
+//                            {
+//                                'legendName': 'Usage Current',
+//                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                            },
+//                            {
+//                                'legendName': 'Working Set Current',
+//                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+//                            }]
+//                        }, {
+//                            'title': 'MEMORY USAGE GROUP BY NODE', 'val': []
+//                        }
+//                    ]
+//                    }, {
+//                        'titleText': 'CPU', 'val': [
+//                            {
+//                                'title': 'CPU USAGE GROUP BY NODE', 'val': []
+//                            }
+//                        ]
+//                    }, {
+//                        'titleText': 'DISK', 'val': [
+//                            {
+//                                'title': 'OVERALL CLUSTER DISK USAGE', 'val': [{
+//                                'legendName': 'Limit Current',
+//                                'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                            },
+//                                {
+//                                    'legendName': 'Usage Current',
+//                                    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                                }]
+//                            }, {
+//                                'title': 'DISK USAGE GROUP BY NODE', 'val': []
+//                            }
+//                        ]
+//                    }, {
+//                        'titleText': 'NETWORK', 'val': [
+//                            {
+//                                'title': 'NETWORK USAGE GROUP BY NODE', 'val': []
+//                            }
+//                        ]
+//                    }
+//                ]
+//            },
+//            {
+//                'name': 'minmon', 'val': [{
+//                'titleText': 'minion01', 'val': [{
+//                    'title': 'memory', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                        },
+//                        {
+//                            'legendName': 'Working Set Current',
+//                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+//                        }]
+//                }, {
+//                    'title': 'cpu', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                        }]
+//                }, {
+//                    'title': 'disk', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                        }]
+//                }, {
+//                    'title': 'network', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                        }]
+//                }]
+//            }, {
+//                'titleText': 'minion02', 'val': [{
+//                    'title': 'memory', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [200, 162, 171, 214, 270, 310, 290, 270, 310]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [100, 112, 81, 114, 70, 210, 190, 81, 114]
+//                        },
+//                        {
+//                            'legendName': 'Working Set Current',
+//                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+//                        }]
+//                }, {
+//                    'title': 'cpu', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                        }]
+//                }, {
+//                    'title': 'disk', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                        }]
+//                }, {
+//                    'title': 'network', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                        }]
+//                }]
+//            }, {
+//                'titleText': 'minion03', 'val': [{
+//                    'title': 'memory', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [180, 142, 151, 194, 250, 290, 270, 250, 290]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [80, 92, 61, 94, 50, 190, 170, 61, 94]
+//                        },
+//                        {
+//                            'legendName': 'Working Set Current',
+//                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+//                        }]
+//                }, {
+//                    'title': 'cpu', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                        }]
+//                }, {
+//                    'title': 'disk', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                        }]
+//                }, {
+//                    'title': 'network', 'val': [{
+//                        'legendName': 'Limit Current',
+//                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//                    },
+//                        {
+//                            'legendName': 'Usage Current',
+//                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//                        }]
+//                }]
+//            }]
+//            }
+//        ]
+//    };
+
     function addClusterImg() {
         var clusterTxt = '<div class="table-lists"  style="margin-top: 10px;width: 1115px;height:260px; float: left">'
                 + '</div>';

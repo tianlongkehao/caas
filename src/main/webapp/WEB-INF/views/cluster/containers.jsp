@@ -42,24 +42,31 @@
                     </ul>
                     <form id="search_form" class="form-inline" action="<%=path %>/user/searchByCondition" method="post">
                         <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">
-                            <label style="line-height: 35px">服务:</label>
-                            <select name="search_service" id="search_service" onchange="searchService()"
+                            <label style="line-height: 35px">租户:</label>
+                            <select name="search_namespace" id="search_namespace" onchange="searchNamespace()"
                                     style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
-                                <option name="search_service" value="0"></option>
+                                <option name="search_namespace" value="0"></option>
                             </select>
                         </div>
                         <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">
-                            <label style="line-height: 35px">容器:</label>
-                            <select name="search_container" id="search_container" onchange="searchContainer()"
+                            <label style="line-height: 35px">实例:</label>
+                            <select name="search_pod" id="search_pod" onchange="searchPod()" disabled
                                     style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
-                                <option name="search_container" selected="" value="0"></option>
+                                <option name="search_pod" value="0"></option>
                             </select>
                         </div>
+                        <%--<div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">--%>
+                        <%--<label style="line-height: 35px">容器:</label>--%>
+                        <%--<select name="search_container" id="search_container" onchange="searchContainer()" disabled--%>
+                        <%--style="height: 30px;display: inline; width: 140px; border-radius: 5px;">--%>
+                        <%--<option name="search_container" selected="" value="0"></option>--%>
+                        <%--</select>--%>
+                        <%--</div>--%>
                         <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; float: right"
                              align="right">
                             <label style="line-height: 35px">时间:</label>
                             <select name="search_time" id="search_time"
-                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
+                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
                                 <option name="search_time" value="5m">最近5分钟</option>
                                 <option name="search_time" value="30m">最近30分钟</option>
                                 <option name="search_time" value="1h">最近1小时</option>
@@ -100,22 +107,23 @@
     var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
     //var colorData = ['#61a0a8', '#d48265', '#749f83',  '#ca8622', '#bda29a','#2f4554','#00BFFF','#61a0a8','#61a0a8','#749f83' ,'#91c7ae','#6e7074'];
 
-	//默认监控5分钟
-	getContainerMonitor("5m");
-	//获取监控数据
-	function getContainerMonitor(timePeriod){
-	    $.ajax({
-	        url:ctx+"/cluster/getContainerMonitor?timePeriod=" + timePeriod,
-	        success:function(data){
-	        	showContainerImg($.parseJSON(data));
-	        }
-	    })
-	}
+    //默认监控5分钟
+    getContainerMonitor("5m");
+    //获取监控数据
+    function getContainerMonitor(timePeriod) {
+        $.ajax({
+            url: ctx + "/cluster/getContainerMonitor?timePeriod=" + timePeriod,
+            success: function (data) {
+                showContainerImg($.parseJSON(data));
+            }
+        })
+    }
+    var namespaceData = ['test01', 'test02', 'test03'];
 
     var containerData = {
         'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
         'yValue': [{
-            'name': 'service01', 'val': [{
+            'name': 'pod01', 'val': [{
                 'titleText': 'container01',
                 'val': [{
                     'title': 'memory',
@@ -159,7 +167,8 @@
                         {
                             'legendName': 'Working Set Current',
                             'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
-                        }]},
+                        }]
+                },
                     {
                         'title': 'cpu',
                         'val': [{
@@ -175,25 +184,27 @@
                 }]
         },
             {
-                'name': 'service02', 'val': [{
+                'name': 'pod02', 'val': [{
                 'titleText': 'container03', 'val': [{
 
-                        'title': 'memory',
-                        'val': [{
-                            'legendName': 'Limit Current',
-                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                    'title': 'memory',
+                    'val': [{
+                        'legendName': 'Limit Current',
+                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                    },
+                        {
+                            'legendName': 'Usage Current',
+                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
                         },
-                            {
-                                'legendName': 'Usage Current',
-                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            },
-                            {
-                                'legendName': 'Working Set Current',
-                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                            }]}
+                        {
+                            'legendName': 'Working Set Current',
+                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                        }]
+                }
                     ,
 
-                    {'title': 'cpu',
+                    {
+                        'title': 'cpu',
                         'val': [{
                             'legendName': 'cpu Limit Current',
                             'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
@@ -204,26 +215,28 @@
                             }]
 
 
-                }]
+                    }]
             }, {
                 'titleText': 'container04', 'val': [{
 
-                        'title': 'memory',
-                        'val': [{
-                            'legendName': 'Limit Current',
-                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                    'title': 'memory',
+                    'val': [{
+                        'legendName': 'Limit Current',
+                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+                    },
+                        {
+                            'legendName': 'Usage Current',
+                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
                         },
-                            {
-                                'legendName': 'Usage Current',
-                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            },
-                            {
-                                'legendName': 'Working Set Current',
-                                'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                            }]}
+                        {
+                            'legendName': 'Working Set Current',
+                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+                        }]
+                }
                     ,
 
-                    {'title': 'cpu',
+                    {
+                        'title': 'cpu',
                         'val': [{
                             'legendName': 'Limit Current',
                             'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
@@ -234,56 +247,102 @@
                             }]
 
 
-                }]
+                    }]
             }]
             }
         ]
     };
-    
+
     //显示容器IMG
     showContainerImg(containerData);
-
+    //添加container memory画布
     function addContainerMemImg() {
-        var memTxt = '<div class="table-lists"  style="margin-top: 10px; float: left;width: 563px;height:260px;">'
+        var memTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: left;width: 563px;height:260px;">'
                 + '</div>';
         $("#resourceContainer").append(memTxt);
     }
+    //添加container cpu画布
     function addContainerCpuImg() {
-        var cpuTxt = '<div class="table-lists"  style="margin-top: 10px; float: right;width: 563px;height:260px;">'
+        var cpuTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: right;width: 563px;height:260px;">'
                 + '</div>';
         $("#resourceContainer").append(cpuTxt);
     }
-
-    function addContainerSerOpt() {
-        var serOpt = '<option name="search_service" value=""></option>'
-        $("#search_service").append(serOpt);
+    //添加namespace下拉选项
+    function addNamespacesOpt() {
+        var namespaceOpt = '<option name="search_namespace" value=""></option>'
+        $("#search_namespace").append(namespaceOpt);
     }
-    function addContainerConOpt() {
-        var conOpt = '<option name="search_container" value=""></option>'
-        $("#search_container").append(conOpt);
+    //添加pod option下拉选项
+    function addPodOpt() {
+        var serOpt = '<option name="search_pod" value=""></option>'
+        $("#search_pod").append(serOpt);
+    }
+    //添加container option下拉选项
+    //    function addContainerConOpt() {
+    //        var conOpt = '<option name="search_container" value=""></option>'
+    //        $("#search_container").append(conOpt);
+    //    }
+    showNamespceOpt();
+    //由namespaceData得到租户的option下拉选项
+    function showNamespceOpt() {
+        for (var namespaceVal = 0; namespaceVal < namespaceData.length; namespaceVal++) {
+            addNamespacesOpt();
+            var namespaceOpt = document.getElementById('search_namespace').children[namespaceVal + 1];
+            namespaceOpt.value = namespaceData[namespaceVal];
+            namespaceOpt.innerHTML = namespaceData[namespaceVal];
+        }
+    }
+    //由containerData得到pod的option下拉选项
+    function showPodOpt(s) {
+        var containerDataYval = containerData.yValue[s];
+        //search_pod_options
+        addPodOpt();
+        var podOpt = document.getElementById('search_pod').children[s + 1];
+        podOpt.value = containerDataYval.name;
+        podOpt.innerHTML = containerDataYval.name;
+    }
+    //筛选租户
+    function searchNamespace(){
+        $("#search_pod").removeAttr("disabled");
+        $("#search_pod")[0].children[0].selected = true;
+        if($("#search_namespace")[0].children[0].selected == true){
+            $("#search_pod").attr("disabled","disabled");
+            $(".pod").removeClass("hide")
+        }
+
+    }
+    //筛选pod
+    function searchPod(){
+        var pod0val = $("#search_pod")[0].value;
+        for (var i = 0; i < document.getElementById('resourceContainer').childElementCount; i++){
+            var searchFactor = document.getElementById('resourceContainer').children[i];
+            $(searchFactor).addClass('hide');
+            var facClass = searchFactor.classList;
+            if(pod0val == "0"){
+                $(searchFactor).removeClass('hide');
+            }else if(pod0val != "0"){
+                if(facClass.contains(pod0val)){
+                    $(searchFactor).removeClass('hide');
+                }
+            }
+        }
     }
 
     function showContainerImg(containerData) {
         var count = 0;
-        var containerNum = 0;
+        //var containerNum = 0;
         for (var s = 0; s < containerData.yValue.length; s++) {
             var containerDataYval = containerData.yValue[s];
-            //search_service_options
-            addContainerSerOpt();
-            var serviceOpt = document.getElementById('search_service').children[s + 1];
-            serviceOpt.value = containerDataYval.name;
-            serviceOpt.innerHTML = containerDataYval.name;
-
-
+            showPodOpt(s);
             for (var j = 0; j < containerDataYval.val.length; j++) {
                 //search_container_options
-                addContainerConOpt();
-                containerNum++;
-                var containerOpt = document.getElementById('search_container').children[containerNum];
-                containerOpt.value = containerDataYval.val[j].titleText;
-                containerOpt.innerHTML = containerDataYval.val[j].titleText;
-                $(containerOpt).addClass(containerDataYval.name);
-                $(containerOpt).addClass(containerDataYval.val[j].titleText);
+//                addContainerConOpt();
+//                containerNum++;
+//                var containerOpt = document.getElementById('search_container').children[containerNum];
+//                containerOpt.value = containerDataYval.val[j].titleText;
+//                containerOpt.innerHTML = containerDataYval.val[j].titleText;
+//                $(containerOpt).addClass(containerDataYval.name);
+//                $(containerOpt).addClass(containerDataYval.val[j].titleText);
 
                 var option = {
                     title: {
@@ -294,7 +353,7 @@
                     },
                     legend: {
                         bottom: '1%',
-                        data: [],
+                        data: []
                     },
                     grid: {
                         left: '3%',
@@ -320,7 +379,7 @@
         }
 
     }
-    
+
     function showContainerMemImg(count, containerDataYval, j, option) {
         var c = {
             type: 'value',

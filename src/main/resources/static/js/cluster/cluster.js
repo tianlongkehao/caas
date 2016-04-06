@@ -70,42 +70,38 @@ function delCluster() {
     }
 }
 
-function searchService(){
-    $("#search_container")[0].children[0].selected = true;
-    searchContainer();
-}
 
-function searchContainer(){
-    var svc0val = $("#search_service")[0].value;
-    var con0val = $("#search_container")[0].value;
-    for(var i = 0; i < document.getElementById('resourceContainer').childElementCount; i++){
-        var searchFactor = document.getElementById('resourceContainer').children[i];
-        $(searchFactor).addClass('hide');
-        var facClass = searchFactor.classList;
-        if(svc0val == "0" && con0val == "0"){
-            $(searchFactor).removeClass('hide');
-        }else if(svc0val != "0" && con0val != "0"){
-            if(facClass.contains(svc0val) && facClass.contains(con0val) ){
-                $(searchFactor).removeClass('hide');
-            }
-        }else if(con0val != "0"){
-            if(facClass.contains(con0val)){
-                $(searchFactor).removeClass('hide');
-            }
-        }else if(svc0val != "0"){
-            if(facClass.contains(svc0val)){
-                $(searchFactor).removeClass('hide');
-            }
-        }
-    }
-    for(var j = 1; j < document.getElementById('search_container').length; j++){
-        var serviceLink = document.getElementById('search_container').children[j];
-        var linkClass = serviceLink.classList;
-        $(serviceLink).removeClass('hide');
-        if(svc0val != "0" && !linkClass.contains(svc0val)){
-            $(serviceLink).addClass('hide');
-        }
-    }
-}
+//function searchContainer(){
+//    var svc0val = $("#search_service")[0].value;
+//    var con0val = $("#search_container")[0].value;
+//    for(var i = 0; i < document.getElementById('resourceContainer').childElementCount; i++){
+//        var searchFactor = document.getElementById('resourceContainer').children[i];
+//        $(searchFactor).addClass('hide');
+//        var facClass = searchFactor.classList;
+//        if(svc0val == "0" && con0val == "0"){
+//            $(searchFactor).removeClass('hide');
+//        }else if(svc0val != "0" && con0val != "0"){
+//            if(facClass.contains(svc0val) && facClass.contains(con0val) ){
+//                $(searchFactor).removeClass('hide');
+//            }
+//        }else if(con0val != "0"){
+//            if(facClass.contains(con0val)){
+//                $(searchFactor).removeClass('hide');
+//            }
+//        }else if(svc0val != "0"){
+//            if(facClass.contains(svc0val)){
+//                $(searchFactor).removeClass('hide');
+//            }
+//        }
+//    }
+//    for(var j = 1; j < document.getElementById('search_container').length; j++){
+//        var serviceLink = document.getElementById('search_container').children[j];
+//        var linkClass = serviceLink.classList;
+//        $(serviceLink).removeClass('hide');
+//        if(svc0val != "0" && !linkClass.contains(svc0val)){
+//            $(serviceLink).addClass('hide');
+//        }
+//    }
+//}
 
 
