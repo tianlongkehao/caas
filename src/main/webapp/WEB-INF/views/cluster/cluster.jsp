@@ -282,19 +282,19 @@
 //    };
     //添加集群中ALL&NODE画布
     function addClusterImg() {
-        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px;width: 1115px;height:260px; float: left">'
+        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px;width: 100%;height:260px; float: left">'
                 + '</div>';
         $("#resourceImg").append(clusterTxt);
     }
     //添加MINION节点画布（左侧）
     function addMinImgLeft() {
-        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px; width: 563px;height:260px;float: left">'
+        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px; width: 49.5%;height:260px;float: left">'
                 + '</div>';
         $("#resourceImg").append(clusterTxt);
     }
     //添加MINION节点画布（右侧）
     function addMinImgRight() {
-        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px; width: 563px;height:260px;float: right">'
+        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px; width: 49.5%;height:260px;float: right">'
                 + '</div>';
         $("#resourceImg").append(clusterTxt);
     }

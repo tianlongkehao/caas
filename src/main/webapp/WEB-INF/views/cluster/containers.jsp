@@ -269,13 +269,13 @@
 
     //添加container memory画布
     function addContainerMemImg() {
-        var memTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: left;width: 563px;height:260px;">'
+        var memTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: left;width: 49.5%;height:260px;">'
                 + '</div>';
         $("#resourceContainer").append(memTxt);
     }
     //添加container cpu画布
     function addContainerCpuImg() {
-        var cpuTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: right;width: 563px;height:260px;">'
+        var cpuTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: right;width: 49.5%;height:260px;">'
                 + '</div>';
         $("#resourceContainer").append(cpuTxt);
     }
@@ -311,13 +311,6 @@
         }
 
     }
-
-    //    function getPodFromNamespace(){
-    //        var namespace0val = $("#search_namespace")[0].value;
-    //        var jsonData = getContainerMonitor("5m",namespace0val,"");
-    //        showPodOpt(s, jsonData);
-    //    }
-
     //筛选租户
     function removePod() {
         var imgLst = document.getElementById("resourceContainer");
@@ -330,14 +323,15 @@
         $("#search_pod").removeAttr("disabled");
         $("#search_pod")[0].children[0].selected = true;
         var namespace0val = $("#search_namespace")[0].value;
+        var time0val = $("#search_time")[0].value;
 
         if ($("#search_namespace")[0].children[0].selected == true) {
             $("#search_pod").attr("disabled", "disabled");
             removePod();
-            getContainerMonitor("5m", "", "",true)
+            getContainerMonitor(time0val, "", "",true)
         } else {
             removePod();
-            getContainerMonitor("5m", namespace0val, "",true);
+            getContainerMonitor(time0val, namespace0val, "",true);
             var podOptCount = $("#search_pod")[0].options.length;
             var podLst = document.getElementById("search_pod");
             for (var j = 1; j < podOptCount; j++) {
@@ -350,18 +344,28 @@
     function searchPod() {
         var pod0val = $("#search_pod")[0].value;
         var namespace0val = $("#search_namespace")[0].value;
+        var time0val = $("#search_time")[0].value;
         removePod();
-        getContainerMonitor("5m", namespace0val, pod0val,false);
+        getContainerMonitor(time0val, namespace0val, pod0val,false);
         if($("#search_pod")[0].children[0].selected == true){
             removePod();
-            getContainerMonitor("5m", namespace0val, "",false);
+            getContainerMonitor(time0val, namespace0val, "",false);
         }
     }
     //筛选time
     function searchTime(){
         removePod();
-        var pod0val = $("#search_pod")[0].value;
-        var namespace0val = $("#search_namespace")[0].value;
+        if($("#search_namespace")[0].value == "0"){
+            var namespace0val ="";
+            var pod0val = "";
+        }else{
+            if($("#search_pod")[0].value == "0"){
+                var pod0val = "";
+            }else{
+                var pod0val = $("#search_pod")[0].value;
+            }
+            var namespace0val = $("#search_namespace")[0].value;
+        }
         var time0val = $("#search_time")[0].value;
         getContainerMonitor(time0val, namespace0val, pod0val,false);
     }
