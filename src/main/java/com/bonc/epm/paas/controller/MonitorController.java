@@ -6,6 +6,7 @@ import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 import org.influxdb.dto.QueryResult.Series;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +16,18 @@ import java.util.List;
 public class MonitorController {
     
 	private InfluxDB influxDB;
+	
 	private String timePeriod;
+	
 	private String dbName;
+	
+	private Integer memDivisor = 1024*1024*1024;
+	
+	private Integer cpuDivisor = 1;
+	
+	private Integer diskDivisor = 1024*1024*1024;
+	
+	private Integer netDivisor = 1000;
 	
 	/**
 	 * 根据timePeriod计算timeGroup
@@ -115,7 +126,7 @@ public class MonitorController {
      * @param sql
      * @return
      */
-    private List<String> dbSearch(String sql) {
+    private List<String> dbSearch(String sql, Integer divisor) {
         Query sqlQuery = new Query(sql, dbName);
         QueryResult result_mem_limit = influxDB.query(sqlQuery);
         List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
@@ -123,7 +134,10 @@ public class MonitorController {
         for (List<Object> aListObject : listObject) {
             //判断值是否为null
         	if (aListObject.get(1) != null) {
-                String str = aListObject.get(1).toString();
+        		Double ad = (Double) aListObject.get(1)/divisor;
+                String strDouble = ad.toString();
+                BigDecimal bigDecimal = new BigDecimal(strDouble);
+                String str = bigDecimal.toPlainString();
                 //判断小数点位数
                 if(str.length() <= str.indexOf(".") + 3){
                 	listString.add(str);
@@ -136,7 +150,6 @@ public class MonitorController {
         }
         return listString;
     }
-
     
     /**
      *  取得CONTAINER监控数据
@@ -155,19 +168,19 @@ public class MonitorController {
     	switch (dataType) {
         case "getMemLimit":
             //mem_limit
-        	return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.MEMORY_LIMIT, namespace, podName, containerName));
+        	return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.MEMORY_LIMIT, namespace, podName, containerName), memDivisor);
         case "getMemUse":
             //mem_use
-        	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_USAGE, namespace, podName, containerName));
+        	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_USAGE, namespace, podName, containerName), memDivisor);
         case "getMemSet":
             //mem_set
-        	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, namespace, podName, containerName));
+        	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, namespace, podName, containerName), memDivisor);
         case "getCpuLimit":
             //cpu_limit
-        	return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, namespace, podName, containerName));
+        	return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, namespace, podName, containerName), cpuDivisor);
         case "getCpuUse":
             //cpu_use
-        	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.CPU_USAGE, namespace, podName, containerName));
+        	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.CPU_USAGE, namespace, podName, containerName), cpuDivisor);
 		default:
             return new ArrayList<String>(); 
     	}
@@ -212,79 +225,51 @@ public class MonitorController {
     	switch (dataType) {
         case "getMemLimitOverAll":
             //overall cluster memory usage:mem_limit
-        	return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_LIMIT, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_LIMIT, minionName), memDivisor);
         case "getMemUseOverAll":
             //overall cluster memory usage:mem_use
-            return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_USAGE, minionName));
+            return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_USAGE, minionName), memDivisor);
         case "getMemSetOverAll":
             //overall cluster memory usage:mem_workingSet
-            return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_WORKING_SET, minionName));
-            
-        case "getMemLimitNode":
-            //memory usage group by node:memory_limit
-        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_LIMIT, minionName));
-        case "getMemUseNode":
-            //memory usage group by node:memory_use
-        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, minionName));
+            return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_WORKING_SET, minionName), memDivisor);
         	
         case "getMemLimitMinion":
         	//individual node memory usage： mem_limit
-        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_LIMIT, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_LIMIT, minionName), memDivisor);
         case "getMemUseMinion":
         	//individual node memory usage:memUse
-        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_USAGE, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_USAGE, minionName), memDivisor);
         case "getMemSetMinion":
         	//individual node memory usage:memory_working_set
-        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, minionName));
-        	
-        case "getCpuLimitNode":
-        	//cpu use group by node:cpu_limit
-        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, minionName));
-        case "getCpuUseNode":
-        	//cpu use group by node:cpu_use
-        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_U, MonitorConstant.CPU_USAGE, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, minionName), memDivisor);
         	
         case "getCpuLimitMinion":
         	//individual node cpu usage:cpu_limit
-        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, minionName), cpuDivisor);
         case "getCpuUseMinion":
         	//individual node cpu usage:cpu_use
-        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_U, MonitorConstant.CPU_USAGE, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_U, MonitorConstant.CPU_USAGE, minionName), cpuDivisor);
         	
         case "getDiskLimitOverAll":
         	//overall cluster disk usage:disk_limit
-        	return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.FILE_LIMIT, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.FILE_LIMIT, minionName), diskDivisor);
         case "getDiskUseOverAll":
         	//overall cluster disk usage:disk_use
-        	return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.FILE_USAGE, minionName));
-        	
-        case "getDiskLimitNode":
-        	//disk usage group by node:disk_limit
-        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.FILE_LIMIT, minionName));
-        case "getDiskUseNode":
-        	//disk usage group by node:disk_use
-        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.FILE_USAGE, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.FILE_USAGE, minionName), diskDivisor);
         	
         case "getDiskLimitMinion":
         	//individual node disk usage:disk_limit
-        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.FILE_LIMIT, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.FILE_LIMIT, minionName), diskDivisor);
         case "getDiskUseMinion":
         	//individual node disk usage:disk_use
-        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.FILE_USAGE, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.LAST_VALUE, MonitorConstant.FILE_USAGE, minionName), diskDivisor);
         	
-        case "getTxNode":
-        	//network usage group by node:tx
-        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_TX, minionName));
-        case "getRxNode":
-        	//network usage group by node:rx
-        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_RX, minionName));
         case "getTxMinion":
         	//individual node network usage:tx
-        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_TX, minionName));
+        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_TX, minionName), netDivisor);
         case "getRxMinion":
         	//individual node network usage:rx
-        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_RX, minionName));
-        	
+        	return dbSearch(joinClusterSQL(MonitorConstant.NEGATIVE_VALUE_S, MonitorConstant.NET_RX, minionName), netDivisor);
 		default:
             return new ArrayList<String>(); 
     	}

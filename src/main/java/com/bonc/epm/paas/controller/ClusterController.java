@@ -194,18 +194,6 @@ public class ClusterController {
 			// MEMORY USAGE GROUP BY NODE
 			yValue.append("{\"title\": \"MEMORY USAGE GROUP BY NODE\",\"val\": [");
 
-			/*
-			 * //memory usage group by node:memory_limit yValue =
-			 * joinClusterYValue(yValue, "LimitCurrent", timePeriod,
-			 * "getMemLimitNode");
-			 * 
-			 * //memory usage group by node:memory_use(workding_set表取) yValue =
-			 * joinClusterYValue(yValue, "UsageCurrent", timePeriod,
-			 * "getMemUseNode");
-			 * 
-			 * //去掉最后一个逗号 yValue.deleteCharAt(yValue.length() - 1);
-			 */
-
 			// MEM NODE结束,MEM结束
 			yValue.append("]}]},");
 
@@ -214,18 +202,6 @@ public class ClusterController {
 
 			// CPU USAGE GROUP BY NODE
 			yValue.append("{\"title\": \"CPU USAGE GROUP BY NODE\",\"val\": [");
-
-			/*
-			 * //CPU use group by node:cpu_limit yValue =
-			 * joinClusterYValue(yValue, "LimitCurrent", timePeriod,
-			 * "getCpuLimitNode");
-			 * 
-			 * //CPU use group by node:cpu_use yValue =
-			 * joinClusterYValue(yValue, "UsageCurrent", timePeriod,
-			 * "getCpuUseNode");
-			 * 
-			 * //去掉最后一个逗号 yValue.deleteCharAt(yValue.length() - 1);
-			 */
 
 			// CPU结束
 			yValue.append("]}]},");
@@ -249,18 +225,6 @@ public class ClusterController {
 			// DISK USAGE GROUP BY NODE
 			yValue.append("{\"title\": \"DISK USAGE GROUP BY NODE\",\"val\": [");
 
-			/*
-			 * //disk usage group by node:disk_limit yValue =
-			 * joinClusterYValue(yValue, "LimitCurrent", timePeriod,
-			 * "getDiskLimitNode");
-			 * 
-			 * //disk usage group by node:disk_use yValue =
-			 * joinClusterYValue(yValue, "UsageCurrent", timePeriod,
-			 * "getDiskUseNode");
-			 * 
-			 * //去掉最后一个逗号 yValue.deleteCharAt(yValue.length() - 1);
-			 */
-
 			// DISK结束
 			yValue.append("]}]},");
 
@@ -269,18 +233,6 @@ public class ClusterController {
 
 			// NETWORK USAGE GROUP BY NODE
 			yValue.append("{\"title\": \"NETWORK USAGE GROUP BY NODE\",\"val\": [");
-
-			/*
-			 * //network usage group by node:tx yValue =
-			 * joinClusterYValue(yValue, "UsageCurrent", timePeriod,
-			 * "getTxNode");
-			 * 
-			 * //network usage group by node:rx yValue =
-			 * joinClusterYValue(yValue, "UsageCurrent", timePeriod,
-			 * "getRxNode");
-			 * 
-			 * //去掉最后一个逗号 yValue.deleteCharAt(yValue.length() - 1);
-			 */
 
 			// NET结束
 			yValue.append("]}]}]},");
