@@ -36,7 +36,30 @@
                                 class="ic_left">集群监控</span></span></a>
                     </div>
                 </aside>
+                <div class="caption clearfix" style="padding-bottom: 0px">
+                    <ul class="toolbox clearfix">
+                        <li><a href="javascript:window.location.reload(true);" id="userReloadBtn"><i
+                                class="fa fa-repeat"></i></a></li>
+                    </ul>
+                    <form id="search_form" class="form-inline" action="<%=path %>/user/searchByCondition" method="post">
+                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; float: right"
+                             align="right">
+                            <label style="line-height: 35px">时间:</label>
+                            <select name="search_time" id="search_time" onchange="searchTime()"
+                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
+                                <option name="search_time" value="5m">最近5分钟</option>
+                                <option name="search_time" value="30m">最近30分钟</option>
+                                <option name="search_time" value="1h">最近1小时</option>
+                                <option name="search_time" value="6h">最近6个小时</option>
+                                <option name="search_time" value="12h">最近12小时</option>
+                                <option name="search_time" value="24h">最近24小时</option>
+                                <option name="search_time" value="7d">最近7天</option>
+                                <option name="search_time" value="30d">最近30天</option>
+                            </select>
+                        </div>
 
+                    </form>
+                </div>
                 <div>
                     <div id="clusterResource_wrap" class="tab_wrap">
                         <div class="detail-info">
@@ -257,21 +280,38 @@
 //            }
 //        ]
 //    };
-
+    //添加集群中ALL&NODE画布
     function addClusterImg() {
         var clusterTxt = '<div class="table-lists"  style="margin-top: 10px;width: 1115px;height:260px; float: left">'
                 + '</div>';
         $("#resourceImg").append(clusterTxt);
     }
+    //添加MINION节点画布（左侧）
     function addMinImgLeft() {
         var clusterTxt = '<div class="table-lists"  style="margin-top: 10px; width: 563px;height:260px;float: left">'
                 + '</div>';
         $("#resourceImg").append(clusterTxt);
     }
+    //添加MINION节点画布（右侧）
     function addMinImgRight() {
         var clusterTxt = '<div class="table-lists"  style="margin-top: 10px; width: 563px;height:260px;float: right">'
                 + '</div>';
         $("#resourceImg").append(clusterTxt);
+    }
+
+    //时间筛选
+    function searchTime(){
+        removePod();
+        var time0val = $("#search_time")[0].value;
+        getClusterMonitor(time0val);
+    }
+    //删除页面所有画布
+    function removePod() {
+        var imgLst = document.getElementById("resourceImg");
+        var count = imgLst.childNodes.length;
+        for (var i = 0; i < count; i++) {
+            imgLst.removeChild(imgLst.childNodes[0]);
+        }
     }
 
     function createChart(clusterData) {

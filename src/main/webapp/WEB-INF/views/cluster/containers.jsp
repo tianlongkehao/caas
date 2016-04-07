@@ -65,7 +65,7 @@
                         <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; float: right"
                              align="right">
                             <label style="line-height: 35px">时间:</label>
-                            <select name="search_time" id="search_time"
+                            <select name="search_time" id="search_time" onchange="searchTime()"
                                     style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
                                 <option name="search_time" value="5m">最近5分钟</option>
                                 <option name="search_time" value="30m">最近30分钟</option>
@@ -103,166 +103,170 @@
 
 <script type="text/javascript">
 
-	var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
+    var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
 
-	//默认监控5分钟
+    //默认监控5分钟
 
-	getContainerMonitor("5m", "", "");
-	getAllNamespace();
+    getContainerMonitor("5m", "", "",false);
+    getAllNamespace();
 
-	//获取监控数据
-	function getContainerMonitor(timePeriod,nameSpace,podName){
-	    $.ajax({
-	        url:ctx+"/cluster/getContainerMonitor?timePeriod=" + timePeriod + "&nameSpace=&"+nameSpace+"podName="+podName,
-	        success:function(data){
-	        	showContainerImg($.parseJSON(data));
-	        }
-	    })
-	}
-	
-	//获取所有NAMESPACE
-	function getAllNamespace(){
-	    $.ajax({
-	        url:ctx+"/cluster/getAllNamespace",
-	        success:function(data){
-	            showNamespceOpt($.parseJSON(data));
-	        }
-	    })
-	}
+    //获取监控数据
+    function getContainerMonitor(timePeriod, nameSpace, podName,isNamespace) {
+        $.ajax({
+            url: ctx + "/cluster/getContainerMonitor?timePeriod=" + timePeriod + "&nameSpace=" + nameSpace + "&podName=" + podName,
+            success: function (data) {
+                var jsonData = $.parseJSON(data);
+                showContainerImg(jsonData);
+                if (isNamespace) {
+                    showPodOpt(jsonData)
+                }
+            }
+        })
+    }
+
+    //获取所有NAMESPACE
+    function getAllNamespace() {
+        $.ajax({
+            url: ctx + "/cluster/getAllNamespace",
+            success: function (data) {
+                showNamespceOpt($.parseJSON(data));
+            }
+        })
+    }
 
     /* var containerData = {
-        'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
-        'yValue': [{
-            'name': 'pod01', 'val': [{
-                'titleText': 'container01',
-                'val': [{
-                    'title': 'memory',
-                    'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                        }]
-                },
-                    {
-                        'title': 'cpu',
-                        'val': [{
-                            'legendName': 'Limit Current',
-                            'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-                        },
-                            {
-                                'legendName': 'Usage Current',
-                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            }]
-                    }]
-            },
-                {
-                    'titleText': 'container02', 'val': [{
+     'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
+     'yValue': [{
+     'name': 'pod01', 'val': [{
+     'titleText': 'container01',
+     'val': [{
+     'title': 'memory',
+     'val': [{
+     'legendName': 'Limit Current',
+     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+     },
+     {
+     'legendName': 'Usage Current',
+     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+     },
+     {
+     'legendName': 'Working Set Current',
+     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+     }]
+     },
+     {
+     'title': 'cpu',
+     'val': [{
+     'legendName': 'Limit Current',
+     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+     },
+     {
+     'legendName': 'Usage Current',
+     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+     }]
+     }]
+     },
+     {
+     'titleText': 'container02', 'val': [{
 
-                    'title': 'memory',
-                    'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
-                        }]
-                },
-                    {
-                        'title': 'cpu',
-                        'val': [{
-                            'legendName': 'cLimit Current',
-                            'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                        },
-                            {
-                                'legendName': 'cUsage Current',
-                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            }]
+     'title': 'memory',
+     'val': [{
+     'legendName': 'Limit Current',
+     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+     },
+     {
+     'legendName': 'Usage Current',
+     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+     },
+     {
+     'legendName': 'Working Set Current',
+     'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
+     }]
+     },
+     {
+     'title': 'cpu',
+     'val': [{
+     'legendName': 'cLimit Current',
+     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+     },
+     {
+     'legendName': 'cUsage Current',
+     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+     }]
 
-                    }]
-                }]
-        },
-            {
-                'name': 'pod02', 'val': [{
-                'titleText': 'container03', 'val': [{
+     }]
+     }]
+     },
+     {
+     'name': 'pod02', 'val': [{
+     'titleText': 'container03', 'val': [{
 
-                    'title': 'memory',
-                    'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                        }]
-                }
-                    ,
+     'title': 'memory',
+     'val': [{
+     'legendName': 'Limit Current',
+     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+     },
+     {
+     'legendName': 'Usage Current',
+     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+     },
+     {
+     'legendName': 'Working Set Current',
+     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+     }]
+     }
+     ,
 
-                    {
-                        'title': 'cpu',
-                        'val': [{
-                            'legendName': 'cpu Limit Current',
-                            'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-                        },
-                            {
-                                'legendName': 'cpu Usage Current',
-                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            }]
-
-
-                    }]
-            }, {
-                'titleText': 'container04', 'val': [{
-
-                    'title': 'memory',
-                    'val': [{
-                        'legendName': 'Limit Current',
-                        'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-                    },
-                        {
-                            'legendName': 'Usage Current',
-                            'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                        },
-                        {
-                            'legendName': 'Working Set Current',
-                            'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-                        }]
-                }
-                    ,
-
-                    {
-                        'title': 'cpu',
-                        'val': [{
-                            'legendName': 'Limit Current',
-                            'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-                        },
-                            {
-                                'legendName': 'Usage Current',
-                                'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-                            }]
+     {
+     'title': 'cpu',
+     'val': [{
+     'legendName': 'cpu Limit Current',
+     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+     },
+     {
+     'legendName': 'cpu Usage Current',
+     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+     }]
 
 
-                    }]
-            }]
-            }
-        ]
-    }; */
-    
+     }]
+     }, {
+     'titleText': 'container04', 'val': [{
+
+     'title': 'memory',
+     'val': [{
+     'legendName': 'Limit Current',
+     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+     },
+     {
+     'legendName': 'Usage Current',
+     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+     },
+     {
+     'legendName': 'Working Set Current',
+     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+     }]
+     }
+     ,
+
+     {
+     'title': 'cpu',
+     'val': [{
+     'legendName': 'Limit Current',
+     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+     },
+     {
+     'legendName': 'Usage Current',
+     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+     }]
+
+
+     }]
+     }]
+     }
+     ]
+     }; */
+
     //添加container memory画布
     function addContainerMemImg() {
         var memTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: left;width: 563px;height:260px;">'
@@ -285,11 +289,7 @@
         var serOpt = '<option name="search_pod" value=""></option>'
         $("#search_pod").append(serOpt);
     }
-    //添加container option下拉选项
-    //    function addContainerConOpt() {
-    //        var conOpt = '<option name="search_container" value=""></option>'
-    //        $("#search_container").append(conOpt);
-    //    }
+
     //由namespaceData得到租户的option下拉选项
     function showNamespceOpt(namespaceData) {
         for (var namespaceVal = 0; namespaceVal < namespaceData.length; namespaceVal++) {
@@ -300,75 +300,76 @@
         }
     }
     //由containerData得到pod的option下拉选项
-    function showPodOpt(s, containerData) {
-        var containerDataYval = containerData.yValue[s];
-        //search_pod_options
-        addPodOpt();
-        var podOpt = document.getElementById('search_pod').children[s + 1];
-        podOpt.value = containerDataYval.name;
-        podOpt.innerHTML = containerDataYval.name;
-    }
-    //筛选租户
-    function searchNamespace(){
-        $("#search_pod").removeAttr("disabled");
-        $("#search_pod")[0].children[0].selected = true;
-        if($("#search_namespace")[0].children[0].selected == true){
-            $("#search_pod").attr("disabled","disabled");
-            $(".pod").removeClass("hide")
+    function showPodOpt(containerData) {
+        for (var podNum = 0; podNum < containerData.yValue.length; podNum++) {
+            var containerDataYval = containerData.yValue[podNum];
+            //search_pod_options
+            addPodOpt();
+            var podOpt = document.getElementById('search_pod').children[podNum + 1];
+            podOpt.value = containerDataYval.name;
+            podOpt.innerHTML = containerDataYval.name;
         }
-        var resourceCon = $("#resourceContainer")[0];
+
+    }
+
+    //    function getPodFromNamespace(){
+    //        var namespace0val = $("#search_namespace")[0].value;
+    //        var jsonData = getContainerMonitor("5m",namespace0val,"");
+    //        showPodOpt(s, jsonData);
+    //    }
+
+    //筛选租户
+    function removePod() {
         var imgLst = document.getElementById("resourceContainer");
         var count = imgLst.childNodes.length;
-        for(var i=0;i < count; i++ ) {
+        for (var i = 0; i < count; i++) {
             imgLst.removeChild(imgLst.childNodes[0]);
         }
+    }
+    function searchNamespace() {
+        $("#search_pod").removeAttr("disabled");
+        $("#search_pod")[0].children[0].selected = true;
         var namespace0val = $("#search_namespace")[0].value;
-        getContainerMonitor("5m",namespace0val,"");
+
+        if ($("#search_namespace")[0].children[0].selected == true) {
+            $("#search_pod").attr("disabled", "disabled");
+            removePod();
+            getContainerMonitor("5m", "", "",true)
+        } else {
+            removePod();
+            getContainerMonitor("5m", namespace0val, "",true);
+            var podOptCount = $("#search_pod")[0].options.length;
+            var podLst = document.getElementById("search_pod");
+            for (var j = 1; j < podOptCount; j++) {
+                podLst.removeChild(podLst.options[1])
+            }
+        }
 
     }
     //筛选pod
-    function searchPod(){
+    function searchPod() {
         var pod0val = $("#search_pod")[0].value;
         var namespace0val = $("#search_namespace")[0].value;
-        var resourceCon = $("#resourceContainer")[0];
-        var t = document.getElementsByClassName("pod");
-        if(resourceCon.children != null){
-            resourceCon.removeChild(t);
+        removePod();
+        getContainerMonitor("5m", namespace0val, pod0val,false);
+        if($("#search_pod")[0].children[0].selected == true){
+            removePod();
+            getContainerMonitor("5m", namespace0val, "",false);
         }
-        getContainerMonitor("5m",namespace0val,pod0val);
     }
-    function searchPod(){
+    //筛选time
+    function searchTime(){
+        removePod();
         var pod0val = $("#search_pod")[0].value;
-        for (var i = 0; i < document.getElementById('resourceContainer').childElementCount; i++){
-            var searchFactor = document.getElementById('resourceContainer').children[i];
-            $(searchFactor).addClass('hide');
-            var facClass = searchFactor.classList;
-            if(pod0val == "0"){
-                $(searchFactor).removeClass('hide');
-            }else if(pod0val != "0"){
-                if(facClass.contains(pod0val)){
-                    $(searchFactor).removeClass('hide');
-                }
-            }
-        }
+        var namespace0val = $("#search_namespace")[0].value;
+        var time0val = $("#search_time")[0].value;
+        getContainerMonitor(time0val, namespace0val, pod0val,false);
     }
-
     function showContainerImg(containerData) {
         var count = 0;
-        //var containerNum = 0;
         for (var s = 0; s < containerData.yValue.length; s++) {
             var containerDataYval = containerData.yValue[s];
-            showPodOpt(s, containerData);
             for (var j = 0; j < containerDataYval.val.length; j++) {
-                //search_container_options
-//                addContainerConOpt();
-//                containerNum++;
-//                var containerOpt = document.getElementById('search_container').children[containerNum];
-//                containerOpt.value = containerDataYval.val[j].titleText;
-//                containerOpt.innerHTML = containerDataYval.val[j].titleText;
-//                $(containerOpt).addClass(containerDataYval.name);
-//                $(containerOpt).addClass(containerDataYval.val[j].titleText);
-
                 var option = {
                     title: {
                         text: ''
@@ -411,7 +412,7 @@
             scale: true,
             axisLabel: {
                 formatter: '{value} Gib'
-            },
+            }
         };
         option.yAxis.push(c);
         var containerDataYmem = containerDataYval.val[j].val[0];
