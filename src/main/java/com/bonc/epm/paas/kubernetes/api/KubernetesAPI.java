@@ -37,6 +37,7 @@ import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
+import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -184,6 +185,18 @@ public interface KubernetesAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     public Status deleteLimitRange(@PathParam("namespace")String namespace,@PathParam("name") String name)
             throws KubernetesClientException;
+
+    /**
+     * Get all Namespaces
+     * 
+     * @return Namespaces
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/nodes")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public NodeList getAllNodes() throws KubernetesClientException;
     
 	/* Namespace API */
 

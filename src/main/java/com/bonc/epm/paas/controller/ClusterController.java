@@ -8,9 +8,6 @@ import java.util.*;
 
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
-import org.influxdb.dto.Query;
-import org.influxdb.dto.QueryResult;
-import org.influxdb.dto.QueryResult.Series;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.bonc.epm.paas.entity.ContainerUse;
+
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
-import com.bonc.epm.paas.kubernetes.model.AbstractKubernetesModelList;
-import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
+import com.bonc.epm.paas.kubernetes.model.Node;
+import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
-import com.bonc.epm.paas.kubernetes.model.Service;
-import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
@@ -45,6 +40,7 @@ import com.jcraft.jsch.SftpException;
 @Controller
 @RequestMapping(value = "/cluster")
 public class ClusterController {
+	
 	private static final Logger log = LoggerFactory.getLogger(ClusterController.class);
 
 	@Autowired
@@ -58,27 +54,48 @@ public class ClusterController {
 
 	@Value("${monitor.url}")
 	private String url;
+	
 	@Value("${monitor.username}")
 	private String username;
+	
 	@Value("${monitor.password}")
 	private String password;
+	
 	@Value("${monitor.dbName}")
 	private String dbName;
 
 	private InfluxDB influxDB;
 
+	/**
+	 * resource
+	 * 
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/resource" }, method = RequestMethod.GET)
 	public String resourceCluster(Model model) {
 		model.addAttribute("menu_flag", "cluster");
 		return "cluster/cluster.jsp";
 	}
 
+	/**
+	 * containers
+	 * 
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/containers" }, method = RequestMethod.GET)
 	public String resourceContainers(Model model) {
 		model.addAttribute("menu_flag", "containers");
 		return "cluster/containers.jsp";
 	}
 
+	/**
+	 * management
+	 * 
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/management" }, method = RequestMethod.GET)
 	public String clusterList(Model model) {
 
@@ -91,6 +108,13 @@ public class ClusterController {
 		return "cluster/cluster-management.jsp";
 	}
 
+	/**
+	 * detail
+	 * 
+	 * @param hostIps
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/detail" }, method = RequestMethod.GET)
 	public String clusterDetail(@RequestParam String hostIps, Model model) {
 
@@ -154,13 +178,13 @@ public class ClusterController {
 			yValue.append("{\"title\": \"OVERALL CLUSTER MEMORY USAGE\",\"val\": [");
 
 			// overall cluster memory usage:mem_limit
-			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitOverAll");
+			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitOverAll", "");
 
 			// overall cluster memory usage:mem_use
-			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseOverAll");
+			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseOverAll", "");
 
 			// overall cluster memory usage:mem_workingSet
-			yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetOverAll");
+			yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetOverAll", "");
 
 			// 去掉最后一个逗号
 			yValue.deleteCharAt(yValue.length() - 1);
@@ -212,10 +236,10 @@ public class ClusterController {
 			yValue.append("{\"title\": \"OVERALL CLUSTER DISK USAGE\",\"val\": [");
 
 			// overall cluster disk usage:disk_limit
-			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitOverAll");
+			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitOverAll", "");
 
 			// overall cluster disk usage:disk_use
-			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseOverAll");
+			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseOverAll", "");
 
 			// 去掉最后一个逗号
 			yValue.deleteCharAt(yValue.length() - 1);
@@ -262,80 +286,95 @@ public class ClusterController {
 
 			// minion
 			yValue.append("{\"name\": \"minmon\",\"val\": [");
+			
+			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
+			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
-			// 从表中取出所有slave节点
-			List<Cluster> clusterLst = (List<Cluster>) clusterDao.getByHostType("slave");
+			// 取得所有NAMESPACE
+			NodeList nodeLst = client.getAllNodes();
 
 			// 循环处理minion的监控信息
-			for (int i = 0; i < clusterLst.size(); i++) {
-				// memory
-				yValue.append("{\"titleText\": \"").append("minion" + clusterLst.get(i).getHost().split("\\.")[3])
-						.append("\",\"val\": [");
+			for (int i = 0; i < nodeLst.size(); i++) {
+				
+				Node minionItem = nodeLst.getItems().get(i);
+				//子节点名称
+				String minionName = minionItem.getMetadata().getName();
+				//子节点类型
+				String minionType = minionItem.getStatus().getConditions().get(0).getType();
+				//子节点状态
+				String minionStatus = minionItem.getStatus().getConditions().get(0).getStatus();
+				
+				//判斷节点非master,type为Ready,status为True
+				if(!"127.0.0.1".equals(minionName) && "Ready".equals(minionType) && "True".equals(minionStatus)){
+					
+					// memory
+					yValue.append("{\"titleText\": \"").append(minionName).append("\",\"val\": [");
 
-				// memory
-				yValue.append("{\"title\": \"memory\",\"val\": [");
+					// memory
+					yValue.append("{\"title\": \"memory\",\"val\": [");
 
-				// individual node memory usage： mem_limit
-				yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitMinion");
+					// individual node memory usage： mem_limit
+					yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitMinion", minionName);
 
-				// individual node memory usage:memUse
-				yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseMinion");
+					// individual node memory usage:memUse
+					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseMinion", minionName);
 
-				// individual node memory usage:memory_working_set
-				yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetMinion");
+					// individual node memory usage:memory_working_set
+					yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetMinion", minionName);
 
-				// 去掉最后一个逗号
-				yValue.deleteCharAt(yValue.length() - 1);
-				// memory结束
-				yValue.append("]},");
+					// 去掉最后一个逗号
+					yValue.deleteCharAt(yValue.length() - 1);
+					// memory结束
+					yValue.append("]},");
 
-				// CPU
-				yValue.append("{\"title\": \"cpu\",\"val\": [");
+					// CPU
+					yValue.append("{\"title\": \"cpu\",\"val\": [");
 
-				// individual node CPU usage:cpu_limit
-				yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getCpuLimitMinion");
+					// individual node CPU usage:cpu_limit
+					yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getCpuLimitMinion", minionName);
 
-				// individual node CPU usage:cpu_use
-				yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseMinion");
+					// individual node CPU usage:cpu_use
+					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseMinion", minionName);
 
-				// 去掉最后一个逗号
-				yValue.deleteCharAt(yValue.length() - 1);
-				// CPU结束
-				yValue.append("]},");
+					// 去掉最后一个逗号
+					yValue.deleteCharAt(yValue.length() - 1);
+					// CPU结束
+					yValue.append("]},");
 
-				// disk
-				yValue.append("{\"title\": \"disk\",\"val\": [");
+					// disk
+					yValue.append("{\"title\": \"disk\",\"val\": [");
 
-				// individual node disk usage:disk_limit
-				yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitMinion");
+					// individual node disk usage:disk_limit
+					yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitMinion", minionName);
 
-				// individual node disk usage:disk_use
-				yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseMinion");
+					// individual node disk usage:disk_use
+					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseMinion", minionName);
 
-				// 去掉最后一个逗号
-				yValue.deleteCharAt(yValue.length() - 1);
-				// disk结束
-				yValue.append("]},");
+					// 去掉最后一个逗号
+					yValue.deleteCharAt(yValue.length() - 1);
+					// disk结束
+					yValue.append("]},");
 
-				// network
-				yValue.append("{\"title\": \"network\",\"val\": [");
+					// network
+					yValue.append("{\"title\": \"network\",\"val\": [");
 
-				// individual node network usage:tx
-				yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getTxMinion");
+					// individual node network usage:tx
+					yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getTxMinion", minionName);
 
-				// individual node network usage:rx
-				yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getRxMinion");
+					// individual node network usage:rx
+					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getRxMinion", minionName);
 
-				// 去掉最后一个逗号
-				yValue.deleteCharAt(yValue.length() - 1);
-				// network结束
-				yValue.append("]},");
+					// 去掉最后一个逗号
+					yValue.deleteCharAt(yValue.length() - 1);
+					// network结束
+					yValue.append("]},");
 
-				// 去掉最后一个逗号
-				yValue.deleteCharAt(yValue.length() - 1);
+					// 去掉最后一个逗号
+					yValue.deleteCharAt(yValue.length() - 1);
 
-				// minion节点串结束
-				yValue.append("]},");
+					// minion节点串结束
+					yValue.append("]},");
+				}
 			}
 			// 去掉最后一个逗号
 			yValue.deleteCharAt(yValue.length() - 1);
@@ -352,6 +391,11 @@ public class ClusterController {
 		return "{" + xValue.toString() + yValue.toString() + "}";
 	}
 
+	/**
+	 * 取得所有NAMESPACE
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = { "/getAllNamespace" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getAllNamespace() {
@@ -382,9 +426,7 @@ public class ClusterController {
 	 * 取得容器资源使用情况;
 	 *
 	 * @param nameSpace
-	 *            nameSpace
 	 * @param podName
-	 *            podName
 	 * @return String
 	 */
 	@RequestMapping(value = { "/getContainerMonitor" }, method = RequestMethod.GET)
@@ -395,8 +437,6 @@ public class ClusterController {
 		StringBuilder yValue = new StringBuilder();
 
 		try {
-			influxDB = InfluxDBFactory.connect(url, username, password);
-
 			xValue.append("\"xValue\": [");
 
 			// xValue
@@ -445,13 +485,9 @@ public class ClusterController {
 	 * 拼接单一NAMESPACE串
 	 * 
 	 * @param yValue
-	 *            yValue
 	 * @param timePeriod
-	 *            timePeriod
 	 * @param namespace
-	 *            nameSpace
 	 * @param podName
-	 *            podName
 	 * @return StringBuilder
 	 */
 	private StringBuilder createNamespaceJson(StringBuilder yValue, String timePeriod, String nameSpace,
@@ -497,7 +533,9 @@ public class ClusterController {
 		yValue.append("{\"name\": \"" + podName + "\",\"val\": [");
 
 		// 取得CONTAINER_NAME
-		List<String> containerNameLst = getAllContainerName(namespace, podName);
+		MonitorController monCon = new MonitorController();
+		influxDB = InfluxDBFactory.connect(url, username, password);
+		List<String> containerNameLst = monCon.getAllContainerName(influxDB, dbName, namespace, podName);
 
 		// 循环处理所有container
 		for (String containerName : containerNameLst) {
@@ -555,11 +593,23 @@ public class ClusterController {
 		return yValue;
 	}
 
+	/**
+	 * add
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = { "/add" }, method = RequestMethod.GET)
 	public String clusterAdd() {
 		return "cluster/cluster-create.jsp";
 	}
 
+	/**
+	 * searchCluster
+	 * 
+	 * @param searchIP
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/searchCluster" }, method = RequestMethod.POST)
 	public String searchCluster(@RequestParam String searchIP, Model model) {
 
@@ -569,6 +619,13 @@ public class ClusterController {
 		return "cluster/cluster-management.jsp";
 	}
 
+	/**
+	 * getClusters
+	 * 
+	 * @param ipRange
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = { "/getClusters" }, method = RequestMethod.POST)
 	public String getClusters(@RequestParam String ipRange, Model model) {
 		List<String> lstIps = new ArrayList<>();
@@ -609,6 +666,7 @@ public class ClusterController {
 						conCluster.setHost(ipSon);
 						conCluster.setPort(22);
 						lstClusters.add(conCluster);
+						socket.close();
 					}
 				} catch (NoRouteToHostException e) {
 					log.error("无法SSH到目标主机:" + ipSon);
@@ -624,6 +682,16 @@ public class ClusterController {
 		return "cluster/cluster-create.jsp";
 	}
 
+	/**
+	 * installCluster
+	 * 
+	 * @param user
+	 * @param pass
+	 * @param ip
+	 * @param port
+	 * @param type
+	 * @return
+	 */
 	@RequestMapping(value = { "/installCluster" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String installCluster(@RequestParam String user, @RequestParam String pass, @RequestParam String ip,
@@ -689,6 +757,17 @@ public class ClusterController {
 		}
 	}
 
+	/**
+	 * copyFile
+	 * 
+	 * @param user
+	 * @param pass
+	 * @param ip
+	 * @param port
+	 * @throws IOException
+	 * @throws JSchException
+	 * @throws InterruptedException
+	 */
 	private void copyFile(String user, String pass, String ip, Integer port)
 			throws IOException, JSchException, InterruptedException {
 		JSch jsch = new JSch();
@@ -713,9 +792,7 @@ public class ClusterController {
 	 * 从数据库中读取时间轴数据,并进行拼接
 	 * 
 	 * @param val
-	 *            val
 	 * @param timePeriod
-	 *            timePeriod
 	 * @return
 	 */
 	private StringBuilder joinXValue(StringBuilder val, String timePeriod) {
@@ -734,21 +811,17 @@ public class ClusterController {
 	 * 从数据库中读取监控数据,并进行拼接
 	 * 
 	 * @param val
-	 *            val
 	 * @param legendName
-	 *            legendName
 	 * @param timePeriod
-	 *            timePeriod
 	 * @param dataType
-	 *            dataType
 	 * @return
 	 */
-	private StringBuilder joinClusterYValue(StringBuilder val, String legendName, String timePeriod, String dataType) {
+	private StringBuilder joinClusterYValue(StringBuilder val, String legendName, String timePeriod, String dataType, String minionName) {
 		MonitorController monCon = new MonitorController();
 		val.append("{\"legendName\": \"");
 		val.append(legendName);
 		val.append("\",\"yAxis\": [");
-		List<String> lst = monCon.getClusterData(influxDB, dbName, timePeriod, dataType);
+		List<String> lst = monCon.getClusterData(influxDB, dbName, timePeriod, dataType, minionName);
 		for (int i = 0; i < lst.size(); i++) {
 			val.append("\"").append(lst.get(i)).append("\",");
 		}
@@ -762,13 +835,9 @@ public class ClusterController {
 	 * 从数据库中读取监控数据,并进行拼接
 	 * 
 	 * @param val
-	 *            val
 	 * @param legendName
-	 *            legendName
 	 * @param timePeriod
-	 *            timePeriod
 	 * @param dataType
-	 *            dataType
 	 * @return
 	 */
 	private StringBuilder joinContainerYValue(StringBuilder val, String legendName, String timePeriod, String dataType,
@@ -786,29 +855,5 @@ public class ClusterController {
 		val.deleteCharAt(val.length() - 1);
 		val.append("]},");
 		return val;
-	}
-
-	/**
-	 * 取得所有容器名称
-	 * 
-	 * @param namespace
-	 * @param podName
-	 * @return
-	 */
-	private List<String> getAllContainerName(String namespace, String podName) {
-
-		List<String> listString = new ArrayList<>();
-
-		String sql = "SELECT  container_name, last(\"value\")  FROM  \"memory/limit_bytes_gauge\"  WHERE 1=1  and "
-				+ "\"pod_namespace\" = \'" + namespace + "\'  AND \"pod_name\" = \'" + podName
-				+ "\' AND time > now() - 5m GROUP BY pod_namespace ,pod_name ,container_name, time(1m) fill(null)";
-		Query sqlQuery = new Query(sql, dbName);
-		QueryResult result_mem_limit = influxDB.query(sqlQuery);
-		List<Series> seriesLst = result_mem_limit.getResults().get(0).getSeries();
-		for (Series series : seriesLst) {
-			List<List<Object>> listObject = series.getValues();
-			listString.add(listObject.get(1).get(1).toString());
-		}
-		return listString;
 	}
 }

@@ -28,6 +28,7 @@ import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
+import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -142,6 +143,14 @@ public interface KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     public Status deleteLimitRange(String name) throws KubernetesClientException;
+
+    /**
+     * Get all Nodes
+     * 
+     * @return Nodes
+     * @throws KubernetesClientException
+     */
+    public NodeList getAllNodes() throws KubernetesClientException;
     
     /* name space API */
     /**
