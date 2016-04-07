@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Kind {
-    STATUS("Status"), STATUSDETAILS("StatusDetails"), POD("Pod"), PODLIST("PodList"), REPLICATIONCONTROLLER(
+    STATUS("Status"), STATUSDETAILS("StatusDetails"), NODE("Node"), NODELIST("NodeList"), POD("Pod"), PODLIST("PodList"), REPLICATIONCONTROLLER(
             "ReplicationController"), REPLICATIONCONTROLLERLIST("ReplicationControllerList"), SERVICE("Service"), SERVICELIST(
             "ServiceList"), NAMESPACE("Namespace"), NAMESPACELIST("NamespaceList"), LIMITRANGE("LimitRange"), LIMITRANGELIST(
             		"LimitRangeList"), RESOURCEQUOTA("ResourceQuota"), RESOURCEQUOTALIST("ResourceQuotaList");

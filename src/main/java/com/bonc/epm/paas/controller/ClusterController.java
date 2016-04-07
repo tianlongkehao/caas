@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
+import com.bonc.epm.paas.kubernetes.model.Node;
+import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
@@ -175,13 +178,13 @@ public class ClusterController {
 			yValue.append("{\"title\": \"OVERALL CLUSTER MEMORY USAGE\",\"val\": [");
 
 			// overall cluster memory usage:mem_limit
-			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitOverAll");
+			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitOverAll", "");
 
 			// overall cluster memory usage:mem_use
-			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseOverAll");
+			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseOverAll", "");
 
 			// overall cluster memory usage:mem_workingSet
-			yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetOverAll");
+			yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetOverAll", "");
 
 			// 去掉最后一个逗号
 			yValue.deleteCharAt(yValue.length() - 1);
@@ -233,10 +236,10 @@ public class ClusterController {
 			yValue.append("{\"title\": \"OVERALL CLUSTER DISK USAGE\",\"val\": [");
 
 			// overall cluster disk usage:disk_limit
-			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitOverAll");
+			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitOverAll", "");
 
 			// overall cluster disk usage:disk_use
-			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseOverAll");
+			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseOverAll", "");
 
 			// 去掉最后一个逗号
 			yValue.deleteCharAt(yValue.length() - 1);
@@ -283,80 +286,95 @@ public class ClusterController {
 
 			// minion
 			yValue.append("{\"name\": \"minmon\",\"val\": [");
+			
+			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
+			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
-			// 从表中取出所有slave节点
-			List<Cluster> clusterLst = (List<Cluster>) clusterDao.getByHostType("slave");
+			// 取得所有NAMESPACE
+			NodeList nodeLst = client.getAllNodes();
 
 			// 循环处理minion的监控信息
-			for (int i = 0; i < clusterLst.size(); i++) {
-				// memory
-				yValue.append("{\"titleText\": \"").append("minion" + clusterLst.get(i).getHost().split("\\.")[3])
-						.append("\",\"val\": [");
+			for (int i = 0; i < nodeLst.size(); i++) {
+				
+				Node minionItem = nodeLst.getItems().get(i);
+				//子节点名称
+				String minionName = minionItem.getMetadata().getName();
+				//子节点类型
+				String minionType = minionItem.getStatus().getConditions().get(0).getType();
+				//子节点状态
+				String minionStatus = minionItem.getStatus().getConditions().get(0).getStatus();
+				
+				//判斷节点非master,type为Ready,status为True
+				if(!"127.0.0.1".equals(minionName) && "Ready".equals(minionType) && "True".equals(minionStatus)){
+					
+					// memory
+					yValue.append("{\"titleText\": \"").append(minionName).append("\",\"val\": [");
 
-				// memory
-				yValue.append("{\"title\": \"memory\",\"val\": [");
+					// memory
+					yValue.append("{\"title\": \"memory\",\"val\": [");
 
-				// individual node memory usage： mem_limit
-				yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitMinion");
+					// individual node memory usage： mem_limit
+					yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitMinion", minionName);
 
-				// individual node memory usage:memUse
-				yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseMinion");
+					// individual node memory usage:memUse
+					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseMinion", minionName);
 
-				// individual node memory usage:memory_working_set
-				yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetMinion");
+					// individual node memory usage:memory_working_set
+					yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetMinion", minionName);
 
-				// 去掉最后一个逗号
-				yValue.deleteCharAt(yValue.length() - 1);
-				// memory结束
-				yValue.append("]},");
+					// 去掉最后一个逗号
+					yValue.deleteCharAt(yValue.length() - 1);
+					// memory结束
+					yValue.append("]},");
 
-				// CPU
-				yValue.append("{\"title\": \"cpu\",\"val\": [");
+					// CPU
+					yValue.append("{\"title\": \"cpu\",\"val\": [");
 
-				// individual node CPU usage:cpu_limit
-				yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getCpuLimitMinion");
+					// individual node CPU usage:cpu_limit
+					yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getCpuLimitMinion", minionName);
 
-				// individual node CPU usage:cpu_use
-				yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseMinion");
+					// individual node CPU usage:cpu_use
+					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseMinion", minionName);
 
-				// 去掉最后一个逗号
-				yValue.deleteCharAt(yValue.length() - 1);
-				// CPU结束
-				yValue.append("]},");
+					// 去掉最后一个逗号
+					yValue.deleteCharAt(yValue.length() - 1);
+					// CPU结束
+					yValue.append("]},");
 
-				// disk
-				yValue.append("{\"title\": \"disk\",\"val\": [");
+					// disk
+					yValue.append("{\"title\": \"disk\",\"val\": [");
 
-				// individual node disk usage:disk_limit
-				yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitMinion");
+					// individual node disk usage:disk_limit
+					yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitMinion", minionName);
 
-				// individual node disk usage:disk_use
-				yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseMinion");
+					// individual node disk usage:disk_use
+					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseMinion", minionName);
 
-				// 去掉最后一个逗号
-				yValue.deleteCharAt(yValue.length() - 1);
-				// disk结束
-				yValue.append("]},");
+					// 去掉最后一个逗号
+					yValue.deleteCharAt(yValue.length() - 1);
+					// disk结束
+					yValue.append("]},");
 
-				// network
-				yValue.append("{\"title\": \"network\",\"val\": [");
+					// network
+					yValue.append("{\"title\": \"network\",\"val\": [");
 
-				// individual node network usage:tx
-				yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getTxMinion");
+					// individual node network usage:tx
+					yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getTxMinion", minionName);
 
-				// individual node network usage:rx
-				yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getRxMinion");
+					// individual node network usage:rx
+					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getRxMinion", minionName);
 
-				// 去掉最后一个逗号
-				yValue.deleteCharAt(yValue.length() - 1);
-				// network结束
-				yValue.append("]},");
+					// 去掉最后一个逗号
+					yValue.deleteCharAt(yValue.length() - 1);
+					// network结束
+					yValue.append("]},");
 
-				// 去掉最后一个逗号
-				yValue.deleteCharAt(yValue.length() - 1);
+					// 去掉最后一个逗号
+					yValue.deleteCharAt(yValue.length() - 1);
 
-				// minion节点串结束
-				yValue.append("]},");
+					// minion节点串结束
+					yValue.append("]},");
+				}
 			}
 			// 去掉最后一个逗号
 			yValue.deleteCharAt(yValue.length() - 1);
@@ -419,8 +437,6 @@ public class ClusterController {
 		StringBuilder yValue = new StringBuilder();
 
 		try {
-			influxDB = InfluxDBFactory.connect(url, username, password);
-
 			xValue.append("\"xValue\": [");
 
 			// xValue
@@ -518,7 +534,8 @@ public class ClusterController {
 
 		// 取得CONTAINER_NAME
 		MonitorController monCon = new MonitorController();
-		List<String> containerNameLst = monCon.getAllContainerName(namespace, podName);
+		influxDB = InfluxDBFactory.connect(url, username, password);
+		List<String> containerNameLst = monCon.getAllContainerName(influxDB, dbName, namespace, podName);
 
 		// 循环处理所有container
 		for (String containerName : containerNameLst) {
@@ -799,12 +816,12 @@ public class ClusterController {
 	 * @param dataType
 	 * @return
 	 */
-	private StringBuilder joinClusterYValue(StringBuilder val, String legendName, String timePeriod, String dataType) {
+	private StringBuilder joinClusterYValue(StringBuilder val, String legendName, String timePeriod, String dataType, String minionName) {
 		MonitorController monCon = new MonitorController();
 		val.append("{\"legendName\": \"");
 		val.append(legendName);
 		val.append("\",\"yAxis\": [");
-		List<String> lst = monCon.getClusterData(influxDB, dbName, timePeriod, dataType);
+		List<String> lst = monCon.getClusterData(influxDB, dbName, timePeriod, dataType, minionName);
 		for (int i = 0; i < lst.size(); i++) {
 			val.append("\"").append(lst.get(i)).append("\",");
 		}
