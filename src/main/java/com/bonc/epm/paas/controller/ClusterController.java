@@ -29,6 +29,7 @@ import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
+import com.bonc.epm.paas.util.DateFormatUtils;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.jcraft.jsch.ChannelSftp;
@@ -799,7 +800,15 @@ public class ClusterController {
 		MonitorController monCon = new MonitorController();
 		List<String> lst = monCon.getXValue(influxDB, dbName, timePeriod);
 		for (int i = 0; i < lst.size(); i++) {
-			val.append("\"").append(lst.get(i)).append("\",");
+			String strDate = lst.get(i);
+			//String转为Date
+			Date dateDate = DateFormatUtils.formatStringToDate(strDate);
+			//加8小时
+			Date comStrDate = DateFormatUtils.dateCompute(dateDate, "hour", 8);
+			//Date转为String
+			String comDateDate = DateFormatUtils.formatDateToString(comStrDate, DateFormatUtils.YYYY_MM_DD_HH_MM_SS);
+			//拼接字符串
+			val.append("\"").append(comDateDate).append("\",");
 		}
 		// 去掉最后一个逗号
 		val.deleteCharAt(val.length() - 1);
