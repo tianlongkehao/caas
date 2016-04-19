@@ -134,8 +134,11 @@
  //});
 
  function createContainer(){
-	 $('input[name="chkItem"]:checked').each(function(index, el){
-		 var id = $(el).val();
+	 var serviceIDs = [];
+	 $('input[name="chkItem"]:checked').each(function(){
+		 
+		 var id = $(this).val();
+		 serviceIDs.push(id);
 		 var $chkItem = $(this);
 			 //alert(id);
 		 layer.open({
@@ -149,7 +152,7 @@
 		        	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
 		        	layer.close(index);
 					$.ajax({
-						url:""+ctx+"service/createContainer.do?id="+id,
+						url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs,
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
@@ -167,9 +170,10 @@
  
  
  function stopContainer(){
-	 $('input[name="chkItem"]:checked').each(function(index, el){
-	        var id = $(el).val();
-	        //alert(id);
+	 var serviceIDs = [];
+	 $('input[name="chkItem"]:checked').each(function(){
+	        var id = $(this).val();
+	        serviceIDs.push(id);
 	        layer.open({
 		        title: '停止服务',
 		        content: '确定停止服务？',
@@ -177,7 +181,7 @@
 		        yes: function(index, layero){ 
 		        	layer.close(index);
 		        						$.ajax({
-		        							url:""+ctx+"service/stopContainer.do?id="+id,
+		        							url:""+ctx+"service/stopServices.do?serviceIDs="+serviceIDs,
 		        							success:function(data){
 		        								data = eval("(" + data + ")");
 		        								if(data.status=="200"){
