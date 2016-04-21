@@ -752,6 +752,51 @@ public class ServiceController {
 		
 	}
 	
+	@RequestMapping("service/stopServices.do")
+	@ResponseBody
+	public String stopServices(String serviceIDs){
+		ArrayList<Long> ids = new ArrayList<Long>();
+		String [] str = serviceIDs.split(",");
+		if(str!=null&&str.length>0){
+			for(String id:str){
+				ids.add(Long.valueOf(id));
+			}
+		}
+		Map<String, Object> maps = new HashMap<String,Object>();
+		try {
+			for(long id:ids){
+				stopContainer(id);
+			}
+			maps.put("status", "200");
+		} catch (Exception e) {
+			maps.put("status", "400");
+			log.error("服务停止错误！");
+		}
+		return JSON.toJSONString(maps);
+	}
+	
+	@RequestMapping("service/stratServices.do")
+	@ResponseBody
+	public String startServices(String serviceIDs){
+		ArrayList<Long> ids = new ArrayList<Long>();
+		String [] str = serviceIDs.split(",");
+		if(str!=null&&str.length>0){
+			for(String id:str){
+				ids.add(Long.valueOf(id));
+			}
+		}
+		Map<String, Object> maps = new HashMap<String,Object>();
+		try {
+			for(long id:ids){
+				CreateContainer(id);
+			}
+			maps.put("status", "200");
+		} catch (Exception e) {
+			maps.put("status", "400");
+			log.error("服务停止错误！");
+		}
+		return JSON.toJSONString(maps);
+	}
 	
 	
 
