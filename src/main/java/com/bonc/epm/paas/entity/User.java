@@ -35,7 +35,7 @@ public class User {
 	private String user_cellphone;//手机号码
 	private String user_phone;//固定电话
 	private String user_province;//省份
-
+	private String open_user_key;//省份
 
 	@ManyToMany
 	@JoinTable(name="user_favor_images", 
@@ -164,6 +164,14 @@ public class User {
 
 	public void setUser_province(String user_province) {
 		this.user_province = user_province;
+	}
+
+	public String getOpen_user_key() {
+		return open_user_key;
+	}
+
+	public void setOpen_user_key(String open_user_key) {
+		this.open_user_key = open_user_key;
 	}
 
 }

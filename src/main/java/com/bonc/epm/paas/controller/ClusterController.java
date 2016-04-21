@@ -26,9 +26,12 @@ import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
+import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -41,7 +44,7 @@ import com.jcraft.jsch.SftpException;
 @Controller
 @RequestMapping(value = "/cluster")
 public class ClusterController {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ClusterController.class);
 
 	@Autowired
@@ -55,13 +58,13 @@ public class ClusterController {
 
 	@Value("${monitor.url}")
 	private String url;
-	
+
 	@Value("${monitor.username}")
 	private String username;
-	
+
 	@Value("${monitor.password}")
 	private String password;
-	
+
 	@Value("${monitor.dbName}")
 	private String dbName;
 
@@ -239,7 +242,7 @@ public class ClusterController {
 
 			// minion
 			yValue.append("{\"name\": \"minmon\",\"val\": [");
-			
+
 			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
@@ -248,18 +251,18 @@ public class ClusterController {
 
 			// 循环处理minion的监控信息
 			for (int i = 0; i < nodeLst.size(); i++) {
-				
+
 				Node minionItem = nodeLst.getItems().get(i);
-				//子节点名称
+				// 子节点名称
 				String minionName = minionItem.getMetadata().getName();
-				//子节点类型
+				// 子节点类型
 				String minionType = minionItem.getStatus().getConditions().get(0).getType();
-				//子节点状态
+				// 子节点状态
 				String minionStatus = minionItem.getStatus().getConditions().get(0).getStatus();
-				
-				//判斷节点非master,type为Ready,status为True
-				if(!"127.0.0.1".equals(minionName) && "Ready".equals(minionType) && "True".equals(minionStatus)){
-					
+
+				// 判斷节点非master,type为Ready,status为True
+				if (!"127.0.0.1".equals(minionName) && "Ready".equals(minionType) && "True".equals(minionStatus)) {
+
 					// memory
 					yValue.append("{\"titleText\": \"").append(minionName).append("\",\"val\": [");
 
@@ -312,10 +315,10 @@ public class ClusterController {
 					yValue.append("{\"title\": \"network\",\"val\": [");
 
 					// individual node network usage:tx
-					yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getTxMinion", minionName);
+					yValue = joinClusterYValue(yValue, "TxCurrent", timePeriod, "getTxMinion", minionName);
 
 					// individual node network usage:rx
-					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getRxMinion", minionName);
+					yValue = joinClusterYValue(yValue, "RxCurrent", timePeriod, "getRxMinion", minionName);
 
 					// 去掉最后一个逗号
 					yValue.deleteCharAt(yValue.length() - 1);
@@ -363,14 +366,13 @@ public class ClusterController {
 		// 循环处理每个NAMESPACE
 		for (int i = 0; i < namespaceLst.size(); i++) {
 			// 命名空间名称
-			String namespaceName = namespaceLst.get(i).getMetadata().
-					getName();
+			String namespaceName = namespaceLst.get(i).getMetadata().getName();
 			rtnValue.append("\"").append(namespaceName).append("\"").append(",");
 		}
 
 		// 去掉最后一个逗号
 		rtnValue.deleteCharAt(rtnValue.length() - 1);
-		
+
 		// 拼接总串
 		return "[" + rtnValue.toString() + "]";
 	}
@@ -386,6 +388,13 @@ public class ClusterController {
 	@ResponseBody
 	public String getContainerMonitor(String nameSpace, String podName, String timePeriod) {
 
+		// 当前登陆用户
+		User curUser = CurrentUserUtils.getInstance().getUser();
+		// 当前租户为租户
+		if (UserConstant.AUTORITY_TENANT.equals(curUser.getUser_autority())) {
+			nameSpace = curUser.getUserName();
+		}
+
 		StringBuilder xValue = new StringBuilder();
 		StringBuilder yValue = new StringBuilder();
 
@@ -400,6 +409,7 @@ public class ClusterController {
 
 			// 判断是否单一NAMESPACE
 			if ("".equals(nameSpace) || nameSpace == null) {
+
 				// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
 				KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
@@ -753,13 +763,13 @@ public class ClusterController {
 		List<String> lst = monCon.getXValue(influxDB, dbName, timePeriod);
 		for (int i = 0; i < lst.size(); i++) {
 			String strDate = lst.get(i);
-			//String转为Date
+			// String转为Date
 			Date dateDate = DateFormatUtils.formatStringToDate(strDate);
-			//加8小时
+			// 加8小时
 			Date comStrDate = DateFormatUtils.dateCompute(dateDate, "hour", 8);
-			//Date转为String
+			// Date转为String
 			String comDateDate = DateFormatUtils.formatDateToString(comStrDate, DateFormatUtils.YYYY_MM_DD_HH_MM_SS);
-			//拼接字符串
+			// 拼接字符串
 			val.append("\"").append(comDateDate).append("\",");
 		}
 		// 去掉最后一个逗号
@@ -777,7 +787,8 @@ public class ClusterController {
 	 * @param dataType
 	 * @return
 	 */
-	private StringBuilder joinClusterYValue(StringBuilder val, String legendName, String timePeriod, String dataType, String minionName) {
+	private StringBuilder joinClusterYValue(StringBuilder val, String legendName, String timePeriod, String dataType,
+			String minionName) {
 		MonitorController monCon = new MonitorController();
 		val.append("{\"legendName\": \"");
 		val.append(legendName);
