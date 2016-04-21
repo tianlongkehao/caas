@@ -132,6 +132,7 @@
                     </li>
                 </ul>
             </li>
+
             <li id="menu_cluster">
                 <a href="<%=path %>/cluster/resource">
                     <img class="nav-icon" src="<%=path %>/images/server.svg" alt=""/>
@@ -156,6 +157,22 @@
                 </ul>
             </li>
         </c:if>
+        <c:if test="${cur_user.user_autority == 2}">
+        <li id="menu_cluster">
+            <a href="<%=path %>/cluster/containers">
+                <img class="nav-icon" src="<%=path %>/images/server.svg" alt=""/>
+                <span class="nav-title">集群</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li id="" action="">
+                    <a href="<%=path %>/cluster/containers">
+                        容器监控
+                    </a>
+                </li>
+            </ul>
+        </li>
+        </c:if>
+
 
 
     </ul>

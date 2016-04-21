@@ -280,6 +280,7 @@
 //            }
 //        ]
 //    };
+
     //添加集群中ALL&NODE画布
     function addClusterImg() {
         var clusterTxt = '<div class="table-lists"  style="margin-top: 10px;width: 100%;height:260px; float: left">'
@@ -438,11 +439,12 @@
                         barHeight: 2,
                         itemStyle: {
                             normal: {
-                                color: colorData[m],
+                                color: colorData[m]
                             }
                         },
-                        stack: '总量',
-                        areaStyle: {normal: {}, color: colorData[m]},
+
+//                        stack: '总量',
+                        areaStyle: {normal: {color: colorData[m], opacity: 0.3}},
                         data: clusterYval
                     };
                     option.legend.data.push(a);
@@ -482,11 +484,11 @@
                         barHeight: 2,
                         itemStyle: {
                             normal: {
-                                color: colorData[minxx],
+                                color: colorData[minxx]
                             }
                         },
-                        stack: '总量',
-                        areaStyle: {normal: {}, color: colorData[minxx]},
+//                        stack: '总量',
+                        areaStyle: {normal: {color: colorData[minxx], opacity: 0.3}},
                         data: clusterYVal
                     };
                     option.legend.data.push(mina);

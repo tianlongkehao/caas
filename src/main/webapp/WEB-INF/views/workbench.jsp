@@ -112,6 +112,19 @@
                         </a>
                     </li>
                     </c:if>
+                    <c:if test="${cur_user.user_autority == 2}">
+                        <li>
+                            <a class="icon-view" href="javascript:void(0);" action="<%=path %>/cluster/containers">
+                                <div class="icon-wrapper">
+                                    <div class="icon-img">
+                                        <span><img src="<%=path %>/images/server.svg" alt=""/></span>
+                                    </div>
+                                    <div class="icon-name">集群资源</div>
+                                </div>
+                            </a>
+                        </li>
+                    </c:if>
+
 
                 </ul>
             </div>

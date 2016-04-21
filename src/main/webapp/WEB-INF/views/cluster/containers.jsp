@@ -41,6 +41,7 @@
                                 class="fa fa-repeat"></i></a></li>
                     </ul>
                     <form id="search_form" class="form-inline" action="<%=path %>/user/searchByCondition" method="post">
+                        <c:if test="${cur_user.user_autority == 1}">
                         <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">
                             <label style="line-height: 35px">租户:</label>
                             <select name="search_namespace" id="search_namespace" onchange="searchNamespace()"
@@ -48,6 +49,7 @@
                                 <option name="search_namespace" value="0"></option>
                             </select>
                         </div>
+                        </c:if>
                         <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">
                             <label style="line-height: 35px">实例:</label>
                             <select name="search_pod" id="search_pod" onchange="searchPod()" disabled
@@ -55,6 +57,7 @@
                                 <option name="search_pod" value="0"></option>
                             </select>
                         </div>
+
                         <%--<div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">--%>
                         <%--<label style="line-height: 35px">容器:</label>--%>
                         <%--<select name="search_container" id="search_container" onchange="searchContainer()" disabled--%>
@@ -133,6 +136,7 @@
             }
         })
     }
+
 
     /* var containerData = {
      'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
@@ -340,6 +344,9 @@
         }
 
     }
+    if(${cur_user.user_autority == 2}){
+        $("#search_pod").removeAttr("disabled");
+    }
     //筛选pod
     function searchPod() {
         var pod0val = $("#search_pod")[0].value;
@@ -437,8 +444,8 @@
                         color: colorData[i]
                     }
                 },
-                stack: '总量',
-                areaStyle: {normal: {}, color: colorData[i]},
+//                stack: '总量',
+                areaStyle: {normal: {color: colorData[i],opacity: 0.3}},
                 data: containerYval
             };
             option.legend.data.push(a);
@@ -489,8 +496,8 @@
                         color: colorData[k]
                     }
                 },
-                stack: '总量',
-                areaStyle: {normal: {}, color: colorData[k]},
+//                stack: '总量',
+                areaStyle: {normal: {color: colorData[k], opacity: 0.3} },
                 data: containerYCpuval
             };
 
