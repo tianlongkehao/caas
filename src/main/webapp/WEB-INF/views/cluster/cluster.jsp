@@ -427,9 +427,9 @@
 
                     option.legend.data.push(a);
                     //红色预警
-                    for (var aaa = 0; aaa < clusterYval.length; aaa++) {
-                        var usageVal = clusterDataMinVal.val[1].yAxis[aaa];
-                        var limitVal = clusterDataMinVal.val[0].yAxis[aaa];
+                    for (var arrayCluster = 0; arrayCluster < clusterYval.length; arrayCluster++) {
+                        var usageVal = clusterDataMinVal.val[1].yAxis[arrayCluster];
+                        var limitVal = clusterDataMinVal.val[0].yAxis[arrayCluster];
                         if (m == 1 && usageVal >= limitVal * 0.9 && clusterDataMinVal.title.indexOf("NETWORK") == -1) {
                             clusterDataMinVal.title.indexOf("NETWORK");
                             var c = {
@@ -501,9 +501,9 @@
                     option.legend.data.push(mina);
 
                     //红色预警
-                    for (var arrayNum = 0; arrayNum < clusterYVal.length; arrayNum++) {
-                        var usageVal = clusterYValNum.val[1].yAxis[arrayNum];
-                        var limitVal = clusterYValNum.val[0].yAxis[arrayNum];
+                    for (var arrayMinNum = 0; arrayMinNum < clusterYVal.length; arrayMinNum++) {
+                        var usageVal = clusterYValNum.val[1].yAxis[arrayMinNum];
+                        var limitVal = clusterYValNum.val[0].yAxis[arrayMinNum];
                         if (minxx == 1 && usageVal >= limitVal * 0.9 && titleTextMin.indexOf("network") == -1) {
                             var minc = {
                                 name: clusterYValNum.val[minxx].legendName,
