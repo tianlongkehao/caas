@@ -67,7 +67,7 @@ public class SSOFilter implements Filter {
 				tenantId = attributes.get("tenantId").toString();
 			}
 			if (attributes.get("tenantAdmin") != null) {
-				tenantId = attributes.get("tenantAdmin").toString();
+				tenantAdmin = attributes.get("tenantAdmin").toString();
 			}
 			// paas当前登录用户
 			User currPaasUser = CurrentUserUtils.getInstance().getUser();
@@ -110,11 +110,11 @@ public class SSOFilter implements Filter {
 		User user = userDao.findByUserName(userName);
 		if (user == null) {
 			user = new User();
+			user.setPassword(UserConstant.INIT_PASSWORD);
 		}
 		Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
 		user.setUserName(userName);
 		user.setUser_realname(userName);
-		user.setPassword(UserConstant.INIT_PASSWORD);
 		user.setOpen_user_key(attributes.get("userId").toString());
 		if (attributes.get("email") != null) {
 			user.setEmail(attributes.get("email").toString());
@@ -125,7 +125,7 @@ public class SSOFilter implements Filter {
 			if ("1".equals(tenantAdmin)) {
 				user.setUser_autority(UserConstant.AUTORITY_TENANT);
 				user.setParent_id(0);
-			} else {
+			} else if ("0".equals(tenantAdmin)){
 				user.setUser_autority(UserConstant.AUTORITY_USER);
 				user.setParent_id(Long.valueOf(attributes.get("tenantId").toString()));
 			}
@@ -172,8 +172,8 @@ public class SSOFilter implements Filter {
 		// 查找租户名称
 		User tenantUser = userDao.findById(Long.valueOf(tenantId));
 		String tenantName = tenantUser.getUserName();
-		String open_cpu = "10";
-		String open_mem = "1";
+		String open_cpu = "0";
+		String open_mem = "0";
 		try {
 			// 调用能力平台用户资源查询接口，查询为此用户分配的资源
 			RESTResourceClient resourceClient = new RESTResourceClient();
@@ -181,6 +181,7 @@ public class SSOFilter implements Filter {
 			Map<String, String> open_res = (Map<String, String>) resourceClient.getResById(tenantId);
 			open_cpu = open_res.get("cpu");
 			open_mem = open_res.get("memory");
+			System.out.println("能力平台租户资源:" + open_res.toString());
 		} catch (Exception e) {
 			System.out.println("获取能力平台租户资源出错！" + e);
 		}
@@ -202,6 +203,7 @@ public class SSOFilter implements Filter {
 		try {
 			// 获得resourceQuota
 			current_quota = client.getResourceQuota(tenantName);
+			System.out.println("k8s租户资源:" + current_quota.toString());
 		} catch (KubernetesClientException e) {
 			createFlg = true;
 		} catch (RuntimeException e) {
@@ -221,7 +223,7 @@ public class SSOFilter implements Filter {
 				Integer int_open_mem = Integer.parseInt(open_mem);
 
 				// 判断是否增加了资源
-				if (int_open_cpu >= int_cur_cpu && int_open_mem >= int_cur_mem) {
+				if (int_open_cpu != 0 && int_open_cpu >= int_cur_cpu && int_open_mem >= int_cur_mem) {
 					// 更新quota
 					client.updateResourceQuota(tenantName, open_quota);
 				}
