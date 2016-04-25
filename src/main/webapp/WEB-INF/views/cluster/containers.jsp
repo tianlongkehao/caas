@@ -138,138 +138,138 @@
     }
 
 
-    /* var containerData = {
-     'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
-     'yValue': [{
-     'name': 'pod01', 'val': [{
-     'titleText': 'container01',
-     'val': [{
-     'title': 'memory',
-     'val': [{
-     'legendName': 'Limit Current',
-     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-     },
-     {
-     'legendName': 'Usage Current',
-     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-     },
-     {
-     'legendName': 'Working Set Current',
-     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-     }]
-     },
-     {
-     'title': 'cpu',
-     'val': [{
-     'legendName': 'Limit Current',
-     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-     },
-     {
-     'legendName': 'Usage Current',
-     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-     }]
-     }]
-     },
-     {
-     'titleText': 'container02', 'val': [{
-
-     'title': 'memory',
-     'val': [{
-     'legendName': 'Limit Current',
-     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-     },
-     {
-     'legendName': 'Usage Current',
-     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-     },
-     {
-     'legendName': 'Working Set Current',
-     'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
-     }]
-     },
-     {
-     'title': 'cpu',
-     'val': [{
-     'legendName': 'cLimit Current',
-     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-     },
-     {
-     'legendName': 'cUsage Current',
-     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-     }]
-
-     }]
-     }]
-     },
-     {
-     'name': 'pod02', 'val': [{
-     'titleText': 'container03', 'val': [{
-
-     'title': 'memory',
-     'val': [{
-     'legendName': 'Limit Current',
-     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-     },
-     {
-     'legendName': 'Usage Current',
-     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-     },
-     {
-     'legendName': 'Working Set Current',
-     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-     }]
-     }
-     ,
-
-     {
-     'title': 'cpu',
-     'val': [{
-     'legendName': 'cpu Limit Current',
-     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-     },
-     {
-     'legendName': 'cpu Usage Current',
-     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-     }]
-
-
-     }]
-     }, {
-     'titleText': 'container04', 'val': [{
-
-     'title': 'memory',
-     'val': [{
-     'legendName': 'Limit Current',
-     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-     },
-     {
-     'legendName': 'Usage Current',
-     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-     },
-     {
-     'legendName': 'Working Set Current',
-     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-     }]
-     }
-     ,
-
-     {
-     'title': 'cpu',
-     'val': [{
-     'legendName': 'Limit Current',
-     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-     },
-     {
-     'legendName': 'Usage Current',
-     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-     }]
-
-
-     }]
-     }]
-     }
-     ]
-     }; */
+//     var containerData = {
+//     'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
+//     'yValue': [{
+//     'name': 'pod01', 'val': [{
+//     'titleText': 'container01',
+//     'val': [{
+//     'title': 'memory',
+//     'val': [{
+//     'legendName': 'Limit Current',
+//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//     },
+//     {
+//     'legendName': 'Usage Current',
+//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//     },
+//     {
+//     'legendName': 'Working Set Current',
+//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+//     }]
+//     },
+//     {
+//     'title': 'cpu',
+//     'val': [{
+//     'legendName': 'Limit Current',
+//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+//     },
+//     {
+//     'legendName': 'Usage Current',
+//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//     }]
+//     }]
+//     },
+//     {
+//     'titleText': 'container02', 'val': [{
+//
+//     'title': 'memory',
+//     'val': [{
+//     'legendName': 'Limit Current',
+//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//     },
+//     {
+//     'legendName': 'Usage Current',
+//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//     },
+//     {
+//     'legendName': 'Working Set Current',
+//     'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
+//     }]
+//     },
+//     {
+//     'title': 'cpu',
+//     'val': [{
+//     'legendName': 'cLimit Current',
+//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//     },
+//     {
+//     'legendName': 'cUsage Current',
+//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//     }]
+//
+//     }]
+//     }]
+//     },
+//     {
+//     'name': 'pod02', 'val': [{
+//     'titleText': 'container03', 'val': [{
+//
+//     'title': 'memory',
+//     'val': [{
+//     'legendName': 'Limit Current',
+//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//     },
+//     {
+//     'legendName': 'Usage Current',
+//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//     },
+//     {
+//     'legendName': 'Working Set Current',
+//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+//     }]
+//     }
+//     ,
+//
+//     {
+//     'title': 'cpu',
+//     'val': [{
+//     'legendName': 'cpu Limit Current',
+//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+//     },
+//     {
+//     'legendName': 'cpu Usage Current',
+//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//     }]
+//
+//
+//     }]
+//     }, {
+//     'titleText': 'container04', 'val': [{
+//
+//     'title': 'memory',
+//     'val': [{
+//     'legendName': 'Limit Current',
+//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+//     },
+//     {
+//     'legendName': 'Usage Current',
+//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//     },
+//     {
+//     'legendName': 'Working Set Current',
+//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+//     }]
+//     }
+//     ,
+//
+//     {
+//     'title': 'cpu',
+//     'val': [{
+//     'legendName': 'Limit Current',
+//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+//     },
+//     {
+//     'legendName': 'Usage Current',
+//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+//     }]
+//
+//
+//     }]
+//     }]
+//     }
+//     ]
+//     };
 
     //添加container memory画布
     function addContainerMemImg() {
@@ -376,6 +376,7 @@
         var time0val = $("#search_time")[0].value;
         getContainerMonitor(time0val, namespace0val, pod0val,false);
     }
+    //生成容器监控画布
     function showContainerImg(containerData) {
         var count = 0;
         for (var s = 0; s < containerData.yValue.length; s++) {
@@ -412,11 +413,9 @@
                 count = showContainerMemImg(count, containerDataYval, j, option);
                 count = showContainerCpuImg(count, containerDataYval, j, option);
             }
-
         }
-
     }
-
+    //生成内存监控
     function showContainerMemImg(count, containerDataYval, j, option) {
         var c = {
             type: 'value',
@@ -427,29 +426,51 @@
         };
         option.yAxis.push(c);
         var containerDataYmem = containerDataYval.val[j].val[0];
-
         for (var i = 0; i < containerDataYmem.val.length; i++) {
             var containerYval = containerDataYmem.val[i].yAxis;
             var a = {
                 name: containerDataYmem.val[i].legendName,
                 icon: 'roundRect'
             };
-            var b = {
-                name: containerDataYmem.val[i].legendName,
-                type: 'line',
-                barWidth: 5,
-                barHeight: 2,
-                itemStyle: {
-                    normal: {
-                        color: colorData[i]
-                    }
-                },
-//                stack: '总量',
-                areaStyle: {normal: {color: colorData[i],opacity: 0.3}},
-                data: containerYval
-            };
             option.legend.data.push(a);
-            option.series.push(b);
+
+            //红色预警
+            for (var arrayNum = 0; arrayNum < containerYval.length; arrayNum++) {
+                var usageVal = containerDataYmem.val[1].yAxis[arrayNum];
+                var limitVal = containerDataYmem.val[0].yAxis[arrayNum];
+                if (i == 1 && usageVal >= limitVal * 0.9) {
+                    var bc = {
+                        name: containerDataYmem.val[i].legendName,
+                        type: 'line',
+                        barWidth: 5,
+                        barHeight: 2,
+                        itemStyle: {
+                            normal: {
+                                color: colorData[i]
+                            }
+                        },
+                        areaStyle: {normal: {color: '#ff0000',opacity: 0.3}},
+                        data: containerYval
+                    };
+                    option.series.push(bc);
+                } else {
+                    var b = {
+                        name: containerDataYmem.val[i].legendName,
+                        type: 'line',
+                        barWidth: 5,
+                        barHeight: 2,
+                        itemStyle: {
+                            normal: {
+                                color: colorData[i]
+                            }
+                        },
+                        areaStyle: {normal: {color: colorData[i],opacity: 0.3}},
+                        data: containerYval
+                    };
+                    option.series.push(b);
+                }
+                break
+            }
 
             var titleText = containerDataYval.name + " " + containerDataYval.val[j].titleText + " " + containerDataYmem.title;
             option.title.text = titleText;
@@ -468,7 +489,7 @@
         option.yAxis = [];
         return count;
     }
-
+    //生成cpu监控
     function showContainerCpuImg(count, containerDataYval, j, option) {
         var f = {
             type: 'value',
@@ -486,23 +507,45 @@
                 name: containerDataYcpu.val[k].legendName,
                 icon: 'roundRect'
             };
-            var e = {
-                name: containerDataYcpu.val[k].legendName,
-                type: 'line',
-                barWidth: 5,
-                barHeight: 2,
-                itemStyle: {
-                    normal: {
-                        color: colorData[k]
-                    }
-                },
-//                stack: '总量',
-                areaStyle: {normal: {color: colorData[k], opacity: 0.3} },
-                data: containerYCpuval
-            };
-
             option.legend.data.push(d);
-            option.series.push(e);
+
+            //红色预警
+            for (var arrayNumCpu = 0; arrayNumCpu < containerYCpuval.length; arrayNumCpu++) {
+                var usageVal = containerDataYcpu.val[1].yAxis[arrayNumCpu];
+                var limitVal = containerDataYcpu.val[0].yAxis[arrayNumCpu];
+                if (k == 1 && usageVal >= limitVal * 0.9) {
+                    var ec = {
+                        name: containerDataYcpu.val[k].legendName,
+                        type: 'line',
+                        barWidth: 5,
+                        barHeight: 2,
+                        itemStyle: {
+                            normal: {
+                                color: colorData[k]
+                            }
+                        },
+                        areaStyle: {normal: {color: '#ff0000', opacity: 0.3} },
+                        data: containerYCpuval
+                    };
+                    option.series.push(ec);
+                } else {
+                    var e = {
+                        name: containerDataYcpu.val[k].legendName,
+                        type: 'line',
+                        barWidth: 5,
+                        barHeight: 2,
+                        itemStyle: {
+                            normal: {
+                                color: colorData[k]
+                            }
+                        },
+                        areaStyle: {normal: {color: colorData[k], opacity: 0.3} },
+                        data: containerYCpuval
+                    };
+                    option.series.push(e);
+                }
+                break
+            }
 
             var titleTextCpu = containerDataYval.name + " " + containerDataYval.val[j].titleText + " " + containerDataYcpu.title;
             option.title.text = titleTextCpu;
