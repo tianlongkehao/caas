@@ -62,6 +62,9 @@ $(document).ready(function () {
         for (var i = 0; i < rowHosts.length; i++) {
             var rowHost = rowHosts[0];
             var host = rowHost.innerHTML;
+            var rootName = $('#rootName').val().trim();
+            var password = $('#password').val().trim();
+            var port = $('#port').val().trim();
             var rowMaster = rowHost.nextElementSibling;
             var masterChecked = rowMaster.childNodes[0].checked;
             var rowSlave = rowMaster.nextElementSibling;
@@ -75,6 +78,9 @@ $(document).ready(function () {
             }
             var hostType = {};
             hostType.host = host;
+            hostType.password = password;
+            hostType.rootName = rootName;
+            hostType.port = port;
             if (masterChecked == true) {
                 hostType.type = "master";
             } else if (slaveChecked == true) {
@@ -89,7 +95,7 @@ $(document).ready(function () {
             var rowsLength = rowsHostType.length;
             var rowNum = 0;
             var hostType = rowsHostType[rowNum];
-            installEnv(hostType.host, hostType.type, rowNum, rowsLength, rowsHostType);
+            installEnv(hostType.host, hostType.type,hostType.rootName,hostType.password,hostType.port, rowNum, rowsLength, rowsHostType);
             layer.load(0, {shade: [0.3, '#000']});
         }
 
@@ -137,7 +143,7 @@ function chkSlave(ccc) {
  debugger
  bartimer;
  };*/
-function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
+function installEnv(host, type,rootName,password,port, rowNum, rowsLength, rowsHostType) {
     rowNum = rowNum + 1;
     var str = "";
     str += '<tr>';
@@ -168,7 +174,7 @@ function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
     }
 
     $.ajax({
-        url: ctx + "/cluster/installCluster?user=root&pass=a1s2d3&ip=" + host + "&port=22&type=" + type,
+        url: ctx + "/cluster/installCluster?&user=" + rootName + "&pass=" + password + "&ip=" + host + "&port=" + port + "&type=" + type,
         success: function (data) {
 
 
@@ -196,7 +202,7 @@ function installEnv(host, type, rowNum, rowsLength, rowsHostType) {
             };
             if (rowNum < rowsLength) {
                 var hostType = rowsHostType[rowNum];
-                installEnv(hostType.host, hostType.type, rowNum, rowsLength);
+                installEnv(hostType.host, hostType.type,hostType.rootName,hostType.password,hostType.port, rowNum, rowsLength);
             }
 
         }

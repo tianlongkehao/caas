@@ -683,8 +683,8 @@ public class ClusterController {
 			 * 2].trim());
 			 */
 			// 安装环境
-			String masterName = "centos-master";
-			String hostName = "centos-minion" + ip.split("\\.")[3];
+			String masterName = "master";
+			String hostName = "minion" + ip.split("\\.")[3];
 			String cmd = "cd /opt/;chmod +x ./envInstall.sh;nohup ./envInstall.sh " + imageHostPort + " " + yumSource
 					+ " " + type + " " + masterName + " " + hostName;
 			Boolean endFlg = false;
@@ -734,6 +734,7 @@ public class ClusterController {
 	private void copyFile(String user, String pass, String ip, Integer port)
 			throws IOException, JSchException, InterruptedException {
 		JSch jsch = new JSch();
+		System.out.print("++++++++++++++++"+user+"+++++"+ip+"+++++"+port+"++"+pass);
 		Session session = jsch.getSession(user, ip, port);
 		session.setPassword(pass);
 		Properties sshConfig = new Properties();
