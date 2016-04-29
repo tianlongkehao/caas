@@ -15,8 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jasig.cas.client.validation.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.User;
@@ -27,7 +30,7 @@ import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.RESTResourceClient;
+import com.bonc.epm.paas.util.WebClientUtil;
 
 @Component
 public class SSOFilter implements Filter {
@@ -44,6 +47,9 @@ public class SSOFilter implements Filter {
 	@Autowired
 	public UserDao userDao;
 
+	@Value("${resourceMmanage.address}")
+	private String resManUrl;
+
 	@Override
 	public void destroy() {
 	}
@@ -57,17 +63,18 @@ public class SSOFilter implements Filter {
 			// cas当前认证用户
 			Assertion assertion = (Assertion) httpRequest.getSession().getAttribute(CONST_CAS_ASSERTION);
 			Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
+			System.out.println("能力平台USER:" + attributes.toString());
 			if (assertion == null || assertion.getPrincipal() == null) {
 				authFailure(response, AUTH_FAILURE_MSG_NO_PRIVILEGE);
 			}
 			String casLoginUserName = assertion.getPrincipal().getName();
-			String tenantId = null;
+			String tenantId = "unicom";
 			String tenantAdmin = null;
 			if (attributes.get("tenantId") != null) {
 				tenantId = attributes.get("tenantId").toString();
 			}
 			if (attributes.get("tenantAdmin") != null) {
-				tenantId = attributes.get("tenantAdmin").toString();
+				tenantAdmin = attributes.get("tenantAdmin").toString();
 			}
 			// paas当前登录用户
 			User currPaasUser = CurrentUserUtils.getInstance().getUser();
@@ -84,9 +91,9 @@ public class SSOFilter implements Filter {
 				// 当前登陆为租户
 				if ("1".equals(tenantAdmin)) {
 					// 创建命名空间
-					createNamespace(tenantId);
+					createNamespace(casLoginUserName);
 					// 创建资源
-					createQuota(tenantId);
+					createQuota(tenantId, casLoginUserName);
 				}
 				httpRequest.getSession().setAttribute("cur_user", user);
 				httpRequest.getSession().setAttribute("ssoConfig", configProps);
@@ -110,11 +117,11 @@ public class SSOFilter implements Filter {
 		User user = userDao.findByUserName(userName);
 		if (user == null) {
 			user = new User();
+			user.setPassword(UserConstant.INIT_PASSWORD);
 		}
 		Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
 		user.setUserName(userName);
-		user.setUser_realname(userName);
-		user.setPassword(UserConstant.INIT_PASSWORD);
+		user.setUser_realname(attributes.get("userName").toString());
 		user.setOpen_user_key(attributes.get("userId").toString());
 		if (attributes.get("email") != null) {
 			user.setEmail(attributes.get("email").toString());
@@ -125,7 +132,7 @@ public class SSOFilter implements Filter {
 			if ("1".equals(tenantAdmin)) {
 				user.setUser_autority(UserConstant.AUTORITY_TENANT);
 				user.setParent_id(0);
-			} else {
+			} else if ("0".equals(tenantAdmin)) {
 				user.setUser_autority(UserConstant.AUTORITY_USER);
 				user.setParent_id(Long.valueOf(attributes.get("tenantId").toString()));
 			}
@@ -140,10 +147,8 @@ public class SSOFilter implements Filter {
 	 * 
 	 * @param userName
 	 */
-	private void createNamespace(String tenantId) {
-		// 查找租户名称
-		User tenantUser = userDao.findById(Long.valueOf(tenantId));
-		String tenantName = tenantUser.getUserName();
+	private void createNamespace(String tenantName) {
+		System.out.println("创建nameSpace");
 		// 以用户名(登陆帐号)为name，创建client
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
 		// 是否创建nameSpace
@@ -167,63 +172,84 @@ public class SSOFilter implements Filter {
 	 * 
 	 * @param userName
 	 */
-	@SuppressWarnings("unchecked")
-	private void createQuota(String tenantId) {
-		// 查找租户名称
-		User tenantUser = userDao.findById(Long.valueOf(tenantId));
-		String tenantName = tenantUser.getUserName();
-		String open_cpu = "10";
-		String open_mem = "1";
+	private void createQuota(String tenantId, String tenantName) {
+		System.out.println("给租户创建资源");
+		String open_cpu = "0";
+		String open_mem = "0";
+		boolean isExistResMan = false;
 		try {
-			// 调用能力平台用户资源查询接口，查询为此用户分配的资源
-			RESTResourceClient resourceClient = new RESTResourceClient();
-			// 根据名字查询能力平台resource
-			Map<String, String> open_res = (Map<String, String>) resourceClient.getResById(tenantId);
-			open_cpu = open_res.get("cpu");
-			open_mem = open_res.get("memory");
+			Map<String, Object> data = new HashMap<String, Object>();
+			System.out.println("tenantId:" + tenantId);
+			data.put("tenant_id", "\""+tenantId+"\"");
+			data.put("resource_type_code", "\"container\"");
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("param", data);
+			String rtnStr = WebClientUtil.doPost(resManUrl, params);
+			System.out.println("rtnStr:" + rtnStr);
+			// 解析返回资源数据
+			JSONObject jsStr = JSONObject.parseObject(rtnStr);
+			JSONArray jsArrData = (JSONArray) jsStr.get("data");
+			JSONObject jsObj = (JSONObject) jsArrData.get(0);
+			JSONArray jsArrData2 = (JSONArray) jsObj.get("data");
+			JSONObject jsObj2 = (JSONObject) jsArrData2.get(0);
+			JSONArray jsPro = (JSONArray) jsObj2.get("property");
+			JSONObject cpuObject = (JSONObject) jsPro.get(0);
+			JSONObject memObject = (JSONObject) jsPro.get(1);
+			//获取CPU和MEM的值
+			open_cpu = (String) cpuObject.get("prop_value");
+			open_mem = (String) memObject.get("prop_value");
+			System.out.println("能力平台租户已分配资源:{" + "cpu:" + open_cpu + ",mem:" + open_mem + "}");
+			isExistResMan = true;
 		} catch (Exception e) {
 			System.out.println("获取能力平台租户资源出错！" + e);
 		}
-		// 为client创建资源配额
-		Map<String, String> open_map = new HashMap<String, String>();
-		// 内存
-		open_map.put("memory", open_mem + "G");
-		// CPU数量(个)
-		open_map.put("cpu", open_cpu + "");
-		// 以用户名(登陆帐号)为name，创建client
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient(tenantName);
-		// 生成quota
-		ResourceQuota open_quota = kubernetesClientService.generateSimpleResourceQuota(tenantName, open_map);
-		// 是否创建resourceQuota
-		boolean createFlg = false;
-		// kubernetes是否可以连接
-		boolean disConnectFlg = false;
-		ResourceQuota current_quota = null;
-		try {
-			// 获得resourceQuota
-			current_quota = client.getResourceQuota(tenantName);
-		} catch (KubernetesClientException e) {
-			createFlg = true;
-		} catch (RuntimeException e) {
-			System.out.println("连接kubernetesAPI超时！" + e);
-			disConnectFlg = true;
-		}
-		// kubernetes不能连接
-		if (!disConnectFlg) {
-			if (createFlg) {
-				// 创建quota
-				client.createResourceQuota(open_quota);
-			} else {
-				Map<String, String> map = current_quota.getSpec().getHard();
-				Integer int_cur_cpu = Integer.parseInt(map.get("cpu"));
-				Integer int_cur_mem = Integer.parseInt(map.get("memory").replace("Gi", "").replace("G", ""));
-				Integer int_open_cpu = Integer.parseInt(open_cpu);
-				Integer int_open_mem = Integer.parseInt(open_mem);
+		// 判断能力平台租户资源是否存在
+		if (isExistResMan) {
+			// 以用户名(登陆帐号)为name，创建client
+			KubernetesAPIClientInterface client = kubernetesClientService.getClient(tenantName);
+			// 是否创建resourceQuota
+			boolean isCreate = false;
+			// kubernetes是否可以连接
+			boolean isConnect = true;
+			ResourceQuota current_quota = null;
+			try {
+				// 获得resourceQuota
+				current_quota = client.getResourceQuota(tenantName);
+				System.out.println("k8s租户资源:" + current_quota.toString());
+			} catch (KubernetesClientException e) {
+				System.out.println("k8s环境中没有此租户的资源" + e);
+				isCreate = true;
+			} catch (RuntimeException e) {
+				System.out.println("连接kubernetesAPI超时！" + e);
+				isConnect = false;
+			}
+			// kubernetes不能连接
+			if (isConnect) {
+				// 为client创建资源配额
+				Map<String, String> open_map = new HashMap<String, String>();
+				// 内存
+				open_map.put("memory", open_mem + "G");
+				// CPU数量(个)
+				open_map.put("cpu", open_cpu + "");
+				// 生成quota
+				ResourceQuota open_quota = kubernetesClientService.generateSimpleResourceQuota(tenantName, open_map);
+				// 是否新建quota
+				if (isCreate) {
+					// 创建quota
+					client.createResourceQuota(open_quota);
+				} else {
+					Map<String, String> map = current_quota.getSpec().getHard();
+					Integer int_cur_cpu = Integer.parseInt(map.get("cpu"));
+					Integer int_cur_mem = Integer.parseInt(map.get("memory").replace("Gi", "").replace("G", ""));
+					Integer int_open_cpu = Integer.parseInt(open_cpu);
+					Integer int_open_mem = Integer.parseInt(open_mem);
 
-				// 判断是否增加了资源
-				if (int_open_cpu >= int_cur_cpu && int_open_mem >= int_cur_mem) {
-					// 更新quota
-					client.updateResourceQuota(tenantName, open_quota);
+					// 判断是否增加了资源
+					if ((int_open_cpu >= int_cur_cpu && int_open_mem >= int_cur_mem)
+							&& !(int_open_cpu == int_cur_cpu && int_open_mem == int_cur_mem)) {
+						// 更新quota
+						client.updateResourceQuota(tenantName, open_quota);
+					}
 				}
 			}
 		}
