@@ -98,28 +98,28 @@
                                     <li class="line-h-3">
                                         <div class="param-set">
                                             <span class="number-title">root：</span>
-                                            <input type="text" class="form-control" placeholder="root"
+                                            <input type="text" class="form-control" placeholder="root" id="rootName" name="rootName" value="root"
                                                    style="width: 78%;display: inline">
                                         </div>
                                     </li>
                                     <li class="line-h-3">
                                         <div class="param-set">
                                             <span class="number-title">输入密码：</span>
-                                            <input type="password" class="form-control"
+                                            <input type="password" class="form-control" id="password" name="password"
                                                    style="width: 78%;display: inline">
                                         </div>
                                     </li>
                                     <li class="line-h-3">
                                         <div class="param-set">
                                             <span class="number-title">确认密码：</span>
-                                            <input type="password" class="form-control"
+                                            <input type="password" class="form-control" id="rePassword" name="rePassword"
                                                    style="width: 78%;display: inline">
                                         </div>
                                     </li>
                                     <li class="line-h-3">
                                         <div class="param-set">
                                             <span class="number-title">SSH端口：</span>
-                                            <input type="text" class="form-control" placeholder="22"
+                                            <input type="text" class="form-control" id="port" name="port" placeholder="22" value="22"
                                                    style="width: 78%;display: inline">
                                         </div>
                                     </li>
