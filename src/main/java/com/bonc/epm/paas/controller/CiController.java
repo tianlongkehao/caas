@@ -398,7 +398,7 @@ public class CiController {
 			List<Image> imageList = imageDao.findByName(imageName);
 			if(!CollectionUtils.isEmpty(imageList)){
 				for(Image image:imageList){
-					if(ci.getImgNameVersion().equals(imageVersion)){
+					if(image.getVersion().equals(imageVersion)){
 						img = image;
 					}
 				}
