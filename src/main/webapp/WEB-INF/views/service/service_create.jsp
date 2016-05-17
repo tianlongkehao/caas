@@ -119,8 +119,14 @@
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">CPU数量：</span>
-                                        <input type="number" value="0.1" class="number" min="0.1" step ="0.1" autocomplete="off" max="${leftcpu }"
-                                               placeholder="当前可用cpu数量：${leftcpu }个" id="cpuNum" name="cpuNum"> 
+                                        <c:if test="${leftcpu > 12}">
+                                            <input type="number" value="0.1" class="number" min="0.1" step ="0.1" autocomplete="off" max="12"
+                                                   placeholder="当前可用cpu数量：${leftcpu }个" id="cpuNum" name="cpuNum" onmouseout="cpuMouseOut()">
+                                        </c:if>
+                                        <c:if test="${leftcpu < 12}">
+                                            <input type="number" value="0.1" class="number" min="0.1" step ="0.1" autocomplete="off" max="${leftcpu }"
+                                                   placeholder="当前可用cpu数量：${leftcpu }个" id="cpuNum" name="cpuNum" onmouseout="cpuMouseOut()">
+                                        </c:if>
                                                <span class="unit">个</span>
                                               <!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：${leftcpu }</span> -->
                                     </div>
@@ -129,12 +135,16 @@
                                 <li class="line-h-3">
                                     <div class="param-set">
                                         <span class="number-title">内存：</span>
-                                        <c:if test="${leftmemory>512 }">
-                                        	<input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftmemory }" data-slider-step="1" data-slider-value="512"/>
+                                        <c:if test="${leftmemory>8192 }">
+                                        	<input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="8192" data-slider-step="1" data-slider-value="512" />
                                         	<input type="text" value="512" id="ram" name="ram">
                                         </c:if>
+                                        <c:if test="${leftmemory>512&&leftmemory<8192 }">
+                                            <input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftmemory }" data-slider-step="1" data-slider-value="512" />
+                                            <input type="text" value="512" id="ram" name="ram">
+                                        </c:if>
                                         <c:if test="${leftmemory<512 }">
-                                        	<input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftmemory }" data-slider-step="1" data-slider-value="0"/>
+                                        	<input id="ramSlider" data-slider-id='ramSlider' type="text" data-slider-min="0" data-slider-max="${leftmemory }" data-slider-step="1" data-slider-value="0" />
                                         	<input type="text" value="${leftmemory }" id="ram" name="ram">
                                         </c:if>
                                         

@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	loadImageList();
+
 	
 	$("#createButton").click(function(){
 		var name = $('#serviceName').val();
@@ -27,7 +28,9 @@ $(document).ready(function(){
 		      $('#cpuNum').focus();
 		      return;
 		    }
-	    
+
+
+
 	    var ram = $('#ram').val();
 	    if(!ram || ram < 1){
 		      layer.tips('内存不能为零','#ram',{tips: [1, '#3595CC']});
@@ -42,6 +45,8 @@ $(document).ready(function(){
 		var tips = $(this).attr("placeholder");
 		layer.tips(tips,'#cpuNum',{tips: [1, '#3595CC']});
 	})
+
+
 	
 	$("#searchimage").click(function(){
 		var imageName = $('#imageName').val();
@@ -91,8 +96,9 @@ $(document).ready(function(){
 	            }
 	        }
 	    })
-	})
+	});
 
+	cpuMouseOut();
 
     $(".two_step").click(function(){
 
@@ -119,12 +125,29 @@ $(document).ready(function(){
 
 });
 
+function cpuMouseOut(){
+	var cpuNum = $('#cpuNum').val();
+	var cpuInput = $("#cpuNum")[0];
+	if(cpuNum > cpuInput.max){
+		cpuInput.value = 1;
+	}
+}
+
+
 $(function(){
 	var ramSlider = $("#ramSlider").slider({
 		formatter: function(value) {
 			return value;
+		},
+		value:100,
+		min: 512,
+		max: 8192,
+		step: 512,
+		slide: function( event, ui ) {
+			$( "#ram" ).val( "$" + ui.value );
 		}
 	});
+	//$( "#ram" ).val( "$" + $( "#ramSlider" ).slider( "value" ) );
 
 	ramSlider.on("slide", function(slideEvt) {
 		$("#ram").val(slideEvt.value);
