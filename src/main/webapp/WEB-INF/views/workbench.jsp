@@ -26,8 +26,10 @@
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="<%=path %>/user/detail/${cur_user.id }/a"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
-                                <li><a href="<%=path %>/user/detail/${cur_user.id }/b"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                            	<c:if test="${!cas_enable}">
+                                	<li><a href="<%=path %>/user/detail/${cur_user.id }/a"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
+                               		<li><a href="<%=path %>/user/detail/${cur_user.id }/b"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                                </c:if>
                                 <li class="logout">
                                     <c:choose>
                                     	<c:when test="${ssoConfig.enable}">
@@ -77,40 +79,45 @@
                             </div>
                         </a>
                     </li>
-                    <c:if test="${cur_user.user_autority == 2}">
-                    <li>
-                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/user/manage/list/${cur_user.id }">
-                            <div class="icon-wrapper">
-                                <div class="icon-img">
-                                    <span><img src="<%=path %>/images/user.svg" alt=""/></span>
-                                </div>
-                                <div class="icon-name">用户管理</div>
-                            </div>
-                        </a>
-                    </li>
+                    <c:if test="${!cas_enable}">
+	                    <c:if test="${cur_user.user_autority == 2}">
+	                    <li>
+	                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/user/manage/list/${cur_user.id }">
+	                            <div class="icon-wrapper">
+	                                <div class="icon-img">
+	                                    <span><img src="<%=path %>/images/user.svg" alt=""/></span>
+	                                </div>
+	                                <div class="icon-name">用户管理</div>
+	                            </div>
+	                        </a>
+	                    </li>
+	                    </c:if>
+	
+	                    <c:if test="${cur_user.user_autority == 1}">
+	                    <li>
+	                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/user/list">
+	                            <div class="icon-wrapper">
+	                                <div class="icon-img">
+	                                    <span><img src="<%=path %>/images/user.svg" alt=""/></span>
+	                                </div>
+	                                <div class="icon-name">租户管理</div>
+	                            </div>
+	                        </a>
+	                    </li>
+	                    </c:if>
                     </c:if>
-
+                    
                     <c:if test="${cur_user.user_autority == 1}">
-                    <li>
-                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/user/list">
-                            <div class="icon-wrapper">
-                                <div class="icon-img">
-                                    <span><img src="<%=path %>/images/user.svg" alt=""/></span>
-                                </div>
-                                <div class="icon-name">租户管理</div>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/cluster/resource">
-                            <div class="icon-wrapper">
-                                <div class="icon-img">
-                                    <span><img src="<%=path %>/images/server.svg" alt=""/></span>
-                                </div>
-                                <div class="icon-name">集群管理</div>
-                            </div>
-                        </a>
-                    </li>
+                    	<li>
+	                        <a class="icon-view" href="javascript:void(0);" action="<%=path %>/cluster/resource">
+	                            <div class="icon-wrapper">
+	                                <div class="icon-img">
+	                                    <span><img src="<%=path %>/images/server.svg" alt=""/></span>
+	                                </div>
+	                                <div class="icon-name">集群管理</div>
+	                            </div>
+	                        </a>
+	                    </li>
                     </c:if>
                     <c:if test="${cur_user.user_autority == 2}">
                         <li>
