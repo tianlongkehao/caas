@@ -96,6 +96,7 @@ public class UserController {
 	public String userSave(User user, Resource resource, Restriction restriction, Model model) {
 		System.out.println("save.do=============================================");
 		try {
+			user.setNamespace(user.getNamespace());
 			// 以用户名(登陆帐号)为name，创建client
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
 
@@ -157,6 +158,7 @@ public class UserController {
 			if (userDao.checkUsername1(user.getUserName()) == null) {
 				// DB保存用户信息
 				user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
+				user.setNamespace(CurrentUserUtils.getInstance().getUser().getNamespace());
 				userDao.save(user);
 			}
 			model.addAttribute("creatFlag", "200");
@@ -182,6 +184,7 @@ public class UserController {
 	@RequestMapping(value = { "/update.do" }, method = RequestMethod.POST)
 	public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
 		try {
+			user.setNamespace(user.getNamespace());
 			// 以用户名(登陆帐号)为name，创建client
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
 			client.getNamespace(user.getNamespace());
@@ -490,7 +493,7 @@ public class UserController {
 	@RequestMapping(value = { "/checkUsername/{username}" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String checkUsername(@PathVariable String username) {
-		// TODO 把验证namespace拆分开
+		
 		Map<String, String> map = new HashMap<String, String>();
 		List<String> names = userDao.checkUsername(username);
 		if (names.size() > 0) {
