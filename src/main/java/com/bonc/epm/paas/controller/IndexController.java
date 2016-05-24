@@ -15,12 +15,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.ServiceException;
 
 @Controller
 public class IndexController {
 	private static final Logger log = LoggerFactory.getLogger(IndexController.class);
+
+	@Autowired
+	CasClientConfigurationProperties configProps;
 	
 	@Autowired
 	private  UserDao userDao;
@@ -54,6 +58,7 @@ public class IndexController {
 			return "redirect:login";
 		}
 		CurrentUserUtils.getInstance().setUser(user);
+		CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
 		redirect.addFlashAttribute("user", user);
 		return "redirect:workbench";
 	}

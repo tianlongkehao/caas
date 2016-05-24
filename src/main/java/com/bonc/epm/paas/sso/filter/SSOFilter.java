@@ -105,6 +105,7 @@ public class SSOFilter implements Filter {
 					createQuota(tenantId, namespace);
 				}
 				httpRequest.getSession().setAttribute("cur_user", user);
+				httpRequest.getSession().setAttribute("cas_enable", configProps.getEnable()); 
 				httpRequest.getSession().setAttribute("ssoConfig", configProps);
 			}
 		}

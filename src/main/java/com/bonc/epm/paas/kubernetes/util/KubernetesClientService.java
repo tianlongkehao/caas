@@ -11,7 +11,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.model.Container;
@@ -68,7 +67,7 @@ public class KubernetesClientService {
 	}
 	
 	public KubernetesAPIClientInterface getClient() {
-		String namespace = CurrentUserUtils.getInstance().getUser().getUserName();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
         return getClient(namespace);
     }
 	
@@ -416,3 +415,4 @@ public class KubernetesClientService {
 		return service;
 	}
 }
+
