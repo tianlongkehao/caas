@@ -35,7 +35,8 @@ public class User {
 	private String user_cellphone;//手机号码
 	private String user_phone;//固定电话
 	private String user_province;//省份
-	private String open_user_key;//省份
+	private String open_user_id;
+	private String namespace;
 
 	@ManyToMany
 	@JoinTable(name="user_favor_images", 
@@ -166,12 +167,20 @@ public class User {
 		this.user_province = user_province;
 	}
 
-	public String getOpen_user_key() {
-		return open_user_key;
+	public String getOpen_user_id() {
+		return open_user_id;
 	}
 
-	public void setOpen_user_key(String open_user_key) {
-		this.open_user_key = open_user_key;
+	public void setOpen_user_id(String open_user_id) {
+		this.open_user_id = open_user_id;
+	}
+
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
 	}
 
 }

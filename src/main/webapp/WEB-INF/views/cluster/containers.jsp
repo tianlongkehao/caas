@@ -113,466 +113,490 @@
 	</div>
 
 	<script type="text/javascript">
+		var colorData = [ '#7EB26D', '#EAB839', '#6ED0E0' ];
 
-    var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
+		//默认监控5分钟
 
-    //默认监控5分钟
+		getContainerMonitor("5m", "", "", false);
+		if (document.getElementById('search_namespace') != null) {
+			getAllNamespace();
+		}
 
-    getContainerMonitor("5m", "", "",false);
-    debugger
-    if( document.getElementById('search_namespace') != null){
+		//获取监控数据
+		function getContainerMonitor(timePeriod, nameSpace, podName,
+				isNamespace) {
+			$.ajax({
+				url : ctx + "/cluster/getContainerMonitor?timePeriod="
+						+ timePeriod + "&nameSpace=" + nameSpace + "&podName="
+						+ podName,
+				success : function(data) {
+					var jsonData = $.parseJSON(data);
+					showContainerImg(jsonData);
+					if (isNamespace) {
+						showPodOpt(jsonData)
+					}
+				}
+			})
+		}
 
-        getAllNamespace();
+		//获取所有NAMESPACE
+		function getAllNamespace() {
+			$.ajax({
+				url : ctx + "/cluster/getAllNamespace",
+				success : function(data) {
+					showNamespceOpt($.parseJSON(data));
+				}
+			})
+		}
 
-    }
-    //获取监控数据
-    function getContainerMonitor(timePeriod, nameSpace, podName,isNamespace) {
-        $.ajax({
-            url: ctx + "/cluster/getContainerMonitor?timePeriod=" + timePeriod + "&nameSpace=" + nameSpace + "&podName=" + podName,
-            success: function (data) {
-                var jsonData = $.parseJSON(data);
-                showContainerImg(jsonData);
-                if (isNamespace) {
-                    showPodOpt(jsonData)
-                }
-            }
-        })
-    }
+		//     var containerData = {
+		//     'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
+		//     'yValue': [{
+		//     'name': 'pod01', 'val': [{
+		//     'titleText': 'container01',
+		//     'val': [{
+		//     'title': 'memory',
+		//     'val': [{
+		//     'legendName': 'Limit Current',
+		//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+		//     },
+		//     {
+		//     'legendName': 'Usage Current',
+		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+		//     },
+		//     {
+		//     'legendName': 'Working Set Current',
+		//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+		//     }]
+		//     },
+		//     {
+		//     'title': 'cpu',
+		//     'val': [{
+		//     'legendName': 'Limit Current',
+		//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+		//     },
+		//     {
+		//     'legendName': 'Usage Current',
+		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+		//     }]
+		//     }]
+		//     },
+		//     {
+		//     'titleText': 'container02', 'val': [{
+		//
+		//     'title': 'memory',
+		//     'val': [{
+		//     'legendName': 'Limit Current',
+		//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+		//     },
+		//     {
+		//     'legendName': 'Usage Current',
+		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+		//     },
+		//     {
+		//     'legendName': 'Working Set Current',
+		//     'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
+		//     }]
+		//     },
+		//     {
+		//     'title': 'cpu',
+		//     'val': [{
+		//     'legendName': 'cLimit Current',
+		//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+		//     },
+		//     {
+		//     'legendName': 'cUsage Current',
+		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+		//     }]
+		//
+		//     }]
+		//     }]
+		//     },
+		//     {
+		//     'name': 'pod02', 'val': [{
+		//     'titleText': 'container03', 'val': [{
+		//
+		//     'title': 'memory',
+		//     'val': [{
+		//     'legendName': 'Limit Current',
+		//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+		//     },
+		//     {
+		//     'legendName': 'Usage Current',
+		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+		//     },
+		//     {
+		//     'legendName': 'Working Set Current',
+		//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+		//     }]
+		//     }
+		//     ,
+		//
+		//     {
+		//     'title': 'cpu',
+		//     'val': [{
+		//     'legendName': 'cpu Limit Current',
+		//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+		//     },
+		//     {
+		//     'legendName': 'cpu Usage Current',
+		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+		//     }]
+		//
+		//
+		//     }]
+		//     }, {
+		//     'titleText': 'container04', 'val': [{
+		//
+		//     'title': 'memory',
+		//     'val': [{
+		//     'legendName': 'Limit Current',
+		//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+		//     },
+		//     {
+		//     'legendName': 'Usage Current',
+		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+		//     },
+		//     {
+		//     'legendName': 'Working Set Current',
+		//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+		//     }]
+		//     }
+		//     ,
+		//
+		//     {
+		//     'title': 'cpu',
+		//     'val': [{
+		//     'legendName': 'Limit Current',
+		//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+		//     },
+		//     {
+		//     'legendName': 'Usage Current',
+		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+		//     }]
+		//
+		//
+		//     }]
+		//     }]
+		//     }
+		//     ]
+		//     };
 
-    //获取所有NAMESPACE
-    function getAllNamespace() {
-        $.ajax({
-            url: ctx + "/cluster/getAllNamespace",
-            success: function (data) {
-                showNamespceOpt($.parseJSON(data));
-            }
-        })
-    }
+		//添加container memory画布
+		function addContainerMemImg() {
+			var memTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: left;width: 49.5%;height:260px;">'
+					+ '</div>';
+			$("#resourceContainer").append(memTxt);
+		}
+		//添加container cpu画布
+		function addContainerCpuImg() {
+			var cpuTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: right;width: 49.5%;height:260px;">'
+					+ '</div>';
+			$("#resourceContainer").append(cpuTxt);
+		}
+		//添加namespace下拉选项
+		function addNamespacesOpt() {
+			var namespaceOpt = '<option name="search_namespace" value=""></option>'
+			$("#search_namespace").append(namespaceOpt);
+		}
+		//添加pod option下拉选项
+		function addPodOpt() {
+			var serOpt = '<option name="search_pod" value=""></option>'
+			$("#search_pod").append(serOpt);
+		}
 
+		//由namespaceData得到租户的option下拉选项
+		function showNamespceOpt(namespaceData) {
+			for (var namespaceVal = 0; namespaceVal < namespaceData.length; namespaceVal++) {
+				addNamespacesOpt();
+				var namespaceOpt = document.getElementById('search_namespace').children[namespaceVal + 1];
+				namespaceOpt.value = namespaceData[namespaceVal];
+				namespaceOpt.innerHTML = namespaceData[namespaceVal];
+			}
+		}
+		//由containerData得到pod的option下拉选项
+		function showPodOpt(containerData) {
+			for (var podNum = 0; podNum < containerData.yValue.length; podNum++) {
+				var containerDataYval = containerData.yValue[podNum];
+				//search_pod_options
+				addPodOpt();
+				var podOpt = document.getElementById('search_pod').children[podNum + 1];
+				podOpt.value = containerDataYval.name;
+				podOpt.innerHTML = containerDataYval.name;
+			}
 
-//     var containerData = {
-//     'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
-//     'yValue': [{
-//     'name': 'pod01', 'val': [{
-//     'titleText': 'container01',
-//     'val': [{
-//     'title': 'memory',
-//     'val': [{
-//     'legendName': 'Limit Current',
-//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-//     },
-//     {
-//     'legendName': 'Usage Current',
-//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-//     },
-//     {
-//     'legendName': 'Working Set Current',
-//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-//     }]
-//     },
-//     {
-//     'title': 'cpu',
-//     'val': [{
-//     'legendName': 'Limit Current',
-//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-//     },
-//     {
-//     'legendName': 'Usage Current',
-//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-//     }]
-//     }]
-//     },
-//     {
-//     'titleText': 'container02', 'val': [{
-//
-//     'title': 'memory',
-//     'val': [{
-//     'legendName': 'Limit Current',
-//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-//     },
-//     {
-//     'legendName': 'Usage Current',
-//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-//     },
-//     {
-//     'legendName': 'Working Set Current',
-//     'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
-//     }]
-//     },
-//     {
-//     'title': 'cpu',
-//     'val': [{
-//     'legendName': 'cLimit Current',
-//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-//     },
-//     {
-//     'legendName': 'cUsage Current',
-//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-//     }]
-//
-//     }]
-//     }]
-//     },
-//     {
-//     'name': 'pod02', 'val': [{
-//     'titleText': 'container03', 'val': [{
-//
-//     'title': 'memory',
-//     'val': [{
-//     'legendName': 'Limit Current',
-//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-//     },
-//     {
-//     'legendName': 'Usage Current',
-//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-//     },
-//     {
-//     'legendName': 'Working Set Current',
-//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-//     }]
-//     }
-//     ,
-//
-//     {
-//     'title': 'cpu',
-//     'val': [{
-//     'legendName': 'cpu Limit Current',
-//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-//     },
-//     {
-//     'legendName': 'cpu Usage Current',
-//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-//     }]
-//
-//
-//     }]
-//     }, {
-//     'titleText': 'container04', 'val': [{
-//
-//     'title': 'memory',
-//     'val': [{
-//     'legendName': 'Limit Current',
-//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-//     },
-//     {
-//     'legendName': 'Usage Current',
-//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-//     },
-//     {
-//     'legendName': 'Working Set Current',
-//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-//     }]
-//     }
-//     ,
-//
-//     {
-//     'title': 'cpu',
-//     'val': [{
-//     'legendName': 'Limit Current',
-//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-//     },
-//     {
-//     'legendName': 'Usage Current',
-//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-//     }]
-//
-//
-//     }]
-//     }]
-//     }
-//     ]
-//     };
+		}
+		//筛选租户
+		function removePod() {
+			var imgLst = document.getElementById("resourceContainer");
+			var count = imgLst.childNodes.length;
+			for (var i = 0; i < count; i++) {
+				imgLst.removeChild(imgLst.childNodes[0]);
+			}
+		}
+		function searchNamespace() {
+			$("#search_pod").removeAttr("disabled");
+			$("#search_pod")[0].children[0].selected = true;
+			var namespace0val = $("#search_namespace")[0].value;
+			var time0val = $("#search_time")[0].value;
 
-    //添加container memory画布
-    function addContainerMemImg() {
-        var memTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: left;width: 49.5%;height:260px;">'
-                + '</div>';
-        $("#resourceContainer").append(memTxt);
-    }
-    //添加container cpu画布
-    function addContainerCpuImg() {
-        var cpuTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: right;width: 49.5%;height:260px;">'
-                + '</div>';
-        $("#resourceContainer").append(cpuTxt);
-    }
-    //添加namespace下拉选项
-    function addNamespacesOpt() {
-        var namespaceOpt = '<option name="search_namespace" value=""></option>'
-        $("#search_namespace").append(namespaceOpt);
-    }
-    //添加pod option下拉选项
-    function addPodOpt() {
-        var serOpt = '<option name="search_pod" value=""></option>'
-        $("#search_pod").append(serOpt);
-    }
+			if ($("#search_namespace")[0].children[0].selected == true) {
+				$("#search_pod").attr("disabled", "disabled");
+				removePod();
+				getContainerMonitor(time0val, "", "", true)
+			} else {
+				removePod();
+				getContainerMonitor(time0val, namespace0val, "", true);
+				var podOptCount = $("#search_pod")[0].options.length;
+				var podLst = document.getElementById("search_pod");
+				for (var j = 1; j < podOptCount; j++) {
+					podLst.removeChild(podLst.options[1])
+				}
+			}
 
-    //由namespaceData得到租户的option下拉选项
-    function showNamespceOpt(namespaceData) {
-        for (var namespaceVal = 0; namespaceVal < namespaceData.length; namespaceVal++) {
-            addNamespacesOpt();
-            var namespaceOpt = document.getElementById('search_namespace').children[namespaceVal + 1];
-            namespaceOpt.value = namespaceData[namespaceVal];
-            namespaceOpt.innerHTML = namespaceData[namespaceVal];
-        }
-    }
-    //由containerData得到pod的option下拉选项
-    function showPodOpt(containerData) {
-        for (var podNum = 0; podNum < containerData.yValue.length; podNum++) {
-            var containerDataYval = containerData.yValue[podNum];
-            //search_pod_options
-            addPodOpt();
-            var podOpt = document.getElementById('search_pod').children[podNum + 1];
-            podOpt.value = containerDataYval.name;
-            podOpt.innerHTML = containerDataYval.name;
-        }
+		}
+		if (document.getElementById('search_namespace') == null) {
+			$("#search_pod").removeAttr("disabled");
+		}
+		//筛选pod
+		function searchPod() {
+			var pod0val = $("#search_pod")[0].value;
+			var namespace0val = $("#search_namespace")[0].value;
+			var time0val = $("#search_time")[0].value;
+			removePod();
+			getContainerMonitor(time0val, namespace0val, pod0val, false);
+			if ($("#search_pod")[0].children[0].selected == true) {
+				removePod();
+				getContainerMonitor(time0val, namespace0val, "", false);
+			}
+		}
+		//筛选time
+		function searchTime() {
+			removePod();
+			if ($("#search_namespace")[0].value == "0") {
+				var namespace0val = "";
+				var pod0val = "";
+			} else {
+				if ($("#search_pod")[0].value == "0") {
+					var pod0val = "";
+				} else {
+					var pod0val = $("#search_pod")[0].value;
+				}
+				var namespace0val = $("#search_namespace")[0].value;
+			}
+			var time0val = $("#search_time")[0].value;
+			getContainerMonitor(time0val, namespace0val, pod0val, false);
+		}
+		//生成容器监控画布
+		function showContainerImg(containerData) {
+			var count = 0;
+			for (var s = 0; s < containerData.yValue.length; s++) {
+				var containerDataYval = containerData.yValue[s];
+				for (var j = 0; j < containerDataYval.val.length; j++) {
+					var option = {
+						title : {
+							text : ''
+						},
+						tooltip : {
+							trigger : 'axis'
+						},
+						legend : {
+							bottom : '1%',
+							data : []
+						},
+						grid : {
+							left : '3%',
+							right : '4%',
+							bottom : '10%',
+							containLabel : true
+						},
+						xAxis : [],
+						yAxis : [],
+						series : []
+					};
 
-    }
-    //筛选租户
-    function removePod() {
-        var imgLst = document.getElementById("resourceContainer");
-        var count = imgLst.childNodes.length;
-        for (var i = 0; i < count; i++) {
-            imgLst.removeChild(imgLst.childNodes[0]);
-        }
-    }
-    function searchNamespace() {
-        $("#search_pod").removeAttr("disabled");
-        $("#search_pod")[0].children[0].selected = true;
-        var namespace0val = $("#search_namespace")[0].value;
-        var time0val = $("#search_time")[0].value;
+					var xAxis = {
+						type : 'category',
+						boundaryGap : false,
+						data : containerData.xValue
+					};
+					option.xAxis.push(xAxis);
+					count = showContainerMemImg(count, containerDataYval, j,
+							option);
+					count = showContainerCpuImg(count, containerDataYval, j,
+							option);
+				}
+			}
+		}
+		//生成内存监控
+		function showContainerMemImg(count, containerDataYval, j, option) {
+			var c = {
+				type : 'value',
+				scale : true,
+				axisLabel : {
+					formatter : '{value} Gib'
+				}
+			};
+			option.yAxis.push(c);
+			var containerDataYmem = containerDataYval.val[j].val[0];
+			for (var i = 0; i < containerDataYmem.val.length; i++) {
+				var containerYval = containerDataYmem.val[i].yAxis;
+				var a = {
+					name : containerDataYmem.val[i].legendName,
+					icon : 'roundRect'
+				};
+				option.legend.data.push(a);
 
-        if ($("#search_namespace")[0].children[0].selected == true) {
-            $("#search_pod").attr("disabled", "disabled");
-            removePod();
-            getContainerMonitor(time0val, "", "",true)
-        } else {
-            removePod();
-            getContainerMonitor(time0val, namespace0val, "",true);
-            var podOptCount = $("#search_pod")[0].options.length;
-            var podLst = document.getElementById("search_pod");
-            for (var j = 1; j < podOptCount; j++) {
-                podLst.removeChild(podLst.options[1])
-            }
-        }
+				//红色预警
+				for (var arrayNum = 0; arrayNum < containerYval.length; arrayNum++) {
+					var usageVal = containerDataYmem.val[1].yAxis[arrayNum];
+					var limitVal = containerDataYmem.val[0].yAxis[arrayNum];
+					if (i == 1 && usageVal >= limitVal * 0.9) {
+						var bc = {
+							name : containerDataYmem.val[i].legendName,
+							type : 'line',
+							barWidth : 5,
+							barHeight : 2,
+							itemStyle : {
+								normal : {
+									color : colorData[i]
+								}
+							},
+							areaStyle : {
+								normal : {
+									color : '#ff0000',
+									opacity : 0.3
+								}
+							},
+							data : containerYval
+						};
+						option.series.push(bc);
+					} else {
+						var b = {
+							name : containerDataYmem.val[i].legendName,
+							type : 'line',
+							barWidth : 5,
+							barHeight : 2,
+							itemStyle : {
+								normal : {
+									color : colorData[i]
+								}
+							},
+							areaStyle : {
+								normal : {
+									color : colorData[i],
+									opacity : 0.3
+								}
+							},
+							data : containerYval
+						};
+						option.series.push(b);
+					}
+					break
+				}
 
-    }
-    if(document.getElementById('search_namespace') == null){
-        $("#search_pod").removeAttr("disabled");
-    }
-    //筛选pod
-    function searchPod() {
-        var pod0val = $("#search_pod")[0].value;
-        var namespace0val = $("#search_namespace")[0].value;
-        var time0val = $("#search_time")[0].value;
-        removePod();
-        getContainerMonitor(time0val, namespace0val, pod0val,false);
-        if($("#search_pod")[0].children[0].selected == true){
-            removePod();
-            getContainerMonitor(time0val, namespace0val, "",false);
-        }
-    }
-    //筛选time
-    function searchTime(){
-        removePod();
-        if($("#search_namespace")[0].value == "0"){
-            var namespace0val ="";
-            var pod0val = "";
-        }else{
-            if($("#search_pod")[0].value == "0"){
-                var pod0val = "";
-            }else{
-                var pod0val = $("#search_pod")[0].value;
-            }
-            var namespace0val = $("#search_namespace")[0].value;
-        }
-        var time0val = $("#search_time")[0].value;
-        getContainerMonitor(time0val, namespace0val, pod0val,false);
-    }
-    //生成容器监控画布
-    function showContainerImg(containerData) {
-        var count = 0;
-        for (var s = 0; s < containerData.yValue.length; s++) {
-            var containerDataYval = containerData.yValue[s];
-            for (var j = 0; j < containerDataYval.val.length; j++) {
-                var option = {
-                    title: {
-                        text: ''
-                    },
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        bottom: '1%',
-                        data: []
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '10%',
-                        containLabel: true
-                    },
-                    xAxis: [],
-                    yAxis: [],
-                    series: []
-                };
+				var titleText = containerDataYval.name + " "
+						+ containerDataYval.val[j].titleText + " "
+						+ containerDataYmem.title;
+				option.title.text = titleText;
+			}
+			addContainerMemImg();
+			var containersMemImg = document.getElementById('resourceContainer').children[count];
+			$(containersMemImg).addClass(containerDataYval.name);
+			$(containersMemImg).addClass(containerDataYval.val[j].titleText);
 
-                var xAxis = {
-                    type: 'category',
-                    boundaryGap: false,
-                    data: containerData.xValue
-                };
-                option.xAxis.push(xAxis);
-                count = showContainerMemImg(count, containerDataYval, j, option);
-                count = showContainerCpuImg(count, containerDataYval, j, option);
-            }
-        }
-    }
-    //生成内存监控
-    function showContainerMemImg(count, containerDataYval, j, option) {
-        var c = {
-            type: 'value',
-            scale: true,
-            axisLabel: {
-                formatter: '{value} Gib'
-            }
-        };
-        option.yAxis.push(c);
-        var containerDataYmem = containerDataYval.val[j].val[0];
-        for (var i = 0; i < containerDataYmem.val.length; i++) {
-            var containerYval = containerDataYmem.val[i].yAxis;
-            var a = {
-                name: containerDataYmem.val[i].legendName,
-                icon: 'roundRect'
-            };
-            option.legend.data.push(a);
+			var containersMem = echarts.init(containersMemImg);
+			containersMem.setOption(option);
 
-            //红色预警
-            for (var arrayNum = 0; arrayNum < containerYval.length; arrayNum++) {
-                var usageVal = containerDataYmem.val[1].yAxis[arrayNum];
-                var limitVal = containerDataYmem.val[0].yAxis[arrayNum];
-                if (i == 1 && usageVal >= limitVal * 0.9) {
-                    var bc = {
-                        name: containerDataYmem.val[i].legendName,
-                        type: 'line',
-                        barWidth: 5,
-                        barHeight: 2,
-                        itemStyle: {
-                            normal: {
-                                color: colorData[i]
-                            }
-                        },
-                        areaStyle: {normal: {color: '#ff0000',opacity: 0.3}},
-                        data: containerYval
-                    };
-                    option.series.push(bc);
-                } else {
-                    var b = {
-                        name: containerDataYmem.val[i].legendName,
-                        type: 'line',
-                        barWidth: 5,
-                        barHeight: 2,
-                        itemStyle: {
-                            normal: {
-                                color: colorData[i]
-                            }
-                        },
-                        areaStyle: {normal: {color: colorData[i],opacity: 0.3}},
-                        data: containerYval
-                    };
-                    option.series.push(b);
-                }
-                break
-            }
+			count++;
+			option.legend.data = [];
+			option.series = [];
+			option.yAxis = [];
+			return count;
+		}
+		//生成cpu监控
+		function showContainerCpuImg(count, containerDataYval, j, option) {
+			var f = {
+				type : 'value',
+				scale : true,
+				axisLabel : {
+					formatter : '{value} ms'
+				},
+			};
+			option.yAxis.push(f);
+			var containerDataYcpu = containerDataYval.val[j].val[1];
 
-            var titleText = containerDataYval.name + " " + containerDataYval.val[j].titleText + " " + containerDataYmem.title;
-            option.title.text = titleText;
-        }
-        addContainerMemImg();
-        var containersMemImg = document.getElementById('resourceContainer').children[count];
-        $(containersMemImg).addClass(containerDataYval.name);
-        $(containersMemImg).addClass(containerDataYval.val[j].titleText);
+			for (var k = 0; k < containerDataYcpu.val.length; k++) {
+				var containerYCpuval = containerDataYcpu.val[k].yAxis;
+				var d = {
+					name : containerDataYcpu.val[k].legendName,
+					icon : 'roundRect'
+				};
+				option.legend.data.push(d);
 
-        var containersMem = echarts.init(containersMemImg);
-        containersMem.setOption(option);
+				//红色预警
+				for (var arrayNumCpu = 0; arrayNumCpu < containerYCpuval.length; arrayNumCpu++) {
+					var usageVal = containerDataYcpu.val[1].yAxis[arrayNumCpu];
+					var limitVal = containerDataYcpu.val[0].yAxis[arrayNumCpu];
+					if (k == 1 && usageVal >= limitVal * 0.9) {
+						var ec = {
+							name : containerDataYcpu.val[k].legendName,
+							type : 'line',
+							barWidth : 5,
+							barHeight : 2,
+							itemStyle : {
+								normal : {
+									color : colorData[k]
+								}
+							},
+							areaStyle : {
+								normal : {
+									color : '#ff0000',
+									opacity : 0.3
+								}
+							},
+							data : containerYCpuval
+						};
+						option.series.push(ec);
+					} else {
+						var e = {
+							name : containerDataYcpu.val[k].legendName,
+							type : 'line',
+							barWidth : 5,
+							barHeight : 2,
+							itemStyle : {
+								normal : {
+									color : colorData[k]
+								}
+							},
+							areaStyle : {
+								normal : {
+									color : colorData[k],
+									opacity : 0.3
+								}
+							},
+							data : containerYCpuval
+						};
+						option.series.push(e);
+					}
+					break
+				}
 
-        count++;
-        option.legend.data = [];
-        option.series = [];
-        option.yAxis = [];
-        return count;
-    }
-    //生成cpu监控
-    function showContainerCpuImg(count, containerDataYval, j, option) {
-        var f = {
-            type: 'value',
-            scale: true,
-            axisLabel: {
-                formatter: '{value} ms'
-            },
-        };
-        option.yAxis.push(f);
-        var containerDataYcpu = containerDataYval.val[j].val[1];
+				var titleTextCpu = containerDataYval.name + " "
+						+ containerDataYval.val[j].titleText + " "
+						+ containerDataYcpu.title;
+				option.title.text = titleTextCpu;
 
-        for (var k = 0; k < containerDataYcpu.val.length; k++) {
-            var containerYCpuval = containerDataYcpu.val[k].yAxis;
-            var d = {
-                name: containerDataYcpu.val[k].legendName,
-                icon: 'roundRect'
-            };
-            option.legend.data.push(d);
-
-            //红色预警
-            for (var arrayNumCpu = 0; arrayNumCpu < containerYCpuval.length; arrayNumCpu++) {
-                var usageVal = containerDataYcpu.val[1].yAxis[arrayNumCpu];
-                var limitVal = containerDataYcpu.val[0].yAxis[arrayNumCpu];
-                if (k == 1 && usageVal >= limitVal * 0.9) {
-                    var ec = {
-                        name: containerDataYcpu.val[k].legendName,
-                        type: 'line',
-                        barWidth: 5,
-                        barHeight: 2,
-                        itemStyle: {
-                            normal: {
-                                color: colorData[k]
-                            }
-                        },
-                        areaStyle: {normal: {color: '#ff0000', opacity: 0.3} },
-                        data: containerYCpuval
-                    };
-                    option.series.push(ec);
-                } else {
-                    var e = {
-                        name: containerDataYcpu.val[k].legendName,
-                        type: 'line',
-                        barWidth: 5,
-                        barHeight: 2,
-                        itemStyle: {
-                            normal: {
-                                color: colorData[k]
-                            }
-                        },
-                        areaStyle: {normal: {color: colorData[k], opacity: 0.3} },
-                        data: containerYCpuval
-                    };
-                    option.series.push(e);
-                }
-                break
-            }
-
-            var titleTextCpu = containerDataYval.name + " " + containerDataYval.val[j].titleText + " " + containerDataYcpu.title;
-            option.title.text = titleTextCpu;
-
-        }
-        addContainerCpuImg();
-        var containersCpuImg = document.getElementById('resourceContainer').children[count];
-        $(containersCpuImg).addClass(containerDataYval.name);
-        $(containersCpuImg).addClass(containerDataYval.val[j].titleText);
-        var containersCpu = echarts.init(containersCpuImg);
-        containersCpu.setOption(option);
-        count++;
-        return count;
-    }
-
-</script>
+			}
+			addContainerCpuImg();
+			var containersCpuImg = document.getElementById('resourceContainer').children[count];
+			$(containersCpuImg).addClass(containerDataYval.name);
+			$(containersCpuImg).addClass(containerDataYval.val[j].titleText);
+			var containersCpu = echarts.init(containersCpuImg);
+			containersCpu.setOption(option);
+			count++;
+			return count;
+		}
+	</script>
 </body>
 </html>
