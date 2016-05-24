@@ -146,9 +146,11 @@
                                            value="${user.email}" style="width: 78%;display: inline">
                                 </div>
                             </div>
+                            <c:if test="${!cas_enable}">
                             <div style="margin-top: 25px">
                                 <span class="pull-right btn btn-primary" id="basicInfo">保存</span>
                             </div>
+                            </c:if>
                         </form>
                     </div>
 
