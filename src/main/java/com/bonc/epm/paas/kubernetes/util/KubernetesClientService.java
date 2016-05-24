@@ -68,7 +68,7 @@ public class KubernetesClientService {
 	}
 	
 	public KubernetesAPIClientInterface getClient() {
-		String namespace = CurrentUserUtils.getInstance().getUser().getUserName();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
         return getClient(namespace);
     }
 	

@@ -17,6 +17,7 @@ import com.bonc.epm.paas.entity.User;
  */
 public class CurrentUserUtils {
 	private final String CUR_USER = "cur_user";
+	private final String CAS_ENABLE = "cas_enable";
 	public static CurrentUserUtils INSTANCE = null;
 	
 	private CurrentUserUtils(){
@@ -69,6 +70,14 @@ public class CurrentUserUtils {
 	 */
 	public void setUser(User user){
 		getSession().setAttribute(CUR_USER, user);
+	}
+
+	public Boolean getCasEnable(){
+		return (Boolean) getSession().getAttribute(CAS_ENABLE);
+	}
+	
+	public void setCasEnable(Boolean cas_enable){
+		getSession().setAttribute(CAS_ENABLE, cas_enable);
 	}
 	
 	/**退出当前用户
