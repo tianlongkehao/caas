@@ -1,118 +1,130 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>集群</title>
-    <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
-    <script type="text/javascript" src="<%=path %>/js/cluster/cluster.js"></script>
-    <script type="text/javascript" src="<%=path %>/plugins/echarts/src/echarts.js"></script>
+<title>集群</title>
+<%@include file="../frame/header.jsp"%>
+<link rel="stylesheet" type="text/css"
+	href="<%=path%>/css/mod/cluster.css" />
+<script type="text/javascript" src="<%=path%>/js/cluster/cluster.js"></script>
+<script type="text/javascript"
+	src="<%=path%>/plugins/echarts/src/echarts.js"></script>
 </head>
 
 <body>
-<jsp:include page="../frame/menu.jsp" flush="true">
-    <jsp:param name="cluster" value=""/>
-</jsp:include>
-<input type="hidden" id="checkedHosts">
+	<jsp:include page="../frame/menu.jsp" flush="true">
+		<jsp:param name="cluster" value="" />
+	</jsp:include>
+	<input type="hidden" id="checkedHosts">
 
-<div class="page-container">
-    <article>
-        <div class="page-main">
-            <div class="contentTitle">
-                <ol class="breadcrumb">
-                    <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
-                            id="nav1">控制台</span></a></li>
-                    <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">集群资源</li>
-                </ol>
-            </div>
-            <div class="contentMain">
+	<div class="page-container">
+		<article>
+			<div class="page-main">
+				<div class="contentTitle">
+					<ol class="breadcrumb">
+						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+								id="nav1">控制台</span></a></li>
+						<li><i class="fa fa-angle-right"></i></li>
+						<li class="active" id="nav2">集群资源</li>
+					</ol>
+				</div>
+				<div class="contentMain">
 
-                <aside class="aside-btn">
-                    <div class="btns-group">
-                        <a id="clusterResource" class="Record action"><span class="btn btn-defaults btn-white"><span
-                                class="ic_left">容器监控</span></span></a>
-                    </div>
-                </aside>
+					<aside class="aside-btn">
+						<div class="btns-group">
+							<a id="clusterResource" class="Record action"><span
+								class="btn btn-defaults btn-white"><span class="ic_left">容器监控</span></span></a>
+						</div>
+					</aside>
 
-                <div class="caption clearfix" style="padding-bottom: 0px">
-                    <ul class="toolbox clearfix">
-                        <li><a href="javascript:window.location.reload(true);" id="userReloadBtn"><i
-                                class="fa fa-repeat"></i></a></li>
-                    </ul>
-                    <form id="search_form" class="form-inline" action="<%=path %>/user/searchByCondition" method="post">
-                        <c:if test="${cur_user.user_autority == 1}">
-                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">
-                            <label style="line-height: 35px">租户:</label>
-                            <select name="search_namespace" id="search_namespace" onchange="searchNamespace()"
-                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
-                                <option name="search_namespace" value="0"></option>
-                            </select>
-                        </div>
-                        </c:if>
-                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">
-                            <label style="line-height: 35px">实例:</label>
-                            <select name="search_pod" id="search_pod" onchange="searchPod()" disabled
-                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px;">
-                                <option name="search_pod" value="0"></option>
-                            </select>
-                        </div>
+					<div class="caption clearfix" style="padding-bottom: 0px">
+						<ul class="toolbox clearfix">
+							<li><a href="javascript:window.location.reload(true);"
+								id="userReloadBtn"><i class="fa fa-repeat"></i></a></li>
+						</ul>
+						<form id="search_form" class="form-inline"
+							action="<%=path%>/user/searchByCondition" method="post">
+							<c:if test="${cur_user.user_autority == 1}">
+								<div class="searchFun"
+									style="float: left; text-align: center; margin: 0px 10px"
+									align="right">
+									<label style="line-height: 35px">租户:</label> <select
+										name="search_namespace" id="search_namespace"
+										onchange="searchNamespace()"
+										style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+										<option name="search_namespace" value="0"></option>
+									</select>
+								</div>
+							</c:if>
+							<div class="searchFun"
+								style="float: left; text-align: center; margin: 0px 10px"
+								align="right">
+								<label style="line-height: 35px">实例:</label> <select
+									name="search_pod" id="search_pod" onchange="searchPod()"
+									disabled
+									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+									<option name="search_pod" value="0"></option>
+								</select>
+							</div>
 
-                        <%--<div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">--%>
-                        <%--<label style="line-height: 35px">容器:</label>--%>
-                        <%--<select name="search_container" id="search_container" onchange="searchContainer()" disabled--%>
-                        <%--style="height: 30px;display: inline; width: 140px; border-radius: 5px;">--%>
-                        <%--<option name="search_container" selected="" value="0"></option>--%>
-                        <%--</select>--%>
-                        <%--</div>--%>
-                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; float: right"
-                             align="right">
-                            <label style="line-height: 35px">时间:</label>
-                            <select name="search_time" id="search_time" onchange="searchTime()"
-                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
-                                <option name="search_time" value="5m">最近5分钟</option>
-                                <option name="search_time" value="30m">最近30分钟</option>
-                                <option name="search_time" value="1h">最近1小时</option>
-                                <option name="search_time" value="6h">最近6个小时</option>
-                                <option name="search_time" value="12h">最近12小时</option>
-                                <option name="search_time" value="24h">最近24小时</option>
-                                <option name="search_time" value="7d">最近7天</option>
-                                <option name="search_time" value="30d">最近30天</option>
-                            </select>
-                        </div>
+							<%--<div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">--%>
+							<%--<label style="line-height: 35px">容器:</label>--%>
+							<%--<select name="search_container" id="search_container" onchange="searchContainer()" disabled--%>
+							<%--style="height: 30px;display: inline; width: 140px; border-radius: 5px;">--%>
+							<%--<option name="search_container" selected="" value="0"></option>--%>
+							<%--</select>--%>
+							<%--</div>--%>
+							<div class="searchFun"
+								style="float: left; text-align: center; margin: 0px 10px; float: right"
+								align="right">
+								<label style="line-height: 35px">时间:</label> <select
+									name="search_time" id="search_time" onchange="searchTime()"
+									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+									<option name="search_time" value="5m">最近5分钟</option>
+									<option name="search_time" value="30m">最近30分钟</option>
+									<option name="search_time" value="1h">最近1小时</option>
+									<option name="search_time" value="6h">最近6个小时</option>
+									<option name="search_time" value="12h">最近12小时</option>
+									<option name="search_time" value="24h">最近24小时</option>
+									<option name="search_time" value="7d">最近7天</option>
+									<option name="search_time" value="30d">最近30天</option>
+								</select>
+							</div>
 
-                    </form>
-                </div>
-
-
-                <div>
-
-                    <div id="clusterResource_wrap" class="tab_wrap">
-                        <div class="detail-info">
-                            <div class="info-list" id="resourceContainer">
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
+						</form>
+					</div>
 
 
-            </div>
-        </div>
-    </article>
-</div>
+					<div>
 
-<script type="text/javascript">
+						<div id="clusterResource_wrap" class="tab_wrap">
+							<div class="detail-info">
+								<div class="info-list" id="resourceContainer"></div>
+
+							</div>
+
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+		</article>
+	</div>
+
+	<script type="text/javascript">
 
     var colorData = ['#7EB26D', '#EAB839', '#6ED0E0'];
 
     //默认监控5分钟
 
     getContainerMonitor("5m", "", "",false);
-    getAllNamespace();
+    debugger
+    if( document.getElementById('search_namespace') != null){
 
+        getAllNamespace();
+
+    }
     //获取监控数据
     function getContainerMonitor(timePeriod, nameSpace, podName,isNamespace) {
         $.ajax({
@@ -344,7 +356,7 @@
         }
 
     }
-    if(${cur_user.user_autority == 2}){
+    if(document.getElementById('search_namespace') == null){
         $("#search_pod").removeAttr("disabled");
     }
     //筛选pod

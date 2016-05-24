@@ -165,7 +165,7 @@
                                 </li>
                             </ul>
                             <div class="btn-block" style="height: 50px;" id="deployImage">
-                                <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}" class="btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">部署镜像</a>
+                                <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}" class="btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}" >部署镜像</a>
                             </div>
                             <c:if test="${editImage==1 }">
 	                            <div class="btn-block " style="height: 50px; " id="deleteImage">

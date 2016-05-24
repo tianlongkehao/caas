@@ -125,7 +125,7 @@
                                         </c:if>
                                         <c:if test="${leftcpu < 12}">
                                             <input type="number" value="0.1" class="number" min="0.1" step ="0.1" autocomplete="off" max="${leftcpu }"
-                                                   placeholder="当前可用cpu数量：${leftcpu }个" id="cpuNum" name="cpuNum" onmouseout="cpuMouseOut()">
+                                                   placeholder="当前可用cpu数量：${leftcpu }个" id="cpuNum" name="cpuNum">
                                         </c:if>
                                                <span class="unit">个</span>
                                               <!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：${leftcpu }</span> -->
