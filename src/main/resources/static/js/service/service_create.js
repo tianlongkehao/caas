@@ -128,8 +128,8 @@ $(document).ready(function(){
 function cpuMouseOut(){
 	var cpuNum = $('#cpuNum').val();
 	var cpuInput = $("#cpuNum")[0];
-	if(cpuNum > cpuInput.max){
-		cpuInput.value = 1;
+	if(cpuNum > 12){
+		cpuInput.value = 12;
 	}
 }
 

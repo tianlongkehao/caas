@@ -23,7 +23,9 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="<%=path %>/user/detail/${cur_user.id }/a"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
-                        <li><a href="<%=path %>/user/detail/${cur_user.id }/b"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                        <c:if test="${!cas_enable}">
+                        	<li><a href="<%=path %>/user/detail/${cur_user.id }/b"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                        </c:if>
                         <li class="logout">
 	                        <c:choose>
 		                       	<c:when test="${ssoConfig.enable}">
@@ -102,24 +104,25 @@
                 </li>
             </ul>
         </li>
-        <c:if test="${cur_user.user_autority == 2}">
-        <li id="menu_usermanage" class="user-admin">
-            <a href="<%=path %>/user/manage/list/${cur_user.id }">
-                <img class="nav-icon" src="<%=path %>/images/user.svg" alt=""/>
-                <span class="nav-title">用户</span>
-            </a>
-            <ul class="nav-item-hover">
-                <li id="menuUserUser" action="">
-                    <a href="<%=path %>/user/manage/list/${cur_user.id }">
-                        用户管理
-                    </a>
-                </li>
-            </ul>
-        </li>
-        </c:if>
-
-        <c:if test="${cur_user.user_autority == 1}">
-            <li id="menu_user" class="user-admin">
+        <c:if test="${!cas_enable}">
+	        <c:if test="${cur_user.user_autority == 2}">
+	        <li id="menu_usermanage" class="user-admin">
+	            <a href="<%=path %>/user/manage/list/${cur_user.id }">
+	                <img class="nav-icon" src="<%=path %>/images/user.svg" alt=""/>
+	                <span class="nav-title">用户</span>
+	            </a>
+	            <ul class="nav-item-hover">
+	                <li id="menuUserUser" action="">
+	                    <a href="<%=path %>/user/manage/list/${cur_user.id }">
+	                        用户管理
+	                    </a>
+	                </li>
+	            </ul>
+	        </li>
+	        </c:if>
+	        
+	        <c:if test="${cur_user.user_autority == 1}">
+	        <li id="menu_user" class="user-admin">
                 <a href="<%=path %>/user/list">
                     <img class="nav-icon" src="<%=path %>/images/user.svg" alt=""/>
                     <span class="nav-title">租户</span>
@@ -132,7 +135,9 @@
                     </li>
                 </ul>
             </li>
-
+            </c:if>
+		</c:if>
+        <c:if test="${cur_user.user_autority == 1}">
             <li id="menu_cluster">
                 <a href="<%=path %>/cluster/resource">
                     <img class="nav-icon" src="<%=path %>/images/server.svg" alt=""/>

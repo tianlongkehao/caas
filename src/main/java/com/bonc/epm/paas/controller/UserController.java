@@ -586,7 +586,7 @@ public class UserController {
 					Map<String, String> hard = quota.getStatus().getHard();
 					Map<String, String> used = quota.getStatus().getUsed();
 					servCpuNum = hard.get("cpu");// cpu个数
-					servMemoryNum = hard.get("memory").replace('G', ' ');// 内存个数
+					servMemoryNum = hard.get("memory").replace("i", "").replace("G", "");// 内存个数
 					servPodNum = hard.get("pods");// pod个数
 					servServiceNum = hard.get("services");// 服务个数
 					servControllerNum = hard.get("replicationcontrollers");// 副本控制数
