@@ -54,6 +54,7 @@
                                     <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
                                     <select class="form-control" style="width: 78%;display: inline; float: right;margin-right: 17px"
                                             name="user_autority" id="user_autority" disabled>
+                                        <option name="option" value="1" >管理员</option>
                                         <option name="option" value="2" >租户</option>
                                         <option name="option" value="3" >普通用户</option>
                                     </select>
