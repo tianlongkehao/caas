@@ -243,10 +243,10 @@ public class ClusterController {
 			// minion
 			yValue.append("{\"name\": \"minmon\",\"val\": [");
 
-			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
+			// 创建client
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
-			// 取得所有NAMESPACE
+			// 取得所有node
 			NodeList nodeLst = client.getAllNodes();
 
 			// 循环处理minion的监控信息
@@ -388,11 +388,12 @@ public class ClusterController {
 	@ResponseBody
 	public String getContainerMonitor(String nameSpace, String podName, String timePeriod) {
 
+		influxDB = InfluxDBFactory.connect(url, username, password);
 		// 当前登陆用户
 		User curUser = CurrentUserUtils.getInstance().getUser();
-		// 当前租户为租户
+		// 当前用户为租户
 		if (UserConstant.AUTORITY_TENANT.equals(curUser.getUser_autority())) {
-			nameSpace = curUser.getUserName();
+			nameSpace = curUser.getNamespace();
 		}
 
 		StringBuilder xValue = new StringBuilder();
@@ -416,6 +417,7 @@ public class ClusterController {
 				// 取得所有NAMESPACE
 				NamespaceList namespaceLst = client.getAllNamespaces();
 
+				System.out.print("namespaceLst.size()=" + namespaceLst.size());
 				// 循环处理每个NAMESPACE
 				for (int i = 0; i < namespaceLst.size(); i++) {
 					// 命名空间名称
@@ -431,8 +433,6 @@ public class ClusterController {
 				// 取得单一POD的JSON数据
 				yValue = createNamespaceJson(yValue, timePeriod, nameSpace, podName);
 			}
-			// 去掉最后一个NAMESPACE的逗号
-			yValue.deleteCharAt(yValue.length() - 1);
 
 			// yValue结束
 			yValue.append("]");
@@ -456,6 +456,7 @@ public class ClusterController {
 	private StringBuilder createNamespaceJson(StringBuilder yValue, String timePeriod, String nameSpace,
 			String podName) {
 
+		System.out.print("nameSpace=" + nameSpace);
 		// 判断podName是否为空
 		if ("".equals(podName)) {
 			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
@@ -464,18 +465,26 @@ public class ClusterController {
 			// 取得所有此NAMESPACE下的POD
 			PodList podLst = clientNamespace.getAllPods();
 
-			// 循环所有POD
-			for (int i = 0; i < podLst.size(); i++) {
-				// POD
-				Pod indexPod = podLst.get(i);
-				// 实例名称
-				String indexPodName = indexPod.getMetadata().getName();
-				// 拼接POD的JSON数据
-				yValue = createPodJson(yValue, timePeriod, nameSpace, indexPodName);
+			System.out.print("podLst=" + podLst);
+			System.out.print("podLst.size=" + String.valueOf(podLst.size()));
+			if (podLst != null && podLst.getItems() != null && podLst.size() != 0){
+				// 循环所有POD
+				for (int i = 0; i < podLst.size(); i++) {
+					// POD
+					Pod indexPod = podLst.get(i);
+					// 实例名称
+					String indexPodName = indexPod.getMetadata().getName();
+					// 拼接POD的JSON数据
+					yValue = createPodJson(yValue, timePeriod, nameSpace, indexPodName);
+				}
+				// 去掉最后一个NAMESPACE的逗号
+				yValue.deleteCharAt(yValue.length() - 1);
 			}
 		} else {
 			// 拼接POD的JSON串
 			yValue = createPodJson(yValue, timePeriod, nameSpace, podName);
+			// 去掉最后一个NAMESPACE的逗号
+			yValue.deleteCharAt(yValue.length() - 1);
 		}
 		return yValue;
 	}
@@ -492,6 +501,7 @@ public class ClusterController {
 	 */
 	private StringBuilder createPodJson(StringBuilder yValue, String timePeriod, String namespace, String podName) {
 
+		System.out.print("podName=" + podName);
 		// POD开始
 		yValue.append("{\"name\": \"" + podName + "\",\"val\": [");
 
@@ -500,6 +510,7 @@ public class ClusterController {
 		influxDB = InfluxDBFactory.connect(url, username, password);
 		List<String> containerNameLst = monCon.getAllContainerName(influxDB, dbName, namespace, podName);
 
+		System.out.print("containerNameLst=" + containerNameLst.toString());
 		// 循环处理所有container
 		for (String containerName : containerNameLst) {
 
@@ -553,6 +564,7 @@ public class ClusterController {
 		// POD结束
 		yValue.append("]},");
 
+		System.out.print("yValue=" + yValue.toString());
 		return yValue;
 	}
 
@@ -762,6 +774,7 @@ public class ClusterController {
 	private StringBuilder joinXValue(StringBuilder val, String timePeriod) {
 		MonitorController monCon = new MonitorController();
 		List<String> lst = monCon.getXValue(influxDB, dbName, timePeriod);
+		System.out.println("XValue=" + lst.toString());
 		for (int i = 0; i < lst.size(); i++) {
 			String strDate = lst.get(i);
 			// String转为Date

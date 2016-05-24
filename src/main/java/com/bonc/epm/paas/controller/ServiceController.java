@@ -341,7 +341,7 @@ public class ServiceController {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		try {	 
-			ResourceQuota quota = client.getResourceQuota(currentUser.getUserName());
+			ResourceQuota quota = client.getResourceQuota(currentUser.getNamespace());
 			if(quota.getStatus() != null){
 				long hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
 				long used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
