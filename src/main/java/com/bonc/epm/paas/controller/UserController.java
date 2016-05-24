@@ -96,7 +96,7 @@ public class UserController {
 	public String userSave(User user, Resource resource, Restriction restriction, Model model) {
 		System.out.println("save.do=============================================");
 		try {
-			user.setNamespace(user.getNamespace());
+			user.setNamespace(user.getUserName());
 			// 以用户名(登陆帐号)为name，创建client
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
 
@@ -184,7 +184,7 @@ public class UserController {
 	@RequestMapping(value = { "/update.do" }, method = RequestMethod.POST)
 	public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
 		try {
-			user.setNamespace(user.getNamespace());
+			user.setNamespace(user.getUserName());
 			// 以用户名(登陆帐号)为name，创建client
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
 			client.getNamespace(user.getNamespace());
