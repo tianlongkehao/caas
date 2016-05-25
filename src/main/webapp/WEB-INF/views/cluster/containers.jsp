@@ -324,6 +324,7 @@
 			for (var podNum = 0; podNum < containerData.yValue.length; podNum++) {
 				var containerDataYval = containerData.yValue[podNum];
 				//search_pod_options
+
 				addPodOpt();
 				var podOpt = document.getElementById('search_pod').children[podNum + 1];
 				podOpt.value = containerDataYval.name;
@@ -378,20 +379,22 @@
 				}
 			} else {
 				$("#search_pod").removeAttr("disabled");
+				var selectValue = $("#search_pod")[0].value;
 				var podOptCount = $("#search_pod")[0].options.length;
 				var podLst = document.getElementById("search_pod");
 				for (var j = 1; j < podOptCount; j++) {
 					podLst.removeChild(podLst.options[1])
 				}
-				removePod();
-				var pod0val = $("#search_pod")[0].value;
+				
+				var pod0val = selectValue;
 				var time0val = $("#search_time")[0].value;
 				if ($("#search_pod")[0].children[0].selected == true) {
+					removePod();
 					getContainerMonitor(time0val, "", "", true);
 				} else {
+					removePod();
 					getContainerMonitor(time0val, "", pod0val, true);
 				}
-				
 			}
 		}
 
@@ -421,7 +424,7 @@
 				getContainerMonitor(time0val, "", pod0val, false);
 			}
 		}
-
+		
 		//生成容器监控画布
 		function showContainerImg(containerData) {
 			var count = 0;
