@@ -122,6 +122,7 @@
 			getAllNamespace();
 		} else {
 			getContainerMonitor("5m", "", "", true);
+			$("#search_pod").removeAttr("disabled");
 		}
 
 		//获取监控数据
