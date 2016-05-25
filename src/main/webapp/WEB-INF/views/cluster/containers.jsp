@@ -378,6 +378,11 @@
 				}
 			} else {
 				$("#search_pod").removeAttr("disabled");
+				var podOptCount = $("#search_pod")[0].options.length;
+				var podLst = document.getElementById("search_pod");
+				for (var j = 1; j < podOptCount; j++) {
+					podLst.removeChild(podLst.options[1])
+				}
 				removePod();
 				var pod0val = $("#search_pod")[0].value;
 				var time0val = $("#search_time")[0].value;
@@ -386,11 +391,7 @@
 				} else {
 					getContainerMonitor(time0val, "", pod0val, true);
 				}
-				var podOptCount = $("#search_pod")[0].options.length;
-				var podLst = document.getElementById("search_pod");
-				for (var j = 1; j < podOptCount; j++) {
-					podLst.removeChild(podLst.options[1])
-				}
+				
 			}
 		}
 
