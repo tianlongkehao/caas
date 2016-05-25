@@ -385,10 +385,9 @@
 				for (var j = 1; j < podOptCount; j++) {
 					podLst.removeChild(podLst.options[1])
 				}
-				
 				var pod0val = selectValue;
 				var time0val = $("#search_time")[0].value;
-				if ($("#search_pod")[0].children[0].selected == true) {
+				if (pod0val == 0) {
 					removePod();
 					getContainerMonitor(time0val, "", "", true);
 				} else {
