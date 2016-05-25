@@ -191,7 +191,7 @@ public class ClusterController {
 			yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetOverAll", "");
 
 			// 去掉最后一个逗号
-			yValue = deleteLastStr(yValue);
+			yValue = this.deleteLastStr(yValue);
 			yValue.append("]},");
 
 			// MEMORY USAGE GROUP BY NODE
@@ -222,7 +222,7 @@ public class ClusterController {
 			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseOverAll", "");
 
 			// 去掉最后一个逗号
-			yValue = deleteLastStr(yValue);
+			yValue = this.deleteLastStr(yValue);
 			yValue.append("]},");
 
 			// DISK USAGE GROUP BY NODE
@@ -279,7 +279,7 @@ public class ClusterController {
 					yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetMinion", minionName);
 
 					// 去掉最后一个逗号
-					yValue = deleteLastStr(yValue);
+					yValue = this.deleteLastStr(yValue);
 					// memory结束
 					yValue.append("]},");
 
@@ -293,7 +293,7 @@ public class ClusterController {
 					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseMinion", minionName);
 
 					// 去掉最后一个逗号
-					yValue = deleteLastStr(yValue);
+					yValue = this.deleteLastStr(yValue);
 					// CPU结束
 					yValue.append("]},");
 
@@ -307,7 +307,7 @@ public class ClusterController {
 					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseMinion", minionName);
 
 					// 去掉最后一个逗号
-					yValue = deleteLastStr(yValue);
+					yValue = this.deleteLastStr(yValue);
 					// disk结束
 					yValue.append("]},");
 
@@ -321,19 +321,19 @@ public class ClusterController {
 					yValue = joinClusterYValue(yValue, "RxCurrent", timePeriod, "getRxMinion", minionName);
 
 					// 去掉最后一个逗号
-					yValue = deleteLastStr(yValue);
+					yValue = this.deleteLastStr(yValue);
 					// network结束
 					yValue.append("]},");
 
 					// 去掉最后一个逗号
-					yValue = deleteLastStr(yValue);
+					yValue = this.deleteLastStr(yValue);
 
 					// minion节点串结束
 					yValue.append("]},");
 				}
 			}
 			// 去掉最后一个逗号
-			yValue = deleteLastStr(yValue);
+			yValue = this.deleteLastStr(yValue);
 			// 所有minion结束
 			yValue.append("]}");
 
@@ -371,7 +371,7 @@ public class ClusterController {
 		}
 
 		// 去掉最后一个逗号
-		rtnValue = deleteLastStr(rtnValue);
+		rtnValue = this.deleteLastStr(rtnValue);
 
 		// 拼接总串
 		return "[" + rtnValue.toString() + "]";
@@ -434,7 +434,7 @@ public class ClusterController {
 				yValue = createNamespaceJson(yValue, timePeriod, nameSpace, podName);
 			}
 			// 去掉最后一个逗号
-			yValue = deleteLastStr(yValue);
+			yValue = this.deleteLastStr(yValue);
 
 			// yValue结束
 			yValue.append("]");
@@ -531,7 +531,7 @@ public class ClusterController {
 					containerName);
 
 			// 去掉最后一个逗号
-			yValue = deleteLastStr(yValue);
+			yValue = this.deleteLastStr(yValue);
 
 			// MEM结束
 			yValue.append("]},");
@@ -548,7 +548,7 @@ public class ClusterController {
 					containerName);
 
 			// 去掉最后一个逗号
-			yValue = deleteLastStr(yValue);
+			yValue = this.deleteLastStr(yValue);
 
 			// CPU结束
 			yValue.append("]}");
@@ -558,7 +558,7 @@ public class ClusterController {
 		}
 
 		// 去掉最后一个逗号
-		yValue = deleteLastStr(yValue);
+		yValue = this.deleteLastStr(yValue);
 		// POD结束
 		yValue.append("]},");
 
@@ -785,7 +785,7 @@ public class ClusterController {
 			val.append("\"").append(comDateDate).append("\",");
 		}
 		// 去掉最后一个逗号
-		val = deleteLastStr(val);
+		val = this.deleteLastStr(val);
 		val.append("],");
 		return val;
 	}
@@ -810,7 +810,7 @@ public class ClusterController {
 			val.append("\"").append(lst.get(i)).append("\",");
 		}
 		// 去掉最后一个逗号
-		val = deleteLastStr(val);
+		val = this.deleteLastStr(val);
 		val.append("]},");
 		return val;
 	}
@@ -836,7 +836,7 @@ public class ClusterController {
 			val.append("\"").append(lst.get(i)).append("\",");
 		}
 		// 去掉最后一个逗号
-		val = deleteLastStr(val);
+		val = this.deleteLastStr(val);
 		val.append("]},");
 		return val;
 	}
@@ -845,7 +845,7 @@ public class ClusterController {
 	 * 判断字符串最后一位是某为逗号,如果是删掉
 	 * 
 	 * @param str
-	 * @return
+	 * @return StringBuilder
 	 */
 	private StringBuilder deleteLastStr(StringBuilder str) {
 		// 判断最后一位是不是逗号
