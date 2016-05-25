@@ -68,9 +68,9 @@ public class SSOFilter implements Filter {
 				authFailure(response, AUTH_FAILURE_MSG_NO_PRIVILEGE);
 			}
 			String casLoginId = assertion.getPrincipal().getName();
-			//TODO
-			attributes.put("tenantId", "unicom_zb");
-			attributes.put("tenantAdmin", "1");
+			
+			//attributes.put("tenantId", "unicom_zb");
+			//attributes.put("tenantAdmin", "1");
 			String tenantId = "";
 			String namespace = "";
 			String tenantAdmin = "";
@@ -209,11 +209,10 @@ public class SSOFilter implements Filter {
 		try {
 			Map<String, Object> data = new HashMap<String, Object>();
 			System.out.println("tenantId:" + tenantId);
-			//TODO
-			data.put("tenant_id", "\"" + "unicom" + "\"");
-			data.put("resource_type_code", "\"container\"");
-			//data.put("tenant_id", "\"" + tenantId + "\"");
-			//data.put("resource_type_code", "\"Docker\"");
+			//data.put("tenant_id", "\"" + "unicom" + "\"");
+			//data.put("resource_type_code", "\"container\"");
+			data.put("tenant_id", "\"" + tenantId + "\"");
+			data.put("resource_type_code", "\"Docker\"");
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("param", data);
 			String rtnStr = WebClientUtil.doPost(resManUrl, params);
