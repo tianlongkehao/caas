@@ -329,15 +329,16 @@
 			}
 
 		}
+		//删除pod下拉列表项目
+		function removePod() {
+			var imgLst = document.getElementById("resourceContainer");
+			var count = imgLst.childNodes.length;
+			for (var i = 0; i < count; i++) {
+				imgLst.removeChild(imgLst.childNodes[0]);
+			}
+		}
 		if(document.getElementById("search_namespace") != null){
 			//筛选租户
-			function removePod() {
-				var imgLst = document.getElementById("resourceContainer");
-				var count = imgLst.childNodes.length;
-				for (var i = 0; i < count; i++) {
-					imgLst.removeChild(imgLst.childNodes[0]);
-				}
-			}
 			function searchNamespace() {
 				$("#search_pod").removeAttr("disabled");
 				$("#search_pod")[0].children[0].selected = true;
@@ -361,14 +362,15 @@
 			}
 			//筛选pod
 			function searchPod() {
-				var pod0val = $("#search_pod")[0].value;
-				var namespace0val = $("#search_namespace")[0].value;
-				var time0val = $("#search_time")[0].value;
-				removePod();
-				getContainerMonitor(time0val, namespace0val, pod0val, false);
 				if ($("#search_pod")[0].children[0].selected == true) {
 					removePod();
 					getContainerMonitor(time0val, namespace0val, "", false);
+				}else{
+					var pod0val = $("#search_pod")[0].value;
+					var namespace0val = $("#search_namespace")[0].value;
+					var time0val = $("#search_time")[0].value;
+					removePod();
+					getContainerMonitor(time0val, namespace0val, pod0val, false);
 				}
 			}
 			//筛选time
@@ -383,15 +385,17 @@
 				getContainerMonitor(time0val, namespace0val, pod0val, false);
 			}
 		}else{
+			$("#search_pod").removeAttr("disabled");
 			//筛选pod
 			function searchPod() {
-				var pod0val = $("#search_pod")[0].value;
-				var time0val = $("#search_time")[0].value;
-				removePod();
-				getContainerMonitor(time0val, "", pod0val, true);
 				if ($("#search_pod")[0].children[0].selected == true) {
 					removePod();
 					getContainerMonitor(time0val, "", "", true);
+				}else{
+					var pod0val = $("#search_pod")[0].value;
+					var time0val = $("#search_time")[0].value;
+					removePod();
+					getContainerMonitor(time0val, "", pod0val, true);
 				}
 			}
 			//筛选time
@@ -405,7 +409,7 @@
 				var time0val = $("#search_time")[0].value;
 				getContainerMonitor(time0val, "", pod0val, false);
 			}
-			$("#search_pod").removeAttr("disabled");
+			
 		}
 		
 		//生成容器监控画布
