@@ -117,9 +117,11 @@
 
 		//默认监控5分钟
 
-		getContainerMonitor("5m", "", "", false);
 		if (document.getElementById('search_namespace') != null) {
+			getContainerMonitor("5m", "", "", false);
 			getAllNamespace();
+		}else{
+			getContainerMonitor("5m", "", "", true);
 		}
 
 		//获取监控数据
@@ -357,40 +359,55 @@
 				}
 
 			}
-		}
-		
-		if (document.getElementById('search_namespace') == null) {
-			$("#search_pod").removeAttr("disabled");
-		}
-		//筛选pod
-		function searchPod() {
-			var pod0val = $("#search_pod")[0].value;
-			var namespace0val = $("#search_namespace")[0].value;
-			var time0val = $("#search_time")[0].value;
-			removePod();
-			getContainerMonitor(time0val, namespace0val, pod0val, false);
-			if ($("#search_pod")[0].children[0].selected == true) {
+			//筛选pod
+			function searchPod() {
+				var pod0val = $("#search_pod")[0].value;
+				var namespace0val = $("#search_namespace")[0].value;
+				var time0val = $("#search_time")[0].value;
 				removePod();
-				getContainerMonitor(time0val, namespace0val, "", false);
+				getContainerMonitor(time0val, namespace0val, pod0val, false);
+				if ($("#search_pod")[0].children[0].selected == true) {
+					removePod();
+					getContainerMonitor(time0val, namespace0val, "", false);
+				}
 			}
-		}
-		//筛选time
-		function searchTime() {
-			removePod();
-			if ($("#search_namespace")[0].value == "0") {
-				var namespace0val = "";
-				var pod0val = "";
-			} else {
+			//筛选time
+			function searchTime() {
+				removePod();
 				if ($("#search_pod")[0].value == "0") {
 					var pod0val = "";
 				} else {
 					var pod0val = $("#search_pod")[0].value;
 				}
-				var namespace0val = $("#search_namespace")[0].value;
+				var time0val = $("#search_time")[0].value;
+				getContainerMonitor(time0val, namespace0val, pod0val, false);
 			}
-			var time0val = $("#search_time")[0].value;
-			getContainerMonitor(time0val, namespace0val, pod0val, false);
+		}else{
+			//筛选pod
+			function searchPod() {
+				var pod0val = $("#search_pod")[0].value;
+				var time0val = $("#search_time")[0].value;
+				removePod();
+				getContainerMonitor(time0val, "", pod0val, true);
+				if ($("#search_pod")[0].children[0].selected == true) {
+					removePod();
+					getContainerMonitor(time0val, "", "", true);
+				}
+			}
+			//筛选time
+			function searchTime() {
+				removePod();
+				if ($("#search_pod")[0].value == "0") {
+					var pod0val = "";
+				} else {
+					var pod0val = $("#search_pod")[0].value;
+				}
+				var time0val = $("#search_time")[0].value;
+				getContainerMonitor(time0val, "", pod0val, false);
+			}
+			$("#search_pod").removeAttr("disabled");
 		}
+		
 		//生成容器监控画布
 		function showContainerImg(containerData) {
 			var count = 0;
