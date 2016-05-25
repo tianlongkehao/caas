@@ -294,25 +294,26 @@
 					+ '</div>';
 			$("#resourceContainer").append(cpuTxt);
 		}
-		//添加namespace下拉选项
-		function addNamespacesOpt() {
-			var namespaceOpt = '<option name="search_namespace" value=""></option>'
-			$("#search_namespace").append(namespaceOpt);
+		if(document.getElementById("search_namespace") != null){
+			//添加namespace下拉选项
+			function addNamespacesOpt() {
+				var namespaceOpt = '<option name="search_namespace" value=""></option>'
+				$("#search_namespace").append(namespaceOpt);
+			}
+			//由namespaceData得到租户的option下拉选项
+			function showNamespceOpt(namespaceData) {
+				for (var namespaceVal = 0; namespaceVal < namespaceData.length; namespaceVal++) {
+					addNamespacesOpt();
+					var namespaceOpt = document.getElementById('search_namespace').children[namespaceVal + 1];
+					namespaceOpt.value = namespaceData[namespaceVal];
+					namespaceOpt.innerHTML = namespaceData[namespaceVal];
+				}
+			}
 		}
 		//添加pod option下拉选项
 		function addPodOpt() {
 			var serOpt = '<option name="search_pod" value=""></option>'
 			$("#search_pod").append(serOpt);
-		}
-
-		//由namespaceData得到租户的option下拉选项
-		function showNamespceOpt(namespaceData) {
-			for (var namespaceVal = 0; namespaceVal < namespaceData.length; namespaceVal++) {
-				addNamespacesOpt();
-				var namespaceOpt = document.getElementById('search_namespace').children[namespaceVal + 1];
-				namespaceOpt.value = namespaceData[namespaceVal];
-				namespaceOpt.innerHTML = namespaceData[namespaceVal];
-			}
 		}
 		//由containerData得到pod的option下拉选项
 		function showPodOpt(containerData) {
@@ -326,35 +327,38 @@
 			}
 
 		}
-		//筛选租户
-		function removePod() {
-			var imgLst = document.getElementById("resourceContainer");
-			var count = imgLst.childNodes.length;
-			for (var i = 0; i < count; i++) {
-				imgLst.removeChild(imgLst.childNodes[0]);
-			}
-		}
-		function searchNamespace() {
-			$("#search_pod").removeAttr("disabled");
-			$("#search_pod")[0].children[0].selected = true;
-			var namespace0val = $("#search_namespace")[0].value;
-			var time0val = $("#search_time")[0].value;
-
-			if ($("#search_namespace")[0].children[0].selected == true) {
-				$("#search_pod").attr("disabled", "disabled");
-				removePod();
-				getContainerMonitor(time0val, "", "", true)
-			} else {
-				removePod();
-				getContainerMonitor(time0val, namespace0val, "", true);
-				var podOptCount = $("#search_pod")[0].options.length;
-				var podLst = document.getElementById("search_pod");
-				for (var j = 1; j < podOptCount; j++) {
-					podLst.removeChild(podLst.options[1])
+		if(document.getElementById("search_namespace") != null){
+			//筛选租户
+			function removePod() {
+				var imgLst = document.getElementById("resourceContainer");
+				var count = imgLst.childNodes.length;
+				for (var i = 0; i < count; i++) {
+					imgLst.removeChild(imgLst.childNodes[0]);
 				}
 			}
+			function searchNamespace() {
+				$("#search_pod").removeAttr("disabled");
+				$("#search_pod")[0].children[0].selected = true;
+				var namespace0val = $("#search_namespace")[0].value;
+				var time0val = $("#search_time")[0].value;
 
+				if ($("#search_namespace")[0].children[0].selected == true) {
+					$("#search_pod").attr("disabled", "disabled");
+					removePod();
+					getContainerMonitor(time0val, "", "", true)
+				} else {
+					removePod();
+					getContainerMonitor(time0val, namespace0val, "", true);
+					var podOptCount = $("#search_pod")[0].options.length;
+					var podLst = document.getElementById("search_pod");
+					for (var j = 1; j < podOptCount; j++) {
+						podLst.removeChild(podLst.options[1])
+					}
+				}
+
+			}
 		}
+		
 		if (document.getElementById('search_namespace') == null) {
 			$("#search_pod").removeAttr("disabled");
 		}
