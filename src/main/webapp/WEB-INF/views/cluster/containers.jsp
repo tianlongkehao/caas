@@ -377,16 +377,13 @@
 					getContainerMonitor(time0val, namespace0val, pod0val, false);
 				}
 			} else {
-
 				$("#search_pod").removeAttr("disabled");
-
+				removePod();
 				var pod0val = $("#search_pod")[0].value;
 				var time0val = $("#search_time")[0].value;
 				if ($("#search_pod")[0].children[0].selected == true) {
-					removePod();
 					getContainerMonitor(time0val, "", "", true);
 				} else {
-					removePod();
 					getContainerMonitor(time0val, "", pod0val, true);
 				}
 			}
