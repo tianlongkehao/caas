@@ -338,57 +338,47 @@
 				imgLst.removeChild(imgLst.childNodes[0]);
 			}
 		}
-		if (document.getElementById("search_namespace") != null) {
-			//筛选租户
-			function searchNamespace() {
-				$("#search_pod").removeAttr("disabled");
-				$("#search_pod")[0].children[0].selected = true;
-				var namespace0val = $("#search_namespace")[0].value;
-				var time0val = $("#search_time")[0].value;
+		//筛选租户
+		function searchNamespace() {
+			$("#search_pod").removeAttr("disabled");
+			$("#search_pod")[0].children[0].selected = true;
+			var namespace0val = $("#search_namespace")[0].value;
+			var time0val = $("#search_time")[0].value;
 
-				if ($("#search_namespace")[0].children[0].selected == true) {
-					$("#search_pod").attr("disabled", "disabled");
-					removePod();
-					getContainerMonitor(time0val, "", "", true)
-				} else {
-					removePod();
-					getContainerMonitor(time0val, namespace0val, "", true);
-					var podOptCount = $("#search_pod")[0].options.length;
-					var podLst = document.getElementById("search_pod");
-					for (var j = 1; j < podOptCount; j++) {
-						podLst.removeChild(podLst.options[1])
-					}
+			if ($("#search_namespace")[0].children[0].selected == true) {
+				$("#search_pod").attr("disabled", "disabled");
+				removePod();
+				getContainerMonitor(time0val, "", "", true)
+			} else {
+				removePod();
+				getContainerMonitor(time0val, namespace0val, "", true);
+				var podOptCount = $("#search_pod")[0].options.length;
+				var podLst = document.getElementById("search_pod");
+				for (var j = 1; j < podOptCount; j++) {
+					podLst.removeChild(podLst.options[1])
 				}
-
 			}
-			//筛选pod
-			function searchPod() {
+
+		}
+
+		function searchPod() {
+
+			if (document.getElementById("search_namespace") != null) {
+
 				var pod0val = $("#search_pod")[0].value;
 				var namespace0val = $("#search_namespace")[0].value;
 				var time0val = $("#search_time")[0].value;
 				if ($("#search_pod")[0].children[0].selected == true) {
 					removePod();
 					getContainerMonitor(time0val, namespace0val, "", false);
-				} else{
+				} else {
 					removePod();
 					getContainerMonitor(time0val, namespace0val, pod0val, false);
 				}
-			}
-			//筛选time
-			function searchTime() {
-				removePod();
-				if ($("#search_pod")[0].value == "0") {
-					var pod0val = "";
-				} else {
-					var pod0val = $("#search_pod")[0].value;
-				}
-				var time0val = $("#search_time")[0].value;
-				getContainerMonitor(time0val, namespace0val, pod0val, false);
-			}
-		} else {
-			$("#search_pod").removeAttr("disabled");
-			//筛选pod
-			function searchPod() {
+			} else {
+
+				$("#search_pod").removeAttr("disabled");
+
 				var pod0val = $("#search_pod")[0].value;
 				var time0val = $("#search_time")[0].value;
 				if ($("#search_pod")[0].children[0].selected == true) {
@@ -399,8 +389,24 @@
 					getContainerMonitor(time0val, "", pod0val, true);
 				}
 			}
-			//筛选time
-			function searchTime() {
+		}
+
+		function searchTime() {
+
+			if (document.getElementById("search_namespace") != null) {
+
+				removePod();
+				if ($("#search_pod")[0].value == "0") {
+					var pod0val = "";
+				} else {
+					var pod0val = $("#search_pod")[0].value;
+				}
+				var time0val = $("#search_time")[0].value;
+				getContainerMonitor(time0val, namespace0val, pod0val, false);
+			} else {
+
+				$("#search_pod").removeAttr("disabled");
+
 				removePod();
 				if ($("#search_pod")[0].value == "0") {
 					var pod0val = "";
@@ -410,7 +416,6 @@
 				var time0val = $("#search_time")[0].value;
 				getContainerMonitor(time0val, "", pod0val, false);
 			}
-
 		}
 
 		//生成容器监控画布
