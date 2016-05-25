@@ -331,7 +331,7 @@
 			}
 
 		}
-		//删除pod下拉列表项目
+		//删除pod画布
 		function removePod() {
 			var imgLst = document.getElementById("resourceContainer");
 			var count = imgLst.childNodes.length;
@@ -385,6 +385,11 @@
 					getContainerMonitor(time0val, "", "", true);
 				} else {
 					getContainerMonitor(time0val, "", pod0val, true);
+				}
+				var podOptCount = $("#search_pod")[0].options.length;
+				var podLst = document.getElementById("search_pod");
+				for (var j = 1; j < podOptCount; j++) {
+					podLst.removeChild(podLst.options[1])
 				}
 			}
 		}
