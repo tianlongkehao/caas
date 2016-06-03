@@ -102,17 +102,17 @@ public class ESClient {
 		System.out.println("elasticsearch已关闭");
 	}
 
-//	public static void main(String args[]){
-//		ESClient esc = new ESClient();
-//		esc.initESClient("10.0.93.205:9300");
-////		esc.createIndex();
-//		esc.search("logstash-2016.03.11","fluentd","epmfeng-d94xr");
-////		esc.getIndex();
-////		esc.get();
-////		esc.delete();
-//		esc.closeESClient();
-//	}
-	
+/*	public static void main(String args[]){
+		ESClient esc = new ESClient();
+		esc.initESClient("10.0.92.211:9300");
+//		esc.createIndex();
+		esc.search("logstash-2016.06.02","fluentd","portal-v5wuw");
+//		esc.getIndex();
+//		esc.get();
+//		esc.delete();
+		esc.closeESClient();
+	}*/
+
 
 
 	/**
@@ -150,6 +150,7 @@ public class ESClient {
 				string = string + result.get("log");
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error(keyWord+"日志出错！");
 		}
 		
