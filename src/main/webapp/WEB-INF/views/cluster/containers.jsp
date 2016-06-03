@@ -152,9 +152,11 @@ debugger
 		function createMap(containerData) {
 			aPods = [];
 			var count = 0;
+			//循环pod
 			for (var s = 0; s < containerData.yValue.length; s++) {
 				var containerDataYval = containerData.yValue[s];
 				aCons = [];
+				//循环container
 				for (var j = 0; j < containerDataYval.val.length; j++) {
 					
 					var option = {
@@ -310,7 +312,7 @@ debugger
 		function showDynamic(containersMem,containersCpu){
 			setInterval(function() {
 				update(containersMem, containersCpu);
-			}, 1000);
+			}, 60000);
 		}
 		//局部刷新
 		function update(aPods){
@@ -631,138 +633,138 @@ debugger
 			return seriesData;
 		}
 
-		//     var containerData = {
-		//     'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
-		//     'yValue': [{
-		//     'name': 'pod01', 'val': [{
-		//     'titleText': 'container01',
-		//     'val': [{
-		//     'title': 'memory',
-		//     'val': [{
-		//     'legendName': 'Limit Current',
-		//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-		//     },
-		//     {
-		//     'legendName': 'Usage Current',
-		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-		//     },
-		//     {
-		//     'legendName': 'Working Set Current',
-		//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-		//     }]
-		//     },
-		//     {
-		//     'title': 'cpu',
-		//     'val': [{
-		//     'legendName': 'Limit Current',
-		//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-		//     },
-		//     {
-		//     'legendName': 'Usage Current',
-		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-		//     }]
-		//     }]
-		//     },
-		//     {
-		//     'titleText': 'container02', 'val': [{
-		//
-		//     'title': 'memory',
-		//     'val': [{
-		//     'legendName': 'Limit Current',
-		//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-		//     },
-		//     {
-		//     'legendName': 'Usage Current',
-		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-		//     },
-		//     {
-		//     'legendName': 'Working Set Current',
-		//     'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
-		//     }]
-		//     },
-		//     {
-		//     'title': 'cpu',
-		//     'val': [{
-		//     'legendName': 'cLimit Current',
-		//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-		//     },
-		//     {
-		//     'legendName': 'cUsage Current',
-		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-		//     }]
-		//
-		//     }]
-		//     }]
-		//     },
-		//     {
-		//     'name': 'pod02', 'val': [{
-		//     'titleText': 'container03', 'val': [{
-		//
-		//     'title': 'memory',
-		//     'val': [{
-		//     'legendName': 'Limit Current',
-		//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-		//     },
-		//     {
-		//     'legendName': 'Usage Current',
-		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-		//     },
-		//     {
-		//     'legendName': 'Working Set Current',
-		//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-		//     }]
-		//     }
-		//     ,
-		//
-		//     {
-		//     'title': 'cpu',
-		//     'val': [{
-		//     'legendName': 'cpu Limit Current',
-		//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-		//     },
-		//     {
-		//     'legendName': 'cpu Usage Current',
-		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-		//     }]
-		//
-		//
-		//     }]
-		//     }, {
-		//     'titleText': 'container04', 'val': [{
-		//
-		//     'title': 'memory',
-		//     'val': [{
-		//     'legendName': 'Limit Current',
-		//     'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-		//     },
-		//     {
-		//     'legendName': 'Usage Current',
-		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-		//     },
-		//     {
-		//     'legendName': 'Working Set Current',
-		//     'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-		//     }]
-		//     }
-		//     ,
-		//
-		//     {
-		//     'title': 'cpu',
-		//     'val': [{
-		//     'legendName': 'Limit Current',
-		//     'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-		//     },
-		//     {
-		//     'legendName': 'Usage Current',
-		//     'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-		//     }]
-		//
-		//
-		//     }]
-		//     }]
-		//     }
-		//     ]
-		//     };
+// 		     var containerData = {
+// 		    'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
+// 		    'yValue': [{
+// 		    'name': 'pod01', 'val': [{
+// 		    'titleText': 'container01',
+// 		    'val': [{
+// 		    'title': 'memory',
+// 		    'val': [{
+// 		    'legendName': 'Limit Current',
+// 		    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+// 		    },
+// 		    {
+// 		    'legendName': 'Usage Current',
+// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+// 		    },
+// 		    {
+// 		    'legendName': 'Working Set Current',
+// 		    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+// 		    }]
+// 		    },
+// 		    {
+// 		    'title': 'cpu',
+// 		    'val': [{
+// 		    'legendName': 'Limit Current',
+// 		    'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+// 		    },
+// 		    {
+// 		    'legendName': 'Usage Current',
+// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+// 		    }]
+// 		    }]
+// 		    },
+// 		    {
+// 		    'titleText': 'container02', 'val': [{
+		
+// 		    'title': 'memory',
+// 		    'val': [{
+// 		    'legendName': 'Limit Current',
+// 		    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+// 		    },
+// 		    {
+// 		    'legendName': 'Usage Current',
+// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+// 		    },
+// 		    {
+// 		    'legendName': 'Working Set Current',
+// 		    'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
+// 		    }]
+// 		    },
+// 		    {
+// 		    'title': 'cpu',
+// 		    'val': [{
+// 		    'legendName': 'cLimit Current',
+// 		    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+// 		    },
+// 		    {
+// 		    'legendName': 'cUsage Current',
+// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+// 		    }]
+		
+// 		    }]
+// 		    }]
+// 		    },
+// 		    {
+// 		    'name': 'pod02', 'val': [{
+// 		    'titleText': 'container03', 'val': [{
+		
+// 		    'title': 'memory',
+// 		    'val': [{
+// 		    'legendName': 'Limit Current',
+// 		    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+// 		    },
+// 		    {
+// 		    'legendName': 'Usage Current',
+// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+// 		    },
+// 		    {
+// 		    'legendName': 'Working Set Current',
+// 		    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+// 		    }]
+// 		    }
+// 		    ,
+		
+// 		    {
+// 		    'title': 'cpu',
+// 		    'val': [{
+// 		    'legendName': 'cpu Limit Current',
+// 		    'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+// 		    },
+// 		    {
+// 		    'legendName': 'cpu Usage Current',
+// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+// 		    }]
+		
+		
+// 		    }]
+// 		    }, {
+// 		    'titleText': 'container04', 'val': [{
+		
+// 		    'title': 'memory',
+// 		    'val': [{
+// 		    'legendName': 'Limit Current',
+// 		    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
+// 		    },
+// 		    {
+// 		    'legendName': 'Usage Current',
+// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+// 		    },
+// 		    {
+// 		    'legendName': 'Working Set Current',
+// 		    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
+// 		    }]
+// 		    }
+// 		    ,
+		
+// 		    {
+// 		    'title': 'cpu',
+// 		    'val': [{
+// 		    'legendName': 'Limit Current',
+// 		    'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
+// 		    },
+// 		    {
+// 		    'legendName': 'Usage Current',
+// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
+// 		    }]
+		
+		
+// 		    }]
+// 		    }]
+// 		    }
+// 		    ]
+// 		    };   
 	</script>
 </body>
 </html>

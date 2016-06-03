@@ -304,7 +304,7 @@
     function showDynamic(){
 		setInterval(function() {
 			update();
-		}, 1000);
+		}, 60000);
 	}
     //监控图
     function createChart(clusterData) {
@@ -444,7 +444,7 @@
                 option.series = [];
                 eachPart.push(clustersImg);
                 //实时刷新OVER NODE
-                showDynamic();
+                //showDynamic();
             }
             
             
@@ -494,7 +494,7 @@
                 option.series = [];
                 eachPart.push(clustersImg);
               //实时刷新MINION
-                showDynamic();
+                //showDynamic();
             }
             fourPart.push(eachPart);
         }

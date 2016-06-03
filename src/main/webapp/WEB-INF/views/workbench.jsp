@@ -25,6 +25,7 @@
                                 ${cur_user.userName }
                                 <span class="caret"></span>
                             </a>
+                           
                             <ul class="dropdown-menu">
                                 <li><a href="<%=path %>/user/detail/${cur_user.id }/a"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
                                 <c:if test="${!cas_enable}">
@@ -40,6 +41,7 @@
                                     	</c:otherwise>
                                     </c:choose>
                                 </li>
+                                
                             </ul>
                         </li>
                     </ul>
