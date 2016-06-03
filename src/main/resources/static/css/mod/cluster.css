@@ -1142,9 +1142,9 @@ i.pushOrg {
     font-size: 14px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
-    background: #FAFAFA;
+    background: #F5F5F5 !important;
 }
-/*slave-内存*/
+/*slave-内存
 .detail-info .info-list #slaveMemResourceInfo tbody td .slider_bj {
     position: relative;
     background: #DADBDE;
@@ -1180,6 +1180,8 @@ i.pushOrg {
     padding-left: 25px;
     background: #FAFAFA;
 }
+*/
+
 
 /*.host_step4, .enabled, #divResult td, .processcontainer{
     width:200px;

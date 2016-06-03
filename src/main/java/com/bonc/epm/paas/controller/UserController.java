@@ -352,25 +352,25 @@ public class UserController {
 		return "user/user_detail.jsp";
 	}
 
-	// private String computeMemoryOut(Map<String, String> val) {
-	// String memVal = val.get("memory");
-	// if (memVal.contains("Mi")) {
-	// Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
-	// return a1.toString();
-	// } else {
-	// return memVal.replace("Gi", "");
-	// }
-	// }
-	//
-	// private String computeCpuOut(Map<String, String> val) {
-	// String cpuVal = val.get("cpu");
-	// if (cpuVal.contains("m")) {
-	// Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
-	// return a1.toString();
-	// } else {
-	// return cpuVal;
-	// }
-	// }
+	 private String computeMemoryOut(Map<String, String> val) {
+		 String memVal = val.get("memory");
+		 if (memVal.contains("Mi")) {
+			 Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
+			 return a1.toString();
+		 } else {
+			 return memVal.replace("Gi", "");
+		 }
+	 }
+	
+	 private String computeCpuOut(Map<String, String> val) {
+		 String cpuVal = val.get("cpu");
+		 if (cpuVal.contains("m")) {
+			 Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
+			 return a1.toString();
+		 } else {
+			 return cpuVal;
+		 }
+	 }
 
 	@RequestMapping(value = { "manage/detail/{id}" }, method = RequestMethod.GET)
 	public String manageDetail(Model model, @PathVariable long id) {
@@ -591,10 +591,13 @@ public class UserController {
 					servServiceNum = hard.get("services");// 服务个数
 					servControllerNum = hard.get("replicationcontrollers");// 副本控制数
 
-					Float cpuNum = Float.valueOf(used.get("cpu").replace("m", "")) / 1000;
-					usedCpuNum = Float.valueOf(cpuNum);// 已使用CPU个数
-					Float memNum = Float.valueOf(used.get("memory").replace("k", "")) / (1024 * 1024 * 1024);
-					usedMemoryNum = Float.valueOf(memNum);// 已使用内存
+//					Float cpuNum = Float.valueOf(used.get("cpu").replace("m", "")) / 1000;
+//					usedCpuNum = Float.valueOf(cpuNum);// 已使用CPU个数
+//					Float memNum = Float.valueOf(used.get("memory").replace("k", "")) / (1024 * 1024 * 1024);
+//					usedMemoryNum = Float.valueOf(memNum);// 已使用内存
+					
+					usedCpuNum = Float.valueOf(computeCpuOut(used));// 已使用CPU个数
+					usedMemoryNum = Float.valueOf(computeMemoryOut(used));// 已使用内存
 					usedPodNum = PodCount;// 已经使用的POD个数
 					usedServiceNum = RCcount;// 已经使用的服务个数
 					/*******************************************************************/

@@ -38,7 +38,7 @@
                 </aside>
                 <div class="caption clearfix" style="padding-bottom: 0px">
                     <ul class="toolbox clearfix">
-                        <li><a href="javascript:window.location.reload(true);" id="userReloadBtn"><i
+                        <li><a id="updateCluster" style="cursor:pointer"><i
                                 class="fa fa-repeat"></i></a></li>
                     </ul>
                     <form id="search_form" class="form-inline" action="<%=path %>/user/searchByCondition" method="post">
@@ -82,6 +82,8 @@
 
     var colorData = ['#7EB26D', '#EAB839', '#6ED0E0', '#61a0a8', '#749f83', '#ca8622', '#bda29a', '#2f4554', '#d48265', '#00bfff', '#61a0a8', '#61a0a8', '#749f83', '#91c7ae', '#6e7074'];
 
+    var fourPart = [];
+    var eachPart = [];
     //默认监控5分钟
     getClusterMonitor("5m");
     //获取监控数据
@@ -92,6 +94,414 @@
                 createChart($.parseJSON(data));
             }
         })
+    }
+
+    //添加集群中ALL&NODE画布
+    function addClusterImg(abcHeight) {
+        var clusterTxt = '<div class="table-lists node-lists"  style="margin-top: 10px;width: 100%;height:'+abcHeight+'; float: left;">'
+                + '</div>';
+        $("#resourceImg").append(clusterTxt);
+    }
+    //添加MINION节点画布（左侧）
+    function addMinImgLeft() {
+        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px; width: 49.5%;height:260px;float: left;">'
+                + '</div>';
+        $("#resourceImg").append(clusterTxt);
+    }
+    //添加MINION节点画布（右侧）
+    function addMinImgRight() {
+        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px; width: 49.5%;height:260px;float: right;">'
+                + '</div>';
+        $("#resourceImg").append(clusterTxt);
+    }
+
+    //时间筛选
+    function searchTime() {
+        removePod();
+        var time0val = $("#search_time")[0].value;
+        getClusterMonitor(time0val);
+    }
+    //删除页面所有画布
+    function removePod() {
+        var imgLst = document.getElementById("resourceImg");
+        var count = imgLst.childNodes.length;
+        for (var i = 0; i < count; i++) {
+            imgLst.removeChild(imgLst.childNodes[0]);
+        }
+    }
+    //根据容器个数计算集群监控画布高度
+    function computerSize(clusterDataYval1){
+    	//每个图例的宽度为240
+    	var perwidth = 240;
+    	//画布的宽度
+    	var abcwidth = document.getElementById("resourceImg").offsetWidth;
+    	//node下图例的个数
+    	var abclength = clusterDataYval1.val.length * 2;
+    	//画布的宽度除以每个图例的宽度，计算出每行显示几个图例
+    	var perlineNum = parseInt(abcwidth/perwidth);
+    	//计算显示几行图例
+    	var lineNum = Math.ceil(abclength/perlineNum);
+    	//根据图例的行数计算画布的高度
+    	var abcHeight = 280 + 25*lineNum;
+    	//计算图例占画布的百分比
+    	var abcpercent = Math.ceil(25*lineNum/abcHeight*100)+"%";
+    	var obj = {};
+    	obj.abcHeight = abcHeight+"px";
+    	obj.abcpercent = abcpercent;
+    	return obj;
+    }
+    //node的seriesData
+    function nodeSeriesData(clusterDataNodeVal){
+    	   //红色预警
+    	var seriesData = [];
+    	//第i个node的第m条数据的数据线
+    	for (var m = 0; m < clusterDataNodeVal.val.length; m++) {
+    		var clusterDataNodeValY = clusterDataNodeVal.val[m].yAxis;
+        	var nodeSeriesVal = {
+                    name: clusterDataNodeVal.val[m].legendName,
+                    type: 'line',
+                    barWidth: 5,
+                    barHeight: 2,
+                    label: {},
+                    itemStyle: {
+                        normal: {
+                            color: colorData[m]
+                        }
+                    },
+                    areaStyle: {normal: {color: colorData[m], opacity: 0.3}},
+                    data: clusterDataNodeValY
+                };
+        	if(m == 1 ){
+        		for (var arrayCluster = 0; arrayCluster < clusterDataNodeValY.length; arrayCluster++) {
+                    var usageVal = clusterDataNodeVal.val[1].yAxis[arrayCluster];
+                    var limitVal = clusterDataNodeVal.val[0].yAxis[arrayCluster];
+                    if (usageVal >= limitVal * 0.9 && clusterDataNodeVal.title.indexOf("NETWORK") == -1) {
+                    	clusterDataNodeVal.title.indexOf("NETWORK");
+                        var nodeSeriesLabel = {
+				                normal: {
+				                    show: true,
+				                    position: 'top',
+				                    textStyle: {
+				                    	color: '#CC0000' 
+				                    }
+				                }
+				            };
+                        var nodeSeriesAreaStyle = {normal: {color: '#CC0000', opacity: 0.6}};
+                        nodeSeriesVal.label = nodeSeriesLabel;
+                        nodeSeriesVal.areaStyle = nodeSeriesAreaStyle;
+                        break;
+                    }
+                }
+        	}
+        	seriesData.push(nodeSeriesVal);	
+    	}
+    	return seriesData;
+    }
+    //局部刷新
+		function update(){
+			$.ajax({
+	            url: ctx + "/cluster/getClusterMonitor?timePeriod=" + "5m",
+	            success: function (data) {
+					var clusterData = $.parseJSON(data);
+					//遍历mem,cpu,dist,net,生成memory的overall和node监控后，遍历各minion中的memory，生成监控图，以此循环出全部监控图。
+					for (var j = 0; j < 4; j++) {
+					    var thisPart =  fourPart[j]
+			            //overall和node数据
+			            var clusterDataYval = clusterData.yValue[0].val[j];
+			            //minion数据
+			            var clusterDataYval1 = clusterData.yValue[1]
+			            //循环overall和node
+			            var i = 0;
+			            for (i = 0; i < clusterDataYval.val.length; i++) {
+			            	var clustersImg = thisPart[i];
+			                var clusterDataNodeVal = clusterDataYval.val[i];
+			            	var seriesDataNode = nodeSeriesData(clusterDataNodeVal);
+							var xAxis = {
+		                            type: 'category',
+		                            boundaryGap: false,
+		                            data: clusterData.xValue
+		                        };
+							
+							var abc =[];
+							abc.push(xAxis); 
+							
+							clustersImg.setOption({
+								xAxis: abc
+						    });
+							clustersImg.setOption({
+						        series: seriesDataNode
+						    });
+						}
+			            //over  setOption
+						for (var m = 0; m < clusterDataNodeVal.val.length; m++) {
+							var clustersImg = thisPart[i+m];
+							var xAxis = {
+		                            type: 'category',
+		                            boundaryGap: false,
+		                            data: clusterData.xValue
+		                        };
+							var abc =[];
+							abc.push(xAxis); 
+							
+							clustersImg.setOption({
+								xAxis: abc
+						    });
+							clustersImg.setOption({
+						        series: seriesDataNode
+						    });
+						}
+						
+					}
+				}
+			})
+		}
+    //minion的series:[]
+    function minSeriesData(titleTextMin,clusterYVal,clusterDataYVal1,min,j){
+    	var seriesData = [];
+    	var clusterYValNum = clusterDataYVal1.val[min].val[j];
+    	for (var minxx = 0; minxx < clusterDataYVal1.val[min].val[j].val.length; minxx++) {
+    		//红色预警
+    		var clusterDataYVal1Min = clusterDataYVal1.val[min].val[j].val[minxx].yAxis
+        	var minseriesVal = {
+                        name: clusterYValNum.val[minxx].legendName,
+                        type: 'line',
+                        barWidth: 5,
+                        barHeight: 2,
+                        label:{},
+                        itemStyle: {
+                            normal: {
+                                color: colorData[minxx]
+                            }
+                        },
+                        areaStyle: {normal: {color: colorData[minxx], opacity: 0.3}},
+                        data: clusterDataYVal1Min
+                    };
+             if(minxx == 1){
+            	 for (var arrayMinNum = 0; arrayMinNum < clusterYVal.length; arrayMinNum++) {
+                     var usageVal = clusterYValNum.val[1].yAxis[arrayMinNum];
+                     var limitVal = clusterYValNum.val[0].yAxis[arrayMinNum];
+                     if (usageVal >= limitVal * 0.9 && titleTextMin.indexOf("network") == -1) {
+                         var minSeriesLabel = {
+ 				                normal: {
+ 				                    show: true,
+ 				                    position: 'top',
+ 				                    textStyle: {
+ 				                    	color: '#CC0000' 
+ 				                    }
+ 				                }
+ 				            };
+                         var minSeriesAreaStyle = {normal: {color: '#CC0000', opacity: 0.6}};
+                         minseriesVal.label = minSeriesLabel;
+                         minseriesVal.areaStyle = minSeriesAreaStyle;
+                         break;
+                     }
+                 }
+             }
+             seriesData.push(minseriesVal); 
+    	}
+    	return seriesData;
+    }
+    function showDynamic(){
+		setInterval(function() {
+			update();
+		}, 60000);
+	}
+    //监控图
+    function createChart(clusterData) {
+        var count = 0;
+        // mem cpu disk net 
+        for (var j = 0; j < 4; j++) {
+        	var eachPart = [];
+            //遍历cluster,生成memory的overall和node监控后，遍历各minion中的memory，生成监控图，以此循环出全部监控图。
+            var clusterDataYval = clusterData.yValue[0].val[j];
+            //minion
+            var clusterDataYval1 = clusterData.yValue[1]
+            // over node 
+            for (var i = 0; i < clusterDataYval.val.length; i++) {
+            	//遍历overall和node
+            	debugger
+            	//gaodu
+            	var obj = computerSize(clusterDataYval1); 
+            	var abcHeight = obj.abcHeight;
+            	var abcpercent = obj.abcpercent;
+                
+                var option = {
+                    title: {
+                        text: ''
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        bottom: '1%',
+                        data: []
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: abcpercent,
+                        containLabel: true
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: clusterData.xValue
+                        }
+                    ],
+                    yAxis: [],
+                    series: []
+                };
+
+                //根据titleText确定纵坐标的单位
+                var titleText = clusterDataYval.val[i].title;
+                option.title.text = titleText;
+                if (titleText.indexOf("CPU") != -1) {
+                    var a1 = {
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value} ms'
+                        }
+                    };
+                    option.yAxis.push(a1);
+                } else if (titleText.indexOf("NETWORK") != -1) {
+                    var b1 = {
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value} KBps'
+                        }
+                    };
+                    option.yAxis.push(b1);
+                } else {
+                    var c1 = {
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value} Gib'
+                        }
+                    };
+                    option.yAxis.push(c1);
+                }
+                //cluster中node监控的数值是从各minion节点中获得的，把各节点的数据拼到node里
+                var memNodeNum = 0;
+                var cpuNodeNum = 0;
+                var diskNodeNum = 0;
+                var netNodeNum = 0;
+                for (var minToCluster = 0; minToCluster < clusterData.yValue[1].val.length; minToCluster++) {
+                    for (var minNum = 0; minNum < 2; minNum++) {
+                        var titleText = clusterData.yValue[1].val[minToCluster].titleText;
+                        var memoryNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[0].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[0].val[minNum].yAxis
+                        };
+                        var cpuNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[1].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[1].val[minNum].yAxis
+                        };
+                        var diskNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[2].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[2].val[minNum].yAxis
+                        };
+                        var netNode = {
+                            'legendName': clusterData.yValue[1].val[minToCluster].val[3].val[minNum].legendName + "{" + titleText + "}",
+                            'yAxis': clusterData.yValue[1].val[minToCluster].val[3].val[minNum].yAxis
+                        };
+                        clusterData.yValue[0].val[0].val[1].val[memNodeNum] = memoryNode;
+                        clusterData.yValue[0].val[1].val[0].val[cpuNodeNum] = cpuNode;
+                        clusterData.yValue[0].val[2].val[1].val[diskNodeNum] = diskNode;
+                        clusterData.yValue[0].val[3].val[0].val[netNodeNum] = netNode;
+                        memNodeNum++;
+                        cpuNodeNum++;
+                        diskNodeNum++;
+                        netNodeNum++;
+                    }
+                }
+                //生成overall和node的监控，i为第几个node
+                var clusterDataNodeVal = clusterDataYval.val[i];
+                //node中的三条数据线clusterDataNodeVal.val.length=3
+               
+                for (var m = 0; m < clusterDataNodeVal.val.length; m++) {
+                	//第i个node的第m条数据的数据线
+                    var clusterDataNodeValY = clusterDataNodeVal.val[m].yAxis;
+                    var a = {
+                        name: clusterDataNodeVal.val[m].legendName,
+                        icon: 'roundRect'
+                    };
+                    option.legend.data.push(a);
+
+                }
+                var seriesDataNode = nodeSeriesData(clusterDataNodeVal);
+                option.series = seriesDataNode;
+                
+                addClusterImg(abcHeight);
+                //OVER NODE
+                var clustersImg = echarts.init(document.getElementById('resourceImg').children[count]);
+                clustersImg.setOption(option);
+                count++;
+                option.legend.data = [];
+                option.series = [];
+                eachPart.push(clustersImg);
+                //实时刷新OVER NODE
+                //showDynamic();
+            }
+            
+            
+          
+            //cluster中的minion监控
+            //嵌套，在生成overall和node后，遍历minion中相应数据，生成minion的监控项
+            var clusterDataYVal1 = clusterData.yValue[1];
+
+            for (var min = 0; min < clusterDataYVal1.val.length; min++) {
+                //minion的个数
+                var titleTextMin = clusterDataYVal1.val[min].titleText + " " + clusterDataYVal1.val[min].val[j].title;
+                option.title.text = titleTextMin;
+
+//                for(var memNum = 0; memNum < 2; memNum++){
+//                    var memoryNode = {
+//                        'legendName': clusterDataYVal1.val[min].val[0].val[memNum].legendName + "{" + clusterDataYVal1.val[min].titleText + "}",
+//                        'yAxis': clusterDataYVal1.val[min].val[0].val[memNum].yAxis
+//                    };
+//                    for(var memNode = 0; memNode < clusterDataYVal1.val.length*2; memNode++){
+//                        clusterData.yValue[0].val[0].val[1].val[memNode] = memoryNode;
+//                    }
+//                }
+				//第min个minion中，第j个元素，j=1是memory j=2是cpu j=3是disk j=4是network
+				//循环数据中的三条数据线clusterDataYVal1.val[min].val[j].val.length=3
+                for (var minxx = 0; minxx < clusterDataYVal1.val[min].val[j].val.length; minxx++) {
+                    var clusterYVal = clusterDataYVal1.val[min].val[j].val[minxx].yAxis;
+                    var clusterYValNum = clusterDataYVal1.val[min].val[j];
+                    var mina = {
+                        name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
+                        icon: 'roundRect'
+                    };
+                    option.legend.data.push(mina);
+                }
+                var seriesDataMin = minSeriesData(titleTextMin,clusterYVal,clusterDataYVal1,min,j);
+                option.series = seriesDataMin;
+
+                if (min % 2 == 0) {
+                    addMinImgLeft();
+                } else {
+                    addMinImgRight();
+                }
+                //MINION
+                var minionImg = echarts.init(document.getElementById('resourceImg').children[count]);
+                minionImg.setOption(option);
+                count++;
+                option.legend.data = [];
+                option.series = [];
+                eachPart.push(clustersImg);
+              //实时刷新MINION
+                //showDynamic();
+            }
+            fourPart.push(eachPart);
+        }
+
+        document.getElementById("updateCluster").addEventListener("click", function() {
+        	update();
+		}, false);
     }
 
     //    var clusterData = {
@@ -280,278 +690,6 @@
     //            }
     //        ]
     //    };
-
-
-    //添加集群中ALL&NODE画布
-    function addClusterImg() {
-        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px;width: 100%;height:260px; float: left">'
-                + '</div>';
-        $("#resourceImg").append(clusterTxt);
-    }
-    //添加MINION节点画布（左侧）
-    function addMinImgLeft() {
-        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px; width: 49.5%;height:260px;float: left">'
-                + '</div>';
-        $("#resourceImg").append(clusterTxt);
-    }
-    //添加MINION节点画布（右侧）
-    function addMinImgRight() {
-        var clusterTxt = '<div class="table-lists"  style="margin-top: 10px; width: 49.5%;height:260px;float: right">'
-                + '</div>';
-        $("#resourceImg").append(clusterTxt);
-    }
-
-    //时间筛选
-    function searchTime() {
-        removePod();
-        var time0val = $("#search_time")[0].value;
-        getClusterMonitor(time0val);
-    }
-    //删除页面所有画布
-    function removePod() {
-        var imgLst = document.getElementById("resourceImg");
-        var count = imgLst.childNodes.length;
-        for (var i = 0; i < count; i++) {
-            imgLst.removeChild(imgLst.childNodes[0]);
-        }
-    }
-    //监控图
-    function createChart(clusterData) {
-        var count = 0;
-        for (var j = 0; j < 4; j++) {
-            //遍历cluster,生成memory的overall和node监控后，遍历各minion中的memory，生成监控图，以此循环出全部监控图。
-            var clusterDataYval = clusterData.yValue[0].val[j];
-            for (var i = 0; i < clusterDataYval.val.length; i++) {
-                //遍历overall和node
-                var option = {
-                    title: {
-                        text: ''
-                    },
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        bottom: '1%',
-                        data: []
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '10%',
-                        containLabel: true
-                    },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            boundaryGap: false,
-                            data: clusterData.xValue
-                        }
-                    ],
-                    yAxis: [],
-                    series: []
-                };
-
-                //根据titleText确定纵坐标的单位
-                var titleText = clusterDataYval.val[i].title;
-                option.title.text = titleText;
-                if (titleText.indexOf("CPU") != -1) {
-                    var a1 = {
-                        type: 'value',
-                        scale: true,
-                        axisLabel: {
-                            formatter: '{value} ms'
-                        }
-                    };
-                    option.yAxis.push(a1);
-                } else if (titleText.indexOf("NETWORK") != -1) {
-                    var b1 = {
-                        type: 'value',
-                        scale: true,
-                        axisLabel: {
-                            formatter: '{value} KBps'
-                        }
-                    };
-                    option.yAxis.push(b1);
-                } else {
-                    var c1 = {
-                        type: 'value',
-                        scale: true,
-                        axisLabel: {
-                            formatter: '{value} Gib'
-                        }
-                    };
-                    option.yAxis.push(c1);
-                }
-                //cluster中node监控的数值是从各minion节点中获得的，把各节点的数据拼到node里
-                var memNodeNum = 0;
-                var cpuNodeNum = 0;
-                var diskNodeNum = 0;
-                var netNodeNum = 0;
-                for (var minToCluster = 0; minToCluster < clusterData.yValue[1].val.length; minToCluster++) {
-                    for (var minNum = 0; minNum < 2; minNum++) {
-                        var titleText = clusterData.yValue[1].val[minToCluster].titleText;
-                        var memoryNode = {
-                            'legendName': clusterData.yValue[1].val[minToCluster].val[0].val[minNum].legendName + "{" + titleText + "}",
-                            'yAxis': clusterData.yValue[1].val[minToCluster].val[0].val[minNum].yAxis
-                        };
-                        var cpuNode = {
-                            'legendName': clusterData.yValue[1].val[minToCluster].val[1].val[minNum].legendName + "{" + titleText + "}",
-                            'yAxis': clusterData.yValue[1].val[minToCluster].val[1].val[minNum].yAxis
-                        };
-                        var diskNode = {
-                            'legendName': clusterData.yValue[1].val[minToCluster].val[2].val[minNum].legendName + "{" + titleText + "}",
-                            'yAxis': clusterData.yValue[1].val[minToCluster].val[2].val[minNum].yAxis
-                        };
-                        var netNode = {
-                            'legendName': clusterData.yValue[1].val[minToCluster].val[3].val[minNum].legendName + "{" + titleText + "}",
-                            'yAxis': clusterData.yValue[1].val[minToCluster].val[3].val[minNum].yAxis
-                        };
-                        clusterData.yValue[0].val[0].val[1].val[memNodeNum] = memoryNode;
-                        clusterData.yValue[0].val[1].val[0].val[cpuNodeNum] = cpuNode;
-                        clusterData.yValue[0].val[2].val[1].val[diskNodeNum] = diskNode;
-                        clusterData.yValue[0].val[3].val[0].val[netNodeNum] = netNode;
-                        memNodeNum++;
-                        cpuNodeNum++;
-                        diskNodeNum++;
-                        netNodeNum++;
-                    }
-                }
-                //生成overall和node的监控
-                var clusterDataMinVal = clusterDataYval.val[i];
-                for (var m = 0; m < clusterDataMinVal.val.length; m++) {
-                    var clusterYval = clusterDataMinVal.val[m].yAxis;
-                    var a = {
-                        name: clusterDataMinVal.val[m].legendName,
-                        icon: 'roundRect'
-                    };
-
-                    option.legend.data.push(a);
-                    //红色预警
-                    for (var arrayCluster = 0; arrayCluster < clusterYval.length; arrayCluster++) {
-                        var usageVal = clusterDataMinVal.val[1].yAxis[arrayCluster];
-                        var limitVal = clusterDataMinVal.val[0].yAxis[arrayCluster];
-                        if (m == 1 && usageVal >= limitVal * 0.9 && clusterDataMinVal.title.indexOf("NETWORK") == -1) {
-                            clusterDataMinVal.title.indexOf("NETWORK");
-                            var c = {
-                                name: clusterDataMinVal.val[m].legendName,
-                                type: 'line',
-                                barWidth: 5,
-                                barHeight: 2,
-                                itemStyle: {
-                                    normal: {
-                                        color: colorData[m]
-                                    }
-                                },
-                                areaStyle: {normal: {color: '#ff0000', opacity: 0.3}},
-                                data: clusterYval
-                            };
-                            option.series.push(c);
-                        } else {
-                            var b = {
-                                name: clusterDataMinVal.val[m].legendName,
-                                type: 'line',
-                                barWidth: 5,
-                                barHeight: 2,
-                                itemStyle: {
-                                    normal: {
-                                        color: colorData[m]
-                                    }
-                                },
-                                areaStyle: {normal: {color: colorData[m], opacity: 0.3}},
-                                data: clusterYval
-                            };
-                            option.series.push(b);
-                        }
-                        break
-                    }
-                }
-                addClusterImg();
-                var clustersImg = echarts.init(document.getElementById('resourceImg').children[count]);
-                clustersImg.setOption(option);
-                count++;
-                option.legend.data = [];
-                option.series = [];
-            }
-            //cluster中的minion监控
-            //嵌套，在生成overall和node后，遍历minion中相应数据，生成minion的监控项
-            var clusterDataYVal1 = clusterData.yValue[1];
-
-            for (var min = 0; min < clusterDataYVal1.val.length; min++) {
-                //minion的个数
-                var titleTextMin = clusterDataYVal1.val[min].titleText + " " + clusterDataYVal1.val[min].val[j].title;
-                option.title.text = titleTextMin;
-
-//                for(var memNum = 0; memNum < 2; memNum++){
-//                    var memoryNode = {
-//                        'legendName': clusterDataYVal1.val[min].val[0].val[memNum].legendName + "{" + clusterDataYVal1.val[min].titleText + "}",
-//                        'yAxis': clusterDataYVal1.val[min].val[0].val[memNum].yAxis
-//                    };
-//                    for(var memNode = 0; memNode < clusterDataYVal1.val.length*2; memNode++){
-//                        clusterData.yValue[0].val[0].val[1].val[memNode] = memoryNode;
-//                    }
-//                }
-
-                for (var minxx = 0; minxx < clusterDataYVal1.val[min].val[j].val.length; minxx++) {
-                    var clusterYVal = clusterDataYVal1.val[min].val[j].val[minxx].yAxis;
-                    var clusterYValNum = clusterDataYVal1.val[min].val[j];
-                    var mina = {
-                        name: clusterDataYVal1.val[min].val[j].val[minxx].legendName,
-                        icon: 'roundRect'
-                    };
-                    option.legend.data.push(mina);
-
-                    //红色预警
-                    for (var arrayMinNum = 0; arrayMinNum < clusterYVal.length; arrayMinNum++) {
-                        var usageVal = clusterYValNum.val[1].yAxis[arrayMinNum];
-                        var limitVal = clusterYValNum.val[0].yAxis[arrayMinNum];
-                        if (minxx == 1 && usageVal >= limitVal * 0.9 && titleTextMin.indexOf("network") == -1) {
-                            var minc = {
-                                name: clusterYValNum.val[minxx].legendName,
-                                type: 'line',
-                                barWidth: 5,
-                                barHeight: 2,
-                                itemStyle: {
-                                    normal: {
-                                        color: colorData[minxx]
-                                    }
-                                },
-                                areaStyle: {normal: {color: '#ff0000', opacity: 0.3}},
-                                data: clusterYVal
-                            };
-                            option.series.push(minc);
-                        } else {
-                            var minb = {
-                                name: clusterYValNum.val[minxx].legendName,
-                                type: 'line',
-                                barWidth: 5,
-                                barHeight: 2,
-                                itemStyle: {
-                                    normal: {
-                                        color: colorData[minxx]
-                                    }
-                                },
-                                areaStyle: {normal: {color: colorData[minxx], opacity: 0.3}},
-                                data: clusterYVal
-                            };
-                            option.series.push(minb);
-                        }
-                        break
-                    }
-                }
-
-                if (min % 2 == 0) {
-                    addMinImgLeft();
-                } else {
-                    addMinImgRight();
-                }
-                var minionImg = echarts.init(document.getElementById('resourceImg').children[count]);
-                minionImg.setOption(option);
-                count++;
-                option.legend.data = [];
-                option.series = [];
-            }
-        }
-    }
 
 
 </script>
