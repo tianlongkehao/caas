@@ -87,9 +87,9 @@ public class SSOFilter implements Filter {
 			}
 			// PAAS当前登录用户
 			User currPaasUser = CurrentUserUtils.getInstance().getUser();
+			System.out.println("cas登陆Id" + casLoginId);
+			System.out.print("\n");
 			if (currPaasUser != null) {
-				System.out.println("cas登陆Id" + casLoginId);
-				System.out.print("\n");
 				System.out.println("paas当前登陆用户" + currPaasUser.getUserName());
 				System.out.print("\n");
 			}
