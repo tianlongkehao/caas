@@ -71,6 +71,8 @@ public class ServiceController {
 	private TemplateConf templateConf;
 	@Autowired
 	private esConf esConf;
+	@Autowired
+	private NginxServerConf nginxServerConf;
 	
 	
 	
@@ -112,7 +114,6 @@ public class ServiceController {
 	}
 	
 	public void getNginxServer(Model model){
-		NginxServerConf nginxServerConf = new NginxServerConf();
 		model.addAttribute("DMZ", nginxServerConf.getDMZ());
 		model.addAttribute("USER", nginxServerConf.getUSER());
 	}
