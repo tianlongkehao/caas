@@ -153,14 +153,14 @@
 		        		nginxstr = nginxstr+"'"+servid+"'"+":"+"'"+servname+"',";
 		        	})
 		        	nginxstr = nginxstr.substring(0,nginxstr.length-1) +"}";
-		        	var nginxObj = eval('(' + nginxstr + ')'); 
+		        	//var nginxObj = eval('(' + nginxstr + ')'); 
 		        	var cStatusHtml = "<i class='fa_success'></i>"+
 	                				  "启动中"+
 	                				  "<img src='"+ctx+"images/loading4.gif' alt=''/>";
 		        	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
 		        	layer.close(index);
 					$.ajax({
-						url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs+"&nginxObj="+nginxObj,
+						url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs+"&nginxObj="+nginxstr,
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){

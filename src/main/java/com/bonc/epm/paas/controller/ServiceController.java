@@ -413,7 +413,7 @@ public class ServiceController {
 	 */
 	@RequestMapping("service/createContainer.do")
 	@ResponseBody
-	public String CreateContainer(long id,JSONObject nginxObj){
+	public String CreateContainer(long id,String nginxObj){
 		Service service = serviceDao.findOne(id);
 		Map<String, Object> map = new HashMap<String, Object>();
 		//使用k8s管理服务
@@ -787,7 +787,7 @@ public class ServiceController {
 	
 	@RequestMapping("service/stratServices.do")
 	@ResponseBody
-	public String startServices(String serviceIDs,JSONObject nginxObj){
+	public String startServices(String serviceIDs,String nginxObj){
 		ArrayList<Long> ids = new ArrayList<Long>();
 		String [] str = serviceIDs.split(",");
 		if(str!=null&&str.length>0){

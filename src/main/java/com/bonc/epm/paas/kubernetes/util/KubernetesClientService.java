@@ -299,7 +299,7 @@ public class KubernetesClientService {
 	
 
 	
-	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram,JSONObject nginxObj){
+	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram,String nginxObj){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -312,9 +312,12 @@ public class KubernetesClientService {
 		podMeta.setName(name);
 		Map<String,String> labels = new HashMap<String,String>();
 		labels.put("app", name);
-		Set<String> set = nginxObj.keySet();
-		for(String key:set){
-			labels.put(key, nginxObj.getString(key));
+		if(nginxObj!="{}"){
+			JSONObject jsonObject = JSONObject.parseObject(nginxObj);
+			Set<String> set = jsonObject.keySet();
+			for(String key:set){
+				labels.put(key, jsonObject.getString(key));
+			}
 		}
 		podMeta.setLabels(labels);
 		template.setMetadata(podMeta);
