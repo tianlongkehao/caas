@@ -87,6 +87,12 @@ public class SSOFilter implements Filter {
 			}
 			// PAAS当前登录用户
 			User currPaasUser = CurrentUserUtils.getInstance().getUser();
+			System.out.println("cas登陆Id" + casLoginId);
+			System.out.print("\n");
+			if (currPaasUser != null) {
+				System.out.println("paas当前登陆用户" + currPaasUser.getUserName());
+				System.out.print("\n");
+			}
 			boolean isLoadPaasUser = false;
 			if (currPaasUser == null) {
 				isLoadPaasUser = true;
@@ -97,8 +103,10 @@ public class SSOFilter implements Filter {
 			if (isLoadPaasUser) {
 				// 更新租户
 				User user = saveUser(assertion, namespace);
-				// 当前登陆为租户
-				if ("1".equals(tenantAdmin)) {
+				// 统一平台的userId
+				String userId = attributes.get("userId").toString();
+				//是租户而且不是管理员
+				if ("1".equals(tenantAdmin) && !"1".equals(userId)) {
 					// 创建命名空间
 					createNamespace(namespace);
 					// 创建资源
@@ -148,8 +156,8 @@ public class SSOFilter implements Filter {
 			user.setUser_cellphone(attributes.get("mobile").toString());
 		}
 		// 电话
-		if (attributes.get("elephone") != null) {
-			user.setUser_phone(attributes.get("elephone").toString());
+		if (attributes.get("telephone") != null) {
+			user.setUser_phone(attributes.get("telephone").toString());
 		}
 		if (attributes.get("tenantAdmin") != null) {
 			// 是否为租户

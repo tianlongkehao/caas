@@ -596,8 +596,8 @@ public class UserController {
 //					Float memNum = Float.valueOf(used.get("memory").replace("k", "")) / (1024 * 1024 * 1024);
 //					usedMemoryNum = Float.valueOf(memNum);// 已使用内存
 					
-					usedCpuNum = Float.valueOf(computeCpuOut(used));// 已使用CPU个数
-					usedMemoryNum = Float.valueOf(computeMemoryOut(used));// 已使用内存
+					usedCpuNum = Float.valueOf(this.computeCpuOut(used));// 已使用CPU个数
+					usedMemoryNum = Float.valueOf(this.computeMemoryOut(used));// 已使用内存
 					usedPodNum = PodCount;// 已经使用的POD个数
 					usedServiceNum = RCcount;// 已经使用的服务个数
 					/*******************************************************************/

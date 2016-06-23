@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.bonc.epm.paas.constant.NginxServerConf;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.esConf;
@@ -97,6 +98,7 @@ public class ServiceController {
 		//获取特殊条件的pods
 		try {
 			getServiceSource(model, currentUser.getId());
+			getNginxServer(model);
 			//getleftResource(model);
 		} catch (KubernetesClientException e) {
 			model.addAttribute("msg",e.getStatus().getMessage());
@@ -108,6 +110,13 @@ public class ServiceController {
 		return "service/service.jsp";
 		
 	}
+	
+	public void getNginxServer(Model model){
+		NginxServerConf nginxServerConf = new NginxServerConf();
+		model.addAttribute("DMZ", nginxServerConf.getDMZ());
+		model.addAttribute("USER", nginxServerConf.getUSER());
+	}
+	
 	public void getServiceSource(Model model,long id) {
 		List<Service> serviceList = new ArrayList<Service>();
 	    List<Container> containerList = new ArrayList<Container>();
@@ -403,7 +412,7 @@ public class ServiceController {
 	 */
 	@RequestMapping("service/createContainer.do")
 	@ResponseBody
-	public String CreateContainer(long id){
+	public String CreateContainer(long id,JSONObject nginxObj){
 		Service service = serviceDao.findOne(id);
 		Map<String, Object> map = new HashMap<String, Object>();
 		//使用k8s管理服务
@@ -424,7 +433,7 @@ public class ServiceController {
 		try {
 			//如果没有则新增
 			if(controller==null){
-				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080,service.getCpuNum(),service.getRam());
+				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080,service.getCpuNum(),service.getRam(),nginxObj);
 				controller = client.createReplicationController(controller);
 			}else{
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
@@ -777,7 +786,7 @@ public class ServiceController {
 	
 	@RequestMapping("service/stratServices.do")
 	@ResponseBody
-	public String startServices(String serviceIDs){
+	public String startServices(String serviceIDs,JSONObject nginxObj){
 		ArrayList<Long> ids = new ArrayList<Long>();
 		String [] str = serviceIDs.split(",");
 		if(str!=null&&str.length>0){
@@ -788,7 +797,7 @@ public class ServiceController {
 		Map<String, Object> maps = new HashMap<String,Object>();
 		try {
 			for(long id:ids){
-				CreateContainer(id);
+				CreateContainer(id,nginxObj);
 			}
 			maps.put("status", "200");
 		} catch (Exception e) {

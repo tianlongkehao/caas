@@ -203,7 +203,7 @@ public class ClusterController {
 			yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetOverAll", "");
 
 			// 去掉最后一个逗号
-			yValue.deleteCharAt(yValue.length() - 1);
+			yValue = this.deleteLastStr(yValue);
 			yValue.append("]},");
 
 			// MEMORY USAGE GROUP BY NODE
@@ -234,7 +234,7 @@ public class ClusterController {
 			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseOverAll", "");
 
 			// 去掉最后一个逗号
-			yValue.deleteCharAt(yValue.length() - 1);
+			yValue = this.deleteLastStr(yValue);
 			yValue.append("]},");
 
 			// DISK USAGE GROUP BY NODE
@@ -291,7 +291,7 @@ public class ClusterController {
 					yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetMinion", minionName);
 
 					// 去掉最后一个逗号
-					yValue.deleteCharAt(yValue.length() - 1);
+					yValue = this.deleteLastStr(yValue);
 					// memory结束
 					yValue.append("]},");
 
@@ -305,7 +305,7 @@ public class ClusterController {
 					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseMinion", minionName);
 
 					// 去掉最后一个逗号
-					yValue.deleteCharAt(yValue.length() - 1);
+					yValue = this.deleteLastStr(yValue);
 					// CPU结束
 					yValue.append("]},");
 
@@ -319,7 +319,7 @@ public class ClusterController {
 					yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseMinion", minionName);
 
 					// 去掉最后一个逗号
-					yValue.deleteCharAt(yValue.length() - 1);
+					yValue = this.deleteLastStr(yValue);
 					// disk结束
 					yValue.append("]},");
 
@@ -333,19 +333,19 @@ public class ClusterController {
 					yValue = joinClusterYValue(yValue, "RxCurrent", timePeriod, "getRxMinion", minionName);
 
 					// 去掉最后一个逗号
-					yValue.deleteCharAt(yValue.length() - 1);
+					yValue = this.deleteLastStr(yValue);
 					// network结束
 					yValue.append("]},");
 
 					// 去掉最后一个逗号
-					yValue.deleteCharAt(yValue.length() - 1);
+					yValue = this.deleteLastStr(yValue);
 
 					// minion节点串结束
 					yValue.append("]},");
 				}
 			}
 			// 去掉最后一个逗号
-			yValue.deleteCharAt(yValue.length() - 1);
+			yValue = this.deleteLastStr(yValue);
 			// 所有minion结束
 			yValue.append("]}");
 
@@ -383,7 +383,7 @@ public class ClusterController {
 		}
 
 		// 去掉最后一个逗号
-		rtnValue.deleteCharAt(rtnValue.length() - 1);
+		rtnValue = this.deleteLastStr(rtnValue);
 
 		// 拼接总串
 		return "[" + rtnValue.toString() + "]";
@@ -445,6 +445,8 @@ public class ClusterController {
 				// 取得单一POD的JSON数据
 				yValue = createNamespaceJson(yValue, timePeriod, nameSpace, podName);
 			}
+			// 去掉最后一个逗号
+			yValue = this.deleteLastStr(yValue);
 
 			// yValue结束
 			yValue.append("]");
@@ -479,7 +481,7 @@ public class ClusterController {
 
 			System.out.print("podLst=" + podLst);
 			System.out.print("podLst.size=" + String.valueOf(podLst.size()));
-			if (podLst != null && podLst.getItems() != null && podLst.size() != 0){
+			if (podLst != null && podLst.getItems() != null && podLst.size() != 0) {
 				// 循环所有POD
 				for (int i = 0; i < podLst.size(); i++) {
 					// POD
@@ -489,14 +491,10 @@ public class ClusterController {
 					// 拼接POD的JSON数据
 					yValue = createPodJson(yValue, timePeriod, nameSpace, indexPodName);
 				}
-				// 去掉最后一个NAMESPACE的逗号
-				yValue.deleteCharAt(yValue.length() - 1);
 			}
 		} else {
 			// 拼接POD的JSON串
 			yValue = createPodJson(yValue, timePeriod, nameSpace, podName);
-			// 去掉最后一个NAMESPACE的逗号
-			yValue.deleteCharAt(yValue.length() - 1);
 		}
 		return yValue;
 	}
@@ -545,7 +543,7 @@ public class ClusterController {
 					containerName);
 
 			// 去掉最后一个逗号
-			yValue.deleteCharAt(yValue.length() - 1);
+			yValue = this.deleteLastStr(yValue);
 
 			// MEM结束
 			yValue.append("]},");
@@ -562,7 +560,7 @@ public class ClusterController {
 					containerName);
 
 			// 去掉最后一个逗号
-			yValue.deleteCharAt(yValue.length() - 1);
+			yValue = this.deleteLastStr(yValue);
 
 			// CPU结束
 			yValue.append("]}");
@@ -572,7 +570,7 @@ public class ClusterController {
 		}
 
 		// 去掉最后一个逗号
-		yValue.deleteCharAt(yValue.length() - 1);
+		yValue = this.deleteLastStr(yValue);
 		// POD结束
 		yValue.append("]},");
 
@@ -758,7 +756,7 @@ public class ClusterController {
 	private void copyFile(String user, String pass, String ip, Integer port)
 			throws IOException, JSchException, InterruptedException {
 		JSch jsch = new JSch();
-		System.out.print("++++++++++++++++"+user+"+++++"+ip+"+++++"+port+"++"+pass);
+		System.out.print("++++++++++++++++" + user + "+++++" + ip + "+++++" + port + "++" + pass);
 		Session session = jsch.getSession(user, ip, port);
 		session.setPassword(pass);
 		Properties sshConfig = new Properties();
@@ -799,7 +797,7 @@ public class ClusterController {
 			val.append("\"").append(comDateDate).append("\",");
 		}
 		// 去掉最后一个逗号
-		val.deleteCharAt(val.length() - 1);
+		val = this.deleteLastStr(val);
 		val.append("],");
 		return val;
 	}
@@ -824,7 +822,7 @@ public class ClusterController {
 			val.append("\"").append(lst.get(i)).append("\",");
 		}
 		// 去掉最后一个逗号
-		val.deleteCharAt(val.length() - 1);
+		val = this.deleteLastStr(val);
 		val.append("]},");
 		return val;
 	}
@@ -850,8 +848,23 @@ public class ClusterController {
 			val.append("\"").append(lst.get(i)).append("\",");
 		}
 		// 去掉最后一个逗号
-		val.deleteCharAt(val.length() - 1);
+		val = this.deleteLastStr(val);
 		val.append("]},");
 		return val;
+	}
+
+	/**
+	 * 判断字符串最后一位是某为逗号,如果是删掉
+	 * 
+	 * @param str
+	 * @return StringBuilder
+	 */
+	private StringBuilder deleteLastStr(StringBuilder str) {
+		// 判断最后一位是不是逗号
+		if (",".equals(str.substring(str.length() - 1))) {
+			// 去掉最后一个NAMESPACE的逗号
+			str.deleteCharAt(str.length() - 1);
+		}
+		return str;
 	}
 }
