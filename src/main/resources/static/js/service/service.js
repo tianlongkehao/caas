@@ -136,6 +136,7 @@
  function createContainer(){
 	 var serviceIDs = [];
 	 var nginxstr = "{";
+	
 	 $('input[name="chkItem"]:checked').each(function(){
 		 
 		 var id = $(this).val();
@@ -154,6 +155,9 @@
 		        	})
 		        	nginxstr = nginxstr.substring(0,nginxstr.length-1) +"}";
 		        	//var nginxObj = eval('(' + nginxstr + ')'); 
+		        	if(nginxstr == "}"){
+		        		nginxstr = "{}";
+		        	}
 		        	var cStatusHtml = "<i class='fa_success'></i>"+
 	                				  "启动中"+
 	                				  "<img src='"+ctx+"images/loading4.gif' alt=''/>";
