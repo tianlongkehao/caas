@@ -111,6 +111,18 @@ public class ClusterController {
 		model.addAttribute("menu_flag", "cluster");
 		return "cluster/cluster-management.jsp";
 	}
+	
+	/**
+	 * topo
+	 * 
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = { "/topo" }, method = RequestMethod.GET)
+	public String clusterTopo(Model model) {
+		model.addAttribute("menu_flag", "containers");
+		return "cluster/cluster-topo.jsp";
+	}
 
 	/**
 	 * detail

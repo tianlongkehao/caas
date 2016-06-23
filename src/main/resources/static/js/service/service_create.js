@@ -22,28 +22,28 @@ $(document).ready(function(){
 	      return;
 	    }
 	    
-	    var cpuNum = $('#cpuNum').val();
-	    if(!cpuNum || cpuNum.length < 1){
+	    //var cpuNum = $('#cpuNum').val();
+	    /*if(!cpuNum || cpuNum.length < 1){
 		      layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
 		      $('#cpuNum').focus();
 		      return;
-		    }
+		    }*/
 
 
 
-	    var ram = $('#ram').val();
-	    if(!ram || ram < 1){
+	    //var ram = $('#ram').val();
+	    /*if(!ram || ram < 1){
 		      layer.tips('内存不能为零','#ram',{tips: [1, '#3595CC']});
 		      $('#ram').focus();
 		      return;
-		    }
+		    }*/
 
 		containerName();
     });
 	
-	$("#cpuNum").click(function(){
+	$(".cpuNum").click(function(){
 		var tips = $(this).attr("placeholder");
-		layer.tips(tips,'#cpuNum',{tips: [1, '#3595CC']});
+		layer.tips(tips,'.cpuNum',{tips: [1, '#3595CC']});
 	})
 
 
@@ -134,7 +134,7 @@ function cpuMouseOut(){
 }
 
 
-$(function(){
+/*$(function(){
 	var ramSlider = $("#ramSlider").slider({
 		formatter: function(value) {
 			return value;
@@ -160,7 +160,7 @@ $(function(){
 		console.log(ramVal);
 		ramSlider.slider('setValue', ramVal);
 	});
-});
+});*/
 
 function loadImageList() {
     $.ajax({

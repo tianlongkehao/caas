@@ -133,6 +133,16 @@
                             </a>
                         </li>
                     </c:if>
+                    <li>
+	                    <a class="icon-view" href="javascript:void(0);" action="<%=path %>/product/help">
+	                        <div class="icon-wrapper">
+	                            <div class="icon-img">
+	                                <span><img src="<%=path %>/images/help.png" alt=""/></span>
+	                            </div>
+	                            <div class="icon-name">新手入门</div>
+	                        </div>
+	                   </a>
+	                </li>
 
 
                 </ul>

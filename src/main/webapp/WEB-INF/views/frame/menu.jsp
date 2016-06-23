@@ -171,6 +171,11 @@
                             集群管理
                         </a>
                     </li>
+                    <li id="manageCluster" action="">
+                        <a href="<%=path %>/cluster/topo">
+                            集群拓扑
+                        </a>
+                    </li>
                 </ul>
             </li>
         </c:if>
@@ -189,6 +194,19 @@
             </ul>
         </li>
         </c:if>
+        <li id="menu_product">
+            <a href="<%=path %>/product/help">
+                <img class="nav-icon" src="<%=path %>/images/help.png" alt=""/>
+                <span class="nav-title">文档</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li id="" action="">
+                    <a href="<%=path %>/product/help">
+                        帮助文档
+                    </a>
+                </li>
+            </ul>
+        </li>
 
 
 
