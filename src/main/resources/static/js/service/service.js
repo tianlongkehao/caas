@@ -135,6 +135,7 @@
 
  function createContainer(){
 	 var serviceIDs = [];
+	 var nginxstr = "{";
 	 $('input[name="chkItem"]:checked').each(function(){
 		 
 		 var id = $(this).val();
@@ -143,16 +144,23 @@
 			 //alert(id);
 		 layer.open({
 		        title: '启动服务',
-		        content: '确定启动服务？',
+		        content: $("#nginxserver"),
 		        btn: ['确定', '取消'],
 		        yes: function(index, layero){ 
+		        	$('input[name="nginxserv"]:checked').each(function(){
+		        		var servname = $(this).val();
+		        		var servid = $(this).attr('id');
+		        		nginxstr = nginxstr+"'"+servid+"'"+":"+"'"+servname+"',";
+		        	})
+		        	nginxstr = nginxstr.substring(0,nginxstr.length-1) +"}";
+		        	var nginxObj = eval('(' + nginxstr + ')'); 
 		        	var cStatusHtml = "<i class='fa_success'></i>"+
 	                				  "启动中"+
 	                				  "<img src='"+ctx+"images/loading4.gif' alt=''/>";
 		        	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
 		        	layer.close(index);
 					$.ajax({
-						url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs,
+						url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs+"&nginxObj="+nginxObj,
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){

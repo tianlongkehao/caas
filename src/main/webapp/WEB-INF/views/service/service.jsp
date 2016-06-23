@@ -85,6 +85,20 @@
                             </ul>
                         </li>
                     </ul>
+                    <div id="nginxserver" style="display:none">
+                    	<ul class="popWin">
+                          <li class="line-h-3">
+                            <label class="checkbox-inline">
+  								<input type="checkbox" id="dmz" name="nginxserv" value="${DMZ }"> DMZ区
+							</label>
+                          </li>
+                          <li class="line-h-3">
+                            <label class="checkbox-inline">
+  								<input type="checkbox" id="user" name="nginxserv"  value="${USER }"> USER区
+							</label>
+                          </li>
+                        </ul>
+                    </div>
                     <div id="upgrade" style="display:none">
                     	<ul class="popWin">
                           <li class="line-h-3">
