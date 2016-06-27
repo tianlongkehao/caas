@@ -37,7 +37,9 @@ public class User {
 	private String user_province;//省份
 	private String open_user_id;
 	private String namespace;
+	private String vol_size;//卷组容量
 
+	
 	@ManyToMany
 	@JoinTable(name="user_favor_images", 
 	joinColumns={@JoinColumn(name="favor_users")},
@@ -182,5 +184,13 @@ public class User {
 	public void setNamespace(String namespace) {
 		this.namespace = namespace;
 	}
+	public String getVol_size() {
+		return vol_size;
+	}
+
+	public void setVol_size(String vol_size) {
+		this.vol_size = vol_size;
+	}
+
 
 }

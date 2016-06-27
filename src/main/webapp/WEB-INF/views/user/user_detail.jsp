@@ -176,7 +176,14 @@
                                                 <span class="unit">GB</span>
                                             </div>
                                         </li>
-                                        
+                                        <li class="line-h-3">
+                                            <div class="param-set">
+                                                <span class="number-title">卷组容量：</span>
+                                                <input type="text" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="vol" name="server_count" style="width:350px" value="${user.vol_size }">
+                                                <span class="unit">GB</span>
+                                            </div>
+                                        </li>
                                         <li class="line-h-3">
                                             <div class="param-set">
                                                 <span class="number-title">Pod数量：</span>
@@ -206,14 +213,7 @@
                                                 <span class="unit">个</span>
                                             </div>
                                         </li>
-                                        <li class="line-h-3">
-                                            <div class="param-set">
-                                                <span class="number-title">卷组容量：</span>
-                                                <input type="text" class="number" min="1" autocomplete="off"
-                                                       placeholder="1" id="vol" name="server_count" style="width:350px" disabled="disabled">
-                                                <span class="unit">GB</span>
-                                            </div>
-                                        </li>
+                                        
                                     </ul>
                                     <div class="" style="padding-top: 100px">
                                         <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>

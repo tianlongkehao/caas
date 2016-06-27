@@ -13,6 +13,7 @@
 	
 	checkbox();
 	
+	
 //	$("#serviceSearch").click(function(){
 //		var serviceName = $('#searchName').val();
 //		$.ajax({
@@ -144,6 +145,7 @@
 		 var $chkItem = $(this);
 			 //alert(id);
 		 layer.open({
+			 	type:1,
 		        title: '启动服务',
 		        content: $("#nginxserver"),
 		        btn: ['确定', '取消'],

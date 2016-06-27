@@ -122,7 +122,7 @@
 		var aCons = [];
 		
 		//默认监控5分钟
-debugger
+
 		 if (document.getElementById('search_namespace') != null) {
 			 getContainerMonitor("5m", "", "", false);
 			getAllNamespace();

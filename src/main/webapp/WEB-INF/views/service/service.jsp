@@ -12,6 +12,7 @@
 <jsp:include page="../frame/menu.jsp" flush="true">
     <jsp:param name="service" value=""/>
 </jsp:include>
+
 <div id="nginxserver" style="display:none">
                     	<ul class="popWin">
                           <li class="line-h-3">
@@ -25,7 +26,7 @@
 							</label>
                           </li>
                         </ul>
-                    </div>
+                    </div> 
 <div class="page-container">
     <article>
         <div class="page-main">
@@ -42,7 +43,7 @@
 
                 <aside class="aside-btn">
                     <div class="btns-group">
-                        <span class="btn btn-defaults btn-white"><i class="icon-map-marker"></i><span class="ic_left">BONC PAAS</span></span>
+                        <span class="btn btn-defaults btn-white"><i class="icon-map-marker"></i><span class="ic_left">BCM</span></span>
                     </div>
                 </aside>
                 <div class="caption clearfix">

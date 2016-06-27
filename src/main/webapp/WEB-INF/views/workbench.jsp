@@ -16,7 +16,7 @@
                 <div class="container">
                     <div class="navbar-header navbar-logo">
                         <a href="javascript:void(0);">
-                            <h1>BONC-PaaS</h1>
+                            <h1>BCM</h1>
                         </a>
                     </div>
                     <ul class="nav navbar-nav navbar-right navbar-info">

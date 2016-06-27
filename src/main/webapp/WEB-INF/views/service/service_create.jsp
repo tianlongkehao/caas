@@ -178,41 +178,44 @@
                                     class="update-mi"><input type="checkbox" id="state_service"
                                         stateless="0"> <label for="state_service"><font
                                         color="blue">有状态服务</font></label><span class="mountTips"></span></span></li>-->
-                                <li class="hide-set" id="save_roll_dev" style="display:none">
+                                <li class="hide-set" id="save_roll_dev" >
                                     <ul id="mountPathList">
-                                        <li class="mount line-h-3"><span class="ve_top">&nbsp;</span>
+                                        <li class="mount line-h-3">
+                                        	<span class="ve_top">挂载地址：</span>
                                             <table class="pull-left">
                                                 <tbody>
                                                 <tr>
-                                                    <!-- <input type='text' disabled/> -->
-                                                    <td><span class="ve_top" style="width: 150px">/var/lib/mysql</span>
-                                                    </td>
-                                                    <td><select class="selectVolume"
+                                                    <td><input type="text" value="/var/lib/mysql" /></td>
+                                                    <!-- <td><span class="ve_top" style="width: 150px">/var/lib/mysql</span>
+                                                    </td> -->
+                                                    <td style="padding-left: 10px;">
+                                                    <select class="selectVolume" id="selectVolume"
                                                                 style="height: 30px; width: 230px;">
                                                         <option value="0">选择一个存储卷</option>
-                                                        <option uid="" value="test">test ext4 200M</option>
+                                                        
                                                     </select></td>
                                                     <td>
                                                         <ins class="ins">
-                                                            <input type="checkbox" id="readOnlyOp1"
-                                                                   class="isVolumeReadonly"> <label for="readOnlyOp1">只读</label>
+                                                            <input type="checkbox" id="readOnlyOp1" 
+                                                                   class="isVolumeReadonly"> <label for="readOnlyOp1" style="margin-bottom:0px;">只读</label>
                                                         </ins>
-                                                        <a class="refreshVolume" title="刷新"
+                                                        <!-- <a class="refreshVolume" title="刷新"
                                                            href="javascript:void(0)"> <i
                                                                 class="fa fa-refresh fa-lg" style="font-size: 16px"></i>
                                                         </a> <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> <a
                                                             class="delVolume" title="删除" href="javascript:void(0)">
                                                         <i class="fa fa-trash-o" style="font-size: 16px"></i>
-                                                    </a></td>
+                                                    	</a> -->
+                                                    </td>
                                                 </tr>
                                                 </tbody>
                                             </table>
                                         </li>
-                                        <li class="line-h-3"><span class="ve_top">镜像设置：</span> <span
+                                        <!-- <li class="line-h-3"><span class="ve_top">镜像设置：</span> <span
                                                 class="update-mi"><input type="checkbox" id="pullPolicy"
                                                                          name="pullPolicy" checked=""> <label
                                                 for="pullPolicy">更新镜像</label></span>
-                                        </li>
+                                        </li> -->
                                     </ul>
                                     <div style="height: 80px !important;"></div>
                                 </li>

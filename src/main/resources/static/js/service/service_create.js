@@ -1,6 +1,25 @@
 $(document).ready(function(){
 	loadImageList();
 
+	getServiceStorageVol();
+	function getServiceStorageVol(){
+		debugger
+		$.ajax({
+			url : ctx + "/service/storageList?pageable=",
+			type: "POST",
+			success : function(data) {
+				var jsonData = $.parseJSON(data);
+				for(var i = 0; i < jsonData.count; i++){
+					var storageVolOpt = '<option value=""></option>';
+					$("#selectVolume").append(storageVolOpt);
+					var txt = jsonData.storages[0].storageName +" "+ jsonData.storages[i].format +" "+ jsonData.storages[i].storageSize + "M";
+					$("#selectVolume")[0].children[i+1].innerHTML = txt;
+				}
+				
+			}
+		})
+	}
+	
 	
 	$("#createButton").click(function(){
 		var name = $('#serviceName').val();

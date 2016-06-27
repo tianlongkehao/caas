@@ -183,6 +183,17 @@
 
                                             </div>
                                         </li>
+                                        <li class="line-h-3">
+                                            <div class="param-set">
+                                                <span class="number-title">卷组容量：</span>
+                                                <input type="number" value="1" class="number" min="1" autocomplete="off"
+                                                       placeholder="1" id="vol" name="vol" style="width:350px">
+                                                <span class="unit">GB</span>
+                                                <%--<input  data-slider-id='volSlider' disabled="disabled"
+                                             		  data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="1"/> 
+                                                <input type="text" value="1" id="vol" name="vol" disabled="disabled">--%>
+                                            </div>
+                                        </li>
                                        
                                         <li class="line-h-3">
                                             <div class="param-set">
@@ -216,18 +227,7 @@
                                                 <span class="unit">个</span>
                                             </div>
                                         </li>
-                                        <li class="line-h-3">
-                                            <div class="param-set">
-                                                <span class="number-title">卷组容量：</span>
-                                                <input type="number" value="0" class="number" min="1" autocomplete="off"
-                                                       placeholder="1" id="vol" name="vol" style="width:350px" disabled>
-                                                <span class="unit">GB</span>
-                                                <%--<input  data-slider-id='volSlider' disabled="disabled"
-                                                		data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="1"/>
-<!--                                                 		data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="1"/> -->
-                                                <input type="text" value="1" id="vol" name="vol" disabled="disabled">--%>
-                                            </div>
-                                        </li>
+                                        
                                     </ul>
                                     <div class="" style="padding-top: 100px">
                                         <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>
