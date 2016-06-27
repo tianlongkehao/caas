@@ -59,7 +59,7 @@
                                         <input type="radio" name="storageSize" class="storageSize" id="defVolNum">
                                         	<input id="defVol" style="width:50px; font-size:8px" placeholder="自定义大小"><span>G</span>
                                         <span style="color:#1E90FF; padding-left:15px">总量:<span id="totalVol">${cur_user.vol_size}</span>G</span>
-                                        <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">11</span>G 可用</span>
+                                        <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">${leftstorage }</span>G 可用</span>
                                     </div>
 
                                 </div>
