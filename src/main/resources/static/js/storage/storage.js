@@ -103,8 +103,8 @@ function dilatationStorage(){
 		var storageName = $(this).attr("storageName");
 
 		$("#upgradeStorageName").val(storageName);
-		$("#storageSizeUpdateSlider_input").val(storageSize);
-		var storageSizeUpdateSlider = sliderFn('storageSizeUpdateSlider', 1024, 0, parseInt(storageSize));
+		//$("#storageSizeUpdateSlider_input").val(storageSize);
+		//var storageSizeUpdateSlider = sliderFn('storageSizeUpdateSlider', 1024, 0, parseInt(storageSize));
 		layer.open({
 			type:1,
 			title: '扩容',
@@ -114,7 +114,9 @@ function dilatationStorage(){
 			yes: function(index, layero){ //或者使用btn1
 				//按钮【按钮一】的回调
 				layer.close(index);
-				var storageUpdateSize = $("#storageSizeUpdateSlider_input").val();
+				//var storageUpdateSize = $("#storageSizeUpdateSlider_input").val();
+				$("#updatedefVolNum")[0].value = $("#updatedefVol").val()*1024;
+				var storageUpdateSize = $(".updateStorageSize:checked").val();
 				$.ajax({
 					url:""+ctx+"/service/storage/dilatation",
 					type:"post",

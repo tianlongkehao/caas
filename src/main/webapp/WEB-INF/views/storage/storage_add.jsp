@@ -61,7 +61,6 @@
                                         <span style="color:#1E90FF; padding-left:15px">总量:<span id="totalVol">${cur_user.vol_size}</span>G</span>
                                         <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">11</span>G 可用</span>
                                     </div>
-
                                 </div>
                             </div>
                             <div class="row">
