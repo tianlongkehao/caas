@@ -6,7 +6,7 @@ public class Resource {
 	private String cpu_account ;//CPU数量
 	private String ram ;//内存
 	private String vol_count ;//卷组挂载数量
-	private String vol ;//卷组容量
+	private long vol ;//卷组容量
 	private String pod_count ;//Pod数量
 	private String image_control ;//副本控制器
 	private String server_count ;//服务
@@ -29,10 +29,10 @@ public class Resource {
 	public void setVol_count(String vol_count) {
 		this.vol_count = vol_count;
 	}
-	public String getVol() {
+	public long getVol() {
 		return vol;
 	}
-	public void setVol(String vol) {
+	public void setVol(long vol) {
 		this.vol = vol;
 	}
 	public String getPod_count() {
