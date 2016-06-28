@@ -189,7 +189,7 @@
                                                     <!-- <td><span class="ve_top" style="width: 150px">/var/lib/mysql</span>
                                                     </td> -->
                                                     <td style="padding-left: 10px;">
-                                                    <select class="selectVolume" id="selectVolume"
+                                                    <select class="selectVolume" id="selectVolume" name="volName"
                                                                 style="height: 30px; width: 230px;">
                                                         <option value="0">选择一个存储卷</option>
                                                         
