@@ -43,6 +43,13 @@ public class StorageController {
 	
 	@RequestMapping(value={"service/storage"}, method = RequestMethod.GET)
 	public String findStorages(Model model){
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		int leftstorage = 0;
+		List<Storage> list = storageDao.findByCreateBy(cUser.getId());
+		for(Storage storage:list){
+			leftstorage = leftstorage + (int)storage.getStorageSize();
+		}
+		model.addAttribute("leftstorage", (int)cUser.getVol_size()-leftstorage/1024);
 //		long createBy = CurrentUserUtils.getInstance().getUser().getId();
 //		List<Storage> storages = storageDao.findByCreateBy(createBy);
 //		model.addAttribute("storages",storages);
@@ -97,7 +104,7 @@ public class StorageController {
 		for(Storage storage:list){
 			leftstorage = leftstorage + (int)storage.getStorageSize();
 		}
-		model.addAttribute("leftstorage", (int)cUser.getVol_size()-leftstorage);
+		model.addAttribute("leftstorage", (int)cUser.getVol_size()-leftstorage/1024);
 		model.addAttribute("menu_flag", "service");
 		return "storage/storage_add.jsp";
 	}
