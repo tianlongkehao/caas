@@ -37,7 +37,7 @@ public class User {
 	private String user_province;//省份
 	private String open_user_id;
 	private String namespace;
-	private long vol_size;//卷组容量
+	private long vol_size = 0;//卷组容量
 
 	
 	@ManyToMany

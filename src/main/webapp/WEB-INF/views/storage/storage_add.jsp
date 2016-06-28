@@ -53,9 +53,9 @@
                                         data-slider-min="0" data-slider-max="1024" data-slider-step="1" data-slider-value="250"/>
                                         <input type="text" value="250" id="storageSize_input" name="storageSize">
                                         <span>M</span> --%>
-                                        <input type="radio" name="storageSize" class="storageSize" value="1024">1<span>G</span>
-                                        <input type="radio" name="storageSize" class="storageSize" value="2048">2<span>G</span>
-                                        <input type="radio" name="storageSize" class="storageSize" value="3072">3<span>G</span>
+                                        <input type="radio" name="storageSize" class="storageSize" value="20480">20<span>G</span>
+                                        <input type="radio" name="storageSize" class="storageSize" value="51200">50<span>G</span>
+                                        <input type="radio" name="storageSize" class="storageSize" value="102400">100<span>G</span>
                                         <input type="radio" name="storageSize" class="storageSize" id="defVolNum">
                                         	<input id="defVol" style="width:50px; font-size:8px" placeholder="自定义大小"><span>G</span>
                                         <span style="color:#1E90FF; padding-left:15px">总量:<span id="totalVol">${cur_user.vol_size}</span>G</span>
@@ -63,7 +63,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" style="display:none">
                                 <div class="form-group col-md-12">
                                     <label class="col-md-2">存储格式：</label>
                                     <div class="col-md-4">
