@@ -81,7 +81,7 @@ public class ServiceController {
 
 	@Autowired
 	private NginxServerConf nginxServerConf;
-	
+
 	@RequestMapping("service/listService.do")
 	@ResponseBody
 	public String list() {
@@ -109,7 +109,7 @@ public class ServiceController {
 		try {
 			getServiceSource(model, currentUser.getId());
 			getNginxServer(model);
-			//getleftResource(model);
+			// getleftResource(model);
 		} catch (KubernetesClientException e) {
 			model.addAttribute("msg", e.getStatus().getMessage());
 			log.debug("service show:" + e.getStatus().getMessage());
@@ -120,8 +120,8 @@ public class ServiceController {
 		return "service/service.jsp";
 
 	}
-	
-	public void getNginxServer(Model model){
+
+	public void getNginxServer(Model model) {
 		model.addAttribute("DMZ", nginxServerConf.getDMZ());
 		model.addAttribute("USER", nginxServerConf.getUSER());
 	}
@@ -430,7 +430,7 @@ public class ServiceController {
 	 */
 	@RequestMapping("service/createContainer.do")
 	@ResponseBody
-	public String CreateContainer(long id,String nginxObj){
+	public String CreateContainer(long id, String nginxObj) {
 		Service service = serviceDao.findOne(id);
 		Map<String, Object> map = new HashMap<String, Object>();
 		// 使用k8s管理服务
@@ -449,17 +449,14 @@ public class ServiceController {
 		} catch (KubernetesClientException e) {
 			k8sService = null;
 		}
-
-		// ceph中创建租户目录和服务目录 TODO
-		CephController ceph = new CephController();
-		ceph.connectCephFS();
-		ceph.createNamespaceCephFS();
-		ceph.createServiceCephFS("service01");
-
 		try {
-			//如果没有则新增
-			if(controller==null){
-				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),service.getInstanceNum(),registryImgName,8080,service.getCpuNum(),service.getRam(),nginxObj);
+			// 如果没有则新增
+			if (controller == null) {
+				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
+						service.getInstanceNum(), registryImgName, 8080, service.getCpuNum(), service.getRam(),
+						nginxObj);
+				// 给controller设置卷组挂载的信息 TODO
+				this.setVolumeStorage(controller, service.getVolName());
 				controller = client.createReplicationController(controller);
 			} else {
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
@@ -834,7 +831,7 @@ public class ServiceController {
 
 	@RequestMapping("service/stratServices.do")
 	@ResponseBody
-	public String startServices(String serviceIDs,String nginxObj){
+	public String startServices(String serviceIDs, String nginxObj) {
 		ArrayList<Long> ids = new ArrayList<Long>();
 		String[] str = serviceIDs.split(",");
 		if (str != null && str.length > 0) {
@@ -844,15 +841,63 @@ public class ServiceController {
 		}
 		Map<String, Object> maps = new HashMap<String, Object>();
 		try {
-			for(long id:ids){
-				CreateContainer(id,nginxObj);
+			for (long id : ids) {
+				CreateContainer(id, nginxObj);
 			}
 			maps.put("status", "200");
 		} catch (Exception e) {
 			maps.put("status", "400");
-			log.error("服务停止错误！");
+			log.error("服务启动错误！");
 		}
 		return JSON.toJSONString(maps);
 	}
 
+	/**
+	 * 给controller设置卷组挂载的信息
+	 * 
+	 * @param controller
+	 * @param storageName
+	 * @return ReplicationController
+	 */
+	private ReplicationController setVolumeStorage(ReplicationController controller, String storageName) {
+
+		ReplicationControllerSpec rcSpec = new ReplicationControllerSpec();
+		PodTemplateSpec template = new PodTemplateSpec();
+		PodSpec podSpec = new PodSpec();
+		List<Volume> volumes = new ArrayList<Volume>();
+		Volume volume = new Volume();
+		volume.setName("cephfs");
+		CephFSVolumeSource cephfs = new CephFSVolumeSource();
+		List<String> monitors = new ArrayList<String>();
+		System.out.println("CEPH_MONITOR:" + CEPH_MONITOR);
+		String[] ceph_monitors = CEPH_MONITOR.split(",");
+		for (String ceph_monitor : ceph_monitors) {
+			monitors.add(ceph_monitor);
+		}
+		cephfs.setMonitors(monitors);
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		cephfs.setPath("/" + namespace + "/" + storageName);
+		cephfs.setUser("admin");
+		LocalObjectReference secretRef = new LocalObjectReference();
+		secretRef.setName("ceph-secret");
+		cephfs.setSecretRef(secretRef);
+		cephfs.setReadOnly(false);
+		volume.setCephfs(cephfs);
+		volumes.add(volume);
+		podSpec.setVolumes(volumes);
+		List<com.bonc.epm.paas.kubernetes.model.Container> containers = new ArrayList<com.bonc.epm.paas.kubernetes.model.Container>();
+		com.bonc.epm.paas.kubernetes.model.Container container = new com.bonc.epm.paas.kubernetes.model.Container();
+		List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
+		VolumeMount volumeMount = new VolumeMount();
+		volumeMount.setMountPath("mountPath");
+		volumeMount.setName("cephfs");
+		volumeMounts.add(volumeMount);
+		container.setVolumeMounts(volumeMounts);
+		containers.add(container);
+		podSpec.setContainers(containers);
+		template.setSpec(podSpec);
+		rcSpec.setTemplate(template);
+		controller.setSpec(rcSpec);
+		return controller;
+	}
 }

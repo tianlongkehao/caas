@@ -124,6 +124,12 @@ public class UserController {
 			quota = client.createResourceQuota(quota);
 			System.out.println("quota:" + JSON.toJSONString(quota));
 
+			// ceph中创建租户目录 TODO
+			CephController ceph = new CephController();
+			ceph.connectCephFS();
+			ceph.createNamespaceCephFS(user.getNamespace());
+
+
 			// 为client创建资源限制
 			// LimitRange limitRange = generateLimitRange(user.getNamespace(),
 			// restriction);
@@ -199,6 +205,8 @@ public class UserController {
 				ResourceQuota updateQuota = client.updateResourceQuota(user.getNamespace(), quota);
 				// LimitRange updateLimitRange =
 				// client.updateLimitRange(user.getNamespace(), limit);
+				//20160628 增加卷組更新功能
+				user.setVol_size(resource.getVol());
 				userDao.save(user);
 				model.addAttribute("updateFlag", "200");
 				// 返回 user.jsp 页面，展示所用用户信息

@@ -61,14 +61,11 @@ public class CephController {
 	/**
 	 * createNamespaceCephFS
 	 */
-	public void createNamespaceCephFS() {
+	public void createNamespaceCephFS(String namespace) {
 
 		try {
 			System.out.println("进入方法：createNamespaceCephFS");
 			
-			// 获取NAMESPACE
-			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-
 			cephMount.mkdir("/" + namespace, CephMount.O_RDWR);
 			System.out.println("创建目录：" + "/" + namespace);
 			
@@ -84,12 +81,12 @@ public class CephController {
 	}
 
 	/**
-	 * createServiceCephFS
+	 * createStorageCephFS
 	 */
-	public void createServiceCephFS(String serviceName) {
+	public void createStorageCephFS(String storageName) {
 
 		try {
-			System.out.println("进入方法：createServiceCephFS");
+			System.out.println("进入方法：createStorageCephFS");
 			
 			// 获取NAMESPACE
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
@@ -97,8 +94,8 @@ public class CephController {
 			//指定当前工作目录
 			cephMount.chdir("/" + namespace);
 			
-			cephMount.mkdir(serviceName, CephMount.O_RDWR);
-			System.out.println("创建目录：" + serviceName);
+			cephMount.mkdir(storageName, CephMount.O_RDWR);
+			System.out.println("创建目录：" + storageName);
 			
 			System.out.println("打印根目录下的所有目录");
 			String[] listdir1 = cephMount.listdir("/");
