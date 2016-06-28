@@ -1,6 +1,25 @@
 $(document).ready(function(){
 	loadImageList();
 
+	getServiceStorageVol();
+	function getServiceStorageVol(){
+		debugger
+		$.ajax({
+			url : ctx + "/service/storageList?pageable=",
+			type: "POST",
+			success : function(data) {
+				var jsonData = $.parseJSON(data);
+				for(var i = 0; i < jsonData.count; i++){
+					var storageVolOpt = '<option value=""></option>';
+					$("#selectVolume").append(storageVolOpt);
+					var txt = jsonData.storages[0].storageName +" "+ jsonData.storages[i].format +" "+ jsonData.storages[i].storageSize + "M";
+					$("#selectVolume")[0].children[i+1].innerHTML = txt;
+				}
+				
+			}
+		})
+	}
+	
 	
 	$("#createButton").click(function(){
 		var name = $('#serviceName').val();
@@ -22,28 +41,28 @@ $(document).ready(function(){
 	      return;
 	    }
 	    
-	    var cpuNum = $('#cpuNum').val();
-	    if(!cpuNum || cpuNum.length < 1){
+	    //var cpuNum = $('#cpuNum').val();
+	    /*if(!cpuNum || cpuNum.length < 1){
 		      layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
 		      $('#cpuNum').focus();
 		      return;
-		    }
+		    }*/
 
 
 
-	    var ram = $('#ram').val();
-	    if(!ram || ram < 1){
+	    //var ram = $('#ram').val();
+	    /*if(!ram || ram < 1){
 		      layer.tips('内存不能为零','#ram',{tips: [1, '#3595CC']});
 		      $('#ram').focus();
 		      return;
-		    }
+		    }*/
 
 		containerName();
     });
 	
-	$("#cpuNum").click(function(){
+	$(".cpuNum").click(function(){
 		var tips = $(this).attr("placeholder");
-		layer.tips(tips,'#cpuNum',{tips: [1, '#3595CC']});
+		layer.tips(tips,'.cpuNum',{tips: [1, '#3595CC']});
 	})
 
 
@@ -134,7 +153,7 @@ function cpuMouseOut(){
 }
 
 
-$(function(){
+/*$(function(){
 	var ramSlider = $("#ramSlider").slider({
 		formatter: function(value) {
 			return value;
@@ -160,7 +179,7 @@ $(function(){
 		console.log(ramVal);
 		ramSlider.slider('setValue', ramVal);
 	});
-});
+});*/
 
 function loadImageList() {
     $.ajax({

@@ -122,7 +122,7 @@
 		var aCons = [];
 		
 		//默认监控5分钟
-debugger
+
 		 if (document.getElementById('search_namespace') != null) {
 			 getContainerMonitor("5m", "", "", false);
 			getAllNamespace();
@@ -131,8 +131,6 @@ debugger
 			$("#search_pod").removeAttr("disabled");
 		} 
 
-		//createabc("5m", "", "", true);
-		//$("#search_pod").removeAttr("disabled");
 		//获取监控数据
 		function getContainerMonitor(timePeriod, nameSpace, podName, isNamespace) {
 			$.ajax({
@@ -180,7 +178,7 @@ debugger
 						yAxis : [],
 						series : []
 					};
-
+					//横坐标数据
 					var xAxis = {
 						type : 'category',
 						boundaryGap : false,
@@ -189,7 +187,7 @@ debugger
 
 					var seriesDataMem = MemSeriesData(
 							containerDataYval, j);
-					
+					//纵坐标
 					var c = {
 						type : 'value',
 						scale : true,
@@ -206,6 +204,7 @@ debugger
 					
 					option.xAxis.push(xAxis);
 					option.yAxis.push(c);
+					//MEMORY纵坐标数据
 					option.series = seriesDataMem;
 					//内存画布
 					addContainerMemImg();
@@ -215,6 +214,7 @@ debugger
 					$(containersMemImg).addClass(
 							containerDataYval.val[j].titleText);
 					var containersMem = echarts.init(containersMemImg);
+					//绘制内存监控图
 					containersMem.setOption(option);
 					
 					count++;
@@ -226,7 +226,7 @@ debugger
 					//绘制cpu监控图
 					var seriesDataCpu = cpuSeriesData(
 							containerDataYval, j);
-
+					//CPU纵坐标
 					var c = {
 						type : 'value',
 						scale : true,
@@ -240,6 +240,7 @@ debugger
 					
 					option.xAxis.push(xAxis);
 					option.yAxis.push(c);
+					//CPU横坐标数据
 					option.series = seriesDataCpu;
 
 					addContainerCpuImg();
@@ -249,6 +250,7 @@ debugger
 					$(containersCpuImg).addClass(
 							containerDataYval.val[j].titleText);
 					var containersCpu = echarts.init(containersCpuImg);
+					//绘制CPU监控图
 					containersCpu.setOption(option);
 					
 					count++;

@@ -49,9 +49,17 @@
                                     <label class="col-md-2">存储大小：</label>
                                     <%--<input id="storageSize" name="storageSize" class="form-control" type="text">--%>
                                     <div class="col-md-8">
-                                        <input id="storageSizeSlider" data-slider-id='storageSizeSliderData' type="text" <%--data-slider-min="0" data-slider-max="1024" data-slider-step="1" data-slider-value="250"--%>/>
+                                        <%-- <input id="storageSizeSlider" data-slider-id='storageSizeSliderData' type="text" 
+                                        data-slider-min="0" data-slider-max="1024" data-slider-step="1" data-slider-value="250"/>
                                         <input type="text" value="250" id="storageSize_input" name="storageSize">
-                                        <span>M</span>
+                                        <span>M</span> --%>
+                                        <input type="radio" name="storageSize" class="storageSize" value="1024">1<span>G</span>
+                                        <input type="radio" name="storageSize" class="storageSize" value="2048">2<span>G</span>
+                                        <input type="radio" name="storageSize" class="storageSize" value="3072">3<span>G</span>
+                                        <input type="radio" name="storageSize" class="storageSize" id="defVolNum">
+                                        	<input id="defVol" style="width:50px; font-size:8px" placeholder="自定义大小"><span>G</span>
+                                        <span style="color:#1E90FF; padding-left:15px">总量:<span id="totalVol">${cur_user.vol_size}</span>G</span>
+                                        <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">${leftstorage }</span>G 可用</span>
                                     </div>
 
                                 </div>

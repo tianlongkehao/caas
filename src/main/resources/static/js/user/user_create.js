@@ -242,6 +242,14 @@ $(document).ready(function(){
             });
         }
     });
+    $('#vol').blur(function (event) {
+        var vol = $('#vol').val().trim();
+        if (vol === '') {
+            layer.tips('请填写卷组容量', '#vol', {
+                tips: [1, '#0FA6D8']
+            });
+        }
+    });
     $('#pod_count').blur(function (event) {
         var pod_count = $('#pod_count').val().trim();
         if (pod_count === '') {

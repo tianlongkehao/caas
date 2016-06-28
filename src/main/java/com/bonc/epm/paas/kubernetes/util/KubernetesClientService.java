@@ -2,8 +2,10 @@ package com.bonc.epm.paas.kubernetes.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.model.Container;
@@ -296,7 +299,7 @@ public class KubernetesClientService {
 	
 
 	
-	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram){
+	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram,String nginxObj){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -309,6 +312,13 @@ public class KubernetesClientService {
 		podMeta.setName(name);
 		Map<String,String> labels = new HashMap<String,String>();
 		labels.put("app", name);
+		if(nginxObj!="{}"){
+			JSONObject jsonObject = JSONObject.parseObject(nginxObj);
+			Set<String> set = jsonObject.keySet();
+			for(String key:set){
+				labels.put(key, jsonObject.getString(key));
+			}
+		}
 		podMeta.setLabels(labels);
 		template.setMetadata(podMeta);
 		PodSpec podSpec = new PodSpec();

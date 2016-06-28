@@ -96,6 +96,9 @@ public class UserController {
 	public String userSave(User user, Resource resource, Restriction restriction, Model model) {
 		System.out.println("save.do=============================================");
 		try {
+			System.out.println(resource.getVol());
+			System.out.println(user.getVol_size());
+			user.setVol_size(resource.getVol()); 
 			user.setNamespace(user.getUserName());
 			// 以用户名(登陆帐号)为name，创建client
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());

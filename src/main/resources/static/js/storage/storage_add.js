@@ -1,4 +1,4 @@
-$(function(){
+/*$(function(){
     var storageSizeSlider = sliderFn('storageSizeSlider', 1024,0, 250);
 
     //var storageSizeSlider = $("#storageSizeSlider").slider({
@@ -17,9 +17,24 @@ $(function(){
         var storageVal = Number($(this).val());
         storageSizeSlider.slider('setValue', storageVal);
     });
-});
+});*/
 
 $(document).ready(function () {
+	
+	$("#defVolNum").click(function(){
+		$("#defVol").focus();
+	});
+	/*aaa();
+	function aaa(){
+		var a = $(".ci-listTr");
+		var usedSum = "";
+		var totalVal = $("#totalVol").text();
+		for(var i = 0; i < a.length; i++){
+			usedSum = usedSum +a[i]children[4];
+		}
+		
+		$("#restVol").innerHTML = totalVal - usedSum;
+	}*/
 
     $("#storageName").blur(function(){
         var storageName = $("#storageName").val();
@@ -44,7 +59,8 @@ $(document).ready(function () {
 
     $("#buildStorage").click(function(){
         var storageName = $("#storageName").val();
-        var storageSize = $("#storageSizeSlider").val();
+        $("#defVolNum")[0].value = $("#defVol").val()*1024;
+        var storageSize = $(".storageSize:checked").val();
         var options=$("#format option:selected");
         var format = options.text();
         
