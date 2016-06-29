@@ -185,18 +185,18 @@
                                             <table class="pull-left">
                                                 <tbody>
                                                 <tr>
-                                                    <td><input type="text" value="/var/lib/mysql" /></td>
+                                                    <td><input type="text" name="mountPath" value="/var/lib/mysql" /></td>
                                                     <!-- <td><span class="ve_top" style="width: 150px">/var/lib/mysql</span>
                                                     </td> -->
                                                     <td style="padding-left: 10px;">
-                                                    <select class="selectVolume" id="selectVolume"
+                                                    <select class="selectVolume" id="selectVolume" name="volName"
                                                                 style="height: 30px; width: 230px;">
                                                         <option value="0">选择一个存储卷</option>
                                                         
                                                     </select></td>
                                                     <td>
                                                         <ins class="ins">
-                                                            <input type="checkbox" id="readOnlyOp1" 
+                                                            <input type="checkbox" id="readOnlyOp1" name="isVolumeReadonly"
                                                                    class="isVolumeReadonly"> <label for="readOnlyOp1" style="margin-bottom:0px;">只读</label>
                                                         </ins>
                                                         <!-- <a class="refreshVolume" title="刷新"
