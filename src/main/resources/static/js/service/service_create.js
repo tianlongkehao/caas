@@ -3,16 +3,15 @@ $(document).ready(function(){
 
 	getServiceStorageVol();
 	function getServiceStorageVol(){
-		debugger
 		$.ajax({
 			url : ctx + "/service/storageList?pageable=",
 			type: "POST",
 			success : function(data) {
 				var jsonData = $.parseJSON(data);
 				for(var i = 0; i < jsonData.count; i++){
-					var storageVolOpt = '<option value=""></option>';
-					$("#selectVolume").append(storageVolOpt);
 					var txt = jsonData.storages[i].storageName +" "+ jsonData.storages[i].format +" "+ jsonData.storages[i].storageSize + "M";
+					var storageVolOpt = '<option name="volName" value="' + jsonData.storages[i].storageName + '"></option>';
+					$("#selectVolume").append(storageVolOpt);
 					$("#selectVolume")[0].children[i+1].innerHTML = txt;
 				}
 				

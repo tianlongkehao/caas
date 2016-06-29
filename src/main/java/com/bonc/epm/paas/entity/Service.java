@@ -89,8 +89,6 @@ public class Service {
 	private String volName;
 	// 挂载卷名称
 	private String mountPath;
-	// 挂载卷是否只读
-	private boolean isVolumeReadOnly;
 	// private List<String> podName;
 	// public List<String> getPodName() {
 	// return podName;
@@ -280,13 +278,5 @@ public class Service {
 
 	public void setMountPath(String mountPath) {
 		this.mountPath = mountPath;
-	}
-
-	public boolean isVolumeReadOnly() {
-		return isVolumeReadOnly;
-	}
-
-	public void setVolumeReadOnly(boolean isVolumeReadOnly) {
-		this.isVolumeReadOnly = isVolumeReadOnly;
 	}
 }
