@@ -194,19 +194,19 @@
                                                         <option value="0">选择一个存储卷</option>
                                                         
                                                     </select></td>
-                                                    <td>
+                                                    <!-- <td>
                                                         <ins class="ins">
-                                                            <input type="checkbox" id="readOnlyOp1" name="isVolumeReadonly"
+                                                            <input type="checkbox" id="readOnlyOp1" name="isVolumeReadOnly"
                                                                    class="isVolumeReadonly"> <label for="readOnlyOp1" style="margin-bottom:0px;">只读</label>
                                                         </ins>
-                                                        <!-- <a class="refreshVolume" title="刷新"
+                                                        <a class="refreshVolume" title="刷新"
                                                            href="javascript:void(0)"> <i
                                                                 class="fa fa-refresh fa-lg" style="font-size: 16px"></i>
                                                         </a> <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> <a
                                                             class="delVolume" title="删除" href="javascript:void(0)">
                                                         <i class="fa fa-trash-o" style="font-size: 16px"></i>
-                                                    	</a> -->
-                                                    </td>
+                                                    	</a>
+                                                    </td> -->
                                                 </tr>
                                                 </tbody>
                                             </table>

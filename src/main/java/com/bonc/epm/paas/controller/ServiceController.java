@@ -37,6 +37,7 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
+import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
@@ -457,7 +458,11 @@ public class ServiceController {
 						nginxObj);
 				// 给controller设置卷组挂载的信息 TODO
 				System.out.println("给rc绑定vol");
-				this.setVolumeStorage(controller, service.getVolName());
+				System.out.println("service.getVolName():" + service.getVolName());
+				System.out.println("service.getServiceName():" + service.getServiceName());
+				System.out.println("registryImgName:" + registryImgName);
+				System.out.println("service.getMountPath():" + service.getMountPath());
+				this.setVolumeStorage(controller, service.getVolName(), service.getServiceName(), registryImgName, service.getMountPath());
 				controller = client.createReplicationController(controller);
 			} else {
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
@@ -860,8 +865,7 @@ public class ServiceController {
 	 * @param storageName
 	 * @return ReplicationController
 	 */
-	private ReplicationController setVolumeStorage(ReplicationController controller, String storageName) {
-
+	private ReplicationController setVolumeStorage(ReplicationController controller, String storageName, String serviceName, String image, String mountPath) {
 		ReplicationControllerSpec rcSpec = new ReplicationControllerSpec();
 		PodTemplateSpec template = new PodTemplateSpec();
 		PodSpec podSpec = new PodSpec();
@@ -890,13 +894,23 @@ public class ServiceController {
 		com.bonc.epm.paas.kubernetes.model.Container container = new com.bonc.epm.paas.kubernetes.model.Container();
 		List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
 		VolumeMount volumeMount = new VolumeMount();
-		volumeMount.setMountPath("mountPath");
+		volumeMount.setMountPath(mountPath);
 		volumeMount.setName("cephfs");
 		volumeMounts.add(volumeMount);
+		container.setImage(image);
+		container.setName(serviceName);
 		container.setVolumeMounts(volumeMounts);
 		containers.add(container);
 		podSpec.setContainers(containers);
+		ObjectMeta metadata = new ObjectMeta();
+		Map<String, String> labels = new HashMap<String, String>();
+		labels.put("name", serviceName);
+		metadata.setLabels(labels);
+		template.setMetadata(metadata);
 		template.setSpec(podSpec);
+		Map<String, String> selector = new HashMap<String, String>();
+		selector.put("name", serviceName);
+		rcSpec.setSelector(selector);
 		rcSpec.setTemplate(template);
 		controller.setSpec(rcSpec);
 		return controller;

@@ -24,6 +24,7 @@ $(document).ready(function () {
 	$("#defVolNum").click(function(){
 		$("#defVol").focus();
 	});
+	
 	/*aaa();
 	function aaa(){
 		var a = $(".ci-listTr");

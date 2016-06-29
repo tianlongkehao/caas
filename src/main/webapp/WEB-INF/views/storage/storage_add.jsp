@@ -63,6 +63,15 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label class="col-md-2">读写权限：</label>
+                                    <div class="col-md-4">
+                                        <input type="checkbox" id="readOnlyOp1" name="isVolumeReadOnly"
+                                               class="isVolumeReadonly"> <label for="readOnlyOp1" style="margin-bottom:0px;">只读</label>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row" style="display:none">
                                 <div class="form-group col-md-12">
                                     <label class="col-md-2">存储格式：</label>
