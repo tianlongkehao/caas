@@ -185,7 +185,7 @@
                                             <table class="pull-left">
                                                 <tbody>
                                                 <tr>
-                                                    <td><input type="text" value="/var/lib/mysql" /></td>
+                                                    <td><input type="text" name="mountPath" value="/var/lib/mysql" /></td>
                                                     <!-- <td><span class="ve_top" style="width: 150px">/var/lib/mysql</span>
                                                     </td> -->
                                                     <td style="padding-left: 10px;">
@@ -196,7 +196,7 @@
                                                     </select></td>
                                                     <td>
                                                         <ins class="ins">
-                                                            <input type="checkbox" id="readOnlyOp1" 
+                                                            <input type="checkbox" id="readOnlyOp1" name="isVolumeReadOnly"
                                                                    class="isVolumeReadonly"> <label for="readOnlyOp1" style="margin-bottom:0px;">只读</label>
                                                         </ins>
                                                         <!-- <a class="refreshVolume" title="刷新"
