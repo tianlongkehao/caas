@@ -134,7 +134,7 @@ public class StorageController {
 			// ceph中创建存储卷目录 TODO
 			CephController ceph = new CephController();
 			ceph.connectCephFS();
-			ceph.createStorageCephFS(storage.getStorageName(), storage.isVolumeReadOnly());
+			ceph.createStorageCephFS(storage.getStorageName());
 
 			storageDao.save(storage);
 			map.put("status", "200");

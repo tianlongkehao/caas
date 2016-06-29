@@ -83,15 +83,11 @@ public class CephController {
 	/**
 	 * createStorageCephFS
 	 */
-	public void createStorageCephFS(String storageName, boolean isVolumeReadOnly) {
+	public void createStorageCephFS(String storageName) {
 
 		try {
 			System.out.println("进入方法：createStorageCephFS");
 
-			int readOrWrite = CephMount.O_RDWR;
-			if (isVolumeReadOnly) {
-				readOrWrite = CephMount.O_RDONLY;
-			}
 			// 获取NAMESPACE
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 
@@ -99,7 +95,7 @@ public class CephController {
 			cephMount.chdir("/" + namespace);
 
 			// 创建挂载卷目录
-			cephMount.mkdir(storageName, readOrWrite);
+			cephMount.mkdir(storageName, CephMount.O_RDWR);
 			System.out.println("创建目录：" + storageName);
 
 			System.out.println("打印根目录下的所有目录");

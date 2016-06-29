@@ -35,10 +35,6 @@ public class Storage {
 	private String mountPoint;
 
 	/**
-	 * 挂载卷是否只读
-	 */
-	private boolean isVolumeReadOnly;
-	/**
 	 * 存储大小
 	 */
 	private long storageSize;
@@ -98,14 +94,6 @@ public class Storage {
 
 	public void setMountPoint(String mountPoint) {
 		this.mountPoint = mountPoint;
-	}
-
-	public boolean isVolumeReadOnly() {
-		return isVolumeReadOnly;
-	}
-
-	public void setVolumeReadOnly(boolean isVolumeReadOnly) {
-		this.isVolumeReadOnly = isVolumeReadOnly;
 	}
 
 	public long getStorageSize() {
