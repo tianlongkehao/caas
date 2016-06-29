@@ -456,6 +456,7 @@ public class ServiceController {
 						service.getInstanceNum(), registryImgName, 8080, service.getCpuNum(), service.getRam(),
 						nginxObj);
 				// 给controller设置卷组挂载的信息 TODO
+				System.out.println("给rc绑定vol");
 				this.setVolumeStorage(controller, service.getVolName());
 				controller = client.createReplicationController(controller);
 			} else {

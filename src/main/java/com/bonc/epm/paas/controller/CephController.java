@@ -94,6 +94,7 @@ public class CephController {
 			//指定当前工作目录
 			cephMount.chdir("/" + namespace);
 			
+			//创建挂载卷目录
 			cephMount.mkdir(storageName, CephMount.O_RDWR);
 			System.out.println("创建目录：" + storageName);
 			
