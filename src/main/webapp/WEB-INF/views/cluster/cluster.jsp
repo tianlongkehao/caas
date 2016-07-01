@@ -91,6 +91,7 @@
         $.ajax({
             url: ctx + "/cluster/getClusterMonitor?timePeriod=" + timePeriod,
             success: function (data) {
+            	debugger
                 createChart($.parseJSON(data));
             }
         })

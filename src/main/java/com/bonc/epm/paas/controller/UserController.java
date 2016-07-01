@@ -114,6 +114,8 @@ public class UserController {
 			// map.put("cpu",
 			// Integer.valueOf(resource.getCpu_account())*1000");//CPU数量
 			map.put("cpu", resource.getCpu_account() + "");// CPU数量(个)
+			//TODO
+			map.put("vol", resource.getVol() + "G");// 卷组容量
 			// map.put("pods", resource.getPod_count() + "");//POD数量
 			// map.put("services", resource.getServer_count() + "");//服务
 			// map.put("replicationcontrollers", resource.getImage_control() +
@@ -207,6 +209,8 @@ public class UserController {
 				// client.updateLimitRange(user.getNamespace(), limit);
 				//20160628 增加卷組更新功能
 				user.setVol_size(resource.getVol());
+				//TODO
+				user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
 				userDao.save(user);
 				model.addAttribute("updateFlag", "200");
 				// 返回 user.jsp 页面，展示所用用户信息
@@ -314,7 +318,8 @@ public class UserController {
 					// Integer a=Integer.valueOf(map.get("cpu"))/1024;
 					// resource.setCpu_account(a.toString());//CPU数量
 					resource.setCpu_account(map.get("cpu"));// CPU数量
-					resource.setRam(map.get("memory").replace("G", ""));// 内存
+					resource.setRam(map.get("memory").replace("G", "").replace("Gi", ""));// 内存
+					
 					System.out.println("+++++++++++++" + map.get("cpu") + "------" + map.get("memory"));
 					// resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
 					// resource.setPod_count(map.get("pods"));//POD数量
@@ -858,7 +863,7 @@ public class UserController {
 		ResourceQuotaSpec spec = quota.getSpec();
 		Map<String, String> hard = quota.getSpec().getHard();
 
-		hard.put("memory", resource.getRam() + ""); // 内存
+		hard.put("memory", resource.getRam() + "G"); // 内存
 		hard.put("cpu", resource.getCpu_account() + "");// CPU数量
 		// hard.put("pods", resource.getPod_count() + "");//POD数量
 		// hard.put("services", resource.getServer_count() + "");//服务

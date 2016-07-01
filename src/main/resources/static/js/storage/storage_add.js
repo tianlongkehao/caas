@@ -65,6 +65,12 @@ $(document).ready(function () {
         var options=$("#format option:selected");
         var format = options.text();
         
+        var leftstorage = $("#restVol").text();
+        if(storageSize > leftstorage){
+        	layer.tips('存储大小不能大于剩余卷组容量', $('#restVol'),{tips: [1, '#EF6578']});
+            return;
+        }
+        
         if (storageName === '') {
             layer.tips('存储名称不能为空', $('#storageName'),{tips: [1, '#EF6578']});
             $('#storageName').focus();

@@ -180,7 +180,7 @@
                                             <div class="param-set">
                                                 <span class="number-title">卷组容量：</span>
                                                 <input type="text" class="number" min="1" autocomplete="off"
-                                                       placeholder="1" id="vol" name="server_count" style="width:350px" value="${user.vol_size }">
+                                                       placeholder="1" id="vol" name="vol" style="width:350px" value="${user.vol_size }">
                                                 <span class="unit">GB</span>
                                             </div>
                                         </li>
