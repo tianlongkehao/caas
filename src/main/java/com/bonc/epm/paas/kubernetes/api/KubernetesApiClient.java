@@ -21,6 +21,7 @@ import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
+import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.rest.util.RestFactory;
@@ -326,6 +327,14 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             return api.getAllNodes();
         } catch (NotFoundException e) {
         	return new NodeList();
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	public Secret createSecret(Secret secret) throws KubernetesClientException {
+		try {
+            return api.createSecret(namespace, secret);
         } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
         }

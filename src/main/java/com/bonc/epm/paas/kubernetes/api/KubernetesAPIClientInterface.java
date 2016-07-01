@@ -35,6 +35,7 @@ import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
+import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 
@@ -342,5 +343,14 @@ public interface KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     public Status deleteService(String name) throws KubernetesClientException;
+    /**
+     * Create a new Secret
+     * 
+     * @param secret
+     *            Secret to be created
+     * @return
+     * @throws KubernetesClientException
+     */
+    public Secret createSecret(Secret secret) throws KubernetesClientException;
 
 }

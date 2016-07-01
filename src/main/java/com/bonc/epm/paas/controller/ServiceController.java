@@ -462,7 +462,7 @@ public class ServiceController {
 				System.out.println("service.getServiceName():" + service.getServiceName());
 				System.out.println("registryImgName:" + registryImgName);
 				System.out.println("service.getMountPath():" + service.getMountPath());
-				this.setVolumeStorage(controller, service.getVolName(), service.getServiceName(), registryImgName, service.getMountPath());
+				controller = this.setVolumeStorage(controller, service.getVolName(), service.getMountPath());
 				controller = client.createReplicationController(controller);
 			} else {
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
@@ -865,10 +865,12 @@ public class ServiceController {
 	 * @param storageName
 	 * @return ReplicationController
 	 */
-	private ReplicationController setVolumeStorage(ReplicationController controller, String storageName, String serviceName, String image, String mountPath) {
-		ReplicationControllerSpec rcSpec = new ReplicationControllerSpec();
-		PodTemplateSpec template = new PodTemplateSpec();
-		PodSpec podSpec = new PodSpec();
+	private ReplicationController setVolumeStorage(ReplicationController controller, String storageName,
+			String mountPath) {
+
+		ReplicationControllerSpec rcSpec = controller.getSpec();
+		PodTemplateSpec template = rcSpec.getTemplate();
+		PodSpec podSpec = template.getSpec();
 		List<Volume> volumes = new ArrayList<Volume>();
 		Volume volume = new Volume();
 		volume.setName("cephfs");
@@ -890,29 +892,56 @@ public class ServiceController {
 		volume.setCephfs(cephfs);
 		volumes.add(volume);
 		podSpec.setVolumes(volumes);
-		List<com.bonc.epm.paas.kubernetes.model.Container> containers = new ArrayList<com.bonc.epm.paas.kubernetes.model.Container>();
-		com.bonc.epm.paas.kubernetes.model.Container container = new com.bonc.epm.paas.kubernetes.model.Container();
-		List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
-		VolumeMount volumeMount = new VolumeMount();
-		volumeMount.setMountPath(mountPath);
-		volumeMount.setName("cephfs");
-		volumeMounts.add(volumeMount);
-		container.setImage(image);
-		container.setName(serviceName);
-		container.setVolumeMounts(volumeMounts);
-		containers.add(container);
-		podSpec.setContainers(containers);
-		ObjectMeta metadata = new ObjectMeta();
-		Map<String, String> labels = new HashMap<String, String>();
-		labels.put("name", serviceName);
-		metadata.setLabels(labels);
-		template.setMetadata(metadata);
-		template.setSpec(podSpec);
-		Map<String, String> selector = new HashMap<String, String>();
-		selector.put("name", serviceName);
-		rcSpec.setSelector(selector);
-		rcSpec.setTemplate(template);
-		controller.setSpec(rcSpec);
+		List<com.bonc.epm.paas.kubernetes.model.Container> containers = podSpec.getContainers();
+		for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
+			List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
+			VolumeMount volumeMount = new VolumeMount();
+			volumeMount.setMountPath(mountPath);
+			volumeMount.setName("cephfs");
+			volumeMounts.add(volumeMount);
+			container.setVolumeMounts(volumeMounts);
+		}
+
+		/*
+		 * ReplicationControllerSpec rcSpec = new ReplicationControllerSpec();
+		 * PodTemplateSpec template = new PodTemplateSpec(); PodSpec podSpec =
+		 * new PodSpec(); Volume volume = new Volume();
+		 * volume.setName("cephfs"); CephFSVolumeSource cephfs = new
+		 * CephFSVolumeSource(); List<String> monitors = new
+		 * ArrayList<String>(); System.out.println("CEPH_MONITOR:" +
+		 * CEPH_MONITOR); String[] ceph_monitors = CEPH_MONITOR.split(","); for
+		 * (String ceph_monitor : ceph_monitors) { monitors.add(ceph_monitor); }
+		 * cephfs.setMonitors(monitors); String namespace =
+		 * CurrentUserUtils.getInstance().getUser().getNamespace();
+		 * cephfs.setPath("/" + namespace + "/" + storageName);
+		 * cephfs.setUser("admin"); LocalObjectReference secretRef = new
+		 * LocalObjectReference(); secretRef.setName("ceph-secret");
+		 * cephfs.setSecretRef(secretRef); cephfs.setReadOnly(false);
+		 * volume.setCephfs(cephfs); volumes.add(volume);
+		 * podSpec.setVolumes(volumes);
+		 * List<com.bonc.epm.paas.kubernetes.model.Container> containers = new
+		 * ArrayList<com.bonc.epm.paas.kubernetes.model.Container>();
+		 * com.bonc.epm.paas.kubernetes.model.Container container = new
+		 * com.bonc.epm.paas.kubernetes.model.Container(); List<VolumeMount>
+		 * volumeMounts = new ArrayList<VolumeMount>(); VolumeMount volumeMount
+		 * = new VolumeMount(); volumeMount.setMountPath(mountPath);
+		 * volumeMount.setName("cephfs"); volumeMounts.add(volumeMount);
+		 * container.setImage(image); container.setName(serviceName);
+		 * container.setVolumeMounts(volumeMounts); ResourceRequirements
+		 * resources = new ResourceRequirements(); Map<String, Object> limits =
+		 * new HashMap<String, Object>(); limits.put("cpu", cpuNum);
+		 * limits.put("memory", ram + "Mi"); resources.setLimits(limits);
+		 * container.setResources(resources); containers.add(container);
+		 * podSpec.setContainers(containers); ObjectMeta metadata = new
+		 * ObjectMeta(); Map<String, String> labels = new HashMap<String,
+		 * String>(); labels.put("name", serviceName);
+		 * metadata.setLabels(labels); template.setMetadata(metadata);
+		 * template.setSpec(podSpec); Map<String, String> selector = new
+		 * HashMap<String, String>(); selector.put("name", serviceName);
+		 * rcSpec.setSelector(selector); rcSpec.setTemplate(template);
+		 * rcSpec.setReplicas(replicas); controller.setSpec(rcSpec);
+		 */
+
 		return controller;
 	}
 }

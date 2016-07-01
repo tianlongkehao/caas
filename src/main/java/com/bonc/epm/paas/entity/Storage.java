@@ -38,6 +38,8 @@ public class Storage {
 	 * 存储大小
 	 */
 	private long storageSize;
+	
+	private boolean isVolReadOnly;
 	/**
 	 * 创建时间
 	 */
@@ -112,4 +114,11 @@ public class Storage {
 		this.createDate = createDate;
 	}
 
+	public boolean isVolReadOnly() {
+		return isVolReadOnly;
+	}
+
+	public void setVolReadOnly(boolean isVolReadOnly) {
+		this.isVolReadOnly = isVolReadOnly;
+	}
 }
