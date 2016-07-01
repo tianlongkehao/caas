@@ -268,9 +268,19 @@ public class ClusterController {
 				// 子节点名称
 				String minionName = minionItem.getMetadata().getName();
 				// 子节点类型
-				String minionType = minionItem.getStatus().getConditions().get(0).getType();
+				String minionType= "";
+				String minionType0 = minionItem.getStatus().getConditions().get(0).getType();
+				String minionType1 = minionItem.getStatus().getConditions().get(1).getType();
+				if ("Ready".equals(minionType0) || "Ready".equals(minionType1)){
+					minionType= "Ready";
+				}
 				// 子节点状态
-				String minionStatus = minionItem.getStatus().getConditions().get(0).getStatus();
+				String minionStatus = "";
+				String minionStatus0 = minionItem.getStatus().getConditions().get(0).getStatus();
+				String minionStatus1 = minionItem.getStatus().getConditions().get(1).getStatus();
+				if ("True".equals(minionStatus0) || "True".equals(minionStatus1)){
+					minionStatus= "True";
+				}
 
 				// 判斷节点非master,type为Ready,status为True
 				if (!"127.0.0.1".equals(minionName) && "Ready".equals(minionType) && "True".equals(minionStatus)) {

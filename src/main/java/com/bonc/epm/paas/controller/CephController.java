@@ -65,11 +65,11 @@ public class CephController {
 
 		try {
 			System.out.println("进入方法：createNamespaceCephFS");
-			
+
 			cephMount.mkdir("/" + namespace, CephMount.O_RDWR);
 			System.out.println("创建目录：" + "/" + namespace);
-			
-			System.out.println("打印"+namespace+"下的所有目录");
+
+			System.out.println("打印" + namespace + "下的所有目录");
 			String[] listdir = cephMount.listdir("/" + namespace);
 			for (String strDir : listdir) {
 				System.out.println("dir:" + strDir);
@@ -83,28 +83,33 @@ public class CephController {
 	/**
 	 * createStorageCephFS
 	 */
-	public void createStorageCephFS(String storageName) {
+	public void createStorageCephFS(String storageName, boolean isVolReadOnly) {
 
 		try {
 			System.out.println("进入方法：createStorageCephFS");
-			
+
 			// 获取NAMESPACE
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 
-			//指定当前工作目录
+			int readOrWrite = CephMount.O_RDWR;
+			if (isVolReadOnly){
+				readOrWrite = CephMount.O_RDONLY;
+			}
+			// 指定当前工作目录
 			cephMount.chdir("/" + namespace);
-			
-			//创建挂载卷目录
-			cephMount.mkdir(storageName, CephMount.O_RDWR);
+
+			// 创建挂载卷目录
+			System.out.println("readOrWrite：" + readOrWrite);
+			cephMount.mkdir(storageName, readOrWrite);
 			System.out.println("创建目录：" + storageName);
-			
+
 			System.out.println("打印根目录下的所有目录");
 			String[] listdir1 = cephMount.listdir("/");
 			for (String strDir : listdir1) {
 				System.out.println("dir:" + strDir);
 			}
-			
-			System.out.println("打印"+namespace+"下的所有目录");
+
+			System.out.println("打印" + namespace + "下的所有目录");
 			String[] listdir2 = cephMount.listdir("/" + namespace);
 			for (String strDir : listdir2) {
 				System.out.println("dir:" + strDir);
@@ -115,7 +120,6 @@ public class CephController {
 			e.printStackTrace();
 		}
 	}
-
 
 	/**
 	 * 连结ceph服务

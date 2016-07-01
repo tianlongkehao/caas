@@ -12,6 +12,7 @@ import org.hibernate.validator.internal.util.privilegedactions.GetAnnotationPara
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +39,9 @@ public class UserController {
 	@Autowired
 	private KubernetesClientService kubernetesClientService;
 	private Model model;
+
+	@Value("${ceph.key}")
+	public String CEPH_KEY;
 
 	/**
 	 * 展示所有用户信息、 1、租户、管理员无差别？
@@ -107,6 +111,10 @@ public class UserController {
 			Namespace namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
 			namespace = client.createNamespace(namespace);
 			System.out.println("namespace:" + JSON.toJSONString(namespace));
+
+			Secret secret = kubernetesClientService.generateSecret("ceph-secret", user.getNamespace(), CEPH_KEY);
+			secret = client.createSecret(secret);
+			System.out.println("secret:" + JSON.toJSONString(secret));
 
 			// 为client创建资源配额
 			Map<String, String> map = new HashMap<String, String>();

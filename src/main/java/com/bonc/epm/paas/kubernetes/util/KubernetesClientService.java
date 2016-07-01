@@ -30,6 +30,7 @@ import com.bonc.epm.paas.kubernetes.model.ReplicationControllerSpec;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
 import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
+import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
@@ -423,6 +424,18 @@ public class KubernetesClientService {
 		
 		service.setSpec(spec);
 		return service;
+	}
+	
+	public Secret generateSecret(String name, String namespace, String key){
+		Secret secret = new Secret();
+		ObjectMeta meta = new ObjectMeta();
+		meta.setName(name);
+		meta.setNamespace(namespace);
+		secret.setMetadata(meta);
+		Map<String, String> data = new HashMap<String, String>();
+		data.put("key", key);
+		secret.setData(data);
+		return secret;
 	}
 }
 
