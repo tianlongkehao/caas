@@ -62,11 +62,11 @@ $(document).ready(function () {
         var storageName = $("#storageName").val();
         $("#defVolNum")[0].value = $("#defVol").val()*1024;
         var storageSize = $(".storageSize:checked").val();
-        var options=$("#format option:selected");
-        var format = options.text();
+        //var options=$("#format option:selected");
+        //var format = options.text();
         
         var leftstorage = $("#restVol").text();
-        if(storageSize > leftstorage){
+        if(storageSize/1024 > leftstorage){
         	layer.tips('存储大小不能大于剩余卷组容量', $('#restVol'),{tips: [1, '#EF6578']});
             return;
         }
@@ -83,7 +83,7 @@ $(document).ready(function () {
         }
 
         var url = ""+ctx+"/service/storage/build";
-        $.post(url, {'storageName':storageName,'storageSize':storageSize,'format':format}, function(data){
+        $.post(url, {'storageName':storageName,'storageSize':storageSize}, function(data){
         	data = eval("(" + data + ")");
         	if(data.status=="200"){
                 layer.msg( "创建成功！", {
