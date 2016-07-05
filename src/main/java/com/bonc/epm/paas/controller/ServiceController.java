@@ -21,23 +21,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.constant.NginxServerConf;
 import com.bonc.epm.paas.constant.ServiceConstant;
+import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.esConf;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
+import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Service;
+import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
-import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
@@ -68,12 +69,19 @@ public class ServiceController {
 
 	@Autowired
 	private ImageDao imageDao;
+
+	@Autowired
+	private StorageDao storageDao;
+
 	@Autowired
 	public DockerClientService dockerClientService;
+
 	@Autowired
 	private KubernetesClientService kubernetesClientService;
+
 	@Autowired
 	private TemplateConf templateConf;
+
 	@Autowired
 	private esConf esConf;
 
@@ -456,7 +464,7 @@ public class ServiceController {
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 						service.getInstanceNum(), registryImgName, 8080, service.getCpuNum(), service.getRam(),
 						nginxObj);
-				// 给controller设置卷组挂载的信息 TODO
+				// 给controller设置卷组挂载的信息 
 				System.out.println("给rc绑定vol");
 				System.out.println("service.getVolName():" + service.getVolName());
 				System.out.println("service.getServiceName():" + service.getServiceName());
@@ -525,16 +533,17 @@ public class ServiceController {
 					templateConf);
 		}
 		// 将ip、端口等信息写入模版并保存到nginx config文件路径
-		TemplateEngine.generateConfig(app,
-				CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName(), templateConf);
-		// 重新启动nginx服务器
-		TemplateEngine.cmdReloadConfig(templateConf);
-		service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
+		/*
+		 * TemplateEngine.generateConfig(app,
+		 * CurrentUserUtils.getInstance().getUser().getUserName() + "-" +
+		 * service.getServiceName(), templateConf); // 重新启动nginx服务器
+		 * TemplateEngine.cmdReloadConfig(templateConf);
+		 * service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
+		 */
 		service.setPortSet(String.valueOf(service.getId() + kubernetesClientService.getK8sStartPort()));
 		serviceDao.save(service);
-		//更新挂载卷的使用状态
-		StorageController storageController = new StorageController();
-		storageController.updateStorageType(service.getVolName(), service.getServiceName());
+		// 更新挂载卷的使用状态
+		this.updateStorageType(service.getVolName(), service.getServiceName());
 		log.debug("container--Name:" + service.getServiceName());
 		return "redirect:/service";
 	}
@@ -781,9 +790,8 @@ public class ServiceController {
 			}
 			map.put("status", "200");
 			serviceDao.delete(id);
-			//更新挂载卷的使用状态
-			StorageController storageController = new StorageController();
-			storageController.updateStorageType(service.getVolName(), service.getServiceName());
+			// 更新挂载卷的使用状态
+			this.updateStorageType(service.getVolName(), service.getServiceName());
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());
@@ -908,5 +916,36 @@ public class ServiceController {
 			container.setVolumeMounts(volumeMounts);
 		}
 		return controller;
+	}
+
+	/**
+	 * 更新挂载卷状态
+	 * 
+	 * @param volName
+	 * @return
+	 */
+	public void updateStorageType(String volName, String serviceName) {
+
+		// userId
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+
+		Storage storage = storageDao.findByCreateByAndStorageName(userId, volName);
+		// 设置使用状态
+		List<Service> lstService = serviceDao.findByCreateByAndVolName(userId, volName);
+		if (lstService.size() == 0) {
+			storage.setUseType(StorageConstant.NOT_USER);
+		} else {
+			storage.setUseType(StorageConstant.IS_USER);
+		}
+		// 设置挂载点
+		StringBuilder newMp = new StringBuilder();
+		for (Service service : lstService) {
+			newMp.append(service.getServiceName());
+			newMp.append(":");
+			newMp.append(service.getMountPath());
+			newMp.append(";");
+		}
+		storage.setMountPoint(newMp.toString());
+		storageDao.save(storage);
 	}
 }

@@ -8,16 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.Storage;
 
-
 @Transactional
-public interface StorageDao extends CrudRepository<Storage, Long>{
+public interface StorageDao extends CrudRepository<Storage, Long> {
 
-	public List<Storage> findByCreateBy (long createBy);
-	
-	public Storage findByCreateByAndStorageName (long createBy , String storageName);
-	
-	public List<Storage> findAllByCreateByOrderByCreateDateDesc(long createBy,Pageable pageable);
-	
+	public List<Storage> findByCreateBy(long createBy);
+
+	//@Query("select s from Storage s where 1=1 and s.createBy= ?1 and s.storageName = ?2")
+	public Storage findByCreateByAndStorageName(long createBy, String storageName);
+
+	public List<Storage> findAllByCreateByOrderByCreateDateDesc(long createBy, Pageable pageable);
+
 	public long countByCreateBy(long createBy);
-	
+
 }
