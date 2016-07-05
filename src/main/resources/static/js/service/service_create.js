@@ -10,7 +10,7 @@ $(document).ready(function(){
 				var jsonData = $.parseJSON(data);
 				for(var i = 0; i < jsonData.count; i++){
 					var storageVolOpt = '<option name="volName" value=""></option>';
-					var txt = jsonData.storages[i].storageName +" "+ jsonData.storages[i].format +" "+ jsonData.storages[i].storageSize + "M";
+					var txt = jsonData.storages[i].storageName +" "+ jsonData.storages[i].storageSize + "M";
 					$("#selectVolume").append(storageVolOpt);
 					$("#selectVolume")[0].children[i+1].innerHTML = txt;
 					$("#selectVolume")[0].children[i+1].value = jsonData.storages[i].storageName;

@@ -525,11 +525,13 @@ public class ServiceController {
 					templateConf);
 		}
 		// 将ip、端口等信息写入模版并保存到nginx config文件路径
-		TemplateEngine.generateConfig(app,
-				CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName(), templateConf);
+		//TODO
+		//TemplateEngine.generateConfig(app,
+				//CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName(), templateConf);
 		// 重新启动nginx服务器
-		TemplateEngine.cmdReloadConfig(templateConf);
-		service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
+		//TODO
+		//TemplateEngine.cmdReloadConfig(templateConf);
+		//service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
 		service.setPortSet(String.valueOf(service.getId() + kubernetesClientService.getK8sStartPort()));
 		serviceDao.save(service);
 		//更新挂载卷的使用状态
