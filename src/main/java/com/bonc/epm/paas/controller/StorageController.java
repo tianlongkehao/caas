@@ -22,18 +22,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.StorageConstant;
+import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiRecord;
+import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
 @Controller
 public class StorageController {
+
 	private static final Logger log = LoggerFactory.getLogger(StorageController.class);
+
 	@Autowired
 	private StorageDao storageDao;
+
+	@Autowired
+	private ServiceDao serviceDao;
 
 	/**
 	 * 进入存储卷组页面
@@ -205,5 +212,27 @@ public class StorageController {
 			map.put("status", "200");
 		}
 		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 更新挂载卷状态
+	 * 
+	 * @param volName
+	 * @return
+	 */
+	public void updateStorageType(String volName) {
+
+		// userId
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+
+		Storage storage = storageDao.findByCreateByAndStorageName(userId, volName);
+
+		List<Service> lstService = serviceDao.findByCreateByAndVolName(userId, volName);
+		if (lstService.size() == 0) {
+			storage.setUseType(StorageConstant.NOT_USER);
+		} else {
+			storage.setUseType(StorageConstant.IS_USER);
+		}
+		storageDao.save(storage);
 	}
 }
