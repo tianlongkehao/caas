@@ -10,9 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,11 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.StorageConstant;
-import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
-import com.bonc.epm.paas.entity.Ci;
-import com.bonc.epm.paas.entity.CiRecord;
-import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -38,9 +31,6 @@ public class StorageController {
 
 	@Autowired
 	private StorageDao storageDao;
-
-	@Autowired
-	private ServiceDao serviceDao;
 
 	/**
 	 * 进入存储卷组页面
@@ -212,37 +202,5 @@ public class StorageController {
 			map.put("status", "200");
 		}
 		return JSON.toJSONString(map);
-	}
-
-	/**
-	 * 更新挂载卷状态
-	 * 
-	 * @param volName
-	 * @return
-	 */
-	public void updateStorageType(String volName, String serviceName) {
-
-		// userId
-		long userId = CurrentUserUtils.getInstance().getUser().getId();
-
-		Storage storage = storageDao.findByCreateByAndStorageName(userId, volName);
-
-		// 设置使用状态
-		List<Service> lstService = serviceDao.findByCreateByAndVolName(userId, volName);
-		if (lstService.size() == 0) {
-			storage.setUseType(StorageConstant.NOT_USER);
-		} else {
-			storage.setUseType(StorageConstant.IS_USER);
-		}
-		// 设置挂载点
-		StringBuilder newMp = new StringBuilder();
-		for (Service service : lstService) {
-			newMp.append(service.getServiceName());
-			newMp.append(":");
-			newMp.append(service.getMountPath());
-			newMp.append(";");
-		}
-		storage.setMountPoint(newMp.toString());
-		storageDao.save(storage);
 	}
 }

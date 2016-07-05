@@ -138,7 +138,7 @@ public class UserController {
 			quota = client.createResourceQuota(quota);
 			System.out.println("quota:" + JSON.toJSONString(quota));
 
-			// ceph中创建租户目录 TODO
+			// ceph中创建租户目录 
 			CephController ceph = new CephController();
 			ceph.connectCephFS();
 			ceph.createNamespaceCephFS(user.getNamespace());
