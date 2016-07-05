@@ -104,9 +104,9 @@ public class ESClient {
 
 /*	public static void main(String args[]){
 		ESClient esc = new ESClient();
-		esc.initESClient("10.0.92.211:9300");
+		esc.initESClient("192.168.12.43:9300");
 //		esc.createIndex();
-		esc.search("logstash-2016.06.02","fluentd","portal-v5wuw");
+		esc.search("logstash-2016.07.04","fluentd","hello-584gz");
 //		esc.getIndex();
 //		esc.get();
 //		esc.delete();

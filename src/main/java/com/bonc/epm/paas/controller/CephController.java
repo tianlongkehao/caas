@@ -120,7 +120,42 @@ public class CephController {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * deleteStorageCephFS
+	 */
+	public void deleteStorageCephFS(String storageName) {
 
+		try {
+			System.out.println("进入方法：deleteStorageCephFS");
+			
+			// 获取NAMESPACE
+			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+			
+			System.out.println("删除前,打印" + namespace + "下的所有目录");
+			String[] listDirBef = cephMount.listdir("/" + namespace);
+			for (String strDir : listDirBef) {
+				System.out.println("dir:" + strDir);
+			}
+
+			// 指定当前工作目录
+			cephMount.chdir("/" + namespace);
+
+			// 删除挂载卷目录
+			cephMount.rmdir(storageName);
+			System.out.println("删除目录：" + storageName);
+
+			System.out.println("删除前,打印" + namespace + "下的所有目录");
+			String[] listDirAft = cephMount.listdir("/" + namespace);
+			for (String strDir : listDirAft) {
+				System.out.println("dir:" + strDir);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * 连结ceph服务
 	 */
