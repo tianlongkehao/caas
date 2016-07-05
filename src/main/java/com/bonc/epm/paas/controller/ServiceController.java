@@ -534,7 +534,7 @@ public class ServiceController {
 		serviceDao.save(service);
 		//更新挂载卷的使用状态
 		StorageController storageController = new StorageController();
-		storageController.updateStorageType(service.getVolName());
+		storageController.updateStorageType(service.getVolName(), service.getServiceName());
 		log.debug("container--Name:" + service.getServiceName());
 		return "redirect:/service";
 	}
@@ -783,7 +783,7 @@ public class ServiceController {
 			serviceDao.delete(id);
 			//更新挂载卷的使用状态
 			StorageController storageController = new StorageController();
-			storageController.updateStorageType(service.getVolName());
+			storageController.updateStorageType(service.getVolName(), service.getServiceName());
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());

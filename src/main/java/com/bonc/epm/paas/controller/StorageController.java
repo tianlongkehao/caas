@@ -220,19 +220,29 @@ public class StorageController {
 	 * @param volName
 	 * @return
 	 */
-	public void updateStorageType(String volName) {
+	public void updateStorageType(String volName, String serviceName) {
 
 		// userId
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 
 		Storage storage = storageDao.findByCreateByAndStorageName(userId, volName);
 
+		// 设置使用状态
 		List<Service> lstService = serviceDao.findByCreateByAndVolName(userId, volName);
 		if (lstService.size() == 0) {
 			storage.setUseType(StorageConstant.NOT_USER);
 		} else {
 			storage.setUseType(StorageConstant.IS_USER);
 		}
+		// 设置挂载点
+		StringBuilder newMp = new StringBuilder();
+		for (Service service : lstService) {
+			newMp.append(service.getServiceName());
+			newMp.append(":");
+			newMp.append(service.getMountPath());
+			newMp.append(";");
+		}
+		storage.setMountPoint(newMp.toString());
 		storageDao.save(storage);
 	}
 }
