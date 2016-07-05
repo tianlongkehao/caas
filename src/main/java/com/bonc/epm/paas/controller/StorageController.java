@@ -194,8 +194,16 @@ public class StorageController {
 	@ResponseBody
 	public String deleteStorage(@RequestParam long storageId) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		storageDao.delete(storageId);
-		map.put("status", "200");
+		Storage storage = storageDao.findOne(storageId);
+		if (StorageConstant.IS_USER == storage.getUseType()) {
+			map.put("status", "500");
+		} else {
+			storageDao.delete(storageId);
+			CephController cephCon = new CephController();
+			cephCon.connectCephFS();
+			cephCon.deleteStorageCephFS(storage.getStorageName());
+			map.put("status", "200");
+		}
 		return JSON.toJSONString(map);
 	}
 }
