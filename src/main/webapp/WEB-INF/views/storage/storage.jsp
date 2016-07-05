@@ -50,9 +50,9 @@
                                         <thead>
                                         <tr style="height:40px;">
                                             <th style="width: 15%;text-indent:30px;">名称</th>
-                                            <th style="width: 10%;text-indent: 15px;">使用状态</th>
-                                            <th style="width: 10%;text-indent: 20px;">格式</th>
-                                            <th style="width: 10%;text-indent: 8px;">挂载点</th>
+                                            <th style="width: 15%;text-indent: 15px;">使用状态</th>
+                                            <!-- <th style="width: 10%;text-indent: 20px;">格式</th> -->
+                                            <th style="width: 15%;text-indent: 8px;">挂载点</th>
                                             <th style="width: 15%;text-indent: 10px;">大小</th>
                                             <th style="width: 12%;">创建时间</th>
                                             <th style="width: 20%;text-indent: 10px;">功能</th>

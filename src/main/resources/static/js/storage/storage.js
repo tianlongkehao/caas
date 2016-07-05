@@ -25,11 +25,11 @@ function loadStorageList(){
         							' <td style="width: 15%; text-indent:22px;" id = "storageName">'+
         							'<a href="'+ctx+'/service/storage/detail/'+storage.id+'" title="查看详细信息">'+storage.storageName +'</a>'+
         							'</td>'+
-        							' <td style="width: 10%;" class="cStatusColumn">' +
+        							' <td style="width: 15%;" class="cStatusColumn">' +
         								useType +
         							' </td>'+
-        							' <td style="width: 10%;">' + storage.format + '</td>'+
-        							' <td style="width: 10%;">' + storage.mountPoint + '</td>'+
+        							//' <td style="width: 10%;">' + storage.format + '</td>'+
+        							' <td style="width: 15%;">' + storage.mountPoint + '</td>'+
         							' <td style="width: 12%;">' + storage.storageSize + ' M</td>'+
         							' <td style="width: 15%;">' + storage.createDate + '</td>'+
         							' <td style="width: 20%;">' + 

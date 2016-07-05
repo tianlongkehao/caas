@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.Resource;
 import com.bonc.epm.paas.entity.Restriction;
+import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
@@ -36,6 +38,8 @@ public class UserController {
 	private static Map<String, KubernetesAPIClientInterface> clientMap;
 	@Autowired
 	public UserDao userDao;
+	@Autowired
+	public StorageDao storageDao;
 	@Autowired
 	private KubernetesClientService kubernetesClientService;
 	private Model model;
@@ -326,7 +330,7 @@ public class UserController {
 					// Integer a=Integer.valueOf(map.get("cpu"))/1024;
 					// resource.setCpu_account(a.toString());//CPU数量
 					resource.setCpu_account(map.get("cpu"));// CPU数量
-					resource.setRam(map.get("memory").replace("G", "").replace("Gi", ""));// 内存
+					resource.setRam(map.get("memory").replace("G", "").replace("i", ""));// 内存
 					
 					System.out.println("+++++++++++++" + map.get("cpu") + "------" + map.get("memory"));
 					// resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
@@ -634,6 +638,15 @@ public class UserController {
 		} catch (KubernetesClientException e) {
 			System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
 		}
+		
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		int usedstorage = 0;
+		List<Storage> list = storageDao.findByCreateBy(cUser.getId());
+		for (Storage storage : list) {
+			usedstorage = usedstorage + (int) storage.getStorageSize();
+		}
+		model.addAttribute("usedstorage",  usedstorage / 1024);
+		
 		model.addAttribute("user", user);
 		model.addAttribute("servCpuNum", servCpuNum);
 		model.addAttribute("servMemoryNum", servMemoryNum);

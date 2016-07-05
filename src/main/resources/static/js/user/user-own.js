@@ -52,6 +52,8 @@ $(function(){
     $("#usedCpu")[0].style.width = userCpuPer;
     var userMemPer = $("#detailMemory")[0].textContent/$("#totalMemory")[0].textContent*100+"%";
     $("#usedMemory")[0].style.width = userMemPer;
+    var userVolPer = $("#detailVolume")[0].textContent/$("#totalVolume")[0].textContent*100+"%";
+    $("#usedVolume")[0].style.width = userVolPer;
 
     $("#basicInfo").click(function(){
     	var id = $("#user_id").val();

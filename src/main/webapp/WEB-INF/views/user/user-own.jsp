@@ -242,6 +242,17 @@
                                         	</c:choose>--%>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>卷组容量（G）</td>
+                                        <td>
+                                            <div class="slider_bj">
+                                                <div class="slider_block detailVolume" id="usedVolume"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span id="detailVolume">${usedstorage}</span>/<span id="totalVolume">${cur_user.vol_size}</span>（G）
+                                        </td>
+                                    </tr>
                                     <%--<tr>
                                         <td>集群（个）</td>
                                         <td>
