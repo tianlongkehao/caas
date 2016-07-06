@@ -41,6 +41,18 @@ $(document).ready(function(){
 	      return;
 	    }
 	    
+	    var nginxstr = "{";
+	    $('input[name="nginxserv"]:checked').each(function(){
+    		var servname = $(this).val();
+    		var servid = $(this).attr('id');
+    		nginxstr = nginxstr+"'"+servid+"'"+":"+"'"+servname+"',";
+    	})
+    	nginxstr = nginxstr.substring(0,nginxstr.length-1) +"}";
+    	//var nginxObj = eval('(' + nginxstr + ')'); 
+    	if(nginxstr == "}"){
+    		nginxstr = "{}";
+    	}
+    	$('#nginxZone').val(nginxstr);
 	    //var cpuNum = $('#cpuNum').val();
 	    /*if(!cpuNum || cpuNum.length < 1){
 		      layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});

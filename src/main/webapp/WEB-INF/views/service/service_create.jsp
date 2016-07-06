@@ -100,10 +100,23 @@
                                     <span class="ve_top">服务访问路径：</span>
                                     <input type="text" value="" class="in_style" id="webPath" name="webPath" >
                                 </li>
+                                <c:if test="${DMZ!=null && USER!=null  }">
+                                 <li class="line-h-3">
+                                 	<span class="ve_top">nginx代理区域选择：</span>
+                                	<label class="checkbox-inline">
+  										<input type="checkbox" id="dmz" name="nginxserv" value="${DMZ }"> DMZ区
+									</label>
+									<label class="checkbox-inline">
+  										<input type="checkbox" id="user" name="nginxserv" value="${USER }"> USER区
+									</label>
+									<input type="hidden" value="" class="in_style" id="nginxZone" name="nginxZone">
+								</li>
+								</c:if>
                                 <li class="line-h-3">
                                     <span class="ve_top">nginx代理路径：</span>
                                     <input type="text" value="" class="in_style" id="nginxPath" name="nginxPath" >
                                 </li>
+                               
                                 
                                 <!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
