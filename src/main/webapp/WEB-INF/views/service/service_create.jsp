@@ -91,10 +91,15 @@
                                     <input type="text" value="" class="in_style" id="serviceName" name="serviceName">
                                     <input type="hidden" value="" class="in_style" id="resourceName" name="resourceName">
                                 </li>
-                                <li class="line-h-3">
-                                    <span class="ve_top">启动命令：</span>
-                                    <input type="checkbox" id="startCommant_disabled">
-                                    <input type="text" value="" class="in_style_mid" id="startCommant" name="startCommant" disabled>
+                                <li id="service_type">
+                                	<span class="ve_top">启动命令：</span> 
+                                	<span class="update-mi">
+                                		<input type="checkbox" id="startCommant"> 
+                                    	<label for="startCommant"><font color="blue">自定义启动命令</font></label>
+                                    </span>
+                                </li>
+                                <li class="line-h-3" id="startCommant_li">
+                                    <input type="text" value="" class="in_style" id="startCommant_input" name="startCommant" style="margin-left:120px">
                                 </li>
                                 <li class="line-h-3">
                                     <span class="ve_top">服务访问路径：</span>

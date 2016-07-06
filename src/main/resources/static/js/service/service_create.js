@@ -74,10 +74,17 @@ $(document).ready(function(){
 		//$("#mountPath").attr("disabled",forFalse);
 		//$("#selectVolume").attr("disabled",forFalse);
 	})
+
 	$("#startCommant_disabled").click(function(){
 		forFalse = !forFalse;
 		$("#startCommant").attr("disabled",forFalse);
 	})
+	
+	$("#startCommant_li").hide();
+	$("#startCommant").click(function(){
+		$("#startCommant_li").toggle();
+	})
+	
 	
 	$("#searchimage").click(function(){
 		var imageName = $('#imageName').val();
