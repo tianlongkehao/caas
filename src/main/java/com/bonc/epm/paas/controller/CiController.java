@@ -174,12 +174,20 @@ public class CiController {
 		return "ci/ci_add.jsp";
 	}
 	
-	@RequestMapping(value={"ci/addSource"},method=RequestMethod.GET)
+	@RequestMapping(value={"ci/uploadImage"},method=RequestMethod.GET)
 	public String addSource(Model model){
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         model.addAttribute("username", cuurentUser.getUserName());
         model.addAttribute("menu_flag", "ci");
-		return "ci/ci_addSource.jsp";
+		return "ci/ci_uploadImage.jsp";
+	}
+	
+	@RequestMapping(value={"ci/dockerfile"},method=RequestMethod.GET)
+	public String dockerfile(Model model){
+		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        model.addAttribute("username", cuurentUser.getUserName());
+        model.addAttribute("menu_flag", "ci");
+		return "ci/ci_dockerfile.jsp";
 	}
 	
 	@RequestMapping(value={"ci/addCodeSource"},method=RequestMethod.GET)

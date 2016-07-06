@@ -60,12 +60,24 @@ $(document).ready(function(){
 		containerName();
     });
 	
-	$(".cpuNum").click(function(){
+	/*$(".cpuNum").click(function(){
 		var tips = $(this).attr("placeholder");
 		layer.tips(tips,'.cpuNum',{tips: [1, '#3595CC']});
+	})*/
+
+	//控制checkbook后输入框是否可填写
+	var forFalse = true;
+	$("#save_roll_dev").hide();
+	$("#state_service").click(function(){
+		$("#save_roll_dev").toggle();
+		//forFalse = !forFalse;
+		//$("#mountPath").attr("disabled",forFalse);
+		//$("#selectVolume").attr("disabled",forFalse);
 	})
-
-
+	$("#startCommant_disabled").click(function(){
+		forFalse = !forFalse;
+		$("#startCommant").attr("disabled",forFalse);
+	})
 	
 	$("#searchimage").click(function(){
 		var imageName = $('#imageName').val();

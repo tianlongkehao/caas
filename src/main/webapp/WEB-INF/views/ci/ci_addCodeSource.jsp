@@ -21,14 +21,14 @@
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">代码构建</li>
+                    <li class="active" id="nav2">快速构建</li>
                 </ol>
             </div>
             <div class="contentMain">
 
                 <div class="item-obj">
                     <div class="container">
-                        <h4>代码上传构建</h4>
+                        <h4>快速构建</h4>
 
                         <form id="buildForm" name="buildForm" action="<%=path %>/ci/addCodeResourceCi.do" method="post" enctype="multipart/form-data">
                             <div class="row depot-name">

@@ -21,14 +21,14 @@
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">上传构建</li>
+                    <li class="active" id="nav2">上传镜像</li>
                 </ol>
             </div>
             <div class="contentMain">
 
                 <div class="item-obj">
                     <div class="container">
-                        <h4>代码上传构建</h4>
+                        <h4>上传镜像</h4>
 
                         <form id="buildForm" name="buildForm" action="<%=path %>/ci/addResourceCi.do" method="post" enctype="multipart/form-data">
                             <div class="row depot-name">
@@ -65,8 +65,14 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <label for="sourceCode">上传代码</label>
+                                    <label for="sourceCode">上传镜像</label>
                                     <input type="file" name="sourceCode" id="sourceCode">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label for="sourceCode">镜像类型</label></br>
+                                    <input type="checkbox">基础镜像
                                 </div>
                             </div>
                             <section class="registryinfo">
@@ -81,10 +87,10 @@
                                             <input id="projectName" name="projectName" type="text" value=""
                                                    class="reg-input">
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                             <span class="reg-text">上传DockerFile</span> &nbsp;
                                             <input id="dockerFile" name="dockerFile" type="file" class="dockerfileinput">
-                                        </td>
+                                        </td> -->
                                     </tr>
                                     </tbody>
                                 </table>

@@ -28,10 +28,12 @@
                 <div class="caption clearfix">
                     <ul class="toolbox clearfix">
                         <li><a href="javascript:void(0);" id="ciReloadBtn"><i class="fa fa-repeat"></i></a></li>
-                        <li><a href="<%=path %>/ci/add" id="ciAddBtn">快速构建</a></li>
+                        <li><a href="<%=path %>/ci/add" id="ciAddBtn">代码构建</a></li>
+                        <li><a href="<%=path %>/ci/addCodeSource" id="ciAddCodeSourceBtn">快速构建</a></li>
                         <%-- <li><a href="<%=path %>/ci/addSource" id="ciAddSourceBtn">上传构建</a></li> --%>
-                        <li><a href="<%=path %>/ci/addCodeSource" id="ciAddCodeSourceBtn">代码构建</a></li>
                         <!-- <li><a href="<%=path %>/file/downloadTemplate?fileName=Dockerfile">下载dockerfile示例</a></li> -->
+                        <li><a href="<%=path %>/ci/uploadImage" id="ciAddSourceBtn">上传镜像</a></li>
+                        <li><a href="<%=path %>/ci/dockerfile">Dockerfile构建</a></li>
                     </ul>
                 </div>
                 <div class="itemTable">

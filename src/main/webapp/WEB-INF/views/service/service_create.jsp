@@ -91,6 +91,19 @@
                                     <input type="text" value="" class="in_style" id="serviceName" name="serviceName">
                                     <input type="hidden" value="" class="in_style" id="resourceName" name="resourceName">
                                 </li>
+                                <li class="line-h-3">
+                                    <span class="ve_top">启动命令：</span>
+                                    <input type="checkbox" id="startCommant_disabled">
+                                    <input type="text" value="" class="in_style_mid" id="startCommant" name="startCommant" disabled>
+                                </li>
+                                <li class="line-h-3">
+                                    <span class="ve_top">服务访问路径：</span>
+                                    <input type="text" value="" class="in_style" id="webPath" name="webPath" >
+                                </li>
+                                <li class="line-h-3">
+                                    <span class="ve_top">nginx代理路径：</span>
+                                    <input type="text" value="" class="in_style" id="nginxPath" name="nginxPath" >
+                                </li>
                                 
                                 <!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
@@ -121,9 +134,8 @@
                                         <span class="number-title">CPU数量：</span>
                                         <input type="radio" class="cpuNum" name="cpuNum" value="1" placeholder="当前可用cpu数量：${leftcpu }个">1<span>个</span>
                                        	<input type="radio" class="cpuNum" name="cpuNum" value="2" placeholder="当前可用cpu数量：${leftcpu }个">2<span>个</span>
-                                        <input type="radio" class="cpuNum" name="cpuNum" value="4" placeholder="当前可用cpu数量：${leftcpu }个">4<span>个</span>	
-                                        
-                                        <!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：${leftcpu }</span> -->
+                                        <input type="radio" class="cpuNum" name="cpuNum" value="4" placeholder="当前可用cpu数量：${leftcpu }个">4<span>个</span>
+                                        <span style="color: #1E90FF;margin-left: 50px;">当前可用cpu数量：${leftcpu }个</span>
                                     </div>
                                     
                                 </li>
@@ -133,7 +145,7 @@
                                         <input type="radio" class="ram" name="ram" value="2048">2<span>G</span>
                                         <input type="radio" class="ram" name="ram" value="4098">4<span>G</span>
                                         <input type="radio" class="ram" name="ram" value="8192">8<span>G</span>
-                                        <!--<span style="color: grey;">当前可用ram：${leftram }M</span> -->
+                                        <span style="color: #1E90FF;margin-left: 60px;">当前可用内存：${leftmemory }G</span>
                                     </div>
                                 </li>
                                 <%-- <li class="line-h-3">
@@ -174,22 +186,26 @@
                                 </li> --%>
 
 
-                                <!--  <li id="service_type"><span class="ve_top">服务类型：</span> <span
-                                    class="update-mi"><input type="checkbox" id="state_service"
-                                        stateless="0"> <label for="state_service"><font
-                                        color="blue">有状态服务</font></label><span class="mountTips"></span></span></li>-->
+                                <li id="service_type">
+                                	<span class="ve_top">服务类型：</span> 
+                                	<span class="update-mi">
+                                		<input type="checkbox" id="state_service" stateless="0"> 
+                                    	<label for="state_service"><font color="blue">有状态服务</font></label>
+                                    	<span class="mountTips"></span>
+                                    </span>
+                                </li>
                                 <li class="hide-set" id="save_roll_dev" >
                                     <ul id="mountPathList">
                                         <li class="mount line-h-3">
-                                        	<span class="ve_top">挂载地址：</span>
-                                            <table class="pull-left">
+                                        	<!-- <span class="ve_top">挂载地址：</span> -->
+                                            <table class="pull-left" style="margin-left:120px;">
                                                 <tbody>
                                                 <tr>
-                                                    <td><input type="text" name="mountPath" value="/var/lib/mysql" /></td>
+                                                    <td><input type="text" id="mountPath" name="mountPath" value="/var/lib/mysql"  /></td>
                                                     <!-- <td><span class="ve_top" style="width: 150px">/var/lib/mysql</span>
                                                     </td> -->
                                                     <td style="padding-left: 10px;">
-                                                    <select class="selectVolume" id="selectVolume" name="volName"
+                                                    <select class="selectVolume" id="selectVolume" name="volName" 
                                                                 style="height: 30px; width: 230px;">
                                                         <option name="volName" value="0">选择一个存储卷</option>
                                                         

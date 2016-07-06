@@ -21,6 +21,10 @@ function loadStorageList(){
         		(function(){
         			var storage = data.storages[i];
         			var useType = storage.useType ==1 ? "未使用" : "使用" ;
+        			
+        			if(storage.mountPoint == null || storage.mountPoint == ""){
+        				storage.mountPoint = "未挂载";
+        			}
         			itemsHtml += ' <tr class="ci-listTr" style="cursor:auto">'+
         							' <td style="width: 15%; text-indent:22px;" id = "storageName">'+
         							'<a href="'+ctx+'/service/storage/detail/'+storage.id+'" title="查看详细信息">'+storage.storageName +'</a>'+
@@ -29,7 +33,7 @@ function loadStorageList(){
         								useType +
         							' </td>'+
         							//' <td style="width: 10%;">' + storage.format + '</td>'+
-        							' <td style="width: 15%;">' + storage.mountPoint + '</td>'+
+        							' <td style="width: 15%;word-wrap:break-word;word-break:break-all;">' + storage.mountPoint + '</td>'+
         							' <td style="width: 12%;">' + storage.storageSize + ' M</td>'+
         							' <td style="width: 15%;">' + storage.createDate + '</td>'+
         							' <td style="width: 20%;">' + 

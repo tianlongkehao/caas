@@ -390,7 +390,7 @@ public class ServiceController {
 
 				System.out.println(hard + "  " + used);
 				model.addAttribute("leftcpu", leftCpu);
-				model.addAttribute("leftmemory", leftmemory);
+				model.addAttribute("leftmemory", leftmemory/1024);
 			}
 
 		} catch (Exception e) {
