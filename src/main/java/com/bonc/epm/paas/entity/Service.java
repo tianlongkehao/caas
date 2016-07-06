@@ -93,6 +93,7 @@ public class Service {
 	// public void setPodName(List<String> podName) {
 	// this.podName = podName;
 	// }
+	private String nginxZone;
 	public long getImgID() {
 		return imgID;
 	}
@@ -276,4 +277,13 @@ public class Service {
 	public void setMountPath(String mountPath) {
 		this.mountPath = mountPath;
 	}
+
+	public String getNginxZone() {
+		return nginxZone;
+	}
+
+	public void setNginxZone(String nginxZone) {
+		this.nginxZone = nginxZone;
+	}
+	
 }

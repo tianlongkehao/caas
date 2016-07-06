@@ -359,6 +359,8 @@ public class ServiceController {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
 		}
+		//获取配置文件中nginx选择区域
+		getNginxServer(model);
 
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
@@ -439,7 +441,7 @@ public class ServiceController {
 	 */
 	@RequestMapping("service/createContainer.do")
 	@ResponseBody
-	public String CreateContainer(long id, String nginxObj) {
+	public String CreateContainer(long id) {
 		Service service = serviceDao.findOne(id);
 		Map<String, Object> map = new HashMap<String, Object>();
 		// 使用k8s管理服务
@@ -463,7 +465,7 @@ public class ServiceController {
 			if (controller == null) {
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 						service.getInstanceNum(), registryImgName, 8080, service.getCpuNum(), service.getRam(),
-						nginxObj);
+						service.getNginxZone());
 				// 给controller设置卷组挂载的信息 
 				System.out.println("给rc绑定vol");
 				System.out.println("service.getVolName():" + service.getVolName());
@@ -851,7 +853,7 @@ public class ServiceController {
 
 	@RequestMapping("service/stratServices.do")
 	@ResponseBody
-	public String startServices(String serviceIDs, String nginxObj) {
+	public String startServices(String serviceIDs) {
 		ArrayList<Long> ids = new ArrayList<Long>();
 		String[] str = serviceIDs.split(",");
 		if (str != null && str.length > 0) {
@@ -862,7 +864,7 @@ public class ServiceController {
 		Map<String, Object> maps = new HashMap<String, Object>();
 		try {
 			for (long id : ids) {
-				CreateContainer(id, nginxObj);
+				CreateContainer(id);
 			}
 			maps.put("status", "200");
 		} catch (Exception e) {
