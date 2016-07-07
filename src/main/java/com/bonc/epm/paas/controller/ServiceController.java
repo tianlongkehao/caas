@@ -359,7 +359,7 @@ public class ServiceController {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
 		}
-		//获取配置文件中nginx选择区域
+		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
 
 		model.addAttribute("imgID", imgID);
@@ -392,7 +392,7 @@ public class ServiceController {
 
 				System.out.println(hard + "  " + used);
 				model.addAttribute("leftcpu", leftCpu);
-				model.addAttribute("leftmemory", leftmemory/1024);
+				model.addAttribute("leftmemory", leftmemory / 1024);
 			}
 
 		} catch (Exception e) {
@@ -466,13 +466,11 @@ public class ServiceController {
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 						service.getInstanceNum(), registryImgName, 8080, service.getCpuNum(), service.getRam(),
 						service.getNginxZone());
-				// 给controller设置卷组挂载的信息 
+				// 给controller设置卷组挂载的信息
 				System.out.println("给rc绑定vol");
-				System.out.println("service.getVolName():" + service.getVolName());
-				System.out.println("service.getServiceName():" + service.getServiceName());
-				System.out.println("registryImgName:" + registryImgName);
-				System.out.println("service.getMountPath():" + service.getMountPath());
-				controller = this.setVolumeStorage(controller, service.getVolName(), service.getMountPath());
+				if (!"0".equals(service.getVolName())) {
+					controller = this.setVolumeStorage(controller, service.getVolName(), service.getMountPath());
+				}
 				controller = client.createReplicationController(controller);
 			} else {
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
@@ -535,17 +533,20 @@ public class ServiceController {
 					templateConf);
 		}
 		// 将ip、端口等信息写入模版并保存到nginx config文件路径
-		//TODO
-		//TemplateEngine.generateConfig(app,
-				//CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName(), templateConf);
+		// TODO
+		// TemplateEngine.generateConfig(app,
+		// CurrentUserUtils.getInstance().getUser().getUserName() + "-" +
+		// service.getServiceName(), templateConf);
 		// 重新启动nginx服务器
-		//TODO
-		//TemplateEngine.cmdReloadConfig(templateConf);
-		//service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
+		// TODO
+		// TemplateEngine.cmdReloadConfig(templateConf);
+		// service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
 		service.setPortSet(String.valueOf(service.getId() + kubernetesClientService.getK8sStartPort()));
 		serviceDao.save(service);
 		// 更新挂载卷的使用状态
-		this.updateStorageType(service.getVolName(), service.getServiceName());
+		if (!"0".equals(service.getVolName())) {
+			this.updateStorageType(service.getVolName(), service.getServiceName());
+		}
 		log.debug("container--Name:" + service.getServiceName());
 		return "redirect:/service";
 	}
