@@ -107,7 +107,7 @@
                                 </li>
                                 <c:if test="${DMZ!=null && USER!=null  }">
                                  <li class="line-h-3">
-                                 	<span class="ve_top">nginx代理区域选择：</span>
+                                 	<span class="ve_top">nginx代理区域：</span>
                                 	<label class="checkbox-inline">
   										<input type="checkbox" id="dmz" name="nginxserv" value="${DMZ }"> DMZ区
 									</label>
