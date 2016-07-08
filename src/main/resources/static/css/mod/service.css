@@ -462,9 +462,9 @@
 
 .createPadding {
     padding: 20px 60px;
-    position: fixed;
-    bottom: 0;
-    width: 75% !important;
+    /* position: fixed;
+    bottom: 0; */
+    width: 99% !important;
     background: #fff;
     height: 80px !important;
     margin: 0 !important;

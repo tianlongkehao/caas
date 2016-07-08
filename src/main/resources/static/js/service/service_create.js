@@ -82,20 +82,34 @@ $(document).ready(function(){
 	$("#save_roll_dev").hide();
 	$("#state_service").click(function(){
 		$("#save_roll_dev").toggle();
-		//forFalse = !forFalse;
-		//$("#mountPath").attr("disabled",forFalse);
-		//$("#selectVolume").attr("disabled",forFalse);
+		$("#mountPath").focus();
 	})
 
-	$("#startCommant_disabled").click(function(){
-		forFalse = !forFalse;
-		$("#startCommant").attr("disabled",forFalse);
-	})
-	
+	//启动命令
 	$("#startCommant_li").hide();
 	$("#startCommant").click(function(){
 		$("#startCommant_li").toggle();
+		$("#startCommant_input").focus();
 	})
+	
+	//添加环境变量
+	$("#cratePATH").click(function(){
+		var addName = $("#Name").val();
+		var addValue = $("#Value").val();
+		if(addName != "" && addValue != ""){
+			var tr = '<tr>'+
+			'<td class="keys"><input type="text" style="width: 98%" value="'+addName+'"></td>'+
+			'<td class="vals"><input type="text" style="width: 98%" value="'+addValue+'"></td>'+
+			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
+			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin">'+
+			'</td>'+
+		'</tr>'
+		$("#Path-oper").append(tr);
+		}else{
+			
+		}
+		
+	});
 	
 	
 	$("#searchimage").click(function(){
@@ -285,7 +299,54 @@ function containerName(){
 								$("#buildService").submit();
 							}
 					}
-				
 			 });
-	 
 }
+
+/**
+ * 删除环境变量
+ */
+//删除环境变量
+function deleteRow(obj){
+	$(obj).parent().parent().remove();
+	
+}
+/*function deleteRow(obj){
+	var id = "";
+	$(":checked[name='ids']").each(function(){
+		id = id + jQuery(this).val() + ",";
+	});
+	if ("" == id) {
+		alert("请选择至少一个用户");
+		return;
+	}
+	else {
+		id = id.substring(0, id.length - 1);
+		layer.open({
+			 title: '删除用户',
+			 content:'确定删除多个用户吗？',
+			 btn: ['确定', '取消'],
+			 yes: function(index, layero){ //或者使用btn1
+				 layer.close(index);
+				 $.ajax({
+						url:ctx+"/user/delMul.do?ids="+id,
+						success:function(data){
+							data = eval("(" + data + ")");
+							if(data.status=="200"){
+								layer.alert("用户信息删除成功");
+							}else{
+								layer.alert("用户信息删除失败，请检查服务器连接");
+							}
+							//location.href = ctx+"redirect:/user/list";
+							location.reload(true);
+						}
+				 })
+				 
+		 	 },
+			 cancel: function(index){ //或者使用btn2
+			 	//按钮【按钮二】的回调
+		 	 }
+		 });
+	}
+}*/
+
+
