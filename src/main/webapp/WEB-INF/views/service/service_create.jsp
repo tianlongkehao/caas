@@ -219,6 +219,10 @@
 													<li class="hide-select"><input type="text"
 														placeholder="name" id="Name"> <input type="text"
 														placeholder="value" id="Value"> <a id="cratePATH"><i class="fa fa-plus"></i>添加</a>
+														<div style="float:right">
+															<span id="importBtn" class=" btn-info btn-sm" style="cursor:pointer">导入</span>
+															<span id="exportBtn" class=" btn-info btn-sm" style="cursor:pointer">保存</span>
+														</div>
 													</li>
 													<li>
 														<table class="table table-hover enabled" id="Path" >

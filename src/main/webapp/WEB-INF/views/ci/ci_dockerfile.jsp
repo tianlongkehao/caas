@@ -70,8 +70,8 @@
                             <div class="row">
                                 <div class="form-group col-md-12">
                                     <label>编写dockerfile</label>
-                                    <span id="importBtn" class=" btn-info btn-sm">导入模板</span>
-                                    <span id="exportBtn" class=" btn-info btn-sm">另存为模板</span>
+                                    <span id="importBtn" class=" btn-info btn-sm" style="cursor:pointer">导入模板</span>
+                                    <span id="exportBtn" class=" btn-info btn-sm" style="cursor:pointer">另存为模板</span>
                                 </div>
                                 <div class="form-group col-md-12">
                                     <textarea id="dockerfile" style="background-color:black;color: #37fc34;border:0; width:100%; height:230px" ></textarea>
