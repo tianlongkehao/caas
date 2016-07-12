@@ -483,7 +483,7 @@ public class ServiceController {
 				//yuanpeng
 				k8sService = kubernetesClientService.generateService(service.getServiceName(), 80, 8080,
 				//		(int) service.getId() + kubernetesClientService.getK8sStartPort());
-						vailPortSet());
+						Integer.valueOf(service.getPortSet()));
 				k8sService = client.createService(k8sService);
 			}
 			if (controller == null || k8sService == null) {
