@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -353,12 +356,13 @@ public class ServiceController {
 		if (imageName != null) {
 			isDepoly = "deploy";
 		}
-
+/*
 		boolean flag = getleftResource(model);
 		if (!flag) {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
 		}
+		*/
 		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
 
@@ -476,8 +480,10 @@ public class ServiceController {
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
 			}
 			if (k8sService == null) {
+				//yuanpeng
 				k8sService = kubernetesClientService.generateService(service.getServiceName(), 80, 8080,
-						(int) service.getId() + kubernetesClientService.getK8sStartPort());
+				//		(int) service.getId() + kubernetesClientService.getK8sStartPort());
+						Integer.valueOf(service.getPortSet()));
 				k8sService = client.createService(k8sService);
 			}
 			if (controller == null || k8sService == null) {
@@ -518,7 +524,8 @@ public class ServiceController {
 		Map<String, String> app = new HashMap<String, String>();
 		app.put("userName", currentUser.getUserName());
 		app.put("confName", service.getServiceName());
-		app.put("port", String.valueOf(service.getId() + kubernetesClientService.getK8sStartPort()));
+		//app.put("port", String.valueOf(service.getId() + kubernetesClientService.getK8sStartPort()));
+		app.put("port", String.valueOf(generatePortSet()));
 		// 判断配置文件是否存在并删除
 		if (TemplateEngine.fileIsExist(
 				CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName(),
@@ -541,7 +548,10 @@ public class ServiceController {
 		// TODO
 		// TemplateEngine.cmdReloadConfig(templateConf);
 		// service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
-		service.setPortSet(String.valueOf(service.getId() + kubernetesClientService.getK8sStartPort()));
+		//获取有效的portSet
+		//int portSet =vailPortSet();
+		//将port添加到数据库中
+		service.setPortSet(app.get("port"));
 		serviceDao.save(service);
 		// 更新挂载卷的使用状态
 		if (!"0".equals(service.getVolName())) {
@@ -550,7 +560,26 @@ public class ServiceController {
 		log.debug("container--Name:" + service.getServiceName());
 		return "redirect:/service";
 	}
-
+	/**
+	 * yuanpeng
+	 * 生成有效的PORTSET
+	 * @return int
+	 */
+	public int generatePortSet(){
+		//生成从30010到30200的set集合
+		Set<Integer> bigSet = Stream.iterate(30010, item -> item+1)
+				.limit(30200-30010)
+				.collect(Collectors.toSet());
+		Set<Integer> smalSet= serviceDao.findPortSets();
+		//求bigSet集合与smalSet集合的差集
+		bigSet.removeAll(smalSet);
+		//从集合中随机选取一个元素
+		Object[] obj =bigSet.toArray();
+		int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
+				.toString());
+		return portSet;
+	}
+	
 	/**
 	 * serviceName 判重
 	 * 
