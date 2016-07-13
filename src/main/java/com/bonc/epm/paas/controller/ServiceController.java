@@ -525,7 +525,7 @@ public class ServiceController {
 		app.put("userName", currentUser.getUserName());
 		app.put("confName", service.getServiceName());
 		//app.put("port", String.valueOf(service.getId() + kubernetesClientService.getK8sStartPort()));
-		app.put("port", String.valueOf(vailPortSet()));
+		app.put("port", String.valueOf(generatePortSet()));
 		// 判断配置文件是否存在并删除
 		if (TemplateEngine.fileIsExist(
 				CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName(),
@@ -565,7 +565,7 @@ public class ServiceController {
 	 * 生成有效的PORTSET
 	 * @return int
 	 */
-	public int vailPortSet(){
+	public int generatePortSet(){
 		//生成从30010到30200的set集合
 		Set<Integer> bigSet = Stream.iterate(30010, item -> item+1)
 				.limit(30200-30010)
