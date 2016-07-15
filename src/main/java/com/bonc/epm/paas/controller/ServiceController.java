@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.bonc.epm.paas.constant.NginxServerConf;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
@@ -526,7 +527,7 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
-	public String constructContainer(Service service, String resourceName) {
+	public String constructContainer(Service service, String resourceName,String envVariable) {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
@@ -536,6 +537,17 @@ public class ServiceController {
 			service.setServiceLink(resourceName);
 		}
 		serviceDao.save(service);
+		
+		//将服务中的环境变量循环遍历，保存到相关联的实体类中；
+		JSONArray jsonArray = JSONArray.parseArray(envVariable);  
+		for(int i = 0 ; i < jsonArray.size(); i ++ ) {
+			EnvVariable envVar = new EnvVariable();
+			envVar.setEnvKey(jsonArray.getJSONObject(i).getString("envKey"));
+			envVar.setEnvValue(jsonArray.getJSONObject(i).getString("envValue"));
+			envVar.setCreateDate(new Date());
+			envVar.setServiceId(service.getId());
+			envVariableDao.save(envVar);
+		}
 		
 		// app为修改nginx配置文件的配置项
 		Map<String, String> app = new HashMap<String, String>();

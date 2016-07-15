@@ -52,7 +52,36 @@ $(document).ready(function(){
     	if(nginxstr == "}"){
     		nginxstr = "{}";
     	}
-    	$('#nginxZone').val(nginxstr);
+    	$('#proxyZone').val(nginxstr);
+    	
+    	
+    	var dataJson="[";  
+        var envKey = "";  
+        var envValue = "";  
+        $("#Path-oper1 tr").each(function (index, domEle){
+        	envKey = "";  
+        	envValue = "";  
+            $(domEle).find("input").each(function(index,data){  
+            	
+                if(index == 0){  
+                	if($(data).val() == "" || $(data).val() == null){
+                		return;
+                	}
+                	envKey = $(data).val();  
+                }else if (index == 1){  
+                	envValue = $(data).val();
+                }  
+            });  
+            dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},";               
+        });
+        
+        if (dataJson.lastIndexOf(",")) {  
+            dataJson = dataJson.substring(0,dataJson.length -1);  
+            dataJson += "]";  
+        }  
+        alert(dataJson);
+        $('#envVariable').val(dataJson);
+    	
 	    //var cpuNum = $('#cpuNum').val();
 	    /*if(!cpuNum || cpuNum.length < 1){
 		      layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
@@ -104,7 +133,7 @@ $(document).ready(function(){
 			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin">'+
 			'</td>'+
 		'</tr>'
-		$("#Path-oper").append(tr);
+		$("#Path-oper1").append(tr);
 		}else{
 			
 		}
