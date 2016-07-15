@@ -558,6 +558,7 @@ public class ServiceController {
 			service.setServiceLink(resourceName);
 		}
 		serviceDao.save(service);
+		
 		// app为修改nginx配置文件的配置项
 		Map<String, String> app = new HashMap<String, String>();
 		app.put("userName", currentUser.getUserName());
