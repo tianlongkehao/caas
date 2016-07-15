@@ -14,10 +14,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.alibaba.fastjson.JSONObject;
+import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
+import com.bonc.epm.paas.kubernetes.model.EnvVar;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
@@ -300,7 +302,11 @@ public class KubernetesClientService {
 	
 
 	
-	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort,Double cpu,String ram,String nginxObj){
+	public ReplicationController generateSimpleReplicationController(String name,int replicas,
+	                                                                     String image,int containerPort,
+	                                                                         Double cpu,String ram,String nginxObj, 
+	                                                                             String servicePath, String proxyPath,
+	                                                                                 List<EnvVariable> envVariables, List<String> command, List<String> args){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -313,6 +319,8 @@ public class KubernetesClientService {
 		podMeta.setName(name);
 		Map<String,String> labels = new HashMap<String,String>();
 		labels.put("app", name);
+		labels.put("servicePath", servicePath);
+		labels.put("proxyPath", proxyPath);
 		if(nginxObj!="{}"){
 			JSONObject jsonObject = JSONObject.parseObject(nginxObj);
 			Set<String> set = jsonObject.keySet();
@@ -328,6 +336,17 @@ public class KubernetesClientService {
 		container.setName(name);
 		container.setImage(image);
 		container.setImagePullPolicy("Always");
+		
+		if (null != envVariables && envVariables.size() > 0) {
+		    List<EnvVar> envVars = new ArrayList<EnvVar>();
+		    for (EnvVariable oneRow : envVariables) {
+		        EnvVar envVar = new EnvVar();
+		        envVar.setName(oneRow.getEnvKey());
+		        envVar.setValue(oneRow.getEnvValue());
+		        envVars.add(envVar);
+		    }
+		    container.setEnv(envVars);
+		}
 
 
 		ResourceRequirements requirements = new ResourceRequirements();
@@ -349,6 +368,8 @@ public class KubernetesClientService {
 		port.setContainerPort(containerPort);
 		ports.add(port);
 		container.setPorts(ports);
+		container.setCommand(command);
+		container.setArgs(args);
 		containers.add(container);
 		podSpec.setContainers(containers);
 		template.setSpec(podSpec);

@@ -7,14 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,11 +26,13 @@ import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.esConf;
+import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Container;
+import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Storage;
@@ -66,6 +68,9 @@ public class ServiceController {
 
 	@Autowired
 	public ServiceDao serviceDao;
+	
+	@Autowired
+	public EnvVariableDao envVariableDao;
 
 	@Autowired
 	private ImageDao imageDao;
@@ -145,7 +150,7 @@ public class ServiceController {
 			PodList podList = client.getLabelSelectorPods(map);
 			if (podList != null) {
 				List<Pod> pods = podList.getItems();
-				if (!CollectionUtils.isEmpty(pods)) {
+				if (CollectionUtils.isNotEmpty(pods)) {
 					int i = 1;
 					for (Pod pod : pods) {
 						String podName = pod.getMetadata().getName();
@@ -183,7 +188,7 @@ public class ServiceController {
 				PodList podList = client.getLabelSelectorPods(map);
 				if (podList != null) {
 					List<Pod> pods = podList.getItems();
-					if (!CollectionUtils.isEmpty(pods)) {
+					if (CollectionUtils.isNotEmpty(pods)) {
 						int i = 1;
 						for (Pod pod : pods) {
 							String podName = pod.getMetadata().getName();
@@ -243,7 +248,7 @@ public class ServiceController {
 		PodList podList = client.getLabelSelectorPods(map);
 		if (podList != null) {
 			List<Pod> pods = podList.getItems();
-			if (!CollectionUtils.isEmpty(pods)) {
+			if (CollectionUtils.isNotEmpty(pods)) {
 				int i = 1;
 				for (Pod pod : pods) {
 					// 获取pod名称
@@ -290,7 +295,7 @@ public class ServiceController {
 			PodList podList = client.getLabelSelectorPods(map);
 			if (podList != null) {
 				List<Pod> pods = podList.getItems();
-				if (!CollectionUtils.isEmpty(pods)) {
+				if (CollectionUtils.isNotEmpty(pods)) {
 					int i = 1;
 					for (Pod pod : pods) {
 						// 获取pod名称
@@ -431,8 +436,31 @@ public class ServiceController {
 		List<Image> images = imageDao.findByNameOf(userId, "%" + imageName + "%");
 		map.put("data", images);
 		return JSON.toJSONString(map);
-	}
-
+	} 
+	
+    public static void main(String[] args) {
+        
+        String str = "  kk kkk klaf    fsaff fsge tg sagh ger fsaga   ";
+        //测试的字符串
+         
+        String regex = "\\s+";
+        //表示一个或多个空格的正则表达式
+         
+        str = str.trim();
+        //去掉字符串开头和结尾的空格
+         
+        String str1 = str.replaceAll(regex, "");
+        //去掉所有的空格
+         
+        String str2 = str.replaceAll(regex, " ");
+        //把一个或多个空格替换成一个空格
+         
+        System.out.println(str);
+        System.out.println(str1);
+        System.out.println(str2);
+    }
+	
+	
 	/**
 	 * create container and services from dockerfile
 	 * 
@@ -443,6 +471,8 @@ public class ServiceController {
 	@ResponseBody
 	public String CreateContainer(long id) {
 		Service service = serviceDao.findOne(id);
+		List<EnvVariable> envVariables = envVariableDao.findByServiceId(id);
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		// 使用k8s管理服务
 		String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(),
@@ -463,9 +493,23 @@ public class ServiceController {
 		try {
 			// 如果没有则新增
 			if (controller == null) {
+			    // 初始化自定义启动命令
+			    String startCommand = service.getStartCommand().trim();
+			    List<String> command = new ArrayList<String>();
+			    List<String> args = new ArrayList<String>();
+			    if (StringUtils.isNotBlank(startCommand)) {
+			        String[] startCommandArray = startCommand.replaceAll("\\s+", " ").split(" ");
+			        for (String item : startCommandArray) {
+			            if (CollectionUtils.isEmpty(command)) {
+			                command.add(item);
+			                continue;
+			            }
+			            args.add(item);
+			        }
+			    }
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 						service.getInstanceNum(), registryImgName, 8080, service.getCpuNum(), service.getRam(),
-						service.getNginxZone());
+						service.getNginxZone(),service.getServicePath(),service.getProxyPath(),envVariables,command,args);
 				// 给controller设置卷组挂载的信息
 				System.out.println("给rc绑定vol");
 				if (!"0".equals(service.getVolName())) {
