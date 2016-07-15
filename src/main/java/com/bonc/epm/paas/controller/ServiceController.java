@@ -504,7 +504,7 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
-	public String constructContainer(Service service, String resourceName,String[] nginxserv) {
+	public String constructContainer(Service service, String resourceName) {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
@@ -513,15 +513,8 @@ public class ServiceController {
 			resourceName = resourceName.substring(0, resourceName.indexOf("."));
 			service.setServiceLink(resourceName);
 		}
-		//复选的nginx代理区域添加到service中
-		String proxyZone = "";
-		if(nginxserv.length > 0){
-			for(String nginx : nginxserv){
-				proxyZone += nginx+";";
-			}
-		}
-		service.setProxyZone(proxyZone);
 		serviceDao.save(service);
+		
 		// app为修改nginx配置文件的配置项
 		Map<String, String> app = new HashMap<String, String>();
 		app.put("userName", currentUser.getUserName());
