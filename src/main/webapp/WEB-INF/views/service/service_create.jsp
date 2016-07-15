@@ -95,12 +95,12 @@
 											</li>
 											<li id="service_type"><span class="ve_top">启动命令：</span>
 												<span class="update-mi"> <input type="checkbox"
-													id="startCommant"> <label for="startCommant"><font
+													id="startCommand"> <label for="startCommand"><font
 														color="blue">自定义启动命令</font></label>
 											</span></li>
-											<li class="line-h-3" id="startCommant_li"><input
+											<li class="line-h-3" id="startCommand_li"><input
 												type="text" value="" class="in_style"
-												id="startCommant_input" name="startCommant"
+												id="startCommand_input" name="startCommand"
 												style="margin-left: 120px"></li>
 											<li class="line-h-3"><span class="ve_top">服务访问路径：</span>
 												<input type="text" value="" class="in_style" id="webPath"
@@ -220,8 +220,8 @@
 														placeholder="name" id="Name"> <input type="text"
 														placeholder="value" id="Value"> <a id="cratePATH"><i class="fa fa-plus"></i>添加</a>
 														<div style="float:right">
-															<span id="importBtn" class=" btn-info btn-sm" style="cursor:pointer">导入</span>
-															<span id="exportBtn" class=" btn-info btn-sm" style="cursor:pointer">保存</span>
+															<span id="importBtn" class=" btn-info btn-sm" style="cursor:pointer">导入模板</span>
+															<span id="exportBtn" class=" btn-info btn-sm" style="cursor:pointer">另存为模板</span>
 														</div>
 													</li>
 													<li>
@@ -234,94 +234,7 @@
 																</tr>
 															</thead>
 															<tbody id="Path-oper">
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled value="PATH"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" style="width: 98%"
-																		value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"> 
-																	</td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue"
-																		value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin">
-																	</td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled value="DEBIAN_FRONTEND"></td>
-																	<td class="vals"><input type="text" style="width: 98%"
-																		placeholder="value" value="noninteractive"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="noninteractive"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled value="MYSQL_USER"></td>
-																	<td class="vals"><input type="text" style="width: 98%"
-																		placeholder="value" value="admin"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="admin"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text" style="width: 98%"
-																		style="width: 98%" disabled value="MYSQL_PASS"></td>
-																	<td class="vals"><input type="text" style="width: 98%"
-																		placeholder="value" value="**Random**"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="**Random**"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled
-																		value="REPLICATION_MASTER"></td>
-																	<td class="vals"><input type="text" style="width: 98%"
-																		placeholder="value" value="**False**"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="**False**"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled
-																		value="REPLICATION_SLAVE"></td>
-																	<td class="vals"><input type="text" style="width: 98%"
-																		placeholder="value" value="**False**"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="**False**"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled
-																		value="REPLICATION_USER"></td>
-																	<td class="vals"><input type="text" style="width: 98%"
-																		placeholder="value" value="replica"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="replica"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled
-																		value="REPLICATION_PASS"></td>
-																	<td class="vals"><input type="text" style="width: 98%"
-																		placeholder="value" value="replica"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="replica"></td>
-																</tr>
+																
 															</tbody>
 														</table>
 													</li>

@@ -36,7 +36,7 @@ function loadStorageList(){
         							' <td style="width: 15%;word-wrap:break-word;word-break:break-all;">' + storage.mountPoint + '</td>'+
         							' <td style="width: 12%;">' + storage.storageSize + ' M</td>'+
         							' <td style="width: 15%;">' + storage.createDate + '</td>'+
-        							' <td style="width: 20%;">' + 
+        							' <td style="width: 20%;">' +
         								' <span class="btn btn-primary format formatStorage"> 格式化 </span>'+
         								' <span class="btn btn-primary dilation dilatationStorage" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'">扩容</span>'+
         								' <span class="btn btn-primary delete deleteStorage" storageId="'+storage.id +'"> 删除 </span>'+

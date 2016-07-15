@@ -524,10 +524,13 @@ td .dockerfileinput {
 }
 
 .detail-succeed {
-    height: 180px;
-    border-bottom: 1px solid #DFDDDD;
+    height: 280px;
+    /* border-bottom: 1px solid #DFDDDD; */
     position: relative;
     margin-top: 2%;
+}
+.vol_list{
+	border-bottom: 1px solid #DFDDDD;
 }
 
 .icon-img {

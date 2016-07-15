@@ -45,7 +45,7 @@ public class CephController {
 
 			cephMount.conf_read_file("/etc/ceph/ceph.conf");
 			System.out.println("Read the configuration file.");
-
+			
 			cephMount.mount("/");
 
 			System.out.println("打印根目录下的所有目录");

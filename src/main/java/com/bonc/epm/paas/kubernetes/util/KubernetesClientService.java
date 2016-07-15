@@ -313,7 +313,7 @@ public class KubernetesClientService {
 		podMeta.setName(name);
 		Map<String,String> labels = new HashMap<String,String>();
 		labels.put("app", name);
-		if(nginxObj!="{}"){
+		if(nginxObj != null && !"".equals(nginxObj)){
 			JSONObject jsonObject = JSONObject.parseObject(nginxObj);
 			Set<String> set = jsonObject.keySet();
 			for(String key:set){

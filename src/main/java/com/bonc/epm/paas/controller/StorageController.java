@@ -128,10 +128,10 @@ public class StorageController {
 		Storage StorageValidate = storageDao.findByCreateByAndStorageName(createBy, storage.getStorageName());
 		if (StorageValidate == null) {
 
-			// ceph中创建存储卷目录 TODO
-			//CephController ceph = new CephController();
-			//ceph.connectCephFS();
-			//ceph.createStorageCephFS(storage.getStorageName(), storage.isVolReadOnly());
+			// ceph中创建存储卷目录 TODO 3
+			CephController ceph = new CephController();
+			ceph.connectCephFS();
+			ceph.createStorageCephFS(storage.getStorageName(), storage.isVolReadOnly());
 
 			storageDao.save(storage);
 			map.put("status", "200");

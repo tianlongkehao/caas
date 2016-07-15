@@ -86,10 +86,10 @@ $(document).ready(function(){
 	})
 
 	//启动命令
-	$("#startCommant_li").hide();
-	$("#startCommant").click(function(){
-		$("#startCommant_li").toggle();
-		$("#startCommant_input").focus();
+	$("#startCommand_li").hide();
+	$("#startCommand").click(function(){
+		$("#startCommand_li").toggle();
+		$("#startCommand_input").focus();
 	})
 	
 	//添加环境变量
