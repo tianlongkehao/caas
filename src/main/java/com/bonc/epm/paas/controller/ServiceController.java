@@ -436,29 +436,7 @@ public class ServiceController {
 		List<Image> images = imageDao.findByNameOf(userId, "%" + imageName + "%");
 		map.put("data", images);
 		return JSON.toJSONString(map);
-	} 
-	
-    public static void main(String[] args) {
-        
-        String str = "  kk kkk klaf    fsaff fsge tg sagh ger fsaga   ";
-        //测试的字符串
-         
-        String regex = "\\s+";
-        //表示一个或多个空格的正则表达式
-         
-        str = str.trim();
-        //去掉字符串开头和结尾的空格
-         
-        String str1 = str.replaceAll(regex, "");
-        //去掉所有的空格
-         
-        String str2 = str.replaceAll(regex, " ");
-        //把一个或多个空格替换成一个空格
-         
-        System.out.println(str);
-        System.out.println(str1);
-        System.out.println(str2);
-    }
+	}
 	
 	
 	/**
@@ -509,7 +487,7 @@ public class ServiceController {
 			    }
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 						service.getInstanceNum(), registryImgName, 8080, service.getCpuNum(), service.getRam(),
-						service.getNginxZone(),service.getServicePath(),service.getProxyPath(),envVariables,command,args);
+						service.getProxyZone(),service.getServicePath(),service.getProxyPath(),envVariables,command,args);
 				// 给controller设置卷组挂载的信息
 				System.out.println("给rc绑定vol");
 				if (!"0".equals(service.getVolName())) {

@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -368,8 +369,12 @@ public class KubernetesClientService {
 		port.setContainerPort(containerPort);
 		ports.add(port);
 		container.setPorts(ports);
-		container.setCommand(command);
-		container.setArgs(args);
+		if (CollectionUtils.isNotEmpty(command)) {
+		      container.setCommand(command);
+		}
+		if (CollectionUtils.isNotEmpty(args)) {
+		      container.setArgs(args); 
+		}
 		containers.add(container);
 		podSpec.setContainers(containers);
 		template.setSpec(podSpec);
