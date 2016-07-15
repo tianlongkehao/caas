@@ -94,6 +94,27 @@ public class Service {
 	// this.podName = podName;
 	// }
 	private String nginxZone;
+	
+	/**
+	 * 自定义启动命令
+	 */
+	private String startCommand;
+	
+	/**
+	 * 服务访问路径
+	 */
+	private String servicePath;
+	
+	/**
+	 * nginx代理区域
+	 */
+	private String proxyZone;
+	
+	/**
+	 * nginx代理路径
+	 */
+	private String proxyPath;
+	
 	public long getImgID() {
 		return imgID;
 	}
@@ -285,5 +306,39 @@ public class Service {
 	public void setNginxZone(String nginxZone) {
 		this.nginxZone = nginxZone;
 	}
+
+	public String getStartCommand() {
+		return startCommand;
+	}
+
+	public void setStartCommand(String startCommand) {
+		this.startCommand = startCommand;
+	}
+
+	public String getServicePath() {
+		return servicePath;
+	}
+
+	public void setServicePath(String servicePath) {
+		this.servicePath = servicePath;
+	}
+
+	public String getProxyZone() {
+		return proxyZone;
+	}
+
+	public void setProxyZone(String proxyZone) {
+		this.proxyZone = proxyZone;
+	}
+
+	public String getProxyPath() {
+		return proxyPath;
+	}
+
+	public void setProxyPath(String proxyPath) {
+		this.proxyPath = proxyPath;
+	}
+	
+	
 	
 }
