@@ -243,6 +243,9 @@ public class ServiceController {
 	public String detail(Model model, @PathVariable long id) {
 		System.out.printf("id: " + id);
 		Service service = serviceDao.findOne(id);
+		service.setProxyZone(substr(service.getProxyZone()));
+		List<EnvVariable> envVariableList = new ArrayList();
+		envVariableList = envVariableDao.findByServiceId(id);
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<Container> containerList = new ArrayList<Container>();
 		List<String> logList = new ArrayList<String>();
@@ -281,9 +284,30 @@ public class ServiceController {
 		model.addAttribute("containerList", containerList);
 		model.addAttribute("logList", logList);
 		model.addAttribute("service", service);
+		model.addAttribute("envVariableList", envVariableList);
 		return "service/service-detail.jsp";
 	}
 
+	/**
+	 * 将字符串重新组装
+	 * 主要用于proxyZone的重新组装
+	 * @param str
+	 * @return
+	 */
+	String substr(String str){
+		String strs="";
+		String[] splitstr=str.split("'");
+		for(int i=0;i<splitstr.length;i++){
+			if((i+1)%4==0){
+				//System.out.println(splitstr[i]);
+				strs+=splitstr[i]+",";
+			}
+	}
+		strs=strs.substring(0,strs.length()-1);
+		return strs;
+	}
+
+	
 	@RequestMapping("service/detail/getlogs.do")
 	@ResponseBody
 	public String getServiceLogs(long id, String date) {
