@@ -41,6 +41,20 @@ $(document).ready(function(){
 	      return;
 	    }
 	    
+	    var servicePath = $("#webPath").val();
+	    if(!servicePath || servicePath.length < 1){
+		      layer.tips('服务路径不能为空','#webPath',{tips: [1, '#3595CC']});
+		      $('#webPath').focus();
+		      return;
+		}
+	    
+	    var proxyPath = $("#nginxPath").val();
+	    if(!proxyPath || proxyPath.length < 1){
+		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
+		      $('#nginxPath').focus();
+		      return;
+		}
+	    
 	    var nginxstr = "{";
 	    $('input[name="nginxserv"]:checked').each(function(){
     		var servname = $(this).val();
@@ -54,19 +68,12 @@ $(document).ready(function(){
     	}
     	$('#proxyZone').val(nginxstr);
     	
-    	
-    	var dataJson="[";  
-        var envKey = "";  
-        var envValue = "";  
+    	var dataJson="";  
         $("#Path-oper1 tr").each(function (index, domEle){
-        	envKey = "";  
-        	envValue = "";  
+            var envKey = "";  
+            var envValue = "";  
             $(domEle).find("input").each(function(index,data){  
-            	
                 if(index == 0){  
-                	if($(data).val() == "" || $(data).val() == null){
-                		return;
-                	}
                 	envKey = $(data).val();  
                 }else if (index == 1){  
                 	envValue = $(data).val();
@@ -74,12 +81,10 @@ $(document).ready(function(){
             });  
             dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},";               
         });
-        
-        if (dataJson.lastIndexOf(",")) {  
+        if (dataJson != "") {  
             dataJson = dataJson.substring(0,dataJson.length -1);  
-            dataJson += "]";  
-        }  
-        alert(dataJson);
+            dataJson ="[" +dataJson+ "]";  
+        }
         $('#envVariable').val(dataJson);
     	
 	    //var cpuNum = $('#cpuNum').val();
@@ -97,8 +102,23 @@ $(document).ready(function(){
 		      $('#ram').focus();
 		      return;
 		    }*/
-
-		containerName();
+        var serviceName = $("#serviceName").val();
+        $.ajax({
+    		url : ctx + "/service/matchPath.do",
+    		type: "POST",
+    		data:{"proxyPath":proxyPath,"serviceName":serviceName},
+    		success : function(data) {
+    			data = eval("(" + data + ")");
+    			if (data.status=="400") {
+    				layer.alert("nginx路径名称重复，请重新输入！");
+    			} else if (data.status=="500") {
+    				layer.alert("服务名称重复，请重新输入！");
+    			}else {
+    				$("#buildService").submit();
+    			}
+    		}
+    	});
+        
     });
 	
 	/*$(".cpuNum").click(function(){

@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -500,7 +503,7 @@ public class ServiceController {
 			}
 			if (k8sService == null) {
 				k8sService = kubernetesClientService.generateService(service.getServiceName(), 80, 8080,
-						(int) service.getId() + kubernetesClientService.getK8sStartPort());
+																			Integer.valueOf(service.getPortSet()));
 				k8sService = client.createService(k8sService);
 			}
 			if (controller == null || k8sService == null) {
@@ -539,21 +542,23 @@ public class ServiceController {
 		serviceDao.save(service);
 		
 		//将服务中的环境变量循环遍历，保存到相关联的实体类中；
-		JSONArray jsonArray = JSONArray.parseArray(envVariable);  
-		for(int i = 0 ; i < jsonArray.size(); i ++ ) {
-			EnvVariable envVar = new EnvVariable();
-			envVar.setEnvKey(jsonArray.getJSONObject(i).getString("envKey"));
-			envVar.setEnvValue(jsonArray.getJSONObject(i).getString("envValue"));
-			envVar.setCreateDate(new Date());
-			envVar.setServiceId(service.getId());
-			envVariableDao.save(envVar);
+		if (StringUtils.isNotEmpty(envVariable)) {
+			JSONArray jsonArray = JSONArray.parseArray(envVariable);  
+			for(int i = 0 ; i < jsonArray.size(); i ++ ) {
+				EnvVariable envVar = new EnvVariable();
+				envVar.setEnvKey(jsonArray.getJSONObject(i).getString("envKey"));
+				envVar.setEnvValue(jsonArray.getJSONObject(i).getString("envValue"));
+				envVar.setCreateDate(new Date());
+				envVar.setServiceId(service.getId());
+				envVariableDao.save(envVar);
+			}
 		}
 		
 		// app为修改nginx配置文件的配置项
 		Map<String, String> app = new HashMap<String, String>();
 		app.put("userName", currentUser.getUserName());
 		app.put("confName", service.getServiceName());
-		app.put("port", String.valueOf(service.getId() + kubernetesClientService.getK8sStartPort()));
+		app.put("port", String.valueOf(vailPortSet()));
 		// 判断配置文件是否存在并删除
 		if (TemplateEngine.fileIsExist(
 				CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName(),
@@ -568,7 +573,7 @@ public class ServiceController {
 					templateConf);
 		}
 		// 将ip、端口等信息写入模版并保存到nginx config文件路径
-		// TODO 3
+		// TODO 3  windows注释
 		 TemplateEngine.generateConfig(app,
 		 CurrentUserUtils.getInstance().getUser().getUserName() + "-" +
 		 service.getServiceName(), templateConf);
@@ -576,7 +581,7 @@ public class ServiceController {
 		// TODO 2
 		 TemplateEngine.cmdReloadConfig(templateConf);
 		 service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
-		service.setPortSet(String.valueOf(service.getId() + kubernetesClientService.getK8sStartPort()));
+		 service.setPortSet(app.get("port"));
 		serviceDao.save(service);
 		// 更新挂载卷的使用状态
 		if (!"0".equals(service.getVolName())) {
@@ -584,6 +589,52 @@ public class ServiceController {
 		}
 		log.debug("container--Name:" + service.getServiceName());
 		return "redirect:/service";
+	}
+	
+	/**
+	 * 当前用户创建服务时匹配服务路径和nginx路径 和服务名称不重复
+	 * @param servicePath
+	 * @param proxyPath
+	 * @return
+	 */
+	@RequestMapping("service/matchPath.do")
+	@ResponseBody
+	public String matchServicePathAndProxyPath(String proxyPath,String serviceName){
+		Map<String, Object> map = new HashMap<String, Object>();
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		for (Service service : serviceDao.findByCreateBy(cUser.getId())) {
+			if (service.getServiceName().equals(serviceName)) {
+				map.put("status", "500");
+				break;
+			} else if (service.getProxyPath().equals(proxyPath)) {
+				map.put("status", "400");
+				break;
+			} else {
+				map.put("status", "200");
+			}
+		}
+		return JSON.toJSONString(map);
+	}
+	
+	/**
+	 * yuanpeng
+	 * 生成有效的PORTSET
+	 * @return int
+	 */
+	public int vailPortSet(){
+		int offset =kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
+		Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
+									.limit(offset)
+									.collect(Collectors.toSet());
+		Set<Integer> smalSet= serviceDao.findPortSets();
+		//求bigSet集合与smalSet集合的差集, 然后在从集合中随机选取一个元素
+		if (!CollectionUtils.isEmpty(smalSet)) {
+			bigSet.removeAll(smalSet);
+		}
+		Object[] obj =bigSet.toArray();
+		int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
+				.toString());
+		return portSet;
 	}
 
 	/**
