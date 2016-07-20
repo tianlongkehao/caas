@@ -66,7 +66,7 @@ $(document).ready(function(){
     	if(nginxstr == "}"){
     		nginxstr = "{}";
     	}
- 
+
     	$('#proxyZone').val(nginxstr);
     	
     	var dataJson="";  
@@ -94,7 +94,7 @@ $(document).ready(function(){
 		      $('#cpuNum').focus();
 		      return;
 		    }*/
-		    
+
 	    //var ram = $('#ram').val();
 	    /*if(!ram || ram < 1){
 		      layer.tips('内存不能为零','#ram',{tips: [1, '#3595CC']});
@@ -116,7 +116,7 @@ $(document).ready(function(){
     				$("#buildService").submit();
     			}
     		}
-    	});       
+    	});
     });
 	
 	/*
