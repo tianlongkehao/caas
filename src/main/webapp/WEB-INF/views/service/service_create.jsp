@@ -143,6 +143,9 @@
 														autocomplete="off" max="" placeholder="1" id="instanceNum"
 														name="instanceNum"> <span class="unit">个</span>
 													<!-- <span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span> -->
+													<span class="dynamic-scale"> <input type="checkbox" id="dynamic-service"> 
+														<label for="dynamic-service"><font color="blue">自动化伸缩</font></label>
+													</span>
 												</div>
 											</li>
 											<li class="line-h-3">
@@ -215,7 +218,7 @@
 												<!-- <div style="height: 80px !important;"></div> -->
 											</li>
 											<li class="hide-set"><span class="ve_top">环境变量：</span>
-												<ol class="pull-left" style="width: 100%;">
+												<ol>
 													<li class="hide-select"><input type="text"
 														placeholder="name" id="Name"> <input type="text"
 														placeholder="value" id="Value"> <a id="cratePATH"><i class="fa fa-plus"></i>添加</a>
@@ -240,11 +243,52 @@
 													</li>
 												</ol>
 												</li>
+												<li class="hide-set"><span class="ve_top">端口配置：</span>
+												<table class="table enabled">
+													<thead style="background: #fafafa">
+														<tr>
+															<th style="width: 35%">容器端口</th>
+															<th style="width: 35%">协议</th>
+															<th style="width: 15%">映射端口</th>
+															<th style="vertical-align: middle; width: 8.9%">操作</th>
+														</tr>
+													</thead>
+													<tbody class="BORDER" id="pushPrptpcol">
+														<tr class="plus-row">
+															<td><input class="port" type="text" 
+																value="8080"></td>
+															<td><select class="T-http">
+																	<option>TCP</option>
+																	<option>HTTP</option>
+															</select></td>
+															<td><i>动态生成</i></td>
+															<td><a href="javascript:void(0)"
+																onclick="deletePortRow(this)" class="gray"> <i
+																	class="fa fa-trash-o fa-lg"></i>
+															</a></td>
+														</tr>
+														<!-- <tr class="plus-row">
+															<td><input class="port" type="text"></td>
+															<td><select class="T-http">
+																	<option>TCP</option>
+																	<option>HTTP</option>
+															</select></td>
+															<td><i>动态生成</i></td>
+															<td><a href="javascript:void(0)"
+																onclick="deletePortRow(this)" class="gray"> <i
+																	class="fa fa-trash-o fa-lg"></i>
+															</a></td>
+														</tr> -->
+													</tbody>
+												</table>
+												<div class="createPort">
+													<span id="createPort"><i class="fa fa-plus margin"></i>添加端口</span>
+												</div></li>
 										</ul>
 									</div>
 
 									<%-- 高级设置 --%>
-									<div class="host_step3" style="height: auto;">
+									<div class="host_step3 hide" style="height: auto;">
 										<ul class="advanced">
 											<li class="hide-set"><span class="ve_top">链接服务：</span>
 												<ol class="pull-left" style="width: 100%;">
@@ -426,7 +470,7 @@
 							</div>
 
 						</div>
-						<div class="createPadding hide">
+						<div class="createPadding">
 							<button class=" btn btn-default go_backs"
 								>上一步</button>
 							<!-- <button class="btn btn-success two_step hide">高级设置</button> -->

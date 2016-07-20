@@ -48,36 +48,35 @@ $(document).ready(function(){
     		nginxstr = nginxstr+"'"+servid+"'"+":"+"'"+servname+"',";
     	})
     	nginxstr = nginxstr.substring(0,nginxstr.length-1) +"}";
-    	//var nginxObj = eval('(' + nginxstr + ')'); 
+    	// var nginxObj = eval('(' + nginxstr + ')');
     	if(nginxstr == "}"){
     		nginxstr = "{}";
     	}
     	$('#nginxZone').val(nginxstr);
-	    //var cpuNum = $('#cpuNum').val();
-	    /*if(!cpuNum || cpuNum.length < 1){
-		      layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
-		      $('#cpuNum').focus();
-		      return;
-		    }*/
+	    // var cpuNum = $('#cpuNum').val();
+	    /*
+		 * if(!cpuNum || cpuNum.length < 1){
+		 * layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
+		 * $('#cpuNum').focus(); return; }
+		 */
 
 
 
-	    //var ram = $('#ram').val();
-	    /*if(!ram || ram < 1){
-		      layer.tips('内存不能为零','#ram',{tips: [1, '#3595CC']});
-		      $('#ram').focus();
-		      return;
-		    }*/
+	    // var ram = $('#ram').val();
+	    /*
+		 * if(!ram || ram < 1){ layer.tips('内存不能为零','#ram',{tips: [1,
+		 * '#3595CC']}); $('#ram').focus(); return; }
+		 */
 
 		containerName();
     });
 	
-	/*$(".cpuNum").click(function(){
-		var tips = $(this).attr("placeholder");
-		layer.tips(tips,'.cpuNum',{tips: [1, '#3595CC']});
-	})*/
+	/*
+	 * $(".cpuNum").click(function(){ var tips = $(this).attr("placeholder");
+	 * layer.tips(tips,'.cpuNum',{tips: [1, '#3595CC']}); })
+	 */
 
-	//控制checkbook后输入框是否可填写
+	// 控制checkbook后输入框是否可填写
 	var forFalse = true;
 	$("#save_roll_dev").hide();
 	$("#state_service").click(function(){
@@ -85,14 +84,14 @@ $(document).ready(function(){
 		$("#mountPath").focus();
 	})
 
-	//启动命令
+	// 启动命令
 	$("#startCommand_li").hide();
 	$("#startCommand").click(function(){
 		$("#startCommand_li").toggle();
 		$("#startCommand_input").focus();
 	})
 	
-	//添加环境变量
+	// 添加环境变量
 	$("#cratePATH").click(function(){
 		var addName = $("#Name").val();
 		var addValue = $("#Value").val();
@@ -105,10 +104,23 @@ $(document).ready(function(){
 			'</td>'+
 		'</tr>'
 		$("#Path-oper").append(tr);
-		}else{
-			
 		}
 		
+	});
+	
+	// 添加端口
+	$("#createPort").click(function(){
+		var portTr = '<tr class="plus-row">'+
+					  '<td><input class="port" type="text"></td>'+
+					  '<td><select class="T-http">'+
+					  '<option>TCP</option>'+
+					  '<option>HTTP</option>'+
+					  '</select></td>'+
+					  '<td><i>'+'动态生成'+'</i></td>'+
+					  '<td><a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
+					  '<i class="fa fa-trash-o fa-lg"></i>'+
+					  '</a></td></tr>';
+		$("#pushPrptpcol").append(portTr);
 	});
 	
 	
@@ -153,7 +165,7 @@ $(document).ready(function(){
 	                        	var imageVersion = $(this).attr("imageVersion");
 	                        	var imgID = $(this).attr("imgID");
 	                        	var resourceName = $(this).attr("resourceName");
-	                        	//containerName();
+	                        	// containerName();
 	                            deploy(imgID,imageName, imageVersion,resourceName);
 	                        });
 	                	}
@@ -198,33 +210,19 @@ function cpuMouseOut(){
 }
 
 
-/*$(function(){
-	var ramSlider = $("#ramSlider").slider({
-		formatter: function(value) {
-			return value;
-		},
-		value:100,
-		min: 512,
-		max: 8192,
-		step: 512,
-		slide: function( event, ui ) {
-			$( "#ram" ).val( "$" + ui.value );
-		}
-	});
-	//$( "#ram" ).val( "$" + $( "#ramSlider" ).slider( "value" ) );
-
-	ramSlider.on("slide", function(slideEvt) {
-		$("#ram").val(slideEvt.value);
-	}).on("change", function(slideEvt){
-		$("#ram").val(slideEvt.value.newValue);
-	});
-
-	$("#ram").on("change",function(){
-		var ramVal = Number($(this).val());
-		console.log(ramVal);
-		ramSlider.slider('setValue', ramVal);
-	});
-});*/
+/*
+ * $(function(){ var ramSlider = $("#ramSlider").slider({ formatter:
+ * function(value) { return value; }, value:100, min: 512, max: 8192, step: 512,
+ * slide: function( event, ui ) { $( "#ram" ).val( "$" + ui.value ); } }); //$(
+ * "#ram" ).val( "$" + $( "#ramSlider" ).slider( "value" ) );
+ * 
+ * ramSlider.on("slide", function(slideEvt) { $("#ram").val(slideEvt.value);
+ * }).on("change", function(slideEvt){ $("#ram").val(slideEvt.value.newValue);
+ * });
+ * 
+ * $("#ram").on("change",function(){ var ramVal = Number($(this).val());
+ * console.log(ramVal); ramSlider.slider('setValue', ramVal); }); });
+ */
 
 function loadImageList() {
     $.ajax({
@@ -266,7 +264,7 @@ function loadImageList() {
                         	var imageVersion = $(this).attr("imageVersion");
                         	var imgID = $(this).attr("imgID");
                         	var resourceName = $(this).attr("resourceName");
-                        	//containerName();
+                        	// containerName();
                             deploy(imgID,imageName, imageVersion,resourceName);
                         });
                 	}
@@ -305,48 +303,27 @@ function containerName(){
 /**
  * 删除环境变量
  */
-//删除环境变量
+// 删除环境变量
 function deleteRow(obj){
 	$(obj).parent().parent().remove();
 	
 }
-/*function deleteRow(obj){
-	var id = "";
-	$(":checked[name='ids']").each(function(){
-		id = id + jQuery(this).val() + ",";
-	});
-	if ("" == id) {
-		alert("请选择至少一个用户");
-		return;
-	}
-	else {
-		id = id.substring(0, id.length - 1);
-		layer.open({
-			 title: '删除用户',
-			 content:'确定删除多个用户吗？',
-			 btn: ['确定', '取消'],
-			 yes: function(index, layero){ //或者使用btn1
-				 layer.close(index);
-				 $.ajax({
-						url:ctx+"/user/delMul.do?ids="+id,
-						success:function(data){
-							data = eval("(" + data + ")");
-							if(data.status=="200"){
-								layer.alert("用户信息删除成功");
-							}else{
-								layer.alert("用户信息删除失败，请检查服务器连接");
-							}
-							//location.href = ctx+"redirect:/user/list";
-							location.reload(true);
-						}
-				 })
-				 
-		 	 },
-			 cancel: function(index){ //或者使用btn2
-			 	//按钮【按钮二】的回调
-		 	 }
-		 });
-	}
-}*/
+//删除port
+function deletePortRow(obj){
+	$(obj).parent().parent().remove();
+}
+/*
+ * function deleteRow(obj){ var id = "";
+ * $(":checked[name='ids']").each(function(){ id = id + jQuery(this).val() +
+ * ","; }); if ("" == id) { alert("请选择至少一个用户"); return; } else { id =
+ * id.substring(0, id.length - 1); layer.open({ title: '删除用户',
+ * content:'确定删除多个用户吗？', btn: ['确定', '取消'], yes: function(index, layero){
+ * //或者使用btn1 layer.close(index); $.ajax({ url:ctx+"/user/delMul.do?ids="+id,
+ * success:function(data){ data = eval("(" + data + ")");
+ * if(data.status=="200"){ layer.alert("用户信息删除成功"); }else{
+ * layer.alert("用户信息删除失败，请检查服务器连接"); } //location.href =
+ * ctx+"redirect:/user/list"; location.reload(true); } })
+ *  }, cancel: function(index){ //或者使用btn2 //按钮【按钮二】的回调 } }); } }
+ */
 
 

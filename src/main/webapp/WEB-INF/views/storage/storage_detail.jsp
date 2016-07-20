@@ -39,12 +39,12 @@
 					</aside>
 
 					<section class="detail-succeed">
-						<div class="icon-img">
+						<div class="icon-img" id="storageUsed">
 							<div class="type-icon">
 								<i class="fa fa-hdd-o"></i>
 							</div>
 						</div>
-						<ul class="succeed-content pull-left" style="width: 49%">
+						<ul class="succeed-content pull-left">
 							<li>卷组名称：&nbsp;&nbsp;&nbsp;${storage.storageName }</li>
 
 							<li>使用状态：&nbsp;&nbsp;&nbsp; <c:if

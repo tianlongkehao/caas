@@ -227,7 +227,7 @@
     display: block;
     clear: both;
     overflow-y: auto;
-    margin-bottom: 20px;
+    margin-bottom: 100px;
 }
 
 .blankapp-list .list-wrapper {
@@ -318,7 +318,9 @@
     max-height: 130px;
     overflow-y: auto;
 }
-
+.safeSet{
+	margin-bottom:100px;
+}
 .safeSet .dropdown-menu li {
     padding: 5px 0px;
     text-indent: 10px;
@@ -462,9 +464,9 @@
 
 .createPadding {
     padding: 20px 60px;
-    /* position: fixed;
-    bottom: 0; */
-    width: 99% !important;
+    position: fixed;
+    bottom: 0; 
+    width: 90% !important;
     background: #fff;
     height: 80px !important;
     margin: 0 !important;
@@ -801,4 +803,7 @@ i.pushOrg {
     color: #BFBFBF;
 }
 
-
+/* ¶¯Ì¬À©ÈÝ */
+.dynamic-scale{
+	margin-left: 43px;
+}

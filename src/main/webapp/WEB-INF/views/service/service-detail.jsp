@@ -106,9 +106,22 @@
 									<td>CPU：${service.cpuNum }</td>
 									<td>内存：${service.ram }MB</td>
 								</tr>
+								<tr>
+									<td>启动命令：</td>
+									<td>服务访问路径：</td>
+								</tr>
+								<tr>
+									<td>nginx代理区域：</td>
+									<td>nginx代理路径：</td>
+								</tr>
+								<tr>
+									<td>服务类型：</td>
+									
+								</tr>
+								
 							</tbody>
 						</table>
-						<!-- <table class="table basicInfo w50">
+						<table class="table basicInfo w50">
 			<thead>
 				<tr>
 					<th>环境变量</th>
@@ -121,7 +134,7 @@
 					<td>变量值</td>
 				</tr>
 			</tbody>
-		</table> -->
+		</table>
 					</div>
 					<div class="containerInstances hide" style="min-height: 300px;">
 						<table class="table">
