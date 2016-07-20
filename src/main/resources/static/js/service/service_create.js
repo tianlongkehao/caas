@@ -41,6 +41,20 @@ $(document).ready(function(){
 	      return;
 	    }
 	    
+	    var servicePath = $("#webPath").val();
+	    if(!servicePath || servicePath.length < 1){
+		      layer.tips('服务路径不能为空','#webPath',{tips: [1, '#3595CC']});
+		      $('#webPath').focus();
+		      return;
+		}
+	    
+	    var proxyPath = $("#nginxPath").val();
+	    if(!proxyPath || proxyPath.length < 1){
+		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
+		      $('#nginxPath').focus();
+		      return;
+		}
+	    
 	    var nginxstr = "{";
 	    $('input[name="nginxserv"]:checked').each(function(){
     		var servname = $(this).val();
@@ -52,6 +66,7 @@ $(document).ready(function(){
     	if(nginxstr == "}"){
     		nginxstr = "{}";
     	}
+<<<<<<< HEAD
     	$('#nginxZone').val(nginxstr);
 	    // var cpuNum = $('#cpuNum').val();
 	    /*
@@ -59,9 +74,39 @@ $(document).ready(function(){
 		 * layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
 		 * $('#cpuNum').focus(); return; }
 		 */
+=======
+    	$('#proxyZone').val(nginxstr);
+    	
+    	var dataJson="";  
+        $("#Path-oper1 tr").each(function (index, domEle){
+            var envKey = "";  
+            var envValue = "";  
+            $(domEle).find("input").each(function(index,data){  
+                if(index == 0){  
+                	envKey = $(data).val();  
+                }else if (index == 1){  
+                	envValue = $(data).val();
+                }  
+            });  
+            dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},";               
+        });
+        if (dataJson != "") {  
+            dataJson = dataJson.substring(0,dataJson.length -1);  
+            dataJson ="[" +dataJson+ "]";  
+        }
+        $('#envVariable').val(dataJson);
+    	
+	    //var cpuNum = $('#cpuNum').val();
+	    /*if(!cpuNum || cpuNum.length < 1){
+		      layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
+		      $('#cpuNum').focus();
+		      return;
+		    }*/
+>>>>>>> branch 'develop' of https://git.oschina.net/llizhuping/EPM_PAAS_CLOUD.git
 
 
 
+<<<<<<< HEAD
 	    // var ram = $('#ram').val();
 	    /*
 		 * if(!ram || ram < 1){ layer.tips('内存不能为零','#ram',{tips: [1,
@@ -69,6 +114,31 @@ $(document).ready(function(){
 		 */
 
 		containerName();
+=======
+	    //var ram = $('#ram').val();
+	    /*if(!ram || ram < 1){
+		      layer.tips('内存不能为零','#ram',{tips: [1, '#3595CC']});
+		      $('#ram').focus();
+		      return;
+		    }*/
+        var serviceName = $("#serviceName").val();
+        $.ajax({
+    		url : ctx + "/service/matchPath.do",
+    		type: "POST",
+    		data:{"proxyPath":proxyPath,"serviceName":serviceName},
+    		success : function(data) {
+    			data = eval("(" + data + ")");
+    			if (data.status=="400") {
+    				layer.alert("nginx路径名称重复，请重新输入！");
+    			} else if (data.status=="500") {
+    				layer.alert("服务名称重复，请重新输入！");
+    			}else {
+    				$("#buildService").submit();
+    			}
+    		}
+    	});
+        
+>>>>>>> branch 'develop' of https://git.oschina.net/llizhuping/EPM_PAAS_CLOUD.git
     });
 	
 	/*
@@ -103,7 +173,7 @@ $(document).ready(function(){
 			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin">'+
 			'</td>'+
 		'</tr>'
-		$("#Path-oper").append(tr);
+		$("#Path-oper1").append(tr);
 		}
 		
 	});

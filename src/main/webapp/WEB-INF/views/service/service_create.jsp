@@ -79,6 +79,8 @@
 								<%-- 容器配置 --%>
 								<form id="buildService" name="buildService"
 									action="<%=path%>/service/constructContainer.do">
+									<input type = "hidden" id = "envVariable" name = "envVariable" value ="" ></input>
+									
 									<div class="host_step2">
 										<ul class="safeSet">
 											<li class="line-h-3"><span class="ve_top">镜像名称：</span> <input
@@ -104,21 +106,21 @@
 												style="margin-left: 120px"></li>
 											<li class="line-h-3"><span class="ve_top">服务访问路径：</span>
 												<input type="text" value="" class="in_style" id="webPath"
-												name="webPath"></li>
+												name="servicePath"></li>
 											<c:if test="${DMZ!=null && USER!=null  }">
 												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
 													<label class="checkbox-inline"> <input
-														type="checkbox" id="dmz" name="nginxserv" value="${DMZ }">
+														type="checkbox" id="${DMZ }" name="nginxserv" value="${DMZ }">
 														DMZ区
 												</label> <label class="checkbox-inline"> <input
-														type="checkbox" id="user" name="nginxserv"
+														type="checkbox" id="${USER }" name="nginxserv"
 														value="${USER }"> USER区
 												</label> <input type="hidden" value="" class="in_style"
-													id="nginxZone" name="nginxZone"></li>
+													id="proxyZone" name="proxyZone"></li>
 											</c:if>
 											<li class="line-h-3"><span class="ve_top">nginx代理路径：</span>
 												<input type="text" value="" class="in_style" id="nginxPath"
-												name="nginxPath"></li>
+												name="proxyPath"></li>
 
 
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
@@ -236,7 +238,7 @@
 																	<th style="width: 10%">操作</th>
 																</tr>
 															</thead>
-															<tbody id="Path-oper">
+															<tbody id="Path-oper1">
 																
 															</tbody>
 														</table>

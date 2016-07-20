@@ -93,7 +93,6 @@ public class Service {
 	// public void setPodName(List<String> podName) {
 	// this.podName = podName;
 	// }
-	private String nginxZone;
 	
 	/**
 	 * 自定义启动命令
@@ -297,14 +296,6 @@ public class Service {
 
 	public void setMountPath(String mountPath) {
 		this.mountPath = mountPath;
-	}
-
-	public String getNginxZone() {
-		return nginxZone;
-	}
-
-	public void setNginxZone(String nginxZone) {
-		this.nginxZone = nginxZone;
 	}
 
 	public String getStartCommand() {

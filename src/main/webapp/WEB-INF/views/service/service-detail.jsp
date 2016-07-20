@@ -107,21 +107,36 @@
 									<td>内存：${service.ram }MB</td>
 								</tr>
 								<tr>
-									<td>启动命令：</td>
-									<td>服务访问路径：</td>
+									<td>启动命令：${service.startCommand }</td>
+									<td>服务访问路径：${service.servicePath }</td>
 								</tr>
 								<tr>
-									<td>nginx代理区域：</td>
-									<td>nginx代理路径：</td>
+									<td>nginx代理区域：${service.proxyZone }</td>
+									<td>nginx代理路径：${service.proxyPath }</td>
 								</tr>
 								<tr>
-									<td>服务类型：</td>
-									
+									<td>服务类型：${service.serviceType }</td>
 								</tr>
-								
 							</tbody>
 						</table>
 						<table class="table basicInfo w50">
+							<thead>
+								<tr>
+									<th>环境变量</th>
+									<th>&nbsp;</th>
+								</tr>
+							</thead>
+							<tbody class="BORDER">
+								<c:forEach items="${envVariableList }" var="envVariable">
+									<tr>
+										<td>变量名 ${envVariable.envKey }</td>
+										<td>变量值 ${envVariable.envValue }</td>
+									</tr>
+								</c:forEach>
+							</tbody>
+						</table>
+
+						<!-- <table class="table basicInfo w50">
 			<thead>
 				<tr>
 					<th>环境变量</th>
