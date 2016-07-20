@@ -646,7 +646,7 @@ public class ServiceController {
 	 * @return int
 	 */
 	public int vailPortSet(){
-		int offset =kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
+		int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
 		Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
 									.limit(offset)
 									.collect(Collectors.toSet());
