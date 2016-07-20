@@ -66,15 +66,7 @@ $(document).ready(function(){
     	if(nginxstr == "}"){
     		nginxstr = "{}";
     	}
-<<<<<<< HEAD
-    	$('#nginxZone').val(nginxstr);
-	    // var cpuNum = $('#cpuNum').val();
-	    /*
-		 * if(!cpuNum || cpuNum.length < 1){
-		 * layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
-		 * $('#cpuNum').focus(); return; }
-		 */
-=======
+
     	$('#proxyZone').val(nginxstr);
     	
     	var dataJson="";  
@@ -102,19 +94,7 @@ $(document).ready(function(){
 		      $('#cpuNum').focus();
 		      return;
 		    }*/
->>>>>>> branch 'develop' of https://git.oschina.net/llizhuping/EPM_PAAS_CLOUD.git
 
-
-
-<<<<<<< HEAD
-	    // var ram = $('#ram').val();
-	    /*
-		 * if(!ram || ram < 1){ layer.tips('内存不能为零','#ram',{tips: [1,
-		 * '#3595CC']}); $('#ram').focus(); return; }
-		 */
-
-		containerName();
-=======
 	    //var ram = $('#ram').val();
 	    /*if(!ram || ram < 1){
 		      layer.tips('内存不能为零','#ram',{tips: [1, '#3595CC']});
@@ -138,7 +118,6 @@ $(document).ready(function(){
     		}
     	});
         
->>>>>>> branch 'develop' of https://git.oschina.net/llizhuping/EPM_PAAS_CLOUD.git
     });
 	
 	/*
