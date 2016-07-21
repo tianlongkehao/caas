@@ -19,7 +19,7 @@ $(document).ready(function(){
 			}
 		})
 	}
-	
+
 	
 	$("#createButton").click(function(){
 		var name = $('#serviceName').val();
@@ -117,7 +117,6 @@ $(document).ready(function(){
     			}
     		}
     	});
-        
     });
 	
 	/*

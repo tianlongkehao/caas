@@ -53,10 +53,14 @@ public class KubernetesClientService {
     private String password;
 	@Value("${kubernetes.api.startport}")
     private String startPort;
+	@Value("${kubernetes.api.endport}")
+    private String endPort;
 	@Value("${kubernetes.api.address}")
 	private String address;
 	
-	
+	public int getK8sEndPort() {
+		return Integer.valueOf(endPort);
+	}
     public String getK8sEndpoint(){
 		return endpoint;
 	}
@@ -320,9 +324,9 @@ public class KubernetesClientService {
 		podMeta.setName(name);
 		Map<String,String> labels = new HashMap<String,String>();
 		labels.put("app", name);
-		if(nginxObj != null && !"".equals(nginxObj)){
 		labels.put("servicePath", servicePath);
 		labels.put("proxyPath", proxyPath);
+		if(nginxObj != null && !"".equals(nginxObj)){
 			JSONObject jsonObject = JSONObject.parseObject(nginxObj);
 			Set<String> set = jsonObject.keySet();
 			for(String key:set){
