@@ -152,7 +152,7 @@
                         </ul>
                     </div>
                     <div class="searchs">
-                    <form id="search_form" class="form-inline" action="<%=path %>/service/findservice" method="post">
+                    	<form id="search_form" class="form-inline" action="<%=path %>/service/findservice" method="post">
                             <div class="form-group">
                                 <div class="input-group">
                                     <input id="searchNames" name="searchNames" type="text" class="form-control" placeholder="搜索">

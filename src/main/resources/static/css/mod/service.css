@@ -807,3 +807,13 @@ i.pushOrg {
 .dynamic-scale{
 	margin-left: 43px;
 }
+
+.vals-path{
+	color:green;
+	float:right;
+	margin-right:15px;
+	font-size:16px
+}
+tr.focus{
+    background-color:#f5f6f6;
+}

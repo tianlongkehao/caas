@@ -172,6 +172,40 @@ $(document).ready(function(){
 		$("#pushPrptpcol").append(portTr);
 	});
 	
+	//导入模板
+	$("#importBtn").click(function(){
+		layer.open({
+		 	type:1,
+	        title: '环境变量模板',
+	        content: $("#environment-variable"),
+	        btn: ['导入', '取消'],
+	        yes: function(index, layero){ 
+	        	
+	        	layer.close(index);
+				/*$.ajax({
+					url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs,
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("环境变量模板导入成功");
+							window.location.reload();
+						}else{
+							layer.alert("环境变量模板导入失败");
+						}
+					}	
+				})*/
+	        }
+	 })
+	});
+	
+	//导入模板文件选项对勾
+	$("#Path-table>tbody>tr").on("click", function () {
+		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
+        $(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
+        //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
+        $(this).toggleClass("focus");//设定当前行为选中行
+        $(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
+    });
 	
 	$("#searchimage").click(function(){
 		var imageName = $('#imageName').val();
