@@ -15,5 +15,7 @@ public interface EnvVariableDao extends CrudRepository<EnvVariable, Long>{
      * @see 
      */
     List<EnvVariable> findByServiceId(long id);
+    
+    List<EnvVariable> findByCreateBy(long id);
 	
 }

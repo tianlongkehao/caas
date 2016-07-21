@@ -570,6 +570,7 @@ public class ServiceController {
 			JSONArray jsonArray = JSONArray.parseArray(envVariable);  
 			for(int i = 0 ; i < jsonArray.size(); i ++ ) {
 				EnvVariable envVar = new EnvVariable();
+				envVar.setCreateBy(currentUser.getId());
 				envVar.setEnvKey(jsonArray.getJSONObject(i).getString("envKey"));
 				envVar.setEnvValue(jsonArray.getJSONObject(i).getString("envValue"));
 				envVar.setCreateDate(new Date());
@@ -637,6 +638,20 @@ public class ServiceController {
 				map.put("status", "200");
 			}
 		}
+		return JSON.toJSONString(map);
+	}
+	
+	/**
+	 * 查询用户的环境变量，导入到环境变量模板中
+	 * @return
+	 */
+	@RequestMapping("service/findEnvVariables.do")
+	@ResponseBody
+	public String findEnvVariables(){
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<EnvVariable> envVariables = envVariableDao.findByCreateBy(cUser.getId());
+		map.put("envVariables", envVariables);
 		return JSON.toJSONString(map);
 	}
 	

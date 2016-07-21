@@ -422,6 +422,7 @@ public class CiController {
 			img.setRemark(ci.getDescription());
 			img.setCreator(ci.getCreateBy());
 			img.setCreateTime(new Date());
+			img.setIsBaseImage(2);
 			imageDao.save(img);
 			ci.setImgId(img.getId());
 		}

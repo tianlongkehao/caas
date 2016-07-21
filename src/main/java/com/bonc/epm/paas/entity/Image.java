@@ -3,6 +3,7 @@ package com.bonc.epm.paas.entity;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -37,6 +38,12 @@ public class Image {
 	
 	@ManyToMany(mappedBy = "favorImages")
 	private List<User> favorUsers;
+	
+	/**
+	 * 是否为基础镜像
+	 * 1 是基础镜像，2不是基础镜像；
+	 */
+	private Integer isBaseImage;
 	
 	public long getId() {
 		return id;
@@ -111,6 +118,12 @@ public class Image {
 	}
 	public void setResourceName(String resourceName) {
 		this.resourceName = resourceName;
+	}
+	public Integer getIsBaseImage() {
+		return isBaseImage;
+	}
+	public void setIsBaseImage(Integer isBaseImage) {
+		this.isBaseImage = isBaseImage;
 	}
 	
 }

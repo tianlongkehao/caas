@@ -41,4 +41,7 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	@Query("select COUNT(ufi) from UserFavorImages ufi where ufi.favor_images =?1 and ufi.favor_users = ?2")
 	public int findByUserIdAndImageId(long imageId,long userId);
 	
+	@Query("select i from Image i where  i.isBaseImage= 1 and (i.creator = ?1 or i.imageType = 1)")
+	public List<Image> findByBaseImage(long creator);
+	
 }

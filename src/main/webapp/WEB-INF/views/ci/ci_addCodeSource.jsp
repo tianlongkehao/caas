@@ -35,6 +35,7 @@
 								<div class="form-group col-md-7">
 									<label>基础镜像</label>
 									<div class="">
+										
 										<input id="baseImageName" name="baseImageName" type="text" 
                                                value="${docker_regisgtry_address }/bonc/tomcat" style="width:218px"> :
                                         <input id="baseImageVersion" name="baseImageVersion" type="text" value="8-jre7">
