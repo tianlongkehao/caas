@@ -35,9 +35,15 @@
 								<div class="form-group col-md-7">
 									<label>基础镜像</label>
 									<div class="">
-										<input id="baseImageName" name="baseImageName" type="text" 
+										<select id="baseImageName" name="baseImageName"  style="width:218px; height:48px">
+											<option type="text" value="tomcat">${docker_regisgtry_address }/bonc/</option>
+										</select> : 
+										<select id="baseImageVersion" name="baseImageVersion" style="height:48px">
+											<option type="text" value="8-jre7">8-jre7</option>
+										</select>
+										<%-- <input id="baseImageName" name="baseImageName" type="text" 
                                                value="${docker_regisgtry_address }/bonc/tomcat" style="width:218px"> :
-                                        <input id="baseImageVersion" name="baseImageVersion" type="text" value="8-jre7">
+                                        <input id="baseImageVersion" name="baseImageVersion" type="text" value="8-jre7"> --%> 
 									</div>
 								</div>
 								<div class="form-group col-md-7">
