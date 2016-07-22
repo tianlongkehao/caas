@@ -126,6 +126,9 @@ public class UserController {
 			// map.put("cpu",
 			// Integer.valueOf(resource.getCpu_account())*1000");//CPU数量
 			map.put("cpu", resource.getCpu_account() + "");// CPU数量(个)
+			//TODO
+			log.info("vol======"+resource.getVol() + "G");
+			map.put("vol", resource.getVol() + "G");// 卷组容量
 			// map.put("pods", resource.getPod_count() + "");//POD数量
 			// map.put("services", resource.getServer_count() + "");//服务
 			// map.put("replicationcontrollers", resource.getImage_control() +
@@ -219,6 +222,7 @@ public class UserController {
 				// client.updateLimitRange(user.getNamespace(), limit);
 				//20160628 增加卷組更新功能
 				user.setVol_size(resource.getVol());
+				//TODO
 				user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
 				userDao.save(user);
 				model.addAttribute("updateFlag", "200");

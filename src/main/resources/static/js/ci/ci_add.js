@@ -44,8 +44,34 @@ $(document).ready(function () {
             });
         }
     });
-
-
+    
+    //添加基础镜像的版本信息
+    $("#baseImageName").change(function(){
+    	var baseImageName = $("#baseImageName").val();
+    	$.ajax({
+    		url:""+ctx+"/ci/findBaseImageVersion.do",
+    		type:"post",
+    		data:{"baseImageName":baseImageName}, 
+    		success: function (data) {
+	            data = eval("(" + data + ")");
+	            var html = "";
+	            if (data != null) {
+	            	if (data['data'].length > 0) {
+	            		for (var i in data.data) {
+	            			var image = data.data[i];
+	            			html += "<option type='text' value='"+image.version+"'>"+image.version+"</option>"
+	            		}
+	            	}
+	            }
+	            if(baseImageName == "tomcat"){
+	            	$("#baseImageVersion").html("<option type='text' value='8-jre7'>8-jre7</option>"); 
+	            }else{
+	            	$("#baseImageVersion").html(html);    
+	            }
+    		}
+    	})
+    });
+    
     function checkCiAdd(){
         var imgNameLast = $("#imgNameLast").val().trim();
         var projectName = $('#projectName').val().trim();
