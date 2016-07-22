@@ -609,7 +609,7 @@ public class ServiceController {
 		 service.getServiceName(), templateConf);
 		// 重新启动nginx服务器
 		// TODO 2
-//		 TemplateEngine.cmdReloadConfig(templateConf);
+		 TemplateEngine.cmdReloadConfig(templateConf);
 		 service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
 		 service.setPortSet(app.get("port"));
 		serviceDao.save(service);
