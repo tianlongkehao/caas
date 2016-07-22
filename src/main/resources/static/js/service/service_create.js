@@ -143,12 +143,24 @@ $(document).ready(function(){
 	$("#cratePATH").click(function(){
 		var addName = $("#Name").val();
 		var addValue = $("#Value").val();
+		//判断key是否重复，
+		var arrayKey = $("#arrayKey").val().split(",");
+		for(var i = 0; i<arrayKey.length; i++){
+			if(addName == arrayKey[i]){
+				layer.tips('环境变量key不能重复','#Name',{tips: [1, '#3595CC']});
+				$('#Name').focus();
+				return;
+			}
+		}
+		arrayKey.push(addName);
+		$("#arrayKey").attr("value",arrayKey);
+		
 		if(addName != "" && addValue != ""){
 			var tr = '<tr>'+
 			'<td class="keys"><input type="text" style="width: 98%" value="'+addName+'"></td>'+
 			'<td class="vals"><input type="text" style="width: 98%" value="'+addValue+'"></td>'+
 			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin">'+
+			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+addName+'">'+
 			'</td>'+
 		'</tr>'
 		$("#Path-oper1").append(tr);
@@ -171,6 +183,20 @@ $(document).ready(function(){
 		$("#pushPrptpcol").append(portTr);
 	});
 	
+	
+	//导入模板文件选项对勾
+	var envKey = null;
+	var envValue = null;
+	$("#Path-table>tbody>tr").on("click", function () {
+		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
+		$(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
+		//$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
+		$(this).toggleClass("focus");//设定当前行为选中行
+		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
+		envKey = $(this).parent().find("tr.focus").find(".key").val();
+		envValue = $(this).parent().find("tr.focus").find(".value").val()
+	});
+	
 	//导入模板
 	$("#importBtn").click(function(){
 		layer.open({
@@ -179,32 +205,34 @@ $(document).ready(function(){
 	        content: $("#environment-variable"),
 	        btn: ['导入', '取消'],
 	        yes: function(index, layero){ 
+	        	if(envKey != "" && envValue != ""){
+	        		//判断key是否重复
+	        		var arrayKey = $("#arrayKey").val().split(",");
+	        		for(var i = 0; i<arrayKey.length; i++){
+	        			if(envKey == arrayKey[i]){
+	        				layer.tips('环境变量key不能重复','#Name',{tips: [1, '#3595CC']});
+	        				$('#Name').focus();
+	        				layer.close(index);
+	        				return;
+	        			}
+	        		}
+	        		arrayKey.push(envKey+",");
+	        		$("#arrayKey").attr("value",arrayKey);
+	        		
+	    			var tr = '<tr>'+
+	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envKey+'"></td>'+
+	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envValue+'"></td>'+
+	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
+	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envKey+'">'+
+	    			'</td>'+
+	    		'</tr>'
+	    		$("#Path-oper1").append(tr);
+	    		}
 	        	
 	        	layer.close(index);
-				/*$.ajax({
-					url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs,
-					success:function(data){
-						data = eval("(" + data + ")");
-						if(data.status=="200"){
-							layer.alert("环境变量模板导入成功");
-							window.location.reload();
-						}else{
-							layer.alert("环境变量模板导入失败");
-						}
-					}	
-				})*/
 	        }
 	 })
 	});
-	
-	//导入模板文件选项对勾
-	$("#Path-table>tbody>tr").on("click", function () {
-		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
-        $(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
-        //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
-        $(this).toggleClass("focus");//设定当前行为选中行
-        $(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
-    });
 	
 	$("#searchimage").click(function(){
 		var imageName = $('#imageName').val();
@@ -387,6 +415,15 @@ function containerName(){
  */
 // 删除环境变量
 function deleteRow(obj){
+	var envKey = $(obj).parent().find("input:first").val();
+	var arrayKey = $("#arrayKey").val().split(",");
+	var newArray = new Array();
+	for(var i = 0; i<arrayKey.length; i++){
+		if(envKey !=arrayKey[i]){
+			newArray.push(arrayKey[i]);
+		}
+	}
+	$("#arrayKey").attr("value",newArray);
 	$(obj).parent().parent().remove();
 	
 }

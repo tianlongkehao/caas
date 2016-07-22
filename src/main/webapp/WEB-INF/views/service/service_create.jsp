@@ -253,7 +253,7 @@
 																</tr>
 															</thead>
 															<tbody id="Path-oper1">
-
+																<input type="hidden" id = "arrayKey" value="" />
 															</tbody>
 														</table>
 													</li>
@@ -484,9 +484,15 @@
 								<div id="environment-variable">
 									<table class="table table-hover enabled" id="Path-table" style="width: 345px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
-											<tr>
-												<td class="vals vals-env">demo1<span class="vals-path hide"><i class="fa fa-check"></i></span></td>
-											</tr>
+											<c:forEach var = "envVariable" items = "${envVariables }">
+												<tr>
+													<td class="vals vals-env">${envVariable.envKey } : ${envVariable.envValue }
+														<span class="vals-path hide"><i class="fa fa-check"></i></span>
+														<input type="hidden" class="key" value="${envVariable.envKey }" />
+														<input type="hidden" class="value" value="${envVariable.envValue }" />
+													</td>
+												</tr>
+											</c:forEach>
 											<tr>
 												<td class="vals vals-env">demo2<span class="vals-path hide"><i class="fa fa-check"></i></span></td>
 											</tr>

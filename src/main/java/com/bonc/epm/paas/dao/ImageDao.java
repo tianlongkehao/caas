@@ -44,4 +44,7 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	@Query("select i from Image i where  i.isBaseImage= 1 and (i.creator = ?1 or i.imageType = 1)")
 	public List<Image> findByBaseImage(long creator);
 	
+	@Query("select i from Image i where  i.name = ?2 and i.isBaseImage= 1 and (i.creator = ?1 or i.imageType = 1)")
+	public List<Image> findByBaseImageVarsionOfName(long creator,String name);
+	
 }

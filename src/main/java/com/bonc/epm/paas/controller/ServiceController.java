@@ -394,14 +394,19 @@ public class ServiceController {
 		}
 		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
-
+		
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<EnvVariable> envVariables = envVariableDao.findByCreateBy(cUser.getId());
+		
+		
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
 		model.addAttribute("imageName", imageName);
 		model.addAttribute("imageVersion", imageVersion);
 		model.addAttribute("isDepoly", isDepoly);
 		model.addAttribute("menu_flag", "service");
-
+		model.addAttribute("envVariables",envVariables);
 		return "service/service_create.jsp";
 	}
 
@@ -604,7 +609,7 @@ public class ServiceController {
 		 service.getServiceName(), templateConf);
 		// 重新启动nginx服务器
 		// TODO 2
-		 TemplateEngine.cmdReloadConfig(templateConf);
+//		 TemplateEngine.cmdReloadConfig(templateConf);
 		 service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
 		 service.setPortSet(app.get("port"));
 		serviceDao.save(service);
@@ -918,6 +923,7 @@ public class ServiceController {
 			}
 			map.put("status", "200");
 			serviceDao.delete(id);
+			envVariableDao.deleteByServiceId(id);
 			// 更新挂载卷的使用状态
 			this.updateStorageType(service.getVolName(), service.getServiceName());
 		} catch (KubernetesClientException e) {
