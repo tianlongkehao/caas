@@ -32,12 +32,14 @@ import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.esConf;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
+import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
+import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
@@ -75,6 +77,9 @@ public class ServiceController {
 	
 	@Autowired
 	public EnvVariableDao envVariableDao;
+	
+	@Autowired
+	public PortConfigDao portConfigDao;
 
 	@Autowired
 	private ImageDao imageDao;
@@ -554,7 +559,7 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
-	public String constructContainer(Service service, String resourceName,String envVariable) {
+	public String constructContainer(Service service, String resourceName,String envVariable,String portConfig) {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
@@ -577,6 +582,21 @@ public class ServiceController {
 				envVariableDao.save(envVar);
 			}
 		}
+		//保存到与service关联的portConfig实体类
+		if (StringUtils.isNotEmpty(portConfig)){
+			JSONArray jsonArray = JSONArray.parseArray(portConfig);  
+			for(int i = 0 ; i < jsonArray.size(); i ++ ) {
+				PortConfig portCon = new PortConfig();
+				portCon.setContainerPort(jsonArray.getJSONObject(i).getString("containerPort"));
+				portCon.setMapPort(jsonArray.getJSONObject(i).getString("mapPort"));
+				portCon.setProtocol(jsonArray.getJSONObject(i).getString("protocol"));
+//			portCon.setOptions(Integer.valueOf(jsonArray.getJSONObject(i).getString("option")));
+				portCon.setCreateDate(new Date());
+				portCon.setServiceId(service.getId());
+				portConfigDao.save(portCon);
+			}
+		}
+		//保存
 		
 		// app为修改nginx配置文件的配置项
 		Map<String, String> app = new HashMap<String, String>();

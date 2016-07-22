@@ -137,9 +137,9 @@ public class UserController {
 			System.out.println("quota:" + JSON.toJSONString(quota));
 
 			// ceph中创建租户目录 
-			CephController ceph = new CephController();
+/*			CephController ceph = new CephController();
 			ceph.connectCephFS();
-			ceph.createNamespaceCephFS(user.getNamespace());
+			ceph.createNamespaceCephFS(user.getNamespace());*/
 
 
 			// 为client创建资源限制
