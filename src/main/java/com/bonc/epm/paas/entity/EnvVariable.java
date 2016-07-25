@@ -37,7 +37,12 @@ public class EnvVariable {
 	 * 关联服务Id
 	 */
 	private long serviceId;
-
+	
+	/**
+	 * 模板名称
+	 */
+	private String templateName;
+	
 	/**
 	 * 创建时间
 	 */
@@ -91,6 +96,13 @@ public class EnvVariable {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-	
+
+	public String getTemplateName() {
+		return templateName;
+	}
+
+	public void setTemplateName(String templateName) {
+		this.templateName = templateName;
+	}
 	
 }

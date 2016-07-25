@@ -397,8 +397,7 @@ public class ServiceController {
 		
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<EnvVariable> envVariables = envVariableDao.findByCreateBy(cUser.getId());
-		
+		List<String> templateNames = envVariableDao.findTemplateName(cUser.getId());
 		
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
@@ -406,7 +405,7 @@ public class ServiceController {
 		model.addAttribute("imageVersion", imageVersion);
 		model.addAttribute("isDepoly", isDepoly);
 		model.addAttribute("menu_flag", "service");
-		model.addAttribute("envVariables",envVariables);
+		model.addAttribute("templateNames",templateNames);
 		return "service/service_create.jsp";
 	}
 
@@ -559,7 +558,7 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
-	public String constructContainer(Service service, String resourceName,String envVariable) {
+	public String constructContainer(Service service, String resourceName,String envVariable,String templateName) {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
@@ -580,6 +579,9 @@ public class ServiceController {
 				envVar.setEnvValue(jsonArray.getJSONObject(i).getString("envValue"));
 				envVar.setCreateDate(new Date());
 				envVar.setServiceId(service.getId());
+				if(StringUtils.isNotEmpty(templateName)){
+					envVar.setTemplateName(templateName);
+				}
 				envVariableDao.save(envVar);
 			}
 		}
@@ -629,7 +631,7 @@ public class ServiceController {
 	 */
 	@RequestMapping("service/matchPath.do")
 	@ResponseBody
-	public String matchServicePathAndProxyPath(String proxyPath,String serviceName){
+	public String matchServicePathAndProxyPath (String proxyPath,String serviceName) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		for (Service service : serviceDao.findByCreateBy(cUser.getId())) {
@@ -645,18 +647,31 @@ public class ServiceController {
 		}
 		return JSON.toJSONString(map);
 	}
+	@RequestMapping("service/matchTemplateName.do")
+	@ResponseBody
+	public String matchTemplateName (String templateName) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		for (EnvVariable envVariable : envVariableDao.findByCreateBy(cUser.getId())) {
+			if (envVariable.getTemplateName().equals(templateName)) {
+				map.put("status", "200");
+				break;
+			}
+		}
+		return JSON.toJSONString(map);
+	}
 	
 	/**
-	 * 查询用户的环境变量，导入到环境变量模板中
+	 * 查询用户的环境变量模板，导入到环境变量模板中
 	 * @return
 	 */
-	@RequestMapping("service/findEnvVariables.do")
+	@RequestMapping("service/importEnvVariable.do")
 	@ResponseBody
-	public String findEnvVariables(){
+	public String findEnvVariables(String templateName){
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<EnvVariable> envVariables = envVariableDao.findByCreateBy(cUser.getId());
-		map.put("envVariables", envVariables);
+		List<EnvVariable> envVariables = envVariableDao.findByCreateByAndTemplateName(cUser.getId(),templateName);
+		map.put("data", envVariables);
 		return JSON.toJSONString(map);
 	}
 	
