@@ -653,6 +653,9 @@ public class ServiceController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		for (EnvVariable envVariable : envVariableDao.findByCreateBy(cUser.getId())) {
+			if (StringUtils.isEmpty(envVariable.getTemplateName())) {
+				continue;
+			}
 			if (envVariable.getTemplateName().equals(templateName)) {
 				map.put("status", "200");
 				break;
