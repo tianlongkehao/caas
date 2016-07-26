@@ -76,6 +76,8 @@ import com.github.dockerjava.api.model.ExposedPort;
 public class ServiceController {
 	private static final Logger log = LoggerFactory.getLogger(ServiceController.class);
 
+	private static int a =0;
+	Set<Integer> smalSet;
 	@Autowired
 	public ServiceDao serviceDao;
 	
@@ -393,7 +395,9 @@ public class ServiceController {
 	 */
 	@RequestMapping(value = { "service/add" }, method = RequestMethod.GET)
 	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {
-
+		
+		clearSet();
+		
 		String isDepoly = "";
 		if (imageName != null) {
 			isDepoly = "deploy";
@@ -753,24 +757,44 @@ public class ServiceController {
 		Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
 									.limit(offset)
 									.collect(Collectors.toSet());
-		Set<Integer> smalSet= serviceDao.findPortSets();
-		//求bigSet集合与smalSet集合的差集, 然后在从集合中随机选取一个元素
-		if (!CollectionUtils.isEmpty(smalSet)) {
+		if(CollectionUtils.isEmpty(smalSet)){
+			smalSet= serviceDao.findPortSets();
+		}	 else{
 			bigSet.removeAll(smalSet);
 		}
 		Object[] obj =bigSet.toArray();
 		int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
 				.toString());
+		smalSet.add(portSet);
+		System.out.println("大小："+smalSet.size());
+		System.out.println(smalSet.toString());
 		return portSet;
 	}
 
 	@RequestMapping("service/generatePortSet.do")
 	@ResponseBody
 	public String generatePortSet(){
-		vailPortSet();
+		//vailPortSet();
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("data", String.valueOf(vailPortSet()));
+		map.put("mapPort", String.valueOf(vailPortSet()));
 		return JSON.toJSONString(map);
+	}
+	/**
+	 * 如果集合不为空就清空集合
+	 */
+	public void clearSet(){
+		if(!CollectionUtils.isEmpty(smalSet)){
+			smalSet.clear();
+		}
+	}
+	/**
+	 *   删除集合中的某个元素
+	 * @param set
+	 */
+	@RequestMapping("service/removeSet.do")
+	public void removeSet(int set){
+		System.out.println(set);
+		smalSet.remove(set);
 	}
 	/**
 	 * serviceName 判重

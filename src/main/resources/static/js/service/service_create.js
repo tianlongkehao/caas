@@ -209,10 +209,10 @@ $(document).ready(function(){
 									'</select>'+
 							'</td>'+
 							'<td>'+
-									'<i>'+data.data+'</i>'+
+									'<i>'+data.mapPort+'</i>'+
 							'</td>'+
 							'<td>'+
-									'<a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
+									'<a href="javascript:void(0)" onclick="deletePortRow(this,'+data.mapPort+')" class="gray">'+
 												'<i class="fa fa-trash-o fa-lg"></i>'+
 									'</a>'+
 						  '</td>'+
@@ -472,7 +472,7 @@ function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
 				  										'<i>'+ n.mapPort +'</i>'+
 				  									'</td>'+
 				  									'<td>'+
-				  											'<a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
+				  											'<a href="javascript:void(0)" onclick="deletePortRow(this,'+n.mapPort+')" class="gray">'+
 				  											'<i class="fa fa-trash-o fa-lg"></i>'+
 				  											'</a>'+
 				  									'</td>'+
@@ -524,8 +524,12 @@ function deleteRow(obj){
 	
 }
 //删除port
-function deletePortRow(obj){
-	$(obj).parent().parent().remove();
+function deletePortRow(obj,int){
+	//alert(int);
+	 $.ajax({
+			url:""+ctx+"/service/removeSet.do?set="+int
+	 });
+	 $(obj).parent().parent().remove();
 }
 /*
  * function deleteRow(obj){ var id = "";
