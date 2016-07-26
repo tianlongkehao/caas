@@ -28,6 +28,10 @@ public class Ci {
 	 */
 	private String baseImageVersion;
 	/**
+	 * 基础镜像Id
+	 */
+	private long baseImageId;
+	/**
 	 * 项目名称
 	 */
 	private String projectName;
@@ -160,6 +164,12 @@ public class Ci {
 	}
 	public void setImgNameVersion(String imgNameVersion) {
 		this.imgNameVersion = imgNameVersion;
+	}
+	public long getBaseImageId() {
+		return baseImageId;
+	}
+	public void setBaseImageId(long baseImageId) {
+		this.baseImageId = baseImageId;
 	}
 	public Integer getImgType() {
 		return imgType;

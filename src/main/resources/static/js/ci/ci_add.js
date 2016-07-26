@@ -1,5 +1,7 @@
 $(document).ready(function () {
-
+	
+	changeBaseImageVersion ();
+	
  	$("#buildBtn").click(function(){
         if(checkCiAdd()) {
         	$("#buildForm").submit();
@@ -7,7 +9,6 @@ $(document).ready(function () {
         }
         return false;
     });
-
 
     $(".btn-imageType .btns").each(function(){
         $(this).click(function(){
@@ -47,6 +48,10 @@ $(document).ready(function () {
     
     //添加基础镜像的版本信息
     $("#baseImageName").change(function(){
+    	changeBaseImageVersion ();
+    });
+    
+    function changeBaseImageVersion () {
     	var baseImageName = $("#baseImageName").val();
     	$.ajax({
     		url:""+ctx+"/ci/findBaseImageVersion.do",
@@ -59,18 +64,14 @@ $(document).ready(function () {
 	            	if (data['data'].length > 0) {
 	            		for (var i in data.data) {
 	            			var image = data.data[i];
-	            			html += "<option type='text' value='"+image.version+"'>"+image.version+"</option>"
+	            			html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>"
 	            		}
 	            	}
 	            }
-	            if(baseImageName == "tomcat"){
-	            	$("#baseImageVersion").html("<option type='text' value='8-jre7'>8-jre7</option>"); 
-	            }else{
-	            	$("#baseImageVersion").html(html);    
-	            }
+	            $("#baseImageId").html(html);    
     		}
     	})
-    });
+    }
     
     function checkCiAdd(){
         var imgNameLast = $("#imgNameLast").val().trim();

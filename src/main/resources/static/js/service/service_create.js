@@ -88,7 +88,7 @@ $(document).ready(function(){
         }
         $('#envVariable').val(dataJson);
     	//将端口配置 数据变为json放入到
-        dataJson ="";
+       var portJson ="";
         $("#pushPrptpcol tr").each(function (index, domEle){
     				var protocol = "";
     				var mapPort = "";
@@ -102,15 +102,14 @@ $(document).ready(function(){
     				$(domEle).find("i").each(function(index,data){  
     					if(index == 0){  mapPort = $(data).html();  }
     					}); 
-    				dataJson += "{"+"\"containerPort\":\""+containerPort+"\","+"\"protocol\":\""+protocol+"\","
+    				portJson += "{"+"\"containerPort\":\""+containerPort+"\","+"\"protocol\":\""+protocol+"\","
     				+"\"mapPort\":\""+mapPort+"\"},";                 
         });
-        if (dataJson != "") {  
-            dataJson = dataJson.substring(0,dataJson.length -1);  
-            dataJson ="[" +dataJson+ "]";  
+        if (portJson != "") {  
+        		portJson = portJson.substring(0,portJson.length -1);  
+        		portJson ="[" +portJson+ "]";  
         }
-        $('#portConfig').val(dataJson);
-        
+        $('#portConfig').val(portJson);
 	    //var cpuNum = $('#cpuNum').val();
 	    /*if(!cpuNum || cpuNum.length < 1){
 		      layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
@@ -193,17 +192,34 @@ $(document).ready(function(){
 	
 	// 添加端口
 	$("#createPort").click(function(){
-		var portTr = '<tr class="plus-row">'+
-					  '<td><input class="port" type="text"></td>'+
-					  '<td><select class="T-http">'+
-					  '<option>TCP</option>'+
-					  '<option>HTTP</option>'+
-					  '</select></td>'+
-					  '<td><i>'+'动态生成'+'</i></td>'+
-					  '<td><a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
-					  '<i class="fa fa-trash-o fa-lg"></i>'+
-					  '</a></td></tr>';
-		$("#pushPrptpcol").append(portTr);
+		$.ajax({
+			url : ctx + "/service/generatePortSet.do",
+    		type: "GET",
+    		success : function(data) {
+    		data = eval("(" + data + ")");
+    		var portTr =''+ 
+				'<tr class="plus-row">'+
+    					'<td>'+
+    						'<input class="port" type="text">'+
+							'</td>'+
+							'<td>'+
+									'<select class="T-http">'+
+										  '<option>TCP</option>'+
+											'<option>HTTP</option>'+
+									'</select>'+
+							'</td>'+
+							'<td>'+
+									'<i>'+data.data+'</i>'+
+							'</td>'+
+							'<td>'+
+									'<a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
+												'<i class="fa fa-trash-o fa-lg"></i>'+
+									'</a>'+
+						  '</td>'+
+				'</tr>';
+    		$("#pushPrptpcol").append(portTr);
+    		}
+		});
 	});
 	
 	
