@@ -4,11 +4,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "nginxConf.io")
 public class TemplateConf {
-	    private String confpath;
-	    private String cmdpath;
-	    private String confurl;
-	    private String serverIP;
-	    public String getServerIP() {
+    private String confpath;
+    private String cmdpath;
+    private String confurl;
+    private String serverIP;
+    private String serverAddr;
+    
+	  public String getServerAddr() {
+		  return serverAddr;
+	  	}
+	  public void setServerAddr(String serverAddr) {
+		  this.serverAddr = serverAddr;
+	  	}
+	  public String getServerIP() {
 			return serverIP;
 		}
 		public void setServerIP(String serverIP) {
