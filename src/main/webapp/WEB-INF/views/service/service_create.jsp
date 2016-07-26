@@ -16,8 +16,9 @@
 		var imageName = '${imageName}';
 		var imageVersion = '${imageVersion}';
 		var resourceName = '${resourceName}';
+		var portConfigs = '${portConfigs}'
 		if (isDepoly == 'deploy') {
-			deploy(imgID, imageName, imageVersion, resourceName);
+			deploy(imgID, imageName, imageVersion, resourceName,portConfigs);
 		}
 	});
 </script>
@@ -79,9 +80,11 @@
 								<%-- 容器配置 --%>
 								<form id="buildService" name="buildService"
 									action="<%=path%>/service/constructContainer.do">
-									<input type = "hidden" id = "envVariable" name = "envVariable" value ="" ></input>
-									<input type = "hidden" id = "portConfig" name = "portConfig" value ="" ></input>
-									
+									<input type="hidden" id="envVariable" name="envVariable"
+										value=""></input>
+										<input type="hidden" id="portConfig" name="portConfig"
+										value=""></input>
+
 									<div class="host_step2">
 										<ul class="safeSet">
 											<li class="line-h-3"><span class="ve_top">镜像名称：</span> <input
@@ -111,8 +114,8 @@
 											<c:if test="${DMZ!=null && USER!=null  }">
 												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
 													<label class="checkbox-inline"> <input
-														type="checkbox" id="${DMZ }" name="nginxserv" value="${DMZ }">
-														DMZ区
+														type="checkbox" id="${DMZ }" name="nginxserv"
+														value="${DMZ }"> DMZ区
 												</label> <label class="checkbox-inline"> <input
 														type="checkbox" id="${USER }" name="nginxserv"
 														value="${USER }"> USER区
@@ -146,10 +149,23 @@
 														autocomplete="off" max="" placeholder="1" id="instanceNum"
 														name="instanceNum"> <span class="unit">个</span>
 													<!-- <span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span> -->
-													<span class="dynamic-scale"> <input type="checkbox" id="dynamic-service"> 
-														<label for="dynamic-service"><font color="blue">自动化伸缩</font></label>
+													<span class="dynamic-scale"> <input type="checkbox"
+														id="dynamic-service"> <label for="dynamic-service"><font
+															color="blue">自动化伸缩</font></label>
 													</span>
+
 												</div>
+											</li>
+											<li class="line-h-3">
+												<div class="param-set">
+													<span class="number-title">伸缩范围：</span><input type="number"
+														value="1" class="number" min="1">
+													<span class="unit">个</span> <span
+														style="margin-left: 15px">~</span> <input type="number"
+														value="5" class="number"> <span class="unit">个</span>
+												</div>
+
+
 											</li>
 											<li class="line-h-3">
 												<div class="param-set">
@@ -217,21 +233,21 @@
                                                                          name="pullPolicy" checked=""> <label
                                                 for="pullPolicy">更新镜像</label></span>
                                         </li> -->
-												</ul>
-												<!-- <div style="height: 80px !important;"></div> -->
+												</ul> <!-- <div style="height: 80px !important;"></div> -->
 											</li>
 											<li class="hide-set"><span class="ve_top">环境变量：</span>
 												<ol>
 													<li class="hide-select"><input type="text"
 														placeholder="name" id="Name"> <input type="text"
-														placeholder="value" id="Value"> <a id="cratePATH"><i class="fa fa-plus"></i>添加</a>
-														<div style="float:right">
-															<span id="importBtn" class=" btn-info btn-sm" style="cursor:pointer">导入模板</span>
-															<span id="exportBtn" class=" btn-info btn-sm" style="cursor:pointer">另存为模板</span>
-														</div>
-													</li>
+														placeholder="value" id="Value"> <a id="cratePATH"><i
+															class="fa fa-plus"></i>添加</a>
+														<div style="float: right">
+															<span id="importBtn" class=" btn-info btn-sm"
+																style="cursor: pointer">导入模板</span> <span id="exportBtn"
+																class=" btn-info btn-sm" style="cursor: pointer">另存为模板</span>
+														</div></li>
 													<li>
-														<table class="table table-hover enabled" id="Path" >
+														<table class="table table-hover enabled" id="Path">
 															<thead>
 																<tr>
 																	<th style="width: 45%">键</th>
@@ -240,17 +256,12 @@
 																</tr>
 															</thead>
 															<tbody id="Path-oper1">
-<<<<<<< HEAD
-																
-=======
 																<input type="hidden" id = "arrayKey" value="" />
->>>>>>> refs/heads/develop
 															</tbody>
 														</table>
 													</li>
-												</ol>
-												</li>
-												<li class="hide-set"><span class="ve_top">端口配置：</span>
+												</ol></li>
+											<li class="hide-set"><span class="ve_top">端口配置：</span>
 												<table class="table enabled">
 													<thead style="background: #fafafa">
 														<tr>
@@ -261,31 +272,18 @@
 														</tr>
 													</thead>
 													<tbody class="BORDER" id="pushPrptpcol">
-														<tr class="plus-row">
-															<td><input class="port" type="text" 
-																value="8080"></td>
+														<!-- <tr class="plus-row">
+															<td><input class="port" type="text" value="8080"></td>
 															<td><select class="T-http">
 																	<option>TCP</option>
 																	<option>HTTP</option>
 															</select></td>
-															<td><i>30012</i></td>
+															<td><i>30099</i></td>
 															<td><a href="javascript:void(0)"
 																onclick="deletePortRow(this)" class="gray"> <i
 																	class="fa fa-trash-o fa-lg"></i>
 															</a></td>
-														</tr>
-														 <tr class="plus-row">
-															<td><input class="port" type="text" value="8082"></td>
-															<td><select class="T-http">
-																	<option>TCP</option>
-																	<option>HTTP</option>
-															</select></td>
-															<td><i>30011</i></td>
-															<td><a href="javascript:void(0)"
-																onclick="deletePortRow(this)" class="gray"> <i
-																	class="fa fa-trash-o fa-lg"></i>
-															</a></td>
-														</tr> 
+														</tr> -->
 													</tbody>
 												</table>
 												<div class="createPort">
@@ -439,7 +437,7 @@
 															<th style="vertical-align: middle; width: 8.9%">操作</th>
 														</tr>
 													</thead>
-													<tbody class="BORDER" id="pushPrptpcol">
+													<tbody class="BORDER" id="pushPrptpcol2">
 														<tr class="plus-row">
 															<td><input class="port" type="text" disabled=""
 																value="3306"></td>
@@ -474,8 +472,6 @@
 										<div style="height: 80px !important;"></div>
 									</div>
 								</form>
-<<<<<<< HEAD
-=======
 								<div id="environment-variable">
 									<table class="table table-hover enabled" id="Path-table" style="width: 345px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
@@ -494,24 +490,14 @@
 										</tbody>
 									</table>
 								</div>
->>>>>>> refs/heads/develop
 							</div>
 
 						</div>
 						<div class="createPadding">
-							<button class=" btn btn-default go_backs"
-								>上一步</button>
+							<button class=" btn btn-default go_backs">上一步</button>
 							<!-- <button class="btn btn-success two_step hide">高级设置</button> -->
 							<button id="createButton"
 								class="pull-right btn btn-primary pull_confirm">创建</button>
 						</div>
 
 					</div>
-
-				</div>
-			</div>
-		</article>
-	</div>
-
-</body>
-</html>

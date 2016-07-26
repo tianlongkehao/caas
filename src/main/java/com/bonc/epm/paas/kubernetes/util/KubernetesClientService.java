@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.entity.EnvVariable;
+import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.model.Container;
@@ -308,7 +309,7 @@ public class KubernetesClientService {
 
 	
 	public ReplicationController generateSimpleReplicationController(String name,int replicas,
-	                                                                     String image,int containerPort,
+	                                                                     String image,List<PortConfig> portConfigs,
 	                                                                         Double cpu,String ram,String nginxObj, 
 	                                                                             String servicePath, String proxyPath,
 	                                                                                 List<EnvVariable> envVariables, List<String> command, List<String> args){
@@ -368,11 +369,16 @@ public class KubernetesClientService {
 		requirements.setLimits(limit);
 		container.setResources(requirements);
 		
-		List<ContainerPort> ports = new ArrayList<ContainerPort>();
-		ContainerPort port = new ContainerPort();
-		port.setContainerPort(containerPort);
-		ports.add(port);
-		container.setPorts(ports);
+		if (CollectionUtils.isNotEmpty(portConfigs)) {
+		      List<ContainerPort> ports = new ArrayList<ContainerPort>();
+		      for (PortConfig oneRow : portConfigs) {
+		          ContainerPort port = new ContainerPort();
+		          port.setContainerPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+		          ports.add(port); 
+		      }
+		      container.setPorts(ports);
+		}
+
 		if (CollectionUtils.isNotEmpty(command)) {
 		      container.setCommand(command);
 		}
@@ -387,7 +393,7 @@ public class KubernetesClientService {
 		return replicationController;
 	}
 	
-	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort){
+	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort ){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -430,7 +436,7 @@ public class KubernetesClientService {
 		return replicationController;
 	}
 	
-	public Service generateService(String appName,Integer port,Integer targetPort,Integer nodePort){
+	public Service generateService(String appName,List<PortConfig> portConfigs ){
 		Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(appName);
@@ -442,15 +448,20 @@ public class KubernetesClientService {
 		Map<String,String> selector = new HashMap<String,String>();
 		selector.put("app", appName);
 		spec.setSelector(selector);
-		List<ServicePort> ports = new ArrayList<ServicePort>();
-		ServicePort portObj = new ServicePort();
-		portObj.setName("http");
-		portObj.setProtocol("TCP");
-		portObj.setPort(port);
-		portObj.setTargetPort(targetPort);
-		portObj.setNodePort(nodePort);
-		ports.add(portObj);
-		spec.setPorts(ports);
+		if (CollectionUtils.isNotEmpty(portConfigs)) {
+		    List<ServicePort> ports = new ArrayList<ServicePort>();
+		    for (PortConfig oneRow : portConfigs) {
+		        ServicePort portObj = new ServicePort();
+		        portObj.setName("http");
+		        portObj.setProtocol("TCP");
+		        portObj.setPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+		        portObj.setTargetPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+		        portObj.setNodePort(Integer.valueOf(oneRow.getMapPort().trim()));
+		        ports.add(portObj);
+		    	}
+		    spec.setPorts(ports);
+		}
+
 		
 		service.setSpec(spec);
 		return service;

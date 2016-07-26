@@ -100,7 +100,7 @@ $(document).ready(function(){
     					if(index == 0){  protocol = $(data).val();  }
     					}); 
     				$(domEle).find("i").each(function(index,data){  
-    					if(index == 0){  mapPort = $(data).val();  }
+    					if(index == 0){  mapPort = $(data).html();  }
     					}); 
     				dataJson += "{"+"\"containerPort\":\""+containerPort+"\","+"\"protocol\":\""+protocol+"\","
     				+"\"mapPort\":\""+mapPort+"\"},";                 
@@ -269,6 +269,7 @@ $(document).ready(function(){
 	                if (data['data'].length > 0) {
 	                    for (var i in data.data) {
 	                        var image = data.data[i];
+	                        var portConfigs = JSON.stringify(image.portConfigs);
 	                        html += "<li class='image-item'><span class='img_icon span2'>"+
 							"<img src='"+ctx+"/images/image-1.png'>"+
 					"</span> <span class='span5 type' type='database'>"+
@@ -282,7 +283,7 @@ $(document).ready(function(){
 					"</span> <span class='span3'>"+
 							"<div class='list-item-description'>"+
 								"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
-									""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
+									""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
 									"data-attr='tenxcloud/mysql'> 部署 <i"+
 									"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
 								"</span>"+
@@ -297,8 +298,9 @@ $(document).ready(function(){
 	                        	var imageVersion = $(this).attr("imageVersion");
 	                        	var imgID = $(this).attr("imgID");
 	                        	var resourceName = $(this).attr("resourceName");
+	                        	var portConfigs = $(this).attr("portConfigs");
 	                        	// containerName();
-	                            deploy(imgID,imageName, imageVersion,resourceName);
+	                            deploy(imgID,imageName, imageVersion,resourceName,portConfigs);
 	                        });
 	                	}
 	            }
@@ -368,6 +370,7 @@ function loadImageList() {
                 if (data['data'].length > 0) {
                     for (var i in data.data) {
                         var image = data.data[i];
+                        var portConfigs = JSON.stringify(image.portConfigs);
                         html += "<li class='image-item'><span class='img_icon span2'>"+
 						"<img src='"+ctx+"/images/image-1.png'>"+
 				"</span> <span class='span5 type' type='database'>"+
@@ -381,7 +384,7 @@ function loadImageList() {
 				"</span> <span class='span3'>"+
 						"<div class='list-item-description'>"+
 							"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
-								""+ image.version +"</span> <span imgID='"+image.id+"'resourceName='"+image.resourceName+"'  imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
+								""+ image.version +"</span> <span imgID='"+image.id+"'resourceName='"+image.resourceName+"'  imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
 								"data-attr='tenxcloud/mysql'> 部署 <i"+
 								"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
 							"</span>"+
@@ -396,8 +399,9 @@ function loadImageList() {
                         	var imageVersion = $(this).attr("imageVersion");
                         	var imgID = $(this).attr("imgID");
                         	var resourceName = $(this).attr("resourceName");
+                        	var portConfigs = $(this).attr("portConfigs");
                         	// containerName();
-                            deploy(imgID,imageName, imageVersion,resourceName);
+                          deploy(imgID,imageName, imageVersion,resourceName,portConfigs);
                         });
                 	}
             }
@@ -405,12 +409,38 @@ function loadImageList() {
     })
 }
 
-function deploy(imgID,imageName, imageVersion,resourceName){
-
+function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
+		if ('undefined' != portConfigs) {
+			portConfigs = eval("(" + portConfigs + ")");
+			$("#pushPrptpcol").empty();
+        	$.each(portConfigs,function(i,n){
+        		var portTr = '<tr class="plus-row">'+
+				  									'<td>'+
+        												'<input class="port" type="text" value=" '+n.containerPort+'">'+
+				  									'</td>'+
+				  									'<td>' +
+				  											'<select class="T-http">'+
+				  													'<option>TCP</option>'+
+				  													'<option>HTTP</option>'+
+				  											'</select>'+
+				  									'</td>'+
+				  									'<td>'+
+				  										'<i>'+ n.mapPort +'</i>'+
+				  									'</td>'+
+				  									'<td>'+
+				  											'<a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
+				  											'<i class="fa fa-trash-o fa-lg"></i>'+
+				  											'</a>'+
+				  									'</td>'+
+				  								'</tr>';
+        		$("#pushPrptpcol").append(portTr);
+    				});
+		}
     $("#imgName").val(imageName);
     $("#imgVersion").val(imageVersion);
     $("#imgID").val(imgID);
     $("#resourceName").val(resourceName);
+    $("#portConfigs").val(portConfigs);
     $(".step-inner").css("left","-100%");
     $(".createPadding").removeClass("hide");
     $(".radius_step").removeClass("action").eq(1).addClass("action");

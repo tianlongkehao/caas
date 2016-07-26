@@ -35,6 +35,8 @@ public class Image {
 	private Date createTime;
 	@Transient
 	private Integer currUserFavor;
+	@Transient 
+	List<PortConfig> portConfigs;
 	
 	@ManyToMany(mappedBy = "favorImages")
 	private List<User> favorUsers;
@@ -124,6 +126,12 @@ public class Image {
 	}
 	public void setIsBaseImage(Integer isBaseImage) {
 		this.isBaseImage = isBaseImage;
+	}
+	public List<PortConfig> getPortConfigs() {
+		return portConfigs;
+	}
+	public void setPortConfigs(List<PortConfig> portConfigs) {
+		this.portConfigs = portConfigs;
 	}
 	
 }

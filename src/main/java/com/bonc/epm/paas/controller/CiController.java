@@ -400,7 +400,8 @@ public class CiController {
 		String dockerfilePath = ci.getCodeLocation()+ci.getDockerFileLocation();
 		String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
 		String imageVersion = ci.getImgNameVersion();
-		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao);
+		String imageId = "";
+		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao,imageId);
 		if(flag){
 			//上传镜像
 			flag = dockerClientService.pushImage(imageName, imageVersion,ciRecord,ciRecordDao);
@@ -426,7 +427,7 @@ public class CiController {
 				img = new Image();
 				img.setName(imageName);
 				img.setVersion(imageVersion);
-				
+				img.setImageId(imageId);
 			}
 			img.setResourceName(ci.getResourceName());
 			img.setImageType(ci.getImgType());
