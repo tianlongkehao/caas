@@ -80,11 +80,10 @@
 								<%-- 容器配置 --%>
 								<form id="buildService" name="buildService"
 									action="<%=path%>/service/constructContainer.do">
-									<input type="hidden" id="envVariable" name="envVariable"
-										value=""></input>
-										<input type="hidden" id="portConfig" name="portConfig"
-										value=""></input>
-
+									<input type="hidden" id="envVariable" name="envVariable" value=""></input>
+									<input type="hidden" id="portConfig" name="portConfig" value=""></input>
+									<input type="hidden" id="templateName" name="templateName" value=""></input>
+									
 									<div class="host_step2">
 										<ul class="safeSet">
 											<li class="line-h-3"><span class="ve_top">镜像名称：</span> <input
@@ -475,23 +474,24 @@
 								<div id="environment-variable">
 									<table class="table table-hover enabled" id="Path-table" style="width: 345px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
-											<c:forEach var = "envVariable" items = "${envVariables }">
+											<c:forEach var = "templateName" items = "${templateNames }">
 												<tr>
-													<td class="vals vals-env">${envVariable.envKey } : ${envVariable.envValue }
+													<td class="vals vals-env">${templateName }
 														<span class="vals-path hide"><i class="fa fa-check"></i></span>
-														<input type="hidden" class="key" value="${envVariable.envKey }" />
-														<input type="hidden" class="value" value="${envVariable.envValue }" />
+														<input type="hidden" class="templateName" value="${templateName }" />
 													</td>
 												</tr>
 											</c:forEach>
-											<tr>
-												<td class="vals vals-env">demo2<span class="vals-path hide"><i class="fa fa-check"></i></span></td>
-											</tr>
 										</tbody>
 									</table>
 								</div>
+								<!-- 环境变量另存为模板 -->
+								<div id="environment-template">
+									<div style="width: 345px; margin: 5px 10px 5px 10px">
+										<span>模板名称：</span><input type="text" id="envTemplateName" style="width:77%" autofocus="autofocus" />
+									</div>
+								</div>
 							</div>
-
 						</div>
 						<div class="createPadding">
 							<button class=" btn btn-default go_backs">上一步</button>

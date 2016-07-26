@@ -208,16 +208,14 @@ $(document).ready(function(){
 	
 	
 	//导入模板文件选项对勾
-	var envKey = null;
-	var envValue = null;
+	var templateName = null;
 	$("#Path-table>tbody>tr").on("click", function () {
 		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
 		$(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
 		//$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
 		$(this).toggleClass("focus");//设定当前行为选中行
 		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
-		envKey = $(this).parent().find("tr.focus").find(".key").val();
-		envValue = $(this).parent().find("tr.focus").find(".value").val()
+		templateName = $(this).parent().find("tr.focus").find(".templateName").val();
 	});
 	
 	//导入模板
@@ -227,45 +225,75 @@ $(document).ready(function(){
 	        title: '环境变量模板',
 	        content: $("#environment-variable"),
 	        btn: ['导入', '取消'],
-	        yes: function(index, layero){ 
-	        	if(envKey != "" && envValue != ""){
-	        		//判断key是否重复
-	        		var arrayKey = $("#arrayKey").val().split(",");
-	        		for(var i = 0; i<arrayKey.length; i++){
-	        			if(envKey == arrayKey[i]){
-	        				layer.tips('环境变量key不能重复','#Name',{tips: [1, '#3595CC']});
-	        				$('#Name').focus();
-	        				layer.close(index);
-	        				return;
-	        			}
-	        		}
-	        		arrayKey.push(envKey+",");
-	        		$("#arrayKey").attr("value",arrayKey);
-	        		
-	    			var tr = '<tr>'+
-	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envKey+'"></td>'+
-	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envValue+'"></td>'+
-	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envKey+'">'+
-	    			'</td>'+
-	    		'</tr>'
-	    		$("#Path-oper1").append(tr);
-	    		}
-	        	
+	        yes: function(index, layero){
+	        	 var arrayKey = $("#arrayKey").val().split(",");
+	        	 $.ajax({
+	         		url : ctx + "/service/importEnvVariable.do",
+	         		type: "POST",
+	         		data:{"templateName":templateName},
+	         		success : function(data) {
+	         			data = eval("(" + data + ")");
+	         			var html = "";
+	    	            if (data != null) {
+	    	                if (data['data'].length > 0) {
+	    	                	for (var i in data.data) {
+	    	                		var envVariable = data.data[i];
+	    	                		html += '<tr>'+
+		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envVariable.envKey+'"></td>'+
+		    	    	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envVariable.envValue+'"></td>'+
+		    	    	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
+		    	    	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envVariable.envKey+'">'+
+		    	    	    			'</td>'+
+		    	    	    		'</tr>'
+		    	    	    		arrayKey.push(envVariable.envKey+",");
+	    	                	}
+	    	                }
+	    	            }
+	    	            $("#Path-oper1").append(html);
+	    	            $("#arrayKey").attr("value",arrayKey);
+	         		}
+	         	});
 	        	layer.close(index);
 	        }
-	 })
-	});	
+		})
+	});
+	
+	//另存为模板
+	$("#exportBtn").click(function(){
+		layer.open({
+		 	type:1,
+	        title: '另存为模板',
+	        content: $("#environment-template"),
+	        btn: ['保存', '取消'],
+	        yes: function(index, layero){ 
+	        	var templateName = $("#envTemplateName").val();
+	        	$.ajax({
+					url:ctx+"/service/matchTemplateName.do",
+					type: "POST",
+	         		data:{"templateName":templateName},
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("环境变量模板名称重复");
+						}else{
+							layer.alert("环境变量模板导入成功");
+							$('#templateName').val(templateName);
+							layer.close(index);
+						}
+					}	
+	        	});
+	        }
+		})
+	});
+	
 	$("#searchimage").click(function(){
 		var imageName = $('#imageName').val();
 		$.ajax({
 	        url: ""+ctx+"/service/findimages.do?imageName="+imageName,
 	        success: function (data) {
 	            data = eval("(" + data + ")");
-
 	            var html = "";
 	            if (data != null) {
-
 	                if (data['data'].length > 0) {
 	                    for (var i in data.data) {
 	                        var image = data.data[i];
