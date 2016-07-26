@@ -22,7 +22,7 @@ public interface EnvVariableDao extends CrudRepository<EnvVariable, Long>{
     
     public void deleteByServiceId(long serviceId);
     
-    @Query("select distinct env.templateName from EnvVariable env where env.createBy = ?1")
+    @Query("select distinct env.templateName from EnvVariable env where env.createBy = ?1 and env.templateName is not NULL")
     public List<String> findTemplateName(long createBy);
     
     public List<EnvVariable> findByCreateByAndTemplateName(long createBy,String templateName);
