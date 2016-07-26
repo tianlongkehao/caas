@@ -457,3 +457,23 @@ td .dockerfileinput {
 .other-details .col-9x .other-hint {
     color: #666;
 }
+
+/* 导出导入模板弹窗 */
+.dynamic-scale{
+	margin-left: 43px;
+}
+
+.doc-tr{
+	color:green;
+	float:right;
+	margin-right:15px;
+	font-size:16px
+}
+tr.focus{
+    background-color:#f5f6f6;
+}
+.enabled tr {
+    border: 1px solid #eee;
+    text-indent: 5px;
+}
+

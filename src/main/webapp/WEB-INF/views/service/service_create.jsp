@@ -91,7 +91,7 @@
 											<li class="line-h-3"><span class="ve_top">镜像版本：</span> <input
 												type="text" value="" class="in_style" id="imgVersion"
 												name="imgVersion" readOnly="readOnly"></li>
-											<li class="line-h-3"><span class="ve_top">服务名称：</span> <input
+											<li class="line-h-3"><span class="ve_top">服务名称：<font color="red">*</font></span><input
 												type="text" value="" class="in_style" id="serviceName"
 												name="serviceName"> <input type="hidden" value=""
 												class="in_style" id="resourceName" name="resourceName">
@@ -104,8 +104,8 @@
 											<li class="line-h-3" id="startCommand_li"><input
 												type="text" value="" class="in_style"
 												id="startCommand_input" name="startCommand"
-												style="margin-left: 120px"></li>
-											<li class="line-h-3"><span class="ve_top">服务访问路径：</span>
+												style="margin-left: 150px"></li>
+											<li class="line-h-3"><span class="ve_top">服务访问路径：<font color="red">*</font></span>
 												<input type="text" value="" class="in_style" id="webPath"
 												name="servicePath"></li>
 											<c:if test="${DMZ!=null && USER!=null  }">
@@ -119,7 +119,7 @@
 												</label> <input type="hidden" value="" class="in_style"
 													id="proxyZone" name="proxyZone"></li>
 											</c:if>
-											<li class="line-h-3"><span class="ve_top">nginx代理路径：</span>
+											<li class="line-h-3"><span class="ve_top">nginx代理路径：<font color="red">*</font></span>
 												<input type="text" value="" class="in_style" id="nginxPath"
 												name="proxyPath"></li>
 
@@ -141,7 +141,7 @@
                                 </li> -->
 											<li class="line-h-3" id="instsize">
 												<div class="param-set">
-													<span class="number-title">实例数量：</span> <input
+													<span class="ve_top">实例数量：<font color="red">*</font></span> <input
 														type="number" value="1" class="number" min="1"
 														autocomplete="off" max="" placeholder="1" id="instanceNum"
 														name="instanceNum"> <span class="unit">个</span>
@@ -153,20 +153,30 @@
 
 												</div>
 											</li>
-											<li class="line-h-3">
+											<li class="line-h-3" id="dynamic-range">
 												<div class="param-set">
-													<span class="number-title">伸缩范围：</span><input type="number"
-														value="1" class="number" min="1">
-													<span class="unit">个</span> <span
-														style="margin-left: 15px">~</span> <input type="number"
-														value="5" class="number"> <span class="unit">个</span>
+													<span class="ve_top">伸缩范围：<font color="red">*</font></span> <input
+														type="number" value="1" class="number" min="1"
+														autocomplete="off" max="" placeholder="1" id="minNum"
+														name="instanceNum"> <span class="unit">个</span> 
+														<span style="margin-left: 34px"> ~ </span>
+													<input
+														type="number" value="10" class="number" min="1"
+														autocomplete="off" max="" placeholder="10" id="maxNum"
+														name="instanceNum"> <span class="unit">个</span>
 												</div>
-
-
 											</li>
+											<li class="line-h-3" id="dynamic-threshold">
+												<div class="param-set">
+													<span class="ve_top">伸缩阈值：<font color="red">*</font></span> 
+													<input type="number" placeholder="60" ><span class="unit">%</span>
+													<span style="color: grey; margin-left: 40px;">CPU资源使用率</span>
+												</div>
+											</li>
+										
 											<li class="line-h-3">
 												<div class="param-set">
-													<span class="number-title">CPU数量：</span> <input
+													<span class="ve_top">CPU数量：<font color="red">*</font></span> <input
 														type="radio" class="cpuNum" name="cpuNum" value="1"
 														placeholder="当前可用cpu数量：${leftcpu }个">1<span>个</span>
 													<input type="radio" class="cpuNum" name="cpuNum" value="2"
@@ -179,7 +189,7 @@
 											</li>
 											<li class="line-h-3">
 												<div class="param-set">
-													<span class="number-title">内存：</span> <input type="radio"
+													<span class="ve_top">内存：<font color="red">*</font></span> <input type="radio"
 														class="ram" name="ram" value="2048">2<span>G</span>
 													<input type="radio" class="ram" name="ram" value="4098">4<span>G</span>
 													<input type="radio" class="ram" name="ram" value="8192">8<span>G</span>
@@ -196,7 +206,7 @@
 												<ul id="mountPathList">
 													<li class="mount line-h-3">
 														<!-- <span class="ve_top">挂载地址：</span> -->
-														<table class="pull-left" style="margin-left: 120px;">
+														<table class="pull-left" style="margin-left: 150px;">
 															<tbody>
 																<tr>
 																	<td><input type="text" id="mountPath"
@@ -481,6 +491,7 @@
 										<div style="height: 80px !important;"></div>
 									</div>
 								</form>
+								<!-- 环境变量导入模板 -->
 								<div id="environment-variable">
 									<table class="table table-hover enabled" id="Path-table" style="width: 345px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
@@ -492,6 +503,12 @@
 											</tr>
 										</tbody>
 									</table>
+								</div>
+								<!-- 环境变量另存为模板 -->
+								<div id="environment-template">
+									<div style="width: 345px; margin: 5px 10px 5px 10px">
+										<span>模板名称：</span><input type="text" id="envTemplateName" style="width:77%" autofocus="autofocus" />
+									</div>
 								</div>
 							</div>
 

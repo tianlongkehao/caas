@@ -156,6 +156,18 @@ $(document).ready(function(){
 		
 	});
 	
+	//自动化伸缩范围&伸缩阈值
+	var trueOrfalse = false;
+	$("#dynamic-range").hide();
+	$("#dynamic-threshold").hide();
+	$("#dynamic-service").click(function(){
+		trueOrfalse = !trueOrfalse;
+		$("#instanceNum").attr("disabled",trueOrfalse);
+		$("#dynamic-range").toggle();
+		$("#dynamic-threshold").toggle();
+		$("#minNum").focus();
+	});
+	
 	// 添加端口
 	$("#createPort").click(function(){
 		var portTr = '<tr class="plus-row">'+
@@ -178,6 +190,32 @@ $(document).ready(function(){
 	        title: '环境变量模板',
 	        content: $("#environment-variable"),
 	        btn: ['导入', '取消'],
+	        yes: function(index, layero){ 
+	        	
+	        	layer.close(index);
+				/*$.ajax({
+					url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs,
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("环境变量模板导入成功");
+							window.location.reload();
+						}else{
+							layer.alert("环境变量模板导入失败");
+						}
+					}	
+				})*/
+	        }
+	 })
+	});
+	
+	//环境变量另存为模板
+	$("#exportBtn").click(function(){
+		layer.open({
+		 	type:1,
+	        title: '另存为模板',
+	        content: $("#environment-template"),
+	        btn: ['保存', '取消'],
 	        yes: function(index, layero){ 
 	        	
 	        	layer.close(index);
