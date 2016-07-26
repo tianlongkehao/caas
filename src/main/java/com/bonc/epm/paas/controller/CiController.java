@@ -191,7 +191,7 @@ public class CiController {
 	}
 	
 	@RequestMapping(value={"ci/addCodeSource"},method=RequestMethod.GET)
-	public String addCodeSource(Model model){
+	public String oo(Model model){
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
 		List<Image> images = imageDao.findByBaseImage(cuurentUser.getId());
 		//去掉镜像名称相同的镜像
@@ -275,7 +275,14 @@ public class CiController {
         		ci.setResourceName(sourceCode.getOriginalFilename());
         		FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
         	}
-        	String fileTemplate = FileUtils.class.getClassLoader().getResource("Dockerfile").getPath();
+        	
+        	String fileTemplate = null;
+        	if (ci.getResourceName().endsWith("war")) {
+        	    fileTemplate = FileUtils.class.getClassLoader().getResource("Dockerfile").getPath();
+        	} else {
+        	    fileTemplate = FileUtils.class.getClassLoader().getResource("Dockerfilejar").getPath();
+        	}
+        	
         	String toFile = ci.getCodeLocation()+"/"+"Dockerfile";
         	Map<String,String> data = new HashMap<String, String>();
         	data.put("${baseImage}", ci.getBaseImageName()+":"+ci.getBaseImageVersion());
