@@ -141,21 +141,21 @@
                                     <span class="ve_top display-block">容器配置：</span>
 
                                 </li> -->
-											<li class="line-h-3" id="instsize">
+ 											<li class="line-h-3" id="instsize">
 												<div class="param-set">
 													<span class="number-title">实例数量：</span> <input
 														type="number" value="1" class="number" min="1"
 														autocomplete="off" max="" placeholder="1" id="instanceNum"
 														name="instanceNum"> <span class="unit">个</span>
-													<!-- <span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span> -->
+<%-- 													<span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span>
 													<span class="dynamic-scale"> <input type="checkbox"
 														id="dynamic-service"> <label for="dynamic-service"><font
 															color="blue">自动化伸缩</font></label>
-													</span>
+													</span> --%>
 
 												</div>
 											</li>
-											<li class="line-h-3">
+<!-- 											<li class="line-h-3">
 												<div class="param-set">
 													<span class="number-title">伸缩范围：</span><input type="number"
 														value="1" class="number" min="1">
@@ -165,7 +165,7 @@
 												</div>
 
 
-											</li>
+											</li> -->
 											<li class="line-h-3">
 												<div class="param-set">
 													<span class="number-title">CPU数量：</span> <input
@@ -474,14 +474,21 @@
 								<div id="environment-variable">
 									<table class="table table-hover enabled" id="Path-table" style="width: 345px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
-											<c:forEach var = "templateName" items = "${templateNames }">
+											<c:if test="${empty templateNames }">
 												<tr>
-													<td class="vals vals-env">${templateName }
-														<span class="vals-path hide"><i class="fa fa-check"></i></span>
-														<input type="hidden" class="templateName" value="${templateName }" />
-													</td>
+													<td>没有保存的模板</td>
 												</tr>
-											</c:forEach>
+											</c:if>
+											<c:if test="${not empty templateNames }">
+												<c:forEach var = "templateName" items = "${templateNames }">
+													<tr>
+														<td class="vals vals-env">${templateName }
+															<span class="vals-path hide"><i class="fa fa-check"></i></span>
+															<input type="hidden" class="templateName" value="${templateName }" />
+														</td>
+													</tr>
+												</c:forEach>
+											</c:if>
 										</tbody>
 									</table>
 								</div>

@@ -764,6 +764,14 @@ public class ServiceController {
 		return portSet;
 	}
 
+	@RequestMapping("service/generatePortSet.do")
+	@ResponseBody
+	public String generatePortSet(){
+		vailPortSet();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("data", String.valueOf(vailPortSet()));
+		return JSON.toJSONString(map);
+	}
 	/**
 	 * serviceName 判重
 	 * 

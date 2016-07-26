@@ -258,8 +258,9 @@ public class CiController {
 	public String addCodeResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode) {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
 		ci.setBaseImageName(dockerClientService.getDockerRegistryAddress() + "/" + ci.getBaseImageName());
-        ci.setCreateBy(cuurentUser.getId());
-        ci.setCreateDate(new Date());
+		ci.setBaseImageVersion(imageDao.findById(ci.getBaseImageId()).getVersion());
+		ci.setCreateBy(cuurentUser.getId());
+		ci.setCreateDate(new Date());
 		ci.setType(CiConstant.TYPE_CODE);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
