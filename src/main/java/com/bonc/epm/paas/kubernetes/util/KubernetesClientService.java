@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -327,11 +328,10 @@ public class KubernetesClientService {
 		labels.put("app", name);
 		labels.put("servicePath", servicePath);
 		labels.put("proxyPath", proxyPath);
-		if(nginxObj != null && !"".equals(nginxObj)){
-			JSONObject jsonObject = JSONObject.parseObject(nginxObj);
-			Set<String> set = jsonObject.keySet();
-			for(String key:set){
-				labels.put(key, jsonObject.getString(key));
+		if (StringUtils.isNotBlank(nginxObj)) {
+			String[] proxyArray = nginxObj.split(",");
+			for (int i = 0; i < proxyArray.length;i++) {
+				labels.put(proxyArray[i], proxyArray[i]);
 			}
 		}
 		podMeta.setLabels(labels);

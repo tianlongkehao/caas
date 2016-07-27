@@ -1,25 +1,6 @@
 $(document).ready(function(){
 	loadImageList();
-
 	getServiceStorageVol();
-	function getServiceStorageVol(){
-		$.ajax({
-			url : ctx + "/service/storageList?pageable=",
-			type: "POST",
-			success : function(data) {
-				var jsonData = $.parseJSON(data);
-				for(var i = 0; i < jsonData.count; i++){
-					var storageVolOpt = '<option name="volName" value=""></option>';
-					var txt = jsonData.storages[i].storageName +" "+ jsonData.storages[i].storageSize + "M";
-					$("#selectVolume").append(storageVolOpt);
-					$("#selectVolume")[0].children[i+1].innerHTML = txt;
-					$("#selectVolume")[0].children[i+1].value = jsonData.storages[i].storageName;
-				}
-				
-			}
-		})
-	}
-
 	
 	$("#createButton").click(function(){
 		var name = $('#serviceName').val();
@@ -55,7 +36,7 @@ $(document).ready(function(){
 		      return;
 		}
 	    
-	    var nginxstr = "{";
+/*	    var nginxstr = "{";
 	    $('input[name="nginxserv"]:checked').each(function(){
     		var servname = $(this).val();
     		var servid = $(this).attr('id');
@@ -65,8 +46,17 @@ $(document).ready(function(){
     	// var nginxObj = eval('(' + nginxstr + ')');
     	if(nginxstr == "}"){
     		nginxstr = "{}";
-    	}
-
+    	}*/
+	    var nginxstr = "";
+	    $('input[name="nginxserv"]:checked').each(function(){
+    		var servname = $(this).val();
+    		var servid = $(this).attr('id');
+    		if ("" == nginxstr) {
+    			nginxstr = servid;
+    		} else {
+    			nginxstr += ","+servid;
+    		}
+    	})
     	$('#proxyZone').val(nginxstr);
     	
     	var dataJson="";  
@@ -209,10 +199,10 @@ $(document).ready(function(){
 									'</select>'+
 							'</td>'+
 							'<td>'+
-									'<i>'+data.data+'</i>'+
+									'<i>'+data.mapPort+'</i>'+
 							'</td>'+
 							'<td>'+
-									'<a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
+									'<a href="javascript:void(0)" onclick="deletePortRow(this,'+data.mapPort+')" class="gray">'+
 												'<i class="fa fa-trash-o fa-lg"></i>'+
 									'</a>'+
 						  '</td>'+
@@ -314,30 +304,33 @@ $(document).ready(function(){
 	                    for (var i in data.data) {
 	                        var image = data.data[i];
 	                        var portConfigs = JSON.stringify(image.portConfigs);
-	                        html += "<li class='image-item'><span class='img_icon span2'>"+
-							"<img src='"+ctx+"/images/image-1.png'>"+
-					"</span> <span class='span5 type' type='database'>"+
-							"<div class='list-item-description'>"+
-								"<div class='name h4'>"+
-									""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"../registry/detail/"+image.id+"'>"+
-										"<i class='fa fa-external-link-square'></i>"+
-									"</a>"+
+	                        if (image.isBaseImage == 2) {		//判断是否为基础镜像，是基础镜像不显示
+	                        	
+		                        html += "<li class='image-item'><span class='img_icon span2'>"+
+								"<img src='"+ctx+"/images/image-1.png'>"+
+						"</span> <span class='span5 type' type='database'>"+
+								"<div class='list-item-description'>"+
+									"<div class='name h4'>"+
+										""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"../registry/detail/"+image.id+"'>"+
+											"<i class='fa fa-external-link-square'></i>"+
+										"</a>"+
+									"</div>"+
 								"</div>"+
-							"</div>"+
-					"</span> <span class='span3'>"+
-							"<div class='list-item-description'>"+
-								"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
-									""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
-									"data-attr='tenxcloud/mysql'> 部署 <i"+
-									"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
-								"</span>"+
-							"</div>"+
-					"</span></li>";
+						"</span> <span class='span3'>"+
+								"<div class='list-item-description'>"+
+									"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+ image.isBaseImage +
+										""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
+										"data-attr='tenxcloud/mysql'> 部署 <i"+
+										"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
+									"</span>"+
+								"</div>"+
+						"</span></li>";
+		                        
+		                    	}
 	                    	}
 	                    	$("#imageList").html(html);
 
 	                        $(".pull-deploy").click(function(){
-
 	                        	var imageName = $(this).attr("imageName");
 	                        	var imageVersion = $(this).attr("imageVersion");
 	                        	var imgID = $(this).attr("imgID");
@@ -407,33 +400,35 @@ function loadImageList() {
         url: ""+ctx+"/service/images",
         success: function (data) {
             data = eval("(" + data + ")");
-
             var html = "";
             if (data != null) {
-
                 if (data['data'].length > 0) {
                     for (var i in data.data) {
                         var image = data.data[i];
                         var portConfigs = JSON.stringify(image.portConfigs);
-                        html += "<li class='image-item'><span class='img_icon span2'>"+
-						"<img src='"+ctx+"/images/image-1.png'>"+
-				"</span> <span class='span5 type' type='database'>"+
-						"<div class='list-item-description'>"+
-							"<div class='name h4'>"+
-								""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"../registry/detail/"+image.id+"'>"+
-									"<i class='fa fa-external-link-square'></i>"+
-								"</a>"+
+                        if (image.isBaseImage == 2) {   //判断是否为基础镜像，是基础镜像不显示
+                        	
+	                        html += "<li class='image-item'><span class='img_icon span2'>"+
+							"<img src='"+ctx+"/images/image-1.png'>"+
+					"</span> <span class='span5 type' type='database'>"+
+							"<div class='list-item-description'>"+
+								"<div class='name h4'>"+
+									""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"../registry/detail/"+image.id+"'>"+
+										"<i class='fa fa-external-link-square'></i>"+
+									"</a>"+
+								"</div>"+
 							"</div>"+
-						"</div>"+
-				"</span> <span class='span3'>"+
-						"<div class='list-item-description'>"+
-							"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
-								""+ image.version +"</span> <span imgID='"+image.id+"'resourceName='"+image.resourceName+"'  imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
-								"data-attr='tenxcloud/mysql'> 部署 <i"+
-								"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
-							"</span>"+
-						"</div>"+
-				"</span></li>";
+					"</span> <span class='span3'>"+
+							"<div class='list-item-description'>"+
+								"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+ 
+									""+ image.version +"</span> <span imgID='"+image.id+"'resourceName='"+image.resourceName+"'  imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
+									"data-attr='tenxcloud/mysql'> 部署 <i"+
+									"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
+								"</span>"+
+							"</div>"+
+					"</span></li>";
+	                        
+	                    	}
                     	}
                     	$("#imageList").html(html);
 
@@ -454,41 +449,41 @@ function loadImageList() {
 }
 
 function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
-		if ('undefined' != portConfigs) {
-			portConfigs = eval("(" + portConfigs + ")");
-			$("#pushPrptpcol").empty();
-        	$.each(portConfigs,function(i,n){
-        		var portTr = '<tr class="plus-row">'+
-				  									'<td>'+
-        												'<input class="port" type="text" value=" '+n.containerPort+'">'+
-				  									'</td>'+
-				  									'<td>' +
-				  											'<select class="T-http">'+
-				  													'<option>TCP</option>'+
-				  													'<option>HTTP</option>'+
-				  											'</select>'+
-				  									'</td>'+
-				  									'<td>'+
-				  										'<i>'+ n.mapPort +'</i>'+
-				  									'</td>'+
-				  									'<td>'+
-				  											'<a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
-				  											'<i class="fa fa-trash-o fa-lg"></i>'+
-				  											'</a>'+
-				  									'</td>'+
-				  								'</tr>';
-        		$("#pushPrptpcol").append(portTr);
-    				});
-		}
-    $("#imgName").val(imageName);
-    $("#imgVersion").val(imageVersion);
-    $("#imgID").val(imgID);
-    $("#resourceName").val(resourceName);
-    $("#portConfigs").val(portConfigs);
-    $(".step-inner").css("left","-100%");
-    $(".createPadding").removeClass("hide");
-    $(".radius_step").removeClass("action").eq(1).addClass("action");
-    $(".two_step").removeClass("hide");
+	if ('undefined' != portConfigs) {
+		portConfigs = eval("(" + portConfigs + ")");
+		$("#pushPrptpcol").empty();
+    	$.each(portConfigs,function(i,n){
+    		var portTr = '<tr class="plus-row">'+
+			  									'<td>'+
+    												'<input class="port" type="text" value=" '+n.containerPort+'">'+
+			  									'</td>'+
+			  									'<td>' +
+			  											'<select class="T-http">'+
+			  													'<option>TCP</option>'+
+			  													'<option>HTTP</option>'+
+			  											'</select>'+
+			  									'</td>'+
+			  									'<td>'+
+			  										'<i>'+ n.mapPort +'</i>'+
+			  									'</td>'+
+			  									'<td>'+
+			  											'<a href="javascript:void(0)" onclick="deletePortRow(this,'+n.mapPort+')" class="gray">'+
+			  											'<i class="fa fa-trash-o fa-lg"></i>'+
+			  											'</a>'+
+			  									'</td>'+
+			  								'</tr>';
+    		$("#pushPrptpcol").append(portTr);
+				});
+	}
+$("#imgName").val(imageName);
+$("#imgVersion").val(imageVersion);
+$("#imgID").val(imgID);
+$("#resourceName").val(resourceName);
+$("#portConfigs").val(portConfigs);
+$(".step-inner").css("left","-100%");
+$(".createPadding").removeClass("hide");
+$(".radius_step").removeClass("action").eq(1).addClass("action");
+$(".two_step").removeClass("hide");
 }
 
 function containerName(){
@@ -523,10 +518,34 @@ function deleteRow(obj){
 	$(obj).parent().parent().remove();
 	
 }
-//删除port
-function deletePortRow(obj){
-	$(obj).parent().parent().remove();
+
+function getServiceStorageVol(){
+	$.ajax({
+		url : ctx + "/service/storageList?pageable=",
+		type: "POST",
+		success : function(data) {
+			var jsonData = $.parseJSON(data);
+			for(var i = 0; i < jsonData.count; i++){
+				var storageVolOpt = '<option name="volName" value=""></option>';
+				var txt = jsonData.storages[i].storageName +" "+ jsonData.storages[i].storageSize + "M";
+				$("#selectVolume").append(storageVolOpt);
+				$("#selectVolume")[0].children[i+1].innerHTML = txt;
+				$("#selectVolume")[0].children[i+1].value = jsonData.storages[i].storageName;
+			}
+			
+		}
+	})
 }
+//删除port
+function deletePortRow(obj,int){
+	//alert(int);
+	 $.ajax({
+			url:""+ctx+"/service/removeSet.do?set="+int,
+			type: "GET"
+	 });
+	 $(obj).parent().parent().remove();
+}
+
 /*
  * function deleteRow(obj){ var id = "";
  * $(":checked[name='ids']").each(function(){ id = id + jQuery(this).val() +
