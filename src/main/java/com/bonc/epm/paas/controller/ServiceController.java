@@ -1029,7 +1029,7 @@ public class ServiceController {
 			envVariableDao.deleteByServiceId(id);
 			portConfigDao.deleteByServiceId(id);
 			// 更新挂载卷的使用状态
-			this.updateStorageType(service.getVolName(), service.getServiceName());
+//			this.updateStorageType(service.getVolName(), service.getServiceName());
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());
