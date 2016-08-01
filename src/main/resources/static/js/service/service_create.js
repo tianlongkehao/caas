@@ -197,6 +197,9 @@ $(document).ready(function(){
     		type: "GET",
     		success : function(data) {
     		data = eval("(" + data + ")");
+    		if(!data.mapPort||"error".equels(data.ERROR)){
+    				alert("可用映射端口已经用尽，请联系管理员。");
+    		}else{
     		var portTr =''+ 
 				'<tr class="plus-row">'+
     					'<td>'+
@@ -218,6 +221,7 @@ $(document).ready(function(){
 						  '</td>'+
 				'</tr>';
     		$("#pushPrptpcol").append(portTr);
+        		}
     		}
 		});
 	});

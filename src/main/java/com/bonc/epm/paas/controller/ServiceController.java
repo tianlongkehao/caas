@@ -759,28 +759,38 @@ public class ServiceController {
 									.collect(Collectors.toSet());
 		if(CollectionUtils.isEmpty(smalSet)){
 			smalSet= serviceDao.findPortSets();
+			smalSet.remove(null);//
 		}	 else{
 			bigSet.removeAll(smalSet);
 		}
-		Object[] obj =bigSet.toArray();
-		int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
-				.toString());
+		if(CollectionUtils.isEmpty(bigSet)){
+			return -1;
+		}else{
+	//	int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)].toString());
+			Object[] obj =bigSet.toArray();
+		int portSet=Integer.valueOf(obj[0]
+							.toString());
 		smalSet.add(portSet);
-		System.out.println("大小："+smalSet.size());
-		System.out.println(smalSet.toString());
+		log.info("大小："+smalSet.size());
+		log.info(smalSet.toString());
 		return portSet;
+		}
 	}
 
 	@RequestMapping("service/generatePortSet.do")
 	@ResponseBody
 	public String generatePortSet(){
-		//vailPortSet();
+		
 		Map<String, String> map = new HashMap<String, String>();
+		if(-1==vailPortSet()){
+			map.put("ERROR","error");
+			return JSON.toJSONString(map);
+		}
 		map.put("mapPort", String.valueOf(vailPortSet()));
 		return JSON.toJSONString(map);
 	}
 	/**
-	 * 如果集合不为空就清空集合
+	 *清空集合
 	 */
 	public void clearSet(){
 		if(!CollectionUtils.isEmpty(smalSet)){
