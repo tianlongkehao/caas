@@ -428,7 +428,8 @@ public class ServiceController {
     private List<PortConfig> getBaseImageExposedPorts(String imgID) {
         Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
         if (null != ci) {
-            Image image = imageDao.findByNameAndVersion(ci.getBaseImageName().substring(ci.getBaseImageName().indexOf("/") +1),ci.getBaseImageVersion());
+            //Image image = imageDao.findByNameAndVersion(ci.getBaseImageName().substring(ci.getBaseImageName().indexOf("/") +1),ci.getBaseImageVersion());
+            Image image = imageDao.findById(ci.getBaseImageId());
             InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
             // v1.9
             long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
