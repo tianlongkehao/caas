@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -327,11 +328,10 @@ public class KubernetesClientService {
 		labels.put("app", name);
 		labels.put("servicePath", servicePath);
 		labels.put("proxyPath", proxyPath);
-		if(nginxObj != null && !"".equals(nginxObj)){
-			JSONObject jsonObject = JSONObject.parseObject(nginxObj);
-			Set<String> set = jsonObject.keySet();
-			for(String key:set){
-				labels.put(key, jsonObject.getString(key));
+		if (StringUtils.isNotBlank(nginxObj)) {
+			String[] proxyArray = nginxObj.split(",");
+			for (int i = 0; i < proxyArray.length;i++) {
+				labels.put(proxyArray[i], proxyArray[i]);
 			}
 		}
 		podMeta.setLabels(labels);
@@ -436,36 +436,49 @@ public class KubernetesClientService {
 		return replicationController;
 	}
 	
-	public Service generateService(String appName,List<PortConfig> portConfigs ){
-		Service service = new Service();
-		ObjectMeta meta = new ObjectMeta();
-		meta.setName(appName);
-		service.setMetadata(meta);
-		ServiceSpec spec = new ServiceSpec();
-		spec.setType("NodePort");
-		spec.setSessionAffinity("ClientIP");
-		
-		Map<String,String> selector = new HashMap<String,String>();
-		selector.put("app", appName);
-		spec.setSelector(selector);
-		if (CollectionUtils.isNotEmpty(portConfigs)) {
-		    List<ServicePort> ports = new ArrayList<ServicePort>();
-		    for (PortConfig oneRow : portConfigs) {
-		        ServicePort portObj = new ServicePort();
-		        portObj.setName("http");
-		        portObj.setProtocol("TCP");
-		        portObj.setPort(Integer.valueOf(oneRow.getContainerPort().trim()));
-		        portObj.setTargetPort(Integer.valueOf(oneRow.getContainerPort().trim()));
-		        portObj.setNodePort(Integer.valueOf(oneRow.getMapPort().trim()));
-		        ports.add(portObj);
-		    	}
-		    spec.setPorts(ports);
-		}
+	public Service generateService(String appName,List<PortConfig> portConfigs, 
+            																	String proxyZone, String servicePath, String proxyPath){
+			Service service = new Service();
+			ObjectMeta meta = new ObjectMeta();
+			meta.setName(appName);
+			Map<String,String> labels = new HashMap<String,String>();
+			labels.put("app", appName);
+			labels.put("servicePath", servicePath);
+			labels.put("proxyPath", proxyPath);
+			if (StringUtils.isNotBlank(proxyZone)) {
+			String[] proxyArray = proxyZone.split(",");
+			for (int i = 0; i < proxyArray.length;i++) {
+			labels.put(proxyArray[i], proxyArray[i]);
+			}
+			}
+			meta.setLabels(labels);
+			service.setMetadata(meta);
+			ServiceSpec spec = new ServiceSpec();
+			spec.setType("NodePort");
+			spec.setSessionAffinity("ClientIP");
+			
+			Map<String,String> selector = new HashMap<String,String>();
+			selector.put("app", appName);
+			spec.setSelector(selector);
+			if (CollectionUtils.isNotEmpty(portConfigs)) {
+			List<ServicePort> ports = new ArrayList<ServicePort>();
+			for (PortConfig oneRow : portConfigs) {
+			ServicePort portObj = new ServicePort();
+			portObj.setName("http");
+			portObj.setProtocol("TCP");
+			portObj.setPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+			portObj.setTargetPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+			portObj.setNodePort(Integer.valueOf(oneRow.getMapPort().trim()));
+			ports.add(portObj);
+			}
+			spec.setPorts(ports);
+}
 
-		
-		service.setSpec(spec);
-		return service;
-	}
+
+service.setSpec(spec);
+return service;
+}
+
 	
 	public Secret generateSecret(String name, String namespace, String key){
 		Secret secret = new Secret();

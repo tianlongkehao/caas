@@ -76,7 +76,6 @@ import com.github.dockerjava.api.model.ExposedPort;
 public class ServiceController {
 	private static final Logger log = LoggerFactory.getLogger(ServiceController.class);
 
-	private static int a =0;
 	Set<Integer> smalSet;
 	@Autowired
 	public ServiceDao serviceDao;
@@ -257,7 +256,7 @@ public class ServiceController {
 	public String detail(Model model, @PathVariable long id) {
 		System.out.printf("id: " + id);
 		Service service = serviceDao.findOne(id);
-		service.setProxyZone(substr(service.getProxyZone()));
+		//service.setProxyZone(substr(service.getProxyZone()));
 		List<EnvVariable> envVariableList = new ArrayList();
 		envVariableList = envVariableDao.findByServiceId(id);
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -402,8 +401,7 @@ public class ServiceController {
 		if (imageName != null) {
 			isDepoly = "deploy";
 		     // 获取基础镜像的暴露端口信息
-	    model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
-			
+			model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
 		}
 
 		boolean flag = getleftResource(model);
@@ -411,7 +409,6 @@ public class ServiceController {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
 		}
-
 
 		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
@@ -584,7 +581,7 @@ public class ServiceController {
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
 			}
 			if (k8sService == null) {
-				k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs);
+				k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs,service.getProxyZone(),service.getServicePath(),service.getProxyPath());
 				k8sService = client.createService(k8sService);
 			}
 			if (controller == null || k8sService == null) {
@@ -716,6 +713,7 @@ public class ServiceController {
 		}
 		return JSON.toJSONString(map);
 	}
+	
 	@RequestMapping("service/matchTemplateName.do")
 	@ResponseBody
 	public String matchTemplateName (String templateName) {
@@ -777,18 +775,29 @@ public class ServiceController {
 		}
 	}
 
-	@RequestMapping("service/generatePortSet.do")
+	@RequestMapping(value = {"service/generatePortSet.do"} , method = RequestMethod.GET)
 	@ResponseBody
 	public String generatePortSet(){
-		
 		Map<String, String> map = new HashMap<String, String>();
 		if(-1==vailPortSet()){
 			map.put("ERROR","error");
 			return JSON.toJSONString(map);
 		}
+
 		map.put("mapPort", String.valueOf(vailPortSet()));
 		return JSON.toJSONString(map);
 	}
+	
+	/**
+	 *   删除集合中的某个元素
+	 * @param set
+	 */
+	@RequestMapping(value = { "service/removeSet.do" } , method = RequestMethod.GET)
+	public void removeSet(int set){
+		System.out.println(set);
+		smalSet.remove(set);
+	}
+	
 	/**
 	 *清空集合
 	 */
@@ -797,15 +806,7 @@ public class ServiceController {
 			smalSet.clear();
 		}
 	}
-	/**
-	 *   删除集合中的某个元素
-	 * @param set
-	 */
-	@RequestMapping("service/removeSet.do")
-	public void removeSet(int set){
-		System.out.println(set);
-		smalSet.remove(set);
-	}
+	
 	/**
 	 * serviceName 判重
 	 * 
@@ -1049,8 +1050,9 @@ public class ServiceController {
 			map.put("status", "200");
 			serviceDao.delete(id);
 			envVariableDao.deleteByServiceId(id);
+			portConfigDao.deleteByServiceId(id);
 			// 更新挂载卷的使用状态
-			this.updateStorageType(service.getVolName(), service.getServiceName());
+//			this.updateStorageType(service.getVolName(), service.getServiceName());
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());
