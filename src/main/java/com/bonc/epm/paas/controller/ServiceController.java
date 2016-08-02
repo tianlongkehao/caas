@@ -756,7 +756,7 @@ public class ServiceController {
 									.limit(offset)
 									.collect(Collectors.toSet());
 		if(CollectionUtils.isEmpty(smalSet)){
-			smalSet= serviceDao.findPortSets();
+			smalSet= portConfigDao.findPortSets();
 			smalSet.remove(null);//
 		}	 else{
 			bigSet.removeAll(smalSet);
@@ -1186,7 +1186,7 @@ public class ServiceController {
 	 * @param volName
 	 * @return
 	 */
-	public void updateStorageType(String volName, String serviceName) {
+public void updateStorageType(String volName, String serviceName) {
 
 		// userId
 		long userId = CurrentUserUtils.getInstance().getUser().getId();

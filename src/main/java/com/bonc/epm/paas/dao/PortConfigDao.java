@@ -1,7 +1,9 @@
 package com.bonc.epm.paas.dao;
 
+import java.util.HashSet;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,4 +22,6 @@ public interface PortConfigDao extends CrudRepository<PortConfig, Long>{
     
     public void deleteByServiceId(long ServiceId);
 	
+    @Query("select i.mapPort from PortConfig i")
+		public HashSet<Integer> findPortSets();
 }

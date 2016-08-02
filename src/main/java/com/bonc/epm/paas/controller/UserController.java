@@ -76,11 +76,6 @@ public class UserController {
 		return "user/user-management.jsp";
 	}
 
-	/**
-	 * 跳转到租户创建页面： user/user_create.jsp
-	 *
-	 * @return
-	 */
 	@RequestMapping(value = { "/add" }, method = RequestMethod.GET)
 	public String useradd(Model model) {
 		model.addAttribute("menu_flag", "user");
@@ -125,7 +120,7 @@ public class UserController {
 			map.put("memory", resource.getRam() + "G"); // 内存
 			map.put("cpu", resource.getCpu_account() + "");// CPU数量(个)
 			//TODO
-			//map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
+			map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
 			//map.put("pods", resource.getPod_count() + "");//POD数量
 			//map.put("services", resource.getServer_count() + "");//服务
 			//map.put("replicationcontrollers", resource.getImage_control() +"");//副本控制器
