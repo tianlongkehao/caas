@@ -1,0 +1,7 @@
+FROM ${baseImage}
+
+ENV TZ "Asia/Shanghai"
+
+COPY ${fileName} /
+
+CMD ["catalina.sh", "run"]

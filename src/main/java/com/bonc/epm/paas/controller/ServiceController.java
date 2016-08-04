@@ -76,6 +76,7 @@ import com.github.dockerjava.api.model.ExposedPort;
 public class ServiceController {
 	private static final Logger log = LoggerFactory.getLogger(ServiceController.class);
 
+	Set<Integer> smalSet;
 	@Autowired
 	public ServiceDao serviceDao;
 	
@@ -255,7 +256,7 @@ public class ServiceController {
 	public String detail(Model model, @PathVariable long id) {
 		System.out.printf("id: " + id);
 		Service service = serviceDao.findOne(id);
-		service.setProxyZone(substr(service.getProxyZone()));
+		//service.setProxyZone(substr(service.getProxyZone()));
 		List<EnvVariable> envVariableList = new ArrayList();
 		envVariableList = envVariableDao.findByServiceId(id);
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -398,8 +399,7 @@ public class ServiceController {
 		if (imageName != null) {
 			isDepoly = "deploy";
 		     // 获取基础镜像的暴露端口信息
-	    model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
-			
+			model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
 		}
 
 		boolean flag = getleftResource(model);
@@ -407,7 +407,6 @@ public class ServiceController {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
 		}
-
 
 		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
@@ -429,7 +428,8 @@ public class ServiceController {
     private List<PortConfig> getBaseImageExposedPorts(String imgID) {
         Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
         if (null != ci) {
-            Image image = imageDao.findByNameAndVersion(ci.getBaseImageName().substring(ci.getBaseImageName().indexOf("/") +1),ci.getBaseImageVersion());
+            //Image image = imageDao.findByNameAndVersion(ci.getBaseImageName().substring(ci.getBaseImageName().indexOf("/") +1),ci.getBaseImageVersion());
+            Image image = imageDao.findById(ci.getBaseImageId());
             InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
             // v1.9
             long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
@@ -712,6 +712,7 @@ public class ServiceController {
 		}
 		return JSON.toJSONString(map);
 	}
+	
 	@RequestMapping("service/matchTemplateName.do")
 	@ResponseBody
 	public String matchTemplateName (String templateName) {
@@ -753,25 +754,37 @@ public class ServiceController {
 		Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
 									.limit(offset)
 									.collect(Collectors.toSet());
-		Set<Integer> smalSet= serviceDao.findPortSets();
-		//求bigSet集合与smalSet集合的差集, 然后在从集合中随机选取一个元素
-		if (!CollectionUtils.isEmpty(smalSet)) {
+		if(CollectionUtils.isEmpty(smalSet)){
+			smalSet= serviceDao.findPortSets();
+		}	 else{
 			bigSet.removeAll(smalSet);
 		}
 		Object[] obj =bigSet.toArray();
 		int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
 				.toString());
+		smalSet.add(portSet);
 		return portSet;
 	}
 
-	@RequestMapping("service/generatePortSet.do")
+	@RequestMapping(value = {"service/generatePortSet.do"} , method = RequestMethod.GET)
 	@ResponseBody
 	public String generatePortSet(){
-		vailPortSet();
+		//vailPortSet();
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("data", String.valueOf(vailPortSet()));
+		map.put("mapPort", String.valueOf(vailPortSet()));
 		return JSON.toJSONString(map);
 	}
+	
+	/**
+	 *   删除集合中的某个元素
+	 * @param set
+	 */
+	@RequestMapping(value = { "service/removeSet.do" } , method = RequestMethod.GET)
+	public void removeSet(int set){
+		System.out.println(set);
+		smalSet.remove(set);
+	}
+	
 	/**
 	 * serviceName 判重
 	 * 
@@ -1015,8 +1028,9 @@ public class ServiceController {
 			map.put("status", "200");
 			serviceDao.delete(id);
 			envVariableDao.deleteByServiceId(id);
+			portConfigDao.deleteByServiceId(id);
 			// 更新挂载卷的使用状态
-			this.updateStorageType(service.getVolName(), service.getServiceName());
+//			this.updateStorageType(service.getVolName(), service.getServiceName());
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());
