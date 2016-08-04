@@ -193,9 +193,19 @@ public class CiController {
 	@RequestMapping(value={"ci/addCodeSource"},method=RequestMethod.GET)
 	public String addCodeSource(Model model){
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+		List<Image> images = imageDao.findByBaseImage(cuurentUser.getId());
+		//去掉镜像名称相同的镜像
+		for (int i = 0; i < images.size() ; i++)	{
+            for (int j = 0; j < images.size() ; j++) {
+                if (images.get(i).getName().equals(images.get(j).getName()) && i != j) {
+                	images.remove(j);
+                }
+            }
+        }
         model.addAttribute("username", cuurentUser.getUserName());
         model.addAttribute("menu_flag", "ci");
         model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
+        model.addAttribute("baseImage", images);
 		return "ci/ci_addCodeSource.jsp";
 	}
 	
@@ -247,8 +257,10 @@ public class CiController {
 	@RequestMapping("ci/addCodeResourceCi.do")
 	public String addCodeResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode) {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        ci.setCreateBy(cuurentUser.getId());
-        ci.setCreateDate(new Date());
+		ci.setBaseImageName(dockerClientService.getDockerRegistryAddress() + "/" + ci.getBaseImageName());
+		ci.setBaseImageVersion(imageDao.findById(ci.getBaseImageId()).getVersion());
+		ci.setCreateBy(cuurentUser.getId());
+		ci.setCreateDate(new Date());
 		ci.setType(CiConstant.TYPE_CODE);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
@@ -389,7 +401,8 @@ public class CiController {
 		String dockerfilePath = ci.getCodeLocation()+ci.getDockerFileLocation();
 		String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
 		String imageVersion = ci.getImgNameVersion();
-		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao);
+		String imageId = "";
+		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao,imageId);
 		if(flag){
 			//上传镜像
 			flag = dockerClientService.pushImage(imageName, imageVersion,ciRecord,ciRecordDao);
@@ -415,20 +428,29 @@ public class CiController {
 				img = new Image();
 				img.setName(imageName);
 				img.setVersion(imageVersion);
-				
+				img.setImageId(imageId);
 			}
 			img.setResourceName(ci.getResourceName());
 			img.setImageType(ci.getImgType());
 			img.setRemark(ci.getDescription());
 			img.setCreator(ci.getCreateBy());
 			img.setCreateTime(new Date());
+			img.setIsBaseImage(2);
 			imageDao.save(img);
 			ci.setImgId(img.getId());
 		}
 		return flag;
 	}
 	
-	
+	@RequestMapping("ci/findBaseImageVersion.do")
+	@ResponseBody
+	public String findBaseImage(String baseImageName){
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<Image> images = imageDao.findByBaseImageVarsionOfName(cUser.getId(), baseImageName);
+		map.put("data", images);
+		return JSON.toJSONString(map);
+	}
 	
 	
 }

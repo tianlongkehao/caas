@@ -15,4 +15,11 @@ public interface CiDao extends CrudRepository<Ci, Long> {
 	
 	public List<Ci> findByCreateBy(Long createBy,Sort sort);
 	
+	    /**
+	     * Description: 
+	     * @param imgID
+	     * @return 
+	     * @see 
+	     */
+    public Ci findByImgId(Long imgID);
 } 

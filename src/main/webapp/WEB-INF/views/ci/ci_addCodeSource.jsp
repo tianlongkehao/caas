@@ -36,10 +36,12 @@
 									<label>基础镜像</label>
 									<div class="">
 										<select id="baseImageName" name="baseImageName"  style="width:218px; height:48px">
-											<option type="text" value="tomcat">${docker_regisgtry_address }/bonc/</option>
+											<c:forEach var = "image" items = "${baseImage }">
+												<option type="text" value="${image.name }">${docker_regisgtry_address }/${image.name }</option>
+											</c:forEach>
 										</select> : 
-										<select id="baseImageVersion" name="baseImageVersion" style="height:48px">
-											<option type="text" value="8-jre7">8-jre7</option>
+										<select id="baseImageId" name="baseImageId" style="height:48px">
+										
 										</select>
 										<%-- <input id="baseImageName" name="baseImageName" type="text" 
                                                value="${docker_regisgtry_address }/bonc/tomcat" style="width:218px"> :

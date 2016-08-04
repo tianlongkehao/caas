@@ -20,6 +20,10 @@ public class EnvVariable {
 	private long envId;
 	
 	/**
+	 * 创建者
+	 */
+	private long createBy;
+	/**
 	 * 环境变量Key
 	 */
 	private String envKey;
@@ -33,19 +37,32 @@ public class EnvVariable {
 	 * 关联服务Id
 	 */
 	private long serviceId;
-
+	
+	/**
+	 * 模板名称
+	 */
+	private String templateName;
+	
 	/**
 	 * 创建时间
 	 */
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
-
+	
 	public long getEnvId() {
 		return envId;
 	}
 
 	public void setEnvId(long envId) {
 		this.envId = envId;
+	}
+
+	public long getCreateBy() {
+		return createBy;
+	}
+
+	public void setCreateBy(long createBy) {
+		this.createBy = createBy;
 	}
 
 	public String getEnvKey() {
@@ -79,6 +96,13 @@ public class EnvVariable {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-	
+
+	public String getTemplateName() {
+		return templateName;
+	}
+
+	public void setTemplateName(String templateName) {
+		this.templateName = templateName;
+	}
 	
 }

@@ -14,6 +14,7 @@ import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.BuildResponseItem;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.Ports;
@@ -71,14 +72,37 @@ public class DockerClientService {
 	public String generateRegistryImageName(String imageName,String imageVersion){
 		return username+"/"+imageName+":"+imageVersion;
 	}
+	
+	/**
+	 * 
+	 * Description:
+	 * 查看镜像信息
+	 * @param imageId String
+	 * @return InspectImageResponse 
+	 * @see InspectImageResponse 
+	 */
+	public InspectImageResponse inspectImage(String imageId) {
+	    try {
+            DockerClient dockerClient = this.getDockerClientInstance();
+            return dockerClient.inspectImageCmd(imageId).exec();
+        }
+        catch (Exception e) {
+           log.error("error inspect image,message:-"+e.getMessage());
+           e.printStackTrace();
+           return null;
+        }
+	}
+
 	/**
 	 * 构建镜像
 	 * @param dockerfilePath
 	 * @param imageName
 	 * @param imageVersion
+	 * @param imageId 
 	 * @return
 	 */
-	public boolean buildImage(String dockerfilePath,String imageName,String imageVersion,final CiRecord ciRecord,final CiRecordDao ciRecordDao){
+	public boolean buildImage(String dockerfilePath,String imageName,String imageVersion,
+	                              final CiRecord ciRecord,final CiRecordDao ciRecordDao, String imageId){
 		try{
 			DockerClient dockerClient = this.getDockerClientInstance();
 			File baseDir = new File(dockerfilePath);
@@ -95,7 +119,7 @@ public class DockerClientService {
 			       super.onNext(item);
 			    }
 			};
-			String imageId = dockerClient.buildImageCmd(baseDir).exec(callback).awaitImageId();
+			imageId = dockerClient.buildImageCmd(baseDir).exec(callback).awaitImageId();
 			//修改镜像名称及版本
 			dockerClient.tagImageCmd(imageId, username+"/"+imageName, imageVersion).withForce().exec();
 			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"tagImageCmd:"+imageId+":"+username+"/"+imageName+":"+imageVersion);
@@ -109,7 +133,7 @@ public class DockerClientService {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * 上传到镜像仓库
 	 * @param imageName

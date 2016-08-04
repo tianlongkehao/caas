@@ -96,14 +96,17 @@ public class TemplateEngine {
      */
     public static boolean deleteConfig(String confName,String configName,TemplateConf templateConf){
     	try {
-    		// 读取配置文件
-            String data = readConf(templateConf.getConfpath()+configName+".conf");
-            log.debug("过滤前－nginx配置文件内容："+data);
-            // 过滤删除内容
-            data = data.replace(getObject(confName,templateConf.getConfpath()+configName+".conf"), "");
-            log.debug("过滤后－nginx配置文件内容："+data);
-            // 重新写回文件
-            writeConf(templateConf.getConfpath()+configName+".conf", data, false);
+    		String confPath = templateConf.getConfpath()+configName+".conf";
+    		if(new File(confPath).exists()) {
+        		// 读取配置文件
+                String data = readConf(confPath);
+                log.debug("过滤前－nginx配置文件内容："+data);
+                // 过滤删除内容
+                data = data.replace(getObject(confName,templateConf.getConfpath()+configName+".conf"), "");
+                log.debug("过滤后－nginx配置文件内容："+data);
+                // 重新写回文件
+                writeConf(templateConf.getConfpath()+configName+".conf", data, false);
+    		}
 		} catch (Exception e) {
 			log.error("读取删除文件路径"+templateConf.getConfpath()+configName);
 			return false;
@@ -174,20 +177,21 @@ public class TemplateEngine {
      */
     public static String readConf(String confPath){
         StringBuffer sb = new StringBuffer();
-        try{
-            FileReader fr = new FileReader(confPath);
-            BufferedReader br = new BufferedReader(fr);
-            String line = "";
-            while((line = br.readLine()) != null){
-                sb.append(line);
-            }
-            br.close();
-            fr.close();
-        }catch(Exception e){
-        	log.error(e);
-            e.printStackTrace();
-        }
-        return sb.toString();
+		        try{
+
+		            FileReader fr = new FileReader(confPath);
+		            BufferedReader br = new BufferedReader(fr);
+		            String line = "";
+		            while((line = br.readLine()) != null){
+		                sb.append(line);
+		            				}
+		            br.close();
+		            fr.close();
+		        }catch(Exception e){
+		        	log.error(e);
+		            e.printStackTrace();
+		        }
+      return sb.toString();
     }
     
     /**

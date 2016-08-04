@@ -87,7 +87,29 @@ $(document).ready(function(){
             dataJson ="[" +dataJson+ "]";  
         }
         $('#envVariable').val(dataJson);
-    	
+    	//将端口配置 数据变为json放入到
+       var portJson ="";
+        $("#pushPrptpcol tr").each(function (index, domEle){
+    				var protocol = "";
+    				var mapPort = "";
+    				var containerPort = "";
+    				$(domEle).find("input").each(function(index,data){  
+    					if(index == 0){  containerPort = $(data).val();  }
+    					});  
+    				$(domEle).find("select").each(function(index,data){  
+    					if(index == 0){  protocol = $(data).val();  }
+    					}); 
+    				$(domEle).find("i").each(function(index,data){  
+    					if(index == 0){  mapPort = $(data).html();  }
+    					}); 
+    				portJson += "{"+"\"containerPort\":\""+containerPort+"\","+"\"protocol\":\""+protocol+"\","
+    				+"\"mapPort\":\""+mapPort+"\"},";                 
+        });
+        if (portJson != "") {  
+        		portJson = portJson.substring(0,portJson.length -1);  
+        		portJson ="[" +portJson+ "]";  
+        }
+        $('#portConfig').val(portJson);
 	    //var cpuNum = $('#cpuNum').val();
 	    /*if(!cpuNum || cpuNum.length < 1){
 		      layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
@@ -143,12 +165,24 @@ $(document).ready(function(){
 	$("#cratePATH").click(function(){
 		var addName = $("#Name").val();
 		var addValue = $("#Value").val();
+		//判断key是否重复，
+		var arrayKey = $("#arrayKey").val().split(",");
+		for(var i = 0; i<arrayKey.length; i++){
+			if(addName == arrayKey[i]){
+				layer.tips('环境变量key不能重复','#Name',{tips: [1, '#3595CC']});
+				$('#Name').focus();
+				return;
+			}
+		}
+		arrayKey.push(addName);
+		$("#arrayKey").attr("value",arrayKey);
+		
 		if(addName != "" && addValue != ""){
 			var tr = '<tr>'+
 			'<td class="keys"><input type="text" style="width: 98%" value="'+addName+'"></td>'+
 			'<td class="vals"><input type="text" style="width: 98%" value="'+addValue+'"></td>'+
 			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin">'+
+			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+addName+'">'+
 			'</td>'+
 		'</tr>'
 		$("#Path-oper1").append(tr);
@@ -170,17 +204,46 @@ $(document).ready(function(){
 	
 	// 添加端口
 	$("#createPort").click(function(){
-		var portTr = '<tr class="plus-row">'+
-					  '<td><input class="port" type="text"></td>'+
-					  '<td><select class="T-http">'+
-					  '<option>TCP</option>'+
-					  '<option>HTTP</option>'+
-					  '</select></td>'+
-					  '<td><i>'+'动态生成'+'</i></td>'+
-					  '<td><a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
-					  '<i class="fa fa-trash-o fa-lg"></i>'+
-					  '</a></td></tr>';
-		$("#pushPrptpcol").append(portTr);
+		$.ajax({
+			url : ctx + "/service/generatePortSet.do",
+    		type: "GET",
+    		success : function(data) {
+    		data = eval("(" + data + ")");
+    		var portTr =''+ 
+				'<tr class="plus-row">'+
+    					'<td>'+
+    						'<input class="port" type="text">'+
+							'</td>'+
+							'<td>'+
+									'<select class="T-http">'+
+										  '<option>TCP</option>'+
+											'<option>HTTP</option>'+
+									'</select>'+
+							'</td>'+
+							'<td>'+
+									'<i>'+data.data+'</i>'+
+							'</td>'+
+							'<td>'+
+									'<a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
+												'<i class="fa fa-trash-o fa-lg"></i>'+
+									'</a>'+
+						  '</td>'+
+				'</tr>';
+    		$("#pushPrptpcol").append(portTr);
+    		}
+		});
+	});
+	
+	
+	//导入模板文件选项对勾
+	var templateName = null;
+	$("#Path-table>tbody>tr").on("click", function () {
+		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
+		$(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
+		//$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
+		$(this).toggleClass("focus");//设定当前行为选中行
+		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
+		templateName = $(this).parent().find("tr.focus").find(".templateName").val();
 	});
 	
 	//导入模板
@@ -190,26 +253,40 @@ $(document).ready(function(){
 	        title: '环境变量模板',
 	        content: $("#environment-variable"),
 	        btn: ['导入', '取消'],
-	        yes: function(index, layero){ 
-	        	
+	        yes: function(index, layero){
+	        	 var arrayKey = $("#arrayKey").val().split(",");
+	        	 $.ajax({
+	         		url : ctx + "/service/importEnvVariable.do",
+	         		type: "POST",
+	         		data:{"templateName":templateName},
+	         		success : function(data) {
+	         			data = eval("(" + data + ")");
+	         			var html = "";
+	    	            if (data != null) {
+	    	                if (data['data'].length > 0) {
+	    	                	for (var i in data.data) {
+	    	                		var envVariable = data.data[i];
+	    	                		html += '<tr>'+
+		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envVariable.envKey+'"></td>'+
+		    	    	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envVariable.envValue+'"></td>'+
+		    	    	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
+		    	    	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envVariable.envKey+'">'+
+		    	    	    			'</td>'+
+		    	    	    		'</tr>'
+		    	    	    		arrayKey.push(envVariable.envKey+",");
+	    	                	}
+	    	                }
+	    	            }
+	    	            $("#Path-oper1").append(html);
+	    	            $("#arrayKey").attr("value",arrayKey);
+	         		}
+	         	});
 	        	layer.close(index);
-				/*$.ajax({
-					url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs,
-					success:function(data){
-						data = eval("(" + data + ")");
-						if(data.status=="200"){
-							layer.alert("环境变量模板导入成功");
-							window.location.reload();
-						}else{
-							layer.alert("环境变量模板导入失败");
-						}
-					}	
-				})*/
 	        }
-	 })
+		})
 	});
 	
-	//环境变量另存为模板
+	//另存为模板
 	$("#exportBtn").click(function(){
 		layer.open({
 		 	type:1,
@@ -217,46 +294,38 @@ $(document).ready(function(){
 	        content: $("#environment-template"),
 	        btn: ['保存', '取消'],
 	        yes: function(index, layero){ 
-	        	
-	        	layer.close(index);
-				/*$.ajax({
-					url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs,
+	        	var templateName = $("#envTemplateName").val();
+	        	$.ajax({
+					url:ctx+"/service/matchTemplateName.do",
+					type: "POST",
+	         		data:{"templateName":templateName},
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
-							layer.alert("环境变量模板导入成功");
-							window.location.reload();
+							layer.alert("环境变量模板名称重复");
 						}else{
-							layer.alert("环境变量模板导入失败");
+							layer.alert("环境变量模板导入成功");
+							$('#templateName').val(templateName);
+							layer.close(index);
 						}
 					}	
-				})*/
+	        	});
 	        }
-	 })
+		})
 	});
-	
-	//导入模板文件选项对勾
-	$("#Path-table>tbody>tr").on("click", function () {
-		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
-        $(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
-        //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
-        $(this).toggleClass("focus");//设定当前行为选中行
-        $(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
-    });
-	
+
 	$("#searchimage").click(function(){
 		var imageName = $('#imageName').val();
 		$.ajax({
 	        url: ""+ctx+"/service/findimages.do?imageName="+imageName,
 	        success: function (data) {
 	            data = eval("(" + data + ")");
-
 	            var html = "";
 	            if (data != null) {
-
 	                if (data['data'].length > 0) {
 	                    for (var i in data.data) {
 	                        var image = data.data[i];
+	                        var portConfigs = JSON.stringify(image.portConfigs);
 	                        html += "<li class='image-item'><span class='img_icon span2'>"+
 							"<img src='"+ctx+"/images/image-1.png'>"+
 					"</span> <span class='span5 type' type='database'>"+
@@ -270,7 +339,7 @@ $(document).ready(function(){
 					"</span> <span class='span3'>"+
 							"<div class='list-item-description'>"+
 								"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
-									""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
+									""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
 									"data-attr='tenxcloud/mysql'> 部署 <i"+
 									"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
 								"</span>"+
@@ -285,8 +354,9 @@ $(document).ready(function(){
 	                        	var imageVersion = $(this).attr("imageVersion");
 	                        	var imgID = $(this).attr("imgID");
 	                        	var resourceName = $(this).attr("resourceName");
+	                        	var portConfigs = $(this).attr("portConfigs");
 	                        	// containerName();
-	                            deploy(imgID,imageName, imageVersion,resourceName);
+	                            deploy(imgID,imageName, imageVersion,resourceName,portConfigs);
 	                        });
 	                	}
 	            }
@@ -356,6 +426,7 @@ function loadImageList() {
                 if (data['data'].length > 0) {
                     for (var i in data.data) {
                         var image = data.data[i];
+                        var portConfigs = JSON.stringify(image.portConfigs);
                         html += "<li class='image-item'><span class='img_icon span2'>"+
 						"<img src='"+ctx+"/images/image-1.png'>"+
 				"</span> <span class='span5 type' type='database'>"+
@@ -369,7 +440,7 @@ function loadImageList() {
 				"</span> <span class='span3'>"+
 						"<div class='list-item-description'>"+
 							"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
-								""+ image.version +"</span> <span imgID='"+image.id+"'resourceName='"+image.resourceName+"'  imageName='"+image.name+"' imageVersion='"+image.version+"' class='pull-deploy btn btn-primary'"+
+								""+ image.version +"</span> <span imgID='"+image.id+"'resourceName='"+image.resourceName+"'  imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
 								"data-attr='tenxcloud/mysql'> 部署 <i"+
 								"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
 							"</span>"+
@@ -384,8 +455,9 @@ function loadImageList() {
                         	var imageVersion = $(this).attr("imageVersion");
                         	var imgID = $(this).attr("imgID");
                         	var resourceName = $(this).attr("resourceName");
+                        	var portConfigs = $(this).attr("portConfigs");
                         	// containerName();
-                            deploy(imgID,imageName, imageVersion,resourceName);
+                          deploy(imgID,imageName, imageVersion,resourceName,portConfigs);
                         });
                 	}
             }
@@ -393,12 +465,38 @@ function loadImageList() {
     })
 }
 
-function deploy(imgID,imageName, imageVersion,resourceName){
-
+function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
+		if ('undefined' != portConfigs) {
+			portConfigs = eval("(" + portConfigs + ")");
+			$("#pushPrptpcol").empty();
+        	$.each(portConfigs,function(i,n){
+        		var portTr = '<tr class="plus-row">'+
+				  									'<td>'+
+        												'<input class="port" type="text" value=" '+n.containerPort+'">'+
+				  									'</td>'+
+				  									'<td>' +
+				  											'<select class="T-http">'+
+				  													'<option>TCP</option>'+
+				  													'<option>HTTP</option>'+
+				  											'</select>'+
+				  									'</td>'+
+				  									'<td>'+
+				  										'<i>'+ n.mapPort +'</i>'+
+				  									'</td>'+
+				  									'<td>'+
+				  											'<a href="javascript:void(0)" onclick="deletePortRow(this)" class="gray">'+
+				  											'<i class="fa fa-trash-o fa-lg"></i>'+
+				  											'</a>'+
+				  									'</td>'+
+				  								'</tr>';
+        		$("#pushPrptpcol").append(portTr);
+    				});
+		}
     $("#imgName").val(imageName);
     $("#imgVersion").val(imageVersion);
     $("#imgID").val(imgID);
     $("#resourceName").val(resourceName);
+    $("#portConfigs").val(portConfigs);
     $(".step-inner").css("left","-100%");
     $(".createPadding").removeClass("hide");
     $(".radius_step").removeClass("action").eq(1).addClass("action");
@@ -425,6 +523,15 @@ function containerName(){
  */
 // 删除环境变量
 function deleteRow(obj){
+	var envKey = $(obj).parent().find("input:first").val();
+	var arrayKey = $("#arrayKey").val().split(",");
+	var newArray = new Array();
+	for(var i = 0; i<arrayKey.length; i++){
+		if(envKey !=arrayKey[i]){
+			newArray.push(arrayKey[i]);
+		}
+	}
+	$("#arrayKey").attr("value",newArray);
 	$(obj).parent().parent().remove();
 	
 }

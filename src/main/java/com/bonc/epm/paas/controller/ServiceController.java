@@ -30,14 +30,18 @@ import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.esConf;
+import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
+import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
+import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
+import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
@@ -60,6 +64,8 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.ESClient;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
+import com.github.dockerjava.api.command.InspectImageResponse;
+import com.github.dockerjava.api.model.ExposedPort;
 
 /**
  * 
@@ -75,9 +81,15 @@ public class ServiceController {
 	
 	@Autowired
 	public EnvVariableDao envVariableDao;
+	
+	@Autowired
+	public PortConfigDao portConfigDao;
 
 	@Autowired
 	private ImageDao imageDao;
+	
+	@Autowired
+	private CiDao ciDao;
 
 	@Autowired
 	private StorageDao storageDao;
@@ -385,6 +397,9 @@ public class ServiceController {
 		String isDepoly = "";
 		if (imageName != null) {
 			isDepoly = "deploy";
+		     // 获取基础镜像的暴露端口信息
+	    model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
+			
 		}
 
 		boolean flag = getleftResource(model);
@@ -392,18 +407,46 @@ public class ServiceController {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
 		}
+
+
 		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
-
+		
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<String> templateNames = envVariableDao.findTemplateName(cUser.getId());
+		
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
 		model.addAttribute("imageName", imageName);
 		model.addAttribute("imageVersion", imageVersion);
 		model.addAttribute("isDepoly", isDepoly);
 		model.addAttribute("menu_flag", "service");
-
+		model.addAttribute("templateNames",templateNames);
 		return "service/service_create.jsp";
 	}
+	
+    private List<PortConfig> getBaseImageExposedPorts(String imgID) {
+        Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
+        if (null != ci) {
+            Image image = imageDao.findByNameAndVersion(ci.getBaseImageName().substring(ci.getBaseImageName().indexOf("/") +1),ci.getBaseImageVersion());
+            InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
+            // v1.9
+            long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
+            if (countOfExposedPort > 0) {
+                ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
+                List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
+                for (int i = 0;i<countOfExposedPort;i++) {
+                    PortConfig portConfig = new PortConfig();
+                    portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
+                    portConfig.setMapPort(String.valueOf(vailPortSet()));
+                    tmpPortConfigs.add(portConfig);
+                }
+                return tmpPortConfigs;
+            }
+        }
+        return null;
+    }
 
 	public boolean getleftResource(Model model) {
 
@@ -447,7 +490,13 @@ public class ServiceController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Image> images = imageDao.findAll(userId);
+		if (CollectionUtils.isNotEmpty(images)) {
+		    for (Image image : images) {
+		        image.setPortConfigs(getBaseImageExposedPorts(String.valueOf(image.getId())));
+		    }
+		}
 		map.put("data", images);
+		System.out.println(JSON.toJSONString(map));
 		return JSON.toJSONString(map);
 	}
 
@@ -462,6 +511,11 @@ public class ServiceController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Image> images = imageDao.findByNameOf(userId, "%" + imageName + "%");
+		if (CollectionUtils.isNotEmpty(images)) {
+		    for (Image image : images) {
+		        image.setPortConfigs(getBaseImageExposedPorts(String.valueOf(image.getId())));
+		    }
+		}
 		map.put("data", images);
 		return JSON.toJSONString(map);
 	}
@@ -478,7 +532,7 @@ public class ServiceController {
 	public String CreateContainer(long id) {
 		Service service = serviceDao.findOne(id);
 		List<EnvVariable> envVariables = envVariableDao.findByServiceId(id);
-		
+		List<PortConfig> portConfigs = portConfigDao.findByServiceId(service.getId()); // 获取服务对应的端口映射
 		Map<String, Object> map = new HashMap<String, Object>();
 		// 使用k8s管理服务
 		String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(),
@@ -514,7 +568,7 @@ public class ServiceController {
 			        }
 			    }
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
-						service.getInstanceNum(), registryImgName, 8080, service.getCpuNum(), service.getRam(),
+						service.getInstanceNum(), registryImgName, portConfigs, service.getCpuNum(), service.getRam(),
 						service.getProxyZone(),service.getServicePath(),service.getProxyPath(),envVariables,command,args);
 				// 给controller设置卷组挂载的信息
 				System.out.println("给rc绑定vol");
@@ -526,8 +580,7 @@ public class ServiceController {
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
 			}
 			if (k8sService == null) {
-				k8sService = kubernetesClientService.generateService(service.getServiceName(), 80, 8080,
-																			Integer.valueOf(service.getPortSet()));
+				k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs);
 				k8sService = client.createService(k8sService);
 			}
 			if (controller == null || k8sService == null) {
@@ -554,7 +607,7 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
-	public String constructContainer(Service service, String resourceName,String envVariable) {
+	public String constructContainer(Service service, String resourceName,String envVariable,String templateName,String portConfig) {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
@@ -570,15 +623,34 @@ public class ServiceController {
 			JSONArray jsonArray = JSONArray.parseArray(envVariable);  
 			for(int i = 0 ; i < jsonArray.size(); i ++ ) {
 				EnvVariable envVar = new EnvVariable();
-				envVar.setEnvKey(jsonArray.getJSONObject(i).getString("envKey"));
-				envVar.setEnvValue(jsonArray.getJSONObject(i).getString("envValue"));
+				envVar.setCreateBy(currentUser.getId());
+				envVar.setEnvKey(jsonArray.getJSONObject(i).getString("envKey").trim());
+				envVar.setEnvValue(jsonArray.getJSONObject(i).getString("envValue").trim());
 				envVar.setCreateDate(new Date());
 				envVar.setServiceId(service.getId());
+				if(StringUtils.isNotEmpty(templateName)){
+					envVar.setTemplateName(templateName);
+				}
 				envVariableDao.save(envVar);
 			}
 		}
+		//保存到与service关联的portConfig实体类
+		if (StringUtils.isNotEmpty(portConfig)){
+			JSONArray jsonArray = JSONArray.parseArray(portConfig);  
+			for(int i = 0 ; i < jsonArray.size(); i ++ ) {
+				PortConfig portCon = new PortConfig();
+				portCon.setContainerPort(jsonArray.getJSONObject(i).getString("containerPort").trim());
+				portCon.setMapPort(jsonArray.getJSONObject(i).getString("mapPort").trim());
+				portCon.setProtocol(jsonArray.getJSONObject(i).getString("protocol").trim());
+//			portCon.setOptions(Integer.valueOf(jsonArray.getJSONObject(i).getString("option")));
+				portCon.setCreateDate(new Date());
+				portCon.setServiceId(service.getId());
+				portConfigDao.save(portCon);
+			}
+		}
+		//保存
 		
-		// app为修改nginx配置文件的配置项
+/*		// app为修改nginx配置文件的配置项
 		Map<String, String> app = new HashMap<String, String>();
 		app.put("userName", currentUser.getUserName());
 		app.put("confName", service.getServiceName());
@@ -604,8 +676,9 @@ public class ServiceController {
 		// 重新启动nginx服务器
 		// TODO 2
 		 TemplateEngine.cmdReloadConfig(templateConf);
-		 service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));
-		 service.setPortSet(app.get("port"));
+		 service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));*/
+		 //service.setPortSet(app.get("port"));
+		service.setServiceAddr(templateConf.getServerAddr());
 		serviceDao.save(service);
 		// 更新挂载卷的使用状态
 		if (!"0".equals(service.getVolName())) {
@@ -623,7 +696,7 @@ public class ServiceController {
 	 */
 	@RequestMapping("service/matchPath.do")
 	@ResponseBody
-	public String matchServicePathAndProxyPath(String proxyPath,String serviceName){
+	public String matchServicePathAndProxyPath (String proxyPath,String serviceName) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		for (Service service : serviceDao.findByCreateBy(cUser.getId())) {
@@ -637,6 +710,36 @@ public class ServiceController {
 				map.put("status", "200");
 			}
 		}
+		return JSON.toJSONString(map);
+	}
+	@RequestMapping("service/matchTemplateName.do")
+	@ResponseBody
+	public String matchTemplateName (String templateName) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		for (EnvVariable envVariable : envVariableDao.findByCreateBy(cUser.getId())) {
+			if (StringUtils.isEmpty(envVariable.getTemplateName())) {
+				continue;
+			}
+			if (envVariable.getTemplateName().equals(templateName)) {
+				map.put("status", "200");
+				break;
+			}
+		}
+		return JSON.toJSONString(map);
+	}
+	
+	/**
+	 * 查询用户的环境变量模板，导入到环境变量模板中
+	 * @return
+	 */
+	@RequestMapping("service/importEnvVariable.do")
+	@ResponseBody
+	public String findEnvVariables(String templateName){
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<EnvVariable> envVariables = envVariableDao.findByCreateByAndTemplateName(cUser.getId(),templateName);
+		map.put("data", envVariables);
 		return JSON.toJSONString(map);
 	}
 	
@@ -661,6 +764,14 @@ public class ServiceController {
 		return portSet;
 	}
 
+	@RequestMapping("service/generatePortSet.do")
+	@ResponseBody
+	public String generatePortSet(){
+		vailPortSet();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("data", String.valueOf(vailPortSet()));
+		return JSON.toJSONString(map);
+	}
 	/**
 	 * serviceName 判重
 	 * 
@@ -903,6 +1014,7 @@ public class ServiceController {
 			}
 			map.put("status", "200");
 			serviceDao.delete(id);
+			envVariableDao.deleteByServiceId(id);
 			// 更新挂载卷的使用状态
 			this.updateStorageType(service.getVolName(), service.getServiceName());
 		} catch (KubernetesClientException e) {

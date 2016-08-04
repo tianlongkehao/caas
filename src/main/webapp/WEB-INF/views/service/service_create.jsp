@@ -16,8 +16,9 @@
 		var imageName = '${imageName}';
 		var imageVersion = '${imageVersion}';
 		var resourceName = '${resourceName}';
+		var portConfigs = '${portConfigs}'
 		if (isDepoly == 'deploy') {
-			deploy(imgID, imageName, imageVersion, resourceName);
+			deploy(imgID, imageName, imageVersion, resourceName, portConfigs);
 		}
 	});
 </script>
@@ -80,7 +81,9 @@
 								<form id="buildService" name="buildService"
 									action="<%=path%>/service/constructContainer.do">
 									<input type="hidden" id="envVariable" name="envVariable"
-										value=""></input>
+										value=""></input> <input type="hidden" id="portConfig"
+										name="portConfig" value=""></input> <input type="hidden"
+										id="templateName" name="templateName" value=""></input>
 
 									<div class="host_step2">
 										<ul class="safeSet">
@@ -91,11 +94,11 @@
 											<li class="line-h-3"><span class="ve_top">镜像版本：</span> <input
 												type="text" value="" class="in_style" id="imgVersion"
 												name="imgVersion" readOnly="readOnly"></li>
-											<li class="line-h-3"><span class="ve_top">服务名称：<font color="red">*</font></span><input
-												type="text" value="" class="in_style" id="serviceName"
-												name="serviceName"> <input type="hidden" value=""
-												class="in_style" id="resourceName" name="resourceName">
-											</li>
+											<li class="line-h-3"><span class="ve_top">服务名称：<font
+													color="red">*</font></span><input type="text" value=""
+												class="in_style" id="serviceName" name="serviceName">
+												<input type="hidden" value="" class="in_style"
+												id="resourceName" name="resourceName"></li>
 											<li id="service_type"><span class="ve_top">启动命令：</span>
 												<span class="update-mi"> <input type="checkbox"
 													id="startCommand"> <label for="startCommand"><font
@@ -105,9 +108,9 @@
 												type="text" value="" class="in_style"
 												id="startCommand_input" name="startCommand"
 												style="margin-left: 150px"></li>
-											<li class="line-h-3"><span class="ve_top">服务访问路径：<font color="red">*</font></span>
-												<input type="text" value="" class="in_style" id="webPath"
-												name="servicePath"></li>
+											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
+													color="red">*</font></span> <input type="text" value=""
+												class="in_style" id="webPath" name="servicePath"></li>
 											<c:if test="${DMZ!=null && USER!=null  }">
 												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
 													<label class="checkbox-inline"> <input
@@ -119,9 +122,9 @@
 												</label> <input type="hidden" value="" class="in_style"
 													id="proxyZone" name="proxyZone"></li>
 											</c:if>
-											<li class="line-h-3"><span class="ve_top">nginx代理路径：<font color="red">*</font></span>
-												<input type="text" value="" class="in_style" id="nginxPath"
-												name="proxyPath"></li>
+											<li class="line-h-3"><span class="ve_top">nginx代理路径：<font
+													color="red">*</font></span> <input type="text" value=""
+												class="in_style" id="nginxPath" name="proxyPath"></li>
 
 
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
@@ -141,43 +144,46 @@
                                 </li> -->
 											<li class="line-h-3" id="instsize">
 												<div class="param-set">
-													<span class="ve_top">实例数量：<font color="red">*</font></span> <input
-														type="number" value="1" class="number" min="1"
+													<span class="ve_top">实例数量：<font color="red">*</font></span>
+													<input type="number" value="1" class="number" min="1"
 														autocomplete="off" max="" placeholder="1" id="instanceNum"
 														name="instanceNum"> <span class="unit">个</span>
-													<!-- <span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span> -->
+													<%-- 													<span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span>
 													<span class="dynamic-scale"> <input type="checkbox"
 														id="dynamic-service"> <label for="dynamic-service"><font
 															color="blue">自动化伸缩</font></label>
-													</span>
+													</span> --%>
 
 												</div>
 											</li>
+
 											<li class="line-h-3" id="dynamic-range">
+
 												<div class="param-set">
-													<span class="ve_top">伸缩范围：<font color="red">*</font></span> <input
-														type="number" value="1" class="number" min="1"
+													<span class="ve_top">伸缩范围：<font color="red">*</font></span>
+													<input type="number" value="1" class="number" min="1"
 														autocomplete="off" max="" placeholder="1" id="minNum"
-														name="instanceNum"> <span class="unit">个</span> 
-														<span style="margin-left: 34px"> ~ </span>
-													<input
-														type="number" value="10" class="number" min="1"
-														autocomplete="off" max="" placeholder="10" id="maxNum"
-														name="instanceNum"> <span class="unit">个</span>
+														name="instanceNum"> <span class="unit">个</span> <span
+														style="margin-left: 34px"> ~ </span> <input type="number"
+														value="10" class="number" min="1" autocomplete="off"
+														max="" placeholder="10" id="maxNum" name="instanceNum">
+													<span class="unit">个</span>
 												</div>
+
 											</li>
 											<li class="line-h-3" id="dynamic-threshold">
 												<div class="param-set">
-													<span class="ve_top">伸缩阈值：<font color="red">*</font></span> 
-													<input type="number" placeholder="60" ><span class="unit">%</span>
-													<span style="color: grey; margin-left: 40px;">CPU资源使用率</span>
+													<span class="ve_top">伸缩阈值：<font color="red">*</font></span>
+													<input type="number" placeholder="60"><span
+														class="unit">%</span> <span
+														style="color: grey; margin-left: 40px;">CPU资源使用率</span>
 												</div>
 											</li>
-										
+
 											<li class="line-h-3">
 												<div class="param-set">
-													<span class="ve_top">CPU数量：<font color="red">*</font></span> <input
-														type="radio" class="cpuNum" name="cpuNum" value="1"
+													<span class="ve_top">CPU数量：<font color="red">*</font></span>
+													<input type="radio" class="cpuNum" name="cpuNum" value="1"
 														placeholder="当前可用cpu数量：${leftcpu }个">1<span>个</span>
 													<input type="radio" class="cpuNum" name="cpuNum" value="2"
 														placeholder="当前可用cpu数量：${leftcpu }个">2<span>个</span>
@@ -189,8 +195,8 @@
 											</li>
 											<li class="line-h-3">
 												<div class="param-set">
-													<span class="ve_top">内存：<font color="red">*</font></span> <input type="radio"
-														class="ram" name="ram" value="2048">2<span>G</span>
+													<span class="ve_top">内存：<font color="red">*</font></span> <input
+														type="radio" class="ram" name="ram" value="2048">2<span>G</span>
 													<input type="radio" class="ram" name="ram" value="4098">4<span>G</span>
 													<input type="radio" class="ram" name="ram" value="8192">8<span>G</span>
 													<span style="color: #1E90FF; margin-left: 60px;">当前可用内存：${leftmemory }G</span>
@@ -204,8 +210,7 @@
 											</span></li>
 											<li class="hide-set" id="save_roll_dev">
 												<ul id="mountPathList">
-													<li class="mount line-h-3">
-														<!-- <span class="ve_top">挂载地址：</span> -->
+													<li class="mount line-h-3"><span class="ve_top">挂载地址：</span>
 														<table class="pull-left" style="margin-left: 150px;">
 															<tbody>
 																<tr>
@@ -232,8 +237,7 @@
                                                     </td> -->
 																</tr>
 															</tbody>
-														</table>
-													</li>
+														</table></li>
 
 													<!-- <li class="line-h-3"><span class="ve_top">镜像设置：</span> <span
                                                 class="update-mi"><input type="checkbox" id="pullPolicy"
@@ -263,7 +267,7 @@
 																</tr>
 															</thead>
 															<tbody id="Path-oper1">
-
+																<input type="hidden" id="arrayKey" value="" />
 															</tbody>
 														</table>
 													</li>
@@ -279,25 +283,13 @@
 														</tr>
 													</thead>
 													<tbody class="BORDER" id="pushPrptpcol">
-														<tr class="plus-row">
+														<!-- <tr class="plus-row">
 															<td><input class="port" type="text" value="8080"></td>
 															<td><select class="T-http">
 																	<option>TCP</option>
 																	<option>HTTP</option>
 															</select></td>
-															<td><i>动态生成</i></td>
-															<td><a href="javascript:void(0)"
-																onclick="deletePortRow(this)" class="gray"> <i
-																	class="fa fa-trash-o fa-lg"></i>
-															</a></td>
-														</tr>
-														<!-- <tr class="plus-row">
-															<td><input class="port" type="text"></td>
-															<td><select class="T-http">
-																	<option>TCP</option>
-																	<option>HTTP</option>
-															</select></td>
-															<td><i>动态生成</i></td>
+															<td><i>30099</i></td>
 															<td><a href="javascript:void(0)"
 																onclick="deletePortRow(this)" class="gray"> <i
 																	class="fa fa-trash-o fa-lg"></i>
@@ -456,7 +448,7 @@
 															<th style="vertical-align: middle; width: 8.9%">操作</th>
 														</tr>
 													</thead>
-													<tbody class="BORDER" id="pushPrptpcol">
+													<tbody class="BORDER" id="pushPrptpcol2">
 														<tr class="plus-row">
 															<td><input class="port" type="text" disabled=""
 																value="3306"></td>
@@ -493,25 +485,36 @@
 								</form>
 								<!-- 环境变量导入模板 -->
 								<div id="environment-variable">
-									<table class="table table-hover enabled" id="Path-table" style="width: 345px; margin: 5px 10px 5px 10px">
+									<table class="table table-hover enabled" id="Path-table"
+										style="width: 345px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
-											<tr>
-												<td class="vals vals-env">demo1<span class="vals-path hide"><i class="fa fa-check"></i></span></td>
-											</tr>
-											<tr>
-												<td class="vals vals-env">demo2<span class="vals-path hide"><i class="fa fa-check"></i></span></td>
-											</tr>
+											<c:if test="${empty templateNames }">
+												<tr>
+													<td>没有保存的模板</td>
+												</tr>
+											</c:if>
+											<c:if test="${not empty templateNames }">
+												<c:forEach var="templateName" items="${templateNames }">
+													<tr>
+														<td class="vals vals-env">${templateName }<span
+															class="vals-path hide"><i class="fa fa-check"></i></span>
+															<input type="hidden" class="templateName"
+															value="${templateName }" />
+														</td>
+													</tr>
+												</c:forEach>
+											</c:if>
 										</tbody>
 									</table>
 								</div>
 								<!-- 环境变量另存为模板 -->
 								<div id="environment-template">
 									<div style="width: 345px; margin: 5px 10px 5px 10px">
-										<span>模板名称：</span><input type="text" id="envTemplateName" style="width:77%" autofocus="autofocus" />
+										<span>模板名称：</span><input type="text" id="envTemplateName"
+											style="width: 77%" autofocus="autofocus" />
 									</div>
 								</div>
 							</div>
-
 						</div>
 						<div class="createPadding">
 							<button class=" btn btn-default go_backs">上一步</button>
@@ -521,7 +524,6 @@
 						</div>
 
 					</div>
-
 				</div>
 			</div>
 		</article>

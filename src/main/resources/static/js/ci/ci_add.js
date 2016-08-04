@@ -1,5 +1,7 @@
 $(document).ready(function () {
-
+	
+	changeBaseImageVersion ();
+	
  	$("#buildBtn").click(function(){
         if(checkCiAdd()) {
         	$("#buildForm").submit();
@@ -7,7 +9,6 @@ $(document).ready(function () {
         }
         return false;
     });
-
 
     $(".btn-imageType .btns").each(function(){
         $(this).click(function(){
@@ -44,8 +45,34 @@ $(document).ready(function () {
             });
         }
     });
-
-
+    
+    //添加基础镜像的版本信息
+    $("#baseImageName").change(function(){
+    	changeBaseImageVersion ();
+    });
+    
+    function changeBaseImageVersion () {
+    	var baseImageName = $("#baseImageName").val();
+    	$.ajax({
+    		url:""+ctx+"/ci/findBaseImageVersion.do",
+    		type:"post",
+    		data:{"baseImageName":baseImageName}, 
+    		success: function (data) {
+	            data = eval("(" + data + ")");
+	            var html = "";
+	            if (data != null) {
+	            	if (data['data'].length > 0) {
+	            		for (var i in data.data) {
+	            			var image = data.data[i];
+	            			html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>"
+	            		}
+	            	}
+	            }
+	            $("#baseImageId").html(html);    
+    		}
+    	})
+    }
+    
     function checkCiAdd(){
         var imgNameLast = $("#imgNameLast").val().trim();
         var projectName = $('#projectName').val().trim();
