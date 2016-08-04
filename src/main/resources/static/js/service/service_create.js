@@ -1,6 +1,7 @@
 $(document).ready(function(){
 	loadImageList();
 	getServiceStorageVol();
+///	getMountPath();
 	
 	$("#createButton").click(function(){
 		var name = $('#serviceName').val();
@@ -187,7 +188,7 @@ $(document).ready(function(){
     		type: "GET",
     		success : function(data) {
     		data = eval("(" + data + ")");
-    		if(!data.mapPort||"error".equels(data.ERROR)){
+    		if(!data.mapPort||"error"==(data.ERROR)){
     				alert("可用映射端口已经用尽，请联系管理员。");
     		}else{
     		var portTr =''+ 
@@ -539,6 +540,20 @@ function getServiceStorageVol(){
 			
 		}
 	})
+}
+//获取挂载地址mountPath
+function getMountPath(){
+	$("#selectVolume").change(function(){
+		var volume = $("#selectVolume").val();
+		$.ajax({
+			url : ctx + "/service/getMountPath.do?volume="+volume,
+			type: "GET",
+			success : function(data) {
+				data = eval("(" + data + ")");
+				$("#mountPath").val(data.mountPath);
+			}
+		})
+    });
 }
 //删除port
 function deletePortRow(obj,int){

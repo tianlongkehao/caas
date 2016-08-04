@@ -449,6 +449,17 @@ public class ServiceController {
         }
         return null;
     }
+    
+    @RequestMapping(value = { "service/getPortConfig.do" }, method = RequestMethod.GET)
+    @ResponseBody
+    public String getPortConfig(String imgID){
+        List<PortConfig> list = new ArrayList();
+        list=getBaseImageExposedPorts(imgID);
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("data",list);
+        return JSON.toJSONString(map); 
+           
+    }
 
 	public boolean getleftResource(Model model) {
 
@@ -1160,7 +1171,7 @@ public class ServiceController {
 		}
 		cephfs.setMonitors(monitors);
 		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-		cephfs.setPath("/" + namespace + "/" + storageName);
+		//cephfs.setPath("/" + namespace + "/" + storageName);
 		cephfs.setUser("admin");
 		LocalObjectReference secretRef = new LocalObjectReference();
 		secretRef.setName("ceph-secret");
@@ -1211,4 +1222,24 @@ public void updateStorageType(String volName, String serviceName) {
 		storage.setMountPoint(newMp.toString());
 		storageDao.save(storage);
 	}
+/**
+ * 
+ * Description: <br>
+ *   获取挂在地址
+ * 
+ * @return 
+ * @see
+ */
+@RequestMapping(value = { "service/getMountPath.do" }, method = RequestMethod.GET)
+@ResponseBody
+public String getMountPath(String volume){
+    String mountPath = storageDao.findByVolume(volume);
+    if(null !=mountPath){
+        mountPath.substring(mountPath.indexOf(":/")+1, mountPath.lastIndexOf(";")) ;
+        }
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("mountPath",mountPath);
+    return JSON.toJSONString(map);
+    
+}
 }
