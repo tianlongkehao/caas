@@ -30,7 +30,7 @@
 					<section class="detail-succeed">
 						<div class="icon-img">
 							<div class="type-icon">
-								<img src="/images/image-1.png" height="100%">
+								<img src="<%=path %>/images/image-1.png" height="100%">
 							</div>
 						</div>
 						<ul class="succeed-content pull-left">

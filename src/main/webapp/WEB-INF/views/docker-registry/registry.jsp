@@ -44,7 +44,7 @@
 	                                            <i class="fa fa-star star-style" style="color:#efa421"></i>
 	                                        </c:if>
                                             <div class="mir-img ">
-                                                <img src="/images/image-1.png">
+                                                <img src="<%=path %>/images/image-1.png">
                                             </div>
                                         </div>
                                         <div class="select-info">
