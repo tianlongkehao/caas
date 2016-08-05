@@ -119,7 +119,6 @@ public class UserController {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("memory", resource.getRam() + "G"); // 内存
 			map.put("cpu", resource.getCpu_account() + "");// CPU数量(个)
-			//TODO
 			map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
 			//map.put("pods", resource.getPod_count() + "");//POD数量
 			//map.put("services", resource.getServer_count() + "");//服务
@@ -134,8 +133,6 @@ public class UserController {
 			CephController ceph = new CephController();
 			ceph.connectCephFS();
 			ceph.createNamespaceCephFS(user.getNamespace());
-
-
 
 			// 为client创建资源限制
 			// LimitRange limitRange = generateLimitRange(user.getNamespace(),

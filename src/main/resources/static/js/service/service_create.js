@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	loadImageList();
 	getServiceStorageVol();
-///	getMountPath();
+	getMountPath();
 	
 	$("#createButton").click(function(){
 		var name = $('#serviceName').val();
