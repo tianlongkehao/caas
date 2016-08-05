@@ -23,6 +23,15 @@ $(document).ready(function(){
 	      return;
 	    }
 	    
+	    var startCommand_input = $("#startCommand_input").val();
+	    if($("#startCommand").prop("checked")==true){
+			    if(!startCommand_input || startCommand_input.length < 1){
+				      layer.tips('自定义启动命令不能为空','#startCommand_input',{tips: [1, '#3595CC']});
+				      $('#startCommand_input').focus();
+				      return;
+					}		   
+	    }
+	    
 	    var servicePath = $("#webPath").val();
 	    if(!servicePath || servicePath.length < 1){
 		      layer.tips('服务路径不能为空','#webPath',{tips: [1, '#3595CC']});
@@ -36,6 +45,20 @@ $(document).ready(function(){
 		      $('#nginxPath').focus();
 		      return;
 		}
+	    var mountPath = $("#mountPath").val();
+	    var selectVolume = $("#selectVolume").val();
+	    if($("#state_service").prop("checked")==true){
+			    if(!mountPath || mountPath.length < 1){
+				      layer.tips('挂载路径不能为空','#mountPath',{tips: [1, '#3595CC']});
+				      $('#mountPath').focus();
+				      return;
+					}		   
+			    if(selectVolume=='0'){
+				      layer.tips('请选择一个挂载卷','#selectVolume',{tips: [1, '#3595CC']});
+				      return;
+					}
+	    }
+	   
 	    
 /*	    var nginxstr = "{";
 	    $('input[name="nginxserv"]:checked').each(function(){
@@ -138,9 +161,9 @@ $(document).ready(function(){
 	 */
 
 	// 控制checkbook后输入框是否可填写
-	var forFalse = true;
 	$("#save_roll_dev").hide();
 	$("#state_service").click(function(){
+//		alert($("#state_service").prop("checked"));
 		$("#save_roll_dev").toggle();
 		$("#mountPath").focus();
 	})
