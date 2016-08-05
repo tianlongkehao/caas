@@ -1235,7 +1235,7 @@ public void updateStorageType(String volName, String serviceName) {
 public String getMountPath(String volume){
     String mountPath = storageDao.findByVolume(volume);
     if(null !=mountPath){
-        mountPath.substring(mountPath.indexOf(":/")+1, mountPath.lastIndexOf(";")) ;
+        mountPath = mountPath.substring(mountPath.indexOf(":/")+1, mountPath.lastIndexOf(";")) ;
         }
     Map<String, Object> map = new HashMap<String, Object>();
     map.put("mountPath",mountPath);

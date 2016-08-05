@@ -67,7 +67,7 @@ public class StorageController {
 	public String findStorageList(Pageable pageable) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		long createBy = CurrentUserUtils.getInstance().getUser().getId();
-		List<Storage> storages = storageDao.findAllByCreateByOrderByCreateDateDesc(createBy, pageable);
+		List<Storage> storages = storageDao.findAllByCreateByAndUseTypeOrderByCreateDateDesc(createBy, pageable,StorageConstant.NOT_USER);
 		map.put("storages", storages);
 		map.put("status", "200");
 		map.put("count", storageDao.countByCreateBy(createBy));
