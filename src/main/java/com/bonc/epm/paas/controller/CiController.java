@@ -65,9 +65,14 @@ public class CiController {
 	public String detail(Model model,@PathVariable long id){
         Ci ci = ciDao.findOne(id);
         List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction.DESC,"constructDate")));
+        List<Image> images = this.findByBaseImages();
+        Image currentBaseImage = imageDao.findById(ci.getBaseImageId());
 		model.addAttribute("id", id);
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
+        model.addAttribute("baseImage", images);
+        model.addAttribute("currentBaseImage",currentBaseImage);
+        model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
         model.addAttribute("menu_flag", "ci");
 		return "ci/ci_detail.jsp";
 	}
@@ -122,8 +127,11 @@ public class CiController {
 		Ci originCi = ciDao.findOne(ci.getId());
 		originCi.setProjectName(ci.getProjectName());
 		originCi.setDescription(ci.getDescription());
-		originCi.setBaseImageName(ci.getBaseImageName());
-		originCi.setBaseImageVersion(ci.getBaseImageVersion());
+		originCi.setBaseImageName(dockerClientService.getDockerRegistryAddress() + "/" + ci.getBaseImageName());
+		originCi.setBaseImageId(ci.getBaseImageId());
+		originCi.setBaseImageVersion(imageDao.findById(ci.getBaseImageId()).getVersion());
+//		originCi.setBaseImageName(ci.getBaseImageName());
+//		originCi.setBaseImageVersion(ci.getBaseImageVersion());
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
         	File file = new File(originCi.getCodeLocation());
@@ -193,15 +201,7 @@ public class CiController {
 	@RequestMapping(value={"ci/addCodeSource"},method=RequestMethod.GET)
 	public String oo(Model model){
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
-		List<Image> images = imageDao.findByBaseImage(cuurentUser.getId());
-		//去掉镜像名称相同的镜像
-		for (int i = 0; i < images.size() ; i++)	{
-            for (int j = 0; j < images.size() ; j++) {
-                if (images.get(i).getName().equals(images.get(j).getName()) && i != j) {
-                	images.remove(j);
-                }
-            }
-        }
+		List<Image> images = this.findByBaseImages();
         model.addAttribute("username", cuurentUser.getUserName());
         model.addAttribute("menu_flag", "ci");
         model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
@@ -459,5 +459,23 @@ public class CiController {
 		return JSON.toJSONString(map);
 	}
 	
-	
+	/**
+	 * 查询基础镜像，去掉重复名称的基础镜像
+	 * 
+	 * @return  list
+	 * @see
+	 */
+	public List<Image> findByBaseImages(){
+	    User cuurentUser = CurrentUserUtils.getInstance().getUser();
+	    List<Image> images = imageDao.findByBaseImage(cuurentUser.getId());
+        //去掉镜像名称相同的镜像
+        for (int i = 0; i < images.size() ; i++)    {
+            for (int j = 0; j < images.size() ; j++) {
+                if (images.get(i).getName().equals(images.get(j).getName()) && i != j) {
+                    images.remove(j);
+                }
+            }
+        }
+        return images;
+	}
 }

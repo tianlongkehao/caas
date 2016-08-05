@@ -218,9 +218,22 @@
                                         <div class="form-group">
                                             <label class="col-2x control-label">基础镜像：</label>
                                             <div class="col-sm-9">
-                                                <input id="baseImageName" name="baseImageName" type="text" 
-                                               value="${ci.baseImageName}" style="width:218px"> :
-                                        <input id="baseImageVersion" name="baseImageVersion" type="text" value="${ci.baseImageVersion}">
+                                                <select id="baseImageName" name="baseImageName"  style="width:218px; height:48px">
+                                                    <option type="text" value="${currentBaseImage.name }">${docker_regisgtry_address }/${currentBaseImage.name }</option>
+                                                    <c:forEach var = "image" items = "${baseImage }">
+                                                        <c:if test = "${currentBaseImage.name ne image.name }">
+                                                               <option type="text" value="${image.name }">${docker_regisgtry_address }/${image.name }</option>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </select> : 
+                                                <select id="baseImageId" name="baseImageId" style="height:48px">
+                                                    <option type="text"  value="${ci.baseImageId }">${ci.baseImageVersion }</option>
+                                                </select>
+                                            
+                                               <%--  <input id="baseImageName" name="baseImageName" type="text" 
+                                                          value="${ci.baseImageName}" style="width:218px"> :
+                                                <input id="baseImageVersion" name="baseImageVersion" type="text" value="${ci.baseImageVersion}">
+                                                 --%>
                                             </div>
                                         </div>
                                         <div class="form-group">
