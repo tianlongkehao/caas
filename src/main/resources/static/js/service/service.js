@@ -151,11 +151,11 @@
 		        yes: function(index, layero){ 
 		        	var cStatusHtml = "<i class='fa_success'></i>"+
 	                				  "启动中"+
-	                				  "<img src='"+ctx+"images/loading4.gif' alt=''/>";
+	                				  "<img src='"+ctx+"/images/loading4.gif' alt=''/>";
 		        	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
 		        	layer.close(index);
 					$.ajax({
-						url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs,
+						url:""+ctx+"/service/stratServices.do?serviceIDs="+serviceIDs,
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
@@ -184,7 +184,7 @@
 		        yes: function(index, layero){ 
 		        	layer.close(index);
 		        						$.ajax({
-		        							url:""+ctx+"service/stopServices.do?serviceIDs="+serviceIDs,
+		        							url:""+ctx+"/service/stopServices.do?serviceIDs="+serviceIDs,
 		        							success:function(data){
 		        								data = eval("(" + data + ")");
 		        								if(data.status=="200"){
@@ -214,7 +214,7 @@
 		        yes: function(index, layero){ 
 		        	layer.close(index);
 		        				$.ajax({
-		        					url:""+ctx+"service/delServices.do?serviceIDs="+serviceIDs,
+		        					url:""+ctx+"/service/delServices.do?serviceIDs="+serviceIDs,
 		        					success:function(data){
 		        						data = eval("(" + data + ")");
 		        						if(data.status=="200"){
@@ -259,7 +259,7 @@
 				 var num = $('#numberChange').val();
 				// alert(num);
 				 $.ajax({
- 					url:""+ctx+"service/modifyServiceNum.do?id="+id+"&addservice="+num,
+ 					url:""+ctx+"/service/modifyServiceNum.do?id="+id+"&addservice="+num,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
@@ -313,7 +313,7 @@
 				 var cpus = $('#confCpu').val();
 				 var rams = $('#confRamSlider_input').val();
 				 $.ajax({
- 					url:""+ctx+"service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
+ 					url:""+ctx+"/service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
