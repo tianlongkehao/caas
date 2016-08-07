@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,7 +77,7 @@ import com.github.dockerjava.api.model.ExposedPort;
 public class ServiceController {
 	private static final Logger log = LoggerFactory.getLogger(ServiceController.class);
 
-	Set<Integer> smalSet;
+	public static Set<Integer> smalSet = new HashSet<Integer>();
 	@Autowired
 	public ServiceDao serviceDao;
 	
@@ -763,28 +764,60 @@ public class ServiceController {
 	 * @return int
 	 */
 	public int vailPortSet(){
-		int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
-		Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
-									.limit(offset)
-									.collect(Collectors.toSet());
-		if(CollectionUtils.isEmpty(smalSet)){
-			smalSet= portConfigDao.findPortSets();
-			smalSet.remove(null);//
-		}	 else{
-			bigSet.removeAll(smalSet);
-		}
-		if(CollectionUtils.isEmpty(bigSet)){
-			return -1;
-		}else{
-	//	int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)].toString());
-			Object[] obj =bigSet.toArray();
-		int portSet=Integer.valueOf(obj[0]
-							.toString());
-		smalSet.add(portSet);
-		log.info("大小："+smalSet.size());
-		log.info(smalSet.toString());
-		return portSet;
-		}
+   int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
+    Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
+                                .limit(offset)
+                                .collect(Collectors.toSet());
+    if(CollectionUtils.isEmpty(smalSet)){
+        smalSet= portConfigDao.findPortSets();
+        smalSet.remove(null);
+        if(CollectionUtils.isEmpty(smalSet)){
+            bigSet.removeAll(smalSet);
+        }
+    }else{
+        bigSet.removeAll(smalSet);
+        
+        }
+    if(CollectionUtils.isEmpty(bigSet)){
+        return -1;
+    }else{
+//  int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)].toString());
+        Object[] obj =bigSet.toArray();
+    int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
+                        .toString());
+    smalSet.add(portSet);
+    return portSet;
+    }
+//		int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
+//		Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
+//									.limit(offset)
+//									.collect(Collectors.toSet());
+//		Set<Integer> oneSet = new HashSet<Integer>();
+//		if(CollectionUtils.isEmpty(smalSet)){
+//			smalSet= portConfigDao.findPortSets();
+//			smalSet.remove(null);
+//			if(CollectionUtils.isEmpty(smalSet)){
+//			    bigSet.removeAll(smalSet);
+//			}
+//		}else{
+//			bigSet.removeAll(smalSet);
+//			
+//		}
+//		if(CollectionUtils.isEmpty(bigSet)){
+//			return -1;
+//		}else{
+//	//	int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)].toString());
+//			Object[] obj =bigSet.toArray();
+//		int portSet=Integer.valueOf(obj[0]
+//							.toString());
+//		smalSet.add(portSet);
+//		log.info("大小："+smalSet.size());
+//		log.info(smalSet.toString());
+//		log.info("大小："+bigSet.size());
+//    log.info(bigSet.toString());
+//		log.info("port="+portSet);
+//		return portSet;
+//		}
 	}
 
 	@RequestMapping(value = {"service/generatePortSet.do"} , method = RequestMethod.GET)
