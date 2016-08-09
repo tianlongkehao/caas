@@ -1,5 +1,9 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -886,12 +892,24 @@ public class ServiceController {
 		try {
 			SshConnect.connect(name, password, hostIp, 22);
 			boolean b = false;
-			SshConnect.exec(cmd, 1000);
+			String rollingLog = SshConnect.exec(cmd, 1000);
 			while (!b) {
-				String str = SshConnect.exec("echo $?", 1000);
-				b = str.endsWith("#");
+				String str = SshConnect.exec("", 10000);
+				if (StringUtils.isNotBlank(str)) {
+				    rollingLog += str;
+				}
+				b = (str.endsWith("$") || str.endsWith("#"));
+				//b = str.endsWith("updated");
 			}
-
+			log.info("rolling-update log:-"+rollingLog);
+			String result = SshConnect.exec("echo $?", 1000);
+			if (StringUtils.isNotBlank(result)) {
+			    if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
+			        new InterruptedException();
+			    }
+			} else {
+			    new InterruptedException();
+			}
 		} catch (InterruptedException e) {
 			log.error(e.getMessage());
 			log.error("error:执行command失败");
