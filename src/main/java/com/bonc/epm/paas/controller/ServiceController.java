@@ -990,6 +990,16 @@ public class ServiceController {
 		}
 		return true;
 	}
+	
+	@RequestMapping("service/findImageVersion.do")
+    @ResponseBody
+	public String findImageVersion(String imageName){
+	    User cUser = CurrentUserUtils.getInstance().getUser();
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName);
+        map.put("data", images);
+        return JSON.toJSONString(map);
+	}
 
 	/**
 	 * 修改服务数量

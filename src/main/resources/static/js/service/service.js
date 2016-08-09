@@ -422,9 +422,12 @@
 		 var serviceName = $(el).attr('serviceName');
 		 $('#upgradeVersionServiceName').val(serviceName);
 		 var imgName = $(el).attr('imagename');
+		 //查询镜像版本
+		 findImageVersion(imgName);
+//		 var imgVersion = $("#imgVersionName").val();
 		 var imgVersion = $(el).attr('imageversion');
 		 $('#upgradeimgName').val(imgName);
-		 $('#imgVersionName').val(imgVersion);
+//		 $('#imgVersionName').val(imgVersion);
 		 layer.open({
 			 type:1,
 			 title: '更改镜像版本',
@@ -457,5 +460,24 @@
 	 })
  }
  
-
+function findImageVersion(imageName){
+	$.ajax({
+		url:ctx+"/service/findImageVersion.do",
+		type:"post",
+		data:{"imageName":imageName}, 
+		success: function (data) {
+            data = eval("(" + data + ")");
+            var html = "";
+            if (data != null) {
+            	if (data['data'].length > 0) {
+            		for (var i in data.data) {
+            			var image = data.data[i];
+            			html += "<option type='text' value='"+image.version+"'>"+image.version+"</option>"
+            		}
+            	}
+            }
+            $("#imgVersionName").html(html);    
+		}
+	})
+}
  
