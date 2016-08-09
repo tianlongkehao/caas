@@ -47,16 +47,18 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	@Query("select i from Image i where  i.name = ?2 and i.isBaseImage= 1 and (i.creator = ?1 or i.imageType = 1)")
 	public List<Image> findByBaseImageVarsionOfName(long creator,String name);
     
-		/**
-	     * Description:
-	     * 
-	     * @param name
-	     * @param version
-	     * @return 
-	     * @see 
-	     */
-		@Query("select i from Image i where i.name = ?1 and i.version = ?2")
+	/**
+     * Description:
+     * 
+     * @param name
+     * @param version
+     * @return 
+     * @see 
+     */
+	@Query("select i from Image i where i.name = ?1 and i.version = ?2")
     public Image findByNameAndVersion(String name, String version);
-
+	
+	@Query("select i from Image i where (i.imageType = 1 or i.creator = ?1) and i.name = ?2")
+	public List<Image> findByImageVarsionOfName(long creator,String name);
 	
 }
