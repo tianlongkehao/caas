@@ -37,6 +37,10 @@ $(document).ready(function () {
 		$("#restVol").innerHTML = totalVal - usedSum;
 	}*/
 
+		$("#defVol").click(function(){
+			$("#defVolNum").attr("checked","checked");
+		 });
+		
     $("#storageName").blur(function(){
         var storageName = $("#storageName").val();
         if (storageName === '') {

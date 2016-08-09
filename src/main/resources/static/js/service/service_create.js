@@ -1,6 +1,7 @@
 $(document).ready(function(){
 	loadImageList();
 	getServiceStorageVol();
+	getMountPath();
 	
 	$("#createButton").click(function(){
 		var name = $('#serviceName').val();
@@ -22,6 +23,15 @@ $(document).ready(function(){
 	      return;
 	    }
 	    
+	    var startCommand_input = $("#startCommand_input").val();
+	    if($("#startCommand").prop("checked")==true){
+			    if(!startCommand_input || startCommand_input.length < 1){
+				      layer.tips('自定义启动命令不能为空','#startCommand_input',{tips: [1, '#3595CC']});
+				      $('#startCommand_input').focus();
+				      return;
+					}		   
+	    }
+	    
 	    var servicePath = $("#webPath").val();
 	    if(!servicePath || servicePath.length < 1){
 		      layer.tips('服务路径不能为空','#webPath',{tips: [1, '#3595CC']});
@@ -35,6 +45,20 @@ $(document).ready(function(){
 		      $('#nginxPath').focus();
 		      return;
 		}
+	    var mountPath = $("#mountPath").val();
+	    var selectVolume = $("#selectVolume").val();
+	    if($("#state_service").prop("checked")==true){
+			    if(!mountPath || mountPath.length < 1){
+				      layer.tips('挂载路径不能为空','#mountPath',{tips: [1, '#3595CC']});
+				      $('#mountPath').focus();
+				      return;
+					}		   
+			    if(selectVolume=='0'){
+				      layer.tips('请选择一个挂载卷','#selectVolume',{tips: [1, '#3595CC']});
+				      return;
+					}
+	    }
+	   
 	    
 /*	    var nginxstr = "{";
 	    $('input[name="nginxserv"]:checked').each(function(){
@@ -137,9 +161,9 @@ $(document).ready(function(){
 	 */
 
 	// 控制checkbook后输入框是否可填写
-	var forFalse = true;
 	$("#save_roll_dev").hide();
 	$("#state_service").click(function(){
+//		alert($("#state_service").prop("checked"));
 		$("#save_roll_dev").toggle();
 		$("#mountPath").focus();
 	})
@@ -187,6 +211,9 @@ $(document).ready(function(){
     		type: "GET",
     		success : function(data) {
     		data = eval("(" + data + ")");
+    		if(!data.mapPort||"error"==(data.ERROR)){
+    				alert("可用映射端口已经用尽，请联系管理员。");
+    		}else{
     		var portTr =''+ 
 				'<tr class="plus-row">'+
     					'<td>'+
@@ -208,6 +235,7 @@ $(document).ready(function(){
 						  '</td>'+
 				'</tr>';
     		$("#pushPrptpcol").append(portTr);
+        		}
     		}
 		});
 	});
@@ -449,41 +477,41 @@ function loadImageList() {
 }
 
 function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
-	if ('undefined' != portConfigs) {
-		portConfigs = eval("(" + portConfigs + ")");
-		$("#pushPrptpcol").empty();
-    	$.each(portConfigs,function(i,n){
-    		var portTr = '<tr class="plus-row">'+
-			  									'<td>'+
-    												'<input class="port" type="text" value=" '+n.containerPort+'">'+
-			  									'</td>'+
-			  									'<td>' +
-			  											'<select class="T-http">'+
-			  													'<option>TCP</option>'+
-			  													'<option>HTTP</option>'+
-			  											'</select>'+
-			  									'</td>'+
-			  									'<td>'+
-			  										'<i>'+ n.mapPort +'</i>'+
-			  									'</td>'+
-			  									'<td>'+
-			  											'<a href="javascript:void(0)" onclick="deletePortRow(this,'+n.mapPort+')" class="gray">'+
-			  											'<i class="fa fa-trash-o fa-lg"></i>'+
-			  											'</a>'+
-			  									'</td>'+
-			  								'</tr>';
-    		$("#pushPrptpcol").append(portTr);
-				});
-	}
-$("#imgName").val(imageName);
-$("#imgVersion").val(imageVersion);
-$("#imgID").val(imgID);
-$("#resourceName").val(resourceName);
-$("#portConfigs").val(portConfigs);
-$(".step-inner").css("left","-100%");
-$(".createPadding").removeClass("hide");
-$(".radius_step").removeClass("action").eq(1).addClass("action");
-$(".two_step").removeClass("hide");
+		if ('undefined' != portConfigs) {
+			portConfigs = eval("(" + portConfigs + ")");
+			$("#pushPrptpcol").empty();
+        	$.each(portConfigs,function(i,n){
+        		var portTr = '<tr class="plus-row">'+
+				  									'<td>'+
+        												'<input class="port" type="text" value=" '+n.containerPort+'">'+
+				  									'</td>'+
+				  									'<td>' +
+				  											'<select class="T-http">'+
+				  													'<option>TCP</option>'+
+				  													'<option>HTTP</option>'+
+				  											'</select>'+
+				  									'</td>'+
+				  									'<td>'+
+				  										'<i>'+ n.mapPort +'</i>'+
+				  									'</td>'+
+				  									'<td>'+
+				  											'<a href="javascript:void(0)" onclick="deletePortRow(this,'+n.mapPort+')" class="gray">'+
+				  											'<i class="fa fa-trash-o fa-lg"></i>'+
+				  											'</a>'+
+				  									'</td>'+
+				  								'</tr>';
+        		$("#pushPrptpcol").append(portTr);
+    				});
+		}
+	    $("#imgName").val(imageName);
+	    $("#imgVersion").val(imageVersion);
+	    $("#imgID").val(imgID);
+	    $("#resourceName").val(resourceName);
+	    $("#portConfigs").val(portConfigs);
+	    $(".step-inner").css("left","-100%");
+	    $(".createPadding").removeClass("hide");
+	    $(".radius_step").removeClass("action").eq(1).addClass("action");
+	    $(".two_step").removeClass("hide");
 }
 
 function containerName(){
@@ -535,6 +563,20 @@ function getServiceStorageVol(){
 			
 		}
 	})
+}
+//获取挂载地址mountPath
+function getMountPath(){
+	$("#selectVolume").change(function(){
+		var volume = $("#selectVolume").val();
+		$.ajax({
+			url : ctx + "/service/getMountPath.do?volume="+volume,
+			type: "GET",
+			success : function(data) {
+				data = eval("(" + data + ")");
+				$("#mountPath").val(data.mountPath);
+			}
+		})
+    });
 }
 //删除port
 function deletePortRow(obj,int){
