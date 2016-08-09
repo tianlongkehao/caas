@@ -701,7 +701,7 @@ public class ServiceController {
 		service.setServiceAddr(templateConf.getServerAddr());
 		serviceDao.save(service);
 		// 更新挂载卷的使用状态
-		if (!"0".equals(service.getVolName())) {
+		if (!"0".equals(service.getVolName()) && StringUtils.isNotBlank(service.getVolName())) {
 			this.updateStorageType(service.getVolName(), service.getServiceName());
 		}
 		log.debug("container--Name:" + service.getServiceName());
@@ -1125,7 +1125,9 @@ public class ServiceController {
 			envVariableDao.deleteByServiceId(id);
 			portConfigDao.deleteByServiceId(id);
 			// 更新挂载卷的使用状态
-			this.updateStorageType(service.getVolName(), service.getServiceName());
+			if (!"0".equals(service.getVolName()) && StringUtils.isNotBlank(service.getVolName())) {
+			    this.updateStorageType(service.getVolName(), service.getServiceName());
+			}
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());
