@@ -396,8 +396,6 @@ public class ServiceController {
 	@RequestMapping(value = { "service/add" }, method = RequestMethod.GET)
 	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {
 		
-		clearSet();
-		
 		String isDepoly = "";
 		if (imageName != null) {
 			isDepoly = "deploy";
@@ -504,11 +502,11 @@ public class ServiceController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Image> images = imageDao.findAll(userId);
-		if (CollectionUtils.isNotEmpty(images)) {
+	/*	if (CollectionUtils.isNotEmpty(images)) {
 		    for (Image image : images) {
 		        image.setPortConfigs(getBaseImageExposedPorts(String.valueOf(image.getId())));
 		    }
-		}
+		}*/
 		map.put("data", images);
 		System.out.println(JSON.toJSONString(map));
 		return JSON.toJSONString(map);
@@ -525,11 +523,11 @@ public class ServiceController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Image> images = imageDao.findByNameOf(userId, "%" + imageName + "%");
-		if (CollectionUtils.isNotEmpty(images)) {
+/*		if (CollectionUtils.isNotEmpty(images)) {
 		    for (Image image : images) {
 		        image.setPortConfigs(getBaseImageExposedPorts(String.valueOf(image.getId())));
 		    }
-		}
+		}*/
 		map.put("data", images);
 		return JSON.toJSONString(map);
 	}
@@ -764,60 +762,31 @@ public class ServiceController {
 	 * @return int
 	 */
 	public int vailPortSet(){
-   int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
-    Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
-                                .limit(offset)
-                                .collect(Collectors.toSet());
-    if(CollectionUtils.isEmpty(smalSet)){
-        smalSet= portConfigDao.findPortSets();
-        smalSet.remove(null);
-        if(CollectionUtils.isEmpty(smalSet)){
-            bigSet.removeAll(smalSet);
+	    synchronized (this) {
+	        int stopFlag=0;
+	        int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
+	        Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
+	                                    .limit(offset)
+	                                    .collect(Collectors.toSet());
+	        Set<Integer> tmpBigSet = bigSet;
+	        tmpBigSet.removeAll(smalSet);
+	        while (CollectionUtils.isEmpty(tmpBigSet)) {
+	            smalSet.clear();
+	            smalSet.addAll(portConfigDao.findPortSets());
+	            smalSet.remove(null);
+	            bigSet.removeAll(smalSet); 
+	            tmpBigSet = bigSet;
+	            stopFlag++;
+	            if (stopFlag > 100) {
+	                return -1;
+	                            }
+	                }
+	        Object[] obj =bigSet.toArray();
+	        int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
+	                           .toString());
+	        smalSet.add(portSet);
+	        return portSet;
         }
-    }else{
-        bigSet.removeAll(smalSet);
-        
-        }
-    if(CollectionUtils.isEmpty(bigSet)){
-        return -1;
-    }else{
-//  int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)].toString());
-        Object[] obj =bigSet.toArray();
-    int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
-                        .toString());
-    smalSet.add(portSet);
-    return portSet;
-    }
-//		int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
-//		Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
-//									.limit(offset)
-//									.collect(Collectors.toSet());
-//		Set<Integer> oneSet = new HashSet<Integer>();
-//		if(CollectionUtils.isEmpty(smalSet)){
-//			smalSet= portConfigDao.findPortSets();
-//			smalSet.remove(null);
-//			if(CollectionUtils.isEmpty(smalSet)){
-//			    bigSet.removeAll(smalSet);
-//			}
-//		}else{
-//			bigSet.removeAll(smalSet);
-//			
-//		}
-//		if(CollectionUtils.isEmpty(bigSet)){
-//			return -1;
-//		}else{
-//	//	int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)].toString());
-//			Object[] obj =bigSet.toArray();
-//		int portSet=Integer.valueOf(obj[0]
-//							.toString());
-//		smalSet.add(portSet);
-//		log.info("大小："+smalSet.size());
-//		log.info(smalSet.toString());
-//		log.info("大小："+bigSet.size());
-//    log.info(bigSet.toString());
-//		log.info("port="+portSet);
-//		return portSet;
-//		}
 	}
 
 	@RequestMapping(value = {"service/generatePortSet.do"} , method = RequestMethod.GET)
@@ -836,20 +805,15 @@ public class ServiceController {
 	/**
 	 *   删除集合中的某个元素
 	 * @param set
+	 * @return 
 	 */
 	@RequestMapping(value = { "service/removeSet.do" } , method = RequestMethod.GET)
-	public void removeSet(int set){
-		System.out.println(set);
+	@ResponseBody
+	public String removeSet(int set){
+	  Map<String, String> map = new HashMap<String, String>();
 		smalSet.remove(set);
-	}
-	
-	/**
-	 *清空集合
-	 */
-	public void clearSet(){
-		if(!CollectionUtils.isEmpty(smalSet)){
-			smalSet.clear();
-		}
+		map.put("status", "200");
+		return JSON.toJSONString(map);
 	}
 	
 	/**

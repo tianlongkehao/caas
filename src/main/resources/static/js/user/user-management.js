@@ -55,13 +55,13 @@ $(document).ready(function(){
                     //console.info("Data: " + data + "\nStatus: " + status);
                     var data = eval("(" + data + ")");
                     if(data.status=="400"){
-                        layer.alert("登陆帐号已经被使用，请输入新的帐号！");
+                        //layer.alert("登陆帐号已经被使用，请输入新的帐号！");
                         layer.tips('登陆帐号已经被使用，请输入新的帐号！','#userName',{
                             tips: [1, '#0FA6D8']
                         });
                     }
                     if(data.status=="300"){
-                        layer.alert("k8s已经建立此名称的namespace，请输入新的帐号！");
+                        layer.tips("k8s已经建立此名称的namespace，请输入新的帐号！");
                     }
                 });
         }
