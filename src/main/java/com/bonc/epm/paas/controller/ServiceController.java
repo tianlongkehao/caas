@@ -512,7 +512,7 @@ public class ServiceController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Image> images = imageDao.findAll(userId);
-/*		if (CollectionUtils.isNotEmpty(images)) {
+	/*	if (CollectionUtils.isNotEmpty(images)) {
 		    for (Image image : images) {
 		        image.setPortConfigs(getBaseImageExposedPorts(String.valueOf(image.getId())));
 		    }
@@ -822,6 +822,7 @@ public class ServiceController {
 	/**
 	 *   删除集合中的某个元素
 	 * @param set
+	 * @return 
 	 */
 	@RequestMapping(value = { "service/removeSet.do" } , method = RequestMethod.GET)
 	public void removeSet(int set){
