@@ -450,7 +450,7 @@ public class ServiceController {
                     if (-1 != randomPort) {
                         portConfig.setMapPort(String.valueOf(randomPort));                       
                     } else {
-                        new RuntimeException("获取端口失败！");
+                        portConfig.setMapPort("-1");
                     }
                     tmpPortConfigs.add(portConfig);
                 }
@@ -776,7 +776,7 @@ public class ServiceController {
        synchronized (this) {
            int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
            Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
-                                       .limit(10)
+                                       .limit(offset)
                                        .collect(Collectors.toSet());
 /*           Set<Integer> tmpBigSet = bigSet;
            tmpBigSet.removeAll(smalSet);

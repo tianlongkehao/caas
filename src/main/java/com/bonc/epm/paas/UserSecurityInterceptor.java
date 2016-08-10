@@ -31,7 +31,7 @@ public class UserSecurityInterceptor implements HandlerInterceptor {
         if (obj == null || !(obj instanceof User)) {
             response.sendRedirect(request.getContextPath() + "/login");
             
-            ServiceController.smalSet.clear();
+            //ServiceController.smalSet.clear();
             if (portConfigDao == null) {//解决service为null无法注入问题 
                System.out.println("portConfigDao is null!!!"); 
                BeanFactory factory = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getServletContext()); 
