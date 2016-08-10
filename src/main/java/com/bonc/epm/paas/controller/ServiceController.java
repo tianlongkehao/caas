@@ -776,7 +776,7 @@ public class ServiceController {
        synchronized (this) {
            int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
            Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
-                                       .limit(offset)
+                                       .limit(10)
                                        .collect(Collectors.toSet());
 /*           Set<Integer> tmpBigSet = bigSet;
            tmpBigSet.removeAll(smalSet);
@@ -796,10 +796,11 @@ public class ServiceController {
                smalSet.addAll(portConfigDao.findPortSets());
                smalSet.remove(null);
                return -1;
-           }
+              }
            Object[] obj =bigSet.toArray();
            int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
                               .toString());
+           smalSet.add(portSet);
            return portSet;
        }
    }
@@ -808,12 +809,13 @@ public class ServiceController {
 	@ResponseBody
 	public String generatePortSet(){
 		Map<String, String> map = new HashMap<String, String>();
-		if(-1 == vailPortSet()){
+		int mapPort = vailPortSet();
+		if(-1 == mapPort){
 			map.put("ERROR","error");
 			return JSON.toJSONString(map);
 		}
 
-		map.put("mapPort", String.valueOf(vailPortSet()));
+		map.put("mapPort", String.valueOf(mapPort));
 		return JSON.toJSONString(map);
 	}
 	
@@ -824,7 +826,7 @@ public class ServiceController {
 	@RequestMapping(value = { "service/removeSet.do" } , method = RequestMethod.GET)
 	public void removeSet(int set){
 	    log.info("移除的端口："+set);
-		/*smalSet.remove(set);*/
+		 smalSet.remove(set);
 	}
 	
 	/**
