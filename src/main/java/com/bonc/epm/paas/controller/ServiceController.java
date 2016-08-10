@@ -1,5 +1,9 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -395,10 +401,7 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping(value = { "service/add" }, method = RequestMethod.GET)
-	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {
-		
-		clearSet();
-		
+	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {		
 		String isDepoly = "";
 		if (imageName != null) {
 			isDepoly = "deploy";
@@ -703,7 +706,7 @@ public class ServiceController {
 		service.setServiceAddr(templateConf.getServerAddr());
 		serviceDao.save(service);
 		// 更新挂载卷的使用状态
-		if (!"0".equals(service.getVolName())) {
+		if (!"0".equals(service.getVolName()) && StringUtils.isNotBlank(service.getVolName())) {
 			this.updateStorageType(service.getVolName(), service.getServiceName());
 		}
 		log.debug("container--Name:" + service.getServiceName());
@@ -820,17 +823,8 @@ public class ServiceController {
 	 */
 	@RequestMapping(value = { "service/removeSet.do" } , method = RequestMethod.GET)
 	public void removeSet(int set){
-		System.out.println(set);
-		smalSet.remove(set);
-	}
-	
-	/**
-	 *清空集合
-	 */
-	public void clearSet(){
-		if(!CollectionUtils.isEmpty(smalSet)){
-			smalSet.clear();
-		}
+	    log.info("移除的端口："+set);
+		/*smalSet.remove(set);*/
 	}
 	
 	/**
@@ -934,12 +928,24 @@ public class ServiceController {
 		try {
 			SshConnect.connect(name, password, hostIp, 22);
 			boolean b = false;
-			SshConnect.exec(cmd, 1000);
+			String rollingLog = SshConnect.exec(cmd, 1000);
 			while (!b) {
-				String str = SshConnect.exec("echo $?", 1000);
-				b = str.endsWith("#");
+				String str = SshConnect.exec("", 10000);
+				if (StringUtils.isNotBlank(str)) {
+				    rollingLog += str;
+				}
+				b = (str.endsWith("$") || str.endsWith("#"));
+				//b = str.endsWith("updated");
 			}
-
+			log.info("rolling-update log:-"+rollingLog);
+			String result = SshConnect.exec("echo $?", 1000);
+			if (StringUtils.isNotBlank(result)) {
+			    if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
+			        new InterruptedException();
+			    }
+			} else {
+			    new InterruptedException();
+			}
 		} catch (InterruptedException e) {
 			log.error(e.getMessage());
 			log.error("error:执行command失败");
@@ -952,6 +958,16 @@ public class ServiceController {
 			SshConnect.disconnect();
 		}
 		return true;
+	}
+	
+	@RequestMapping("service/findImageVersion.do")
+    @ResponseBody
+	public String findImageVersion(String imageName){
+	    User cUser = CurrentUserUtils.getInstance().getUser();
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName);
+        map.put("data", images);
+        return JSON.toJSONString(map);
 	}
 
 	/**
@@ -1087,7 +1103,9 @@ public class ServiceController {
 			}
 			
 			// 更新挂载卷的使用状态
-			this.updateStorageType(service.getVolName(), service.getServiceName());
+			if (!"0".equals(service.getVolName()) && StringUtils.isNotBlank(service.getVolName())) {
+			    this.updateStorageType(service.getVolName(), service.getServiceName());
+			}
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());

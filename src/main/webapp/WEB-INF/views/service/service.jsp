@@ -119,7 +119,10 @@
                                      <option name="user_autority" value="2">租户</option>
                                      <option name="user_autority" value="1">管理员</option>
                                                     </select>  -->
-                              <input value="" id="imgVersionName" class=""  style="margin-top: 10px;width: 165px;" type="text">
+                              <select id="imgVersionName" name="imgVersionName" style="margin-top: 10px;width: 165px;">
+                              
+                              </select>
+                             <!--  <input value="" id="imgVersionName" class=""  style="margin-top: 10px;width: 165px;" type="text"> -->
 							  <!-- <span  style="color: grey;margin-left: 50px;">可用实例数量：<label id="leftpod" ></label></span> -->
                             </div>
                           </li>
