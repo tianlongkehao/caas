@@ -60,10 +60,11 @@
 							<li>格&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;式：&nbsp;&nbsp;&nbsp;${storage.format }</li>
 							<li>创建时间：&nbsp;&nbsp;&nbsp;${storage.createDate }</li>
 							<li>内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;容：&nbsp;&nbsp;&nbsp;
-								<span class="btn btn-primary upload"> 上传文件 </span> <span
-								class="btn btn-primary download"> 导出文件 </span>
+								<span class="btn btn-primary upload" id="fileUpload"> 上传文件 </span> <span
+								class="btn btn-primary download" id="fileDownload"> 导出文件 </span>
 							</li>
 						</ul>
+						
 						<div class="pull-right parameter-list">
 							<canvas id="parameter" width="120px" height="120px"></canvas>
 							<div class="param-text">
@@ -122,6 +123,19 @@
 		</article>
 	</div>
 <script type="text/javascript">
+$("#fileUpload").click(function(){
+    layer.open({
+    	type:1,
+    	content:$(),
+    	title:'上传文件',
+    	btn:['保存','取消'],
+    	yes:function(index,layero){
+    		
+    	}
+    })
+    
+});
+
 var jsonData = {
 		
 }
