@@ -450,7 +450,7 @@ public class ServiceController {
                     if (-1 != randomPort) {
                         portConfig.setMapPort(String.valueOf(randomPort));                       
                     } else {
-                        new RuntimeException("获取端口失败！");
+                        portConfig.setMapPort("-1");
                     }
                     tmpPortConfigs.add(portConfig);
                 }
@@ -796,10 +796,11 @@ public class ServiceController {
                smalSet.addAll(portConfigDao.findPortSets());
                smalSet.remove(null);
                return -1;
-           }
+              }
            Object[] obj =bigSet.toArray();
            int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
                               .toString());
+           smalSet.add(portSet);
            return portSet;
        }
    }
@@ -808,12 +809,13 @@ public class ServiceController {
 	@ResponseBody
 	public String generatePortSet(){
 		Map<String, String> map = new HashMap<String, String>();
-		if(-1 == vailPortSet()){
+		int mapPort = vailPortSet();
+		if(-1 == mapPort){
 			map.put("ERROR","error");
 			return JSON.toJSONString(map);
 		}
 
-		map.put("mapPort", String.valueOf(vailPortSet()));
+		map.put("mapPort", String.valueOf(mapPort));
 		return JSON.toJSONString(map);
 	}
 	
@@ -825,7 +827,7 @@ public class ServiceController {
 	@RequestMapping(value = { "service/removeSet.do" } , method = RequestMethod.GET)
 	public void removeSet(int set){
 	    log.info("移除的端口："+set);
-		/*smalSet.remove(set);*/
+		 smalSet.remove(set);
 	}
 	
 	/**
