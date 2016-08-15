@@ -58,7 +58,7 @@ $(document).ready(function () {
 			   		     			layer.msg( "删除成功！", {
 				   						icon: 1
 				   					},function(){
-				   						window.location.href = "/registry/0";
+				   						window.location.href = ""+ctx+"/registry/0";
 				   					});
 		   		     			}
 		   		     		},

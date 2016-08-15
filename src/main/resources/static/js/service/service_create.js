@@ -357,15 +357,23 @@ $(document).ready(function(){
 		                    	}
 	                    	}
 	                    	$("#imageList").html(html);
+	                    	$(".pull-deploy").click(function(){
 
-	                        $(".pull-deploy").click(function(){
 	                        	var imageName = $(this).attr("imageName");
 	                        	var imageVersion = $(this).attr("imageVersion");
 	                        	var imgID = $(this).attr("imgID");
 	                        	var resourceName = $(this).attr("resourceName");
-	                        	var portConfigs = $(this).attr("portConfigs");
-	                        	// containerName();
-	                            deploy(imgID,imageName, imageVersion,resourceName,portConfigs);
+	                      // 	var portConfigs = $(this).attr("portConfigs");
+	                        	var portConfigs ;
+	                        	$.ajax({
+	                                url: ""+ctx+"/service/getPortConfig.do?imgID="+imgID,
+	                                type: "GET",
+	                                success: function (data) {
+	                                	data = eval("(" + data + ")");
+	                                 portConfigs =	JSON.stringify(data.data);
+	                                 deploy(imgID,imageName, imageVersion,resourceName,portConfigs);
+	                                }
+	                        	});
 	                        });
 	                	}
 	            }
@@ -466,9 +474,19 @@ function loadImageList() {
                         	var imageVersion = $(this).attr("imageVersion");
                         	var imgID = $(this).attr("imgID");
                         	var resourceName = $(this).attr("resourceName");
-                        	var portConfigs = $(this).attr("portConfigs");
+                      // 	var portConfigs = $(this).attr("portConfigs");
+                        	var portConfigs ;
+                        	$.ajax({
+                                url: ""+ctx+"/service/getPortConfig.do?imgID="+imgID,
+                                type: "GET",
+                                success: function (data) {
+                                	data = eval("(" + data + ")");
+                                 portConfigs =	JSON.stringify(data.data);
+                                 deploy(imgID,imageName, imageVersion,resourceName,portConfigs);
+                                									
+                                }
+                        	});
                         	// containerName();
-                          deploy(imgID,imageName, imageVersion,resourceName,portConfigs);
                         });
                 	}
             }
@@ -477,7 +495,7 @@ function loadImageList() {
 }
 
 function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
-		if ('undefined' != portConfigs) {
+		if (undefined != portConfigs && 'null' != portConfigs) {
 			portConfigs = eval("(" + portConfigs + ")");
 			$("#pushPrptpcol").empty();
         	$.each(portConfigs,function(i,n){
@@ -583,7 +601,10 @@ function deletePortRow(obj,int){
 	//alert(int);
 	 $.ajax({
 			url:""+ctx+"/service/removeSet.do?set="+int,
-			type: "GET"
+			type: "GET",
+			success : function(data) {
+				
+			}
 	 });
 	 $(obj).parent().parent().remove();
 }

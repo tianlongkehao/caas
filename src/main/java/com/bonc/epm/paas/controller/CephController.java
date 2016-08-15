@@ -65,7 +65,7 @@ public class CephController {
 			for (String strDir : listdir) {
 				System.out.println("dir:" + strDir);
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {  
 			e.printStackTrace();
 		}
 	}
