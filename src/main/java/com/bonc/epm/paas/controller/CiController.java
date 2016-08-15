@@ -1,5 +1,6 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,10 +29,12 @@ import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
+import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiRecord;
+import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
@@ -48,6 +51,8 @@ public class CiController {
 	@Autowired
 	public ImageDao imageDao;
 	@Autowired
+	public DockerFileTemplateDao dockerFileTemplateDao;
+	@Autowired
 	public DockerClientService dockerClientService;
 	
 	@Value("${paas.codetemp.path}")
@@ -63,10 +68,15 @@ public class CiController {
 	}
 	@RequestMapping(value={"ci/detail/{id}"},method=RequestMethod.GET)
 	public String detail(Model model,@PathVariable long id){
+	    User cuurentUser = CurrentUserUtils.getInstance().getUser();
         Ci ci = ciDao.findOne(id);
         List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction.DESC,"constructDate")));
         List<Image> images = this.findByBaseImages();
         Image currentBaseImage = imageDao.findById(ci.getBaseImageId());
+        if (ci.getType() == 2) {
+            List<DockerFileTemplate> dockerFiles = dockerFileTemplateDao.findByCreateBy(cuurentUser.getId());
+            model.addAttribute("dockerFiles", dockerFiles);
+        }
 		model.addAttribute("id", id);
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
@@ -90,9 +100,9 @@ public class CiController {
 		return JSON.toJSONString(map);
 	}
 	
-	@RequestMapping("ci/modifyResourceCi.do")
+	@RequestMapping("ci/modifyDockerFileCi.do")
 	@ResponseBody
-	public String modifyResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,@RequestParam("dockerFile") MultipartFile dockerFile) {
+	public String modifyDockerFileCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,String dockerFile) {
 		Ci originCi = ciDao.findOne(ci.getId());
 		originCi.setProjectName(ci.getProjectName());
 		originCi.setDescription(ci.getDescription());
@@ -105,9 +115,10 @@ public class CiController {
         	if (sourceCode!=null&&!sourceCode.isEmpty()) {
         		FileUtils.storeFile(sourceCode.getInputStream(), originCi.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
         	}
-        	if (dockerFile!=null&&!dockerFile.isEmpty()) {
-        		FileUtils.storeFile(dockerFile.getInputStream(), originCi.getCodeLocation()+"/"+dockerFile.getOriginalFilename());
-        	}
+        	if (!dockerFile.isEmpty()) {
+                ByteArrayInputStream in = new ByteArrayInputStream(dockerFile.getBytes());  
+                FileUtils.storeFile(in, originCi.getCodeLocation()+"/"+"Dockerfile");
+            }
         } catch (Exception e) {
         	e.printStackTrace();
         	log.error("modifyResourceCi error:"+e.getMessage());
@@ -193,7 +204,9 @@ public class CiController {
 	@RequestMapping(value={"ci/dockerfile"},method=RequestMethod.GET)
 	public String dockerfile(Model model){
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+		List<DockerFileTemplate> dockerFiles = dockerFileTemplateDao.findByCreateBy(cuurentUser.getId());
         model.addAttribute("username", cuurentUser.getUserName());
+        model.addAttribute("dockerFiles", dockerFiles);
         model.addAttribute("menu_flag", "ci");
 		return "ci/ci_dockerfile.jsp";
 	}
@@ -224,12 +237,12 @@ public class CiController {
 		
 	}
 	
-	@RequestMapping("ci/addResourceCi.do")
+	@RequestMapping(value={"ci/addResourceCi.do"},method=RequestMethod.POST)
 	public String addResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,@RequestParam("dockerFile") MultipartFile dockerFile) {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         ci.setCreateBy(cuurentUser.getId());
         ci.setCreateDate(new Date());
-		ci.setType(CiConstant.TYPE_RESOURCE);
+		ci.setType(CiConstant.TYPE_DOCKERFILE);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
 		ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
@@ -254,6 +267,97 @@ public class CiController {
         return "redirect:/ci";
 
 	}
+	
+	/**
+	 * 使用DockerFile构建
+	 * 
+	 * @param ci ： 构建数据
+	 * @param sourceCode ： 代码文件
+	 * @param dockerFile ：dockerFile文本
+	 * @return String
+	 * @see
+	 */
+	@RequestMapping(value={"ci/addDockerFileCi.do"},method=RequestMethod.POST)
+    public String addDockerFileCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,String dockerFile,String templateName) {
+	    User cuurentUser = CurrentUserUtils.getInstance().getUser();
+	    String[] baseImage = dockerFileBaseImage(dockerFile);
+	    if (baseImage.length <= 0 ) {
+	        return "redirect:/error";
+	    }
+	    
+	    Image image = imageDao.findByNameAndVersion(baseImage[0].substring(baseImage[0].indexOf("/") +1),baseImage[1]);
+	    if (null == image) {
+	        return "redirect:/error";
+	    }
+	    ci.setBaseImageId(image.getId());
+	    ci.setBaseImageName(baseImage[0]);
+	    ci.setBaseImageVersion(baseImage[1]);
+        ci.setCreateBy(cuurentUser.getId());
+        ci.setCreateDate(new Date());
+        ci.setType(CiConstant.TYPE_DOCKERFILE);
+        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
+        ci.setConstructionDate(new Date());
+        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        ci.setDockerFileLocation("/");
+        try {
+            File file = new File(ci.getCodeLocation());
+            if(!file.exists()){
+                file.mkdirs();
+            }
+            if (!sourceCode.isEmpty()) {
+                FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
+            }
+            if (!dockerFile.isEmpty()) {
+                ByteArrayInputStream in=new ByteArrayInputStream(dockerFile.getBytes());  
+                FileUtils.storeFile(in, ci.getCodeLocation()+"/"+"Dockerfile");
+            }
+        } catch (Exception e) {
+            log.error("modifyResourceCi error:"+e.getMessage());
+            return "redirect:/error"; 
+        }
+        
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(templateName)) {
+            DockerFileTemplate dkFile = new DockerFileTemplate();
+            dkFile.setCreateBy(cuurentUser.getId());
+            dkFile.setCreateDate(new Date());
+            dkFile.setDockerFile(dockerFile);
+            dkFile.setTemplateName(templateName);
+            dockerFileTemplateDao.save(dkFile);
+        }
+        
+        ciDao.save(ci);
+        log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+        return "redirect:/ci";
+
+    }
+    
+	/**
+	 * 从dockerFile文件中获取dockerFile构建的基础镜像
+	 * 
+	 * @param dockerFile ： dockerFile文件
+	 * @return String
+	 * @see
+	 */
+	public  String[] dockerFileBaseImage(String dockerFile){
+	    String[] baseImage = new String[10];
+	    try {
+	        dockerFile = dockerFile.substring(dockerFile.indexOf("FROM")).replaceAll("\\s+", " ");
+	        String[] ssh = dockerFile.split(" ");
+	        System.out.println(ssh[1]);
+	        String name = ssh[1].substring(0, ssh[1].lastIndexOf(":"));
+	        String version = ssh[1].substring(ssh[1].lastIndexOf(":")+1);
+	        if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(version)) {
+	            baseImage[0] = name;
+	            baseImage[1] = version;
+	        }
+        }
+        catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+	    return baseImage;
+    }
+	
 	@RequestMapping("ci/addCodeResourceCi.do")
 	public String addCodeResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode) {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
@@ -261,7 +365,7 @@ public class CiController {
 		ci.setBaseImageVersion(imageDao.findById(ci.getBaseImageId()).getVersion());
 		ci.setCreateBy(cuurentUser.getId());
 		ci.setCreateDate(new Date());
-		ci.setType(CiConstant.TYPE_CODE);
+		ci.setType(CiConstant.TYPE_QUICK);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
 		ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
@@ -358,7 +462,7 @@ public class CiController {
 	 */
 	private boolean fetchCode(Ci ci,CiRecord ciRecord,CiRecordDao ciRecordDao){
 		//如果是代码上传，不需要重新下载源代码
-		if(CiConstant.TYPE_CODE.equals(ci.getType()))return true;
+		if(CiConstant.TYPE_QUICK.equals(ci.getType()) || CiConstant.TYPE_DOCKERFILE.equals(ci.getType())) return true;
 		try{
 			if(CiConstant.CODE_TYPE_SVN.equals(ci.getCodeType())){
 				String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
@@ -478,4 +582,30 @@ public class CiController {
         }
         return images;
 	}
+	
+	/**
+	 * 匹配dockerFile模板名称有没有重复
+	 * 
+	 * @param templateName ： 模板名称
+	 * @return String
+	 * @see
+	 */
+	@RequestMapping("ci/matchTemplateName.do")
+	@ResponseBody
+    public String matchTemplateName (String templateName) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        User cUser = CurrentUserUtils.getInstance().getUser();
+        for (DockerFileTemplate dkFile : dockerFileTemplateDao.findByCreateBy(cUser.getId())) {
+            if (StringUtils.isEmpty(dkFile.getTemplateName())) {
+                continue;
+            }
+            if (dkFile.getTemplateName().equals(templateName)) {
+                map.put("status", "200");
+                break;
+            }
+        }
+        return JSON.toJSONString(map);
+    }
+	    
+	
 }

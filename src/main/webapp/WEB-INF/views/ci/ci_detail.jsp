@@ -178,10 +178,12 @@
                                                 <input type="file" class="" id="sourceCode" name="sourceCode" style="margin:6px 0;">
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                         <div class="form-group">
                                             <label class="col-2x control-label">重新上传Dockfile：</label>
                                             <div class="col-sm-9">
-                                                <input type="file" class="" id="dockerFile" name="dockerFile" style="margin:6px 0;">
+                                            <span id="docImport-btn" class=" btn-info btn-sm" style="cursor: pointer; ">导入模板</span>
+                                            <textarea id="dockerFile" name = "dockerFile"
+                                                style="background-color: black; color: #37fc34; border: 0; width: 100%; height: 230px; margin-top:10px">...</textarea>   
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -263,7 +265,31 @@
                         </div>
                     </div>
                 </div>
-
+                
+                 <!--dockerfile导入模板 -->
+                <div id="dockerfile-import" style="display:none">
+                    <table class="table table-hover enabled" id="Path-table-doc"
+                        style="width: 345px; margin: 5px 10px 5px 10px">
+                        <tbody id="dockerfile-body">
+                            <c:if test="${empty dockerFiles }">
+                                <tr>
+                                    <td>没有保存的模板</td>
+                                </tr>
+                            </c:if>
+                            <c:if test="${not empty dockerFiles }">
+                                <c:forEach var = "dockerFile" items = "${dockerFiles }">
+                                    <tr>
+                                        <td class="vals vals-doc">${dockerFile.templateName }
+                                          <span class="doc-tr hide"><i class="fa fa-check"></i></span>
+                                           <input type="hidden" class="dockerFileTemplate" value='${dockerFile.dockerFile }' />
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </c:if>
+                        </tbody>
+                    </table>
+                </div>
+            
             </div>
         </div>
     </article>
