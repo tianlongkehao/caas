@@ -279,6 +279,7 @@ public class UserController {
 							System.out.println(e.getMessage());
 						}
 						client.deleteNamespace(namespace);
+						//TODO 逻辑删除卷组信息
 					}
 				} catch (KubernetesClientException e) {
 					System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
@@ -556,6 +557,7 @@ public class UserController {
 	@RequestMapping(value = { "user/del/{id}" }, method = RequestMethod.GET)
 	public String userDel(Model model, @PathVariable long id) {
 		userDao.delete(id);
+        //TODO 逻辑删除卷组信息
 		// Map<String,Object> map = new HashMap<String,Object>();
 		log.debug("del userid======:" + id);
 		return "redirect:/user";

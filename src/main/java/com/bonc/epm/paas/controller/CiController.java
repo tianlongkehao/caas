@@ -296,7 +296,7 @@ public class CiController {
             if (!sourceCode.isEmpty()) {
                 FileUtils.storeFile(sourceCode.getInputStream(), imagePath+"/"+sourceCode.getOriginalFilename());
                }*/
-            boolean flag = createAndPushImage(image,imagePath,sourceCode.getInputStream());
+            boolean flag = createAndPushImage(image,sourceCode.getInputStream());
             if(flag){
                 //排重添加镜像数据
                 Image img = null;
@@ -332,7 +332,7 @@ public class CiController {
 	  * @return 
 	  * @see
 	  */
-    private boolean createAndPushImage(Image image,String imagePath,InputStream inputStream){
+    private boolean createAndPushImage(Image image,InputStream inputStream){
         // import and push image
         boolean flag = dockerClientService.createAndPushImage(image, inputStream);
         if(flag){

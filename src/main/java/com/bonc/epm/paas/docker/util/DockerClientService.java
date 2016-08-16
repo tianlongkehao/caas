@@ -104,10 +104,13 @@ public class DockerClientService {
 	 * @return 
 	 * @see
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean createAndPushImage(Image image, InputStream inputStream) {
 	    try {
             DockerClient dockerClient = this.getDockerClientInstance();
-            String imageId = dockerClient.createImageCmd(image.getName(), inputStream).exec().getId();
+            
+            String imageId = dockerClient.createImageCmd(image.getName(), inputStream).withTag(image.getVersion()).exec().getId();
+            imageId = imageId.substring(0,12); // ?? why is not the response same with building image.
             dockerClient.tagImageCmd(imageId, username +"/"+image.getName(), image.getVersion()).withForce().exec();
             
             // push image
