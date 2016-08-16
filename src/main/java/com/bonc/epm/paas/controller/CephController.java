@@ -31,6 +31,8 @@ public class CephController {
 
 	// cephMount
 	private CephMount cephMount;
+	// mode
+	private int mode = 511;
 
 	/**
 	 * connectCephFS
@@ -41,6 +43,7 @@ public class CephController {
 			cephMount = new CephMount("admin");
 			cephMount.conf_read_file("/etc/ceph/ceph.conf");
 			cephMount.mount("/");
+			cephMount.chmod("/", mode);
 
 			logger.info("打印根目录下的所有目录");
 			String[] listdir = cephMount.listdir("/");
@@ -67,7 +70,7 @@ public class CephController {
 	public void createNamespaceCephFS(String namespace) {
 		try {
 			logger.info("进入方法：createNamespaceCephFS");
-			cephMount.mkdir("/" + namespace, CephMount.O_APPEND + CephMount.O_RDWR);
+			cephMount.mkdir("/" + namespace, mode);
 
 			logger.info("打印" + namespace + "下的所有目录");
 			String[] listdir = cephMount.listdir("/" + namespace);
@@ -119,15 +122,15 @@ public class CephController {
 		try {
 			logger.info("进入方法：createStorageCephFS");
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-			int readOrWrite = CephMount.O_APPEND + CephMount.O_RDWR;
+			int readOrWrite = mode;
 			if (isVolReadOnly){
-				readOrWrite = CephMount.O_APPEND;
+				readOrWrite = 292;
 			}
 			// 指定当前工作目录
 			cephMount.chdir("/" + namespace);
 			// 创建挂载卷目录
 			cephMount.mkdir(storageName, readOrWrite);
-			cephMount.chmod("/"+namespace, CephMount.O_APPEND + CephMount.O_RDWR);
+			cephMount.chmod("/"+namespace, mode);
 
 			logger.info("打印" + namespace + "下的所有目录");
 			String[] listdir2 = cephMount.listdir("/" + namespace);
