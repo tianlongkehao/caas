@@ -1,24 +1,26 @@
 package com.bonc.epm.paas.controller;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.UnsupportedEncodingException;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -432,6 +434,7 @@ public class ServiceController {
 		return "service/service_create.jsp";
 	}
 	
+	
     private List<PortConfig> getBaseImageExposedPorts(String imgID) {
         Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
         if (null != ci) {
@@ -768,6 +771,7 @@ public class ServiceController {
 		map.put("data", envVariables);
 		return JSON.toJSONString(map);
 	}
+	
 	/**
     * 生成有效的PORTSET,回收端口
     * @return int

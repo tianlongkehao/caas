@@ -1,7 +1,15 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +28,7 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.SshConnect;
 
 /**
  * 镜像
@@ -189,6 +198,106 @@ public class RegistryController {
 			return "success";
 		}
 	}
+	
+	/**
+     * 响应镜像“下载”按钮的实现
+     * 
+     * @param imgID ： 镜像Id
+     * @param imageName ： 镜像名称
+     * @param imageVersion 镜像版本
+     * @param resourceName 资源
+     * @param model model
+     * @return  String
+     * @see
+     */
+    @RequestMapping(value = {"registry/downloadImage"}, method = RequestMethod.GET)
+    @ResponseBody
+    public void downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
+                                Model model,HttpServletRequest request, HttpServletResponse response){
+        
+        String downName = imageName.substring(imageName.lastIndexOf("/")+1);
+        String cmd = "docker save -o /home/paas/paas/apache-tomcat-8.0.32/downimage/"
+                + downName + ".tar " + imageName + ":" + imageVersion;
+        
+        boolean flag = cmdexec(cmd);
+        
+        if (flag) {
+            getDownload(downName+".tar",request,response);
+        }
+    }
+    
+    /**
+     * 下载镜像文件
+     * 
+     * @param fileName : 文件名称
+     * @param request ：request
+     * @param response  ： response
+     * @see
+     */
+    public void getDownload(String fileName,HttpServletRequest request, HttpServletResponse response) {  
+        
+        String fullPath = "D:/devTools/navicat.zip" ; 
+        
+        //设置文件MIME类型  
+        response.setContentType(request.getServletContext().getMimeType(fullPath));  
+        //设置Content-Disposition  
+        response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
+  
+        try {  
+            InputStream myStream = new FileInputStream(fullPath);  
+            IOUtils.copy(myStream, response.getOutputStream());  
+            response.flushBuffer();  
+            System.out.println("保存成功");
+        } catch (IOException e) {  
+            LOG.error("downloadImage error:"+e.getMessage());
+        }  
+    }
+    
+    /**
+     * ssh cmd
+     * 
+     * @param cmd
+     * @return
+     */
+    public boolean cmdexec(String cmd) {
+        String hostIp = "192.168.0.29";
+        String name = "root";
+        String password = "root.123";
+        try {
+            SshConnect.connect(name, password, hostIp, 22);
+            boolean b = false;
+            String rollingLog = SshConnect.exec(cmd, 1000);
+            while (!b) {
+                String str = SshConnect.exec("", 10000);
+                if (StringUtils.isNotBlank(str)) {
+                    rollingLog += str;
+                }
+                b = (str.endsWith("$") || str.endsWith("#"));
+                //b = str.endsWith("updated");
+            }
+            LOG.info("rolling-update log:-"+rollingLog);
+            String result = SshConnect.exec("echo $?", 1000);
+            if (StringUtils.isNotBlank(result)) {
+                if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
+                    new InterruptedException();
+                }
+            } else {
+                new InterruptedException();
+            }
+        } catch (InterruptedException e) {
+            LOG.error(e.getMessage());
+            LOG.error("error:执行command失败");
+            return false;
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            LOG.error("error:ssh连接失败");
+            return false;
+        } finally {
+            SshConnect.disconnect();
+        }
+        return true;
+    }
+    
 	
 	/**删除当前镜像
 	 * 

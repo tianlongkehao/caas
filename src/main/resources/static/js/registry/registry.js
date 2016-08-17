@@ -41,6 +41,10 @@ $(document).ready(function () {
     	});
     });
     
+    $("#downloadImage").click(function(){
+    	layer.load(0, {shade: [0.3, '#000'],time:5000});
+    });
+    
     $("#deleteImage").click(function(){
    		var imageId = $("#imageId").val();
    		 layer.open({
