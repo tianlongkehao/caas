@@ -2,6 +2,7 @@ package com.bonc.epm.paas.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CiConstant;
+import com.bonc.epm.paas.constant.ImageConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
@@ -269,6 +271,78 @@ public class CiController {
 	}
 	
 	/**
+	 * 
+	 * Description: <br>
+     *  上传镜像
+	 * @param image
+	 * @param sourceCode
+	 * @return 
+	 * @see
+	 */
+	@RequestMapping("ci/addResourceImage.do")
+	public String addResourceImage(Image image , @RequestParam("sourceCode") MultipartFile sourceCode) {
+	    User currentUser = CurrentUserUtils.getInstance().getUser();
+	    image.setName(currentUser.getUserName() +"/" + image.getName());
+	    image.setResourceName(sourceCode.getOriginalFilename());
+	    
+	    image.setCreateTime(new Date());
+	    image.setCreator(currentUser.getId());
+	    String imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
+        try {
+/*            File file = new File(imagePath);
+            if(!file.exists()){
+                file.mkdirs();
+               }
+            if (!sourceCode.isEmpty()) {
+                FileUtils.storeFile(sourceCode.getInputStream(), imagePath+"/"+sourceCode.getOriginalFilename());
+               }*/
+            boolean flag = createAndPushImage(image,sourceCode.getInputStream());
+            if(flag){
+                //排重添加镜像数据
+                Image img = null;
+                List<Image> imageList = imageDao.findByName(image.getName());
+                if(!CollectionUtils.isEmpty(imageList)){
+                    for(Image oneRow : imageList){
+                        if(image.getVersion().equals(oneRow.getVersion())){
+                            img = oneRow;
+                              }
+                        }
+                    }
+                if(img==null){
+                    img = image;
+                    }
+                if (ImageConstant.BaseImage == img.getIsBaseImage()) {
+                    img.setIsBaseImage(ImageConstant.BaseImage);
+                } else {
+                    img.setIsBaseImage(ImageConstant.NotBaseImage);
+                    }
+                imageDao.save(img);
+            }
+       } catch (Exception e) {
+            log.error("uploadImage error:"+e.getMessage());
+            return "redirect:/error"; 
+        }
+	   return "redirect:/ci";
+	}
+	
+	 /**
+	  * 
+	  * Description:
+	   * 导入和上传镜像
+	  * @return 
+	  * @see
+	  */
+    private boolean createAndPushImage(Image image,InputStream inputStream){
+        // import and push image
+        boolean flag = dockerClientService.createAndPushImage(image, inputStream);
+        if(flag){
+               //删除本地镜像
+            flag = dockerClientService.removeImage(image.getName(), image.getVersion(),null,null);
+          }
+        return flag;
+    }
+
+	/**
 	 * 使用DockerFile构建
 	 * 
 	 * @param ci ： 构建数据
@@ -323,7 +397,7 @@ public class CiController {
             dkFile.setDockerFile(dockerFile);
             dkFile.setTemplateName(templateName);
             dockerFileTemplateDao.save(dkFile);
-        }
+          }
         
         ciDao.save(ci);
         log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
@@ -546,7 +620,7 @@ public class CiController {
 			img.setRemark(ci.getDescription());
 			img.setCreator(ci.getCreateBy());
 			img.setCreateTime(new Date());
-			img.setIsBaseImage(2);
+			img.setIsBaseImage(ImageConstant.NotBaseImage);
 			imageDao.save(img);
 			ci.setImgId(img.getId());
 		}

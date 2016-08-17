@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.docker.util;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.docker.api.DockerRegistryAPI;
 import com.bonc.epm.paas.entity.CiRecord;
+import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.github.dockerjava.api.DockerClient;
@@ -90,6 +92,42 @@ public class DockerClientService {
            log.error("error inspect image,message:-"+e.getMessage());
            e.printStackTrace();
            return null;
+        }
+	}
+	
+	/**
+	 * 
+	 * Description:
+	 * 导入镜像并push到远程
+	 * @param image
+	 * @param inputStream
+	 * @return 
+	 * @see
+	 */
+	@SuppressWarnings("deprecation")
+	public boolean createAndPushImage(Image image, InputStream inputStream) {
+	    try {
+            DockerClient dockerClient = this.getDockerClientInstance();
+            
+            String imageId = dockerClient.createImageCmd(image.getName(), inputStream).withTag(image.getVersion()).exec().getId();
+            imageId = imageId.substring(0,12); // ?? why is not the response same with building image.
+            dockerClient.tagImageCmd(imageId, username +"/"+image.getName(), image.getVersion()).withForce().exec();
+            
+            // push image
+            PushImageResultCallback callback = new PushImageResultCallback() {
+                @Override
+                public void onNext(PushResponseItem item) {
+                    log.info("==========PushResponseItem:"+item);
+                    super.onNext(item);
+                   }
+               };
+            dockerClient.pushImageCmd(username +"/"+ image.getName()).withTag(image.getVersion()).exec(callback).awaitSuccess();
+            image.setImageId(imageId);
+            return true;
+        }
+        catch (Exception e) {
+            log.error("createImage error:"+e.getMessage());
+            return false;
         }
 	}
 
@@ -182,13 +220,17 @@ public class DockerClientService {
 		try{
 			DockerClient dockerClient = this.getDockerClientInstance();
 			dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce().exec();
-			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);
-	    	ciRecordDao.save(ciRecord);
+			if (null != ciRecord && null != ciRecordDao) {
+	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);
+	          ciRecordDao.save(ciRecord); 
+			}
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
-			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
-	    	ciRecordDao.save(ciRecord);
+			if (null != ciRecord && null != ciRecordDao) {
+	            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+	            ciRecordDao.save(ciRecord);			    
+			}
 			log.error("removeImage error:"+e.getMessage());
 			return false;
 		}
