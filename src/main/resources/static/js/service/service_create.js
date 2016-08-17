@@ -155,6 +155,19 @@ $(document).ready(function(){
     	});
     });
 	
+	$("#service-path").click(function(){
+    	layer.tips('内容必须和上传的项目名一致！', '#service-path', {
+            tips: [2, '#0FA6D8'] //还可配置颜色
+        });
+    });
+	
+	$("#proxy-path").click(function(){
+    	layer.tips('内容建议为“用户名+项目名”！', '#proxy-path', {
+            tips: [2, '#0FA6D8'] //还可配置颜色
+        });
+    });
+
+	
 	/*
 	 * $(".cpuNum").click(function(){ var tips = $(this).attr("placeholder");
 	 * layer.tips(tips,'.cpuNum',{tips: [1, '#3595CC']}); })

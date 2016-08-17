@@ -75,6 +75,14 @@
                                     <input id="isBaseImage" name="isBaseImage" type="checkbox" value="1" checked>基础镜像
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label for="sourceCode">镜像类型</label><br>
+                                    <input id="isBaseImage" name="isBaseImage" type="checkbox" value="1" checked>基础镜像
+                                    <span style="color:#1dd2af" id="is-baseImage"><i class="fa fa-info-circle"></i></span>
+                                </div>
+                            </div>
+                            
                             <section class="registryinfo">
                                 <table class="table registry">
                                     <tbody>
