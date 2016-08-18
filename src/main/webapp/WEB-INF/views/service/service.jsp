@@ -262,7 +262,7 @@
                                                         <td style="width:34%" id="mysqlurl">
                                                             <span class="url">
                                                             	<c:if test="${service.serviceAddr!=null&&service.serviceAddr!='' }">
-                                                                	<a href="${service.serviceAddr }/${service.serviceLink}" target="_blank">${service.serviceAddr }/${service.serviceLink}</a>
+                                                                	<a href="${service.serviceAddr}/${service.proxyPath}" target="_blank">${service.serviceAddr}/${service.proxyPath}</a>
                                                                 </c:if>
                                                             </span>
                                                         </td>

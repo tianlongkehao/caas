@@ -637,9 +637,8 @@ public class ServiceController {
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
 		service.setCreateBy(currentUser.getId());
-		if (!StringUtils.isEmpty(resourceName)) {
-			resourceName = resourceName.substring(0, resourceName.indexOf("."));
-			service.setServiceLink(resourceName);
+		if (!StringUtils.isEmpty(resourceName) && !service.getServicePath().trim().equals(resourceName.substring(0, resourceName.indexOf(".")).trim())) {
+			service.setServicePath(resourceName.substring(0, resourceName.indexOf(".")).trim());
 		}
 		serviceDao.save(service);
 		

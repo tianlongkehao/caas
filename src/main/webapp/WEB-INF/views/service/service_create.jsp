@@ -108,8 +108,9 @@
 												id="startCommand_input" name="startCommand"
 												style="margin-left: 120px"></li>
 											<li class="line-h-3"><span class="ve_top">服务访问路径：</span>
-												<input type="text" value="" class="in_style" id="webPath"
-												name="servicePath"></li>
+												<input type="text" value="" class="in_style" id="webPath" name="servicePath">
+												<span style="color:#1dd2af" id="service-path"><i class="fa fa-info-circle"></i></span>
+											</li>
 											<c:if test="${DMZ!=null && USER!=null  }">
 												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
 													<label class="checkbox-inline"> <input
@@ -122,8 +123,9 @@
 													id="proxyZone" name="proxyZone"></li>
 											</c:if>
 											<li class="line-h-3"><span class="ve_top">nginx代理路径：</span>
-												<input type="text" value="" class="in_style" id="nginxPath"
-												name="proxyPath"></li>
+												<input type="text" value="" class="in_style" id="nginxPath" name="proxyPath">
+												<span style="color:#1dd2af" id="proxy-path"><i class="fa fa-info-circle"></i></span>
+											</li>
 
 
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>

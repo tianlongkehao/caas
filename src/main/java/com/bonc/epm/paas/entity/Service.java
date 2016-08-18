@@ -61,10 +61,6 @@ public class Service {
 	 */
 	private Integer status;
 	/**
-	 * 链接服务
-	 */
-	private String serviceLink;
-	/**
 	 * 环境变量
 	 */
 	private String buildPath;
@@ -152,14 +148,6 @@ public class Service {
 
 	public void setContainerID(long containerID) {
 		this.containerID = containerID;
-	}
-
-	public String getServiceLink() {
-		return serviceLink;
-	}
-
-	public void setServiceLink(String serviceLink) {
-		this.serviceLink = serviceLink;
 	}
 
 	public String getBuildPath() {
