@@ -52,22 +52,11 @@ public class DockerClientService {
 	private String email;
 	@Value("${docker.io.serverAddress}")
 	private String serverAddress;
-	@Value("${docker.io.node.url}")
-	private static String nodeUrl;
+	@Value("${docker.io.nodeUrl}")
+	private String nodeUrl;
+	private HashMap<String,Integer> nodeMap = null;
 	
 	private static final Logger log = LoggerFactory.getLogger(DockerClientService.class);
-	
-	private static HashMap<String,Integer> nodeMap;
-	static {
-	    nodeMap = new HashMap<String,Integer>();
-       if (StringUtils.isNoneBlank(nodeUrl)) {
-           String[] nodeArray = nodeUrl.split(",");
-           int init = 0;
-           for (int i=0;i<nodeArray.length;i++) {
-               nodeMap.put(nodeArray[i], init);
-              }
-         }  
-	}
 	
 	/**
 	 * 
@@ -83,7 +72,7 @@ public class DockerClientService {
 	/**
 	 * 
 	 * Description: <br>
-    * 获取制定的docker客户端
+     *  获取指定node节点的dockerClient实例
 	 * @return 
 	 * @see
 	 */
@@ -97,22 +86,45 @@ public class DockerClientService {
 				.withEmail(email)
 				.withServerAddress(serverAddress)
 				.build();
-		DockerClient dockerClient = DockerClientBuilder.getInstance(config)
-		  .build();
+		DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
 		return dockerClient;
 	}
 	
+	/**
+	 * 
+	 * Description: <br>
+	 * 获取最合适node节点的dockerClient实例
+	 * @return 
+	 * @see
+	 */
    public DockerClient getNormalDockerClientInstance(){
+       if (null == nodeMap) {
+           nodeMap = new HashMap<String,Integer>();
+           if (StringUtils.isNoneBlank(nodeUrl)) {
+               String[] nodeArray = nodeUrl.split(",");
+               int init = 0;
+               for (int i=0;i<nodeArray.length;i++) {
+                   nodeMap.put(nodeArray[i], init);
+                  }
+             }
+         }
        Iterator<Entry<String, Integer>> iter = nodeMap.entrySet().iterator();
-       String url = iter.next().getKey();
-       int weight = iter.next().getValue();
+       Map.Entry<String, Integer> first = (Map.Entry<String, Integer>) iter.next();
+       String url = first.getKey();
+       int weight = first.getValue();
        while (iter.hasNext()) {
            Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>) iter.next();
            if (entry.getValue() < weight) {
                url = entry.getKey();
                weight = entry.getValue();
-           }
-        }
+              }
+           if (entry.getValue() >= 65535) {
+               nodeMap.put(entry.getKey(), 0);
+             }
+         }
+       nodeMap.put(url, nodeMap.get(url) + 1);
+       System.out.println("当前使用的docker客户端地址是：-" + url);
+       
         DockerClientConfig config = DockerClientConfig
                 .createDefaultConfigBuilder()
                 .withUri(url)
@@ -122,8 +134,8 @@ public class DockerClientService {
                 .withEmail(email)
                 .withServerAddress(serverAddress)
                 .build();
-        DockerClient dockerClient = DockerClientBuilder.getInstance(config)
-          .build();
+        DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
+
         return dockerClient;
     }
    
@@ -196,12 +208,17 @@ public class DockerClientService {
 	 * @param imageName
 	 * @param imageVersion
 	 * @param imageId 
+	 * @param dockerClient 
 	 * @return
 	 */
-	public boolean buildImage(String dockerfilePath,String imageName,String imageVersion,
-	                              final CiRecord ciRecord,final CiRecordDao ciRecordDao, String imageId){
+	public boolean buildImage(String dockerfilePath,String imageName,
+	                              String imageVersion,final CiRecord ciRecord,
+	                                  final CiRecordDao ciRecordDao, String imageId, DockerClient dockerClient){
 		try{
-			DockerClient dockerClient = this.getSpecialDockerClientInstance();
+		    if (null == dockerClient) {
+		        dockerClient = this.getSpecialDockerClientInstance();
+		     }
+			
 			File baseDir = new File(dockerfilePath);
 			BuildImageResultCallback callback = new BuildImageResultCallback() {
 			    @Override
@@ -235,11 +252,15 @@ public class DockerClientService {
 	 * 上传到镜像仓库
 	 * @param imageName
 	 * @param imageVersion
+	 * @param dockerClient
 	 * @return
 	 */
-	public boolean pushImage(String imageName,String imageVersion,final CiRecord ciRecord,final CiRecordDao ciRecordDao){
+	public boolean pushImage(String imageName,String imageVersion,final CiRecord ciRecord,final CiRecordDao ciRecordDao, DockerClient dockerClient){
 		try{
-			DockerClient dockerClient = this.getSpecialDockerClientInstance();
+		    if (null == dockerClient) {
+		       dockerClient = this.getSpecialDockerClientInstance();
+		    }
+			
 			PushImageResultCallback callback = new PushImageResultCallback() {
 				@SuppressWarnings("deprecation")
 				@Override
@@ -273,11 +294,14 @@ public class DockerClientService {
 	 * @param imageVersion
 	 * @param ciRecordDao 
 	 * @param ciRecord 
+	 * @param dockerClient 
 	 * @return
 	 */
-	public boolean removeImage(String imageName,String imageVersion, CiRecord ciRecord, CiRecordDao ciRecordDao){
+	public boolean removeImage(String imageName,String imageVersion, CiRecord ciRecord, CiRecordDao ciRecordDao, DockerClient dockerClient){
 		try{
-			DockerClient dockerClient = this.getSpecialDockerClientInstance();
+		    if (null == dockerClient) {
+		         dockerClient = this.getSpecialDockerClientInstance(); 
+		    }
 			dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce().exec();
 			if (null != ciRecord && null != ciRecordDao) {
 	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);
