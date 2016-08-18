@@ -240,7 +240,7 @@ public class RegistryController {
         if (!exist) {
             boolean complete= dockerClientService.pullImage(imageName, imageVersion);
             if (complete) {
-                String cmd = "docker save -o /home/paas/paas/apache-tomcat-8.0.32/downimage/"
+                String cmd = "sudo docker save -o /home/paas/paas/apache-tomcat-8.0.32/downimage/"
                     + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
                 flag = cmdexec(cmd);
             }
