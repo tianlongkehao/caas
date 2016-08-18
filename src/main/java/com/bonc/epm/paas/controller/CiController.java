@@ -43,6 +43,7 @@ import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.bonc.epm.paas.util.FileUtils;
+import com.github.dockerjava.api.DockerClient;
 @Controller
 public class CiController {
 	private static final Logger log = LoggerFactory.getLogger(CiController.class);
@@ -337,7 +338,7 @@ public class CiController {
         boolean flag = dockerClientService.createAndPushImage(image, inputStream);
         if(flag){
                //删除本地镜像
-            flag = dockerClientService.removeImage(image.getName(), image.getVersion(),null,null);
+            flag = dockerClientService.removeImage(image.getName(), image.getVersion(),null,null,null);
           }
         return flag;
     }
@@ -587,14 +588,16 @@ public class CiController {
 		String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
 		String imageVersion = ci.getImgNameVersion();
 		String imageId = "";
-		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao,imageId);
+		
+		DockerClient dockerClient = dockerClientService.getNormalDockerClientInstance();
+		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao,imageId, dockerClient);
 		if(flag){
 			//上传镜像
-			flag = dockerClientService.pushImage(imageName, imageVersion,ciRecord,ciRecordDao);
+			flag = dockerClientService.pushImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient);
 		}
 		if(flag){
 			//删除本地镜像
-			flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao);
+			flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient);
 		}
 		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
 		ciRecordDao.save(ciRecord);
