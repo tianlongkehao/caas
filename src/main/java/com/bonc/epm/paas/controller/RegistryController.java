@@ -1,5 +1,6 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
@@ -44,6 +47,20 @@ public class RegistryController {
 	private UserDao userDao;
 	@Autowired
 	private FavorDao favorDao;
+	@Autowired
+	private DockerClientService dockerClientService;
+	
+	@Value("${docker.image.url}")
+    private String url;
+	
+	@Value("${docker.ssh.username}")
+	private String userName;
+	
+	@Value("${docker.ssh.password}")
+	private String password;
+	
+	@Value("${docker.ssh.address}")
+	private String address;
 	
 	/**
 	 * 响应镜像查询按钮
@@ -216,12 +233,20 @@ public class RegistryController {
                                 Model model,HttpServletRequest request, HttpServletResponse response){
         
         String downName = imageName.substring(imageName.lastIndexOf("/")+1);
-        String cmd = "docker save -o /home/paas/paas/apache-tomcat-8.0.32/downimage/"
-                + downName + ".tar " + imageName + ":" + imageVersion;
         
-        boolean flag = cmdexec(cmd);
-        
-        if (flag) {
+        File file = new File("../downimage/"+downName+".tar");
+        boolean exist = file.exists();
+        boolean flag = false;
+        if (!exist) {
+            boolean complete= dockerClientService.pullImage(imageName, imageVersion);
+            if (complete) {
+                String cmd = "docker save -o /home/paas/paas/apache-tomcat-8.0.32/downimage/"
+                    + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
+                flag = cmdexec(cmd);
+            }
+            dockerClientService.removeImage(imageName, imageVersion, null, null);
+        }
+        if (flag || exist) {
             getDownload(downName+".tar",request,response);
         }
     }
@@ -236,18 +261,15 @@ public class RegistryController {
      */
     public void getDownload(String fileName,HttpServletRequest request, HttpServletResponse response) {  
         
-        String fullPath = "D:/devTools/navicat.zip" ; 
-        
+        String fullPath = "../downimage/" + fileName ; 
         //设置文件MIME类型  
         response.setContentType(request.getServletContext().getMimeType(fullPath));  
         //设置Content-Disposition  
         response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
-  
         try {  
             InputStream myStream = new FileInputStream(fullPath);  
             IOUtils.copy(myStream, response.getOutputStream());  
             response.flushBuffer();  
-            System.out.println("保存成功");
         } catch (IOException e) {  
             LOG.error("downloadImage error:"+e.getMessage());
         }  
@@ -260,11 +282,8 @@ public class RegistryController {
      * @return
      */
     public boolean cmdexec(String cmd) {
-        String hostIp = "192.168.0.29";
-        String name = "root";
-        String password = "root.123";
         try {
-            SshConnect.connect(name, password, hostIp, 22);
+            SshConnect.connect(userName, password, address, 22);
             boolean b = false;
             String rollingLog = SshConnect.exec(cmd, 1000);
             while (!b) {

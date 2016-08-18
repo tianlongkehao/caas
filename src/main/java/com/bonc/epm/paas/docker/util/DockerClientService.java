@@ -20,6 +20,7 @@ import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.BuildResponseItem;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.Ports;
+import com.github.dockerjava.api.model.PullResponseItem;
 import com.github.dockerjava.api.model.PushResponseItem;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -245,7 +246,20 @@ public class DockerClientService {
 	public boolean pullImage(String imageName,String imageVersion){
 		try{
 			DockerClient dockerClient = this.getDockerClientInstance();
-			dockerClient.pullImageCmd(username+"/"+imageName).withTag(imageVersion).exec(new PullImageResultCallback()).awaitSuccess();
+            // pull image
+			PullImageResultCallback callback = new PullImageResultCallback() {
+                @Override
+                public void onNext(PullResponseItem item) {
+                    log.info("==========PullResponseItem:"+item);
+                    super.onNext(item);
+                   }
+            };
+			dockerClient.pullImageCmd(username+"/"+imageName).withTag(imageVersion).exec(callback);
+			try{
+			    Thread.sleep(10*1000);//暂停10秒后程序继续执行
+			}catch (InterruptedException e) {
+			    e.printStackTrace();
+			} 
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
