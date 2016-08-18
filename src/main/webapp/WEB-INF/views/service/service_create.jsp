@@ -276,7 +276,7 @@
 												</ol></li>
 											<li class="hide-set"><span class="ve_top">端口配置：</span>
 												<table class="table enabled">
-													<thead style="background: #fafafa">
+													<thead>
 														<tr>
 															<th style="width: 35%">容器端口</th>
 															<th style="width: 35%">协议</th>
@@ -299,194 +299,14 @@
 														</tr> -->
 													</tbody>
 												</table>
-												<div class="createPort">
+												<div class="createPort" style="background: #fafafa">
 													<span id="createPort"><i class="fa fa-plus margin"></i>添加端口</span>
 												</div></li>
 										</ul>
 									</div>
-
-									<%-- 高级设置 --%>
-									<div class="host_step3 hide" style="height: auto;">
-										<ul class="advanced">
-											<li class="hide-set"><span class="ve_top">链接服务：</span>
-												<ol class="pull-left" style="width: 100%;">
-													<li class="hide-select"><select class="col col-4"
-														id="linkcontainers"
-														style="min-width: 100px; height: 28px;">
-															<option>mysql</option>
-													</select> <input id="containernickname" type="text"
-														placeholder="value"> <a id="addcontainer"
-														class="cursor">添加</a></li>
-
-													<li>
-														<table id="linkcontainertb"
-															class="table table-hover enabled" style="display: none">
-															<thead>
-																<tr>
-																	<th style="">服务</th>
-																	<th style="width: 40%">名称</th>
-																	<th style="width: 20%">操作</th>
-																</tr>
-															</thead>
-															<tbody id="linkcontainerbody"></tbody>
-														</table>
-													</li>
-												</ol></li>
-											<li class="hide-set"><span class="ve_top">环境变量：</span>
-												<ol class="pull-left" style="width: 100%;">
-													<li class="hide-select"><input type="text"
-														placeholder="name" id="Name"> <input type="text"
-														placeholder="value" id="Value"> <a id="cratePATH">添加</a>
-													</li>
-													<li>
-														<table class="table table-hover enabled" id="Path">
-															<thead>
-																<tr>
-																	<th style="width: 45%">键</th>
-																	<th style="width: 45%">值</th>
-																	<th style="width: 10%">操作</th>
-																</tr>
-															</thead>
-															<tbody id="Path-oper">
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled="" value="PATH"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value"
-																		value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin">
-																	</td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue"
-																		value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin">
-																	</td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled="" value="DEBIAN_FRONTEND"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="noninteractive"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="noninteractive"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled="" value="MYSQL_USER"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="admin"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="admin"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled="" value="MYSQL_PASS"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="**Random**"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="**Random**"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled=""
-																		value="REPLICATION_MASTER"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="**False**"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="**False**"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled=""
-																		value="REPLICATION_SLAVE"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="**False**"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="**False**"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled=""
-																		value="REPLICATION_USER"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="replica"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="replica"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled=""
-																		value="REPLICATION_PASS"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="replica"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="replica"></td>
-																</tr>
-															</tbody>
-														</table>
-													</li>
-												</ol></li>
-											<li class="hide-set"><span class="ve_top">端口配置：</span>
-												<table class="table enabled">
-													<thead style="background: #fafafa">
-														<tr>
-															<th style="width: 35%">容器端口</th>
-															<th style="width: 35%">协议</th>
-															<th style="width: 15%">映射端口</th>
-															<th style="vertical-align: middle; width: 8.9%">操作</th>
-														</tr>
-													</thead>
-													<tbody class="BORDER" id="pushPrptpcol2">
-														<tr class="plus-row">
-															<td><input class="port" type="text" disabled=""
-																value="3306"></td>
-															<td><select class="T-http">
-																	<option>TCP</option>
-																	<option>HTTP</option>
-															</select></td>
-															<td><i>动态生成</i></td>
-															<td><a href="javascript:void(0)"
-																onclick="_deletePortRow(this)" class="gray"> <i
-																	class="fa fa-trash-o fa-lg"></i>
-															</a></td>
-														</tr>
-														<tr class="plus-row">
-															<td><input class="port" type="text"></td>
-															<td><select class="T-http">
-																	<option>TCP</option>
-																	<option>HTTP</option>
-															</select></td>
-															<td><i>动态生成</i></td>
-															<td><a href="javascript:void(0)"
-																onclick="_deletePortRow(this)" class="gray"> <i
-																	class="fa fa-trash-o fa-lg"></i>
-															</a></td>
-														</tr>
-													</tbody>
-												</table>
-												<div class="createPort">
-													<span><i class="fa fa-plus margin"></i></span>
-												</div></li>
-										</ul>
-										<div style="height: 80px !important;"></div>
-									</div>
 								</form>
 								<!-- 环境变量导入模板 -->
-								<div id="environment-variable" style="max-height:360px;overflow-y:scroll;overflow-x:hidden;">
+								<div id="environment-variable" style="display:none; max-height:360px;overflow-y:scroll;overflow-x:hidden;">
 									<table class="table table-hover enabled" id="Path-table"
 										style="width: 326px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">

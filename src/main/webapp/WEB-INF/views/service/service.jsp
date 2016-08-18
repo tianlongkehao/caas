@@ -184,8 +184,9 @@
                                                     <th style="width: 20%;padding-left: 5px;">名称</th>
                                                     <th style="width: 10%;text-indent: 8px;">运行状态</th>
                                                     <th style="width: 20%;">镜像</th>
-                                                    <th style="width: 34%;">服务地址</th>
-                                                    <th style="width: 10%;">创建于</th>
+                                                    <th style="width: 24%;">服务地址</th>
+                                                    <th style="width: 12%;">创建于</th>
+                                                    <th style="width: 8%;">操作</th>
                                                 </tr>
                                             </thead>
                                         </table>
@@ -259,17 +260,28 @@
                                                                 <a title="点击查看镜像" target="_blank" href="<%=path %>../registry/detail/${service.imgID }">${service.imgName }</a>
                                                             </span>
                                                         </td>
-                                                        <td style="width:34%" id="mysqlurl">
+                                                        <td style="width:24%" id="mysqlurl">
                                                             <span class="url">
                                                             	<c:if test="${service.serviceAddr!=null&&service.serviceAddr!='' }">
                                                                 	<a href="${service.serviceAddr}/${service.proxyPath}" target="_blank">${service.serviceAddr}/${service.proxyPath}</a>
                                                                 </c:if>
                                                             </span>
                                                         </td>
-                                                        <td style="width:10%" class="tdTimeStrap">
+                                                        <td style="width:12%" class="tdTimeStrap">
                                                             <input type="hidden" class="timeStrap" value="">
                                                             <i class="fa_time"></i>
                                                             <span>${service.createDate }</span>
+                                                        </td>
+                                                        <td style="width:8%">
+                                                            <a id="startContainer" class="no-drop" href="javascript:createContainer()">
+					                                        	<i class="fa fa-play"></i>
+						                                    </a>
+						                                    <a id="stopContainer" class="no-drop" href="javascript:stopContainer()" style="margin-left:10px">
+						                                        <i class="fa fa-power-off"></i>
+						                                    </a>
+	                                                    	<a id="deleteButton" class="no-drop" href="javascript:delContainer()" style="margin-left:10px">
+						                                        <i class="fa fa-trash"></i>
+						                                    </a>
                                                         </td>
                                                     </tr>
 

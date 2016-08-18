@@ -3,6 +3,8 @@ $(document).ready(function(){
 	getServiceStorageVol();
 	getMountPath();
 	
+	$(".createPadding").addClass("hide");
+	
 	$("#createButton").click(function(){
 		var name = $('#serviceName').val();
 		// check the name of container
