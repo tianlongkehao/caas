@@ -151,11 +151,11 @@
 		        yes: function(index, layero){ 
 		        	var cStatusHtml = "<i class='fa_success'></i>"+
 	                				  "启动中"+
-	                				  "<img src='"+ctx+"images/loading4.gif' alt=''/>";
+	                				  "<img src='"+ctx+"/images/loading4.gif' alt=''/>";
 		        	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
 		        	layer.close(index);
 					$.ajax({
-						url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs,
+						url:""+ctx+"/service/stratServices.do?serviceIDs="+serviceIDs,
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
@@ -184,7 +184,7 @@
 		        yes: function(index, layero){ 
 		        	layer.close(index);
 		        						$.ajax({
-		        							url:""+ctx+"service/stopServices.do?serviceIDs="+serviceIDs,
+		        							url:""+ctx+"/service/stopServices.do?serviceIDs="+serviceIDs,
 		        							success:function(data){
 		        								data = eval("(" + data + ")");
 		        								if(data.status=="200"){
@@ -214,7 +214,7 @@
 		        yes: function(index, layero){ 
 		        	layer.close(index);
 		        				$.ajax({
-		        					url:""+ctx+"service/delServices.do?serviceIDs="+serviceIDs,
+		        					url:""+ctx+"/service/delServices.do?serviceIDs="+serviceIDs,
 		        					success:function(data){
 		        						data = eval("(" + data + ")");
 		        						if(data.status=="200"){
@@ -259,7 +259,7 @@
 				 var num = $('#numberChange').val();
 				// alert(num);
 				 $.ajax({
- 					url:""+ctx+"service/modifyServiceNum.do?id="+id+"&addservice="+num,
+ 					url:""+ctx+"/service/modifyServiceNum.do?id="+id+"&addservice="+num,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
@@ -313,7 +313,7 @@
 				 var cpus = $('#confCpu').val();
 				 var rams = $('#confRamSlider_input').val();
 				 $.ajax({
- 					url:""+ctx+"service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
+ 					url:""+ctx+"/service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
  					success:function(data){
  						data = eval("(" + data + ")");
  						if(data.status=="200"){
@@ -422,9 +422,12 @@
 		 var serviceName = $(el).attr('serviceName');
 		 $('#upgradeVersionServiceName').val(serviceName);
 		 var imgName = $(el).attr('imagename');
+		 //查询镜像版本
+		 findImageVersion(imgName);
+//		 var imgVersion = $("#imgVersionName").val();
 		 var imgVersion = $(el).attr('imageversion');
 		 $('#upgradeimgName').val(imgName);
-		 $('#imgVersionName').val(imgVersion);
+//		 $('#imgVersionName').val(imgVersion);
 		 layer.open({
 			 type:1,
 			 title: '更改镜像版本',
@@ -457,5 +460,24 @@
 	 })
  }
  
-
+function findImageVersion(imageName){
+	$.ajax({
+		url:ctx+"/service/findImageVersion.do",
+		type:"post",
+		data:{"imageName":imageName}, 
+		success: function (data) {
+            data = eval("(" + data + ")");
+            var html = "";
+            if (data != null) {
+            	if (data['data'].length > 0) {
+            		for (var i in data.data) {
+            			var image = data.data[i];
+            			html += "<option type='text' value='"+image.version+"'>"+image.version+"</option>"
+            		}
+            	}
+            }
+            $("#imgVersionName").html(html);    
+		}
+	})
+}
  

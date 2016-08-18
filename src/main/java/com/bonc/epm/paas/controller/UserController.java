@@ -76,11 +76,6 @@ public class UserController {
 		return "user/user-management.jsp";
 	}
 
-	/**
-	 * 跳转到租户创建页面： user/user_create.jsp
-	 *
-	 * @return
-	 */
 	@RequestMapping(value = { "/add" }, method = RequestMethod.GET)
 	public String useradd(Model model) {
 		model.addAttribute("menu_flag", "user");
@@ -123,27 +118,21 @@ public class UserController {
 			// 为client创建资源配额
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("memory", resource.getRam() + "G"); // 内存
-			// map.put("cpu",
-			// Integer.valueOf(resource.getCpu_account())*1000");//CPU数量
 			map.put("cpu", resource.getCpu_account() + "");// CPU数量(个)
-			//TODO
-			log.info("vol======"+resource.getVol() + "G");
-//			map.put("vol", resource.getVol() + "Gi");// 卷组容量
-			// map.put("pods", resource.getPod_count() + "");//POD数量
-			// map.put("services", resource.getServer_count() + "");//服务
-			// map.put("replicationcontrollers", resource.getImage_control() +
-			// "");//副本控制器
-			// map.put("resourcequotas", "1");//资源配额数量
+			map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
+			//map.put("pods", resource.getPod_count() + "");//POD数量
+			//map.put("services", resource.getServer_count() + "");//服务
+			//map.put("replicationcontrollers", resource.getImage_control() +"");//副本控制器
+			//map.put("resourcequotas", "1");//资源配额数量
 			ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getNamespace(), map);
 			System.out.println("before quota: " + JSON.toJSONString(quota));
 			quota = client.createResourceQuota(quota);
 			System.out.println("quota:" + JSON.toJSONString(quota));
 
 			// ceph中创建租户目录 
-//			CephController ceph = new CephController();
-//			ceph.connectCephFS();
-//			ceph.createNamespaceCephFS(user.getNamespace());
-
+			CephController ceph = new CephController();
+			ceph.connectCephFS();
+			ceph.createNamespaceCephFS(user.getNamespace());
 
 			// 为client创建资源限制
 			// LimitRange limitRange = generateLimitRange(user.getNamespace(),
@@ -290,6 +279,7 @@ public class UserController {
 							System.out.println(e.getMessage());
 						}
 						client.deleteNamespace(namespace);
+						//TODO 逻辑删除卷组信息
 					}
 				} catch (KubernetesClientException e) {
 					System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
@@ -567,6 +557,7 @@ public class UserController {
 	@RequestMapping(value = { "user/del/{id}" }, method = RequestMethod.GET)
 	public String userDel(Model model, @PathVariable long id) {
 		userDao.delete(id);
+        //TODO 逻辑删除卷组信息
 		// Map<String,Object> map = new HashMap<String,Object>();
 		log.debug("del userid======:" + id);
 		return "redirect:/user";

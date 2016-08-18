@@ -30,7 +30,7 @@
 					<section class="detail-succeed">
 						<div class="icon-img">
 							<div class="type-icon">
-								<img src="/images/image-1.png" height="100%">
+								<img src="<%=path %>/images/image-1.png" height="100%">
 							</div>
 						</div>
 						<ul class="succeed-content pull-left">
@@ -44,14 +44,14 @@
 								<li>运行状态：已停止</li>
 							</c:if>
 							<li>服务地址：<a
-								href="${service.serviceAddr }:${service.portSet}${service.serviceLink}"
-								target="_blank">${service.serviceName}:${service.portSet}${service.serviceLink}</a></li>
+								href="${service.serviceAddr}/${service.proxyPath}"
+								target="_blank">${service.serviceAddr}/${service.proxyPath}</a></li>
 							<li>创建时间：${service.createDate }</li>
 							<li>更新时间：${service.createDate }</li>
 						</ul>
 						<div class="applocation">
 							<a
-								href="${service.serviceAddr }:${service.portSet}${service.serviceLink}"
+								href="${service.serviceAddr}/${service.proxyPath}"
 								target="_blank" class="open">打开应用</a>
 						</div>
 					</section>
@@ -167,8 +167,8 @@
 										<td>${service.imgName }</td>
 										<td>bonc:8080</td>
 										<td><a
-											href="${service.serviceAddr }:${service.portSet}${service.serviceLink}"
-											target="_blank">${service.serviceName}:${service.portSet }</a></td>
+											href="${service.serviceAddr}/${service.proxyPath}"
+											target="_blank">${service.serviceAddr}/${service.proxyPath}</a></td>
 										<td>${service.createDate }</td>
 									</tr>
 								</c:forEach>
@@ -236,8 +236,8 @@
 										<td>TCP</td>
 										<td>${service.portSet }</td>
 										<td><a
-											href="${service.serviceAddr }:${service.portSet }${service.serviceLink}"
-											target="_blank">${service.serviceName}:${service.portSet }</a></td>
+											href="${service.serviceAddr}/${service.proxyPath}"
+											target="_blank">${service.serviceAddr}/${service.proxyPath}</a></td>
 									</tr>
 								</tbody>
 							</table>

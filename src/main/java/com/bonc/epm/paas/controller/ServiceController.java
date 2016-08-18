@@ -1,12 +1,20 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,7 +84,7 @@ import com.github.dockerjava.api.model.ExposedPort;
 public class ServiceController {
 	private static final Logger log = LoggerFactory.getLogger(ServiceController.class);
 
-	Set<Integer> smalSet;
+	public static Set<Integer> smalSet = new HashSet<Integer>();
 	@Autowired
 	public ServiceDao serviceDao;
 	
@@ -403,8 +411,7 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping(value = { "service/add" }, method = RequestMethod.GET)
-	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {
-
+	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {		
 		String isDepoly = "";
 		if (imageName != null) {
 			isDepoly = "deploy";
@@ -450,13 +457,28 @@ public class ServiceController {
                 for (int i = 0;i<countOfExposedPort;i++) {
                     PortConfig portConfig = new PortConfig();
                     portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
-                    portConfig.setMapPort(String.valueOf(vailPortSet()));
+                    int randomPort = vailPortSet();
+                    if (-1 != randomPort) {
+                        portConfig.setMapPort(String.valueOf(randomPort));                       
+                    } else {
+                        portConfig.setMapPort("-1");
+                    }
                     tmpPortConfigs.add(portConfig);
                 }
                 return tmpPortConfigs;
             }
         }
         return null;
+    }
+    
+    @RequestMapping(value = { "service/getPortConfig.do" }, method = RequestMethod.GET)
+    @ResponseBody
+    public String getPortConfig(String imgID){
+        List<PortConfig> list=getBaseImageExposedPorts(imgID);
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("data",list);
+        return JSON.toJSONString(map); 
+           
     }
 
 	public boolean getleftResource(Model model) {
@@ -501,11 +523,11 @@ public class ServiceController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Image> images = imageDao.findAll(userId);
-		if (CollectionUtils.isNotEmpty(images)) {
+	/*	if (CollectionUtils.isNotEmpty(images)) {
 		    for (Image image : images) {
 		        image.setPortConfigs(getBaseImageExposedPorts(String.valueOf(image.getId())));
 		    }
-		}
+		}*/
 		map.put("data", images);
 		System.out.println(JSON.toJSONString(map));
 		return JSON.toJSONString(map);
@@ -522,11 +544,11 @@ public class ServiceController {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Image> images = imageDao.findByNameOf(userId, "%" + imageName + "%");
-		if (CollectionUtils.isNotEmpty(images)) {
+/*		if (CollectionUtils.isNotEmpty(images)) {
 		    for (Image image : images) {
 		        image.setPortConfigs(getBaseImageExposedPorts(String.valueOf(image.getId())));
 		    }
-		}
+		}*/
 		map.put("data", images);
 		return JSON.toJSONString(map);
 	}
@@ -591,7 +613,7 @@ public class ServiceController {
 				controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
 			}
 			if (k8sService == null) {
-				k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs);
+				k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs,service.getProxyZone(),service.getServicePath(),service.getProxyPath());
 				k8sService = client.createService(k8sService);
 			}
 			if (controller == null || k8sService == null) {
@@ -623,9 +645,8 @@ public class ServiceController {
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
 		service.setCreateBy(currentUser.getId());
-		if (!StringUtils.isEmpty(resourceName)) {
-			resourceName = resourceName.substring(0, resourceName.indexOf("."));
-			service.setServiceLink(resourceName);
+		if (!StringUtils.isEmpty(resourceName) && !service.getServicePath().trim().equals(resourceName.substring(0, resourceName.indexOf(".")).trim())) {
+			service.setServicePath(resourceName.substring(0, resourceName.indexOf(".")).trim());
 		}
 		serviceDao.save(service);
 		
@@ -657,6 +678,9 @@ public class ServiceController {
 				portCon.setCreateDate(new Date());
 				portCon.setServiceId(service.getId());
 				portConfigDao.save(portCon);
+				
+				// 向map中添加生成的node端口
+				smalSet.add(Integer.valueOf(portCon.getContainerPort()));
 			}
 		}
 		//保存
@@ -692,7 +716,7 @@ public class ServiceController {
 		service.setServiceAddr(templateConf.getServerAddr());
 		serviceDao.save(service);
 		// 更新挂载卷的使用状态
-		if (!"0".equals(service.getVolName())) {
+		if (!"0".equals(service.getVolName()) && StringUtils.isNotBlank(service.getVolName())) {
 			this.updateStorageType(service.getVolName(), service.getServiceName());
 		}
 		log.debug("container--Name:" + service.getServiceName());
@@ -754,46 +778,66 @@ public class ServiceController {
 		map.put("data", envVariables);
 		return JSON.toJSONString(map);
 	}
-	
 	/**
-	 * yuanpeng
-	 * 生成有效的PORTSET
-	 * @return int
-	 */
-	public int vailPortSet(){
-		int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
-		Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
-									.limit(offset)
-									.collect(Collectors.toSet());
-		if(CollectionUtils.isEmpty(smalSet)){
-			smalSet= serviceDao.findPortSets();
-		}	 else{
-			bigSet.removeAll(smalSet);
-		}
-		Object[] obj =bigSet.toArray();
-		int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
-				.toString());
-		smalSet.add(portSet);
-		return portSet;
-	}
+    * 生成有效的PORTSET,回收端口
+    * @return int
+    */
+   public int vailPortSet(){
+       synchronized (this) {
+           int offset = kubernetesClientService.getK8sEndPort() - kubernetesClientService.getK8sStartPort();
+           Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
+                                       .limit(offset)
+                                       .collect(Collectors.toSet());
+/*           Set<Integer> tmpBigSet = bigSet;
+           tmpBigSet.removeAll(smalSet);
+           if (CollectionUtils.isEmpty(tmpBigSet)) {
+               smalSet.clear();
+               smalSet.addAll(portConfigDao.findPortSets());
+               smalSet.remove(null);
+               bigSet.removeAll(smalSet); 
+               return -1;
+           } else {
+               smalSet.addAll(portConfigDao.findPortSets());
+               smalSet.remove(null);
+               bigSet.removeAll(smalSet);
+           }*/
+           bigSet.removeAll(smalSet);
+           if (CollectionUtils.isEmpty(bigSet)) {
+               smalSet.addAll(portConfigDao.findPortSets());
+               smalSet.remove(null);
+               return -1;
+              }
+           Object[] obj =bigSet.toArray();
+           int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
+                              .toString());
+           smalSet.add(portSet);
+           return portSet;
+       }
+   }
 
 	@RequestMapping(value = {"service/generatePortSet.do"} , method = RequestMethod.GET)
 	@ResponseBody
 	public String generatePortSet(){
-		//vailPortSet();
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("mapPort", String.valueOf(vailPortSet()));
+		int mapPort = vailPortSet();
+		if(-1 == mapPort){
+			map.put("ERROR","error");
+			return JSON.toJSONString(map);
+		}
+
+		map.put("mapPort", String.valueOf(mapPort));
 		return JSON.toJSONString(map);
 	}
 	
 	/**
 	 *   删除集合中的某个元素
 	 * @param set
+	 * @return 
 	 */
 	@RequestMapping(value = { "service/removeSet.do" } , method = RequestMethod.GET)
 	public void removeSet(int set){
-		System.out.println(set);
-		smalSet.remove(set);
+	    log.info("移除的端口："+set);
+		 smalSet.remove(set);
 	}
 	
 	/**
@@ -897,12 +941,24 @@ public class ServiceController {
 		try {
 			SshConnect.connect(name, password, hostIp, 22);
 			boolean b = false;
-			SshConnect.exec(cmd, 1000);
+			String rollingLog = SshConnect.exec(cmd, 1000);
 			while (!b) {
-				String str = SshConnect.exec("echo $?", 1000);
-				b = str.endsWith("#");
+				String str = SshConnect.exec("", 10000);
+				if (StringUtils.isNotBlank(str)) {
+				    rollingLog += str;
+				}
+				b = (str.endsWith("$") || str.endsWith("#"));
+				//b = str.endsWith("updated");
 			}
-
+			log.info("rolling-update log:-"+rollingLog);
+			String result = SshConnect.exec("echo $?", 1000);
+			if (StringUtils.isNotBlank(result)) {
+			    if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
+			        new InterruptedException();
+			    }
+			} else {
+			    new InterruptedException();
+			}
 		} catch (InterruptedException e) {
 			log.error(e.getMessage());
 			log.error("error:执行command失败");
@@ -915,6 +971,16 @@ public class ServiceController {
 			SshConnect.disconnect();
 		}
 		return true;
+	}
+	
+	@RequestMapping("service/findImageVersion.do")
+    @ResponseBody
+	public String findImageVersion(String imageName){
+	    User cUser = CurrentUserUtils.getInstance().getUser();
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName);
+        map.put("data", images);
+        return JSON.toJSONString(map);
 	}
 
 	/**
@@ -1039,9 +1105,20 @@ public class ServiceController {
 			map.put("status", "200");
 			serviceDao.delete(id);
 			envVariableDao.deleteByServiceId(id);
-			portConfigDao.deleteByServiceId(id);
+			
+			// 删除服务 释放绑定的端口
+			List<PortConfig> bindPort = portConfigDao.findByServiceId(id);
+			if (CollectionUtils.isNotEmpty(bindPort)) {
+			    for (PortConfig oneRow : bindPort) {
+			        smalSet.remove(Integer.valueOf(oneRow.getContainerPort()));
+			    }
+			    portConfigDao.deleteByServiceId(id);
+			}
+			
 			// 更新挂载卷的使用状态
-//			this.updateStorageType(service.getVolName(), service.getServiceName());
+			if (!"0".equals(service.getVolName()) && StringUtils.isNotBlank(service.getVolName())) {
+			    this.updateStorageType(service.getVolName(), service.getServiceName());
+			}
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());
@@ -1175,7 +1252,7 @@ public class ServiceController {
 	 * @param volName
 	 * @return
 	 */
-	public void updateStorageType(String volName, String serviceName) {
+public void updateStorageType(String volName, String serviceName) {
 
 		// userId
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
@@ -1199,4 +1276,24 @@ public class ServiceController {
 		storage.setMountPoint(newMp.toString());
 		storageDao.save(storage);
 	}
+/**
+ * 
+ * Description: <br>
+ *   获取挂在地址
+ * 
+ * @return 
+ * @see
+ */
+@RequestMapping(value = { "service/getMountPath.do" }, method = RequestMethod.GET)
+@ResponseBody
+public String getMountPath(String volume){
+    String mountPath = storageDao.findByVolume(volume);
+    if(StringUtils.isNotBlank(mountPath)){
+        mountPath = mountPath.substring(mountPath.indexOf(":/")+1, mountPath.lastIndexOf(";")) ;
+     }
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("mountPath",mountPath);
+    return JSON.toJSONString(map);
+    
+}
 }

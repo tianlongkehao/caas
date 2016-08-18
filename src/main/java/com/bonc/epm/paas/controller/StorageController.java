@@ -67,7 +67,7 @@ public class StorageController {
 	public String findStorageList(Pageable pageable, Model model) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		long createBy = CurrentUserUtils.getInstance().getUser().getId();
-		List<Storage> storages = storageDao.findAllByCreateByOrderByCreateDateDesc(createBy, pageable);
+		List<Storage> storages = storageDao.findAllByCreateByAndUseTypeOrderByCreateDateDesc(createBy, pageable,StorageConstant.NOT_USER);
 		map.put("storages", storages);
 		map.put("status", "200");
 		map.put("count", storageDao.countByCreateBy(createBy));
@@ -126,9 +126,8 @@ public class StorageController {
 		storage.setCreateDate(new Date());
 		storage.setUseType(StorageConstant.NOT_USER);
 		storage.setCreateBy(createBy);
-		Storage StorageValidate = storageDao.findByCreateByAndStorageName(createBy, storage.getStorageName());
-		if (StorageValidate == null) {
-
+		Storage storageValidate = storageDao.findByCreateByAndStorageName(createBy, storage.getStorageName());
+		if (null == storageValidate) {
 			// ceph中创建存储卷目录 TODO 3
 			CephController ceph = new CephController();
 			ceph.connectCephFS();
@@ -139,7 +138,6 @@ public class StorageController {
 		} else {
 			map.put("status", "500");
 		}
-
 		return JSON.toJSONString(map);
 	}
 

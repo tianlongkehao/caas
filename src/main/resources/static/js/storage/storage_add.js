@@ -37,6 +37,10 @@ $(document).ready(function () {
 		$("#restVol").innerHTML = totalVal - usedSum;
 	}*/
 
+		$("#defVol").click(function(){
+			$("#defVolNum").attr("checked","checked");
+		 });
+		
     $("#storageName").blur(function(){
         var storageName = $("#storageName").val();
         if (storageName === '') {
@@ -50,6 +54,7 @@ $(document).ready(function () {
         	if(data.status=="200"){
                 return;
             }else{
+            	
                 layer.tips('存储名称重复', $('#storageName'),{tips: [1, '#EF6578']});
                 $('#storageName').focus();
                 return;

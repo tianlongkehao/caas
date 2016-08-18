@@ -178,12 +178,12 @@
                                                 <input type="file" class="" id="sourceCode" name="sourceCode" style="margin:6px 0;">
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                         <div class="form-group">
                                             <label class="col-2x control-label">重新上传Dockfile：</label>
                                             <div class="col-sm-9">
                                             <span id="docImport-btn" class=" btn-info btn-sm" style="cursor: pointer; ">导入模板</span>
-                                            <textarea id="dockerfile"
-											style="background-color: black; color: #37fc34; border: 0; width: 100%; height: 230px; margin-top:10px">...</textarea>   
+                                            <textarea id="dockerFile" name = "dockerFile"
+                                                style="background-color: black; color: #37fc34; border: 0; width: 100%; height: 230px; margin-top:10px">...</textarea>   
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -220,9 +220,22 @@
                                         <div class="form-group">
                                             <label class="col-2x control-label">基础镜像：</label>
                                             <div class="col-sm-9">
-                                                <input id="baseImageName" name="baseImageName" type="text" 
-                                               value="${ci.baseImageName}" style="width:218px"> :
-                                        <input id="baseImageVersion" name="baseImageVersion" type="text" value="${ci.baseImageVersion}">
+                                                <select id="baseImageName" name="baseImageName"  style="width:218px; height:48px">
+                                                    <option type="text" value="${currentBaseImage.name }">${docker_regisgtry_address }/${currentBaseImage.name }</option>
+                                                    <c:forEach var = "image" items = "${baseImage }">
+                                                        <c:if test = "${currentBaseImage.name ne image.name }">
+                                                               <option type="text" value="${image.name }">${docker_regisgtry_address }/${image.name }</option>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </select> : 
+                                                <select id="baseImageId" name="baseImageId" style="height:48px">
+                                                    <option type="text"  value="${ci.baseImageId }">${ci.baseImageVersion }</option>
+                                                </select>
+                                            
+                                               <%--  <input id="baseImageName" name="baseImageName" type="text" 
+                                                          value="${ci.baseImageName}" style="width:218px"> :
+                                                <input id="baseImageVersion" name="baseImageVersion" type="text" value="${ci.baseImageVersion}">
+                                                 --%>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -252,22 +265,30 @@
                         </div>
                     </div>
                 </div>
-                <!--dockerfile导入模板 -->
-				<div id="dockerfile-import" style="display:none">
-					<table class="table table-hover enabled" id="Path-table-doc"
-						style="width: 345px; margin: 5px 10px 5px 10px">
-						<tbody id="dockerfile-body">
-							<tr>
-								<td class="vals vals-doc">demo1<span class="doc-tr hide"><i
-										class="fa fa-check"></i></span></td>
-							</tr>
-							<tr>
-								<td class="vals vals-env">demo2<span class="doc-tr hide"><i
-										class="fa fa-check"></i></span></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+                
+                 <!--dockerfile导入模板 -->
+                <div id="dockerfile-import" style="display:none; max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+                    <table class="table table-hover enabled" id="Path-table-doc"
+                        style="width: 326px; margin: 5px 10px 5px 10px">
+                        <tbody id="dockerfile-body">
+                            <c:if test="${empty dockerFiles }">
+                                <tr>
+                                    <td>没有保存的模板</td>
+                                </tr>
+                            </c:if>
+                            <c:if test="${not empty dockerFiles }">
+                                <c:forEach var = "dockerFile" items = "${dockerFiles }">
+                                    <tr>
+                                        <td class="vals vals-doc">${dockerFile.templateName }
+                                          <span class="doc-tr hide"><i class="fa fa-check"></i></span>
+                                           <input type="hidden" class="dockerFileTemplate" value='${dockerFile.dockerFile }' />
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </c:if>
+                        </tbody>
+                    </table>
+                </div>
 
             </div>
         </div>

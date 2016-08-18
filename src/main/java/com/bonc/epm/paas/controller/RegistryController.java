@@ -200,6 +200,7 @@ public class RegistryController {
 	@ResponseBody
 	public String deleteImage(@RequestParam long imageId){
 		imageDao.delete(imageId);
+		// TODO 应该删除本地镜像和仓库中的镜像
 		return "ok";
 	}
 	

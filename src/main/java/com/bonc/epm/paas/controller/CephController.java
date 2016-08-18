@@ -24,31 +24,28 @@ import com.ceph.fs.CephMount;
 @Controller
 public class CephController {
 
-	private static final Logger log = LoggerFactory.getLogger(CephController.class);
+	private static final Logger logger = LoggerFactory.getLogger(CephController.class);
 
 	// cluster
 	private Rados cluster;
 
 	// cephMount
 	private CephMount cephMount;
+	// mode
+	private int mode = 511;
 
 	/**
 	 * connectCephFS
 	 */
 	public void connectCephFS() {
-
 		try {
-			System.out.println("进入方法：connectCephFS");
-
+			logger.info("进入方法：connectCephFS");
 			cephMount = new CephMount("admin");
-			System.out.println("new CephMount(admin)");
-
 			cephMount.conf_read_file("/etc/ceph/ceph.conf");
-			System.out.println("Read the configuration file.");
-			
 			cephMount.mount("/");
+			cephMount.chmod("/", mode);
 
-			System.out.println("打印根目录下的所有目录");
+			logger.info("打印根目录下的所有目录");
 			String[] listdir = cephMount.listdir("/");
 			for (String strDir : listdir) {
 				System.out.println("dir:" + strDir);
@@ -60,56 +57,82 @@ public class CephController {
 
 	/**
 	 * createNamespaceCephFS
+	 *               文件属主   文件属组   其他所有用户(x:执行；w：写；r：读)
+	 *  O_CREAT              x  
+	 *  O_TRUNC              w
+	 *  O_RDWR                          w
+	 *  O_RDONLY                        x
+	 *  O_APPEND                        r
+	 *  O_WRONLY    x
+	 *  O_EXCL                r                 
+	 * 
 	 */
 	public void createNamespaceCephFS(String namespace) {
-
 		try {
-			System.out.println("进入方法：createNamespaceCephFS");
+			logger.info("进入方法：createNamespaceCephFS");
+			cephMount.mkdir("/" + namespace, mode);
 
-			cephMount.mkdir("/" + namespace, CephMount.O_RDWR);
-			System.out.println("创建目录：" + "/" + namespace);
-
-			System.out.println("打印" + namespace + "下的所有目录");
+			logger.info("打印" + namespace + "下的所有目录");
 			String[] listdir = cephMount.listdir("/" + namespace);
 			for (String strDir : listdir) {
 				System.out.println("dir:" + strDir);
 			}
-
-		} catch (Exception e) {
+		} catch (Exception e) {  
 			e.printStackTrace();
 		}
 	}
+
+    /**
+     * deleteStorageCephFS
+     */
+    public void deleteNamespaceCephFS(String namespace) {
+        try {
+            logger.info("进入方法：deleteNamespaceCephFS");
+            logger.info("删除前,打印根目录下的所有目录");
+            String[] listDirBef = cephMount.listdir("/");
+            for (String strDir : listDirBef) {
+                System.out.println("dir:" + strDir);
+               }
+            
+            logger.info("删除前,打印" + namespace + "下的所有目录");
+            String[] liststorageDir = cephMount.listdir("/" + namespace);
+            for (String strDir : liststorageDir) {
+                System.out.println("dir:" + strDir);
+               }
+
+               // 删除挂载卷目录
+            cephMount.rmdir(namespace);
+
+            logger.info("删除后,打印根目录下的所有目录");
+            String[] listDirAft = cephMount.listdir("/");
+            for (String strDir : listDirAft) {
+                System.out.println("dir:" + strDir);
+               }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 	/**
 	 * createStorageCephFS
 	 */
 	public void createStorageCephFS(String storageName, boolean isVolReadOnly) {
-
 		try {
-			System.out.println("进入方法：createStorageCephFS");
-
-			// 获取NAMESPACE
+			logger.info("进入方法：createStorageCephFS");
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-
-			int readOrWrite = CephMount.O_RDWR;
+			int readOrWrite = mode;
 			if (isVolReadOnly){
-				readOrWrite = CephMount.O_RDONLY;
+				readOrWrite = 292;
 			}
 			// 指定当前工作目录
 			cephMount.chdir("/" + namespace);
-
 			// 创建挂载卷目录
-			System.out.println("readOrWrite：" + readOrWrite);
 			cephMount.mkdir(storageName, readOrWrite);
-			System.out.println("创建目录：" + storageName);
+			cephMount.chmod("/"+namespace, mode);
 
-			System.out.println("打印根目录下的所有目录");
-			String[] listdir1 = cephMount.listdir("/");
-			for (String strDir : listdir1) {
-				System.out.println("dir:" + strDir);
-			}
-
-			System.out.println("打印" + namespace + "下的所有目录");
+			logger.info("打印" + namespace + "下的所有目录");
 			String[] listdir2 = cephMount.listdir("/" + namespace);
 			for (String strDir : listdir2) {
 				System.out.println("dir:" + strDir);
@@ -125,27 +148,21 @@ public class CephController {
 	 * deleteStorageCephFS
 	 */
 	public void deleteStorageCephFS(String storageName) {
-
 		try {
-			System.out.println("进入方法：deleteStorageCephFS");
-			
+			logger.info("进入方法：deleteStorageCephFS");
 			// 获取NAMESPACE
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-			
-			System.out.println("删除前,打印" + namespace + "下的所有目录");
+			logger.info("删除前,打印" + namespace + "下的所有目录");
 			String[] listDirBef = cephMount.listdir("/" + namespace);
 			for (String strDir : listDirBef) {
 				System.out.println("dir:" + strDir);
 			}
 
-			// 指定当前工作目录
+			// 指定当前工作目录&&删除挂载卷目录
 			cephMount.chdir("/" + namespace);
-
-			// 删除挂载卷目录
 			cephMount.rmdir(storageName);
-			System.out.println("删除目录：" + storageName);
 
-			System.out.println("删除前,打印" + namespace + "下的所有目录");
+			logger.info("删除前,打印" + namespace + "下的所有目录");
 			String[] listDirAft = cephMount.listdir("/" + namespace);
 			for (String strDir : listDirAft) {
 				System.out.println("dir:" + strDir);
@@ -160,21 +177,17 @@ public class CephController {
 	 * 连结ceph服务
 	 */
 	public void conCeph(String radosName) {
-
 		try {
-			System.out.println("radosName:" + radosName);
-			cluster = new Rados(radosName);
-			System.out.println("Created cluster handle:" + cluster);
+		   logger.info("radosName:" + radosName);
+			cluster = new Rados(radosName); // Created cluster handle
 
 			File f = new File("/etc/ceph/ceph.conf");
-			cluster.confReadFile(f);
-			System.out.println("Read the configuration file.");
+			cluster.confReadFile(f); // Read the configuration file.
 
-			cluster.connect();
-			System.out.println("Connected to the cluster.");
+			cluster.connect(); // Connected to the cluster.
 		} catch (RadosException e) {
-			log.debug(e.getMessage());
-			System.out.println(e.getMessage() + ": " + e.getReturnValue());
+			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -182,13 +195,10 @@ public class CephController {
 	 * 创建pool
 	 */
 	public void createPoolByNameSpace() {
-
 		try {
-			System.out.println("进入方法：createPoolByNameSpace");
-
+		    logger.info("进入方法：createPoolByNameSpace");
 			// 获取NAMESPACE
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-			System.out.println("namespace:" + namespace);
 
 			// 获取所有pool
 			String[] pools = cluster.poolList();
@@ -201,8 +211,7 @@ public class CephController {
 			// 如果pool不存在，创建pool
 			if (!poolExist) {
 				// 创建pool
-				cluster.poolCreate(namespace);
-				System.out.println("创建pool:" + namespace);
+				cluster.poolCreate(namespace); // 创建pool:namespace
 			}
 		} catch (RadosException e) {
 			e.printStackTrace();
@@ -215,20 +224,13 @@ public class CephController {
 	 * @param conName
 	 */
 	public void createCephImage(String conName) {
-
 		try {
-			System.out.println("进入方法：createCephImage");
-			System.out.println("conName:" + conName);
+			logger.info("进入方法：createCephImage,conName:-"+conName);
+			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace(); // 获取NAMESPACE
+			
+			IoCTX ioctx = cluster.ioCtxCreate(namespace); // 创建ioCtx
 
-			// 获取NAMESPACE
-			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-
-			// 创建ioCtx
-			IoCTX ioctx = cluster.ioCtxCreate(namespace);
-			System.out.println("创建ioctx成功");
-
-			// 創建RBD
-			Rbd rbd = new Rbd(ioctx);
+			Rbd rbd = new Rbd(ioctx); // RBD
 
 			// 获取所有images
 			String[] images = rbd.list();
@@ -240,16 +242,12 @@ public class CephController {
 			}
 			// 如果image不存在，创建image
 			if (!imageExist) {
-				// 創建image并指定空间大小以及feature和format
+				// 创建image并指定空间大小以及feature和format
 				long size_1G = 1024 * 1024 * 1024;
 				// TODO feature的值，还没弄明白
 				long feature_layering = 8 * 8;
 				int order = 22;
-				System.out.println("feature_layering:" + feature_layering);
 				rbd.create(conName, size_1G, feature_layering, order);
-
-				System.out.println("开始创建ceph-image:" + conName);
-				System.out.println("创建ceph-image:" + conName + "成功");
 			}
 
 			// 打开image
@@ -260,9 +258,10 @@ public class CephController {
 			// 清除ioCtx
 			cluster.ioCtxDestroy(ioctx);
 		} catch (RadosException e) {
-			log.debug(e.getMessage());
-			System.out.println(e.getMessage() + ": " + e.getReturnValue());
+			logger.error(e.getMessage());
+			e.printStackTrace();
 		} catch (RbdException e) {
+		   logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -271,8 +270,15 @@ public class CephController {
 	 * 关闭连结
 	 */
 	public void clusterShutDown() {
-		// 关闭连结
-		cluster.shutDown();
+	    try {
+	          // 关闭连结
+	        cluster.shutDown();
+         }
+       catch (Exception e) {
+           logger.error(e.getMessage());
+           e.printStackTrace();
+        }
+
 	}
 
 	/**
@@ -296,8 +302,10 @@ public class CephController {
 			bos.close();
 			buffer = bos.toByteArray();
 		} catch (FileNotFoundException e) {
+		    logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
+		    logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return buffer;
@@ -324,12 +332,14 @@ public class CephController {
 			bos = new BufferedOutputStream(fos);
 			bos.write(buf);
 		} catch (Exception e) {
+		    logger.error(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			if (bos != null) {
 				try {
 					bos.close();
 				} catch (IOException e) {
+				    logger.error(e.getMessage());
 					e.printStackTrace();
 				}
 			}
@@ -337,6 +347,7 @@ public class CephController {
 				try {
 					fos.close();
 				} catch (IOException e) {
+				    logger.error(e.getMessage());
 					e.printStackTrace();
 				}
 			}

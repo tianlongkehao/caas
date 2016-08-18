@@ -30,7 +30,7 @@
                     <div class="mirror-head">
                         <section class="images">
                             <div class="img-icon">
-                                <img class="imgIcon" src="/images/image-1.png" style="max-width:80%;">
+                                <img class="imgIcon" src="<%=path %>/images/image-1.png" style="max-width:80%;">
                             </div>
                         </section>
                         <section class="type-info">

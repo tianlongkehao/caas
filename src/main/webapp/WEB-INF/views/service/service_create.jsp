@@ -109,8 +109,10 @@
 												id="startCommand_input" name="startCommand"
 												style="margin-left: 150px"></li>
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
-													color="red">*</font></span> <input type="text" value=""
-												class="in_style" id="webPath" name="servicePath"></li>
+													color="red">*</font></span>
+												<input type="text" value="" class="in_style" id="webPath" name="servicePath">
+												<span style="color:#1dd2af" id="service-path"><i class="fa fa-info-circle"></i></span>
+											</li>
 											<c:if test="${DMZ!=null && USER!=null  }">
 												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
 													<label class="checkbox-inline"> <input
@@ -123,9 +125,10 @@
 													id="proxyZone" name="proxyZone"></li>
 											</c:if>
 											<li class="line-h-3"><span class="ve_top">nginx代理路径：<font
-													color="red">*</font></span> <input type="text" value=""
-												class="in_style" id="nginxPath" name="proxyPath"></li>
-
+													color="red">*</font></span>
+												<input type="text" value="" class="in_style" id="nginxPath" name="proxyPath">
+												<span style="color:#1dd2af" id="proxy-path"><i class="fa fa-info-circle"></i></span>
+											</li>
 
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
@@ -215,12 +218,11 @@
 															<tbody>
 																<tr>
 																	<td><input type="text" id="mountPath"
-																		name="mountPath" value="/var/lib/mysql" /></td>
+																		name="mountPath" value="" /></td>
 																	<td style="padding-left: 10px;"><select
 																		class="selectVolume" id="selectVolume" name="volName"
 																		style="height: 30px; width: 230px;">
 																			<option name="volName" value="0">选择一个存储卷</option>
-
 																	</select></td>
 																	<!-- <td>
                                                         <ins class="ins">

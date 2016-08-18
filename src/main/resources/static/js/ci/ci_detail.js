@@ -16,7 +16,7 @@ $(document).ready(function(){
     //加载构建日志
     printLog();
     
-  //导入模板
+    //导入模板
 	$("#docImport-btn").click(function(){
 		layer.open({
 		 	type:1,
@@ -25,30 +25,21 @@ $(document).ready(function(){
 	        btn: ['导入', '取消'],
 	        yes: function(index, layero){ 
 	        	
+	        	$("#dockerFile").val(dockerFile);
 	        	layer.close(index);
-				/*$.ajax({
-					url:""+ctx+"service/stratServices.do?serviceIDs="+serviceIDs,
-					success:function(data){
-						data = eval("(" + data + ")");
-						if(data.status=="200"){
-							layer.alert("环境变量模板导入成功");
-							window.location.reload();
-						}else{
-							layer.alert("环境变量模板导入失败");
-						}
-					}	
-				})*/
 	        }
 	 })
 	});
 	
 	//导入模板文件选项对勾
+	var dockerFile = null;
 	$("#Path-table-doc>tbody>tr").on("click", function () {
 		$(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
         $(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
         //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
         $(this).toggleClass("focus");//设定当前行为选中行
         $(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
+        dockerFile = $(this).parent().find("tr.focus").find(".dockerFileTemplate").val();
     });
 
 });
@@ -121,7 +112,7 @@ function registerCiEditEvent(){
 	$("#editCiUploadBtn").click(function(){
 		var index = layer.load(0, {shade: [0.3, '#000']});
         $("#editCiUploadForm").ajaxSubmit({
-            url: ctx+"/ci/modifyResourceCi.do",
+            url: ctx+"/ci/modifyDockerFileCi.do",
             type: "post",
             success: function (data) {
             	layer.close(index);
@@ -139,6 +130,7 @@ function registerCiEditEvent(){
             }
         });
     });
+	
 	$("#editCiUploadCodeBtn").click(function(){
 		var index = layer.load(0, {shade: [0.3, '#000']});
         $("#editCiUploadCodeForm").ajaxSubmit({
@@ -161,7 +153,31 @@ function registerCiEditEvent(){
         });
         
     });
+	
+	$("#baseImageName").change(function(){
+		var baseImageName = $("#baseImageName").val();
+		$.ajax({
+			url:""+ctx+"/ci/findBaseImageVersion.do",
+			type:"post",
+			data:{"baseImageName":baseImageName}, 
+			success: function (data) {
+	            data = eval("(" + data + ")");
+	            var html = "";
+	            if (data != null) {
+	            	if (data['data'].length > 0) {
+	            		for (var i in data.data) {
+	            			var image = data.data[i];
+	            			html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>"
+	            		}
+	            	}
+	            }
+	            $("#baseImageId").html(html);    
+			}
+		})
+	});
 }
+
+
 function registerCiDelEvent(id){
 	 $("#delCiBtn").click(function(){
 		 layer.open({
