@@ -46,6 +46,13 @@ $(document).ready(function () {
         }
     });
     
+    //是否为基础镜像提示信息
+    $("#is-baseImage").click(function(){
+    	layer.tips('默认为非基础镜像', '#is-baseImage', {
+            tips: [2, '#0FA6D8'] //还可配置颜色
+        });
+    });
+    
     //添加基础镜像的版本信息
     $("#baseImageName").change(function(){
     	changeBaseImageVersion ();

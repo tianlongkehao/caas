@@ -924,4 +924,10 @@ i.pushOrg {
     background: #FAFAFA;
 }
 
+/* µ¥Î» */
+.resource-unit{
+	position: absolute;
+	top: 7px;
+	left: 326px;
+}
 

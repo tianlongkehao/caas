@@ -71,8 +71,9 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <label for="sourceCode">镜像类型</label></br>
+                                    <label for="sourceCode">镜像类型</label><br>
                                     <input type="checkbox">基础镜像
+                                    <span style="color:#1dd2af" id="is-baseImage"><i class="fa fa-info-circle"></i></span>
                                 </div>
                             </div>
                             <section class="registryinfo">

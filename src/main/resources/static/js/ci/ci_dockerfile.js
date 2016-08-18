@@ -4,6 +4,13 @@ $(document).ready(function () {
  	$("#dockerfile-import").hide();
  	$("#dockerfile-export").hide();
  	
+ 	$(".btn-imageType .btns").each(function(){
+        $(this).click(function(){
+            $(".btn-imageType .btns").removeClass("active");
+            $(this).addClass("active");
+        });
+    });
+ 	
  	//导入模板
 	$("#docImportBtn").click(function(){
 		layer.open({

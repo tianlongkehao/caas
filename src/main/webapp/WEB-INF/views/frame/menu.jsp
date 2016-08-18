@@ -78,6 +78,11 @@
                         存储与备份
                     </a>
                 </li>
+                 <li>
+                    <a href="<%=path %>/service/import">
+                        引入外部服务
+                    </a>
+                </li>
             </ul>
         </li>
         <li id="menu_ci">

@@ -72,7 +72,6 @@ $(document).ready(function(){
      }*/
 
     $(".next2").click(function () {
-        debugger
         var flag = checkBasicInfo();
         if (flag === false) {
             return;

@@ -38,7 +38,7 @@
 								enctype="multipart/form-data">
 								<div class="row depot-name">
 									<div class="form-group col-md-7">
-										<div class="">
+										<div class="" style="margin-top:25px">
 											<span class="name-note">${username } /&nbsp;</span> <input
 												name="imgNameFirst" type="hidden" value="${dockerfilename }">
 											<input id="imgNameLast" name="imgNameLast" type="text"
@@ -47,17 +47,16 @@
 												value="latest" class="name-input">
 										</div>
 									</div>
-									<!-- <div class="form-group col-md-5">
-                                    <label>性质</label>
-
-                                    <div>
-                                        <span class="btn-groups btn-imageType">
-                                            <a case="public" class="btns active" onclick="javascript:$('#imgType').val(1)">公有</a>
-                                            <a case="private" class="btns" onclick="javascript:$('#imgType').val(2)">私有</a>
-                                        </span>
-                                        <input type="hidden" name="imgType" id="imgType" value="1">
-                                    </div>
-                                </div> -->
+									<div class="form-group col-md-5">
+	                                    <label>性质</label>
+	                                    <div>
+	                                        <span class="btn-groups btn-imageType">
+	                                            <a case="public" class="btns active" onclick="javascript:$('#imgType').val(1)">公有</a>
+	                                            <a case="private" class="btns" onclick="javascript:$('#imgType').val(2)">私有</a>
+	                                        </span>
+	                                        <input type="hidden" name="imgType" id="imgType" value="1">
+	                                    </div>
+                                	</div>
 								</div>
 								<div class="row">
 									<div class="form-group col-md-12">
@@ -183,9 +182,9 @@
 
 				</div>
 				<!--dockerfile导入模板 -->
-				<div id="dockerfile-import">
+				<div id="dockerfile-import" style="max-height:170px;overflow-y:scroll;overflow-x:hidden;">
 					<table class="table table-hover enabled" id="Path-table-doc"
-						style="width: 345px; margin: 5px 10px 5px 10px">
+						style="width: 326px; margin: 5px 10px 5px 10px;">
 						<tbody id="dockerfile-body">
 							<tr>
 								<td class="vals vals-doc">demo1<span class="doc-tr hide"><i
@@ -195,6 +194,7 @@
 								<td class="vals vals-env">demo2<span class="doc-tr hide"><i
 										class="fa fa-check"></i></span></td>
 							</tr>
+							
 						</tbody>
 					</table>
 				</div>

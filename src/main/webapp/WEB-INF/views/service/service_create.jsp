@@ -484,9 +484,9 @@
 									</div>
 								</form>
 								<!-- 环境变量导入模板 -->
-								<div id="environment-variable">
+								<div id="environment-variable" style="max-height:360px;overflow-y:scroll;overflow-x:hidden;">
 									<table class="table table-hover enabled" id="Path-table"
-										style="width: 345px; margin: 5px 10px 5px 10px">
+										style="width: 326px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
 											<c:if test="${empty templateNames }">
 												<tr>
@@ -508,8 +508,8 @@
 									</table>
 								</div>
 								<!-- 环境变量另存为模板 -->
-								<div id="environment-template">
-									<div style="width: 345px; margin: 5px 10px 5px 10px">
+								<div id="environment-template" style="display:none; max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+									<div style="width: 326px; margin: 5px 10px 5px 10px">
 										<span>模板名称：</span><input type="text" id="envTemplateName"
 											style="width: 77%" autofocus="autofocus" />
 									</div>

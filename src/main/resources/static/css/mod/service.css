@@ -319,7 +319,7 @@
     overflow-y: auto;
 }
 .safeSet{
-	margin-bottom:100px;
+	margin-bottom:80px;
 }
 .safeSet .dropdown-menu li {
     padding: 5px 0px;
@@ -816,4 +816,17 @@ i.pushOrg {
 }
 tr.focus{
     background-color:#f5f6f6;
+}
+
+#importServiceBtn{
+	cursor: pointer;
+}
+.editButton{
+	margin-left: 7px;
+}
+#import-service form table tbody tr td input{
+	width: 95%;
+}
+#import-service form table tbody tr td select{
+	height: 28px;
 }

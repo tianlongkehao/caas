@@ -228,7 +228,8 @@ public class ServiceController {
 
 		return "service/service.jsp";
 	}
-
+	
+	
 	/**
 	 * 展示container和services
 	 * 
@@ -242,6 +243,15 @@ public class ServiceController {
 		model.addAttribute("menu_flag", "service");
 
 		return "service/service.jsp";
+
+	}
+	
+	@RequestMapping(value = { "service/import" })
+	public String serviceImport(Model model) {
+		
+		model.addAttribute("menu_flag", "service");
+
+		return "service/service-import.jsp";
 
 	}
 
@@ -401,12 +411,13 @@ public class ServiceController {
 		     // 获取基础镜像的暴露端口信息
 			model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
 		}
-
-		boolean flag = getleftResource(model);
+//TODO 
+		/*boolean flag = getleftResource(model);
 		if (!flag) {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
-		}
+		}*/
+		//TODO
 
 		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
