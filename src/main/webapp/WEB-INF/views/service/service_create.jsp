@@ -82,8 +82,6 @@
 									action="<%=path%>/service/constructContainer.do">
 									<input type="hidden" id="envVariable" name="envVariable" value=""></input>
 									<input type="hidden" id="portConfig" name="portConfig" value=""></input>
-									<input type="hidden" id="templateName" name="templateName" value=""></input>
-									
 									<div class="host_step2">
 										<ul class="safeSet">
 											<li class="line-h-3"><span class="ve_top">镜像名称：</span> <input
@@ -472,8 +470,8 @@
 										<div style="height: 80px !important;"></div>
 									</div>
 								</form>
-								<div id="environment-variable">
-									<table class="table table-hover enabled" id="Path-table" style="width: 345px; margin: 5px 10px 5px 10px">
+								<div id="environment-variable" style="max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+									<table class="table table-hover enabled" id="Path-table" style="width: 326px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
 											<c:if test="${empty templateNames }">
 												<tr>

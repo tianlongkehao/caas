@@ -276,7 +276,7 @@
 
 .ve_top {
     line-height: 30px;
-    width: 120px;
+    width: 150px;
     display: inline-block;
     letter-spacing: 1px;
     float: left;
@@ -307,7 +307,7 @@
     width: 83%;
 }
 .in_style_mid{
-	width: 81.5%;
+    width: 81.5%;
 }
 
 .dropdown-position {
@@ -319,7 +319,7 @@
     overflow-y: auto;
 }
 .safeSet{
-	margin-bottom:100px;
+    margin-bottom:45px;
 }
 .safeSet .dropdown-menu li {
     padding: 5px 0px;
@@ -687,25 +687,25 @@ i.pushOrg {
     transition:all 0.5s;
 }
 .containerLog.all .weblog{
-	height: calc(100% - 40px)
+    height: calc(100% - 40px)
 }
 
 .containerLog .weblog{
-	padding:5px 10px;
-	height:500px;
-	margin-bottom: 
-	50px;overflow-y:auto
+    padding:5px 10px;
+    height:500px;
+    margin-bottom: 
+    50px;overflow-y:auto
 }
 
 #date_log{
-	background: none;
-	border:0;
-	width: 220px;
-	text-align: right;
+    background: none;
+    border:0;
+    width: 220px;
+    text-align: right;
 }
 #date_log:focus{
-	border:0;
-	box-shadow: none;
+    border:0;
+    box-shadow: none;
 }
 
 
@@ -803,17 +803,30 @@ i.pushOrg {
     color: #BFBFBF;
 }
 
-/* ∂ØÃ¨¿©»› */
+/* Âä®ÊÄÅÊâ©ÂÆπ */
 .dynamic-scale{
-	margin-left: 43px;
+    margin-left: 43px;
 }
 
 .vals-path{
-	color:green;
-	float:right;
-	margin-right:15px;
-	font-size:16px
+    color:green;
+    float:right;
+    margin-right:15px;
+    font-size:16px
 }
 tr.focus{
     background-color:#f5f6f6;
+}
+
+#importServiceBtn{
+    cursor: pointer;
+}
+.editButton{
+    margin-left: 7px;
+}
+#import-service form table tbody tr td input{
+    width: 95%;
+}
+#import-service form table tbody tr td select{
+    height: 28px;
 }
