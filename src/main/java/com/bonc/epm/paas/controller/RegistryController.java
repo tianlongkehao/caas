@@ -62,6 +62,12 @@ public class RegistryController {
 	@Value("${docker.ssh.address}")
 	private String address;
 	
+	@Value("${paas.image.path}")
+	public String imagePath = "../downimage";
+	
+	@Value("${paas.saveimage.path}")
+	public String saveImagePath;
+	
 	/**
 	 * 响应镜像查询按钮
 	 * @param index
@@ -240,7 +246,7 @@ public class RegistryController {
         if (!exist) {
             boolean complete= dockerClientService.pullImage(imageName, imageVersion);
             if (complete) {
-                String cmd = "sudo docker save -o /home/paas/paas/apache-tomcat-8.0.32/downimage/"
+                String cmd = "sudo docker save -o " + saveImagePath
                     + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
                 flag = cmdexec(cmd);
             }
@@ -261,13 +267,12 @@ public class RegistryController {
      */
     public void getDownload(String fileName,HttpServletRequest request, HttpServletResponse response) {  
         
-        String fullPath = "../downimage/" + fileName ; 
         //设置文件MIME类型  
-        response.setContentType(request.getServletContext().getMimeType(fullPath));  
+        response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
         //设置Content-Disposition  
         response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
         try {  
-            InputStream myStream = new FileInputStream(fullPath);  
+            InputStream myStream = new FileInputStream(imagePath+"/"+fileName);  
             IOUtils.copy(myStream, response.getOutputStream());  
             response.flushBuffer();  
         } catch (IOException e) {  
