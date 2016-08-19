@@ -925,9 +925,8 @@ public class ServiceController {
 				ReplicationController controller = client.getReplicationController(serviceName);
 				String NS = controller.getMetadata().getNamespace();
 				String cmd = "kubectl rolling-update " + serviceName + " --namespace=" + NS
-						+ " --update-period=10s  --image="
-						+ dockerClientService.generateRegistryImageName(imgName, imgVersion)
-						+ " --rollback ";
+						+ " --update-period=10s --image="
+						+ dockerClientService.generateRegistryImageName(imgName, imgVersion);
 				boolean flag = cmdexec(cmd);
 				if (flag) {
 					service.setImgVersion(imgVersion);
