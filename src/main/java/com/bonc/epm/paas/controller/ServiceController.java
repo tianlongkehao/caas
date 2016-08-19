@@ -146,7 +146,7 @@ public class ServiceController {
 		try {
 			getServiceSource(model, currentUser.getId());
 			getNginxServer(model);
-			// getleftResource(model);
+//			getleftResource(model);
 		} catch (KubernetesClientException e) {
 			model.addAttribute("msg", e.getStatus().getMessage());
 			log.debug("service show:" + e.getStatus().getMessage());
@@ -416,12 +416,12 @@ public class ServiceController {
 		     // 获取基础镜像的暴露端口信息
 			model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
 		}
-//TODO 
-		/*boolean flag = getleftResource(model);
+		//TODO 
+		boolean flag = getleftResource(model);
 		if (!flag) {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
-		}*/
+		}
 		//TODO
 
 		// 获取配置文件中nginx选择区域
