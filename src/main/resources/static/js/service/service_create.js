@@ -6,6 +6,11 @@ $(document).ready(function(){
 	$(".createPadding").addClass("hide");
 	
 	$("#createButton").click(function(){
+		
+		if(!saveEnvVariable()) {
+			return;
+		}
+		
 		var name = $('#serviceName').val();
 		// check the name of container
 	    if(!name || name.length < 1){
@@ -49,16 +54,16 @@ $(document).ready(function(){
 		}
 	    var mountPath = $("#mountPath").val();
 	    var selectVolume = $("#selectVolume").val();
-	    if($("#state_service").prop("checked")==true){
-			    if(!mountPath || mountPath.length < 1){
-				      layer.tips('挂载路径不能为空','#mountPath',{tips: [1, '#3595CC']});
-				      $('#mountPath').focus();
-				      return;
-					}		   
-			    if(selectVolume=='0'){
-				      layer.tips('请选择一个挂载卷','#selectVolume',{tips: [1, '#3595CC']});
-				      return;
-					}
+	    if ($("#state_service").prop("checked")==true) {
+		    if (!mountPath || mountPath.length < 1) {
+			      layer.tips('挂载路径不能为空','#mountPath',{tips: [1, '#3595CC']});
+			      $('#mountPath').focus();
+			      return;
+			}		   
+		    if (selectVolume=='0'){
+			      layer.tips('请选择一个挂载卷','#selectVolume',{tips: [1, '#3595CC']});
+			      return;
+		    }
 	    }
 	   
 	    
@@ -85,24 +90,6 @@ $(document).ready(function(){
     	})
     	$('#proxyZone').val(nginxstr);
     	
-    	var dataJson="";  
-        $("#Path-oper1 tr").each(function (index, domEle){
-            var envKey = "";  
-            var envValue = "";  
-            $(domEle).find("input").each(function(index,data){  
-                if(index == 0){  
-                	envKey = $(data).val();  
-                }else if (index == 1){  
-                	envValue = $(data).val();
-                }  
-            });  
-            dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},";               
-        });
-        if (dataJson != "") {  
-            dataJson = dataJson.substring(0,dataJson.length -1);  
-            dataJson ="[" +dataJson+ "]";  
-        }
-        $('#envVariable').val(dataJson);
     	//将端口配置 数据变为json放入到
        var portJson ="";
         $("#pushPrptpcol tr").each(function (index, domEle){
@@ -289,7 +276,7 @@ $(document).ready(function(){
 	        yes: function(index, layero){
 	        	 var arrayKey = $("#arrayKey").val().split(",");
 	        	 $.ajax({
-	         		url : ctx + "/service/importEnvVariable.do",
+	         		url : ctx + "/service/importEnvTemplate.do",
 	         		type: "POST",
 	         		data:{"templateName":templateName},
 	         		success : function(data) {
@@ -298,15 +285,15 @@ $(document).ready(function(){
 	    	            if (data != null) {
 	    	                if (data['data'].length > 0) {
 	    	                	for (var i in data.data) {
-	    	                		var envVariable = data.data[i];
+	    	                		var envTemplate = data.data[i];
 	    	                		html += '<tr>'+
-		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envVariable.envKey+'"></td>'+
-		    	    	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envVariable.envValue+'"></td>'+
+		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envTemplate.envKey+'"></td>'+
+		    	    	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envTemplate.envValue+'"></td>'+
 		    	    	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-		    	    	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envVariable.envKey+'">'+
+		    	    	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
 		    	    	    			'</td>'+
 		    	    	    		'</tr>'
-		    	    	    		arrayKey.push(envVariable.envKey+",");
+		    	    	    		arrayKey.push(envTemplate.envKey+",");
 	    	                	}
 	    	                }
 	    	            }
@@ -321,30 +308,48 @@ $(document).ready(function(){
 	
 	//另存为模板
 	$("#exportBtn").click(function(){
-		layer.open({
-		 	type:1,
-	        title: '另存为模板',
-	        content: $("#environment-template"),
-	        btn: ['保存', '取消'],
-	        yes: function(index, layero){ 
-	        	var templateName = $("#envTemplateName").val();
-	        	$.ajax({
-					url:ctx+"/service/matchTemplateName.do",
-					type: "POST",
-	         		data:{"templateName":templateName},
-					success:function(data){
-						data = eval("(" + data + ")");
-						if(data.status=="200"){
-							layer.alert("环境变量模板名称重复");
-						}else{
-							layer.alert("环境变量模板导入成功");
-							$('#templateName').val(templateName);
-							layer.close(index);
-						}
-					}	
-	        	});
-	        }
-		})
+		if (!saveEnvVariable()) {
+			return;
+		} else {
+			layer.open({
+			 	type:1,
+		        title: '另存为模板',
+		        content: $("#environment-template"),
+		        btn: ['保存', '取消'],
+		        yes: function(index, layero){ 
+		        	
+		        	var templateName = $("#envTemplateName").val();
+		        	if (templateName == null || templateName == "") {
+		        		layer.tips('模板名称不能为空','#envTemplateName',{tips: [1, '#3595CC']});
+						$('#envTemplateName').focus();
+						return;
+		        	}
+		        	
+		        	var envVariable = $("#envVariable").val();
+		        	if (envVariable == null || envVariable == "") {
+		        		layer.tips('环境变量不能为空','#Path',{tips: [1, '#3595CC']});
+						$('#Path').focus();
+						layer.close(index);
+						return;
+		        	}
+		        	
+		        	$.ajax({
+						url:ctx+"/service/saveEnvTemplate.do",
+						type: "POST",
+		         		data:{"templateName":templateName,"envVariable":envVariable},
+						success:function(data){
+							data = eval("(" + data + ")");
+							if(data.status=="200"){
+								layer.alert("环境变量模板名称重复");
+							}else if (data.status == "400") {
+								layer.alert("环境变量模板导入成功");
+								layer.close(index);
+							}
+						}	
+		        	});
+		        }
+			})
+		}
 	});
 
 	$("#searchimage").click(function(){
@@ -434,6 +439,75 @@ $(document).ready(function(){
     });
 
 });
+
+//保存环境变量到json中
+function saveEnvVariable() {
+	var dataJson="";  
+	var arrayKey = new Array(1) ;
+	var flag = 0;
+    $("#Path-oper1 tr").each(function (index, domEle){
+        var envKey = "";  
+        var envValue = "";  
+        $(domEle).find("input").each(function(index,data){  
+            if(index == 0){  
+            	envKey = $(data).val();
+            } else if (index == 1){  
+            	envValue = $(data).val();
+            }  
+        });  
+        
+		for (var i = 0; i<arrayKey.length;i++) {
+			if (envKey == arrayKey[i]) {
+				layer.tips('环境变量Key不能重复','#Path',{tips: [1, '#3595CC']});
+				$('#Path').focus();
+				flag = 1;
+				break;
+			}
+		}
+		arrayKey.push(envKey);
+        
+        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},";               
+    });
+    
+    if (flag == 1) {
+    	return false;
+    }
+    if (dataJson != "") {  
+        dataJson = dataJson.substring(0,dataJson.length -1);  
+        dataJson ="[" +dataJson+ "]";  
+    }
+    $('#envVariable').val(dataJson);
+    return true;
+}
+
+/**
+ * 删除环境变量
+ */
+// 删除环境变量
+function deleteRow(obj){
+	var envKey = $(obj).parent().find("input:first").val();
+	var arrayKey = $("#arrayKey").val().split(",");
+	for(var i = 0; i<arrayKey.length; i++){
+		if(envKey ==arrayKey[i]){
+			arrayKey.splice(i,1);
+			break;
+		}
+	}
+	$("#arrayKey").attr("value",arrayKey);
+	$(obj).parent().parent().remove();
+}
+
+function decideEnvKey(){
+	var arrayKey = $("#arrayKey").val().split(",");
+	for(var i = 0; i<arrayKey.length; i++){
+		for(var j = i+1;i<arrayKey.length;j++){
+			alert(arrayKey[i] + ":" + arrayKey[j]);
+			if(arrayKey[i] == arrayKey[j]){
+				alert(false);
+			}
+		}
+	}
+}
 
 function cpuMouseOut(){
 	var cpuNum = $('#cpuNum').val();
@@ -574,23 +648,6 @@ function containerName(){
 			 });
 }
 
-/**
- * 删除环境变量
- */
-// 删除环境变量
-function deleteRow(obj){
-	var envKey = $(obj).parent().find("input:first").val();
-	var arrayKey = $("#arrayKey").val().split(",");
-	var newArray = new Array();
-	for(var i = 0; i<arrayKey.length; i++){
-		if(envKey !=arrayKey[i]){
-			newArray.push(arrayKey[i]);
-		}
-	}
-	$("#arrayKey").attr("value",newArray);
-	$(obj).parent().parent().remove();
-	
-}
 
 function getServiceStorageVol(){
 	$.ajax({

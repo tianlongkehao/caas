@@ -80,11 +80,8 @@
 								<%-- 容器配置 --%>
 								<form id="buildService" name="buildService"
 									action="<%=path%>/service/constructContainer.do">
-									<input type="hidden" id="envVariable" name="envVariable"
-										value=""></input> <input type="hidden" id="portConfig"
-										name="portConfig" value=""></input> <input type="hidden"
-										id="templateName" name="templateName" value=""></input>
-
+									<input type="hidden" id="envVariable" name="envVariable" value=""></input>
+									<input type="hidden" id="portConfig" name="portConfig" value=""></input>
 									<div class="host_step2">
 										<ul class="safeSet">
 											<li class="line-h-3"><span class="ve_top">镜像名称：</span> <input
@@ -305,10 +302,15 @@
 										</ul>
 									</div>
 								</form>
+<<<<<<< HEAD
 								<!-- 环境变量导入模板 -->
 								<div id="environment-variable" style="display:none; max-height:360px;overflow-y:scroll;overflow-x:hidden;">
 									<table class="table table-hover enabled" id="Path-table"
 										style="width: 326px; margin: 5px 10px 5px 10px">
+=======
+								<div id="environment-variable" style="max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+									<table class="table table-hover enabled" id="Path-table" style="width: 326px; margin: 5px 10px 5px 10px">
+>>>>>>> refs/heads/envdevelop
 										<tbody id="Path-env">
 											<c:if test="${empty templateNames }">
 												<tr>
