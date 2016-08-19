@@ -79,16 +79,16 @@
 								type="hidden" id="volumeSize" value="512">
 						</div>
 						<div style="width: 83%; float:right; background-color: #fff;">
-							<div style="padding-left:15px">
+							<div style="padding-left:15px" id="val-path">
 								<div class="" style="line-height:40px" id="allboxs"><span >全部文件</span></div>
-								<div class="" style="line-height:40px; display:none" id="nextboxs">
+								<!-- <div class="" style="line-height:40px; display:none" id="nextboxs">
 									<ul style="margin:0px">
 										<li style="float:left"><a href="">返回上一级</a><span style="padding:5px">|</span><a href="">全部文件</a><span style="padding:5px">></span></li>
 										<li style="float:left">{当前文件名称}</li>
 									</ul>
-								</div>
+								</div> -->
 							</div>
-							<table class="table table-hover table-bordered"
+							<table class="table table-hover table-bordered" id="table-vol"
 								style="margin: 0px; background-color: #fff; width: 98%; margin:0 auto; margin-bottom:20px">
 								<thead style="background-color: #F5F6F6">
 									<tr class="vol_list">
@@ -98,19 +98,25 @@
 										<th style="width: 26%;">修改日期</th>
 									</tr>
 								</thead>
-								<tbody>
-									<tr class="vol_list" style="cursor:pointer">
+								<tbody id="tbody-vol">
+									<!-- <tr class="vol_list">
 										<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>
-										<td style="width: 40%;"><a hrer=""><img src="/images/img-file.png" ><span style="margin-left:5px">文件夹3</span></a></td>
-										<td style="width: 30%;">33</td>
-										<td style="width: 26%;"></td>
+										<td style="width: 40%;"><a id="aaa" onclick="expand(this);"><img src="/images/img-file.png" ><span class="volName" style="margin-left:5px">vol1</span></a></td>
+										<td style="width: 30%;">80.1M</td>
+										<td style="width: 26%;">2016-01-02</td>
 									</tr>
-									<tr class="vol_list" style="cursor:pointer">
+									<tr class="vol_list">
 										<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>
-										<td style="width: 40%;"><a><img src="/images/file-f.png"><span style="margin-left:5px">文件4</span></a></td>
-										<td style="width: 30%;">44</td>
-										<td style="width: 26%;"></td>
+										<td style="width: 40%;"><a onclick="expand(this);"><img src="/images/img-file.png"><span class="volName" style="margin-left:5px">vol2</span></a></td>
+										<td style="width: 30%;">50.6M</td>
+										<td style="width: 26%;">2016-01-04</td>
 									</tr>
+									<tr class="vol_list">
+										<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>
+										<td style="width: 40%;"><a onclick="expand(this);"><img src="/images/file-f.png"><span class="volName" style="margin-left:5px">file</span></a></td>
+										<td style="width: 30%;">44.3M</td>
+										<td style="width: 26%;">2016-01-06</td>
+									</tr> -->
 								</tbody>
 							</table>
 						</div>
@@ -121,13 +127,6 @@
 			</div>
 		</article>
 	</div>
-<script type="text/javascript">
-var jsonData = {
-		
-}
-
-</script>
-
 
 </body>
 </html>

@@ -32,12 +32,10 @@
                     <div class="item-obj">
                         <div class="container">
                             <h4>Dockerfile构建</h4>
-
+                            
                             <form id="buildForm" name="buildForm"
                                 action="<%=path%>/ci/addDockerFileCi.do" method="post"
                                 enctype="multipart/form-data">
-                                
-                                <input type="hidden" id="templateName" name="templateName" value=""></input>
                                 
                                 <div class="row depot-name">
                                     <div class="form-group col-md-7">
@@ -80,69 +78,7 @@
                                         <span id="docExportBtn" class=" btn-info btn-sm"
                                             style="cursor: pointer">另存为模板</span>
                                     </div>
-                                    <!-- <div class="wrap-node">
-                                        <textarea id="code" name="code"
-                                            style="min-height: 280px; display: none;"></textarea>
-                                        <div class="CodeMirror cm-s-mdn-like CodeMirror-wrap">
-                                            <div
-                                                style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 4px; left: 43px;">
-                                                <textarea autocorrect="off" autocapitalize="off"
-                                                    spellcheck="false"
-                                                    style="position: absolute; padding: 0px; width: 1000px; height: 1em; outline: none;"
-                                                    tabindex="0"></textarea>
-                                            </div>
-                                            <div class="CodeMirror-vscrollbar" cm-not-content="true">
-                                                <div style="min-width: 1px; height: 0px;"></div>
-                                            </div>
-                                            <div class="CodeMirror-hscrollbar" cm-not-content="true">
-                                                <div style="height: 100%; min-height: 1px; width: 0px;"></div>
-                                            </div>
-                                            <div class="CodeMirror-scrollbar-filler"
-                                                cm-not-content="true"></div>
-                                            <div class="CodeMirror-gutter-filler" cm-not-content="true"></div>
-                                            <div class="CodeMirror-scroll" tabindex="-1">
-                                                <div class="CodeMirror-sizer"
-                                                    style="margin-left: 39px; margin-bottom: -10px; border-right-width: 20px; min-height: 28px; padding-right: 0px; padding-bottom: 0px;">
-                                                    <div style="position: relative; top: 0px;">
-                                                        <div class="CodeMirror-lines">
-                                                            <div style="position: relative; outline: none;">
-                                                                <div class="CodeMirror-measure">
-                                                                    <pre>x</pre>
-                                                                </div>
-                                                                <div class="CodeMirror-measure"></div>
-                                                                <div style="position: relative; z-index: 1;"></div>
-                                                                <div class="CodeMirror-cursors" style="">
-                                                                    <div class="CodeMirror-cursor"
-                                                                        style="left: 4px; top: 0px; height: 20px;">&nbsp;</div>
-                                                                </div>
-                                                                <div class="CodeMirror-code">
-                                                                    <div style="position: relative;">
-                                                                        <div class="CodeMirror-gutter-wrapper"
-                                                                            style="left: -39px;">
-                                                                            <div
-                                                                                class="CodeMirror-linenumber CodeMirror-gutter-elt"
-                                                                                style="left: 6px; width: 21px;">1</div>
-                                                                        </div>
-                                                                        <pre class=" CodeMirror-line ">
-                                                                            <span style="padding-right: 0.1px;"><span
-                                                                                cm-text="">​</span></span>
-                                                                        </pre>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    style="position: absolute; height: 20px; width: 1px; top: 28px;"></div>
-                                                <div class="CodeMirror-gutters" style="height: 320px;">
-                                                    <div class="CodeMirror-gutter CodeMirror-linenumbers"
-                                                        style="width: 32px;"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> -->
-
+                                    
                                     <div class="form-group col-md-12">
                                         <textarea id="dockerFile" name = "dockerFile"
                                             style="background-color: black; color: #37fc34; border: 0; width: 100%; height: 230px"></textarea>
@@ -163,6 +99,7 @@
                                     </table>
                                 </section>
                                 <!-- <section class="registryinfo">
+
                                 <table class="table registry">
                                     <tbody>
                                     <tr>
@@ -182,12 +119,12 @@
                             </form>
                         </div>
                     </div>
-
                 </div>
+                
                 <!--dockerfile导入模板 -->
-                <div id="dockerfile-import">
+                <div id="dockerfile-import" style="max-height:170px;overflow-y:scroll;overflow-x:hidden;">
                     <table class="table table-hover enabled" id="Path-table-doc"
-                        style="width: 345px; margin: 5px 10px 5px 10px">
+                        style="width: 326px; margin: 5px 10px 5px 10px">
                         <tbody id="dockerfile-body">
                             <c:if test="${empty dockerFiles }">
                                 <tr>

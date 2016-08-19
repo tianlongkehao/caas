@@ -43,6 +43,7 @@ import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.bonc.epm.paas.util.FileUtils;
+import com.github.dockerjava.api.DockerClient;
 @Controller
 public class CiController {
 	private static final Logger log = LoggerFactory.getLogger(CiController.class);
@@ -337,7 +338,7 @@ public class CiController {
         boolean flag = dockerClientService.createAndPushImage(image, inputStream);
         if(flag){
                //删除本地镜像
-            flag = dockerClientService.removeImage(image.getName(), image.getVersion(),null,null);
+            flag = dockerClientService.removeImage(image.getName(), image.getVersion(),null,null,null);
           }
         return flag;
     }
@@ -352,7 +353,7 @@ public class CiController {
 	 * @see
 	 */
 	@RequestMapping(value={"ci/addDockerFileCi.do"},method=RequestMethod.POST)
-    public String addDockerFileCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,String dockerFile,String templateName) {
+    public String addDockerFileCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,String dockerFile) {
 	    User cuurentUser = CurrentUserUtils.getInstance().getUser();
 	    String[] baseImage = dockerFileBaseImage(dockerFile);
 	    if (baseImage.length <= 0 ) {
@@ -389,15 +390,6 @@ public class CiController {
             log.error("modifyResourceCi error:"+e.getMessage());
             return "redirect:/error"; 
         }
-        
-        if (org.apache.commons.lang3.StringUtils.isNotEmpty(templateName)) {
-            DockerFileTemplate dkFile = new DockerFileTemplate();
-            dkFile.setCreateBy(cuurentUser.getId());
-            dkFile.setCreateDate(new Date());
-            dkFile.setDockerFile(dockerFile);
-            dkFile.setTemplateName(templateName);
-            dockerFileTemplateDao.save(dkFile);
-          }
         
         ciDao.save(ci);
         log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
@@ -587,14 +579,16 @@ public class CiController {
 		String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
 		String imageVersion = ci.getImgNameVersion();
 		String imageId = "";
-		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao,imageId);
+		
+		DockerClient dockerClient = dockerClientService.getNormalDockerClientInstance();
+		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao,imageId, dockerClient);
 		if(flag){
 			//上传镜像
-			flag = dockerClientService.pushImage(imageName, imageVersion,ciRecord,ciRecordDao);
+			flag = dockerClientService.pushImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient);
 		}
 		if(flag){
 			//删除本地镜像
-			flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao);
+			flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient);
 		}
 		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
 		ciRecordDao.save(ciRecord);
@@ -658,15 +652,15 @@ public class CiController {
 	}
 	
 	/**
-	 * 匹配dockerFile模板名称有没有重复
+	 * dockerFile模板保存，匹配模板名称是否重复
 	 * 
 	 * @param templateName ： 模板名称
-	 * @return String
+	 * @return dockerFile ： dockerFile文件
 	 * @see
 	 */
-	@RequestMapping("ci/matchTemplateName.do")
+	@RequestMapping("ci/saveDockerFileTemplate.do")
 	@ResponseBody
-    public String matchTemplateName (String templateName) {
+    public String saveDockerFileTemplate (String templateName,String dockerFile) {
         Map<String, Object> map = new HashMap<String, Object>();
         User cUser = CurrentUserUtils.getInstance().getUser();
         for (DockerFileTemplate dkFile : dockerFileTemplateDao.findByCreateBy(cUser.getId())) {
@@ -675,9 +669,17 @@ public class CiController {
             }
             if (dkFile.getTemplateName().equals(templateName)) {
                 map.put("status", "200");
-                break;
+                return JSON.toJSONString(map);
             }
         }
+        DockerFileTemplate dkFile = new DockerFileTemplate();
+        dkFile.setCreateBy(cUser.getId());
+        dkFile.setCreateDate(new Date());
+        dkFile.setDockerFile(dockerFile);
+        dkFile.setTemplateName(templateName);
+        dockerFileTemplateDao.save(dkFile);
+        map.put("status", "400");
+        
         return JSON.toJSONString(map);
     }
 	    

@@ -267,9 +267,9 @@
                 </div>
                 
                  <!--dockerfile导入模板 -->
-                <div id="dockerfile-import" style="display:none">
+                <div id="dockerfile-import" style="display:none; max-height:170px;overflow-y:scroll;overflow-x:hidden;">
                     <table class="table table-hover enabled" id="Path-table-doc"
-                        style="width: 345px; margin: 5px 10px 5px 10px">
+                        style="width: 326px; margin: 5px 10px 5px 10px">
                         <tbody id="dockerfile-body">
                             <c:if test="${empty dockerFiles }">
                                 <tr>
@@ -289,7 +289,7 @@
                         </tbody>
                     </table>
                 </div>
-            
+
             </div>
         </div>
     </article>

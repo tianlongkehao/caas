@@ -48,9 +48,144 @@ function loadStorageList(){
 		}
 	});
 }*/
-$(document).ready(function () {
-	$("#storageReloadBtn").click(function(){
-		window.location.reload();
-	});
+var datas = [ {
+	level:"1",
+	imgtype : "box",
+	filename : "vol1",
+	size : "10M",
+	modDate : "2016-12-10",
+	val : [ {
+		level:"2",
+		imgtype : "box",
+		filename : "1",
+		size : "10M",
+		modDate : "2016-12-10",
+		val:[
+		{
+			level:"3",
+			imgtype : "file",
+			filename : "1",
+			size : "10M",
+			modDate : "2016-12-10"}
+		     ]
+	}, {
+		level:"2",
+		imgtype : "file",
+		filename : "2",
+		size : "30M",
+		modDate : "2016-12-10"
+	}, {
+		level:"2",
+		imgtype : "file",
+		filename : "3",
+		size : "50M",
+		modDate : "2016-12-10"
+	} ]
+}, {
+	level:"1",
+	imgtype : "box",
+	filename : "vol2",
+	size : "20M",
+	modDate : "2016-12-10",
+	val : [ {
+		level:"2",
+		imgtype : "file",
+		filename : "4",
+		size : "20M",
+		modDate : "2016-12-10"
+	}, {
+		level:"2",
+		imgtype : "file",
+		filename : "5",
+		size : "30M",
+		modDate : "2016-12-10"
+	}, {
+		level:"2",
+		imgtype : "file",
+		filename : "6",
+		size : "50M",
+		modDate : "2016-12-10"
+	} ]
+},
 
-});
+];
+/* 存储卷 */
+function expand(obj) {
+	
+	var vol_name = $(obj).find("span.volName")[0].innerHTML;
+	
+	var _table = document.getElementById('table-vol');
+	var _tbody = _table.getElementsByTagName('tbody')[0];
+	_tbody.innerHTML = "";
+
+	var _tr = "";
+	for (var i = 0; i < datas.length; i++) {
+		if (datas[i].filename == vol_name) {
+			for (var j = 0; j < datas[i].val.length; j++) {
+				_tr = '<tr class="vol_list">'
+						+ '<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>'
+						+ '<td style="width: 40%;"><a href="" onclick="expand();"><img class="imgSrc" src=""><span style="margin-left:5px">'
+						+ datas[i].val[j].filename + '</span></a></td>'
+						+ '<td style="width: 30%;">' + datas[i].val[j].size
+						+ '</td>' + '<td style="width: 26%;">'
+						+ datas[i].val[j].modDate + '</td></tr>';
+				$("#tbody-vol").append(_tr);
+				if(datas[i].val[j].imgtype == "box"){
+					$("#tbody-vol").find("img.imgSrc")[j].src = "/images/img-file.png";
+				}else{
+					$("#tbody-vol").find("img.imgSrc")[j].src = "/images/file-f.png";
+				}
+			}
+			
+			
+
+			$("#allboxs").addClass("hide");
+
+			var valPath = '<div class="" style="line-height:40px; id="nextboxs">'
+					+ '<ul style="margin:0px">'
+					+ '<li style="float:left"><a href="#">'
+					+ '返回上一级'
+					+ '</a><span style="padding:5px">'
+					+ '|'
+					+ '</span><a href="">'
+					+ '全部文件'
+					+ '</a><span style="padding:5px">&gt;</span></li>'
+					+ '<li style="float:left">'
+					+ datas[i].filename
+					+ '</li>'
+					+ '</ul>' + '</div>';
+			
+			$("#val-path").append(valPath);
+		}
+	}
+
+}
+
+function volList(){
+	for (var i = 0; i < datas.length; i++) {
+		var tableTr = '<tr class="vol_list">'
+				+ '<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>'
+				+ '<td style="width: 40%;"><a id="aaa" onclick="expand(this);"><img class="imgSrc" src="" ><span class="volName" style="margin-left:5px">'
+				+ datas[i].filename + '</span></a></td>'
+				+ '<td style="width: 30%;">' + datas[i].size
+				+ '</td>' + '<td style="width: 26%;">'
+				+ datas[i].modDate + '</td>' + '</tr>';
+		$("#tbody-vol").append(tableTr);
+		if(datas[i].imgtype == "box"){
+			$("#tbody-vol").find("img.imgSrc")[i].src = "/images/img-file.png";
+		}else{
+			$("#tbody-vol").find("img.imgSrc")[i].src = "/images/file-f.png";
+		}
+	}
+}
+
+$(document)
+		.ready(
+				function() {
+					/*
+					 * $("#storageReloadBtn").click(function(){
+					 * window.location.reload(); });
+					 */
+					volList();
+
+				});

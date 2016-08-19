@@ -1,9 +1,5 @@
 package com.bonc.epm.paas.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,12 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +32,7 @@ import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.esConf;
 import com.bonc.epm.paas.dao.CiDao;
+import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
@@ -49,6 +41,7 @@ import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.Container;
+import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
@@ -104,6 +97,9 @@ public class ServiceController {
 
 	@Autowired
 	private StorageDao storageDao;
+	
+	@Autowired
+	private EnvTemplateDao envTemplateDao;
 
 	@Autowired
 	public DockerClientService dockerClientService;
@@ -238,7 +234,8 @@ public class ServiceController {
 
 		return "service/service.jsp";
 	}
-
+	
+	
 	/**
 	 * 展示container和services
 	 * 
@@ -252,6 +249,15 @@ public class ServiceController {
 		model.addAttribute("menu_flag", "service");
 
 		return "service/service.jsp";
+
+	}
+	
+	@RequestMapping(value = { "service/import" })
+	public String serviceImport(Model model) {
+		
+		model.addAttribute("menu_flag", "service");
+
+		return "service/service-import.jsp";
 
 	}
 
@@ -410,19 +416,20 @@ public class ServiceController {
 		     // 获取基础镜像的暴露端口信息
 			model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
 		}
-
-		boolean flag = getleftResource(model);
+//TODO 
+		/*boolean flag = getleftResource(model);
 		if (!flag) {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
-		}
+		}*/
+		//TODO
 
 		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
 		
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<String> templateNames = envVariableDao.findTemplateName(cUser.getId());
+		List<String> templateNames = envTemplateDao.findTemplateName(cUser.getId());
 		
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
@@ -632,7 +639,7 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
-	public String constructContainer(Service service, String resourceName,String envVariable,String templateName,String portConfig) {
+	public String constructContainer(Service service, String resourceName,String envVariable,String portConfig) {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
@@ -652,9 +659,6 @@ public class ServiceController {
 				envVar.setEnvValue(jsonArray.getJSONObject(i).getString("envValue").trim());
 				envVar.setCreateDate(new Date());
 				envVar.setServiceId(service.getId());
-				if(StringUtils.isNotEmpty(templateName)){
-					envVar.setTemplateName(templateName);
-				}
 				envVariableDao.save(envVar);
 			}
 		}
@@ -740,20 +744,40 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 	}
 	
-	@RequestMapping("service/matchTemplateName.do")
+	/**
+	 * 保存环境变量模板
+	 * 
+	 * @param templateName
+	 * @return 
+	 * @see
+	 */
+	@RequestMapping("service/saveEnvTemplate.do")
 	@ResponseBody
-	public String matchTemplateName (String templateName) {
+	public String saveEnvTemplate (String templateName,String envVariable) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User cUser = CurrentUserUtils.getInstance().getUser();
-		for (EnvVariable envVariable : envVariableDao.findByCreateBy(cUser.getId())) {
-			if (StringUtils.isEmpty(envVariable.getTemplateName())) {
-				continue;
-			}
-			if (envVariable.getTemplateName().equals(templateName)) {
-				map.put("status", "200");
-				break;
-			}
+		
+		for (EnvTemplate envTemplate : envTemplateDao.findByCreateBy(cUser.getId())) {
+            if (envTemplate.getTemplateName().equals(templateName)) {
+                map.put("status", "200"); //模板名称重复
+                return JSON.toJSONString(map);
+            }
+        }
+		
+		if (StringUtils.isNotEmpty(envVariable)) {
+            JSONArray jsonArray = JSONArray.parseArray(envVariable);  
+            for(int i = 0 ; i < jsonArray.size(); i ++ ) {
+                EnvTemplate envTemplate = new EnvTemplate();
+                envTemplate.setCreateBy(cUser.getId());
+                envTemplate.setEnvKey(jsonArray.getJSONObject(i).getString("envKey").trim());
+                envTemplate.setEnvValue(jsonArray.getJSONObject(i).getString("envValue").trim());
+                envTemplate.setCreateDate(new Date());
+                envTemplate.setTemplateName(templateName);
+                envTemplateDao.save(envTemplate);
+            }
+            map.put("status", "400");
 		}
+		
 		return JSON.toJSONString(map);
 	}
 	
@@ -761,13 +785,13 @@ public class ServiceController {
 	 * 查询用户的环境变量模板，导入到环境变量模板中
 	 * @return
 	 */
-	@RequestMapping("service/importEnvVariable.do")
+	@RequestMapping("service/importEnvTemplate.do")
 	@ResponseBody
-	public String findEnvVariables(String templateName){
+	public String findEnvTemplate(String templateName){
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<EnvVariable> envVariables = envVariableDao.findByCreateByAndTemplateName(cUser.getId(),templateName);
-		map.put("data", envVariables);
+		List<EnvTemplate> envTemplates = envTemplateDao.findByCreateByAndTemplateName(cUser.getId(),templateName);
+		map.put("data", envTemplates);
 		return JSON.toJSONString(map);
 	}
 	
@@ -902,7 +926,8 @@ public class ServiceController {
 				String NS = controller.getMetadata().getNamespace();
 				String cmd = "kubectl rolling-update " + serviceName + " --namespace=" + NS
 						+ " --update-period=10s  --image="
-						+ dockerClientService.generateRegistryImageName(imgName, imgVersion);
+						+ dockerClientService.generateRegistryImageName(imgName, imgVersion)
+						+ " --rollback ";
 				boolean flag = cmdexec(cmd);
 				if (flag) {
 					service.setImgVersion(imgVersion);

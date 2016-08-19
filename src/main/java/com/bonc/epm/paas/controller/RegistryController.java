@@ -250,7 +250,7 @@ public class RegistryController {
                     + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
                 flag = cmdexec(cmd);
             }
-            dockerClientService.removeImage(imageName, imageVersion, null, null);
+            dockerClientService.removeImage(imageName, imageVersion, null, null,null);
         }
         if (flag || exist) {
             getDownload(downName+".tar",request,response);

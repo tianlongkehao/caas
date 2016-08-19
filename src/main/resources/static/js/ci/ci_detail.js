@@ -41,7 +41,7 @@ $(document).ready(function(){
         $(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
         dockerFile = $(this).parent().find("tr.focus").find(".dockerFileTemplate").val();
     });
-    
+
 });
 
 function registerDeployEvent(){

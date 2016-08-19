@@ -4,6 +4,7 @@ $(document).ready(function () {
  	$("#dockerfile-import").hide();
  	$("#dockerfile-export").hide();
  	
+
  	$("#buildBtn").click(function(){
         if(checkCiAdd()) {
         	$("#buildForm").submit();
@@ -17,6 +18,17 @@ $(document).ready(function () {
             $(".btn-imageType .btns").removeClass("active");
             $(this).addClass("active");
         });
+    });
+ 	
+ 	//导入模板文件选项对勾
+	var dockerFile = null;
+	$("#Path-table-doc>tbody>tr").on("click", function () {
+		$(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
+        $(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
+        //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
+        $(this).toggleClass("focus");//设定当前行为选中行
+        $(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
+        dockerFile = $(this).parent().find("tr.focus").find(".dockerFileTemplate").val();
     });
  	
  	//导入模板
@@ -42,17 +54,28 @@ $(document).ready(function () {
 	        btn: ['保存', '取消'],
 	        yes: function(index, layero){ 
 	        	var templateName = $("#dockerFileTemplateName").val();
+	        	if (templateName == null || templateName == "") {
+	        		layer.tips('模板名称不能为空','#dockerFileTemplateName',{tips: [1, '#3595CC']});
+					$('#dockerFileTemplateName').focus();
+					return;
+	        	}
+	        	var dockerFile = $("#dockerFile").val();
+	        	if (dockerFile == null || dockerFile == "") {
+	        		layer.tips('DockerFile不能为空','#dockerFile',{tips: [1, '#3595CC']});
+					$('#dockerFile').focus();
+					layer.close(index);
+					return;
+	        	}
 	        	$.ajax({
-					url:ctx+"/ci/matchTemplateName.do",
+					url:ctx+"/ci/saveDockerFileTemplate.do",
 					type: "POST",
-	         		data:{"templateName":templateName},
+	         		data:{"templateName":templateName,"dockerFile":dockerFile},
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
-							layer.alert("环境变量模板名称重复");
+							layer.alert("DockerFile模板名称重复");
 						}else{
-							layer.alert("环境变量模板导入成功");
-							$('#templateName').val(templateName);
+							layer.alert("DockerFile模板导入成功");
 							layer.close(index);
 						}
 					}	
@@ -60,18 +83,6 @@ $(document).ready(function () {
 	        }
 	 })
 	});
-	
-	//导入模板文件选项对勾
-	var dockerFile = null;
-	$("#Path-table-doc>tbody>tr").on("click", function () {
-		$(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
-        $(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
-        //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
-        $(this).toggleClass("focus");//设定当前行为选中行
-        $(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
-        dockerFile = $(this).parent().find("tr.focus").find(".dockerFileTemplate").val();
-    });
-	
 	
 	function checkCiAdd(){
         var imgNameLast = $("#imgNameLast").val().trim();
@@ -142,6 +153,7 @@ $(document).ready(function () {
 
         return true;
     }
+
 	
    
 });

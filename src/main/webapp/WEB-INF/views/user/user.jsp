@@ -60,7 +60,7 @@
                                 <label style="line-height: 35px">省份:</label>
                                 <%--<input type="hidden" class="form-control" style="display: inline; width: 60%" placeholder="搜索省份关键字"
                                        name="search_province">--%>
-                                <select name="search_province" id="search_province" style="height: 30px;display: inline;">
+                                <select name="search_province" id="search_province" style="height: 30px;display: inline; border: 1px solid #ccc;border-radius: 4px;">
                                     <option name="search_province" ></option>
                                     <option name="search_province" value="1">北京</option>
                                     <option name="search_province" value="2">天津</option>
@@ -106,7 +106,7 @@
                                	<input style="line-height: 40px" type="checkbox" name="search_autority" value="2">租户
                                 <input type="hidden" name="search_autority">
                             </div>
-           					<div class="searchs" align="right" style="float: left; text-align: center;margin-left: 15px">
+           					<div class="searchs" align="right" style="float: right; text-align: center;">
                                 <div class="form-group">
                                     <div class="input-group">
                                     	<span class="input-group-btn">
