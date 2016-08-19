@@ -181,6 +181,12 @@ $(document).ready(function(){
 	$("#cratePATH").click(function(){
 		var addName = $("#Name").val();
 		var addValue = $("#Value").val();
+		//环境变量Key只能是字母数字下划线；
+		if(addName.search(/^[a-z][a-z0-9_]*$/) === -1){
+			layer.tips('环境变量key只能是字母数字下划线','#Name',{tips: [1, '#3595CC']});
+			$('#Name').focus();
+			return;
+		}
 		//判断key是否重复，
 		var arrayKey = $("#arrayKey").val().split(",");
 		for(var i = 0; i<arrayKey.length; i++){
