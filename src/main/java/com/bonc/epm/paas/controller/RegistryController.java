@@ -238,9 +238,9 @@ public class RegistryController {
     public void downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
                                 Model model,HttpServletRequest request, HttpServletResponse response){
         
-        String downName = imageName.substring(imageName.lastIndexOf("/")+1);
+        String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
         
-        File file = new File("../downimage/"+downName+".tar");
+        File file = new File(imagePath+downName+".tar");
         boolean exist = file.exists();
         boolean flag = false;
         if (!exist) {
