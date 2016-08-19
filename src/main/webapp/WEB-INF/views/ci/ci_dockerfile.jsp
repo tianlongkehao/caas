@@ -37,8 +37,6 @@
                                 action="<%=path%>/ci/addDockerFileCi.do" method="post"
                                 enctype="multipart/form-data">
                                 
-                                <input type="hidden" id="templateName" name="templateName" value=""></input>
-                                
                                 <div class="row depot-name">
                                     <div class="form-group col-md-7">
                                         <div class="" style="margin-top:25px">

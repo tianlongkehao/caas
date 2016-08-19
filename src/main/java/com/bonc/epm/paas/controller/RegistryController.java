@@ -1,10 +1,20 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,10 +26,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.SshConnect;
 
 /**
  * 镜像
@@ -35,6 +47,26 @@ public class RegistryController {
 	private UserDao userDao;
 	@Autowired
 	private FavorDao favorDao;
+	@Autowired
+	private DockerClientService dockerClientService;
+	
+	@Value("${docker.image.url}")
+    private String url;
+	
+	@Value("${docker.ssh.username}")
+	private String userName;
+	
+	@Value("${docker.ssh.password}")
+	private String password;
+	
+	@Value("${docker.ssh.address}")
+	private String address;
+	
+	@Value("${paas.image.path}")
+	public String imagePath = "../downimage";
+	
+	@Value("${paas.saveimage.path}")
+	public String saveImagePath;
 	
 	/**
 	 * 响应镜像查询按钮
@@ -189,6 +221,107 @@ public class RegistryController {
 			return "success";
 		}
 	}
+	
+	/**
+     * 响应镜像“下载”按钮的实现
+     * 
+     * @param imgID ： 镜像Id
+     * @param imageName ： 镜像名称
+     * @param imageVersion 镜像版本
+     * @param resourceName 资源
+     * @param model model
+     * @return  String
+     * @see
+     */
+    @RequestMapping(value = {"registry/downloadImage"}, method = RequestMethod.GET)
+    @ResponseBody
+    public void downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
+                                Model model,HttpServletRequest request, HttpServletResponse response){
+        
+        String downName = imageName.substring(imageName.lastIndexOf("/")+1);
+        
+        File file = new File("../downimage/"+downName+".tar");
+        boolean exist = file.exists();
+        boolean flag = false;
+        if (!exist) {
+            boolean complete= dockerClientService.pullImage(imageName, imageVersion);
+            if (complete) {
+                String cmd = "sudo docker save -o " + saveImagePath
+                    + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
+                flag = cmdexec(cmd);
+            }
+            dockerClientService.removeImage(imageName, imageVersion, null, null,null);
+        }
+        if (flag || exist) {
+            getDownload(downName+".tar",request,response);
+        }
+    }
+    
+    /**
+     * 下载镜像文件
+     * 
+     * @param fileName : 文件名称
+     * @param request ：request
+     * @param response  ： response
+     * @see
+     */
+    public void getDownload(String fileName,HttpServletRequest request, HttpServletResponse response) {  
+        
+        //设置文件MIME类型  
+        response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
+        //设置Content-Disposition  
+        response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
+        try {  
+            InputStream myStream = new FileInputStream(imagePath+"/"+fileName);  
+            IOUtils.copy(myStream, response.getOutputStream());  
+            response.flushBuffer();  
+        } catch (IOException e) {  
+            LOG.error("downloadImage error:"+e.getMessage());
+        }  
+    }
+    
+    /**
+     * ssh cmd
+     * 
+     * @param cmd
+     * @return
+     */
+    public boolean cmdexec(String cmd) {
+        try {
+            SshConnect.connect(userName, password, address, 22);
+            boolean b = false;
+            String rollingLog = SshConnect.exec(cmd, 1000);
+            while (!b) {
+                String str = SshConnect.exec("", 10000);
+                if (StringUtils.isNotBlank(str)) {
+                    rollingLog += str;
+                }
+                b = (str.endsWith("$") || str.endsWith("#"));
+                //b = str.endsWith("updated");
+            }
+            LOG.info("rolling-update log:-"+rollingLog);
+            String result = SshConnect.exec("echo $?", 1000);
+            if (StringUtils.isNotBlank(result)) {
+                if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
+                    new InterruptedException();
+                }
+            } else {
+                new InterruptedException();
+            }
+        } catch (InterruptedException e) {
+            LOG.error(e.getMessage());
+            LOG.error("error:执行command失败");
+            return false;
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            LOG.error("error:ssh连接失败");
+            return false;
+        } finally {
+            SshConnect.disconnect();
+        }
+        return true;
+    }
+    
 	
 	/**删除当前镜像
 	 * 
