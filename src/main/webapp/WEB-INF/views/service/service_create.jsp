@@ -302,15 +302,10 @@
 										</ul>
 									</div>
 								</form>
-<<<<<<< HEAD
 								<!-- 环境变量导入模板 -->
 								<div id="environment-variable" style="display:none; max-height:360px;overflow-y:scroll;overflow-x:hidden;">
 									<table class="table table-hover enabled" id="Path-table"
 										style="width: 326px; margin: 5px 10px 5px 10px">
-=======
-								<div id="environment-variable" style="max-height:170px;overflow-y:scroll;overflow-x:hidden;">
-									<table class="table table-hover enabled" id="Path-table" style="width: 326px; margin: 5px 10px 5px 10px">
->>>>>>> refs/heads/envdevelop
 										<tbody id="Path-env">
 											<c:if test="${empty templateNames }">
 												<tr>
