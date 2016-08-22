@@ -182,7 +182,7 @@ $(document).ready(function(){
 		var addName = $("#Name").val();
 		var addValue = $("#Value").val();
 		//环境变量Key只能是字母数字下划线；
-		if(addName.search(/^[a-z][a-z0-9_]*$/) === -1){
+		if(addName.search(/^[0-9a-zA-Z_]+$/) === -1){
 			layer.tips('环境变量key只能是字母数字下划线','#Name',{tips: [1, '#3595CC']});
 			$('#Name').focus();
 			return;
@@ -263,17 +263,21 @@ $(document).ready(function(){
 	
 	//导入模板文件选项对勾
 	var templateName = null;
-	$("#Path-table>tbody>tr").on("click", function () {
+	$(document).on("click","#Path-table tr", function () {
 		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
 		$(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
 		//$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
 		$(this).toggleClass("focus");//设定当前行为选中行
 		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
 		templateName = $(this).parent().find("tr.focus").find(".templateName").val();
+		console.log(templateName);
 	});
+	
+	
 	
 	//导入模板
 	$("#importBtn").click(function(){
+		loadEnvironment();
 		layer.open({
 		 	type:1,
 	        title: '环境变量模板',
@@ -345,10 +349,10 @@ $(document).ready(function(){
 		         		data:{"templateName":templateName,"envVariable":envVariable},
 						success:function(data){
 							data = eval("(" + data + ")");
-							if(data.status=="200"){
-								layer.alert("环境变量模板名称重复");
-							}else if (data.status == "400") {
-								layer.alert("环境变量模板导入成功");
+							if(data.status=="400"){
+								layer.msg("环境变量模板名称重复", {icon: 5});
+							}else if (data.status == "200") {
+								layer.msg("环境变量模板导入成功",{icon: 6});
 								layer.close(index);
 							}
 						}	
@@ -445,6 +449,33 @@ $(document).ready(function(){
     });
 
 });
+
+//单击导入模板，加载模板数据
+function loadEnvironment(){
+	 $.ajax({
+  		url : ctx + "/service/loadEnvTemplate.do",
+  		success : function(data) {
+  			data = eval("(" + data + ")");
+  			var html = "";
+	            if (data != null) {
+                	for (var i in data.data) {
+                		var templateName = data.data[i];
+                		html += '<tr>'+
+                				'<td class="vals vals-env">'+templateName+'<span class="vals-path hide"><i class="fa fa-check"></i></span>'+
+                				'<input type="hidden" class="templateName" value="'+templateName+'" /></td>'+
+                			'</tr>'
+                	}
+	            } 
+	            if (html == "") {
+	            	html += '<tr><td>没有保存的模板</td></tr>'	
+	            }
+	            $("#Path-env").empty();
+	            $("#Path-env").append(html);
+  			}
+	 });
+}
+
+
 
 //保存环境变量到json中
 function saveEnvVariable() {

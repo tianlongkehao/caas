@@ -207,9 +207,7 @@ public class CiController {
 	@RequestMapping(value={"ci/dockerfile"},method=RequestMethod.GET)
 	public String dockerfile(Model model){
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
-		List<DockerFileTemplate> dockerFiles = dockerFileTemplateDao.findByCreateBy(cuurentUser.getId());
         model.addAttribute("username", cuurentUser.getUserName());
-        model.addAttribute("dockerFiles", dockerFiles);
         model.addAttribute("menu_flag", "ci");
 		return "ci/ci_dockerfile.jsp";
 	}
@@ -652,6 +650,22 @@ public class CiController {
 	}
 	
 	/**
+     * 加载DockerFile模板数据
+     * 
+     * @return String
+     * @see
+     */
+    @RequestMapping("ci/loadDockerFileTemplate.do")
+    @ResponseBody
+    public String loadEnvTemplate(){
+        Map<String, Object> map = new HashMap<String, Object>();
+        User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        List<DockerFileTemplate> dockerFiles = dockerFileTemplateDao.findByCreateBy(cuurentUser.getId());
+        map.put("data", dockerFiles);
+        return JSON.toJSONString(map);
+    }
+	
+	/**
 	 * dockerFile模板保存，匹配模板名称是否重复
 	 * 
 	 * @param templateName ： 模板名称
@@ -668,7 +682,7 @@ public class CiController {
                 continue;
             }
             if (dkFile.getTemplateName().equals(templateName)) {
-                map.put("status", "200");
+                map.put("status", "400");
                 return JSON.toJSONString(map);
             }
         }
@@ -678,7 +692,7 @@ public class CiController {
         dkFile.setDockerFile(dockerFile);
         dkFile.setTemplateName(templateName);
         dockerFileTemplateDao.save(dkFile);
-        map.put("status", "400");
+        map.put("status", "200");
         
         return JSON.toJSONString(map);
     }

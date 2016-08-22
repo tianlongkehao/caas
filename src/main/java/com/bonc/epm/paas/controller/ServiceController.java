@@ -426,10 +426,8 @@ public class ServiceController {
 
 		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
-		
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<String> templateNames = envTemplateDao.findTemplateName(cUser.getId());
 		
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
@@ -437,7 +435,6 @@ public class ServiceController {
 		model.addAttribute("imageVersion", imageVersion);
 		model.addAttribute("isDepoly", isDepoly);
 		model.addAttribute("menu_flag", "service");
-		model.addAttribute("templateNames",templateNames);
 		return "service/service_create.jsp";
 	}
 	
@@ -745,6 +742,22 @@ public class ServiceController {
 	}
 	
 	/**
+	 * 加载环境变量模板数据
+	 * 
+	 * @return String
+	 * @see
+	 */
+	@RequestMapping("service/loadEnvTemplate.do")
+    @ResponseBody
+	public String loadEnvTemplate(){
+	    Map<String, Object> map = new HashMap<String, Object>();
+        User cUser = CurrentUserUtils.getInstance().getUser();
+        List<String> templateNames = envTemplateDao.findTemplateName(cUser.getId());
+        map.put("data", templateNames);
+        return JSON.toJSONString(map);
+	}
+	
+	/**
 	 * 保存环境变量模板
 	 * 
 	 * @param templateName
@@ -759,7 +772,7 @@ public class ServiceController {
 		
 		for (EnvTemplate envTemplate : envTemplateDao.findByCreateBy(cUser.getId())) {
             if (envTemplate.getTemplateName().equals(templateName)) {
-                map.put("status", "200"); //模板名称重复
+                map.put("status", "400"); //模板名称重复
                 return JSON.toJSONString(map);
             }
         }
@@ -775,7 +788,7 @@ public class ServiceController {
                 envTemplate.setTemplateName(templateName);
                 envTemplateDao.save(envTemplate);
             }
-            map.put("status", "400");
+            map.put("status", "200");
 		}
 		
 		return JSON.toJSONString(map);
