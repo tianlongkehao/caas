@@ -80,11 +80,8 @@
 								<%-- 容器配置 --%>
 								<form id="buildService" name="buildService"
 									action="<%=path%>/service/constructContainer.do">
-									<input type="hidden" id="envVariable" name="envVariable"
-										value=""></input> <input type="hidden" id="portConfig"
-										name="portConfig" value=""></input> <input type="hidden"
-										id="templateName" name="templateName" value=""></input>
-
+									<input type="hidden" id="envVariable" name="envVariable" value=""></input>
+									<input type="hidden" id="portConfig" name="portConfig" value=""></input>
 									<div class="host_step2">
 										<ul class="safeSet">
 											<li class="line-h-3"><span class="ve_top">镜像名称：</span> <input
