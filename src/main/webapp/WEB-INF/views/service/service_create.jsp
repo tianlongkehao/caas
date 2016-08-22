@@ -211,7 +211,7 @@
 											<li class="hide-set" id="save_roll_dev">
 												<ul id="mountPathList">
 													<li class="mount line-h-3"><span class="ve_top">挂载地址：</span>
-														<table class="pull-left" style="margin-left: 150px;">
+														<table class="pull-left">
 															<tbody>
 																<tr>
 																	<td><input type="text" id="mountPath"
