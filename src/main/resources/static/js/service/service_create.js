@@ -5,6 +5,7 @@ $(document).ready(function(){
 	
 	$(".createPadding").addClass("hide");
 	
+	
 	$("#createButton").click(function(){
 		var name = $('#serviceName').val();
 		// check the name of container
@@ -181,6 +182,9 @@ $(document).ready(function(){
 //		alert($("#state_service").prop("checked"));
 		$("#save_roll_dev").toggle();
 		$("#mountPath").focus();
+		//调节界面高度
+		var imagePage_height = $(".host_step2").height();
+    	$(".step-inner").height(imagePage_height);
 	})
 
 	// 启动命令
@@ -188,6 +192,9 @@ $(document).ready(function(){
 	$("#startCommand").click(function(){
 		$("#startCommand_li").toggle();
 		$("#startCommand_input").focus();
+		//调节界面高度
+		var imagePage_height = $(".host_step2").height();
+    	$(".step-inner").height(imagePage_height);
 	})
 	
 	// 添加环境变量
@@ -216,7 +223,9 @@ $(document).ready(function(){
 		'</tr>'
 		$("#Path-oper1").append(tr);
 		}
-		
+		//调节界面高度
+		var imagePage_height = $(".host_step2").height();
+    	$(".step-inner").height(imagePage_height);	
 	});
 	
 	//自动化伸缩范围&伸缩阈值
@@ -263,8 +272,12 @@ $(document).ready(function(){
 				'</tr>';
     		$("#pushPrptpcol").append(portTr);
         		}
+    		//调节界面高度
+    		var imagePage_height = $(".host_step2").height();
+        	$(".step-inner").height(imagePage_height);
     		}
 		});
+		
 	});
 	
 	
@@ -430,7 +443,8 @@ $(document).ready(function(){
             $(".step-inner").css("left","-100%");
             $(".radius_step").removeClass("action").eq(1).addClass("action");
         }
-
+    	var imagePage_height = $(".host_step1").height();
+    	$(".step-inner").height(imagePage_height);
     });
 
 });
@@ -496,6 +510,8 @@ function loadImageList() {
                     	$("#imageList").html(html);
 
                         $(".pull-deploy").click(function(){
+                        	var containerRes_height = $(".host_step2").height();
+                        	$(".step-inner").height(containerRes_height);
 
                         	var imageName = $(this).attr("imageName");
                         	var imageVersion = $(this).attr("imageVersion");
@@ -589,7 +605,9 @@ function deleteRow(obj){
 	}
 	$("#arrayKey").attr("value",newArray);
 	$(obj).parent().parent().remove();
-	
+	//调节界面高度
+	var imagePage_height = $(".host_step2").height();
+	$(".step-inner").height(imagePage_height);	
 }
 
 function getServiceStorageVol(){
@@ -634,6 +652,9 @@ function deletePortRow(obj,int){
 			}
 	 });
 	 $(obj).parent().parent().remove();
+	//调节界面高度
+	var imagePage_height = $(".host_step2").height();
+ 	$(".step-inner").height(imagePage_height);	
 }
 
 /*
