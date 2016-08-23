@@ -273,15 +273,15 @@
                                                             <span>${service.createDate }</span>
                                                         </td>
                                                         <td style="width:8%">
-                                                            <a id="startContainer" class="no-drop" href="javascript:createContainer()">
-					                                        	<i class="fa fa-play"></i>
-						                                    </a>
-						                                    <a id="stopContainer" class="no-drop" href="javascript:stopContainer()" style="margin-left:10px">
-						                                        <i class="fa fa-power-off"></i>
-						                                    </a>
-	                                                    	<a id="deleteButton" class="no-drop" href="javascript:delContainer()" style="margin-left:10px">
-						                                        <i class="fa fa-trash"></i>
-						                                    </a>
+                                                            <a id="${service.id}_start" class="startContainer_a" href="javascript:oneStartContainer(${service.id},${service.status})">
+					                                        			<i class="fa fa-play"></i>
+						                                    	  </a>
+						                                    	  <a id="${service.id}_stop" class="stopContainer_a" href="javascript:oneStopContainer(${service.id},${service.status})" style="margin-left:10px">
+						                                        		<i class="fa fa-power-off"></i>
+						                                    	  </a>
+						                                    	  <a id="${service.id}_del" class="deleteButton_a" href="javascript:oneDeleteContainer(${service.id})" style="margin-left:10px">
+						                                        		<i class="fa fa-trash"></i>
+						                                        </a>
                                                         </td>
                                                     </tr>
 

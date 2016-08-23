@@ -933,6 +933,9 @@ public class ServiceController {
 					serviceDao.save(service);
 					map.put("status", "200");
 				} else {
+				   String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS 
+				                               + " --rollback";
+				   cmdexec(rollBackCmd);
 					map.put("status", "400");
 				}
 			}
