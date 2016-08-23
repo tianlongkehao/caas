@@ -32,17 +32,6 @@ $(document).ready(function () {
     });
 	
 	
-//	$(document).on("click","#Path-table tr", function () {
-//		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
-//		$(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
-//		//$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
-//		$(this).toggleClass("focus");//设定当前行为选中行
-//		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
-//		templateName = $(this).parent().find("tr.focus").find(".templateName").val();
-//		console.log(templateName);
-//	});
-	
- 	
  	//导入模板
 	$("#docImportBtn").click(function(){
 		loadDockerFileTemplate();
@@ -55,7 +44,7 @@ $(document).ready(function () {
 	        	$("#dockerFile").val(dockerFile);
 	        	layer.close(index);
 	        }
-	 })
+		})
 	});
 	
 	//另存为模板
@@ -192,7 +181,33 @@ $(document).ready(function () {
 
         return true;
     }
-
 	
-   
 });
+
+
+//多文件上传
+function selectFile(input) {
+	var file_div = "";
+	var obj_files = document.getElementById("sourceCode");
+	var length = obj_files.files.length;
+	for (var i = 0; i < length; i++) {
+		
+		file_div += '<div class="alert alert-info alert-dismissable col-md-3" style="width: 176px; margin-left: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-top: 7px; padding-bottom: 7px;">'+
+		'<span>'+obj_files.files[i].name+'</span></div>';
+//		<button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="delFile(this)">&times;</button>
+	}
+	$("#input-con").empty();
+	$("#input-con").append(file_div);
+	
+}
+//删除已上传的某个文件
+function delFile(obj){
+	var thisText = $(obj).next().text();
+	var obj_files = document.getElementById("sourceCode");
+	var length = obj_files.files.length;
+	for (var i = 0; i < length; i++) {
+		if(thisText == obj_files.files[i].name){
+			obj_files.onDelete(obj_files.files[i]);
+		}
+	}
+}

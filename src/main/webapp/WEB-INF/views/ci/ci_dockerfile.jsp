@@ -67,9 +67,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-md-12">
-                                        <label for="sourceCode">上传程序包</label> <input type="file"
-                                            name="sourceCode" id="sourceCode">
+                                        <label for="sourceCode">上传程序包</label> <input type="file" multiple="multiple" 
+                                         onchange="selectFile(this)"  name="sourceCode" id="sourceCode" autocomplete="off">
                                     </div>
+                                </div>
+                                <div class="row" id="input-con">
+                                    
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-md-12">

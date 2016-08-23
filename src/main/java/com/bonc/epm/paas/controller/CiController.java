@@ -351,7 +351,7 @@ public class CiController {
 	 * @see
 	 */
 	@RequestMapping(value={"ci/addDockerFileCi.do"},method=RequestMethod.POST)
-    public String addDockerFileCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,String dockerFile) {
+    public String addDockerFileCi(Ci ci,@RequestParam("sourceCode") MultipartFile[] sourceCodes,String dockerFile) {
 	    User cuurentUser = CurrentUserUtils.getInstance().getUser();
 	    String[] baseImage = dockerFileBaseImage(dockerFile);
 	    if (baseImage.length <= 0 ) {
@@ -377,8 +377,10 @@ public class CiController {
             if(!file.exists()){
                 file.mkdirs();
             }
-            if (!sourceCode.isEmpty()) {
-                FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
+            for (MultipartFile sourceCode : sourceCodes) {
+                if (!sourceCode.isEmpty()) {
+                    FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
+                }
             }
             if (!dockerFile.isEmpty()) {
                 ByteArrayInputStream in=new ByteArrayInputStream(dockerFile.getBytes());  
