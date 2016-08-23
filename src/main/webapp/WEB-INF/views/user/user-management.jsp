@@ -29,7 +29,7 @@
 
                 <aside class="aside-btn">
                     <div class="btns-group">
-                        <span class="btn btn-defaults btn-white"><i class="icon-map-marker"></i><span class="ic_left">用户管理</span></span>
+                        <span class="btn btn-defaults btn-white"><i class="fa fa-map-marker"></i><span class="ic_left">用户管理</span></span>
                     </div>
                 </aside>
                 <div class="caption clearfix">
@@ -86,6 +86,8 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        
                     </form>
                 </div>
                 <div class="itemTable">

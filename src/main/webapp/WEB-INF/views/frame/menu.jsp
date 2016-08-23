@@ -232,6 +232,7 @@
             $(".nav-menu>li").css("background-color","transparent");
             $(".nav-menu>li").children(".nav-item-hover").css("display","none");
             $(this).css("background-color","#3c81e0");
+            $(this).css("font-size","110%");
             $(this).children(".nav-item-hover").css("display","block");
         });
 
@@ -239,6 +240,7 @@
             $(this).css("background-color","transparent");
             $(this).children(".nav-item-hover").css("display","none");
             $(".item-click").css("background-color","#3c81e0");
+            
         });
 
     });
