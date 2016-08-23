@@ -211,7 +211,7 @@
 											<li class="hide-set" id="save_roll_dev">
 												<ul id="mountPathList">
 													<li class="mount line-h-3"><span class="ve_top">挂载地址：</span>
-														<table class="pull-left" style="margin-left: 150px;">
+														<table class="pull-left">
 															<tbody>
 																<tr>
 																	<td><input type="text" id="mountPath"
@@ -307,22 +307,7 @@
 									<table class="table table-hover enabled" id="Path-table"
 										style="width: 326px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
-											<c:if test="${empty templateNames }">
-												<tr>
-													<td>没有保存的模板</td>
-												</tr>
-											</c:if>
-											<c:if test="${not empty templateNames }">
-												<c:forEach var="templateName" items="${templateNames }">
-													<tr>
-														<td class="vals vals-env">${templateName }<span
-															class="vals-path hide"><i class="fa fa-check"></i></span>
-															<input type="hidden" class="templateName"
-															value="${templateName }" />
-														</td>
-													</tr>
-												</c:forEach>
-											</c:if>
+										
 										</tbody>
 									</table>
 								</div>

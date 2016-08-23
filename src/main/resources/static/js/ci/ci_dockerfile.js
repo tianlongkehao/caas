@@ -22,7 +22,7 @@ $(document).ready(function () {
  	
  	//导入模板文件选项对勾
 	var dockerFile = null;
-	$("#Path-table-doc>tbody>tr").on("click", function () {
+	$(document).on("click","#Path-table-doc tr", function () {
 		$(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
         $(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
         //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
@@ -30,9 +30,11 @@ $(document).ready(function () {
         $(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
         dockerFile = $(this).parent().find("tr.focus").find(".dockerFileTemplate").val();
     });
- 	
+	
+	
  	//导入模板
 	$("#docImportBtn").click(function(){
+		loadDockerFileTemplate();
 		layer.open({
 		 	type:1,
 	        title: 'dockerfile模板',
@@ -42,7 +44,7 @@ $(document).ready(function () {
 	        	$("#dockerFile").val(dockerFile);
 	        	layer.close(index);
 	        }
-	 })
+		})
 	});
 	
 	//另存为模板
@@ -72,10 +74,10 @@ $(document).ready(function () {
 	         		data:{"templateName":templateName,"dockerFile":dockerFile},
 					success:function(data){
 						data = eval("(" + data + ")");
-						if(data.status=="200"){
-							layer.alert("DockerFile模板名称重复");
+						if(data.status=="400"){
+							layer.msg("DockerFile模板名称重复",{icon: 5});
 						}else{
-							layer.alert("DockerFile模板导入成功");
+							layer.msg("DockerFile模板导入成功",{icon: 6});
 							layer.close(index);
 						}
 					}	
@@ -83,6 +85,32 @@ $(document).ready(function () {
 	        }
 	 })
 	});
+	
+	//单击导入模板，加载模板数据
+	function loadDockerFileTemplate(){
+		 $.ajax({
+	  		url : ctx + "/ci/loadDockerFileTemplate.do",
+	  		success : function(data) {
+	  			data = eval("(" + data + ")");
+	  			var html = "";
+		            if (data != null) {
+	                	for (var i in data.data) {
+	                		var dockerFile = data.data[i];
+	                		html += "<tr>"+
+	                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
+	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.dockerFile+"' /></td>"+
+	                			"</tr>"
+	                	}
+		            } 
+		            if (html == "") {
+		            	html += '<tr><td>没有保存的模板</td></tr>'	
+		            }
+		            $("#dockerfile-body").empty();
+		            $("#dockerfile-body").append(html);
+	  			}
+		 });
+	}
+
 	
 	function checkCiAdd(){
         var imgNameLast = $("#imgNameLast").val().trim();
@@ -153,7 +181,33 @@ $(document).ready(function () {
 
         return true;
     }
-
 	
-   
 });
+
+
+//多文件上传
+function selectFile(input) {
+	var file_div = "";
+	var obj_files = document.getElementById("sourceCode");
+	var length = obj_files.files.length;
+	for (var i = 0; i < length; i++) {
+		
+		file_div += '<div class="alert alert-info alert-dismissable col-md-3" style="width: 176px; margin-left: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-top: 7px; padding-bottom: 7px;">'+
+		'<span>'+obj_files.files[i].name+'</span></div>';
+//		<button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="delFile(this)">&times;</button>
+	}
+	$("#input-con").empty();
+	$("#input-con").append(file_div);
+	
+}
+//删除已上传的某个文件
+function delFile(obj){
+	var thisText = $(obj).next().text();
+	var obj_files = document.getElementById("sourceCode");
+	var length = obj_files.files.length;
+	for (var i = 0; i < length; i++) {
+		if(thisText == obj_files.files[i].name){
+			obj_files.onDelete(obj_files.files[i]);
+		}
+	}
+}

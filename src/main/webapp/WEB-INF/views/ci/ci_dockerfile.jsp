@@ -67,9 +67,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-md-12">
-                                        <label for="sourceCode">上传程序包</label> <input type="file"
-                                            name="sourceCode" id="sourceCode">
+                                        <label for="sourceCode">上传程序包</label> <input type="file" multiple="multiple" 
+                                         onchange="selectFile(this)"  name="sourceCode" id="sourceCode" autocomplete="off">
                                     </div>
+                                </div>
+                                <div class="row" id="input-con">
+                                    
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-md-12">
@@ -126,21 +129,7 @@
                     <table class="table table-hover enabled" id="Path-table-doc"
                         style="width: 326px; margin: 5px 10px 5px 10px">
                         <tbody id="dockerfile-body">
-                            <c:if test="${empty dockerFiles }">
-                                <tr>
-                                    <td>没有保存的模板</td>
-                                </tr>
-                            </c:if>
-                            <c:if test="${not empty dockerFiles }">
-                                <c:forEach var = "dockerFile" items = "${dockerFiles }">
-		                            <tr>
-		                                <td class="vals vals-doc">${dockerFile.templateName }
-		                                  <span class="doc-tr hide"><i class="fa fa-check"></i></span>
-		                                   <input type="hidden" class="dockerFileTemplate" value='${dockerFile.dockerFile }' />
-		                                </td>
-		                            </tr>
-		                        </c:forEach>
-                            </c:if>
+                           
                         </tbody>
                     </table>
                 </div>
