@@ -75,18 +75,7 @@
 									</div>
 								</div>
 								<div class="row" id="input-con">
-									<!-- <div class="alert alert-info alert-dismissable col-md-3" value="www.war"
-										style="width: 176px; margin-left: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-top: 7px; padding-bottom: 7px;">
-										<button type="button" class="close" data-dismiss="alert" id="aaa"
-											aria-hidden="true">&times;</button>
-										<span>www.war</span>
-									</div>
-									<div class="alert alert-info alert-dismissable col-md-3"
-										style="width: 176px; margin-left: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-top: 7px; padding-bottom: 7px;">
-										<button type="button" class="close" data-dismiss="alert"
-											aria-hidden="true">&times;</button>
-										www.war
-									</div> -->
+									
 								</div>
 								
 								<div class="row">
