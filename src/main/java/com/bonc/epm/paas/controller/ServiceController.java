@@ -699,7 +699,7 @@ public class ServiceController {
 				portConfigDao.save(portCon);
 				
 				// 向map中添加生成的node端口
-				smalSet.add(Integer.valueOf(portCon.getContainerPort()));
+				smalSet.add(Integer.valueOf(portCon.getContainerPort().trim()));
 			}
 		}
 		//保存
