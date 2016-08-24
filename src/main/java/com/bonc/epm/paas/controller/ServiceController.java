@@ -414,7 +414,20 @@ public class ServiceController {
 		if (imageName != null) {
 			isDepoly = "deploy";
 		     // 获取基础镜像的暴露端口信息
-			model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
+			List<PortConfig> list = getBaseImageExposedPorts(imgID);
+			if (null == list) {
+			    list = new ArrayList<PortConfig>();
+			    PortConfig portConfig = new PortConfig();
+			    portConfig.setContainerPort("8080");
+			    int randomPort = vailPortSet();
+			    if (-1 != randomPort) {
+			        portConfig.setMapPort(String.valueOf(randomPort));                       
+			    } else {
+			        portConfig.setMapPort("-1");
+                 }
+			    list.add(portConfig);
+			}
+			model.addAttribute("portConfigs",JSON.toJSONString(list));
 		}
 		//TODO 
 		boolean flag = getleftResource(model);
@@ -444,26 +457,28 @@ public class ServiceController {
         if (null != ci) {
             //Image image = imageDao.findByNameAndVersion(ci.getBaseImageName().substring(ci.getBaseImageName().indexOf("/") +1),ci.getBaseImageVersion());
             Image image = imageDao.findById(ci.getBaseImageId());
-            InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
-            // v1.9
-            long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
-            if (countOfExposedPort > 0) {
-                ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
-                List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
-                for (int i = 0;i<countOfExposedPort;i++) {
-                    PortConfig portConfig = new PortConfig();
-                    portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
-                    int randomPort = vailPortSet();
-                    if (-1 != randomPort) {
-                        portConfig.setMapPort(String.valueOf(randomPort));                       
-                    } else {
-                        portConfig.setMapPort("-1");
+            if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+                InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
+                // v1.9
+                long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
+                if (countOfExposedPort > 0) {
+                    ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
+                    List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
+                    for (int i = 0;i<countOfExposedPort;i++) {
+                        PortConfig portConfig = new PortConfig();
+                        portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
+                        int randomPort = vailPortSet();
+                        if (-1 != randomPort) {
+                            portConfig.setMapPort(String.valueOf(randomPort));                       
+                        } else {
+                            portConfig.setMapPort("-1");
+                              }
+                        tmpPortConfigs.add(portConfig);
                     }
-                    tmpPortConfigs.add(portConfig);
+                    return tmpPortConfigs;
                 }
-                return tmpPortConfigs;
-            }
-        }
+               }
+          }
         return null;
     }
     
@@ -472,9 +487,20 @@ public class ServiceController {
     public String getPortConfig(String imgID){
         List<PortConfig> list=getBaseImageExposedPorts(imgID);
         Map<String,Object> map = new HashMap<String,Object>();
+        if (null == list) {
+            list = new ArrayList<PortConfig>();
+            PortConfig portConfig = new PortConfig();
+            portConfig.setContainerPort("8080");
+            int randomPort = vailPortSet();
+            if (-1 != randomPort) {
+                portConfig.setMapPort(String.valueOf(randomPort));                       
+            } else {
+                portConfig.setMapPort("-1");
+                  }
+            list.add(portConfig);
+          }
         map.put("data",list);
-        return JSON.toJSONString(map); 
-           
+        return JSON.toJSONString(map);
     }
 
 	public boolean getleftResource(Model model) {
@@ -1143,7 +1169,7 @@ public class ServiceController {
 			List<PortConfig> bindPort = portConfigDao.findByServiceId(id);
 			if (CollectionUtils.isNotEmpty(bindPort)) {
 			    for (PortConfig oneRow : bindPort) {
-			        smalSet.remove(Integer.valueOf(oneRow.getContainerPort()));
+			        smalSet.remove(Integer.valueOf(oneRow.getContainerPort().trim()));
 			    }
 			    portConfigDao.deleteByServiceId(id);
 			}
