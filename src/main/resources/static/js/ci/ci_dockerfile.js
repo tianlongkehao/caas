@@ -117,7 +117,8 @@ $(document).ready(function () {
         var projectName = $('#projectName').val().trim();
         var description = $('#description').val().trim();
         var dockerFile = $('#dockerFile').val().trim();
-        
+    	var obj_files = document.getElementById("sourceCode");
+    	
         // 验证仓库名称
         imgNameLast = imgNameLast.toLowerCase();
         $('#imgNameLast').val(imgNameLast);
@@ -153,8 +154,17 @@ $(document).ready(function () {
             $('#description').focus();
             return false;
         }
-        //验证dockerFile
         
+        //验证是否上传程序包
+        if (obj_files.files.length === 0) {
+        	layer.tips('上传文件不能为空', '#sourceCode', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+            $('#sourceCode').focus();
+            return false;
+        }
+        
+        //验证dockerFile
         if (dockerFile.length === 0 ) {
         	layer.tips('dockerFile不能为空', '#dockerFile',{
         		tips: [1,'##3595CC']
@@ -179,6 +189,27 @@ $(document).ready(function () {
             return false;
         }
 
+        if (dockerFile.length > 0) {
+        	var flag = true;
+        	$.ajax({
+        		async : false,
+        		url : ctx+"/ci/judgeBaseImage.do",
+        		type : "GET",
+        		data : {"dockerFile":dockerFile},
+        		success:function(data){
+					data = eval("(" + data + ")");
+					if(data.status=="400"){
+						layer.msg("dockerFile首行命令不正确，必须是FROM命令，请您检查是否正确", {icon: 5});
+						flag = false;
+					}else if (data.status == "500") {
+						layer.msg("没有找到dockerFile的基础镜像，请您检查是否正确",{icon: 5});
+						flag = false;
+					}
+				}	 
+        	});
+        	return flag;
+        }
+        
         return true;
     }
 	

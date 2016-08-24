@@ -340,7 +340,28 @@ public class CiController {
           }
         return flag;
     }
-
+    
+    @RequestMapping(value={"ci/judgeBaseImage.do"},method=RequestMethod.GET)
+    @ResponseBody
+    public String judgeDocFileBaseImage(String dockerFile){
+        Map<String, Object> map = new HashMap<String, Object>();
+        String[] baseImage = dockerFileBaseImage(dockerFile);
+        String name = baseImage[0];
+        String varsion = baseImage[1];
+        if (StringUtils.isEmpty(name) || StringUtils.isEmpty(varsion) ) {
+            map.put("status", "400");
+            return JSON.toJSONString(map);
+        }
+        
+        Image image = imageDao.findByNameAndVersion(baseImage[0].substring(baseImage[0].indexOf("/") +1),baseImage[1]);
+        if (null == image) {
+            map.put("status", "500");
+            return JSON.toJSONString(map);
+        }
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+    }
+    
 	/**
 	 * 使用DockerFile构建
 	 * 
@@ -354,14 +375,7 @@ public class CiController {
     public String addDockerFileCi(Ci ci,@RequestParam("sourceCode") MultipartFile[] sourceCodes,String dockerFile) {
 	    User cuurentUser = CurrentUserUtils.getInstance().getUser();
 	    String[] baseImage = dockerFileBaseImage(dockerFile);
-	    if (baseImage.length <= 0 ) {
-	        return "redirect:/error";
-	    }
-	    
 	    Image image = imageDao.findByNameAndVersion(baseImage[0].substring(baseImage[0].indexOf("/") +1),baseImage[1]);
-	    if (null == image) {
-	        return "redirect:/error";
-	    }
 	    ci.setBaseImageId(image.getId());
 	    ci.setBaseImageName(baseImage[0]);
 	    ci.setBaseImageVersion(baseImage[1]);
@@ -407,6 +421,9 @@ public class CiController {
 	public  String[] dockerFileBaseImage(String dockerFile){
 	    String[] baseImage = new String[10];
 	    try {
+	        if (dockerFile.indexOf("FROM") == -1) {
+	            return baseImage;
+	        }
 	        dockerFile = dockerFile.substring(dockerFile.indexOf("FROM")).replaceAll("\\s+", " ");
 	        String[] ssh = dockerFile.split(" ");
 	        System.out.println(ssh[1]);
@@ -569,6 +586,7 @@ public class CiController {
 		}
 		return false;
 	}
+	
 	/**
 	 * 构建镜像
 	 * @param ci
