@@ -459,8 +459,16 @@ $(document).ready(function(){
             $(".radius_step").removeClass("action").eq(1).addClass("action");
         }
     	var imagePage_height = $(".host_step1").height();
-    	$(".step-inner").height(imagePage_height);
+    	$(".step-inner").height(imagePage_height +100);
     });
+    
+    //从镜像中心部署，跳转服务之后的页面高度
+    var localUrl = window.location;
+	if(localUrl.search != ""){
+		//调节界面高度
+		var imagePage_height = $(".host_step2").height();
+    	$(".step-inner").height(imagePage_height +100);
+	}
 
 });
 

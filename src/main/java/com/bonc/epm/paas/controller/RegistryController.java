@@ -249,7 +249,7 @@ public class RegistryController {
                 String cmd = "sudo docker save -o " + saveImagePath
                     + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
                 flag = cmdexec(cmd);
-            }
+               }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null);
         }
         if (flag || exist) {
