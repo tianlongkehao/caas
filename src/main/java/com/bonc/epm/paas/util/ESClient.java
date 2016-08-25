@@ -102,7 +102,7 @@ public class ESClient {
 		System.out.println("elasticsearch已关闭");
 	}
 
-	public static void main(String args[]){
+/*	public static void main(String args[]){
 		ESClient esc = new ESClient();
 		esc.initESClient("192.168.50.3:8300");
 		//esc.createIndex();
@@ -111,7 +111,7 @@ public class ESClient {
 		//esc.get();
 		esc.delete();
 		esc.closeESClient();
-	}
+	}*/
 
 
 
