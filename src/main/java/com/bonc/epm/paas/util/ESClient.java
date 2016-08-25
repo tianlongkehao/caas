@@ -13,6 +13,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.client.transport.TransportClient.Builder;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -51,16 +52,15 @@ public class ESClient {
 		// 配置你的es,现在这里只配置了集群的名,默认是elasticsearch,跟服务器的相同
 		Settings settings = Settings
 				.settingsBuilder()
-				.put("cluster.name", "es")
+				.put("cluster.name", "bonc_docker")
 				.put("discovery.type", "zen")//发现集群方式
 				.put("discovery.zen.minimum_master_nodes", 1)//最少有1个master存在
-				.put("discovery.zen.ping_timeout", "200ms")//集群ping时间，太小可能会因为网络通信而导致不能发现集群
+				.put("discovery.zen.ping_timeout", "2000ms")//集群ping时间，太小可能会因为网络通信而导致不能发现集群
 				.put("discovery.initial_state_timeout", "500ms")
-				.put("gateway.type", "local")//(fs, none, local)
+				//.put("gateway.type", "local")//(fs, none, local)
 				.put("index.number_of_shards", 1)
 				.put("action.auto_create_index", false)//配置是否自动创建索引
 				.put("cluster.routing.schedule", "50ms")//发现新节点时间 
-				
 				.build();
 		try {
 			String transportAddresses = es;
@@ -83,10 +83,10 @@ public class ESClient {
 					.toArray(new InetSocketTransportAddress[list.size()]);
 			// Object addressList[]=(Object [])list.toArray();
 
-			client = new Builder().settings(settings).build()
+			//client = new Builder().settings(settings).build()
+				//	.addTransportAddresses(addressList);
+			client = TransportClient.builder().settings(settings).build()
 					.addTransportAddresses(addressList);
-//			client = TransportClient.builder().settings(settings).build()
-//					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("127.0.0.1"),9300));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			log.error("初始化elasticsearch异常！");
@@ -102,16 +102,16 @@ public class ESClient {
 		System.out.println("elasticsearch已关闭");
 	}
 
-/*	public static void main(String args[]){
+	public static void main(String args[]){
 		ESClient esc = new ESClient();
-		esc.initESClient("192.168.12.43:9300");
-//		esc.createIndex();
-		esc.search("logstash-2016.07.04","fluentd","hello-584gz");
-//		esc.getIndex();
-//		esc.get();
-//		esc.delete();
+		esc.initESClient("192.168.50.3:8300");
+		//esc.createIndex();
+		esc.search("logstash-2016.08.24","fluentd","portalpxx1-3hbeq");
+		//esc.getIndex();
+		//esc.get();
+		esc.delete();
 		esc.closeESClient();
-	}*/
+	}
 
 
 
@@ -128,15 +128,16 @@ public class ESClient {
 			
 			searchRequestBuilder.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 			
-			searchRequestBuilder.setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord));
-			 
+			//searchRequestBuilder.setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord));
+			
+			searchRequestBuilder.setQuery(QueryBuilders.wildcardQuery("tag","*"+keyWord+"*").boost(2));
 			searchRequestBuilder.addSort("@timestamp", SortOrder.ASC);
 			
 			searchRequestBuilder.setFrom(0);
 			
 			searchRequestBuilder.setSize(60);
 			
-			searchRequestBuilder.setExplain(true);
+			//searchRequestBuilder.setExplain(true);
 			
 			SearchResponse response = searchRequestBuilder.execute().actionGet();
 				
