@@ -45,6 +45,13 @@
                             <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" value="${user.password }">
                         </div>
                     </div>
+                    
+                    <div class="form-group">
+                            <input id="authCode" name="authCode" placeholder="请输入验证码" type="text"/>
+					        <label><img type="image" src="<%=path %>/authCode" id="codeImage" onclick="chageCode()" title="图片看不清？点击重新得到验证码" style="cursor:pointer;"/></label>
+					        <label><a onclick="chageCode()" style="cursor:pointer;">换一张</a></label>
+					</div>
+					    
                     <div class="form-group">
                         <button id="btn-signin" class="btn btn-primary btn-block" type="button" disabled="disabled">登录</button>
                     </div>
@@ -72,9 +79,15 @@
         }).on("change", function(){
         	checkEnter();
         });
-
+        
+        $("#authCode").on("keyup", function(){
+            checkEnter();
+        }).on("change", function(){
+            checkEnter();
+        });
+        
         function checkEnter(){
-            var checkFlag = $("#userName").val() && $("#password").val();
+            var checkFlag = $("#userName").val() && $("#password").val() && $("#authCode").val();
             if(checkFlag){
                 $("#btn-signin").removeAttr("disabled");
                 return true;
@@ -91,12 +104,16 @@
                 }
             }
         });
-
+        
         $("#btn-signin").click(function(){
             $("#loginForm").submit();
         });
 
     });
+    
+    function chageCode(){
+        $('#codeImage').attr('src',ctx+'/authCode?abc='+Math.random());//链接后添加Math.random，确保每次产生新的验证码，避免缓存问题。
+    }
 
 </script>
 </body>

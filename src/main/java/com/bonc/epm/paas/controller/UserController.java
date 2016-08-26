@@ -5,10 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
-import com.bonc.epm.paas.kubernetes.model.*;
-import com.bonc.epm.paas.util.CurrentUserUtils;
-import org.hibernate.validator.internal.util.privilegedactions.GetAnnotationParameter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +26,19 @@ import com.bonc.epm.paas.entity.Restriction;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.model.LimitRange;
+import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
+import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
+import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.PodList;
+import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
+import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
+import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.EncryptUtils;
 
 @Controller
 @RequestMapping(value = "/user")
@@ -101,6 +110,7 @@ public class UserController {
 		try {
 			System.out.println(resource.getVol());
 			System.out.println(user.getVol_size());
+			user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
 			user.setVol_size(resource.getVol()); 
 			user.setNamespace(user.getUserName());
 			// 以用户名(登陆帐号)为name，创建client
@@ -148,9 +158,9 @@ public class UserController {
 			model.addAttribute("creatFlag", "400");
 		}
 
-		// 返回 user.jsp 页面，展示所用用户信息
+		// 返回 user.jsp 页面，展示所有租户信息
 		List<User> userList = new ArrayList<User>();
-		for (User uu : userDao.findAll()) {
+		for (User uu : userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId())) {
 			userList.add(uu);
 		}
 		model.addAttribute("userList", userList);
@@ -170,6 +180,7 @@ public class UserController {
 		try {
 			if (userDao.checkUsername1(user.getUserName()) == null) {
 				// DB保存用户信息
+		        user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
 				user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
 				user.setNamespace(CurrentUserUtils.getInstance().getUser().getNamespace());
 				userDao.save(user);
@@ -189,7 +200,7 @@ public class UserController {
 	}
 
 	/**
-	 * 更新用户信息
+	 * 更新租户信息
 	 *
 	 * @param user
 	 * @return
@@ -197,6 +208,11 @@ public class UserController {
 	@RequestMapping(value = { "/update.do" }, method = RequestMethod.POST)
 	public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
 		try {
+		    if (StringUtils.isEmpty(user.getPassword())) {
+		        user.setPassword(userDao.findById(user.getId()).getPassword());
+		    }else{
+		        user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
+		    }
 			user.setNamespace(user.getUserName());
 			// 以用户名(登陆帐号)为name，创建client
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
@@ -226,7 +242,7 @@ public class UserController {
 		}
 
 		List<User> userList = new ArrayList<User>();
-		for (User uu : userDao.findAll()) {
+		for (User uu : userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId())) {
 			userList.add(uu);
 		}
 		model.addAttribute("userList", userList);
@@ -234,6 +250,39 @@ public class UserController {
 		return "user/user.jsp";
 	}
 
+	/**
+	 * 租户修改自己创建的用户的信息；
+	 * 
+	 * @param user ：用户信息
+	 * @param model ： model
+	 * @return 
+	 * @see
+	 */
+	@RequestMapping(value = { "/update_management.do" }, method = RequestMethod.POST)
+	public String userManageUpdate(User user,Model model){
+	    User userManage =  CurrentUserUtils.getInstance().getUser();
+	    try {
+            if (StringUtils.isEmpty(user.getPassword())) {
+                user.setPassword(userDao.findById(user.getId()).getPassword());
+            }else{
+                user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
+            }
+            user.setNamespace(userManage.getNamespace());
+            user.setParent_id(userManage.getId());
+            userDao.save(user);
+        } catch (KubernetesClientException e) {
+            System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+        }
+
+        List<User> userManageList = new ArrayList<User>();
+        for (User user1 : userDao.checkUser1manage34(userManage.getId())) {
+            userManageList.add(user1);
+        }
+        model.addAttribute("userManageList", userManageList);
+        model.addAttribute("menu_flag", "usermanage");
+        return "user/user-management.jsp";
+	}
+	
 	/**
 	 * 局部刷新，批量删除用户
 	 *
@@ -538,6 +587,7 @@ public class UserController {
 
 	@RequestMapping("user/add.do")
 	public String userAdd(User user) {
+	    user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
 		userDao.save(user);
 		log.debug("userName--id:" + user.getUserName());
 		// Map<String, Object> map = new HashMap<String, Object>();
@@ -658,8 +708,8 @@ public class UserController {
 	public String userModifyPsw(long id, String password, String newpwd) {
 		User user = userDao.findOne(id);
 		Map<String, Object> map = new HashMap<String, Object>();
-		if (user.getPassword().equals(password)) {
-			user.setPassword(newpwd);
+		if (user.getPassword().equals(EncryptUtils.encryptMD5(password))) {
+			user.setPassword(EncryptUtils.encryptMD5(newpwd));
 			userDao.save(user);
 			map.put("status", "200");
 		} else {

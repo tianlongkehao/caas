@@ -29,7 +29,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter{
      * @param registry
      */
     public void addInterceptors(InterceptorRegistry registry) {
-    	registry.addInterceptor(new UserSecurityInterceptor()).addPathPatterns("/**").excludePathPatterns("/error","/login","/signin");
+    	registry.addInterceptor(new UserSecurityInterceptor()).addPathPatterns("/**").excludePathPatterns("/error","/login","/signin","/authCode");
 	}
     
 }
