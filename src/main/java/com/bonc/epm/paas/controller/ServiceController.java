@@ -732,7 +732,7 @@ public class ServiceController {
 		 TemplateEngine.cmdReloadConfig(templateConf);
 		 service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));*/
 		 //service.setPortSet(app.get("port"));
-		service.setServiceAddr(templateConf.getServerAddr());
+		service.setServiceAddr("http://"+currentUser.getUserName() + "." + templateConf.getServerAddr());
 		serviceDao.save(service);
 		// 更新挂载卷的使用状态
 		if (!"0".equals(service.getVolName()) && StringUtils.isNotBlank(service.getVolName())) {
