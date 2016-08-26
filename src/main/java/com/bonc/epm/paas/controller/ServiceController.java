@@ -844,28 +844,22 @@ public class ServiceController {
            Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
                                        .limit(offset)
                                        .collect(Collectors.toSet());
-/*           Set<Integer> tmpBigSet = bigSet;
-           tmpBigSet.removeAll(smalSet);
-           if (CollectionUtils.isEmpty(tmpBigSet)) {
-               smalSet.clear();
-               smalSet.addAll(portConfigDao.findPortSets());
-               smalSet.remove(null);
-               bigSet.removeAll(smalSet); 
-               return -1;
-           } else {
-               smalSet.addAll(portConfigDao.findPortSets());
-               smalSet.remove(null);
-               bigSet.removeAll(smalSet);
-           }*/
+           smalSet.addAll(portConfigDao.findPortSets());
+           smalSet.remove(null);
            bigSet.removeAll(smalSet);
            if (CollectionUtils.isEmpty(bigSet)) {
-               smalSet.addAll(portConfigDao.findPortSets());
-               smalSet.remove(null);
                return -1;
               }
            Object[] obj =bigSet.toArray();
            int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
                               .toString());
+           PortConfig validPort = portConfigDao.findByMapPort(Integer.toString(portSet));
+              // 监测数据库中是否存在相同的端口号
+           while ( null != validPort) {
+               portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
+                   .toString());
+               validPort = portConfigDao.findByMapPort(Integer.toString(portSet));
+              }
            smalSet.add(portSet);
            return portSet;
        }
