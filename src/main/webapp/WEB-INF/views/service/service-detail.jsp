@@ -136,20 +136,20 @@
 							</tbody>
 						</table>
 
-						<!-- <table class="table basicInfo w50">
-			<thead>
-				<tr>
-					<th>环境变量</th>
-					<th>&nbsp;</th>
-				</tr>
-			</thead>
-			<tbody class="BORDER">
-				<tr>
-					<td>变量名</td>
-					<td>变量值</td>
-				</tr>
-			</tbody>
-		</table>
+						 <table class="table basicInfo w50">
+							<thead>
+								<tr>
+									<th>环境变量</th>
+									<th>&nbsp;</th>
+								</tr>
+							</thead>
+							<tbody class="BORDER">
+								<tr>
+									<td>变量名</td>
+									<td>变量值</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 					<div class="containerInstances hide" style="min-height: 300px;">
 						<table class="table">
