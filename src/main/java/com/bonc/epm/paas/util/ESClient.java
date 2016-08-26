@@ -7,15 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.client.transport.TransportClient.Builder;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.ParsedQuery;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -49,19 +53,17 @@ public class ESClient {
 	public void initESClient(String es) {
 		
 		// 配置你的es,现在这里只配置了集群的名,默认是elasticsearch,跟服务器的相同
-		Settings settings = Settings
-				.settingsBuilder()
-				.put("cluster.name", "es")
-				.put("discovery.type", "zen")//发现集群方式
-				.put("discovery.zen.minimum_master_nodes", 1)//最少有1个master存在
-				.put("discovery.zen.ping_timeout", "200ms")//集群ping时间，太小可能会因为网络通信而导致不能发现集群
-				.put("discovery.initial_state_timeout", "500ms")
-				.put("gateway.type", "local")//(fs, none, local)
-				.put("index.number_of_shards", 1)
-				.put("action.auto_create_index", false)//配置是否自动创建索引
-				.put("cluster.routing.schedule", "50ms")//发现新节点时间 
-				
-				.build();
+		Settings settings = Settings.settingsBuilder()
+                        				.put("cluster.name", "bonc_docker")
+                        				.put("discovery.type", "zen")//发现集群方式
+                        				.put("discovery.zen.minimum_master_nodes", 1)//最少有1个master存在
+                        				.put("discovery.zen.ping_timeout", "2000ms")//集群ping时间，太小可能会因为网络通信而导致不能发现集群
+                        				.put("discovery.initial_state_timeout", "500ms")
+                        				//.put("gateway.type", "local")//(fs, none, local)
+                        				.put("index.number_of_shards", 1)
+                        				.put("action.auto_create_index", false)//配置是否自动创建索引
+                        				.put("cluster.routing.schedule", "50ms")//发现新节点时间 
+                        				.build();
 		try {
 			String transportAddresses = es;
 			// 集群地址配置
@@ -83,10 +85,11 @@ public class ESClient {
 					.toArray(new InetSocketTransportAddress[list.size()]);
 			// Object addressList[]=(Object [])list.toArray();
 
-			client = new Builder().settings(settings).build()
-					.addTransportAddresses(addressList);
-//			client = TransportClient.builder().settings(settings).build()
-//					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("127.0.0.1"),9300));
+			client = new Builder().settings(settings)
+			                      .build()
+					                .addTransportAddresses(addressList);
+			//client = TransportClient.builder().settings(settings).build()
+					//.addTransportAddresses(addressList);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			log.error("初始化elasticsearch异常！");
@@ -104,12 +107,12 @@ public class ESClient {
 
 /*	public static void main(String args[]){
 		ESClient esc = new ESClient();
-		esc.initESClient("192.168.12.43:9300");
-//		esc.createIndex();
-		esc.search("logstash-2016.07.04","fluentd","hello-584gz");
-//		esc.getIndex();
-//		esc.get();
-//		esc.delete();
+		esc.initESClient("192.168.50.3:8300");
+		//esc.createIndex();
+		esc.search("logstash-2016.08.25","fluentd","36kp9");
+		//esc.getIndex();
+		//esc.get();
+		//esc.delete();
 		esc.closeESClient();
 	}*/
 
@@ -122,22 +125,20 @@ public class ESClient {
 	public String search(String index,String type,String keyWord){
 		String string ="";
 		try {
-			SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index);
-			
-			searchRequestBuilder.setTypes(type);
-			
-			searchRequestBuilder.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-			
-			searchRequestBuilder.setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord));
-			 
-			searchRequestBuilder.addSort("@timestamp", SortOrder.ASC);
-			
-			searchRequestBuilder.setFrom(0);
-			
-			searchRequestBuilder.setSize(60);
-			
-			searchRequestBuilder.setExplain(true);
-			
+			SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index)
+			                                                  .setTypes(type)
+			                                                  .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+			                                                  //.setQuery(QueryBuilders.moreLikeThisQuery("tag")
+			                                                  //                       .like(QueryParser.escape(keyWord))
+			                                                  //                       .minTermFreq(1)
+			                                                  //                       .maxQueryTerms(12))
+			                                                  //.setQuery(QueryBuilders.wildcardQuery("tag","*"+QueryParser.escape(keyWord)+"*").boost(2))
+			                                                  .setQuery(QueryBuilders.matchPhraseQuery("kubernete.podname", keyWord))
+			                                                  //.setQuery(QueryBuilders.prefixQuery("tag",keyWord))
+			                                                  .addSort("@timestamp", SortOrder.ASC)
+			                                                  .setFrom(0)
+			                                                  .setSize(60)
+			                                                  .setExplain(true);
 			SearchResponse response = searchRequestBuilder.execute().actionGet();
 				
 			SearchHits searchHits = response.getHits();
@@ -154,8 +155,10 @@ public class ESClient {
 			log.error(keyWord+"日志出错！");
 		}
 		
-
+		
+		log.debug("start");
 		log.debug("pod{"+keyWord+"}日志:"+string);
+		log.debug("end");
 		return string;
 		
 	}

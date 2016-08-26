@@ -214,7 +214,7 @@ public class DockerClientService {
 	 */
 	public boolean buildImage(String dockerfilePath,String imageName,
 	                              String imageVersion,final CiRecord ciRecord,
-	                                  final CiRecordDao ciRecordDao, String imageId, DockerClient dockerClient){
+	                                  final CiRecordDao ciRecordDao, Image imageId, DockerClient dockerClient){
 		try{
 		    if (null == dockerClient) {
 		        dockerClient = this.getSpecialDockerClientInstance();
@@ -234,9 +234,11 @@ public class DockerClientService {
 			       super.onNext(item);
 			    }
 			};
-			imageId = dockerClient.buildImageCmd(baseDir).exec(callback).awaitImageId();
+			String imgId = dockerClient.buildImageCmd(baseDir).exec(callback).awaitImageId();
 			//修改镜像名称及版本
-			dockerClient.tagImageCmd(imageId, username+"/"+imageName, imageVersion).withForce().exec();
+			dockerClient.tagImageCmd(imgId, username+"/"+imageName, imageVersion).withForce().exec();
+			// 得到镜像的ImageId
+			imageId.setImageId(imgId.substring(0,12));
 			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"tagImageCmd:"+imageId+":"+username+"/"+imageName+":"+imageVersion);
 	    	ciRecordDao.save(ciRecord);
 			return true;

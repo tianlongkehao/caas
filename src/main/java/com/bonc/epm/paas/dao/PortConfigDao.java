@@ -23,5 +23,7 @@ public interface PortConfigDao extends CrudRepository<PortConfig, Long>{
     public void deleteByServiceId(long ServiceId);
 	
     @Query("select i.mapPort from PortConfig i")
-		public HashSet<Integer> findPortSets();
+	 public HashSet<Integer> findPortSets();
+
+    public PortConfig findByMapPort(String portSet);
 }
