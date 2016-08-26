@@ -15,6 +15,32 @@ $(document).ready(function(){
     registerCiDelEvent($("#id").val());
     //加载构建日志
     printLog();
+    
+    //导入模板
+	$("#docImport-btn").click(function(){
+		layer.open({
+		 	type:1,
+	        title: 'dockerfile模板',
+	        content: $("#dockerfile-import"),
+	        btn: ['导入', '取消'],
+	        yes: function(index, layero){ 
+	        	
+	        	$("#dockerFile").val(dockerFile);
+	        	layer.close(index);
+	        }
+	 })
+	});
+	
+	//导入模板文件选项对勾
+	var dockerFile = null;
+	$("#Path-table-doc>tbody>tr").on("click", function () {
+		$(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
+        $(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
+        //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
+        $(this).toggleClass("focus");//设定当前行为选中行
+        $(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
+        dockerFile = $(this).parent().find("tr.focus").find(".dockerFileTemplate").val();
+    });
 
 });
 
@@ -86,7 +112,7 @@ function registerCiEditEvent(){
 	$("#editCiUploadBtn").click(function(){
 		var index = layer.load(0, {shade: [0.3, '#000']});
         $("#editCiUploadForm").ajaxSubmit({
-            url: ctx+"/ci/modifyResourceCi.do",
+            url: ctx+"/ci/modifyDockerFileCi.do",
             type: "post",
             success: function (data) {
             	layer.close(index);

@@ -29,9 +29,6 @@ public class CephController {
 
 	  // cluster
 	  private Rados cluster;
-
-	  // cephMount
-	  private CephMount cephMount;
 	
     /**
      * 连接url
@@ -59,15 +56,21 @@ public class CephController {
     @Value("${ceph.ssh.mountpoint}")
     private String mountpoint;
     
-    /**
-     * connectCephFS
-     */
+	// cephMount
+	private CephMount cephMount;
+	// mode
+	private int mode = 511;
+
+	/**
+	 * connectCephFS
+	 */
 	public void connectCephFS() {
 		try {
 			logger.info("进入方法：connectCephFS");
 			cephMount = new CephMount("admin");
 			cephMount.conf_read_file("/etc/ceph/ceph.conf");
 			cephMount.mount("/");
+			cephMount.chmod("/", mode);
 
 			logger.info("打印根目录下的所有目录");
 			String[] listdir = cephMount.listdir("/");
@@ -81,11 +84,20 @@ public class CephController {
 
 	/**
 	 * createNamespaceCephFS
+	 *               文件属主   文件属组   其他所有用户(x:执行；w：写；r：读)
+	 *  O_CREAT              x  
+	 *  O_TRUNC              w
+	 *  O_RDWR                          w
+	 *  O_RDONLY                        x
+	 *  O_APPEND                        r
+	 *  O_WRONLY    x
+	 *  O_EXCL                r                 
+	 * 
 	 */
 	public void createNamespaceCephFS(String namespace) {
 		try {
 			logger.info("进入方法：createNamespaceCephFS");
-			cephMount.mkdir("/" + namespace, CephMount.O_RDWR);
+			cephMount.mkdir("/" + namespace, mode);
 
 			logger.info("打印" + namespace + "下的所有目录");
 			String[] listdir = cephMount.listdir("/" + namespace);
@@ -97,6 +109,39 @@ public class CephController {
 		}
 	}
 
+    /**
+     * deleteStorageCephFS
+     */
+    public void deleteNamespaceCephFS(String namespace) {
+        try {
+            logger.info("进入方法：deleteNamespaceCephFS");
+            logger.info("删除前,打印根目录下的所有目录");
+            String[] listDirBef = cephMount.listdir("/");
+            for (String strDir : listDirBef) {
+                System.out.println("dir:" + strDir);
+               }
+            
+            logger.info("删除前,打印" + namespace + "下的所有目录");
+            String[] liststorageDir = cephMount.listdir("/" + namespace);
+            for (String strDir : liststorageDir) {
+                System.out.println("dir:" + strDir);
+               }
+
+               // 删除挂载卷目录
+            cephMount.rmdir(namespace);
+
+            logger.info("删除后,打印根目录下的所有目录");
+            String[] listDirAft = cephMount.listdir("/");
+            for (String strDir : listDirAft) {
+                System.out.println("dir:" + strDir);
+               }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 	/**
 	 * createStorageCephFS
 	 */
@@ -104,14 +149,15 @@ public class CephController {
 		try {
 			logger.info("进入方法：createStorageCephFS");
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-			int readOrWrite = CephMount.O_RDWR;
+			int readOrWrite = mode;
 			if (isVolReadOnly){
-				readOrWrite = CephMount.O_RDONLY;
+				readOrWrite = 292;
 			}
 			// 指定当前工作目录
 			cephMount.chdir("/" + namespace);
 			// 创建挂载卷目录
 			cephMount.mkdir(storageName, readOrWrite);
+			cephMount.chmod("/"+namespace, mode);
 
 			logger.info("打印" + namespace + "下的所有目录");
 			String[] listdir2 = cephMount.listdir("/" + namespace);

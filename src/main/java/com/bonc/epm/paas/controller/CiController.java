@@ -1,6 +1,8 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,18 +28,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CiConstant;
+import com.bonc.epm.paas.constant.ImageConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
+import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiRecord;
+import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.bonc.epm.paas.util.FileUtils;
+import com.github.dockerjava.api.DockerClient;
 @Controller
 public class CiController {
 	private static final Logger log = LoggerFactory.getLogger(CiController.class);
@@ -47,6 +53,8 @@ public class CiController {
 	public CiRecordDao ciRecordDao;
 	@Autowired
 	public ImageDao imageDao;
+	@Autowired
+	public DockerFileTemplateDao dockerFileTemplateDao;
 	@Autowired
 	public DockerClientService dockerClientService;
 	
@@ -63,10 +71,15 @@ public class CiController {
 	}
 	@RequestMapping(value={"ci/detail/{id}"},method=RequestMethod.GET)
 	public String detail(Model model,@PathVariable long id){
+	    User cuurentUser = CurrentUserUtils.getInstance().getUser();
         Ci ci = ciDao.findOne(id);
         List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction.DESC,"constructDate")));
         List<Image> images = this.findByBaseImages();
         Image currentBaseImage = imageDao.findById(ci.getBaseImageId());
+        if (ci.getType() == 2) {
+            List<DockerFileTemplate> dockerFiles = dockerFileTemplateDao.findByCreateBy(cuurentUser.getId());
+            model.addAttribute("dockerFiles", dockerFiles);
+        }
 		model.addAttribute("id", id);
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
@@ -90,9 +103,9 @@ public class CiController {
 		return JSON.toJSONString(map);
 	}
 	
-	@RequestMapping("ci/modifyResourceCi.do")
+	@RequestMapping("ci/modifyDockerFileCi.do")
 	@ResponseBody
-	public String modifyResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,@RequestParam("dockerFile") MultipartFile dockerFile) {
+	public String modifyDockerFileCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,String dockerFile) {
 		Ci originCi = ciDao.findOne(ci.getId());
 		originCi.setProjectName(ci.getProjectName());
 		originCi.setDescription(ci.getDescription());
@@ -105,9 +118,10 @@ public class CiController {
         	if (sourceCode!=null&&!sourceCode.isEmpty()) {
         		FileUtils.storeFile(sourceCode.getInputStream(), originCi.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
         	}
-        	if (dockerFile!=null&&!dockerFile.isEmpty()) {
-        		FileUtils.storeFile(dockerFile.getInputStream(), originCi.getCodeLocation()+"/"+dockerFile.getOriginalFilename());
-        	}
+        	if (!dockerFile.isEmpty()) {
+                ByteArrayInputStream in = new ByteArrayInputStream(dockerFile.getBytes());  
+                FileUtils.storeFile(in, originCi.getCodeLocation()+"/"+"Dockerfile");
+            }
         } catch (Exception e) {
         	e.printStackTrace();
         	log.error("modifyResourceCi error:"+e.getMessage());
@@ -224,12 +238,12 @@ public class CiController {
 		
 	}
 	
-	@RequestMapping("ci/addResourceCi.do")
+	@RequestMapping(value={"ci/addResourceCi.do"},method=RequestMethod.POST)
 	public String addResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,@RequestParam("dockerFile") MultipartFile dockerFile) {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
         ci.setCreateBy(cuurentUser.getId());
         ci.setCreateDate(new Date());
-		ci.setType(CiConstant.TYPE_RESOURCE);
+		ci.setType(CiConstant.TYPE_DOCKERFILE);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
 		ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
@@ -254,6 +268,179 @@ public class CiController {
         return "redirect:/ci";
 
 	}
+	
+	/**
+	 * 
+	 * Description: <br>
+     *  上传镜像
+	 * @param image
+	 * @param sourceCode
+	 * @return 
+	 * @see
+	 */
+	@RequestMapping("ci/addResourceImage.do")
+	public String addResourceImage(Image image , @RequestParam("sourceCode") MultipartFile sourceCode) {
+	    User currentUser = CurrentUserUtils.getInstance().getUser();
+	    image.setName(currentUser.getUserName() +"/" + image.getName());
+	    image.setResourceName(sourceCode.getOriginalFilename());
+	    
+	    image.setCreateTime(new Date());
+	    image.setCreator(currentUser.getId());
+	    String imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
+        try {
+/*            File file = new File(imagePath);
+            if(!file.exists()){
+                file.mkdirs();
+               }
+            if (!sourceCode.isEmpty()) {
+                FileUtils.storeFile(sourceCode.getInputStream(), imagePath+"/"+sourceCode.getOriginalFilename());
+               }*/
+            boolean flag = createAndPushImage(image,sourceCode.getInputStream());
+            if(flag){
+                //排重添加镜像数据
+                Image img = null;
+                List<Image> imageList = imageDao.findByName(image.getName());
+                if(!CollectionUtils.isEmpty(imageList)){
+                    for(Image oneRow : imageList){
+                        if(image.getVersion().equals(oneRow.getVersion())){
+                            img = oneRow;
+                              }
+                        }
+                    }
+                if(img==null){
+                    img = image;
+                    }
+                if (ImageConstant.BaseImage == img.getIsBaseImage()) {
+                    img.setIsBaseImage(ImageConstant.BaseImage);
+                } else {
+                    img.setIsBaseImage(ImageConstant.NotBaseImage);
+                    }
+                imageDao.save(img);
+            }
+       } catch (Exception e) {
+            log.error("uploadImage error:"+e.getMessage());
+            return "redirect:/error"; 
+        }
+	   return "redirect:/ci";
+	}
+	
+	 /**
+	  * 
+	  * Description:
+	   * 导入和上传镜像
+	  * @return 
+	  * @see
+	  */
+    private boolean createAndPushImage(Image image,InputStream inputStream){
+        // import and push image
+        boolean flag = dockerClientService.createAndPushImage(image, inputStream);
+        if(flag){
+               //删除本地镜像
+            flag = dockerClientService.removeImage(image.getName(), image.getVersion(),null,null,null);
+          }
+        return flag;
+    }
+    
+    @RequestMapping(value={"ci/judgeBaseImage.do"},method=RequestMethod.GET)
+    @ResponseBody
+    public String judgeDocFileBaseImage(String dockerFile){
+        Map<String, Object> map = new HashMap<String, Object>();
+        String[] baseImage = dockerFileBaseImage(dockerFile);
+        String name = baseImage[0];
+        String varsion = baseImage[1];
+        if (StringUtils.isEmpty(name) || StringUtils.isEmpty(varsion) ) {
+            map.put("status", "400");
+            return JSON.toJSONString(map);
+        }
+        
+        Image image = imageDao.findByNameAndVersion(baseImage[0].substring(baseImage[0].indexOf("/") +1),baseImage[1]);
+        if (null == image) {
+            map.put("status", "500");
+            return JSON.toJSONString(map);
+        }
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+    }
+    
+	/**
+	 * 使用DockerFile构建
+	 * 
+	 * @param ci ： 构建数据
+	 * @param sourceCode ： 代码文件
+	 * @param dockerFile ：dockerFile文本
+	 * @return String
+	 * @see
+	 */
+	@RequestMapping(value={"ci/addDockerFileCi.do"},method=RequestMethod.POST)
+    public String addDockerFileCi(Ci ci,@RequestParam("sourceCode") MultipartFile[] sourceCodes,String dockerFile) {
+	    User cuurentUser = CurrentUserUtils.getInstance().getUser();
+	    String[] baseImage = dockerFileBaseImage(dockerFile);
+	    Image image = imageDao.findByNameAndVersion(baseImage[0].substring(baseImage[0].indexOf("/") +1),baseImage[1]);
+	    ci.setBaseImageId(image.getId());
+	    ci.setBaseImageName(baseImage[0]);
+	    ci.setBaseImageVersion(baseImage[1]);
+        ci.setCreateBy(cuurentUser.getId());
+        ci.setCreateDate(new Date());
+        ci.setType(CiConstant.TYPE_DOCKERFILE);
+        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
+        ci.setConstructionDate(new Date());
+        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        ci.setDockerFileLocation("/");
+        try {
+            File file = new File(ci.getCodeLocation());
+            if(!file.exists()){
+                file.mkdirs();
+            }
+            for (MultipartFile sourceCode : sourceCodes) {
+                if (!sourceCode.isEmpty()) {
+                    FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
+                }
+            }
+            if (!dockerFile.isEmpty()) {
+                ByteArrayInputStream in=new ByteArrayInputStream(dockerFile.getBytes());  
+                FileUtils.storeFile(in, ci.getCodeLocation()+"/"+"Dockerfile");
+            }
+        } catch (Exception e) {
+            log.error("modifyResourceCi error:"+e.getMessage());
+            return "redirect:/error"; 
+        }
+        
+        ciDao.save(ci);
+        log.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+        return "redirect:/ci";
+
+    }
+    
+	/**
+	 * 从dockerFile文件中获取dockerFile构建的基础镜像
+	 * 
+	 * @param dockerFile ： dockerFile文件
+	 * @return String
+	 * @see
+	 */
+	public  String[] dockerFileBaseImage(String dockerFile){
+	    String[] baseImage = new String[10];
+	    try {
+	        if (dockerFile.indexOf("FROM") == -1) {
+	            return baseImage;
+	        }
+	        dockerFile = dockerFile.substring(dockerFile.indexOf("FROM")).replaceAll("\\s+", " ");
+	        String[] ssh = dockerFile.split(" ");
+	        System.out.println(ssh[1]);
+	        String name = ssh[1].substring(0, ssh[1].lastIndexOf(":"));
+	        String version = ssh[1].substring(ssh[1].lastIndexOf(":")+1);
+	        if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(version)) {
+	            baseImage[0] = name;
+	            baseImage[1] = version;
+	        }
+        }
+        catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+	    return baseImage;
+    }
+	
 	@RequestMapping("ci/addCodeResourceCi.do")
 	public String addCodeResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode) {
 		User cuurentUser = CurrentUserUtils.getInstance().getUser();
@@ -261,7 +448,7 @@ public class CiController {
 		ci.setBaseImageVersion(imageDao.findById(ci.getBaseImageId()).getVersion());
 		ci.setCreateBy(cuurentUser.getId());
 		ci.setCreateDate(new Date());
-		ci.setType(CiConstant.TYPE_CODE);
+		ci.setType(CiConstant.TYPE_QUICK);
 		ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
 		ci.setConstructionDate(new Date());
 		ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
@@ -358,7 +545,7 @@ public class CiController {
 	 */
 	private boolean fetchCode(Ci ci,CiRecord ciRecord,CiRecordDao ciRecordDao){
 		//如果是代码上传，不需要重新下载源代码
-		if(CiConstant.TYPE_CODE.equals(ci.getType()))return true;
+		if(CiConstant.TYPE_QUICK.equals(ci.getType()) || CiConstant.TYPE_DOCKERFILE.equals(ci.getType())) return true;
 		try{
 			if(CiConstant.CODE_TYPE_SVN.equals(ci.getCodeType())){
 				String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
@@ -399,6 +586,7 @@ public class CiController {
 		}
 		return false;
 	}
+	
 	/**
 	 * 构建镜像
 	 * @param ci
@@ -408,15 +596,17 @@ public class CiController {
 		String dockerfilePath = ci.getCodeLocation()+ci.getDockerFileLocation();
 		String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
 		String imageVersion = ci.getImgNameVersion();
-		String imageId = "";
-		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao,imageId);
+		Image imageId = new Image();
+		
+		DockerClient dockerClient = dockerClientService.getNormalDockerClientInstance();
+		boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao,imageId, dockerClient);
 		if(flag){
 			//上传镜像
-			flag = dockerClientService.pushImage(imageName, imageVersion,ciRecord,ciRecordDao);
+			flag = dockerClientService.pushImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient);
 		}
 		if(flag){
 			//删除本地镜像
-			flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao);
+			flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient);
 		}
 		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
 		ciRecordDao.save(ciRecord);
@@ -435,14 +625,14 @@ public class CiController {
 				img = new Image();
 				img.setName(imageName);
 				img.setVersion(imageVersion);
-				img.setImageId(imageId);
 			}
+			img.setImageId(imageId.getImageId());
 			img.setResourceName(ci.getResourceName());
 			img.setImageType(ci.getImgType());
 			img.setRemark(ci.getDescription());
 			img.setCreator(ci.getCreateBy());
 			img.setCreateTime(new Date());
-			img.setIsBaseImage(2);
+			img.setIsBaseImage(ImageConstant.NotBaseImage);
 			imageDao.save(img);
 			ci.setImgId(img.getId());
 		}
@@ -478,4 +668,54 @@ public class CiController {
         }
         return images;
 	}
+	
+	/**
+     * 加载DockerFile模板数据
+     * 
+     * @return String
+     * @see
+     */
+    @RequestMapping("ci/loadDockerFileTemplate.do")
+    @ResponseBody
+    public String loadEnvTemplate(){
+        Map<String, Object> map = new HashMap<String, Object>();
+        User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        List<DockerFileTemplate> dockerFiles = dockerFileTemplateDao.findByCreateBy(cuurentUser.getId());
+        map.put("data", dockerFiles);
+        return JSON.toJSONString(map);
+    }
+	
+	/**
+	 * dockerFile模板保存，匹配模板名称是否重复
+	 * 
+	 * @param templateName ： 模板名称
+	 * @return dockerFile ： dockerFile文件
+	 * @see
+	 */
+	@RequestMapping("ci/saveDockerFileTemplate.do")
+	@ResponseBody
+    public String saveDockerFileTemplate (String templateName,String dockerFile) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        User cUser = CurrentUserUtils.getInstance().getUser();
+        for (DockerFileTemplate dkFile : dockerFileTemplateDao.findByCreateBy(cUser.getId())) {
+            if (StringUtils.isEmpty(dkFile.getTemplateName())) {
+                continue;
+            }
+            if (dkFile.getTemplateName().equals(templateName)) {
+                map.put("status", "400");
+                return JSON.toJSONString(map);
+            }
+        }
+        DockerFileTemplate dkFile = new DockerFileTemplate();
+        dkFile.setCreateBy(cUser.getId());
+        dkFile.setCreateDate(new Date());
+        dkFile.setDockerFile(dockerFile);
+        dkFile.setTemplateName(templateName);
+        dockerFileTemplateDao.save(dkFile);
+        map.put("status", "200");
+        
+        return JSON.toJSONString(map);
+    }
+	    
+	
 }

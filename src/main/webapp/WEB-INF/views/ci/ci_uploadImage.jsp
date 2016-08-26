@@ -5,7 +5,7 @@
     <title>上传构建</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
-    <script type="text/javascript" src="<%=path %>/js/ci/ci_add.js"></script>
+    <script type="text/javascript" src="<%=path %>/js/ci/ci_addimage.js"></script>
 </head>
 <body>
 
@@ -30,7 +30,7 @@
                     <div class="container">
                         <h4>上传镜像</h4>
 
-                        <form id="buildForm" name="buildForm" action="<%=path %>/ci/addResourceCi.do" method="post" enctype="multipart/form-data">
+                        <form id="buildForm" name="buildForm" action="<%=path %>/ci/addResourceImage.do" method="post" enctype="multipart/form-data">
                             <div class="row depot-name">
                                 <div class="form-group col-md-7">
                                     <label>镜像名称</label>
@@ -38,9 +38,9 @@
                                     <div class="">
                                         <span class="name-note">${username } /&nbsp;</span>
                                         <input name="imgNameFirst" type="hidden" value="${username }">
-                                        <input id="imgNameLast" name="imgNameLast" type="text" class="name-input"
+                                        <input id="name" name="name" type="text" class="name-input"
                                                value=""> :
-                                        <input id="imgNameVersion" name="imgNameVersion" type="text" value="latest"
+                                        <input id="version" name="version" type="text" value="latest"
                                                class="name-input">
                                     </div>
                                 </div>
@@ -56,13 +56,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+<!--                             <div class="row">
                                 <div class="form-group col-md-12">
                                     <label>简介</label>
                                     <input id="description" name="description" class="form-control" type="text"
                                            required="">
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="row">
                                 <div class="form-group col-md-12">
                                     <label for="sourceCode">上传镜像</label>
@@ -71,10 +71,12 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <label for="sourceCode">镜像类型</label></br>
-                                    <input type="checkbox">基础镜像
+                                    <label for="sourceCode">镜像类型</label><br>
+                                    <input id="isBaseImage" name="isBaseImage" type="checkbox" value="1" checked>基础镜像
+                                    <span style="color:#1dd2af" id="is-baseImage"><i class="fa fa-info-circle"></i></span>
                                 </div>
                             </div>
+                            
                             <section class="registryinfo">
                                 <table class="table registry">
                                     <tbody>
@@ -84,7 +86,7 @@
                                     <tr>
                                         <td>
                                             <span class="reg-text">项目名称</span>
-                                            <input id="projectName" name="projectName" type="text" value=""
+                                            <input id="remark" name="remark" type="text" value=""
                                                    class="reg-input">
                                         </td>
                                         <!-- <td>

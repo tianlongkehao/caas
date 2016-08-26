@@ -5,6 +5,8 @@ import org.influxdb.InfluxDB;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 import org.influxdb.dto.QueryResult.Series;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,7 +16,9 @@ import java.util.List;
  * Created by chiwenguang on 16-3-28.
  */
 public class MonitorController {
-    
+	
+	private static final Logger log = LoggerFactory.getLogger(MonitorController.class);
+	
 	private InfluxDB influxDB;
 	
 	private String timePeriod;
@@ -291,10 +295,16 @@ public class MonitorController {
 		Query sqlQuery = new Query(sql, dbName);
 		QueryResult result_mem_limit = influxDB.query(sqlQuery);
 		List<Series> seriesLst = result_mem_limit.getResults().get(0).getSeries();
-		for (Series series : seriesLst) {
-			List<List<Object>> listObject = series.getValues();
-			listString.add(listObject.get(1).get(1).toString());
+		try {
+			for (Series series : seriesLst) {
+				List<List<Object>> listObject = series.getValues();
+				listString.add(listObject.get(1).get(1).toString());
+			}
+		} catch (Exception e) {
+			log.debug(e.getMessage());
+			System.out.println(e.getMessage());
 		}
+
 		return listString;
 	}
 }

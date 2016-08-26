@@ -531,6 +531,7 @@ td .dockerfileinput {
 }
 .vol_list{
 	border-bottom: 1px solid #DFDDDD;
+	cursor:pointer;
 }
 
 .icon-img {

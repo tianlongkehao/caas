@@ -154,7 +154,7 @@
 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
-			</activation>
+			</activation>		
 		</profile>
 		<profile>
 			<id>yq</id>

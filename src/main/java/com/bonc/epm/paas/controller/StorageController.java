@@ -96,13 +96,14 @@ public class StorageController {
 	 */
 	@RequestMapping(value = { "service/storageList" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String findStorageList(Pageable pageable) {
+	public String findStorageList(Pageable pageable, Model model) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		long createBy = CurrentUserUtils.getInstance().getUser().getId();
 		List<Storage> storages = storageDao.findAllByCreateByAndUseTypeOrderByCreateDateDesc(createBy, pageable,StorageConstant.NOT_USER);
 		map.put("storages", storages);
 		map.put("status", "200");
 		map.put("count", storageDao.countByCreateBy(createBy));
+		model.addAttribute("menu_flag", "service");
 		return JSON.toJSONString(map);
 
 	}

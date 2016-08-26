@@ -1,20 +1,13 @@
 package com.bonc.epm.paas.controller;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,6 +32,7 @@ import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.esConf;
 import com.bonc.epm.paas.dao.CiDao;
+import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
@@ -47,6 +41,7 @@ import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.Container;
+import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
@@ -102,6 +97,9 @@ public class ServiceController {
 
 	@Autowired
 	private StorageDao storageDao;
+	
+	@Autowired
+	private EnvTemplateDao envTemplateDao;
 
 	@Autowired
 	public DockerClientService dockerClientService;
@@ -148,7 +146,7 @@ public class ServiceController {
 		try {
 			getServiceSource(model, currentUser.getId());
 			getNginxServer(model);
-			// getleftResource(model);
+//			getleftResource(model);
 		} catch (KubernetesClientException e) {
 			model.addAttribute("msg", e.getStatus().getMessage());
 			log.debug("service show:" + e.getStatus().getMessage());
@@ -236,7 +234,8 @@ public class ServiceController {
 
 		return "service/service.jsp";
 	}
-
+	
+	
 	/**
 	 * 展示container和services
 	 * 
@@ -250,6 +249,15 @@ public class ServiceController {
 		model.addAttribute("menu_flag", "service");
 
 		return "service/service.jsp";
+
+	}
+	
+	@RequestMapping(value = { "service/import" })
+	public String serviceImport(Model model) {
+		
+		model.addAttribute("menu_flag", "service");
+
+		return "service/service-import.jsp";
 
 	}
 
@@ -406,21 +414,33 @@ public class ServiceController {
 		if (imageName != null) {
 			isDepoly = "deploy";
 		     // 获取基础镜像的暴露端口信息
-			model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
+			List<PortConfig> list = getBaseImageExposedPorts(imgID);
+			if (null == list) {
+			    list = new ArrayList<PortConfig>();
+			    PortConfig portConfig = new PortConfig();
+			    portConfig.setContainerPort("8080");
+			    int randomPort = vailPortSet();
+			    if (-1 != randomPort) {
+			        portConfig.setMapPort(String.valueOf(randomPort));                       
+			    } else {
+			        portConfig.setMapPort("-1");
+                 }
+			    list.add(portConfig);
+			}
+			model.addAttribute("portConfigs",JSON.toJSONString(list));
 		}
-
+		//TODO 
 		boolean flag = getleftResource(model);
 		if (!flag) {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
 		}
+		//TODO
 
 		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
-		
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<String> templateNames = envVariableDao.findTemplateName(cUser.getId());
 		
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
@@ -428,35 +448,37 @@ public class ServiceController {
 		model.addAttribute("imageVersion", imageVersion);
 		model.addAttribute("isDepoly", isDepoly);
 		model.addAttribute("menu_flag", "service");
-		model.addAttribute("templateNames",templateNames);
 		return "service/service_create.jsp";
 	}
+	
 	
     private List<PortConfig> getBaseImageExposedPorts(String imgID) {
         Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
         if (null != ci) {
             //Image image = imageDao.findByNameAndVersion(ci.getBaseImageName().substring(ci.getBaseImageName().indexOf("/") +1),ci.getBaseImageVersion());
             Image image = imageDao.findById(ci.getBaseImageId());
-            InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
-            // v1.9
-            long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
-            if (countOfExposedPort > 0) {
-                ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
-                List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
-                for (int i = 0;i<countOfExposedPort;i++) {
-                    PortConfig portConfig = new PortConfig();
-                    portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
-                    int randomPort = vailPortSet();
-                    if (-1 != randomPort) {
-                        portConfig.setMapPort(String.valueOf(randomPort));                       
-                    } else {
-                        portConfig.setMapPort("-1");
+            if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+                InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
+                // v1.9
+                long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
+                if (countOfExposedPort > 0) {
+                    ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
+                    List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
+                    for (int i = 0;i<countOfExposedPort;i++) {
+                        PortConfig portConfig = new PortConfig();
+                        portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
+                        int randomPort = vailPortSet();
+                        if (-1 != randomPort) {
+                            portConfig.setMapPort(String.valueOf(randomPort));                       
+                        } else {
+                            portConfig.setMapPort("-1");
+                              }
+                        tmpPortConfigs.add(portConfig);
                     }
-                    tmpPortConfigs.add(portConfig);
+                    return tmpPortConfigs;
                 }
-                return tmpPortConfigs;
-            }
-        }
+               }
+          }
         return null;
     }
     
@@ -465,9 +487,20 @@ public class ServiceController {
     public String getPortConfig(String imgID){
         List<PortConfig> list=getBaseImageExposedPorts(imgID);
         Map<String,Object> map = new HashMap<String,Object>();
+        if (null == list) {
+            list = new ArrayList<PortConfig>();
+            PortConfig portConfig = new PortConfig();
+            portConfig.setContainerPort("8080");
+            int randomPort = vailPortSet();
+            if (-1 != randomPort) {
+                portConfig.setMapPort(String.valueOf(randomPort));                       
+            } else {
+                portConfig.setMapPort("-1");
+                  }
+            list.add(portConfig);
+          }
         map.put("data",list);
-        return JSON.toJSONString(map); 
-           
+        return JSON.toJSONString(map);
     }
 
 	public boolean getleftResource(Model model) {
@@ -629,14 +662,13 @@ public class ServiceController {
 	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
-	public String constructContainer(Service service, String resourceName,String envVariable,String templateName,String portConfig) {
+	public String constructContainer(Service service, String resourceName,String envVariable,String portConfig) {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(new Date());
 		service.setCreateBy(currentUser.getId());
-		if (!StringUtils.isEmpty(resourceName)) {
-			resourceName = resourceName.substring(0, resourceName.indexOf("."));
-			service.setServiceLink(resourceName);
+		if (!StringUtils.isEmpty(resourceName) && !service.getServicePath().trim().equals(resourceName.substring(0, resourceName.indexOf(".")).trim())) {
+			service.setServicePath(resourceName.substring(0, resourceName.indexOf(".")).trim());
 		}
 		serviceDao.save(service);
 		
@@ -650,9 +682,6 @@ public class ServiceController {
 				envVar.setEnvValue(jsonArray.getJSONObject(i).getString("envValue").trim());
 				envVar.setCreateDate(new Date());
 				envVar.setServiceId(service.getId());
-				if(StringUtils.isNotEmpty(templateName)){
-					envVar.setTemplateName(templateName);
-				}
 				envVariableDao.save(envVar);
 			}
 		}
@@ -670,7 +699,7 @@ public class ServiceController {
 				portConfigDao.save(portCon);
 				
 				// 向map中添加生成的node端口
-				smalSet.add(Integer.valueOf(portCon.getContainerPort()));
+				smalSet.add(Integer.valueOf(portCon.getContainerPort().trim()));
 			}
 		}
 		//保存
@@ -738,20 +767,56 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 	}
 	
-	@RequestMapping("service/matchTemplateName.do")
+	/**
+	 * 加载环境变量模板数据
+	 * 
+	 * @return String
+	 * @see
+	 */
+	@RequestMapping("service/loadEnvTemplate.do")
+    @ResponseBody
+	public String loadEnvTemplate(){
+	    Map<String, Object> map = new HashMap<String, Object>();
+        User cUser = CurrentUserUtils.getInstance().getUser();
+        List<String> templateNames = envTemplateDao.findTemplateName(cUser.getId());
+        map.put("data", templateNames);
+        return JSON.toJSONString(map);
+	}
+	
+	/**
+	 * 保存环境变量模板
+	 * 
+	 * @param templateName
+	 * @return 
+	 * @see
+	 */
+	@RequestMapping("service/saveEnvTemplate.do")
 	@ResponseBody
-	public String matchTemplateName (String templateName) {
+	public String saveEnvTemplate (String templateName,String envVariable) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User cUser = CurrentUserUtils.getInstance().getUser();
-		for (EnvVariable envVariable : envVariableDao.findByCreateBy(cUser.getId())) {
-			if (StringUtils.isEmpty(envVariable.getTemplateName())) {
-				continue;
-			}
-			if (envVariable.getTemplateName().equals(templateName)) {
-				map.put("status", "200");
-				break;
-			}
+		
+		for (EnvTemplate envTemplate : envTemplateDao.findByCreateBy(cUser.getId())) {
+            if (envTemplate.getTemplateName().equals(templateName)) {
+                map.put("status", "400"); //模板名称重复
+                return JSON.toJSONString(map);
+            }
+        }
+		
+		if (StringUtils.isNotEmpty(envVariable)) {
+            JSONArray jsonArray = JSONArray.parseArray(envVariable);  
+            for(int i = 0 ; i < jsonArray.size(); i ++ ) {
+                EnvTemplate envTemplate = new EnvTemplate();
+                envTemplate.setCreateBy(cUser.getId());
+                envTemplate.setEnvKey(jsonArray.getJSONObject(i).getString("envKey").trim());
+                envTemplate.setEnvValue(jsonArray.getJSONObject(i).getString("envValue").trim());
+                envTemplate.setCreateDate(new Date());
+                envTemplate.setTemplateName(templateName);
+                envTemplateDao.save(envTemplate);
+            }
+            map.put("status", "200");
 		}
+		
 		return JSON.toJSONString(map);
 	}
 	
@@ -759,15 +824,16 @@ public class ServiceController {
 	 * 查询用户的环境变量模板，导入到环境变量模板中
 	 * @return
 	 */
-	@RequestMapping("service/importEnvVariable.do")
+	@RequestMapping("service/importEnvTemplate.do")
 	@ResponseBody
-	public String findEnvVariables(String templateName){
+	public String findEnvTemplate(String templateName){
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<EnvVariable> envVariables = envVariableDao.findByCreateByAndTemplateName(cUser.getId(),templateName);
-		map.put("data", envVariables);
+		List<EnvTemplate> envTemplates = envTemplateDao.findByCreateByAndTemplateName(cUser.getId(),templateName);
+		map.put("data", envTemplates);
 		return JSON.toJSONString(map);
 	}
+	
 	/**
     * 生成有效的PORTSET,回收端口
     * @return int
@@ -778,28 +844,22 @@ public class ServiceController {
            Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
                                        .limit(offset)
                                        .collect(Collectors.toSet());
-/*           Set<Integer> tmpBigSet = bigSet;
-           tmpBigSet.removeAll(smalSet);
-           if (CollectionUtils.isEmpty(tmpBigSet)) {
-               smalSet.clear();
-               smalSet.addAll(portConfigDao.findPortSets());
-               smalSet.remove(null);
-               bigSet.removeAll(smalSet); 
-               return -1;
-           } else {
-               smalSet.addAll(portConfigDao.findPortSets());
-               smalSet.remove(null);
-               bigSet.removeAll(smalSet);
-           }*/
+           smalSet.addAll(portConfigDao.findPortSets());
+           smalSet.remove(null);
            bigSet.removeAll(smalSet);
            if (CollectionUtils.isEmpty(bigSet)) {
-               smalSet.addAll(portConfigDao.findPortSets());
-               smalSet.remove(null);
                return -1;
               }
            Object[] obj =bigSet.toArray();
            int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
                               .toString());
+           PortConfig validPort = portConfigDao.findByMapPort(Integer.toString(portSet));
+              // 监测数据库中是否存在相同的端口号
+           while ( null != validPort) {
+               portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
+                   .toString());
+               validPort = portConfigDao.findByMapPort(Integer.toString(portSet));
+              }
            smalSet.add(portSet);
            return portSet;
        }
@@ -898,7 +958,7 @@ public class ServiceController {
 				ReplicationController controller = client.getReplicationController(serviceName);
 				String NS = controller.getMetadata().getNamespace();
 				String cmd = "kubectl rolling-update " + serviceName + " --namespace=" + NS
-						+ " --update-period=10s  --image="
+						+ " --update-period=10s --image="
 						+ dockerClientService.generateRegistryImageName(imgName, imgVersion);
 				boolean flag = cmdexec(cmd);
 				if (flag) {
@@ -906,6 +966,9 @@ public class ServiceController {
 					serviceDao.save(service);
 					map.put("status", "200");
 				} else {
+				   String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS 
+				                               + " --rollback";
+				   cmdexec(rollBackCmd);
 					map.put("status", "400");
 				}
 			}
@@ -1100,7 +1163,7 @@ public class ServiceController {
 			List<PortConfig> bindPort = portConfigDao.findByServiceId(id);
 			if (CollectionUtils.isNotEmpty(bindPort)) {
 			    for (PortConfig oneRow : bindPort) {
-			        smalSet.remove(Integer.valueOf(oneRow.getContainerPort()));
+			        smalSet.remove(Integer.valueOf(oneRow.getContainerPort().trim()));
 			    }
 			    portConfigDao.deleteByServiceId(id);
 			}

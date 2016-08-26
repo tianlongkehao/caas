@@ -146,7 +146,7 @@
                                                     <label class="stepLabel">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
-                                                    		id="pwd" name="password"  value="${user.password}" readonly="readonly">
+                                                    		id="pwd" name="password"  value="" >
                                                 </div>
                                             </div>
                                         </div>

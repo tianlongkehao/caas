@@ -18,7 +18,7 @@
 		var resourceName = '${resourceName}';
 		var portConfigs = '${portConfigs}'
 		if (isDepoly == 'deploy') {
-			deploy(imgID, imageName, imageVersion, resourceName,portConfigs);
+			deploy(imgID, imageName, imageVersion, resourceName, portConfigs);
 		}
 	});
 </script>
@@ -82,8 +82,6 @@
 									action="<%=path%>/service/constructContainer.do">
 									<input type="hidden" id="envVariable" name="envVariable" value=""></input>
 									<input type="hidden" id="portConfig" name="portConfig" value=""></input>
-									<input type="hidden" id="templateName" name="templateName" value=""></input>
-									
 									<div class="host_step2">
 										<ul class="safeSet">
 											<li class="line-h-3"><span class="ve_top">镜像名称：</span> <input
@@ -93,11 +91,11 @@
 											<li class="line-h-3"><span class="ve_top">镜像版本：</span> <input
 												type="text" value="" class="in_style" id="imgVersion"
 												name="imgVersion" readOnly="readOnly"></li>
-											<li class="line-h-3"><span class="ve_top">服务名称：</span> <input
-												type="text" value="" class="in_style" id="serviceName"
-												name="serviceName"> <input type="hidden" value=""
-												class="in_style" id="resourceName" name="resourceName">
-											</li>
+											<li class="line-h-3"><span class="ve_top">服务名称：<font
+													color="red">*</font></span><input type="text" value=""
+												class="in_style" id="serviceName" name="serviceName">
+												<input type="hidden" value="" class="in_style"
+												id="resourceName" name="resourceName"></li>
 											<li id="service_type"><span class="ve_top">启动命令：</span>
 												<span class="update-mi"> <input type="checkbox"
 													id="startCommand"> <label for="startCommand"><font
@@ -106,10 +104,12 @@
 											<li class="line-h-3" id="startCommand_li"><input
 												type="text" value="" class="in_style"
 												id="startCommand_input" name="startCommand"
-												style="margin-left: 120px"></li>
-											<li class="line-h-3"><span class="ve_top">服务访问路径：</span>
-												<input type="text" value="" class="in_style" id="webPath"
-												name="servicePath"></li>
+												style="margin-left: 150px"></li>
+											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
+													color="red">*</font></span>
+												<input type="text" value="" class="in_style" id="webPath" name="servicePath">
+												<span style="color:#1dd2af" id="service-path"><i class="fa fa-info-circle"></i></span>
+											</li>
 											<c:if test="${DMZ!=null && USER!=null  }">
 												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
 													<label class="checkbox-inline"> <input
@@ -121,10 +121,11 @@
 												</label> <input type="hidden" value="" class="in_style"
 													id="proxyZone" name="proxyZone"></li>
 											</c:if>
-											<li class="line-h-3"><span class="ve_top">nginx代理路径：</span>
-												<input type="text" value="" class="in_style" id="nginxPath"
-												name="proxyPath"></li>
-
+											<li class="line-h-3"><span class="ve_top">nginx代理路径：<font
+													color="red">*</font></span>
+												<input type="text" value="" class="in_style" id="nginxPath" name="proxyPath">
+												<span style="color:#1dd2af" id="proxy-path"><i class="fa fa-info-circle"></i></span>
+											</li>
 
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
@@ -141,13 +142,13 @@
                                     <span class="ve_top display-block">容器配置：</span>
 
                                 </li> -->
- 											<li class="line-h-3" id="instsize">
+											<li class="line-h-3" id="instsize">
 												<div class="param-set">
-													<span class="number-title">实例数量：</span> <input
-														type="number" value="1" class="number" min="1"
+													<span class="ve_top">实例数量：<font color="red">*</font></span>
+													<input type="number" value="1" class="number" min="1"
 														autocomplete="off" max="" placeholder="1" id="instanceNum"
 														name="instanceNum"> <span class="unit">个</span>
-<%-- 													<span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span>
+													<%-- 													<span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span>
 													<span class="dynamic-scale"> <input type="checkbox"
 														id="dynamic-service"> <label for="dynamic-service"><font
 															color="blue">自动化伸缩</font></label>
@@ -155,21 +156,34 @@
 
 												</div>
 											</li>
-<!-- 											<li class="line-h-3">
+
+											<li class="line-h-3" id="dynamic-range">
+
 												<div class="param-set">
-													<span class="number-title">伸缩范围：</span><input type="number"
-														value="1" class="number" min="1">
-													<span class="unit">个</span> <span
-														style="margin-left: 15px">~</span> <input type="number"
-														value="5" class="number"> <span class="unit">个</span>
+													<span class="ve_top">伸缩范围：<font color="red">*</font></span>
+													<input type="number" value="1" class="number" min="1"
+														autocomplete="off" max="" placeholder="1" id="minNum"
+														name="instanceNum"> <span class="unit">个</span> <span
+														style="margin-left: 34px"> ~ </span> <input type="number"
+														value="10" class="number" min="1" autocomplete="off"
+														max="" placeholder="10" id="maxNum" name="instanceNum">
+													<span class="unit">个</span>
 												</div>
 
+											</li>
+											<li class="line-h-3" id="dynamic-threshold">
+												<div class="param-set">
+													<span class="ve_top">伸缩阈值：<font color="red">*</font></span>
+													<input type="number" placeholder="60"><span
+														class="unit">%</span> <span
+														style="color: grey; margin-left: 40px;">CPU资源使用率</span>
+												</div>
+											</li>
 
-											</li> -->
 											<li class="line-h-3">
 												<div class="param-set">
-													<span class="number-title">CPU数量：</span> <input
-														type="radio" class="cpuNum" name="cpuNum" value="1"
+													<span class="ve_top">CPU数量：<font color="red">*</font></span>
+													<input type="radio" class="cpuNum" name="cpuNum" value="1"
 														placeholder="当前可用cpu数量：${leftcpu }个">1<span>个</span>
 													<input type="radio" class="cpuNum" name="cpuNum" value="2"
 														placeholder="当前可用cpu数量：${leftcpu }个">2<span>个</span>
@@ -181,8 +195,8 @@
 											</li>
 											<li class="line-h-3">
 												<div class="param-set">
-													<span class="number-title">内存：</span> <input type="radio"
-														class="ram" name="ram" value="2048">2<span>G</span>
+													<span class="ve_top">内存：<font color="red">*</font></span> <input
+														type="radio" class="ram" name="ram" value="2048">2<span>G</span>
 													<input type="radio" class="ram" name="ram" value="4098">4<span>G</span>
 													<input type="radio" class="ram" name="ram" value="8192">8<span>G</span>
 													<span style="color: #1E90FF; margin-left: 60px;">当前可用内存：${leftmemory }G</span>
@@ -196,9 +210,8 @@
 											</span></li>
 											<li class="hide-set" id="save_roll_dev">
 												<ul id="mountPathList">
-													<li class="mount line-h-3">
-														<!-- <span class="ve_top">挂载地址：</span> -->
-														<table class="pull-left" style="margin-left: 120px;">
+													<li class="mount line-h-3"><span class="ve_top">挂载地址：</span>
+														<table class="pull-left">
 															<tbody>
 																<tr>
 																	<td><input type="text" id="mountPath"
@@ -223,8 +236,7 @@
                                                     </td> -->
 																</tr>
 															</tbody>
-														</table>
-													</li>
+														</table></li>
 
 													<!-- <li class="line-h-3"><span class="ve_top">镜像设置：</span> <span
                                                 class="update-mi"><input type="checkbox" id="pullPolicy"
@@ -254,14 +266,14 @@
 																</tr>
 															</thead>
 															<tbody id="Path-oper1">
-																<input type="hidden" id = "arrayKey" value="" />
+																<input type="hidden" id="arrayKey" value="" />
 															</tbody>
 														</table>
 													</li>
 												</ol></li>
 											<li class="hide-set"><span class="ve_top">端口配置：</span>
 												<table class="table enabled">
-													<thead style="background: #fafafa">
+													<thead>
 														<tr>
 															<th style="width: 35%">容器端口</th>
 															<th style="width: 35%">协议</th>
@@ -284,217 +296,26 @@
 														</tr> -->
 													</tbody>
 												</table>
-												<div class="createPort">
+												<div class="createPort" style="background: #fafafa">
 													<span id="createPort"><i class="fa fa-plus margin"></i>添加端口</span>
 												</div></li>
 										</ul>
 									</div>
-
-									<%-- 高级设置 --%>
-									<div class="host_step3 hide" style="height: auto;">
-										<ul class="advanced">
-											<li class="hide-set"><span class="ve_top">链接服务：</span>
-												<ol class="pull-left" style="width: 100%;">
-													<li class="hide-select"><select class="col col-4"
-														id="linkcontainers"
-														style="min-width: 100px; height: 28px;">
-															<option>mysql</option>
-													</select> <input id="containernickname" type="text"
-														placeholder="value"> <a id="addcontainer"
-														class="cursor">添加</a></li>
-
-													<li>
-														<table id="linkcontainertb"
-															class="table table-hover enabled" style="display: none">
-															<thead>
-																<tr>
-																	<th style="">服务</th>
-																	<th style="width: 40%">名称</th>
-																	<th style="width: 20%">操作</th>
-																</tr>
-															</thead>
-															<tbody id="linkcontainerbody"></tbody>
-														</table>
-													</li>
-												</ol></li>
-											<li class="hide-set"><span class="ve_top">环境变量：</span>
-												<ol class="pull-left" style="width: 100%;">
-													<li class="hide-select"><input type="text"
-														placeholder="name" id="Name"> <input type="text"
-														placeholder="value" id="Value"> <a id="cratePATH">添加</a>
-													</li>
-													<li>
-														<table class="table table-hover enabled" id="Path">
-															<thead>
-																<tr>
-																	<th style="width: 45%">键</th>
-																	<th style="width: 45%">值</th>
-																	<th style="width: 10%">操作</th>
-																</tr>
-															</thead>
-															<tbody id="Path-oper">
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled="" value="PATH"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value"
-																		value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin">
-																	</td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue"
-																		value="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin">
-																	</td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled="" value="DEBIAN_FRONTEND"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="noninteractive"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="noninteractive"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled="" value="MYSQL_USER"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="admin"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="admin"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled="" value="MYSQL_PASS"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="**Random**"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="**Random**"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled=""
-																		value="REPLICATION_MASTER"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="**False**"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="**False**"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled=""
-																		value="REPLICATION_SLAVE"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="**False**"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="**False**"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled=""
-																		value="REPLICATION_USER"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="replica"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="replica"></td>
-																</tr>
-																<tr>
-																	<td class="keys"><input type="text"
-																		style="width: 98%" disabled=""
-																		value="REPLICATION_PASS"></td>
-																	<td class="vals"><input type="text"
-																		placeholder="value" value="replica"></td>
-																	<td class="func"><a href="javascript:void(0)"
-																		onclick="deleteRow(this)" class="gray"><i
-																			class="fa fa-trash-o fa-lg"></i></a><input type="hidden"
-																		class="oldValue" value="replica"></td>
-																</tr>
-															</tbody>
-														</table>
-													</li>
-												</ol></li>
-											<li class="hide-set"><span class="ve_top">端口配置：</span>
-												<table class="table enabled">
-													<thead style="background: #fafafa">
-														<tr>
-															<th style="width: 35%">容器端口</th>
-															<th style="width: 35%">协议</th>
-															<th style="width: 15%">映射端口</th>
-															<th style="vertical-align: middle; width: 8.9%">操作</th>
-														</tr>
-													</thead>
-													<tbody class="BORDER" id="pushPrptpcol2">
-														<tr class="plus-row">
-															<td><input class="port" type="text" disabled=""
-																value="3306"></td>
-															<td><select class="T-http">
-																	<option>TCP</option>
-																	<option>HTTP</option>
-															</select></td>
-															<td><i>动态生成</i></td>
-															<td><a href="javascript:void(0)"
-																onclick="_deletePortRow(this)" class="gray"> <i
-																	class="fa fa-trash-o fa-lg"></i>
-															</a></td>
-														</tr>
-														<tr class="plus-row">
-															<td><input class="port" type="text"></td>
-															<td><select class="T-http">
-																	<option>TCP</option>
-																	<option>HTTP</option>
-															</select></td>
-															<td><i>动态生成</i></td>
-															<td><a href="javascript:void(0)"
-																onclick="_deletePortRow(this)" class="gray"> <i
-																	class="fa fa-trash-o fa-lg"></i>
-															</a></td>
-														</tr>
-													</tbody>
-												</table>
-												<div class="createPort">
-													<span><i class="fa fa-plus margin"></i></span>
-												</div></li>
-										</ul>
-										<div style="height: 80px !important;"></div>
-									</div>
 								</form>
-								<div id="environment-variable">
-									<table class="table table-hover enabled" id="Path-table" style="width: 345px; margin: 5px 10px 5px 10px">
+								<!-- 环境变量导入模板 -->
+								<div id="environment-variable" style="display:none; max-height:360px;overflow-y:scroll;overflow-x:hidden;">
+									<table class="table table-hover enabled" id="Path-table"
+										style="width: 326px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
-											<c:if test="${empty templateNames }">
-												<tr>
-													<td>没有保存的模板</td>
-												</tr>
-											</c:if>
-											<c:if test="${not empty templateNames }">
-												<c:forEach var = "templateName" items = "${templateNames }">
-													<tr>
-														<td class="vals vals-env">${templateName }
-															<span class="vals-path hide"><i class="fa fa-check"></i></span>
-															<input type="hidden" class="templateName" value="${templateName }" />
-														</td>
-													</tr>
-												</c:forEach>
-											</c:if>
+										
 										</tbody>
 									</table>
 								</div>
 								<!-- 环境变量另存为模板 -->
-								<div id="environment-template">
-									<div style="width: 345px; margin: 5px 10px 5px 10px">
-										<span>模板名称：</span><input type="text" id="envTemplateName" style="width:77%" autofocus="autofocus" />
+								<div id="environment-template" style="display:none; max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+									<div style="width: 326px; margin: 5px 10px 5px 10px">
+										<span>模板名称：</span><input type="text" id="envTemplateName"
+											style="width: 77%" autofocus="autofocus" />
 									</div>
 								</div>
 							</div>
@@ -507,3 +328,11 @@
 						</div>
 
 					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+
+
+</body>
+</html>

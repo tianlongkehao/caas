@@ -36,7 +36,7 @@ public class Ci {
 	 */
 	private String projectName;
 	/**
-	 * 构建类型：1快速构建2上传构建3代码构建
+	 * 构建类型：1代码构建2DockerFile构建3快速构建
 	 */
 	private Integer type;
 	/**
