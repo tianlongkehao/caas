@@ -1,38 +1,70 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.dao.StorageDao;
+import com.bonc.epm.paas.entity.FileInfo;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.SFTPUtil;
+import com.bonc.epm.paas.util.SshConnect;
+import com.bonc.epm.paas.util.ZipCompressing;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 
 @Controller
 public class StorageController {
 
 	private static final Logger log = LoggerFactory.getLogger(StorageController.class);
-
+	
 	@Autowired
 	private StorageDao storageDao;
+	
+	@Autowired
+  private CephController cephController;
 
-	/**
+    /**
 	 * 进入存储卷组页面
 	 * 
 	 * @param model
@@ -201,4 +233,131 @@ public class StorageController {
 		}
 		return JSON.toJSONString(map);
 	}
+	/**
+	 * 
+	 * Description:展示文件列表
+	 * 
+	 * @param path
+	 * @param dirName
+	 * @param storageName
+	 * @return 
+	 * @see
+	 */
+
+	  @RequestMapping(value={"listFile"},method=RequestMethod.GET)
+	  @ResponseBody
+	  public String fileList(String path,String dirName,String storageName){
+	      Map map = new HashMap();
+	      String directory=path;
+	      String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+	      if("".equals(dirName)){
+	          File file = new File(cephController.getMountpoint()+namespace+storageName);
+          if(!file.exists()){
+              CephController cephCon = new CephController();
+              cephCon.connectCephFS();
+            try {
+                    SshConnect.connect(cephController.getUsername(), cephController.getPassword(), cephController.getUrl(), 22);
+                    SshConnect.exec("cd "+cephController.getMountpoint(), 1000);
+                    SshConnect.exec(cephController.getMountexec(), 1000);
+                }catch (JSchException | IOException | InterruptedException e) {
+                    e.printStackTrace();
+                                   }
+                      }
+	        directory=cephController.getMountpoint()+namespace+storageName;
+	             }
+	      if ("../".equals(dirName)){
+	          if((path).equals(cephController.getMountpoint()+namespace+storageName)){
+	              map.put("status", "500");
+	              return JSON.toJSONString(map); 
+	             }
+	        directory=directory.substring(0,directory.lastIndexOf('/'));
+	        directory=directory.substring(0,directory.lastIndexOf('/')+1);
+	      }else{
+	        directory+=dirName;
+	             }
+        List<FileInfo> list = SFTPUtil.listFileInfo(directory);
+        map.put("fileList", list);
+        return JSON.toJSONString(map); 
+	       }
+	
+/**
+ * 
+ * Description: 上传文件到卷组
+ * 
+ * @param file
+ * @param path
+ * @return 
+ * @see
+ */
+
+	@RequestMapping(value={"upload"},method=RequestMethod.POST)
+  @ResponseBody
+    public String handleFileUpload(@RequestParam("file")MultipartFile file,String path){
+       if(!file.isEmpty()){
+           try {
+              /*图片上传到了工程的跟路径；
+               * 1、文件路径； * 2、文件名；* 3、文件格式;* 4、文件大小的限制;
+               */
+              BufferedOutputStream out = new BufferedOutputStream(
+                      new FileOutputStream(
+                              new File(path+file.getOriginalFilename())));
+              out.write(file.getBytes());
+              out.flush();
+              out.close();
+           } catch (FileNotFoundException e) {
+              e.printStackTrace();
+              return"上传失败,"+e.getMessage();
+           } catch (IOException e) {
+              e.printStackTrace();
+              return"上传失败,"+e.getMessage();
+           }
+           Map map = new HashMap();
+           map.put("status","200");
+           return JSON.toJSONString(map); 
+       }else{
+           return"上传失败，因为文件是空的.";
+       }
+
+    }
+    /**
+     * 
+     * Description: 下载卷组中的文件
+     * 
+     * @param downfiles
+     * @param directory
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws JSchException
+     * @throws InterruptedException 
+     * @see
+     */
+
+   @RequestMapping(value={"media"}, method = RequestMethod.GET)  
+   public void downloadFile(String downfiles,String directory,HttpServletRequest request, HttpServletResponse response)  
+           throws IOException, JSchException, InterruptedException {  
+
+       SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+       String newdownfile =  df.format(new Date())+".zip";
+       String[] downfile = downfiles.split(",");
+       File[] files = new File [downfile.length] ;
+       for(int i =0;i<downfile.length;i++){
+           files[i]=new File(directory+downfile[i]);
+               }    
+       ZipCompressing.zip(directory+newdownfile, files); //测试压缩目录
+           //下载
+       String fullPath = directory+newdownfile;
+       response.setContentType(request.getServletContext().getMimeType(fullPath));  
+       response.setHeader("Content-Disposition", "attachment;filename="+newdownfile);  
+       try {  
+           InputStream myStream =new FileInputStream(fullPath);
+           IOUtils.copy(myStream, response.getOutputStream());  
+           response.flushBuffer();  
+           System.out.println("下载成功");
+       } catch (IOException e) {  
+       }  finally{
+           File rm = new File(fullPath);
+           rm.delete();
+                }
+   } 
 }

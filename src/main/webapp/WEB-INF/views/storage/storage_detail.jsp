@@ -4,11 +4,13 @@
 <head lang="en">
 <title>服务</title>
 <%@include file="../frame/header.jsp"%>
+<script type="text/javascript" src="<%=path %>/js/storage/storage_detail.js"></script>
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/storage.css" />
-	<script type="text/javascript" src="<%=path %>/js/storage/storage_detail.js"></script>
+
 </head>
 <body>
+
 	<jsp:include page="../frame/menu.jsp" flush="true">
 		<jsp:param name="service" value="" />
 	</jsp:include>
@@ -25,7 +27,7 @@
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">存储和备份</li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">${storage.storageName }</li>
+						<li class="active" id="storageName">${storage.storageName }</li>
 					</ol>
 
 				</div>
@@ -62,6 +64,7 @@
 							<li>内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;容：&nbsp;&nbsp;&nbsp;
 								<span class="btn btn-primary upload" id="fileUpload"> 上传文件 </span> <span
 								class="btn btn-primary download" id="fileDownload"> 导出文件 </span>
+								<input hidden="true" value="" id="downfilepath"/>
 							</li>
 						</ul>
 						
@@ -99,49 +102,36 @@
 										<th style="width: 26%;">修改日期</th>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody id ="mybody">
 									<tr class="vol_list" style="cursor:pointer">
 										<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>
-										<td style="width: 40%;"><a hrer=""><img src="/images/img-file.png" ><span style="margin-left:5px">文件夹3</span></a></td>
+										<td style="width: 40%;"><a hrer=""><img src="/images/img-file.png" ><span onclick="creatable()" style="margin-left:5px">文件夹3</span></a></td>
 										<td style="width: 30%;">33</td>
-										<td style="width: 26%;"></td>
-									</tr>
-									<tr class="vol_list" style="cursor:pointer">
-										<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>
-										<td style="width: 40%;"><a><img src="/images/file-f.png"><span style="margin-left:5px">文件4</span></a></td>
-										<td style="width: 30%;">44</td>
 										<td style="width: 26%;"></td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
-						
+						<div id="environment-templat" hidden="true">
+                <div style="width: 345px; margin: 5px 10px 5px 10px">
+                   <form method="POST" enctype="multipart/form-data" action="upload" id="form1" name="form1"> 
+                     <p>文件：<input type="file" name="file" id="file" /></p>
+                     <input type="hidden" name="path" value="sfasf" id="path">
+                   </form>
+                 </div>
+            </div>
 					</section>
 
 				</div>
 			</div>
 		</article>
 	</div>
-<script type="text/javascript">
-$("#fileUpload").click(function(){
-    layer.open({
-    	type:1,
-    	content:$(),
-    	title:'上传文件',
-    	btn:['保存','取消'],
-    	yes:function(index,layero){
-    		
-    	}
-    })
-    
-});
-
-var jsonData = {
-		
-}
-
-</script>
-
-
+	<script type="text/javascript">
+		document.getElementById('fileDownload').onclick = function(){
+	        var directory = document.getElementById('downfilepath').value;
+	        var downfiles = $("input[name='downfiles']:checked").serialize();
+	        location.href = ctx + "/media?directory=" + directory +"&"+ downfiles;
+	    }
+	</script>
 </body>
 </html>

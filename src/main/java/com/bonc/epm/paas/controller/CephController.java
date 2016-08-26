@@ -2,6 +2,7 @@ package com.bonc.epm.paas.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import com.ceph.rados.Rados;
 import com.ceph.rbd.Rbd;
@@ -24,17 +25,43 @@ import com.ceph.fs.CephMount;
 @Controller
 public class CephController {
 
-	private static final Logger logger = LoggerFactory.getLogger(CephController.class);
+	  private static final Logger logger = LoggerFactory.getLogger(CephController.class);
 
-	// cluster
-	private Rados cluster;
+	  // cluster
+	  private Rados cluster;
 
-	// cephMount
-	private CephMount cephMount;
-
-	/**
-	 * connectCephFS
-	 */
+	  // cephMount
+	  private CephMount cephMount;
+	
+    /**
+     * 连接url
+     */
+    @Value("${ceph.ssh.url}")
+    private String url;
+    /**
+     * 用户名
+     */
+    @Value("${ceph.ssh.username}")
+    private String username;
+    /**
+     * 密码
+     */
+    @Value("${ceph.ssh.password}")
+    private String password;
+    /**
+     * 挂载指令
+     */
+    @Value("${ceph.ssh.mountexec}")
+    private String mountexec;
+    /**
+     * 挂载点
+     */
+    @Value("${ceph.ssh.mountpoint}")
+    private String mountpoint;
+    
+    /**
+     * connectCephFS
+     */
 	public void connectCephFS() {
 		try {
 			logger.info("进入方法：connectCephFS");
@@ -307,4 +334,23 @@ public class CephController {
 			}
 		}
 	}
+	public String getMountexec() {
+        return mountexec;
+        }
+    
+	public String getMountpoint() {
+    return mountpoint;
+    }
+
+	public String getUrl() {
+    return url;
+     }
+
+	public String getUsername() {
+    return username;
+      }
+
+	public String getPassword() {
+    return password;
+      }
 }
