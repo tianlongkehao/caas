@@ -56,7 +56,7 @@
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left ;" >权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
-                                                    <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
+                                                    <input type="hidden" id="user_autority_hidden"  name="user_autority" value="${user.user_autority}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
                                                     			name="user_autority" id="user_autority" readonly="readonly" disabled>
                                                         <option name="option" value="2" >租户</option>
