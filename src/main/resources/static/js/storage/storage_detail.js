@@ -1,5 +1,4 @@
 
-<<<<<<< HEAD
 var jsonData = {
 		
 }
@@ -116,7 +115,6 @@ function  creatable(isDir,path,dirName){
 	}
 }
 
-=======
 function loadStorageList(){
 	var url = ""+ctx+"/service/storageList";
 	var json = {pageable:"pageable"};
@@ -162,7 +160,7 @@ function loadStorageList(){
         	$('tbody #storageList').html(itemsHtml);
 		}
 	});
-}*/
+}
 var datas = [ {
 	level:"1",
 	imgtype : "box",
@@ -304,4 +302,3 @@ $(document)
 					volList();
 
 				});
->>>>>>> refs/heads/develop
