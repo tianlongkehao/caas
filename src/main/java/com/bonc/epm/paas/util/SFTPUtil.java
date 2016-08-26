@@ -44,30 +44,29 @@ public class SFTPUtil {
 * @param password 密码
 * @return
 */
-public static ChannelSftp connect(String host, int port, String username,
-String password) {
-ChannelSftp sftp = null;
-try {
-JSch jsch = new JSch();
-jsch.getSession(username, host, port);
-Session sshSession = jsch.getSession(username, host, port);
-System.out.println("Session created.");
-sshSession.setPassword(password);
-Properties sshConfig = new Properties();
-sshConfig.put("StrictHostKeyChecking", "no");
-sshSession.setConfig(sshConfig);
-sshSession.connect();
-System.out.println("Session connected.");
-System.out.println("Opening Channel.");
-Channel channel = sshSession.openChannel("sftp");
-channel.connect();
-sftp = (ChannelSftp) channel;
-System.out.println("Connected to " + host + ".");
-} catch (Exception e) {
-
-}
-return sftp;
-}
+    public static ChannelSftp connect(String host, int port, String username,String password) {
+        ChannelSftp sftp = null;
+        try {
+            JSch jsch = new JSch();
+            jsch.getSession(username, host, port);
+            Session sshSession = jsch.getSession(username, host, port);
+            System.out.println("Session created.");
+            sshSession.setPassword(password);
+            Properties sshConfig = new Properties();
+            sshConfig.put("StrictHostKeyChecking", "no");
+            sshSession.setConfig(sshConfig);
+            sshSession.connect();
+            System.out.println("Session connected.");
+            System.out.println("Opening Channel.");
+            Channel channel = sshSession.openChannel("sftp");
+            channel.connect();
+            sftp = (ChannelSftp) channel;
+            System.out.println("Connected to " + host + ".");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sftp;
+    }
 
 /**
 * 上传文件
@@ -76,13 +75,12 @@ return sftp;
 * @param sftp
 */
 public void upload(String directory, MultipartFile file, ChannelSftp sftp) {
-try {
-   
-sftp.cd(directory);
-sftp.put(new ByteArrayInputStream(file.getBytes()), file.getOriginalFilename());
-} catch (Exception e) {
-e.printStackTrace();
-}
+    try {
+        sftp.cd(directory);
+        sftp.put(new ByteArrayInputStream(file.getBytes()), file.getOriginalFilename());
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
 }
 
 /**
@@ -134,12 +132,12 @@ public void download(String downloadFile,String directory, ChannelSftp sftp ,Str
 * @param sftp
 */
 public void delete(String directory, String deleteFile, ChannelSftp sftp) {
-try {
-sftp.cd(directory);
-sftp.rm(deleteFile);
-} catch (Exception e) {
-e.printStackTrace();
-}
+    try {
+        sftp.cd(directory);
+        sftp.rm(deleteFile);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
 }
 
 /**
@@ -204,24 +202,24 @@ public static String getFileSize(File f){
        
 }
 
-public static void main(String[] args) {
-SFTPUtil sf = new SFTPUtil(); 
-String host = "192.168.0.21";
-int port = 22;
-String username = "root";
-String password = "root.123";
-String directory = "/mnt/k8s";
-String uploadFile = "D:\\tmp\\upload.txt";
-String downloadFile = "upload.txt";
-String saveFile = "D:\\tmp\\download.txt";
-String deleteFile = "delete.txt";
-ChannelSftp sftp=sf.connect(host, port, username, password);
-try{
-//sftp.cd(directory);
-//sftp.mkdir("ss");
-System.out.println("finished");
-}catch(Exception e){
-e.printStackTrace();
-} 
-}
+//    public static void main(String[] args) {
+//        SFTPUtil sf = new SFTPUtil(); 
+//        String host = "192.168.0.21";
+//        int port = 22;
+//        String username = "root";
+//        String password = "root.123";
+//        String directory = "/mnt/k8s";
+//        String uploadFile = "D:\\tmp\\upload.txt";
+//        String downloadFile = "upload.txt";
+//        String saveFile = "D:\\tmp\\download.txt";
+//        String deleteFile = "delete.txt";
+//        ChannelSftp sftp=sf.connect(host, port, username, password);
+//            try{
+//                //sftp.cd(directory);
+//                //sftp.mkdir("ss");
+//                System.out.println("finished");
+//            }catch(Exception e){
+//                e.printStackTrace();
+//            } 
+//        }
 }
