@@ -4,11 +4,13 @@
 <head lang="en">
 <title>服务</title>
 <%@include file="../frame/header.jsp"%>
+<script type="text/javascript" src="<%=path %>/js/storage/storage_detail.js"></script>
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/storage.css" />
-	<script type="text/javascript" src="<%=path %>/js/storage/storage_detail.js"></script>
+
 </head>
 <body>
+
 	<jsp:include page="../frame/menu.jsp" flush="true">
 		<jsp:param name="service" value="" />
 	</jsp:include>
@@ -25,7 +27,7 @@
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">存储和备份</li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">${storage.storageName }</li>
+						<li class="active" id="storageName">${storage.storageName }</li>
 					</ol>
 
 				</div>
@@ -60,10 +62,12 @@
 							<li>格&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;式：&nbsp;&nbsp;&nbsp;${storage.format }</li>
 							<li>创建时间：&nbsp;&nbsp;&nbsp;${storage.createDate }</li>
 							<li>内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;容：&nbsp;&nbsp;&nbsp;
-								<span class="btn btn-primary upload"> 上传文件 </span> <span
-								class="btn btn-primary download"> 导出文件 </span>
+								<span class="btn btn-primary upload" id="fileUpload"> 上传文件 </span> <span
+								class="btn btn-primary download" id="fileDownload"> 导出文件 </span>
+								<input hidden="true" value="" id="downfilepath"/>
 							</li>
 						</ul>
+						
 						<div class="pull-right parameter-list">
 							<canvas id="parameter" width="120px" height="120px"></canvas>
 							<div class="param-text">
@@ -98,9 +102,19 @@
 										<th style="width: 26%;">修改日期</th>
 									</tr>
 								</thead>
+<<<<<<< HEAD
+								<tbody id ="mybody">
+									<tr class="vol_list" style="cursor:pointer">
+=======
 								<tbody id="tbody-vol">
 									<!-- <tr class="vol_list">
+>>>>>>> refs/heads/develop
 										<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>
+<<<<<<< HEAD
+										<td style="width: 40%;"><a hrer=""><img src="/images/img-file.png" ><span onclick="creatable()" style="margin-left:5px">文件夹3</span></a></td>
+										<td style="width: 30%;">33</td>
+										<td style="width: 26%;"></td>
+=======
 										<td style="width: 40%;"><a id="aaa" onclick="expand(this);"><img src="/images/img-file.png" ><span class="volName" style="margin-left:5px">vol1</span></a></td>
 										<td style="width: 30%;">80.1M</td>
 										<td style="width: 26%;">2016-01-02</td>
@@ -110,6 +124,7 @@
 										<td style="width: 40%;"><a onclick="expand(this);"><img src="/images/img-file.png"><span class="volName" style="margin-left:5px">vol2</span></a></td>
 										<td style="width: 30%;">50.6M</td>
 										<td style="width: 26%;">2016-01-04</td>
+>>>>>>> refs/heads/develop
 									</tr>
 									<tr class="vol_list">
 										<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>
@@ -120,13 +135,30 @@
 								</tbody>
 							</table>
 						</div>
-						
+						<div id="environment-templat" hidden="true">
+                <div style="width: 345px; margin: 5px 10px 5px 10px">
+                   <form method="POST" enctype="multipart/form-data" action="upload" id="form1" name="form1"> 
+                     <p>文件：<input type="file" name="file" id="file" /></p>
+                     <input type="hidden" name="path" value="sfasf" id="path">
+                   </form>
+                 </div>
+            </div>
 					</section>
 
 				</div>
 			</div>
 		</article>
 	</div>
+<<<<<<< HEAD
+	<script type="text/javascript">
+		document.getElementById('fileDownload').onclick = function(){
+	        var directory = document.getElementById('downfilepath').value;
+	        var downfiles = $("input[name='downfiles']:checked").serialize();
+	        location.href = ctx + "/media?directory=" + directory +"&"+ downfiles;
+	    }
+	</script>
+=======
 
+>>>>>>> refs/heads/develop
 </body>
 </html>
