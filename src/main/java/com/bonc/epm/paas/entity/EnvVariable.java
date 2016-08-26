@@ -2,6 +2,7 @@ package com.bonc.epm.paas.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,6 +32,7 @@ public class EnvVariable {
 	/**
 	 * 环境变量Value
 	 */
+	@Column(length = 4096)
 	private String envValue;
 	
 	/**
