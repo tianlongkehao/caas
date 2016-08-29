@@ -453,31 +453,41 @@ public class ServiceController {
 	
 	
     private List<PortConfig> getBaseImageExposedPorts(String imgID) {
-        Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
-        if (null != ci) {
-            //Image image = imageDao.findByNameAndVersion(ci.getBaseImageName().substring(ci.getBaseImageName().indexOf("/") +1),ci.getBaseImageVersion());
-            Image image = imageDao.findById(ci.getBaseImageId());
-            if (null != image && StringUtils.isNotBlank(image.getImageId())) {
-                InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
-                // v1.9
-                long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
-                if (countOfExposedPort > 0) {
-                    ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
-                    List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
-                    for (int i = 0;i<countOfExposedPort;i++) {
-                        PortConfig portConfig = new PortConfig();
-                        portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
-                        int randomPort = vailPortSet();
-                        if (-1 != randomPort) {
-                            portConfig.setMapPort(String.valueOf(randomPort));                       
-                        } else {
-                            portConfig.setMapPort("-1");
-                              }
-                        tmpPortConfigs.add(portConfig);
+        try {
+            Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
+            if (null != ci) {
+                Image image = imageDao.findById(Long.valueOf(imgID));
+                if (null == image) {
+                    image = imageDao.findById(ci.getBaseImageId());
+                   }
+                 
+                if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+                    dockerClientService.pullImage(image.getName(), image.getVersion());
+                    InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
+                    // v1.9
+                    long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
+                    if (countOfExposedPort > 0) {
+                        ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
+                        List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
+                        for (int i = 0;i<countOfExposedPort;i++) {
+                            PortConfig portConfig = new PortConfig();
+                            portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
+                            int randomPort = vailPortSet();
+                            if (-1 != randomPort) {
+                                portConfig.setMapPort(String.valueOf(randomPort));                       
+                            } else {
+                                portConfig.setMapPort("-1");
+                                  }
+                            tmpPortConfigs.add(portConfig);
+                        }
+                        return tmpPortConfigs;
                     }
-                    return tmpPortConfigs;
-                }
-               }
+                   }
+              }
+          }
+        catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
           }
         return null;
     }
