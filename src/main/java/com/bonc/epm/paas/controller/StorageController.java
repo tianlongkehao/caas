@@ -234,6 +234,19 @@ public class StorageController {
 		}
 		return JSON.toJSONString(map);
 	}
+	
+	@RequestMapping(value={"hasUsed.do"},method=RequestMethod.GET)
+    @ResponseBody
+    public String hasUsed(String storageName,long totalSize){
+	    Map map = new HashMap();
+	    String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+	    File file = new File(cephController.getMountpoint()+namespace+storageName);
+	    mountLocalCeph(file);
+  
+	    long hasUsed = file.length()/1024/1024;
+      map.put("length", String.valueOf(hasUsed));
+      return JSON.toJSONString(map); 
+	    }
 	/**
 	 * 
 	 * Description:展示文件列表
@@ -252,18 +265,9 @@ public class StorageController {
 	      String directory=path;
 	      String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 	      if("".equals(dirName)){
-	          File file = new File(cephController.getMountpoint()+namespace+storageName);
-          if(!file.exists()){
-              CephController cephCon = new CephController();
-              cephCon.connectCephFS();
-            try {
-                    SshConnect.connect(cephController.getUsername(), cephController.getPassword(), cephController.getUrl(), 22);
-                    SshConnect.exec("cd "+cephController.getMountpoint(), 1000);
-                    SshConnect.exec(cephController.getMountexec(), 1000);
-                }catch (JSchException | IOException | InterruptedException e) {
-                    e.printStackTrace();
-                                   }
-                      }
+	        File file = new File(cephController.getMountpoint()+namespace+storageName);
+	        mountLocalCeph(file);
+
 	        directory=cephController.getMountpoint()+namespace+storageName;
 	             }
 	      if ("../".equals(dirName)){
@@ -280,6 +284,26 @@ public class StorageController {
         map.put("fileList", list);
         return JSON.toJSONString(map); 
 	       }
+	  /**
+	   * 
+	   * Description: 如果没有本地cephfs目录没有挂载，则挂载。
+	   * 
+	   * @param file 
+	   * @see
+	   */
+	  public void mountLocalCeph(File file){
+	      if(!file.exists()){
+              CephController cephCon = new CephController();
+              cephCon.connectCephFS();
+            try {
+                    SshConnect.connect(cephController.getUsername(), cephController.getPassword(), cephController.getUrl(), 22);
+                    SshConnect.exec("cd "+cephController.getMountpoint(), 1000);
+                    SshConnect.exec(cephController.getMountexec(), 1000);
+                }catch (JSchException | IOException | InterruptedException e) {
+                    e.printStackTrace();
+                                   }
+                      }
+	    }
 	
 /**
  * 

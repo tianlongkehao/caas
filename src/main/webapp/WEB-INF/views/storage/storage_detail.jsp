@@ -72,10 +72,10 @@
 							<canvas id="parameter" width="120px" height="120px"></canvas>
 							<div class="param-text">
 								<p class="param-used">
-									<span class="i"></span>已使用：<span id="sizeUsed">0</span>M
+									<span class="i"></span>已使用：<span id="hasUsed"></span>M
 								</p>
 								<p class="param-sum">
-									<span class="i"></span>总&nbsp;&nbsp;&nbsp;&nbsp;量：${storage.storageSize }
+									<span class="i" ></span>总&nbsp;&nbsp;&nbsp;&nbsp;量：<span id="totalSize" >${storage.storageSize }</span>
 									M
 								</p>
 							</div>
@@ -102,36 +102,8 @@
 										<th style="width: 26%;">修改日期</th>
 									</tr>
 								</thead>
-<<<<<<< HEAD
 								<tbody id ="mybody">
 									<tr class="vol_list" style="cursor:pointer">
-=======
-								<tbody id="tbody-vol">
-									<!-- <tr class="vol_list">
->>>>>>> refs/heads/develop
-										<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>
-<<<<<<< HEAD
-										<td style="width: 40%;"><a hrer=""><img src="/images/img-file.png" ><span onclick="creatable()" style="margin-left:5px">文件夹3</span></a></td>
-										<td style="width: 30%;">33</td>
-										<td style="width: 26%;"></td>
-=======
-										<td style="width: 40%;"><a id="aaa" onclick="expand(this);"><img src="/images/img-file.png" ><span class="volName" style="margin-left:5px">vol1</span></a></td>
-										<td style="width: 30%;">80.1M</td>
-										<td style="width: 26%;">2016-01-02</td>
-									</tr>
-									<tr class="vol_list">
-										<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>
-										<td style="width: 40%;"><a onclick="expand(this);"><img src="/images/img-file.png"><span class="volName" style="margin-left:5px">vol2</span></a></td>
-										<td style="width: 30%;">50.6M</td>
-										<td style="width: 26%;">2016-01-04</td>
->>>>>>> refs/heads/develop
-									</tr>
-									<tr class="vol_list">
-										<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>
-										<td style="width: 40%;"><a onclick="expand(this);"><img src="/images/file-f.png"><span class="volName" style="margin-left:5px">file</span></a></td>
-										<td style="width: 30%;">44.3M</td>
-										<td style="width: 26%;">2016-01-06</td>
-									</tr> -->
 								</tbody>
 							</table>
 						</div>
@@ -149,7 +121,6 @@
 			</div>
 		</article>
 	</div>
-<<<<<<< HEAD
 	<script type="text/javascript">
 		document.getElementById('fileDownload').onclick = function(){
 	        var directory = document.getElementById('downfilepath').value;
@@ -157,8 +128,5 @@
 	        location.href = ctx + "/media?directory=" + directory +"&"+ downfiles;
 	    }
 	</script>
-=======
-
->>>>>>> refs/heads/develop
 </body>
 </html>
