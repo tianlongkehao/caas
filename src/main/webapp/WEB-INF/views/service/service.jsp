@@ -58,7 +58,7 @@
                                     </a>
                                 </li>
                                <li>
-                                    <a id="upgradeCluster" class="no-drop" href="javascript:versionUpgrade()">
+                                    <a id="upgradeCluster" class="no-drop" href="javascript:versionUpgrade()"  >
                                         <i class="fa fa-arrow-up"></i>
                                         <span class="ic_left">版本升级</span>
                                     </a>
@@ -333,6 +333,19 @@
         </div>
     </article>
 </div>
+
+
+    <div class="modal fade container" id="myModal" tabindex="-1" role="dialog"
+        aria-labelledby="myModalLabel" aria-hidden="true" style="width:30%">
+        <div class="progress progress-striped active" id="loading"
+            style="margin-top: 87%;">
+            <div class="progress-bar progress-bar-info" role="progressbar"
+                aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                style="width: 100%;">
+            </div>
+        </div>
+    </div>
+
 
 ${msg}
 <c:if test="${msg!= null} ">
