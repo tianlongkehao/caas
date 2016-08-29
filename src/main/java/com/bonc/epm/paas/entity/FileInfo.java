@@ -82,9 +82,9 @@ public class FileInfo {
     public void setPath(String path) {
         this.path = path;
     }
-    public static void main(String[] args) {
-        String  a="abcdef";
-        System.out.println(a.charAt(0));
-    }
+//    public static void main(String[] args) {
+//        String  a="abcdef";
+//        System.out.println(a.charAt(0));
+//    }
 }
 
