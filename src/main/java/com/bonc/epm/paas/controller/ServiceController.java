@@ -273,8 +273,8 @@ public class ServiceController {
 		System.out.printf("id: " + id);
 		Service service = serviceDao.findOne(id);
 		//service.setProxyZone(substr(service.getProxyZone()));
-		List<EnvVariable> envVariableList = new ArrayList();
-		envVariableList = envVariableDao.findByServiceId(id);
+		List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
+		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<Container> containerList = new ArrayList<Container>();
 		List<String> logList = new ArrayList<String>();
@@ -314,6 +314,7 @@ public class ServiceController {
 		model.addAttribute("logList", logList);
 		model.addAttribute("service", service);
 		model.addAttribute("envVariableList", envVariableList);
+		model.addAttribute("portConfigList", portConfigList);
 		return "service/service-detail.jsp";
 	}
 
@@ -453,31 +454,41 @@ public class ServiceController {
 	
 	
     private List<PortConfig> getBaseImageExposedPorts(String imgID) {
-        Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
-        if (null != ci) {
-            //Image image = imageDao.findByNameAndVersion(ci.getBaseImageName().substring(ci.getBaseImageName().indexOf("/") +1),ci.getBaseImageVersion());
-            Image image = imageDao.findById(ci.getBaseImageId());
-            if (null != image && StringUtils.isNotBlank(image.getImageId())) {
-                InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
-                // v1.9
-                long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
-                if (countOfExposedPort > 0) {
-                    ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
-                    List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
-                    for (int i = 0;i<countOfExposedPort;i++) {
-                        PortConfig portConfig = new PortConfig();
-                        portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
-                        int randomPort = vailPortSet();
-                        if (-1 != randomPort) {
-                            portConfig.setMapPort(String.valueOf(randomPort));                       
-                        } else {
-                            portConfig.setMapPort("-1");
-                              }
-                        tmpPortConfigs.add(portConfig);
+        try {
+            Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
+            if (null != ci) {
+                Image image = imageDao.findById(Long.valueOf(imgID));
+                if (null == image) {
+                    image = imageDao.findById(ci.getBaseImageId());
+                   }
+                 
+                if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+                    dockerClientService.pullImage(image.getName(), image.getVersion());
+                    InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
+                    // v1.9
+                    long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
+                    if (countOfExposedPort > 0) {
+                        ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
+                        List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
+                        for (int i = 0;i<countOfExposedPort;i++) {
+                            PortConfig portConfig = new PortConfig();
+                            portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
+                            int randomPort = vailPortSet();
+                            if (-1 != randomPort) {
+                                portConfig.setMapPort(String.valueOf(randomPort));                       
+                            } else {
+                                portConfig.setMapPort("-1");
+                                  }
+                            tmpPortConfigs.add(portConfig);
+                        }
+                        return tmpPortConfigs;
                     }
-                    return tmpPortConfigs;
-                }
-               }
+                   }
+              }
+          }
+        catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
           }
         return null;
     }

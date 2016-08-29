@@ -72,10 +72,10 @@
 							<canvas id="parameter" width="120px" height="120px"></canvas>
 							<div class="param-text">
 								<p class="param-used">
-									<span class="i"></span>已使用：<span id="sizeUsed">0</span>M
+									<span class="i"></span>已使用：<span id="hasUsed"></span>M
 								</p>
 								<p class="param-sum">
-									<span class="i"></span>总&nbsp;&nbsp;&nbsp;&nbsp;量：${storage.storageSize }
+									<span class="i" ></span>总&nbsp;&nbsp;&nbsp;&nbsp;量：<span id="totalSize" >${storage.storageSize }</span>
 									M
 								</p>
 							</div>

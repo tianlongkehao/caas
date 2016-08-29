@@ -135,21 +135,6 @@
 								</c:forEach>
 							</tbody>
 						</table>
-
-						 <table class="table basicInfo w50">
-							<thead>
-								<tr>
-									<th>环境变量</th>
-									<th>&nbsp;</th>
-								</tr>
-							</thead>
-							<tbody class="BORDER">
-								<tr>
-									<td>变量名</td>
-									<td>变量值</td>
-								</tr>
-							</tbody>
-						</table>
 					</div>
 					<div class="containerInstances hide" style="min-height: 300px;">
 						<table class="table">
@@ -257,7 +242,20 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr>
+										<c:forEach items="${portConfigList }" var="portConfig">
+											<tr>
+											   <td>${service.serviceName }</td>
+												<td>${portConfig.containerPort }</td>
+												<td>${portConfig.protocol }</td>
+												<td>${portConfig.mapPort }</td>
+												<td>
+													<a href="${service.serviceAddr}/${service.proxyPath}" target="_blank">
+															${service.serviceAddr}/${service.proxyPath}
+													</a>
+												</td>
+											</tr>
+										</c:forEach>
+<%-- 									<tr>
 										<td>${service.serviceName }</td>
 										<td>8080</td>
 										<td>TCP</td>
@@ -265,7 +263,7 @@
 										<td><a
 											href="${service.serviceAddr}/${service.proxyPath}"
 											target="_blank">${service.serviceAddr}/${service.proxyPath}</a></td>
-									</tr>
+									</tr> --%>
 								</tbody>
 							</table>
 						</section>
