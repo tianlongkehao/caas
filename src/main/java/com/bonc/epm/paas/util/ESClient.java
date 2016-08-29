@@ -18,6 +18,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.client.transport.TransportClient.Builder;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.ParsedQuery;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -132,29 +133,31 @@ public class ESClient {
 	public String search(String index,String type,String keyWord){
 		String string ="";
 		try {
-			SearchRequestBuilder searchRequestBuilder = null;
-			searchRequestBuilder = client.prepareSearch(index)
-                                       .setTypes(type)
-                                       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                       .setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord))
-                                       .addSort("@timestamp", SortOrder.ASC)
-                                       .setFrom(0)
-                                       .setSize(60)
-                                       .setExplain(true);
-			SearchResponse response = searchRequestBuilder.execute().actionGet();
-				
-			SearchHits searchHits = response.getHits();
-			SearchHit[] hits = searchHits.getHits();
-			Map result = null ;
-			
-			for (int i = 0; i < hits.length; i++) {
-				SearchHit hit = hits[i];
-				result = hit.getSource();			
-				string = string + result.get("log");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.error(keyWord+"日志出错！");
+    			SearchRequestBuilder searchRequestBuilder = null;
+    			searchRequestBuilder = client.prepareSearch(index)
+                                           .setTypes(type)
+                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                                           .setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord))
+                                           .addSort("@timestamp", SortOrder.ASC)
+                                           .setFrom(0)
+                                           .setSize(60)
+                                           .setExplain(true);
+    			SearchResponse response = searchRequestBuilder.execute().actionGet();
+    				
+    			SearchHits searchHits = response.getHits();
+    			SearchHit[] hits = searchHits.getHits();
+    			Map result = null ;
+    			
+    			for (int i = 0; i < hits.length; i++) {
+    				SearchHit hit = hits[i];
+    				result = hit.getSource();			
+    				string = string + result.get("log");
+    			}
+		} catch (IndexNotFoundException infe) {
+		    log.error("搜索日志的Index出错：-" + infe.getMessage());
+		}
+		catch (Exception e) {
+			log.error(keyWord+"日志出错！错误信息：-" + e.getMessage());
 		}
 		
 		log.debug("start*******************************************************************************");
