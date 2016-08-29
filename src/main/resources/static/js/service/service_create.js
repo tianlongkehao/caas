@@ -203,6 +203,12 @@ $(document).ready(function(){
 				return;
 			}
 		}
+		//判断value长度
+		if(addValue.length >= 4096){
+	    	layer.tips('value字符长度不能超过4096','#Value',{tips: [1, '#3595CC']});
+		      $('#Value').focus();
+		      return;
+	    }
 		arrayKey.push(addName);
 		$("#arrayKey").attr("value",arrayKey);
 		
