@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var jsonData = {
 		
 }
@@ -338,5 +339,4 @@ $(document)
 					 * window.location.reload(); });
 					 */
 					volList();
-
 				});

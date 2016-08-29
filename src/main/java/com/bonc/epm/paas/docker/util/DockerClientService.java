@@ -329,9 +329,9 @@ public class DockerClientService {
 	 * @return
 	 */
 	public boolean pullImage(String imageName,String imageVersion){
-		try{
+		try {
 			DockerClient dockerClient = this.getSpecialDockerClientInstance();
-            // pull image
+         // pull image
 			PullImageResultCallback callback = new PullImageResultCallback() {
                 @Override
                 public void onNext(PullResponseItem item) {
@@ -339,14 +339,15 @@ public class DockerClientService {
                     super.onNext(item);
                    }
             };
-			dockerClient.pullImageCmd(username+"/"+imageName).withTag(imageVersion).exec(callback);
-			try{
-			    Thread.sleep(10*1000);//暂停10秒后程序继续执行
-			}catch (InterruptedException e) {
-			    e.printStackTrace();
-			} 
+			dockerClient.pullImageCmd(username+"/"+imageName).withTag(imageVersion).exec(callback).awaitCompletion();
 			return true;
-		}catch(Exception e){
+		}
+		catch(InterruptedException e) {
+		    log.error("when pulling image,then thread error.");
+		    e.printStackTrace();
+		    return false;
+		}
+		catch(Exception e){
 			e.printStackTrace();
 			log.error("pullImage error:"+e.getMessage());
 			return false;
