@@ -529,7 +529,7 @@
 //		 $('#imgVersionName').val(imgVersion);
 		 layer.open({
 			 type:1,
-			 title: '更改镜像版本',
+			 title: '升级镜像版本',
 			 content: $("#versionUpgrade"),
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){
@@ -540,7 +540,7 @@
 					 success:function(data){
 	 						data = eval("(" + data + ")");
 	 						if(data.status=="200"){
-	 							layer.alert("更改成功");
+	 							layer.alert("升级完成");
 	 							window.location.reload();
 	 						}else if(data.status=="500"){
 	 							layer.alert("请选择需要升级的版本号！");
