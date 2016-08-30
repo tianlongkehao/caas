@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -19,7 +18,6 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
 import org.junit.After;
 import org.junit.Before;
@@ -37,9 +35,8 @@ import org.springframework.util.StringUtils;
  * @version 2016年4月30日
  * @see ESClient
  * @since 2016年4月30日
- * @updateDate 2016年8月30日
- * @updateAuthor wangke
- *  
+ * 版本更新时间：2016年8月30
+ * 更新人：王珂
  */
 @Service
 public class ESClient {
@@ -57,7 +54,7 @@ public class ESClient {
     /**
      * 
      * Description:
-      * 初始化es客户端
+     *  初始化es客户端
      * @param es 
      * @see
      */
@@ -92,39 +89,28 @@ public class ESClient {
             }
 			// 这里可以同时连接集群的服务器,可以多个,并且连接服务是可访问的
             InetSocketTransportAddress[] addressList = (InetSocketTransportAddress[]) list.toArray(new InetSocketTransportAddress[list.size()]);
-
-			client = new Builder().settings(settings)
-			                      .build()
-					                .addTransportAddresses(addressList);
-			//client = TransportClient.builder().settings(settings).build()
-					//.addTransportAddresses(addressList);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			LOG.error("初始化elasticsearch异常！");
-			
-		}
+            client = new Builder().settings(settings)
+                                  .build()
+					              .addTransportAddresses(addressList);
+        } 
+        catch (UnknownHostException e) {
+            LOG.error("初始化elasticsearch异常！");
+            e.printStackTrace();
+        }
         LOG.debug("初始化elasticsearch成功！");
-		System.out.println("初始化elasticsearch成功！");
-	}
+    }
 
-	@After
+    /**
+     * 
+     * Description: 
+     * 关闭es客户端  
+     * @see
+     */
+    @After
 	public void closeESClient() {
-		client.close();
-		System.out.println("elasticsearch已关闭");
-	}
-
-//	public static void main(String args[]){
-//		ESClient esc = new ESClient();
-//		esc.initESClient("192.168.50.3:8300");
-//		//esc.createIndex();
-//		esc.search("logstash-2016.08.25","fluentd","36kp9");
-//		//esc.getIndex();
-//		//esc.get();
-//		//esc.delete();
-//		esc.closeESClient();
-//	}
-
-
+        client.close();
+        LOG.info("elasticsearch已关闭");
+    }
 
     /**
      * 
@@ -136,12 +122,12 @@ public class ESClient {
      * @return log String
      * @see
      */
-	@SuppressWarnings("rawtypes")
+    @SuppressWarnings("rawtypes")
 	public String search(String index,String type,String keyWord){
-		String string ="";
-		try {
-    			SearchRequestBuilder searchRequestBuilder = null;
-    			searchRequestBuilder = client.prepareSearch(index)
+        String string ="";
+        try {
+            SearchRequestBuilder searchRequestBuilder = null;
+            searchRequestBuilder = client.prepareSearch(index)
                                            .setTypes(type)
                                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                                            .setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord))
@@ -149,59 +135,65 @@ public class ESClient {
                                            .setFrom(0)
                                            .setSize(60)
                                            .setExplain(true);
-    			SearchResponse response = searchRequestBuilder.execute().actionGet();
-    				
-    			SearchHits searchHits = response.getHits();
-    			SearchHit[] hits = searchHits.getHits();
-    			Map result = null ;
-    			
-    			for (int i = 0; i < hits.length; i++) {
-    				SearchHit hit = hits[i];
-    				result = hit.getSource();			
-    				string = string + result.get("log");
-    			}
-		} catch (IndexNotFoundException infe) {
-		    LOG.error("搜索日志的Index出错：-" + infe.getMessage());
-		}
-		catch (Exception e) {
-		    LOG.error(keyWord+"日志出错！错误信息：-" + e.getMessage());
-		}
+            
+            SearchResponse response = searchRequestBuilder.execute().actionGet();
+            SearchHit[] hits = response.getHits().getHits();
+            for (int i = 0; i < hits.length; i++) {
+                SearchHit hit = hits[i];
+                Map result = hit.getSource();			
+                string = string + result.get("log");
+            }
+        } 
+        catch (IndexNotFoundException infe) {
+            LOG.error("搜索日志的Index出错：-" + infe.getMessage());
+        }
+        catch (Exception e) {
+            LOG.error(keyWord+"日志出错！错误信息：-" + e.getMessage());
+        }
 		
-		LOG.debug("start*******************************************************************************");
-		LOG.debug("pod{"+keyWord+"}日志:"+string);
-		LOG.debug("end*********************************************************************************");
-		return string;
-		
-	}
+        LOG.debug("start*******************************************************************************");
+        LOG.debug("pod{"+keyWord+"}日志:"+string);
+        LOG.debug("end*********************************************************************************");
+        return string;
+    }
 	
-	/**
-	 * 获取
-	 */
-	public void get(){
-		GetResponse response = client.prepareGet("logstash-2016.01.25", "fluentd", "AVL5NVZZ2fZxynvv9zEb")
-				.execute().actionGet();
-		
-		Set<String> headers = response.getHeaders();
-		System.out.println(headers);
-		boolean exists = response.isExists();
-		System.out.println(exists);
-		String sourceString = response.getSourceAsString();
-		System.out.println(sourceString);
-		String id = response.getId();
-		System.out.println(id);
-		boolean sourceEmpty = response.isSourceEmpty();
-		System.out.println(sourceEmpty);
-	}
+    /**
+     * 
+     * Description:
+     * 获取日志返回相应信息
+     * @see
+     */
+    public void get(){
+        GetResponse response = client.prepareGet("logstash-2016.01.25", "fluentd", "AVL5NVZZ2fZxynvv9zEb")
+				                     .execute()
+				                     .actionGet();
+        LOG.info("headers:-" + response.getHeaders() + ";" + 
+				                     "exists:-" + response.isExists() + ";" + "sourceString:-" + response.getSourceAsString());
+    }
 
 	/**
-	 * 删除
+	 * 
+	 * Description:
+	 * 删除 
+	 * @see
 	 */
-	public void delete(){
-		DeleteResponse response = client.prepareDelete("blog", "post", "AVJjRJVqW-UsQoTouwCF")
-				.execute().actionGet();
-		
-		boolean isFound = response.isFound();
-		System.out.println(isFound);
-		
-	}
+    public void delete(){
+        DeleteResponse response = client.prepareDelete("blog", "post", "AVJjRJVqW-UsQoTouwCF")
+				                        .execute()
+				                        .actionGet();
+        boolean isFound = response.isFound();
+        LOG.info("delete result:-" + isFound);
+    }
+	
+	
+	// public static void main(String args[]){
+//  ESClient esc = new ESClient();
+//  esc.initESClient("192.168.50.3:8300");
+//  //esc.createIndex();
+//  esc.search("logstash-2016.08.25","fluentd","36kp9");
+//  //esc.getIndex();
+//  //esc.get();
+//  //esc.delete();
+//  esc.closeESClient();
+//}
 }
