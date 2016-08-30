@@ -393,6 +393,7 @@ public class CiController {
             }
             for (MultipartFile sourceCode : sourceCodes) {
                 if (!sourceCode.isEmpty()) {
+                    ci.setResourceName(sourceCode.getOriginalFilename());
                     FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
                 }
             }

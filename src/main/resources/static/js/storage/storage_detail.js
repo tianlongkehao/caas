@@ -3,8 +3,8 @@ var jsonData = {
 }
 
 $(document).ready(function () {
- hasUsed();
- creatable(null,null,null);
+  hasUsed();
+  creatable(null,null,null);
 
  /**
   * 上传文件
