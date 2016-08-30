@@ -7,20 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.client.transport.TransportClient.Builder;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.index.query.ParsedQuery;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -32,29 +28,43 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-
-
-
-
 /**
+ * 
+ * elasticsearch 日志查询公共类
+ *  提供查询es集群客户端的初始化和关闭功能
+ *  以及筛选日志和获取基本信息功能
  * @author fengtao
- *
+ * @version 2016年4月30日
+ * @see ESClient
+ * @since 2016年4月30日
+ * @updateDate 2016年8月30日
+ * @updateAuthor wangke
+ *  
  */
 @Service
 public class ESClient {
-
-	private static final Logger log = LoggerFactory.getLogger(ESClient.class);
+    /**
+     * ESClient类日志实例
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ESClient.class);
 	
-	private Client client;
-	
-	/**
-	 * 初始化
+    /**
+	 * 声明客户端类型变量
 	 */
-	@Before
-	public void initESClient(String es) {
-		
+    private Client client;
+	
+
+    /**
+     * 
+     * Description:
+      * 初始化es客户端
+     * @param es 
+     * @see
+     */
+    @Before
+	public void initESClient(String es) {	
 		// 配置你的es,现在这里只配置了集群的名,默认是elasticsearch,跟服务器的相同
-		Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.settingsBuilder()
                         				.put("cluster.name", "bonc_docker")
                         				.put("discovery.type", "zen")//发现集群方式
                         				.put("discovery.zen.minimum_master_nodes", 1)//最少有1个master存在
@@ -65,26 +75,23 @@ public class ESClient {
                         				.put("action.auto_create_index", false)//配置是否自动创建索引
                         				.put("cluster.routing.schedule", "50ms")//发现新节点时间 
                         				.build();
-		try {
-			String transportAddresses = es;
-			// 集群地址配置
-			List<InetSocketTransportAddress> list = new ArrayList<InetSocketTransportAddress>();
-			if (!StringUtils.isEmpty(transportAddresses)) {
-				String[] strArr = transportAddresses.split(",");
-				for (String str : strArr) {
-					String[] addressAndPort = str.split(":");
-					String address = addressAndPort[0];
-					int port = Integer.valueOf(addressAndPort[1]);
-
-					InetSocketTransportAddress inetSocketTransportAddress = new InetSocketTransportAddress(
-							InetAddress.getByName(address), port);
-					list.add(inetSocketTransportAddress);
-				}
-			}
+        try {
+            String transportAddresses = es;
+               // 集群地址配置
+            List<InetSocketTransportAddress> list = new ArrayList<InetSocketTransportAddress>();
+            if (!StringUtils.isEmpty(transportAddresses)) {
+                String[] strArr = transportAddresses.split(",");
+                for (String str : strArr) {
+                    String[] addressAndPort = str.split(":");
+                    String address = addressAndPort[0];
+                    int port = Integer.valueOf(addressAndPort[1]);
+                    InetSocketTransportAddress inetSocketTransportAddress = new InetSocketTransportAddress(
+                                                                                                InetAddress.getByName(address), port);
+                    list.add(inetSocketTransportAddress);
+                }
+            }
 			// 这里可以同时连接集群的服务器,可以多个,并且连接服务是可访问的
-			InetSocketTransportAddress addressList[] = (InetSocketTransportAddress[]) list
-					.toArray(new InetSocketTransportAddress[list.size()]);
-			// Object addressList[]=(Object [])list.toArray();
+            InetSocketTransportAddress[] addressList = (InetSocketTransportAddress[]) list.toArray(new InetSocketTransportAddress[list.size()]);
 
 			client = new Builder().settings(settings)
 			                      .build()
@@ -93,10 +100,10 @@ public class ESClient {
 					//.addTransportAddresses(addressList);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
-			log.error("初始化elasticsearch异常！");
+			LOG.error("初始化elasticsearch异常！");
 			
 		}
-		log.debug("初始化elasticsearch成功！");
+        LOG.debug("初始化elasticsearch成功！");
 		System.out.println("初始化elasticsearch成功！");
 	}
 
@@ -154,15 +161,15 @@ public class ESClient {
     				string = string + result.get("log");
     			}
 		} catch (IndexNotFoundException infe) {
-		    log.error("搜索日志的Index出错：-" + infe.getMessage());
+		    LOG.error("搜索日志的Index出错：-" + infe.getMessage());
 		}
 		catch (Exception e) {
-			log.error(keyWord+"日志出错！错误信息：-" + e.getMessage());
+		    LOG.error(keyWord+"日志出错！错误信息：-" + e.getMessage());
 		}
 		
-		log.debug("start*******************************************************************************");
-		log.debug("pod{"+keyWord+"}日志:"+string);
-		log.debug("end*********************************************************************************");
+		LOG.debug("start*******************************************************************************");
+		LOG.debug("pod{"+keyWord+"}日志:"+string);
+		LOG.debug("end*********************************************************************************");
 		return string;
 		
 	}
