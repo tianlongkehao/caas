@@ -333,8 +333,7 @@
         </div>
     </article>
 </div>
-
-
+     <!--版本升级进度条 -->
     <div class="modal fade container" id="myModal" tabindex="-1" role="dialog"
         aria-labelledby="myModalLabel" aria-hidden="true" style="width:30%">
         <div class="progress progress-striped active" id="loading"

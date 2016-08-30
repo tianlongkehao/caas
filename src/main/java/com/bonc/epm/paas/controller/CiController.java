@@ -69,6 +69,7 @@ public class CiController {
         model.addAttribute("menu_flag", "ci");
 		return "ci/ci.jsp";
 	}
+	
 	@RequestMapping(value={"ci/detail/{id}"},method=RequestMethod.GET)
 	public String detail(Model model,@PathVariable long id){
 	    User cuurentUser = CurrentUserUtils.getInstance().getUser();
@@ -78,6 +79,8 @@ public class CiController {
         Image currentBaseImage = imageDao.findById(ci.getBaseImageId());
         if (ci.getType() == 2) {
             List<DockerFileTemplate> dockerFiles = dockerFileTemplateDao.findByCreateBy(cuurentUser.getId());
+            String dockerFileTxt = FileUtils.readFileByLines(ci.getCodeLocation()+"/"+"Dockerfile");
+            model.addAttribute("dockerFileTxt", dockerFileTxt);
             model.addAttribute("dockerFiles", dockerFiles);
         }
 		model.addAttribute("id", id);
@@ -89,6 +92,7 @@ public class CiController {
         model.addAttribute("menu_flag", "ci");
 		return "ci/ci_detail.jsp";
 	}
+	
 	@RequestMapping("ci/modifyCi.do")
 	@ResponseBody
 	public String modifyCi(Ci ci) {
