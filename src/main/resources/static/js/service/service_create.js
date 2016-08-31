@@ -407,7 +407,7 @@ $(document).ready(function(){
 								"</div>"+
 						"</span> <span class='span3'>"+
 								"<div class='list-item-description'>"+
-									"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+ image.isBaseImage +
+									"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
 										""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
 										"data-attr='tenxcloud/mysql'> 部署 <i"+
 										"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+

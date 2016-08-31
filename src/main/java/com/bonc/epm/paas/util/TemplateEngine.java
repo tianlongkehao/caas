@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.OutputStreamWriter;
 import java.util.Map;
@@ -54,7 +55,13 @@ public class TemplateEngine {
     
     public static boolean cmdReloadConfig(TemplateConf templateConf){
     	log.debug("nginxcmdString====="+templateConf.getCmdpath());
-    	return CmdUtil.exeCmd(templateConf.getCmdpath()+" -s reload");
+    	try {
+            return CmdUtil.exeCmd(templateConf.getCmdpath()+" -s reload");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
     
     public static String getConfUrl(TemplateConf templateConf){
