@@ -47,6 +47,7 @@ function loadStorageList(){
         	$('tbody #storageList').html(itemsHtml);
 		}
 	});
+	alert("test");
 }
 $(document).ready(function () {
 	$("#storageReloadBtn").click(function(){

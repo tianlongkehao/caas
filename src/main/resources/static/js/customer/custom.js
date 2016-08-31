@@ -15,6 +15,26 @@ $(function(){
             $(".chkAll").prop('checked', $(this).is(":checked"));
         }
     });
+    
+  //搜索按钮
+    $("#filter").hide();
+    $("#SearchBtn").click(function(){
+    	
+    	$("#filter").toggle();
+    })
+    //搜索按钮1
+    $("#filter1").hide();
+    $("#SearchBtn1").click(function(){
+    	
+    	$("#filter1").toggle();
+    })
+    //搜索按钮2
+    $("#filter2").hide();
+    $("#SearchBtn2").click(function(){
+    	
+    	$("#filter2").toggle();
+    })
+
 
 });
 

@@ -53,7 +53,7 @@
 .modalCrealApp .steps-main {
     margin: 0 auto;
     overflow: hidden;
-    padding-bottom: 10px;
+    padding-bottom: 30px;
 }
 
 .progre {
@@ -792,7 +792,7 @@ i.pushOrg {
 #serviceBody .clusterId:hover{
 
     background: #fbfbfb;
-}
+} 
 
 .serviceOperation a.no-drop,
 .serviceOperation a.no-drop:focus,
@@ -803,7 +803,7 @@ i.pushOrg {
     color: #BFBFBF;
 }
 
-/* 动态扩容 */
+/* 鍔ㄦ�佹墿瀹� */
 .dynamic-scale{
     margin-left: 43px;
 }

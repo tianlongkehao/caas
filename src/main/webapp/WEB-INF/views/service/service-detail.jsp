@@ -85,7 +85,7 @@
 									</c:if>
 								</tr>
 								<tr>
-									<td>镜像名称：${service.imgName }</td>
+									<td>镜像名称：${service.imgName } : ${service.imgVersion }</td>
 									<td>创建时间：${service.createDate }</td>
 								</tr>
 							</tbody>

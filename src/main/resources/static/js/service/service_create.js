@@ -5,7 +5,6 @@ $(document).ready(function(){
 	
 	$(".createPadding").addClass("hide");
 	
-	
 	$("#createButton").click(function(){
 		
 		if(!saveEnvVariable()) {
@@ -66,7 +65,6 @@ $(document).ready(function(){
 			      return;
 		    }
 	    }
-	   
 	    
 /*	    var nginxstr = "{";
 	    $('input[name="nginxserv"]:checked').each(function(){
@@ -194,6 +192,12 @@ $(document).ready(function(){
 			$('#Name').focus();
 			return;
 		}
+		//判断value长度
+		if(addValue.length >= 4096){
+	    	layer.tips('value字符长度不能超过4096','#Value',{tips: [1, '#3595CC']});
+		      $('#Value').focus();
+		      return;
+	    }
 		//判断key是否重复，
 		var arrayKey = $("#arrayKey").val().split(",");
 		for(var i = 0; i<arrayKey.length; i++){
@@ -292,6 +296,7 @@ $(document).ready(function(){
 	        title: '环境变量模板',
 	        content: $("#environment-variable"),
 	        btn: ['导入', '取消'],
+	        scrollbar: false,
 	        yes: function(index, layero){
 	        	 var arrayKey = $("#arrayKey").val().split(",");
 	        	 $.ajax({
@@ -335,8 +340,8 @@ $(document).ready(function(){
 		        title: '另存为模板',
 		        content: $("#environment-template"),
 		        btn: ['保存', '取消'],
+		        scrollbar: false,
 		        yes: function(index, layero){ 
-		        	
 		        	var templateName = $("#envTemplateName").val();
 		        	if (templateName == null || templateName == "") {
 		        		layer.tips('模板名称不能为空','#envTemplateName',{tips: [1, '#3595CC']});
@@ -457,6 +462,15 @@ $(document).ready(function(){
     	var imagePage_height = $(".host_step1").height();
     	$(".step-inner").height(imagePage_height);
     });
+    
+    //从镜像中心部署，跳转服务之后的页面高度
+    var localUrl = window.location;
+	if(localUrl.search != ""){
+		//调节界面高度
+		var imagePage_height = $(".host_step2").height();
+    	$(".step-inner").height(imagePage_height);
+	}
+	
 
 });
 

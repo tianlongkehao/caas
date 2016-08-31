@@ -1,15 +1,16 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head lang="en">
     <title>服务</title>
-    <%@include file="../frame/header.jsp" %>
+    <%@include file="../frame/header.jsp"%>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/storage.css"/>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/footable/footable.core.css"/>
   	<script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script> 
 </head>
 <body>
 <jsp:include page="../frame/menu.jsp" flush="true">
-    <jsp:param name="ci" value=""/>
+    <jsp:param name="service" value=""/>
 </jsp:include>
 
 <div class="page-container">
@@ -21,97 +22,67 @@
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active" id="nav2">服务</li>
-                     <li><i class="fa fa-angle-right"></i></li>
+                     <li style="margin-left: -44px;"><i class="fa fa-angle-right"></i></li>
                     <li class="active">存储和备份</li>
                 </ol>
             </div>
             <div class="contentMain">
-				
-				<aside class="aside-btn">
-                    <div class="btns-group">
-                        <span class="btn btn-defaults btn-white"><i class="icon-map-marker"></i><span class="ic_left">BCM</span></span>
-                    </div>
-                </aside>
-				
-                <div class="caption clearfix">
-                    <ul class="toolbox clearfix">
-                        <li><a href="javascript:void(0);" id="storageReloadBtn"><i class="fa fa-repeat"></i></a></li>
-                        <li><a href="<%=path %>/service/storage/add" id="storageAdd">创建</a></li>
-                        <!-- <li><a href="<%=path %>/file/downloadTemplate?fileName=Dockerfile">下载dockerfile示例</a></li> -->
-                    </ul>
-                </div>
-                <div class="itemTable">
-                    <table class="table ci-table">
-                        <thead>
-                        <tr>
-                            <th>
-                                <div class="table-head">
-                                    <table class="table" style="margin:0px;">
-                                        <thead>
-                                        <tr style="height:40px;">
-                                            <th style="width: 15%;text-indent:30px;">名称</th>
-                                            <th style="width: 15%;text-indent: 15px;">使用状态</th>
-                                            <!-- <th style="width: 10%;text-indent: 20px;">格式</th> -->
-                                            <th style="width: 15%;text-indent: 8px;">挂载点</th>
-                                            <th style="width: 15%;text-indent: 10px;">大小</th>
-                                            <th style="width: 12%;">创建时间</th>
-                                            <th style="width: 20%;text-indent: 10px;">功能</th>
-                                        </tr>
-                                        </thead>
-                                    </table>
-                                </div>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody id="projectsBody">
-                        <tr>
-                            <td>
-                                <div class="content-table">
-                                    <table class="table tables">
-                                        <tbody id="storageList">
-                                      <%--   <c:forEach items="${storages}" var="storage" >
-                                            <tr class="ci-listTr" style="cursor:auto">
-                                                <td style="width: 15%; text-indent:22px;" id = "storageName">
-                                                	${storage.storageName}
-                                                </td>
-                                                <td style="width: 12%;" class="cStatusColumn">
-                                                	<c:if test="${storage.useType ==0 }">
-                                                		&nbsp;未使用
-                                                	</c:if>
-                                                	<c:if test="${storage.useType ==1 }">
-                                                		使用
-                                                	</c:if>
-                                                </td>
-                                                <td style="width: 10%;">
-                                                	${storage.format }
-                                                </td>
-                                                <td style="width: 10%;">
-                                                	${storage.mountPoint  }
-                                                </td>
-                                                <td style="width: 15%;">
-                                                	${storage.storageSize } 
-                                                	<span>M</span>
-                                                </td>
-                                                <td style="width: 12%;">
-                                                	${storage.createDate }
-                                                </td>
-                                                <td style="width:23%">	
-                                                 <span class="btn btn-primary format formatStorage">格式化</span>
-                                       			 <span class="btn btn-primary dilation dilatationStorage" storageId="${storage.id }" storageSize="${storage.storageSize }" storageName="${storage.storageName }">扩容</span>
-                                       			 <span class="btn btn-primary deleteStorage deleteStorage" storageId="${storage.id }" >删除</span>
-                                                </td>
-                                            </tr>
-                                        </c:forEach> --%>
+                <div class="row">
+						<div class="col-sm-12">
+							<div class="ibox float-e-margins">
+								<div class="ibox-title">
+									<h5>
+										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>存储卷
+									</h5>
 
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-          		<div id="pagination"></div>
+									<div class="ibox-tools">
+										<a href="javascript:window.location.reload(true);"
+											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a> 
+										
+										<a href="<%=path %>/service/storage/add" id="storageAdd" title="创建存储卷"><i
+											class="fa fa-plus"></i></a>
+										<a id="SearchBtn" title="搜索"><i
+											class="fa fa-search"></i></a> 
+										<a class="collapse-link" title="缩放表格">
+		                                    <i class="fa fa-chevron-up"></i>
+		                                </a>
+									</div>
+								</div>
+								<div class="ibox-content">
+									<input type="text" class="form-control input-sm m-b-xs"
+										id="filter" placeholder="搜索表格...">
+
+									<table class="footable table table-stripped" data-page-size="8"
+										data-filter=#filter>
+										<thead>
+											<tr>
+												<th style="width: 15%;text-indent:30px;">名称</th>
+	                                            <th style="width: 15%;text-indent: 15px;">使用状态</th>
+	                                            <!-- <th style="width: 10%;text-indent: 20px;">格式</th> -->
+	                                            <th style="width: 15%;text-indent: 8px;">挂载点</th>
+	                                            <th style="width: 15%;text-indent: 10px;">大小</th>
+	                                            <th style="width: 20%;">创建时间</th>
+	                                            <th style="width: 10%;text-indent: 10px;" class="del-operation">操作</th>
+											</tr>
+										</thead>
+										<tbody id="storageList">
+											
+										</tbody>
+										<tfoot>
+											<tr>
+												<td colspan="6">
+													<ul class="pagination pull-right"></ul>
+												</td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+                
+          		<!-- <div id="pagination"></div> -->
           		
             </div>
         </div>
@@ -143,6 +114,23 @@
         </li>
     </ul>
 </div>
+<script type="text/javascript">
+	$(".footable").footable();
+	$(".del-operation").children("span").addClass("hide");
+	//折叠ibox
+	$('.collapse-link').click(function () {
+	    var ibox = $(this).closest('div.ibox');
+	    var button = $(this).find('i');
+	    var content = ibox.find('div.ibox-content');
+	    content.slideToggle(200);
+	    button.toggleClass('fa-chevron-up').toggleClass('fa-chevron-down');
+	    ibox.toggleClass('').toggleClass('border-bottom');
+	    setTimeout(function () {
+	        ibox.resize();
+	        ibox.find('[id^=map-]').resize();
+	    }, 50);
+	});
+</script>
 
 </body>
 </html>

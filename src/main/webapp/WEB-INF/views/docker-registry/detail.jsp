@@ -27,6 +27,7 @@
                     <input type="hidden" id = "editImage" value = "${editImage }" name = "editImage">
                 </div>
                 <div class="contentMain">
+                	
                     <div class="mirror-head">
                         <section class="images">
                             <div class="img-icon">

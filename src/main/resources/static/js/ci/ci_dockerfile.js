@@ -1,5 +1,12 @@
 $(document).ready(
 		function() {
+			
+			var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
+                lineNumbers: true,
+                matchBrackets: true,
+                styleActiveLine: true,
+                theme: "ambiance"
+            });
 
 			$("#dockerfile").focus();
 			$("#dockerfile-import").hide();
@@ -195,9 +202,14 @@ function delFile(obj){
 	var thisText = $(obj).next().text();
 	var obj_files = document.getElementById("sourceCode");
 	var length = obj_files.files.length;
-	for (var i = 0; i < obj_files.files.length; i++) {
-		if(thisText == obj_files.files[i].name){
-			obj_files.files[i].remove();
+//	for (var i = 0; i < obj_files.files.length; i++) {
+//		if(thisText == obj_files.files[i].name){
+//			obj_files.files[i].remove();
+//		}
+//	}
+	for(var p in obj_files.files){
+		if (thisText == obj_files.files[p].name) {
+			delete obj_files.files[p];
 		}
 	}
 }

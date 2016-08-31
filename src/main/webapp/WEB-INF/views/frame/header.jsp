@@ -11,6 +11,7 @@ var ctx = "<%=path%>";
 <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/Font-Awesome-master/css/font-awesome.min.css"/>
 <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/layer/skin/layer.css"/>
 <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/bootstrap-slider/dist/css/bootstrap-slider.min.css"/>
+<link rel="stylesheet" type="text/css" href="<%=path %>/css/core/footable/footable.core.css" />
 <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/editor/editor.css">
 <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/base.css">
 <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/layout.css"/>
@@ -19,6 +20,7 @@ var ctx = "<%=path%>";
 
 <script type="text/javascript" src="<%=path %>/js/plugins/jquery-1.11.3.js"></script>
 <script type="text/javascript" src="<%=path %>/plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
+<script type="text/javascript" src="<%=path %>/js/plugins/footable.all.min.js"></script>
 <script type="text/javascript" src="<%=path %>/plugins/bootstrap-slider/dist/bootstrap-slider.min.js" ></script>
 <script type="text/javascript" src="<%=path %>/plugins/layer/layer.js"></script>
 <script type="text/javascript" src="<%=path %>/js/plugins/jquery.form.js"></script>

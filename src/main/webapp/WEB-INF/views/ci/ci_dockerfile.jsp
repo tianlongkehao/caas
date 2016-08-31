@@ -7,6 +7,8 @@
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/core/codemirror.css" />
+	<link rel="stylesheet" type="text/css"
+	href="<%=path%>/css/core/ambiance.css" />
 <script type="text/javascript" src="<%=path%>/js/ci/ci_dockerfile.js"></script>
 <script type="text/javascript" src="<%=path%>/js/plugins/codemirror.js"></script>
 </head>
@@ -71,7 +73,6 @@
 										<label for="sourceCode">上传程序包</label> <input type="file"
 											class="files" name="sourceCode" id="sourceCode"
 											multiple="multiple" onchange="selectFile(this)">
-
 									</div>
 								</div>
 								<div class="row" id="input-con">
@@ -87,8 +88,7 @@
 									</div>
 
 									<div class="form-group col-md-12">
-										<textarea id="dockerFile" name="dockerFile"
-											style="background-color: black; color: #37fc34; border: 0; width: 100%; height: 230px"></textarea>
+										<textarea id="dockerFile" name="dockerFile"></textarea>
 									</div>
 								</div>
 								<section class="registryinfo">

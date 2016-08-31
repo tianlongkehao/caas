@@ -417,11 +417,11 @@ public class ServiceController {
 			model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
 		}
 		//TODO 
-		boolean flag = getleftResource(model);
+		/*boolean flag = getleftResource(model);
 		if (!flag) {
 			model.addAttribute("msg", "请创建租户！");
 			return "service/service.jsp";
-		}
+		}*/
 		//TODO
 
 		// 获取配置文件中nginx选择区域

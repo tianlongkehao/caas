@@ -183,8 +183,8 @@
 											<li class="line-h-3">
 												<div class="param-set">
 													<span class="ve_top">CPU数量：<font color="red">*</font></span>
-													<input type="radio" class="cpuNum" name="cpuNum" value="1"
-														placeholder="当前可用cpu数量：${leftcpu }个">1<span>个</span>
+													<input type="radio" class="cpuNum " name="cpuNum" value="1"
+														placeholder="当前可用cpu数量：${leftcpu }个" checked>1<span>个</span>
 													<input type="radio" class="cpuNum" name="cpuNum" value="2"
 														placeholder="当前可用cpu数量：${leftcpu }个">2<span>个</span>
 													<input type="radio" class="cpuNum" name="cpuNum" value="4"
@@ -196,7 +196,7 @@
 											<li class="line-h-3">
 												<div class="param-set">
 													<span class="ve_top">内存：<font color="red">*</font></span> <input
-														type="radio" class="ram" name="ram" value="2048">2<span>G</span>
+														type="radio" class="ram" name="ram" value="2048" checked>2<span>G</span>
 													<input type="radio" class="ram" name="ram" value="4098">4<span>G</span>
 													<input type="radio" class="ram" name="ram" value="8192">8<span>G</span>
 													<span style="color: #1E90FF; margin-left: 60px;">当前可用内存：${leftmemory }G</span>
