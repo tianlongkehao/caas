@@ -142,7 +142,8 @@ public class ServiceController {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		// 获取特殊条件的pods
 		try {
-			getServiceSource(model, currentUser.getId());
+//			getServiceSource(model, currentUser.getId());
+			findService(model, "");
 			getNginxServer(model);
 //			getleftResource(model);
 		} catch (KubernetesClientException e) {
@@ -179,6 +180,11 @@ public class ServiceController {
 						container
 								.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
 						container.setServiceid(service.getId());
+						if (pod.getStatus().getPhase().equals("Running")) {
+							container.setContainerStatus(0);
+						} else {
+							container.setContainerStatus(1);
+						}
 						containerList.add(container);
 					}
 				}
@@ -217,6 +223,11 @@ public class ServiceController {
 							container.setContainerName(
 									service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
 							container.setServiceid(service.getId());
+							if (pod.getStatus().getPhase().equals("Running")) {
+								container.setContainerStatus(0);
+							} else {
+								container.setContainerStatus(1);
+							}
 							containerList.add(container);
 						}
 					}
