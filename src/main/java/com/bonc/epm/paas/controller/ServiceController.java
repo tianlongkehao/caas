@@ -273,8 +273,8 @@ public class ServiceController {
 		System.out.printf("id: " + id);
 		Service service = serviceDao.findOne(id);
 		//service.setProxyZone(substr(service.getProxyZone()));
-		List<EnvVariable> envVariableList = new ArrayList();
-		envVariableList = envVariableDao.findByServiceId(id);
+		List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
+		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<Container> containerList = new ArrayList<Container>();
 		List<String> logList = new ArrayList<String>();
@@ -314,6 +314,7 @@ public class ServiceController {
 		model.addAttribute("logList", logList);
 		model.addAttribute("service", service);
 		model.addAttribute("envVariableList", envVariableList);
+		model.addAttribute("portConfigList", portConfigList);
 		return "service/service-detail.jsp";
 	}
 

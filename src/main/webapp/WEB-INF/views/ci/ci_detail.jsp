@@ -183,7 +183,7 @@
                                             <div class="col-sm-9">
                                             <span id="docImport-btn" class=" btn-info btn-sm" style="cursor: pointer; ">导入模板</span>
                                             <textarea id="dockerFile" name = "dockerFile"
-                                                style="background-color: black; color: #37fc34; border: 0; width: 100%; height: 230px; margin-top:10px">...</textarea>   
+                                                style="background-color: black; color: #37fc34; border: 0; width: 100%; height: 230px; margin-top:10px">${dockerFileTxt }</textarea>   
                                             </div>
                                         </div>
                                         <div class="form-group">

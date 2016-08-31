@@ -28,21 +28,35 @@ $(document).ready(function () {
     				_this.addClass('live');
     				layer.msg( "收藏成功。", {
 							icon: 1
-						});
+					});
     			}else{
     				$("#collectTxt").text("收藏");
     				$(".star-style").removeClass("fa-star").addClass("fa-star-o");
     				_this.removeClass('live');
     				layer.msg( "取消收藏。", {
 							icon: 0.5
-						});
+					});
     			}
     		}
     	});
     });
-    
+  
+    //判断有没有用户下载过该镜像，没有人下载过，页面加载一个遮罩层；
     $("#downloadImage").click(function(){
-    	layer.load(0, {shade: [0.3, '#000'],time:15000});
+    	var imageVersion = document.getElementById("doloadImage").getAttribute("imageversion");
+    	var imageName = document.getElementById("doloadImage").getAttribute("imagename");
+    	$.ajax({
+			async : false,
+     		url:""+ctx+"/registry/judgeFileExist.do",
+     		type:"post",
+     		data:{"imageName":imageName,"imageVersion":imageVersion},
+     		success:function(data){
+     			data = eval("(" + data + ")");
+     			if(data.status == "500"){
+     				layer.load(0, {shade: [0.3, '#000'],time:15000});
+     			}
+     		}
+     	});
     });
     
     $("#deleteImage").click(function(){

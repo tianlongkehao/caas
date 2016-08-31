@@ -529,22 +529,26 @@
 //		 $('#imgVersionName').val(imgVersion);
 		 layer.open({
 			 type:1,
-			 title: '更改镜像版本',
+			 title: '升级镜像版本',
 			 content: $("#versionUpgrade"),
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){
 				 layer.close(index);
+				 $('#myModal').modal('show');
 				 var imgVersion1 = $('#imgVersionName').val();
 				 $.ajax({
 					 url:ctx+"/service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
 					 success:function(data){
 	 						data = eval("(" + data + ")");
 	 						if(data.status=="200"){
-	 							layer.alert("更改成功");
+	 							$('#myModal').modal('hide');
+	 							layer.alert("升级完成");
 	 							window.location.reload();
 	 						}else if(data.status=="500"){
+	 							 $('#myModal').modal('hide');
 	 							layer.alert("请选择需要升级的版本号！");
 	 						}else{
+	 							 $('#myModal').modal('hide');
 	 							layer.alert("请检查配置服务！");
 	 						}
 			
