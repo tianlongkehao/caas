@@ -236,17 +236,17 @@ public class StorageController {
 	}
 	
 	@RequestMapping(value={"hasUsed.do"},method=RequestMethod.GET)
-    @ResponseBody
-    public String hasUsed(String storageName,long totalSize){
-	    Map map = new HashMap();
-	    String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-	    File file = new File(cephController.getMountpoint()+namespace+storageName);
-	    mountLocalCeph(file);
+  @ResponseBody
+  public String hasUsed(String storageName,long totalSize){
+    Map map = new HashMap();
+    String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+    File file = new File(cephController.getMountpoint()+namespace+storageName);
+    mountLocalCeph(file);
   
-	    long hasUsed = file.length()/1024/1024;
-      map.put("length", String.valueOf(hasUsed));
-      return JSON.toJSONString(map); 
-	    }
+    long hasUsed = file.length()/1024/1024;
+    map.put("length", String.valueOf(hasUsed));
+    return JSON.toJSONString(map); 
+    }
 	/**
 	 * 
 	 * Description:展示文件列表
@@ -317,31 +317,41 @@ public class StorageController {
 
 	@RequestMapping(value={"upload"},method=RequestMethod.POST)
   @ResponseBody
-    public String handleFileUpload(@RequestParam("file")MultipartFile file,String path){
+    public String handleFileUpload(@RequestParam("file")MultipartFile file,String path
+                                   ,String storageName,long id){
        if(!file.isEmpty()){
            try {
-              /*图片上传到了工程的跟路径；
-               * 1、文件路径； * 2、文件名；* 3、文件格式;* 4、文件大小的限制;
-               */
+              Map map = new HashMap();
+              String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+              File dir = new File(cephController.getMountpoint()+namespace+"/"+storageName);
+             // File dir = new File(path);
+              storageDao.findOne(id).getStorageSize();
+              long used = (file.getSize() + dir.length())/1024/1024;
+              long result =  storageDao.findOne(id).getStorageSize() - used;
+              if (0 >= result){
+                                      //上传文件大小超过可用大小，返回失败
+                 map.put("status", "500");
+                 return JSON.toJSONString(map); 
+                              }
               BufferedOutputStream out = new BufferedOutputStream(
                       new FileOutputStream(
                               new File(path+file.getOriginalFilename())));
               out.write(file.getBytes());
               out.flush();
               out.close();
+              map.put("used",used);
+              map.put("status","200");
+              return JSON.toJSONString(map); 
            } catch (FileNotFoundException e) {
               e.printStackTrace();
               return"上传失败,"+e.getMessage();
            } catch (IOException e) {
               e.printStackTrace();
               return"上传失败,"+e.getMessage();
-           }
-           Map map = new HashMap();
-           map.put("status","200");
-           return JSON.toJSONString(map); 
+                        } 
        }else{
            return"上传失败，因为文件是空的.";
-       }
+                }
 
     }
     /**
