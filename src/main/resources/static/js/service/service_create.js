@@ -314,6 +314,7 @@ $(document).ready(function(){
 	    	            if (data != null) {
 	    	                if (data['data'].length > 0) {
 	    	                	for (var i in data.data) {
+	    	                		$("#Path-oper1").children("tr").remove()
 	    	                		var envTemplate = data.data[i];
 	    	                		html += '<tr>'+
 		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envTemplate.envKey+'"></td>'+
@@ -369,7 +370,26 @@ $(document).ready(function(){
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="400"){
-								layer.msg("环境变量模板名称重复", {icon: 5});
+								layer.msg("环境变量模板名称重复",{
+									  time: 0 //不自动关闭
+									  ,btn: ['覆盖', '重命名']
+									  ,yes: function(index2){
+							        	$.ajax({
+											url:ctx+"/service/modifyEnvTemplate.do",
+											type: "POST",
+							         		data:{"templateName":templateName,"envVariable":envVariable},
+											success:function(data){
+												data = eval("(" + data + ")");
+												if (data.status == "200") {
+													layer.msg("环境变量模板导入成功",{icon: 6});
+													layer.close(index2);
+													layer.close(index);
+												}
+											}	
+							        	});
+
+									  }
+									});
 							}else if (data.status == "200") {
 								layer.msg("环境变量模板导入成功",{icon: 6});
 								layer.close(index);

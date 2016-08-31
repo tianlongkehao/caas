@@ -98,8 +98,6 @@ public class ServiceController {
 	@Autowired
 	private StorageDao storageDao;
 	
-	@Autowired
-	private EnvTemplateDao envTemplateDao;
 
 	@Autowired
 	public DockerClientService dockerClientService;
@@ -778,72 +776,6 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 	}
 	
-	/**
-	 * 加载环境变量模板数据
-	 * 
-	 * @return String
-	 * @see
-	 */
-	@RequestMapping("service/loadEnvTemplate.do")
-    @ResponseBody
-	public String loadEnvTemplate(){
-	    Map<String, Object> map = new HashMap<String, Object>();
-        User cUser = CurrentUserUtils.getInstance().getUser();
-        List<String> templateNames = envTemplateDao.findTemplateName(cUser.getId());
-        map.put("data", templateNames);
-        return JSON.toJSONString(map);
-	}
-	
-	/**
-	 * 保存环境变量模板
-	 * 
-	 * @param templateName
-	 * @return 
-	 * @see
-	 */
-	@RequestMapping("service/saveEnvTemplate.do")
-	@ResponseBody
-	public String saveEnvTemplate (String templateName,String envVariable) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		User cUser = CurrentUserUtils.getInstance().getUser();
-		
-		for (EnvTemplate envTemplate : envTemplateDao.findByCreateBy(cUser.getId())) {
-            if (envTemplate.getTemplateName().equals(templateName)) {
-                map.put("status", "400"); //模板名称重复
-                return JSON.toJSONString(map);
-            }
-        }
-		
-		if (StringUtils.isNotEmpty(envVariable)) {
-            JSONArray jsonArray = JSONArray.parseArray(envVariable);  
-            for(int i = 0 ; i < jsonArray.size(); i ++ ) {
-                EnvTemplate envTemplate = new EnvTemplate();
-                envTemplate.setCreateBy(cUser.getId());
-                envTemplate.setEnvKey(jsonArray.getJSONObject(i).getString("envKey").trim());
-                envTemplate.setEnvValue(jsonArray.getJSONObject(i).getString("envValue").trim());
-                envTemplate.setCreateDate(new Date());
-                envTemplate.setTemplateName(templateName);
-                envTemplateDao.save(envTemplate);
-            }
-            map.put("status", "200");
-		}
-		
-		return JSON.toJSONString(map);
-	}
-	
-	/**
-	 * 查询用户的环境变量模板，导入到环境变量模板中
-	 * @return
-	 */
-	@RequestMapping("service/importEnvTemplate.do")
-	@ResponseBody
-	public String findEnvTemplate(String templateName){
-		User cUser = CurrentUserUtils.getInstance().getUser();
-		Map<String, Object> map = new HashMap<String, Object>();
-		List<EnvTemplate> envTemplates = envTemplateDao.findByCreateByAndTemplateName(cUser.getId(),templateName);
-		map.put("data", envTemplates);
-		return JSON.toJSONString(map);
-	}
 	
 	/**
     * 生成有效的PORTSET,回收端口
