@@ -30,7 +30,6 @@
 					</ol>
 				</div>
 				<div class="contentMain">
-
 					<div class="item-obj">
 						<div class="container">
 							<h4>Dockerfile构建</h4>
@@ -105,21 +104,7 @@
 										</tbody>
 									</table>
 								</section>
-								<!-- <section class="registryinfo">
-
-                                <table class="table registry">
-                                    <tbody>
-                                    <tr>
-                                        <td class="first-info"><b style="font-weight: 500;">编写dockerfile</b></td>
-                                    </tr>
-                                    <tr>
-                                        
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </section> -->
 								<br>
-
 								<div class="pull-right">
 									<span id="buildBtn" class="btn btn-primary">创建</span>
 								</div>
@@ -127,6 +112,7 @@
 						</div>
 					</div>
 				</div>
+
 
 				<!--dockerfile导入模板 -->
 				<div id="dockerfile-import"
@@ -163,6 +149,5 @@
 			</div>
 		</article>
 	</div>
-
 </body>
 </html>

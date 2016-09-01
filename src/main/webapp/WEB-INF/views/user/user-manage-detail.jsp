@@ -5,7 +5,7 @@
     <title>租户信息</title>
     <%@include file="../frame/header.jsp" %> 
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
-    <script type="text/javascript" src="<%=path %>/js/user/user_detail.js"></script>
+    <script type="text/javascript" src="<%=path %>/js/user/user_management_detail.js"></script>
 </head>
 <body>
 
@@ -56,9 +56,9 @@
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 20%; float: left ;" >权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
-                                                    <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
+                                                    <input type="hidden" id="user_autority_hidden"  name="user_autority" value="${user.user_autority}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
-                                                    			name="user_autority" id="user_autority" readonly="readonly">
+                                                    			name="user_autority" id="user_autority" readonly="readonly" disabled>
                                                         <option name="option" value="2" >租户</option>
                                                         <option name="option" value="1" >管理员</option>
                                                         <option name="option" value="3" >普通用户</option>
@@ -147,12 +147,12 @@
                                                     <label style="width: 20%; float: left;" >密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
-                                                    		id="pwd" name="password"  value="${user.password}" readonly="readonly">
+                                                    		id="pwd" name="password"  value="" >
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="list-item-description" style="padding-top: 100px">
-                                            <a href="<%=path %>/user/list/${cur_user.id}"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
+                                            <a href="<%=path %>/user/manage/list/${cur_user.id}"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
                                             <span class="next2 pull-right btn btn-primary pull_confirm" data-attr="tenxcloud/mysql" id="user_create_next2">修改</span>
                                         </div>
                                     </div>

@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
@@ -223,6 +226,29 @@ public class RegistryController {
 	}
 	
 	/**
+	 * 判断中有没有用户下载过当前镜像
+	 * 
+	 * @param imageName ： 镜像名称
+	 * @param imageVersion ： 镜像版本
+	 * @return  String
+	 * @see
+	 */
+	@RequestMapping(value = {"registry/judgeFileExist.do"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String judgeFileExist(String imageName, String imageVersion){
+	    Map<String, Object> map = new HashMap<String, Object>();
+    	String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
+        File file = new File(imagePath+"/"+downName+".tar");
+        boolean exist = file.exists();
+        if (exist) {
+            map.put("status", "200");
+        } else {
+            map.put("status", "500");
+        }
+        return JSON.toJSONString(map);
+	}
+	
+	/**
      * 响应镜像“下载”按钮的实现
      * 
      * @param imgID ： 镜像Id
@@ -239,21 +265,22 @@ public class RegistryController {
                                 Model model,HttpServletRequest request, HttpServletResponse response){
         
         String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
-        
-        File file = new File(imagePath+downName+".tar");
+        File file = new File(imagePath+"/"+downName+".tar");
         boolean exist = file.exists();
-        boolean flag = false;
-        if (!exist) {
+        if (exist) {
+            getDownload(downName+".tar",request,response);
+        }else {
             boolean complete= dockerClientService.pullImage(imageName, imageVersion);
+            boolean flag = false;
             if (complete) {
                 String cmd = "sudo docker save -o " + saveImagePath
                     + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
                 flag = cmdexec(cmd);
             }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null);
-        }
-        if (flag || exist) {
-            getDownload(downName+".tar",request,response);
+            if (flag) {
+                getDownload(downName+".tar",request,response);
+            }
         }
     }
     

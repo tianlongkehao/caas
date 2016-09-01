@@ -1,6 +1,197 @@
-/*$(function(){
-	loadStorageList();
-}) 
+var jsonData = {
+		
+}
+
+$(document).ready(function () {
+  hasUsed();
+  creatable(null,null,null);
+
+ /**
+  * 上传文件
+  */
+ $("#fileUpload").click(function(){
+	    layer.open({
+	    	type:1,
+	    	content:$('#environment-templat'),
+	    	title:'上传文件',
+	    	btn:['保存','取消'],
+	    	yes: function(index, layero){ 
+	    			var path = $('#downfilepath').val();
+	        	$('#path').val(path);
+	        	var formData = new FormData($( "#form1" )[0]);
+	        	var fileName = document.getElementById("file").value;
+	        	var flag =0;
+	         $("#mybody tr").each(function (index, domEle){
+	    				$(domEle).find("span").each(function(index,data){  
+	    					if(fileName == $(data).html()){
+	    						flag=1;
+	    						}
+							});                  
+	         			});
+	         if(flag==0){
+	        	  up(formData,flag);
+	         }else{
+							layer.open({
+		 						type:1,
+		 						content:'卷组中存在同名的文件，您确定要覆盖吗？',
+		 						title:'确认',
+		 						btn:['确认','取消'],
+		 						yes: function(index, layero){
+		 							up(formData,flag);
+		 						}
+							});
+	         			}
+	        	}
+	    	})
+	});
+	$("#storageReloadBtn").click(function(){
+		window.location.reload();
+	});
+});
+
+	function up(formData,flag){
+     $.ajax({
+    	 type:'POST',
+    	 url: ctx + '/upload',
+    	 data: formData,
+		 	 async: false,  
+	     cache: false,  
+	     contentType: false,  
+	     processData: false,  
+	     success : function(data) {
+	 				var data = eval("("+data+")");
+	 				if("200"==data.status && flag==0){
+	 					layer.open({
+	 						type:1,
+	 						content:'上传成功！',
+	 						title:'上传成功',
+	 						btn:['确定'],
+	 						yes: function(index, layero){ 
+	 							creatable(null,null,null);
+	 							$('#hasUsed').html(data.used);
+	 							layer.closeAll()
+	 						}
+	 					 });
+	 				}else if ("500"==data.status) {
+		 				layer.open({
+	 						type:1,
+	 						content:'上传失败，文件大小超过卷组可用大小！',
+	 						title:'上传失败',
+	 						btn:['确定'],
+	 						yes: function(index, layero){ 
+	 							creatable(null,null,null);
+	 							layer.closeAll()
+	 						}
+	 					 });
+					}else {
+						creatable(null,null,null);
+						$('#hasUsed').html(data.used);
+						layer.closeAll();
+					}
+		 	}
+	 }); 
+   } //
+
+/**
+ * 总用量
+ */
+function hasUsed(){
+	var storageName=$('#storageName').html();
+	var totalSize =$('#totalSize').html();
+	$.ajax({
+		type: "GET",
+    url: ctx + "/hasUsed.do?storageName=/"+storageName+"&totalSize="+totalSize,
+    success : function(data) {
+    	data = eval('('+data+')');
+    	if("500"!=data.status){
+    		var hasUsed =data.length;
+    		$('#hasUsed').html(hasUsed);
+    		}
+    	}
+	})
+}
+/**
+ * 生成ceph的文件列表
+ * @param isDir
+ * @param path
+ * @param dirName
+ */
+function  creatable(isDir,path,dirName){
+	
+	if(null==isDir ||"true"==isDir ){
+		var tbody="";
+		var context =$('#mybody');
+		var param="";
+		var storageName=$('#storageName').html();
+		if(null==path||null==path){
+		 param="path=&dirName=&storageName=/"+storageName+"/";
+		}else{
+			param="path="+path+"&dirName="+dirName+"/&storageName=/"+storageName+"/";
+		}
+		context.empty();
+
+		$.ajax({
+	        type: "GET",
+	        url: ctx + "/listFile?"+param,
+	        success : function(data) {
+	        	//alert(data);
+	        	var data = eval("("+data+")");
+	        	if(data.status=="500"){
+	        		alert("您没有权限浏览上一级内容");
+	        		creatable(null,null,null);
+	        		return;
+	        			}
+	        	for (i in data.fileList) {
+	        		var	fileInfo =	JSON.stringify(data.fileList[i]);
+	    				fileInfo = eval("(" + fileInfo + ")");
+	    				//alert(fileInfo.day);
+	    				if(fileInfo.fileName=='..'){
+			    				tbody+='<tr class="vol_list" style="cursor:pointer">'+
+									'<td style="text-indent: 14px;">'+
+									'</td>'+
+									'<td style="width: 40%;">'+
+									'<a hrer="">'
+									if(true==fileInfo.dir){
+										tbody+='<img src="/images/img-file.png" >'
+									}else{
+										tbody+='<img src="/images/file-f.png" >'
+									 }
+									tbody+='<span style="margin-left:5px" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileName+'") >'+
+									fileInfo.fileName+'</span>'+
+									'</a>'+
+									'</td>'+
+									'<td style="width: 30%;">'+fileInfo.size+'</td>'+
+									'<td style="width: 26%;"></td>'+
+								'</tr>';
+	    				}else{
+			    				tbody+='<tr class="vol_list" style="cursor:pointer">'+
+									'<td style="text-indent: 14px;">'+
+									'<input type="checkbox" class="chkItem" name="downfiles" value="'+fileInfo.fileName+'" >'+
+									'</td>'+
+									'<td style="width: 40%;">'+
+									'<a hrer="">'
+									if(true==fileInfo.dir){
+										tbody+='<img src="/images/img-file.png" >'
+									}else{
+										tbody+='<img src="/images/file-f.png" >'
+									 }
+			    				tbody+='<span style="margin-left:5px" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileName+'") >'+
+									fileInfo.fileName+'</span>'+
+									'</a>'+
+									'</td>'+
+									'<td style="width: 30%;">'+fileInfo.size+'KB</td>'+
+									'<td style="width: 26%;">'+fileInfo.time+'</td>'+
+								'</tr>';
+	    				}
+	           
+	           $('#downfilepath').val(fileInfo.path);
+	        	} 
+	        	$('#mybody').html($(tbody)); 
+	    		
+	        }
+	      })
+	}
+}
 
 function loadStorageList(){
 	var url = ""+ctx+"/service/storageList";
@@ -47,7 +238,7 @@ function loadStorageList(){
         	$('tbody #storageList').html(itemsHtml);
 		}
 	});
-}*/
+}
 var datas = [ {
 	level:"1",
 	imgtype : "box",
@@ -187,5 +378,4 @@ $(document)
 					 * window.location.reload(); });
 					 */
 					volList();
-
 				});

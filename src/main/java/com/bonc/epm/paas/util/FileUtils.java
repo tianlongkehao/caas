@@ -98,5 +98,43 @@ public class FileUtils {
             }
         }
     }
-		
+	
+	/**
+	 * 读取dockerFile文件中的文本数据；
+	 * 
+	 * @param fileTemplate ： dockerfile文件路径
+	 * @return String
+	 * @see
+	 */
+	public static String readFileByLines(String fileTemplate){
+	    String dockerFile = "";
+	    File file = new File(fileTemplate);
+	    
+	    BufferedReader reader = null;
+	    
+	    try{
+	        reader = new BufferedReader(new FileReader(file));
+            String tempString = "";
+            while ((tempString = reader.readLine()) != null) {
+                try {
+                    tempString.getBytes("utf-8");
+                    dockerFile+=tempString+"\n";
+                } catch (UnsupportedEncodingException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                }
+            }
+        }
+	    return dockerFile;
+	}
+	
 }

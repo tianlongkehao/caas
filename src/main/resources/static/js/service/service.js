@@ -108,11 +108,11 @@
 
 
 	$(".clusterId").each(function(){
-		$(this).click(function(){
+		$(this).click(function(e){
 			$(":checkbox").click(function(e){
 				e.stopPropagation();
 			});
-
+			
 			if($(this).next("tr").hasClass("hide")){
 				$(this).next("tr").removeClass("hide");
 				$(this).children().eq(1).children("b").css("transform","rotate(0deg)");
@@ -144,7 +144,6 @@
 		 var $chkItem = $(this);
 			 //alert(id);
 		 layer.open({
-			 	type:1,
 		        title: '启动服务',
 		        content: '确定启动服务？',
 		        btn: ['确定', '取消'],
@@ -170,7 +169,6 @@
 		 })
 	 }) 
  }
- 
  
  function stopContainer(){
 	 var serviceIDs = [];
@@ -232,6 +230,107 @@
 	 })
 	 
  }
+ 
+ 
+ 
+ // 每一行的启动
+ $(document).off("click",".startContainer_a").on("click",".startContainer_a",function(e){
+	 e.stopPropagation();
+	 //createContainer()
+ });
+ 
+ //响应每一行的启动按钮
+ function oneStartContainer(id,status) {
+	 if (3 == status) {
+		 return;
+	 }
+	 $('#'+id+'_stop').addClass('a-live');
+	 var serviceIDs = [];
+	 serviceIDs.push(id);
+	 layer.open({
+	        title: '启动服务',
+	        content: '确定启动服务？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ 
+	        	var cStatusHtml = "<i class='fa_success'></i>"+
+                				  "启动中"+
+                				  "<img src='"+ctx+"/images/loading4.gif' alt=''/>";
+	        	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
+	        	layer.close(index);
+				$.ajax({
+					url:""+ctx+"/service/stratServices.do?serviceIDs="+serviceIDs,
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("服务启动成功");
+							window.location.reload();
+						}else{
+							layer.alert("服务启动失败");
+						}
+					}	
+				})
+	        }
+	 })
+ }
+ 
+ // 响应每一行上的停止按钮
+ function oneStopContainer(id,status) {
+	 if (4 == status) {
+		 return;
+	 }
+	 var serviceIDs = [];
+     serviceIDs.push(id);
+     layer.open({
+	        title: '停止服务',
+	        content: '确定停止服务？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ 
+	        	layer.close(index);
+	        						$.ajax({
+	        							url:""+ctx+"/service/stopServices.do?serviceIDs="+serviceIDs,
+	        							success:function(data){
+	        								data = eval("(" + data + ")");
+	        								if(data.status=="200"){
+	        									layer.alert("服务已停止");
+	        									window.location.reload();
+	        								}else{
+	        									layer.alert("服务停止失败，请检查服务器连接");
+	        								}
+     		
+	        							}
+	        						})
+	        	
+	        }
+     })
+ }
+ 
+ // 响应每一行上的删除按钮
+ function oneDeleteContainer(id) {
+	  var serviceIDs = [];
+     serviceIDs.push(id);
+	  layer.open({
+	        title: '删除服务',
+	        content: '确定删除服务？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ 
+	        	layer.close(index);
+	        				$.ajax({
+	        					url:""+ctx+"/service/delServices.do?serviceIDs="+serviceIDs,
+	        					success:function(data){
+	        						data = eval("(" + data + ")");
+	        						if(data.status=="200"){
+	        							layer.alert("服务已删除");
+	        							window.location.reload();
+	        						}else{
+	        							layer.alert("服务删除失败，请检查服务器连接");
+	        						}
+       		
+	        					}
+	        				})
+	        }
+	 })
+ }
+ 
  
  function upGradeContainer(){
 	 $('input[name="chkItem"]:checked').each(function(index, el){
@@ -430,22 +529,26 @@
 //		 $('#imgVersionName').val(imgVersion);
 		 layer.open({
 			 type:1,
-			 title: '更改镜像版本',
+			 title: '升级镜像版本',
 			 content: $("#versionUpgrade"),
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){
 				 layer.close(index);
+				 $('#myModal').modal('show');
 				 var imgVersion1 = $('#imgVersionName').val();
 				 $.ajax({
 					 url:ctx+"/service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
 					 success:function(data){
 	 						data = eval("(" + data + ")");
 	 						if(data.status=="200"){
-	 							layer.alert("更改成功");
+	 							$('#myModal').modal('hide');
+	 							layer.alert("升级完成");
 	 							window.location.reload();
 	 						}else if(data.status=="500"){
+	 							 $('#myModal').modal('hide');
 	 							layer.alert("请选择需要升级的版本号！");
 	 						}else{
+	 							 $('#myModal').modal('hide');
 	 							layer.alert("请检查配置服务！");
 	 						}
 			

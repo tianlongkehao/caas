@@ -273,8 +273,8 @@ public class ServiceController {
 		System.out.printf("id: " + id);
 		Service service = serviceDao.findOne(id);
 		//service.setProxyZone(substr(service.getProxyZone()));
-		List<EnvVariable> envVariableList = new ArrayList();
-		envVariableList = envVariableDao.findByServiceId(id);
+		List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
+		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<Container> containerList = new ArrayList<Container>();
 		List<String> logList = new ArrayList<String>();
@@ -314,6 +314,7 @@ public class ServiceController {
 		model.addAttribute("logList", logList);
 		model.addAttribute("service", service);
 		model.addAttribute("envVariableList", envVariableList);
+		model.addAttribute("portConfigList", portConfigList);
 		return "service/service-detail.jsp";
 	}
 
@@ -414,7 +415,20 @@ public class ServiceController {
 		if (imageName != null) {
 			isDepoly = "deploy";
 		     // 获取基础镜像的暴露端口信息
-			model.addAttribute("portConfigs",JSON.toJSONString(getBaseImageExposedPorts(imgID)));
+			List<PortConfig> list = getBaseImageExposedPorts(imgID);
+			if (null == list) {
+			    list = new ArrayList<PortConfig>();
+			    PortConfig portConfig = new PortConfig();
+			    portConfig.setContainerPort("8080");
+			    int randomPort = vailPortSet();
+			    if (-1 != randomPort) {
+			        portConfig.setMapPort(String.valueOf(randomPort));                       
+			    } else {
+			        portConfig.setMapPort("-1");
+                 }
+			    list.add(portConfig);
+			}
+			model.addAttribute("portConfigs",JSON.toJSONString(list));
 		}
 		//TODO 
 		/*boolean flag = getleftResource(model);
@@ -426,10 +440,8 @@ public class ServiceController {
 
 		// 获取配置文件中nginx选择区域
 		getNginxServer(model);
-		
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<String> templateNames = envTemplateDao.findTemplateName(cUser.getId());
 		
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
@@ -437,36 +449,47 @@ public class ServiceController {
 		model.addAttribute("imageVersion", imageVersion);
 		model.addAttribute("isDepoly", isDepoly);
 		model.addAttribute("menu_flag", "service");
-		model.addAttribute("templateNames",templateNames);
 		return "service/service_create.jsp";
 	}
 	
 	
     private List<PortConfig> getBaseImageExposedPorts(String imgID) {
-        Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
-        if (null != ci) {
-            //Image image = imageDao.findByNameAndVersion(ci.getBaseImageName().substring(ci.getBaseImageName().indexOf("/") +1),ci.getBaseImageVersion());
-            Image image = imageDao.findById(ci.getBaseImageId());
-            InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
-            // v1.9
-            long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
-            if (countOfExposedPort > 0) {
-                ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
-                List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
-                for (int i = 0;i<countOfExposedPort;i++) {
-                    PortConfig portConfig = new PortConfig();
-                    portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
-                    int randomPort = vailPortSet();
-                    if (-1 != randomPort) {
-                        portConfig.setMapPort(String.valueOf(randomPort));                       
-                    } else {
-                        portConfig.setMapPort("-1");
+        try {
+            Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
+            if (null != ci) {
+                Image image = imageDao.findById(Long.valueOf(imgID));
+                if (null == image) {
+                    image = imageDao.findById(ci.getBaseImageId());
+                   }
+                 
+                if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+                    dockerClientService.pullImage(image.getName(), image.getVersion());
+                    InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
+                    // v1.9
+                    long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
+                    if (countOfExposedPort > 0) {
+                        ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
+                        List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
+                        for (int i = 0;i<countOfExposedPort;i++) {
+                            PortConfig portConfig = new PortConfig();
+                            portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
+                            int randomPort = vailPortSet();
+                            if (-1 != randomPort) {
+                                portConfig.setMapPort(String.valueOf(randomPort));                       
+                            } else {
+                                portConfig.setMapPort("-1");
+                                  }
+                            tmpPortConfigs.add(portConfig);
+                        }
+                        return tmpPortConfigs;
                     }
-                    tmpPortConfigs.add(portConfig);
-                }
-                return tmpPortConfigs;
-            }
-        }
+                   }
+              }
+          }
+        catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+          }
         return null;
     }
     
@@ -475,9 +498,20 @@ public class ServiceController {
     public String getPortConfig(String imgID){
         List<PortConfig> list=getBaseImageExposedPorts(imgID);
         Map<String,Object> map = new HashMap<String,Object>();
+        if (null == list) {
+            list = new ArrayList<PortConfig>();
+            PortConfig portConfig = new PortConfig();
+            portConfig.setContainerPort("8080");
+            int randomPort = vailPortSet();
+            if (-1 != randomPort) {
+                portConfig.setMapPort(String.valueOf(randomPort));                       
+            } else {
+                portConfig.setMapPort("-1");
+                  }
+            list.add(portConfig);
+          }
         map.put("data",list);
-        return JSON.toJSONString(map); 
-           
+        return JSON.toJSONString(map);
     }
 
 	public boolean getleftResource(Model model) {
@@ -676,7 +710,7 @@ public class ServiceController {
 				portConfigDao.save(portCon);
 				
 				// 向map中添加生成的node端口
-				smalSet.add(Integer.valueOf(portCon.getContainerPort()));
+				smalSet.add(Integer.valueOf(portCon.getContainerPort().trim()));
 			}
 		}
 		//保存
@@ -709,7 +743,7 @@ public class ServiceController {
 		 TemplateEngine.cmdReloadConfig(templateConf);
 		 service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));*/
 		 //service.setPortSet(app.get("port"));
-		service.setServiceAddr(templateConf.getServerAddr());
+		service.setServiceAddr("http://"+currentUser.getUserName() + "." + templateConf.getServerAddr());
 		serviceDao.save(service);
 		// 更新挂载卷的使用状态
 		if (!"0".equals(service.getVolName()) && StringUtils.isNotBlank(service.getVolName())) {
@@ -745,6 +779,22 @@ public class ServiceController {
 	}
 	
 	/**
+	 * 加载环境变量模板数据
+	 * 
+	 * @return String
+	 * @see
+	 */
+	@RequestMapping("service/loadEnvTemplate.do")
+    @ResponseBody
+	public String loadEnvTemplate(){
+	    Map<String, Object> map = new HashMap<String, Object>();
+        User cUser = CurrentUserUtils.getInstance().getUser();
+        List<String> templateNames = envTemplateDao.findTemplateName(cUser.getId());
+        map.put("data", templateNames);
+        return JSON.toJSONString(map);
+	}
+	
+	/**
 	 * 保存环境变量模板
 	 * 
 	 * @param templateName
@@ -759,7 +809,7 @@ public class ServiceController {
 		
 		for (EnvTemplate envTemplate : envTemplateDao.findByCreateBy(cUser.getId())) {
             if (envTemplate.getTemplateName().equals(templateName)) {
-                map.put("status", "200"); //模板名称重复
+                map.put("status", "400"); //模板名称重复
                 return JSON.toJSONString(map);
             }
         }
@@ -775,7 +825,7 @@ public class ServiceController {
                 envTemplate.setTemplateName(templateName);
                 envTemplateDao.save(envTemplate);
             }
-            map.put("status", "400");
+            map.put("status", "200");
 		}
 		
 		return JSON.toJSONString(map);
@@ -805,28 +855,22 @@ public class ServiceController {
            Set<Integer> bigSet = Stream.iterate(kubernetesClientService.getK8sStartPort(), item -> item+1)
                                        .limit(offset)
                                        .collect(Collectors.toSet());
-/*           Set<Integer> tmpBigSet = bigSet;
-           tmpBigSet.removeAll(smalSet);
-           if (CollectionUtils.isEmpty(tmpBigSet)) {
-               smalSet.clear();
-               smalSet.addAll(portConfigDao.findPortSets());
-               smalSet.remove(null);
-               bigSet.removeAll(smalSet); 
-               return -1;
-           } else {
-               smalSet.addAll(portConfigDao.findPortSets());
-               smalSet.remove(null);
-               bigSet.removeAll(smalSet);
-           }*/
+           smalSet.addAll(portConfigDao.findPortSets());
+           smalSet.remove(null);
            bigSet.removeAll(smalSet);
            if (CollectionUtils.isEmpty(bigSet)) {
-               smalSet.addAll(portConfigDao.findPortSets());
-               smalSet.remove(null);
                return -1;
               }
            Object[] obj =bigSet.toArray();
            int portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
                               .toString());
+           PortConfig validPort = portConfigDao.findByMapPort(Integer.toString(portSet));
+              // 监测数据库中是否存在相同的端口号
+           while ( null != validPort) {
+               portSet=Integer.valueOf(obj[(int)(Math.random()*obj.length)]
+                   .toString());
+               validPort = portConfigDao.findByMapPort(Integer.toString(portSet));
+              }
            smalSet.add(portSet);
            return portSet;
        }
@@ -933,6 +977,9 @@ public class ServiceController {
 					serviceDao.save(service);
 					map.put("status", "200");
 				} else {
+				   String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS 
+				                               + " --rollback";
+				   cmdexec(rollBackCmd);
 					map.put("status", "400");
 				}
 			}
@@ -1127,7 +1174,7 @@ public class ServiceController {
 			List<PortConfig> bindPort = portConfigDao.findByServiceId(id);
 			if (CollectionUtils.isNotEmpty(bindPort)) {
 			    for (PortConfig oneRow : bindPort) {
-			        smalSet.remove(Integer.valueOf(oneRow.getContainerPort()));
+			        smalSet.remove(Integer.valueOf(oneRow.getContainerPort().trim()));
 			    }
 			    portConfigDao.deleteByServiceId(id);
 			}
