@@ -115,7 +115,13 @@ public class ServiceController {
 
 	@Value("${ceph.monitor}")
 	public String CEPH_MONITOR;
-
+	
+	/**
+     * 内存和cpu的比例大小
+     */
+    @Value("${ratio.memtocpu}")
+    public String RATIO_MEMTOCPU = "4";
+	
 	@Autowired
 	private NginxServerConf nginxServerConf;
 
@@ -528,7 +534,7 @@ public class ServiceController {
 				System.out.println(quota.getStatus().getUsed().get("cpu"));
 
 				double leftCpu = kubernetesClientService.transCpu(quota.getStatus().getHard().get("cpu"))
-						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu"));
+						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU);
 
 				long leftmemory = hard - used;
 

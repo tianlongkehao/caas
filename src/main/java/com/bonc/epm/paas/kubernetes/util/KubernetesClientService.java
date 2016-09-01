@@ -60,6 +60,12 @@ public class KubernetesClientService {
 	@Value("${kubernetes.api.address}")
 	private String address;
 	
+	/**
+     * 内存和cpu的比例大小
+     */
+    @Value("${ratio.memtocpu}")
+    public String RATIO_MEMTOCPU = "4";
+	
 	public int getK8sEndPort() {
 		return Integer.valueOf(endPort);
 	}
@@ -359,7 +365,7 @@ public class KubernetesClientService {
 		requirements.getLimits();
 		Map<String,Object> def = new HashMap<String,Object>();
 		//float fcpu = cpu*1024;
-		def.put("cpu", cpu);
+		def.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
 		def.put("memory", ram+"Mi");
 		Map<String,Object> limit = new HashMap<String,Object>();
 		//limit = getlimit(limit);
