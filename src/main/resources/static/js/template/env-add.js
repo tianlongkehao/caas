@@ -83,6 +83,7 @@ $(document).ready(function(){
 	    	                	}
 	    	                }
 	    	            }
+	    	            $("#Path-oper1").children("tr").remove()
 	    	            $("#Path-oper1").append(html);
 	    	            $("#arrayKey").attr("value",arrayKey);
 	         		}

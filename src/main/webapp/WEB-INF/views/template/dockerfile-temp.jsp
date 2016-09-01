@@ -41,7 +41,7 @@
 										
 										<a href="<%=path %>/template/dockerfile/add" id="dockerfileAdd" title="新建dockerfile"><i
 											class="fa fa-plus"></i></a>
-										<a id="SearchBtn1" title="搜索"><i
+										<a id="SearchBtn" title="搜索"><i
 											class="fa fa-search"></i></a> 
 										<a class="collapse-link" title="缩放表格">
 		                                    <i class="fa fa-chevron-up"></i>
@@ -50,10 +50,10 @@
 								</div>
 								<div class="ibox-content">
 									<input type="text" class="form-control input-sm m-b-xs"
-										id="filter1" placeholder="搜索表格...">
+										id="filter" placeholder="搜索表格...">
 
 									<table class="footable table table-stripped" data-page-size="8"
-										data-filter=#filter1>
+										data-filter=#filter>
 										<thead>
 											<tr>
 												<th style="width: 15%;text-indent:30px;">名称</th>

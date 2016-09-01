@@ -34,11 +34,10 @@
 									<div class="ibox-tools">
 										<a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a> 
-										<a id="SearchBtn2" title="部署"><i
-											class="fa fa-wrench"></i></a> 
-										<a id="SearchBtn2" title="导出"><i
+										 
+										<a id="exportBtn" title="导出"><i
 											class="fa fa-share-square-o"></i></a> 
-										<a id="SearchBtn2" title="搜索"><i
+										<a id="SearchBtn" title="搜索"><i
 											class="fa fa-search"></i></a> 
 										<a id="deleteButton" class="no-drop"
 											href="javascript:delImages()" title="删除"> <i
@@ -48,10 +47,10 @@
 								</div>
 								<div class="ibox-content">
 									<input type="text" class="form-control input-sm m-b-xs"
-										id="filter2" placeholder="搜索表格...">
+										id="filter" placeholder="搜索表格...">
 
-									<table class="footable table table-stripped" data-page-size="9"
-										data-filter=#filter2>
+									<table class="footable table table-stripped fixed-table-header" data-page-size="9"
+										data-filter=#filter>
 										<thead>
 											<tr>
 												<th style="width: 5%; text-indent: 30px;">
