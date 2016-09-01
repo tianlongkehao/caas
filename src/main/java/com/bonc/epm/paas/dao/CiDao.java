@@ -8,18 +8,42 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.Ci;
 
+/**
+ * 
+ * ciDao构建接口
+ * @author update
+ * @version 2016年8月31日
+ * @see CiDao
+ * @since
+ */
 @Transactional
 public interface CiDao extends CrudRepository<Ci, Long> {
 	
-	public List<Ci> findByCreateBy(Long createBy);
+    /**
+     * 根据创建id查询构建数据
+     * 
+     * @param createBy ： 创建Id
+     * @return list
+     * @see
+     */
+    List<Ci> findByCreateBy(Long createBy);
 	
-	public List<Ci> findByCreateBy(Long createBy,Sort sort);
+    /**
+     * 根据创建者Id和sort排序查询构建数据
+     * 
+     * @param createBy ： 创建者
+     * @param sort ： sort排序
+     * @return list
+     * @see
+     */
+    List<Ci> findByCreateBy(Long createBy,Sort sort);
 	
-	    /**
-	     * Description: 
-	     * @param imgID
-	     * @return 
-	     * @see 
-	     */
-    public Ci findByImgId(Long imgID);
+    /**
+     * 根据构建镜像Id查询构建数据
+     * 
+     * @param imgID ： 镜像Id
+     * @return ci
+     * @see 
+     */
+    Ci findByImgId(Long imgID);
 } 
