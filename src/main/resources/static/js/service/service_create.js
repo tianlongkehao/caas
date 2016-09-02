@@ -214,7 +214,7 @@ $(document).ready(function(){
 		$("#mountPath").focus();
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height);
+    	$(".step-inner").height(imagePage_height+100);
 	})
 
 	// 启动命令
@@ -224,7 +224,7 @@ $(document).ready(function(){
 		$("#startCommand_input").focus();
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height);
+    	$(".step-inner").height(imagePage_height+100);
 	})
 	
 	// 添加环境变量
@@ -267,7 +267,7 @@ $(document).ready(function(){
 		}
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height);	
+    	$(".step-inner").height(imagePage_height+100);	
 	});
 	
 	//自动化伸缩范围&伸缩阈值
@@ -316,7 +316,7 @@ $(document).ready(function(){
         		}
     		//调节界面高度
     		var imagePage_height = $(".host_step2").height();
-        	$(".step-inner").height(imagePage_height);
+        	$(".step-inner").height(imagePage_height+100);
     		}
 		});
 		
@@ -371,6 +371,8 @@ $(document).ready(function(){
 	         		}
 	         	});
 	        	layer.close(index);
+	        	var containerRes_height = $(".host_step2").height();
+             	$(".step-inner").height(containerRes_height+100);
 	        }
 		})
 	});
@@ -603,7 +605,7 @@ function deleteRow(obj){
 	$(obj).parent().parent().remove();
 	//调节界面高度
 	var imagePage_height = $(".host_step2").height();
-	$(".step-inner").height(imagePage_height);	
+	$(".step-inner").height(imagePage_height+100);	
 }
 
 function decideEnvKey(){
@@ -680,7 +682,7 @@ function loadImageList() {
 
                         $(".pull-deploy").click(function(){
                         	var containerRes_height = $(".host_step2").height();
-                        	$(".step-inner").height(containerRes_height);
+                        	$(".step-inner").height(containerRes_height+100);
 
                         	var imageName = $(this).attr("imageName");
                         	var imageVersion = $(this).attr("imageVersion");
