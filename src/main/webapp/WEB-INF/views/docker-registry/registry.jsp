@@ -48,12 +48,13 @@
                                             </div>
                                         </div>
                                         <div class="select-info">
-                                            <div class="pull-right-text">${image.name}
+                                            <div class="pull-right-text">
                                              	<c:if test="${image.imageType==2 }">
 	                                            	<span class="btn btn-link lock">
 	                                            		<i class="fa fa-lock"></i>
 	                               					</span>
                                					</c:if>
+                               					${image.name}
                                             </div>
                                             <div>
                                             	<i class="fa fa-tag"></i> ${image.version }

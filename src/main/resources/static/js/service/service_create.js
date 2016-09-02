@@ -60,7 +60,7 @@ $(document).ready(function(){
 		    $('#ve_cpu').focus();
 			return;
 	    }
-	    if (cpuNum > leftcpu) {
+	    if (parseInt(cpuNum) > parseInt(leftcpu)) {
 	    	layer.tips('cpu剩余不足',"input[name='cpuNum']:checked",{tips: [1, '#3595CC']});
 		    $("input[name='cpuNum']:checked").focus();
 			return;
@@ -74,7 +74,7 @@ $(document).ready(function(){
 		    $("#ve_ram").focus();
 			return;
 	    }
-	    if (ram > leftmemory) {
+	    if (parseInt(ram) > parseInt(leftmemory)) {
 	    	layer.tips('内存剩余不足',"input[name='ram']:checked",{tips: [1,"#3595CC"]})
 	    	$("input[name='ram']:checked").focus();
 	    	return;
