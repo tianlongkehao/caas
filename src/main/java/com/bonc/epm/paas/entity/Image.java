@@ -35,6 +35,8 @@ public class Image {
 	private Date createTime;
 	@Transient
 	private Integer currUserFavor;
+	@Transient
+	private String creatorName;
 	@Transient 
 	List<PortConfig> portConfigs;
 	
@@ -133,5 +135,11 @@ public class Image {
 	public void setPortConfigs(List<PortConfig> portConfigs) {
 		this.portConfigs = portConfigs;
 	}
-	
+	public String getCreatorName() {
+		return creatorName;
+	}
+	public void setCreatorName(String creatorName) {
+		this.creatorName = creatorName;
+	}
+
 }

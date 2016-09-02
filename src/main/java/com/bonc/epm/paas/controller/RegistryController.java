@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,7 @@ public class RegistryController {
 	 * @return
 	 */
 	
+	@SuppressWarnings("null")
 	@RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
 	public String index(@PathVariable int index, Model model) {
 		List<Image> images = null;
@@ -96,7 +98,7 @@ public class RegistryController {
 			addCurrUserFavor(images);
 			active = "我的收藏";
 		}
-		
+		addCreatorName(images);
 		model.addAttribute("images", images);
 		model.addAttribute("menu_flag", "registry");
 		model.addAttribute("index", index);
@@ -371,4 +373,13 @@ public class RegistryController {
 			image.setCurrUserFavor(imageDao.findByUserIdAndImageId(image.getId(), userId));
 		}
 	}
+	private void addCreatorName(List<Image> images){
+		for(Image image:images){
+			User user = userDao.findById(image.getCreator());
+			if (user != null) {
+				image.setCreatorName(user.getUserName());
+			}
+		}
+	}
+
 }
