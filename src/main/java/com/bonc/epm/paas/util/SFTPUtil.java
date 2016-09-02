@@ -167,7 +167,7 @@ public class SFTPUtil {
         fileList.add(fillFileInfo(true, "..", directory, "", ""));
         for(int i=0;i<tempList.length;i++){
             if(!".".equals(tempList[i].getName())) {
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 FileInfo fi = fillFileInfo(tempList[i].isDirectory(),tempList[i].getName(),
                                                 directory,String.valueOf(tempList[i].length()/1024),
                                                 formatter.format(tempList[i].lastModified()));
