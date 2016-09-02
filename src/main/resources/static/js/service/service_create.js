@@ -60,7 +60,7 @@ $(document).ready(function(){
 		    $('#ve_cpu').focus();
 			return;
 	    }
-	    if (cpuNum > leftcpu) {
+	    if (parseInt(cpuNum) > parseInt(leftcpu)) {
 	    	layer.tips('cpu剩余不足',"input[name='cpuNum']:checked",{tips: [1, '#3595CC']});
 		    $("input[name='cpuNum']:checked").focus();
 			return;
@@ -74,7 +74,7 @@ $(document).ready(function(){
 		    $("#ve_ram").focus();
 			return;
 	    }
-	    if (ram > leftmemory) {
+	    if (parseInt(cpuNum) > parseInt(leftcpu)) {
 	    	layer.tips('内存剩余不足',"input[name='ram']:checked",{tips: [1,"#3595CC"]})
 	    	$("input[name='ram']:checked").focus();
 	    	return;
@@ -571,7 +571,8 @@ function saveEnvVariable() {
 		}
 		arrayKey.push(envKey);
         
-        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},";               
+//        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},"; 
+		 dataJson += envKey+","+envValue+";";
     });
     
     if (flag == 1) {
@@ -579,7 +580,7 @@ function saveEnvVariable() {
     }
     if (dataJson != "") {  
         dataJson = dataJson.substring(0,dataJson.length -1);  
-        dataJson ="[" +dataJson+ "]";  
+//        dataJson ="[" +dataJson+ "]";  
     }
     $('#envVariable').val(dataJson);
     return true;

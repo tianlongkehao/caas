@@ -691,16 +691,17 @@ public class ServiceController {
 		
 		//将服务中的环境变量循环遍历，保存到相关联的实体类中；
 		if (StringUtils.isNotEmpty(envVariable)) {
-			JSONArray jsonArray = JSONArray.parseArray(envVariable);  
-			for(int i = 0 ; i < jsonArray.size(); i ++ ) {
-				EnvVariable envVar = new EnvVariable();
-				envVar.setCreateBy(currentUser.getId());
-				envVar.setEnvKey(jsonArray.getJSONObject(i).getString("envKey").trim());
-				envVar.setEnvValue(jsonArray.getJSONObject(i).getString("envValue").trim());
-				envVar.setCreateDate(new Date());
-				envVar.setServiceId(service.getId());
-				envVariableDao.save(envVar);
-			}
+		    String[] envKeyAndValues = envVariable.split(";");
+		    for (String envKeyAndValue : envKeyAndValues ) {
+		        EnvVariable envVar = new EnvVariable();
+		        envVar.setCreateBy(currentUser.getId());
+		        envVar.setEnvKey(envKeyAndValue.substring(0,envKeyAndValue.indexOf(",")));
+		        envVar.setEnvValue(envKeyAndValue.substring(envKeyAndValue.indexOf(",")+1));
+		        envVar.setCreateDate(new Date());
+		        envVar.setServiceId(service.getId());
+		        envVariableDao.save(envVar);
+		    }
+		    
 		}
 		//保存到与service关联的portConfig实体类
 		if (StringUtils.isNotEmpty(portConfig)){
@@ -821,12 +822,12 @@ public class ServiceController {
         }
 		
 		if (StringUtils.isNotEmpty(envVariable)) {
-            JSONArray jsonArray = JSONArray.parseArray(envVariable);  
-            for(int i = 0 ; i < jsonArray.size(); i ++ ) {
+		    String[] envKeyAndValues = envVariable.split(";");
+            for (String envKeyAndValue : envKeyAndValues ) {
                 EnvTemplate envTemplate = new EnvTemplate();
                 envTemplate.setCreateBy(cUser.getId());
-                envTemplate.setEnvKey(jsonArray.getJSONObject(i).getString("envKey").trim());
-                envTemplate.setEnvValue(jsonArray.getJSONObject(i).getString("envValue").trim());
+                envTemplate.setEnvKey(envKeyAndValue.substring(0,envKeyAndValue.indexOf(",")));
+                envTemplate.setEnvValue(envKeyAndValue.substring(envKeyAndValue.indexOf(",")+1));
                 envTemplate.setCreateDate(new Date());
                 envTemplate.setTemplateName(templateName);
                 envTemplateDao.save(envTemplate);
