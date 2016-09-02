@@ -118,7 +118,7 @@ public class ESClient {
      * 根据关键字查找日志内容
      * @param index String
      * @param type String
-     * @param keyWord String 
+     * @param keyWord String  
      * @return log String
      * @see
      */
@@ -186,14 +186,14 @@ public class ESClient {
     }
 	
 	
-	// public static void main(String args[]){
-//  ESClient esc = new ESClient();
-//  esc.initESClient("192.168.50.3:8300");
-//  //esc.createIndex();
-//  esc.search("logstash-2016.08.25","fluentd","36kp9");
-//  //esc.getIndex();
-//  //esc.get();
-//  //esc.delete();
-//  esc.closeESClient();
-//}
+/*     public static void main(String args[]){
+      ESClient esc = new ESClient();
+      esc.initESClient("192.168.50.3:8300");
+      //esc.createIndex();
+      esc.search("logstash-2016.09.01","fluentd","casvass-ctksu");
+      //esc.getIndex();
+      //esc.get();
+      //esc.delete();
+      esc.closeESClient();
+    }*/
 }
