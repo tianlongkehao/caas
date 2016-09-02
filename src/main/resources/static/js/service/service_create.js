@@ -74,7 +74,7 @@ $(document).ready(function(){
 		    $("#ve_ram").focus();
 			return;
 	    }
-	    if (parseInt(cpuNum) > parseInt(leftcpu)) {
+	    if (parseInt(ram) > parseInt(leftmemory)) {
 	    	layer.tips('内存剩余不足',"input[name='ram']:checked",{tips: [1,"#3595CC"]})
 	    	$("input[name='ram']:checked").focus();
 	    	return;

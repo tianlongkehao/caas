@@ -61,17 +61,9 @@ $(document).ready(function () {
 	     success : function(data) {
 	 				var data = eval("("+data+")");
 	 				if("200"==data.status && flag==0){
-	 					layer.open({
-	 						type:1,
-	 						content:'上传成功！',
-	 						title:'上传成功',
-	 						btn:['确定'],
-	 						yes: function(index, layero){ 
-	 							creatable(null,null,null);
-	 							$('#hasUsed').html(data.used);
-	 							layer.closeAll()
-	 						}
-	 					 });
+							creatable(null,null,null);
+ 							$('#hasUsed').html(data.used);
+ 							layer.closeAll();
 	 				}else if ("500"==data.status) {
 		 				layer.open({
 	 						type:1,
@@ -180,7 +172,7 @@ function  creatable(isDir,path,dirName){
 									'</a>'+
 									'</td>'+
 									'<td style="width: 30%;">'+fileInfo.size+'KB</td>'+
-									'<td style="width: 26%;">'+fileInfo.time+'</td>'+
+									'<td style="width: 26%;">'+fileInfo.modifiedTime+'</td>'+
 								'</tr>';
 	    				}
 	           

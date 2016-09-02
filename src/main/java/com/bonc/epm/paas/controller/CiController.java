@@ -2,6 +2,7 @@ package com.bonc.epm.paas.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
@@ -110,7 +111,7 @@ public class CiController {
         model.addAttribute("menu_flag", "ci");
         return "ci/ci.jsp";
     }
-	
+
     /**
      * 
      * Description: <br>
@@ -118,10 +119,11 @@ public class CiController {
      * @param model Model 
      * @param id ： 构建Id
      * @return ci_detail.jsp
+     * @throws IOException 
      * @see
      */
     @RequestMapping(value={"ci/detail/{id}"},method=RequestMethod.GET)
-	public String detail(Model model,@PathVariable long id){
+	public String detail(Model model,@PathVariable long id) throws IOException{
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
         Ci ci = ciDao.findOne(id);
         List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction.DESC,"constructDate")));
