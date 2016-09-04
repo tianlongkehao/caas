@@ -7,11 +7,8 @@ import org.apache.tools.zip.*;
 import java.io.*;
 //import java.util.zip.ZipEntry;
 //import java.util.zip.ZipOutputStream;
-<<<<<<< HEAD
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipOutputStream;
-=======
->>>>>>> refs/remotes/origin/develop
  
 /**
  * Function : 文件压缩成zip
@@ -89,11 +86,7 @@ public class ZipCompressing {
                 while ((b = bi.read()) != -1) {
                     out.write(b); // 将字节流写入当前zip目录
                 }
-<<<<<<< HEAD
-                out.setEncoding("GBK");
-=======
                 out.setEncoding("UTF-8");
->>>>>>> refs/remotes/origin/develop
                 out.closeEntry(); //关闭zip实体
                 in.close(); // 输入流关闭
             }
@@ -121,20 +114,6 @@ public class ZipCompressing {
     /**
      * @param args
      */
-<<<<<<< HEAD
-    public static void main(String[] args) {
-        try {
-        	File[] files = new File [2];
-        	files[0]=new File("d:/t2.txt");
-        	files[1]=new File("d:/袁鹏.txt");
-            //ZipCompressing.zip("d:/test1.zip",new File("d:/t2.txt"));    //测试单个文件
-            ZipCompressing.zip("d:/test2.zip", files);   //测试多个文件
-            //ZipCompressing.zip("d:/test3.zip", new File("d:/培训")); //测试压缩目录
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
- 
-    }
 //    public static void main(String[] args) {
 //        try {
 //            File[] files = new File[2];
