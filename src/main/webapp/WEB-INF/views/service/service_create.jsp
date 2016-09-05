@@ -182,24 +182,26 @@
 
 											<li class="line-h-3">
 												<div class="param-set">
-													<span class="ve_top">CPU数量：<font color="red">*</font></span>
-													<input type="radio" class="cpuNum" name="cpuNum" value="1"
+													<span class="ve_top" id= "ve_cpu">CPU数量：<font color="red">*</font></span>
+													<input type="radio" id = "cpu1" class="cpuNum" name="cpuNum" value="1"
 														placeholder="当前可用cpu数量：${leftcpu }个">1<span>个</span>
 													<input type="radio" class="cpuNum" name="cpuNum" value="2"
 														placeholder="当前可用cpu数量：${leftcpu }个">2<span>个</span>
 													<input type="radio" class="cpuNum" name="cpuNum" value="4"
-														placeholder="当前可用cpu数量：${leftcpu }个">4<span>个</span>
+                                                       placeholder="当前可用cpu数量：${leftcpu }个">4<span>个</span>
 													<span style="color: #1E90FF; margin-left: 50px;">当前可用cpu数量：${leftcpu }个</span>
+													<input type = "hidden" id = "leftcpu" value = "${leftcpu }"/>
 												</div>
 
 											</li>
 											<li class="line-h-3">
 												<div class="param-set">
-													<span class="ve_top">内存：<font color="red">*</font></span> <input
-														type="radio" class="ram" name="ram" value="2048">2<span>G</span>
-													<input type="radio" class="ram" name="ram" value="4098">4<span>G</span>
-													<input type="radio" class="ram" name="ram" value="8192">8<span>G</span>
+													<span class="ve_top" id = "ve_ram" >内存：<font color="red">*</font></span> 
+													<input type="radio" class="ram" name="ram" id = "ram1" value="2048">2<span>G</span>
+													<input type="radio" class="ram" name="ram" id = "ram2" value="4096">4<span>G</span>
+													<input type="radio" class="ram" name="ram" id = "ram4" value="8192">8<span>G</span>
 													<span style="color: #1E90FF; margin-left: 60px;">当前可用内存：${leftmemory }G</span>
+													<input type="hidden" id = "leftmemory" value = "${leftmemory * 1024 }"/>
 												</div>
 											</li>
 											<li id="service_type"><span class="ve_top">服务类型：</span>

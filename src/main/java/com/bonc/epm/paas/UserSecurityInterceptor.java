@@ -3,14 +3,10 @@ package com.bonc.epm.paas;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bonc.epm.paas.controller.ServiceController;
 import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.entity.User;
 /**
@@ -20,10 +16,13 @@ import com.bonc.epm.paas.entity.User;
  */
 public class UserSecurityInterceptor implements HandlerInterceptor {
 
-   @Autowired
-   public PortConfigDao portConfigDao;
+   /**
+    *  portConfigDao
+    */
+    @Autowired
+    public PortConfigDao portConfigDao;
     
-	@Override
+    @Override
 	public boolean preHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler) throws Exception {
 		 //验证用户是否登陆
@@ -42,19 +41,18 @@ public class UserSecurityInterceptor implements HandlerInterceptor {
         }
         
         return true;
-	}
+    }
 
-	@Override
+    @Override
 	public void postHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
-	}
+    }
 
-	@Override
+    @Override
 	public void afterCompletion(HttpServletRequest request,
 			HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
-
-	}
+    }
 
 }

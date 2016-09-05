@@ -1,4 +1,3 @@
-
 var jsonData = {
 		
 }
@@ -20,38 +19,70 @@ $(document).ready(function () {
 	    			var path = $('#downfilepath').val();
 	        	$('#path').val(path);
 	        	var formData = new FormData($( "#form1" )[0]);
-	        	$.ajax({
-		        		type:'POST',
-		        		url: ctx + '/upload',
-		        		data: formData,
-					 			async: false,  
-		 	         cache: false,  
-		 	         contentType: false,  
-		 	         processData: false,  
-		 	         success : function(data) {
-	   			 				var data = eval("("+data+")");
-	   			 				if("200"==data.status){
-	   			 					layer.open({
-	   			 						type:1,
-	   			 						content:'上传成功！',
-	   			 						title:'上传成功',
-	   			 						btn:['确定'],
-	   			 						yes: function(index, layero){ 
-	   			 							creatable(null,null,null);
-	   			 						layer.closeAll()
-	   			 						   }
-	   			 			});
-	   			 		}
-	   			 	}
-	          			
-	        	}); 
-	        }
-	    })
+	        	var fileName = document.getElementById("file").value;
+	        	var flag =0;
+	         $("#mybody tr").each(function (index, domEle){
+	    				$(domEle).find("span").each(function(index,data){  
+	    					if(fileName == $(data).html()){
+	    						flag=1;
+	    						}
+							});                  
+	         			});
+	         if(flag==0){
+	        	  up(formData,flag);
+	         }else{
+							layer.open({
+		 						type:1,
+		 						content:'卷组中存在同名的文件，您确定要覆盖吗？',
+		 						title:'确认',
+		 						btn:['确认','取消'],
+		 						yes: function(index, layero){
+		 							up(formData,flag);
+		 						}
+							});
+	         			}
+	        	}
+	    	})
 	});
 	$("#storageReloadBtn").click(function(){
 		window.location.reload();
 	});
 });
+
+	function up(formData,flag){
+     $.ajax({
+    	 type:'POST',
+    	 url: ctx + '/upload',
+    	 data: formData,
+		 	 async: false,  
+	     cache: false,  
+	     contentType: false,  
+	     processData: false,  
+	     success : function(data) {
+	 				var data = eval("("+data+")");
+	 				if("200"==data.status && flag==0){
+							creatable(null,null,null);
+ 							$('#hasUsed').html(data.used);
+ 							layer.closeAll();
+	 				}else if ("500"==data.status) {
+		 				layer.open({
+	 						type:1,
+	 						content:'上传失败，文件大小超过卷组可用大小！',
+	 						title:'上传失败',
+	 						btn:['确定'],
+	 						yes: function(index, layero){ 
+	 							creatable(null,null,null);
+	 							layer.closeAll()
+	 						}
+	 					 });
+					}else {
+						creatable(null,null,null);
+						$('#hasUsed').html(data.used);
+						layer.closeAll();
+					}
+		 	}
+	 }); 
+   } //
 
 /**
  * 总用量
@@ -141,7 +172,7 @@ function  creatable(isDir,path,dirName){
 									'</a>'+
 									'</td>'+
 									'<td style="width: 30%;">'+fileInfo.size+'KB</td>'+
-									'<td style="width: 26%;">'+fileInfo.time+'</td>'+
+									'<td style="width: 26%;">'+fileInfo.modifiedTime+'</td>'+
 								'</tr>';
 	    				}
 	           

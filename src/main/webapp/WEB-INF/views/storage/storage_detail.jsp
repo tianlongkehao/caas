@@ -111,7 +111,9 @@
                 <div style="width: 345px; margin: 5px 10px 5px 10px">
                    <form method="POST" enctype="multipart/form-data" action="upload" id="form1" name="form1"> 
                      <p>文件：<input type="file" name="file" id="file" /></p>
-                     <input type="hidden" name="path" value="sfasf" id="path">
+                     <input type="hidden" name="path" value="sfasf" id="path" />
+                     <input type ="hidden" name="storageName" value=${storage.storageName }  />
+                     <input type ="hidden" name="id" value=${storage.id }  >
                    </form>
                  </div>
             </div>
@@ -125,6 +127,10 @@
 		document.getElementById('fileDownload').onclick = function(){
 	        var directory = document.getElementById('downfilepath').value;
 	        var downfiles = $("input[name='downfiles']:checked").serialize();
+	        if(""==downfiles){
+	        	   alert("请选择需要下载的文件");
+	        	   return;
+	                  }
 	        location.href = ctx + "/media?directory=" + directory +"&"+ downfiles;
 	    }
 	</script>
