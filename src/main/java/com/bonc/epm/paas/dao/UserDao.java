@@ -52,28 +52,52 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ " and u.user_province = ?2")
 	public List<User> checkUsermanage(String user_autority, String user_province);
 
-	@Query("select u from User u "
+	/**
+	 * 
+	 * Description:
+	 * 查找parent_id下的所有租户和管理员
+	 * @param parent_id Long
+	 * @return List<User> 
+	 * @see
+	 */
+    @Query("select u from User u "
 			+ "where 1=1 "
 			+ "and u.user_autority in(1,2)"
-			+ "and u.parent_id = ?1")
-	public List<User> checkUser(Long parent_id);
+			+ "and u.parent_id = ?1") 
+    List<User> checkUser(Long parent_id);
 
 	@Query("select u from User u "
 			+ "where 1=1 "
 			+ "and u.parent_id = ?1")
 	public List<User> getByParentId(Long parent_id);
 
-	@Query("select u from User u"
+	/**
+	 * 
+	 * Description:
+	 *  
+	 * @param user_province 
+	 * @return List<User>
+	 * @see
+	 */
+    @Query("select u from User u"
 			+ " where 1=1 "
 			+ " and u.user_autority in(3,4)"
 			+ " and u.user_province = ?1")
-	public List<User> checkUsermanage34(String user_province);
+	List<User> checkUsermanage34(String user_province);
 
-	@Query("select u from User u"
+	/**
+	 * 
+	 * Description:
+	 * parent_id和user_autority
+	 * @param parent_id Long
+	 * @return List<User> 
+	 * @see
+	 */
+    @Query("select u from User u"
 			+ " where 1=1 "
 			+ " and u.user_autority in(3,4)"
-			+ " and u.parent_id = ?1")
-	public List<User> checkUser1manage34(Long parent_id);
+			+ " and u.parent_id = ?1") 
+    List<User> checkUser1manage34(Long parent_id);
 
 	@Query("select u from User u "
 			+ "where 1=1 "

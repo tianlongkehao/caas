@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,334 +40,344 @@ import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
+import com.bonc.epm.paas.util.ServiceException;
 
+/**
+ * 
+ * 用户相关操作控制器
+ * @author ke_wang
+ * @version 2016年9月5日
+ * @see UserController
+ * @since 2016年9月5日
+ */
 @Controller
 @RequestMapping(value = "/user")
 public class UserController {
-	private static final Logger log = LoggerFactory.getLogger(UserController.class);
-	private static Map<String, KubernetesAPIClientInterface> clientMap;
-	@Autowired
-	public UserDao userDao;
-	@Autowired
-	public StorageDao storageDao;
-	@Autowired
+    
+    /**
+     * LOG
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+    /**
+     * UserDao
+     */
+    @Autowired
+    private UserDao userDao;
+    /**
+     * StorageDao
+     */
+    @Autowired
+	private StorageDao storageDao;
+    /**
+     * KubernetesClientService
+     */
+    @Autowired
 	private KubernetesClientService kubernetesClientService;
-	private Model model;
 
-	@Value("${ceph.key}")
-	public String CEPH_KEY;
+    /**
+     * CEPH_KEY ${ceph.key} 
+     */
+    @Value("${ceph.key}")
+    private String CEPH_KEY;
+    /**
+     * Model
+     */
+    public Model model;
 
-	/**
-	 * 展示所有用户信息、 1、租户、管理员无差别？
-	 * 
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
+    /**
+     * 
+     * Description:
+     * 展示所有用户信息
+     * Q:租户、管理员无差别？
+     * @param model Model
+     * @return .jsp String
+     * @see Model 
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
 	public String index(Model model) {
-		List<User> userList = new ArrayList<User>();
-		for (User user : userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId())) {
-			userList.add(user);
-		}
-		model.addAttribute("userList", userList);
-		model.addAttribute("menu_flag", "user");
-		return "user/user.jsp";
-	}
+        List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
+        model.addAttribute("userList", userList);
+        model.addAttribute("menu_flag", "user");
+        return "user/user.jsp";
+    }
 
-	@RequestMapping(value = "/manage/list/{id}", method = RequestMethod.GET)
+    /**
+     * 
+     * Description:
+     * @param model Model
+     * @param id long
+     * @return .jsp String
+     * @see
+     */
+    @RequestMapping(value = "/manage/list/{id}", method = RequestMethod.GET)
 	public String userIndex(Model model, @PathVariable long id) {
-		// User userManger = userDao.findOne(id);
-		List<User> userManageList = new ArrayList<>();
-		for (User user : userDao.checkUser1manage34(id)) {
-			userManageList.add(user);
-		}
-		model.addAttribute("userManageList", userManageList);
-		model.addAttribute("menu_flag", "usermanage");
-		return "user/user-management.jsp";
-	}
+        List<User> userManageList = userDao.checkUser1manage34(id);
+        model.addAttribute("userManageList", userManageList);
+        model.addAttribute("menu_flag", "usermanage");
+        return "user/user-management.jsp";
+    }
 
-	@RequestMapping(value = { "/add" }, method = RequestMethod.GET)
+    /**
+     * 
+     * Description:
+     * 返回到user_create.jsp页面
+     * @param model Model
+     * @return .jsp String
+     * @see
+     */
+    @RequestMapping(value = { "/add" }, method = RequestMethod.GET)
 	public String useradd(Model model) {
-		model.addAttribute("menu_flag", "user");
-		return "user/user_create.jsp";
-	}
+        model.addAttribute("menu_flag", "user");
+        return "user/user_create.jsp";
+    }
 
-	@RequestMapping(value = { "/manage/add/{id}" }, method = RequestMethod.GET)
+    /**
+     * 
+     * Description:
+     * 返回user_manage_create.jsp
+     * @param model Model
+     * @param id long
+     * @return .jsp String
+     * @see
+     */
+    @RequestMapping(value = { "/manage/add/{id}" }, method = RequestMethod.GET)
 	public String userCreate(Model model, @PathVariable long id) {
-		User userMangerCreat = userDao.findOne(id);
-		model.addAttribute("menu_flag", "usermanage");
-		return "user/user_manage_create.jsp";
-	}
-
-	/**
-	 * 创建新租户 以用户登陆帐号（用户名）为名称，创建Namespace
-	 *
-	 * @param user
-	 * @return
-	 */
-	@RequestMapping(value = { "/save.do" }, method = RequestMethod.POST)
+        model.addAttribute("menu_flag", "usermanage");
+        return "user/user_manage_create.jsp";
+    }
+    
+    /**
+     * 
+     * Description:
+     * 创建新租户 
+     * 以用户登陆帐号（用户名）为名称，创建Namespace
+     * @param user User
+     * @param resource Resource
+     * @param restriction Restriction
+     * @param model Model
+     * @return .jsp String
+     * @see Resource Restriction
+     */
+    @RequestMapping(value = { "/save.do" }, method = RequestMethod.POST)
 	public String userSave(User user, Resource resource, Restriction restriction, Model model) {
-		System.out.println("save.do=============================================");
-		try {
-			System.out.println(resource.getVol());
-			System.out.println(user.getVol_size());
-			user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
-			user.setVol_size(resource.getVol()); 
-			user.setNamespace(user.getUserName());
-			// 以用户名(登陆帐号)为name，创建client
-			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-
+        try {
+            fillPartUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，为client创建Namespace
-			Namespace namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
-			namespace = client.createNamespace(namespace);
-			System.out.println("namespace:" + JSON.toJSONString(namespace));
+            Namespace namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
+	        // 以用户名(登陆帐号)为name，创建client
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+            
+            if (!createNsAndSec(user, namespace, client)) {
+                throw new ServiceException("create namespace or secret error.");
+            }
 
-			Secret secret = kubernetesClientService.generateSecret("ceph-secret", user.getNamespace(), CEPH_KEY);
-			secret = client.createSecret(secret);
-			System.out.println("secret:" + JSON.toJSONString(secret));
+            if (!createQuota(user, resource, client)) {
+                throw new ServiceException("create quata error.");
+            }
 
-			// 为client创建资源配额
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("memory", resource.getRam() + "G"); // 内存
-			map.put("cpu", resource.getCpu_account() + "");// CPU数量(个)
-			map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
-			//map.put("pods", resource.getPod_count() + "");//POD数量
-			//map.put("services", resource.getServer_count() + "");//服务
-			//map.put("replicationcontrollers", resource.getImage_control() +"");//副本控制器
-			//map.put("resourcequotas", "1");//资源配额数量
-			ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getNamespace(), map);
-			System.out.println("before quota: " + JSON.toJSONString(quota));
-			quota = client.createResourceQuota(quota);
-			System.out.println("quota:" + JSON.toJSONString(quota));
-
-			// ceph中创建租户目录 
-			CephController ceph = new CephController();
-			ceph.connectCephFS();
-			ceph.createNamespaceCephFS(user.getNamespace());
+            if (!createCeph(user)) {
+                throw new ServiceException("create ceph error.");
+            }
 
 			// 为client创建资源限制
 			// LimitRange limitRange = generateLimitRange(user.getNamespace(),
 			// restriction);
 			// limitRange = client.createLimitRange(limitRange);
 			// System.out.println("limitRange:"+JSON.toJSONString(limitRange));
+            
 			// DB保存用户信息
-			user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
-			userDao.save(user);
-			model.addAttribute("creatFlag", "200");
-		} catch (Exception e) {
-			e.printStackTrace();
-			model.addAttribute("creatFlag", "400");
-		}
+            userDao.save(user);
+            model.addAttribute("creatFlag", "200");
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("creatFlag", "400");
+        }
 
 		// 返回 user.jsp 页面，展示所有租户信息
-		List<User> userList = new ArrayList<User>();
-		for (User uu : userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId())) {
-			userList.add(uu);
-		}
-		model.addAttribute("userList", userList);
-		model.addAttribute("menu_flag", "user");
-		return "user/user.jsp";
-	}
+        List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
+        model.addAttribute("userList", userList);
+        model.addAttribute("menu_flag", "user");
+        return "user/user.jsp";
+    }
 
-	/**
-	 * 创建新用户
-	 */
-	@RequestMapping(value = { "/savemanage.do" }, method = RequestMethod.POST)
+    /**
+     * 
+     * Description:
+     * 创建新用户
+     * @param user User
+     * @param model Model
+     * @return .jsp String
+     * @see
+     */
+    @RequestMapping(value = { "/savemanage.do" }, method = RequestMethod.POST)
 	public String userManageSave(User user, Model model) {
-		System.out.println("savemanage.do=============================================");
-		Long userid = CurrentUserUtils.getInstance().getUser().getId();
-		User userManger = userDao.findOne(userid);
-		List<User> userManageList = new ArrayList<>();
-		try {
-			if (userDao.checkUsername1(user.getUserName()) == null) {
+        try {
+            if (null == userDao.checkUsername1(user.getUserName())) {
 				// DB保存用户信息
-		        user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
-				user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
-				user.setNamespace(CurrentUserUtils.getInstance().getUser().getNamespace());
-				userDao.save(user);
-			}
-			model.addAttribute("creatFlag", "200");
-		} catch (Exception e) {
-			e.printStackTrace();
-			model.addAttribute("creatFlag", "400");
-		}
-		for (User user1 : userDao.checkUsermanage34(userManger.getUser_province())) {
-			userManageList.add(user1);
+                user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
+                user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
+                user.setNamespace(CurrentUserUtils.getInstance().getUser().getNamespace());
+                userDao.save(user);
+            }
+            model.addAttribute("creatFlag", "200");
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("creatFlag", "400");
+        }
+		
+        User userManger = userDao.findOne(CurrentUserUtils.getInstance().getUser().getId());
+        List<User> userManageList = userDao.checkUsermanage34(userManger.getUser_province());
+        model.addAttribute("userManageList", userManageList);
+        model.addAttribute("menu_flag", "usermanage");
+        return "user/user-management.jsp";
+    }
 
-		}
-		model.addAttribute("userManageList", userManageList);
-		model.addAttribute("menu_flag", "usermanage");
-		return "user/user-management.jsp";
-	}
-
-	/**
-	 * 更新租户信息
-	 *
-	 * @param user
-	 * @return
-	 */
-	@RequestMapping(value = { "/update.do" }, method = RequestMethod.POST)
+    /**
+     * 
+     * Description:
+     * 更新租户信息 
+     * @param user User
+     * @param resource Resource
+     * @param restriction Restriction
+     * @param model Model
+     * @return .jsp String
+     * @see
+     */
+    @RequestMapping(value = { "/update.do" }, method = RequestMethod.POST)
 	public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
-		try {
-		    if (StringUtils.isEmpty(user.getPassword())) {
-		        user.setPassword(userDao.findById(user.getId()).getPassword());
-		    }else{
-		        user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
-		    }
-			user.setNamespace(user.getUserName());
+        try {
+            updateUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，创建client
-			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-			client.getNamespace(user.getNamespace());
-			ResourceQuota quota = updateQuota(client, user.getNamespace(), resource);
-			// LimitRange limit = updateLimitRange(client, user.getNamespace(),
-			// restriction);
-
-			try {
-				ResourceQuota updateQuota = client.updateResourceQuota(user.getNamespace(), quota);
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+            client.getNamespace(user.getNamespace());
+            try {
+                ResourceQuota quota = updateQuotaInfo(client, user.getNamespace(), resource);
+                client.updateResourceQuota(user.getNamespace(), quota);
+				
+	            // LimitRange limit = updateLimitRange(client, user.getNamespace(),
+	            // restriction);
 				// LimitRange updateLimitRange =
 				// client.updateLimitRange(user.getNamespace(), limit);
-				//20160628 增加卷組更新功能
-				user.setVol_size(resource.getVol());
-				//TODO
-				user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
-				userDao.save(user);
-				model.addAttribute("updateFlag", "200");
-				// 返回 user.jsp 页面，展示所用用户信息
-			} catch (Exception e) {
-				e.printStackTrace();
-				model.addAttribute("updateFlag", "400");
-			}
+				
+                userDao.save(user);
+                model.addAttribute("updateFlag", "200");
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                model.addAttribute("updateFlag", "400");
+            }
+        } 
+        catch (KubernetesClientException e) {
+            LOG.error("error message:-"+ e.getMessage());
+        }
 
-		} catch (KubernetesClientException e) {
-			System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
-		}
+        List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
+        model.addAttribute("userList", userList);
+        model.addAttribute("menu_flag", "user");
+        return "user/user.jsp";
+    }
 
-		List<User> userList = new ArrayList<User>();
-		for (User uu : userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId())) {
-			userList.add(uu);
-		}
-		model.addAttribute("userList", userList);
-		model.addAttribute("menu_flag", "user");
-		return "user/user.jsp";
-	}
-
-	/**
-	 * 租户修改自己创建的用户的信息；
-	 * 
-	 * @param user ：用户信息
-	 * @param model ： model
-	 * @return 
-	 * @see
-	 */
-	@RequestMapping(value = { "/update_management.do" }, method = RequestMethod.POST)
+    /**
+     * 
+     * Description:
+     * 租户修改自己创建的用户的信息
+     * @param user ：用户信息
+     * @param model ： model
+     * @return .jsp String
+     * @see
+     */
+    @RequestMapping(value = { "/update_management.do" }, method = RequestMethod.POST)
 	public String userManageUpdate(User user,Model model){
-	    User userManage =  CurrentUserUtils.getInstance().getUser();
-	    try {
+        User userManage =  CurrentUserUtils.getInstance().getUser();
+        try {
             if (StringUtils.isEmpty(user.getPassword())) {
                 user.setPassword(userDao.findById(user.getId()).getPassword());
-            }else{
+            }
+            else{
                 user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
             }
             user.setNamespace(userManage.getNamespace());
             user.setParent_id(userManage.getId());
             userDao.save(user);
-        } catch (KubernetesClientException e) {
-            System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+        } 
+        catch (KubernetesClientException e) {
+            LOG.error("error message :-"+ e.getMessage());
         }
-
-        List<User> userManageList = new ArrayList<User>();
-        for (User user1 : userDao.checkUser1manage34(userManage.getId())) {
-            userManageList.add(user1);
-        }
+        List<User> userManageList = userDao.checkUser1manage34(userManage.getId());
         model.addAttribute("userManageList", userManageList);
         model.addAttribute("menu_flag", "usermanage");
         return "user/user-management.jsp";
-	}
+    }
 	
-	/**
-	 * 局部刷新，批量删除用户
-	 *
-	 * @return
-	 */
-	@RequestMapping("/delMul.do")
+
+    /**
+     * 
+     * Description:
+     * 局部刷新，批量删除用户
+     * @param ids String
+     * @return JSON.toJSONString(map)
+     * @see
+     */
+    @RequestMapping("/delMul.do")
 	@ResponseBody
 	public String userDelMul(String ids) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		List<User> users = new ArrayList<User>();
-		List<Long> idList = new ArrayList<Long>();
-		List<String> namespaceList = new ArrayList<String>();
-		try {
-			String[] idArr = ids.split(",");
-			for (int i = 0; i < idArr.length; i++) {
-				idList.add(Long.parseLong(idArr[i]));
-			}
-			for (User user : userDao.findAll(idList)) {
-				users.add(user);
-				namespaceList.add(user.getNamespace());
-				// 如果删除的为租户
-				if (UserConstant.AUTORITY_TENANT.equals(user.getUser_autority())) {
-					Long userId = user.getId();
-					// 取得用户
-					for (User sonUser : userDao.getByParentId(userId)) {
-						users.add(sonUser);
-					}
-				}
-			}
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            if (StringUtils.isNotBlank(ids)) {
+                String[] idArr = ids.split(",");
+                List<Long> idList = new ArrayList<Long>();
+                for (int i = 0; i < idArr.length; i++) {
+                    idList.add(Long.parseLong(idArr[i]));
+                }
+                
+                List<String> namespaceList = new ArrayList<String>();
+                deleteTenAndUser(idList, namespaceList);
+                delNamespace(namespaceList);
+            }
+            map.put("status", "200");
+        }
+        catch (javax.ws.rs.ProcessingException e) {
+            LOG.error("javax.ws.rs.ProcessingException :-" + e.getMessage());
+            map.put("status", "400");
+        } 
+        catch (KubernetesClientException e) {
+            LOG.error("KubernetesClientException :-" + e.getMessage());
+            map.put("status", "400");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
+    }
 
-			userDao.delete(users);
-			for (String namespace : namespaceList) {
-				try {
-					// 以用户名(登陆帐号)为name，创建client
-					KubernetesAPIClientInterface client = kubernetesClientService.getClient(namespace);
-					client.getNamespace(namespace);
-
-					if (client.getNamespace(namespace) != null) {
-						client.deleteLimitRange(namespace);
-						try {
-							client.deleteResourceQuota(namespace);
-						} catch (javax.ws.rs.ProcessingException e) {
-							System.out.println(e.getMessage());
-						}
-						client.deleteNamespace(namespace);
-						//TODO 逻辑删除卷组信息
-					}
-				} catch (KubernetesClientException e) {
-					System.out.println(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
-				}
-			}
-			map.put("status", "200");
-		} catch (Exception e) {
-			e.printStackTrace();
-			map.put("status", "400");
-		}
-		return JSON.toJSONString(map);
-	}
-
-	/**
-	 * 根据用户id查询用户信息
-	 *
-	 * @param model
-	 * @param id
-	 * @return
-	 */
-	@RequestMapping(value = { "detail/{id}" }, method = RequestMethod.GET)
-	public String Detail(Model model, @PathVariable long id) {
-		System.out.println("/user/user/detail========================================");
-		User user = userDao.findOne(id);
-		Resource resource = new Resource();
-		Restriction restriction = new Restriction();
-		try {
+    /**
+     * 
+     * Description:
+     * 根据用户id查询用户信息
+     * @param model Model
+     * @param id long
+     * @return  .jsp String
+     */
+    @RequestMapping(value = { "detail/{id}" }, method = RequestMethod.GET)
+    public String detailById(Model model, @PathVariable long id) {
+        User user = userDao.findOne(id);
+        Resource resource = new Resource();
+        Restriction restriction = new Restriction();
+        try {
 			// 以用户名(登陆帐号)为name，创建client
-			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-			Namespace ns = client.getNamespace(user.getNamespace());
-			if (ns != null) {
-				System.out.println("namespace:" + JSON.toJSONString(ns));
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+            Namespace ns = client.getNamespace(user.getNamespace());
+            if (null != ns) {
+                System.out.println("namespace:" + JSON.toJSONString(ns));
 
-				ResourceQuota quota = client.getResourceQuota(user.getNamespace());
-				System.out.println("resourceQuota:" + JSON.toJSONString(quota));
+                ResourceQuota quota = client.getResourceQuota(user.getNamespace());
+                System.out.println("resourceQuota:" + JSON.toJSONString(quota));
 
-				if (quota != null) {
-					Map<String, String> map = quota.getSpec().getHard();
+                if (quota != null) {
+                    Map<String, String> map = quota.getSpec().getHard();
 					// Integer a=Integer.valueOf(map.get("cpu"))/1024;
 					// resource.setCpu_account(a.toString());//CPU数量
 					resource.setCpu_account(map.get("cpu"));// CPU数量
@@ -589,7 +600,7 @@ public class UserController {
 	public String userAdd(User user) {
 	    user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
 		userDao.save(user);
-		log.debug("userName--id:" + user.getUserName());
+		LOG.debug("userName--id:" + user.getUserName());
 		// Map<String, Object> map = new HashMap<String, Object>();
 		// map.put("status", "200");
 		// map.put("data", user);
@@ -609,7 +620,7 @@ public class UserController {
 		userDao.delete(id);
         //TODO 逻辑删除卷组信息
 		// Map<String,Object> map = new HashMap<String,Object>();
-		log.debug("del userid======:" + id);
+		LOG.debug("del userid======:" + id);
 		return "redirect:/user";
 	}
 
@@ -912,31 +923,194 @@ public class UserController {
 	}
 
 	/**
-	 * <!-- 工具方法 --> 获取更新后的 ResourceQuota
-	 *
-	 * @param client
-	 * @param username
-	 * @param resource
-	 * @return
+	 * 获取更新后的 ResourceQuota
+	 * @param client 
+	 * @param namespace 
+	 * @param resource 
+	 * @return quota ResourceQuota
 	 */
-	private ResourceQuota updateQuota(KubernetesAPIClientInterface client, String namespace, Resource resource) {
-		ResourceQuota quota = client.getResourceQuota(namespace);
-		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + quota);
-		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + namespace);
-		ResourceQuotaSpec spec = quota.getSpec();
-		Map<String, String> hard = quota.getSpec().getHard();
-
-		hard.put("memory", resource.getRam() + "G"); // 内存
-		hard.put("cpu", resource.getCpu_account() + "");// CPU数量
+    private ResourceQuota updateQuotaInfo(KubernetesAPIClientInterface client, String namespace, Resource resource) {
+        ResourceQuota quota = client.getResourceQuota(namespace);
+        ResourceQuotaSpec spec = quota.getSpec();
+        
+        Map<String, String> hard = quota.getSpec().getHard();
+        hard.put("memory", resource.getRam() + "G"); // 内存
+        hard.put("cpu", resource.getCpu_account() + "");// CPU数量
 		// hard.put("pods", resource.getPod_count() + "");//POD数量
 		// hard.put("services", resource.getServer_count() + "");//服务
 		// hard.put("replicationcontrollers", resource.getImage_control() +
 		// "");//副本控制器
 		// hard.put("resourcequotas", "1");//资源配额数量
+        spec.setHard(hard);
+        quota.setSpec(spec);
+        return quota;
+    }
+	
+    /**
+     * 
+     * Description:
+     * fillPartUserInfo
+     * @param user 
+     * @param resource  
+     * @see Resource 
+     */
+    private void fillPartUserInfo(User user, Resource resource) {
+        user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
+        user.setVol_size(resource.getVol()); 
+        user.setNamespace(user.getUserName());
+        user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
+    }
 
-		spec.setHard(hard);
-		quota.setSpec(spec);
+    /**
+     * 
+     * Description:
+     * ceph中创建租户目录  
+     * @param user 
+     * @return boolean
+     * @see
+     */
+    private boolean createCeph(User user) {
+        try {
+            CephController ceph = new CephController();
+            ceph.connectCephFS();
+            ceph.createNamespaceCephFS(user.getNamespace());
+            return true;
+        }
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
 
-		return quota;
-	}
+    /**
+     * 
+     * Description:
+     * 为client创建资源配额
+     * @param user User
+     * @param resource Resource
+     * @param client KubernetesAPIClientInterface
+     * @return boolean 
+     * @see KubernetesAPIClientInterface Resource
+     */
+    private boolean createQuota(User user, Resource resource, KubernetesAPIClientInterface client) {
+        try {
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("memory", resource.getRam() + "G"); // 内存
+            map.put("cpu", resource.getCpu_account() + "");// CPU数量(个)
+            map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
+            //map.put("pods", resource.getPod_count() + "");//POD数量
+            //map.put("services", resource.getServer_count() + "");//服务
+            //map.put("replicationcontrollers", resource.getImage_control() +"");//副本控制器
+            //map.put("resourcequotas", "1");//资源配额数量
+            ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getNamespace(), map);
+            quota = client.createResourceQuota(quota);
+            LOG.info("create quota:" + JSON.toJSONString(quota));
+            return true;
+        }
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 
+     * Description:
+     * 创建命名空间的secret
+     * @param user User
+     * @param namespace Namespace
+     * @param client 
+     * @return boolean
+     * @see
+     */
+    private boolean createNsAndSec(User user, Namespace namespace,KubernetesAPIClientInterface client) {
+        try {
+            namespace = client.createNamespace(namespace);
+            LOG.info("create namespace:" + JSON.toJSONString(namespace));
+
+            Secret secret = kubernetesClientService.generateSecret("ceph-secret", user.getNamespace(), CEPH_KEY);
+            secret = client.createSecret(secret);
+            LOG.info("create secret:" + JSON.toJSONString(secret));
+            return true;
+        }
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+
+    }
+    
+    /**
+     * 
+     * Description:
+     * 更新用户信息
+     * @param user User
+     * @param resource Resource
+     * @see
+     */
+    private void updateUserInfo(User user, Resource resource) {
+        if (StringUtils.isEmpty(user.getPassword())) {
+            user.setPassword(userDao.findById(user.getId()).getPassword());
+        }
+        else{
+            user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
+        }
+        //卷组更新功能
+        user.setVol_size(resource.getVol());
+        user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
+        user.setNamespace(user.getUserName());
+    }
+    
+    /**
+     * 
+     * Description:
+     * deleteTenAndUser
+     * @param idList List<Long>
+     * @param namespaceList List<String>
+     * @see
+     */
+    private void deleteTenAndUser(List<Long> idList, List<String> namespaceList) {
+        List<User> users = new ArrayList<User>();
+        for (User user : userDao.findAll(idList)) {
+            users.add(user);
+            namespaceList.add(user.getNamespace());
+            // 如果删除的为租户
+            if (UserConstant.AUTORITY_TENANT.equals(user.getUser_autority())) {
+                Long userId = user.getId();
+                // 取得用户
+                for (User sonUser : userDao.getByParentId(userId)) {
+                    users.add(sonUser);
+                }
+            }
+        }
+        userDao.delete(users);
+    }
+    
+    /**
+     * 
+     * Description:
+     * 删除租户命名空间
+     * @param namespaceList 
+     */
+    private void delNamespace(List<String> namespaceList) {
+        if (CollectionUtils.isNotEmpty(namespaceList)) {
+            for (String namespace : namespaceList) {
+                // 以用户名(登陆帐号)为name，创建client
+                KubernetesAPIClientInterface client = kubernetesClientService.getClient(namespace);
+                client.getNamespace(namespace);
+                
+                if (null != client.getNamespace(namespace)) {
+                    try {
+                        client.deleteLimitRange(namespace);
+                        client.deleteResourceQuota(namespace);
+                    } 
+                    catch (javax.ws.rs.ProcessingException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    client.deleteNamespace(namespace);
+                    //TODO 逻辑删除卷组信息
+                }
+            } 
+        }
+    }
 }
