@@ -3,6 +3,9 @@ $(document).ready(function(){
 	getServiceStorageVol();
 	getMountPath();
 	
+	document.getElementById("cpu1").checked=true;
+	document.getElementById("ram1").checked=true;
+	
 	$(".createPadding").addClass("hide");
 	
 	
@@ -31,6 +34,7 @@ $(document).ready(function(){
 	      return;
 	    }
 	    
+	    //自定义启动命令的判断
 	    var startCommand_input = $("#startCommand_input").val();
 	    if($("#startCommand").prop("checked")==true){
 			    if(!startCommand_input || startCommand_input.length < 1){
@@ -40,6 +44,7 @@ $(document).ready(function(){
 					}		   
 	    }
 	    
+	    //服务路径的判断
 	    var servicePath = $("#webPath").val();
 	    if(!servicePath || servicePath.length < 1){
 		      layer.tips('服务路径不能为空','#webPath',{tips: [1, '#3595CC']});
@@ -47,12 +52,44 @@ $(document).ready(function(){
 		      return;
 		}
 	    
+	    //判断cpu是否有足够的剩余
+	    var cpuNum = $("input[name='cpuNum']:checked").val();
+	    var leftcpu = $("#leftcpu").val();
+	    if (cpuNum == null) {
+	    	layer.tips('请您选择cpu数量',"#ve_cpu",{tips: [1, '#3595CC']});
+		    $('#ve_cpu').focus();
+			return;
+	    }
+	    if (parseInt(cpuNum) > parseInt(leftcpu)) {
+	    	layer.tips('cpu剩余不足',"input[name='cpuNum']:checked",{tips: [1, '#3595CC']});
+		    $("input[name='cpuNum']:checked").focus();
+			return;
+	    }
+	    
+	    //判断内存是否有足够的剩余
+	    var ram = $("input[name='ram']:checked").val();
+	    var leftmemory = $("#leftmemory").val();
+	    if (ram == null) {
+	    	layer.tips('请您选择内存数量',"#ve_ram",{tips: [1, '#3595CC']});
+		    $("#ve_ram").focus();
+			return;
+	    }
+	    if (parseInt(ram) > parseInt(leftmemory)) {
+	    	layer.tips('内存剩余不足',"input[name='ram']:checked",{tips: [1,"#3595CC"]})
+	    	$("input[name='ram']:checked").focus();
+	    	return;
+	    }
+	    
+	    
+	    //nginx代理路径的判断
 	    var proxyPath = $("#nginxPath").val();
 	    if(!proxyPath || proxyPath.length < 1){
 		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
 		      $('#nginxPath').focus();
 		      return;
 		}
+	    
+	    //挂载路径的判断
 	    var mountPath = $("#mountPath").val();
 	    var selectVolume = $("#selectVolume").val();
 	    if ($("#state_service").prop("checked")==true) {
@@ -92,7 +129,7 @@ $(document).ready(function(){
     	$('#proxyZone').val(nginxstr);
     	
     	//将端口配置 数据变为json放入到
-       var portJson ="";
+	    var portJson ="";
         $("#pushPrptpcol tr").each(function (index, domEle){
     				var protocol = "";
     				var mapPort = "";
@@ -156,7 +193,13 @@ $(document).ready(function(){
             tips: [2, '#0FA6D8'] //还可配置颜色
         });
     });
-
+	
+	//选择cpu数量之后，默认选择相对应的内存大小；
+	/*$(".cpuNum").change(function(){
+		var cpuNum = $("input[name='cpuNum']:checked").val();
+		var ramId = "ram"+cpuNum;
+		document.getElementById(ramId).checked=true;
+    });*/
 	
 	/*
 	 * $(".cpuNum").click(function(){ var tips = $(this).attr("placeholder");
@@ -171,7 +214,7 @@ $(document).ready(function(){
 		$("#mountPath").focus();
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height);
+    	$(".step-inner").height(imagePage_height+100);
 	})
 
 	// 启动命令
@@ -181,7 +224,7 @@ $(document).ready(function(){
 		$("#startCommand_input").focus();
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height);
+    	$(".step-inner").height(imagePage_height+100);
 	})
 	
 	// 添加环境变量
@@ -224,7 +267,7 @@ $(document).ready(function(){
 		}
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height);	
+    	$(".step-inner").height(imagePage_height+100);	
 	});
 	
 	//自动化伸缩范围&伸缩阈值
@@ -273,12 +316,11 @@ $(document).ready(function(){
         		}
     		//调节界面高度
     		var imagePage_height = $(".host_step2").height();
-        	$(".step-inner").height(imagePage_height);
+        	$(".step-inner").height(imagePage_height+100);
     		}
 		});
 		
 	});
-	
 	
 	//导入模板文件选项对勾
 	var templateName = null;
@@ -291,8 +333,6 @@ $(document).ready(function(){
 		templateName = $(this).parent().find("tr.focus").find(".templateName").val();
 		console.log(templateName);
 	});
-	
-	
 	
 	//导入模板
 	$("#importBtn").click(function(){
@@ -331,6 +371,8 @@ $(document).ready(function(){
 	         		}
 	         	});
 	        	layer.close(index);
+	        	var containerRes_height = $(".host_step2").height();
+             	$(".step-inner").height(containerRes_height+100);
 	        }
 		})
 	});
@@ -531,7 +573,8 @@ function saveEnvVariable() {
 		}
 		arrayKey.push(envKey);
         
-        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},";               
+//        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},"; 
+		 dataJson += envKey+","+envValue+";";
     });
     
     if (flag == 1) {
@@ -539,7 +582,7 @@ function saveEnvVariable() {
     }
     if (dataJson != "") {  
         dataJson = dataJson.substring(0,dataJson.length -1);  
-        dataJson ="[" +dataJson+ "]";  
+//        dataJson ="[" +dataJson+ "]";  
     }
     $('#envVariable').val(dataJson);
     return true;
@@ -562,7 +605,7 @@ function deleteRow(obj){
 	$(obj).parent().parent().remove();
 	//调节界面高度
 	var imagePage_height = $(".host_step2").height();
-	$(".step-inner").height(imagePage_height);	
+	$(".step-inner").height(imagePage_height+100);	
 }
 
 function decideEnvKey(){
@@ -639,7 +682,7 @@ function loadImageList() {
 
                         $(".pull-deploy").click(function(){
                         	var containerRes_height = $(".host_step2").height();
-                        	$(".step-inner").height(containerRes_height);
+                        	$(".step-inner").height(containerRes_height+100);
 
                         	var imageName = $(this).attr("imageName");
                         	var imageVersion = $(this).attr("imageVersion");
