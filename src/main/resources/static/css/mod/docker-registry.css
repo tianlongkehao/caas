@@ -85,6 +85,7 @@
     float: right;
     width: 10%;
     color: #337ab7;
+    height:30px;
 }
 
 .images-panel .create-item {
@@ -329,4 +330,7 @@
     position: absolute;
     right: 20px;
     top: 20px;
+}
+.a-oper{
+	margin-left:10px;
 }
