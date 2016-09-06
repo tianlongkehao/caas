@@ -370,9 +370,10 @@ $(document).ready(function(){
 	    	            $("#arrayKey").attr("value",arrayKey);
 	         		}
 	         	});
-	        	layer.close(index);
 	        	var containerRes_height = $(".host_step2").height();
-             	$(".step-inner").height(containerRes_height+100);
+	          $(".step-inner").height(containerRes_height+100);
+	        	layer.close(index);
+	        	
 	        }
 		})
 	});
