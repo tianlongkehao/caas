@@ -97,7 +97,16 @@ public class CephController {
 	public void createNamespaceCephFS(String namespace) {
 		try {
 			logger.info("进入方法：createNamespaceCephFS");
-			cephMount.mkdir("/" + namespace, mode);
+			String[] listDirBef = cephMount.listdir("/");
+			boolean flag = false;
+          for (String strDir : listDirBef) {
+              if (namespace.trim().equals(strDir)) {
+                  flag = true;
+              }
+            }
+          if (!flag) {
+              cephMount.mkdir("/" + namespace, mode);
+          }
 
 			logger.info("打印" + namespace + "下的所有目录");
 			String[] listdir = cephMount.listdir("/" + namespace);
