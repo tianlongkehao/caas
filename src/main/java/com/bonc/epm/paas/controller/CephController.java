@@ -106,7 +106,7 @@ public class CephController {
             }
           if (!flag) {
               cephMount.mkdir("/" + namespace, mode);
-          }
+             }
 
 			logger.info("打印" + namespace + "下的所有目录");
 			String[] listdir = cephMount.listdir("/" + namespace);
