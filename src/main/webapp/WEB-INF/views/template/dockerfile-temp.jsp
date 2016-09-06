@@ -2,15 +2,15 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>服务</title>
+    <title>模板</title>
     <%@include file="../frame/header.jsp"%>
-    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/storage.css"/>
-    <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/footable/footable.core.css"/>
-  	<script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script> 
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/template.css"/>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/footable/footable。core.css"/>
+  	<%-- <script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script> --%> 
 </head>
 <body>
 <jsp:include page="../frame/menu.jsp" flush="true">
-    <jsp:param name="service" value=""/>
+    <jsp:param name="template" value=""/>
 </jsp:include>
 
 <div class="page-container">
@@ -21,25 +21,25 @@
                     <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">服务</li>
+                    <li class="active" id="nav2">模板</li>
                      <li style="margin-left: -44px;"><i class="fa fa-angle-right"></i></li>
-                    <li class="active">存储和备份</li>
+                    <li class="active" style="width:110px">dockerfile模板</li>
                 </ol>
             </div>
             <div class="contentMain">
-                <div class="row">
+					<div class="row">
 						<div class="col-sm-12">
 							<div class="ibox float-e-margins">
 								<div class="ibox-title">
 									<h5>
-										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>存储卷
+										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>dockerfile模板
 									</h5>
 
 									<div class="ibox-tools">
 										<a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a> 
 										
-										<a href="<%=path %>/service/storage/add" id="storageAdd" title="创建存储卷"><i
+										<a href="<%=path %>/template/dockerfile/add" id="dockerfileAdd" title="新建dockerfile"><i
 											class="fa fa-plus"></i></a>
 										<a id="SearchBtn" title="搜索"><i
 											class="fa fa-search"></i></a> 
@@ -57,15 +57,22 @@
 										<thead>
 											<tr>
 												<th style="width: 15%;text-indent:30px;">名称</th>
-	                                            <th style="width: 15%;text-indent: 15px;">使用状态</th>
-	                                            <!-- <th style="width: 10%;text-indent: 20px;">格式</th> -->
-	                                            <th style="width: 15%;text-indent: 8px;">挂载点</th>
-	                                            <th style="width: 15%;text-indent: 10px;">大小</th>
+	                                            <th style="width: 15%;text-indent: 15px;">###</th>
+	                                            <th style="width: 15%;text-indent: 8px;">###</th>
+	                                            <th style="width: 15%;text-indent: 10px;">创建人</th>
 	                                            <th style="width: 20%;">创建时间</th>
 	                                            <th style="width: 10%;text-indent: 10px;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="storageList">
+											<!-- <tr>
+												<td style="width: 15%;text-indent:30px;">aaa</td>
+	                                            <td style="width: 15%;text-indent: 15px;">aaa</td>
+	                                            <td style="width: 15%;text-indent: 8px;">aaa</td>
+	                                            <td style="width: 15%;text-indent: 10px;">jiang</td>
+	                                            <td style="width: 20%;">2016-08-20 11:37:49</td>
+	                                            <td style="width: 10%;text-indent: 10px;" ><a><i class="fa fa-trash"></i></a></td>
+											</tr> -->
 											
 										</tbody>
 										<tfoot>

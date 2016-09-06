@@ -48,8 +48,7 @@
 								<div class="ibox-content">
 									<input type="text" class="form-control input-sm m-b-xs"
 										id="filter" placeholder="搜索表格...">
-
-									<table class="footable table table-stripped fixed-table-header" data-page-size="9"
+									<table class="footable table table-stripped fixed-table-header" data-page-size="10"
 										data-filter=#filter>
 										<thead>
 											<tr>
@@ -79,18 +78,25 @@
 														<td style="width: 15%; text-indent: 15;">${image.version }</td>
 														<td style="width: 15%; text-indent: 8;"
 															id="user.user_province" name="user.user_province">${image.remark }</td>
-														<td style="width: 15%; text-indent: 10;">${image.creatorName }</td>
+														<td style="width: 15%; text-indent: 10;">${image.creatorName }<c:if test="${image.creatorName == ''||image.creatorName == null}">该创建人已被删除</c:if></td>
 														<td style="width: 20%; text-indent: 10;"
 															id="user.user_autority" name="user.user_autority">${image.createTime }</td>
 														<td style="width: 10%; text-indent: 10;"><a
 															class="no-drop" href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
 															title="部署"> <i class="fa fa-wrench"></i>
 														</a><a
-															class="no-drop" href="javascript:delOneImage()"
-															style="margin-left: 10px" title="导出"> <i class="fa fa-share-square-o"></i>
-														</a><a
-															class="no-drop" href="<%=path %>/registry/downloadImage?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
-															style="margin-left: 10px" title="删除"> <i class="fa fa-trash"></i>
+															class="no-drop a-oper" href="javascript:delOneImage()"
+															title="导出"> <i class="fa fa-share-square-o"></i>
+														</a>
+														<c:if test="${image.currUserFavor==0 }">
+				                                            <a class="a-oper"><i class="fa fa-star-o star-style" style="color:#4280CB"></i></a>
+				                                        </c:if>
+				                                        <c:if test="${image.currUserFavor==1 }">
+				                                            <a class="a-oper"><i class="fa fa-star star-style" style="color:#337ab7"></i></a>
+				                                        </c:if>
+														<a
+															class="no-drop a-oper" href="<%=path %>/registry/downloadImage?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
+															title="删除"> <i class="fa fa-trash"></i>
 														</a></td>
 													</tr>
 												</c:if>

@@ -35,18 +35,6 @@
     border-bottom: 1px solid #eee;
     cursor: pointer;
 }
-
-.bj-code-source {
-    background: #EDF4FC;
-    width: 100px;
-    text-align: center;
-    height: 30px;
-    border-radius: 20px;
-    display: inline-block;
-    line-height: 30px;
-    color: #333;
-}
-
 .itemTable .ci-table .ci-listTr:hover {
     background:#FAFAFA;
 }
@@ -733,3 +721,39 @@ span.i {
     height: 50px;
     line-height: 35px;
 }
+/* 环境变量 */
+.hide-set {
+    margin: 0 auto;
+    clear: both;
+    position: relative;
+    min-height: 40px;
+}
+.ve_top {
+    line-height: 30px;
+    width: 80px;
+    display: inline-block;
+    letter-spacing: 1px;
+    float: left;
+}
+.hide-select > input {
+    padding: 3px 0;
+    text-indent: 10px;
+    width: 230px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+.enabled thead {
+    background: #E4EAEC;
+}
+#env-variate tr, .enabled tr {
+    border: 1px solid #eee;
+    text-indent: 5px;
+}
+#crateEnv, #importBtn, #crateEnvVariate{
+	cursor: pointer
+}
+
+
+
+
+

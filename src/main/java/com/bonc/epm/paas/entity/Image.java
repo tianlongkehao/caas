@@ -32,11 +32,11 @@ public class Image {
 	private String remark;
 	private String summary;
 	private long creator;
+	@Transient
+	private String creatorName;
 	private Date createTime;
 	@Transient
 	private Integer currUserFavor;
-	@Transient
-	private String creatorName;
 	@Transient 
 	List<PortConfig> portConfigs;
 	

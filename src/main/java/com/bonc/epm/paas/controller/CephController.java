@@ -25,10 +25,10 @@ import com.ceph.fs.CephMount;
 @Controller
 public class CephController {
 
-	  private static final Logger logger = LoggerFactory.getLogger(CephController.class);
-
-	  // cluster
-	  private Rados cluster;
+	private static final Logger logger = LoggerFactory.getLogger(CephController.class);
+	
+	// cluster
+	private Rados cluster;
 	
     /**
      * 连接url

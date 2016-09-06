@@ -27,71 +27,58 @@
 					</ol>
 				</div>
 				<div class="contentMain">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="ibox float-e-margins">
+								<div class="ibox-title">
+									<h5>
+										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>引入外部服务
+									</h5>
 
+									<div class="ibox-tools">
+										<a href="javascript:window.location.reload(true);"
+											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
+										<a href="javascript:void(0)" id="importServiceBtn" title="新建"><i
+											class="fa fa-plus"></i></a>  <a id="SearchBtn1" title="搜索"><i
+											class="fa fa-search"></i></a>
+											<a href="" id="delImportSers"
+											onclick="delImportSers()" title="删除"><i
+											class="fa fa-trash"></i></a>
+									</div>
+								</div>
+								<div class="ibox-content">
+									<input type="text" class="form-control input-sm m-b-xs"
+										id="filter1" placeholder="搜索表格...">
 
-					<aside class="aside-btn">
-						<div class="btns-group">
-							<span class="btn btn-defaults btn-white"><i
-								class="icon-map-marker"></i><span class="ic_left">BCM</span></span>
+									<table class="footable table table-stripped" data-page-size="8"
+										data-filter=#filter1>
+										<thead>
+											<tr>
+												<th style="width: 5%; text-indent: 30px;"><input
+													type="checkbox" autocomplete="off" class="chkAll"
+													id="checkallbox" /></th>
+												<th style="width: 18%; padding-left: 5px;">服务名称</th>
+												<th style="width: 20%; text-indent: 8px;">服务访问地址</th>
+												<th style="width: 20%;">外部服务地址</th>
+												<th style="width: 14%;">可见域</th>
+												<th style="width: 10%;" class="del-operation">操作</th>
+											</tr>
+										</thead>
+										<tbody id="storageList">
+
+										</tbody>
+										<tfoot>
+											<tr>
+												<td colspan="6">
+													<ul class="pagination pull-right"></ul>
+												</td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
+							</div>
 						</div>
-					</aside>
-					<div class="caption clearfix">
-						<ul class="toolbox clearfix">
-							<li><a href="javascript:void(0);" id="serviceReloadBtn"><i
-									class="fa fa-repeat"></i></a></li>
-							<li><a id="importServiceBtn"><i class="fa fa-plus"></i>&nbsp;&nbsp;新建</a></li>
-							<li class="dropdown"><a data-toggle="dropdown"
-								href="javascript:void(0);">更多操作&nbsp;&nbsp;<i
-									class="fa fa-caret-down"></i></a>
-								<ul class="dropdown-menu serviceOperation">
-									<li><a id="deleteButton" class="no-drop"
-										href="javascript:void()" onclick="delImportSers()"> <i class="fa fa-trash"></i>
-											<span class="ic_left">删除</span>
-									</a></li>
-								</ul></li>
-						</ul>
 					</div>
-					<div class="itemTable">
-						<table class="table service-table">
-							<thead>
-								<tr>
-									<th>
-										<div class="table-head">
-											<table class="table">
-												<thead>
-													<tr>
-														<th style="width: 5%; text-indent: 30px;"><input
-															type="checkbox" autocomplete="off" class="chkAll" /></th>
-														<th style="width: 18%; padding-left: 5px;">服务名称</th>
-														<th style="width: 20%; text-indent: 8px;">服务访问地址</th>
-														<th style="width: 20%;">外部服务地址</th>
-														<th style="width: 14%;">可见域</th>
-														<th style="width: 10%;">操作</th>
-													</tr>
-
-												</thead>
-											</table>
-										</div>
-									</th>
-								</tr>
-							</thead>
-							<tbody id="serviceBody">
-								<tr>
-									<td>
-										<div>
-											<table class="table">
-												<tbody id="importSerList">
-													
-												</tbody>
-											</table>
-										</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-
-					</div>
-
 				</div>
 			</div>
 		</article>
@@ -135,6 +122,10 @@
 			alert(errorMsg);
 		</script>
 	</c:if>
-
+	<script type="text/javascript">
+		$(".footable").footable();
+		$(".del-operation").children("span").addClass("hide");
+		$("#checkallbox").next().addClass("hide");
+	</script>
 </body>
 </html>

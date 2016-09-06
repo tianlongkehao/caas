@@ -7,7 +7,7 @@ function delUser(){
 		id = id + jQuery(this).val() + ",";
 	});
 	if ("" == id) {
-		alert("请选择至少一个租户");
+		layer.alert("请选择至少一个用户", {icon:0});
 		return;
 	}
 	else {

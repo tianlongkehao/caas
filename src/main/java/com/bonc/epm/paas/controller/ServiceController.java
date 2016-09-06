@@ -390,8 +390,9 @@ public class ServiceController {
 						// 关闭es客户端
 						esClient.closeESClient();
 						// 拼接日志格式
+
 						String add = "[" + "App-" + i + "] [" + podName + "]：";
-						s = add + s.replaceAll("\n", "\n" + add);
+						s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
 						s = s.substring(0, s.length() - add.length());
 						logStr = logStr.concat(s);

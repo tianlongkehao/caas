@@ -61,9 +61,17 @@ $(document).ready(function () {
 	     success : function(data) {
 	 				var data = eval("("+data+")");
 	 				if("200"==data.status && flag==0){
-							creatable(null,null,null);
- 							$('#hasUsed').html(data.used);
- 							layer.closeAll();
+	 					layer.open({
+	 						type:1,
+	 						content:'上传成功！',
+	 						title:'上传成功',
+	 						btn:['确定'],
+	 						yes: function(index, layero){ 
+	 							creatable(null,null,null);
+	 							$('#hasUsed').html(data.used);
+	 							layer.closeAll()
+	 						}
+	 					 });
 	 				}else if ("500"==data.status) {
 		 				layer.open({
 	 						type:1,

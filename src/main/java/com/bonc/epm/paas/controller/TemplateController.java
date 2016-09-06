@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
@@ -20,12 +20,42 @@ import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
-
 @Controller
+@RequestMapping(value = "/template")
 public class TemplateController {
 
 	@Autowired
 	private EnvTemplateDao envTemplateDao;
+	
+	/**
+	 * 模板管理
+	 * 
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/dockerfile", method = RequestMethod.GET)
+	public String dockerfileTemp(Model model) {
+		model.addAttribute("menu_flag", "template"); 
+		return "template/dockerfile-temp.jsp";
+	}
+	
+	@RequestMapping(value = "/env", method = RequestMethod.GET)
+	public String envTemp(Model model) {
+		model.addAttribute("menu_flag", "template"); 
+		return "template/env-temp.jsp";
+	}
+	
+	@RequestMapping(value = "/dockerfile/add", method = RequestMethod.GET)
+	public String dockerfileAdd(Model model) {
+		model.addAttribute("menu_flag", "template"); 
+		return "template/dockerfile-add.jsp";
+	}
+	
+	@RequestMapping(value = "/env/add", method = RequestMethod.GET)
+	public String envAdd(Model model) {
+		model.addAttribute("menu_flag", "template"); 
+		return "template/env-add.jsp";
+	}
 	
 	/**
 	 * 加载环境变量模板数据
@@ -33,7 +63,7 @@ public class TemplateController {
 	 * @return String
 	 * @see
 	 */
-	@RequestMapping("service/loadEnvTemplate.do")
+	@RequestMapping("/loadEnvTemplate.do")
     @ResponseBody
 	public String loadEnvTemplate(){
 	    Map<String, Object> map = new HashMap<String, Object>();
@@ -50,7 +80,7 @@ public class TemplateController {
 	 * @return
 	 * @see
 	 */
-	@RequestMapping("service/saveEnvTemplate.do")
+	@RequestMapping("/saveEnvTemplate.do")
 	@ResponseBody
 	public String saveEnvTemplate(String templateName, String envVariable) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -85,7 +115,7 @@ public class TemplateController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping("service/importEnvTemplate.do")
+	@RequestMapping("/importEnvTemplate.do")
 	@ResponseBody
 	public String findEnvTemplate(String templateName) {
 		User cUser = CurrentUserUtils.getInstance().getUser();
@@ -100,7 +130,7 @@ public class TemplateController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping("service/modifyEnvTemplate.do")
+	@RequestMapping("/modifyEnvTemplate.do")
 	@ResponseBody
 	public String modifyEnvTemplate(String templateName, String envVariable) {
 		delEnvTemplate(templateName);
@@ -115,7 +145,7 @@ public class TemplateController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping("service/delEnvTemplate.do")
+	@RequestMapping("/delEnvTemplate.do")
 	@ResponseBody
 	public String delEnvTemplate(String templateName) {
 		User cUser = CurrentUserUtils.getInstance().getUser();

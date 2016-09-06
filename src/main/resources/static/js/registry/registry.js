@@ -42,7 +42,7 @@ $(document).ready(function () {
     });
   
     //判断有没有用户下载过该镜像，没有人下载过，页面加载一个遮罩层；
-    $("#downloadImage").click(function(){
+    /*$("#downloadImage").click(function(){
     	var imageVersion = document.getElementById("doloadImage").getAttribute("imageversion");
     	var imageName = document.getElementById("doloadImage").getAttribute("imagename");
     	$.ajax({
@@ -57,7 +57,7 @@ $(document).ready(function () {
      			}
      		}
      	});
-    });
+    });*/
     
     $("#deleteImage").click(function(){
    		var imageId = $("#imageId").val();
