@@ -99,7 +99,7 @@ public class CephController {
 			logger.info("进入方法：createNamespaceCephFS");
 			String[] listDirBef = cephMount.listdir("/");
 			boolean flag = false;
-          for (String strDir : listDirBef) {
+			for (String strDir : listDirBef) {
               if (namespace.trim().equals(strDir)) {
                   flag = true;
               }
