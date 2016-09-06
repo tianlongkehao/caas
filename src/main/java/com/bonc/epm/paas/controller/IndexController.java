@@ -31,36 +31,52 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
 import com.bonc.epm.paas.util.ServiceException;
 
+/**
+ * 登录
+ * @author update
+ * @version 2016年9月5日
+ * @see IndexController
+ * @since
+ */
 @Controller
 public class IndexController {
-	private static final Logger log = LoggerFactory.getLogger(IndexController.class);
-
-	@Autowired
-	CasClientConfigurationProperties configProps;
+    
+    /**
+     * IndexController 日志实例
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(IndexController.class);
+    
+    /**
+     *  configProps 接口
+     */
+    @Autowired
+	private CasClientConfigurationProperties configProps;
 	
-	@Autowired
-	private  UserDao userDao;
-	/**
-	 * 跳转登录页面
-	 * @author lance
-	 * 2014-6-8下午6:49:40
-	 * @return
-	 */
-	@RequestMapping(value={"login"},method=RequestMethod.GET)
+    /**
+     * userDao接口
+     */
+    @Autowired
+	private UserDao userDao;
+	
+    /**
+     * Description: <br>
+     * 跳转登录页面
+     * @return login.jsp
+     */
+    @RequestMapping(value={"login"},method=RequestMethod.GET)
 	public String login(){
-		return "login.jsp";
-	}
+        return "login.jsp";
+    }
 	
-	/**
-	 * 生成图片验证码
-	 * 
-	 * @param request
-	 * @param response
-	 * @param session
-	 * @throws IOException 
-	 * @see
-	 */
-	@RequestMapping(value={"authCode"},method=RequestMethod.GET)
+    /**
+     * Description: <br>
+     * 生成图片验证码
+     * @param request request
+     * @param response response
+     * @param session session
+     * @throws IOException  IOException
+     */
+    @RequestMapping(value={"authCode"},method=RequestMethod.GET)
     public void getAuthCode(HttpServletRequest request, HttpServletResponse response,HttpSession session)
             throws IOException {
         int width = 100;
@@ -90,9 +106,7 @@ public class IndexController {
             g.drawLine(x, y, x + x1, y + y1);
         }
         
-        String[] codeSequence = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",        
-                        "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W",        
-                        "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" }; 
+        String[] codeSequence = { "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9" }; 
         //绘制字符
         String strCode = "";
         for(int i=0;i<5;i++){
@@ -108,113 +122,156 @@ public class IndexController {
         ImageIO.write(image, "JPEG", response.getOutputStream());
         response.getOutputStream().flush();
     }
-
+    
+    /**
+     * Description: <br>
+     * 生成随机颜色
+     * @param fc fc
+     * @param bc bc
+     * @return color
+     */
     public Color getRandColor(int fc,int bc){
         Random random = new Random();
-        if(fc>255)
+        if (fc > 255) {
             fc = 255;
-        if(bc>255)
+        }
+        if (bc > 255) {
             bc = 255;
+        }
         int r = fc + random.nextInt(bc - fc);
         int g = fc + random.nextInt(bc - fc);
         int b = fc + random.nextInt(bc - fc);
         return new Color(r,g,b);
     }
+    
+    /**
+     * Description: <br>
+     * 登录成功后跳转页面
+     * @param user user
+     * @param redirect redirect
+     * @param authCode authCode
+     * @param request request
+     * @return String
+     * @see
+     */
+    @RequestMapping(value="signin",method=RequestMethod.POST)
+	public String login(User user, RedirectAttributes redirect,String authCode,HttpServletRequest request){
+        try {
+            String judgeCode = (String)request.getSession().getAttribute("strCode");
+            if (!judgeCode.equals(authCode.toUpperCase())) {
+                throw new ServiceException("验证码输入错误");
+            }
+            user = login(user);
+        }
+        catch (ServiceException e) {
+            LOG.debug(e.getMessage());
+            redirect.addFlashAttribute("err_code", e.getMessage());
+            redirect.addFlashAttribute("user", user);
+            return "redirect:login";
+        }
+        CurrentUserUtils.getInstance().setUser(user);
+        CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
+        redirect.addFlashAttribute("user", user);
+        return "redirect:workbench";
+    }
+    
+    /**
+     * Description: <br>
+     * 退出登录
+     * @param model  添加返回信息
+     * @param id 当前登录Id
+     * @return String
+     */
+    @RequestMapping(value={"loginout/{id}"},method=RequestMethod.GET)
+	public String loginOut(Model model ,@PathVariable long id){
+        User user = userDao.findById(id);
+        CurrentUserUtils.getInstance().loginoutUser(user);
+        return "redirect:login";
+    }
 	
     /**
-	 * 登录成功后跳转页面
-	 * @author fengtao
-	 * 2015-12-22
-	 * @param name
-	 * @param password
-	 * @return
-	 */
-	@RequestMapping(value="signin",method=RequestMethod.POST)
-	public String login(User user, RedirectAttributes redirect,String authCode,HttpServletRequest request){
-		try {
-		    String judgeCode = (String)request.getSession().getAttribute("strCode");
-		    if (!judgeCode.equals(authCode.toUpperCase())) {
-		        throw new ServiceException("验证码输入错误");
-		    }
-			user = login(user);
-		} catch (ServiceException e) {
-			log.debug(e.getMessage());
-			redirect.addFlashAttribute("err_code", e.getMessage());
-			redirect.addFlashAttribute("user", user);
-			return "redirect:login";
-		}
-		CurrentUserUtils.getInstance().setUser(user);
-		CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
-		redirect.addFlashAttribute("user", user);
-		return "redirect:workbench";
-	}
-
-	@RequestMapping(value={"loginout/{id}"},method=RequestMethod.GET)
-	public String loginOut(Model model ,@PathVariable long id){
-		User user = userDao.findById(id);
-		CurrentUserUtils.getInstance().loginoutUser(user);
-		return "redirect:login";
-	}
-	
-	@RequestMapping(value={"index","/"},method=RequestMethod.GET)
+     * Description: <br>
+     * 跳转进入index.jsp页面
+     * @return  index.jsp
+     */
+    @RequestMapping(value={"index","/"},method=RequestMethod.GET)
 	public String index(){
-		return "index.jsp";
-	}
-
-	@RequestMapping(value={"workbench"},method=RequestMethod.GET)
+        return "index.jsp";
+    }
+    
+    /**
+     * Description: <br>
+     * 跳转进入workbench.jsp页面
+     * @return workbench.jsp
+     */
+    @RequestMapping(value={"workbench"},method=RequestMethod.GET)
 	public String workbench(){
-		return "workbench.jsp";
-	}
-
-	@RequestMapping(value={"menu"},method=RequestMethod.GET)
+        return "workbench.jsp";
+    }
+    
+    /**
+     * Description: <br>
+     * 跳转进入menu.jsp页面
+     * @param model 添加返回信息数据
+     * @param flag flag
+     * @return menu.jsp
+     */
+    @RequestMapping(value={"menu"},method=RequestMethod.GET)
 	public String menu(Model model,String flag){
-		model.addAttribute("flag", flag);
-		return "menu.jsp";
-	}
+        model.addAttribute("flag", flag);
+        return "menu.jsp";
+    }
 	
-	public User login(User user) {
-		if(StringUtils.isBlank(user.getUserName())) {
-			throw new ServiceException("用户名不能为空");
-		}
-		if(StringUtils.isBlank(user.getPassword())) {
-			throw new ServiceException("密码不能为空");
-		}
-		User userEntity = userDao.findByUserName(user.getUserName());
-		log.debug("user.getUserName()="+user.getUserName());
-		if(userEntity == null){
-			throw new ServiceException("用户名不存在");
-		}
-		log.debug("userEntity="+userEntity.toString());
-		String password = EncryptUtils.encryptMD5(user.getPassword());
-//		String password = user.getPassword();
-		log.debug("password="+password);
-		log.debug("userEntity.getPassword()="+userEntity.getPassword());
-		if(!StringUtils.equals(password, userEntity.getPassword())){
-			throw new ServiceException("密码输入错误");
-		}
-		return userEntity;
-	}
-
-	/**
-	 * 初始化一个User
-	 */
-	@PostConstruct
+    /**
+     * Description: <br>
+     * 用户登录
+     * @param user user
+     * @return user
+     */
+    public User login(User user) {
+        if (StringUtils.isBlank(user.getUserName())) {
+            throw new ServiceException("用户名不能为空");
+        }
+        if (StringUtils.isBlank(user.getPassword())) {
+            throw new ServiceException("密码不能为空");
+        }
+        User userEntity = userDao.findByUserName(user.getUserName());
+        LOG.debug("user.getUserName()="+user.getUserName());
+        if (userEntity == null) {
+            throw new ServiceException("用户名不存在");
+        }
+        LOG.debug("userEntity="+userEntity.toString());
+        String password = EncryptUtils.encryptMD5(user.getPassword());
+        LOG.debug("password="+password);
+        LOG.debug("userEntity.getPassword()="+userEntity.getPassword());
+        if (!StringUtils.equals(password, userEntity.getPassword())) {
+            throw new ServiceException("密码输入错误");
+        }
+        return userEntity;
+    }
+    
+    /**
+     * 
+     * Description: <br>
+     *  初始化admin
+     */
+    @PostConstruct
 	public void init(){
-		User user = new User();
-		user.setUserName("admin");
-		user.setPassword(EncryptUtils.encryptMD5("admin"));
-		user.setUser_autority("1");
-		user.setVol_size(0);
-		if(userDao.findByUserName(user.getUserName()) == null) {
-			userDao.save(user);
-		}
-		log.info("User init success:"+user.toString());
-	}
+        User user = new User();
+        user.setUserName("admin");
+        user.setPassword(EncryptUtils.encryptMD5("admin"));
+        user.setUser_autority("1");
+        user.setVol_size(0);
+        if (userDao.findByUserName(user.getUserName()) == null) {
+            userDao.save(user);
+        }
+        LOG.info("User init success:"+user.toString());
+    }
 	
 //	public static void main(String[] args)
 //    {
-//        String admin = EncryptUtils.encryptMD5("bonc1111");
+//        String admin = EncryptUtils.encryptMD5("paas1234");
 //        System.out.println(admin);
-//        System.out.println(EncryptUtils.encryptMD5(admin));
+//       System.out.println(EncryptUtils.encryptMD5(admin));
 //    }
 }
