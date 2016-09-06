@@ -10,7 +10,6 @@ import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * 
  * 文件压缩成zip
@@ -129,6 +128,7 @@ public class ZipCompressing {
             targetFile.mkdirs();
         }
     }
+}
 
 /*    public static void main(String[] args) {
         try {
@@ -138,6 +138,4 @@ public class ZipCompressing {
         } catch (Exception e) {
             e.printStackTrace();
         }
- 
-    }*/
-}
+}*/
