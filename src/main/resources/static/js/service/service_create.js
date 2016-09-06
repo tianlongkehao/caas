@@ -359,7 +359,6 @@ $(document).ready(function(){
 	    	            if (data != null) {
 	    	                if (data['data'].length > 0) {
 	    	                	for (var i in data.data) {
-	    	                		$("#Path-oper1").children("tr").remove()
 	    	                		var envTemplate = data.data[i];
 	    	                		html += '<tr>'+
 		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envTemplate.envKey+'"></td>'+
@@ -372,7 +371,6 @@ $(document).ready(function(){
 	    	                	}
 	    	                }
 	    	            }
-	    	            $("#Path-oper1").children("tr").remove()
 	    	            $("#Path-oper1").append(html);
 	    	            $("#arrayKey").attr("value",arrayKey);
 	         		}

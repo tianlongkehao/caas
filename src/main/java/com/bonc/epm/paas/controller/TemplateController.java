@@ -94,17 +94,17 @@ public class TemplateController {
 		}
 
 		if (StringUtils.isNotEmpty(envVariable)) {
-			JSONArray jsonArray = JSONArray.parseArray(envVariable);
-			for (int i = 0; i < jsonArray.size(); i++) {
-				EnvTemplate envTemplate = new EnvTemplate();
-				envTemplate.setCreateBy(cUser.getId());
-				envTemplate.setEnvKey(jsonArray.getJSONObject(i).getString("envKey").trim());
-				envTemplate.setEnvValue(jsonArray.getJSONObject(i).getString("envValue").trim());
-				envTemplate.setCreateDate(new Date());
-				envTemplate.setTemplateName(templateName);
-				envTemplateDao.save(envTemplate);
-			}
-			map.put("status", "200");
+		    String[] envKeyAndValues = envVariable.split(";");
+            for (String envKeyAndValue : envKeyAndValues ) {
+                EnvTemplate envTemplate = new EnvTemplate();
+                envTemplate.setCreateBy(cUser.getId());
+                envTemplate.setEnvKey(envKeyAndValue.substring(0,envKeyAndValue.indexOf(",")));
+                envTemplate.setEnvValue(envKeyAndValue.substring(envKeyAndValue.indexOf(",")+1));
+                envTemplate.setCreateDate(new Date());
+                envTemplate.setTemplateName(templateName);
+                envTemplateDao.save(envTemplate);
+            }
+            map.put("status", "200");
 		}
 
 		return JSON.toJSONString(map);
