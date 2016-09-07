@@ -363,7 +363,7 @@ public class ServiceController {
                     String podName = pod.getMetadata().getName();
 					// 初始化es客户端
                     ESClient esClient = new ESClient();
-                    esClient.initESClient(esConf.getHost());
+                    esClient.initESClient(esConf.getHost(),esConf.getClusterName());
 					// 设置es查询日期，数据格式，查询的pod名称
                     String s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
 					// 关闭es客户端
@@ -412,7 +412,7 @@ public class ServiceController {
 
 	/**
 	 * Description: <br>
-	 * 根据服务Id查询相关联的服务日志
+	 * 获取当前服务的日志
 	 * @param id 服务Id
 	 * @param date 日期
 	 * @return String
@@ -435,11 +435,11 @@ public class ServiceController {
                 if (CollectionUtils.isNotEmpty(pods)) {
                     int i = 1;
                     for (Pod pod : pods) {
-						// 获取pod名称
+                        // 获取pod名称
                         String podName = pod.getMetadata().getName();
-						// 初始化es客户端
+                        // 初始化es客户端
                         ESClient esClient = new ESClient();
-                        esClient.initESClient(esConf.getHost());
+                        esClient.initESClient(esConf.getHost(),esConf.getClusterName());
                         String s = null;
                         if (date != "") {
 							// 设置es查询日期，数据格式，查询的pod名称
@@ -476,18 +476,18 @@ public class ServiceController {
     
     /**
      * Description: <br>
-     * 时间格式的转换
-     * @param time 时间
+     * 日期格式的转换
+     * @param time 
      * @return String
-     * @see
      */
     public static String dateToString(Date time) {
         SimpleDateFormat formatter;
         formatter = new SimpleDateFormat("yyyy.MM.dd");
         String ctime = formatter.format(time);
+
         return ctime;
     }
-
+    
     /**
      * Description: <br>
      * 响应“部署”按钮

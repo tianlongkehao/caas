@@ -54,15 +54,16 @@ public class ESClient {
     /**
      * 
      * Description:
-     *  初始化es客户端
-     * @param es 
+      *  初始化es客户端
+     * @param es
+     * @param clusterName 
      * @see
      */
     @Before
-	public void initESClient(String es) {	
+	public void initESClient(String es,String clusterName) {	
 		// 配置你的es,现在这里只配置了集群的名,默认是elasticsearch,跟服务器的相同
         Settings settings = Settings.settingsBuilder()
-                        				.put("cluster.name", "bonc_docker")
+                        				.put("cluster.name", clusterName)
                         				.put("discovery.type", "zen")//发现集群方式
                         				.put("discovery.zen.minimum_master_nodes", 1)//最少有1个master存在
                         				.put("discovery.zen.ping_timeout", "2000ms")//集群ping时间，太小可能会因为网络通信而导致不能发现集群
