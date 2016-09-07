@@ -27,7 +27,7 @@ public class ZipCompressing {
     /**
      * 定义递归次数变量
      */
-    public static int K_LOOP = 1;
+    private static int K_LOOP = 1;
  
     /**
      * 
