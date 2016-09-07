@@ -180,7 +180,7 @@ function  creatable(isDir,path,dirName){
 									'</a>'+
 									'</td>'+
 									'<td style="width: 30%;">'+fileInfo.size+'KB</td>'+
-									'<td style="width: 26%;">'+fileInfo.time+'</td>'+
+									'<td style="width: 26%;">'+fileInfo.modifiedTime+'</td>'+
 								'</tr>';
 	    				}
 	           

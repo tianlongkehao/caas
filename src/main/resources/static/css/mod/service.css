@@ -34,7 +34,7 @@
 
 .clusterId {
     border-bottom: 1px solid #eee;
-    border-left: 1px solid #eee;
+    
 }
 
 .tr-row {
@@ -803,7 +803,7 @@ i.pushOrg {
     color: #BFBFBF;
 }
 
-/* 鍔ㄦ�佹墿瀹� */
+/* 閸斻劍锟戒焦澧跨�癸拷 */
 .dynamic-scale{
     margin-left: 43px;
 }

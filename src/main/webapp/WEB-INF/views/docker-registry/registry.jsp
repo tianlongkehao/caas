@@ -48,7 +48,6 @@
 								<div class="ibox-content">
 									<input type="text" class="form-control input-sm m-b-xs"
 										id="filter" placeholder="搜索表格...">
-
 									<table class="footable table table-stripped fixed-table-header" data-page-size="10"
 										data-filter=#filter>
 										<thead>

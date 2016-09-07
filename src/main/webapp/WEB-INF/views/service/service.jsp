@@ -26,81 +26,8 @@
 					</ol>
 				</div>
 				<div class="contentMain">
-					<div class="caption clearfix">
-						<div id="upgrade" style="display: none">
-							<ul class="popWin">
-								<li class="line-h-3"><span class="edit-name-c">服务名称：</span>
-									<input id="upgradeServiceName" disabled="disabled"
-									style="margin-top: 5px; width: 165px;" type="text" value="">
-								</li>
-								<li class="line-h-3" id="instsizeChange">
-									<div class="param-set">
-										<span class="edit-name-c" style="margin-top: 5px;">实例数量：</span>
-										<input value="1" id="numberChange" class="" min="1" max=""
-											style="margin-top: 10px; width: 165px;" type="number">
-										<span class="unit">个</span>
-										<!-- <span  style="color: grey;margin-left: 50px;">可用实例数量：<label id="leftpod" ></label></span> -->
-									</div>
-								</li>
-							</ul>
-						</div>
-						<div id="versionUpgrade" style="display: none">
-							<ul class="popWin">
-								<li class="line-h-3"><span class="edit-name-c">服务名称：</span>
-									<input id="upgradeVersionServiceName" disabled="disabled"
-									style="margin-top: 5px; width: 165px;" type="text" value="">
-								</li>
-								<li class="line-h-3"><span class="edit-name-c">镜像名称：</span>
-									<input id="upgradeimgName" disabled="disabled"
-									style="margin-top: 5px; width: 165px;" type="text" value="">
-								</li>
-								<li class="line-h-3" id="instsizeChange">
-									<div class="param-set">
-										<span class="edit-name-c" style="margin-top: 5px;">镜像版本：</span>
-										<!--<select class="form-control" style="margin-top: 10px;width: 165px;display: inline; float: right;" id="imgVersionName" name="user_autority">
-                                     <option name="user_autority" value="2">租户</option>
-                                     <option name="user_autority" value="1">管理员</option>
-                                                    </select>  -->
-										<select id="imgVersionName" name="imgVersionName"
-											style="margin-top: 10px; width: 165px;">
 
-										</select>
-										<!--  <input value="" id="imgVersionName" class=""  style="margin-top: 10px;width: 165px;" type="text"> -->
-										<!-- <span  style="color: grey;margin-left: 50px;">可用实例数量：<label id="leftpod" ></label></span> -->
-									</div>
-								</li>
-							</ul>
-						</div>
-						<div id="changeConf" style="display: none">
-							<ul class="popWin">
-								<li class="line-h-3"><span>服务名称：</span> <input class=""
-									id="confServiceName" disabled="disabled"
-									style="margin-top: 5px; width: 165px;" type="text" value="">
-								</li>
-								<li class="line-h-3">
-									<div class="param-set">
-										<span>CPU数量：</span> <input type="number" value=""
-											style="margin-top: 10px; width: 165px;" min="${cpumin }"
-											max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
-											id="confCpu" name="confCpu"> <span class="unit">个</span>
-										<!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" ></label></span> -->
-									</div>
-								</li>
-								<li class="line-h-3">
-									<div class="param-set">
-										<span>内存：</span> <input id="confRamSlider"
-											data-slider-id='confRamSliderData' type="text"
-											data-slider-min="${memorymin }"
-											data-slider-max="${memorymax }" data-slider-step="1" /> <input
-											type="text" left="" value="" id="confRamSlider_input"
-											name="confRam"> <span>M</span>
-										<!-- <span style="color: grey;">当前可用ram：<label id="leftram" ></label>M</span>-->
-									</div>
-								</li>
-							</ul>
-						</div>
-					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="ibox float-e-margins">
@@ -257,19 +184,22 @@
 																								type="hidden" class="timeStrap" value="">
 																								<i class="fa_time"></i> <span>${service.createDate }</span>
 																							</td>
-																							<td style="width: 8%"><a id="startContainer"
-																								class="no-drop"
-																								href="javascript:createContainer()"> <i
-																									class="fa fa-play"></i>
-																							</a> <a id="stopContainer" class="no-drop"
-																								href="javascript:stopContainer()"
+																							<td style="width: 8%"><a
+																								id="${service.id}_start"
+																								class="startContainer_a"
+																								href="javascript:oneStartContainer(${service.id},${service.status})">
+																									<i class="fa fa-play"></i>
+																							</a> <a id="${service.id}_stop"
+																								class="stopContainer_a"
+																								href="javascript:oneStopContainer(${service.id},${service.status})"
 																								style="margin-left: 10px"> <i
 																									class="fa fa-power-off"></i>
-																							</a> <a id="deleteButton" class="no-drop"
-																								href="javascript:delContainer()"
+																							</a> <a id="${service.id}_del" class="deleteButton_a"
+																								href="javascript:oneDeleteContainer(${service.id})"
 																								style="margin-left: 10px"> <i
 																									class="fa fa-trash"></i>
 																							</a></td>
+
 																						</tr>
 
 																						<tr style="border-left: 1px solid #eee;"
@@ -328,23 +258,95 @@
 							</div>
 						</div>
 					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+	<div class="caption clearfix">
+		<div id="upgrade" style="display: none">
+			<ul class="popWin">
+				<li class="line-h-3"><span class="edit-name-c">服务名称：</span> <input
+					id="upgradeServiceName" disabled="disabled"
+					style="margin-top: 5px; width: 165px;" type="text" value="">
+				</li>
+				<li class="line-h-3" id="instsizeChange">
+					<div class="param-set">
+						<span class="edit-name-c" style="margin-top: 5px;">实例数量：</span> <input
+							value="1" id="numberChange" class="" min="1" max=""
+							style="margin-top: 10px; width: 165px;" type="number"> <span
+							class="unit">个</span>
+						<!-- <span  style="color: grey;margin-left: 50px;">可用实例数量：<label id="leftpod" ></label></span> -->
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div id="versionUpgrade" style="display: none">
+			<ul class="popWin">
+				<li class="line-h-3"><span class="edit-name-c">服务名称：</span> <input
+					id="upgradeVersionServiceName" disabled="disabled"
+					style="margin-top: 5px; width: 165px;" type="text" value="">
+				</li>
+				<li class="line-h-3"><span class="edit-name-c">镜像名称：</span> <input
+					id="upgradeimgName" disabled="disabled"
+					style="margin-top: 5px; width: 165px;" type="text" value="">
+				</li>
+				<li class="line-h-3" id="instsizeChange">
+					<div class="param-set">
+						<span class="edit-name-c" style="margin-top: 5px;">镜像版本：</span>
+						<!--<select class="form-control" style="margin-top: 10px;width: 165px;display: inline; float: right;" id="imgVersionName" name="user_autority">
+                                     <option name="user_autority" value="2">租户</option>
+                                     <option name="user_autority" value="1">管理员</option>
+                                                    </select>  -->
+						<select id="imgVersionName" name="imgVersionName"
+							style="margin-top: 10px; width: 165px;">
 
-            </div>
-        </div>
-    </article>
-</div>
-     <!--版本升级进度条 -->
-    <div class="modal fade container" id="myModal" tabindex="-1" role="dialog"
-        aria-labelledby="myModalLabel" aria-hidden="true" style="width:30%">
-        <div class="progress progress-striped active" id="loading"
-            style="margin-top: 87%;">
-            <div class="progress-bar progress-bar-info" role="progressbar"
-                aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-                style="width: 100%;">
-            </div>
-        </div>
-    </div>
-    
+						</select>
+						<!--  <input value="" id="imgVersionName" class=""  style="margin-top: 10px;width: 165px;" type="text"> -->
+						<!-- <span  style="color: grey;margin-left: 50px;">可用实例数量：<label id="leftpod" ></label></span> -->
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div id="changeConf" style="display: none">
+			<ul class="popWin">
+				<li class="line-h-3"><span>服务名称：</span> <input class=""
+					id="confServiceName" disabled="disabled"
+					style="margin-top: 5px; width: 165px;" type="text" value="">
+				</li>
+				<li class="line-h-3">
+					<div class="param-set">
+						<span>CPU数量：</span> <input type="number" value=""
+							style="margin-top: 10px; width: 165px;" min="${cpumin }"
+							max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
+							id="confCpu" name="confCpu"> <span class="unit">个</span>
+						<!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" ></label></span> -->
+					</div>
+				</li>
+				<li class="line-h-3">
+					<div class="param-set">
+						<span>内存：</span> <input id="confRamSlider"
+							data-slider-id='confRamSliderData' type="text"
+							data-slider-min="${memorymin }" data-slider-max="${memorymax }"
+							data-slider-step="1" /> <input type="text" left="" value=""
+							id="confRamSlider_input" name="confRam"> <span>M</span>
+						<!-- <span style="color: grey;">当前可用ram：<label id="leftram" ></label>M</span>-->
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!--版本升级进度条 -->
+	<div class="modal fade container" id="myModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+		style="width: 30%">
+		<div class="progress progress-striped active" id="loading"
+			style="margin-top: 87%;">
+			<div class="progress-bar progress-bar-info" role="progressbar"
+				aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+				style="width: 100%;"></div>
+		</div>
+	</div>
+
 	${msg}
 	<c:if test="${msg!= null} ">
 		<input type="hidden" id="errorMsg" value="${msg}">

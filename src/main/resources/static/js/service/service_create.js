@@ -3,6 +3,9 @@ $(document).ready(function(){
 	getServiceStorageVol();
 	getMountPath();
 	
+	document.getElementById("cpu1").checked=true;
+	document.getElementById("ram1").checked=true;
+	
 	$(".createPadding").addClass("hide");
 	
 	$("#createButton").click(function(){
@@ -30,6 +33,7 @@ $(document).ready(function(){
 	      return;
 	    }
 	    
+	    //自定义启动命令的判断
 	    var startCommand_input = $("#startCommand_input").val();
 	    if($("#startCommand").prop("checked")==true){
 			    if(!startCommand_input || startCommand_input.length < 1){
@@ -39,6 +43,7 @@ $(document).ready(function(){
 					}		   
 	    }
 	    
+	    //服务路径的判断
 	    var servicePath = $("#webPath").val();
 	    if(!servicePath || servicePath.length < 1){
 		      layer.tips('服务路径不能为空','#webPath',{tips: [1, '#3595CC']});
@@ -46,12 +51,44 @@ $(document).ready(function(){
 		      return;
 		}
 	    
+	    //判断cpu是否有足够的剩余
+	    var cpuNum = $("input[name='cpuNum']:checked").val();
+	    var leftcpu = $("#leftcpu").val();
+	    if (cpuNum == null) {
+	    	layer.tips('请您选择cpu数量',"#ve_cpu",{tips: [1, '#3595CC']});
+		    $('#ve_cpu').focus();
+			return;
+	    }
+	    if (parseInt(cpuNum) > parseInt(leftcpu)) {
+	    	layer.tips('cpu剩余不足',"input[name='cpuNum']:checked",{tips: [1, '#3595CC']});
+		    $("input[name='cpuNum']:checked").focus();
+			return;
+	    }
+	    
+	    //判断内存是否有足够的剩余
+	    var ram = $("input[name='ram']:checked").val();
+	    var leftmemory = $("#leftmemory").val();
+	    if (ram == null) {
+	    	layer.tips('请您选择内存数量',"#ve_ram",{tips: [1, '#3595CC']});
+		    $("#ve_ram").focus();
+			return;
+	    }
+	    if (parseInt(ram) > parseInt(leftmemory)) {
+	    	layer.tips('内存剩余不足',"input[name='ram']:checked",{tips: [1,"#3595CC"]})
+	    	$("input[name='ram']:checked").focus();
+	    	return;
+	    }
+	    
+	    
+	    //nginx代理路径的判断
 	    var proxyPath = $("#nginxPath").val();
 	    if(!proxyPath || proxyPath.length < 1){
 		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
 		      $('#nginxPath').focus();
 		      return;
 		}
+	    
+	    //挂载路径的判断
 	    var mountPath = $("#mountPath").val();
 	    var selectVolume = $("#selectVolume").val();
 	    if ($("#state_service").prop("checked")==true) {
@@ -90,7 +127,7 @@ $(document).ready(function(){
     	$('#proxyZone').val(nginxstr);
     	
     	//将端口配置 数据变为json放入到
-       var portJson ="";
+	    var portJson ="";
         $("#pushPrptpcol tr").each(function (index, domEle){
     				var protocol = "";
     				var mapPort = "";
@@ -154,7 +191,13 @@ $(document).ready(function(){
             tips: [2, '#0FA6D8'] //还可配置颜色
         });
     });
-
+	
+	//选择cpu数量之后，默认选择相对应的内存大小；
+	/*$(".cpuNum").change(function(){
+		var cpuNum = $("input[name='cpuNum']:checked").val();
+		var ramId = "ram"+cpuNum;
+		document.getElementById(ramId).checked=true;
+    });*/
 	
 	/*
 	 * $(".cpuNum").click(function(){ var tips = $(this).attr("placeholder");
@@ -169,7 +212,7 @@ $(document).ready(function(){
 		$("#mountPath").focus();
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height);
+    	$(".step-inner").height(imagePage_height+100);
 	})
 
 	// 启动命令
@@ -179,7 +222,7 @@ $(document).ready(function(){
 		$("#startCommand_input").focus();
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height);
+    	$(".step-inner").height(imagePage_height+100);
 	})
 	
 	// 添加环境变量
@@ -228,7 +271,7 @@ $(document).ready(function(){
 		}
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height);	
+    	$(".step-inner").height(imagePage_height+100);	
 	});
 	
 	//自动化伸缩范围&伸缩阈值
@@ -277,12 +320,11 @@ $(document).ready(function(){
         		}
     		//调节界面高度
     		var imagePage_height = $(".host_step2").height();
-        	$(".step-inner").height(imagePage_height);
+        	$(".step-inner").height(imagePage_height+100);
     		}
 		});
 		
 	});
-	
 	
 	//导入模板文件选项对勾
 	var templateName = null;
@@ -296,8 +338,6 @@ $(document).ready(function(){
 		console.log(templateName);
 	});
 	
-	
-	
 	//导入模板
 	$("#importBtn").click(function(){
 		loadEnvironment();
@@ -310,7 +350,7 @@ $(document).ready(function(){
 	        yes: function(index, layero){
 	        	 var arrayKey = $("#arrayKey").val().split(",");
 	        	 $.ajax({
-	         		url : ctx + "/service/importEnvTemplate.do",
+	         		url : ctx + "/template/importEnvTemplate.do",
 	         		type: "POST",
 	         		data:{"templateName":templateName},
 	         		success : function(data) {
@@ -335,7 +375,10 @@ $(document).ready(function(){
 	    	            $("#arrayKey").attr("value",arrayKey);
 	         		}
 	         	});
+	        	var containerRes_height = $(".host_step2").height();
+	          $(".step-inner").height(containerRes_height+100);
 	        	layer.close(index);
+	        	
 	        }
 		})
 	});
@@ -368,13 +411,32 @@ $(document).ready(function(){
 		        	}
 		        	
 		        	$.ajax({
-						url:ctx+"/service/saveEnvTemplate.do",
+						url:ctx+"/template/saveEnvTemplate.do",
 						type: "POST",
 		         		data:{"templateName":templateName,"envVariable":envVariable},
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="400"){
-								layer.msg("环境变量模板名称重复", {icon: 5});
+								layer.msg("环境变量模板名称重复",{
+									  time: 0 //不自动关闭
+									  ,btn: ['覆盖', '重命名']
+									  ,yes: function(index2){
+							        	$.ajax({
+											url:ctx+"/template/modifyEnvTemplate.do",
+											type: "POST",
+							         		data:{"templateName":templateName,"envVariable":envVariable},
+											success:function(data){
+												data = eval("(" + data + ")");
+												if (data.status == "200") {
+													layer.msg("环境变量模板导入成功",{icon: 6});
+													layer.close(index2);
+													layer.close(index);
+												}
+											}	
+							        	});
+
+									  }
+									});
 							}else if (data.status == "200") {
 								layer.msg("环境变量模板导入成功",{icon: 6});
 								layer.close(index);
@@ -485,7 +547,7 @@ $(document).ready(function(){
 //单击导入模板，加载模板数据
 function loadEnvironment(){
 	 $.ajax({
-  		url : ctx + "/service/loadEnvTemplate.do",
+  		url : ctx + "/template/loadEnvTemplate.do",
   		success : function(data) {
   			data = eval("(" + data + ")");
   			var html = "";
@@ -535,7 +597,8 @@ function saveEnvVariable() {
 		}
 		arrayKey.push(envKey);
         
-        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},";               
+//        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},"; 
+		 dataJson += envKey+","+envValue+";";
     });
     
     if (flag == 1) {
@@ -543,7 +606,7 @@ function saveEnvVariable() {
     }
     if (dataJson != "") {  
         dataJson = dataJson.substring(0,dataJson.length -1);  
-        dataJson ="[" +dataJson+ "]";  
+//        dataJson ="[" +dataJson+ "]";  
     }
     $('#envVariable').val(dataJson);
     return true;
@@ -566,7 +629,7 @@ function deleteRow(obj){
 	$(obj).parent().parent().remove();
 	//调节界面高度
 	var imagePage_height = $(".host_step2").height();
-	$(".step-inner").height(imagePage_height);	
+	$(".step-inner").height(imagePage_height+100);	
 }
 
 function decideEnvKey(){
@@ -643,7 +706,7 @@ function loadImageList() {
 
                         $(".pull-deploy").click(function(){
                         	var containerRes_height = $(".host_step2").height();
-                        	$(".step-inner").height(containerRes_height);
+                        	$(".step-inner").height(containerRes_height+100);
 
                         	var imageName = $(this).attr("imageName");
                         	var imageVersion = $(this).attr("imageVersion");

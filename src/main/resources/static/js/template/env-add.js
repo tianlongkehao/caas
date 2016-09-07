@@ -62,7 +62,7 @@ $(document).ready(function(){
 	        yes: function(index, layero){
 	        	 var arrayKey = $("#arrayKey").val().split(",");
 	        	 $.ajax({
-	         		url : ctx + "/service/importEnvTemplate.do",
+	         		url : ctx + "/template/importEnvTemplate.do",
 	         		type: "POST",
 	         		data:{"templateName":templateName},
 	         		success : function(data) {
