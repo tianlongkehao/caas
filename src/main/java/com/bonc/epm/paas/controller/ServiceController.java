@@ -297,7 +297,7 @@ public class ServiceController {
 					String podName = pod.getMetadata().getName();
 					// 初始化es客户端
 					ESClient esClient = new ESClient();
-					esClient.initESClient(esConf.getHost());
+					esClient.initESClient(esConf.getHost(),esConf.getClusterName());
 					// 设置es查询日期，数据格式，查询的pod名称
 					String s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
 					// 关闭es客户端
@@ -366,7 +366,7 @@ public class ServiceController {
 						String podName = pod.getMetadata().getName();
 						// 初始化es客户端
 						ESClient esClient = new ESClient();
-						esClient.initESClient(esConf.getHost());
+						esClient.initESClient(esConf.getHost(),esConf.getClusterName());
 						String s = null;
 						if (date != "") {
 							// 设置es查询日期，数据格式，查询的pod名称
