@@ -90,7 +90,6 @@ public class CephController {
             cephMount.conf_read_file("/etc/ceph/ceph.conf");
             cephMount.mount("/");
             cephMount.chmod("/", mode);
-
             LOGGER.info("打印根目录下的所有目录");
             String[] listdir = cephMount.listdir("/");
             for (String strDir : listdir) {
