@@ -90,10 +90,10 @@
 															title="导出"> <i class="fa fa-share-square-o"></i>
 														</a>
 														<c:if test="${image.currUserFavor==0 }">
-				                                            <a class="a-oper"><i class="fa fa-star-o star-style" style="color:#4280CB"></i></a>
+				                                            <a class="no-drop a-oper"><i class="fa fa-star-o star-style fork" style="color:#4280CB"></i></a>
 				                                        </c:if>
 				                                        <c:if test="${image.currUserFavor==1 }">
-				                                            <a class="a-oper"><i class="fa fa-star star-style" style="color:#337ab7"></i></a>
+				                                            <a class="no-drop a-oper"><i class="fa fa-star star-style fork" style="color:#337ab7"></i></a>
 				                                        </c:if>
 														<a
 															class="no-drop a-oper" href="<%=path %>/registry/downloadImage?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
