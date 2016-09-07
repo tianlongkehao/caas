@@ -13,34 +13,48 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * 
+ * 下载模板文件
+ * @author update
+ * @version 2016年9月5日
+ * @see FileController
+ * @since
+ */
 @Controller
 public class FileController{
+    
+    /**
+     * FileController日志实例
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(FileController.class);
 
-	private static final Logger log = LoggerFactory
-			.getLogger(FileController.class);
-
-	/**
-	 * 下载模板文件
-	 * @return
-	 */
-	@RequestMapping(value ="/file/downloadTemplate")
+    /**
+     * Description: <br>
+     * 下载模板文件
+     * @param fileName 文件名称
+     * @param request request
+     * @param response response
+     */
+    @RequestMapping(value ="/file/downloadTemplate")
 	public void downloadTemplate(String fileName,HttpServletRequest request,HttpServletResponse response) {
         try {
-        	response.setContentType(request.getServletContext().getMimeType(fileName));  
+            response.setContentType(request.getServletContext().getMimeType(fileName));  
             response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
-    		String fullFileName = request.getServletContext().getRealPath("/template/"+fileName);
-    		log.info("fullFileName:"+fullFileName+",fileName:"+fileName);
-    		InputStream inStream=new FileInputStream(fullFileName);
-    		ServletOutputStream outputStream= response.getOutputStream();
-    		byte[] b = new byte[100];
+            String fullFileName = request.getServletContext().getRealPath("/template/"+fileName);
+            LOG.info("fullFileName:"+fullFileName+",fileName:"+fileName);
+            InputStream inStream=new FileInputStream(fullFileName);
+            ServletOutputStream outputStream= response.getOutputStream();
+            byte[] b = new byte[100];
             int len;
-        	while ((len = inStream.read(b)) > 0){
+            while ((len = inStream.read(b)) > 0){
             	outputStream.write(b, 0, len);
             }
             inStream.close();
-    		outputStream.close();
-        } catch (IOException e) {
-            log.error("FileController  downloadTemplate:"+e.getMessage());
+            outputStream.close();
+        } 
+        catch (IOException e) {
+            LOG.error("FileController  downloadTemplate:"+e.getMessage());
         }
-	}
+    }
 }
