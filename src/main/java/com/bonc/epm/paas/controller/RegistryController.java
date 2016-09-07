@@ -360,15 +360,16 @@ public class RegistryController {
             SshConnect.connect(userName, password, address, 22);
             boolean b = false;
             String rollingLog = SshConnect.exec(cmd, 1000);
+            b = (rollingLog.endsWith("$") || rollingLog.endsWith("#"));
             while (!b) {
-                String str = SshConnect.exec("", 10000);
+                String str = SshConnect.exec("", 1000);
                 if (StringUtils.isNotBlank(str)) {
                     rollingLog += str;
                 }
                 b = (str.endsWith("$") || str.endsWith("#"));
                 //b = str.endsWith("updated");
             }
-            LOG.info("rolling-update log:-"+rollingLog);
+            LOG.info("save image log:-"+rollingLog);
             String result = SshConnect.exec("echo $?", 1000);
             if (StringUtils.isNotBlank(result)) {
                 if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
