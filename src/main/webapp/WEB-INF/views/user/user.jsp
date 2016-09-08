@@ -24,12 +24,11 @@
 					</ol>
 				</div>
 				<div class="contentMain">
-					
 					<div class="row">
-						<div class="col-sm-12">
-							<div class="ibox float-e-margins">
-								<div class="ibox-title">
-									<h5>
+                    <div class="col-md-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5>
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>租户管理
 									</h5>
 
@@ -38,20 +37,14 @@
 											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
 										<a href="<%=path%>/user/add" id="userCreateBtn" title="创建用户"><i
 											class="fa fa-plus"></i></a> 
-										<a id="SearchBtn" title="搜索"><i
-											class="fa fa-search"></i></a> 
 										<a href="javascript:delTenement()" title="删除"><i
 											class="fa fa-trash"></i></a>
 									</div>
-								</div>
-								<div class="ibox-content">
-									<input type="text" class="form-control input-sm m-b-xs"
-										id="filter" placeholder="搜索表格...">
-
-									<table class="footable table table-stripped" data-page-size="8"
-										data-filter=#filter>
-										<thead>
-											<tr>
+                            </div>
+                            <div class="ibox-content">
+                                <table class="table footable table-striped table-hover dataTables-example">
+                                    <thead>
+                                        <tr>
 												<th style="width: 5%; text-indent: 30px;">
 													<input type="checkbox" class="chkAll" id="checkallbox" /></th>
 												<th style="width: 15%; padding-left: 5px;">登录账号</th>
@@ -63,8 +56,8 @@
 												<th style="width: 10%;">角色权限</th>
 												<th style="width: 10%;" class="del-operation">操作</th>
 											</tr>
-										</thead>
-										<tbody>
+                                    </thead>
+                                    <tbody id="userList">
 											<c:forEach items="${userList }" var="user">
 												<c:if test="${user.id == null || user.id == 0}">
 													<c:set var="cursorClass" value="cursor-no-drop"></c:set>
@@ -134,20 +127,23 @@
 														</a></td>
 													</tr>
 												</c:if>
-											</c:forEach>
+											</c:forEach> 
 										</tbody>
-										<tfoot>
+                                    	<tfoot class="hide">
 											<tr>
 												<td colspan="9">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
 										</tfoot>
-									</table>
-								</div>
-							</div>
-						</div>
-					</div>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+					
+					
 				</div>
 
 			</div>
@@ -159,6 +155,7 @@
 
 	<script type="text/javascript">
 	$(document).ready(function(){
+		$('.dataTables-example').dataTable();
 		$(".footable").footable();
 		$("#checkallbox").next().addClass("hide");
 		$(".del-operation").children("span").addClass("hide");

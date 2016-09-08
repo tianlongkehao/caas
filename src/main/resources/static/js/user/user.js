@@ -1,5 +1,5 @@
 $(function(){
-
+	
 	for(var j=0; j<document.getElementsByClassName("userTr").length; j++){
 		var user_autority_val = document.getElementById("user_autority_hidden").value;
 		var autority_options = document.getElementById("user_autority").options;
@@ -19,6 +19,7 @@ $(function(){
 			}
 		}
 	}
+
 
     $(".Record").click(function(){
 
@@ -300,7 +301,6 @@ function tenement_detail() {
 	}
 	location.href = ctx+"/user/detail/"+id;
 }
-
 
 //检测密码强度
 //////////////////////////////////////////////////////////////////////

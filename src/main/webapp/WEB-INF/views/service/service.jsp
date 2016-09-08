@@ -37,8 +37,6 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="javascript:window.location.reload(true);"
-											id="serviceReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 										<a href="<%=path%>/service/add" id="serviceCreateBtn"
 											title="创建服务"><i class="fa fa-plus"></i></a> <a
 											id="startContainer" class="no-drop"
@@ -59,20 +57,18 @@
 										</a> <a id="deleteButton" class="no-drop"
 											href="javascript:delContainer()" title="删除"> <i
 											class="fa fa-trash"></i>
-										</a> <a id="SearchBtn" title="搜索"><i class="fa fa-search"></i></a>
-
+										</a>
+										<a href="javascript:window.location.reload(true);"
+											id="serviceReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 									</div>
 								</div>
 								<div class="ibox-content">
-									<input type="text" class="form-control input-sm m-b-xs"
-										id="filter" placeholder="搜索表格...">
-
 									<table class="table">
 										<thead>
 											<tr>
 												<th class="hideDropIcon">
 													<div class="table-head">
-														<table class="footable table-stripped" data-page-size="8"
+														<table class="footable table-striped table-hover dataTables-example"
 															data-filter=#filter>
 															<thead>
 																<tr>
@@ -246,7 +242,7 @@
 											</tr>
 
 										</tbody>
-										<tfoot>
+										<tfoot class="hide">
 											<tr>
 												<td colspan="7">
 													<ul class="pagination pull-right"></ul>
@@ -262,7 +258,7 @@
 			</div>
 		</article>
 	</div>
-	<div class="caption clearfix">
+	<div class="">
 		<div id="upgrade" style="display: none">
 			<ul class="popWin">
 				<li class="line-h-3"><span class="edit-name-c">服务名称：</span> <input
@@ -357,6 +353,7 @@
 		</script>
 	</c:if>
 	<script type="text/javascript">
+		$('.dataTables-example').dataTable();
 		$(".footable").footable();
 		$("#checkallbox").next().addClass("hide");
 		$(".hideDropIcon").next().addClass("hide");

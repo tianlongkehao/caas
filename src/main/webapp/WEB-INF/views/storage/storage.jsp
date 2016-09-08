@@ -36,23 +36,14 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="javascript:window.location.reload(true);"
-											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a> 
-										
 										<a href="<%=path %>/service/storage/add" id="storageAdd" title="创建存储卷"><i
 											class="fa fa-plus"></i></a>
-										<a id="SearchBtn" title="搜索"><i
-											class="fa fa-search"></i></a> 
-										<a class="collapse-link" title="缩放表格">
-		                                    <i class="fa fa-chevron-up"></i>
-		                                </a>
+										<a href="javascript:window.location.reload(true);"
+											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 									</div>
 								</div>
 								<div class="ibox-content">
-									<input type="text" class="form-control input-sm m-b-xs"
-										id="filter" placeholder="搜索表格...">
-
-									<table class="footable table table-stripped" data-page-size="8"
+									<table class="footable table table-stripped table-hover dataTables-example" 
 										data-filter=#filter>
 										<thead>
 											<tr>
@@ -68,7 +59,7 @@
 										<tbody id="storageList">
 											
 										</tbody>
-										<tfoot>
+										<tfoot class="hide">
 											<tr>
 												<td colspan="6">
 													<ul class="pagination pull-right"></ul>
@@ -79,11 +70,8 @@
 								</div>
 							</div>
 						</div>
-					</div>
-					
-                
+				</div>
           		<!-- <div id="pagination"></div> -->
-          		
             </div>
         </div>
     </article>
@@ -115,6 +103,7 @@
     </ul>
 </div>
 <script type="text/javascript">
+	$('.dataTables-example').dataTable();
 	$(".footable").footable();
 	$(".del-operation").children("span").addClass("hide");
 	//折叠ibox

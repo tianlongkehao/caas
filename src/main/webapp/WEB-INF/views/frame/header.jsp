@@ -16,6 +16,7 @@ var ctx = "<%=path%>";
 <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/base.css">
 <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/layout.css"/>
 <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/jq-pagination/jquery.list.css"/>
+<link rel="stylesheet" type="text/css" href="<%=path%>/css/core/dataTables.bootstrap.css">
 
 
 <script type="text/javascript" src="<%=path %>/js/plugins/jquery-1.11.3.js"></script>
@@ -28,5 +29,8 @@ var ctx = "<%=path%>";
 <script type="text/javascript" src="<%=path %>/plugins/editor/marked.js"></script>
 <script type="text/javascript" src="<%=path %>/js/customer/custom.js"></script>
 <script type="text/javascript" src="<%=path %>/plugins/jq-pagination/jquery.list.js"></script>
+<!-- Data Tables -->
+<script type="text/javascript" src="<%=path%>/js/plugins/jquery.dataTables.js"></script>
+<script type="text/javascript" src="<%=path%>/js/plugins/dataTables.bootstrap.js"></script>
 
 
