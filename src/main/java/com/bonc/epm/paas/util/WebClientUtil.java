@@ -12,6 +12,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -28,7 +29,7 @@ public class WebClientUtil {
 	 * 功能：打印日志
 	 */
     private static Logger LOGGER = Logger.getLogger(WebClientUtil.class);
-	
+
     /**
 	 * 通过post获取网络资源
 	 * @param url  String
@@ -51,8 +52,7 @@ public class WebClientUtil {
             if(params!=null) {
                 parameterData="";
                 for(String key:params.keySet()) {
-                    parameterData+=(parameterData.equals("")?"":"&")+ 
-                    					key+"="+URLEncoder.encode( String.valueOf(params.get(key)), "UTF8");
+                    parameterData+=(parameterData.equals("") ? "" : "&")+ key+"="+URLEncoder.encode( String.valueOf(params.get(key)), "UTF8");
                 }
             }
             // 获得一个http连接
@@ -108,11 +108,11 @@ public class WebClientUtil {
             if(params!=null){
             	parameterData="";
             	for(String key:params.keySet()){
-                    parameterData+=(parameterData.equals("")?"":"&")+ key+"="+URLEncoder.encode( String.valueOf(params.get(key)), "UTF8");
+                    parameterData+=(parameterData.equals("") ? "" : "&") + key+"="+URLEncoder.encode( String.valueOf(params.get(key)), "UTF8");
             	}
             }
         	
-            // 获得一个http连接
+               // 获得一个http连接
             HttpURLConnection httpURLConnection = getHttpURLConn(url, parameterData,"GET");        
           
             if(parameterData!=null){
