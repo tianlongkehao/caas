@@ -77,9 +77,6 @@ public class SSOFilter implements Filter {
 			}
 			LOG.debug("cas登陆Id" + assertion.getPrincipal().getName());
 			
-			attributes.put("tenantId", "unicom");
-			attributes.put("tenantAdmin", "1");
-			
 			String tenantId = "";
 			String namespace = "";
 			String tenantAdmin = "";
@@ -90,6 +87,8 @@ public class SSOFilter implements Filter {
 				if (namespace.contains("_")){
 					namespace = namespace.replace("_", "--");
 				}
+			} else {
+			    attributes.put("tenantId", assertion.getPrincipal().getName());
 			}
 			if (attributes.get("tenantAdmin") != null) {
 				tenantAdmin = attributes.get("tenantAdmin").toString();
