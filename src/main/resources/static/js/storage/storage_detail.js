@@ -29,6 +29,7 @@ $(document).ready(function () {
 							});                  
 	         			});
 	         if(flag==0){
+	        	  layer.closeAll();
 	        	  up(formData,flag);
 	         }else{
 							layer.open({
@@ -37,6 +38,7 @@ $(document).ready(function () {
 		 						title:'确认',
 		 						btn:['确认','取消'],
 		 						yes: function(index, layero){
+		 							layer.closeAll();
 		 							up(formData,flag);
 		 						}
 							});
@@ -50,6 +52,7 @@ $(document).ready(function () {
 });
 
 	function up(formData,flag){
+		 $('#myModal').modal('show');
      $.ajax({
     	 type:'POST',
     	 url: ctx + '/upload',
@@ -61,18 +64,12 @@ $(document).ready(function () {
 	     success : function(data) {
 	 				var data = eval("("+data+")");
 	 				if("200"==data.status && flag==0){
-	 					layer.open({
-	 						type:1,
-	 						content:'上传成功！',
-	 						title:'上传成功',
-	 						btn:['确定'],
-	 						yes: function(index, layero){ 
-	 							creatable(null,null,null);
-	 							$('#hasUsed').html(data.used);
-	 							layer.closeAll()
-	 						}
-	 					 });
+	 						$('#myModal').modal('hide');
+							creatable(null,null,null);
+ 							$('#hasUsed').html(data.used);
+ 							layer.closeAll();
 	 				}else if ("500"==data.status) {
+	 					$('#myModal').modal('hide');
 		 				layer.open({
 	 						type:1,
 	 						content:'上传失败，文件大小超过卷组可用大小！',
@@ -80,10 +77,11 @@ $(document).ready(function () {
 	 						btn:['确定'],
 	 						yes: function(index, layero){ 
 	 							creatable(null,null,null);
-	 							layer.closeAll()
+	 							layer.closeAll();
 	 						}
 	 					 });
 					}else {
+						$('#myModal').modal('hide');
 						creatable(null,null,null);
 						$('#hasUsed').html(data.used);
 						layer.closeAll();

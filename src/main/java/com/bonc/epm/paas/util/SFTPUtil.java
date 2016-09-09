@@ -157,7 +157,7 @@ public class SFTPUtil {
     /**
     * 列出目录下的文件
     * @param directory 要列出的目录
-    * @return fileList  List<FileInfo>
+    * @return fileList List<FileInfo>
     * @throws SftpException
     */
     public static List<FileInfo> listFileInfo(String directory){
