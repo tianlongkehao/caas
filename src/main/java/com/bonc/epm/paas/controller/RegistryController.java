@@ -103,6 +103,8 @@ public class RegistryController {
 		model.addAttribute("menu_flag", "registry");
 		model.addAttribute("index", index);
 		model.addAttribute("active",active);
+		model.addAttribute("editImage",userId);
+
 		
 		return "docker-registry/registry.jsp";
 	}

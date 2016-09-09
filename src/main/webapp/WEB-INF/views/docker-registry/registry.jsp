@@ -60,8 +60,8 @@
 
 												<c:if test="${cur_image.id != image.id}">
 													<tr class="userTr" id="${image.id }">
-														<td style="width: 5%; text-indent: 22px;"><input
-															type="checkbox" class="chkItem" name="ids"
+														<td style="width: 5%; text-indent: 22px;">
+														<input type="checkbox" class="chkItem" name="ids"
 															value="${image.id }"></td>
 														<td style="width: 15%; text-indent: 22px;"><a
 															href="<%=path %>/registry/detail/${image.id }"
@@ -94,10 +94,11 @@
 																<a class="no-drop a-oper"><i
 																	class="fa fa-star star-style fork"
 																	style="color: #337ab7"></i></a>
-															</c:if> <a class="no-drop a-oper"
+															</c:if> 
+															<c:if test="${editImage==image.creator }"><a class="no-drop a-oper"
 															href="javascript:void(0)" onclick="deleteImage(this)"
 															title="删除" imageversion="${image.version}" imagename="${image.name}" imageid="${image.id}"> <i class="fa fa-trash"></i>
-														</a></td>
+														</a></c:if></td>
 													</tr>
 												</c:if>
 											</c:forEach>
