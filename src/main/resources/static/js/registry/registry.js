@@ -59,39 +59,40 @@ $(document).ready(function () {
      	});
     });*/
     
-    $("#deleteImage").click(function(){
-   		var imageId = $("#imageId").val();
-   		 layer.open({
-   		        title: '删除镜像',
-   		        content: '确定删除镜像？',
-   		        btn: ['确定', '取消'],
-   		        yes: function(index){ 
-   		        	layer.close(index);
-   		        	$.ajax({
-		   		     		url:""+ctx+"/registry/detail/deleteimage",
-		   		     		type:"post",
-		   		     		data:{"imageId":imageId},
-		   		     		success:function(data){
-		   		     			if(data == "ok"){
-			   		     			layer.msg( "删除成功！", {
-				   						icon: 1
-				   					},function(){
-				   						window.location.href = ""+ctx+"/registry/0";
-				   					});
-		   		     			}
-		   		     		},
-		   		     		error:function(){
-			   		     		layer.msg( "删除失败，镜像被收藏", {
-			   						icon: 1
-			   					});
-		   		     		}
-		   		     	});
-   		        	refresh();
-   		        }
-   		 });
-    });
 });
 
+/*删除单个镜像*/
+function deleteImage(obj){
+	var imageId = $(obj).attr("imageid");
+	layer.open({
+	        title: '删除镜像',
+	        content: '确定删除镜像？',
+	        btn: ['确定', '取消'],
+	        yes: function(index){ 
+	        	layer.close(index);
+	        	$.ajax({
+   		     		url:""+ctx+"/registry/detail/deleteimage",
+   		     		type:"post",
+   		     		data:{"imageId":imageId},
+   		     		success:function(data){
+   		     			if(data == "ok"){
+	   		     			layer.msg( "删除成功！", {
+		   						icon: 1
+		   					},function(){
+		   						window.location.href = ""+ctx+"/registry/0";
+		   					});
+   		     			}
+   		     		},
+   		     		error:function(){
+	   		     		layer.msg( "删除失败，镜像被收藏", {
+	   						icon: 1
+	   					});
+   		     		}
+   		     	});
+	        	refresh();
+	        }
+	 });
+}
 
 $(function(){
 
@@ -195,6 +196,8 @@ $(function(){
 	}
 
 });
+
+
 
 /*
 function loadImageList() {

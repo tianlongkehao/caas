@@ -33,8 +33,7 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>${active }
 									</h5>
 									<div class="ibox-tools">
-										<a id="exportBtn" title="导出"><i
-											class="fa fa-share-square-o"></i></a> <a id="deleteButton"
+										<a id="deleteButton"
 											class="no-drop" href="javascript:delImages()" title="删除">
 											<i class="fa fa-trash"></i>
 										</a> <a href="javascript:window.location.reload(true);"
@@ -96,8 +95,8 @@
 																	class="fa fa-star star-style fork"
 																	style="color: #337ab7"></i></a>
 															</c:if> <a class="no-drop a-oper"
-															href="<%=path %>/registry/downloadImage?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
-															title="删除"> <i class="fa fa-trash"></i>
+															href="javascript:void(0)" onclick="deleteImage(this)"
+															title="删除" imageversion="${image.version}" imagename="${image.name}" imageid="${image.id}"> <i class="fa fa-trash"></i>
 														</a></td>
 													</tr>
 												</c:if>
