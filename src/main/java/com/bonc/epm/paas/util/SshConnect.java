@@ -118,10 +118,10 @@ public class SshConnect {
             catch (Exception e) {
                 LOG.error("error message is :-" + e.getMessage());
             } 
-            finally {
+            /*finally {
                 OUTPUTSTREAM.close();
                 INPUTSTREAM.close();
-            }
+            }*/
         }
         return builder.toString().trim();
     }
