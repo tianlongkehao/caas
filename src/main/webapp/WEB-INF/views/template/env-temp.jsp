@@ -10,6 +10,8 @@
 	href="<%=path%>/css/core/footable/footable。core.css" />
 <script type="text/javascript"
 	src="<%=path%>/js/template/env-temp.js"></script>
+<script type="text/javascript"
+	src="<%=path%>/js/customer/custom.js"></script>
 </head>
 <body>
 	<jsp:include page="../frame/menu.jsp" flush="true">
@@ -39,9 +41,15 @@
 									</h5>
 									<div class="ibox-tools">
 										<a href="<%=path%>/template/env/add" id="envVariableAdd"
-											title="新建环境变量模板"><i class="fa fa-plus"></i></a> <a
-											href="javascript:window.location.reload(true);"
-											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
+											title="新建环境变量模板"><i class="fa fa-plus"></i>
+										</a> 
+										<a href="javascript:window.location.reload(true);"
+											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i>
+										</a>
+										<a id="deleteButton" class="no-drop"
+											href="javascript:delEnvTemplates()" title="删除">
+											<i class="fa fa-trash"></i>
+										</a>
 									</div>
 								</div>
 								<div class="ibox-content">
@@ -50,6 +58,9 @@
 										data-filter=#filter>
 										<thead>
 											<tr>
+												<th style="width: 5%; text-indent: 30px;">
+													<input type="checkbox" autocomplete="off" class="chkAll" />
+												</th>
 												<th style="width: 15%; text-indent: 30px;">名称</th>
 												<th style="width: 15%; text-indent: 15px;">主鍵</th>
 												<th style="width: 30%; text-indent: 8px;">值</th>
@@ -61,12 +72,16 @@
 										<tbody id="envTemplateList">
 											<c:forEach items="${envTemplateList}" var="envTemplate">
 												<tr>
+													<td style="width: 5%; text-indent: 30px;">
+														<input type="checkbox" class="chkItem" name="chkItem"
+															autocomplete="off" id="checkboxID" value="${envTemplate.id }" />
+													</td>
 													<td style="width: 15%;text-indent:30px;">${envTemplate.templateName }</td>
 		                                            <td style="width: 15%;text-indent: 15px;">${envTemplate.envKey }</td>
 		                                            <td style="width: 30%;text-indent: 8px;">${envTemplate.envValue }</td>
 		                                            <td style="width: 20%;">${envTemplate.createDate }</td>
 		                                            <td style="width: 10%;text-indent: 10px;" >
-														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate(${envTemplate.id })" title="删除">
+														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate(${envTemplate.id })" title="删除"></a>
 														<i class="fa fa-trash"></i>
 		                                            </td>
 												</tr>
@@ -74,7 +89,7 @@
 										</tbody>
 										<tfoot class="hide">
 											<tr>
-												<td colspan="5">
+												<td colspan="6">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
@@ -93,6 +108,7 @@
 		$('.dataTables-example').dataTable();
 		$(".footable").footable();
 		$(".del-operation").children("span").addClass("hide");
+		$(".chkAll").next().addClass("hide");
 		//折叠ibox
 		$('.collapse-link').click(function() {
 			var ibox = $(this).closest('div.ibox');
