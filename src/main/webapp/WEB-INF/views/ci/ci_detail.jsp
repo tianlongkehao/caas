@@ -96,7 +96,7 @@
                                                         <div style='clear:both;'></div>
                                                         <div class='buildStatus' style='margin:0px 0px 10px 0px'></div>
                                                         <div class='build-logs' style='max-height: 400px; overflow: auto;margin-top:10px;background-color:black;color: #37fc34'>
-															<pre class='logs' style='background-color:black; overflow: hidden;color: #37fc34;border:0'><span class='printLogSpan' status='${ciRecord.constructResult}' ciRecordId='${ciRecord.id}'>${ciRecord.logPrint}</span>
+															<pre class='logs' style='background-color:black; overflow: hidden;color: #37fc34;border:0; float:left'><span class='printLogSpan' status='${ciRecord.constructResult}' ciRecordId='${ciRecord.id}'>${ciRecord.logPrint}</span>
 															</pre>
                                                         </div>
                                                     </div>
