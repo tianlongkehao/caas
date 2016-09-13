@@ -65,12 +65,30 @@
 										</ol></li>
 								</div>
 								<div class="container" style="width: 90%">
-									<div class="list-item-description" style="padding-top: 100px;">
+									<div class="list-item-description" >
 										<a href="<%=path%>/template/env"><span
 											class="btn btn-default" style="margin-right: 30px;">返回</span></a>
-										<span id="buildStorage" class="btn btn-primary pull-right">保存</span>
+										<span id="exportBtn" class="btn btn-primary pull-right" style="cursor: pointer">保存</span>
 									</div>
 								</div>
+								<!-- 环境变量导入模板 -->
+								<div id="environment-variable" style="display:none; max-height:360px;overflow-y:scroll;overflow-x:hidden;">
+									<table class="table table-hover enabled" id="Path-table"
+										style="width: 326px; margin: 5px 10px 5px 10px">
+										<tbody id="Path-env">
+										
+										</tbody>
+									</table>
+								</div>
+								<!-- 环境变量另存为模板 -->
+								<div id="environment-template" style="display:none; max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+									<div style="width: 326px; margin: 5px 10px 5px 10px">
+										<span>模板名称：</span><input type="text" id="envTemplateName"
+											style="width: 77%" autofocus="autofocus" />
+									</div>
+								</div>
+								<input type="hidden" id="envVariable" name="envVariable"
+									value=""></input>
 							</form>
 						</div>
 					</div>
