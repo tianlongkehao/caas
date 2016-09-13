@@ -49,7 +49,7 @@
 											class=" btn-info btn-sm pull-right" style="cursor: pointer">导入模板</span>
 									</div>
 
-									<div class="form-group col-md-12">
+									<div class="form-group col-md-12" id = "dockerfiletext">
 										<textarea id="dockerFile" name="dockerFile"></textarea>
 									</div>
 								</div>
@@ -69,6 +69,38 @@
 			</div>
 		</article>
 	</div>
-
+        <!--dockerfile导入模板 -->
+       <div id="dockerfile-import"
+           style="max-height: 170px; overflow-y: scroll; overflow-x: hidden;display: none;">
+           <table class="table table-hover enabled" id="Path-table-doc"
+               style="width: 326px; margin: 5px 10px 5px 10px">
+               <tbody id="dockerfile-body">
+                   <c:if test="${empty dockerFileList }">
+                       <tr>
+                           <td>没有保存的模板</td>
+                       </tr>
+                   </c:if>
+                   <c:if test="${not empty dockerFileList }">
+                       <c:forEach var="dockerFile" items="${dockerFileList }">
+                           <tr>
+                               <td class="vals vals-doc">${dockerFile.templateName }<span
+                                   class="doc-tr hide"><i class="fa fa-check"></i></span> <input
+                                   type="hidden" class="dockerFileTemplate"
+                                   value='${dockerFile.dockerFile }' />
+                               </td>
+                           </tr>
+                       </c:forEach>
+                   </c:if>
+               </tbody>
+           </table>
+       </div>
+       
+       <!-- dockerfile另存为模板 -->
+       <div id="dockerfile-export" style = "display: none;">
+           <div style="width: 345px; margin: 5px 10px 5px 10px">
+               <span>模板名称：</span><input type="text" id="dockerFileTemplateName"
+                   style="width: 77%" autofocus="autofocus" />
+           </div>
+       </div>
 </body>
 </html>

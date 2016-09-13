@@ -96,9 +96,9 @@ $(document).ready(
 							success : function(data) {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
-									layer.alert("DockerFile模板名称重复");
-								} else {
 									layer.alert("DockerFile模板导入成功");
+								} else {
+									layer.alert("DockerFile模板名称重复");
 									layer.close(index);
 								}
 							}

@@ -6,7 +6,7 @@
     <%@include file="../frame/header.jsp"%>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/template.css"/>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/footable/footable。core.css"/>
-  	<%-- <script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script> --%> 
+    <script type="text/javascript" src="<%=path%>/js/template/dockerfile-temp.js"></script>
 </head>
 <body>
 <jsp:include page="../frame/menu.jsp" flush="true">
@@ -47,23 +47,27 @@
 										<thead>
 											<tr>
 												<th style="width: 15%;text-indent:30px;">名称</th>
-	                                            <th style="width: 15%;text-indent: 15px;">###</th>
-	                                            <th style="width: 15%;text-indent: 8px;">###</th>
-	                                            <th style="width: 15%;text-indent: 10px;">创建人</th>
 	                                            <th style="width: 20%;">创建时间</th>
 	                                            <th style="width: 10%;text-indent: 10px;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="storageList">
-											<!-- <tr>
-												<td style="width: 15%;text-indent:30px;">aaa</td>
-	                                            <td style="width: 15%;text-indent: 15px;">aaa</td>
-	                                            <td style="width: 15%;text-indent: 8px;">aaa</td>
-	                                            <td style="width: 15%;text-indent: 10px;">jiang</td>
-	                                            <td style="width: 20%;">2016-08-20 11:37:49</td>
-	                                            <td style="width: 10%;text-indent: 10px;" ><a><i class="fa fa-trash"></i></a></td>
-											</tr> -->
-											
+											  <c:forEach items = "${dockerFileList }" var = "dockerfile">
+													<tr>
+														<td style="width: 15%;text-indent:30px;cursor: pointer;">
+														<a href="<%=path %>/template/dockerfile/detail/${dockerfile.id }"
+                                                            title="查看详细信息"
+                                                            onmousemove="style.textDecoration='underline'"
+                                                            onmouseout="style.textDecoration='none'">${dockerfile.templateName }</a>
+														</td>
+			                                            <td style="width: 20%;">${dockerfile.createDate }</td>
+			                                            <td style="width: 10%;text-indent: 10px;" >
+			                                                 <a title="删除" href="javascript:void(0)" onclick="deletedockerfile(this)" dockerfileId = "${dockerfile.id }">
+			                                                     <i class="fa fa-trash"></i>
+			                                                 </a>
+			                                            </td>
+													</tr>
+											  </c:forEach>
 										</tbody>
 										<tfoot class="hide">
 											<tr>
