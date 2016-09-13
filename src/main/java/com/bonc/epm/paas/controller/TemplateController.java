@@ -28,18 +28,6 @@ public class TemplateController {
 	@Autowired
 	private EnvTemplateDao envTemplateDao;
 	
-	/**
-	 * 模板管理
-	 * 
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value = "/dockerfile", method = RequestMethod.GET)
-	public String dockerfileTemp(Model model) {
-		model.addAttribute("menu_flag", "template"); 
-		return "template/dockerfile-temp.jsp";
-	}
-	
 	@RequestMapping(value = "/env", method = RequestMethod.GET)
 	public String envTemp(Model model) {
 		User cUser = CurrentUserUtils.getInstance().getUser();
@@ -47,12 +35,6 @@ public class TemplateController {
 		model.addAttribute("envTemplateList",envTemplates);
 		model.addAttribute("menu_flag", "template"); 
 		return "template/env-temp.jsp";
-	}
-	
-	@RequestMapping(value = "/dockerfile/add", method = RequestMethod.GET)
-	public String dockerfileAdd(Model model) {
-		model.addAttribute("menu_flag", "template"); 
-		return "template/dockerfile-add.jsp";
 	}
 	
 	@RequestMapping(value = "/env/add", method = RequestMethod.GET)
