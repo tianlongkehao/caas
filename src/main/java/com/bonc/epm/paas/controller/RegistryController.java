@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
@@ -152,6 +153,9 @@ public class RegistryController {
 	public String detail(@PathVariable long id, Model model) {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Image image = imageDao.findById(id);
+		if (null == image) {
+		    return "docker-registry/nodetail.jsp";
+		}
 		int favorUser = imageDao.findAllUserById(id);
 		User user = userDao.findById(image.getCreator());
 		long imageCreator = image.getCreator();
@@ -363,9 +367,17 @@ public class RegistryController {
 	@RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteImage(@RequestParam long imageId){
-		imageDao.delete(imageId);
-		// TODO 应该删除本地镜像和仓库中的镜像
-		return "ok";
+	   Image image = imageDao.findOne(imageId);
+	   if (null != image) {
+	       image.setIsDelete(CommConstant.TYPE_YES_VALUE);
+	       imageDao.save(image);
+	       // TODO 应该删除本地镜像和仓库中的镜像
+	       return "ok";
+	    } else {
+	       return "error";
+	    }
+		//imageDao.delete(imageId);
+
 	}
 	
 	
@@ -375,6 +387,7 @@ public class RegistryController {
 			image.setCurrUserFavor(imageDao.findByUserIdAndImageId(image.getId(), userId));
 		}
 	}
+	
 	private void addCreatorName(List<Image> images){
 		for(Image image:images){
 			User user = userDao.findById(image.getCreator());

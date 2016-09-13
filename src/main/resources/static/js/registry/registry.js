@@ -40,7 +40,7 @@ $(document).ready(function () {
     		}
     	});
     });
-  
+    
     //判断有没有用户下载过该镜像，没有人下载过，页面加载一个遮罩层；
     /*$("#downloadImage").click(function(){
     	var imageVersion = document.getElementById("doloadImage").getAttribute("imageversion");
@@ -59,8 +59,59 @@ $(document).ready(function () {
      	});
     });*/
     
+    $(".a-oper").each(function(){
+    	$(this).click(function(){
+        	var imageId = $(this).attr('imageId');
+        	var _this = $(this);
+        	$.ajax({
+        		url:""+ctx+"/registry/detail/favor",
+        		type:"post",
+        		data:{"imageId":imageId},
+        		success:function(data){
+        			if(data == "success"){
+        				_this.children(".star-style").removeClass("fa-star-o").addClass("fa-star");
+        				_this.addClass('live');
+        				layer.msg( "收藏成功。", {
+    							icon: 1
+    					});
+        			}else{
+        				_this.children(".star-style").removeClass("fa-star").addClass("fa-star-o");
+        				_this.removeClass('live');
+        				layer.msg( "取消收藏。", {
+    							icon: 0.5
+    					});
+        			}
+        		}
+        	});
+        });
+    });
+    
 });
 
+
+//function favorStore(imageId) {
+//	var _this = $(this);
+//	$.ajax({
+//		url: ctx+"/registry/detail/favor",
+//		type:"post",
+//		data:{"imageId":imageId},
+//		success:function(data){
+//			if(data == "success"){
+//				$(".star-style").removeClass("fa-star-o").addClass("fa-star");
+//				_this.addClass('live');
+//				layer.msg( "收藏成功。", {
+//						icon: 1
+//				});
+//			}else{
+//				$(".star-style").removeClass("fa-star").addClass("fa-star-o");
+//				_this.removeClass('live');
+//				layer.msg( "取消收藏。", {
+//						icon: 0.5
+//				});
+//			}
+//		}
+//	});
+//}
 /*删除单个镜像*/
 function deleteImage(obj){
 	var imageId = $(obj).attr("imageid");
@@ -81,10 +132,14 @@ function deleteImage(obj){
 		   					},function(){
 		   						window.location.href = ""+ctx+"/registry/0";
 		   					});
+   		     			} else {
+   		   		     		layer.msg( "删除失败", {
+   		   						icon: 1
+   		   					});  		     				
    		     			}
    		     		},
    		     		error:function(){
-	   		     		layer.msg( "删除失败，镜像被收藏", {
+	   		     		layer.msg( "删除失败", {
 	   						icon: 1
 	   					});
    		     		}
