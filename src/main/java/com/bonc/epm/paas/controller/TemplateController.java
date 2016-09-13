@@ -1,5 +1,6 @@
 package com.bonc.epm.paas.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,28 +28,13 @@ public class TemplateController {
 	@Autowired
 	private EnvTemplateDao envTemplateDao;
 	
-	/**
-	 * 模板管理
-	 * 
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value = "/dockerfile", method = RequestMethod.GET)
-	public String dockerfileTemp(Model model) {
-		model.addAttribute("menu_flag", "template"); 
-		return "template/dockerfile-temp.jsp";
-	}
-	
 	@RequestMapping(value = "/env", method = RequestMethod.GET)
 	public String envTemp(Model model) {
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		List<EnvTemplate> envTemplates = envTemplateDao.findByCreateBy(cUser.getId());
+		model.addAttribute("envTemplateList",envTemplates);
 		model.addAttribute("menu_flag", "template"); 
 		return "template/env-temp.jsp";
-	}
-	
-	@RequestMapping(value = "/dockerfile/add", method = RequestMethod.GET)
-	public String dockerfileAdd(Model model) {
-		model.addAttribute("menu_flag", "template"); 
-		return "template/dockerfile-add.jsp";
 	}
 	
 	@RequestMapping(value = "/env/add", method = RequestMethod.GET)
@@ -156,6 +142,30 @@ public class TemplateController {
 		} 
 		map.put("status", "200");
 		return JSON.toJSONString(map);
+	}
+	
+	/**
+	 * 删除环境变量
+	 * 
+	 * @return
+	 */
+	@RequestMapping("/delEnvTemplates.do")
+	@ResponseBody
+	public String delEnvTemplates(String envTemplateIDs) {
+		// 解析获取的id List
+        ArrayList<Long> ids = new ArrayList<Long>();
+        String[] str = envTemplateIDs.split(",");
+        if (str != null && str.length > 0) {
+            for (String id : str) {
+                ids.add(Long.valueOf(id));
+            }
+        }
+        Map<String, Object> maps = new HashMap<String, Object>();
+        for (long id : ids) {
+            envTemplateDao.delete(id);
+        }
+        maps.put("status", "200");
+        return JSON.toJSONString(maps); 
 	}
 	
 }
