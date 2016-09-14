@@ -1157,8 +1157,7 @@ public class ServiceController {
                 if (StringUtils.isNotBlank(str)) {
                     rollingLog += str;
                 }
-                b = (str.endsWith("$") || str.endsWith("#"));
-				//b = str.endsWith("updated");
+                b = (str.endsWith("$") || str.endsWith("#")) || str.endsWith("updated");
             }
             LOG.info("rolling-update LOG:-"+rollingLog);
             String result = SshConnect.exec("echo $?", 1000);

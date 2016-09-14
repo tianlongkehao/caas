@@ -84,7 +84,7 @@ $(document).ready(function () {
          		success:function(data){
          			data = eval("(" + data + ")");
          			if(data.status == "500"){ //判断有没有用户下载过该镜像，没有人下载过，页面加载一个遮罩层；
-         				layer.load(0, {shade: [0.3, '#000'],time:15000});
+         				load = layer.load(0, {shade: [0.3, '#000'],time:15000});
          	        	$.ajax({
          	        		url:""+ctx+"/registry/downloadImage",
          	        		type:"get",
@@ -98,13 +98,12 @@ $(document).ready(function () {
          	        		success:function(data){
          	        			var data1 = eval("(" + data + ")");
          	        			if(data1.status == "200"){
-         	        				alert(ctx);
+         	        				layer.close(load);
          	        				window.location.href = ctx + "/registry/download?imageName="+_this.attr("imagename") +"&imageVersion="+_this.attr("imageversion");
          	        			}
          	        		}
          	        	});
          			} else {
-         				alert(ctx);
          				window.location.href = ctx +"/registry/download?imageName="+_this.attr("imagename") +"&imageVersion="+_this.attr("imageversion");
          			}
          		}

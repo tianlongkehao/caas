@@ -241,20 +241,21 @@ public class RegistryController {
 	 * @return  String
 	 * @see
 	 */
-	@RequestMapping(value = {"registry/judgeFileExist.do"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"registry/judgeFileExist.do"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String judgeFileExist(String imageName, String imageVersion){
-	    Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
     	String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
         File file = new File(imagePath+"/"+downName+".tar");
         boolean exist = file.exists();
         if (exist) {
             map.put("status", "200");
-        } else {
+        } 
+        else {
             map.put("status", "500");
         }
         return JSON.toJSONString(map);
-	}
+    }
 	
 	/**
      * 响应镜像“下载”按钮的实现
@@ -283,21 +284,21 @@ public class RegistryController {
             //getDownload(downName+".tar",request,response);
             map.put("status", "200");
             
-        }else {
+        } else {
             boolean complete= dockerClientService.pullImage(imageName, imageVersion);
             boolean flag = false;
             if (complete) {
                 String cmd = "sudo docker save -o " + saveImagePath
                     + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
                 flag = cmdexec(cmd);
-               }
+            }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null);
             if (flag) {
                 //getDownload(downName+".tar",request,response);
                 map.put("status", "200");
             }
-         }
-       return JSON.toJSONString(map);
+        }
+        return JSON.toJSONString(map);
     }
     
     /**
@@ -341,7 +342,7 @@ public class RegistryController {
                 if (StringUtils.isNotBlank(str)) {
                     rollingLog += str;
                 }
-                b = (str.endsWith("$") || str.endsWith("#"));
+                b = (str.endsWith("$") || str.endsWith("#")) || str.endsWith("updated");
                 //b = str.endsWith("updated");
             }
             LOG.info("rolling-update log:-"+rollingLog);
