@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.controller.CephController;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -153,6 +154,8 @@ public class SSOFilter implements Filter {
                                     !"1".equals(attributes.get("userId").toString().trim())) {
                             createNamespace(namespace); // 创建命名空间
                             createQuota(tenantId, namespace); // 创建资源
+                            createCeph(namespace); // 创建ceph
+                            
                         }
                     }
                     
@@ -167,6 +170,25 @@ public class SSOFilter implements Filter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    /**
+     * 
+     * Description:
+     * 创建ceph卷组空间
+     * @param namespace 
+     * @see
+     */
+    private void createCeph(String namespace) {
+        try {
+            CephController ceph = new CephController();
+            ceph.connectCephFS();
+            ceph.createNamespaceCephFS(namespace);
+        }
+        catch (Exception e) {
+            LOG.error("create ceph error" +e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
