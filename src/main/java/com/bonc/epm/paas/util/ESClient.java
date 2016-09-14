@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.queryparser.xml.FilterBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -134,9 +135,9 @@ public class ESClient {
                                            .setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord))
                                            .addSort("@timestamp", SortOrder.ASC)
                                            .setFrom(0)
-                                           .setSize(60)
+                                           .setSize(10000)
                                            .setExplain(true);
-            
+      
             SearchResponse response = searchRequestBuilder.execute().actionGet();
             SearchHit[] hits = response.getHits().getHits();
             for (int i = 0; i < hits.length; i++) {
@@ -158,6 +159,54 @@ public class ESClient {
         return string;
     }
 	
+    
+    /**
+     * 
+     * Description: <br>
+     * 根据关键字和时间范围查找日志内容
+     * @param type String
+     * @param keyWord String  
+     * @param from String  
+     * @param to String  
+     * @return log String
+     * @see
+     */
+    @SuppressWarnings("rawtypes")
+	public String search(String type,String keyWord,String from,String to){
+        String string ="";
+        try {
+            SearchRequestBuilder searchRequestBuilder = null;
+            searchRequestBuilder = client.prepareSearch()
+                    .setTypes(type)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord))
+                    .setPostFilter(QueryBuilders.rangeQuery("@timestamp").from(from).to(to))
+                    .addSort("@timestamp", SortOrder.ASC)
+                    .setFrom(0)
+                    .setSize(10000)
+                    .setExplain(true);
+            
+            SearchResponse response = searchRequestBuilder.execute().actionGet();
+            SearchHit[] hits = response.getHits().getHits();
+            for (int i = 0; i < hits.length; i++) {
+                SearchHit hit = hits[i];
+                Map result = hit.getSource();			
+                string = string + result.get("log");
+            }
+        } 
+        catch (IndexNotFoundException infe) {
+            LOG.error("搜索日志的Index出错：-" + infe.getMessage());
+        }
+        catch (Exception e) {
+            LOG.error(keyWord+"日志出错！错误信息：-" + e.getMessage());
+        }
+		
+        LOG.debug("start*******************************************************************************");
+        LOG.debug("pod{"+keyWord+"}日志:"+string);
+        LOG.debug("end*********************************************************************************");
+        return string;
+    }
+
     /**
      * 
      * Description:
