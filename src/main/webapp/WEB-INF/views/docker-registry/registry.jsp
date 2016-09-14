@@ -33,9 +33,9 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>${active }
 									</h5>
 									<div class="ibox-tools">
-										<a id="deleteButton"
+										<!-- <a id="deleteButton"
 											class="no-drop" href="javascript:delImages()" title="删除">
-											<i class="fa fa-trash"></i>
+											<i class="fa fa-trash"></i> -->
 										</a> <a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 									</div>

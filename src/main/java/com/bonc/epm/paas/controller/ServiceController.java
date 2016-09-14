@@ -396,6 +396,7 @@ public class ServiceController {
         model.addAttribute("service", service);
         model.addAttribute("envVariableList", envVariableList);
         model.addAttribute("portConfigList", portConfigList);
+        model.addAttribute("menu_flag", "service");
         return "service/service-detail.jsp";
     }
 
