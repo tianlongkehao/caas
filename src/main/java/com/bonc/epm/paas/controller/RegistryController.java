@@ -269,14 +269,20 @@ public class RegistryController {
      */
     @RequestMapping(value = {"registry/downloadImage"}, method = RequestMethod.GET)
     @ResponseBody
-    public void downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
+    public String downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
                                 Model model,HttpServletRequest request, HttpServletResponse response){
-        
+        Map<String, Object> map = new HashMap<String, Object>();
         String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
+        File path = new File(imagePath);
+        if (!path .exists()  && !path .isDirectory()) {
+            path.mkdirs();
+        }
         File file = new File(imagePath+"/"+downName+".tar");
         boolean exist = file.exists();
         if (exist) {
-            getDownload(downName+".tar",request,response);
+            //getDownload(downName+".tar",request,response);
+            map.put("status", "200");
+            
         }else {
             boolean complete= dockerClientService.pullImage(imageName, imageVersion);
             boolean flag = false;
@@ -284,12 +290,14 @@ public class RegistryController {
                 String cmd = "sudo docker save -o " + saveImagePath
                     + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
                 flag = cmdexec(cmd);
-            }
+               }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null);
             if (flag) {
-                getDownload(downName+".tar",request,response);
+                //getDownload(downName+".tar",request,response);
+                map.put("status", "200");
             }
-        }
+         }
+       return JSON.toJSONString(map);
     }
     
     /**
@@ -300,8 +308,10 @@ public class RegistryController {
      * @param response  ： response
      * @see
      */
-    public void getDownload(String fileName,HttpServletRequest request, HttpServletResponse response) {  
-        
+    @RequestMapping(value = {"registry/download"}, method = RequestMethod.GET)
+    public void getDownload(String imageName, String imageVersion,
+                                HttpServletRequest request, HttpServletResponse response) {
+       String fileName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion + ".tar";
         //设置文件MIME类型  
         response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
         //设置Content-Disposition  

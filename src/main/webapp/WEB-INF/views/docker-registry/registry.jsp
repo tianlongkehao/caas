@@ -81,17 +81,17 @@
 																 imageversion="${image.version}" imagename="${image.name}" title="部署">
 																 <i class="fa fa-wrench"></i>
 															</a>
-															<a class="no-drop a-oper" href="<%=path %>/registry/downloadImage?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}" id="doloadImage" imageversion="${image.version}" imagename="${image.name}" title="导出"> 
+															<a class="no-drop a-oper downloadImage" imageversion="${image.version}" imagename="${image.name}" imgID="${image.id }" resourcename= "${image.resourceName}" title="导出"> 
 																<i class="fa fa-share-square-o"></i>
 															</a> 
 															<c:if test="${image.currUserFavor==0 }">
-																	<a class="no-drop a-oper" imageId="${image.id }"><i
+																	<a class="no-drop a-oper forkquick" imageId="${image.id }"><i
 																		class="fa fa-star-o star-style"
 																		style="color: #4280CB"></i></a>
 															</c:if> 
 															
 															<c:if test="${image.currUserFavor==1 }">
-																<a class="no-drop a-oper" imageId="${image.id }">
+																<a class="no-drop a-oper forkquick" imageId="${image.id }">
 																	<i class="fa fa-star star-style" style="color: #337ab7"></i>
 																</a>
 															</c:if>
