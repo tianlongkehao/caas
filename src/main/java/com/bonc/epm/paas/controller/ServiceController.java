@@ -805,9 +805,9 @@ public class ServiceController {
         service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
         service.setCreateDate(new Date());
         service.setCreateBy(currentUser.getId());
-        if (!StringUtils.isEmpty(resourceName) && !service.getServicePath().trim().equals(resourceName.substring(0, resourceName.indexOf(".")).trim())) {
+/*        if (!StringUtils.isEmpty(resourceName) && !service.getServicePath().trim().equals(resourceName.substring(0, resourceName.indexOf(".")).trim())) {
             service.setServicePath(resourceName.substring(0, resourceName.indexOf(".")).trim());
-        }
+        }*/
         serviceDao.save(service);
 		
 		//将服务中的环境变量循环遍历，保存到相关联的实体类中；

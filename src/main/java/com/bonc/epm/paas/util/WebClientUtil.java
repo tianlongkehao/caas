@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.util;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,12 +48,12 @@ public class WebClientUtil {
         InputStreamReader inputStreamReader = null;
         BufferedReader reader = null;
         StringBuffer resultBuffer = new StringBuffer();
-        String tempLine = null;        
+        String tempLine = null;   
         try {
             if(params!=null) {
                 parameterData="";
                 for(String key:params.keySet()) {
-                    parameterData+=(parameterData.equals("") ? "" : "&")+ key+"="+URLEncoder.encode( String.valueOf(params.get(key)), "UTF8");
+                    parameterData+=(parameterData.equals("") ? "" : "&")+ key+"="+URLEncoder.encode(String.valueOf(params.get(key)), "UTF8");
                 }
             }
             // 获得一个http连接
@@ -63,6 +64,9 @@ public class WebClientUtil {
             	outputStreamWriter = new OutputStreamWriter(outputStream);	            
             	outputStreamWriter.write(parameterData.toString());
             	outputStreamWriter.flush();
+/*                DataOutputStream out = new DataOutputStream(httpURLConnection.getOutputStream());
+                out.writeBytes(parameterData);
+                out.flush();*/
             }            
 
             if (httpURLConnection.getResponseCode() == 200) {
@@ -108,7 +112,7 @@ public class WebClientUtil {
             if(params!=null){
             	parameterData="";
             	for(String key:params.keySet()){
-                    parameterData+=(parameterData.equals("") ? "" : "&") + key+"="+URLEncoder.encode( String.valueOf(params.get(key)), "UTF8");
+                    parameterData+=(parameterData.equals("") ? "" : "&") + key+"="+URLEncoder.encode(String.valueOf(params.get(key)).replace(" ", ""), "UTF8");
             	}
             }
         	
@@ -166,7 +170,7 @@ public class WebClientUtil {
     	httpURLConnection.setRequestMethod(mode);
     	httpURLConnection.setRequestProperty("Accept-Charset", "utf-8");
     	httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-    	httpURLConnection.setRequestProperty("Content-Length", String.valueOf(parameterData==null?0:parameterData.length()));
+    	httpURLConnection.setRequestProperty("Content-Length", String.valueOf(parameterData==null ? 0 : parameterData.length()));
     	return httpURLConnection;
     }
 	

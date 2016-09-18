@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.sso.filter;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.controller.CephController;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -152,6 +154,8 @@ public class SSOFilter implements Filter {
                                     !"1".equals(attributes.get("userId").toString().trim())) {
                             createNamespace(namespace); // 创建命名空间
                             createQuota(tenantId, namespace); // 创建资源
+                            createCeph(namespace); // 创建ceph
+                            
                         }
                     }
                     
@@ -166,6 +170,25 @@ public class SSOFilter implements Filter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    /**
+     * 
+     * Description:
+     * 创建ceph卷组空间
+     * @param namespace 
+     * @see
+     */
+    private void createCeph(String namespace) {
+        try {
+            CephController ceph = new CephController();
+            ceph.connectCephFS();
+            ceph.createNamespaceCephFS(namespace);
+        }
+        catch (Exception e) {
+            LOG.error("create ceph error" +e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -267,25 +290,27 @@ public class SSOFilter implements Filter {
         try {
             Map<String, Object> params = new HashMap<String, Object>();
             Map<String, Object> data = new HashMap<String, Object>();
-            data.put("tenant_id", "\"" + tenantId + "\"");
-            data.put("resource_type_code", "\"Docker\"");
+            data.put("tenant_id","\""+tenantId+"\"");
+            data.put("resource_type_code","\"Docker\"");
             params.put("param", data);
             String rtnStr = WebClientUtil.doGet(resManUrl, params);
 			// 解析返回资源数据
             if (StringUtils.isNotBlank(rtnStr)) {
                 JSONObject jsStr = JSONObject.parseObject(rtnStr);
-                JSONArray jsArrData = (JSONArray) jsStr.get("data");
-                JSONObject jsObj = (JSONObject) jsArrData.get(0);
-                JSONArray jsArrData2 = (JSONArray) jsObj.get("data");
-                JSONObject jsObj2 = (JSONObject) jsArrData2.get(0);
-                JSONArray jsPro = (JSONArray) jsObj2.get("property");
-                JSONObject cpuObject = (JSONObject) jsPro.get(0);
-                JSONObject memObject = (JSONObject) jsPro.get(1);
-	            // 获取CPU和MEM的值
-                openCpu = (String) cpuObject.get("prop_value");
-                openMem = (String) memObject.get("prop_value");
-                LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem + "}");
-                createResourceQuota(namespace, openCpu, openMem);
+                if ((boolean)jsStr.get("success")) {
+                    JSONArray jsArrData = (JSONArray) jsStr.get("data");
+                    JSONObject jsObj = (JSONObject) jsArrData.get(0);
+                    JSONArray jsArrData2 = (JSONArray) jsObj.get("data");
+                    JSONObject jsObj2 = (JSONObject) jsArrData2.get(0);
+                    JSONArray jsPro = (JSONArray) jsObj2.get("property");
+                    JSONObject cpuObject = (JSONObject) jsPro.get(0);
+                    JSONObject memObject = (JSONObject) jsPro.get(1);
+                    // 获取CPU和MEM的值
+                    openCpu = (String) cpuObject.get("prop_value");
+                    openMem = (String) memObject.get("prop_value");
+                    LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem + "}");
+                    createResourceQuota(namespace, openCpu, openMem);
+                }
             }
         }
         catch (Exception e) {
