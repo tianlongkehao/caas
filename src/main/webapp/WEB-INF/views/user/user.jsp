@@ -122,7 +122,7 @@
 																<option name="user_autority" value="1">管理员</option>
 														</select></td>
 														<td style="width: 10%;"><a id="deleteButton"
-															class="no-drop" href="javascript:delOneTenement()"
+															class="no-drop" href="javascript:delOneTenement(${user.id })"
 															style="margin-left: 10px"> <i class="fa fa-trash"></i>
 														</a></td>
 													</tr>
