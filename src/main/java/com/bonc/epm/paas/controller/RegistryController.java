@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
@@ -152,6 +153,9 @@ public class RegistryController {
 	public String detail(@PathVariable long id, Model model) {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
 		Image image = imageDao.findById(id);
+		if (null == image) {
+		    return "docker-registry/nodetail.jsp";
+		}
 		int favorUser = imageDao.findAllUserById(id);
 		User user = userDao.findById(image.getCreator());
 		long imageCreator = image.getCreator();
@@ -237,20 +241,21 @@ public class RegistryController {
 	 * @return  String
 	 * @see
 	 */
-	@RequestMapping(value = {"registry/judgeFileExist.do"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"registry/judgeFileExist.do"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String judgeFileExist(String imageName, String imageVersion){
-	    Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
     	String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
         File file = new File(imagePath+"/"+downName+".tar");
         boolean exist = file.exists();
         if (exist) {
             map.put("status", "200");
-        } else {
+        } 
+        else {
             map.put("status", "500");
         }
         return JSON.toJSONString(map);
-	}
+    }
 	
 	/**
      * 响应镜像“下载”按钮的实现
@@ -265,15 +270,21 @@ public class RegistryController {
      */
     @RequestMapping(value = {"registry/downloadImage"}, method = RequestMethod.GET)
     @ResponseBody
-    public void downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
+    public String downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
                                 Model model,HttpServletRequest request, HttpServletResponse response){
-        
+        Map<String, Object> map = new HashMap<String, Object>();
         String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
+        File path = new File(imagePath);
+        if (!path .exists()  && !path .isDirectory()) {
+            path.mkdirs();
+        }
         File file = new File(imagePath+"/"+downName+".tar");
         boolean exist = file.exists();
         if (exist) {
-            getDownload(downName+".tar",request,response);
-        }else {
+            //getDownload(downName+".tar",request,response);
+            map.put("status", "200");
+            
+        } else {
             boolean complete= dockerClientService.pullImage(imageName, imageVersion);
             boolean flag = false;
             if (complete) {
@@ -283,9 +294,11 @@ public class RegistryController {
             }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null);
             if (flag) {
-                getDownload(downName+".tar",request,response);
+                //getDownload(downName+".tar",request,response);
+                map.put("status", "200");
             }
         }
+        return JSON.toJSONString(map);
     }
     
     /**
@@ -296,8 +309,10 @@ public class RegistryController {
      * @param response  ： response
      * @see
      */
-    public void getDownload(String fileName,HttpServletRequest request, HttpServletResponse response) {  
-        
+    @RequestMapping(value = {"registry/download"}, method = RequestMethod.GET)
+    public void getDownload(String imageName, String imageVersion,
+                                HttpServletRequest request, HttpServletResponse response) {
+       String fileName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion + ".tar";
         //设置文件MIME类型  
         response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
         //设置Content-Disposition  
@@ -327,7 +342,7 @@ public class RegistryController {
                 if (StringUtils.isNotBlank(str)) {
                     rollingLog += str;
                 }
-                b = (str.endsWith("$") || str.endsWith("#"));
+                b = (str.endsWith("$") || str.endsWith("#")) || str.endsWith("updated");
                 //b = str.endsWith("updated");
             }
             LOG.info("rolling-update log:-"+rollingLog);
@@ -363,9 +378,17 @@ public class RegistryController {
 	@RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteImage(@RequestParam long imageId){
-		imageDao.delete(imageId);
-		// TODO 应该删除本地镜像和仓库中的镜像
-		return "ok";
+	   Image image = imageDao.findOne(imageId);
+	   if (null != image) {
+	       image.setIsDelete(CommConstant.TYPE_YES_VALUE);
+	       imageDao.save(image);
+	       // TODO 应该删除本地镜像和仓库中的镜像
+	       return "ok";
+	    } else {
+	       return "error";
+	    }
+		//imageDao.delete(imageId);
+
 	}
 	
 	
@@ -375,6 +398,7 @@ public class RegistryController {
 			image.setCurrUserFavor(imageDao.findByUserIdAndImageId(image.getId(), userId));
 		}
 	}
+	
 	private void addCreatorName(List<Image> images){
 		for(Image image:images){
 			User user = userDao.findById(image.getCreator());

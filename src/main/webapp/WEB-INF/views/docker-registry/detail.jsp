@@ -168,8 +168,8 @@
                             <div class="btn-block" style="height: 50px;" id="deployImage">
                                 <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}" class="btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}" >部署镜像</a>
                             </div>
-                            <div class="btn-block" style="height: 50px;" id="downloadImage">
-                                <a href="<%=path %>/registry/downloadImage?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}" id="doloadImage" class="btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}" >导出镜像</a>
+                            <div class="btn-block" style="height: 50px;">
+                               <a class="btn-primary btn btn-long-deploy downloadImage" imageversion="${image.version}" imagename="${image.name}" imgID="${image.id }" resourcename= "${image.resourceName}" id="doloadImage" >导出镜像</a>
                             </div>
                             <c:if test="${editImage==1 }">
 	                            <div class="btn-block " style="height: 50px; " id="deleteImage">

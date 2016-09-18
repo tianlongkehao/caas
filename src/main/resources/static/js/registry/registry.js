@@ -40,26 +40,78 @@ $(document).ready(function () {
     		}
     	});
     });
-  
-    //判断有没有用户下载过该镜像，没有人下载过，页面加载一个遮罩层；
-    /*$("#downloadImage").click(function(){
-    	var imageVersion = document.getElementById("doloadImage").getAttribute("imageversion");
-    	var imageName = document.getElementById("doloadImage").getAttribute("imagename");
-    	$.ajax({
-			async : false,
-     		url:""+ctx+"/registry/judgeFileExist.do",
-     		type:"post",
-     		data:{"imageName":imageName,"imageVersion":imageVersion},
-     		success:function(data){
-     			data = eval("(" + data + ")");
-     			if(data.status == "500"){
-     				layer.load(0, {shade: [0.3, '#000'],time:15000});
-     			}
-     		}
-     	});
-    });*/
     
+	// 快速收藏
+    $(".forkquick").each(function(){
+    	$(this).click(function(){
+        	var imageId = $(this).attr('imageId');
+        	var _this = $(this);
+        	$.ajax({
+        		url:""+ctx+"/registry/detail/favor",
+        		type:"post",
+        		data:{"imageId":imageId},
+        		success:function(data){
+        			if(data == "success"){
+        				_this.children(".star-style").removeClass("fa-star-o").addClass("fa-star");
+        				_this.addClass('live');
+        				layer.msg( "收藏成功。", {
+    							icon: 1
+    					});
+        			}else{
+        				_this.children(".star-style").removeClass("fa-star").addClass("fa-star-o");
+        				_this.removeClass('live');
+        				layer.msg( "取消收藏。", {
+    							icon: 0.5
+    					});
+        			}
+        		}
+        	});
+        });
+    });
+    
+    // 导出镜像
+    $(".downloadImage").each(function(){
+    	$(this).click(function(){
+    		var _this = $(this);
+        	$.ajax({
+    			async : false,
+         		url:""+ctx+"/registry/judgeFileExist.do",
+         		type:"post",
+         		data:{
+         			"imageName":$(this).attr("imagename"),
+         			"imageVersion":$(this).attr("imageversion")
+         		},
+         		success:function(data){
+         			data = eval("(" + data + ")");
+         			if(data.status == "500"){ //判断有没有用户下载过该镜像，没有人下载过，页面加载一个遮罩层；
+         				load = layer.load(0, {shade: [0.3, '#000'],time:15000});
+         	        	$.ajax({
+         	        		url:""+ctx+"/registry/downloadImage",
+         	        		type:"get",
+         	        		async:false, 
+         	        		data:{
+         	        			"imageName" : _this.attr("imagename"),
+         	        			"imageVersion" : _this.attr("imageversion"),
+         	        			"imgID" : _this.attr("imgID"),
+         	        			"resourceName" :_this.attr("resourcename")
+         	        		},
+         	        		success:function(data){
+         	        			var data1 = eval("(" + data + ")");
+         	        			if(data1.status == "200"){
+         	        				layer.close(load);
+         	        				window.location.href = ctx + "/registry/download?imageName="+_this.attr("imagename") +"&imageVersion="+_this.attr("imageversion");
+         	        			}
+         	        		}
+         	        	});
+         			} else {
+         				window.location.href = ctx +"/registry/download?imageName="+_this.attr("imagename") +"&imageVersion="+_this.attr("imageversion");
+         			}
+         		}
+         	});
+        });
+    });
 });
+
 
 /*删除单个镜像*/
 function deleteImage(obj){
@@ -81,10 +133,14 @@ function deleteImage(obj){
 		   					},function(){
 		   						window.location.href = ""+ctx+"/registry/0";
 		   					});
+   		     			} else {
+   		   		     		layer.msg( "删除失败", {
+   		   						icon: 1
+   		   					});  		     				
    		     			}
    		     		},
    		     		error:function(){
-	   		     		layer.msg( "删除失败，镜像被收藏", {
+	   		     		layer.msg( "删除失败", {
 	   						icon: 1
 	   					});
    		     		}
@@ -196,50 +252,3 @@ $(function(){
 	}
 
 });
-
-
-
-/*
-function loadImageList() {
-    $.ajax({
-        url: "/registry/images",
-        success: function (data) {
-            data = eval("(" + data + ")");
-
-            var html = "";
-            if (data != null) {
-                if (data['data'].length > 0) {
-                    for (var i in data.data) {
-                        var image = data.data[i];
-                        html += '<li class="images-panel">' +
-                            '<div class="select-img">' +
-                            '<i class="fa fa-star-o star-style" style="color:#efa421"></i>' +
-                            '<div class="mir-img ">' +
-                            '<img src="images/image-1.png">' +
-                            '</div>' +
-                            '</div>' +
-                            '<div class="select-info">' +
-                            '<div class="pull-right-text">' + image.name + '</div>' +
-                            '<div>' +
-                            '<div class="pull-right">' +
-                            '<a href="javascript:void(0);" class="btn-pull-deploy btn" imageversion='+image.version+' imagename='+image.name+'>部署</a>' +
-                            '</div>' +
-                            '</div>' +
-                            '</div>' +
-                            '<div class="create-item">' +
-                            '<a href="docker-registry-detail.html">' +
-                            '<span class="note-text" title="' + image.remark + '">' + image.remark + '</span>' +
-                            '</a>' +
-                            '</div>' +
-                            '</li>';
-                    }
-                    $("#imageList").html(html);
-                } else {
-
-                }
-            } else {
-            }
-
-        }
-    });
-}*/

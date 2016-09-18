@@ -212,6 +212,18 @@
 																												var="container">
 																												<c:if
 																													test="${container.serviceid == service.id}">
+																													<c:choose>
+																														<c:when test="${container.containerStatus == 1 }">
+																															<c:set var="statusName" value="未启动"></c:set>
+																															<c:set var="statusClassName" value="fa_stop"></c:set>
+																															<c:set var="loadingImgShowClass" value="hide"></c:set>
+																														</c:when>
+																														<c:when test="${container.containerStatus == 0 }">
+																															<c:set var="statusName" value="运行中"></c:set>
+													                                                  					  	<c:set var="statusClassName" value="fa_run"></c:set>
+													                                                    					<c:set var="loadingImgShowClass" value="hide"></c:set>
+																														</c:when>
+																													</c:choose>
 																													<tr class="tr-row">
 																														<td style="width: 5%">&nbsp;</td>
 																														<td style="width: 20%;"><a

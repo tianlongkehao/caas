@@ -33,9 +33,9 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>${active }
 									</h5>
 									<div class="ibox-tools">
-										<a id="deleteButton"
+										<!-- <a id="deleteButton"
 											class="no-drop" href="javascript:delImages()" title="删除">
-											<i class="fa fa-trash"></i>
+											<i class="fa fa-trash"></i> -->
 										</a> <a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 									</div>
@@ -76,29 +76,31 @@
 																test="${image.creatorName == ''||image.creatorName == null}">该创建人已被删除</c:if></td>
 														<td style="width: 20%; text-indent: 10;"
 															id="user.user_autority" name="user.user_autority">${image.createTime }</td>
-														<td style="width: 10%; text-indent: 10;"><a
-															class="no-drop"
-															href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
-															imageversion="${image.version}" imagename="${image.name}"
-															title="部署"> <i class="fa fa-wrench"></i>
-														</a><a class="no-drop a-oper"
-															href="<%=path %>/registry/downloadImage?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
-															id="doloadImage" imageversion="${image.version}"
-															imagename="${image.name}" title="导出"> <i
-																class="fa fa-share-square-o"></i>
-														</a> <c:if test="${image.currUserFavor==0 }">
-																<a class="no-drop a-oper"><i
-																	class="fa fa-star-o star-style fork"
-																	style="color: #4280CB"></i></a>
-															</c:if> <c:if test="${image.currUserFavor==1 }">
-																<a class="no-drop a-oper"><i
-																	class="fa fa-star star-style fork"
-																	style="color: #337ab7"></i></a>
+														<td style="width: 10%; text-indent: 10;">
+															<a class="no-drop" href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
+																 imageversion="${image.version}" imagename="${image.name}" title="部署">
+																 <i class="fa fa-wrench"></i>
+															</a>
+															<a class="no-drop a-oper downloadImage" imageversion="${image.version}" imagename="${image.name}" imgID="${image.id }" resourcename= "${image.resourceName}" title="导出"> 
+																<i class="fa fa-share-square-o"></i>
+															</a> 
+															<c:if test="${image.currUserFavor==0 }">
+																	<a class="no-drop a-oper forkquick" imageId="${image.id }"><i
+																		class="fa fa-star-o star-style"
+																		style="color: #4280CB"></i></a>
 															</c:if> 
-															<c:if test="${editImage==image.creator }"><a class="no-drop a-oper"
-															href="javascript:void(0)" onclick="deleteImage(this)"
-															title="删除" imageversion="${image.version}" imagename="${image.name}" imageid="${image.id}"> <i class="fa fa-trash"></i>
-														</a></c:if></td>
+															
+															<c:if test="${image.currUserFavor==1 }">
+																<a class="no-drop a-oper forkquick" imageId="${image.id }">
+																	<i class="fa fa-star star-style" style="color: #337ab7"></i>
+																</a>
+															</c:if>
+															<c:if test="${editImage==image.creator }">
+																<a class="no-drop a-oper" href="javascript:void(0)" onclick="deleteImage(this)"
+																		title="删除" imageversion="${image.version}" imagename="${image.name}" imageid="${image.id}"> <i class="fa fa-trash"></i>
+																</a>
+															</c:if>
+														</td>
 													</tr>
 												</c:if>
 											</c:forEach>
