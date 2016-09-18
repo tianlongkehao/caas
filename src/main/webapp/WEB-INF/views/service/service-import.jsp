@@ -41,7 +41,7 @@
 										<a href="javascript:void(0)" id="importServiceBtn" title="新建"><i
 											class="fa fa-plus"></i></a>  <a id="SearchBtn1" title="搜索"><i
 											class="fa fa-search"></i></a>
-											<a href="" id="delImportSers"
+											<a  id="delImportSers"
 											onclick="delImportSers()" title="删除"><i
 											class="fa fa-trash"></i></a>
 									</div>
@@ -64,7 +64,7 @@
 												<th style="width: 10%;" class="del-operation">操作</th>
 											</tr>
 										</thead>
-										<tbody id="storageList">
+										<tbody id="importSerList">
 
 										</tbody>
 										<tfoot>
@@ -103,8 +103,8 @@
 					<tr>
 						<th style="width: 35%">可见域：</th>
 						<td><select class="" id="improt-ser-visibility">
-								<option>仅本租户可见</option>
-								<option>所有租户可见</option>
+								<option value="0">仅本租户可见</option>
+								<option value="1">所有租户可见</option>
 						</select></td>
 					</tr>
 
