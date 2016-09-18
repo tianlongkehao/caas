@@ -66,7 +66,7 @@ $(document).ready(function(){
           max: laydate.now(+0),
           zIndex: 99999999, //css z-index
           choose: function(dates){ //选择好日期的回调
-            logPage = 1;
+//            logPage = 1;
             getServiceLogs();
           }
         });
@@ -99,17 +99,18 @@ function getServiceLogs(){
 		url:ctx+"/service/detail/getlogs.do?id="+id+"&date="+date,
 		success:function(data){
 			data = $.parseJSON(data);
-			data.logStr = "";
 			var html = "";
 			if(data.status == '200' && data.logStr != ""){
-					var logs = data.logStr;
-					console.log(logs)
-					html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">'+
-						logs+'<br></pre>'+
-						'<input id="serviceInstances" type="hidden" value="">'+
-						'<input id="creationTime" type="hidden" value="'+date+'">';
-					
-					$("#logList").html(html);
+				var logs = data.logStr;
+				console.log(logs)
+				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;overflow:hidden; float:left;">'+
+					logs+'<br></pre>'
+				$("#logList").html("");
+				$("#logList").html(html);
+			}else{
+				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
+				$("#logList").html("");
+				$("#logList").html(html);
 			}
 		}	
 	})

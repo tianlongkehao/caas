@@ -4,11 +4,11 @@
 		  return false;
 		});
 	
-	
+	creatable();
 
 	_refreshCreateTime(60000);
 	
-	checkbox();
+//	checkbox();
 	
 	//添加外部服务地址
 	$("#importServiceBtn").click(function(){
@@ -23,14 +23,15 @@
 	        	 var importSerOut = $("#improt-ser-out").val();
 	        	 var importSerVis = $("#improt-ser-visibility").val();
 	        	 
-	        	 /*$.ajax({
-		         		url : ctx + "/service/importSer.do",
+	        	 $.ajax({
+		         		url : ctx + "/refservice/add.do",
 		         		type: "POST",
-		         		data:{"templateName":templateName},
-		         		success : function(data) {
+		         		data: {"serName":importSerName,"serAddress":importSerIn
+		         			,"refAddress":importSerOut,"viDomain":importSerVis},
+		         		success: function(data) {
 		         			
 		         		}
-		         	});*/
+		         	});
 	        	 
 	        	 if(importSerName != ""){
 	     			var tr = '<tr>'+
@@ -38,9 +39,13 @@
 				     			'<input type="checkbox" name="chkItem" /></td>'+
 						     		'<td style="width: 18%; padding-left: 5px;">'+importSerName+'</td>'+
 						     		'<td style="width: 20%; text-indent: 8px;">'+importSerIn+'</td>'+
-						     		'<td style="width: 20%;">'+importSerOut+'</td>'+
-						     		'<td style="width: 14%;">'+importSerVis+'</td>'+
-						     		'<td style="width: 10%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this)"> <i class="fa fa-trash fa-lg"></i></a>'+
+						     		'<td style="width: 20%;">'+importSerOut+'</td>';
+						     		if(1==importSerVis){
+						     			tr+='<td style="width: 14%;">所有租户可见</td>';
+						     		}else{
+						     			tr+='<td style="width: 14%;">仅本租户可见</td>';
+						     		}
+						     	    tr+='<td style="width: 10%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this)"> <i class="fa fa-trash fa-lg"></i></a>'+
 						     		'<a class="editButton" href="javascript:editImportSer(this)"><i class="fa fa-edit fa-lg"></i></a></td>'+
 						     	'</tr>';
 	     		$("#importSerList").append(tr);
@@ -55,8 +60,40 @@
 
  });
  
+ //展示列表
+ function  creatable(){
+ 	var tr="";
+ 	var context =$('#importSerList');
+ 	context.empty();
+ 	$.ajax({
+         type: "GET",
+         url: ctx + "/refservice/list.do",
+         success : function(data) {
+         	var data = eval("("+data+")");
+         	for (var i in data.data) {
+            		var refservice = data.data[i];
+            		tr+='<tr>'+
+	     			'<td style="width: 5%; text-indent: 30px;">'+
+	     			'<input type="checkbox" name="chkItem" value='+refservice.id+' /></td>'+
+			     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'</td>'+
+			     		'<td style="width: 20%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
+			     		'<td style="width: 20%;">'+refservice.refAddress+'</td>';
+			     		if('1'==refservice.viDomain){
+			     			tr+='<td style="width: 14%;">所有租户可见</td>';
+			     		}else{
+			     			tr+='<td style="width: 14%;">仅本租户可见</td>';
+			     		}
+			     		tr+='<td style="width: 10%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash fa-lg"></i></a>'+
+			     		'<a class="editButton" href="javascript:editImportSer(this,'+refservice.id+')"><i class="fa fa-edit fa-lg"></i></a></td>'+
+			     	'</tr>';
+         	}
+            $("#importSerList").append(tr);
+         }
+       })
+ }
+ 
  //删除某一行
- function delImportSer(obj){
+ function delImportSer(obj,id){
 	 
 		layer.open({
 		        title: '删除外部引入服务',
@@ -64,22 +101,39 @@
 		        btn: ['确定', '取消'],
 		        yes: function(index, layero){ 
 		        	$(obj).parent().parent().remove();
-		    	   
+		        	//refservice/delete.do
+		        	$.ajax({
+		        		type: "GET",
+		                url: ctx + "/refservice/delete.do?ids="+id,
+		        	});
 		        	layer.close(index);
 		        }
 	 })
 	 
  }
  //修改
- function editImportSer(obj){
-	 
+ function editImportSer(obj,id){
+	 $("#improt-ser-name").val(id);
 	 layer.open({
 		 	type: 1,
 	        title: '修改外部引入服务',
 	        content: $("#import-service"),
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ 
-	        	
+	        	var importSerName = $("#improt-ser-name").val();
+	        	 var importSerIn = $("#improt-ser-in").val();
+	        	 var importSerOut = $("#improt-ser-out").val();
+	        	 var importSerVis = $("#improt-ser-visibility").val();
+	        	 
+	        	 $.ajax({
+		         		url : ctx + "/refservice/edit.do",
+		         		type: "POST",
+		         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
+		         			,"refAddress":importSerOut,"viDomain":importSerVis},
+		         		success: function(data) {
+		         			creatable();
+		         		}
+		         	});
 	        	layer.close(index);
 	        }
 	 })
@@ -87,32 +141,28 @@
  
  //批量删除
  function delImportSers(){
-	 var importSerIDs = [];
-	 $('input[name="chkItem"]:checked').each(function(){
-	      var importSerId = $(this).val();
-	      importSerIDs.push(importSerId);
-		 layer.open({
-		        title: '删除外部引入服务',
-		        content: '确定批量删除外部引入服务？',
-		        btn: ['确定', '取消'],
-		        yes: function(index, layero){ 
-		        	layer.close(index);
-		        				/*$.ajax({
-		        					url:""+ctx+"service/delServices.do?serviceIDs="+serviceIDs,
-		        					success:function(data){
-		        						data = eval("(" + data + ")");
-		        						if(data.status=="200"){
-		        							layer.alert("服务已删除");
-		        							window.location.reload();
-		        						}else{
-		        							layer.alert("服务删除失败，请检查服务器连接");
-		        						}
-	        		
-		        					}
-		        				})*/
-		        }
-		 })
-		 
+	 var ids = $("input[name='chkItem']:checked").serialize();
+	 var downfiles = $("input[name='downfiles']:checked").serialize();
+	 layer.open({
+	        title: '删除外部引入服务',
+	        content: '确定批量删除外部引入服务？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ 
+	        	layer.close(index);
+	        				$.ajax({
+	        					url:""+ctx+"/refservice/delete.do?"+ids,
+	        					success:function(data){
+	        						data = eval("(" + data + ")");
+	        						if(data.status=="200"){
+	        							layer.alert("服务已删除");
+	        							window.location.reload();
+	        						}else{
+	        							layer.alert("服务删除失败，请检查服务器连接");
+	        						}
+        		
+	        					}
+	        				})
+	        }
 	 })
 	 
  }

@@ -62,6 +62,7 @@ public class MonitorController {
     private Integer netDivisor = 1000;
 	
 	/**
+
 	 * 根据timePeriod计算timeGroup
 	 * @param timePeriod 
 	 * @return String
@@ -100,6 +101,7 @@ public class MonitorController {
     }
 	
     /**
+
      * 根据Cluster条件拼接SQL
      * @param selCol 
      * @param tabName 
@@ -108,8 +110,12 @@ public class MonitorController {
      */
     private String joinClusterSQL(String selCol, String tabName, String minionName) {
         //根据查询时间段取得间隔时间
+
+
         String timeGroup = getTimeGroup(timePeriod);
         //拼SQL
+
+
         String sql = "SELECT " + selCol + " FROM " + tabName + " WHERE \"container_name\" = 'machine' ";
         if (!"".equals(minionName)){
             sql = sql + " AND \"hostname\" =~ /" + minionName + "/";
@@ -120,7 +126,9 @@ public class MonitorController {
     }
     
     /**
+
      * 根据Container条件拼接SQL
+
      * 
      * @param selCol 
      * @param tabName 
@@ -131,9 +139,13 @@ public class MonitorController {
      */
     private String joinContainerSQL(String selCol, String tabName, String namespace, String podName, String containerName) {
         //根据查询时间段取得间隔时间
+
+
         String timeGroup = getTimeGroup(timePeriod);
         
         //拼SQL
+
+
         String sql = "SELECT " + selCol + " FROM " + tabName + " WHERE 1=1 ";
         
         if (namespace != null && !"".equals(namespace)) {
@@ -150,7 +162,9 @@ public class MonitorController {
     }
     
     /**
+
      * 查詢INFLUXDB
+
      * 
      * @param sql 
      * @param divisor 
@@ -184,7 +198,9 @@ public class MonitorController {
     }
     
     /**
+
      *  取得CONTAINER监控数据
+
      * 
      * @param influxDB 
      * @param dbName 
@@ -222,7 +238,9 @@ public class MonitorController {
     }
 
     /**
+
      * 取得X轴横坐标
+
      * 
      * @param influxDB 
      * @param dbName 
@@ -245,7 +263,9 @@ public class MonitorController {
     }
     
     /**
+
      *  取得CLUSTER监控数据
+
      * 
      * @param influxDB 
      * @param dbName 
@@ -312,6 +332,7 @@ public class MonitorController {
     }
 
 	/**
+
 	 * 取得所有容器名称
 	 * @param influxDB 
 	 * @param dbName 

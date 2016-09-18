@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CiConstant;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ImageConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
@@ -422,6 +423,7 @@ public class CiController {
         image.setResourceName(sourceCode.getOriginalFilename());
         image.setCreateTime(new Date());
         image.setCreator(currentUser.getId());
+        image.setIsDelete(CommConstant.TYPE_NO_VALUE);
         
         try {
 /*            String imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
@@ -824,6 +826,7 @@ public class CiController {
             img.setCreator(ci.getCreateBy());
             img.setCreateTime(new Date());
             img.setIsBaseImage(ImageConstant.NotBaseImage);
+            img.setIsDelete(CommConstant.TYPE_NO_VALUE);
             imageDao.save(img);
             ci.setImgId(img.getId());
         }

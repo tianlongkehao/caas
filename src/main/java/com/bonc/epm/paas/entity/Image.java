@@ -32,8 +32,11 @@ public class Image {
 	private String remark;
 	private String summary;
 	private long creator;
-	private Date createTime;
 	@Transient
+	private String creatorName;
+	private Date createTime;
+	private Integer isDelete;
+   @Transient
 	private Integer currUserFavor;
 	@Transient 
 	List<PortConfig> portConfigs;
@@ -41,7 +44,7 @@ public class Image {
 	@ManyToMany(mappedBy = "favorImages")
 	private List<User> favorUsers;
 	
-	/**
+    /**
 	 * 是否为基础镜像
 	 * 1 是基础镜像，2不是基础镜像；
 	 */
@@ -133,5 +136,18 @@ public class Image {
 	public void setPortConfigs(List<PortConfig> portConfigs) {
 		this.portConfigs = portConfigs;
 	}
+	public String getCreatorName() {
+		return creatorName;
+	}
+	public void setCreatorName(String creatorName) {
+		this.creatorName = creatorName;
+	}
 	
+   public Integer getIsDelete() {
+        return isDelete;
+    }
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }	
+
 }

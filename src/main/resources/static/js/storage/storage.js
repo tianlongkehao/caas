@@ -47,6 +47,7 @@ function loadStorageList(){
         	$('tbody #storageList').html(itemsHtml);
 		}
 	});
+	alert("test");
 }
 $(document).ready(function () {
 	$("#storageReloadBtn").click(function(){
@@ -66,8 +67,8 @@ function delStorage() {
 	$(document).on("click",".deleteStorage",function(){
 		var storageId = $(this).attr("storageId");
    		 layer.open({
-   		        title: '删除备份',
-   		        content: '确定删除备份？',
+   		        title: '删除卷组',
+   		        content: '确定删除卷组？',
    		        btn: ['确定', '取消'],
    		        yes: function(index){ 
    		        	layer.close(index);

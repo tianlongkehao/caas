@@ -85,7 +85,7 @@
 									</c:if>
 								</tr>
 								<tr>
-									<td>镜像名称：${service.imgName }</td>
+									<td>镜像名称：${service.imgName } : ${service.imgVersion }</td>
 									<td>创建时间：${service.createDate }</td>
 								</tr>
 							</tbody>
@@ -294,12 +294,12 @@
 							<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>
 						</c:if>
 						<c:if test="${logList!='[]' }">
-						<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;"><c:forEach items="${logList}" var="log" >${log}<br></c:forEach>
+						<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow:hidden; float:left;"><c:forEach items="${logList}" var="log" >${log}<br></c:forEach>
 						</pre>
 						</c:if>
 							<input id="serviceInstances" type="hidden" value=""> 
-							<input id="creationTime" type="hidden" value="${service.createDate }">
 						</div>
+						<input id="creationTime" type="hidden" value="${service.createDate }">
 					</div>
 					<div class="containerEvent hide" style="min-height: 500px;">
 						<div class="containerEvent"

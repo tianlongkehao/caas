@@ -248,18 +248,22 @@ public class ServiceController {
                     for (Pod pod : pods) {
                         String podName = pod.getMetadata().getName();
                         Container container = new Container();
-                        container
-								.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-                        container.setServiceid(service.getId());
-                        containerList.add(container);
-                    }
-                }
-            }
-            serviceList.add(service);
-        }
-        model.addAttribute("containerList", containerList);
-        model.addAttribute("serviceList", serviceList);
-    }
+                        container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+						container.setServiceid(service.getId());
+						if (pod.getStatus().getPhase().equals("Running")) {
+							container.setContainerStatus(0);
+						} else {
+							container.setContainerStatus(1);
+						}
+						containerList.add(container);
+					}
+				}
+			}
+			serviceList.add(service);
+		}
+		model.addAttribute("containerList", containerList);
+		model.addAttribute("serviceList", serviceList);
+	}
 
     /**
      * Description: <br>
@@ -275,36 +279,41 @@ public class ServiceController {
         List<Service> serviceList = new ArrayList<Service>();
         List<Container> containerList = new ArrayList<Container>();
 		// 获取特殊条件的pods
-        try {
-            for (Service service : serviceDao.findByNameOf(currentUser.getId(), "%" + searchNames + "%")) {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("app", service.getServiceName());
-                PodList podList = client.getLabelSelectorPods(map);
-                if (podList != null) {
-                    List<Pod> pods = podList.getItems();
-                    if (CollectionUtils.isNotEmpty(pods)) {
-                        int i = 1;
-                        for (Pod pod : pods) {
-                            String podName = pod.getMetadata().getName();
-                            Container container = new Container();
-                            container.setContainerName(
-								    service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-                            container.setServiceid(service.getId());
-                            containerList.add(container);
-                        }
-                    }
-                }
-                serviceList.add(service);
-                LOG.debug("service=========" + service);
-            }
-        }
-        catch (Exception e) {
-            LOG.error("服务查询错误：" + e);
-        }
-        model.addAttribute("serviceList", serviceList);
-        model.addAttribute("containerList", containerList);
-        return "service/service.jsp";
-    }
+		try {
+			for (Service service : serviceDao.findByNameOf(currentUser.getId(), "%" + searchNames + "%")) {
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("app", service.getServiceName());
+				PodList podList = client.getLabelSelectorPods(map);
+				if (podList != null) {
+					List<Pod> pods = podList.getItems();
+					if (CollectionUtils.isNotEmpty(pods)) {
+						int i = 1;
+						for (Pod pod : pods) {
+							String podName = pod.getMetadata().getName();
+							Container container = new Container();
+							container.setContainerName(
+									service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+							container.setServiceid(service.getId());
+							if (pod.getStatus().getPhase().equals("Running")) {
+								container.setContainerStatus(0);
+							} else {
+								container.setContainerStatus(1);
+							}
+							containerList.add(container);
+						}
+					}
+				}
+				serviceList.add(service);
+				LOG.debug("service=========" + service);
+			}
+		} catch (Exception e) {
+			LOG.error("服务查询错误：" + e);
+		}
+		model.addAttribute("serviceList", serviceList);
+		model.addAttribute("containerList", containerList);
+
+		return "service/service.jsp";
+	}
 	
     /**
      * Description: <br>
@@ -387,6 +396,7 @@ public class ServiceController {
         model.addAttribute("service", service);
         model.addAttribute("envVariableList", envVariableList);
         model.addAttribute("portConfigList", portConfigList);
+        model.addAttribute("menu_flag", "service");
         return "service/service-detail.jsp";
     }
 
@@ -1148,8 +1158,7 @@ public class ServiceController {
                 if (StringUtils.isNotBlank(str)) {
                     rollingLog += str;
                 }
-                b = (str.endsWith("$") || str.endsWith("#"));
-				//b = str.endsWith("updated");
+                b = (str.endsWith("$") || str.endsWith("#")) || str.endsWith("updated");
             }
             LOG.info("rolling-update LOG:-"+rollingLog);
             String result = SshConnect.exec("echo $?", 1000);
@@ -1551,3 +1560,4 @@ public class ServiceController {
     }
     
 }
+

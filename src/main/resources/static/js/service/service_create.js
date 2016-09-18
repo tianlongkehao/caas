@@ -8,7 +8,6 @@ $(document).ready(function(){
 	
 	$(".createPadding").addClass("hide");
 	
-	
 	$("#createButton").click(function(){
 		
 		if(!saveEnvVariable()) {
@@ -103,7 +102,6 @@ $(document).ready(function(){
 			      return;
 		    }
 	    }
-	   
 	    
 /*	    var nginxstr = "{";
 	    $('input[name="nginxserv"]:checked').each(function(){
@@ -237,6 +235,12 @@ $(document).ready(function(){
 			$('#Name').focus();
 			return;
 		}
+		//判断value长度
+		if(addValue.length >= 4096){
+	    	layer.tips('value字符长度不能超过4096','#Value',{tips: [1, '#3595CC']});
+		      $('#Value').focus();
+		      return;
+	    }
 		//判断key是否重复，
 		var arrayKey = $("#arrayKey").val().split(",");
 		for(var i = 0; i<arrayKey.length; i++){
@@ -342,10 +346,11 @@ $(document).ready(function(){
 	        title: '环境变量模板',
 	        content: $("#environment-variable"),
 	        btn: ['导入', '取消'],
+	        scrollbar: false,
 	        yes: function(index, layero){
 	        	 var arrayKey = $("#arrayKey").val().split(",");
 	        	 $.ajax({
-	         		url : ctx + "/service/importEnvTemplate.do",
+	         		url : ctx + "/template/importEnvTemplate.do",
 	         		type: "POST",
 	         		data:{"templateName":templateName},
 	         		success : function(data) {
@@ -388,8 +393,8 @@ $(document).ready(function(){
 		        title: '另存为模板',
 		        content: $("#environment-template"),
 		        btn: ['保存', '取消'],
+		        scrollbar: false,
 		        yes: function(index, layero){ 
-		        	
 		        	var templateName = $("#envTemplateName").val();
 		        	if (templateName == null || templateName == "") {
 		        		layer.tips('模板名称不能为空','#envTemplateName',{tips: [1, '#3595CC']});
@@ -406,13 +411,32 @@ $(document).ready(function(){
 		        	}
 		        	
 		        	$.ajax({
-						url:ctx+"/service/saveEnvTemplate.do",
+						url:ctx+"/template/saveEnvTemplate.do",
 						type: "POST",
 		         		data:{"templateName":templateName,"envVariable":envVariable},
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="400"){
-								layer.msg("环境变量模板名称重复", {icon: 5});
+								layer.msg("环境变量模板名称重复",{
+									  time: 0 //不自动关闭
+									  ,btn: ['覆盖', '重命名']
+									  ,yes: function(index2){
+							        	$.ajax({
+											url:ctx+"/template/modifyEnvTemplate.do",
+											type: "POST",
+							         		data:{"templateName":templateName,"envVariable":envVariable},
+											success:function(data){
+												data = eval("(" + data + ")");
+												if (data.status == "200") {
+													layer.msg("环境变量模板导入成功",{icon: 6});
+													layer.close(index2);
+													layer.close(index);
+												}
+											}	
+							        	});
+
+									  }
+									});
 							}else if (data.status == "200") {
 								layer.msg("环境变量模板导入成功",{icon: 6});
 								layer.close(index);
@@ -518,13 +542,12 @@ $(document).ready(function(){
 		var imagePage_height = $(".host_step2").height();
     	$(".step-inner").height(imagePage_height +100);
 	}
-
 });
 
 //单击导入模板，加载模板数据
 function loadEnvironment(){
 	 $.ajax({
-  		url : ctx + "/service/loadEnvTemplate.do",
+  		url : ctx + "/template/loadEnvTemplate.do",
   		success : function(data) {
   			data = eval("(" + data + ")");
   			var html = "";

@@ -199,6 +199,24 @@
             </ul>
         </li>
         </c:if>
+        <li id="menu_template">
+            <a href="<%=path %>/template/dockerfile">
+                <img class="nav-icon" src="<%=path %>/images/help.png" alt=""/>
+                <span class="nav-title">模板</span>
+            </a>
+            <ul class="nav-item-hover">
+                <li id="" action="">
+                    <a href="<%=path %>/template/dockerfile">
+                       dockerfile
+                    </a>
+                </li>
+                <li id="" action="">
+                    <a href="<%=path %>/template/env">
+                       环境变量
+                    </a>
+                </li>
+            </ul>
+        </li>
         <li id="menu_product">
             <a href="<%=path %>/product/help">
                 <img class="nav-icon" src="<%=path %>/images/help.png" alt=""/>
@@ -232,6 +250,7 @@
             $(".nav-menu>li").css("background-color","transparent");
             $(".nav-menu>li").children(".nav-item-hover").css("display","none");
             $(this).css("background-color","#3c81e0");
+            $(this).css("font-size","110%");
             $(this).children(".nav-item-hover").css("display","block");
         });
 
@@ -239,6 +258,7 @@
             $(this).css("background-color","transparent");
             $(this).children(".nav-item-hover").css("display","none");
             $(".item-click").css("background-color","#3c81e0");
+            
         });
 
     });

@@ -195,7 +195,7 @@
     top: -10px;
 }
 
-.mirror-head .type-info .fork {
+.mirror-head .type-info .fork .forkquick {
     cursor: pointer;
     font-size: 14px;
 }
@@ -330,4 +330,8 @@
     position: absolute;
     right: 20px;
     top: 20px;
+}
+.a-oper{
+	margin-left:10px;
+	cursor: pointer;
 }
