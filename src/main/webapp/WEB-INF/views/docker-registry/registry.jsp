@@ -116,65 +116,6 @@
 							</div>
 						</div>
 					</div>
-
-					<div class="content hide">
-						<div class="search">
-							<form class="search-group-inner"
-								style="width: 60%; margin: 0 auto; position: relative;"
-								action="<%=path %>/registry/${index }" method="post">
-								<input name="imageName" class="search-img" placeholder="搜索镜像"
-									type="text">
-								<button type="submit" class="btn btn-primary btn-send">搜索</button>
-							</form>
-						</div>
-						<div class="images-layout">
-							<ul id="imageList">
-
-								<c:forEach items="${images}" var="image">
-
-									<li class="images-panel">
-										<div class="select-img">
-											<c:if test="${image.currUserFavor==0 }">
-												<i class="fa fa-star-o star-style" style="color: #4280CB"></i>
-											</c:if>
-											<c:if test="${image.currUserFavor==1 }">
-												<i class="fa fa-star star-style" style="color: #efa421"></i>
-											</c:if>
-											<div class="mir-img ">
-												<img src="<%=path%>/images/image-1.png">
-											</div>
-										</div>
-										<div class="select-info">
-											<div class="pull-right-text">
-												<c:if test="${image.imageType==2 }">
-													<span class="btn btn-link lock"> <i
-														class="fa fa-lock"></i>
-													</span>
-												</c:if>
-												${image.name}
-											</div>
-											<div>
-												<i class="fa fa-tag"></i> ${image.version }
-												<div class="pull-right">
-													<a
-														href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
-														class="btn-pull-deploy btn"
-														imageversion="${image.version}" imagename="${image.name}">部署</a>
-												</div>
-											</div>
-										</div>
-										<div class="create-item">
-											<a href="<%=path %>/registry/detail/${image.id }"> <span
-												class="note-text"> ${image.summary } </span>
-											</a>
-										</div>
-									</li>
-
-								</c:forEach>
-
-							</ul>
-						</div>
-					</div>
 				</div>
 			</div>
 		</article>
