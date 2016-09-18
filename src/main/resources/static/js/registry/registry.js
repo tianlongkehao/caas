@@ -131,7 +131,7 @@ function deleteImage(obj){
 	   		     			layer.msg( "删除成功！", {
 		   						icon: 1
 		   					},function(){
-		   						window.location.href = ""+ctx+"/registry/0";
+		   						window.location.reload(true);
 		   					});
    		     			} else {
    		   		     		layer.msg( "删除失败", {
@@ -148,6 +148,43 @@ function deleteImage(obj){
 	        	refresh();
 	        }
 	 });
+}
+
+//批量删除镜像
+function delImages(){
+	obj = document.getElementsByName("ids");
+	var imageIds = [];
+    for (k in obj) {
+        if (obj[k].checked) {
+        	imageIds.push(obj[k].value);
+        }
+    }
+    if (imageIds.length <=0) {
+    	layer.msg( "请选择需要删除的镜像", {icon: 2 });
+    	return;
+    }
+    layer.open({
+        title: '删除镜像',
+        content: '确定删除镜像？',
+        btn: ['确定', '取消'],
+        yes: function(index, layero){ 
+        	layer.close(index);
+			$.ajax({
+				url:""+ctx+"/registry/delImages.do?imageIds="+imageIds,
+				success:function(data){
+					data = eval("(" + data + ")");
+					if(data.status=="200"){
+						layer.alert("镜像删除成功");
+						window.location.reload(true);
+					}else{
+						layer.alert("镜像删除失败，请检查服务器连接");
+					}
+
+				}
+			})
+        }
+ })
+    
 }
 
 $(function(){

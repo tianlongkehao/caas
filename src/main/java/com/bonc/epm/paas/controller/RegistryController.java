@@ -368,28 +368,58 @@ public class RegistryController {
         return true;
     }
     
-	
-	/**删除当前镜像
-	 * 
-	 * @param imageId
-	 * @return
-	 */
-	
-	@RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
+    /**
+     * Description: <br>
+     * 删除单个镜像
+     * @param imageId 
+     * @return String
+     */
+    @RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteImage(@RequestParam long imageId){
-	   Image image = imageDao.findOne(imageId);
-	   if (null != image) {
-	       image.setIsDelete(CommConstant.TYPE_YES_VALUE);
-	       imageDao.save(image);
-	       // TODO 应该删除本地镜像和仓库中的镜像
-	       return "ok";
-	    } else {
-	       return "error";
-	    }
+        Image image = imageDao.findOne(imageId);
+        if (null != image) {
+            image.setIsDelete(CommConstant.TYPE_YES_VALUE);
+            imageDao.save(image);
+            // TODO 应该删除本地镜像和仓库中的镜像
+            return "ok";
+        } 
+        else {
+            return "error";
+        }
 		//imageDao.delete(imageId);
-
-	}
+    }
+	
+	/**
+	 * Description: <br>
+	 * 批量删除镜像
+	 * @param imageIds 
+	 * @return String
+	 */
+    @RequestMapping("registry/delImages.do")
+	@ResponseBody
+    public String deleteImages(String imageIds) {
+        // 解析获取的id List
+        ArrayList<Long> ids = new ArrayList<Long>();
+        String[] str = imageIds.split(",");
+        if (str != null && str.length > 0) {
+            for (String id : str) {
+                ids.add(Long.valueOf(id));
+            }
+        }
+        Map<String, Object> maps = new HashMap<String, Object>();
+        try {
+            for (long id : ids) {
+                deleteImage(id);
+            }
+            maps.put("status", "200");
+        } 
+        catch (Exception e) {
+            maps.put("status", "400");
+            LOG.error("镜像删除错误！");
+        }
+        return JSON.toJSONString(maps); 
+    }
 	
 	
 	private void addCurrUserFavor(List<Image> images){

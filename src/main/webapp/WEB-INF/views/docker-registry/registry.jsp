@@ -33,10 +33,12 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>${active }
 									</h5>
 									<div class="ibox-tools">
-										<!-- <a id="deleteButton"
-											class="no-drop" href="javascript:delImages()" title="删除">
-											<i class="fa fa-trash"></i> -->
-										</a> <a href="javascript:window.location.reload(true);"
+										<c:if test="${index == 1}">
+											  <a id="deleteButton"
+												    class="no-drop" href="javascript:void(0)" onclick = "delImages()" title="删除">
+												<i class="fa fa-trash"></i></a>
+										</c:if>
+										 <a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 									</div>
 								</div>
