@@ -135,7 +135,7 @@ public class ESClient {
                                            .setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord))
                                            .addSort("@timestamp", SortOrder.ASC)
                                            .setFrom(0)
-                                           .setSize(10000)
+                                           .setSize(5000)
                                            .setExplain(true);
       
             SearchResponse response = searchRequestBuilder.execute().actionGet();
@@ -183,7 +183,7 @@ public class ESClient {
                     .setPostFilter(QueryBuilders.rangeQuery("@timestamp").from(from).to(to))
                     .addSort("@timestamp", SortOrder.ASC)
                     .setFrom(0)
-                    .setSize(10000)
+                    .setSize(5000)
                     .setExplain(true);
             
             SearchResponse response = searchRequestBuilder.execute().actionGet();
