@@ -41,7 +41,7 @@
 									</div>
 								</div>
 								<div class="ibox-content">
-									<table class="table footable table-striped table-hover dataTables-example">
+									<table class="table table-striped table-hover dataTables-example">
 										<thead>
 											<tr>
 												<th style="width: 5%; text-indent: 30px;"><input
@@ -124,10 +124,10 @@
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('.dataTables-example').dataTable();
-			$(".footable").footable();
-			$("#checkallbox").next().addClass("hide");
-			$(".del-operation").children("span").addClass("hide");
+			$('.dataTables-example').dataTable( {
+		        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
+			});
+			$("#checkallbox").parent().removeClass("sorting_asc");
 		})
 	</script>
 

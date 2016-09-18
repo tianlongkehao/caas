@@ -4,7 +4,7 @@ $(function(){
     $(".chkAll").click(function(){
         $(".chkItem").prop('checked',$(".chkAll").is(":checked"));
     });
-
+ 
     // 每条数据 checkbox class设为 chkItem
     $(document).on("click",".chkItem", function(){
         if($(this).is(":checked")){
