@@ -5,7 +5,6 @@
     <title>服务</title>
     <%@include file="../frame/header.jsp"%>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/storage.css"/>
-    
   	<script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script> 
 </head>
 <body>
@@ -51,8 +50,8 @@
 	                                            <!-- <th style="width: 10%;text-indent: 20px;">格式</th> -->
 	                                            <th style="width: 15%;text-indent: 8px;">挂载点</th>
 	                                            <th style="width: 15%;text-indent: 10px;">大小</th>
-	                                            <th style="width: 20%;">创建时间</th>
-	                                            <th style="width: 10%;text-indent: 10px;" class="del-operation">操作</th>
+	                                            <th style="width: 10%;">创建时间</th>
+	                                            <th style="width: 20%;text-indent: 10px;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="storageList">
@@ -102,9 +101,7 @@
     </ul>
 </div>
 <script type="text/javascript">
-	$('.dataTables-example').dataTable({
-        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 5 ] }]
-	});
+	
 	
 </script>
 
