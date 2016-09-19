@@ -184,22 +184,28 @@
 																								type="hidden" class="timeStrap" value="">
 																								<i class="fa_time"></i> <span>${service.createDate }</span>
 																							</td>
-																							<td style="width: 8%"><a
-																								id="${service.id}_start"
-																								class="startContainer_a"
-																								href="javascript:oneStartContainer(${service.id},${service.status})">
-																									<i class="fa fa-play"></i>
-																							</a> <a id="${service.id}_stop"
-																								class="stopContainer_a"
-																								href="javascript:oneStopContainer(${service.id},${service.status})"
-																								style="margin-left: 10px"> <i
-																									class="fa fa-power-off"></i>
-																							</a> <a id="${service.id}_del" class="deleteButton_a"
-																								href="javascript:oneDeleteContainer(${service.id})"
-																								style="margin-left: 10px"> <i
-																									class="fa fa-trash"></i>
-																							</a></td>
-
+																							<td style="width: 8%"><c:if
+																									test="${service.status != 3}">
+																									<a id="${service.id}_start"
+																										class="startContainer_a"
+																										href="javascript:oneStartContainer(${service.id},${service.status})">
+																										<i class="fa fa-play"></i>
+																									</a>
+																								</c:if> <c:if test="${service.status == 3}">
+																									<a id="${service.id}_stop"
+																										class="stopContainer_a"
+																										href="javascript:oneStopContainer(${service.id},${service.status})"
+																										style="margin-left: 10px"> <i
+																										class="fa fa-power-off"></i>
+																									</a>
+																								</c:if> <c:if test="${service.status != 3}">
+																									<a id="${service.id}_del"
+																										class="deleteButton_a"
+																										href="javascript:oneDeleteContainer(${service.id})"
+																										style="margin-left: 10px"> <i
+																										class="fa fa-trash"></i>
+																									</a>
+																								</c:if></td>
 																						</tr>
 
 																						<tr style="border-left: 1px solid #eee;"

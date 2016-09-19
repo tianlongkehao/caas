@@ -43,7 +43,7 @@
 									</div>
 								</div>
 								<div class="ibox-content">
-									<table class="footable table table-stripped table-hover dataTables-example" 
+									<table class="table table-stripped table-hover dataTables-example" 
 										data-filter=#filter>
 										<thead>
 											<tr>
@@ -103,9 +103,9 @@
     </ul>
 </div>
 <script type="text/javascript">
-	$('.dataTables-example').dataTable();
-	$(".footable").footable();
-	$(".del-operation").children("span").addClass("hide");
+	$('.dataTables-example').dataTable({
+        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 5 ] }]
+	});
 	//折叠ibox
 	$('.collapse-link').click(function () {
 	    var ibox = $(this).closest('div.ibox');

@@ -2,6 +2,7 @@ package com.bonc.epm.paas.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -374,7 +375,13 @@ public class ServiceController {
                     ESClient esClient = new ESClient();
                     esClient.initESClient(esConf.getHost(),esConf.getClusterName());
 					// 设置es查询日期，数据格式，查询的pod名称
-                    String s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
+//                    String s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
+                	Calendar calendar = Calendar.getInstance();
+                	calendar.add(Calendar.HOUR_OF_DAY, -8);
+                	calendar.add(Calendar.MINUTE, -3);
+                	String dateString = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss+00:00").format(calendar.getTime());
+                	String s = esClient.search("fluentd", podName,dateString,"9999-12-31T00:00:00+00:00");
+
 					// 关闭es客户端
                     esClient.closeESClient();
 					// 拼接日志格式
@@ -453,18 +460,29 @@ public class ServiceController {
                         String s = null;
                         if (date != "") {
 							// 设置es查询日期，数据格式，查询的pod名称
-                            s = esClient.search("logstash-" + date.replaceAll("-", "."), "fluentd", podName);
+//                            s = esClient.search("logstash-" + date.replaceAll("-", "."), "fluentd", podName);
+                        	Calendar calendar = Calendar.getInstance();
+                        	calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
+                        	calendar.add(Calendar.HOUR_OF_DAY, -8);
+                        	String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+                            s = esClient.search("fluentd", podName,dateString,"9999-12-31T00:00:00+00:00");
                         } 
                         else {
 							// 设置es查询日期，数据格式，查询的pod名称
-                            s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
+                        	Calendar calendar = Calendar.getInstance();
+                        	calendar.add(Calendar.HOUR_OF_DAY, -8);
+                        	calendar.add(Calendar.MINUTE, -3);
+                        	String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+                            s = esClient.search("fluentd", podName,dateString,"9999-12-31T00:00:00+00:00");
+//                            s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
                         }
 
 						// 关闭es客户端
                         esClient.closeESClient();
 						// 拼接日志格式
                         String add = "[" + "App-" + i + "] [" + podName + "]：";
-                        s = add + s.replaceAll("\n", "\n" + add);
+//                        s = add + s.replaceAll("\n", "\n" + add);
+                        s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
                         s = s.substring(0, s.length() - add.length());
                         logStr = logStr.concat(s);

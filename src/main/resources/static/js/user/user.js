@@ -247,39 +247,33 @@ function delTenement (){
 /**
  * 删除某一个租户
  */
-function delOneTenement (){
-	var id = "";
-	$(":checked[name='ids']").each(function(){
-		id = id + jQuery(this).val();
-	});
-	
-		id = id.substring(0, id.length - 1);
-		layer.open({
-			 title: '删除用户',
-			 content:'确定删除此用户吗？',
-			 btn: ['确定', '取消'],
-			 yes: function(index, layero){ //或者使用btn1
-				 layer.close(index);
-				 $.ajax({
-						url:ctx+"/user/delMul.do?ids="+id,
-						success:function(data){
-							data = eval("(" + data + ")");
-							if(data.status=="200"){
-								layer.alert("用户信息删除成功",{icon:1});
-								location.reload(true);
-							}else{
-								layer.alert("用户信息删除失败，请检查服务器连接",{icon:2});
-							}
-							//location.href = ctx+"redirect:/user/list";
-							//location.reload(true);
+function delOneTenement (id){
+	layer.open({
+		 title: '删除用户',
+		 content:'确定删除此用户吗？',
+		 btn: ['确定', '取消'],
+		 yes: function(index, layero){ //或者使用btn1
+			 layer.close(index);
+			 $.ajax({
+					url:ctx+"/user/delMul.do?ids="+id,
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("用户信息删除成功",{icon:1});
+							location.reload(true);
+						}else{
+							layer.alert("用户信息删除失败，请检查服务器连接",{icon:2});
 						}
-				 })
-				 
-		 	 },
-			 cancel: function(index){ //或者使用btn2
-			 	//按钮【按钮二】的回调
-		 	 }
-		 });
+						//location.href = ctx+"redirect:/user/list";
+						//location.reload(true);
+					}
+			 })
+			 
+	 	 },
+		 cancel: function(index){ //或者使用btn2
+		 	//按钮【按钮二】的回调
+	 	 }
+	 });
 	
 }
 
