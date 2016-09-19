@@ -54,12 +54,12 @@
 								</div>
 								<div class="ibox-content">
 									<table
-										class="footable table table-striped table-hover dataTables-example"
+										class="table table-striped table-hover dataTables-example"
 										data-filter=#filter>
 										<thead>
 											<tr>
 												<th style="width: 5%; text-indent: 30px;">
-													<input type="checkbox" autocomplete="off" class="chkAll" />
+													<input type="checkbox" autocomplete="off" class="chkAll" id="checkallbox"/>
 												</th>
 												<th style="width: 15%; text-indent: 30px;">名称</th>
 												<th style="width: 15%; text-indent: 15px;">主鍵</th>
@@ -105,23 +105,10 @@
 	</div>
 
 	<script type="text/javascript">
-		$('.dataTables-example').dataTable();
-		$(".footable").footable();
-		$(".del-operation").children("span").addClass("hide");
-		$(".chkAll").next().addClass("hide");
-		//折叠ibox
-		$('.collapse-link').click(function() {
-			var ibox = $(this).closest('div.ibox');
-			var button = $(this).find('i');
-			var content = ibox.find('div.ibox-content');
-			content.slideToggle(200);
-			button.toggleClass('fa-chevron-up').toggleClass('fa-chevron-down');
-			ibox.toggleClass('').toggleClass('border-bottom');
-			setTimeout(function() {
-				ibox.resize();
-				ibox.find('[id^=map-]').resize();
-			}, 50);
+		$('.dataTables-example').dataTable({
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,5] }]
 		});
+		$("#checkallbox").parent().removeClass("sorting_asc");
 	</script>
 
 </body>
