@@ -130,7 +130,7 @@ public class ClusterController {
      */
     @RequestMapping(value = { "/containers" }, method = RequestMethod.GET)
 	public String resourceContainers(Model model) {
-        model.addAttribute("menu_flag", "containers");
+        model.addAttribute("menu_flag", "cluster");
         return "cluster/containers.jsp";
     }
 
@@ -160,7 +160,7 @@ public class ClusterController {
      */
     @RequestMapping(value = { "/topo" }, method = RequestMethod.GET)
 	public String clusterTopo(Model model) {
-        model.addAttribute("menu_flag", "containers");
+        model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster-topo.jsp";
     }
 
