@@ -2,11 +2,11 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-<title>服务</title>
-<%@include file="../frame/header.jsp"%>
-<link rel="stylesheet" type="text/css"
+    <title>服务</title>
+    <%@include file="../frame/header.jsp"%>
+    <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/service.css" />
-<script type="text/javascript"
+    <script type="text/javascript"
 	src="<%=path%>/js/service/service-import.js"></script>
 </head>
 <body>

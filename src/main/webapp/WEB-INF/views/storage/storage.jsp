@@ -5,7 +5,7 @@
     <title>服务</title>
     <%@include file="../frame/header.jsp"%>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/storage.css"/>
-    <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/footable/footable.core.css"/>
+    
   	<script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script> 
 </head>
 <body>
@@ -43,8 +43,7 @@
 									</div>
 								</div>
 								<div class="ibox-content">
-									<table class="table table-stripped table-hover dataTables-example" 
-										data-filter=#filter>
+									<table class="table table-stripped table-hover dataTables-example">
 										<thead>
 											<tr>
 												<th style="width: 15%;text-indent:30px;">名称</th>
@@ -71,7 +70,7 @@
 							</div>
 						</div>
 				</div>
-          		<!-- <div id="pagination"></div> -->
+          		
             </div>
         </div>
     </article>
@@ -106,19 +105,7 @@
 	$('.dataTables-example').dataTable({
         "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 5 ] }]
 	});
-	//折叠ibox
-	$('.collapse-link').click(function () {
-	    var ibox = $(this).closest('div.ibox');
-	    var button = $(this).find('i');
-	    var content = ibox.find('div.ibox-content');
-	    content.slideToggle(200);
-	    button.toggleClass('fa-chevron-up').toggleClass('fa-chevron-down');
-	    ibox.toggleClass('').toggleClass('border-bottom');
-	    setTimeout(function () {
-	        ibox.resize();
-	        ibox.find('[id^=map-]').resize();
-	    }, 50);
-	});
+	
 </script>
 
 </body>

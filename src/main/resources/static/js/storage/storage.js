@@ -3,22 +3,23 @@ $(function(){
 }) 
 
 function loadStorageList(){
-	var url = ""+ctx+"/service/storageList";
-	var json = {pageable:"pageable"};
-	
-	jqList.query(url,json, function(data){
+	$.ajax({
+		url:""+ctx+"/service/storageList",
+		type:"post",
+		data:{pageable:"pageable"},
+		success:function(data){
+        var data = eval("("+data+")");
 		if(data.status == 200) {
         	var itemsHtml = '';
         	var len = data.storages.length;
-        	if(len == 0){
+/*        	if(len == 0){
         		if(searchFlag) {
         			itemsHtml = '<tr><td colspan="4">未找到匹配的数据...</td></tr>';
         		}else {
         			itemsHtml = '<tr><td colspan="4">无数据...</td></tr>';
         		}
-        	}
+        	}*/
         	for(var i=0; i<len; i++){
-        		(function(){
         			var storage = data.storages[i];
         			var useType = storage.useType ==1 ? "未使用" : "使用" ;
         			
@@ -41,13 +42,13 @@ function loadStorageList(){
         								' <span class="btn btn-primary dilation dilatationStorage" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'">扩容</span>'+
         								' <span class="btn btn-primary delete deleteStorage" storageId="'+storage.id +'"> 删除 </span>'+
         							'</td>'+	
-        						+'</tr>'
-        		})(i);
+        						+'</tr>';
         	}
-        	$('tbody #storageList').html(itemsHtml);
+        	$('#storageList').html(itemsHtml);
+		}
 		}
 	});
-	alert("test");
+	
 }
 $(document).ready(function () {
 	$("#storageReloadBtn").click(function(){
