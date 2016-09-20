@@ -46,6 +46,9 @@ function loadStorageList(){
         	}
         	$('#storageList').html(itemsHtml);
 		}
+		$('.dataTables-example').dataTable({
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 5 ] }]
+		});
 		}
 	});
 	

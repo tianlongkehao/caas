@@ -102,9 +102,7 @@
     </ul>
 </div>
 <script type="text/javascript">
-	$('.dataTables-example').dataTable({
-        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 5 ] }]
-	});
+
 	
 </script>
 
