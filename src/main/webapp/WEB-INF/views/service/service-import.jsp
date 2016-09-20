@@ -2,11 +2,11 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>服务</title>
-    <%@include file="../frame/header.jsp"%>
-    <link rel="stylesheet" type="text/css"
+<title>服务</title>
+<%@include file="../frame/header.jsp"%>
+<link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/service.css" />
-    <script type="text/javascript"
+<script type="text/javascript"
 	src="<%=path%>/js/service/service-import.js"></script>
 </head>
 <body>
@@ -39,19 +39,14 @@
 										<a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 										<a href="javascript:void(0)" id="importServiceBtn" title="新建"><i
-											class="fa fa-plus"></i></a>  <a id="SearchBtn1" title="搜索"><i
-											class="fa fa-search"></i></a>
+											class="fa fa-plus"></i></a>  
 											<a  id="delImportSers"
 											onclick="delImportSers()" title="删除"><i
 											class="fa fa-trash"></i></a>
 									</div>
 								</div>
 								<div class="ibox-content">
-									<input type="text" class="form-control input-sm m-b-xs"
-										id="filter1" placeholder="搜索表格...">
-
-									<table class="footable table table-stripped" data-page-size="8"
-										data-filter=#filter1>
+									<table class="table table-striped table-hover dataTables-example">
 										<thead>
 											<tr>
 												<th style="width: 5%; text-indent: 30px;"><input
@@ -67,7 +62,7 @@
 										<tbody id="importSerList">
 
 										</tbody>
-										<tfoot>
+										<tfoot class="hide">
 											<tr>
 												<td colspan="6">
 													<ul class="pagination pull-right"></ul>
@@ -123,9 +118,10 @@
 		</script>
 	</c:if>
 	<script type="text/javascript">
-		$(".footable").footable();
-		$(".del-operation").children("span").addClass("hide");
-		$("#checkallbox").next().addClass("hide");
+	$('.dataTables-example').dataTable({
+        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
+	});
+	$("#checkallbox").parent().removeClass("sorting_asc");
 	</script>
 </body>
 </html>

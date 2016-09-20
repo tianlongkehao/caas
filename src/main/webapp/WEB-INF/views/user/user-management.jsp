@@ -44,7 +44,7 @@
 										</div>
 									</div>
 									<div class="ibox-content">
-										<table class="footable table table-striped table-hover dataTables-example"
+										<table class="table table-striped table-hover dataTables-example"
 											data-page-size="8" data-filter=#filter>
 											<thead>
 												<tr>
@@ -90,7 +90,7 @@
 													</c:if>
 												</c:forEach>
 											</tbody>
-											<tfoot>
+											<tfoot class="hide">
 												<tr>
 													<td colspan="8">
 														<ul class="pagination pull-right"></ul>
@@ -114,10 +114,10 @@
 	<input id="update_flag" value="${updateFlag}" type="hidden">
 	<script type="text/javascript">
     $(document).ready(function(){
-    	$('.dataTables-example').dataTable();
-    	$(".footable").footable();
-		$("#checkallbox").next().addClass("hide");
-		$(".del-operation").children("span").addClass("hide");
+    	$('.dataTables-example').dataTable({
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,7] }]
+		});
+		$("#checkallbox").parent().removeClass("sorting_asc");
     	
         var create_flag = $.trim($("#create_flag").val());
         var update_flag = $.trim($("#update_flag").val());
