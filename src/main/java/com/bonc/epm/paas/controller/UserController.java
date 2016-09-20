@@ -29,6 +29,7 @@ import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
@@ -851,8 +852,13 @@ public class UserController {
             //map.put("resourcequotas", "1");//资源配额数量
             ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getNamespace(), map);
             quota = client.createResourceQuota(quota);
-            LOG.info("create quota:" + JSON.toJSONString(quota));
-            return true;
+            if (quota != null) {
+            	LOG.info("create quota:" + JSON.toJSONString(quota));
+            	return true;
+			} else {
+				LOG.info("create quota failed: namespace=" + user.getNamespace() + "hard=" + map.toString());
+				return false;
+			}
         }
         catch (Exception e) {
             LOG.error(e.getMessage());
@@ -949,7 +955,10 @@ public class UserController {
                 if (null != client.getNamespace(namespace)) {
                     try {
                         client.deleteLimitRange(namespace);
-                        client.deleteResourceQuota(namespace);
+                        Status status =  client.deleteResourceQuota(namespace);
+                        if (status.getStatus() =="Success") {
+							
+						}
                     } 
                     catch (javax.ws.rs.ProcessingException e) {
                         System.out.println(e.getMessage());
@@ -1028,6 +1037,8 @@ public class UserController {
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
             model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
             // model.addAttribute("usedControllerNum", usedControllerNum);
+        } else {
+            LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
         }
     }
     
