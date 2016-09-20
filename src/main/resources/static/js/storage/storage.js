@@ -1,5 +1,7 @@
 $(function(){
 	loadStorageList();
+	
+	
 }) 
 
 function loadStorageList(){
@@ -27,17 +29,17 @@ function loadStorageList(){
         				storage.mountPoint = "未挂载";
         			}
         			itemsHtml += ' <tr class="ci-listTr" style="cursor:auto">'+
-        							' <td style="width: 15%; text-indent:22px;" id = "storageName">'+
+        							' <td style="width: 15%; text-indent:30px;" id = "storageName">'+
         							'<a href="'+ctx+'/service/storage/detail/'+storage.id+'" title="查看详细信息">'+storage.storageName +'</a>'+
         							'</td>'+
-        							' <td style="width: 15%;" class="cStatusColumn">' +
+        							' <td style="width: 15%; text-indent:15px;"  class="cStatusColumn">' +
         								useType +
         							' </td>'+
         							//' <td style="width: 10%;">' + storage.format + '</td>'+
-        							' <td style="width: 15%;word-wrap:break-word;word-break:break-all;">' + storage.mountPoint + '</td>'+
-        							' <td style="width: 12%;">' + storage.storageSize + ' M</td>'+
-        							' <td style="width: 15%;">' + storage.createDate + '</td>'+
-        							' <td style="width: 20%;">' +
+        							' <td style="width: 15%; text-indent:8px;word-wrap:break-word;word-break:break-all;">' + storage.mountPoint + '</td>'+
+        							' <td style="width: 15%; text-indent:10px;">' + storage.storageSize + ' M</td>'+
+        							' <td style="width: 10%;">' + storage.createDate + '</td>'+
+        							' <td style="width: 20%; text-indent:10px;">' +
         								' <span class="btn btn-primary format formatStorage"> 格式化 </span>'+
         								' <span class="btn btn-primary dilation dilatationStorage" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'">扩容</span>'+
         								' <span class="btn btn-primary delete deleteStorage" storageId="'+storage.id +'"> 删除 </span>'+
