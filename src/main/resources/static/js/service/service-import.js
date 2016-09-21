@@ -88,7 +88,11 @@
 			     	'</tr>';
          	}
             $("#importSerList").append(tr);
+        	$('.dataTables-example').dataTable({
+                "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
+        	});
          }
+ 	
        })
  }
  

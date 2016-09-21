@@ -60,6 +60,9 @@ $(document).ready(function () {
 		window.location.reload();
 	});
 
+	$("#updatedefVol").click(function(){
+		$("#updatedefVolNum").attr("checked","checked");
+	 });
 });
 
 $(function(){
@@ -126,7 +129,6 @@ function dilatationStorage(){
 				//按钮【按钮一】的回调
 				layer.close(index);
 				//var storageUpdateSize = $("#storageSizeUpdateSlider_input").val();
-				alert($("#updatedefVol").val());
 				$("#updatedefVolNum")[0].value = $("#updatedefVol").val()*1024;
 				var storageUpdateSize = $(".updateStorageSize:checked").val();
 				$.ajax({
