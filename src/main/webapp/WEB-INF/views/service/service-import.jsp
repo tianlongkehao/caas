@@ -118,9 +118,7 @@
 		</script>
 	</c:if>
 	<script type="text/javascript">
-	$('.dataTables-example').dataTable({
-        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
-	});
+
 	$("#checkallbox").parent().removeClass("sorting_asc");
 	</script>
 </body>
