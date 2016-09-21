@@ -211,14 +211,14 @@ function delTenement (){
 		id = id + jQuery(this).val() + ",";
 	});
 	if ("" == id) {
-		layer.alert("请选择至少一个用户", {icon:0});
+		layer.alert("请选择至少一个租户", {icon:0});
 		return;
 	}
 	else {
 		id = id.substring(0, id.length - 1);
 		layer.open({
-			 title: '删除用户',
-			 content:'确定删除多个用户吗？',
+			 title: '删除租户',
+			 content:'确定删除多个租户吗？',
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){ //或者使用btn1
 				 layer.close(index);
@@ -227,9 +227,9 @@ function delTenement (){
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="200"){
-								layer.alert("用户信息删除成功");
+								layer.alert("租户信息删除成功");
 							}else{
-								layer.alert("用户信息删除失败，请检查服务器连接");
+								layer.alert("租户信息删除失败，请检查服务器连接");
 							}
 							//location.href = ctx+"redirect:/user/list";
 							location.reload(true);
@@ -249,8 +249,8 @@ function delTenement (){
  */
 function delOneTenement (id){
 	layer.open({
-		 title: '删除用户',
-		 content:'确定删除此用户吗？',
+		 title: '删除租户',
+		 content:'确定删除此租户吗？',
 		 btn: ['确定', '取消'],
 		 yes: function(index, layero){ //或者使用btn1
 			 layer.close(index);
@@ -259,10 +259,10 @@ function delOneTenement (id){
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
-							layer.alert("用户信息删除成功",{icon:1});
+							layer.alert("租户信息删除成功",{icon:1});
 							location.reload(true);
 						}else{
-							layer.alert("用户信息删除失败，请检查服务器连接",{icon:2});
+							layer.alert("租户信息删除失败，请检查服务器连接",{icon:2});
 						}
 						//location.href = ctx+"redirect:/user/list";
 						//location.reload(true);
@@ -286,11 +286,11 @@ function tenement_detail() {
 		count = count + 1;
 	});
 	if ("" == id) {
-		alert("请选择一个用户");
+		alert("请选择一个租户");
 		return;
 	}
 	if(count > 1){
-		alert("只能选择一个用户");
+		alert("只能选择一个租户");
 		return;
 	}
 	location.href = ctx+"/user/detail/"+id;

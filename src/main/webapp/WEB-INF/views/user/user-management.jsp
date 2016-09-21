@@ -31,7 +31,7 @@
 								<div class="ibox float-e-margins">
 									<div class="ibox-title">
 										<h5>
-											<i class="fa fa-map-marker" style="margin-right: 6px;"></i>租户管理
+											<i class="fa fa-map-marker" style="margin-right: 6px;"></i>用户管理
 										</h5>
 										<div class="ibox-tools">
 											<a href="<%=path %>/user/manage/add/${cur_user.id }"
