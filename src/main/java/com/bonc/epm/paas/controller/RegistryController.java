@@ -120,7 +120,7 @@ public class RegistryController {
             addCurrUserFavor(images);
             active = "我的收藏";
         }
-		
+		addCreatorName(images);
         model.addAttribute("images", images);
         model.addAttribute("menu_flag", "registry");
         model.addAttribute("index", index);
@@ -364,4 +364,13 @@ public class RegistryController {
             image.setCurrUserFavor(imageDao.findByUserIdAndImageId(image.getId(), userId));
         }
     }
+    
+	private void addCreatorName(List<Image> images){
+		for(Image image:images){
+			User user = userDao.findById(image.getCreator());
+			if (user != null) {
+				image.setCreatorName(user.getUserName());
+			}
+		}
+	}
 }
