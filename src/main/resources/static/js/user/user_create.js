@@ -39,6 +39,36 @@ function delUser(){
 		});
 	}
 }
+/**
+ * 删除选中用户
+ */
+function delUserById(id){
+	layer.open({
+		title: '删除租户',
+		content:'确定删除这个租户吗？',
+		btn: ['确定', '取消'],
+		yes: function(index, layero){ //或者使用btn1
+			layer.close(index);
+			$.ajax({
+				url:ctx+"/user/delMul.do?ids="+id,
+				success:function(data){
+					data = eval("(" + data + ")");
+					if(data.status=="200"){
+						layer.alert("租户信息删除成功");
+                        window.location.reload();
+					}else{
+						layer.alert("租户信息删除失败，请检查服务器连接");
+					}
+					location.reload(true);
+				}
+			})
+
+		},
+		cancel: function(index){ //或者使用btn2
+			//按钮【按钮二】的回调
+		}
+	});
+}
 
 function user_detail() {
     var id = "";

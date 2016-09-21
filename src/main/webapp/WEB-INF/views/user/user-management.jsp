@@ -84,7 +84,7 @@
 																	test='${user.user_autority == "3"}'>普通用户</c:if> <c:if
 																	test='${user.user_autority == "4"}'>超级用户</c:if></td>
 															<td style="width: 8%; text-indent: 4px;"><a
-																href="javascript:delUser()" title="删除"><i
+																href="javascript:delUserById(${user.id })" title="删除"><i
 																	class="fa fa-trash"></i></a></td>
 														</tr>
 													</c:if>
