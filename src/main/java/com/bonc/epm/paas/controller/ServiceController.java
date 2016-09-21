@@ -1578,9 +1578,6 @@ public class ServiceController {
         map.put("mountPath",mountPath);
         return JSON.toJSONString(map);
     }
-    
-    
-    
     /**
      * Description: <br>
      * 根据服务id查询服务和容器
@@ -1598,7 +1595,7 @@ public class ServiceController {
 		// 获取特殊条件的pods
 		try {
 				Map<String, String> mapapp = new HashMap<String, String>();
-				map.put("app", service.getServiceName());
+				mapapp.put("app", service.getServiceName());
 				PodList podList = client.getLabelSelectorPods(mapapp);
 				if (podList != null) {
 					List<Pod> pods = podList.getItems();
@@ -1629,6 +1626,5 @@ public class ServiceController {
         return JSON.toJSONString(map);
 
 	}
-
+    
 }
-

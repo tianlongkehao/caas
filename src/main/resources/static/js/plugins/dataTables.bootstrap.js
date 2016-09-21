@@ -30,6 +30,8 @@ if ($.fn.dataTable.Api) {
                 e.preventDefault();
                 if (e.data.action !== 'ellipsis') {
                     api.page(e.data.action).draw(false);
+                    //TODO
+                    $("#checkallbox").parent().removeClass("sorting_asc");
                 }
             };
 

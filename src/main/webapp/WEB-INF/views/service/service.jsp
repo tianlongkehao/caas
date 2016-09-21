@@ -29,7 +29,7 @@
 
 
 					<div class="row">
-						<div class="col-sm-12">
+						<div class="col-md-12">
 							<div class="ibox float-e-margins">
 								<div class="ibox-title">
 									<h5>
@@ -59,212 +59,125 @@
 										</a> <a id="deleteButton" class="no-drop"
 											href="javascript:delContainer()" title="删除"> <i
 											class="fa fa-trash"></i>
-										</a> <a id="SearchBtn" title="搜索"><i class="fa fa-search"></i></a>
+										</a>
 
 									</div>
 								</div>
 								<div class="ibox-content">
-									<input type="text" class="form-control input-sm m-b-xs"
-										id="filter" placeholder="搜索表格...">
-
-									<table class="table">
+									<table class="table table-stripped table-hover dataTables-example">
 										<thead>
 											<tr>
-												<th class="hideDropIcon">
-													<div class="table-head">
-														<table class="footable table-stripped" data-page-size="8"
-															data-filter=#filter>
-															<thead>
-																<tr>
-																	<th style="width: 5%; text-indent: 30px;"><input
-																		type="checkbox" autocomplete="off"
-																		class="chkAll hideDropIcon" /></th>
-																	<th style="width: 20%; padding-left: 5px;">名称</th>
-																	<th style="width: 10%; text-indent: 8px;">运行状态</th>
-																	<th style="width: 20%;">镜像</th>
-																	<th style="width: 24%;">服务地址</th>
-																	<th style="width: 12%;">创建于</th>
-																	<th style="width: 8%;">操作</th>
-																</tr>
-															</thead>
-														</table>
-													</div>
-												</th>
+												<th style="width: 5%; text-indent: 30px;"><input
+													type="checkbox" autocomplete="off" class="chkAll"
+													id="checkallbox" /></th>
+												<th style="width: 20%; padding-left: 5px;">名称</th>
+												<th style="width: 10%; text-indent: 8px;">运行状态</th>
+												<th style="width: 20%;">镜像</th>
+												<th style="width: 24%;">服务地址</th>
+												<th style="width: 12%;">创建于</th>
+												<th style="width: 8%;">操作</th>
 											</tr>
 										</thead>
-										<tbody id="serviceBody">
-											<tr>
-												<td>
-													<div>
-														<table class="table">
-															<tbody id="serviceList">
-																<c:forEach items="${serviceList}" var="service">
-																	<c:choose>
-																		<c:when test="${service.status == 1 }">
-																			<c:set var="statusName" value="未启动"></c:set>
-																			<c:set var="statusClassName" value="fa_stop"></c:set>
-																			<c:set var="loadingImgShowClass" value="hide"></c:set>
-																		</c:when>
-																		<c:when test="${service.status == 2 }">
-																			<c:set var="statusName" value="启动中"></c:set>
-																			<c:set var="statusClassName" value="fa_success"></c:set>
-																			<c:set var="loadingImgShowClass" value=""></c:set>
-																			<c:set var="loadingImgShowClass" value="hide"></c:set>
-																		</c:when>
-																		<c:when test="${service.status == 3 }">
-																			<c:set var="statusName" value="运行中"></c:set>
-																			<c:set var="statusClassName" value="fa_run"></c:set>
-																			<c:set var="loadingImgShowClass" value="hide"></c:set>
-																		</c:when>
-																		<c:when test="${service.status == 4 }">
-																			<c:set var="statusName" value="已停止"></c:set>
-																			<c:set var="statusClassName" value="fa_stop"></c:set>
-																			<c:set var="loadingImgShowClass" value="hide"></c:set>
-																		</c:when>
-																		<c:when test="${service.status == 5 }">
-																			<c:set var="statusName" value="启动失败"></c:set>
-																			<c:set var="statusClassName" value="fa_stop"></c:set>
-																			<c:set var="loadingImgShowClass" value="hide"></c:set>
-																		</c:when>
-																	</c:choose>
-																	<c:if test="${service.id == null || service.id == 0}">
-																		<c:set var="cursorClass" value="cursor-no-drop"></c:set>
-																	</c:if>
 
-																	<tr id="inst_${service.id }" memory="512MB"
-																		class="show-tr">
-																		<td>
-																			<div class="contents-table">
-																				<table class="table">
-																					<tbody>
+										<tbody id="serviceList">
 
-																						<tr class="clusterId"
-																							containerName="${service.serviceName }">
-																							<td style="width: 5%; text-indent: 30px;"><input
-																								type="checkbox" class="chkItem" name="chkItem"
-																								autocomplete="off" id="checkboxID"
-																								value="${service.id }"
-																								serviceName="${service.serviceName }"
-																								serviceNum="${service.instanceNum }"
-																								confRam="${service.ram }"
-																								status="${service.status }"
-																								imagename="${service.imgName }"
-																								imageversion="${service.imgVersion }"
-																								confCpu="${service.cpuNum }" /></td>
-																							<td style="width: 20%; white-space: nowrap;"><b
-																								class="caret margin"
-																								style="transform: rotate(-90deg);"></b> <a
-																								href="<%=path %>/service/detail/${service.id}"
-																								class="cluster_mirrer_name">${service.serviceName}</a>
-																								<span class="number-node">${service.instanceNum }</span>
-																								<span class="margin cursor console-code-modal"
-																								data-id="#console-code-modal"> <i
-																									class="fa fa-desktop"
-																									onclick="_showConsole('mysql');"></i>
-																							</span></td>
-																							<td style="width: 10%" class="cStatusColumn"
-																								id="containerStatus"><i
-																								class="${statusClassName}"></i> ${statusName} <img
-																								src="<%=path %>/images/loading4.gif" alt=""
-																								class="${loadingImgShowClass}" /></td>
-																							<td style="width: 20%;"><span
-																								class="cluster_mirrer"> <a title="点击查看镜像"
-																									target="_blank"
-																									href="<%=path %>../registry/detail/${service.imgID }">${service.imgName }</a>
-																							</span></td>
-																							<td style="width: 24%" id="mysqlurl"><span
-																								class="url"> <c:if
-																										test="${service.serviceAddr!=null&&service.serviceAddr!='' }">
-																										<a
-																											href="${service.serviceAddr}/${service.proxyPath}"
-																											target="_blank">${service.serviceAddr}/${service.proxyPath}</a>
-																									</c:if>
-																							</span></td>
-																							<td style="width: 12%" class="tdTimeStrap"><input
-																								type="hidden" class="timeStrap" value="">
-																								<i class="fa_time"></i> <span>${service.createDate }</span>
-																							</td>
-																							<td style="width: 8%"><c:if
-																									test="${service.status != 3}">
-																									<a id="${service.id}_start"
-																										class="startContainer_a"
-																										href="javascript:oneStartContainer(${service.id},${service.status})">
-																										<i class="fa fa-play"></i>
-																									</a>
-																								</c:if> <c:if test="${service.status == 3}">
-																									<a id="${service.id}_stop"
-																										class="stopContainer_a"
-																										href="javascript:oneStopContainer(${service.id},${service.status})"
-																										style="margin-left: 10px"> <i
-																										class="fa fa-power-off"></i>
-																									</a>
-																								</c:if> <c:if test="${service.status != 3}">
-																									<a id="${service.id}_del"
-																										class="deleteButton_a"
-																										href="javascript:oneDeleteContainer(${service.id})"
-																										style="margin-left: 10px"> <i
-																										class="fa fa-trash"></i>
-																									</a>
-																								</c:if></td>
-																						</tr>
+											<c:forEach items="${serviceList}" var="service">
+												<c:choose>
+													<c:when test="${service.status == 1 }">
+														<c:set var="statusName" value="未启动"></c:set>
+														<c:set var="statusClassName" value="fa_stop"></c:set>
+														<c:set var="loadingImgShowClass" value="hide"></c:set>
+													</c:when>
+													<c:when test="${service.status == 2 }">
+														<c:set var="statusName" value="启动中"></c:set>
+														<c:set var="statusClassName" value="fa_success"></c:set>
+														<c:set var="loadingImgShowClass" value=""></c:set>
+														<c:set var="loadingImgShowClass" value="hide"></c:set>
+													</c:when>
+													<c:when test="${service.status == 3 }">
+														<c:set var="statusName" value="运行中"></c:set>
+														<c:set var="statusClassName" value="fa_run"></c:set>
+														<c:set var="loadingImgShowClass" value="hide"></c:set>
+													</c:when>
+													<c:when test="${service.status == 4 }">
+														<c:set var="statusName" value="已停止"></c:set>
+														<c:set var="statusClassName" value="fa_stop"></c:set>
+														<c:set var="loadingImgShowClass" value="hide"></c:set>
+													</c:when>
+													<c:when test="${service.status == 5 }">
+														<c:set var="statusName" value="启动失败"></c:set>
+														<c:set var="statusClassName" value="fa_stop"></c:set>
+														<c:set var="loadingImgShowClass" value="hide"></c:set>
+													</c:when>
+												</c:choose>
+												<c:if test="${service.id == null || service.id == 0}">
+													<c:set var="cursorClass" value="cursor-no-drop"></c:set>
+												</c:if>
 
-																						<tr style="border-left: 1px solid #eee;"
-																							class="hide">
-																							<td colspan="8"><div class="align-center">
-																									<table class="table">
-																										<thead
-																											style="background: #FAFAFA; border-top: 1px solid #EDECEC;">
-																											<c:forEach items="${containerList}"
-																												var="container">
-																												<c:if
-																													test="${container.serviceid == service.id}">
-																													<c:choose>
-																														<c:when test="${container.containerStatus == 1 }">
-																															<c:set var="statusName" value="未启动"></c:set>
-																															<c:set var="statusClassName" value="fa_stop"></c:set>
-																															<c:set var="loadingImgShowClass" value="hide"></c:set>
-																														</c:when>
-																														<c:when test="${container.containerStatus == 0 }">
-																															<c:set var="statusName" value="运行中"></c:set>
-													                                                  					  	<c:set var="statusClassName" value="fa_run"></c:set>
-													                                                    					<c:set var="loadingImgShowClass" value="hide"></c:set>
-																														</c:when>
-																													</c:choose>
-																													<tr class="tr-row">
-																														<td style="width: 5%">&nbsp;</td>
-																														<td style="width: 20%;"><a
-																															style="margin-left: 19px;"
-																															href="javascript:void(0)">${container.containerName }</a>
-																														</td>
-																														<td colspan="2" style="width: 30%"><i
-																															class="${statusClassName}"></i>
-																															${statusName} <img
-																															src="<%=path %>/images/loading4.gif"
-																															alt="" class="${loadingImgShowClass}" /></td>
-																														<td style="width: 34%"></td>
-																														<td style="width: 10%"></td>
-																													</tr>
-																												</c:if>
-																											</c:forEach>
-																										</thead>
-																									</table>
-																								</div></td>
-																						</tr>
-																					</tbody>
-																				</table>
-																			</div>
-																		</td>
-																	</tr>
 
-																</c:forEach>
-															</tbody>
-														</table>
-													</div>
-												</td>
-											</tr>
 
+												<tr class="clusterId" id="inst_${service.id }" onclick="loadContainers(this)"
+													containerName="${service.serviceName }" serviceId="${service.id }">
+													<td style="width: 5%; text-indent: 30px;"><input
+														type="checkbox" class="chkItem" name="chkItem"
+														autocomplete="off" id="checkboxID" value="${service.id }"
+														serviceName="${service.serviceName }"
+														serviceNum="${service.instanceNum }"
+														confRam="${service.ram }" status="${service.status }"
+														imagename="${service.imgName }"
+														imageversion="${service.imgVersion }"
+														confCpu="${service.cpuNum }" /></td>
+													<td style="width: 20%; white-space: nowrap;"><b id="aaa"
+														class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>
+														<a href="<%=path %>/service/detail/${service.id}" serviceId="${service.id}"
+														class="cluster_mirrer_name">${service.serviceName}</a> <span
+														class="number-node">${service.instanceNum }</span> <span
+														class="margin cursor console-code-modal"
+														data-id="#console-code-modal"> <i
+															class="fa fa-desktop" onclick="_showConsole('mysql');"></i>
+													</span></td>
+													<td style="width: 10%" class="cStatusColumn"
+														id="containerStatus"><i class="${statusClassName}"></i>
+														${statusName} <img src="<%=path %>/images/loading4.gif"
+														alt="" class="${loadingImgShowClass}" /></td>
+													<td style="width: 20%;"><span class="cluster_mirrer">
+															<a title="点击查看镜像" target="_blank"
+															href="<%=path %>../registry/detail/${service.imgID }">${service.imgName }</a>
+													</span></td>
+													<td style="width: 24%" id="mysqlurl"><span class="url">
+															<c:if
+																test="${service.serviceAddr!=null&&service.serviceAddr!='' }">
+																<a href="${service.serviceAddr}/${service.proxyPath}"
+																	target="_blank">${service.serviceAddr}/${service.proxyPath}</a>
+															</c:if>
+													</span></td>
+													<td style="width: 12%" class="tdTimeStrap"><input
+														type="hidden" class="timeStrap" value=""> <i
+														class="fa_time"></i> <span>${service.createDate }</span></td>
+													<td style="width: 8%"><c:if
+															test="${service.status != 3}">
+															<a id="${service.id}_start" class="startContainer_a"
+																href="javascript:oneStartContainer(${service.id},${service.status})">
+																<i class="fa fa-play"></i>
+															</a>
+														</c:if> <c:if test="${service.status == 3}">
+															<a id="${service.id}_stop" class="stopContainer_a"
+																href="javascript:oneStopContainer(${service.id},${service.status})"
+																style="margin-left: 10px"> <i
+																class="fa fa-power-off"></i>
+															</a>
+														</c:if> <c:if test="${service.status != 3}">
+															<a id="${service.id}_del" class="deleteButton_a"
+																href="javascript:oneDeleteContainer(${service.id})"
+																style="margin-left: 10px"> <i class="fa fa-trash"></i>
+															</a>
+														</c:if></td>
+												</tr>
+												
+											</c:forEach>
+												
 										</tbody>
-										<tfoot>
+										<tfoot class="hide">
 											<tr>
 												<td colspan="7">
 													<ul class="pagination pull-right"></ul>
@@ -375,10 +288,13 @@
 		</script>
 	</c:if>
 	<script type="text/javascript">
-		$(".footable").footable();
-		$("#checkallbox").next().addClass("hide");
-		$(".hideDropIcon").next().addClass("hide");
-		$(".del-operation").children("span").addClass("hide");
+		 $('.dataTables-example').dataTable({
+			"aoColumnDefs" : [ {
+				"bSortable" : false,
+				"aTargets" : [ 0, 6 ]
+			} ]
+		});
+		$("#checkallbox").parent().removeClass("sorting_asc"); 
 	</script>
 </body>
 </html>
