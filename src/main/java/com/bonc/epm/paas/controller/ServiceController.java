@@ -1576,6 +1576,55 @@ public class ServiceController {
         map.put("mountPath",mountPath);
         return JSON.toJSONString(map);
     }
+    /**
+     * Description: <br>
+     * 根据服务id查询服务和容器
+     * @param serviceID 服务ID
+     * @return String
+     */
+    @RequestMapping(value = { "service/findservice.do" }, method = RequestMethod.GET)
+    @ResponseBody
+	public String findService(Long serviceID) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        User currentUser = CurrentUserUtils.getInstance().getUser();
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        Service service = serviceDao.findOne(serviceID);
+        List<Container> containerList = new ArrayList<Container>();
+		// 获取特殊条件的pods
+		try {
+				Map<String, String> mapapp = new HashMap<String, String>();
+				mapapp.put("app", service.getServiceName());
+				PodList podList = client.getLabelSelectorPods(mapapp);
+				if (podList != null) {
+					List<Pod> pods = podList.getItems();
+					if (CollectionUtils.isNotEmpty(pods)) {
+						int i = 1;
+						for (Pod pod : pods) {
+							String podName = pod.getMetadata().getName();
+							Container container = new Container();
+							container.setContainerName(
+									service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+							container.setServiceid(service.getId());
+							if (pod.getStatus().getPhase().equals("Running")) {
+								container.setContainerStatus(0);
+							} else {
+								container.setContainerStatus(1);
+							}
+							containerList.add(container);
+						}
+					}
+				}
+			
+		} catch (Exception e) {
+			LOG.error("服务查询错误：" + e);
+		}
+		map.put("service", service);
+		map.put("containerList", containerList);
+		map.put("status", "200");
+        return JSON.toJSONString(map);
+
+	}
+
     
 }
 
