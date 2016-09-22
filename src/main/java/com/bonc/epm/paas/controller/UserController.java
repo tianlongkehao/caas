@@ -162,7 +162,9 @@ public class UserController {
      * @see Resource Restriction
      */
     @RequestMapping(value = { "/save.do" }, method = RequestMethod.POST)
+    @ResponseBody
 	public String userSave(User user, Resource resource, Restriction restriction, Model model) {
+        Map<String, Object> map = new HashMap<String, Object>();
         try {
             fillPartUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，为client创建Namespace
@@ -171,15 +173,25 @@ public class UserController {
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
             
             if (!createNsAndSec(user, namespace, client)) {
-                throw new ServiceException("create namespace or secret error.");
+                client.deleteNamespace(user.getNamespace());
+                map.put("message", "创建namespace或者secret失败！");
+                map.put("creatFlag", "400");
+                return JSON.toJSONString(map);
             }
 
             if (!createQuota(user, resource, client)) {
-                throw new ServiceException("create quata error.");
+                client.deleteNamespace(user.getNamespace());
+                map.put("message", "创建quota失败");
+                map.put("creatFlag", "400");
+                return JSON.toJSONString(map);
             }
 
             if (!createCeph(user)) {
-                throw new ServiceException("create ceph error.");
+                client.deleteNamespace(user.getNamespace());
+                client.deleteResourceQuota(user.getNamespace());
+                map.put("message", "创建ceph失败");
+                map.put("creatFlag", "400");
+                return JSON.toJSONString(map);
             }
 
 			// 为client创建资源限制
@@ -190,18 +202,16 @@ public class UserController {
             
 			// DB保存用户信息
             userDao.save(user);
-            model.addAttribute("creatFlag", "200");
+            map.put("creatFlag", "200");
         } 
         catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("creatFlag", "400");
+            map.put("message", "创建失败");
+            map.put("creatFlag", "400");
+            return JSON.toJSONString(map);
         }
 
-		// 返回 user.jsp 页面，展示所有租户信息
-        List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
-        model.addAttribute("userList", userList);
-        model.addAttribute("menu_flag", "user");
-        return "user/user.jsp";
+        return JSON.toJSONString(map);
     }
 
     /**
@@ -230,8 +240,9 @@ public class UserController {
             model.addAttribute("creatFlag", "400");
         }
 		
-        User userManger = userDao.findOne(CurrentUserUtils.getInstance().getUser().getId());
-        List<User> userManageList = userDao.checkUsermanage34(userManger.getUser_province());
+//        User userManger = userDao.findOne(CurrentUserUtils.getInstance().getUser().getId());
+//        List<User> userManageList = userDao.checkUsermanage34(userManger.getUser_province());
+        List<User> userManageList = userDao.checkUser1manage34(user.getParent_id());
         model.addAttribute("userManageList", userManageList);
         model.addAttribute("menu_flag", "usermanage");
         return "user/user-management.jsp";
@@ -318,7 +329,7 @@ public class UserController {
     /**
      * 
      * Description:
-     * 局部刷新，批量删除用户
+     * 局部刷新，批量删除租户
      * @param ids String
      * @return JSON.toJSONString(map)
      * @see
@@ -348,6 +359,32 @@ public class UserController {
         catch (KubernetesClientException e) {
             LOG.error("KubernetesClientException :-" + e.getMessage());
             map.put("status", "400");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 批量删除用户
+     * @param ids id
+     * @return  String
+     */
+    @RequestMapping("/delUser.do")
+    @ResponseBody
+    public String userDel(String ids){
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            if (StringUtils.isNotBlank(ids)) {
+                String[] idArr = ids.split(",");
+                for (int i = 0; i < idArr.length; i++) {
+                   userDao.delete(Long.parseLong(idArr[i]));
+                }
+            }
+            map.put("status", "200");
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -441,6 +478,7 @@ public class UserController {
         this.model = model;
         User user = userDao.findOne(id);
         model.addAttribute("user", user);
+        model.addAttribute("menu_flag", "usermanage");
         return "user/user-manage-detail.jsp";
     }
 
