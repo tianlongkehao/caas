@@ -2757,6 +2757,9 @@
 	 */
 	function _fnFilterCreateSearch( sSearch, bRegex, bSmart, bCaseInsensitive )
 	{
+		//TODO
+		$("b").css("transform","rotate(-90deg)");
+		$("#checkallbox").parent().removeClass("sorting_asc");
 		var asSearch,
 			sRegExpString = bRegex ? sSearch : _fnEscapeRegex( sSearch );
 	
@@ -3049,6 +3052,9 @@
 	
 	function _fnLengthChange ( settings, val )
 	{
+		//TODO
+		$("b").css("transform","rotate(-90deg)");
+		$("#checkallbox").parent().removeClass("sorting_asc");
 		var len = parseInt( val, 10 );
 		settings._iDisplayLength = len;
 	
@@ -3188,6 +3194,9 @@
 	 */
 	function _fnPageChange ( settings, action, redraw )
 	{
+		//TODO
+		$("b").css("transform","rotate(-90deg)");
+		$("#checkallbox").parent().removeClass("sorting_asc");
 		var
 			start     = settings._iDisplayStart,
 			len       = settings._iDisplayLength,
