@@ -172,7 +172,13 @@ public class StorageController {
         if (null == storageValidate) {
             // ceph中创建存储卷目录 TODO 3
             CephController ceph = new CephController();
-            ceph.connectCephFS();
+            try {
+                ceph.connectCephFS();
+            }
+            catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             ceph.createStorageCephFS(storage.getStorageName(), storage.isVolReadOnly());
 
             storageDao.save(storage);
@@ -248,7 +254,13 @@ public class StorageController {
         else {
             storageDao.delete(storageId);
             CephController cephCon = new CephController();
-            cephCon.connectCephFS();
+            try {
+                cephCon.connectCephFS();
+            }
+            catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             cephCon.deleteStorageCephFS(storage.getStorageName());
             map.put("status", "200");
         }
@@ -324,7 +336,13 @@ public class StorageController {
     public void mountLocalCeph(File file) {
         if (!file.exists()) {
             CephController cephCon = new CephController();
-            cephCon.connectCephFS();
+            try {
+                cephCon.connectCephFS();
+            }
+            catch (Exception e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
             try {
                 SshConnect.connect(cephController.getUsername(), cephController.getPassword(), cephController.getUrl(),
                         22);

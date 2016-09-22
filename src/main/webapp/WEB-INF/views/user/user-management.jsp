@@ -6,7 +6,7 @@
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/user.css" />
-<script type="text/javascript" src="<%=path%>/js/user/user_create.js"></script>
+<%-- <script type="text/javascript" src="<%=path%>/js/user/user_create.js"></script> --%>
 </head>
 <body>
 
@@ -113,6 +113,79 @@
 	<input id="create_flag" value="${creatFlag}" type="hidden">
 	<input id="update_flag" value="${updateFlag}" type="hidden">
 	<script type="text/javascript">
+	
+	/**
+	 * 删除选中用户
+	 */
+	function delUser(){
+	    var id = "";
+	    $(":checked[name='ids']").each(function(){
+	        id = id + jQuery(this).val() + ",";
+	    });
+	    if ("" == id) {
+	        layer.alert("请选择至少一个用户", {icon:0});
+	        return;
+	    }
+	    else {
+	        id = id.substring(0, id.length - 1);
+	        layer.open({
+	            title: '删除用户',
+	            content:'确定删除多个用户吗？',
+	            btn: ['确定', '取消'],
+	            yes: function(index, layero){ //或者使用btn1
+	                layer.close(index);
+	                $.ajax({
+	                    url:ctx+"/user/delUser.do?ids="+id,
+	                    success:function(data){
+	                        data = eval("(" + data + ")");
+	                        if(data.status=="200"){
+	                            layer.alert("用户信息删除成功");
+	                            window.location.reload();
+	                        }else{
+	                            layer.alert("用户信息删除失败，请检查服务器连接");
+	                        }
+	                        location.reload(true);
+	                    }
+	                })
+
+	            },
+	            cancel: function(index){ //或者使用btn2
+	                //按钮【按钮二】的回调
+	            }
+	        });
+	    }
+	}
+	/**
+	 * 删除选中用户
+	 */
+	function delUserById(id){
+	    layer.open({
+	        title: '删除用户',
+	        content:'确定删除这个用户吗？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ //或者使用btn1
+	            layer.close(index);
+	            $.ajax({
+	                url:ctx+"/user/delUser.do?ids="+id,
+	                success:function(data){
+	                    data = eval("(" + data + ")");
+	                    if(data.status=="200"){
+	                        layer.alert("用户信息删除成功");
+	                        window.location.reload();
+	                    }else{
+	                        layer.alert("用户信息删除失败，请检查服务器连接");
+	                    }
+	                    location.reload(true);
+	                }
+	            })
+
+	        },
+	        cancel: function(index){ //或者使用btn2
+	            //按钮【按钮二】的回调
+	        }
+	    });
+	}
+	
     $(document).ready(function(){
     	$('.dataTables-example').dataTable({
 	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,7] }]
