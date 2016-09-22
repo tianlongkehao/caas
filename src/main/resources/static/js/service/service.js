@@ -139,6 +139,7 @@
 				url:""+ctx+"/service/findservice.do?serviceID="+serviceID,
 				type:"get",
 				success:function(data){
+					$(aaa).remove();
 					var containersHtml = "";
 					var data = eval("("+data+")");
 					var containerLength = data.containerList.length;
