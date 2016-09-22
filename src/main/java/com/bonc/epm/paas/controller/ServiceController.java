@@ -369,31 +369,36 @@ public class ServiceController {
             if (CollectionUtils.isNotEmpty(pods)) {
                 int i = 1;
                 for (Pod pod : pods) {
-					// 获取pod名称
-                    String podName = pod.getMetadata().getName();
-					// 初始化es客户端
-                    ESClient esClient = new ESClient();
-                    esClient.initESClient(esConf.getHost(),esConf.getClusterName());
-					// 设置es查询日期，数据格式，查询的pod名称
+                	for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
+                		
+                		// 获取pod名称
+                		String podName = pod.getMetadata().getName();
+                		//获取container名称
+                		String containerName = k8scontainer.getName();
+                		// 初始化es客户端
+                		ESClient esClient = new ESClient();
+                		esClient.initESClient(esConf.getHost(),esConf.getClusterName());
+                		// 设置es查询日期，数据格式，查询的pod名称
 //                    String s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
-                	Calendar calendar = Calendar.getInstance();
-                	calendar.add(Calendar.HOUR_OF_DAY, -8);
-                	calendar.add(Calendar.MINUTE, -3);
-                	String dateString = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss+00:00").format(calendar.getTime());
-                	String s = esClient.search("fluentd", podName,dateString,"9999-12-31T00:00:00+00:00");
-
-					// 关闭es客户端
-                    esClient.closeESClient();
-					// 拼接日志格式
-                    String add = "[" + "App-" + i + "] [" + podName + "]：";
-                    s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-
-                    s = s.substring(0, s.length() - add.length());
-                    Container container = new Container();
-                    container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-                    container.setServiceid(service.getId());
-                    containerList.add(container);
-                    logList.add(s);
+                		Calendar calendar = Calendar.getInstance();
+                		calendar.add(Calendar.HOUR_OF_DAY, -8);
+                		calendar.add(Calendar.MINUTE, -3);
+                		String dateString = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss+00:00").format(calendar.getTime());
+                		String s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
+                		
+                		// 关闭es客户端
+                		esClient.closeESClient();
+                		// 拼接日志格式
+                		String add = "[" + "App-" + i + "] [" + podName + "] ["+containerName+"]：";
+                		s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+                		
+                		s = s.substring(0, s.length() - add.length());
+                		Container container = new Container();
+                		container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+                		container.setServiceid(service.getId());
+                		containerList.add(container);
+                		logList.add(s);
+                	}
                 }
             }
         }
@@ -452,41 +457,49 @@ public class ServiceController {
                 if (CollectionUtils.isNotEmpty(pods)) {
                     int i = 1;
                     for (Pod pod : pods) {
-                        // 获取pod名称
-                        String podName = pod.getMetadata().getName();
-                        // 初始化es客户端
-                        ESClient esClient = new ESClient();
-                        esClient.initESClient(esConf.getHost(),esConf.getClusterName());
-                        String s = null;
-                        if (date != "") {
-							// 设置es查询日期，数据格式，查询的pod名称
+                    	
+                    	for(com.bonc.epm.paas.kubernetes.model.Container container : pod.getSpec().getContainers()){
+                    		
+                    		// 获取pod名称
+                    		String podName = pod.getMetadata().getName();
+                    		
+                    		//获取container名称
+                    		String containerName = container.getName();
+                    		
+                    		// 初始化es客户端
+                    		ESClient esClient = new ESClient();
+                    		esClient.initESClient(esConf.getHost(),esConf.getClusterName());
+                    		String s = null;
+                    		if (date != "") {
+                    			// 设置es查询日期，数据格式，查询的pod名称
 //                            s = esClient.search("logstash-" + date.replaceAll("-", "."), "fluentd", podName);
-                        	Calendar calendar = Calendar.getInstance();
-                        	calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
-                        	calendar.add(Calendar.HOUR_OF_DAY, -8);
-                        	String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
-                            s = esClient.search("fluentd", podName,dateString,"9999-12-31T00:00:00+00:00");
-                        } 
-                        else {
-							// 设置es查询日期，数据格式，查询的pod名称
-                        	Calendar calendar = Calendar.getInstance();
-                        	calendar.add(Calendar.HOUR_OF_DAY, -8);
-                        	calendar.add(Calendar.MINUTE, -3);
-                        	String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
-                            s = esClient.search("fluentd", podName,dateString,"9999-12-31T00:00:00+00:00");
+                    			Calendar calendar = Calendar.getInstance();
+                    			calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
+                    			calendar.add(Calendar.HOUR_OF_DAY, -8);
+                    			String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+                    			s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
+                    		} 
+                    		else {
+                    			// 设置es查询日期，数据格式，查询的pod名称
+                    			Calendar calendar = Calendar.getInstance();
+                    			calendar.add(Calendar.HOUR_OF_DAY, -8);
+                    			calendar.add(Calendar.MINUTE, -3);
+                    			String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+                    			s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
 //                            s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
-                        }
-
-						// 关闭es客户端
-                        esClient.closeESClient();
-						// 拼接日志格式
-                        String add = "[" + "App-" + i + "] [" + podName + "]：";
+                    		}
+                    		
+                    		// 关闭es客户端
+                    		esClient.closeESClient();
+                    		// 拼接日志格式
+                    		String add = "[" + "App-" + i + "] [" + podName + "] ["+containerName+"]：";
 //                        s = add + s.replaceAll("\n", "\n" + add);
-                        s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-
-                        s = s.substring(0, s.length() - add.length());
-                        logStr = logStr.concat(s);
-                        logList.add(s);
+                    		s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+                    		
+                    		s = s.substring(0, s.length() - add.length());
+                    		logStr = logStr.concat(s);
+                    		logList.add(s);
+                    	}
                     }
                 }
             }

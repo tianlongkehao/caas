@@ -64,7 +64,7 @@ $(document).ready(function(){
           issure: true, // 是否显示确认
           istime: true,
           format: 'YYYY-MM-DDThh:mm:ss',
-          min: $('#creationTime').val(),
+//          min: $('#creationTime').val(),
 //          max: laydate.now(+0),
           zIndex: 99999999, //css z-index
           choose: function(dates){ //选择好日期的回调
