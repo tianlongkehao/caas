@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
@@ -348,10 +350,53 @@ public class RegistryController {
     @RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteImage(@RequestParam long imageId){
-        imageDao.delete(imageId);
-		// TODO 应该删除本地镜像和仓库中的镜像
-        return "ok";
+        
+        Image image = imageDao.findOne(imageId);
+        if (null != image) {
+            image.setIsDelete(CommConstant.TYPE_YES_VALUE);
+            imageDao.save(image);
+            // TODO 应该删除本地镜像和仓库中的镜像
+            return "ok";
+        } 
+        else {
+            return "error";
+        }
     }
+    
+    
+   /**
+    * Description: <br>
+    * 批量删除镜像
+    * @param imageIds 
+    * @return String
+    */
+    @RequestMapping("registry/delImages.do")
+    @ResponseBody
+    public String deleteImages(String imageIds) {
+        // 解析获取的id List
+        ArrayList<Long> ids = new ArrayList<Long>();
+        String[] str = imageIds.split(",");
+        if (str != null && str.length > 0) {
+            for (String id : str) {
+                ids.add(Long.valueOf(id));
+            }
+        }
+        Map<String, Object> maps = new HashMap<String, Object>();
+        try {
+            for (long id : ids) {
+                deleteImage(id);
+            }
+            maps.put("status", "200");
+        } 
+        catch (Exception e) {
+            maps.put("status", "400");
+            LOG.error("镜像删除错误！");
+        }
+        return JSON.toJSONString(maps); 
+    }
+       
+    
+    
     
     /**
      * Description: <br>
