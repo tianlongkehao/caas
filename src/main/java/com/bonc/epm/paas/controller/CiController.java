@@ -462,7 +462,7 @@ public class CiController {
             LOG.error("uploadImage error:"+e.getMessage());
             return "redirect:/error"; 
         }
-        return "redirect:/ci";
+        return "redirect:/registry/1";
     }
 	
     /**
