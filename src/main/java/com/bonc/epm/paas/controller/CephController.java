@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.FileUtils;
 import com.ceph.fs.CephMount;
 import com.ceph.rados.IoCTX;
 import com.ceph.rados.Rados;
@@ -221,6 +222,24 @@ public class CephController {
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     *  格式化卷组
+     * 
+     * @param storageName
+     * @param isVolReadOnly 
+     * @throws FileNotFoundException 
+     * @see
+     */
+    public void formatStorageCephFS(String root,String storageName,boolean isVolReadOnly) throws FileNotFoundException{
+        LOGGER.info("进入方法：deleteStorageCephFS");
+        // 获取NAMESPACE
+        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        CephController cep = new CephController();
+        StringBuffer path = new StringBuffer(root);
+        path.append(namespace).append("/").append(storageName);
+        FileUtils.delAllFile(path.toString());
     }
 
     /**
