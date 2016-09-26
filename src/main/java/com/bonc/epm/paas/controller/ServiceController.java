@@ -1303,9 +1303,21 @@ public class ServiceController {
             for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
                 setContainer(container, cpus, rams);
             }
-            client.updateReplicationController(service.getServiceName(), controller);
-            serviceDao.save(service);
-            map.put("status", "200");
+            controller = client.updateReplicationController(service.getServiceName(), controller);
+            for (com.bonc.epm.paas.kubernetes.model.Container container2 :controller.getSpec().getTemplate().getSpec().getContainers()) {
+				if (container2.getResources().getLimits().get("cpu") != cpus ||
+					container2.getResources().getLimits().get("memory").equals(rams + "Mi") ||
+					container2.getResources().getRequests().get("cpu") != cpus ||
+					container2.getResources().getRequests().get("memory").equals(rams + "Mi")	) {
+		            map.put("status", "400");
+		            LOG.info("modifyCPU failed:id["+id+"], cpus["+cpus+"], rams["+rams+"]");
+		            break;
+				}
+			}
+            if (map.get("status") == null) {
+            	map.put("status", "200");
+            	serviceDao.save(service);
+			}
         }
         catch (KubernetesClientException e) {
             map.put("status", "400");
