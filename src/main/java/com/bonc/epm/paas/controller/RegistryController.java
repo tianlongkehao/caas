@@ -109,25 +109,23 @@ public class RegistryController {
         long userId = CurrentUserUtils.getInstance().getUser().getId();
         if (index == 0) {
             images = imageDao.findByImageType(1);
-            addCurrUserFavor(images);
             active = "镜像中心";
         } 
         else if (index == 1) {
             images = imageDao.findAllByCreator(userId);
-            addCurrUserFavor(images);
             active = "我的镜像";
         }
         else if(index == 2){
             images = userDao.findAllFavor(userId);
-            addCurrUserFavor(images);
             active = "我的收藏";
         }
+        addCurrUserFavor(images);
 		addCreatorName(images);
         model.addAttribute("images", images);
-        model.addAttribute("menu_flag", "registry");
         model.addAttribute("index", index);
         model.addAttribute("active",active);
-		
+        model.addAttribute("editImage",userId);
+        model.addAttribute("menu_flag", "registry");
         return "docker-registry/registry.jsp";
     }
 	
@@ -176,6 +174,11 @@ public class RegistryController {
 	public String detail(@PathVariable long id, Model model) {
         long userId = CurrentUserUtils.getInstance().getUser().getId();
         Image image = imageDao.findById(id);
+        //判断镜像是否被删除
+        if (null == image) {
+            model.addAttribute("menu_flag", "registry");
+            return "docker-registry/nodetail.jsp";
+        }
         //查询有多少租户收藏当前镜像
         int favorUser = imageDao.findAllUserById(id);
         //查询当前镜像的创建者信息
