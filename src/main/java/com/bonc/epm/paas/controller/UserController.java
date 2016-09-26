@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,10 +20,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.Resource;
 import com.bonc.epm.paas.entity.Restriction;
+import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -42,7 +43,6 @@ import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
-import com.bonc.epm.paas.util.ServiceException;
 
 /**
  * 
@@ -60,16 +60,31 @@ public class UserController {
      * LOG
      */
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+    
     /**
      * UserDao
      */
     @Autowired
     private UserDao userDao;
+    
     /**
      * StorageDao
      */
     @Autowired
 	private StorageDao storageDao;
+    
+    /**
+     * 服务数据层接口
+     */
+    @Autowired
+    private ServiceDao serviceDao;
+    
+    /**
+     * 调用服务controller
+     */
+    @Autowired
+    private ServiceController serviceController;
+    
     /**
      * KubernetesClientService
      */
@@ -81,6 +96,7 @@ public class UserController {
      */
     @Value("${ceph.key}")
     private String CEPH_KEY;
+    
     /**
      * Model
      */
@@ -381,7 +397,8 @@ public class UserController {
             if (StringUtils.isNotBlank(ids)) {
                 String[] idArr = ids.split(",");
                 for (int i = 0; i < idArr.length; i++) {
-                   userDao.delete(Long.parseLong(idArr[i]));
+                    delUserService(Long.parseLong(idArr[i]));
+                    userDao.delete(Long.parseLong(idArr[i]));
                 }
             }
             map.put("status", "200");
@@ -391,6 +408,29 @@ public class UserController {
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 删除用户时同步删除用户创建的服务
+     * @param userId : 用户Id
+     * @return 
+     * @see
+     */
+    public void delUserService(long userId){
+        try {
+            List<Service> list = serviceDao.findByCreateBy(userId);
+            String serviceIds = "";
+            if (list.size() > 0) {
+                for (Service service : list) {
+                    serviceIds += service.getId() + ",";
+                }
+                serviceController.delServices(serviceIds);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

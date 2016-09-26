@@ -52,7 +52,7 @@
                                             <a case="public" class="btns active" onclick="javascript:$('#imgType').val(1)">公有</a>
                                             <a case="private" class="btns" onclick="javascript:$('#imgType').val(2)">私有</a>
                                         </span>
-                                        <input type="hidden" name="imgType" id="imgType" value="1">
+                                        <input type="hidden" name="imageType" id="imgType" value="1">
                                     </div>
                                 </div>
                             </div>
