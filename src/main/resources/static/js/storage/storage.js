@@ -40,13 +40,14 @@ function loadStorageList(){
         							' <td style="width: 15%; text-indent:10px;">' + storage.storageSize + ' M</td>'+
         							' <td style="width: 10%;">' + storage.createDate + '</td>'+
         							' <td style="width: 20%; text-indent:10px;">' +
-        								' <span class="btn btn-primary format formatStorage"> 格式化 </span>'+
-        								' <span class="btn btn-primary dilation dilatationStorage" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'">扩容</span>'+
-        								' <span class="btn btn-primary delete deleteStorage" storageId="'+storage.id +'"> 删除 </span>'+
+        							' <span class="btn btn-primary format formatStorage" storageName="'+storage.storageName +'" isVolReadOnly="'+storage.volReadOnly+'"> 格式化 </span>'+
+    									' <span class="btn btn-primary dilation dilatationStorage" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'">扩容</span>'+
+    									' <span class="btn btn-primary delete deleteStorage" storageId="'+storage.id +'"> 删除 </span>'+
         							'</td>'+	
         						+'</tr>';
         	}
         	$('#storageList').html(itemsHtml);
+        	mountLocalCeph();
 		}
 		$('.dataTables-example').dataTable({
 	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 5 ] }]
@@ -69,7 +70,64 @@ $(function(){
 	dilatationStorage();
 	
 	delStorage();
+	
+	formatStorage();
 });
+
+function mountLocalCeph(){
+	$.ajax({
+		url:""+ctx+"/storage/mount.do",
+		success:function(data){
+			data = eval("(" + data + ")");
+			if(data.status=="200"){
+//				layer.msg( "修改成功！", {
+//						icon: 1
+//					},function(){
+//						window.location.reload();
+//					});
+			} else if(data.status=="500"){
+				layer.alert("挂载有点异常啊哈");
+			}
+
+		}
+	})
+}
+
+function formatStorage(){
+	$(document).on("click",".formatStorage",function(){
+		var storageName = $(this).attr("storageName");
+		var isVolReadOnly = $(this).attr("isVolReadOnly");
+  		 layer.open({
+		        title: '格式化卷组',
+		        content: '确定格式化卷组？',
+		        btn: ['确定', '取消'],
+		        yes: function(index){ 
+		        	layer.close(index);
+		        	$.ajax({
+		   		     		url:""+ctx+"/storage/format",
+		   		     		type:"post",
+		   		     		data:{"storageName":storageName,"isVolReadOnly":isVolReadOnly},
+		   		     		success:function(data){
+		   		     		data = eval("(" + data + ")");
+							if(data.status=="200"){
+			   		     			layer.msg( "格式化成功！", {
+				   						icon: 1
+				   					},function(){
+				   						window.location.href = ""+ctx+"/service/storage";
+				   					});
+		   		     			}
+		   		     		},
+		   		     		error:function(){
+			   		     		layer.msg( "格式化失败", {
+			   						icon: 0.5
+			   					});
+		   		     		}
+		   		     	});
+		        	refresh();
+		        }
+		 });
+	});
+}
 
 function delStorage() {
 
