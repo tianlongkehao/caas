@@ -1264,7 +1264,7 @@ public class ServiceController {
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
                 ReplicationController controller = client.updateReplicationController(service.getServiceName(),
 						addservice);
-                if (controller != null || controller.getSpec().getReplicas() == addservice) {
+                if (controller != null && controller.getSpec().getReplicas() == addservice) {
                     map.put("status", "200");
                     service.setInstanceNum(addservice);
                     serviceDao.save(service);
