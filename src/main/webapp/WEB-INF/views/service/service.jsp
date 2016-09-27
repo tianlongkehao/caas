@@ -142,7 +142,7 @@
 														alt="" class="${loadingImgShowClass}" /></td>
 													<td style="width: 20%;"><span class="cluster_mirrer">
 															<a title="点击查看镜像" target="_blank"
-															href="<%=path %>../registry/detail/${service.imgID }">${service.imgName }</a>
+															href="<%=path %>/registry/detail/${service.imgID }">${service.imgName }</a>
 													</span></td>
 													<td style="width: 24%" id="mysqlurl"><span class="url">
 															<c:if

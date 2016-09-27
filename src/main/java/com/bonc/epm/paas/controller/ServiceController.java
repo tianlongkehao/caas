@@ -1147,8 +1147,8 @@ public class ServiceController {
                 ReplicationController controller = client.getReplicationController(serviceName);
                 String NS = controller.getMetadata().getNamespace();
                 String cmd = "kubectl rolling-update " + serviceName + " --namespace=" + NS
-						+ " --update-period=10s --image="
-						+ dockerClientService.generateRegistryImageName(imgName, imgVersion);
+						                               + " --update-period=10s --image="
+						                               + dockerClientService.generateRegistryImageName(imgName, imgVersion);
                 boolean flag = cmdexec(cmd);
                 if (flag) {
                     service.setImgVersion(imgVersion);
@@ -1156,8 +1156,7 @@ public class ServiceController {
                     map.put("status", "200");
                 }
                 else {
-                    String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS 
-				                               + " --rollback";
+                    String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS + " --rollback";
                     cmdexec(rollBackCmd);
                     map.put("status", "400");
                 }
@@ -1185,15 +1184,21 @@ public class ServiceController {
         try {
             SshConnect.connect(name, password, hostIp, 22);
             boolean b = false;
-            String rollingLog = SshConnect.exec(cmd, 1000);
+            String rollingLog = SshConnect.exec(cmd, 10000);
+            if (rollingLog.endsWith("$") || rollingLog.endsWith("#") || rollingLog.contains("updated")) {
+                b = true;
+            }
             while (!b) {
                 String str = SshConnect.exec("", 10000);
                 if (StringUtils.isNotBlank(str)) {
                     rollingLog += str;
                 }
-                b = (str.endsWith("$") || str.endsWith("#")) || str.endsWith("updated");
+                b = (rollingLog.endsWith("$") || rollingLog.endsWith("#") || rollingLog.contains("updated"));
             }
             LOG.info("rolling-update LOG:-"+rollingLog);
+            if (rollingLog.contains("error")) {
+                return false;
+            }
             String result = SshConnect.exec("echo $?", 1000);
             if (StringUtils.isNotBlank(result)) {
                 if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
