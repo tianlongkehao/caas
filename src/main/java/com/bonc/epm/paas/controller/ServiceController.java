@@ -207,7 +207,7 @@ public class ServiceController {
         try {
             getServiceSource(model, currentUser.getId());
             getNginxServer(model);
-            //getleftResource(model);
+            getleftResource(model);
         } 
         catch (KubernetesClientException e) {
             model.addAttribute("msg", e.getStatus().getMessage());
@@ -1304,16 +1304,17 @@ public class ServiceController {
                 setContainer(container, cpus, rams);
             }
             controller = client.updateReplicationController(service.getServiceName(), controller);
-            for (com.bonc.epm.paas.kubernetes.model.Container container2 :controller.getSpec().getTemplate().getSpec().getContainers()) {
-				if (container2.getResources().getLimits().get("cpu") != cpus ||
-					container2.getResources().getLimits().get("memory").equals(rams + "Mi") ||
-					container2.getResources().getRequests().get("cpu") != cpus ||
-					container2.getResources().getRequests().get("memory").equals(rams + "Mi")	) {
-		            map.put("status", "400");
-		            LOG.info("modifyCPU failed:id["+id+"], cpus["+cpus+"], rams["+rams+"]");
-		            break;
-				}
-			}
+//            for (com.bonc.epm.paas.kubernetes.model.Container container2 :controller.getSpec().getTemplate().getSpec().getContainers()) {
+//                if (container2.getResources().getLimits().get("cpu") != cpus ||
+//					container2.getResources().getLimits().get("memory").equals(rams + "Mi") ||
+//					container2.getResources().getRequests().get("cpu") != cpus ||
+//					container2.getResources().getRequests().get("memory").equals(rams + "Mi")) {
+//		            map.put("status", "400");
+//		            LOG.info("modifyCPU failed:id["+id+"], cpus["+cpus+"], rams["+rams+"]");
+//		            break;
+//				}
+//			}
+            
             if (map.get("status") == null) {
             	map.put("status", "200");
             	serviceDao.save(service);
@@ -1344,11 +1345,11 @@ public class ServiceController {
         ResourceRequirements requirements = new ResourceRequirements();
         requirements.getLimits();
         Map<String, Object> def = new HashMap<String, Object>();
-        def.put("cpu", cpus);
+        def.put("cpu", cpus / Integer.valueOf(RATIO_MEMTOCPU));
         def.put("memory", rams + "Mi");
         Map<String, Object> limit = new HashMap<String, Object>();
 		// limit = kubernetesClientService.getlimit(limit);
-        limit.put("cpu", cpus);
+        limit.put("cpu", cpus / Integer.valueOf(RATIO_MEMTOCPU));
         limit.put("memory", rams + "Mi");
         requirements.setRequests(def);
         requirements.setLimits(limit);

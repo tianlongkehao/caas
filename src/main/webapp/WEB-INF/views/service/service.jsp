@@ -142,7 +142,7 @@
 														alt="" class="${loadingImgShowClass}" /></td>
 													<td style="width: 20%;"><span class="cluster_mirrer">
 															<a title="点击查看镜像" target="_blank"
-															href="<%=path %>../registry/detail/${service.imgID }">${service.imgName }</a>
+															href="<%=path %>/registry/detail/${service.imgID }">${service.imgName }</a>
 													</span></td>
 													<td style="width: 24%" id="mysqlurl"><span class="url">
 															<c:if
@@ -250,7 +250,7 @@
 							style="margin-top: 10px; width: 165px;" min="${cpumin }"
 							max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
 							id="confCpu" name="confCpu"> <span class="unit">个</span>
-						<!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" ></label></span> -->
+						<span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" >${leftcpu }</label></span>
 					</div>
 				</li>
 				<li class="line-h-3">
@@ -260,7 +260,7 @@
 							data-slider-min="${memorymin }" data-slider-max="${memorymax }"
 							data-slider-step="1" /> <input type="text" left="" value=""
 							id="confRamSlider_input" name="confRam"> <span>M</span>
-						<!-- <span style="color: grey;">当前可用ram：<label id="leftram" ></label>M</span>-->
+						<span style="color: grey;margin-left: 50px;">当前可用ram：<label id="leftram" >${leftmemory * 1024 }</label>M</span>
 					</div>
 				</li>
 			</ul>
