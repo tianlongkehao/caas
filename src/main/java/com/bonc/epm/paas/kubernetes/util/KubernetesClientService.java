@@ -369,7 +369,7 @@ public class KubernetesClientService {
 		def.put("memory", ram+"Mi");
 		Map<String,Object> limit = new HashMap<String,Object>();
 		//limit = getlimit(limit);
-		limit.put("cpu", cpu);
+		limit.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
 		limit.put("memory", ram+"Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);

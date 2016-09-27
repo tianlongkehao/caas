@@ -51,6 +51,7 @@ import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
@@ -207,7 +208,7 @@ public class ServiceController {
         try {
             getServiceSource(model, currentUser.getId());
             getNginxServer(model);
-            //getleftResource(model);
+            getleftResource(model);
         } 
         catch (KubernetesClientException e) {
             model.addAttribute("msg", e.getStatus().getMessage());
@@ -235,35 +236,35 @@ public class ServiceController {
      * @param id 当前用户id
      */
     public void getServiceSource(Model model, long id) {
-        List<Service> serviceList = new ArrayList<Service>();
-        List<Container> containerList = new ArrayList<Container>();
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        for (Service service : serviceDao.findByCreateBy(id)) {
-            Map<String, String> map = new HashMap<String, String>();
-            map.put("app", service.getServiceName());
-            PodList podList = client.getLabelSelectorPods(map);
-            if (podList != null) {
-                List<Pod> pods = podList.getItems();
-                if (CollectionUtils.isNotEmpty(pods)) {
-                    int i = 1;
-                    for (Pod pod : pods) {
-                        String podName = pod.getMetadata().getName();
-                        Container container = new Container();
-                        container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-						container.setServiceid(service.getId());
-						if (pod.getStatus().getPhase().equals("Running")) {
-							container.setContainerStatus(0);
-						} else {
-							container.setContainerStatus(1);
-						}
-						containerList.add(container);
-					}
-				}
-			}
-			serviceList.add(service);
-		}
-		model.addAttribute("containerList", containerList);
-		model.addAttribute("serviceList", serviceList);
+//        List<Service> serviceList = new ArrayList<Service>();
+//        List<Container> containerList = new ArrayList<Container>();
+//        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+//        for (Service service : serviceDao.findByCreateBy(id)) {
+//            Map<String, String> map = new HashMap<String, String>();
+//            map.put("app", service.getServiceName());
+//            PodList podList = client.getLabelSelectorPods(map);
+//            if (podList != null) {
+//                List<Pod> pods = podList.getItems();
+//                if (CollectionUtils.isNotEmpty(pods)) {
+//                    int i = 1;
+//                    for (Pod pod : pods) {
+//                        String podName = pod.getMetadata().getName();
+//                        Container container = new Container();
+//                        container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+//						container.setServiceid(service.getId());
+//						if (pod.getStatus().getPhase().equals("Running")) {
+//							container.setContainerStatus(0);
+//						} else {
+//							container.setContainerStatus(1);
+//						}
+//						containerList.add(container);
+//					}
+//				}
+//			}
+//			serviceList.add(service);
+//		}
+//		model.addAttribute("containerList", containerList);
+		model.addAttribute("serviceList", serviceDao.findByCreateBy(id));
 	}
 
     /**
@@ -445,7 +446,7 @@ public class ServiceController {
         Service service = serviceDao.findOne(id);
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         List<String> logList = new ArrayList<String>();
-        String logStr = "";
+//        String logStr = "";
         Map<String, String> map = new HashMap<String, String>();
         Map<String, Object> datamap = new HashMap<String, Object>();
 
@@ -497,13 +498,14 @@ public class ServiceController {
                     		s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
                     		
                     		s = s.substring(0, s.length() - add.length());
-                    		logStr = logStr.concat(s);
+//                    		logStr = logStr.concat(s);
                     		logList.add(s);
                     	}
                     }
                 }
             }
-            datamap.put("logStr", logStr);
+//            datamap.put("logStr", logStr);
+            datamap.put("logList",logList);
             datamap.put("status", "200");
         } 
         catch (Exception e) {
@@ -804,7 +806,7 @@ public class ServiceController {
                 k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs,service.getProxyZone(),service.getServicePath(),service.getProxyPath());
                 k8sService = client.createService(k8sService);
             }
-            if (controller == null || k8sService == null) {
+            if (controller == null || k8sService == null || controller.getSpec().getReplicas() != service.getInstanceNum()) {
                 map.put("status", "500");
             }
             else {
@@ -1106,7 +1108,7 @@ public class ServiceController {
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
             ReplicationController controller = client.updateReplicationController(service.getServiceName(), 0);
 
-            if (controller == null) {
+            if (controller == null || controller.getSpec().getReplicas() != 0) {
                 map.put("status", "500");
             }
             else {
@@ -1259,13 +1261,13 @@ public class ServiceController {
         } 
         else {
             try {
-                service.setInstanceNum(addservice);
-                serviceDao.save(service);
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
                 ReplicationController controller = client.updateReplicationController(service.getServiceName(),
 						addservice);
-                if (controller != null) {
+                if (controller != null || controller.getSpec().getReplicas() == addservice) {
                     map.put("status", "200");
+                    service.setInstanceNum(addservice);
+                    serviceDao.save(service);
                 } 
                 else {
                     map.put("status", "400");
@@ -1309,16 +1311,17 @@ public class ServiceController {
                 setContainer(container, cpus, rams);
             }
             controller = client.updateReplicationController(service.getServiceName(), controller);
-            for (com.bonc.epm.paas.kubernetes.model.Container container2 :controller.getSpec().getTemplate().getSpec().getContainers()) {
-				if (container2.getResources().getLimits().get("cpu") != cpus ||
-					container2.getResources().getLimits().get("memory").equals(rams + "Mi") ||
-					container2.getResources().getRequests().get("cpu") != cpus ||
-					container2.getResources().getRequests().get("memory").equals(rams + "Mi")	) {
-		            map.put("status", "400");
-		            LOG.info("modifyCPU failed:id["+id+"], cpus["+cpus+"], rams["+rams+"]");
-		            break;
-				}
-			}
+//            for (com.bonc.epm.paas.kubernetes.model.Container container2 :controller.getSpec().getTemplate().getSpec().getContainers()) {
+//                if (container2.getResources().getLimits().get("cpu") != cpus ||
+//					container2.getResources().getLimits().get("memory").equals(rams + "Mi") ||
+//					container2.getResources().getRequests().get("cpu") != cpus ||
+//					container2.getResources().getRequests().get("memory").equals(rams + "Mi")) {
+//		            map.put("status", "400");
+//		            LOG.info("modifyCPU failed:id["+id+"], cpus["+cpus+"], rams["+rams+"]");
+//		            break;
+//				}
+//			}
+            
             if (map.get("status") == null) {
             	map.put("status", "200");
             	serviceDao.save(service);
@@ -1349,11 +1352,11 @@ public class ServiceController {
         ResourceRequirements requirements = new ResourceRequirements();
         requirements.getLimits();
         Map<String, Object> def = new HashMap<String, Object>();
-        def.put("cpu", cpus);
+        def.put("cpu", cpus / Integer.valueOf(RATIO_MEMTOCPU));
         def.put("memory", rams + "Mi");
         Map<String, Object> limit = new HashMap<String, Object>();
 		// limit = kubernetesClientService.getlimit(limit);
-        limit.put("cpu", cpus);
+        limit.put("cpu", cpus / Integer.valueOf(RATIO_MEMTOCPU));
         limit.put("memory", rams + "Mi");
         requirements.setRequests(def);
         requirements.setLimits(limit);
@@ -1383,15 +1386,43 @@ public class ServiceController {
         String confName = service.getServiceName();
         String configName = CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName();
         try {
+        	ReplicationController controller = new ReplicationController();
             if (service.getStatus() != 1) {
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-                ReplicationController controller = client.getReplicationController(service.getServiceName());
+                controller = client.getReplicationController(service.getServiceName());
                 if (controller != null) {
-                    client.updateReplicationController(service.getServiceName(), 0);
-                    client.deleteReplicationController(service.getServiceName());
-                    client.deleteService(service.getServiceName());
-                    TemplateEngine.deleteConfig(confName, configName, templateConf);
-                }
+                	controller =  client.updateReplicationController(service.getServiceName(), 0);
+                    if (controller !=null && controller.getSpec().getReplicas() == 0) {
+                    	Status status = client.deleteReplicationController(service.getServiceName());
+                    	if (status.getStatus().equals("Success")) {
+                    		status = client.deleteService(service.getServiceName());
+                    		if (status.getStatus().equals("Success")) {
+                    			TemplateEngine.deleteConfig(confName, configName, templateConf);
+                    		} else {
+    	                    	map.put("status", "400");
+    	                    	map.put("msg", "Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+    	                    	LOG.error("Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+    	                    	return JSON.toJSONString(map);
+                    		}
+						} else {
+	                    	map.put("status", "400");
+	                    	map.put("msg", "Delete a Replication Controller failed:ServiceName["+service.getServiceName()+"]");
+	                    	LOG.error("Delete a Replication Controller failed:ServiceName["+service.getServiceName()+"]");
+	                    	return JSON.toJSONString(map);
+						}
+        			} else {
+                    	map.put("status", "400");
+                    	map.put("msg", "Update a Replication Controller (update the number of replicas) failed:ServiceName["+service.getServiceName()+"]");
+                    	LOG.error("Update a Replication Controller (update the number of replicas) failed:ServiceName["+service.getServiceName()+"]");
+                    	return JSON.toJSONString(map);
+        			}
+
+                }else {
+                	map.put("status", "400");
+                	map.put("msg", "ReplicationController取得失败:ServiceName["+service.getServiceName()+"]");
+                	LOG.error("ReplicationController取得失败:ServiceName["+service.getServiceName()+"]");
+                	return JSON.toJSONString(map);
+				}
             }
             map.put("status", "200");
             serviceDao.delete(id);

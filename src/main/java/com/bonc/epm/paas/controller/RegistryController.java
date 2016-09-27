@@ -290,8 +290,9 @@ public class RegistryController {
      */
     @RequestMapping(value = {"registry/downloadImage"}, method = RequestMethod.GET)
     @ResponseBody
-    public void downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
+    public String downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
                                                 Model model,HttpServletRequest request, HttpServletResponse response){
+        Map<String, Object> map = new HashMap<String, Object>();
         String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
         File path = new File(imagePath);
         if (!path.exists() && !path.isDirectory()) {
@@ -300,37 +301,44 @@ public class RegistryController {
         File file = new File(imagePath+"/"+downName+".tar");
         boolean exist = file.exists();
         if (exist) {
-            getDownload(downName+".tar",request,response);
+//            getDownload(downName+".tar",request,response);
+            map.put("status", "200");
         }
         else {
             boolean complete= dockerClientService.pullImage(imageName, imageVersion);
             boolean flag = false;
             if (complete) {
+                String cmd = imageCmdPath +" "+ imagePath +"/"
+                    + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
+//                flag = CmdUtil.exeCmd(cmd);
                 try {
-                    String cmd = imageCmdPath +" "+ imagePath +"/"
-                        + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
                     flag = CmdUtil.exeCmd(cmd);
                 }
                 catch (IOException e) {
-                    LOG.error("docker save image error.msg:-" + e.getMessage());
                     e.printStackTrace();
                 }
             }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null);
             if (flag) {
-                getDownload(downName+".tar",request,response);
+//                getDownload(downName+".tar",request,response);
+                map.put("status", "200");
             }
         }
+        return JSON.toJSONString(map);
     }
     
     /**
      * 下载镜像文件
+     * 
      * @param fileName : 文件名称
      * @param request ：request
      * @param response  ： response
+     * @see
      */
-    public void getDownload(String fileName,HttpServletRequest request, HttpServletResponse response) {  
-        
+    @RequestMapping(value = {"registry/download"}, method = RequestMethod.GET)
+    public void getDownload(String imageName, String imageVersion,
+                                HttpServletRequest request, HttpServletResponse response) {
+        String fileName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion + ".tar";
         //设置文件MIME类型  
         response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
         //设置Content-Disposition  
@@ -339,12 +347,11 @@ public class RegistryController {
             InputStream myStream = new FileInputStream(imagePath+"/"+fileName);  
             IOUtils.copy(myStream, response.getOutputStream());  
             response.flushBuffer();  
-        } 
-        catch (IOException e) {  
+        } catch (IOException e) {  
             LOG.error("downloadImage error:"+e.getMessage());
         }  
     }
-	
+    
 	/**
 	 * 删除当前镜像
 	 * @param imageId 镜像Id
@@ -398,9 +405,6 @@ public class RegistryController {
         return JSON.toJSONString(maps); 
     }
        
-    
-    
-    
     /**
      * Description: <br>
      * 循环遍历镜像集合，查询当前用户是否收藏该镜像
