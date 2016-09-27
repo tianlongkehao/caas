@@ -477,9 +477,21 @@
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){ //或者使用btn1
 				 //按钮【按钮一】的回调
-				 layer.close(index);
 				 var cpus = $('#confCpu').val();
 				 var rams = $('#confRamSlider_input').val();
+				 var leftcpu = $("#leftcpu").html();
+				 if (parseInt(cpus) > parseInt(leftcpu)) {
+			    	 layer.tips('cpu剩余不足',"#confCpu",{tips: [1, '#3595CC']});
+				     $("#confCpu").focus();
+					 return;
+				 }
+				 var leftmemory = $("#leftram").html();
+				 if (parseInt(rams) > parseInt(leftmemory)) {
+					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
+					 $("#confRamSlider_input").focus();
+					 return;
+				 }
+				 layer.close(index);
 				 $.ajax({
  					url:""+ctx+"/service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
  					success:function(data){
