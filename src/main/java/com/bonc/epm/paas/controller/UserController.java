@@ -281,23 +281,27 @@ public class UserController {
             updateUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，创建client
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-            client.getNamespace(user.getNamespace());
-            try {
-                ResourceQuota quota = updateQuotaInfo(client, user.getNamespace(), resource);
-                client.updateResourceQuota(user.getNamespace(), quota);
-				
-	            // LimitRange limit = updateLimitRange(client, user.getNamespace(),
-	            // restriction);
-				// LimitRange updateLimitRange =
-				// client.updateLimitRange(user.getNamespace(), limit);
-				
-                userDao.save(user);
-                model.addAttribute("updateFlag", "200");
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                model.addAttribute("updateFlag", "400");
-            }
+            Namespace namespace = client.getNamespace(user.getNamespace());
+            if (namespace != null) {
+            	try {
+            		ResourceQuota quota = updateQuotaInfo(client, user.getNamespace(), resource);
+            		client.updateResourceQuota(user.getNamespace(), quota);
+            		
+            		// LimitRange limit = updateLimitRange(client, user.getNamespace(),
+            		// restriction);
+            		// LimitRange updateLimitRange =
+            		// client.updateLimitRange(user.getNamespace(), limit);
+            		
+            		userDao.save(user);
+            		model.addAttribute("updateFlag", "200");
+            	}
+            	catch (Exception e) {
+            		e.printStackTrace();
+            		model.addAttribute("updateFlag", "400");
+            	}
+			} else {
+				LOG.error("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
+			}
         } 
         catch (KubernetesClientException e) {
             LOG.error("error message:-"+ e.getMessage());
@@ -957,7 +961,11 @@ public class UserController {
     private boolean createNsAndSec(User user, Namespace namespace,KubernetesAPIClientInterface client) {
         try {
             namespace = client.createNamespace(namespace);
-            LOG.info("create namespace:" + JSON.toJSONString(namespace));
+            if (namespace == null) {
+				LOG.error("Create a new Namespace:namespace["+namespace+"]");
+			}else {
+				LOG.info("create namespace:" + JSON.toJSONString(namespace));
+			}
 
             Secret secret = kubernetesClientService.generateSecret("ceph-secret", user.getNamespace(), CEPH_KEY);
             secret = client.createSecret(secret);
@@ -1028,14 +1036,17 @@ public class UserController {
             for (String namespace : namespaceList) {
                 // 以用户名(登陆帐号)为name，创建client
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient(namespace);
-                client.getNamespace(namespace);
+//                client.getNamespace(namespace);
                 
                 if (null != client.getNamespace(namespace)) {
                     try {
-                        client.deleteLimitRange(namespace);
-                        Status status =  client.deleteResourceQuota(namespace);
-                        if (status.getStatus().equals("Success")) {
-							
+                        Status status = client.deleteLimitRange(namespace);
+                        if (!status.getStatus().equals("Success")) {
+                        	LOG.error("delete LimitRange failed:namespace["+namespace+"]");
+						}
+                        status =  client.deleteResourceQuota(namespace);
+                        if (!status.getStatus().equals("Success")) {
+							LOG.error("delete ResourceQuota failed:namespace["+namespace+"]");
 						}
                     } 
                     catch (javax.ws.rs.ProcessingException e) {

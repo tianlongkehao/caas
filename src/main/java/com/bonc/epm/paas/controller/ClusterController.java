@@ -301,104 +301,109 @@ public class ClusterController {
 			
             // 取得所有node
             NodeList nodeLst = client.getAllNodes();
-
-			// 循环处理minion的监控信息
-            for (int i = 0; i < nodeLst.size(); i++) {
-
-                Node minionItem = nodeLst.getItems().get(i);
-				// 子节点名称
-                String minionName = minionItem.getMetadata().getName();
-				// 子节点类型
-                String minionType= "";
-                String minionType0 = minionItem.getStatus().getConditions().get(0).getType();
-                String minionType1 = minionItem.getStatus().getConditions().get(1).getType();
-                if ("Ready".equals(minionType0) || "Ready".equals(minionType1)){
-                    minionType= "Ready";
-                }
-				// 子节点状态
-                String minionStatus = "";
-                String minionStatus0 = minionItem.getStatus().getConditions().get(0).getStatus();
-                String minionStatus1 = minionItem.getStatus().getConditions().get(1).getStatus();
-                if ("True".equals(minionStatus0) || "True".equals(minionStatus1)){
-                    minionStatus= "True";
-                }
-
-				// 判斷节点非master,type为Ready,status为True
-                if (!"127.0.0.1".equals(minionName) && "Ready".equals(minionType) && "True".equals(minionStatus)) {
-
-					// memory
-                    yValue.append("{\"titleText\": \"").append(minionName).append("\",\"val\": [");
-
-					// memory
-                    yValue.append("{\"title\": \"memory\",\"val\": [");
-
-					// individual node memory usage： mem_limit
-                    yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitMinion", minionName);
-
-					// individual node memory usage:memUse
-                    yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseMinion", minionName);
-
-					// individual node memory usage:memory_working_set
-                    yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetMinion", minionName);
-
-					// 去掉最后一个逗号
-                    yValue = this.deleteLastStr(yValue);
-					
-                    // memory结束
-                    yValue.append("]},");
-
-					// CPU
-                    yValue.append("{\"title\": \"cpu\",\"val\": [");
-
-					// individual node CPU usage:cpu_limit
-                    yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getCpuLimitMinion", minionName);
-
-					// individual node CPU usage:cpu_use
-                    yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseMinion", minionName);
-
-					// 去掉最后一个逗号
-                    yValue = this.deleteLastStr(yValue);
-					
-                    // CPU结束
-                    yValue.append("]},");
-
-					// disk
-                    yValue.append("{\"title\": \"disk\",\"val\": [");
-
-					// individual node disk usage:disk_limit
-                    yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitMinion", minionName);
-
-					// individual node disk usage:disk_use
-                    yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseMinion", minionName);
-
-					// 去掉最后一个逗号
-                    yValue = this.deleteLastStr(yValue);
-					
-                    // disk结束
-                    yValue.append("]},");
-
-					// network
-                    yValue.append("{\"title\": \"network\",\"val\": [");
-
-					// individual node network usage:tx
-                    yValue = joinClusterYValue(yValue, "TxCurrent", timePeriod, "getTxMinion", minionName);
-
-					// individual node network usage:rx
-                    yValue = joinClusterYValue(yValue, "RxCurrent", timePeriod, "getRxMinion", minionName);
-
-					// 去掉最后一个逗号
-                    yValue = this.deleteLastStr(yValue);
-					
-                    // network结束
-                    yValue.append("]},");
-
-					// 去掉最后一个逗号
-                    yValue = this.deleteLastStr(yValue);
-
-					// minion节点串结束
-                    yValue.append("]},");
-                }
-            }
+            
+            if (nodeLst != null) {
+				
+            	// 循环处理minion的监控信息
+            	for (int i = 0; i < nodeLst.size(); i++) {
+            		
+            		Node minionItem = nodeLst.getItems().get(i);
+            		// 子节点名称
+            		String minionName = minionItem.getMetadata().getName();
+            		// 子节点类型
+            		String minionType= "";
+            		String minionType0 = minionItem.getStatus().getConditions().get(0).getType();
+            		String minionType1 = minionItem.getStatus().getConditions().get(1).getType();
+            		if ("Ready".equals(minionType0) || "Ready".equals(minionType1)){
+            			minionType= "Ready";
+            		}
+            		// 子节点状态
+            		String minionStatus = "";
+            		String minionStatus0 = minionItem.getStatus().getConditions().get(0).getStatus();
+            		String minionStatus1 = minionItem.getStatus().getConditions().get(1).getStatus();
+            		if ("True".equals(minionStatus0) || "True".equals(minionStatus1)){
+            			minionStatus= "True";
+            		}
+            		
+            		// 判斷节点非master,type为Ready,status为True
+            		if (!"127.0.0.1".equals(minionName) && "Ready".equals(minionType) && "True".equals(minionStatus)) {
+            			
+            			// memory
+            			yValue.append("{\"titleText\": \"").append(minionName).append("\",\"val\": [");
+            			
+            			// memory
+            			yValue.append("{\"title\": \"memory\",\"val\": [");
+            			
+            			// individual node memory usage： mem_limit
+            			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitMinion", minionName);
+            			
+            			// individual node memory usage:memUse
+            			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseMinion", minionName);
+            			
+            			// individual node memory usage:memory_working_set
+            			yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetMinion", minionName);
+            			
+            			// 去掉最后一个逗号
+            			yValue = this.deleteLastStr(yValue);
+            			
+            			// memory结束
+            			yValue.append("]},");
+            			
+            			// CPU
+            			yValue.append("{\"title\": \"cpu\",\"val\": [");
+            			
+            			// individual node CPU usage:cpu_limit
+            			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getCpuLimitMinion", minionName);
+            			
+            			// individual node CPU usage:cpu_use
+            			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseMinion", minionName);
+            			
+            			// 去掉最后一个逗号
+            			yValue = this.deleteLastStr(yValue);
+            			
+            			// CPU结束
+            			yValue.append("]},");
+            			
+            			// disk
+            			yValue.append("{\"title\": \"disk\",\"val\": [");
+            			
+            			// individual node disk usage:disk_limit
+            			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitMinion", minionName);
+            			
+            			// individual node disk usage:disk_use
+            			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseMinion", minionName);
+            			
+            			// 去掉最后一个逗号
+            			yValue = this.deleteLastStr(yValue);
+            			
+            			// disk结束
+            			yValue.append("]},");
+            			
+            			// network
+            			yValue.append("{\"title\": \"network\",\"val\": [");
+            			
+            			// individual node network usage:tx
+            			yValue = joinClusterYValue(yValue, "TxCurrent", timePeriod, "getTxMinion", minionName);
+            			
+            			// individual node network usage:rx
+            			yValue = joinClusterYValue(yValue, "RxCurrent", timePeriod, "getRxMinion", minionName);
+            			
+            			// 去掉最后一个逗号
+            			yValue = this.deleteLastStr(yValue);
+            			
+            			// network结束
+            			yValue.append("]},");
+            			
+            			// 去掉最后一个逗号
+            			yValue = this.deleteLastStr(yValue);
+            			
+            			// minion节点串结束
+            			yValue.append("]},");
+            		}
+            	}
+			} else {
+				LOG.error("Get all Nodes failed");
+			}
 			// 去掉最后一个逗号
             yValue = this.deleteLastStr(yValue);
 			// 所有minion结束
@@ -431,13 +436,17 @@ public class ClusterController {
 
 		// 取得所有NAMESPACE
         NamespaceList namespaceLst = client.getAllNamespaces();
-
-		// 循环处理每个NAMESPACE
-        for (int i = 0; i < namespaceLst.size(); i++) {
-			// 命名空间名称
-            String namespaceName = namespaceLst.get(i).getMetadata().getName();
-            rtnValue.append("\"").append(namespaceName).append("\"").append(",");
-        }
+        
+        if (namespaceLst != null) {
+        	// 循环处理每个NAMESPACE
+        	for (int i = 0; i < namespaceLst.size(); i++) {
+        		// 命名空间名称
+        		String namespaceName = namespaceLst.get(i).getMetadata().getName();
+        		rtnValue.append("\"").append(namespaceName).append("\"").append(",");
+        	}
+		} else {
+			LOG.error("Get all Namespaces failed");
+		}
 
 		// 去掉最后一个逗号
         rtnValue = this.deleteLastStr(rtnValue);
@@ -487,16 +496,20 @@ public class ClusterController {
 
 				// 取得所有NAMESPACE
                 NamespaceList namespaceLst = client.getAllNamespaces();
-
-                System.out.print("namespaceLst.size()=" + namespaceLst.size());
-				// 循环处理每个NAMESPACE
-                for (int i = 0; i < namespaceLst.size(); i++) {
-					// 命名空间名称
-                    String namespaceName = namespaceLst.get(i).getMetadata().getName();
-
-					// 取得单一NAMESPACE的JSON数据
-                    yValue = createNamespaceJson(yValue, timePeriod, namespaceName, "");
-                }
+                
+                if (namespaceLst != null) {
+                	System.out.print("namespaceLst.size()=" + namespaceLst.size());
+                	// 循环处理每个NAMESPACE
+                	for (int i = 0; i < namespaceLst.size(); i++) {
+                		// 命名空间名称
+                		String namespaceName = namespaceLst.get(i).getMetadata().getName();
+                		
+                		// 取得单一NAMESPACE的JSON数据
+                		yValue = createNamespaceJson(yValue, timePeriod, namespaceName, "");
+                	}
+				} else {
+					LOG.error("Get all Namespaces failed");
+				}
             }
             else if ("".equals(podName) || podName == null) {
 				// 取得单一NAMESPACE的JSON数据

@@ -270,6 +270,11 @@ public class SSOFilter implements Filter {
             // 以用户名(登陆帐号)为name，为client创建nameSpace
             Namespace namespace = kubernetesClientService.generateSimpleNamespace(tenantId);
             namespace = client.createNamespace(namespace);
+            if (namespace == null) {
+				LOG.error("Create a new Namespace:namespace["+namespace+"]");
+			}else {
+				LOG.info("create namespace:" + JSON.toJSONString(namespace));
+			}
         }
         catch (RuntimeException e) {
             LOG.error("连接kubernetesAPI超时！" + e);
