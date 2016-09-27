@@ -135,7 +135,7 @@ public class ESClient {
                                            .setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord))
                                            .addSort("@timestamp", SortOrder.ASC)
                                            .setFrom(0)
-                                           .setSize(10000)
+                                           .setSize(5000)
                                            .setExplain(true);
       
             SearchResponse response = searchRequestBuilder.execute().actionGet();
@@ -172,18 +172,19 @@ public class ESClient {
      * @see
      */
     @SuppressWarnings("rawtypes")
-	public String search(String type,String keyWord,String from,String to){
+	public String search(String type,String pod_name,String container_name,String from,String to){
         String string ="";
         try {
             SearchRequestBuilder searchRequestBuilder = null;
             searchRequestBuilder = client.prepareSearch()
                     .setTypes(type)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                    .setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", keyWord))
-                    .setPostFilter(QueryBuilders.rangeQuery("@timestamp").from(from).to(to))
-                    .addSort("@timestamp", SortOrder.ASC)
-                    .setFrom(0)
-                    .setSize(10000)
+//                    .setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", pod_name))
+					.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("kubernetes.pod_name", pod_name))
+							.must(QueryBuilders.matchQuery("kubernetes.container_name", container_name)))
+					.setPostFilter(QueryBuilders.rangeQuery("@timestamp").from(from).to(to))
+					.addSort("@timestamp", SortOrder.ASC).setFrom(0)
+					.setSize(5000)
                     .setExplain(true);
             
             SearchResponse response = searchRequestBuilder.execute().actionGet();
@@ -198,11 +199,11 @@ public class ESClient {
             LOG.error("搜索日志的Index出错：-" + infe.getMessage());
         }
         catch (Exception e) {
-            LOG.error(keyWord+"日志出错！错误信息：-" + e.getMessage());
+            LOG.error("pod{"+pod_name+"}container{"+container_name+"}日志出错！错误信息：-" + e.getMessage());
         }
 		
         LOG.debug("start*******************************************************************************");
-        LOG.debug("pod{"+keyWord+"}日志:"+string);
+        LOG.debug("pod{"+pod_name+"}container{"+container_name+"}日志:"+string);
         LOG.debug("end*********************************************************************************");
         return string;
     }

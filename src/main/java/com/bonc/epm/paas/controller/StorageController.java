@@ -40,6 +40,7 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.SFTPUtil;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.ZipCompressing;
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 
 /**
@@ -172,7 +173,13 @@ public class StorageController {
         if (null == storageValidate) {
             // ceph中创建存储卷目录 TODO 3
             CephController ceph = new CephController();
-            ceph.connectCephFS();
+            try {
+                ceph.connectCephFS();
+            }
+            catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             ceph.createStorageCephFS(storage.getStorageName(), storage.isVolReadOnly());
 
             storageDao.save(storage);
@@ -248,7 +255,13 @@ public class StorageController {
         else {
             storageDao.delete(storageId);
             CephController cephCon = new CephController();
-            cephCon.connectCephFS();
+            try {
+                cephCon.connectCephFS();
+            }
+            catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             cephCon.deleteStorageCephFS(storage.getStorageName());
             map.put("status", "200");
         }
@@ -268,7 +281,7 @@ public class StorageController {
         Map map = new HashMap();
         String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
         File file = new File(cephController.getMountpoint() + namespace + storageName);
-        mountLocalCeph(file);
+        //mountLocalCeph(file);
 
         long hasUsed = file.length() / 1024 / 1024;
         map.put("length", String.valueOf(hasUsed));
@@ -294,7 +307,7 @@ public class StorageController {
         String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
         if ("".equals(dirName)) {
             File file = new File(cephController.getMountpoint() + namespace + storageName);
-            mountLocalCeph(file);
+            //mountLocalCeph(file);
 
             directory = cephController.getMountpoint() + namespace + storageName;
         }
@@ -321,20 +334,34 @@ public class StorageController {
      * @param file 文件名
      * @see
      */
-    public void mountLocalCeph(File file) {
+    @RequestMapping(value = { "storage/mount.do" }, method = RequestMethod.GET)
+    @ResponseBody
+    public String mountLocalCeph() {
+        Map map = new HashMap();
+        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        File file = new File(cephController.getMountpoint() + namespace);
         if (!file.exists()) {
             CephController cephCon = new CephController();
-            cephCon.connectCephFS();
+            try {
+                cephCon.connectCephFS();
+            }
+            catch (Exception e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
             try {
                 SshConnect.connect(cephController.getUsername(), cephController.getPassword(), cephController.getUrl(),
                         22);
                 SshConnect.exec("cd " + cephController.getMountpoint(), 1000);
                 SshConnect.exec(cephController.getMountexec(), 1000);
+                map.put("status", "200");
             } 
             catch (JSchException | IOException | InterruptedException e) {
+                map.put("status", "500");
                 e.printStackTrace();
             }
         }
+        return JSON.toJSONString(map);
     }
 
     /**
@@ -355,22 +382,29 @@ public class StorageController {
         if (!file.isEmpty()) {
             try {
                 Map map = new HashMap();
+                long fileSize =file.getSize() /1024/1024;
                 String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
                 File dir = new File(cephController.getMountpoint() + namespace + "/" + storageName);
-                // File dir = new File(path);
                 storageDao.findOne(id).getStorageSize();
-                long used = (file.getSize() + dir.length()) / 1024 / 1024;
+                long used = (fileSize + dir.length()) / 1024 / 1024;
                 long result = storageDao.findOne(id).getStorageSize() - used;
                 if (0 >= result) {
                     // 上传文件大小超过可用大小，返回失败
                     map.put("status", "500");
                     return JSON.toJSONString(map);
                 }
-                BufferedOutputStream out = new BufferedOutputStream(
-                        new FileOutputStream(new File(path + file.getOriginalFilename())));
-                out.write(file.getBytes());
-                out.flush();
-                out.close();
+                if(fileSize<=50){
+                    BufferedOutputStream out = new BufferedOutputStream(
+                            new FileOutputStream(new File(path + file.getOriginalFilename())));
+                    out.write(file.getBytes());
+                    out.flush();
+                    out.close();
+                }else{
+                    SFTPUtil sf = new SFTPUtil();
+                    ChannelSftp sftp = sf.connect(cephController.getUrl(), 22, cephController.getUsername()
+                        , cephController.getPassword());
+                    sf.upload(path, file, sftp);
+                                   }
                 map.put("used", used);
                 map.put("status", "200");
                 return JSON.toJSONString(map);
@@ -433,4 +467,20 @@ public class StorageController {
             rm.delete();
         }
     }
+    @RequestMapping(value = { "storage/format" }, method = RequestMethod.POST)
+    @ResponseBody
+    public String formatStorage(String storageName,boolean isVolReadOnly){
+        Map map = new HashMap();
+        try {
+            cephController.formatStorageCephFS(cephController.getMountpoint(),storageName,isVolReadOnly);
+            map.put("status", 200);
+                  }
+        catch (FileNotFoundException e) {
+            map.put("status", 500);
+            e.printStackTrace();
+        }finally{
+            return JSON.toJSONString(map);
+        }
+
+    } 
 }

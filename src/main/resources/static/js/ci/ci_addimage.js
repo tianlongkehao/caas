@@ -1,9 +1,9 @@
 $(document).ready(function () {
  	$("#buildBtn").click(function(){
-        //if(checkCiAdd()) {
+        if(checkCiAdd()) {
         	$("#buildForm").submit();
         	layer.load(0, {shade: [0.3, '#000']});
-        //}
+        }
         return false;
     });
 

@@ -1,44 +1,3 @@
-/**
- * 删除选中用户
- */
-function delUser(){
-	var id = "";
-	$(":checked[name='ids']").each(function(){
-		id = id + jQuery(this).val() + ",";
-	});
-	if ("" == id) {
-		layer.alert("请选择至少一个用户", {icon:0});
-		return;
-	}
-	else {
-		id = id.substring(0, id.length - 1);
-		layer.open({
-			title: '删除租户',
-			content:'确定删除多个租户吗？',
-			btn: ['确定', '取消'],
-			yes: function(index, layero){ //或者使用btn1
-				layer.close(index);
-				$.ajax({
-					url:ctx+"/user/delMul.do?ids="+id,
-					success:function(data){
-						data = eval("(" + data + ")");
-						if(data.status=="200"){
-							layer.alert("租户信息删除成功");
-                            window.location.reload();
-						}else{
-							layer.alert("租户信息删除失败，请检查服务器连接");
-						}
-						location.reload(true);
-					}
-				})
-
-			},
-			cancel: function(index){ //或者使用btn2
-				//按钮【按钮二】的回调
-			}
-		});
-	}
-}
 
 function user_detail() {
     var id = "";
@@ -123,8 +82,27 @@ $(document).ready(function(){
             yes: function (index, layero) { //或者使用btn1
                 //按钮【按钮一】的回调
                 layer.close(index);
-                $('#add_tenement').attr("action", ctx+'/user/save.do');
-                $('#add_tenement').submit();
+                //$('#add_tenement').attr("action", ctx+'/user/save.do');
+                //$('#add_tenement').submit();
+                
+                $.ajax({
+                	type: "post",
+                	url : ctx+"/user/save.do",
+                	data : $('#add_tenement').serialize(),
+                	async : false,
+                	success : function(data){
+                		data = eval("(" + data + ")");
+                		if (data.creatFlag == "400") {
+                			alert(data.message);
+                			window.location.href = ctx + "/user/add";
+                		}
+                		if (data.creatFlag == "200") {
+                			alert("创建成功");
+                			window.location.href = ctx + "/user/list";
+                		}
+                	}
+                	
+                });
             },
             cancel: function (index) { //或者使用btn2
                 //按钮【按钮二】的回调

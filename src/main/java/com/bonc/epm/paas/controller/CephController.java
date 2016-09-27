@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.FileUtils;
 import com.ceph.fs.CephMount;
 import com.ceph.rados.IoCTX;
 import com.ceph.rados.Rados;
@@ -83,21 +84,16 @@ public class CephController {
     /**
      * connectCephFS
      */
-    public void connectCephFS() {
-        try {
-            LOGGER.info("进入方法：connectCephFS");
-            cephMount = new CephMount("admin");
-            cephMount.conf_read_file("/etc/ceph/ceph.conf");
-            cephMount.mount("/");
-            cephMount.chmod("/", mode);
-            LOGGER.info("打印根目录下的所有目录");
-            String[] listdir = cephMount.listdir("/");
-            for (String strDir : listdir) {
-                LOGGER.info("dir:" + strDir);
-            }
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
+    public void connectCephFS() throws Exception {
+        LOGGER.info("进入方法：connectCephFS");
+        cephMount = new CephMount("admin");
+        cephMount.conf_read_file("/etc/ceph/ceph.conf");
+        cephMount.mount("/");
+        cephMount.chmod("/", mode);
+        LOGGER.info("打印根目录下的所有目录");
+        String[] listdir = cephMount.listdir("/");
+        for (String strDir : listdir) {
+            LOGGER.info("dir:" + strDir);
         }
     }
 
@@ -112,20 +108,16 @@ public class CephController {
      *  O_WRONLY    x
      *  O_EXCL                r                 
      *  @param namespace    
+     * @throws FileNotFoundException 
      */
-    public void createNamespaceCephFS(String namespace) {
-        try {
-            LOGGER.info("进入方法：createNamespaceCephFS");
-            cephMount.mkdir("/" + namespace, mode);
+    public void createNamespaceCephFS(String namespace) throws Exception {
+        LOGGER.info("进入方法：createNamespaceCephFS");
+        cephMount.mkdir("/" + namespace, mode);
 
-            LOGGER.info("打印" + namespace + "下的所有目录");
-            String[] listdir = cephMount.listdir("/" + namespace);
-            for (String strDir : listdir) {
-                LOGGER.info("dir:" + strDir);
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+        LOGGER.info("打印" + namespace + "下的所有目录");
+        String[] listdir = cephMount.listdir("/" + namespace);
+        for (String strDir : listdir) {
+            LOGGER.info("dir:" + strDir);
         }
     }
 
@@ -230,6 +222,24 @@ public class CephController {
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     *  格式化卷组
+     * 
+     * @param storageName
+     * @param isVolReadOnly 
+     * @throws FileNotFoundException 
+     * @see
+     */
+    public void formatStorageCephFS(String root,String storageName,boolean isVolReadOnly) throws FileNotFoundException{
+        LOGGER.info("进入方法：deleteStorageCephFS");
+        // 获取NAMESPACE
+        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        CephController cep = new CephController();
+        StringBuffer path = new StringBuffer(root);
+        path.append(namespace).append("/").append(storageName);
+        FileUtils.delAllFile(path.toString());
     }
 
     /**

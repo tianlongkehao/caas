@@ -50,7 +50,25 @@ $(document).ready(function(){
 		      $('#webPath').focus();
 		      return;
 		}
-	    
+	    //判断实例数量是否超过上限
+	    var cpuNum = $("input[name='cpuNum']:checked").val();
+	    var leftcpu = $("#leftcpu").val();
+	    var max1 = leftcpu/cpuNum;
+	    var ram = $("input[name='ram']:checked").val();
+	    var leftmemory = $("#leftmemory").val();
+	    var max2 = leftmemory/ram;
+	    var max =0;
+	    if(max1<=max2){
+	    	max=max1;
+	    }else{
+	    	max=max2;
+	    }
+	    var instNum = $("#instanceNum").val();
+	    if(instNum>=max){
+	    	layer.tips('您可以创建的实例数量不能大于'+Math.floor(max)+',请调整CPU数量和内存',"#instanceNum",{tips: [1, '#3595CC']});
+	    	$('#instanceNum').focus();
+			return;
+	    }
 	    //判断cpu是否有足够的剩余
 	    var cpuNum = $("input[name='cpuNum']:checked").val();
 	    var leftcpu = $("#leftcpu").val();

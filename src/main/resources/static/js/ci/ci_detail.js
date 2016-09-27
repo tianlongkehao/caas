@@ -211,11 +211,11 @@ function registerCiDelEvent(id){
 function registerCiRecordEvent(){
 	$(".event-sign").unbind("click").click(function(){
         if($(this).hasClass("lives")){
-            $(".time-line-message").css("display","none");
+        	$(this).parent().parent().children(".time-line-message").css("display","none");
             $(this).children(".fa_caret").css("transform","rotate(0deg)");
             $(this).removeClass("lives");
         }else{
-            $(".time-line-message").css("display","block");
+        	$(this).parent().parent().children(".time-line-message").css("display","block");
             $(this).children(".fa_caret").css("transform","rotate(90deg)");
             $(this).addClass("lives");
         }

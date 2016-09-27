@@ -42,25 +42,32 @@
 									</div>
 								</div>
 								<div class="ibox-content">
-									<table class="footable table table-striped table-hover dataTables-example" data-page-size="8"
+									<table class="table table-striped table-hover dataTables-example" data-page-size="8"
 										data-filter=#filter>
 										<thead>
 											<tr>
-												<th style="width: 15%;text-indent:30px;">名称</th>
-	                                            <th style="width: 20%;">创建时间</th>
+												<th style="width: 5%; text-indent: 30px;">
+													<input type="checkbox" autocomplete="off" class="chkAll" id="checkallbox"/>
+												</th>
+												<th style="width: 30%;text-indent:30px;">名称</th>
+	                                            <th style="width: 30%;">创建时间</th>
 	                                            <th style="width: 10%;text-indent: 10px;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="storageList">
 											  <c:forEach items = "${dockerFileList }" var = "dockerfile">
 													<tr>
-														<td style="width: 15%;text-indent:30px;cursor: pointer;">
+														<td style="width: 5%; text-indent: 30px;">
+															<input type="checkbox" class="chkItem" name="chkItem"
+																autocomplete="off" id="checkboxID" value="${dockerfile.id }" />
+														</td>
+														<td style="width: 30%;text-indent:30px;cursor: pointer;">
 														<a href="<%=path %>/template/dockerfile/detail/${dockerfile.id }"
                                                             title="查看详细信息"
                                                             onmousemove="style.textDecoration='underline'"
                                                             onmouseout="style.textDecoration='none'">${dockerfile.templateName }</a>
 														</td>
-			                                            <td style="width: 20%;">${dockerfile.createDate }</td>
+			                                            <td style="width: 30%;">${dockerfile.createDate }</td>
 			                                            <td style="width: 10%;text-indent: 10px;" >
 			                                                 <a title="删除" href="javascript:void(0)" onclick="deletedockerfile(this)" dockerfileId = "${dockerfile.id }">
 			                                                     <i class="fa fa-trash"></i>
@@ -71,7 +78,7 @@
 										</tbody>
 										<tfoot class="hide">
 											<tr>
-												<td colspan="6">
+												<td colspan="3">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
@@ -116,10 +123,10 @@
     </ul>
 </div>
 <script type="text/javascript">
-	$('.dataTables-example').dataTable();
-	$(".footable").footable();
-	$(".del-operation").children("span").addClass("hide");
-	
+	$('.dataTables-example').dataTable({
+        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }]
+	});
+	$("#checkallbox").parent().removeClass("sorting_asc");
 </script>
 
 </body>

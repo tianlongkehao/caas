@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,14 +20,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.Resource;
 import com.bonc.epm.paas.entity.Restriction;
+import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
@@ -41,7 +43,6 @@ import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
-import com.bonc.epm.paas.util.ServiceException;
 
 /**
  * 
@@ -59,16 +60,31 @@ public class UserController {
      * LOG
      */
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+    
     /**
      * UserDao
      */
     @Autowired
     private UserDao userDao;
+    
     /**
      * StorageDao
      */
     @Autowired
 	private StorageDao storageDao;
+    
+    /**
+     * 服务数据层接口
+     */
+    @Autowired
+    private ServiceDao serviceDao;
+    
+    /**
+     * 调用服务controller
+     */
+    @Autowired
+    private ServiceController serviceController;
+    
     /**
      * KubernetesClientService
      */
@@ -80,6 +96,7 @@ public class UserController {
      */
     @Value("${ceph.key}")
     private String CEPH_KEY;
+    
     /**
      * Model
      */
@@ -161,7 +178,9 @@ public class UserController {
      * @see Resource Restriction
      */
     @RequestMapping(value = { "/save.do" }, method = RequestMethod.POST)
+    @ResponseBody
 	public String userSave(User user, Resource resource, Restriction restriction, Model model) {
+        Map<String, Object> map = new HashMap<String, Object>();
         try {
             fillPartUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，为client创建Namespace
@@ -170,15 +189,25 @@ public class UserController {
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
             
             if (!createNsAndSec(user, namespace, client)) {
-                throw new ServiceException("create namespace or secret error.");
+                client.deleteNamespace(user.getNamespace());
+                map.put("message", "创建namespace或者secret失败！");
+                map.put("creatFlag", "400");
+                return JSON.toJSONString(map);
             }
 
             if (!createQuota(user, resource, client)) {
-                throw new ServiceException("create quata error.");
+                client.deleteNamespace(user.getNamespace());
+                map.put("message", "创建quota失败");
+                map.put("creatFlag", "400");
+                return JSON.toJSONString(map);
             }
 
             if (!createCeph(user)) {
-                throw new ServiceException("create ceph error.");
+                client.deleteNamespace(user.getNamespace());
+                client.deleteResourceQuota(user.getNamespace());
+                map.put("message", "创建ceph失败");
+                map.put("creatFlag", "400");
+                return JSON.toJSONString(map);
             }
 
 			// 为client创建资源限制
@@ -189,18 +218,16 @@ public class UserController {
             
 			// DB保存用户信息
             userDao.save(user);
-            model.addAttribute("creatFlag", "200");
+            map.put("creatFlag", "200");
         } 
         catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("creatFlag", "400");
+            map.put("message", "创建失败");
+            map.put("creatFlag", "400");
+            return JSON.toJSONString(map);
         }
 
-		// 返回 user.jsp 页面，展示所有租户信息
-        List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
-        model.addAttribute("userList", userList);
-        model.addAttribute("menu_flag", "user");
-        return "user/user.jsp";
+        return JSON.toJSONString(map);
     }
 
     /**
@@ -229,8 +256,9 @@ public class UserController {
             model.addAttribute("creatFlag", "400");
         }
 		
-        User userManger = userDao.findOne(CurrentUserUtils.getInstance().getUser().getId());
-        List<User> userManageList = userDao.checkUsermanage34(userManger.getUser_province());
+//        User userManger = userDao.findOne(CurrentUserUtils.getInstance().getUser().getId());
+//        List<User> userManageList = userDao.checkUsermanage34(userManger.getUser_province());
+        List<User> userManageList = userDao.checkUser1manage34(user.getParent_id());
         model.addAttribute("userManageList", userManageList);
         model.addAttribute("menu_flag", "usermanage");
         return "user/user-management.jsp";
@@ -253,23 +281,27 @@ public class UserController {
             updateUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，创建client
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-            client.getNamespace(user.getNamespace());
-            try {
-                ResourceQuota quota = updateQuotaInfo(client, user.getNamespace(), resource);
-                client.updateResourceQuota(user.getNamespace(), quota);
-				
-	            // LimitRange limit = updateLimitRange(client, user.getNamespace(),
-	            // restriction);
-				// LimitRange updateLimitRange =
-				// client.updateLimitRange(user.getNamespace(), limit);
-				
-                userDao.save(user);
-                model.addAttribute("updateFlag", "200");
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                model.addAttribute("updateFlag", "400");
-            }
+            Namespace namespace = client.getNamespace(user.getNamespace());
+            if (namespace != null) {
+            	try {
+            		ResourceQuota quota = updateQuotaInfo(client, user.getNamespace(), resource);
+            		client.updateResourceQuota(user.getNamespace(), quota);
+            		
+            		// LimitRange limit = updateLimitRange(client, user.getNamespace(),
+            		// restriction);
+            		// LimitRange updateLimitRange =
+            		// client.updateLimitRange(user.getNamespace(), limit);
+            		
+            		userDao.save(user);
+            		model.addAttribute("updateFlag", "200");
+            	}
+            	catch (Exception e) {
+            		e.printStackTrace();
+            		model.addAttribute("updateFlag", "400");
+            	}
+			} else {
+				LOG.error("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
+			}
         } 
         catch (KubernetesClientException e) {
             LOG.error("error message:-"+ e.getMessage());
@@ -317,7 +349,7 @@ public class UserController {
     /**
      * 
      * Description:
-     * 局部刷新，批量删除用户
+     * 局部刷新，批量删除租户
      * @param ids String
      * @return JSON.toJSONString(map)
      * @see
@@ -353,6 +385,56 @@ public class UserController {
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 批量删除用户
+     * @param ids id
+     * @return  String
+     */
+    @RequestMapping("/delUser.do")
+    @ResponseBody
+    public String userDel(String ids){
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            if (StringUtils.isNotBlank(ids)) {
+                String[] idArr = ids.split(",");
+                for (int i = 0; i < idArr.length; i++) {
+                    delUserService(Long.parseLong(idArr[i]));
+                    userDao.delete(Long.parseLong(idArr[i]));
+                }
+            }
+            map.put("status", "200");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 删除用户时同步删除用户创建的服务
+     * @param userId : 用户Id
+     * @return 
+     * @see
+     */
+    public void delUserService(long userId){
+        try {
+            List<Service> list = serviceDao.findByCreateBy(userId);
+            String serviceIds = "";
+            if (list.size() > 0) {
+                for (Service service : list) {
+                    serviceIds += service.getId() + ",";
+                }
+                serviceController.delServices(serviceIds);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -440,6 +522,7 @@ public class UserController {
         this.model = model;
         User user = userDao.findOne(id);
         model.addAttribute("user", user);
+        model.addAttribute("menu_flag", "usermanage");
         return "user/user-manage-detail.jsp";
     }
 
@@ -851,8 +934,13 @@ public class UserController {
             //map.put("resourcequotas", "1");//资源配额数量
             ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getNamespace(), map);
             quota = client.createResourceQuota(quota);
-            LOG.info("create quota:" + JSON.toJSONString(quota));
-            return true;
+            if (quota != null) {
+            	LOG.info("create quota:" + JSON.toJSONString(quota));
+            	return true;
+			} else {
+				LOG.info("create quota failed: namespace=" + user.getNamespace() + "hard=" + map.toString());
+				return false;
+			}
         }
         catch (Exception e) {
             LOG.error(e.getMessage());
@@ -873,7 +961,11 @@ public class UserController {
     private boolean createNsAndSec(User user, Namespace namespace,KubernetesAPIClientInterface client) {
         try {
             namespace = client.createNamespace(namespace);
-            LOG.info("create namespace:" + JSON.toJSONString(namespace));
+            if (namespace == null) {
+				LOG.error("Create a new Namespace:namespace["+namespace+"]");
+			}else {
+				LOG.info("create namespace:" + JSON.toJSONString(namespace));
+			}
 
             Secret secret = kubernetesClientService.generateSecret("ceph-secret", user.getNamespace(), CEPH_KEY);
             secret = client.createSecret(secret);
@@ -944,12 +1036,18 @@ public class UserController {
             for (String namespace : namespaceList) {
                 // 以用户名(登陆帐号)为name，创建client
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient(namespace);
-                client.getNamespace(namespace);
+//                client.getNamespace(namespace);
                 
                 if (null != client.getNamespace(namespace)) {
                     try {
-                        client.deleteLimitRange(namespace);
-                        client.deleteResourceQuota(namespace);
+                        Status status = client.deleteLimitRange(namespace);
+                        if (!status.getStatus().equals("Success")) {
+                        	LOG.error("delete LimitRange failed:namespace["+namespace+"]");
+						}
+                        status =  client.deleteResourceQuota(namespace);
+                        if (!status.getStatus().equals("Success")) {
+							LOG.error("delete ResourceQuota failed:namespace["+namespace+"]");
+						}
                     } 
                     catch (javax.ws.rs.ProcessingException e) {
                         System.out.println(e.getMessage());
@@ -1028,6 +1126,8 @@ public class UserController {
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
             model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
             // model.addAttribute("usedControllerNum", usedControllerNum);
+        } else {
+            LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
         }
     }
     

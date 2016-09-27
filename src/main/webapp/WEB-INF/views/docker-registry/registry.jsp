@@ -33,15 +33,17 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>${active }
 									</h5>
 									<div class="ibox-tools">
-										<!-- <a id="deleteButton"
-											class="no-drop" href="javascript:delImages()" title="删除">
-											<i class="fa fa-trash"></i> -->
-										</a> <a href="javascript:window.location.reload(true);"
+										<c:if test="${index == 1}">
+											  <a id="deleteButton"
+												    class="no-drop" href="javascript:void(0)" onclick = "delImages()" title="删除">
+												<i class="fa fa-trash"></i></a>
+										</c:if>
+										 <a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 									</div>
 								</div>
 								<div class="ibox-content">
-									<table class="table footable table-striped table-hover dataTables-example">
+									<table class="table table-striped table-hover dataTables-example">
 										<thead>
 											<tr>
 												<th style="width: 5%; text-indent: 30px;"><input
@@ -77,28 +79,45 @@
 														<td style="width: 20%; text-indent: 10;"
 															id="user.user_autority" name="user.user_autority">${image.createTime }</td>
 														<td style="width: 10%; text-indent: 10;">
-															<a class="no-drop" href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
-																 imageversion="${image.version}" imagename="${image.name}" title="部署">
-																 <i class="fa fa-wrench"></i>
-															</a>
-															<a class="no-drop a-oper downloadImage" imageversion="${image.version}" imagename="${image.name}" imgID="${image.id }" resourcename= "${image.resourceName}" title="导出"> 
-																<i class="fa fa-share-square-o"></i>
-															</a> 
-															<c:if test="${image.currUserFavor==0 }">
-																	<a class="no-drop a-oper forkquick" imageId="${image.id }"><i
-																		class="fa fa-star-o star-style"
-																		style="color: #4280CB"></i></a>
-															</c:if> 
-															
-															<c:if test="${image.currUserFavor==1 }">
-																<a class="no-drop a-oper forkquick" imageId="${image.id }">
-																	<i class="fa fa-star star-style" style="color: #337ab7"></i>
+														
+	                                                        <c:if test="${image.isDelete == 1 }">
+	                                                            <c:if test="${image.currUserFavor==0 }">
+	                                                                    <a class="no-drop a-oper forkquick" imageId="${image.id }">
+	                                                                       <i class="fa fa-star-o star-style" style="color: #4280CB;margin-left:35px;"></i>
+	                                                                    </a>
+	                                                            </c:if> 
+	                                                            
+	                                                            <c:if test="${image.currUserFavor==1 }">
+	                                                                <a class="no-drop a-oper forkquick"  imageId="${image.id }">
+	                                                                    <i class="fa fa-star star-style" style="color: #337ab7;margin-left:35px;"></i>
+	                                                                </a>
+	                                                            </c:if>
+	                                                        </c:if>
+														      
+														    <c:if test="${image.isDelete != 1 }">
+																<a class="no-drop" href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
+																	 imageversion="${image.version}" imagename="${image.name}" title="部署">
+																	 <i class="fa fa-wrench"></i>
 																</a>
-															</c:if>
-															<c:if test="${editImage==image.creator }">
-																<a class="no-drop a-oper" href="javascript:void(0)" onclick="deleteImage(this)"
-																		title="删除" imageversion="${image.version}" imagename="${image.name}" imageid="${image.id}"> <i class="fa fa-trash"></i>
-																</a>
+																<a class="no-drop a-oper downloadImage" imageversion="${image.version}" imagename="${image.name}" imgID="${image.id }" resourcename= "${image.resourceName}" title="导出"> 
+																	<i class="fa fa-share-square-o"></i>
+																</a> 
+																<c:if test="${image.currUserFavor==0 }">
+																		<a class="no-drop a-oper forkquick" imageId="${image.id }"><i
+																			class="fa fa-star-o star-style"
+																			style="color: #4280CB"></i></a>
+																</c:if> 
+																
+																<c:if test="${image.currUserFavor==1 }">
+																	<a class="no-drop a-oper forkquick" imageId="${image.id }">
+																		<i class="fa fa-star star-style" style="color: #337ab7"></i>
+																	</a>
+																</c:if>
+																<c:if test="${editImage==image.creator }">
+																	<a class="no-drop a-oper" href="javascript:void(0)" onclick="deleteImage(this)"
+																			title="删除" imageversion="${image.version}" imagename="${image.name}" imageid="${image.id}"> <i class="fa fa-trash"></i>
+																	</a>
+																</c:if> 
 															</c:if>
 														</td>
 													</tr>
@@ -118,75 +137,16 @@
 							</div>
 						</div>
 					</div>
-
-					<div class="content hide">
-						<div class="search">
-							<form class="search-group-inner"
-								style="width: 60%; margin: 0 auto; position: relative;"
-								action="<%=path %>/registry/${index }" method="post">
-								<input name="imageName" class="search-img" placeholder="搜索镜像"
-									type="text">
-								<button type="submit" class="btn btn-primary btn-send">搜索</button>
-							</form>
-						</div>
-						<div class="images-layout">
-							<ul id="imageList">
-
-								<c:forEach items="${images}" var="image">
-
-									<li class="images-panel">
-										<div class="select-img">
-											<c:if test="${image.currUserFavor==0 }">
-												<i class="fa fa-star-o star-style" style="color: #4280CB"></i>
-											</c:if>
-											<c:if test="${image.currUserFavor==1 }">
-												<i class="fa fa-star star-style" style="color: #efa421"></i>
-											</c:if>
-											<div class="mir-img ">
-												<img src="<%=path%>/images/image-1.png">
-											</div>
-										</div>
-										<div class="select-info">
-											<div class="pull-right-text">
-												<c:if test="${image.imageType==2 }">
-													<span class="btn btn-link lock"> <i
-														class="fa fa-lock"></i>
-													</span>
-												</c:if>
-												${image.name}
-											</div>
-											<div>
-												<i class="fa fa-tag"></i> ${image.version }
-												<div class="pull-right">
-													<a
-														href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
-														class="btn-pull-deploy btn"
-														imageversion="${image.version}" imagename="${image.name}">部署</a>
-												</div>
-											</div>
-										</div>
-										<div class="create-item">
-											<a href="<%=path %>/registry/detail/${image.id }"> <span
-												class="note-text"> ${image.summary } </span>
-											</a>
-										</div>
-									</li>
-
-								</c:forEach>
-
-							</ul>
-						</div>
-					</div>
 				</div>
 			</div>
 		</article>
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('.dataTables-example').dataTable();
-			$(".footable").footable();
-			$("#checkallbox").next().addClass("hide");
-			$(".del-operation").children("span").addClass("hide");
+			$('.dataTables-example').dataTable( {
+		        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
+			});
+			$("#checkallbox").parent().removeClass("sorting_asc");
 		})
 	</script>
 

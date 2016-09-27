@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.constant.UserConstant;
@@ -269,6 +270,11 @@ public class SSOFilter implements Filter {
             // 以用户名(登陆帐号)为name，为client创建nameSpace
             Namespace namespace = kubernetesClientService.generateSimpleNamespace(tenantId);
             namespace = client.createNamespace(namespace);
+            if (namespace == null) {
+				LOG.error("Create a new Namespace:namespace["+namespace+"]");
+			}else {
+				LOG.info("create namespace:" + JSON.toJSONString(namespace));
+			}
         }
         catch (RuntimeException e) {
             LOG.error("连接kubernetesAPI超时！" + e);
@@ -357,7 +363,12 @@ public class SSOFilter implements Filter {
             openMap.put("memory", openMem + "G");// 内存（G）
             ResourceQuota openQuota = kubernetesClientService.generateSimpleResourceQuota(namespace, openMap);
             if (isCreate) { // 是否新建quota
-                client.createResourceQuota(openQuota); // 创建quota
+            	openQuota = client.createResourceQuota(openQuota); // 创建quota
+                if (openQuota != null) {
+                	LOG.info("create quota:" + JSON.toJSONString(openQuota));
+				} else {
+					LOG.info("create quota failed: namespace=" + namespace + "hard=" + openMap.toString());
+				}
             } 
             else {
                 Map<String, String> map = currentQuota.getSpec().getHard();

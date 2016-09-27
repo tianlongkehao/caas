@@ -1,4 +1,5 @@
  $(document).ready(function () {
+	
 	$("#serviceReloadBtn").click(function(){
 		loadService();
 	});
@@ -105,34 +106,102 @@
 //			}
 //		})
 //	})
-
-
-	$(".clusterId").each(function(){
-		$(this).click(function(e){
-			$(":checkbox").click(function(e){
-				e.stopPropagation();
-			});
-			
-			if($(this).next("tr").hasClass("hide")){
-				$(this).next("tr").removeClass("hide");
-				$(this).children().eq(1).children("b").css("transform","rotate(0deg)");
-			}else{
-				$(this).next("tr").addClass("hide");
-				$(this).children().eq(1).children("b").css("transform","rotate(-90deg)");
-			}
-
-		});
-	});
+	
+//	$(".clusterId").each(function(){
+//		$(this).click(function(e){
+//			$(":checkbox").click(function(e){
+//				e.stopPropagation();
+//			});
+//			
+//			if($(this).next("tr").hasClass("hide")){
+//				$(this).next("tr").removeClass("hide");
+//				$(this).children().eq(1).children("b").css("transform","rotate(0deg)");
+//			}else{
+//				$(this).next("tr").addClass("hide");
+//				$(this).children().eq(1).children("b").css("transform","rotate(-90deg)");
+//			}
+//
+//		});
+//	});
+	
 
  });
  
-//check option
+ function loadContainers(obj){
+	 	var serviceID = $(obj).attr("serviceid");
+	 	var aaa = 'tr[serviceidcon = "'+serviceID+'"]'
+	 	if($(obj).children().eq(1).children("b").attr("rotate") == "show"){
+	 		$(aaa).remove();
+	 		$(obj).children().eq(1).children("b").css("transform","rotate(-90deg)");
+	 		$(obj).children().eq(1).children("b").attr("rotate","hide");
+	 	}else{
+	 		$.ajax({
+				url:""+ctx+"/service/findservice.do?serviceID="+serviceID,
+				type:"get",
+				success:function(data){
+					$(aaa).remove();
+					var containersHtml = "";
+					var data = eval("("+data+")");
+					var containerLength = data.containerList.length;
+					for(var i=0; i<containerLength; i++){
+		    			var containerName = data.containerList[i].containerName;
+		    			var containerStatus = data.containerList[i].containerStatus ==1 ? "未启动" : "启动中" ;
+		    			var statusClassName = data.containerList[i].containerStatus ==1 ? "fa_stop" : "fa_run" ;
+		    			var loadingImgShowClass = data.containerList[i].containerStatus ==1 ? "hide" : "hide" ;
+		    			containersHtml += '<tr class="tr-row" serviceidcon="'+serviceID+'">'+
+										'<td style="width: 5%">&nbsp;</td>'+
+										'<td style="width: 20%;">'+
+										  '<a style="margin-left: 19px;" href="javascript:void(0)">'+containerName+'</a>'+
+										'</td>'+
+										'<td colspan="2" style="width: 30%"><i class="'+statusClassName+'"></i>'+containerStatus+
+										'<img src="<%=path %>/images/loading4.gif" alt="" class="'+loadingImgShowClass+'"/></td>'+
+										'<td style="width: 24%"></td>'+
+										'<td colspan="2" style="width: 20%"></td>'+
+									'</tr>';
+		    		}
+					$(obj).after(containersHtml);
+					
+					$(obj).children().eq(1).children("b").css("transform","rotate(0deg)");
+					$(obj).children().eq(1).children("b").attr("rotate","show");
+					
+				}
+			});
+	 	}
+		
+		
+		
+		 /*var serviceID = $(obj).next().attr("serviceid");
+			$.ajax({
+				url:""+ctx+"/service/findservice.do?serviceID="+serviceID,
+				type:"get",
+				success:function(data){
+					var itemsHtml = "";
+					var data = eval("("+data+")");
+					var containerLength = data.containerList.length;
+					for(var i=0; i<containerLength; i++){
+		    			var containerName = data.containerList[i].containerName;
+		    			var containerStatus = data.containerList[i].containerStatus ==1 ? "未启动" : "启动中" ;
+		    			var statusClassName = data.containerList[i].containerStatus ==1 ? "fa_stop" : "fa_run" ;
+		    			var loadingImgShowClass = data.containerList[i].containerStatus ==1 ? "hide" : "hide" ;
+		    			itemsHtml += '<tr class="tr-row">'+
+										'<td style="width: 5%">&nbsp;</td>'+
+										'<td style="width: 20%;">'+
+										  '<a style="margin-left: 19px;" href="javascript:void(0)">'+containerName+'</a>'+
+										'</td>'+
+										'<td colspan="2" style="width: 30%"><i class="'+statusClassName+'"></i>'+containerStatus+
+										'<img src="<%=path %>/images/loading4.gif" alt="" class="'+loadingImgShowClass+'"/></td>'+
+										'<td style="width: 24%"></td>'+
+										'<td colspan="2" style="width: 20%"></td>'+
+									'</tr>';
+		    		}
+					$(obj).parent().parent().next().children().children().children().children().html(itemsHtml);
+					
+				}
+			});*/
+				
+	} 
  
 
- // 选择内存滑动
- //$(function(){
-	// //sliderFn("confRamSlider", 2024, 0);
- //});
 
  function createContainer(){
 	 var serviceIDs = [];
@@ -408,9 +477,21 @@
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){ //或者使用btn1
 				 //按钮【按钮一】的回调
-				 layer.close(index);
 				 var cpus = $('#confCpu').val();
 				 var rams = $('#confRamSlider_input').val();
+				 var leftcpu = $("#leftcpu").html();
+				 if (parseInt(cpus) > parseInt(leftcpu)) {
+			    	 layer.tips('cpu剩余不足',"#confCpu",{tips: [1, '#3595CC']});
+				     $("#confCpu").focus();
+					 return;
+				 }
+				 var leftmemory = $("#leftram").html();
+				 if (parseInt(rams) > parseInt(leftmemory)) {
+					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
+					 $("#confRamSlider_input").focus();
+					 return;
+				 }
+				 layer.close(index);
 				 $.ajax({
  					url:""+ctx+"/service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
  					success:function(data){
@@ -584,3 +665,4 @@ function findImageVersion(imageName){
 	})
 }
  
+

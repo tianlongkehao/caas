@@ -42,7 +42,7 @@
 									</div>
                             </div>
                             <div class="ibox-content">
-                                <table class="table footable table-striped table-hover dataTables-example">
+                                <table class="table table-striped table-hover dataTables-example">
                                     <thead>
                                         <tr>
 												<th style="width: 5%; text-indent: 30px;">
@@ -122,7 +122,7 @@
 																<option name="user_autority" value="1">管理员</option>
 														</select></td>
 														<td style="width: 10%;"><a id="deleteButton"
-															class="no-drop" href="javascript:delOneTenement()"
+															class="no-drop" href="javascript:delOneTenement(${user.id })"
 															style="margin-left: 10px"> <i class="fa fa-trash"></i>
 														</a></td>
 													</tr>
@@ -155,10 +155,10 @@
 
 	<script type="text/javascript">
 	$(document).ready(function(){
-		$('.dataTables-example').dataTable();
-		$(".footable").footable();
-		$("#checkallbox").next().addClass("hide");
-		$(".del-operation").children("span").addClass("hide");
+		$('.dataTables-example').dataTable({
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,8] }]
+		});
+		$("#checkallbox").parent().removeClass("sorting_asc");
 		
 		var create_flag = $.trim($("#create_flag").val());
 		var update_flag = $.trim($("#update_flag").val());

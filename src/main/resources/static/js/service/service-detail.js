@@ -61,9 +61,11 @@ $(document).ready(function(){
         laydate({
           elem: '#date_log',
           // event: 'focus',
-          issure: false, // 是否显示确认
-          min: $('#creationTime').val(),
-          max: laydate.now(+0),
+          issure: true, // 是否显示确认
+          istime: true,
+          format: 'YYYY-MM-DDThh:mm:ss',
+//          min: $('#creationTime').val(),
+//          max: laydate.now(+0),
           zIndex: 99999999, //css z-index
           choose: function(dates){ //选择好日期的回调
 //            logPage = 1;

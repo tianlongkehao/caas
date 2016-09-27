@@ -1,24 +1,27 @@
 $(function(){
 	loadStorageList();
+	
+	
 }) 
 
 function loadStorageList(){
-	var url = ""+ctx+"/service/storageList";
-	var json = {pageable:"pageable"};
-	
-	jqList.query(url,json, function(data){
+	$.ajax({
+		url:""+ctx+"/service/storageList",
+		type:"post",
+		data:{pageable:"pageable"},
+		success:function(data){
+        var data = eval("("+data+")");
 		if(data.status == 200) {
         	var itemsHtml = '';
         	var len = data.storages.length;
-        	if(len == 0){
+/*        	if(len == 0){
         		if(searchFlag) {
         			itemsHtml = '<tr><td colspan="4">未找到匹配的数据...</td></tr>';
         		}else {
         			itemsHtml = '<tr><td colspan="4">无数据...</td></tr>';
         		}
-        	}
+        	}*/
         	for(var i=0; i<len; i++){
-        		(function(){
         			var storage = data.storages[i];
         			var useType = storage.useType ==1 ? "未使用" : "使用" ;
         			
@@ -26,41 +29,105 @@ function loadStorageList(){
         				storage.mountPoint = "未挂载";
         			}
         			itemsHtml += ' <tr class="ci-listTr" style="cursor:auto">'+
-        							' <td style="width: 15%; text-indent:22px;" id = "storageName">'+
+        							' <td style="width: 15%; text-indent:30px;" id = "storageName">'+
         							'<a href="'+ctx+'/service/storage/detail/'+storage.id+'" title="查看详细信息">'+storage.storageName +'</a>'+
         							'</td>'+
-        							' <td style="width: 15%;" class="cStatusColumn">' +
+        							' <td style="width: 15%; text-indent:15px;"  class="cStatusColumn">' +
         								useType +
         							' </td>'+
         							//' <td style="width: 10%;">' + storage.format + '</td>'+
-        							' <td style="width: 15%;word-wrap:break-word;word-break:break-all;">' + storage.mountPoint + '</td>'+
-        							' <td style="width: 12%;">' + storage.storageSize + ' M</td>'+
-        							' <td style="width: 15%;">' + storage.createDate + '</td>'+
-        							' <td style="width: 20%;">' +
-        								' <span class="btn btn-primary format formatStorage"> 格式化 </span>'+
-        								' <span class="btn btn-primary dilation dilatationStorage" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'">扩容</span>'+
-        								' <span class="btn btn-primary delete deleteStorage" storageId="'+storage.id +'"> 删除 </span>'+
+        							' <td style="width: 15%; text-indent:8px;word-wrap:break-word;word-break:break-all;">' + storage.mountPoint + '</td>'+
+        							' <td style="width: 15%; text-indent:10px;">' + storage.storageSize + ' M</td>'+
+        							' <td style="width: 10%;">' + storage.createDate + '</td>'+
+        							' <td style="width: 20%; text-indent:10px;">' +
+        							' <span class="btn btn-primary format formatStorage" storageName="'+storage.storageName +'" isVolReadOnly="'+storage.volReadOnly+'"> 格式化 </span>'+
+    									' <span class="btn btn-primary dilation dilatationStorage" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'">扩容</span>'+
+    									' <span class="btn btn-primary delete deleteStorage" storageId="'+storage.id +'"> 删除 </span>'+
         							'</td>'+	
-        						+'</tr>'
-        		})(i);
+        						+'</tr>';
         	}
-        	$('tbody #storageList').html(itemsHtml);
+        	$('#storageList').html(itemsHtml);
+        	mountLocalCeph();
+		}
+		$('.dataTables-example').dataTable({
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 5 ] }]
+		});
 		}
 	});
-	alert("test");
+	
 }
 $(document).ready(function () {
 	$("#storageReloadBtn").click(function(){
 		window.location.reload();
 	});
 
+	$("#updatedefVol").click(function(){
+		$("#updatedefVolNum").attr("checked","checked");
+	 });
 });
 
 $(function(){
 	dilatationStorage();
 	
 	delStorage();
+	
+	formatStorage();
 });
+
+function mountLocalCeph(){
+	$.ajax({
+		url:""+ctx+"/storage/mount.do",
+		success:function(data){
+			data = eval("(" + data + ")");
+			if(data.status=="200"){
+//				layer.msg( "修改成功！", {
+//						icon: 1
+//					},function(){
+//						window.location.reload();
+//					});
+			} else if(data.status=="500"){
+				layer.alert("挂载有点异常啊哈");
+			}
+
+		}
+	})
+}
+
+function formatStorage(){
+	$(document).on("click",".formatStorage",function(){
+		var storageName = $(this).attr("storageName");
+		var isVolReadOnly = $(this).attr("isVolReadOnly");
+  		 layer.open({
+		        title: '格式化卷组',
+		        content: '确定格式化卷组？',
+		        btn: ['确定', '取消'],
+		        yes: function(index){ 
+		        	layer.close(index);
+		        	$.ajax({
+		   		     		url:""+ctx+"/storage/format",
+		   		     		type:"post",
+		   		     		data:{"storageName":storageName,"isVolReadOnly":isVolReadOnly},
+		   		     		success:function(data){
+		   		     		data = eval("(" + data + ")");
+							if(data.status=="200"){
+			   		     			layer.msg( "格式化成功！", {
+				   						icon: 1
+				   					},function(){
+				   						window.location.href = ""+ctx+"/service/storage";
+				   					});
+		   		     			}
+		   		     		},
+		   		     		error:function(){
+			   		     		layer.msg( "格式化失败", {
+			   						icon: 0.5
+			   					});
+		   		     		}
+		   		     	});
+		        	refresh();
+		        }
+		 });
+	});
+}
 
 function delStorage() {
 
@@ -120,7 +187,6 @@ function dilatationStorage(){
 				//按钮【按钮一】的回调
 				layer.close(index);
 				//var storageUpdateSize = $("#storageSizeUpdateSlider_input").val();
-				alert($("#updatedefVol").val());
 				$("#updatedefVolNum")[0].value = $("#updatedefVol").val()*1024;
 				var storageUpdateSize = $(".updateStorageSize:checked").val();
 				$.ajax({

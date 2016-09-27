@@ -1,7 +1,20 @@
 package com.bonc.epm.paas.constant;
 
+/**
+ * 
+ * 卷组常量类
+ * @author all
+ * @version 2016年9月18日
+ * @see StorageConstant
+ * @since
+ */
 public class StorageConstant {
-	//备份卷组的使用状态 1 是未使用，2是使用；
-	public static final Integer NOT_USER = 1;
-	public static final Integer IS_USER = 2;
+    /**
+     * 未使用
+     */
+    public static final Integer NOT_USER = 1;
+	/**
+	 * 已使用
+	 */
+    public static final Integer IS_USER = 2;
 }

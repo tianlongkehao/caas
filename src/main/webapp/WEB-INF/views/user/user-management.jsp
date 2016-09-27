@@ -6,7 +6,7 @@
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/user.css" />
-<script type="text/javascript" src="<%=path%>/js/user/user_create.js"></script>
+<%-- <script type="text/javascript" src="<%=path%>/js/user/user_create.js"></script> --%>
 </head>
 <body>
 
@@ -31,7 +31,7 @@
 								<div class="ibox float-e-margins">
 									<div class="ibox-title">
 										<h5>
-											<i class="fa fa-map-marker" style="margin-right: 6px;"></i>租户管理
+											<i class="fa fa-map-marker" style="margin-right: 6px;"></i>用户管理
 										</h5>
 										<div class="ibox-tools">
 											<a href="<%=path %>/user/manage/add/${cur_user.id }"
@@ -44,7 +44,7 @@
 										</div>
 									</div>
 									<div class="ibox-content">
-										<table class="footable table table-striped table-hover dataTables-example"
+										<table class="table table-striped table-hover dataTables-example"
 											data-page-size="8" data-filter=#filter>
 											<thead>
 												<tr>
@@ -84,13 +84,13 @@
 																	test='${user.user_autority == "3"}'>普通用户</c:if> <c:if
 																	test='${user.user_autority == "4"}'>超级用户</c:if></td>
 															<td style="width: 8%; text-indent: 4px;"><a
-																href="javascript:delUser()" title="删除"><i
+																href="javascript:delUserById(${user.id })" title="删除"><i
 																	class="fa fa-trash"></i></a></td>
 														</tr>
 													</c:if>
 												</c:forEach>
 											</tbody>
-											<tfoot>
+											<tfoot class="hide">
 												<tr>
 													<td colspan="8">
 														<ul class="pagination pull-right"></ul>
@@ -113,11 +113,84 @@
 	<input id="create_flag" value="${creatFlag}" type="hidden">
 	<input id="update_flag" value="${updateFlag}" type="hidden">
 	<script type="text/javascript">
+	
+	/**
+	 * 删除选中用户
+	 */
+	function delUser(){
+	    var id = "";
+	    $(":checked[name='ids']").each(function(){
+	        id = id + jQuery(this).val() + ",";
+	    });
+	    if ("" == id) {
+	        layer.alert("请选择至少一个用户", {icon:0});
+	        return;
+	    }
+	    else {
+	        id = id.substring(0, id.length - 1);
+	        layer.open({
+	            title: '删除用户',
+	            content:'确定删除多个用户吗？',
+	            btn: ['确定', '取消'],
+	            yes: function(index, layero){ //或者使用btn1
+	                layer.close(index);
+	                $.ajax({
+	                    url:ctx+"/user/delUser.do?ids="+id,
+	                    success:function(data){
+	                        data = eval("(" + data + ")");
+	                        if(data.status=="200"){
+	                            layer.alert("用户信息删除成功");
+	                            window.location.reload();
+	                        }else{
+	                            layer.alert("用户信息删除失败，请检查服务器连接");
+	                        }
+	                        location.reload(true);
+	                    }
+	                })
+
+	            },
+	            cancel: function(index){ //或者使用btn2
+	                //按钮【按钮二】的回调
+	            }
+	        });
+	    }
+	}
+	/**
+	 * 删除选中用户
+	 */
+	function delUserById(id){
+	    layer.open({
+	        title: '删除用户',
+	        content:'确定删除这个用户吗？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ //或者使用btn1
+	            layer.close(index);
+	            $.ajax({
+	                url:ctx+"/user/delUser.do?ids="+id,
+	                success:function(data){
+	                    data = eval("(" + data + ")");
+	                    if(data.status=="200"){
+	                        layer.alert("用户信息删除成功");
+	                        window.location.reload();
+	                    }else{
+	                        layer.alert("用户信息删除失败，请检查服务器连接");
+	                    }
+	                    location.reload(true);
+	                }
+	            })
+
+	        },
+	        cancel: function(index){ //或者使用btn2
+	            //按钮【按钮二】的回调
+	        }
+	    });
+	}
+	
     $(document).ready(function(){
-    	$('.dataTables-example').dataTable();
-    	$(".footable").footable();
-		$("#checkallbox").next().addClass("hide");
-		$(".del-operation").children("span").addClass("hide");
+    	$('.dataTables-example').dataTable({
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,7] }]
+		});
+		$("#checkallbox").parent().removeClass("sorting_asc");
     	
         var create_flag = $.trim($("#create_flag").val());
         var update_flag = $.trim($("#update_flag").val());
