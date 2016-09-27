@@ -308,10 +308,10 @@ public class RegistryController {
             boolean complete= dockerClientService.pullImage(imageName, imageVersion);
             boolean flag = false;
             if (complete) {
-                String cmd = imageCmdPath +" "+ imagePath +"/"
-                    + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
-//                flag = CmdUtil.exeCmd(cmd);
                 try {
+                    String cmd = imageCmdPath +" "+ imagePath +"/"
+                        + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
+//                    flag = CmdUtil.exeCmd(cmd);
                     flag = CmdUtil.exeCmd(cmd);
                 }
                 catch (IOException e) {
