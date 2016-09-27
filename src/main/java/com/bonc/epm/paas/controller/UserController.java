@@ -1034,7 +1034,7 @@ public class UserController {
                     try {
                         client.deleteLimitRange(namespace);
                         Status status =  client.deleteResourceQuota(namespace);
-                        if (status.getStatus() =="Success") {
+                        if (status.getStatus().equals("Success")) {
 							
 						}
                     } 
