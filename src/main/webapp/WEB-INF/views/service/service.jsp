@@ -153,14 +153,16 @@
 													</span></td>
 													<td style="width: 12%" class="tdTimeStrap"><input
 														type="hidden" class="timeStrap" value=""> <i
-														class="fa_time"></i> <span>${service.createDate }</span></td>
-													<td style="width: 8%"><c:if
-															test="${service.status != 3}">
+														class="fa_time"></i> <span>${service.createDate }</span>
+													</td>
+													<td style="width: 8%">
+														<c:if test="${service.status != 3}">
 															<a id="${service.id}_start" class="startContainer_a"
 																href="javascript:oneStartContainer(${service.id},${service.status})">
 																<i class="fa fa-play"></i>
 															</a>
-														</c:if> <c:if test="${service.status == 3}">
+														</c:if> 
+														<c:if test="${service.status == 3}">
 															<a id="${service.id}_stop" class="stopContainer_a"
 																href="javascript:oneStopContainer(${service.id},${service.status})"
 																style="margin-left: 10px"> <i
