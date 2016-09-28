@@ -1,9 +1,7 @@
 package com.bonc.epm.paas.util;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -45,18 +43,18 @@ public class CmdUtil {
             outputGobbler.start();
             try {
                 process.waitFor();
-               }
+            }
             catch (InterruptedException e) {
-               LOG.error("exec command failed. message:-" + e.getMessage());
-               e.printStackTrace();
-               return false;
-               }
+                LOG.error("exec command failed. InterruptedException message:-" + e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
             return true;
-         }
-       catch (IOException e) {
-           LOG.error("exec command failed. message:-" + e.getMessage());
-           e.printStackTrace();
-           return false;
+        }
+        catch (IOException e) {
+            LOG.error("exec command failed. IOException message:-" + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
 

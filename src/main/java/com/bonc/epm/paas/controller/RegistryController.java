@@ -120,7 +120,7 @@ public class RegistryController {
             active = "我的收藏";
         }
         addCurrUserFavor(images);
-		addCreatorName(images);
+        addCreatorName(images);
         model.addAttribute("images", images);
         model.addAttribute("index", index);
         model.addAttribute("active",active);
@@ -286,7 +286,8 @@ public class RegistryController {
      * @param resourceName 资源
      * @param request  
      * @param response 
-     * @param model 
+     * @param model
+     * @return map JSONString
      */
     @RequestMapping(value = {"registry/downloadImage"}, method = RequestMethod.GET)
     @ResponseBody
@@ -326,8 +327,8 @@ public class RegistryController {
     
     /**
      * 下载镜像文件
-     * 
-     * @param fileName : 文件名称
+     * @param imageName String
+     * @param imageVersion String
      * @param request ：request
      * @param response  ： response
      * @see
@@ -344,7 +345,8 @@ public class RegistryController {
             InputStream myStream = new FileInputStream(imagePath+"/"+fileName);  
             IOUtils.copy(myStream, response.getOutputStream());  
             response.flushBuffer();  
-        } catch (IOException e) {  
+        } 
+        catch (IOException e) {  
             LOG.error("downloadImage error:"+e.getMessage());
         }  
     }
@@ -414,12 +416,19 @@ public class RegistryController {
         }
     }
     
-	private void addCreatorName(List<Image> images){
-		for(Image image:images){
-			User user = userDao.findById(image.getCreator());
-			if (user != null) {
-				image.setCreatorName(user.getUserName());
-			}
-		}
-	}
+    /**
+     * 
+     * Description:
+     * addCreatorName
+     * @param images 
+     * @see
+     */
+    private void addCreatorName(List<Image> images){
+        for(Image image:images){
+            User user = userDao.findById(image.getCreator());
+            if (null != user) {
+                image.setCreatorName(user.getUserName());
+            }
+        }
+    }
 }

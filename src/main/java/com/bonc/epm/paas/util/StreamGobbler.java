@@ -1,20 +1,12 @@
-/*
- * 文件名：StreamGobbler.java
- * 版权：Copyright by bonc
- * 描述：
- * 修改人：root
- * 修改时间：2016年9月28日
- * 跟踪单号：
- * 修改单号：
- * 修改内容：
- */
-
 package com.bonc.epm.paas.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * 执行shell命令，
@@ -24,19 +16,27 @@ import java.io.InputStreamReader;
  * @see StreamGobbler
  * @since
  */
-public class StreamGobbler extends Thread {  
-    
-    InputStream is;  
-    String type;  
+public class StreamGobbler extends Thread {
+    /**
+     * StreamGobbler日志实例
+     */
+    private static final Log LOG = LogFactory.getLog(StreamGobbler.class);
+    /**
+     * InputStream is
+     */
+    private InputStream is;
+    /**
+     * type
+     */
+    private String type;  
   
     public StreamGobbler(InputStream is, String type) {  
         this.is = is;  
         this.type = type;  
     }  
   
-    /**
-     * @throws IOException  br.close()
-     */
+
+    @Override
     public void run() {
         try {  
             InputStreamReader isr = new InputStreamReader(is);  
@@ -44,13 +44,15 @@ public class StreamGobbler extends Thread {
             String line = null;  
             while (null != (line = br.readLine())) {  
                 if (type.equals("Error")) {  
-                    System.out.println("Error   :" + line);  
-                } else {  
-                    System.out.println("Debug:" + line);  
+                    LOG.info("Error   :" + line);  
+                } 
+                else {  
+                    LOG.info("Debug:" + line);  
                 }  
             }  
-        } catch (IOException ioe) {  
+        } 
+        catch (IOException ioe) {  
             ioe.printStackTrace();  
-          } 
+        } 
     }
 }
