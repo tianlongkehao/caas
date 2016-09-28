@@ -99,12 +99,12 @@ function getServiceLogs(){
 	var id = $('#datePicker').attr('serviceid');
 	var date = $('#date_log').val();
 	$.ajax({
-		url:ctx+"/service/detail/getlogs.do?id="+id+"&date="+date,
+		url:ctx+"/service/detail/getLogsByService.do?id="+id+"&date="+date,
 		success:function(data){
 			data = $.parseJSON(data);
 			var html = "";
-			if(data.status == '200' && data.logStr != ""){
-				var logs = data.logStr;
+			if(data.status == '200' && data.logList != ""){
+				var logs = data.logList;
 				console.log(logs)
 				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;overflow:hidden; float:left;">'+
 					logs+'<br></pre>'
