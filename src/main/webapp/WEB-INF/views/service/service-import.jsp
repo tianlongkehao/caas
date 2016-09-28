@@ -107,6 +107,37 @@
 			</table>
 		</form>
 	</div>
+	
+	<!-- 修改外部服务信息 -->
+	   <div id="import-service" style="display: none;">
+        <form>
+            <table class="table enabled"
+                style="width: 345px; padding: 5px; margin: 10px">
+                <tbody class="BORDER">
+                    <tr>
+                        <th style="width: 35%">服务名称：</th>
+                        <td><input class="" type="text" id="improt-ser-name" value=""></td>
+                    </tr>
+                    <tr>
+                        <th style="width: 35%">服务访问地址：</th>
+                        <td><input class="" type="text" id="improt-ser-in" value=""></td>
+                    </tr>
+                    <tr>
+                        <th style="width: 35%">外部服务地址：</th>
+                        <td><input class="" type="text" id="improt-ser-out" value=""></td>
+                    </tr>
+                    <tr>
+                        <th style="width: 35%">可见域：</th>
+                        <td><select class="" id="improt-ser-visibility">
+                                <option value="0">仅本租户可见</option>
+                                <option value="1">所有租户可见</option>
+                        </select></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </form>
+    </div>
 
 	${msg}
 	<c:if test="${msg!= null} ">

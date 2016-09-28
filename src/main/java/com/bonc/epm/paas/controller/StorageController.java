@@ -224,6 +224,16 @@ public class StorageController {
     @ResponseBody
     public String dilatationStorage(long storageId, Integer storageUpdateSize) {
         Map<String, Object> map = new HashMap<String, Object>();
+        User cUser = CurrentUserUtils.getInstance().getUser();
+        int leftstorage=0;
+        List<Storage> list = storageDao.findByCreateBy(cUser.getId());
+        for (Storage storage : list) {
+            leftstorage = leftstorage + (int) storage.getStorageSize();
+        }
+        if (storageUpdateSize/1024>((int) cUser.getVol_size() - leftstorage / 1024)){
+            map.put("status", "500");
+            return JSON.toJSONString(map);
+        }
         Storage storage = storageDao.findOne(storageId);
         storage.setStorageSize(storageUpdateSize);
         storageDao.save(storage);
