@@ -1,130 +1,15 @@
  $(document).ready(function () {
-	
 	$("#serviceReloadBtn").click(function(){
 		loadService();
 	});
 	
 	$(document).on('click','.no-drop',function(){
 		  return false;
-		});
+		});	
 	
-	
-
 	_refreshCreateTime(60000);
 	
 	checkbox();
-	
-	
-//	$("#serviceSearch").click(function(){
-//		var serviceName = $('#searchName').val();
-//		$.ajax({
-//			url:ctx+"/service/findservice.do?servName="+serviceName,
-//			success:function(data){
-//				//data = eval("(" + data + ")");
-//				data = $.parseJSON(data);
-//				if(data.status=="200"){
-//	            	var html="";
-//	            	var htmlpod="";
-//	            	if(data.serviceList.length>0){
-//	            		for(var i in data.serviceList){
-//	            			var service = data.serviceList[i];
-//	            			var StatusHtml = "";
-//	            			var btnStyleHtml = "";
-//	            			if(service.status = 1){
-//	            				StatusHtml = "<i class='fa_run'></i><span style='color: #65BC2C'>运行中 </span>";
-//	            			}else if(service.status = 2){
-//	            				StatusHtml = "<i class='fa_createing'></i><span style='color: #FFA000'>等待中 </span>";
-//	            			}else if(service.status = 3){
-//	            				StatusHtml = "<i class='fa_success'></i><span style='color: #5E99E1'>创建中 <img class='margin' src='/images/loading4.gif'></span>";
-//	            			}else if(service.status = 4){
-//	            				StatusHtml = "<i class='fa_stop'></i><span style='color: #DF582C'>已停止 </span>";
-//	            			}else if(service.status = 5){
-//	            				StatusHtml = "<i class='fa_stop'></i><span style='color: #DF582C'>创建失败 </span>";
-//	            			}else if(service.status = 6){
-//	            				StatusHtml = "<i class='fa fa-warning'></i><span>服务异常 </span>";
-//	            			}
-//	            			html += "<tr class='clusterId' containerName="+service.serviceName+">"+
-//		"<td style='width: 5%; text-indent: 30px;'><input type='checkbox'"+
-//			"name='chkItem' status='' imagename='' imagetag='' value='"+service.id+"'" +
-//					" serviceName='"+service.serviceName +"' serviceNum='"+service.instanceNum +"' confRam='"+service.ram +
-//							" status='"+service.status+"' imagename='"+service.imgName +"' imageversion='"+service.imgVersion +
-//									" confCpu='"+service.cpuNum+ "'/></td>"+
-//		" <td style='width: 20%; white-space: nowrap;'><b"+
-//			"class='caret margin' style='transform: rotate(0deg);'></b> <a"+
-//			"href='/service/detail/'"+service.id+
-//			" class='cluster_mirrer_name'>"+ service.serviceName +"</a> <span class='number-node'>"+ service.instanceNum +"</span>"+
-//			"<span class='margin cursor console-code-modal'"+
-//			"data-id='#console-code-modal'> <i class='fa fa-desktop'"+
-//				"onclick=''></i>"+
-//		"</span></td>"+
-//		"<td style='width: 10%' id='mysqlstatus'>"+ StatusHtml +
-//		"</td><td style='width: 20%;'><img"+
-//			"src=''"+
-//			"style='max-height: 20px; max-width: 40px;'> <span"+
-//			"class='cluster_mirrer'> <a title='点击查看镜像' target='_blank'"+
-//				"href=''>"+ service.imgName +"</a>"+
-//		"</span></td>"+
-//		"<td style='width: 34%' id='mysqlurl'><span class='url'> <a"+
-//				"href='' target='_blank'>bonc</a>"+
-//		"</span></td>"+
-//		"<td style='width: 10%' class='tdTimeStrap'><input type='hidden'"+
-//			"class='timeStrap' value=''> <i"+
-//			"class='fa_time'></i> <span>"+ service.createDate + "</span></td>"+
-//	"</tr>";
-//	if(data.containerList.length>0){
-//		for(var j in data.containerList){
-//			var container = data.containerList[i];
-//			if(container.serviceid == service.id){
-//				htmlpod += "<tr style='border-left: 1px solid #eee;'>"+
-//				"<td colspan='8'><div class='align-center'>"+
-//						"<table class='table'>"+
-//							"<thead style='background: #FAFAFA; border-top: 1px solid #EDECEC;'>"+
-//								"<tr class='tr-row'>"+
-//									"<td style='width: 5%'>&nbsp;</td>"+
-//									"<td style='width: 20%;'><a style='margin-left: 19px;'"+
-//										"href=''>"+ container.containerName +"</a>"+
-//									"</td>"+
-//									"<td colspan='2' style='width: 30%'>"+ StatusHtml +
-//									"<td style='width: 10%'><i class='fa_time'></i>" +service.createDate+ "</td>"+
-//								"</tr>"+
-//							"</thead>"+
-//						"</table>"+
-//					"</div></td>"+
-//			"</tr>";
-//			}
-//		}
-//		
-//	}
-//	   
-//	   html = html + htmlpod;
-//	            		}
-//	            	}
-//	            	$("#serviceList").html(html);
-//	            }else{
-//	            	alert(data.msg);
-//	            }
-//			}
-//		})
-//	})
-	
-//	$(".clusterId").each(function(){
-//		$(this).click(function(e){
-//			$(":checkbox").click(function(e){
-//				e.stopPropagation();
-//			});
-//			
-//			if($(this).next("tr").hasClass("hide")){
-//				$(this).next("tr").removeClass("hide");
-//				$(this).children().eq(1).children("b").css("transform","rotate(0deg)");
-//			}else{
-//				$(this).next("tr").addClass("hide");
-//				$(this).children().eq(1).children("b").css("transform","rotate(-90deg)");
-//			}
-//
-//		});
-//	});
-	
-
  });
  
  function loadContainers(obj){
@@ -163,42 +48,9 @@
 					
 					$(obj).children().eq(1).children("b").css("transform","rotate(0deg)");
 					$(obj).children().eq(1).children("b").attr("rotate","show");
-					
 				}
 			});
 	 	}
-		
-		
-		
-		 /*var serviceID = $(obj).next().attr("serviceid");
-			$.ajax({
-				url:""+ctx+"/service/findservice.do?serviceID="+serviceID,
-				type:"get",
-				success:function(data){
-					var itemsHtml = "";
-					var data = eval("("+data+")");
-					var containerLength = data.containerList.length;
-					for(var i=0; i<containerLength; i++){
-		    			var containerName = data.containerList[i].containerName;
-		    			var containerStatus = data.containerList[i].containerStatus ==1 ? "未启动" : "启动中" ;
-		    			var statusClassName = data.containerList[i].containerStatus ==1 ? "fa_stop" : "fa_run" ;
-		    			var loadingImgShowClass = data.containerList[i].containerStatus ==1 ? "hide" : "hide" ;
-		    			itemsHtml += '<tr class="tr-row">'+
-										'<td style="width: 5%">&nbsp;</td>'+
-										'<td style="width: 20%;">'+
-										  '<a style="margin-left: 19px;" href="javascript:void(0)">'+containerName+'</a>'+
-										'</td>'+
-										'<td colspan="2" style="width: 30%"><i class="'+statusClassName+'"></i>'+containerStatus+
-										'<img src="<%=path %>/images/loading4.gif" alt="" class="'+loadingImgShowClass+'"/></td>'+
-										'<td style="width: 24%"></td>'+
-										'<td colspan="2" style="width: 20%"></td>'+
-									'</tr>';
-		    		}
-					$(obj).parent().parent().next().children().children().children().children().html(itemsHtml);
-					
-				}
-			});*/
-				
 	} 
  
 

@@ -119,22 +119,28 @@
 								</tr>
 							</tbody>
 						</table>
+						
 						<table class="table basicInfo w50">
-							<thead>
-								<tr>
-									<th>环境变量</th>
-									<th>&nbsp;</th>
-								</tr>
-							</thead>
-							<tbody class="BORDER">
-								<c:forEach items="${envVariableList }" var="envVariable">
-									<tr>
-										<td>变量名 ${envVariable.envKey }</td>
-										<td>变量值 ${envVariable.envValue }</td>
-									</tr>
-								</c:forEach>
-							</tbody>
-						</table>
+                            <thead>
+                                <tr>
+                                    <th >环境变量</th>
+                                    <th >&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody class="BORDER">
+                                <tr>
+                                    <td> 键</td>
+                                    <td> 值</td>
+                                </tr>
+                                <c:forEach items="${envVariableList }" var="envVariable">
+                                    <tr>
+                                        <td> ${envVariable.envKey }</td>
+                                        <td> ${envVariable.envValue }</td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+						
 					</div>
 					<div class="containerInstances hide" style="min-height: 300px;">
 						<table class="table">
