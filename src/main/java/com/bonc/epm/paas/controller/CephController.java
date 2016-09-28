@@ -112,11 +112,20 @@ public class CephController {
      */
     public void createNamespaceCephFS(String namespace) throws Exception {
         LOGGER.info("进入方法：createNamespaceCephFS");
-        cephMount.mkdir("/" + namespace, mode);
-
-        LOGGER.info("打印" + namespace + "下的所有目录");
-        String[] listdir = cephMount.listdir("/" + namespace);
+        String[] listdir = cephMount.listdir("/");
+        int  flag =0;
         for (String strDir : listdir) {
+           if (strDir.equals(namespace)){
+               flag =1;
+               break;
+                   }
+                }
+        if(0==flag){
+            cephMount.mkdir("/" + namespace, mode);
+                  }
+        LOGGER.info("打印" + namespace + "下的所有目录");
+        String[] listdir2 = cephMount.listdir("/" + namespace);
+        for (String strDir : listdir2) {
             LOGGER.info("dir:" + strDir);
         }
     }

@@ -2,6 +2,7 @@ package com.bonc.epm.paas.util;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -59,7 +60,40 @@ public class CmdUtil {
             }
         }
     }
-
+/**
+ * 
+ * Description: 在制定目录下执行命令
+ * 
+ * @param commandStr 命令
+ * @param dir 目录
+ * @return boolean true或false
+ * @throws IOException 
+ * @see
+ */
+    public static boolean exeCmd(String commandStr ,String dir) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader br = null;
+        try {
+            File file = new File(dir);
+            Process p = Runtime.getRuntime().exec(commandStr,null ,file);
+            br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line = null;
+            while (null != (line = br.readLine())) {
+                sb.append(line + "\n");
+            }
+            return true;
+        } 
+        catch (Exception e) {
+            LOG.error("exec command failed. message:-" + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } 
+        finally {
+            if (br != null) {
+                br.close();
+            }
+        }
+    }
     /**
      * 
      * Description:
