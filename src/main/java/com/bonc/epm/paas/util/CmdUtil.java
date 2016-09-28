@@ -2,6 +2,7 @@ package com.bonc.epm.paas.util;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -26,7 +27,7 @@ public class CmdUtil {
      * CmdUtil日志实例
      */
     private static final Log LOG = LogFactory.getLog(CmdUtil.class);
-    
+  
     /**
      * 
      * Description:
@@ -37,10 +38,44 @@ public class CmdUtil {
      * @see
      */
     public static boolean exeCmd(String commandStr) throws IOException {
+        try {
+            Process process = Runtime.getRuntime().exec(commandStr);
+            StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "Error");
+            StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "Output");
+            errorGobbler.start();
+            outputGobbler.start();
+            try {
+                process.waitFor();
+            }
+            catch (InterruptedException e) {
+                LOG.error("exec command failed. InterruptedException message:-" + e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+        catch (IOException e) {
+            LOG.error("exec command failed. IOException message:-" + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+/**
+ * 
+ * Description: 在制定目录下执行命令
+ * 
+ * @param commandStr 命令
+ * @param dir 目录
+ * @return boolean true或false
+ * @throws IOException 
+ * @see
+ */
+    public static boolean exeCmd(String commandStr ,String dir) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader br = null;
         try {
-            Process p = Runtime.getRuntime().exec(commandStr);
+            File file = new File(dir);
+            Process p = Runtime.getRuntime().exec(commandStr,null ,file);
             br = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line = null;
             while (null != (line = br.readLine())) {
@@ -59,7 +94,6 @@ public class CmdUtil {
             }
         }
     }
-
     /**
      * 
      * Description:

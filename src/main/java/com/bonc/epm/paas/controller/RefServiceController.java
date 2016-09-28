@@ -136,4 +136,16 @@ public class RefServiceController {
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
+    @RequestMapping(value = "refservice/checkName.do", method = RequestMethod.GET)
+    @ResponseBody
+    private String checkName(String un){
+        Map map = new HashMap();
+        int size = refServiceDao.findBySerName(un).size();
+        if(0<size){
+            map.put("status", "400");
+        }else{
+            map.put("status", "200");
+        }
+        return JSON.toJSONString(map);
+    }
 }

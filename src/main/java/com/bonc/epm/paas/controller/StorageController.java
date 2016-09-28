@@ -36,6 +36,7 @@ import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.entity.FileInfo;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.SFTPUtil;
 import com.bonc.epm.paas.util.SshConnect;
@@ -224,6 +225,16 @@ public class StorageController {
     @ResponseBody
     public String dilatationStorage(long storageId, Integer storageUpdateSize) {
         Map<String, Object> map = new HashMap<String, Object>();
+        User cUser = CurrentUserUtils.getInstance().getUser();
+        int leftstorage=0;
+        List<Storage> list = storageDao.findByCreateBy(cUser.getId());
+        for (Storage storage : list) {
+            leftstorage = leftstorage + (int) storage.getStorageSize();
+        }
+        if (storageUpdateSize/1024>((int) cUser.getVol_size() - leftstorage / 1024)){
+            map.put("status", "500");
+            return JSON.toJSONString(map);
+        }
         Storage storage = storageDao.findOne(storageId);
         storage.setStorageSize(storageUpdateSize);
         storageDao.save(storage);
@@ -350,13 +361,14 @@ public class StorageController {
                 e1.printStackTrace();
             }
             try {
-                SshConnect.connect(cephController.getUsername(), cephController.getPassword(), cephController.getUrl(),
-                        22);
-                SshConnect.exec("cd " + cephController.getMountpoint(), 1000);
-                SshConnect.exec(cephController.getMountexec(), 1000);
+//                SshConnect.connect(cephController.getUsername(), cephController.getPassword(), cephController.getUrl(),
+//                        22);
+//                SshConnect.exec("cd " + cephController.getMountpoint(), 1000);
+//                SshConnect.exec(cephController.getMountexec(), 1000);
+                CmdUtil.exeCmd(cephController.getMountexec(), cephController.getMountpoint());
                 map.put("status", "200");
             } 
-            catch (JSchException | IOException | InterruptedException e) {
+            catch (IOException  e) {
                 map.put("status", "500");
                 e.printStackTrace();
             }
@@ -393,18 +405,18 @@ public class StorageController {
                     map.put("status", "500");
                     return JSON.toJSONString(map);
                 }
-                if(fileSize<=50){
+//                if(fileSize<=50){
                     BufferedOutputStream out = new BufferedOutputStream(
                             new FileOutputStream(new File(path + file.getOriginalFilename())));
                     out.write(file.getBytes());
                     out.flush();
                     out.close();
-                }else{
-                    SFTPUtil sf = new SFTPUtil();
-                    ChannelSftp sftp = sf.connect(cephController.getUrl(), 22, cephController.getUsername()
-                        , cephController.getPassword());
-                    sf.upload(path, file, sftp);
-                                   }
+//                }else{
+//                    SFTPUtil sf = new SFTPUtil();
+//                    ChannelSftp sftp = sf.connect(cephController.getUrl(), 22, cephController.getUsername()
+//                        , cephController.getPassword());
+//                    sf.upload(path, file, sftp);
+//                                   }
                 map.put("used", used);
                 map.put("status", "200");
                 return JSON.toJSONString(map);
@@ -483,4 +495,13 @@ public class StorageController {
         }
 
     } 
+//    public static void main(String[] args) {
+//        try {
+//            CephController ccl = new CephController();
+//            CmdUtil.exeCmd(ccl.getMountexec(), ccl.getMountpoint());
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//    }
 }

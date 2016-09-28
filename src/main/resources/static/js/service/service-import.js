@@ -6,12 +6,43 @@
 	
 	creatable();
 
+	function check(){
+        var serName = $('#improt-ser-name').val().trim();
+        if (serName.length === 0) {
+            layer.tips('服务名称不能为空', '#improt-ser-name', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+            return false;
+        } else if (serName.length < 4) {
+            layer.tips('服务名称过短', '#improt-ser-name', {
+                tips: [1, '#0FA6D8']
+            });
+            return false;
+        } else {
+            var un = serName.toLowerCase();
+            console.info(un);
+            $("#improt-ser-name").val(un);
+            $.get(
+                "/refservice/checkName.do?un=" + un,
+                function (data, status) {
+                    console.info("Data: " + data + "\nStatus: " + status);
+                    var data = eval("(" + data + ")");
+                    if (data.status == "400") {
+                        //layer.alert("登陆帐号已经被使用，请输入新的帐号！");
+                        layer.tips('服务名已经被使用，请输入新的服务名！', '#improt-ser-name', {
+                            tips: [1, '#0FA6D8']
+                        });
+                    }
+                });
+            return false;
+        }
+ }
 	_refreshCreateTime(60000);
-	
-//	checkbox();
-	
 	//添加外部服务地址
 	$("#importServiceBtn").click(function(){
+		 $("#improt-ser-name").val("");
+		 $("#improt-ser-in").val("");
+		 $("#improt-ser-out").val("");
 		layer.open({
 		 	type:1,
 	        title: '引入外部服务',
@@ -22,7 +53,9 @@
 	        	 var importSerIn = $("#improt-ser-in").val();
 	        	 var importSerOut = $("#improt-ser-out").val();
 	        	 var importSerVis = $("#improt-ser-visibility").val();
-	        	 
+	        	 if(false==check()){
+	        		 return;
+	        	 }
 	        	 $.ajax({
 		         		url : ctx + "/refservice/add.do",
 		         		type: "POST",
@@ -74,7 +107,7 @@
             		var refservice = data.data[i];
             		tr+='<tr>'+
 	     			'<td style="width: 5%; text-indent: 30px;">'+
-	     			'<input type="checkbox" name="chkItem" value='+refservice.id+' /></td>'+
+	     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
 			     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'</td>'+
 			     		'<td style="width: 20%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
 			     		'<td style="width: 20%;">'+refservice.refAddress+'</td>';
@@ -84,18 +117,23 @@
 			     			tr+='<td style="width: 14%;">仅本租户可见</td>';
 			     		}
 			     		tr+='<td style="width: 10%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash fa-lg"></i></a>'+
-			     		'<a class="editButton" href="javascript:editImportSer(this,'+refservice.id+')"><i class="fa fa-edit fa-lg"></i></a></td>'+
+			     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" serOut="'+refservice.refAddress+'" serVi="'+refservice.viDomain+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
 			     	'</tr>';
          	}
             $("#importSerList").append(tr);
-        	$('.dataTables-example').dataTable({
-                "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
-        	});
+            showDataTable();
+        	
          }
  	
        })
  }
- 
+ function showDataTable(){
+	 $('.dataTables-example').dataTable({
+	     "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
+		});
+	 $("#checkallbox").parent().removeClass("sorting_asc");
+	 
+ }
  //删除某一行
  function delImportSer(obj,id){
 	 
@@ -117,7 +155,10 @@
  }
  //修改
  function editImportSer(obj,id){
-	 $("#improt-ser-name").val(id);
+	 $("#improt-ser-name").val($(obj).attr("serName"));
+	 $("#improt-ser-in").val($(obj).attr("serIn"));
+	 $("#improt-ser-out").val($(obj).attr("serOut"));
+	 $("#improt-ser-visibility").val($(obj).attr("serVi"));
 	 layer.open({
 		 	type: 1,
 	        title: '修改外部引入服务',
@@ -145,27 +186,36 @@
  
  //批量删除
  function delImportSers(){
-	 var ids = $("input[name='chkItem']:checked").serialize();
-	 var downfiles = $("input[name='downfiles']:checked").serialize();
+		obj = document.getElementsByName("chkItem");
+		var ids = [];
+	    for (k in obj) {
+	        if (obj[k].checked) {
+	        	ids.push(obj[k].value);
+	        }
+	    }
 	 layer.open({
 	        title: '删除外部引入服务',
 	        content: '确定批量删除外部引入服务？',
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ 
 	        	layer.close(index);
-	        				$.ajax({
-	        					url:""+ctx+"/refservice/delete.do?"+ids,
-	        					success:function(data){
-	        						data = eval("(" + data + ")");
-	        						if(data.status=="200"){
-	        							layer.alert("服务已删除");
-	        							window.location.reload();
-	        						}else{
-	        							layer.alert("服务删除失败，请检查服务器连接");
-	        						}
-        		
-	        					}
-	        				})
+	        	if(""==ids){
+	        		alert("你总要选一个呀");
+	        		return;
+	        	}
+				$.ajax({
+					url:""+ctx+"/refservice/delete.do?ids="+ids,
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("服务已删除");
+							window.location.reload();
+						}else{
+							layer.alert("服务删除失败，请检查服务器连接");
+						}
+	
+					}
+				})
 	        }
 	 })
 	 
