@@ -32,9 +32,10 @@
                         layer.tips('服务名已经被使用，请输入新的服务名！', '#improt-ser-name', {
                             tips: [1, '#0FA6D8']
                         });
+                        return false;
                     }
                 });
-            return false;
+            
         }
  }
 	_refreshCreateTime(60000);
