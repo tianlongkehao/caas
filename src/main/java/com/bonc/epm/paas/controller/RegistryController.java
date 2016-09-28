@@ -301,7 +301,6 @@ public class RegistryController {
         File file = new File(imagePath+"/"+downName+".tar");
         boolean exist = file.exists();
         if (exist) {
-//            getDownload(downName+".tar",request,response);
             map.put("status", "200");
         }
         else {
@@ -311,7 +310,6 @@ public class RegistryController {
                 try {
                     String cmd = imageCmdPath +" "+ imagePath +"/"
                         + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
-//                    flag = CmdUtil.exeCmd(cmd);
                     flag = CmdUtil.exeCmd(cmd);
                 }
                 catch (IOException e) {
@@ -320,7 +318,6 @@ public class RegistryController {
             }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null);
             if (flag) {
-//                getDownload(downName+".tar",request,response);
                 map.put("status", "200");
             }
         }

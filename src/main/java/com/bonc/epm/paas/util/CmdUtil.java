@@ -26,7 +26,7 @@ public class CmdUtil {
      * CmdUtil日志实例
      */
     private static final Log LOG = LogFactory.getLog(CmdUtil.class);
-    
+  
     /**
      * 
      * Description:
@@ -37,26 +37,26 @@ public class CmdUtil {
      * @see
      */
     public static boolean exeCmd(String commandStr) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader br = null;
         try {
-            Process p = Runtime.getRuntime().exec(commandStr);
-            br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line = null;
-            while (null != (line = br.readLine())) {
-                sb.append(line + "\n");
-            }
+            Process process = Runtime.getRuntime().exec(commandStr);
+            StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "Error");
+            StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "Output");
+            errorGobbler.start();
+            outputGobbler.start();
+            try {
+                process.waitFor();
+               }
+            catch (InterruptedException e) {
+               LOG.error("exec command failed. message:-" + e.getMessage());
+               e.printStackTrace();
+               return false;
+               }
             return true;
-        } 
-        catch (Exception e) {
-            LOG.error("exec command failed. message:-" + e.getMessage());
-            e.printStackTrace();
-            return false;
-        } 
-        finally {
-            if (br != null) {
-                br.close();
-            }
+         }
+       catch (IOException e) {
+           LOG.error("exec command failed. message:-" + e.getMessage());
+           e.printStackTrace();
+           return false;
         }
     }
 
