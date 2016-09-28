@@ -272,8 +272,8 @@ public class ESClient {
 					.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("kubernetes.namespace_name", nameSpace))
 							.must(QueryBuilders.matchQuery("kubernetes.labels.app", serviceName)))
 					.setPostFilter(QueryBuilders.rangeQuery("@timestamp").from(from).to(to))
-					.addSort("kubernetes.pod_id", SortOrder.ASC)
-					.addSort("docker.container_id", SortOrder.ASC)
+//					.addSort("kubernetes.pod_id", SortOrder.ASC)
+//					.addSort("docker.container_id", SortOrder.ASC)
 					.addSort("@timestamp", SortOrder.ASC)
 					.setFrom(0)
 					.setSize(5000)
@@ -285,17 +285,21 @@ public class ESClient {
             String string = "";
             
             String current_pod_id ="";
+            String current_pod_name ="";
             String current_container_id ="";
+            String current_container_name ="";
             
             for (int i = 0; i < hits.length; i++) {
                 SearchHit hit = hits[i];
                 Map result = hit.getSource();
                 if (current_pod_id.equals(((Map)result.get("kubernetes")).get("pod_id"))
                 		&& current_container_id.equals(((Map)result.get("docker")).get("container_id"))) {
-                	string = string + result.get("log");
+                	string = string + "["+current_pod_name+"]["+current_container_name+"]"+result.get("log");
 				} else {
 					current_pod_id = (String) ((Map)result.get("kubernetes")).get("pod_id");
+					current_pod_name = (String) ((Map)result.get("kubernetes")).get("pod_name");
 					current_container_id =(String) ((Map)result.get("docker")).get("container_id");
+					current_container_name = (String) ((Map)result.get("kubernetes")).get("container_name");
 					if (!string.equals("")) {
 						logList.add(string);
 					}
