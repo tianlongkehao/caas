@@ -54,7 +54,7 @@ $(document).ready(function(){
         $(".containerEvent").removeClass("hide");
     });
     
-    setInterval("getServiceLogs()",10000);
+    //setInterval("getServiceLogs()",10000);
     
     $('#datePicker').click(function(event) {
         /* Act on the event */
@@ -89,14 +89,12 @@ $(document).ready(function(){
 
 
 
-    
-    ServiceEvent();
-
 });
 
 
 function getServiceLogs(){
 	var id = $('#datePicker').attr('serviceid');
+	var serviceName = $('#datePicker').attr('serviceName');
 	var date = $('#date_log').val();
 	$.ajax({
 		url:ctx+"/service/detail/getLogsByService.do?id="+id+"&date="+date,
@@ -106,30 +104,55 @@ function getServiceLogs(){
 			if(data.status == '200' && data.logList != ""){
 				var logs = data.logList;
 				console.log(logs)
-				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;overflow:hidden; float:left;">'+
-					logs+'<br></pre>'
-				$(".logList").html("");
-				$(".logList").html(html);
+				for(var i = 0; i < logs.length; i++){
+					var num = i+1;
+					html += '<div class="ci-body container" style="padding-top: 10px; padding-bottom: 30px; width:96%">'
+						+ '<div class="">'
+						+ '<div class="code-tabmain">'
+						+ '<div class="log-details" id="">'
+						+ '<div class="event-line " repotype="" status="success">'
+						+ '<div class="event-status success">'
+						+ '<i class="fa fa-check notes"></i>'
+						+ '</div>'
+						+ '<div class="time-line-content">'
+						+ '<div class="time-line-reason event-title">'
+						+ '<div class="title-name success">'
+						+ '<span class="event-names">'+serviceName+num+' </span>'
+						+'</div>'
+						+ '<div class="time-line-time">'
+						+ '<div class="event-sign lives" onclick="ServiceEvent(this)">'
+						+ '<i class="fa fa-angle-right fa_caret" style="transform: rotate(0deg);"></i>'
+						+ '</div>'
+						+ '</div>'
+						+ '<div class="containerLog time-line-message" style="min-height: 500px; margin-top: 50px">'
+						+ '<div class="weblog logList">'
+						+ '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
+						+ logs[i]
+						+ '</pre>'
+						+ '</div></div></div></div></div></div></div></div></div><br>';
+				}
+						
+				$("#logList").html("");
+				$("#logList").html(html);
 			}else{
 				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
-				$(".logList").html("");
-				$(".logList").html(html);
+				$("#logList").html("");
+				$("#logList").html(html);
 			}
 		}	
 	})
 }
 
 
-function ServiceEvent(){
-	$(".event-sign").unbind("click").click(function(){
-        if($(this).hasClass("lives")){
-            $(this).parent().parent().children(".time-line-message").css("display","none");
-            $(this).children(".fa_caret").css("transform","rotate(0deg)");
-            $(this).removeClass("lives");
-        }else{
-            $(this).parent().parent().children(".time-line-message").css("display","block");
-            $(this).children(".fa_caret").css("transform","rotate(90deg)");
-            $(this).addClass("lives");
-        }
-    });
+function ServiceEvent(obj) {
+	if ($(obj).hasClass("lives")) {
+		$(obj).parent().parent().children(".time-line-message").css("display","none");
+		$(obj).children(".fa_caret").css("transform", "rotate(0deg)");
+		$(obj).removeClass("lives");
+	} else {
+		$(obj).parent().parent().children(".time-line-message").css("display","block");
+		$(obj).children(".fa_caret").css("transform", "rotate(90deg)");
+		$(obj).addClass("lives");
+	}
+
 }
