@@ -673,6 +673,8 @@ i.pushOrg {
     min-height: 300px;
     position: relative;
     transition: all 0.5s;
+    padding-right:0px;
+    padding-bottom:0px;
 }
 
 
@@ -693,7 +695,6 @@ i.pushOrg {
 .containerLog .weblog{
     padding:5px 10px;
     height:500px;
-    margin-bottom:20px;
     overflow-y:auto;
 }
 
