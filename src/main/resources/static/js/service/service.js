@@ -1,13 +1,13 @@
-$(document).ready(function() {
 
-	$("#serviceReloadBtn").click(function() {
+ $(document).ready(function () {
+	$("#serviceReloadBtn").click(function(){
 		loadService();
 	});
-
-	$(document).on('click', '.no-drop', function() {
-		return false;
-	});
-
+	
+	$(document).on('click','.no-drop',function(){
+		  return false;
+		});	
+	
 	_refreshCreateTime(60000);
 
 	checkbox();

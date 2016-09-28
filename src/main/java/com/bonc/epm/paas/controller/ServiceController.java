@@ -51,6 +51,7 @@ import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
@@ -235,35 +236,35 @@ public class ServiceController {
      * @param id 当前用户id
      */
     public void getServiceSource(Model model, long id) {
-        List<Service> serviceList = new ArrayList<Service>();
-        List<Container> containerList = new ArrayList<Container>();
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        for (Service service : serviceDao.findByCreateBy(id)) {
-            Map<String, String> map = new HashMap<String, String>();
-            map.put("app", service.getServiceName());
-            PodList podList = client.getLabelSelectorPods(map);
-            if (podList != null) {
-                List<Pod> pods = podList.getItems();
-                if (CollectionUtils.isNotEmpty(pods)) {
-                    int i = 1;
-                    for (Pod pod : pods) {
-                        String podName = pod.getMetadata().getName();
-                        Container container = new Container();
-                        container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-						container.setServiceid(service.getId());
-						if (pod.getStatus().getPhase().equals("Running")) {
-							container.setContainerStatus(0);
-						} else {
-							container.setContainerStatus(1);
-						}
-						containerList.add(container);
-					}
-				}
-			}
-			serviceList.add(service);
-		}
-		model.addAttribute("containerList", containerList);
-		model.addAttribute("serviceList", serviceList);
+//        List<Service> serviceList = new ArrayList<Service>();
+//        List<Container> containerList = new ArrayList<Container>();
+//        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+//        for (Service service : serviceDao.findByCreateBy(id)) {
+//            Map<String, String> map = new HashMap<String, String>();
+//            map.put("app", service.getServiceName());
+//            PodList podList = client.getLabelSelectorPods(map);
+//            if (podList != null) {
+//                List<Pod> pods = podList.getItems();
+//                if (CollectionUtils.isNotEmpty(pods)) {
+//                    int i = 1;
+//                    for (Pod pod : pods) {
+//                        String podName = pod.getMetadata().getName();
+//                        Container container = new Container();
+//                        container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+//						container.setServiceid(service.getId());
+//						if (pod.getStatus().getPhase().equals("Running")) {
+//							container.setContainerStatus(0);
+//						} else {
+//							container.setContainerStatus(1);
+//						}
+//						containerList.add(container);
+//					}
+//				}
+//			}
+//			serviceList.add(service);
+//		}
+//		model.addAttribute("containerList", containerList);
+		model.addAttribute("serviceList", serviceDao.findByCreateBy(id));
 	}
 
     /**
@@ -504,6 +505,7 @@ public class ServiceController {
                 }
             }
             datamap.put("logStr", logStr);
+            datamap.put("logList",logList);
             datamap.put("status", "200");
         } 
         catch (Exception e) {
@@ -804,7 +806,7 @@ public class ServiceController {
                 k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs,service.getProxyZone(),service.getServicePath(),service.getProxyPath());
                 k8sService = client.createService(k8sService);
             }
-            if (controller == null || k8sService == null) {
+            if (controller == null || k8sService == null || controller.getSpec().getReplicas() != service.getInstanceNum()) {
                 map.put("status", "500");
             }
             else {
@@ -1106,7 +1108,7 @@ public class ServiceController {
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
             ReplicationController controller = client.updateReplicationController(service.getServiceName(), 0);
 
-            if (controller == null) {
+            if (controller == null || controller.getSpec().getReplicas() != 0) {
                 map.put("status", "500");
             }
             else {
@@ -1147,8 +1149,8 @@ public class ServiceController {
                 ReplicationController controller = client.getReplicationController(serviceName);
                 String NS = controller.getMetadata().getNamespace();
                 String cmd = "kubectl rolling-update " + serviceName + " --namespace=" + NS
-						+ " --update-period=10s --image="
-						+ dockerClientService.generateRegistryImageName(imgName, imgVersion);
+						                               + " --update-period=10s --image="
+						                               + dockerClientService.generateRegistryImageName(imgName, imgVersion);
                 boolean flag = cmdexec(cmd);
                 if (flag) {
                     service.setImgVersion(imgVersion);
@@ -1156,8 +1158,7 @@ public class ServiceController {
                     map.put("status", "200");
                 }
                 else {
-                    String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS 
-				                               + " --rollback";
+                    String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS + " --rollback";
                     cmdexec(rollBackCmd);
                     map.put("status", "400");
                 }
@@ -1185,15 +1186,21 @@ public class ServiceController {
         try {
             SshConnect.connect(name, password, hostIp, 22);
             boolean b = false;
-            String rollingLog = SshConnect.exec(cmd, 1000);
+            String rollingLog = SshConnect.exec(cmd, 10000);
+            if (rollingLog.endsWith("$") || rollingLog.endsWith("#") || rollingLog.contains("updated")) {
+                b = true;
+            }
             while (!b) {
                 String str = SshConnect.exec("", 10000);
                 if (StringUtils.isNotBlank(str)) {
                     rollingLog += str;
                 }
-                b = (str.endsWith("$") || str.endsWith("#")) || str.endsWith("updated");
+                b = (rollingLog.endsWith("$") || rollingLog.endsWith("#") || rollingLog.contains("updated"));
             }
             LOG.info("rolling-update LOG:-"+rollingLog);
+            if (rollingLog.contains("error")) {
+                return false;
+            }
             String result = SshConnect.exec("echo $?", 1000);
             if (StringUtils.isNotBlank(result)) {
                 if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
@@ -1254,13 +1261,13 @@ public class ServiceController {
         } 
         else {
             try {
-                service.setInstanceNum(addservice);
-                serviceDao.save(service);
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
                 ReplicationController controller = client.updateReplicationController(service.getServiceName(),
 						addservice);
-                if (controller != null) {
+                if (controller != null && controller.getSpec().getReplicas() == addservice) {
                     map.put("status", "200");
+                    service.setInstanceNum(addservice);
+                    serviceDao.save(service);
                 } 
                 else {
                     map.put("status", "400");
@@ -1298,12 +1305,14 @@ public class ServiceController {
             service.setRam(rams);
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
             ReplicationController controller = client.getReplicationController(service.getServiceName());
-            List<com.bonc.epm.paas.kubernetes.model.Container> containers = controller.getSpec().getTemplate().getSpec()
-					.getContainers();
-            for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
-                setContainer(container, cpus, rams);
-            }
-            controller = client.updateReplicationController(service.getServiceName(), controller);
+            if (controller != null ) {
+				
+            	List<com.bonc.epm.paas.kubernetes.model.Container> containers = controller.getSpec().getTemplate().getSpec()
+            			.getContainers();
+            	for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
+            		setContainer(container, cpus, rams);
+            	}
+            	controller = client.updateReplicationController(service.getServiceName(), controller);
 //            for (com.bonc.epm.paas.kubernetes.model.Container container2 :controller.getSpec().getTemplate().getSpec().getContainers()) {
 //                if (container2.getResources().getLimits().get("cpu") != cpus ||
 //					container2.getResources().getLimits().get("memory").equals(rams + "Mi") ||
@@ -1314,10 +1323,15 @@ public class ServiceController {
 //		            break;
 //				}
 //			}
-            
-            if (map.get("status") == null) {
-            	map.put("status", "200");
-            	serviceDao.save(service);
+            	
+            	if (map.get("status") == null) {
+            		map.put("status", "200");
+            		serviceDao.save(service);
+            	}
+			} else {
+	            map.put("status", "400");
+	            map.put("msg", "Get a Replication Controller Info failed:ServiceName["+service.getServiceName()+"]");
+	            LOG.error("Get a Replication Controller Info failed:ServiceName["+service.getServiceName()+"]");
 			}
         }
         catch (KubernetesClientException e) {
@@ -1379,15 +1393,43 @@ public class ServiceController {
         String confName = service.getServiceName();
         String configName = CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName();
         try {
+        	ReplicationController controller = new ReplicationController();
             if (service.getStatus() != 1) {
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-                ReplicationController controller = client.getReplicationController(service.getServiceName());
+                controller = client.getReplicationController(service.getServiceName());
                 if (controller != null) {
-                    client.updateReplicationController(service.getServiceName(), 0);
-                    client.deleteReplicationController(service.getServiceName());
-                    client.deleteService(service.getServiceName());
-                    TemplateEngine.deleteConfig(confName, configName, templateConf);
-                }
+                	controller =  client.updateReplicationController(service.getServiceName(), 0);
+                    if (controller !=null && controller.getSpec().getReplicas() == 0) {
+                    	Status status = client.deleteReplicationController(service.getServiceName());
+                    	if (status.getStatus().equals("Success")) {
+                    		status = client.deleteService(service.getServiceName());
+                    		if (status.getStatus().equals("Success")) {
+                    			TemplateEngine.deleteConfig(confName, configName, templateConf);
+                    		} else {
+    	                    	map.put("status", "400");
+    	                    	map.put("msg", "Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+    	                    	LOG.error("Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+    	                    	return JSON.toJSONString(map);
+                    		}
+						} else {
+	                    	map.put("status", "400");
+	                    	map.put("msg", "Delete a Replication Controller failed:ServiceName["+service.getServiceName()+"]");
+	                    	LOG.error("Delete a Replication Controller failed:ServiceName["+service.getServiceName()+"]");
+	                    	return JSON.toJSONString(map);
+						}
+        			} else {
+                    	map.put("status", "400");
+                    	map.put("msg", "Update a Replication Controller (update the number of replicas) failed:ServiceName["+service.getServiceName()+"]");
+                    	LOG.error("Update a Replication Controller (update the number of replicas) failed:ServiceName["+service.getServiceName()+"]");
+                    	return JSON.toJSONString(map);
+        			}
+
+                }else {
+                	map.put("status", "400");
+                	map.put("msg", "ReplicationController取得失败:ServiceName["+service.getServiceName()+"]");
+                	LOG.error("ReplicationController取得失败:ServiceName["+service.getServiceName()+"]");
+                	return JSON.toJSONString(map);
+				}
             }
             map.put("status", "200");
             serviceDao.delete(id);
@@ -1652,5 +1694,55 @@ public class ServiceController {
         return JSON.toJSONString(map);
 
 	}
-    
+
+	/**
+	 * Description: <br>
+	 * 获取当前服务的日志
+	 * @param id 服务Id
+	 * @param date 日期
+	 * @return String
+	 */
+    @RequestMapping("service/detail/getLogsByService.do")
+	@ResponseBody
+	public String getLogsByService(long id, String date) {
+        Service service = serviceDao.findOne(id);
+        User currentUser = CurrentUserUtils.getInstance().getUser();
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<String> logList = new ArrayList<String>();
+        
+		try {
+			// 初始化es客户端
+			ESClient esClient = new ESClient();
+			esClient.initESClient(esConf.getHost(),esConf.getClusterName()); 
+			
+			if (date != "") {
+				// 设置es查询日期，数据格式，查询的pod名称
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
+				calendar.add(Calendar.HOUR_OF_DAY, -8);
+				String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+				logList = esClient.searchLogsByService("fluentd", service.getServiceName(),currentUser.getNamespace(),dateString,"9999-12-31T00:00:00+00:00");
+			} 
+			else {
+				// 设置es查询日期，数据格式，查询的pod名称
+				Calendar calendar = Calendar.getInstance();
+				calendar.add(Calendar.HOUR_OF_DAY, -8);
+				calendar.add(Calendar.MINUTE, -3);
+				String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+				logList = esClient.searchLogsByService("fluentd", service.getServiceName(),currentUser.getNamespace(),dateString,"9999-12-31T00:00:00+00:00");
+			}
+			
+			// 关闭es客户端
+			esClient.closeESClient();
+			map.put("status", "200");
+			map.put("logList",logList);
+			
+		} catch (Exception e) {
+			map.put("status", "400");
+			LOG.error("日志读取错误：" + e.getMessage());
+		}
+		
+        return JSON.toJSONString(map);
+
+    }
 }

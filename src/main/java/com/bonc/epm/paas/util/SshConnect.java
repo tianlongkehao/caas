@@ -88,41 +88,40 @@ public class SshConnect {
     public static String exec(String cmd, Integer timeout) throws IOException, InterruptedException {
         StringBuilder builder = new StringBuilder();
         String command;
-        if (StringUtils.isNotBlank(cmd)) { // 命令行后面需要补回车
-            try {
-                String cmdTrim = cmd.trim();
-                if (cmdTrim.isEmpty()) {
-                    command = "\n";
+        try {
+                // 命令行后面需要补回车
+            String cmdTrim = cmd.trim();
+            if (cmdTrim.isEmpty()) {
+                command = "\n";
+            } 
+            else {
+                Integer index = cmdTrim.length() - 1;
+                String a = cmdTrim.substring(index);
+                if (Objects.equals("\n", a)) {
+                    command = cmdTrim;
                 } 
                 else {
-                    Integer index = cmdTrim.length() - 1;
-                    String a = cmdTrim.substring(index);
-                    if (Objects.equals("\n", a)) {
-                        command = cmdTrim;
-                    } 
-                    else {
-                        command = cmd + "\n";
-                    }
-                }
-                
-                OUTPUTSTREAM.write(command.getBytes("UTF-8"));
-                OUTPUTSTREAM.flush();
-                Thread.sleep(timeout);
-
-                while (INPUTSTREAM.available() > 0) {
-                    byte[] tmp = ByteBuffer.allocate(INPUTSTREAM.available()).array();
-                    INPUTSTREAM.read(tmp);
-                    builder.append(new String(tmp));
+                    command = cmd + "\n";
                 }
             }
-            catch (Exception e) {
-                LOG.error("error message is :-" + e.getMessage());
-            } 
-            /*finally {
-                OUTPUTSTREAM.close();
-                INPUTSTREAM.close();
-            }*/
+            
+            OUTPUTSTREAM.write(command.getBytes("UTF-8"));
+            OUTPUTSTREAM.flush();
+            Thread.sleep(timeout);
+
+            while (INPUTSTREAM.available() > 0) {
+                byte[] tmp = ByteBuffer.allocate(INPUTSTREAM.available()).array();
+                INPUTSTREAM.read(tmp);
+                builder.append(new String(tmp));
+            }
         }
+        catch (Exception e) {
+            LOG.error("error message is :-" + e.getMessage());
+        } 
+        /*finally {
+            OUTPUTSTREAM.close();
+            INPUTSTREAM.close();
+        }*/
         return builder.toString().trim();
     }
 
