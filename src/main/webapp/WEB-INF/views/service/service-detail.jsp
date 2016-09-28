@@ -287,56 +287,6 @@
 								data-original-title="刷新日志"></i> 
 						</div>
 					</div>
-					<div class="ci-body container"
-						style="padding-top: 10px; padding-bottom: 30px;width:96%">
-						<div class="">
-							<div class="code-tabmain">
-								<div class="log-details" id="">
-									
-
-									<div class='event-line ${liveClass}' repotype=''
-										status='${eventStatus}'>
-										<div class='event-status ${eventStatus}'>
-											<i class='fa ${eventStatusClass} notes'></i>
-										</div>
-										<div class='time-line-content'>
-											<div class='time-line-reason event-title'>
-												<div class='title-name ${eventStatus}'>
-													<span class='event-names'> ${service.serviceName } </span>
-												</div>
-												<div class='time-line-time'>
-													<div class='event-sign lives'>
-														<i class='fa fa-angle-right fa_caret'
-															style='transform: rotate(${transformClass});'></i>
-													</div>
-												</div>
-												<div class="containerLog time-line-message"
-													style="min-height: 500px; margin-top: 50px">
-
-													<div class="weblog logList">
-														<c:if test="${logList=='[]' }">
-															<pre id="serviceLogs"
-																style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>
-														</c:if>
-														<c:if test="${logList!='[]' }">
-															<pre id="serviceLogs"
-																style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">
-																<c:forEach items="${logList}" var="log">${log}<br>
-																</c:forEach>
-															</pre>
-														</c:if>
-														<input id="serviceInstances" type="hidden" value="">
-													</div>
-													<input id="creationTime" type="hidden"
-														value="${service.createDate }">
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
 					
 					<c:forEach items="${logList}" var="log">${log}<br>
 
@@ -347,7 +297,6 @@
 									<div class="log-details" id="">
 										<c:set var="statusClass" value="fa_run"></c:set>
 										<c:set var="eventStatusClass" value="fa-check"></c:set>
-										<c:set var="statusName" value="成功"></c:set>
 										<c:set var="eventStatus" value="success"></c:set>
 										<c:set var="liveClass" value="lives"></c:set>
 										<c:set var="transformClass" value="0deg"></c:set>
@@ -362,7 +311,7 @@
 												<div class='time-line-reason event-title'>
 													<div class='title-name ${eventStatus}'>
 														<span class='event-names'>
-															${container.containerName } </span>
+															${service.serviceName } </span>
 													</div>
 													<div class='time-line-time'>
 														<div class='event-sign lives'>
@@ -395,7 +344,7 @@
 									</div>
 								</div>
 							</div>
-						</div>
+						</div><br>
 					</c:forEach>
 					</div>
 					<div class="containerEvent hide" style="min-height: 500px;">
