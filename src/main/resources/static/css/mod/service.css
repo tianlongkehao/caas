@@ -693,8 +693,8 @@ i.pushOrg {
 .containerLog .weblog{
     padding:5px 10px;
     height:500px;
-    margin-bottom: 
-    50px;overflow-y:auto
+    margin-bottom:20px;
+    overflow-y:auto;
 }
 
 #date_log{
@@ -723,7 +723,7 @@ i.pushOrg {
 }
 
 .weblogtitle .pull_right {
-    width: 40%;
+    width: 94%;
     text-align: right;
     line-height: 40px;
     display: inline-block;
@@ -803,7 +803,7 @@ i.pushOrg {
     color: #BFBFBF;
 }
 
-/* 閸斻劍锟戒焦澧跨�癸拷 */
+/* 闁告柣鍔嶉敓鎴掔劍婢ц法锟界櫢鎷� */
 .dynamic-scale{
     margin-left: 43px;
 }

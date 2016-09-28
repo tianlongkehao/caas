@@ -94,6 +94,7 @@ $(document).ready(function(){
 
 });
 
+
 function getServiceLogs(){
 	var id = $('#datePicker').attr('serviceid');
 	var date = $('#date_log').val();
@@ -107,12 +108,12 @@ function getServiceLogs(){
 				console.log(logs)
 				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;overflow:hidden; float:left;">'+
 					logs+'<br></pre>'
-				$("#logList").html("");
-				$("#logList").html(html);
+				$(".logList").html("");
+				$(".logList").html(html);
 			}else{
 				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
-				$("#logList").html("");
-				$("#logList").html(html);
+				$(".logList").html("");
+				$(".logList").html(html);
 			}
 		}	
 	})
@@ -120,14 +121,14 @@ function getServiceLogs(){
 
 
 function ServiceEvent(){
-	$(".time-line-content").unbind("click").click(function(){
+	$(".event-sign").unbind("click").click(function(){
         if($(this).hasClass("lives")){
-            $(this).children(".event-title").children(".time-line-message").css("display","none");
-            $(this).children(".event-title").children(".time-line-time").children(".event-sign").children(".fa_caret").css("transform","rotate(0deg)");
+            $(this).parent().parent().children(".time-line-message").css("display","none");
+            $(this).children(".fa_caret").css("transform","rotate(0deg)");
             $(this).removeClass("lives");
         }else{
-            $(this).children(".event-title").children(".time-line-message").css("display","block");
-            $(this).children(".event-title").children(".time-line-time").children(".event-sign").children(".fa_caret").css("transform","rotate(90deg)");
+            $(this).parent().parent().children(".time-line-message").css("display","block");
+            $(this).children(".fa_caret").css("transform","rotate(90deg)");
             $(this).addClass("lives");
         }
     });
