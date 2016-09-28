@@ -44,20 +44,20 @@ public class CephController {
     /**
      * 连接url
      */
-    @Value("${ceph.ssh.url}")
-    private String url;
+//    @Value("${ceph.ssh.url}")
+//    private String url;
 
     /**
      * 用户名
      */
-    @Value("${ceph.ssh.username}")
-    private String username;
+//    @Value("${ceph.ssh.username}")
+//    private String username;
 
     /**
      * 密码
      */
-    @Value("${ceph.ssh.password}")
-    private String password;
+//    @Value("${ceph.ssh.password}")
+//    private String password;
 
     /**
      * 挂载指令
@@ -455,15 +455,4 @@ public class CephController {
         return mountpoint;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }
