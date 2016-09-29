@@ -45,7 +45,7 @@ $(document).ready(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".containerLog").removeClass("hide");
     });
-
+    
     $(".historyLOG").click(function(){
 
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
@@ -97,6 +97,35 @@ $(document).ready(function(){
 
 });
 
+//下拉列表选中项对应的log
+function dropdownLog(obj){
+	var id = $(obj).attr("podId")
+	var podName = $(obj).attr("podName");
+	var date = $('#date_log').val();
+	$.ajax({
+		url:ctx+"/service/detail/getLogsByService.do?id="+id+"&podName="+podName+"&date="+date,
+		success:function(data){
+			data = $.parseJSON(data);
+			if(data.status == '200' && data.logList != ""){
+				var containerlog = data.log;
+				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
+					+ containerlog
+				+ '</pre>'
+				
+				$("#containerlogList").html("");
+				$("#containerlogList").html(html);
+			}else{
+				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
+				$("#containerlogList").html("");
+				$("#containerlogList").html(html);	
+			}
+			
+			}
+	})
+	var dropdownLog = 
+	    $("#dropdown-log").append(dropdownLog);
+}
+
 
 function getServiceLogs(){
 	var id = $('#datePicker').attr('serviceid');
@@ -137,15 +166,15 @@ function getServiceLogs(){
 						+ '</pre>'
 						+ '</div></div></div></div></div></div></div></div></div><br>';
 				}	
-				$("#logList").html("");
-				$("#logList").html(html);
+				$("#hisLogList").html("");
+				$("#hisLogList").html(html);
 				$(".event-sign").addClass("lives");
 				$(".event-sign").parent().parent().children(".time-line-message").css("display","block");
 				$(".event-sign").children(".fa_caret").css("transform", "rotate(90deg)");
 			}else{
 				html += '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
-				$("#logList").html("");
-				$("#logList").html(html);
+				$("#hisLogList").html("");
+				$("#hisLogList").html(html);
 			}
 		}	
 	})

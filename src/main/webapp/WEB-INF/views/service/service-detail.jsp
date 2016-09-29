@@ -77,13 +77,14 @@
 							<li><a class="INSTANCES">容器实例</a></li>
 							<li><a class="PORTS">端口</a></li>
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle"
+								<a href="#" class="dropdown-toggle" id="dropdown-log"
 									data-toggle="dropdown"> 日志 <b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">
-									<li><a href="#">aa</a></li>
-									<li><a href="#">aaaa</a></li>
-
+								 	<c:forEach items="${podNameList}" var="log" >
+								 		<li><a podId="${log.containerId }">${log.containerName }</a></li>
+								 	</c:forEach>
+									
 								</ul>
 							</li>
 							<li><a class="historyLOG">历史日志</a></li>
@@ -301,6 +302,7 @@
 					<div class="monitorInfo hide">
 						<div class="data-analysis"></div>
 					</div>
+					<!-- 日志 -->
 					<div class="containerLog hide" style="min-height: 500px;">
 						<div class="weblogtitle">
 							<div class="pull_left">
@@ -319,19 +321,13 @@
 									class="fa fa-expand margin cursor" title="满屏"></i>
 							</div>
 						</div>
-						<div id="logList" class="weblog">
-						<c:if test="${logList=='[]' }">
-							<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>
-						</c:if>
-						<c:if test="${logList!='[]' }">
-						<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow:hidden; float:left;"><c:forEach items="${logList}" var="log" >${log}<br></c:forEach>
-						</pre>
-						</c:if>
-							<input id="serviceInstances" type="hidden" value=""> 
+						<div id="containerlogList" class="weblog">
+							 
 						</div>
+						<input id="serviceInstances" type="hidden" value="">
 						<input id="creationTime" type="hidden" value="${service.createDate }">
 					</div>
-					
+					<!-- 历史日志 -->
 					<div class="historycontainerLog hide" style="margin-bottom:30px;">
 						<div class="weblogtitle">
 							<div class="pull_right">
@@ -343,7 +339,7 @@
 									data-original-title="刷新日志"></i> 
 							</div>
 						</div>
-						<div id="logList"><div>
+						<div id="hisLogList"><div>
 					</div>
 					<div class="containerEvent hide" style="min-height: 500px;">
 						<div class="containerEvent"
