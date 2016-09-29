@@ -337,7 +337,7 @@ public class ESClient {
      * @see
      */
     @SuppressWarnings("rawtypes")
-	public List<String> searchLastLogs(String type,String serviceName,String nameSpace){
+	public List<String> searchServiceLastLogs(String type,String serviceName,String nameSpace){
         List<String> logList = new ArrayList<String>();
         try {
             SearchRequestBuilder searchRequestBuilder = null;
@@ -393,6 +393,55 @@ public class ESClient {
         LOG.debug("serviceName{"+serviceName+"}nameSpace{"+nameSpace+"}日志:"+logList.toString());
         LOG.debug("end*********************************************************************************");
         return logList;
+    }
+
+    /**
+     * 
+     * Description: <br>
+     * 根据serviceName nameSpace和时间范围查找日志内容
+     * @param type String
+     * @param serviceName String  
+     * @param nameSpace String  
+     * @param from String  
+     * @param to String  
+     * @return log List<String>
+     * @see
+     */
+    @SuppressWarnings("rawtypes")
+	public String searchPodLastLogs(String type,String podName,String containerName){
+        String string ="";
+        try {
+            SearchRequestBuilder searchRequestBuilder = null;
+            searchRequestBuilder = client.prepareSearch()
+                    .setTypes(type)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+					.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("kubernetes.pod_name", podName))
+							.must(QueryBuilders.matchQuery("kubernetes.container_name", containerName)))
+					.addSort("@timestamp", SortOrder.DESC)
+					.setFrom(0)
+					.setSize(1000)
+                    .setExplain(true);
+            
+            SearchResponse response = searchRequestBuilder.execute().actionGet();
+            SearchHit[] hits = response.getHits().getHits();
+            
+            for (int i = hits.length - 1; i > -1 ; i--) {
+                SearchHit hit = hits[i];
+                Map result = hit.getSource();			
+                string = string + result.get("log");
+            }
+        } 
+        catch (IndexNotFoundException infe) {
+            LOG.error("搜索日志的Index出错：-" + infe.getMessage());
+        }
+        catch (Exception e) {
+            LOG.error("podName{"+podName+"}containerName{"+containerName+"}日志出错！错误信息：-" + e.getMessage());
+        }
+		
+        LOG.debug("start*******************************************************************************");
+        LOG.debug("podName{"+podName+"}containerName{"+containerName+"}日志:"+ string);
+        LOG.debug("end*********************************************************************************");
+        return string;
     }
 
     
