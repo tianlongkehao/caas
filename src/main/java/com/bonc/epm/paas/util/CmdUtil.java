@@ -14,9 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * 
- * 〈一句话功能简述〉
- * 〈功能详细描述〉
+ * CmdUtil
  * @author ke_wang
  * @version 2016年8月31日
  * @see CmdUtil
@@ -60,16 +58,17 @@ public class CmdUtil {
             return false;
         }
     }
-/**
- * 
- * Description: 在制定目录下执行命令
- * 
- * @param commandStr 命令
- * @param dir 目录
- * @return boolean true或false
- * @throws IOException 
- * @see
- */
+    
+    /**
+     * 
+     * Description: 在制定目录下执行命令
+     * 
+     * @param commandStr 命令
+     * @param dir 目录
+     * @return boolean true或false
+     * @throws IOException 
+     * @see
+     */
     public static boolean exeCmd(String commandStr ,String dir) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader br = null;
