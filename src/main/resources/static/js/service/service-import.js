@@ -63,7 +63,7 @@
 		         		data: {"serName":importSerName,"serAddress":importSerIn
 		         			,"refAddress":importSerOut,"viDomain":importSerVis},
 		         		success: function(data) {
-		         			creatable();
+		         			window.location.reload();
 		         		}
 		         	});
 //	        	 if(importSerName != ""){
@@ -128,9 +128,9 @@
        })
  }
  function showDataTable(){
-//	 $('.dataTables-example').dataTable({
-//	     "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
-//		});
+	 $('.dataTables-example').dataTable({
+	     "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
+		});
 	 $("#checkallbox").parent().removeClass("sorting_asc");
 	 
  }
@@ -176,7 +176,7 @@
 		         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
 		         			,"refAddress":importSerOut,"viDomain":importSerVis},
 		         		success: function(data) {
-		         			creatable();
+		         			window.location.reload();
 		         		}
 		         	});
 	        	layer.close(index);

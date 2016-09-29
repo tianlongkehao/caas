@@ -834,7 +834,7 @@ public class ServiceController {
             }
             else {
                 map.put("status", "200");
-                service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_PENDING);
+                service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
                 serviceDao.save(service);
             }
         }
