@@ -44,20 +44,20 @@ public class CephController {
     /**
      * 连接url
      */
-    @Value("${ceph.ssh.url}")
-    private String url;
+//    @Value("${ceph.ssh.url}")
+//    private String url;
 
     /**
      * 用户名
      */
-    @Value("${ceph.ssh.username}")
-    private String username;
+//    @Value("${ceph.ssh.username}")
+//    private String username;
 
     /**
      * 密码
      */
-    @Value("${ceph.ssh.password}")
-    private String password;
+//    @Value("${ceph.ssh.password}")
+//    private String password;
 
     /**
      * 挂载指令
@@ -112,11 +112,20 @@ public class CephController {
      */
     public void createNamespaceCephFS(String namespace) throws Exception {
         LOGGER.info("进入方法：createNamespaceCephFS");
-        cephMount.mkdir("/" + namespace, mode);
-
-        LOGGER.info("打印" + namespace + "下的所有目录");
-        String[] listdir = cephMount.listdir("/" + namespace);
+        String[] listdir = cephMount.listdir("/");
+        int  flag =0;
         for (String strDir : listdir) {
+           if (strDir.equals(namespace)){
+               flag =1;
+               break;
+                   }
+                }
+        if(0==flag){
+            cephMount.mkdir("/" + namespace, mode);
+                  }
+        LOGGER.info("打印" + namespace + "下的所有目录");
+        String[] listdir2 = cephMount.listdir("/" + namespace);
+        for (String strDir : listdir2) {
             LOGGER.info("dir:" + strDir);
         }
     }
@@ -446,15 +455,4 @@ public class CephController {
         return mountpoint;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }

@@ -361,21 +361,21 @@ public class ServiceController {
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         List<Container> containerList = new ArrayList<Container>();
         List<String> logList = new ArrayList<String>();
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("app", service.getServiceName());
-		// 通过服务名获取pod列表
-        PodList podList = client.getLabelSelectorPods(map);
-        if (podList != null) {
-            List<Pod> pods = podList.getItems();
-            if (CollectionUtils.isNotEmpty(pods)) {
-                int i = 1;
-                for (Pod pod : pods) {
-                	for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
-                		
-                		// 获取pod名称
-                		String podName = pod.getMetadata().getName();
-                		//获取container名称
-                		String containerName = k8scontainer.getName();
+//        Map<String, String> map = new HashMap<String, String>();
+//        map.put("app", service.getServiceName());
+//		// 通过服务名获取pod列表
+//        PodList podList = client.getLabelSelectorPods(map);
+//        if (podList != null) {
+//            List<Pod> pods = podList.getItems();
+//            if (CollectionUtils.isNotEmpty(pods)) {
+//                int i = 1;
+//                for (Pod pod : pods) {
+//                	for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
+//                		
+//                		// 获取pod名称
+//                		String podName = pod.getMetadata().getName();
+//                		//获取container名称
+//                		String containerName = k8scontainer.getName();
                 		// 初始化es客户端
                 		ESClient esClient = new ESClient();
                 		esClient.initESClient(esConf.getHost(),esConf.getClusterName());
@@ -385,24 +385,26 @@ public class ServiceController {
                 		calendar.add(Calendar.HOUR_OF_DAY, -8);
                 		calendar.add(Calendar.MINUTE, -3);
                 		String dateString = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss+00:00").format(calendar.getTime());
-                		String s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
-                		
+//                		String s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
+                        User currentUser = CurrentUserUtils.getInstance().getUser();
+        				logList = esClient.searchLogsByService("fluentd", service.getServiceName(),currentUser.getNamespace(),dateString,"9999-12-31T00:00:00+00:00");
+	
                 		// 关闭es客户端
                 		esClient.closeESClient();
-                		// 拼接日志格式
-                		String add = "[" + "App-" + i + "] [" + podName + "] ["+containerName+"]：";
-                		s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-                		
-                		s = s.substring(0, s.length() - add.length());
-                		Container container = new Container();
-                		container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-                		container.setServiceid(service.getId());
-                		containerList.add(container);
-                		logList.add(s);
-                	}
-                }
-            }
-        }
+//                		// 拼接日志格式
+//                		String add = "[" + "App-" + i + "] [" + podName + "] ["+containerName+"]：";
+//                		s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+//                		
+//                		s = s.substring(0, s.length() - add.length());
+//                		Container container = new Container();
+//                		container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+//                		container.setServiceid(service.getId());
+//                		containerList.add(container);
+//                		logList.add(s);
+//                	}
+//                }
+//            }
+//        }
         model.addAttribute("id", id);
         model.addAttribute("containerList", containerList);
         model.addAttribute("logList", logList);
@@ -446,7 +448,7 @@ public class ServiceController {
         Service service = serviceDao.findOne(id);
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         List<String> logList = new ArrayList<String>();
-//        String logStr = "";
+        String logStr = "";
         Map<String, String> map = new HashMap<String, String>();
         Map<String, Object> datamap = new HashMap<String, Object>();
 
@@ -498,13 +500,13 @@ public class ServiceController {
                     		s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
                     		
                     		s = s.substring(0, s.length() - add.length());
-//                    		logStr = logStr.concat(s);
+                    		logStr = logStr.concat(s);
                     		logList.add(s);
                     	}
                     }
                 }
             }
-//            datamap.put("logStr", logStr);
+            datamap.put("logStr", logStr);
             datamap.put("logList",logList);
             datamap.put("status", "200");
         } 
@@ -1305,12 +1307,14 @@ public class ServiceController {
             service.setRam(rams);
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
             ReplicationController controller = client.getReplicationController(service.getServiceName());
-            List<com.bonc.epm.paas.kubernetes.model.Container> containers = controller.getSpec().getTemplate().getSpec()
-					.getContainers();
-            for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
-                setContainer(container, cpus, rams);
-            }
-            controller = client.updateReplicationController(service.getServiceName(), controller);
+            if (controller != null ) {
+				
+            	List<com.bonc.epm.paas.kubernetes.model.Container> containers = controller.getSpec().getTemplate().getSpec()
+            			.getContainers();
+            	for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
+            		setContainer(container, cpus, rams);
+            	}
+            	controller = client.updateReplicationController(service.getServiceName(), controller);
 //            for (com.bonc.epm.paas.kubernetes.model.Container container2 :controller.getSpec().getTemplate().getSpec().getContainers()) {
 //                if (container2.getResources().getLimits().get("cpu") != cpus ||
 //					container2.getResources().getLimits().get("memory").equals(rams + "Mi") ||
@@ -1321,10 +1325,15 @@ public class ServiceController {
 //		            break;
 //				}
 //			}
-            
-            if (map.get("status") == null) {
-            	map.put("status", "200");
-            	serviceDao.save(service);
+            	
+            	if (map.get("status") == null) {
+            		map.put("status", "200");
+            		serviceDao.save(service);
+            	}
+			} else {
+	            map.put("status", "400");
+	            map.put("msg", "Get a Replication Controller Info failed:ServiceName["+service.getServiceName()+"]");
+	            LOG.error("Get a Replication Controller Info failed:ServiceName["+service.getServiceName()+"]");
 			}
         }
         catch (KubernetesClientException e) {
@@ -1687,5 +1696,55 @@ public class ServiceController {
         return JSON.toJSONString(map);
 
 	}
-    
+
+	/**
+	 * Description: <br>
+	 * 获取当前服务的日志
+	 * @param id 服务Id
+	 * @param date 日期
+	 * @return String
+	 */
+    @RequestMapping("service/detail/getLogsByService.do")
+	@ResponseBody
+	public String getLogsByService(long id, String date) {
+        Service service = serviceDao.findOne(id);
+        User currentUser = CurrentUserUtils.getInstance().getUser();
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<String> logList = new ArrayList<String>();
+        
+		try {
+			// 初始化es客户端
+			ESClient esClient = new ESClient();
+			esClient.initESClient(esConf.getHost(),esConf.getClusterName()); 
+			
+			if (date != "") {
+				// 设置es查询日期，数据格式，查询的pod名称
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
+				calendar.add(Calendar.HOUR_OF_DAY, -8);
+				String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+				logList = esClient.searchLogsByService("fluentd", service.getServiceName(),currentUser.getNamespace(),dateString,"9999-12-31T00:00:00+00:00");
+			} 
+			else {
+				// 设置es查询日期，数据格式，查询的pod名称
+				Calendar calendar = Calendar.getInstance();
+				calendar.add(Calendar.HOUR_OF_DAY, -8);
+				calendar.add(Calendar.MINUTE, -3);
+				String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+				logList = esClient.searchLogsByService("fluentd", service.getServiceName(),currentUser.getNamespace(),dateString,"9999-12-31T00:00:00+00:00");
+			}
+			
+			// 关闭es客户端
+			esClient.closeESClient();
+			map.put("status", "200");
+			map.put("logList",logList);
+			
+		} catch (Exception e) {
+			map.put("status", "400");
+			LOG.error("日志读取错误：" + e.getMessage());
+		}
+		
+        return JSON.toJSONString(map);
+
+    }
 }

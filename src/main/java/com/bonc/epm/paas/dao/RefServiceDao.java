@@ -36,4 +36,6 @@ public interface RefServiceDao extends CrudRepository<RefService, Long>{
      * @see
      */
     List<RefService> findByCreateByOrViDomain(String byCreate,int viDomain);
+    
+    List<RefService> findBySerName(String name);
 }

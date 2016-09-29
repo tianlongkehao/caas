@@ -14,6 +14,7 @@ $(document).ready(function(){
 			return;
 		}
 		
+		//判断服务名称
 		var name = $('#serviceName').val();
 		// check the name of container
 	    if(!name || name.length < 1){
@@ -21,14 +22,13 @@ $(document).ready(function(){
 	      $('#serviceName').focus();
 	      return;
 	    }
-	    name = name.toLowerCase();
 	    if(name.search(/^[a-z][a-z0-9-]*$/) === -1){
-	      layer.tips('服务名称只能由字母、数字及横线组成，且首字母不能为数字及横线。','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+	      layer.tips('服务名称只能由小写字母、数字及横线组成，且首字母不能为数字及横线。','#serviceName',{tips: [1, '#3595CC'],time: 3000});
 	      $('#serviceName').focus();
 	      return;
 	    }
-	    if(name.length > 50 || name.length < 3){
-	      layer.tips('服务名称为3~50个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+	    if(name.length > 64 || name.length < 3){
+	      layer.tips('服务名称为3~64个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});
 	      $('#serviceName').focus();
 	      return;
 	    }
@@ -36,11 +36,21 @@ $(document).ready(function(){
 	    //自定义启动命令的判断
 	    var startCommand_input = $("#startCommand_input").val();
 	    if($("#startCommand").prop("checked")==true){
-			    if(!startCommand_input || startCommand_input.length < 1){
-				      layer.tips('自定义启动命令不能为空','#startCommand_input',{tips: [1, '#3595CC']});
-				      $('#startCommand_input').focus();
-				      return;
-					}		   
+		    if(!startCommand_input || startCommand_input.length < 1){
+			      layer.tips('自定义启动命令不能为空','#startCommand_input',{tips: [1, '#3595CC']});
+			      $('#startCommand_input').focus();
+			      return;
+		    }		   
+		    if(startCommand_input.search(/^[a-zA-Z][a-zA-Z0-9-]*$/) === -1){
+		    	layer.tips('自定义启动命令只能由字母、数字及横线组成，且首字母不能为数字及横线。','#startCommand_input',{tips: [1, '#3595CC'],time: 3000});
+		    	$('#startCommand_input').focus();
+		    	return;
+		    }
+		    if(startCommand_input.length > 64 || startCommand_input.length < 3){
+		    	layer.tips('自定义启动命令为3~64个字符','#startCommand_input',{tips: [1, '#3595CC'],time: 3000});
+		    	$('#startCommand_input').focus();
+		    	return;
+		    }
 	    }
 	    
 	    //服务路径的判断
@@ -50,6 +60,35 @@ $(document).ready(function(){
 		      $('#webPath').focus();
 		      return;
 		}
+	    if(servicePath.search(/^[a-zA-Z][a-zA-Z0-9-]*$/) === -1){
+	      layer.tips('服务路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#webPath',{tips: [1, '#3595CC'],time: 3000});
+	      $('#webPath').focus();
+	      return;
+	    }
+	    if(servicePath.length > 64 || servicePath.length < 3){
+	      layer.tips('服务路径为3~64个字符','#webPath',{tips: [1, '#3595CC'],time: 3000});
+	      $('#webPath').focus();
+	      return;
+	    }
+	    
+	    //nginx代理路径的判断
+	    var proxyPath = $("#nginxPath").val();
+	    if(!proxyPath || proxyPath.length < 1){
+		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
+		      $('#nginxPath').focus();
+		      return;
+		}
+	    if(proxyPath.search(/^[a-zA-Z][a-zA-Z0-9-]*$/) === -1){
+		      layer.tips('服务路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+		      $('#nginxPath').focus();
+		      return;
+	    }
+	    if(proxyPath.length > 64 || proxyPath.length < 3){
+	      layer.tips('服务路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+	      $('#nginxPath').focus();
+	      return;
+	    }
+	    
 	    //判断实例数量是否超过上限
 	    var cpuNum = $("input[name='cpuNum']:checked").val();
 	    var leftcpu = $("#leftcpu").val();
@@ -69,6 +108,7 @@ $(document).ready(function(){
 	    	$('#instanceNum').focus();
 			return;
 	    }
+	    
 	    //判断cpu是否有足够的剩余
 	    var cpuNum = $("input[name='cpuNum']:checked").val();
 	    var leftcpu = $("#leftcpu").val();
@@ -96,15 +136,6 @@ $(document).ready(function(){
 	    	$("input[name='ram']:checked").focus();
 	    	return;
 	    }
-	    
-	    
-	    //nginx代理路径的判断
-	    var proxyPath = $("#nginxPath").val();
-	    if(!proxyPath || proxyPath.length < 1){
-		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
-		      $('#nginxPath').focus();
-		      return;
-		}
 	    
 	    //挂载路径的判断
 	    var mountPath = $("#mountPath").val();
@@ -703,7 +734,7 @@ function loadImageList() {
 					"</span> <span class='span5 type' type='database'>"+
 							"<div class='list-item-description'>"+
 								"<div class='name h4'>"+
-									""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"../registry/detail/"+image.id+"'>"+
+									""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"/registry/detail/"+image.id+"'>"+
 										"<i class='fa fa-external-link-square'></i>"+
 									"</a>"+
 								"</div>"+

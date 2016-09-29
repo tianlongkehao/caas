@@ -201,7 +201,10 @@ function dilatationStorage(){
 		   					},function(){
 		   						window.location.reload();
 		   					});
-						}else{
+						}else if(data.status=="500"){
+							layer.alert("更改失败，可用大小不足");
+						}
+						else{
 							layer.alert("更改失败，请检查服务器连接");
 						}
 
