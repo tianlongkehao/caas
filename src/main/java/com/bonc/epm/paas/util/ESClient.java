@@ -301,11 +301,13 @@ public class ESClient {
 					current_container_id =(String) ((Map)result.get("docker")).get("container_id");
 					current_container_name = (String) ((Map)result.get("kubernetes")).get("container_name");
 					if (!string.equals("")) {
+						string = string.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 						logList.add(string);
 					}
 					string = new String() + result.get("log");
 				}
             }
+            string = string.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
             logList.add(string);
         } 
         catch (IndexNotFoundException infe) {
