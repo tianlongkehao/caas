@@ -158,7 +158,7 @@
 													<td style="width: 23%">
 														<!-- 未运行 -->
 														<c:if test="${service.status == 1}">
-															<a id="${service.id}_start" class="no-drop startContainer_a "
+															<a id="${service.id}_start" class="a-live startContainer_a "
 																href="javascript:oneStartContainer(${service.id},${service.status})"
 																style="margin-left: 5px" title="启动">
 																<i class="fa fa-play"></i>
@@ -166,17 +166,17 @@
 															<a id="${service.id}_stop" class="no-drop stopContainer_a "
 																href="javascript:oneStopContainer(${service.id},${service.status})"
 																style="margin-left: 5px" title="停止"> 
-																<i class="fa fa-power-off"></i>
+																<i class="fa fa-power-off self_a"></i>
 															</a>
 														</c:if>
 														<!-- 运行中 -->
 														<c:if test="${service.status == 3}">
-															<a id="${service.id}_start" class="no-drop startContainer_a "
+															<a id="${service.id}_start" class="no-drop startContainer_a"
 																href="javascript:oneStartContainer(${service.id},${service.status})"
 																style="margin-left: 5px" title="启动">
-																<i class="fa fa-play"></i>
+																<i class="fa fa-play self_a"></i>
 															</a>
-															<a id="${service.id}_stop" class="no-drop stopContainer_a "
+															<a id="${service.id}_stop" class="a-live stopContainer_a "
 																href="javascript:oneStopContainer(${service.id},${service.status})"
 																style="margin-left: 5px" title="停止"> <i
 																class="fa fa-power-off"></i>
@@ -184,7 +184,7 @@
 														</c:if>
 														<!-- 已停止 -->
 														<c:if test="${service.status == 4}">
-															<a id="${service.id}_start" class="no-drop startContainer_a"
+															<a id="${service.id}_start" class="a-live startContainer_a"
 																href="javascript:oneStartContainer(${service.id},${service.status})"
 																style="margin-left: 5px" title="启动">
 																<i class="fa fa-play"></i>
@@ -192,25 +192,25 @@
 															<a id="${service.id}_stop" class="no-drop stopContainer_a"
 																href="javascript:oneStopContainer(${service.id},${service.status})"
 																style="margin-left: 5px" title="停止"> <i
-																class="fa fa-power-off"></i>
+																class="fa fa-power-off self_a"></i>
 															</a>
 														</c:if>
-														<a id="${service.id}_scaleCluster" class="no-drop scaleCluster_a " 
+														<a id="${service.id}_scaleCluster" class="a-live scaleCluster_a " 
 															href="javascript:oneUpGradeContainer(${service.id },'${service.serviceName }',${service.instanceNum })" title="弹性伸缩"
 															style="margin-left: 5px">
 																<i class="fa fa-arrows"></i>
 														</a> 
-														<a id="${service.id}_upgradeCluster" class="no-drop upgradeCluster_a " 
+														<a id="${service.id}_upgradeCluster" class="a-live upgradeCluster_a " 
 															href="javascript:oneVersionUpgrade(${service.id },'${service.serviceName }','${service.imgName }')" title="版本升级"
 															style="margin-left: 5px">
 																<i class="fa fa-arrow-up"></i>
 														</a> 
-														<a id="${service.id}_changeConfiguration" class="no-drop changeConfiguration_a " 
+														<a id="${service.id}_changeConfiguration" class="a-live changeConfiguration_a " 
 															href="javascript:oneChangeContainerConf(${service.id },'${service.serviceName }',${service.cpuNum },${service.ram });" title="更改配置"
 															style="margin-left: 5px">
 																<i class="fa fa-cog"></i>
 														</a> 														
-														<a id="${service.id}_del" class="no-drop deleteButton_a "
+														<a id="${service.id}_del" class="a-live deleteButton_a "
 															href="javascript:oneDeleteContainer(${service.id})"
 															style="margin-left: 5px" title="删除"> 
 																<i class="fa fa-trash"></i>

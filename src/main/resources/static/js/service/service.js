@@ -11,7 +11,7 @@
 
 	checkbox();
  });
-
+ 
 function loadContainers(obj) {
 	var serviceID = $(obj).attr("serviceid");
 	var aaa = 'tr[serviceidcon = "' + serviceID + '"]'
@@ -22,7 +22,7 @@ function loadContainers(obj) {
 		$(obj).children().eq(1).children("b").attr("rotate", "hide");
 	} else {
 		$.ajax({
-					url : "" + ctx + "/service/findservice.do?serviceID="+ serviceID,
+					url : "" + ctx +"/service/findservice.do?serviceID="+serviceID,
 					type : "get",
 					success : function(data) {
 						$(aaa).remove();
@@ -31,12 +31,9 @@ function loadContainers(obj) {
 						var containerLength = data.containerList.length;
 						for (var i = 0; i < containerLength; i++) {
 							var containerName = data.containerList[i].containerName;
-							var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动"
-									: "启动中";
-							var statusClassName = data.containerList[i].containerStatus == 1 ? "fa_stop"
-									: "fa_run";
-							var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide"
-									: "hide";
+							var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动" : "启动中";
+							var statusClassName = data.containerList[i].containerStatus == 1 ? "fa_stop" : "fa_run";
+							var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide" : "hide";
 							containersHtml += '<tr class="tr-row" serviceidcon="'
 									+ serviceID
 									+ '">'
@@ -50,7 +47,7 @@ function loadContainers(obj) {
 									+ statusClassName
 									+ '"></i>'
 									+ containerStatus
-									+ '<img src='+ctx+'/images/loading4.gif" alt="" class="'
+									+ '<img src=" '+ctx+'/images/loading4.gif" alt="" class="'
 									+ loadingImgShowClass
 									+ '"/></td>'
 									+ '<td style="width: 24%"></td>'
@@ -352,7 +349,7 @@ function oneStartContainer(id, status) {
 	$('#' + id + '_stop').addClass('a-live');
 	var serviceIDs = [];
 	serviceIDs.push(id);
-	var cStatusHtml = "<i class='fa_success'></i>" + "启动中" + "<img src='" + ctx+ "/images/loading4.gif' alt=''/>";
+	var cStatusHtml = "<i class='fa_success'></i>" + "启动中" + "<img src='"+ctx+"/images/loading4.gif' alt=''/>";
 	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
 	
 	$.ajax({
