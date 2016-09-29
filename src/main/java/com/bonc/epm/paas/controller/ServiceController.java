@@ -1747,12 +1747,13 @@ public class ServiceController {
 				logList = esClient.searchLogsByService("fluentd", service.getServiceName(),currentUser.getNamespace(),dateString,"9999-12-31T00:00:00+00:00");
 			} 
 			else {
-				// 设置es查询日期，数据格式，查询的pod名称
-				Calendar calendar = Calendar.getInstance();
-				calendar.add(Calendar.HOUR_OF_DAY, -8);
-				calendar.add(Calendar.MINUTE, -3);
-				String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
-				logList = esClient.searchLogsByService("fluentd", service.getServiceName(),currentUser.getNamespace(),dateString,"9999-12-31T00:00:00+00:00");
+//				// 设置es查询日期，数据格式，查询的pod名称
+//				Calendar calendar = Calendar.getInstance();
+//				calendar.add(Calendar.HOUR_OF_DAY, -8);
+//				calendar.add(Calendar.MINUTE, -3);
+//				String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+//				logList = esClient.searchLogsByService("fluentd", service.getServiceName(),currentUser.getNamespace(),dateString,"9999-12-31T00:00:00+00:00");
+				logList = esClient.searchLastLogs("fluentd", service.getServiceName(),currentUser.getNamespace());
 			}
 			
 			// 关闭es客户端
