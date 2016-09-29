@@ -59,8 +59,8 @@ $(document).ready(function(){
         $(".containerEvent").removeClass("hide");
     });
     
-    setInterval("getServiceLogs()",10000);
-    getServiceLogs();
+    //setInterval("getServiceLogs()",10000);
+    //getServiceLogs();
     
     $('#datePicker').click(function(event) {
         /* Act on the event */
@@ -79,8 +79,29 @@ $(document).ready(function(){
           }
         });
       });
+    $('#datePicker1').click(function(event) {
+        /* Act on the event */
+        laydate({
+          elem: '#date_log1',
+          // event: 'focus',
+          issure: true, // 是否显示确认
+          istime: true,
+          format: 'YYYY-MM-DDThh:mm:ss',
+//          min: $('#creationTime').val(),
+//          max: laydate.now(+0),
+          zIndex: 99999999, //css z-index
+          choose: function(dates){ //选择好日期的回调
+//            logPage = 1;
+        	  dropdownLog("1");
+          }
+        });
+      });
+    
       $('#refreshLog').click(function (event) {
     	  getServiceLogs();
+      });
+      $('#refreshLog1').click(function (event) {
+    	  dropdownLog("1");
       });
        
       $('#fullScreen').click(function () {
@@ -99,15 +120,22 @@ $(document).ready(function(){
 
 //下拉列表选中项对应的log
 function dropdownLog(obj){
-	var id = $(obj).attr("podId")
-	var podName = $(obj).attr("podName");
-	var date = $('#date_log').val();
+	if(obj != ""){
+		id = $("#podName").val();
+	} else {
+		$('#serviceid').val($(obj).attr("serviceid"));
+		$('#podName').val($(obj).attr("podName"));
+	}
+	var id = $('#serviceid').val();
+	var podName = $('#podName').val();
+	var date = $('#date_log1').val();
 	$.ajax({
-		url:ctx+"/service/detail/getLogsByService.do?id="+id+"&podName="+podName+"&date="+date,
+		url:ctx+"/service/detail/getPodlogs.do?id="+id+"&podName="+podName+"&date="+date,
 		success:function(data){
 			data = $.parseJSON(data);
 			if(data.status == '200' && data.logList != ""){
-				var containerlog = data.log;
+				
+				var containerlog = data.logStr;
 				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
 					+ containerlog
 				+ '</pre>'
@@ -122,8 +150,6 @@ function dropdownLog(obj){
 			
 			}
 	})
-	var dropdownLog = 
-	    $("#dropdown-log").append(dropdownLog);
 }
 
 

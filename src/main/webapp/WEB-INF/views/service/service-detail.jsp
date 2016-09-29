@@ -57,32 +57,19 @@
 								target="_blank" class="open">打开应用</a>
 						</div>
 					</section>
-					<div class="baseInfo center-style hide">
-						<a class="BASE btn-prim left">基本信息</a>
-						<a class="INSTANCES left">容器实例</a>
-						<!-- <a class="DOMAIN">绑定域名</a>  -->
-						<a class="PORTS left">端口</a>
-						<!--<a class="MONITOR">监控</a>-->
-						<a class="LOG dropdown-toggle left" id="dropdownHisMenu" data-toggle="dropdown">日志<b class="caret"></b></a>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownHisMenu" style="position:relative">
-								<li role="presentation"><a role="menuitem"  href="#">aaa</a></li>
-								<li role="presentation"><a role="menuitem"  href="#">bbb</a></li>
-							</ul>
-						<a class="historyLOG left">历史日志</a>
-						<!--<a class="EVENT">事件</a> -->
-					</div>
+					
 					<div class="baseInfo center-style">
 						<ul class="nav navbar-nav">
 							<li><a class="BASE btn-prim">基本信息</a></li>
 							<li><a class="INSTANCES">容器实例</a></li>
 							<li><a class="PORTS">端口</a></li>
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" id="dropdown-log"
+								<a class="LOG dropdown-toggle" id="dropdown-log"
 									data-toggle="dropdown"> 日志 <b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">
-								 	<c:forEach items="${podNameList}" var="log" >
-								 		<li><a podId="${log.containerId }">${log.containerName }</a></li>
+								 	<c:forEach items="${podNameList}" var="pod" >
+								 		<li><a podName="${pod.podName }" serviceid="${service.id }" onclick="dropdownLog(this)">${pod.podName }</a></li>
 								 	</c:forEach>
 									
 								</ul>
@@ -311,11 +298,13 @@
 							</div>
 							<div class="pull_right">
 								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
-								<input id="date_log" type="text" value="" readonly>
+								<input id="date_log1" type="text" value="" readonly>
 								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
-								<i id="datePicker" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i>
+								<i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i>
+								<input type="hidden" id="podName" name=""podName"" value=""></input>
+								<input type="hidden" id="serviceid" name=""serviceid"" value=""></input>
 								<!--</div>-->
-								<i id="refreshLog" class="fa fa-refresh margin cursor"
+								<i id="refreshLog1" class="fa fa-refresh margin cursor"
 									data-toggle="tooltip" data-placement="top" title=""
 									data-original-title="刷新日志"></i> <i id="fullScreen"
 									class="fa fa-expand margin cursor" title="满屏"></i>

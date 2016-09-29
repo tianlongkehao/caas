@@ -735,6 +735,12 @@ i.pushOrg {
     width: 220px;
     text-align: right;
 }
+#date_log1{
+    background: none;
+    border:0;
+    width: 220px;
+    text-align: right;
+}
 #date_log:focus{
     border:0;
     box-shadow: none;
