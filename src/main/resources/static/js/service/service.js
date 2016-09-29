@@ -166,97 +166,6 @@ function delContainer() {
 			})
 }
 
-// 每一行的启动
-$(document).off("click", ".startContainer_a").on("click", ".startContainer_a",
-		function(e) {
-			e.stopPropagation();
-			// createContainer()
-		});
-
-// 响应每一行的启动按钮
-function oneStartContainer(id, status) {
-	if (3 == status) {
-		return;
-	}
-	$('#' + id + '_stop').addClass('a-live');
-	var serviceIDs = [];
-	serviceIDs.push(id);
-	var cStatusHtml = "<i class='fa_success'></i>" + "启动中" + "<img src='" + ctx+ "/images/loading4.gif' alt=''/>";
-	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
-	
-	$.ajax({
-		url : "" + ctx + "/service/stratServices.do?serviceIDs=" + serviceIDs,
-		success : function(data) {
-			data = eval("(" + data + ")");
-			if (data.status == "200") {
-				layer.alert("服务启动成功");
-				window.location.reload();
-			} else {
-				layer.alert("服务启动失败");
-			}
-		}
-	})
-	
-}
-
-// 响应每一行上的停止按钮
-function oneStopContainer(id, status) {
-	if (4 == status) {
-		return;
-	}
-	var serviceIDs = [];
-	serviceIDs.push(id);
-	layer.open({
-		title : '停止服务',
-		content : '确定停止服务？',
-		btn : [ '确定', '取消' ],
-		yes : function(index, layero) {
-			layer.close(index);
-			$.ajax({
-				url : "" + ctx + "/service/stopServices.do?serviceIDs="+ serviceIDs,
-				success : function(data) {
-					data = eval("(" + data + ")");
-					if (data.status == "200") {
-						layer.alert("服务已停止");
-						window.location.reload();
-					} else {
-						layer.alert("服务停止失败，请检查服务器连接");
-					}
-
-				}
-			})
-
-		}
-	})
-}
-
-// 响应每一行上的删除按钮
-function oneDeleteContainer(id) {
-	var serviceIDs = [];
-	serviceIDs.push(id);
-	layer.open({
-		title : '删除服务',
-		content : '确定删除服务？',
-		btn : [ '确定', '取消' ],
-		yes : function(index, layero) {
-			layer.close(index);
-			$.ajax({
-				url : "" + ctx + "/service/delServices.do?serviceIDs="+ serviceIDs,
-				success : function(data) {
-					data = eval("(" + data + ")");
-					if (data.status == "200") {
-						layer.alert("服务已删除");
-						window.location.reload();
-					} else {
-						layer.alert("服务删除失败，请检查服务器连接");
-					}
-
-				}
-			})
-		}
-	})
-}
-
 function upGradeContainer() {
 	$('input[name="chkItem"]:checked').each(
 			function(index, el) {
@@ -376,6 +285,285 @@ function changeContainerConf() {
 			})
 }
 
+function versionUpgrade() {
+	$('input[name="chkItem"]:checked').each(
+			function(index, el) {
+				var id = $(el).val();
+				var serviceName = $(el).attr('serviceName');
+				$('#upgradeVersionServiceName').val(serviceName);
+				var imgName = $(el).attr('imagename');
+				// 查询镜像版本
+				findImageVersion(imgName);
+				// var imgVersion = $("#imgVersionName").val();
+				var imgVersion = $(el).attr('imageversion');
+				$('#upgradeimgName').val(imgName);
+				// $('#imgVersionName').val(imgVersion);
+				layer.open({
+					type : 1,
+					title : '升级镜像版本',
+					content : $("#versionUpgrade"),
+					btn : [ '确定', '取消' ],
+					yes : function(index, layero) {
+						layer.close(index);
+						$('#myModal').modal('show');
+						var imgVersion1 = $('#imgVersionName').val();
+						$.ajax({
+							url : ctx + "/service/modifyimgVersion.do?id=" + id
+									+ "&serviceName=" + serviceName
+									+ "&imgVersion=" + imgVersion1
+									+ "&imgName=" + imgName,
+							success : function(data) {
+								data = eval("(" + data + ")");
+								if (data.status == "200") {
+									$('#myModal').modal('hide');
+									layer.alert("升级完成");
+									window.location.reload();
+								} else if (data.status == "500") {
+									$('#myModal').modal('hide');
+									layer.alert("请选择需要升级的版本号！");
+								} else {
+									$('#myModal').modal('hide');
+									layer.alert("请检查配置服务！");
+								}
+
+							}
+						})
+					},
+					cancel : function(index) { // 或者使用btn2
+						// 按钮【按钮二】的回调
+					}
+				});
+
+			})
+}
+
+// 每一行的启动
+$(document).off("click", ".startContainer_a").on("click", ".startContainer_a",
+		function(e) {
+			e.stopPropagation();
+			// createContainer()
+		});
+
+// 响应每一行的启动按钮
+function oneStartContainer(id, status) {
+	if (3 == status) {
+		return;
+	}
+	$('#' + id + '_stop').addClass('a-live');
+	var serviceIDs = [];
+	serviceIDs.push(id);
+	var cStatusHtml = "<i class='fa_success'></i>" + "启动中" + "<img src='" + ctx+ "/images/loading4.gif' alt=''/>";
+	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
+	
+	$.ajax({
+		url : "" + ctx + "/service/stratServices.do?serviceIDs=" + serviceIDs,
+		success : function(data) {
+			data = eval("(" + data + ")");
+			if (data.status == "200") {
+				layer.alert("服务启动成功");
+				window.location.reload();
+			} else {
+				layer.alert("服务启动失败");
+			}
+		}
+	})
+	
+}
+
+// 响应每一行上的停止按钮
+function oneStopContainer(id, status) {
+	if (4 == status) {
+		return;
+	}
+	var serviceIDs = [];
+	serviceIDs.push(id);
+	layer.open({
+		title : '停止服务',
+		content : '确定停止服务？',
+		btn : [ '确定', '取消' ],
+		yes : function(index, layero) {
+			layer.close(index);
+			$.ajax({
+				url : "" + ctx + "/service/stopServices.do?serviceIDs="+ serviceIDs,
+				success : function(data) {
+					data = eval("(" + data + ")");
+					if (data.status == "200") {
+						layer.alert("服务已停止");
+						window.location.reload();
+					} else {
+						layer.alert("服务停止失败，请检查服务器连接");
+					}
+
+				}
+			})
+
+		}
+	})
+}
+
+// 响应每一行上的删除按钮
+function oneDeleteContainer(id) {
+	var serviceIDs = [];
+	serviceIDs.push(id);
+	layer.open({
+		title : '删除服务',
+		content : '确定删除服务？',
+		btn : [ '确定', '取消' ],
+		yes : function(index, layero) {
+			layer.close(index);
+			$.ajax({
+				url : "" + ctx + "/service/delServices.do?serviceIDs="+ serviceIDs,
+				success : function(data) {
+					data = eval("(" + data + ")");
+					if (data.status == "200") {
+						layer.alert("服务已删除");
+						window.location.reload();
+					} else {
+						layer.alert("服务删除失败，请检查服务器连接");
+					}
+
+				}
+			})
+		}
+	})
+}
+
+// 响应每一行上的弹性伸缩
+function oneUpGradeContainer(id,containerName,nums) {
+	 $('#upgradeServiceName').val(containerName);
+	 $('#numberChange').val(nums);
+	 var total = 0;
+	 total = parseInt($('#numberChange').attr('max'))+parseInt(nums);
+	 $('#numberChange').attr("max",total);
+	 $('#leftpod').text(total);
+
+	 layer.open({
+		 type:1,
+		 title: '弹性伸缩',
+		 content: $("#upgrade"),
+		 btn: ['确定', '取消'],
+		 yes: function(index, layero){ //或者使用btn1
+		 	//按钮【按钮一】的回调
+			 layer.close(index);
+			 var num = $('#numberChange').val();
+			// alert(num);
+			 $.ajax({
+					url:""+ctx+"/service/modifyServiceNum.do?id="+id+"&addservice="+num,
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("弹性扩容成功！");
+							window.location.reload();
+						}else if(data.status=="400"){
+							layer.alert("弹性扩容失败，请检查服务器连接");
+						}else if(data.status=="300"){
+							layer.alert("请填写弹性扩容的数量！");
+						}
+	
+					}
+				})
+	 	 },
+		 cancel: function(index){ //或者使用btn2
+		 	//按钮【按钮二】的回调
+	 	 }
+	 });	 
+}
+
+// 响应每一行上的版本升级
+function oneVersionUpgrade(id,serviceName,imgName) {
+		 $('#upgradeVersionServiceName').val(serviceName);
+		 //查询镜像版本
+		 findImageVersion(imgName);
+		 $('#upgradeimgName').val(imgName);
+		 layer.open({
+			 type:1,
+			 title: '升级镜像版本',
+			 content: $("#versionUpgrade"),
+			 btn: ['确定', '取消'],
+			 yes: function(index, layero){
+				 layer.close(index);
+				 $('#myModal').modal('show');
+				 var imgVersion1 = $('#imgVersionName').val();
+				 $.ajax({
+					 url:ctx+"/service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
+					 success:function(data){
+	 						data = eval("(" + data + ")");
+	 						if(data.status=="200"){
+	 							$('#myModal').modal('hide');
+	 							layer.alert("升级完成");
+	 							window.location.reload();
+	 						}else if(data.status=="500"){
+	 							 $('#myModal').modal('hide');
+	 							layer.alert("请选择需要升级的版本号！");
+	 						}else{
+	 							 $('#myModal').modal('hide');
+	 							layer.alert("请检查配置服务！");
+	 						}
+			
+	 					}
+				 })
+			 },
+			 cancel: function(index){ //或者使用btn2
+				 //按钮【按钮二】的回调
+			 }
+		 });
+}
+
+// 响应每一行上的修改配置
+function oneChangeContainerConf(id,containerName,cpu,ram) {
+	 $('#confServiceName').val(containerName);
+	 $('#confCpu').val(cpu);
+	 $('#confRamSlider_input').val(ram);
+	 var totalcpu = 0;
+	 var totalram = 0;
+	 totalcpu = parseInt($('#confCpu').attr('max'))+parseInt(cpu);
+	 totalram = '1024';
+	 $('#confCpu').attr("max",totalcpu);
+	 var confRamSlider = sliderFn('confRamSlider', totalram,0, Number(ram));
+
+	 layer.open({
+		 type:1,
+		 title: '更改配置',
+		 area: ['500px', '300px'],
+		 content: $("#changeConf"),
+		 btn: ['确定', '取消'],
+		 yes: function(index, layero){ //或者使用btn1
+			 //按钮【按钮一】的回调
+			 var cpus = $('#confCpu').val();
+			 var rams = $('#confRamSlider_input').val();
+			 var leftcpu = $("#leftcpu").html();
+			 if (parseInt(cpus) > parseInt(leftcpu)) {
+		    	 layer.tips('cpu剩余不足',"#confCpu",{tips: [1, '#3595CC']});
+			     $("#confCpu").focus();
+				 return;
+			 }
+			 var leftmemory = $("#leftram").html();
+			 if (parseInt(rams) > parseInt(leftmemory)) {
+				 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
+				 $("#confRamSlider_input").focus();
+				 return;
+			 }
+			 layer.close(index);
+			 $.ajax({
+					url:""+ctx+"/service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("更改成功");
+							window.location.reload();
+						}else{
+							layer.alert("更改失败，请检查服务器连接");
+						}
+	
+					}
+				})
+		 },
+		 cancel: function(index){ //或者使用btn2
+			 //按钮【按钮二】的回调
+		 }
+	 });	 
+}
+
 function refresh() {
 	window.location.reload();// 刷新当前页面.
 }
@@ -461,6 +649,7 @@ function checkbox() {
 
 			})
 }
+
 // Refresh create time
 function _refreshCreateTime(interval) {
 	setInterval(function() {
@@ -485,58 +674,6 @@ function refresh1(id) {
 		$("#inst_" + id).load(url + id, "");
 	}, 500); // wait one second to run function
 
-}
-
-function versionUpgrade() {
-	$('input[name="chkItem"]:checked').each(
-			function(index, el) {
-				var id = $(el).val();
-				var serviceName = $(el).attr('serviceName');
-				$('#upgradeVersionServiceName').val(serviceName);
-				var imgName = $(el).attr('imagename');
-				// 查询镜像版本
-				findImageVersion(imgName);
-				// var imgVersion = $("#imgVersionName").val();
-				var imgVersion = $(el).attr('imageversion');
-				$('#upgradeimgName').val(imgName);
-				// $('#imgVersionName').val(imgVersion);
-				layer.open({
-					type : 1,
-					title : '升级镜像版本',
-					content : $("#versionUpgrade"),
-					btn : [ '确定', '取消' ],
-					yes : function(index, layero) {
-						layer.close(index);
-						$('#myModal').modal('show');
-						var imgVersion1 = $('#imgVersionName').val();
-						$.ajax({
-							url : ctx + "/service/modifyimgVersion.do?id=" + id
-									+ "&serviceName=" + serviceName
-									+ "&imgVersion=" + imgVersion1
-									+ "&imgName=" + imgName,
-							success : function(data) {
-								data = eval("(" + data + ")");
-								if (data.status == "200") {
-									$('#myModal').modal('hide');
-									layer.alert("升级完成");
-									window.location.reload();
-								} else if (data.status == "500") {
-									$('#myModal').modal('hide');
-									layer.alert("请选择需要升级的版本号！");
-								} else {
-									$('#myModal').modal('hide');
-									layer.alert("请检查配置服务！");
-								}
-
-							}
-						})
-					},
-					cancel : function(index) { // 或者使用btn2
-						// 按钮【按钮二】的回调
-					}
-				});
-
-			})
 }
 
 function findImageVersion(imageName) {
