@@ -54,7 +54,8 @@ $(document).ready(function(){
         $(".containerEvent").removeClass("hide");
     });
     
-    //setInterval("getServiceLogs()",10000);
+//    setInterval("getServiceLogs()",10000);
+    getServiceLogs();
     
     $('#datePicker').click(function(event) {
         /* Act on the event */
