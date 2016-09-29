@@ -1,8 +1,8 @@
 $(document).ready(function(){
 
-    $(".baseInfo>a").click(function(){
+    $(".baseInfo>ul>li>a").click(function(){
 
-        $(".baseInfo>a").removeClass("btn-prim");
+        $(".baseInfo>ul>li>a").removeClass("btn-prim");
         $(this).addClass("btn-prim");
     });
 
@@ -40,11 +40,16 @@ $(document).ready(function(){
         $(".monitorInfo").removeClass("hide");
     });
 
-
     $(".LOG").click(function(){
 
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".containerLog").removeClass("hide");
+    });
+
+    $(".historyLOG").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".historycontainerLog").removeClass("hide");
     });
 
 
@@ -54,7 +59,7 @@ $(document).ready(function(){
         $(".containerEvent").removeClass("hide");
     });
     
-    //setInterval("getServiceLogs()",10000);
+    setInterval("getServiceLogs()",10000);
     
     $('#datePicker').click(function(event) {
         /* Act on the event */
@@ -120,22 +125,24 @@ function getServiceLogs(){
 						+ '<span class="event-names">'+serviceName+num+' </span>'
 						+'</div>'
 						+ '<div class="time-line-time">'
-						+ '<div class="event-sign lives" onclick="ServiceEvent(this)">'
+						+ '<div class="event-sign " onclick="ServiceEvent(this)">'
 						+ '<i class="fa fa-angle-right fa_caret" style="transform: rotate(0deg);"></i>'
 						+ '</div>'
 						+ '</div>'
 						+ '<div class="containerLog time-line-message" style="min-height: 500px; margin-top: 50px">'
 						+ '<div class="weblog logList">'
-						+ '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
+						+ '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
 						+ logs[i]
 						+ '</pre>'
 						+ '</div></div></div></div></div></div></div></div></div><br>';
-				}
-						
+				}	
 				$("#logList").html("");
 				$("#logList").html(html);
+				$(".event-sign").addClass("lives");
+				$(".event-sign").parent().parent().children(".time-line-message").css("display","block");
+				$(".event-sign").children(".fa_caret").css("transform", "rotate(90deg)");
 			}else{
-				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
+				html += '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
 				$("#logList").html("");
 				$("#logList").html(html);
 			}

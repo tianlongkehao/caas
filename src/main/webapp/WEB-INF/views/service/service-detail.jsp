@@ -57,13 +57,37 @@
 								target="_blank" class="open">打开应用</a>
 						</div>
 					</section>
-					<div class="baseInfo center-style">
-						<a class="BASE btn-prim">基本信息</a> <a class="INSTANCES">容器实例</a>
+					<div class="baseInfo center-style hide">
+						<a class="BASE btn-prim left">基本信息</a>
+						<a class="INSTANCES left">容器实例</a>
 						<!-- <a class="DOMAIN">绑定域名</a>  -->
-						<a class="PORTS">端口</a>
+						<a class="PORTS left">端口</a>
 						<!--<a class="MONITOR">监控</a>-->
-						<a class="LOG">日志</a>
+						<a class="LOG dropdown-toggle left" id="dropdownHisMenu" data-toggle="dropdown">日志<b class="caret"></b></a>
+							<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownHisMenu" style="position:relative">
+								<li role="presentation"><a role="menuitem"  href="#">aaa</a></li>
+								<li role="presentation"><a role="menuitem"  href="#">bbb</a></li>
+							</ul>
+						<a class="historyLOG left">历史日志</a>
 						<!--<a class="EVENT">事件</a> -->
+					</div>
+					<div class="baseInfo center-style">
+						<ul class="nav navbar-nav">
+							<li><a class="BASE btn-prim">基本信息</a></li>
+							<li><a class="INSTANCES">容器实例</a></li>
+							<li><a class="PORTS">端口</a></li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle"
+									data-toggle="dropdown"> 日志 <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href="#">aa</a></li>
+									<li><a href="#">aaaa</a></li>
+
+								</ul>
+							</li>
+							<li><a class="historyLOG">历史日志</a></li>
+						</ul>
 					</div>
 					<div class="containerInfo">
 						<table class="table w50">
@@ -277,7 +301,38 @@
 					<div class="monitorInfo hide">
 						<div class="data-analysis"></div>
 					</div>
-					<div class="containerLog hide" style="margin-bottom:30px;">
+					<div class="containerLog hide" style="min-height: 500px;">
+						<div class="weblogtitle">
+							<div class="pull_left">
+								<span class="circle red"></span> <span class="circle blue"></span>
+								<span class="circle green"></span>
+							</div>
+							<div class="pull_right">
+								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
+								<input id="date_log" type="text" value="" readonly>
+								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
+								<i id="datePicker" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i>
+								<!--</div>-->
+								<i id="refreshLog" class="fa fa-refresh margin cursor"
+									data-toggle="tooltip" data-placement="top" title=""
+									data-original-title="刷新日志"></i> <i id="fullScreen"
+									class="fa fa-expand margin cursor" title="满屏"></i>
+							</div>
+						</div>
+						<div id="logList" class="weblog">
+						<c:if test="${logList=='[]' }">
+							<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>
+						</c:if>
+						<c:if test="${logList!='[]' }">
+						<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow:hidden; float:left;"><c:forEach items="${logList}" var="log" >${log}<br></c:forEach>
+						</pre>
+						</c:if>
+							<input id="serviceInstances" type="hidden" value=""> 
+						</div>
+						<input id="creationTime" type="hidden" value="${service.createDate }">
+					</div>
+					
+					<div class="historycontainerLog hide" style="margin-bottom:30px;">
 						<div class="weblogtitle">
 							<div class="pull_right">
 								<input id="date_log" type="text" value="" readonly>
