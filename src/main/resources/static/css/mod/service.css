@@ -841,6 +841,10 @@ i.pushOrg {
     color: #BFBFBF;
 }
 
+i.self_a {
+	color: #676a6c;
+}
+
 /* 闁告柣鍔嶉敓鎴掔劍婢ц法锟界櫢鎷� */
 .dynamic-scale{
     margin-left: 43px;

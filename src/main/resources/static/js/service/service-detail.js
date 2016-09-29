@@ -60,6 +60,7 @@ $(document).ready(function(){
     });
     
     setInterval("getServiceLogs()",10000);
+    getServiceLogs();
     
     $('#datePicker').click(function(event) {
         /* Act on the event */
