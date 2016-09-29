@@ -41,7 +41,7 @@ $(document).ready(function(){
 			      $('#startCommand_input').focus();
 			      return;
 		    }		   
-		    if(startCommand_input.search(/^[a-zA-Z][a-zA-Z0-9-]*$/) === -1){
+/*		    if(startCommand_input.search(/^[a-zA-Z][a-zA-Z0-9-]*$/) === -1){
 		    	layer.tips('自定义启动命令只能由字母、数字及横线组成，且首字母不能为数字及横线。','#startCommand_input',{tips: [1, '#3595CC'],time: 3000});
 		    	$('#startCommand_input').focus();
 		    	return;
@@ -50,7 +50,7 @@ $(document).ready(function(){
 		    	layer.tips('自定义启动命令为3~64个字符','#startCommand_input',{tips: [1, '#3595CC'],time: 3000});
 		    	$('#startCommand_input').focus();
 		    	return;
-		    }
+		    }*/
 	    }
 	    
 	    //服务路径的判断
@@ -60,7 +60,7 @@ $(document).ready(function(){
 		      $('#webPath').focus();
 		      return;
 		}
-	    if(servicePath.search(/^[a-zA-Z][a-zA-Z0-9-]*$/) === -1){
+	    if(servicePath.search(/^[a-zA-Z][a-zA-Z0-9-\/]*$/) === -1){
 	      layer.tips('服务路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#webPath',{tips: [1, '#3595CC'],time: 3000});
 	      $('#webPath').focus();
 	      return;
@@ -78,7 +78,7 @@ $(document).ready(function(){
 		      $('#nginxPath').focus();
 		      return;
 		}
-	    if(proxyPath.search(/^[a-zA-Z][a-zA-Z0-9-]*$/) === -1){
+	    if(proxyPath.search(/^[a-zA-Z][a-zA-Z0-9-\/]*$/) === -1){
 		      layer.tips('服务路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
 		      $('#nginxPath').focus();
 		      return;
@@ -148,6 +148,7 @@ $(document).ready(function(){
 			}		   
 		    if (selectVolume=='0'){
 			      layer.tips('请选择一个挂载卷','#selectVolume',{tips: [1, '#3595CC']});
+			      $('#selectVolume').focus();
 			      return;
 		    }
 	    }
