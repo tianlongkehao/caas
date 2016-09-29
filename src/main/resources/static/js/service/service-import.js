@@ -19,6 +19,7 @@
             });
             return false;
         } else {
+        	var flag=0;
             var un = serName.toLowerCase();
             console.info(un);
             $("#improt-ser-name").val(un);
@@ -32,10 +33,12 @@
                         layer.tips('服务名已经被使用，请输入新的服务名！', '#improt-ser-name', {
                             tips: [1, '#0FA6D8']
                         });
-                        return false;
+                        flag=1;
                     }
                 });
-            
+            if(1==flag){
+            	return false;
+            }
         }
  }
 	_refreshCreateTime(60000);
@@ -54,36 +57,32 @@
 	        	 var importSerIn = $("#improt-ser-in").val();
 	        	 var importSerOut = $("#improt-ser-out").val();
 	        	 var importSerVis = $("#improt-ser-visibility").val();
-	        	 if(false==check()){
-	        		 return;
-	        	 }
 	        	 $.ajax({
 		         		url : ctx + "/refservice/add.do",
 		         		type: "POST",
 		         		data: {"serName":importSerName,"serAddress":importSerIn
 		         			,"refAddress":importSerOut,"viDomain":importSerVis},
 		         		success: function(data) {
-		         			
+		         			window.location.reload();
 		         		}
 		         	});
-	        	 
-	        	 if(importSerName != ""){
-	     			var tr = '<tr>'+
-				     			'<td style="width: 5%; text-indent: 30px;">'+
-				     			'<input type="checkbox" name="chkItem" /></td>'+
-						     		'<td style="width: 18%; padding-left: 5px;">'+importSerName+'</td>'+
-						     		'<td style="width: 20%; text-indent: 8px;">'+importSerIn+'</td>'+
-						     		'<td style="width: 20%;">'+importSerOut+'</td>';
-						     		if(1==importSerVis){
-						     			tr+='<td style="width: 14%;">所有租户可见</td>';
-						     		}else{
-						     			tr+='<td style="width: 14%;">仅本租户可见</td>';
-						     		}
-						     	    tr+='<td style="width: 10%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this)"> <i class="fa fa-trash fa-lg"></i></a>'+
-						     		'<a class="editButton" href="javascript:editImportSer(this)"><i class="fa fa-edit fa-lg"></i></a></td>'+
-						     	'</tr>';
-	     		$("#importSerList").append(tr);
-	        	 }
+//	        	 if(importSerName != ""){
+//	     			var tr = '<tr>'+
+//				     			'<td style="width: 5%; text-indent: 30px;">'+
+//				     			'<input type="checkbox" name="chkItem" /></td>'+
+//						     		'<td style="width: 18%; padding-left: 5px;">'+importSerName+'</td>'+
+//						     		'<td style="width: 20%; text-indent: 8px;">'+importSerIn+'</td>'+
+//						     		'<td style="width: 20%;">'+importSerOut+'</td>';
+//						     		if(1==importSerVis){
+//						     			tr+='<td style="width: 14%;">所有租户可见</td>';
+//						     		}else{
+//						     			tr+='<td style="width: 14%;">仅本租户可见</td>';
+//						     		}
+//						     	    tr+='<td style="width: 10%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this)"> <i class="fa fa-trash fa-lg"></i></a>'+
+//						     		'<a class="editButton" href="javascript:editImportSer(this)"><i class="fa fa-edit fa-lg"></i></a></td>'+
+//						     	'</tr>';
+//	     		$("#importSerList").append(tr);
+//	        	 }
 	        	 layer.close(index);
 	        }
 		})
@@ -177,7 +176,7 @@
 		         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
 		         			,"refAddress":importSerOut,"viDomain":importSerVis},
 		         		success: function(data) {
-		         			creatable();
+		         			window.location.reload();
 		         		}
 		         	});
 	        	layer.close(index);
