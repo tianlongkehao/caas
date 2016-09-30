@@ -359,7 +359,7 @@ public class ServiceController {
 	    List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
 	    List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
 	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        List<String> podNameList = new ArrayList<String>();
+        List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
 	    List<Container> containerList = new ArrayList<Container>();
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("app", service.getServiceName());
@@ -376,7 +376,9 @@ public class ServiceController {
 	            		container.setServiceid(service.getId());
 	            		containerList.add(container);
 	            	}
-	            	podNameList.add(pod.getMetadata().getName());
+	            	com.bonc.epm.paas.entity.Pod current_pod = new com.bonc.epm.paas.entity.Pod();
+	            	current_pod.setPodName(pod.getMetadata().getName());
+	            	podNameList.add(current_pod);
 	            }
 	        }
         }

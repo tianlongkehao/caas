@@ -1,8 +1,8 @@
 $(document).ready(function(){
 
-    $(".baseInfo>a").click(function(){
+    $(".baseInfo>ul>li>a").click(function(){
 
-        $(".baseInfo>a").removeClass("btn-prim");
+        $(".baseInfo>ul>li>a").removeClass("btn-prim");
         $(this).addClass("btn-prim");
     });
 
@@ -40,11 +40,16 @@ $(document).ready(function(){
         $(".monitorInfo").removeClass("hide");
     });
 
-
     $(".LOG").click(function(){
 
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".containerLog").removeClass("hide");
+    });
+    
+    $(".historyLOG").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".historycontainerLog").removeClass("hide");
     });
 
 
@@ -54,8 +59,8 @@ $(document).ready(function(){
         $(".containerEvent").removeClass("hide");
     });
     
-//    setInterval("getServiceLogs()",10000);
-    getServiceLogs();
+    //setInterval("getServiceLogs()",10000);
+    //getServiceLogs();
     
     $('#datePicker').click(function(event) {
         /* Act on the event */
@@ -74,8 +79,29 @@ $(document).ready(function(){
           }
         });
       });
+    $('#datePicker1').click(function(event) {
+        /* Act on the event */
+        laydate({
+          elem: '#date_log1',
+          // event: 'focus',
+          issure: true, // 是否显示确认
+          istime: true,
+          format: 'YYYY-MM-DDThh:mm:ss',
+//          min: $('#creationTime').val(),
+//          max: laydate.now(+0),
+          zIndex: 99999999, //css z-index
+          choose: function(dates){ //选择好日期的回调
+//            logPage = 1;
+        	  dropdownLog("1");
+          }
+        });
+      });
+    
       $('#refreshLog').click(function (event) {
     	  getServiceLogs();
+      });
+      $('#refreshLog1').click(function (event) {
+    	  dropdownLog("1");
       });
        
       $('#fullScreen').click(function () {
@@ -91,6 +117,40 @@ $(document).ready(function(){
 
 
 });
+
+//下拉列表选中项对应的log
+function dropdownLog(obj){
+	if(obj != ""){
+		id = $("#podName").val();
+	} else {
+		$('#serviceid').val($(obj).attr("serviceid"));
+		$('#podName').val($(obj).attr("podName"));
+	}
+	var id = $('#serviceid').val();
+	var podName = $('#podName').val();
+	var date = $('#date_log1').val();
+	$.ajax({
+		url:ctx+"/service/detail/getPodlogs.do?id="+id+"&podName="+podName+"&date="+date,
+		success:function(data){
+			data = $.parseJSON(data);
+			if(data.status == '200' && data.logList != ""){
+				
+				var containerlog = data.logStr;
+				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
+					+ containerlog
+				+ '</pre>'
+				
+				$("#containerlogList").html("");
+				$("#containerlogList").html(html);
+			}else{
+				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
+				$("#containerlogList").html("");
+				$("#containerlogList").html(html);	
+			}
+			
+			}
+	})
+}
 
 
 function getServiceLogs(){
@@ -121,24 +181,26 @@ function getServiceLogs(){
 						+ '<span class="event-names">'+serviceName+num+' </span>'
 						+'</div>'
 						+ '<div class="time-line-time">'
-						+ '<div class="event-sign lives" onclick="ServiceEvent(this)">'
+						+ '<div class="event-sign " onclick="ServiceEvent(this)">'
 						+ '<i class="fa fa-angle-right fa_caret" style="transform: rotate(0deg);"></i>'
 						+ '</div>'
 						+ '</div>'
 						+ '<div class="containerLog time-line-message" style="min-height: 500px; margin-top: 50px">'
 						+ '<div class="weblog logList">'
-						+ '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
+						+ '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
 						+ logs[i]
 						+ '</pre>'
 						+ '</div></div></div></div></div></div></div></div></div><br>';
-				}
-						
-				$("#logList").html("");
-				$("#logList").html(html);
+				}	
+				$("#hisLogList").html("");
+				$("#hisLogList").html(html);
+				$(".event-sign").addClass("lives");
+				$(".event-sign").parent().parent().children(".time-line-message").css("display","block");
+				$(".event-sign").children(".fa_caret").css("transform", "rotate(90deg)");
 			}else{
-				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
-				$("#logList").html("");
-				$("#logList").html(html);
+				html += '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
+				$("#hisLogList").html("");
+				$("#hisLogList").html(html);
 			}
 		}	
 	})
