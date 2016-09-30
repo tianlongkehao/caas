@@ -157,6 +157,9 @@
 			<properties>
 				<profileActive>dev</profileActive>
 			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>	
 		</profile>
 		<profile>
 			<id>yq</id>
@@ -169,9 +172,6 @@
 			<properties>
 				<profileActive>profile</profileActive>
 			</properties>
-			<activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>   
 		</profile>
 	</profiles>
 	<build>
