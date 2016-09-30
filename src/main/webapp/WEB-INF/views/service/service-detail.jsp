@@ -319,7 +319,7 @@
 					<!-- 历史日志 -->
 					<div class="historycontainerLog hide" style="margin-bottom:30px;">
 						<div class="weblogtitle">
-							<div class="pull_right">
+							<div class="pull_right" style="width:99%">
 								<input id="date_log" type="text" value="" readonly>
 								<i id="datePicker" class="fa fa-calendar margin cursor"
 									serviceid="${service.id }" serviceName = "${service.serviceName }"></i>
