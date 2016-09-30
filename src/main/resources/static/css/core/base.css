@@ -378,7 +378,7 @@ i.fa_btn_plus_gray {
     cursor: pointer;
 }
 
-/* ÐÂÑùÊ½µÄtalbe */
+/* ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½talbe */
 .ibox {
     clear: both;
     margin-bottom: 25px;
@@ -432,11 +432,11 @@ i.fa_btn_plus_gray {
 .ibox-tools a {
     cursor: pointer;
     margin-left: 5px;
-    color: #676a6c;
+    color: #3c7bca;
 }
 .ibox-tools a:hover {
     cursor: pointer;
-    color: #3c7bca;
+    color: #676a6c;
 }
 .m-b-xs {
     margin-bottom: 5px;

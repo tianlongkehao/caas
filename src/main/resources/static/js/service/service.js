@@ -8,7 +8,7 @@
 		});	
 	
 	_refreshCreateTime(60000);
-
+	
 	checkbox();
  });
  
@@ -566,23 +566,16 @@ function refresh() {
 }
 
 function checkbox() {
+	
 	$('input[name="chkItem"]').click(
 			function() {
 				if ($(this).prop("checked")) {
-					$('#startContainer').removeClass('no-drop').addClass(
-							'a-live');
-					$('#stopContainer').removeClass('no-drop').addClass(
-							'a-live');
-					$('#scaleCluster').removeClass('no-drop')
-							.addClass('a-live');
-					$('#upgradeCluster').removeClass('no-drop').addClass(
-							'a-live');
-					$('#redeployContainer').removeClass('no-drop').addClass(
-							'a-live');
-					$('#changeConfiguration').removeClass('no-drop').addClass(
-							'a-live');
-					$('#deleteButton').removeClass('no-drop')
-							.addClass('a-live');
+					$('#startContainer').removeClass('no-drop').addClass('a-live');
+					$('#startContainerFa').removeClass('self_a');
+					$('#stopContainer').removeClass('no-drop').addClass('a-live');
+					$('#stopContainerFa').removeClass('self_a');
+					$('#deleteButton').removeClass('no-drop').addClass('a-live');
+					$('#deleteButtonFa').removeClass('self_a');
 					var status = [];
 					$('.clusterId').find("input[name='chkItem']").each(
 							function(el) {
@@ -593,57 +586,73 @@ function checkbox() {
 					var statusStr = status.toString();
 					var runIndex = statusStr.indexOf('3');
 					var stopIndex = statusStr.indexOf('4');
-					if (status.length > 1) {
-						$('#changeConfiguration').removeClass('a-live')
-								.addClass('no-drop');
-						$('#scaleCluster').removeClass('a-live').addClass(
-								'no-drop');
-						$('#upgradeCluster').removeClass('a-live').addClass(
-								'no-drop');
-					}
 					if (statusStr.indexOf('Initialization') > -1) {
-						$('#startContainer').removeClass('a-live').addClass(
-								'no-drop');
-						$('#stopContainer').removeClass('a-live').addClass(
-								'no-drop');
-						$('#changeConfiguration').removeClass('a-live')
-								.addClass('no-drop');
-						$('#scaleCluster').removeClass('a-live').addClass(
-								'no-drop');
-						$('#upgradeCluster').removeClass('a-live').addClass(
-								'no-drop');
+						$('#startContainer').removeClass('a-live').addClass('no-drop');
+						$('#startContainerFa').addClass('self_a');
+						$('#stopContainer').removeClass('a-live').addClass('no-drop');
+						$('#stopContainerFa').addClass('self_a');
 					}
 					if (runIndex > -1 && stopIndex < 0) {
-						$('#startContainer').removeClass('a-live').addClass(
-								'no-drop');
+						$('#startContainer').removeClass('a-live').addClass('no-drop');
+						$('#startContainerFa').addClass('self_a');
 					}
 					if (runIndex < 0 && stopIndex > -1) {
-						$('#stopContainer').removeClass('a-live').addClass(
-								'no-drop');
+						$('#stopContainer').removeClass('a-live').addClass('no-drop');
+						$('#stopContainerFa').addClass('self_a');
 					}
 					if (runIndex > -1 && stopIndex > -1) {
-						$('#startContainer').removeClass('a-live').addClass(
-								'no-drop');
-						$('#stopContainer').removeClass('a-live').addClass(
-								'no-drop');
+						$('#startContainer').removeClass('a-live').addClass('no-drop');
+						$('#startContainerFa').addClass('self_a');
+						$('#stopContainer').removeClass('a-live').addClass('no-drop');
+						$('#stopContainerFa').addClass('self_a');
 					}
 				} else {
-					$('#startContainer').removeClass('a-live').addClass(
-							'no-drop');
-					$('#stopContainer').removeClass('a-live').addClass(
-							'no-drop');
-					$('#scaleCluster').removeClass('a-live')
-							.addClass('no-drop');
-					$('#upgradeCluster').removeClass('a-live').addClass(
-							'no-drop');
-					$('#redeployContainer').removeClass('a-live').addClass(
-							'no-drop');
-					$('#changeConfiguration').removeClass('a-live').addClass(
-							'no-drop');
-					$('#deleteButton').removeClass('a-live')
-							.addClass('no-drop');
+					$('#startContainer').removeClass('a-live').addClass('no-drop');
+					$('#startContainerFa').removeClass('self_a');
+					$('#stopContainer').removeClass('a-live').addClass('no-drop');
+					$('#stopContainerFa').removeClass('self_a');
+					$('#deleteButton').removeClass('a-live').addClass('no-drop');
+					$('#deleteButtonFa').removeClass('self_a');
+					
+					var status = [];
+					$('.clusterId').find("input[name='chkItem']").each(
+							function(el) {
+								if ($(this).is(':checked')) {
+									status.push($(this).attr('status'));
+								}
+							});
+					var statusStr = status.toString();
+					var runIndex = statusStr.indexOf('3');
+					var stopIndex = statusStr.indexOf('4');
+					if (statusStr.indexOf('Initialization') > -1) {
+						$('#startContainer').removeClass('a-live').addClass('no-drop');
+						$('#startContainerFa').addClass('self_a');
+						$('#stopContainer').removeClass('a-live').addClass('no-drop');
+						$('#stopContainerFa').addClass('self_a');
+					}
+					if (runIndex > -1 && stopIndex < 0) {
+						$('#startContainer').removeClass('a-live').addClass('no-drop');
+						$('#startContainerFa').addClass('self_a');
+					}
+					if (runIndex < 0 && stopIndex > -1) {
+						$('#stopContainer').removeClass('a-live').addClass('no-drop');
+						$('#stopContainerFa').addClass('self_a');
+					}
+					if (runIndex > -1 && stopIndex > -1) {
+						$('#startContainer').removeClass('a-live').addClass('no-drop');
+						$('#startContainerFa').addClass('self_a');
+						$('#stopContainer').removeClass('a-live').addClass('no-drop');
+						$('#stopContainerFa').addClass('self_a');
+					}
+					if (status.length == 0) {
+						$('#startContainer').removeClass('a-live').addClass('no-drop');
+						$('#startContainerFa').addClass('self_a');
+						$('#stopContainer').removeClass('a-live').addClass('no-drop');
+						$('#stopContainerFa').addClass('self_a');
+						$('#deleteButton').removeClass('a-live').addClass('no-drop');
+						$('#deleteButtonFa').addClass('self_a');
+					}
 				}
-
 			})
 }
 
