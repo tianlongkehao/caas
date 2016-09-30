@@ -92,7 +92,7 @@ $(document).ready(function(){
           zIndex: 99999999, //css z-index
           choose: function(dates){ //选择好日期的回调
 //            logPage = 1;
-        	  dropdownLog("1");
+        	  dropdownLog();
           }
         });
       });
@@ -101,7 +101,7 @@ $(document).ready(function(){
     	  getServiceLogs();
       });
       $('#refreshLog1').click(function (event) {
-    	  dropdownLog("1");
+    	  dropdownLog();
       });
        
       $('#fullScreen').click(function () {
@@ -120,9 +120,7 @@ $(document).ready(function(){
 
 //下拉列表选中项对应的log
 function dropdownLog(obj){
-	if(obj != ""){
-		id = $("#podName").val();
-	} else {
+	if(obj != null){
 		$('#serviceid').val($(obj).attr("serviceid"));
 		$('#podName').val($(obj).attr("podName"));
 	}
