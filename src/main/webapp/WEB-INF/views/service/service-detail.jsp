@@ -57,13 +57,25 @@
 								target="_blank" class="open">打开应用</a>
 						</div>
 					</section>
+					
 					<div class="baseInfo center-style">
-						<a class="BASE btn-prim">基本信息</a> <a class="INSTANCES">容器实例</a>
-						<!-- <a class="DOMAIN">绑定域名</a>  -->
-						<a class="PORTS">端口</a>
-						<!--<a class="MONITOR">监控</a>-->
-						<a class="LOG">日志</a>
-						<!--<a class="EVENT">事件</a> -->
+						<ul class="nav navbar-nav">
+							<li><a class="BASE btn-prim">基本信息</a></li>
+							<li><a class="INSTANCES">容器实例</a></li>
+							<li><a class="PORTS">端口</a></li>
+							<li class="dropdown">
+								<a class="LOG dropdown-toggle" id="dropdown-log"
+									data-toggle="dropdown"> 日志 <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+								 	<c:forEach items="${podNameList}" var="pod" >
+								 		<li><a podName="${pod.podName }" serviceid="${service.id }" onclick="dropdownLog(this)">${pod.podName }</a></li>
+								 	</c:forEach>
+									
+								</ul>
+							</li>
+							<li><a class="historyLOG">历史日志</a></li>
+						</ul>
 					</div>
 					<div class="containerInfo">
 						<table class="table w50">
@@ -277,9 +289,37 @@
 					<div class="monitorInfo hide">
 						<div class="data-analysis"></div>
 					</div>
-					<div class="containerLog hide" style="margin-bottom:30px;">
+					<!-- 日志 -->
+					<div class="containerLog hide" style="min-height: 500px;">
 						<div class="weblogtitle">
+							<div class="pull_left">
+								<span class="circle red"></span> <span class="circle blue"></span>
+								<span class="circle green"></span>
+							</div>
 							<div class="pull_right">
+								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
+								<input id="date_log1" type="text" value="" readonly>
+								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
+								<i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i>
+								<input type="hidden" id="podName" name=""podName"" value=""></input>
+								<input type="hidden" id="serviceid" name=""serviceid"" value=""></input>
+								<!--</div>-->
+								<i id="refreshLog1" class="fa fa-refresh margin cursor"
+									data-toggle="tooltip" data-placement="top" title=""
+									data-original-title="刷新日志"></i> <i id="fullScreen"
+									class="fa fa-expand margin cursor" title="满屏"></i>
+							</div>
+						</div>
+						<div id="containerlogList" class="weblog">
+							 
+						</div>
+						<input id="serviceInstances" type="hidden" value="">
+						<input id="creationTime" type="hidden" value="${service.createDate }">
+					</div>
+					<!-- 历史日志 -->
+					<div class="historycontainerLog hide" style="margin-bottom:30px;">
+						<div class="weblogtitle">
+							<div class="pull_right" style="width:99%">
 								<input id="date_log" type="text" value="" readonly>
 								<i id="datePicker" class="fa fa-calendar margin cursor"
 									serviceid="${service.id }" serviceName = "${service.serviceName }"></i>
@@ -288,7 +328,7 @@
 									data-original-title="刷新日志"></i> 
 							</div>
 						</div>
-						<div id="logList"><div>
+						<div id="hisLogList"><div>
 					</div>
 					<div class="containerEvent hide" style="min-height: 500px;">
 						<div class="containerEvent"
