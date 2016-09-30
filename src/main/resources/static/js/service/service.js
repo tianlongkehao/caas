@@ -9,6 +9,24 @@
 	
 	_refreshCreateTime(60000);
 	
+	
+	$("#checkallbox").click(function(){
+		 if($(this).prop("checked")){
+		     $("input[type='checkbox']").prop("checked",true);
+		     $('#deleteButton').removeClass('no-drop').addClass('a-live');
+		     $('#deleteButtonFa').removeClass('self_a');
+		 }
+		 else{
+		     $("input[type='checkbox']").prop("checked",false);
+		     $('#startContainer').removeClass('a-live').addClass('no-drop');
+		     $('#startContainerFa').addClass('self_a');
+		     $('#stopContainer').removeClass('a-live').addClass('no-drop');
+		     $('#stopContainerFa').addClass('self_a');
+		     $('#deleteButton').removeClass('a-live').addClass('no-drop');
+		     $('#deleteButtonFa').addClass('self_a');
+		 }
+	});
+	
 	checkbox();
  });
  
@@ -586,21 +604,22 @@ function checkbox() {
 					var statusStr = status.toString();
 					var runIndex = statusStr.indexOf('3');
 					var stopIndex = statusStr.indexOf('4');
+					var noIndex = statusStr.indexOf('1');
 					if (statusStr.indexOf('Initialization') > -1) {
 						$('#startContainer').removeClass('a-live').addClass('no-drop');
 						$('#startContainerFa').addClass('self_a');
 						$('#stopContainer').removeClass('a-live').addClass('no-drop');
 						$('#stopContainerFa').addClass('self_a');
 					}
-					if (runIndex > -1 && stopIndex < 0) {
+					if (runIndex > -1 && stopIndex < 0 && noIndex < 0) {
 						$('#startContainer').removeClass('a-live').addClass('no-drop');
 						$('#startContainerFa').addClass('self_a');
 					}
-					if (runIndex < 0 && stopIndex > -1) {
+					if (runIndex < 0 && (stopIndex > -1 || noIndex > -1)) {
 						$('#stopContainer').removeClass('a-live').addClass('no-drop');
 						$('#stopContainerFa').addClass('self_a');
 					}
-					if (runIndex > -1 && stopIndex > -1) {
+					if (runIndex > -1 && (stopIndex > -1 || noIndex > -1)) {
 						$('#startContainer').removeClass('a-live').addClass('no-drop');
 						$('#startContainerFa').addClass('self_a');
 						$('#stopContainer').removeClass('a-live').addClass('no-drop');
@@ -622,6 +641,7 @@ function checkbox() {
 								}
 							});
 					var statusStr = status.toString();
+					var noIndex = statusStr.indexOf('1');
 					var runIndex = statusStr.indexOf('3');
 					var stopIndex = statusStr.indexOf('4');
 					if (statusStr.indexOf('Initialization') > -1) {
@@ -630,15 +650,15 @@ function checkbox() {
 						$('#stopContainer').removeClass('a-live').addClass('no-drop');
 						$('#stopContainerFa').addClass('self_a');
 					}
-					if (runIndex > -1 && stopIndex < 0) {
+					if (runIndex > -1 && stopIndex < 0 && noIndex <0) {
 						$('#startContainer').removeClass('a-live').addClass('no-drop');
 						$('#startContainerFa').addClass('self_a');
 					}
-					if (runIndex < 0 && stopIndex > -1) {
+					if (runIndex < 0 && (stopIndex > -1 || noIndex > -1)) {
 						$('#stopContainer').removeClass('a-live').addClass('no-drop');
 						$('#stopContainerFa').addClass('self_a');
 					}
-					if (runIndex > -1 && stopIndex > -1) {
+					if (runIndex > -1 && (stopIndex > -1 || noIndex > -1 )) {
 						$('#startContainer').removeClass('a-live').addClass('no-drop');
 						$('#startContainerFa').addClass('self_a');
 						$('#stopContainer').removeClass('a-live').addClass('no-drop');
