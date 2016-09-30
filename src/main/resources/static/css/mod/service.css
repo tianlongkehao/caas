@@ -543,7 +543,7 @@
     border: 1px solid #DDDDDD;
     background: #fff;
     border-radius: 4px;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .contentMain .baseInfo a {
@@ -697,8 +697,45 @@ i.pushOrg {
     height:500px;
     overflow-y:auto;
 }
+.historycontainerLog {
+    background: black;
+    color: #2FBA66;
+    width: 98%;
+    margin-left: 1%;
+    min-height: 300px;
+    position: relative;
+    transition: all 0.5s;
+    padding-right:0px;
+    padding-bottom:0px;
+}
 
+
+.historycontainerLog.all{
+    z-index: 1000000;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top:0;
+    left: 0;
+    margin-left:0;
+    transition:all 0.5s;
+}
+.historycontainerLog.all .weblog{
+    height: calc(100% - 40px)
+}
+
+.historycontainerLog .weblog{
+    padding:5px 10px;
+    height:500px;
+    overflow-y:auto;
+}
 #date_log{
+    background: none;
+    border:0;
+    width: 220px;
+    text-align: right;
+}
+#date_log1{
     background: none;
     border:0;
     width: 220px;
@@ -716,6 +753,12 @@ i.pushOrg {
     padding-left: 2%;
     padding-right: 2%;
 }
+.historycontainerLog .weblogtitle {
+    height: 40px;
+    background: #1C2022;
+    padding-left: 2%;
+    padding-right: 2%;
+}
 
 .weblogtitle .pull_left {
     width: 59%;
@@ -724,7 +767,7 @@ i.pushOrg {
 }
 
 .weblogtitle .pull_right {
-    width: 94%;
+    width: 40%;
     text-align: right;
     line-height: 40px;
     display: inline-block;
@@ -835,3 +878,10 @@ tr.focus{
 #import-service form table tbody tr td select{
     height: 28px;
 }
+.baseInfo .navbar-nav li a{
+	padding-top: 20px;
+    padding-bottom: 18px;
+}
+
+
+

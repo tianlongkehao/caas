@@ -133,7 +133,7 @@
 														alt="" class="${loadingImgShowClass}" /></td>
 													<td style="width: 15%;"><span class="cluster_mirrer">
 															<a title="点击查看镜像" target="_blank"
-															href="<%=path %>/registry/detail/${service.imgID }">${service.imgName }</a>
+															href="<%=path %>../registry/detail/${service.imgID }">${service.imgName }</a>
 													</span></td>
 													<td style="width: 25%" id="mysqlurl"><span class="url">
 															<c:if
@@ -142,6 +142,7 @@
 																	target="_blank">${service.serviceAddr}/${service.proxyPath}</a>
 															</c:if>
 													</span></td>
+
 													<td style="width: 12%" class="tdTimeStrap">
 														<input type="hidden" class="timeStrap" value=""> 
 														<i class="fa_time"></i><span>${service.createDate }</span>
@@ -289,7 +290,7 @@
 							style="margin-top: 10px; width: 165px;" min="${cpumin }"
 							max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
 							id="confCpu" name="confCpu"> <span class="unit">个</span>
-						<span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" >${leftcpu }</label></span>
+						<!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" ></label></span> -->
 					</div>
 				</li>
 				<li class="line-h-3">
@@ -334,6 +335,9 @@
 			} ]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc"); 
+	</script>
+</body>
+</html> 
 	</script>
 </body>
 </html>
