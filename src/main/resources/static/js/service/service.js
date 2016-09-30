@@ -249,8 +249,8 @@ function changeContainerConf() {
 				$('#confCpu').attr("max", totalcpu);
 				// $('#leftcpu').text(totalcpu);
 				// $('#leftram').text(totalram);
-				var confRamSlider = sliderFn('confRamSlider', totalram, 0,
-						Number(ram));
+//				var confRamSlider = sliderFn('confRamSlider', totalram, 0,
+//						Number(ram));
 
 				layer.open({
 					type : 1,
@@ -534,7 +534,7 @@ function oneChangeContainerConf(id,containerName,cpu,ram) {
 	 totalcpu = parseInt($('#confCpu').attr('max'))+parseInt(cpu);
 	 totalram = '1024';
 	 $('#confCpu').attr("max",totalcpu);
-	 var confRamSlider = sliderFn('confRamSlider', totalram,0, Number(ram));
+	 //var confRamSlider = sliderFn('confRamSlider', totalram,0, Number(ram));
 
 	 layer.open({
 		 type:1,

@@ -278,28 +278,28 @@
 				</li>
 			</ul>
 		</div>
+		<!-- 更改配置 -->
 		<div id="changeConf" style="display: none">
 			<ul class="popWin">
-				<li class="line-h-3"><span>服务名称：</span> <input class=""
-					id="confServiceName" disabled="disabled"
-					style="margin-top: 5px; width: 165px;" type="text" value="">
-				</li>
-				<li class="line-h-3">
+				<li class="line-h-3 c-ser">
 					<div class="param-set">
-						<span>CPU数量：</span> <input type="number" value=""
-							style="margin-top: 10px; width: 165px;" min="${cpumin }"
-							max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
-							id="confCpu" name="confCpu"> <span class="unit">个</span>
-						<!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" ></label></span> -->
+						<span class="c-title">服务名称：</span> <input class="c-con"
+						id="confServiceName" disabled="disabled" type="text" value="">
 					</div>
 				</li>
-				<li class="line-h-3">
+				<li class="line-h-3 c-ser">
 					<div class="param-set">
-						<span>内存：</span> <input id="confRamSlider"
-							data-slider-id='confRamSliderData' type="text"
-							data-slider-min="${memorymin }" data-slider-max="${memorymax }"
-							data-slider-step="1" /> <input type="text" left="" value=""
-							id="confRamSlider_input" name="confRam"> <span>M</span>
+						<span class="c-title">CPU数量：</span> <input type="number" value="" class="c-con"
+							min="${cpumin }"
+							max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
+							id="confCpu" name="confCpu"> <span class="unit">个</span>
+						<span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" >${leftcpu }</label></span>
+					</div>
+				</li>
+				<li class="line-h-3 c-ser">
+					<div class="param-set">
+						<span class="c-title">内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;存：</span>  <input type="text" left="" value="" class="c-con"
+							id="confRamSlider_input" name="confRam" min="${memorymin }" max="${memorymax }"> <span class="unit">M</span>
 						<span style="color: grey;margin-left: 50px;">当前可用ram：<label id="leftram" >${leftmemory * 1024 }</label>M</span>
 					</div>
 				</li>

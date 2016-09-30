@@ -197,10 +197,10 @@ $(document).ready(
         
         //验证dockerFile
         if (dockerFile.length === 0 ) {
-        	layer.tips('dockerFile不能为空', '#dockerFile',{
+        	layer.tips('dockerFile不能为空', '#dockerFiles',{
         		tips: [1,'##3595CC']
         	});
-        	$('#dockerFile').focus();
+        	$('#dockerFiles').focus();
         	return false;
         }
         

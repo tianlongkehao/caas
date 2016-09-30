@@ -826,7 +826,7 @@ i.pushOrg {
 
 
 .popWin {
-    padding: 30px;
+	padding: 18px 5px 5px 30px;
 }
 
 #serviceBody tr:hover{
@@ -882,6 +882,16 @@ tr.focus{
 	padding-top: 20px;
     padding-bottom: 18px;
 }
-
-
+.c-ser{
+	margin-top:10px!important;
+}
+.c-title{
+	float:left;
+	line-height: 34px;
+}
+.c-con{
+	width:38%;
+	line-height: 26px;
+	border-radius: 5px;
+}
 
