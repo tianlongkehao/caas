@@ -69,7 +69,7 @@
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podNameList}" var="pod" >
-								 		<li><a podName="${pod.podName }" serviceid="${service.id }" onclick="dropdownLog(this)">${pod.podName }</a></li>
+								 		<li><a podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)">${pod.podName }</a></li>
 								 	</c:forEach>
 									
 								</ul>
@@ -301,8 +301,8 @@
 								<input id="date_log1" type="text" value="" readonly>
 								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
 								<i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i>
-								<input type="hidden" id="podName" name=""podName"" value=""></input>
-								<input type="hidden" id="serviceid" name=""serviceid"" value=""></input>
+								<input type="hidden" id="podName" name="podName" value=""></input>
+								<input type="hidden" id="serviceid" name="serviceid" value=""></input>
 								<!--</div>-->
 								<i id="refreshLog1" class="fa fa-refresh margin cursor"
 									data-toggle="tooltip" data-placement="top" title=""
