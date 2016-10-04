@@ -41,18 +41,21 @@ $(document).ready(function(){
     });
 
     $(".LOG").click(function(){
-
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".containerLog").removeClass("hide");
     });
     
     $(".historyLOG").click(function(){
-
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".historycontainerLog").removeClass("hide");
     });
 
-
+    $(".execCommand").click(function(){
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $("#containerexec").removeClass("hide");
+        $("#execText").val("");
+    });
+    
     $(".EVENT").click(function(){
 
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
@@ -113,9 +116,51 @@ $(document).ready(function(){
           $(this).addClass('fa-exprend').attr('title','满屏').removeClass('fa-compress');
         }
       });
+      
+       $("#execcmd").click(function(){
+    	   var cmd = $("#execText").val();
+    	   if (cmd == "" || cmd == null) {
+    		   layer.tips('命令不能为空！', '#execText', {
+    	            tips: [2, '#0FA6D8'] //还可配置颜色
+    	        });
+    		   return;
+    	   }
+    	   load = layer.load(0, {shade: [0.3, '#000'],time:30000});
+    	   $.ajax({
+    		   async:false,
+    		   url:ctx+"/service/detail/execcmd.do?cmd="+cmd,
+    		   success:function(data){
+    			   data = eval("(" + data + ")");
+    			   if (data.status == "200") {
+    				   	var containerlog = data.result;
+    				   	containerlog = containerlog.replace(/</g,"&lt");
+    				   	containerlog = containerlog.replace(/>/g,"&gt");
+    					var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
+    						+ containerlog
+    					+ '</pre>'
+    					$("#containerlogList2").removeClass("hide");
+    					$("#containerlogList2").html("");
+    					$("#containerlogList2").html(html);
+    					layer.close(load);
+    			   }
+    			   if (data.status == "400") {
+    				    html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">执行失败！！！</pre>'
+    				    $("#containerlogList").html("");
+    				    $("#containerlogList").html(html);	
+    				    layer.close(load);
+    			   }
+    		   }
+    	   })
+       });
+});
 
-
-
+function execCommand(){
+		var podName = $(this).attr("podName");
+		var namespace = $(this).attr("namespace");
+		$("#execText").val("kubectl logs "+podName+" --tail 100 --namespace="+namespace);
+}
+$(function(){
+	$(".podName").on("click",execCommand);
 });
 
 //下拉列表选中项对应的log
