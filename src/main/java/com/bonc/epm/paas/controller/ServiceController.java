@@ -353,59 +353,40 @@ public class ServiceController {
      */
     @RequestMapping(value = { "service/detail/{id}" }, method = RequestMethod.GET)
 	public String detail(Model model, @PathVariable long id) {
-        System.out.printf("id: " + id);
-        Service service = serviceDao.findOne(id);
+	    System.out.printf("id: " + id);
+	    User currentUser = CurrentUserUtils.getInstance().getUser();
+	    Service service = serviceDao.findOne(id);
 		//service.setProxyZone(substr(service.getProxyZone()));
-        List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
-        List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        List<Container> containerList = new ArrayList<Container>();
-        List<String> logList = new ArrayList<String>();
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("app", service.getServiceName());
-		// 通过服务名获取pod列表
+	    List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
+	    List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
+	    List<Container> containerList = new ArrayList<Container>();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("app", service.getServiceName());
+  		// 通过服务名获取pod列表
         PodList podList = client.getLabelSelectorPods(map);
         if (podList != null) {
             List<Pod> pods = podList.getItems();
-            if (CollectionUtils.isNotEmpty(pods)) {
-                int i = 1;
-                for (Pod pod : pods) {
-                	for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
-                		
-                		// 获取pod名称
-                		String podName = pod.getMetadata().getName();
-                		//获取container名称
-                		String containerName = k8scontainer.getName();
-                		// 初始化es客户端
-                		ESClient esClient = new ESClient();
-                		esClient.initESClient(esConf.getHost(),esConf.getClusterName());
-                		// 设置es查询日期，数据格式，查询的pod名称
-//                    String s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
-                		Calendar calendar = Calendar.getInstance();
-                		calendar.add(Calendar.HOUR_OF_DAY, -8);
-                		calendar.add(Calendar.MINUTE, -3);
-                		String dateString = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss+00:00").format(calendar.getTime());
-                		String s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
-                		
-                		// 关闭es客户端
-                		esClient.closeESClient();
-                		// 拼接日志格式
-                		String add = "[" + "App-" + i + "] [" + podName + "] ["+containerName+"]：";
-                		s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-                		
-                		s = s.substring(0, s.length() - add.length());
-                		Container container = new Container();
-                		container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-                		container.setServiceid(service.getId());
-                		containerList.add(container);
-                		logList.add(s);
-                	}
-                }
-            }
+	        if (CollectionUtils.isNotEmpty(pods)) {
+	            int i = 1;
+	            for (Pod pod : pods) {
+	            	for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
+	            		Container container = new Container();
+	            		container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+	            		container.setServiceid(service.getId());
+	            		containerList.add(container);
+	            	}
+	            	com.bonc.epm.paas.entity.Pod current_pod = new com.bonc.epm.paas.entity.Pod();
+	            	current_pod.setPodName(pod.getMetadata().getName());
+	            	podNameList.add(current_pod);
+	            }
+	        }
         }
+        model.addAttribute("namespace",currentUser.getNamespace());
         model.addAttribute("id", id);
+        model.addAttribute("podNameList", podNameList);
         model.addAttribute("containerList", containerList);
-        model.addAttribute("logList", logList);
         model.addAttribute("service", service);
         model.addAttribute("envVariableList", envVariableList);
         model.addAttribute("portConfigList", portConfigList);
@@ -433,89 +414,89 @@ public class ServiceController {
         return strs;
     }
 
-	/**
-	 * Description: <br>
-	 * 获取当前服务的日志
-	 * @param id 服务Id
-	 * @param date 日期
-	 * @return String
-	 */
-    @RequestMapping("service/detail/getlogs.do")
-	@ResponseBody
-	public String getServiceLogs(long id, String date) {
-        Service service = serviceDao.findOne(id);
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        List<String> logList = new ArrayList<String>();
+//	/**
+//	 * Description: <br>
+//	 * 获取当前服务的日志
+//	 * @param id 服务Id
+//	 * @param date 日期
+//	 * @return String
+//	 */
+//    @RequestMapping("service/detail/getlogs.do")
+//	@ResponseBody
+//	public String getServiceLogs(long id, String date) {
+//        Service service = serviceDao.findOne(id);
+//        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+//        List<String> logList = new ArrayList<String>();
 //        String logStr = "";
-        Map<String, String> map = new HashMap<String, String>();
-        Map<String, Object> datamap = new HashMap<String, Object>();
-
-        try {
-            map.put("app", service.getServiceName());
-            PodList podList = client.getLabelSelectorPods(map);
-            if (podList != null) {
-                List<Pod> pods = podList.getItems();
-                if (CollectionUtils.isNotEmpty(pods)) {
-                    int i = 1;
-                    for (Pod pod : pods) {
-                    	
-                    	for(com.bonc.epm.paas.kubernetes.model.Container container : pod.getSpec().getContainers()){
-                    		
-                    		// 获取pod名称
-                    		String podName = pod.getMetadata().getName();
-                    		
-                    		//获取container名称
-                    		String containerName = container.getName();
-                    		
-                    		// 初始化es客户端
-                    		ESClient esClient = new ESClient();
-                    		esClient.initESClient(esConf.getHost(),esConf.getClusterName());
-                    		String s = null;
-                    		if (date != "") {
-                    			// 设置es查询日期，数据格式，查询的pod名称
-//                            s = esClient.search("logstash-" + date.replaceAll("-", "."), "fluentd", podName);
-                    			Calendar calendar = Calendar.getInstance();
-                    			calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
-                    			calendar.add(Calendar.HOUR_OF_DAY, -8);
-                    			String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
-                    			s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
-                    		} 
-                    		else {
-                    			// 设置es查询日期，数据格式，查询的pod名称
-                    			Calendar calendar = Calendar.getInstance();
-                    			calendar.add(Calendar.HOUR_OF_DAY, -8);
-                    			calendar.add(Calendar.MINUTE, -3);
-                    			String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
-                    			s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
-//                            s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
-                    		}
-                    		
-                    		// 关闭es客户端
-                    		esClient.closeESClient();
-                    		// 拼接日志格式
-                    		String add = "[" + "App-" + i + "] [" + podName + "] ["+containerName+"]：";
-//                        s = add + s.replaceAll("\n", "\n" + add);
-                    		s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-                    		
-                    		s = s.substring(0, s.length() - add.length());
+//        Map<String, String> map = new HashMap<String, String>();
+//        Map<String, Object> datamap = new HashMap<String, Object>();
+//
+//        try {
+//            map.put("app", service.getServiceName());
+//            PodList podList = client.getLabelSelectorPods(map);
+//            if (podList != null) {
+//                List<Pod> pods = podList.getItems();
+//                if (CollectionUtils.isNotEmpty(pods)) {
+//                    int i = 1;
+//                    for (Pod pod : pods) {
+//                    	
+//                    	for(com.bonc.epm.paas.kubernetes.model.Container container : pod.getSpec().getContainers()){
+//                    		
+//                    		// 获取pod名称
+//                    		String podName = pod.getMetadata().getName();
+//                    		
+//                    		//获取container名称
+//                    		String containerName = container.getName();
+//                    		
+//                    		// 初始化es客户端
+//                    		ESClient esClient = new ESClient();
+//                    		esClient.initESClient(esConf.getHost(),esConf.getClusterName());
+//                    		String s = null;
+//                    		if (date != "") {
+//                    			// 设置es查询日期，数据格式，查询的pod名称
+////                            s = esClient.search("logstash-" + date.replaceAll("-", "."), "fluentd", podName);
+//                    			Calendar calendar = Calendar.getInstance();
+//                    			calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
+//                    			calendar.add(Calendar.HOUR_OF_DAY, -8);
+//                    			String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+//                    			s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
+//                    		} 
+//                    		else {
+//                    			// 设置es查询日期，数据格式，查询的pod名称
+//                    			Calendar calendar = Calendar.getInstance();
+//                    			calendar.add(Calendar.HOUR_OF_DAY, -8);
+//                    			calendar.add(Calendar.MINUTE, -3);
+//                    			String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+//                    			s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
+////                            s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
+//                    		}
+//                    		
+//                    		// 关闭es客户端
+//                    		esClient.closeESClient();
+//                    		// 拼接日志格式
+//                    		String add = "[" + "App-" + i + "] [" + podName + "] ["+containerName+"]：";
+////                        s = add + s.replaceAll("\n", "\n" + add);
+//                    		s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+//                    		
+//                    		s = s.substring(0, s.length() - add.length());
 //                    		logStr = logStr.concat(s);
-                    		logList.add(s);
-                    	}
-                    }
-                }
-            }
+//                    		logList.add(s);
+//                    	}
+//                    }
+//                }
+//            }
 //            datamap.put("logStr", logStr);
-            datamap.put("logList",logList);
-            datamap.put("status", "200");
-        } 
-        catch (Exception e) {
-            datamap.put("status", "400");
-            LOG.error("日志读取错误：" + e);
-        }
-
-        return JSON.toJSONString(datamap);
-
-    }
+//            datamap.put("logList",logList);
+//            datamap.put("status", "200");
+//        } 
+//        catch (Exception e) {
+//            datamap.put("status", "400");
+//            LOG.error("日志读取错误：" + e);
+//        }
+//
+//        return JSON.toJSONString(datamap);
+//
+//    }
     
     /**
      * Description: <br>
@@ -811,7 +792,7 @@ public class ServiceController {
             }
             else {
                 map.put("status", "200");
-                service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_PENDING);
+                service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
                 serviceDao.save(service);
             }
         }
@@ -1226,7 +1207,7 @@ public class ServiceController {
         }
         return true;
     }
-	
+    
     /**
      * Description: <br>
      * 根据镜像名称查询镜像
@@ -1305,12 +1286,14 @@ public class ServiceController {
             service.setRam(rams);
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
             ReplicationController controller = client.getReplicationController(service.getServiceName());
-            List<com.bonc.epm.paas.kubernetes.model.Container> containers = controller.getSpec().getTemplate().getSpec()
-					.getContainers();
-            for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
-                setContainer(container, cpus, rams);
-            }
-            controller = client.updateReplicationController(service.getServiceName(), controller);
+            if (controller != null ) {
+				
+            	List<com.bonc.epm.paas.kubernetes.model.Container> containers = controller.getSpec().getTemplate().getSpec()
+            			.getContainers();
+            	for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
+            		setContainer(container, cpus, rams);
+            	}
+            	controller = client.updateReplicationController(service.getServiceName(), controller);
 //            for (com.bonc.epm.paas.kubernetes.model.Container container2 :controller.getSpec().getTemplate().getSpec().getContainers()) {
 //                if (container2.getResources().getLimits().get("cpu") != cpus ||
 //					container2.getResources().getLimits().get("memory").equals(rams + "Mi") ||
@@ -1321,10 +1304,15 @@ public class ServiceController {
 //		            break;
 //				}
 //			}
-            
-            if (map.get("status") == null) {
-            	map.put("status", "200");
-            	serviceDao.save(service);
+            	
+            	if (map.get("status") == null) {
+            		map.put("status", "200");
+            		serviceDao.save(service);
+            	}
+			} else {
+	            map.put("status", "400");
+	            map.put("msg", "Get a Replication Controller Info failed:ServiceName["+service.getServiceName()+"]");
+	            LOG.error("Get a Replication Controller Info failed:ServiceName["+service.getServiceName()+"]");
 			}
         }
         catch (KubernetesClientException e) {
@@ -1687,5 +1675,199 @@ public class ServiceController {
         return JSON.toJSONString(map);
 
 	}
+
+	/**
+	 * Description: <br>
+	 * 获取当前服务的日志
+	 * @param id 服务Id
+	 * @param date 日期
+	 * @return String
+	 */
+    @RequestMapping("service/detail/getLogsByService.do")
+	@ResponseBody
+	public String getLogsByService(long id, String date) {
+        Service service = serviceDao.findOne(id);
+        User currentUser = CurrentUserUtils.getInstance().getUser();
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<String> logList = new ArrayList<String>();
+        
+		try {
+			// 初始化es客户端
+			ESClient esClient = new ESClient();
+			esClient.initESClient(esConf.getHost(),esConf.getClusterName()); 
+			
+			if (date != "") {
+				// 设置es查询日期，数据格式，查询的pod名称
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
+				calendar.add(Calendar.HOUR_OF_DAY, -8);
+				String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+				logList = esClient.searchLogsByService("fluentd", service.getServiceName(),currentUser.getNamespace(),dateString,"9999-12-31T00:00:00+00:00");
+			} 
+			else {
+				logList = esClient.searchServiceLastLogs("fluentd", service.getServiceName(),currentUser.getNamespace());
+			}
+			
+			// 关闭es客户端
+			esClient.closeESClient();
+			map.put("status", "200");
+			map.put("logList",logList);
+			
+		} catch (Exception e) {
+			map.put("status", "400");
+			LOG.error("日志读取错误：" + e.getMessage());
+		}
+		
+        return JSON.toJSONString(map);
+
+    }
     
+    
+	/**
+	 * Description: <br>
+	 * 获取当前Pod的日志
+	 * @param id 服务Id
+	 * @param date 日期
+	 * @return String
+	 */
+    @RequestMapping("service/detail/getPodlogs.do")
+	@ResponseBody
+	public String getPodLogs(long id, String podName, String date) {
+        Service service = serviceDao.findOne(id);
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        String logStr = "";
+        Map<String, String> map = new HashMap<String, String>();
+        Map<String, Object> datamap = new HashMap<String, Object>();
+
+        try {
+            map.put("app", service.getServiceName());
+            PodList podList = client.getLabelSelectorPods(map);
+            if (podList != null) {
+                List<Pod> pods = podList.getItems();
+                if (CollectionUtils.isNotEmpty(pods)) {
+                    int i = 1;
+                    for (Pod pod : pods) {
+                    	// 获取pod名称
+                    	String k8sPodName = pod.getMetadata().getName();
+                    	
+                    	if (k8sPodName.equals(podName)) {
+							
+                    		for(com.bonc.epm.paas.kubernetes.model.Container container : pod.getSpec().getContainers()){
+                    			
+                    			//获取container名称
+                    			String containerName = container.getName();
+                    			
+                    			// 初始化es客户端
+                    			ESClient esClient = new ESClient();
+                    			esClient.initESClient(esConf.getHost(),esConf.getClusterName());
+                    			String s = null;
+                    			if (date != "") {
+                    				// 设置es查询日期，数据格式，查询的pod名称
+                    				Calendar calendar = Calendar.getInstance();
+                    				calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
+                    				calendar.add(Calendar.HOUR_OF_DAY, -8);
+                    				String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
+                    				s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
+                    			} 
+                    			else {
+                    				// 查询该Pod的最近1000条log
+                    				s = esClient.searchPodLastLogs("fluentd", podName,containerName);
+                    			}
+                    			
+                    			// 关闭es客户端
+                    			esClient.closeESClient();
+                    			// 拼接日志格式
+                    			String add = "[" + podName + "] ["+containerName+"]：";
+                    			s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+                    			
+                    			s = s.substring(0, s.length() - add.length());
+                    			logStr = logStr.concat(s);
+                    		}
+						}
+                    }
+                }
+            }
+            datamap.put("logStr", logStr);
+            datamap.put("status", "200");
+        } 
+        catch (Exception e) {
+            datamap.put("status", "400");
+            LOG.error("日志读取错误：" + e);
+        }
+
+        return JSON.toJSONString(datamap);
+
+    }
+    
+    /**
+     * Description: <br>
+     * 输入命令，获取返回结果
+     * @param cmd ： 命令
+     * @return String
+     */
+    @RequestMapping("service/detail/execcmd.do")
+    @ResponseBody
+    public String getCmdResult(String cmd){
+        String hostIp = kubernetesClientService.getK8sAddress();
+        String name = kubernetesClientService.getK8sUsername();
+        String password = kubernetesClientService.getK8sPasswrod();
+        Map<String, Object> map = new HashMap<String, Object>();
+//        String cmd = "kubectl exec cas-0uh5c --namespace=testbonc -- ls /usr";
+        try {
+            SshConnect.connect(name, password, hostIp, 22);
+            boolean b = false;
+            String rollingLog = SshConnect.exec(cmd, 10000);
+            if (rollingLog.endsWith("$") || rollingLog.endsWith("#") || rollingLog.contains("updated")) {
+                b = true;
+            }
+            long sys = System.currentTimeMillis();
+            while (!b) {
+                String str = SshConnect.exec("", 10000);
+                if (StringUtils.isNotBlank(str)) {
+                    rollingLog += str;
+                }
+                b = (rollingLog.endsWith("$") || rollingLog.endsWith("#") || rollingLog.contains("updated"));
+                long endsys = System.currentTimeMillis();
+                if (endsys-sys > 20000){
+                    map.put("status", "400");
+                    return JSON.toJSONString(map);
+                }
+            }
+            
+            if (rollingLog.contains("error")) {
+                map.put("status", "400");
+                return JSON.toJSONString(map);
+            }else {
+                map.put("result", rollingLog);
+            }
+            
+            String result = SshConnect.exec("echo $?", 1000);
+            if (StringUtils.isNotBlank(result)) {
+                if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
+                    new InterruptedException();
+                }
+            }
+            else {
+                new InterruptedException();
+            }
+        } 
+        catch (InterruptedException e) {
+            LOG.error(e.getMessage());
+            LOG.error("error:执行command失败");
+            map.put("status", "400");
+            return JSON.toJSONString(map);
+        } 
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+            LOG.error("error:ssh连接失败");
+            map.put("status", "400");
+            return JSON.toJSONString(map);
+        }
+        finally {
+            SshConnect.disconnect();
+        }
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+    }
+
 }

@@ -4,9 +4,13 @@
 <head lang="en">
 <title>服务</title>
 <%@include file="../frame/header.jsp"%>
-<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/service.css" />
-<script type="text/javascript" src="<%=path %>/js/service/service-detail.js"></script>
-<script type="text/javascript" src="<%=path %>/js/service/laydate/laydate.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
+<link rel="stylesheet" type="text/css"
+	href="<%=path%>/css/mod/service.css" />
+<script type="text/javascript"
+	src="<%=path%>/js/service/service-detail.js"></script>
+<script type="text/javascript"
+	src="<%=path%>/js/service/laydate/laydate.js"></script>
 </head>
 <body>
 
@@ -29,7 +33,7 @@
 					<section class="detail-succeed">
 						<div class="icon-img">
 							<div class="type-icon">
-								<img src="<%=path %>/images/image-1.png" height="100%">
+								<img src="<%=path%>/images/image-1.png" height="100%">
 							</div>
 						</div>
 						<ul class="succeed-content pull-left">
@@ -49,19 +53,39 @@
 							<li>更新时间：${service.createDate }</li>
 						</ul>
 						<div class="applocation">
-							<a
-								href="${service.serviceAddr}/${service.proxyPath}"
+							<a href="${service.serviceAddr}/${service.proxyPath}"
 								target="_blank" class="open">打开应用</a>
 						</div>
 					</section>
+					
 					<div class="baseInfo center-style">
-						<a class="BASE btn-prim">基本信息</a> 
-						<a class="INSTANCES">容器实例</a>
-						<!-- <a class="DOMAIN">绑定域名</a>  -->
-						<a class="PORTS">端口</a>
-						<!--<a class="MONITOR">监控</a>-->
-						<a class="LOG">日志</a>
-		 				<!--<a class="EVENT">事件</a> -->
+						<ul class="nav navbar-nav">
+							<li><a class="BASE btn-prim">基本信息</a></li>
+							<li><a class="INSTANCES">容器实例</a></li>
+							<li><a class="PORTS">端口</a></li>
+							<li class="dropdown">
+								<a class="LOG dropdown-toggle" id="dropdown-log"
+									data-toggle="dropdown"> 日志 <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+								 	<c:forEach items="${podNameList}" var="pod" >
+								 		<li><a podName="${pod.podName }" serviceid="${service.id }"  value="2" onclick="dropdownLog(this)">${pod.podName }</a></li>
+								 	</c:forEach>
+									
+								</ul>
+							</li>
+							<li><a class="historyLOG">历史日志</a></li>
+							<li class="dropdown">
+                                <a class="execCommand dropdown-toggle" id="dropdown-log"
+                                    data-toggle="dropdown"> 命令操作 <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <c:forEach items="${podNameList}" var="pod" >
+                                        <li><a class="podName" podName="${pod.podName }" serviceid="${service.id }" namespace = "${namespace }" value="2" >${pod.podName }</a></li>
+                                    </c:forEach>
+                                </ul>
+                            </li>
+						</ul>
 					</div>
 					<div class="containerInfo">
 						<table class="table w50">
@@ -119,22 +143,28 @@
 								</tr>
 							</tbody>
 						</table>
+
 						<table class="table basicInfo w50">
-							<thead>
-								<tr>
-									<th>环境变量</th>
-									<th>&nbsp;</th>
-								</tr>
-							</thead>
-							<tbody class="BORDER">
-								<c:forEach items="${envVariableList }" var="envVariable">
-									<tr>
-										<td>变量名 ${envVariable.envKey }</td>
-										<td>变量值 ${envVariable.envValue }</td>
-									</tr>
-								</c:forEach>
-							</tbody>
-						</table>
+                            <thead>
+                                <tr>
+                                    <th >环境变量</th>
+                                    <th >&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody class="BORDER">
+                                <tr>
+                                    <td> 键</td>
+                                    <td> 值</td>
+                                </tr>
+                                <c:forEach items="${envVariableList }" var="envVariable">
+                                    <tr>
+                                        <td> ${envVariable.envKey }</td>
+                                        <td> ${envVariable.envValue }</td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+						
 					</div>
 					<div class="containerInstances hide" style="min-height: 300px;">
 						<table class="table">
@@ -178,8 +208,7 @@
 
 										<td>${service.imgName }</td>
 										<td>bonc:8080</td>
-										<td><a
-											href="${service.serviceAddr}/${service.proxyPath}"
+										<td><a href="${service.serviceAddr}/${service.proxyPath}"
 											target="_blank">${service.serviceAddr}/${service.proxyPath}</a></td>
 										<td>${service.createDate }</td>
 									</tr>
@@ -242,20 +271,19 @@
 									</tr>
 								</thead>
 								<tbody>
-										<c:forEach items="${portConfigList }" var="portConfig">
-											<tr>
-											   <td>${service.serviceName }</td>
-												<td>${portConfig.containerPort }</td>
-												<td>${portConfig.protocol }</td>
-												<td>${portConfig.mapPort }</td>
-												<td>
-													<a href="${service.serviceAddr}/${service.proxyPath}" target="_blank">
-															${service.serviceAddr}/${service.proxyPath}
-													</a>
-												</td>
-											</tr>
-										</c:forEach>
-<%-- 									<tr>
+									<c:forEach items="${portConfigList }" var="portConfig">
+										<tr>
+											<td>${service.serviceName }</td>
+											<td>${portConfig.containerPort }</td>
+											<td>${portConfig.protocol }</td>
+											<td>${portConfig.mapPort }</td>
+											<td><a
+												href="${service.serviceAddr}/${service.proxyPath}"
+												target="_blank">
+													${service.serviceAddr}/${service.proxyPath} </a></td>
+										</tr>
+									</c:forEach>
+									<%-- 									<tr>
 										<td>${service.serviceName }</td>
 										<td>8080</td>
 										<td>TCP</td>
@@ -271,6 +299,7 @@
 					<div class="monitorInfo hide">
 						<div class="data-analysis"></div>
 					</div>
+					<!-- 日志 -->
 					<div class="containerLog hide" style="min-height: 500px;">
 						<div class="weblogtitle">
 							<div class="pull_left">
@@ -279,31 +308,40 @@
 							</div>
 							<div class="pull_right">
 								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
-								<input id="date_log" type="text" value="" readonly>
+								<input id="date_log1" type="text" value="" readonly>
 								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
-								<i id="datePicker" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i>
+								<i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i>
+								<input type="hidden" id="podName" name="podName" value=""></input>
+								<input type="hidden" id="serviceid" name="serviceid" value=""></input>
 								<!--</div>-->
-								<i id="refreshLog" class="fa fa-refresh margin cursor"
+								<i id="refreshLog1" class="fa fa-refresh margin cursor"
 									data-toggle="tooltip" data-placement="top" title=""
 									data-original-title="刷新日志"></i> <i id="fullScreen"
 									class="fa fa-expand margin cursor" title="满屏"></i>
 							</div>
 						</div>
-						<div id="logList" class="weblog">
-						<c:if test="${logList=='[]' }">
-							<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>
-						</c:if>
-						<c:if test="${logList!='[]' }">
-						<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow:hidden; float:left;"><c:forEach items="${logList}" var="log" >${log}<br></c:forEach>
-						</pre>
-						</c:if>
-							<input id="serviceInstances" type="hidden" value=""> 
+						<div id="containerlogList" class="weblog">
+							 
 						</div>
+						<input id="serviceInstances" type="hidden" value="">
 						<input id="creationTime" type="hidden" value="${service.createDate }">
 					</div>
+					<!-- 历史日志 -->
+					<div class="historycontainerLog hide" style="margin-bottom:30px;">
+						<div class="weblogtitle">
+							<div class="pull_right" style="width:99%">
+								<input id="date_log" type="text" value="" readonly>
+								<i id="datePicker" class="fa fa-calendar margin cursor"
+									serviceid="${service.id }" serviceName = "${service.serviceName }"></i>
+								<i id="refreshLog" class="fa fa-refresh margin cursor"
+									data-toggle="tooltip" data-placement="top" title=""
+									data-original-title="刷新日志"></i> 
+							</div>
+						</div>
+						<div id="hisLogList"><div>
+					</div>
 					<div class="containerEvent hide" style="min-height: 500px;">
-						<div class="containerEvent"
-							style="min-height: 500px; display: block;">
+						<div class="containerEvent" style="min-height: 500px; display: block;">
 							<div class="event">
 								<div class="event-line">
 									<div class="event-status success">
@@ -313,7 +351,7 @@
 										<div class="time-line-reason event-title live">
 											<div class="title-name success">创建成功</div>
 											<div class="time-line-time">
-												<div class="event-sign live">
+												<div class="event-sign">
 													<i class="fa fa-angle-right fa_caret"></i>
 												</div>
 												<div class="datetimes">${service.createDate }</div>
@@ -332,6 +370,24 @@
 					</div>
 				</div>
 			</div>
+			
+			         <!-- 命令操作 -->
+                    <div class="containerLog hide" id = "containerexec" style="min-height: 500px;">
+                        <div class="weblogtitle">
+                            <div class="pull_right" style="width:99%">
+                                <input id="execText" type="text" value="" style="width:90%;background: none;border:0;text-align: right;">
+                                <a id="execcmd" >运行</a>
+                                <input type="hidden" id="podName" name="podName" value=""></input>
+                                <input type="hidden" id="serviceid" name="serviceid" value=""></input>
+                            </div>
+                        </div>
+                        <div id="containerlogList2" class="weblog">
+                             
+                        </div>
+                        <input id="serviceInstances2" type="hidden" value="">
+                        <input id="creationTime2" type="hidden" value="${service.createDate }">
+                    </div>
+			
 		</article>
 	</div>
 </body>

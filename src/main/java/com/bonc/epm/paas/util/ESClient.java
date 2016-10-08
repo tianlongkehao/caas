@@ -19,6 +19,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.junit.After;
 import org.junit.Before;
@@ -247,4 +248,203 @@ public class ESClient {
       //esc.delete();
       esc.closeESClient();
     }*/
+    
+    /**
+     * 
+     * Description: <br>
+     * 根据serviceName nameSpace和时间范围查找日志内容
+     * @param type String
+     * @param serviceName String  
+     * @param nameSpace String  
+     * @param from String  
+     * @param to String  
+     * @return log List<String>
+     * @see
+     */
+    @SuppressWarnings("rawtypes")
+	public List<String> searchLogsByService(String type,String serviceName,String nameSpace,String from,String to){
+        List<String> logList = new ArrayList<String>();
+        try {
+            SearchRequestBuilder searchRequestBuilder = null;
+            searchRequestBuilder = client.prepareSearch()
+                    .setTypes(type)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+//                    .setQuery(QueryBuilders.matchPhraseQuery("kubernetes.pod_name", pod_name))
+					.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("kubernetes.namespace_name", nameSpace))
+							.must(QueryBuilders.matchQuery("kubernetes.labels.app", serviceName)))
+					.setPostFilter(QueryBuilders.rangeQuery("@timestamp").from(from).to(to))
+//					.addSort("kubernetes.pod_id", SortOrder.ASC)
+//					.addSort("docker.container_id", SortOrder.ASC)
+					.addSort("@timestamp", SortOrder.ASC)
+					.setFrom(0)
+					.setSize(5000)
+                    .setExplain(true);
+            
+            SearchResponse response = searchRequestBuilder.execute().actionGet();
+            SearchHit[] hits = response.getHits().getHits();
+            
+            String string = "";
+            
+            String current_pod_id ="";
+            String current_pod_name ="";
+            String current_container_id ="";
+            String current_container_name ="";
+            
+            for (int i = 0; i < hits.length; i++) {
+                SearchHit hit = hits[i];
+                Map result = hit.getSource();
+                if (current_pod_id.equals(((Map)result.get("kubernetes")).get("pod_id"))
+                		&& current_container_id.equals(((Map)result.get("docker")).get("container_id"))) {
+                	string = string + "["+current_pod_name+"]["+current_container_name+"]"+result.get("log");
+				} else {
+					current_pod_id = (String) ((Map)result.get("kubernetes")).get("pod_id");
+					current_pod_name = (String) ((Map)result.get("kubernetes")).get("pod_name");
+					current_container_id =(String) ((Map)result.get("docker")).get("container_id");
+					current_container_name = (String) ((Map)result.get("kubernetes")).get("container_name");
+					if (!string.equals("")) {
+						string = string.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+						logList.add(string);
+					}
+					string = new String() + result.get("log");
+				}
+            }
+            string = string.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+            logList.add(string);
+        } 
+        catch (IndexNotFoundException infe) {
+            LOG.error("搜索日志的Index出错：-" + infe.getMessage());
+        }
+        catch (Exception e) {
+            LOG.error("serviceName{"+serviceName+"}nameSpace{"+nameSpace+"}日志出错！错误信息：-" + e.getMessage());
+        }
+		
+        LOG.debug("start*******************************************************************************");
+        LOG.debug("serviceName{"+serviceName+"}nameSpace{"+nameSpace+"}日志:"+logList.toString());
+        LOG.debug("end*********************************************************************************");
+        return logList;
+    }
+ 
+    /**
+     * 
+     * Description: <br>
+     * 根据serviceName nameSpace和时间范围查找日志内容
+     * @param type String
+     * @param serviceName String  
+     * @param nameSpace String  
+     * @param from String  
+     * @param to String  
+     * @return log List<String>
+     * @see
+     */
+    @SuppressWarnings("rawtypes")
+	public List<String> searchServiceLastLogs(String type,String serviceName,String nameSpace){
+        List<String> logList = new ArrayList<String>();
+        try {
+            SearchRequestBuilder searchRequestBuilder = null;
+            searchRequestBuilder = client.prepareSearch()
+                    .setTypes(type)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+					.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("kubernetes.namespace_name", nameSpace))
+							.must(QueryBuilders.matchQuery("kubernetes.labels.app", serviceName)))
+					.addSort("@timestamp", SortOrder.DESC)
+					.setFrom(0)
+					.setSize(1000)
+                    .setExplain(true);
+            
+            SearchResponse response = searchRequestBuilder.execute().actionGet();
+            SearchHit[] hits = response.getHits().getHits();
+            
+            String string = "";
+            
+            String current_pod_id ="";
+            String current_pod_name ="";
+            String current_container_id ="";
+            String current_container_name ="";
+            
+            for (int i = hits.length - 1; i > -1 ; i--) {
+                SearchHit hit = hits[i];
+                Map result = hit.getSource();
+                if (current_pod_id.equals(((Map)result.get("kubernetes")).get("pod_id"))
+                		&& current_container_id.equals(((Map)result.get("docker")).get("container_id"))) {
+                	string = string + "["+current_pod_name+"]["+current_container_name+"]"+result.get("log");
+				} else {
+					current_pod_id = (String) ((Map)result.get("kubernetes")).get("pod_id");
+					current_pod_name = (String) ((Map)result.get("kubernetes")).get("pod_name");
+					current_container_id =(String) ((Map)result.get("docker")).get("container_id");
+					current_container_name = (String) ((Map)result.get("kubernetes")).get("container_name");
+					if (!string.equals("")) {
+						string = string.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+						logList.add(string);
+					}
+					string = new String() + result.get("log");
+				}
+            }
+            string = string.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+            logList.add(string);
+        } 
+        catch (IndexNotFoundException infe) {
+            LOG.error("搜索日志的Index出错：-" + infe.getMessage());
+        }
+        catch (Exception e) {
+            LOG.error("serviceName{"+serviceName+"}nameSpace{"+nameSpace+"}日志出错！错误信息：-" + e.getMessage());
+        }
+		
+        LOG.debug("start*******************************************************************************");
+        LOG.debug("serviceName{"+serviceName+"}nameSpace{"+nameSpace+"}日志:"+logList.toString());
+        LOG.debug("end*********************************************************************************");
+        return logList;
+    }
+
+    /**
+     * 
+     * Description: <br>
+     * 根据serviceName nameSpace和时间范围查找日志内容
+     * @param type String
+     * @param serviceName String  
+     * @param nameSpace String  
+     * @param from String  
+     * @param to String  
+     * @return log List<String>
+     * @see
+     */
+    @SuppressWarnings("rawtypes")
+	public String searchPodLastLogs(String type,String podName,String containerName){
+        String string ="";
+        try {
+            SearchRequestBuilder searchRequestBuilder = null;
+            searchRequestBuilder = client.prepareSearch()
+                    .setTypes(type)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+					.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("kubernetes.pod_name", podName))
+							.must(QueryBuilders.matchQuery("kubernetes.container_name", containerName)))
+					.addSort("@timestamp", SortOrder.DESC)
+					.setFrom(0)
+					.setSize(1000)
+                    .setExplain(true);
+            
+            SearchResponse response = searchRequestBuilder.execute().actionGet();
+            SearchHit[] hits = response.getHits().getHits();
+            
+            for (int i = hits.length - 1; i > -1 ; i--) {
+                SearchHit hit = hits[i];
+                Map result = hit.getSource();			
+                string = string + result.get("log");
+            }
+        } 
+        catch (IndexNotFoundException infe) {
+            LOG.error("搜索日志的Index出错：-" + infe.getMessage());
+        }
+        catch (Exception e) {
+            LOG.error("podName{"+podName+"}containerName{"+containerName+"}日志出错！错误信息：-" + e.getMessage());
+        }
+		
+        LOG.debug("start*******************************************************************************");
+        LOG.debug("podName{"+podName+"}containerName{"+containerName+"}日志:"+ string);
+        LOG.debug("end*********************************************************************************");
+        return string;
+    }
+
+    
+    
+    
 }
