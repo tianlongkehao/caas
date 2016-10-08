@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
+import com.bonc.epm.paas.ApplicationFilterConfiguration;
+
 /**
  * Enables CAS Java client Servlet Filters configuration facility.
  * To be used together with {@link org.springframework.context.annotation.Configuration Configuration}
@@ -28,7 +30,7 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import(CasClientConfiguration.class)
+@Import(ApplicationFilterConfiguration.class)
 public @interface EnableCasClient {
 
     ValidationType validationType() default ValidationType.CAS;
