@@ -357,15 +357,10 @@ public class StorageController {
                 cephCon.connectCephFS();
             }
             catch (Exception e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
             try {
-//                SshConnect.connect(cephController.getUsername(), cephController.getPassword(), cephController.getUrl(),
-//                        22);
-//                SshConnect.exec("cd " + cephController.getMountpoint(), 1000);
-//                SshConnect.exec(cephController.getMountexec(), 1000);
-                CmdUtil.exeCmd(cephController.getMountexec(), cephController.getMountpoint());
+                CmdUtil.exeCmd(cephController.getMountexec(), cephController.getCephDir());
                 map.put("status", "200");
             } 
             catch (IOException  e) {
