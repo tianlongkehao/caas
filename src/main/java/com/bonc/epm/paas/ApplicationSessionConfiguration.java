@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * ApplicationSessionConfiguration
+ * springboot配置应用sesionListener
  * @author ke_wang
  * @version 2016年9月30日
  * @see ApplicationSessionConfiguration

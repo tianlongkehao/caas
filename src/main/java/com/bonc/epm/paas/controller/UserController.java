@@ -899,7 +899,7 @@ public class UserController {
      * @return boolean
      * @see
      */
-    private boolean createCeph(User user) {
+    public boolean createCeph(User user) {
         try {
             CephController ceph = new CephController();
             ceph.connectCephFS();
@@ -922,7 +922,7 @@ public class UserController {
      * @return boolean 
      * @see KubernetesAPIClientInterface Resource
      */
-    private boolean createQuota(User user, Resource resource, KubernetesAPIClientInterface client) {
+    public boolean createQuota(User user, Resource resource, KubernetesAPIClientInterface client) {
         try {
             Map<String, String> map = new HashMap<String, String>();
             map.put("memory", resource.getRam() + "G"); // 内存
@@ -958,7 +958,7 @@ public class UserController {
      * @return boolean
      * @see
      */
-    private boolean createNsAndSec(User user, Namespace namespace,KubernetesAPIClientInterface client) {
+    public boolean createNsAndSec(User user, Namespace namespace,KubernetesAPIClientInterface client) {
         try {
             namespace = client.createNamespace(namespace);
             if (namespace == null) {

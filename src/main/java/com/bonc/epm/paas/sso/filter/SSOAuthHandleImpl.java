@@ -3,6 +3,7 @@ package com.bonc.epm.paas.sso.filter;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,19 +11,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.validation.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.bonc.epm.paas.SpringApplicationContext;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.controller.CephController;
+import com.bonc.epm.paas.controller.UserController;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -40,8 +39,7 @@ import com.bonc.epm.paas.util.WebClientUtil;
  * @author song
  */
 @Component
-@Configuration
-public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
+public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
     /**
      * 输出日志
      */
@@ -58,7 +56,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
      * AUTH_FAILURE_MSG_NO_RESOURCE
      */
     //private static final String AUTH_FAILURE_NO_RESOURCE = "您尚未分配部署资源，请联系管理员！";
-
+    
     /**
      * configProps
      */
@@ -76,15 +74,15 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
      */
     @Autowired
     private UserDao userDao;
-
     /**
      * resManUrl
      */
     @Value("${resourceMmanage.address}")
     private String resManUrl;
-
-    @Override
+    
+    @Override   
     public boolean onSuccess(HttpServletRequest request, HttpServletResponse response, String loginId) {
+        SpringApplicationContext.CONTEXT.getAutowireCapableBeanFactory().autowireBean(this);
         if (configProps.getEnable()) {
             if ((null != request) && (null != loginId) && (loginId.trim().length() > 0)) {
                 User currPaasUser = CurrentUserUtils.getInstance().getUser();
@@ -118,24 +116,24 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
                 }
                 
                 try {
-                    // 更新租户
-                    User user = saveUser(assertion, namespace);
+                    // 同步统一平台租户用户到本地
+                    User user = fillUserInfo(assertion, namespace);
                     // 统一平台的userId
                     if (null != attributes.get("userId")) {
                          //是租户而且不是管理员
                         if ("1".equals(tenantAdmin) && !"1".equals(attributes.get("userId").toString().trim())) {
-                            createNamespace(namespace); // 创建命名空间
-                            createQuota(tenantId, namespace); // 创建资源
-                            createCeph(namespace); // 创建ceph
+                            if (createNamespace(namespace)) { // 创建命名空间
+                                createQuota(tenantId, namespace); // 创建资源
+                                createCeph(namespace); // 创建ceph
+                            }
                         }
                     }
-                    
-                    CurrentUserUtils.getInstance().setUser(user);
+                    userDao.save(user);
                     CurrentUserUtils.getInstance().setUser(user);
                     CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
-                    request.getSession().setAttribute("cur_user", user);
-                    request.getSession().setAttribute("cas_enable", configProps.getEnable()); 
-                    request.getSession().setAttribute("ssoConfig", configProps);                  
+                    //request.getSession().setAttribute("cur_user", user);
+                    //request.getSession().setAttribute("cas_enable", configProps.getEnable()); 
+                    //request.getSession().setAttribute("ssoConfig", configProps);
                 }
                 catch (Exception e) {
                     LOG.error(e.getMessage());
@@ -143,8 +141,9 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
                 }
                 return true;
             }
+            return false;
         }
-        return false;
+        return true;
     }
     
     /**
@@ -162,6 +161,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
         }
         catch (Exception e) {
             LOG.error("create ceph error" +e.getMessage());
+            kubernetesClientService.getClient("").deleteNamespace(namespace);
             e.printStackTrace();
         }
     }
@@ -176,7 +176,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
      * @return user User
      * @see Assertion
      */
-    private User saveUser(Assertion assertion, String namespace) throws Exception{
+    private User fillUserInfo(Assertion assertion, String namespace) {
         String loginId = assertion.getPrincipal().getName();
         User user = userDao.findByUserName(loginId);
         if (null == user) {
@@ -213,7 +213,6 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
                 user.setUser_autority(UserConstant.AUTORITY_USER);
             }
         }
-        userDao.save(user);
         return user;
     }
     
@@ -221,30 +220,35 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
      * 
      * Description:
      * 创建nameSpace
-     * @param tenantId 
+     * @param namespace 
+     * @return boolean 
      * @throws ServiceException  
      */
-    private void createNamespace(String tenantId) throws ServiceException{
+    private boolean createNamespace(String namespace) throws ServiceException{
         // 以用户名(登陆帐号)为name，创建client ??
         KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
         // 是否创建nameSpace
         try {
-            client.getNamespace(tenantId);
+            client.getNamespace(namespace);
         } 
         catch (KubernetesClientException e) {
             // 以用户名(登陆帐号)为name，为client创建nameSpace
-            Namespace namespace = kubernetesClientService.generateSimpleNamespace(tenantId);
-            namespace = client.createNamespace(namespace);
-            if (namespace == null) {
-                LOG.error("Create a new Namespace:namespace["+namespace+"]");
-            }else {
-                LOG.info("create namespace:" + JSON.toJSONString(namespace));
+            Namespace nSpace = kubernetesClientService.generateSimpleNamespace(namespace);
+            nSpace = client.createNamespace(nSpace);
+            if (nSpace == null) {
+                client.deleteNamespace(namespace);
+                LOG.error("Create a new Namespace:namespace["+nSpace+"]");
+                return false;
+            }
+            else {
+                LOG.info("create namespace:" + JSON.toJSONString(nSpace));
             }
         }
         catch (RuntimeException e) {
             LOG.error("连接kubernetesAPI超时！" + e);
             throw new ServiceException();
         }
+        return true;
     }
 
     /**
@@ -286,6 +290,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
         }
         catch (Exception e) {
             LOG.error("获取能力平台租户资源出错！" + e.getMessage());
+            kubernetesClientService.getClient("").deleteNamespace(namespace);
             e.printStackTrace();
             throw new Exception();
         }
@@ -330,7 +335,8 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle {
                 openQuota = client.createResourceQuota(openQuota); // 创建quota
                 if (openQuota != null) {
                     LOG.info("create quota:" + JSON.toJSONString(openQuota));
-                } else {
+                } 
+                else {
                     LOG.info("create quota failed: namespace=" + namespace + "hard=" + openMap.toString());
                 }
             } 
