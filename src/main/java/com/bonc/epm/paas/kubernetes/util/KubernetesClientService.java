@@ -318,7 +318,7 @@ public class KubernetesClientService {
 	public ReplicationController generateSimpleReplicationController(String name,int replicas,
 	                                                                     String image,List<PortConfig> portConfigs,
 	                                                                         Double cpu,String ram,String nginxObj, 
-	                                                                             String servicePath, String proxyPath,
+	                                                                             String servicePath, String proxyPath,String checkPath,
 	                                                                                 List<EnvVariable> envVariables, List<String> command, List<String> args){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
@@ -334,6 +334,7 @@ public class KubernetesClientService {
 		labels.put("app", name);
 		labels.put("servicePath", servicePath);
 		labels.put("proxyPath", proxyPath);
+		labels.put("healthcheck", checkPath);
 		if (StringUtils.isNotBlank(nginxObj)) {
 			String[] proxyArray = nginxObj.split(",");
 			for (int i = 0; i < proxyArray.length;i++) {

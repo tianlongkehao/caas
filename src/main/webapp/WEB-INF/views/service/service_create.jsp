@@ -105,6 +105,17 @@
 												type="text" value="" class="in_style"
 												id="startCommand_input" name="startCommand"
 												style="margin-left: 150px"></li>
+											<!-- 检查服务状态 -->
+                    <li id="service_stat_check"><span class="ve_top">检查状态：</span>
+                      <span class="update-mi"> <input type="checkbox"
+                        id="checkSerStatus"> <label for="checkSerStatus"><font
+                          color="blue">检查服务状态</font></label>
+                    </span></li>
+                    <li class="line-h-3" id="checkSerStatus_li"><input
+                      type="text" value="" class="in_style"
+                      id="checkSerStatus_input" name="checkPath"
+                      style="margin-left: 150px"></li>		
+                      										
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
 													color="red">*</font></span>
 												<input type="text" value="" class="in_style" id="webPath" name="servicePath">

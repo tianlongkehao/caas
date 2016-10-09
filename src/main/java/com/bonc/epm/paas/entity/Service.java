@@ -53,6 +53,10 @@ public class Service {
 	 */
 	private String imgSet;
 	/**
+	 * 检查服务状态填写的路径
+	 */
+	private String checkPath;
+	/**
 	 * 服务地址
 	 */
 	private String serviceAddr;
@@ -254,7 +258,15 @@ public class Service {
 		this.imgSet = imgSet;
 	}
 
-	public String getServiceAddr() {
+	public String getCheckPath() {
+        return checkPath;
+    }
+
+    public void setCheckPath(String checkPath) {
+        this.checkPath = checkPath;
+    }
+
+    public String getServiceAddr() {
 		return serviceAddr;
 	}
 

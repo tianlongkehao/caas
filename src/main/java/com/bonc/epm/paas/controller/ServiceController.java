@@ -772,7 +772,7 @@ public class ServiceController {
                 }
                 controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 						service.getInstanceNum(), registryImgName, portConfigs, service.getCpuNum(), service.getRam(),
-						service.getProxyZone(),service.getServicePath(),service.getProxyPath(),envVariables,command,args);
+						service.getProxyZone(),service.getServicePath(),service.getProxyPath(),service.getCheckPath(),envVariables,command,args);
 				// 给controller设置卷组挂载的信息
                 System.out.println("给rc绑定vol");
                 if (!"0".equals(service.getVolName())) {
