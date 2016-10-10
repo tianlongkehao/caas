@@ -44,22 +44,13 @@
 											<i class="fa fa-plus"></i>
 										</a>
 										<a id="startContainer" class="no-drop" href="javascript:createContainer()" title="启动">
-											<i class="fa fa-play"></i>
+											<i id = "startContainerFa" class="fa fa-play self_a"></i>
 										</a> 
 										<a id="stopContainer" class="no-drop" href="javascript:stopContainer()" title="停止"> 
-											<i class="fa fa-power-off"></i>
+											<i id = "stopContainerFa" class="fa fa-power-off self_a"></i>
 										</a>
-										<a id="scaleCluster" class="no-drop" href="javascript:upGradeContainer()" title="弹性伸缩">
-											<i class="fa fa-arrows"></i>
-										</a> 
-										<a id="upgradeCluster" class="no-drop" href="javascript:versionUpgrade()" title="版本升级">
-											<i class="fa fa-arrow-up"></i>
-										</a> 
-										<a id="changeConfiguration" class="no-drop" href="javascript:changeContainerConf();" title="更改配置">
-											<i class="fa fa-cog"></i>
-										</a> 
 										<a id="deleteButton" class="no-drop" href="javascript:delContainer()" title="删除">
-											<i class="fa fa-trash"></i>
+											<i id = "deleteButtonFa" class="fa fa-trash self_a"></i>
 										</a>
 									</div>
 								</div>
@@ -158,54 +149,59 @@
 													</td>
 													<td style="width: 23%">
 														<!-- 未运行 -->
-														<c:if test="${service.status == 1}">
-															<a id="${service.id}_start" class="a-live startContainer_a "
-																href="javascript:oneStartContainer(${service.id},${service.status})"
-																style="margin-left: 5px" title="启动">
-																<i class="fa fa-play"></i>
-															</a>
-															<a id="${service.id}_stop" class="no-drop stopContainer_a "
-																href="javascript:oneStopContainer(${service.id},${service.status})"
-																style="margin-left: 5px" title="停止"> 
-																<i class="fa fa-power-off self_a"></i>
-															</a>
-														</c:if>
-														<!-- 运行中 -->
-														<c:if test="${service.status == 3}">
-															<a id="${service.id}_start" class="no-drop startContainer_a"
+													<c:choose>
+													    <c:when test="${service.status == 3}">
+															<a id="${service.id}_start" class="no-drop startContainer_a "
 																href="javascript:oneStartContainer(${service.id},${service.status})"
 																style="margin-left: 5px" title="启动">
 																<i class="fa fa-play self_a"></i>
 															</a>
+														</c:when>
+														<c:otherwise>
+														    <a id="${service.id}_start" class="a-live startContainer_a "
+                                                                href="javascript:oneStartContainer(${service.id},${service.status})"
+                                                                style="margin-left: 5px" title="启动">
+														        <i class="fa fa-play"></i>
+                                                            </a>
+														 </c:otherwise>
+													</c:choose>
+                                                    <c:choose>
+                                                        <c:when test="${service.status == 3}">
 															<a id="${service.id}_stop" class="a-live stopContainer_a "
 																href="javascript:oneStopContainer(${service.id},${service.status})"
-																style="margin-left: 5px" title="停止"> <i
-																class="fa fa-power-off"></i>
+																style="margin-left: 5px" title="停止"> 
+	                                                            <i class="fa fa-power-off"></i>
 															</a>
-														</c:if>
-														<!-- 已停止 -->
-														<c:if test="${service.status == 4}">
-															<a id="${service.id}_start" class="a-live startContainer_a"
-																href="javascript:oneStartContainer(${service.id},${service.status})"
-																style="margin-left: 5px" title="启动">
-																<i class="fa fa-play"></i>
-															</a>
-															<a id="${service.id}_stop" class="no-drop stopContainer_a"
-																href="javascript:oneStopContainer(${service.id},${service.status})"
-																style="margin-left: 5px" title="停止"> <i
-																class="fa fa-power-off self_a"></i>
-															</a>
-														</c:if>
+                                                        </c:when>
+                                                        <c:otherwise>
+	                                                        <a id="${service.id}_stop" class="no-drop stopContainer_a "
+                                                                href="javascript:oneStopContainer(${service.id},${service.status})"
+                                                                style="margin-left: 5px" title="停止">
+                                                                <i class="fa fa-power-off self_a"></i>
+	                                                        </a>
+                                                        </c:otherwise>
+                                                    </c:choose>
 														<a id="${service.id}_scaleCluster" class="a-live scaleCluster_a " 
 															href="javascript:oneUpGradeContainer(${service.id },'${service.serviceName }',${service.instanceNum })" title="弹性伸缩"
 															style="margin-left: 5px">
 																<i class="fa fa-arrows"></i>
 														</a> 
-														<a id="${service.id}_upgradeCluster" class="a-live upgradeCluster_a " 
-															href="javascript:oneVersionUpgrade(${service.id },'${service.serviceName }','${service.imgName }')" title="版本升级"
-															style="margin-left: 5px">
-																<i class="fa fa-arrow-up"></i>
-														</a> 
+									                   <c:choose>
+                                                          <c:when test="${service.status == 3}">
+															<a id="${service.id}_upgradeCluster" class="a-live upgradeCluster_a " 
+																href="javascript:oneVersionUpgrade(${service.id },'${service.serviceName }','${service.imgName }')" title="版本升级"
+																style="margin-left: 5px">
+	                                                            <i class="fa fa-arrow-up"></i>
+															</a> 
+                                                          </c:when>
+                                                          <c:otherwise>
+                                                             <a id="${service.id}_upgradeCluster" class="no-drop upgradeCluster_a " 
+                                                                href="javascript:oneVersionUpgrade(${service.id },'${service.serviceName }','${service.imgName }')" title="版本升级"
+                                                                style="margin-left: 5px">
+                                                                <i class="fa fa-arrow-up self_a"></i>
+                                                            </a>    
+                                                          </c:otherwise>
+                                                       </c:choose>
 														<a id="${service.id}_changeConfiguration" class="a-live changeConfiguration_a " 
 															href="javascript:oneChangeContainerConf(${service.id },'${service.serviceName }',${service.cpuNum },${service.ram });" title="更改配置"
 															style="margin-left: 5px">
@@ -282,28 +278,28 @@
 				</li>
 			</ul>
 		</div>
+		<!-- 更改配置 -->
 		<div id="changeConf" style="display: none">
 			<ul class="popWin">
-				<li class="line-h-3"><span>服务名称：</span> <input class=""
-					id="confServiceName" disabled="disabled"
-					style="margin-top: 5px; width: 165px;" type="text" value="">
-				</li>
-				<li class="line-h-3">
+				<li class="line-h-3 c-ser">
 					<div class="param-set">
-						<span>CPU数量：</span> <input type="number" value=""
-							style="margin-top: 10px; width: 165px;" min="${cpumin }"
-							max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
-							id="confCpu" name="confCpu"> <span class="unit">个</span>
-						<!-- <span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" ></label></span> -->
+						<span class="c-title">服务名称：</span> <input class="c-con"
+						id="confServiceName" disabled="disabled" type="text" value="">
 					</div>
 				</li>
-				<li class="line-h-3">
+				<li class="line-h-3 c-ser">
 					<div class="param-set">
-						<span>内存：</span> <input id="confRamSlider"
-							data-slider-id='confRamSliderData' type="text"
-							data-slider-min="${memorymin }" data-slider-max="${memorymax }"
-							data-slider-step="1" /> <input type="text" left="" value=""
-							id="confRamSlider_input" name="confRam"> <span>M</span>
+						<span class="c-title">CPU数量：</span> <input type="number" value="" class="c-con"
+							min="${cpumin }"
+							max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
+							id="confCpu" name="confCpu"> <span class="unit">个</span>
+						<span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" >${leftcpu }</label></span>
+					</div>
+				</li>
+				<li class="line-h-3 c-ser">
+					<div class="param-set">
+						<span class="c-title">内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;存：</span>  <input type="text" left="" value="" class="c-con"
+							id="confRamSlider_input" name="confRam" min="${memorymin }" max="${memorymax }"> <span class="unit">M</span>
 						<span style="color: grey;margin-left: 50px;">当前可用ram：<label id="leftram" >${leftmemory * 1024 }</label>M</span>
 					</div>
 				</li>

@@ -64,17 +64,28 @@
 							<li><a class="INSTANCES">容器实例</a></li>
 							<li><a class="PORTS">端口</a></li>
 							<li class="dropdown">
-								<a class="LOG dropdown-toggle" id="dropdown-log"
+								<a class="dropdown-toggle" id="dropdown-log"
 									data-toggle="dropdown"> 日志 <b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podNameList}" var="pod" >
-								 		<li><a podName="${pod.podName }" serviceid="${service.id }" onclick="dropdownLog(this)">${pod.podName }</a></li>
+								 		<li class="LOG"><a podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)">${pod.podName }</a></li>
 								 	</c:forEach>
 									
 								</ul>
 							</li>
-							<li><a class="historyLOG">历史日志</a></li>
+<%-- 							<li><a class="historyLOG">历史日志</a></li>
+							<li class="dropdown">
+                                <a class="execCommand dropdown-toggle" id="dropdown-log"
+                                    data-toggle="dropdown"> 命令操作 <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <c:forEach items="${podNameList}" var="pod" >
+                                        <li><a class="podName" podName="${pod.podName }" serviceid="${service.id }" namespace = "${namespace }" value="2" >${pod.podName }</a></li>
+                                    </c:forEach>
+                                </ul>
+                            </li>
+--%>
 						</ul>
 					</div>
 					<div class="containerInfo">
@@ -291,6 +302,8 @@
 					</div>
 					<!-- 日志 -->
 					<div class="containerLog hide" style="min-height: 500px;">
+					<!-- <li ></li> -->
+					<!-- <li ><a id="getCurrentPodlogs" href="javascript:clearLog()">获取实时日志</a></li> -->
 						<div class="weblogtitle">
 							<div class="pull_left">
 								<span class="circle red"></span> <span class="circle blue"></span>
@@ -300,14 +313,13 @@
 								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
 								<input id="date_log1" type="text" value="" readonly>
 								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
-								<i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i>
-								<input type="hidden" id="podName" name=""podName"" value=""></input>
-								<input type="hidden" id="serviceid" name=""serviceid"" value=""></input>
-								<!--</div>-->
-								<i id="refreshLog1" class="fa fa-refresh margin cursor"
-									data-toggle="tooltip" data-placement="top" title=""
-									data-original-title="刷新日志"></i> <i id="fullScreen"
-									class="fa fa-expand margin cursor" title="满屏"></i>
+								<%-- <i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i> --%>
+								<a id="getPodlogFile" href="" style="color:#2FBA66"><i id="download" class="fa fa-download margin cursor" ></i></a>
+								<input type="hidden" id="podName" name="podName" value=""></input>
+ 								<!--<input type="hidden" id="serviceid" name="serviceid" value=""></input> -->
+									<!--</div>-->
+								<i id="refreshLog1" class="fa fa-refresh margin cursor" title="获取实时日志" ></i>
+								<i id="fullScreen" class="fa fa-expand margin cursor" title="满屏"></i>
 							</div>
 						</div>
 						<div id="containerlogList" class="weblog">
@@ -316,7 +328,7 @@
 						<input id="serviceInstances" type="hidden" value="">
 						<input id="creationTime" type="hidden" value="${service.createDate }">
 					</div>
-					<!-- 历史日志 -->
+<%-- 					<!-- 历史日志 -->
 					<div class="historycontainerLog hide" style="margin-bottom:30px;">
 						<div class="weblogtitle">
 							<div class="pull_right" style="width:99%">
@@ -329,10 +341,9 @@
 							</div>
 						</div>
 						<div id="hisLogList"><div>
-					</div>
+					</div> --%>
 					<div class="containerEvent hide" style="min-height: 500px;">
-						<div class="containerEvent"
-							style="min-height: 500px; display: block;">
+						<div class="containerEvent" style="min-height: 500px; display: block;">
 							<div class="event">
 								<div class="event-line">
 									<div class="event-status success">
@@ -361,6 +372,24 @@
 					</div>
 				</div>
 			</div>
+			
+<%-- 			         <!-- 命令操作 -->
+                    <div class="containerLog hide" id = "containerexec" style="min-height: 500px;">
+                        <div class="weblogtitle">
+                            <div class="pull_right" style="width:99%">
+                                <input id="execText" type="text" value="" style="width:90%;background: none;border:0;text-align: right;">
+                                <a id="execcmd" >运行</a>
+                                <input type="hidden" id="podName" name="podName" value=""></input>
+                                <input type="hidden" id="serviceid" name="serviceid" value=""></input>
+                            </div>
+                        </div>
+                        <div id="containerlogList2" class="weblog">
+                             
+                        </div>
+                        <input id="serviceInstances2" type="hidden" value="">
+                        <input id="creationTime2" type="hidden" value="${service.createDate }">
+                    </div>
+ --%>			
 		</article>
 	</div>
 </body>

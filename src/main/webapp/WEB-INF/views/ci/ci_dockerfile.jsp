@@ -86,7 +86,7 @@
 											style="cursor: pointer">另存为模板</span>
 									</div>
 
-									<div class="form-group col-md-12">
+									<div class="form-group col-md-12" id="dockerFiles">
 										<textarea id="dockerFile" name="dockerFile"></textarea>
 									</div>
 								</div>
