@@ -1,145 +1,146 @@
 $(document).ready(function(){
-    $(".baseInfo>ul>li>a").click(function(){
+	$(".baseInfo>ul>li>a").click(function(){
+	
+	    $(".baseInfo>ul>li>a").removeClass("btn-prim");
+	    $(this).addClass("btn-prim");
+	});
+	
+	$(".BASE").click(function(){
+	
+	    $(".contentMain>div:not('.baseInfo')").addClass("hide");
+	    $(".containerInfo").removeClass("hide");
+	});
+	
+	
+	$(".INSTANCES").click(function(){
+	
+	    $(".contentMain>div:not('.baseInfo')").addClass("hide");
+	    $(".containerInstances").removeClass("hide");
+	});
+	
+	
+	$(".DOMAIN").click(function(){
+	
+	    $(".contentMain>div:not('.baseInfo')").addClass("hide");
+	    $(".bindDomain").removeClass("hide");
+	});
+	
+	
+	$(".PORTS").click(function(){
+	
+	    $(".contentMain>div:not('.baseInfo')").addClass("hide");
+	    $(".portMapping").removeClass("hide");
+	});
+	
+	
+	$(".MONITOR").click(function(){
+	
+	    $(".contentMain>div:not('.baseInfo')").addClass("hide");
+	    $(".monitorInfo").removeClass("hide");
+	});
+	
+	$(".LOG").click(function(){
+	
+	    $(".contentMain>div:not('.baseInfo')").addClass("hide");
+	    $(".containerLog").removeClass("hide");
+	});
+	
+	$(".historyLOG").click(function(){
+	
+	    $(".contentMain>div:not('.baseInfo')").addClass("hide");
+	    $(".historycontainerLog").removeClass("hide");
+	});
+	
+	
+	$(".EVENT").click(function(){
+	
+	    $(".contentMain>div:not('.baseInfo')").addClass("hide");
+	    $(".containerEvent").removeClass("hide");
+	});
+	
+	//    	setInterval("dropdownLog()",10000);
+	//getServiceLogs();
+	
+	//    $('#datePicker').click(function(event) {
+	//        /* Act on the event */
+	//        laydate({
+	//          elem: '#date_log',
+	//          // event: 'focus',
+	//          issure: true, // 是否显示确认
+	//          istime: true,
+	//          format: 'YYYY-MM-DDThh:mm:ss',
+	////          min: $('#creationTime').val(),
+	////          max: laydate.now(+0),
+	//          zIndex: 99999999, //css z-index
+	//          choose: function(dates){ //选择好日期的回调
+	////            logPage = 1;
+	//            getServiceLogs();
+	//          }
+	//        });
+	//      });
+	//    $('#datePicker1').click(function(event) {
+	//        /* Act on the event */
+	//        laydate({
+	//          elem: '#date_log1',
+	//          // event: 'focus',
+	//          issure: true, // 是否显示确认
+	//          istime: true,
+	//          format: 'YYYY-MM-DDThh:mm:ss',
+	////          min: $('#creationTime').val(),
+	////          max: laydate.now(+0),
+	//          zIndex: 99999999, //css z-index
+	//          choose: function(dates){ //选择好日期的回调
+	////            logPage = 1;
+	//        	  dropdownLog();
+	//          }
+	//        });
+	//      });
+	
+	$('#refreshLog').click(function (event) {
+		getServiceLogs();
+	});
+	$('#refreshLog1').click(function (event) {
+		clearLog();
+	});
+   
+	$('#fullScreen').click(function () {
+		$('.containerLog').toggleClass('all');
+		var title = $(this).attr('title');
+		if(title == '满屏'){
+			$(this).addClass('fa-compress').attr('title','退出满屏').removeClass('fa-exprend');
+		}else{
+			$(this).addClass('fa-exprend').attr('title','满屏').removeClass('fa-compress');
+		}
+	});
 
-        $(".baseInfo>ul>li>a").removeClass("btn-prim");
-        $(this).addClass("btn-prim");
-    });
-
-    $(".BASE").click(function(){
-
-        $(".contentMain>div:not('.baseInfo')").addClass("hide");
-        $(".containerInfo").removeClass("hide");
-    });
 
 
-    $(".INSTANCES").click(function(){
-
-        $(".contentMain>div:not('.baseInfo')").addClass("hide");
-        $(".containerInstances").removeClass("hide");
-    });
-
-
-    $(".DOMAIN").click(function(){
-
-        $(".contentMain>div:not('.baseInfo')").addClass("hide");
-        $(".bindDomain").removeClass("hide");
-    });
-
-
-    $(".PORTS").click(function(){
-
-        $(".contentMain>div:not('.baseInfo')").addClass("hide");
-        $(".portMapping").removeClass("hide");
-    });
-
-
-    $(".MONITOR").click(function(){
-
-        $(".contentMain>div:not('.baseInfo')").addClass("hide");
-        $(".monitorInfo").removeClass("hide");
-    });
-
-    $(".LOG").click(function(){
-
-        $(".contentMain>div:not('.baseInfo')").addClass("hide");
-        $(".containerLog").removeClass("hide");
-    });
-    
-    $(".historyLOG").click(function(){
-
-        $(".contentMain>div:not('.baseInfo')").addClass("hide");
-        $(".historycontainerLog").removeClass("hide");
-    });
-
-
-    $(".EVENT").click(function(){
-
-        $(".contentMain>div:not('.baseInfo')").addClass("hide");
-        $(".containerEvent").removeClass("hide");
-    });
-    
-//    	setInterval("dropdownLog()",10000);
-    //getServiceLogs();
-    
-//    $('#datePicker').click(function(event) {
-//        /* Act on the event */
-//        laydate({
-//          elem: '#date_log',
-//          // event: 'focus',
-//          issure: true, // 是否显示确认
-//          istime: true,
-//          format: 'YYYY-MM-DDThh:mm:ss',
-////          min: $('#creationTime').val(),
-////          max: laydate.now(+0),
-//          zIndex: 99999999, //css z-index
-//          choose: function(dates){ //选择好日期的回调
-////            logPage = 1;
-//            getServiceLogs();
-//          }
-//        });
-//      });
-//    $('#datePicker1').click(function(event) {
-//        /* Act on the event */
-//        laydate({
-//          elem: '#date_log1',
-//          // event: 'focus',
-//          issure: true, // 是否显示确认
-//          istime: true,
-//          format: 'YYYY-MM-DDThh:mm:ss',
-////          min: $('#creationTime').val(),
-////          max: laydate.now(+0),
-//          zIndex: 99999999, //css z-index
-//          choose: function(dates){ //选择好日期的回调
-////            logPage = 1;
-//        	  dropdownLog();
-//          }
-//        });
-//      });
-    
-      $('#refreshLog').click(function (event) {
-    	  getServiceLogs();
-      });
-      $('#refreshLog1').click(function (event) {
-    	  clearLog();
-      });
-       
-      $('#fullScreen').click(function () {
-        $('.containerLog').toggleClass('all');
-        var title = $(this).attr('title');
-        if(title == '满屏'){
-          $(this).addClass('fa-compress').attr('title','退出满屏').removeClass('fa-exprend');
-        }else{
-          $(this).addClass('fa-exprend').attr('title','满屏').removeClass('fa-compress');
-        }
-      });
-
-
-
-      
-      Date.prototype.Format = function(fmt){
-    	  var o = {
-    			  "M+":this.getUTCMonth()+1,
-    			  "d+":this.getUTCDate(),
-    			  "h+":this.getUTCHours(),
-    			  "m+":this.getUTCMinutes(),
-    			  "s+":this.getUTCSeconds(),
-    			  "q+":Math.floor((this.getUTCMonth()+1)/3),
-    			  "S":this.getUTCMilliseconds()
-    	  };
-    	  if(/(y+)/.test(fmt))
-    		  fmt = fmt.replace(RegExp.$1,(this.getUTCFullYear()+"").substr(4-RegExp.$1.length));
-    	  for(var k in o)
-    		  if(new RegExp("("+k+")").test(fmt))
-    			  fmt =fmt.replace(RegExp.$1,(RegExp.$1.length==1)?(o[k]):(("00"+o[k]).substr((""+o[k]).length)));
-    	  return fmt;
-      }
+  
+	Date.prototype.Format = function(fmt){
+		var o = {
+				"M+":this.getUTCMonth()+1,
+				"d+":this.getUTCDate(),
+				"h+":this.getUTCHours(),
+				"m+":this.getUTCMinutes(),
+				"s+":this.getUTCSeconds(),
+				"q+":Math.floor((this.getUTCMonth()+1)/3),
+				"S":this.getUTCMilliseconds()
+		};
+		if(/(y+)/.test(fmt))
+			fmt = fmt.replace(RegExp.$1,(this.getUTCFullYear()+"").substr(4-RegExp.$1.length));
+		for(var k in o)
+			if(new RegExp("("+k+")").test(fmt))
+				fmt =fmt.replace(RegExp.$1,(RegExp.$1.length==1)?(o[k]):(("00"+o[k]).substr((""+o[k]).length)));
+		return fmt;
+	}
 });
 var sinceTime;
 var interval;
 function clearLog() {
-	  sinceTime = new Date().Format("yyyy-MM-ddThh:mm:ss.000000000Z")
-	  getCurrentPodlogs();
-	  interval = setInterval("getCurrentPodlogs()",5000);
+	sinceTime = new Date().Format("yyyy-MM-ddThh:mm:ss.000000000Z")
+	getCurrentPodlogs();
+	clearInterval(interval);
+	interval = setInterval("getCurrentPodlogs()",5000);
 }
 //下拉列表选中项对应的log
 function dropdownLog(obj){

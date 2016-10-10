@@ -64,12 +64,12 @@
 							<li><a class="INSTANCES">容器实例</a></li>
 							<li><a class="PORTS">端口</a></li>
 							<li class="dropdown">
-								<a class="LOG dropdown-toggle" id="dropdown-log"
+								<a class="dropdown-toggle" id="dropdown-log"
 									data-toggle="dropdown"> 日志 <b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podNameList}" var="pod" >
-								 		<li><a podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)">${pod.podName }</a></li>
+								 		<li class="LOG"><a podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)">${pod.podName }</a></li>
 								 	</c:forEach>
 									
 								</ul>
