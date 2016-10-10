@@ -72,6 +72,11 @@ public class CephController {
     private String mountpoint;
 
     /**
+     * 执行前挂载需要cd到的目录
+     */
+    @Value("${ceph.ssh.cephdir}")
+    private String cephDir;
+    /**
      * CephMount
      */
     private CephMount cephMount;
@@ -455,4 +460,8 @@ public class CephController {
         return mountpoint;
     }
 
+    public String getCephDir() {
+        return cephDir;
+    }
+    
 }

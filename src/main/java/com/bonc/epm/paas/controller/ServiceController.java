@@ -27,6 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -781,7 +784,7 @@ public class ServiceController {
                 }
                 controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 						service.getInstanceNum(), registryImgName, portConfigs, service.getCpuNum(), service.getRam(),
-						service.getProxyZone(),service.getServicePath(),service.getProxyPath(),envVariables,command,args);
+						service.getProxyZone(),service.getServicePath(),service.getProxyPath(),service.getCheckPath(),envVariables,command,args);
 				// 给controller设置卷组挂载的信息
                 System.out.println("给rc绑定vol");
                 if (!"0".equals(service.getVolName())) {
@@ -1228,7 +1231,7 @@ public class ServiceController {
 	public String findImageVersion(String imageName){
         User cUser = CurrentUserUtils.getInstance().getUser();
         Map<String, Object> map = new HashMap<String, Object>();
-        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName);
+        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName, new Sort(new Order(Direction.DESC,"createTime")));
         map.put("data", images);
         return JSON.toJSONString(map);
     }
