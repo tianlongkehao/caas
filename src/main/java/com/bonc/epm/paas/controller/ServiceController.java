@@ -18,6 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -1219,7 +1222,7 @@ public class ServiceController {
 	public String findImageVersion(String imageName){
         User cUser = CurrentUserUtils.getInstance().getUser();
         Map<String, Object> map = new HashMap<String, Object>();
-        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName);
+        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName, new Sort(new Order(Direction.DESC,"createTime")));
         map.put("data", images);
         return JSON.toJSONString(map);
     }
