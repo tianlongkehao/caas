@@ -22,6 +22,8 @@ package com.bonc.epm.paas.kubernetes.api;
 
 import java.util.Map;
 
+import javax.ws.rs.QueryParam;
+
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
@@ -241,10 +243,45 @@ public interface KubernetesAPIClientInterface {
     /**
      * get pod log
      * @param name
+     * @param container
+     * @param previous
+     * @param timestamps
+     * @param tailLines
      * @return
      * @throws KubernetesClientException
      */
-    public String getPodLog(String name) throws KubernetesClientException;
+    public String getPodLog(String name,String container,
+    		Boolean previous, 				//Return previous terminated container logs. Defaults to false.
+    		Boolean timestamps,
+    		Integer tailLines) throws KubernetesClientException;
+
+    /**
+     * get pod log
+     * @param name
+     * @param container
+     * @param previous
+     * @param timestamps
+     * @return
+     * @throws KubernetesClientException
+     */
+    public String getPodLog(String name,String container,
+    		Boolean previous, 				//Return previous terminated container logs. Defaults to false.
+    		Boolean timestamps) throws KubernetesClientException;
+
+    /**
+     * get pod log
+     * @param name
+     * @param container
+     * @param previous
+     * @param sinceTime
+     * @param timestamps
+     * @return
+     * @throws KubernetesClientException
+     */
+    public String getPodLog(String name,String container,
+    		Boolean previous, 				//Return previous terminated container logs. Defaults to false.
+    		String sinceTime,
+    		Boolean timestamps) throws KubernetesClientException;
 
     /* Replication Controller API */
 

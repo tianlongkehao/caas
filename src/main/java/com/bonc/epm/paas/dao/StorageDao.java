@@ -46,7 +46,7 @@ public interface StorageDao extends CrudRepository<Storage, Long> {
 	 * @return List<Storage>
 	 * @see
 	 */
-    List<Storage> findAllByCreateByAndUseTypeOrderByCreateDateDesc(long createBy, Pageable pageable,Integer useType);
+    List<Storage> findAllByCreateByOrderByCreateDateDesc(long createBy, Pageable pageable);
 
 	/**
 	 * 
