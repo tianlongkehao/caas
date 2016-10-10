@@ -74,7 +74,18 @@
 									
 								</ul>
 							</li>
-							<!-- <li><a class="historyLOG">历史日志</a></li> -->
+<%-- 							<li><a class="historyLOG">历史日志</a></li>
+							<li class="dropdown">
+                                <a class="execCommand dropdown-toggle" id="dropdown-log"
+                                    data-toggle="dropdown"> 命令操作 <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <c:forEach items="${podNameList}" var="pod" >
+                                        <li><a class="podName" podName="${pod.podName }" serviceid="${service.id }" namespace = "${namespace }" value="2" >${pod.podName }</a></li>
+                                    </c:forEach>
+                                </ul>
+                            </li>
+--%>
 						</ul>
 					</div>
 					<div class="containerInfo">
@@ -332,8 +343,7 @@
 						<div id="hisLogList"><div>
 					</div> --%>
 					<div class="containerEvent hide" style="min-height: 500px;">
-						<div class="containerEvent"
-							style="min-height: 500px; display: block;">
+						<div class="containerEvent" style="min-height: 500px; display: block;">
 							<div class="event">
 								<div class="event-line">
 									<div class="event-status success">
@@ -362,6 +372,24 @@
 					</div>
 				</div>
 			</div>
+			
+<%-- 			         <!-- 命令操作 -->
+                    <div class="containerLog hide" id = "containerexec" style="min-height: 500px;">
+                        <div class="weblogtitle">
+                            <div class="pull_right" style="width:99%">
+                                <input id="execText" type="text" value="" style="width:90%;background: none;border:0;text-align: right;">
+                                <a id="execcmd" >运行</a>
+                                <input type="hidden" id="podName" name="podName" value=""></input>
+                                <input type="hidden" id="serviceid" name="serviceid" value=""></input>
+                            </div>
+                        </div>
+                        <div id="containerlogList2" class="weblog">
+                             
+                        </div>
+                        <input id="serviceInstances2" type="hidden" value="">
+                        <input id="creationTime2" type="hidden" value="${service.createDate }">
+                    </div>
+ --%>			
 		</article>
 	</div>
 </body>

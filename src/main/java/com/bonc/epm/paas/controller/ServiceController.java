@@ -363,6 +363,7 @@ public class ServiceController {
     @RequestMapping(value = { "service/detail/{id}" }, method = RequestMethod.GET)
 	public String detail(Model model, @PathVariable long id) {
 	    System.out.printf("id: " + id);
+	    User currentUser = CurrentUserUtils.getInstance().getUser();
 	    Service service = serviceDao.findOne(id);
 		//service.setProxyZone(substr(service.getProxyZone()));
 	    List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
@@ -391,6 +392,7 @@ public class ServiceController {
 	            }
 	        }
         }
+        model.addAttribute("namespace",currentUser.getNamespace());
         model.addAttribute("id", id);
         model.addAttribute("podNameList", podNameList);
         model.addAttribute("containerList", containerList);
@@ -1214,7 +1216,7 @@ public class ServiceController {
         }
         return true;
     }
-	
+    
     /**
      * Description: <br>
      * 根据镜像名称查询镜像
@@ -1842,6 +1844,78 @@ public class ServiceController {
 
     }
     
+    /**
+     * Description: <br>
+     * 输入命令，获取返回结果
+     * @param cmd ： 命令
+     * @return String
+     */
+    @RequestMapping("service/detail/execcmd.do")
+    @ResponseBody
+    public String getCmdResult(String cmd){
+        String hostIp = kubernetesClientService.getK8sAddress();
+        String name = kubernetesClientService.getK8sUsername();
+        String password = kubernetesClientService.getK8sPasswrod();
+        Map<String, Object> map = new HashMap<String, Object>();
+//        String cmd = "kubectl exec cas-0uh5c --namespace=testbonc -- ls /usr";
+        try {
+            SshConnect.connect(name, password, hostIp, 22);
+            boolean b = false;
+            String rollingLog = SshConnect.exec(cmd, 10000);
+            if (rollingLog.endsWith("$") || rollingLog.endsWith("#") || rollingLog.contains("updated")) {
+                b = true;
+            }
+            long sys = System.currentTimeMillis();
+            while (!b) {
+                String str = SshConnect.exec("", 10000);
+                if (StringUtils.isNotBlank(str)) {
+                    rollingLog += str;
+                }
+                b = (rollingLog.endsWith("$") || rollingLog.endsWith("#") || rollingLog.contains("updated"));
+                long endsys = System.currentTimeMillis();
+                if (endsys-sys > 20000){
+                    map.put("status", "400");
+                    return JSON.toJSONString(map);
+                }
+            }
+            
+            if (rollingLog.contains("error")) {
+                map.put("status", "400");
+                return JSON.toJSONString(map);
+            }else {
+                map.put("result", rollingLog);
+            }
+            
+            String result = SshConnect.exec("echo $?", 1000);
+            if (StringUtils.isNotBlank(result)) {
+                if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
+                    new InterruptedException();
+                }
+            }
+            else {
+                new InterruptedException();
+            }
+        } 
+        catch (InterruptedException e) {
+            LOG.error(e.getMessage());
+            LOG.error("error:执行command失败");
+            map.put("status", "400");
+            return JSON.toJSONString(map);
+        } 
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+            LOG.error("error:ssh连接失败");
+            map.put("status", "400");
+            return JSON.toJSONString(map);
+        }
+        finally {
+            SshConnect.disconnect();
+        }
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+    }
+
+
 	/**
 	 * Description: <br>
 	 * 获取当前Pod的实时日志
