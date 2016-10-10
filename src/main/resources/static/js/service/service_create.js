@@ -53,6 +53,25 @@ $(document).ready(function(){
 		    }*/
 	    }
 	    
+	  //检查服务状态的判断
+	    var checkPath = $("#checkSerStatus_input").val();
+	    if($("#checkSerStatus").prop("checked")==true){
+		    if(!checkPath || checkPath.length < 1){
+			      layer.tips('测试路径不能为空','#checkSerStatus_input',{tips: [1, '#3595CC']});
+			      $('#checkSerStatus_input').focus();
+			      return;
+			}
+		    if(checkPath.search(/^[a-zA-Z][a-zA-Z0-9-\/]*$/) === -1){
+		      layer.tips('测试路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+		      $('#checkSerStatus_input').focus();
+		      return;
+		    }
+		    if(checkPath.length > 64 || checkPath.length < 3){
+		      layer.tips('测试路径为3~64个字符','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+		      $('#checkSerStatus_input').focus();
+		      return;
+		    }
+	    }
 	    //服务路径的判断
 	    var servicePath = $("#webPath").val();
 	    if(!servicePath || servicePath.length < 1){
@@ -270,6 +289,16 @@ $(document).ready(function(){
 	$("#startCommand").click(function(){
 		$("#startCommand_li").toggle();
 		$("#startCommand_input").focus();
+		//调节界面高度
+		var imagePage_height = $(".host_step2").height();
+    	$(".step-inner").height(imagePage_height+100);
+	})
+	
+	// 启动命令
+	$("#checkSerStatus_li").hide();
+	$("#checkSerStatus").click(function(){
+		$("#checkSerStatus_li").toggle();
+		$("#checkSerStatus_input").focus();
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
     	$(".step-inner").height(imagePage_height+100);

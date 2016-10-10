@@ -218,14 +218,36 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
 	}
 	
-	public String getPodLog(String name) throws KubernetesClientException {
+	public String getPodLog(String name,String container, Boolean previous,
+			Boolean timestamps, Integer tailLines) throws KubernetesClientException {
 		try {
-			return api.getPodLog(namespace, name);
+			return api.getPodLog(namespace, name, container,
+					previous, timestamps, tailLines);
 		} catch (WebApplicationException e) {
 			throw new KubernetesClientException(e);
 		}
 	}
 
+	public String getPodLog(String name,String container, Boolean previous,
+			Boolean timestamps) throws KubernetesClientException {
+		try {
+			return api.getPodLog(namespace, name, container,
+					previous, timestamps);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+	
+	public String getPodLog(String name,String container, Boolean previous,
+			String sinceTime, Boolean timestamps) throws KubernetesClientException {
+		try {
+			return api.getPodLog(namespace, name, container,
+					previous, sinceTime, timestamps);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+	
 	public LimitRange getLimitRange(String name) throws KubernetesClientException {
         try {
             return api.getLimitRange(namespace,name);

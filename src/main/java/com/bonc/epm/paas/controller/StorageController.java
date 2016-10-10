@@ -110,8 +110,7 @@ public class StorageController {
     public String findStorageList(Pageable pageable, Model model) {
         Map<String, Object> map = new HashMap<String, Object>();
         long createBy = CurrentUserUtils.getInstance().getUser().getId();
-        List<Storage> storages = storageDao.findAllByCreateByAndUseTypeOrderByCreateDateDesc(createBy, pageable,
-                StorageConstant.NOT_USER);
+        List<Storage> storages = storageDao.findAllByCreateByOrderByCreateDateDesc(createBy, pageable);
         map.put("storages", storages);
         map.put("status", "200");
         map.put("count", storageDao.countByCreateBy(createBy));
@@ -357,15 +356,10 @@ public class StorageController {
                 cephCon.connectCephFS();
             }
             catch (Exception e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
             try {
-//                SshConnect.connect(cephController.getUsername(), cephController.getPassword(), cephController.getUrl(),
-//                        22);
-//                SshConnect.exec("cd " + cephController.getMountpoint(), 1000);
-//                SshConnect.exec(cephController.getMountexec(), 1000);
-                CmdUtil.exeCmd(cephController.getMountexec(), cephController.getMountpoint());
+                CmdUtil.exeCmd(cephController.getMountexec(), cephController.getCephDir());
                 map.put("status", "200");
             } 
             catch (IOException  e) {

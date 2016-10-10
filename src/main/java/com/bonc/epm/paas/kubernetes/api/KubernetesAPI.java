@@ -321,6 +321,70 @@ public interface KubernetesAPI {
      * get pod log
      * @param namespace
      * @param name
+     * @param container
+     * @param previous
+     * @param timestamps
+     * @param tailLines
+     * @return
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/pods/{name}/log")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name,
+    		@QueryParam("container")String container,
+    		@QueryParam("previous")Boolean previous, 			//Return previous terminated container logs. Defaults to false.
+    		@QueryParam("timestamps")Boolean timestamps,
+    		@QueryParam("tailLines")Integer tailLines
+    		) 
+    		throws KubernetesClientException;
+    
+    /**
+     * get pod log
+     * @param namespace
+     * @param name
+     * @param container
+     * @param previous
+     * @param timestamps
+     * @return
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/pods/{name}/log")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name,
+    		@QueryParam("container")String container,
+    		@QueryParam("previous")Boolean previous, 			//Return previous terminated container logs. Defaults to false.
+    		@QueryParam("timestamps")Boolean timestamps
+    		) 
+    		throws KubernetesClientException;
+    
+    /**
+     * get pod log
+     * @param namespace
+     * @param name
+     * @param container
+     * @param previous
+     * @param sinceTime
+     * @param timestamps
+     * @return
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/pods/{name}/log")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name,
+    		@QueryParam("container")String container,
+    		@QueryParam("previous")Boolean previous, 			//Return previous terminated container logs. Defaults to false.
+    		@QueryParam("sinceTime")String sinceTime,
+    		@QueryParam("timestamps")Boolean timestamps
+    		) 
+    		throws KubernetesClientException;
+
+    /**
+     * get pod log
+     * @param namespace
+     * @param name
      * @return
      * @throws KubernetesClientException
      */
@@ -329,7 +393,6 @@ public interface KubernetesAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name) 
     		throws KubernetesClientException;
-
     /* Replication Controller API */
 
     /**
