@@ -263,7 +263,7 @@ function changeContainerConf() {
 						var cpus = $('#confCpu').val();
 						var rams = $('#confRamSlider_input').val();
 						var leftcpu = $("#leftcpu").html();
-						if (parseInt(cpus) > parseInt(leftcpu)) {
+						if (parseFloat(cpus) > parseFloat(leftcpu)) {
 							layer.tips('cpu剩余不足', "#confCpu", {
 								tips : [ 1, '#3595CC' ]
 							});
@@ -271,7 +271,7 @@ function changeContainerConf() {
 							return;
 						}
 						var leftmemory = $("#leftram").html();
-						if (parseInt(rams) > parseInt(leftmemory)) {
+						if (parseFloat(rams) > parseFloat(leftmemory)) {
 							layer.tips('内存剩余不足', "#confRamSlider_input", {
 								tips : [ 1, "#3595CC" ]
 							})
