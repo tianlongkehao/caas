@@ -100,7 +100,7 @@ public class MethodInvoker {
     		response = invocationBuilder.put(entity);
     	}
     	response.bufferEntity();
-    	log.info(url+pathValue+" -X"+get+":"+post+":"+delete+":"+put+"========response:"+response.readEntity(String.class));
+//    	log.info(url+pathValue+" -X"+get+":"+post+":"+delete+":"+put+"========response:"+response.readEntity(String.class));
     	try{
     		return response.readEntity(method.getReturnType());
     	}catch(Exception e){
