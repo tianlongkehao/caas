@@ -332,12 +332,10 @@
 			"aoColumnDefs" : [ {
 				"bSortable" : false,
 				"aTargets" : [ 0, 6 ]
-			} ]
+			} ],
+		    "aaSorting": [[ 5, "desc" ]] 
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc"); 
 	</script>
 </body>
 </html> 
-	</script>
-</body>
-</html>
