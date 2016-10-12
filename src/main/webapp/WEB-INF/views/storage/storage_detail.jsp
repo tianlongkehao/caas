@@ -62,8 +62,7 @@
 							<li>格&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;式：&nbsp;&nbsp;&nbsp;${storage.format }</li>
 							<li>创建时间：&nbsp;&nbsp;&nbsp;${storage.createDate }</li>
 							<li>内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;容：&nbsp;&nbsp;&nbsp;
-								<span class="btn btn-primary upload" id="fileUpload"> 上传文件 </span> <span
-								class="btn btn-primary download" id="fileDownload"> 导出文件 </span>
+								
 								<input hidden="true" value="" id="downfilepath"/>
 							</li>
 						</ul>
@@ -93,29 +92,55 @@
 								type="hidden" id="volumeSize" value="512">
 						</div>
 						<div style="width: 83%; float:right; background-color: #fff;">
-							<div style="padding-left:15px" id="val-path">
-								<div class="" style="line-height:40px" id="allboxs"><span >全部文件</span></div>
-								<!-- <div class="" style="line-height:40px; display:none" id="nextboxs">
-									<ul style="margin:0px">
-										<li style="float:left"><a href="">返回上一级</a><span style="padding:5px">|</span><a href="">全部文件</a><span style="padding:5px">></span></li>
-										<li style="float:left">{当前文件名称}</li>
-									</ul>
-								</div> -->
+							<div class="row">
+								<div class="col-sm-12">
+									<div class="ibox float-e-margins">
+										<div class="ibox-title">
+											<h5>
+												<div class="" id="allboxs"><span >全部文件</span></div>
+											</h5>
+
+											<div class="ibox-tools">
+												<a href="javascript:window.location.reload(true);"
+													id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
+												<a href="" id="fileUpload" title="上传文件"><i
+													class="fa fa-upload"></i></a> <a href="" id="fileDownload"
+													title="导出文件"><i class="fa fa-download"></i></a> <a
+													id="deleteButton" class="no-drop"
+													href="javascript:delfiles()" title="删除"> <i
+													id="deleteButtonfile" class="fa fa-trash self_a"></i>
+												</a>
+											</div>
+										</div>
+										<div class="ibox-content">
+											<table
+												class="table table-stripped table-hover dataTables-example">
+												<thead>
+													<tr>
+														<th style="width: 5%;text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
+														<th style="width: 25%; text-indent: 30px;">文件名</th>
+														<th style="width: 20%; text-indent: 15px;">大小</th>
+														<th style="width: 25%; text-indent: 8px;">修改日期</th>
+														<th style="width: 10%; text-indent: 10px;"
+															class="del-operation">操作</th>
+													</tr>
+												</thead>
+												<tbody id="storageList">
+
+												</tbody>
+												<tfoot class="hide">
+													<tr>
+														<td colspan="5">
+															<ul class="pagination pull-right"></ul>
+														</td>
+													</tr>
+												</tfoot>
+											</table>
+										</div>
+									</div>
+								</div>
 							</div>
-							<table class="table table-hover table-bordered" id="table-vol"
-								style="margin: 0px; background-color: #fff; width: 98%; margin:0 auto; margin-bottom:20px">
-								<thead style="background-color: #F5F6F6">
-									<tr class="vol_list">
-										<th style="text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
-										<th style="width: 40%;">文件名</th>
-										<th style="width: 30%;">大小</th>
-										<th style="width: 26%;">修改日期</th>
-									</tr>
-								</thead>
-								<tbody id ="mybody">
-									<tr class="vol_list" style="cursor:pointer">
-								</tbody>
-							</table>
+							
 						</div>
 						<div id="environment-templat" hidden="true">
                 <div style="width: 345px; margin: 5px 10px 5px 10px">
@@ -134,6 +159,15 @@
 		</article>
 	</div>
 	<script type="text/javascript">
+		$('.dataTables-example').dataTable({
+			"aoColumnDefs" : [ {
+				"bSortable" : false,
+				"aTargets" : [ 0, 4 ]
+			} ],
+			"aaSorting": [[ 3, "desc" ]]
+		});
+		$("#checkallbox").parent().removeClass("sorting_asc"); 
+	
 		document.getElementById('fileDownload').onclick = function(){
 	        var directory = document.getElementById('downfilepath').value;
 	        var downfiles = $("input[name='downfiles']:checked").serialize();
