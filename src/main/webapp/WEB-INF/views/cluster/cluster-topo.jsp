@@ -181,7 +181,7 @@ $(document).ready(function(){
             	                {category:3, name: 'pod2-1',value : 8},
             	                {category:3, name: 'pod2-2',value : 8},
             	                {category:3, name: 'pod2-3',value : 8},
-            	                {category:4, name: 'service1',value : 10},
+            	                {category:4, name: 'service1',value : 10,serviceName:'aaa'},
             	                {category:4, name: 'service2',value : 10},
             	            ],
             	            links : [
