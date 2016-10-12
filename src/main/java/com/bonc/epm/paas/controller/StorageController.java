@@ -488,9 +488,17 @@ public class StorageController {
      */
     @RequestMapping(value = { "storage/createFile" }, method = RequestMethod.POST)
     @ResponseBody
-    public String createFile(String storageName,boolean isVolReadOnly){
+    public String createFile(String storageName,String fileName){
         Map map = new HashMap();
-
+        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        String directory = cephController.getMountpoint() + namespace + storageName;
+        File file = new File(directory+fileName);
+        if(true==file.mkdir()){
+            map.put("status", "200");
+        }else{
+            map.put("status", "500");
+                }
+        return JSON.toJSONString(map);
 
     } 
     /**
@@ -503,8 +511,18 @@ public class StorageController {
      */
     @RequestMapping(value = { "storage/delFile" }, method = RequestMethod.POST)
     @ResponseBody
-    public String delFile(String storageName,boolean isVolReadOnly){
+    public String delFile(String storageName,String fileNames){
         Map map = new HashMap();
+        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        String directory = cephController.getMountpoint() + namespace + storageName;
+        String[] fileName = fileNames.split(",");
+        for(int i=0 ;i<fileName.length;i++){
+           File file = new File(directory+fileName);
+           file.delete();
+           
+                  }
+        map.put("status", "200");
+        return JSON.toJSONString(map);
 
 
     } 
