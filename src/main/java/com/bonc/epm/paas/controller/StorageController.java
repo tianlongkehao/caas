@@ -332,8 +332,13 @@ public class StorageController {
         else {
             directory += dirName;
         }
-        List<FileInfo> list = SFTPUtil.listFileInfo(directory);
-        map.put("fileList", list);
+        if(new File(directory).exists()){
+            List<FileInfo> list = SFTPUtil.listFileInfo(directory);
+            map.put("fileList", list);
+        }else{
+            map.put("status","400");
+        }
+        
         return JSON.toJSONString(map);
     }
 

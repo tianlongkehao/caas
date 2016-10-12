@@ -10,6 +10,7 @@ $(document).ready(function () {
   * 上传文件
   */
  $("#fileUpload").click(function(){
+	 		$('#file').val("");
 	    layer.open({
 	    	type:1,
 	    	content:$('#environment-templat'),
@@ -137,6 +138,10 @@ function  creatable(isDir,path,dirName){
 	        	if(data.status=="500"){
 	        		alert("您没有权限浏览上一级内容");
 	        		creatable(null,null,null);
+	        		return;
+	        			}
+	        	if(data.status=="400"){
+	        		alert("对不起，没有找到相应的目录");
 	        		return;
 	        			}
 	        	for (i in data.fileList) {
