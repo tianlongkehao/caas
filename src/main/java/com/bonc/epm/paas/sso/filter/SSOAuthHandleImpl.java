@@ -1,17 +1,11 @@
 package com.bonc.epm.paas.sso.filter;
 
-import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.validation.Assertion;
@@ -24,8 +18,10 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.bonc.epm.paas.SpringApplicationContext;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.controller.CephController;
+import com.bonc.epm.paas.controller.UserController;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -39,18 +35,15 @@ import com.bonc.epm.paas.util.ServiceException;
 import com.bonc.epm.paas.util.WebClientUtil;
 
 /**
- * SSOFilter 过滤器
- * 实现cas单点登录
- * @author ke_wang
- * @version 2016年9月10日
- * @see SSOFilter
+ *  单点登录后的模拟登录
+ * @author song
  */
 @Component
-public class SSOFilter implements Filter {
+public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
     /**
      * 输出日志
      */
-    private static final Logger LOG = LoggerFactory.getLogger(SSOFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SSOAuthHandleImpl.class);
     /**
      * CONST_CAS_ASSERTION
      */
@@ -62,8 +55,8 @@ public class SSOFilter implements Filter {
     /**
      * AUTH_FAILURE_MSG_NO_RESOURCE
      */
-	//private static final String AUTH_FAILURE_NO_RESOURCE = "您尚未分配部署资源，请联系管理员！";
-
+    //private static final String AUTH_FAILURE_NO_RESOURCE = "您尚未分配部署资源，请联系管理员！";
+    
     /**
      * configProps
      */
@@ -74,105 +67,85 @@ public class SSOFilter implements Filter {
      * kubernetesClientService
      */
     @Autowired
-	private KubernetesClientService kubernetesClientService;
+    private KubernetesClientService kubernetesClientService;
 
     /**
      * userDao
      */
     @Autowired
-	private UserDao userDao;
-
+    private UserDao userDao;
     /**
      * resManUrl
      */
     @Value("${resourceMmanage.address}")
-	private String resManUrl;
-
-    @Override
-	public void destroy() {
-        
-    }
-
-    /* (non-Javadoc)
-     * ${see_to_overridden}
-     */
-    @Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
+    private String resManUrl;
+    
+    @Override   
+    public boolean onSuccess(HttpServletRequest request, HttpServletResponse response, String loginId) {
+        SpringApplicationContext.CONTEXT.getAutowireCapableBeanFactory().autowireBean(this);
         if (configProps.getEnable()) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-			// cas当前认证用户
-            Assertion assertion = (Assertion) httpRequest.getSession().getAttribute(CONST_CAS_ASSERTION);
-            Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
-            LOG.debug("能力平台USER:" + attributes.toString());
-            if (null == assertion || null == assertion.getPrincipal()) {
-                authFailure(response, AUTH_FAILURE_NO_PRIVILEGE);
-            }
-            LOG.debug("cas登陆Id" + assertion.getPrincipal().getName());
-			
-            String tenantId = "";
-            String namespace = "";
-            String tenantAdmin = "";
-            if (null == attributes.get("tenantId")) {
-                attributes.put("tenantId", assertion.getPrincipal().getName());
-            }
-            if (null != attributes.get("tenantId")) {
-                tenantId = attributes.get("tenantId").toString();
-                namespace = tenantId;
-                //把下划线替换为--
-                if (namespace.contains("_")){
-                    namespace = namespace.replace("_", "--");
+            if ((null != request) && (null != loginId) && (loginId.trim().length() > 0)) {
+                User currPaasUser = CurrentUserUtils.getInstance().getUser();
+                if(currPaasUser!=null && loginId.equals(currPaasUser.getUserName())){ //如果已经登录和并且是一个用户
+                    return true;
                 }
-            }
-            if (attributes.get("tenantAdmin") != null) {
-                tenantAdmin = attributes.get("tenantAdmin").toString();
-            }
-			
-			// 与PAAS当前存在登录用户对比
-            User currPaasUser = CurrentUserUtils.getInstance().getUser();
-            if (null != currPaasUser) {
-                LOG.debug("paas当前登陆用户" + currPaasUser.getUserName());
-            }
-            boolean isLoadPaasUser = false;
-            if (null == currPaasUser) {
-                isLoadPaasUser = true;
-            }
-            else if (null != currPaasUser && 
-                            !assertion.getPrincipal().getName().trim().equals(currPaasUser.getUserName())) {
-				// cas当前认证用户发生变化
-                isLoadPaasUser = true;
-            }
-			
-			// 是否更新登陆用户
-            if (isLoadPaasUser) {
+                
+                //HttpServletRequest httpRequest = (HttpServletRequest) request;
+                // cas当前认证用户
+                Assertion assertion = (Assertion) request.getSession().getAttribute(CONST_CAS_ASSERTION);
+                Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
+                LOG.info("能力平台USER:" + attributes.toString());
+                LOG.info("cas登陆Id" + assertion.getPrincipal().getName() + "||" + loginId);
+                
+                String tenantId = "";
+                String namespace = "";
+                String tenantAdmin = "";
+                if (null == attributes.get("tenantId")) {
+                    attributes.put("tenantId", assertion.getPrincipal().getName());
+                }
+                if (null != attributes.get("tenantId")) {
+                    tenantId = attributes.get("tenantId").toString();
+                    namespace = tenantId;
+                    //把下划线替换为--
+                    if (namespace.contains("_")){
+                        namespace = namespace.replace("_", "--");
+                    }
+                }
+                if (attributes.get("tenantAdmin") != null) {
+                    tenantAdmin = attributes.get("tenantAdmin").toString();
+                }
+                
                 try {
-                    // 更新租户
-                    User user = saveUser(assertion, namespace);
+                    // 同步统一平台租户用户到本地
+                    User user = fillUserInfo(assertion, namespace);
                     // 统一平台的userId
                     if (null != attributes.get("userId")) {
                          //是租户而且不是管理员
-                        if ("1".equals(tenantAdmin) && 
-                                    !"1".equals(attributes.get("userId").toString().trim())) {
-                            createNamespace(namespace); // 创建命名空间
-                            createQuota(tenantId, namespace); // 创建资源
-                            createCeph(namespace); // 创建ceph
-                            
+                        if ("1".equals(tenantAdmin) && !"1".equals(attributes.get("userId").toString().trim())) {
+                            if (createNamespace(namespace)) { // 创建命名空间
+                                createQuota(tenantId, namespace); // 创建资源
+                                createCeph(namespace); // 创建ceph
+                            }
                         }
                     }
-                    
-                    httpRequest.getSession().setAttribute("cur_user", user);
-                    httpRequest.getSession().setAttribute("cas_enable", configProps.getEnable()); 
-                    httpRequest.getSession().setAttribute("ssoConfig", configProps);                    
+                    userDao.save(user);
+                    CurrentUserUtils.getInstance().setUser(user);
+                    CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
+                    //request.getSession().setAttribute("cur_user", user);
+                    //request.getSession().setAttribute("cas_enable", configProps.getEnable()); 
+                    //request.getSession().setAttribute("ssoConfig", configProps);
                 }
                 catch (Exception e) {
                     LOG.error(e.getMessage());
                     throw new ServiceException();
                 }
+                return true;
             }
+            return false;
         }
-        chain.doFilter(request, response);
+        return true;
     }
-
+    
     /**
      * 
      * Description:
@@ -188,19 +161,11 @@ public class SSOFilter implements Filter {
         }
         catch (Exception e) {
             LOG.error("create ceph error" +e.getMessage());
+            kubernetesClientService.getClient("").deleteNamespace(namespace);
             e.printStackTrace();
         }
     }
-
-    /**
-     * init
-     * ${see_to_overridden}
-     */
-    @Override
-	public void init(FilterConfig arg0) throws ServletException {
-        
-    }
-
+    
     /**
      * 
      * Description: 
@@ -211,7 +176,7 @@ public class SSOFilter implements Filter {
      * @return user User
      * @see Assertion
      */
-    private User saveUser(Assertion assertion, String namespace) throws Exception{
+    private User fillUserInfo(Assertion assertion, String namespace) {
         String loginId = assertion.getPrincipal().getName();
         User user = userDao.findByUserName(loginId);
         if (null == user) {
@@ -248,38 +213,42 @@ public class SSOFilter implements Filter {
                 user.setUser_autority(UserConstant.AUTORITY_USER);
             }
         }
-        userDao.save(user);
         return user;
     }
-
+    
     /**
      * 
      * Description:
      * 创建nameSpace
-     * @param tenantId 
+     * @param namespace 
+     * @return boolean 
      * @throws ServiceException  
      */
-    private void createNamespace(String tenantId) throws ServiceException{
-		// 以用户名(登陆帐号)为name，创建client ??
+    private boolean createNamespace(String namespace) throws ServiceException{
+        // 以用户名(登陆帐号)为name，创建client ??
         KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
-		// 是否创建nameSpace
+        // 是否创建nameSpace
         try {
-            client.getNamespace(tenantId);
+            client.getNamespace(namespace);
         } 
         catch (KubernetesClientException e) {
             // 以用户名(登陆帐号)为name，为client创建nameSpace
-            Namespace namespace = kubernetesClientService.generateSimpleNamespace(tenantId);
-            namespace = client.createNamespace(namespace);
-            if (namespace == null) {
-				LOG.error("Create a new Namespace:namespace["+namespace+"]");
-			}else {
-				LOG.info("create namespace:" + JSON.toJSONString(namespace));
-			}
+            Namespace nSpace = kubernetesClientService.generateSimpleNamespace(namespace);
+            nSpace = client.createNamespace(nSpace);
+            if (nSpace == null) {
+                client.deleteNamespace(namespace);
+                LOG.error("Create a new Namespace:namespace["+nSpace+"]");
+                return false;
+            }
+            else {
+                LOG.info("create namespace:" + JSON.toJSONString(nSpace));
+            }
         }
         catch (RuntimeException e) {
             LOG.error("连接kubernetesAPI超时！" + e);
             throw new ServiceException();
         }
+        return true;
     }
 
     /**
@@ -300,7 +269,7 @@ public class SSOFilter implements Filter {
             data.put("resource_type_code","\"Docker\"");
             params.put("param", data);
             String rtnStr = WebClientUtil.doGet(resManUrl, params);
-			// 解析返回资源数据
+            // 解析返回资源数据
             if (StringUtils.isNotBlank(rtnStr)) {
                 JSONObject jsStr = JSONObject.parseObject(rtnStr);
                 if ((boolean)jsStr.get("success")) {
@@ -321,19 +290,19 @@ public class SSOFilter implements Filter {
         }
         catch (Exception e) {
             LOG.error("获取能力平台租户资源出错！" + e.getMessage());
+            kubernetesClientService.getClient("").deleteNamespace(namespace);
             e.printStackTrace();
             throw new Exception();
         }
     }
-
-	/**
-	 * 
-	 * Description: 
-	 *  创建能力平台租户资源
-	 * @param namespace 
-	 * @param openCpu 
-	 * @param openMem  
-	 */
+    /**
+     * 
+     * Description: 
+     *  创建能力平台租户资源
+     * @param namespace 
+     * @param openCpu 
+     * @param openMem  
+     */
     private void createResourceQuota(String namespace, String openCpu, String openMem) {
         // 是否创建resourceQuota
         boolean isCreate = false;
@@ -357,18 +326,19 @@ public class SSOFilter implements Filter {
         }
         // KUBERNETES不能连接
         if (isConnect) {
-        	// 为client创建资源配额
+            // 为client创建资源配额
             Map<String, String> openMap = new HashMap<String, String>();
             openMap.put("cpu", openCpu + "");// CPU数量(核)
             openMap.put("memory", openMem + "G");// 内存（G）
             ResourceQuota openQuota = kubernetesClientService.generateSimpleResourceQuota(namespace, openMap);
             if (isCreate) { // 是否新建quota
-            	openQuota = client.createResourceQuota(openQuota); // 创建quota
+                openQuota = client.createResourceQuota(openQuota); // 创建quota
                 if (openQuota != null) {
-                	LOG.info("create quota:" + JSON.toJSONString(openQuota));
-				} else {
-					LOG.info("create quota failed: namespace=" + namespace + "hard=" + openMap.toString());
-				}
+                    LOG.info("create quota:" + JSON.toJSONString(openQuota));
+                } 
+                else {
+                    LOG.info("create quota failed: namespace=" + namespace + "hard=" + openMap.toString());
+                }
             } 
             else {
                 Map<String, String> map = currentQuota.getSpec().getHard();
@@ -376,26 +346,11 @@ public class SSOFilter implements Filter {
                 Integer intCurMem = Integer.parseInt(map.get("memory").replace("Gi", "").replace("G", ""));
                 Integer intOpenCpu = Integer.parseInt(openCpu);
                 Integer intOpenMem = Integer.parseInt(openMem);
-        		// 判断资源是否变化
+                // 判断资源是否变化
                 if ((intOpenCpu != intCurCpu) || (intOpenMem != intCurMem)) {
                     client.updateResourceQuota(namespace, openQuota);
                 }
             }
         }
-    }
-
-    /**
-     * 
-     * Description:
-     * cas认证失败
-     * @param response 
-     * @param msg 
-     * @throws IOException  
-     * @see
-     */
-    private void authFailure(ServletResponse response, String msg) throws IOException {
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html");
-        response.getWriter().print("<html><head></head><body>" + msg + "</body></html>");
     }
 }

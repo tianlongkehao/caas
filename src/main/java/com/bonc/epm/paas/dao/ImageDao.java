@@ -2,6 +2,7 @@ package com.bonc.epm.paas.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +62,6 @@ public interface ImageDao extends CrudRepository<Image, Long>{
     public Image findByNameAndVersion(String name, String version);
 	
 	@Query("select i from Image i where (i.imageType = 1 or i.creator = ?1) and i.name = ?2 and i.isDelete != 1")
-	public List<Image> findByImageVarsionOfName(long creator,String name);
+	public List<Image> findByImageVarsionOfName(long creator,String name,Sort sort);
 	
 }

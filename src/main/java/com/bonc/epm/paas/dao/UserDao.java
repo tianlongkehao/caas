@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 
 @Transactional
+@Repository
 public interface UserDao extends CrudRepository<User, Long> {
 	
 	public User findByUserName(String userName);
