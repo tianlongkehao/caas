@@ -184,18 +184,28 @@ function  creatable(isDir,path,dirName){
 									'</td>'+
 									'<td style="width: 30%;">'+fileInfo.size+'KB</td>'+
 									'<td style="width: 26%;">'+fileInfo.modifiedTime+'</td>'+
+									'<td style="width: 26%;">'+fileInfo.modifiedTime+'</td>'+
 								'</tr>';
 	    				}
 	           
 	           $('#downfilepath').val(fileInfo.path);
 	        	} 
 	        	$('#mybody').html($(tbody)); 
-	    		
+	        	
 	        }
+		
 	      })
+	      showDataTable();
 	}
 }
 
+function showDataTable(){
+	 $('.dataTables-example').dataTable({
+	     "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
+		});
+	 $("#checkallbox").parent().removeClass("sorting_asc");
+	 
+}
 function loadStorageList(){
 	var url = ""+ctx+"/service/storageList";
 	var json = {pageable:"pageable"};

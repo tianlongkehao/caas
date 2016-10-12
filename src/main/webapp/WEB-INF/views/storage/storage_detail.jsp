@@ -103,9 +103,11 @@
 											<div class="ibox-tools">
 												<a href="javascript:window.location.reload(true);"
 													id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
-												<a href="" id="fileUpload" title="上传文件"><i
-													class="fa fa-upload"></i></a> <a href="" id="fileDownload"
-													title="导出文件"><i class="fa fa-download"></i></a> <a
+												<a  id="fileUpload" title="上传文件"><i
+													class="fa fa-upload"></i></a> <a id="fileDownload"
+													title="导出文件"><i class="fa fa-download"></i>
+													<input hidden="true" value="" id="downfilepath"/>
+													</a> <a
 													id="deleteButton" class="no-drop"
 													href="javascript:delfiles()" title="删除"> <i
 													id="deleteButtonfile" class="fa fa-trash self_a"></i>
@@ -113,7 +115,7 @@
 											</div>
 										</div>
 										<div class="ibox-content">
-											<table
+											<table 
 												class="table table-stripped table-hover dataTables-example">
 												<thead>
 													<tr>
@@ -125,7 +127,7 @@
 															class="del-operation">操作</th>
 													</tr>
 												</thead>
-												<tbody id="storageList">
+												<tbody id="mybody">
 
 												</tbody>
 												<tfoot class="hide">
