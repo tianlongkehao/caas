@@ -97,16 +97,77 @@
 
                     </div>
                 </div>
-
-
+                <input type="hidden" id="master" name="master" value="${master }"></input>
+                <input type="hidden" id="nodes" name="nodes" value="${nodes }"></input>
+                <input type="hidden" id="services" name="service" value="${services }"></input>
+                <p id = "test">buttom</p>
             </div>
         </div>
     </article>
 </div>
 
 <script type="text/javascript">
-
+ var nodeDataTopo = "";
+ var links = "";
  $(document).ready(function(){
+	 
+	 
+	 $.ajax({
+		    async : false,
+            url:ctx+"/cluster/topo/data.do",
+            success:function(data){
+                debugger
+                data = eval("(" + data + ")");
+                var services = data.services;
+                var master = data.master;
+                var num = 0;
+                nodeDataTopo += "{category:"+ num++ +", name: '"+master+"', value : 12, label: 'master\n（主节点）'},";
+                var nodeList = data.nodes;
+                for (var node in nodeList) {
+                	nodeDataTopo += "{category:"+ num++ +", name: '"+ node +"' ,value : 10},";
+                	var podNumber = num;
+                	links += "{source : '"+ master +"', target : '"+ node +"', weight : 2},";
+                	var podTopoList = nodeList[node];
+                	var podLength = podTopoList.length;
+                    for (var j = 0; j < podLength; j++) {
+                    	
+                    	var podName = podTopoList[j].podName;
+                    	nodeDataTopo += "{category:"+ podNumber +", name: '"+ podName +"' ,value : 8'},";
+                        links += "{source : '"+ node +"', target : '"+ podName +"', weight : 3},";
+                    }
+                    num = podNumber+1;
+                }
+                
+                for (var i = 0; i < services.length; i++) {
+                	var serviceTopo = services[i];
+                	var serviceName = serviceTopo.serviceName;
+                	var podNames = serviceTopo.podName;
+                	if (podNames != null && serviceName != null) {
+                		for (var j = 0 ; j <podNames.length; j++) {
+                			var podName = podNames[j];
+                			nodeDataTopo += "{category:"+ num++ +", name: '"+ serviceName +"' ,value : 10},";
+                            links += "{source : '"+ podName +"', target : '"+ serviceName +"', weight : 4},"; 
+                		}
+                	}
+                	
+                }
+                alert(nodeDataTopo);
+                alert(links);
+            }
+     });
+	 
+	 
+	 $("#test").click(function () {
+	        var master = $("#master").val();
+	        var nodes = $("#nodes").val();
+	        var services = $("#services").val();
+	        
+	        
+	        alert(master);
+	        alert(nodes);
+	        alert(services);
+	    });
+	 
     var canvas = document.getElementById('canvas');
     var stage = new JTopo.Stage(canvas);
     //显示工具栏
