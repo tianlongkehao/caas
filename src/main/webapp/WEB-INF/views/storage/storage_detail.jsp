@@ -120,7 +120,7 @@
 						<div id="environment-templat" hidden="true">
                 <div style="width: 345px; margin: 5px 10px 5px 10px">
                    <form method="POST" enctype="multipart/form-data" action="upload" id="form1" name="form1"> 
-                     <p>文件：<input type="file" name="file" id="file" /></p>
+                     <p>文件：<input type="file" multiple="multiple" name="file" id="file" /></p>
                      <input type="hidden" name="path" value="sfasf" id="path" />
                      <input type ="hidden" name="storageName" value=${storage.storageName }  />
                      <input type ="hidden" name="id" value=${storage.id }  >

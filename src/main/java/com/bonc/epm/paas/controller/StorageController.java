@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.StorageConstant;
@@ -384,35 +385,28 @@ public class StorageController {
 
     @RequestMapping(value = { "upload" }, method = RequestMethod.POST)
     @ResponseBody
-    public String handleFileUpload(@RequestParam("file") MultipartFile file, String path, String storageName, long id) {
-        if (!file.isEmpty()) {
+    public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path, String storageName, long id) {
             try {
                 Map map = new HashMap();
-                long fileSize =file.getSize() /1024/1024;
+                for(int i =0;i<files.length;i++){
+                long fileSize =files[i].getSize() /1024/1024;
                 String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
                 File dir = new File(cephController.getMountpoint() + namespace + "/" + storageName);
                 storageDao.findOne(id).getStorageSize();
                 long used = (fileSize + dir.length()) / 1024 / 1024;
                 long result = storageDao.findOne(id).getStorageSize() - used;
                 if (0 >= result) {
-                    // 上传文件大小超过可用大小，返回失败
                     map.put("status", "500");
                     return JSON.toJSONString(map);
                 }
-//                if(fileSize<=50){
                     BufferedOutputStream out = new BufferedOutputStream(
-                            new FileOutputStream(new File(path + file.getOriginalFilename())));
-                    out.write(file.getBytes());
+                            new FileOutputStream(new File(path + files[i].getOriginalFilename())));
+                    out.write(files[i].getBytes());
                     out.flush();
                     out.close();
-//                }else{
-//                    SFTPUtil sf = new SFTPUtil();
-//                    ChannelSftp sftp = sf.connect(cephController.getUrl(), 22, cephController.getUsername()
-//                        , cephController.getPassword());
-//                    sf.upload(path, file, sftp);
-//                                   }
                 map.put("used", used);
                 map.put("status", "200");
+                }
                 return JSON.toJSONString(map);
             } 
             catch (FileNotFoundException e) {
@@ -424,11 +418,6 @@ public class StorageController {
                 return "上传失败," + e.getMessage();
             }
         } 
-        else {
-            return "上传失败，因为文件是空的.";
-        }
-
-    }
 
     /**
      * 
@@ -487,6 +476,36 @@ public class StorageController {
         }finally{
             return JSON.toJSONString(map);
         }
+
+    } 
+    /**
+     * 手动创建文件夹
+     * 
+     * @param storageName
+     * @param isVolReadOnly
+     * @return 
+     * @see
+     */
+    @RequestMapping(value = { "storage/createFile" }, method = RequestMethod.POST)
+    @ResponseBody
+    public String createFile(String storageName,boolean isVolReadOnly){
+        Map map = new HashMap();
+
+
+    } 
+    /**
+     * 手动删除文件或文件夹
+     * 
+     * @param storageName
+     * @param isVolReadOnly
+     * @return 
+     * @see
+     */
+    @RequestMapping(value = { "storage/delFile" }, method = RequestMethod.POST)
+    @ResponseBody
+    public String delFile(String storageName,boolean isVolReadOnly){
+        Map map = new HashMap();
+
 
     } 
 //    public static void main(String[] args) {
