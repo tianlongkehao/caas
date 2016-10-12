@@ -7,7 +7,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.influxdb.InfluxDB;
@@ -27,13 +29,18 @@ import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
+import com.bonc.epm.paas.entity.PodTopo;
+import com.bonc.epm.paas.entity.ServiceTopo;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Node;
 import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
+import com.bonc.epm.paas.kubernetes.model.Service;
+import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
@@ -60,6 +67,10 @@ public class ClusterController {
      * ClusterController日志实例
      */
     private static final Logger LOG = LoggerFactory.getLogger(ClusterController.class);
+
+    private static final int ArrayList = 0;
+
+    private static final int PodTopo = 0;
 
     /**
      * KubernetesClientService 服务接口
@@ -103,6 +114,11 @@ public class ClusterController {
     @Value("${monitor.dbName}")
 	private String dbName;
     
+    /**
+     * master主节点地址信息
+     */
+    @Value("${kubernetes.api.address}")
+    private String masterAddress;
     /**
      * 获取InfluxDB；
      */
@@ -160,10 +176,104 @@ public class ClusterController {
      */
     @RequestMapping(value = { "/topo" }, method = RequestMethod.GET)
 	public String clusterTopo(Model model) {
+        
+        // 创建client
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
+        //以node节点名称为key，node节点中包含的pod信息为value；
+        Map<String, List> nodeMap = new HashMap<String, List>();
+        List<ServiceTopo> serviceTopoList = new ArrayList<>();
+        
+        // 取得所有node
+        NodeList nodeList = client.getAllNodes();
+        for (Node node : nodeList.getItems()) {
+            String minionName = node.getMetadata().getName();
+            String hostIp = node.getStatus().getAddresses().get(0).getAddress();
+            List<PodTopo> podTopoList = new ArrayList<PodTopo>();
+            nodeMap.put(minionName +"/"+ hostIp, podTopoList);
+        }
+        
+        User currentUser = CurrentUserUtils.getInstance().getUser();
+        if (currentUser.getNamespace().equals("admin")) {
+            // 取得所有NAMESPACE
+            NamespaceList namespaceList = client.getAllNamespaces();
+            for (Namespace namespace : namespaceList.getItems()) {
+                String name = namespace.getMetadata().getName();
+                //添加pod数据
+                addPodTopo(name,nodeMap);
+                //添加service数据
+                addServiceTopo(name,serviceTopoList);
+            }
+        } else {
+            //添加pod数据
+            addPodTopo(currentUser.getNamespace(),nodeMap);
+            //添加service数据
+            addServiceTopo(currentUser.getNamespace(),serviceTopoList);
+        }
+        
+        System.out.println(nodeMap.toString());
+        System.out.println(serviceTopoList.toString());
+        model.addAttribute("master", "master/"+masterAddress);
+        model.addAttribute("nodes",nodeMap);
+        model.addAttribute("services", serviceTopoList);
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster-topo.jsp";
     }
 
+    /**
+     * Description: <br>
+     * 查询当前namespace中的pod数据，添加到相关联的Node集合中
+     * @param namespace 命名空间；
+     * @param nodeMap Node
+     * @see
+     */
+    @SuppressWarnings("unchecked")
+    public void addPodTopo(String namespace,Map<String, List> nodeMap) {
+        try {
+            KubernetesAPIClientInterface clientName = kubernetesClientService.getClient(namespace);
+            // 取得所有此NAMESPACE下的POD
+            PodList podList = clientName.getAllPods();
+            for (Pod pod : podList.getItems()) {
+                PodTopo podTopo = new PodTopo();
+                podTopo.setNamespace(namespace);
+                podTopo.setPodName(pod.getMetadata().getName());
+                podTopo.setNodeName(pod.getSpec().getNodeName());
+                podTopo.setHostIp(pod.getStatus().getHostIP());
+                podTopo.setServiceName(pod.getMetadata().getLabels().get("app"));
+                String key = podTopo.getNodeName() + "/" + podTopo.getHostIp();
+                List<PodTopo> podTopoList = nodeMap.get(key);
+                podTopoList.add(podTopo);
+                nodeMap.replace(key, podTopoList);
+            }
+        }
+        catch (Exception e) {
+            LOG.debug(e.getMessage());
+        }
+    }
+    
+    /**
+     * Description: <br>
+     *  将当前命名空间中的所有服务名称添加到集合中；
+     * @param namespace
+     * @param serviceTopoList 
+     * @see
+     */
+    public void addServiceTopo(String namespace, List<ServiceTopo> serviceTopoList){
+        try {
+            KubernetesAPIClientInterface clientName = kubernetesClientService.getClient(namespace);
+            // 取得所有此NAMESPACE下的service
+            ServiceList serviceList = clientName.getAllServices();
+            for (Service service : serviceList.getItems()) {
+                ServiceTopo serviceTopo = new ServiceTopo();
+                serviceTopo.setNamespace(service.getMetadata().getNamespace());
+                serviceTopo.setServiceName(service.getMetadata().getName());
+                serviceTopoList.add(serviceTopo);
+            }
+        }
+        catch (Exception e) {
+            LOG.debug(e.getMessage());
+        }
+    }
+    
     /**
      * Description: <br>
      *  跳转进入cluster-deltail.jsp页面
