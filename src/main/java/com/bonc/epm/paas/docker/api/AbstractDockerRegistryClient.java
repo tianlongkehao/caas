@@ -27,12 +27,10 @@ public abstract class AbstractDockerRegistryClient implements
 	private final Client client;
 	private final String baseUrl;
 
-	private static final String VERSION = "v1/";
-
 	public AbstractDockerRegistryClient(Client client,
 			DockerRegistryConfig config) {
 		this.client = client;
-		this.baseUrl = config.get("default.base_url") + VERSION;
+		this.baseUrl = config.get("default.base_url");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -136,7 +134,7 @@ public abstract class AbstractDockerRegistryClient implements
 		ClientResponse response = resource.accept(MediaType.APPLICATION_JSON,
 				MediaType.APPLICATION_OCTET_STREAM, MediaType.TEXT_PLAIN).put(
 				ClientResponse.class, objRequest);
-		if (response.getStatusInfo() != Status.OK) {
+		if (response.getStatusInfo().equals(Status.OK)) {
 			throw new IOException(
 					"got a non-200 response from client, status = "
 							+ Integer.toString(response.getStatus()));
@@ -149,6 +147,10 @@ public abstract class AbstractDockerRegistryClient implements
 			Map<String, Object> headers) throws IOException {
 		if (StringUtils.isEmpty(endpoint)) {
 			throw new IOException("endpoint is empty!!");
+		}
+		/*删除时获取的那个endpoint 缺少协议 还是用baseUrl*/
+		if (!baseUrl.equals(endpoint)) {
+		    endpoint = baseUrl;
 		}
 		if (path == null) {
 			path = "";
@@ -166,7 +168,7 @@ public abstract class AbstractDockerRegistryClient implements
 		}
 		ClientResponse response = resource.accept("application/json").delete(
 				ClientResponse.class);
-		if (response.getStatusInfo() != Status.OK) {
+		if (response.getStatusInfo().equals(Status.OK)) {
 			throw new IOException(
 					"got a non-200 response from client, status = "
 							+ Integer.toString(response.getStatus()));

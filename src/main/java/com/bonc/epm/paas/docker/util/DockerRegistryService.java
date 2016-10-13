@@ -23,6 +23,7 @@ import com.bonc.epm.paas.docker.api.DockerRegistryClient;
 import com.bonc.epm.paas.docker.config.DockerRegistryConfig;
 import com.bonc.epm.paas.docker.config.DockerRegistryConfigProvider;
 import com.bonc.epm.paas.docker.data.DockerRegistrySearchResponse;
+import com.bonc.epm.paas.docker.data.DockerRepositoryContext;
 import com.sun.jersey.api.client.Client;
 
 /**
@@ -73,6 +74,18 @@ public class DockerRegistryService {
         }
     }
     
+    public void deleteRepositoryTag() {
+        try {
+            DockerRegistryClient regClient = this.getDockerRegistryClient();
+            DockerRepositoryContext repContext = new DockerRepositoryContext("testbonc","testtest");
+            repContext.setAuth("192.168.0.29:5000", "root");
+            regClient.deleteRepositoryTag(repContext, "v1");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     /**
      * 
      * Description:
@@ -82,7 +95,7 @@ public class DockerRegistryService {
      */
     public static void main(String[] args) {
         DockerRegistryService service = new DockerRegistryService();
-        
-        service.searchRegistry("nodejs");
+        service.deleteRepositoryTag();
+        //service.searchRegistry("nodejs");
     }
 }
