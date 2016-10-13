@@ -20,8 +20,19 @@ $(document).ready(function(){
 				$(this).toggleClass("focus");// 设定当前行为选中行
 				$(this).parent().find("tr.focus").find("span.doc-tr")
 						.toggleClass("hide");
-				dockerFile = $(this).parent().find("tr.focus").find(
-						".dockerFileTemplate").val();
+				$.ajax({
+					url : ctx + "/template/dockerfile/content",
+					type : "GET",
+					data : {
+						"id":$(this).parent().find("tr.focus").find(".dockerFileTemplate").val()
+					},
+					success : function(data) {
+						data = eval("(" + data + ")");
+						if (data != null) {
+							dockerFile = data.dockerFile;
+						}
+					}
+				});
 	});
 	
 	// 导入模板

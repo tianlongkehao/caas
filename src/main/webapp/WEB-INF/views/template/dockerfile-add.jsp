@@ -90,7 +90,7 @@
                                <td class="vals vals-doc">${dockerFile.templateName }<span
                                    class="doc-tr hide"><i class="fa fa-check"></i></span> <input
                                    type="hidden" class="dockerFileTemplate"
-                                   value='${dockerFile.dockerFile }' />
+                                   value='${dockerFile.id }' />
                                </td>
                            </tr>
                        </c:forEach>

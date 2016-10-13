@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -919,5 +920,8 @@ public class CiController {
         return JSON.toJSONString(map);
     }
 	    
-	
+	public static void main(String[] args) {
+        String s = "RUN echo 'export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_65' >> /etc/profile";
+        System.out.println(s.replaceAll("\'", "\\\\'"));
+    }
 }
