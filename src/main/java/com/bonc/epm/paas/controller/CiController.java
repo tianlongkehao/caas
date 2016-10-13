@@ -919,9 +919,5 @@ public class CiController {
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
-	    
-	public static void main(String[] args) {
-        String s = "RUN echo 'export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_65' >> /etc/profile";
-        System.out.println(s.replaceAll("\'", "\\\\'"));
-    }
+
 }
