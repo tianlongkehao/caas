@@ -39,6 +39,7 @@ import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.SFTPUtil;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.ZipCompressing;
@@ -491,13 +492,13 @@ public class StorageController {
      * @return 
      * @see
      */
-    @RequestMapping(value = { "storage/createFile" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "storage/createFile.do" }, method = RequestMethod.POST)
     @ResponseBody
-    public String createFile(String storageName,String fileName){
+    public String createFile(String storageName,String dirName,String path){
         Map map = new HashMap();
         String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-        String directory = cephController.getMountpoint() + namespace + storageName;
-        File file = new File(directory+fileName);
+//        String directory = cephController.getMountpoint() + namespace + storageName;
+        File file = new File(path+"/"+dirName);
         if(true==file.mkdir()){
             map.put("status", "200");
         }else{
@@ -514,23 +515,41 @@ public class StorageController {
      * @return 
      * @see
      */
-    @RequestMapping(value = { "storage/delFile" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "storage/delFile.do" }, method = RequestMethod.GET)
     @ResponseBody
-    public String delFile(String storageName,String fileNames){
+    public String delFile(String storageName,String fileNames,String path){
         Map map = new HashMap();
         String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-        String directory = cephController.getMountpoint() + namespace + storageName;
+//        String directory = cephController.getMountpoint() + namespace + storageName;
         String[] fileName = fileNames.split(",");
         for(int i=0 ;i<fileName.length;i++){
-           File file = new File(directory+fileName);
-           file.delete();
-           
+           File file = new File(path+"/"+fileName[i]);
+           if(file.isDirectory()){
+               //删除文件夹下文件和此文件夹
+               FileUtils.delAllFile(path+"/"+fileName[i]);
+               file.delete();
+           }else{
+               file.delete();
+                       }
                   }
         map.put("status", "200");
         return JSON.toJSONString(map);
 
 
     } 
+    @RequestMapping(value = { "storage/unZipFile.do" }, method = RequestMethod.GET)
+    @ResponseBody
+    public String unZipFile(String storageName,String fileName,String path){
+        Map map = new HashMap();
+        try {
+            CmdUtil.exeCmd( "unzip -o "+fileName, path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+    }
+    
 //    public static void main(String[] args) {
 //        try {
 //            CephController ccl = new CephController();

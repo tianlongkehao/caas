@@ -150,62 +150,174 @@ function  creatable(isDir,path,dirName){
 	    				//alert(fileInfo.day);
 	    				if(fileInfo.fileName=='..'){
 			    				tbody+='<tr class="vol_list" style="cursor:pointer">'+
-									'<td style="text-indent: 14px;">'+
+									'<td style="width: 5%;text-indent: 14px;">'+
 									'</td>'+
-									'<td style="width: 40%;">'+
+									'<td style="width: 25%; text-indent: 30px;"  onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileName+'") >'+
 									'<a hrer="">'
 									if(true==fileInfo.dir){
 										tbody+='<img src="/images/img-file.png" >'
 									}else{
 										tbody+='<img src="/images/file-f.png" >'
 									 }
-									tbody+='<span style="margin-left:5px" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileName+'") >'+
+									tbody+='<span style="margin-left:5px"  >'+
 									fileInfo.fileName+'</span>'+
 									'</a>'+
 									'</td>'+
-									'<td style="width: 30%;">'+fileInfo.size+'</td>'+
-									'<td style="width: 26%;"></td>'+
+									'<td style="width: 20%;">'+fileInfo.size+'</td>'+
+									'<td style="width: 25%;"></td>'+
+									'<td style="width: 10%;text-indent: 56px;"></td>'+
 								'</tr>';
 	    				}else{
 			    				tbody+='<tr class="vol_list" style="cursor:pointer">'+
-									'<td style="text-indent: 14px;">'+
+									'<td style="width: 5%;text-indent: 14px;">'+
 									'<input type="checkbox" class="chkItem" name="downfiles" value="'+fileInfo.fileName+'" >'+
 									'</td>'+
-									'<td style="width: 40%;">'+
+									'<td style="width: 25%;text-indent: 30px;" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileName+'") >'+
 									'<a hrer="">'
 									if(true==fileInfo.dir){
 										tbody+='<img src="/images/img-file.png" >'
 									}else{
 										tbody+='<img src="/images/file-f.png" >'
 									 }
-			    				tbody+='<span style="margin-left:5px" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileName+'") >'+
+			    				tbody+='<span style="margin-left:5px"  >'+
 									fileInfo.fileName+'</span>'+
 									'</a>'+
 									'</td>'+
-									'<td style="width: 30%;">'+fileInfo.size+'KB</td>'+
-									'<td style="width: 26%;">'+fileInfo.modifiedTime+'</td>'+
-									'<td style="width: 26%;">'+fileInfo.modifiedTime+'</td>'+
+									'<td style="width: 20%;">'+fileInfo.size+'KB</td>'+
+									'<td style="width: 25%;">'+fileInfo.modifiedTime+'</td>'+
+									'<td style="width: 10%;text-indent: 56px;">'+'<a class="deleteButton" href="javascript:void(0)" onclick="delfile(this)"  fileName="'+fileInfo.fileName+'"> <i class="fa fa-trash fa-lg"></i></a>'+'</td>'+
 								'</tr>';
 	    				}
 	           
 	           $('#downfilepath').val(fileInfo.path);
 	        	} 
 	        	$('#mybody').html($(tbody)); 
-	        	
+	  	      //showDataTable();
 	        }
 		
 	      })
-	      showDataTable();
+
 	}
 }
 
 function showDataTable(){
-	 $('.dataTables-example').dataTable({
-	     "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
-		});
-	 $("#checkallbox").parent().removeClass("sorting_asc");
+	$('.dataTables-example').dataTable({
+		"aoColumnDefs" : [ {
+			"bSortable" : false,
+			"aTargets" : [ 0, 4 ]
+		} ],
+		"aaSorting": [[ 3, "desc" ]]
+	});
+	$("#checkallbox").parent().removeClass("sorting_asc");
 	 
 }
+//解压文件
+function unzipFile(){
+	var path =$('#downfilepath').val();
+	layer.open({
+		type:1,
+		content:'确定解压吗？',
+		title:'解压文件',
+		btn:['确定','取消'],
+		yes: function(index, layero){
+			var dirName=$('#newdir').val();
+			var fileNames = [];
+			obj = document.getElementsByName("downfiles");
+		    for (k in obj) {
+		        if (obj[k].checked) {
+		        	fileNames.push(obj[k].value);
+		        }
+		    }
+
+			$.ajax({
+        		type: "GET",
+           url: ctx + "/storage/unZipFile.do?path="+path+"&fileName="+fileNames+"&storageName=/"+storageName,
+        	});
+        	layer.close(index);
+        	creatable(null,null,null);
+		}
+	})
+}
+//新建文件夹
+function createdir(){
+	var storageName=$('#storageName').html();
+	var path =$('#downfilepath').val();
+	layer.open({
+		type:1,
+		content:$('#createdir-templat'),
+		title:'新建文件夹',
+		btn:['新建','取消'],
+		yes: function(index, layero){
+			var dirName=$('#newdir').val();
+			$.ajax({
+        		type: "POST",
+           url: ctx + "/storage/createFile.do?path="+path+"&dirName="+dirName+"&storageName=/"+storageName,
+        	});
+        	layer.close(index);
+        	creatable(null,null,null);
+		}
+	})
+}
+//删除某一行
+function delfile(obj){
+		var storageName=$('#storageName').html();
+		var fileName=$(obj).attr("fileName");
+		var path =$('#downfilepath').val();
+		layer.open({
+		        title: '删除卷组中的文件',
+		        content: '确定删除卷组中的文件？',
+		        btn: ['确定', '取消'],
+		        yes: function(index, layero){ 
+		        	$(obj).parent().parent().remove();
+		        	//refservice/delete.do
+		        	$.ajax({
+		        		type: "GET",
+		                url: ctx + "/storage/delFile.do?path="+path+"&fileNames="+fileName+"&storageName=/"+storageName,
+		        	});
+		        	layer.close(index);
+		        }
+	 })
+	 
+}
+//批量删除
+function delfiles(){
+		var storageName=$('#storageName').html();
+		var path =$('#downfilepath').val();
+		obj = document.getElementsByName("downfiles");
+		var fileNames = [];
+	    for (k in obj) {
+	        if (obj[k].checked) {
+	        	fileNames.push(obj[k].value);
+	        }
+	    }
+	 layer.open({
+		 			 title: '删除卷组中的文件',
+	        content: '确定删除卷组中的文件？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ 
+	        	layer.close(index);
+	        	if(""==fileNames){
+	        		alert("你总要选一个呀");
+	        		return;
+	        	}
+				$.ajax({
+					url:""+ctx+"/storage/delFile.do?path="+path+"&fileNames="+fileNames+"&storageName=/"+storageName,
+					success:function(data){
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.alert("服务已删除");
+							window.location.reload();
+						}else{
+							layer.alert("服务删除失败，请检查服务器连接");
+						}
+	
+					}
+				})
+	        }
+	 })
+	 
+}
+
 function loadStorageList(){
 	var url = ""+ctx+"/service/storageList";
 	var json = {pageable:"pageable"};

@@ -103,31 +103,34 @@
 											<div class="ibox-tools">
 												<a href="javascript:window.location.reload(true);"
 													id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
+												<a href="javascript:createdir()" id="adddir" title="新建"><i
+	                                          class="fa fa-plus"></i></a>  
 												<a  id="fileUpload" title="上传文件"><i
 													class="fa fa-upload"></i></a> <a id="fileDownload"
 													title="导出文件"><i class="fa fa-download"></i>
 													<input hidden="true" value="" id="downfilepath"/>
-													</a> <a
-													id="deleteButton" class="no-drop"
+													</a> 
+												<a id="deleteButton" class="no-drop"
 													href="javascript:delfiles()" title="删除"> <i
 													id="deleteButtonfile" class="fa fa-trash self_a"></i>
 												</a>
+												<a id="unzip" href="javascript:unzipFile()" title="解压zip文件"><i class="fa fa-hdd-o"></i></a>
 											</div>
 										</div>
-										<div class="ibox-content">
-											<table 
+										<div class="ibox-content" >
+											<table style="border-collapse:collapse;margin:0 auto;"
 												class="table table-stripped table-hover dataTables-example">
-												<thead>
+												<thead style="display:block;">
 													<tr>
 														<th style="width: 5%;text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
 														<th style="width: 25%; text-indent: 30px;">文件名</th>
 														<th style="width: 20%; text-indent: 15px;">大小</th>
 														<th style="width: 25%; text-indent: 8px;">修改日期</th>
-														<th style="width: 10%; text-indent: 10px;"
+														<th style="width: 10%; text-indent: 100px;"
 															class="del-operation">操作</th>
 													</tr>
 												</thead>
-												<tbody id="mybody">
+												<tbody id="mybody" style="overflow-y:auto; height:400px;display:block;width:100%">
 
 												</tbody>
 												<tfoot class="hide">
@@ -154,6 +157,11 @@
                    </form>
                  </div>
             </div>
+            <div id="createdir-templat" hidden="true">
+                <div style="width: 345px; margin: 5px 10px 5px 10px">
+                     <p>新建文件夹名字：<input type="text" name="newdir" id="newdir" /></p>
+                 </div>
+            </div>
 					</section>
 
 				</div>
@@ -161,14 +169,7 @@
 		</article>
 	</div>
 	<script type="text/javascript">
-		$('.dataTables-example').dataTable({
-			"aoColumnDefs" : [ {
-				"bSortable" : false,
-				"aTargets" : [ 0, 4 ]
-			} ],
-			"aaSorting": [[ 3, "desc" ]]
-		});
-		$("#checkallbox").parent().removeClass("sorting_asc"); 
+		 
 	
 		document.getElementById('fileDownload').onclick = function(){
 	        var directory = document.getElementById('downfilepath').value;
