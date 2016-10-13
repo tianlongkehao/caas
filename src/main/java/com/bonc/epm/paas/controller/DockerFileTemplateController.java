@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
@@ -89,6 +90,20 @@ public class DockerFileTemplateController {
         model.addAttribute("dockerFileTemp", dockerFileTemp);
         model.addAttribute("menu_flag", "template"); 
         return "template/dockerfile-edit.jsp";
+    }
+    
+    /**
+     * Description: <br>
+     * 进入dockerfile详细页面
+     * @param index id
+     * @param model modle
+     * @return String
+     */
+    @RequestMapping(value = "/dockerfile/content", method = RequestMethod.GET)
+    @ResponseBody
+    public String getockerfile(long id, Model model){
+        DockerFileTemplate dockerFileTemp = dockerFileTemplateDao.findOne(id);
+        return JSON.toJSONString(dockerFileTemp).replace("&gt;", ">").replace("&lt;", "<").replace("&quot", " ");
     }
     
     /**

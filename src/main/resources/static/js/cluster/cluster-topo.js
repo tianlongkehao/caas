@@ -269,7 +269,3 @@ function showTopo(nodeDataTopo,linksDataTopo) {
 	        }
 	    ); 
 }
-
-
-
-

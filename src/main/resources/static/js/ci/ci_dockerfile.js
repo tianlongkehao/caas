@@ -38,7 +38,19 @@ $(document).ready(
 		        //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
 		        $(this).toggleClass("focus");//设定当前行为选中行
 		        $(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
-		        dockerFile = $(this).parent().find("tr.focus").find(".dockerFileTemplate").val();
+				$.ajax({
+					url : ctx + "/template/dockerfile/content",
+					type : "GET",
+					data : {
+						"id":$(this).parent().find("tr.focus").find(".dockerFileTemplate").val()
+					},
+					success : function(data) {
+						data = eval("(" + data + ")");
+						if (data != null) {
+							dockerFile = data.dockerFile;
+						}
+					}
+				});
 		    });
 
 			// 导入模板
@@ -131,7 +143,7 @@ $(document).ready(
 	                		var dockerFile = data.data[i];
 	                		html += "<tr>"+
 	                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
-	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.dockerFile+"' /></td>"+
+	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
 	                			"</tr>"
 	                	}
 		            } 
