@@ -34,8 +34,20 @@
                         <a id="clusterResource" class="Record action"><span class="btn btn-defaults btn-white"><span
                                 class="ic_left">集群拓扑</span></span></a>
                     </div>
+                    <c:if test="${user == 1 }">
+	                    <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; margin-top:20px; float: right"
+	                             align="right">
+                            <label style="line-height: 35px">租户:</label>
+                            <select name="search_user" id="search_user" onchange="searchUser(this)"
+                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
+                                <c:forEach items="${userList}" var="user">
+                                    <option value="${user.namespace }">${user.namespace }</option>
+                                </c:forEach>
+                            </select>
+	                   </div>
+                   </c:if>
                 </aside>
-                <div class="caption clearfix" style="padding-bottom: 0px">
+                <div class="caption clearfix " style="padding-bottom: 0px">
                     <ul class="toolbox clearfix hide">
                         <li><a id="updateCluster" style="cursor:pointer"><i
                                 class="fa fa-repeat"></i></a></li>
