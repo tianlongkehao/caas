@@ -34,14 +34,8 @@
                         <a id="clusterResource" class="Record action"><span class="btn btn-defaults btn-white"><span
                                 class="ic_left">集群拓扑</span></span></a>
                     </div>
-                </aside>
-                <div class="caption clearfix" style="padding-bottom: 0px">
-                    <ul class="toolbox clearfix hide">
-                        <li><a id="updateCluster" style="cursor:pointer"><i
-                                class="fa fa-repeat"></i></a></li>
-                    </ul>
                     <form id="search_form" class="form-inline" action="<%=path %>/user/searchByCondition" method="post">
-                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; float: right"
+                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; float: right; margin-top:20px"
                              align="right">
                             <label style="line-height: 35px">租户:</label>
                             <select name="search_time" id="search_time" onchange="searchTime()"
@@ -51,14 +45,20 @@
                                 
                             </select>
                         </div>
-
                     </form>
+                </aside>
+                <div class="caption clearfix" style="padding-bottom: 0px">
+                    <ul class="toolbox clearfix hide">
+                        <li><a id="updateCluster" style="cursor:pointer"><i
+                                class="fa fa-repeat"></i></a></li>
+                    </ul>
+                    
                 </div>
                 <div>
                     <div id="clusterResource_wrap" class="tab_wrap">
                         <div class="detail-info">
                         	<div class="info-list" id="resourceImg">
-                        		<div id="clusterTopo" style="height:500px;"></div>
+                        		<div id="clusterTopo" style="height:800px;"></div>
                         		<!-- <div id ="can" style="width:100%; border:1px dashed #cccccc">
                         			<canvas id="canvas" width="1248px" height="450px"></canvas>
                         		</div> -->		
@@ -72,10 +72,5 @@
         </div>
     </article>
 </div>
-
-
-
 </body>
-
-
 </html>

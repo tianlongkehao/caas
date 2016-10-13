@@ -196,6 +196,11 @@
                         容器监控
                     </a>
                 </li>
+                <li id="" action="">
+                    <a href="<%=path %>/cluster/topo">
+                            集群拓扑
+                    </a>
+                </li>
             </ul>
         </li>
         </c:if>
