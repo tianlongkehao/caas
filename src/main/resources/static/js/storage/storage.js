@@ -29,6 +29,7 @@ function loadStorageList(){
         				storage.mountPoint = "未挂载";
         			}
         			itemsHtml += ' <tr class="ci-listTr" style="cursor:auto">'+
+        							'<td style="width: 5%; text-indent: 30px;"><input type="checkbox" class="chkItem" name="chkItem" /></td>'+
         							' <td style="width: 15%; text-indent:30px;" id = "storageName">'+
         							'<a href="'+ctx+'/service/storage/detail/'+storage.id+'" title="查看详细信息">'+storage.storageName +'</a>'+
         							'</td>'+
@@ -38,11 +39,11 @@ function loadStorageList(){
         							//' <td style="width: 10%;">' + storage.format + '</td>'+
         							' <td style="width: 15%; text-indent:8px;word-wrap:break-word;word-break:break-all;">' + storage.mountPoint + '</td>'+
         							' <td style="width: 15%; text-indent:10px;">' + storage.storageSize + ' M</td>'+
-        							' <td style="width: 10%;">' + storage.createDate + '</td>'+
-        							' <td style="width: 20%; text-indent:10px;">' +
-        							' <span class="btn btn-primary format formatStorage" storageName="'+storage.storageName +'" isVolReadOnly="'+storage.volReadOnly+'"> 格式化 </span>'+
-    									' <span class="btn btn-primary dilation dilatationStorage" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'">扩容</span>'+
-    									' <span class="btn btn-primary delete deleteStorage" storageId="'+storage.id +'"> 删除 </span>'+
+        							' <td style="width: 15%;">' + storage.createDate + '</td>'+
+        							' <td style="width: 10%; text-indent:5px;">' +
+        							' <a class="format formatStorage" title="格式化" storageName="'+storage.storageName +'" isVolReadOnly="'+storage.volReadOnly+'"><i class="fa fa-eraser"></i></a>'+
+    									' <a class="dilation dilatationStorage" style="margin-left: 5px" title="扩容" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'"><i class="fa fa-arrows"></i></a>'+
+    									' <a class="delete deleteStorage" style="margin-left: 5px" title="删除" storageId="'+storage.id +'"><i class="fa fa-trash"></i></a>'+
         							'</td>'+	
         						+'</tr>';
         	}
@@ -50,8 +51,13 @@ function loadStorageList(){
         	mountLocalCeph();
 		}
 		$('.dataTables-example').dataTable({
-	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 5 ] }]
+			"aoColumnDefs" : [ {
+				"bSortable" : false,
+				"aTargets" : [ 0, 6 ]
+			} ],
+			"aaSorting": [[ 5, "desc" ]]
 		});
+		$("#checkallbox").parent().removeClass("sorting_asc");
 		}
 	});
 	

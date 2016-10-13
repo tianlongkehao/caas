@@ -35,23 +35,28 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="<%=path %>/service/storage/add" id="storageAdd" title="创建存储卷"><i
-											class="fa fa-plus"></i></a>
 										<a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
+										<a href="<%=path %>/service/storage/add" id="storageAdd" title="创建存储卷"><i
+											class="fa fa-plus"></i></a>
+										<a href="" id="storagedel" title="删除存储卷"><i
+											class="fa fa-trash"></i></a>
 									</div>
 								</div>
 								<div class="ibox-content">
 									<table class="table table-stripped table-hover dataTables-example">
 										<thead>
 											<tr>
+												<th style="width: 5%; text-indent: 30px;"><input
+													type="checkbox" autocomplete="off" class="chkAll"
+													id="checkallbox" /></th>
 												<th style="width: 15%;text-indent:30px;">名称</th>
 	                                            <th style="width: 15%;text-indent: 15px;">使用状态</th>
 	                                            <!-- <th style="width: 10%;text-indent: 20px;">格式</th> -->
 	                                            <th style="width: 15%;text-indent: 8px;">挂载点</th>
 	                                            <th style="width: 15%;text-indent: 10px;">大小</th>
-	                                            <th style="width: 10%;">创建时间</th>
-	                                            <th style="width: 20%;text-indent: 10px;" class="del-operation">操作</th>
+	                                            <th style="width: 15%;">创建时间</th>
+	                                            <th style="width: 10%;text-indent: 5px;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="storageList">
@@ -59,7 +64,7 @@
 										</tbody>
 										<tfoot class="hide">
 											<tr>
-												<td colspan="6">
+												<td colspan="7">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>

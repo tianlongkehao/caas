@@ -15,10 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.bonc.epm.paas.dao.CiRecordDao;
-import com.bonc.epm.paas.docker.api.DockerRegistryAPI;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.Image;
-import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
@@ -66,9 +64,9 @@ public class DockerClientService {
 	 * @return 
 	 * @see
 	 */
-	public DockerRegistryAPI getDockerRegistryAPIClient() {
+/*	public DockerRegistryAPI getDockerRegistryAPIClient() {
         return new RestFactory().createDockerRegistryAPI(serverAddress, username, password);
-	}
+	}*/
 	
 	/**
 	 * 

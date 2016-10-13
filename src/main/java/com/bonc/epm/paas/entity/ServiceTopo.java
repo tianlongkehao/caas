@@ -11,6 +11,8 @@
 
 package com.bonc.epm.paas.entity;
 
+import java.util.List;
+
 public class ServiceTopo {
     /**
      * 服务名称
@@ -21,6 +23,19 @@ public class ServiceTopo {
      * namespace
      */
     private String namespace;
+    
+    /**
+     * podName
+     */
+    private List<String> podName;
+
+    public List<String> getPodName() {
+        return podName;
+    }
+
+    public void setPodName(List<String> podName) {
+        this.podName = podName;
+    }
 
     public String getServiceName() {
         return serviceName;
