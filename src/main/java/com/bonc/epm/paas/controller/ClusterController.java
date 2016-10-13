@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
+import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
 import com.bonc.epm.paas.entity.PodTopo;
@@ -84,7 +85,13 @@ public class ClusterController {
      */
     @Autowired
 	private ClusterDao clusterDao;
-
+    
+    /**
+     * userDao 数据库操作接口
+     */
+    @Autowired
+    private UserDao userDao;
+    
     /**
      * 获取配置文件中的 yumConf.io.address 的数据信息；
      */
@@ -177,14 +184,22 @@ public class ClusterController {
      */
     @RequestMapping(value = { "/topo" }, method = RequestMethod.GET)
 	public String clusterTopo(Model model) {
-        
+        User currentUser = CurrentUserUtils.getInstance().getUser();
+        if (!currentUser.getUserName().equals("admin")) {
+            model.addAttribute("user", "0");
+        } 
+        else {
+            List<User> userList = userDao.checkUser(currentUser.getId());
+            model.addAttribute("user", "1");
+            model.addAttribute("userList", userList);
+        }
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster-topo.jsp";
     }
     
     @RequestMapping(value = { "/topo/data.do" }, method = RequestMethod.GET)
     @ResponseBody
-    public String clusterTopoData(){
+    public String clusterTopoData(String nameSpace){
      // 创建client
         KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
         //以node节点名称为key，node节点中包含的pod信息为value；
@@ -200,23 +215,30 @@ public class ClusterController {
             List<PodTopo> podTopoList = new ArrayList<PodTopo>();
             nodeMap.put(minionName +"/"+ hostIp, podTopoList);
         }
-        
-        User currentUser = CurrentUserUtils.getInstance().getUser();
-        if (currentUser.getNamespace().equals("admin")) {
-            // 取得所有NAMESPACE
-            NamespaceList namespaceList = client.getAllNamespaces();
-            for (Namespace namespace : namespaceList.getItems()) {
-                String name = namespace.getMetadata().getName();
-                //添加pod数据
-                addPodTopo(name,nodeMap);
-                //添加service数据
-                addServiceTopo(name,serviceTopoList);
-            }
-        } else {
+        if (nameSpace != null) {
             //添加pod数据
-            addPodTopo(currentUser.getNamespace(),nodeMap);
+            addPodTopo(nameSpace,nodeMap);
             //添加service数据
-            addServiceTopo(currentUser.getNamespace(),serviceTopoList);
+            addServiceTopo(nameSpace,serviceTopoList);
+        }
+        else {
+            User currentUser = CurrentUserUtils.getInstance().getUser();
+            if (currentUser.getNamespace().equals("admin")) {
+                // 取得所有NAMESPACE
+                NamespaceList namespaceList = client.getAllNamespaces();
+                for (Namespace namespace : namespaceList.getItems()) {
+                    String name = namespace.getMetadata().getName();
+                    //添加pod数据
+                    addPodTopo(name,nodeMap);
+                    //添加service数据
+                    addServiceTopo(name,serviceTopoList);
+                }
+            } else {
+                //添加pod数据
+                addPodTopo(currentUser.getNamespace(),nodeMap);
+                //添加service数据
+                addServiceTopo(currentUser.getNamespace(),serviceTopoList);
+            }
         }
         
         System.out.println(nodeMap.toString());

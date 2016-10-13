@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,14 +58,16 @@ public class IndexController {
      */
     @Autowired
 	private UserDao userDao;
-	
+    @Value("${login.showAuthCode}")
+    private boolean showAuthCode;	
     /**
      * Description: <br>
      * 跳转登录页面
      * @return login.jsp
      */
     @RequestMapping(value={"login"},method=RequestMethod.GET)
-	public String login(){
+	public String login(Model model){
+        model.addAttribute("showAuthCode", showAuthCode);
         return "login.jsp";
     }
 	
@@ -157,9 +160,11 @@ public class IndexController {
     @RequestMapping(value="signin",method=RequestMethod.POST)
 	public String login(User user, RedirectAttributes redirect,String authCode,HttpServletRequest request){
         try {
-            String judgeCode = (String)request.getSession().getAttribute("strCode");
-            if (!judgeCode.equals(authCode.toUpperCase())) {
-                throw new ServiceException("验证码输入错误");
+            if (showAuthCode) {
+                String judgeCode = (String)request.getSession().getAttribute("strCode");
+                if (!judgeCode.equals(authCode.toUpperCase())) {
+                    throw new ServiceException("验证码输入错误");
+                } 
             }
             user = login(user);
         }
