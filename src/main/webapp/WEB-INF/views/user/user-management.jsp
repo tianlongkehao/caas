@@ -36,7 +36,6 @@
 										<div class="ibox-tools">
 											<a href="<%=path %>/user/manage/add/${cur_user.id }"
 												id="userCreateBtn" title="创建用户"><i class="fa fa-plus"></i></a>
-											<a id="SearchBtn" title="搜索"><i class="fa fa-search"></i></a>
 											<a href="javascript:delUser()" title="删除"><i
 												class="fa fa-trash"></i></a>
 											<a href="javascript:window.location.reload(true);"
