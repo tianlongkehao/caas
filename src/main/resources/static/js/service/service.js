@@ -444,12 +444,25 @@ function oneDeleteContainer(id) {
 }
 
 // 响应每一行上的弹性伸缩
-function oneUpGradeContainer(id,containerName,nums) {
+function oneUpGradeContainer(id,containerName,nums,cpu,ram) {
 	 $('#upgradeServiceName').val(containerName);
 	 $('#numberChange').val(nums);
+	 
+	 var leftcpu = $("#leftcpu").html();
+	 var leftram = $("#leftram").html();
+	 
+	 var maxcpu = parseInt(leftcpu)/parseInt(cpu);
+	 var maxram = parseInt(leftram)/parseInt(ram);
+	 
 	 var total = 0;
-	 total = parseInt($('#numberChange').attr('max'))+parseInt(nums);
-	 $('#numberChange').attr("max",total);
+	 if (parseInt(maxcpu) > parseInt(maxram)) {
+		 total = maxram;
+	 } else {
+		 total = maxcpu;
+	 }
+	 
+	 total += parseInt(nums);
+	 $('#numberChange').attr("max",parseInt(total));
 	 $('#leftpod').text(total);
 
 	 layer.open({
@@ -459,9 +472,14 @@ function oneUpGradeContainer(id,containerName,nums) {
 		 btn: ['确定', '取消'],
 		 yes: function(index, layero){ //或者使用btn1
 		 	//按钮【按钮一】的回调
-			 layer.close(index);
 			 var num = $('#numberChange').val();
-			// alert(num);
+			 if (parseInt(num) > parseInt(total)) {
+				 layer.tips('租户资源不足',"#numberChange",{tips: [1, '#3595CC']});
+			     $("#numberChange").focus();
+				 return;
+			 }
+			 
+			 layer.close(index);
 			 $.ajax({
 					url:""+ctx+"/service/modifyServiceNum.do?id="+id+"&addservice="+num,
 					success:function(data){

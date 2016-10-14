@@ -182,7 +182,7 @@
                                                         </c:otherwise>
                                                     </c:choose>
 														<a id="${service.id}_scaleCluster" class="a-live scaleCluster_a " 
-															href="javascript:oneUpGradeContainer(${service.id },'${service.serviceName }',${service.instanceNum })" title="弹性伸缩"
+															href="javascript:oneUpGradeContainer(${service.id },'${service.serviceName }',${service.instanceNum },${service.cpuNum },${service.ram })" title="弹性伸缩"
 															style="margin-left: 5px">
 																<i class="fa fa-arrows"></i>
 														</a> 
