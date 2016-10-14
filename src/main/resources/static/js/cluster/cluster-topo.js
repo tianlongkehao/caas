@@ -206,7 +206,11 @@ function showTopo(nodeDataTopo,linksDataTopo) {
 	            	    },
 	            	    legend: {
 	            	        x: 'left',
-	            	        data:['master','node','pod','service']
+	            	        data:['master','node','pod','service'],
+	            	        selected: {
+	            	            'pod' : false,
+	            	            'service' : false
+	            	        },
 	            	    }, 
 	            	    series : [
 	            	        {
