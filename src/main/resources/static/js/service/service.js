@@ -444,12 +444,25 @@ function oneDeleteContainer(id) {
 }
 
 // 响应每一行上的弹性伸缩
-function oneUpGradeContainer(id,containerName,nums) {
+function oneUpGradeContainer(id,containerName,nums,cpu,ram) {
 	 $('#upgradeServiceName').val(containerName);
 	 $('#numberChange').val(nums);
+	 
+	 var leftcpu = $("#leftcpu").html();
+	 var leftram = $("#leftram").html();
+	 
+	 var maxcpu = parseInt(leftcpu)/parseInt(cpu);
+	 var maxram = parseInt(leftram)/parseInt(ram);
+	 
 	 var total = 0;
-	 total = parseInt($('#numberChange').attr('max'))+parseInt(nums);
-	 $('#numberChange').attr("max",total);
+	 if (parseInt(maxcpu) > parseInt(maxram)) {
+		 total = maxram;
+	 } else {
+		 total = maxcpu;
+	 }
+	 
+	 total += parseInt(nums);
+	 $('#numberChange').attr("max",parseInt(total));
 	 $('#leftpod').text(total);
 
 	 layer.open({
@@ -459,9 +472,14 @@ function oneUpGradeContainer(id,containerName,nums) {
 		 btn: ['确定', '取消'],
 		 yes: function(index, layero){ //或者使用btn1
 		 	//按钮【按钮一】的回调
-			 layer.close(index);
 			 var num = $('#numberChange').val();
-			// alert(num);
+			 if (parseInt(num) > parseInt(total)) {
+				 layer.tips('租户资源不足',"#numberChange",{tips: [1, '#3595CC']});
+			     $("#numberChange").focus();
+				 return;
+			 }
+			 
+			 layer.close(index);
 			 $.ajax({
 					url:""+ctx+"/service/modifyServiceNum.do?id="+id+"&addservice="+num,
 					success:function(data){
@@ -525,13 +543,13 @@ function oneVersionUpgrade(id,serviceName,imgName) {
 }
 
 // 响应每一行上的修改配置
-function oneChangeContainerConf(id,containerName,cpu,ram) {
+function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 	 $('#confServiceName').val(containerName);
 	 $('#confCpu').val(cpu);
 	 $('#confRamSlider_input').val(ram);
 	 var totalcpu = 0;
 	 var totalram = 0;
-	 totalcpu = parseInt($('#confCpu').attr('max'))+parseInt(cpu);
+	 totalcpu = parseInt($('#confCpu').attr('max'))+parseFloat(cpu);
 	 totalram = '1024';
 	 $('#confCpu').attr("max",totalcpu);
 	 //var confRamSlider = sliderFn('confRamSlider', totalram,0, Number(ram));
@@ -547,17 +565,36 @@ function oneChangeContainerConf(id,containerName,cpu,ram) {
 			 var cpus = $('#confCpu').val();
 			 var rams = $('#confRamSlider_input').val();
 			 var leftcpu = $("#leftcpu").html();
-			 if (parseInt(cpus) > parseInt(leftcpu)) {
-		    	 layer.tips('cpu剩余不足',"#confCpu",{tips: [1, '#3595CC']});
-			     $("#confCpu").focus();
-				 return;
-			 }
 			 var leftmemory = $("#leftram").html();
-			 if (parseInt(rams) > parseInt(leftmemory)) {
-				 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
-				 $("#confRamSlider_input").focus();
-				 return;
+			 //服务在运行中
+			 if (status == 3) {
+				 
+				 if ((parseFloat(cpus)*parseFloat(instanceNum)) > ( parseFloat(leftcpu) + parseFloat(cpu)*parseFloat(instanceNum))) {
+					 layer.tips('cpu剩余不足,pod数量为'+instanceNum,"#confCpu",{tips: [1, '#3595CC']});
+					 $("#confCpu").focus();
+					 return;
+				 }
+			 
+				 if ((parseFloat(rams)*parseFloat(instanceNum)) > (parseFloat(leftmemory) + parseFloat(ram)*parseFloat(instanceNum) )) {
+					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
+					 $("#confRamSlider_input").focus();
+					 return;
+				 }
+			 } else {
+				 if ((parseFloat(cpus)*parseFloat(instanceNum)) > parseFloat(leftcpu)) {
+					 layer.tips('cpu剩余不足,pod数量为'+instanceNum,"#confCpu",{tips: [1, '#3595CC']});
+					 $("#confCpu").focus();
+					 return;
+				 }
+				 
+				 if ((parseFloat(rams)*parseFloat(instanceNum)) > parseFloat(leftmemory)) {
+					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
+					 $("#confRamSlider_input").focus();
+					 return;
+				 }
 			 }
+			 
+			 
 			 layer.close(index);
 			 $.ajax({
 					url:""+ctx+"/service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,

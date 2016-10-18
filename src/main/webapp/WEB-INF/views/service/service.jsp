@@ -182,7 +182,7 @@
                                                         </c:otherwise>
                                                     </c:choose>
 														<a id="${service.id}_scaleCluster" class="a-live scaleCluster_a " 
-															href="javascript:oneUpGradeContainer(${service.id },'${service.serviceName }',${service.instanceNum })" title="弹性伸缩"
+															href="javascript:oneUpGradeContainer(${service.id },'${service.serviceName }',${service.instanceNum },${service.cpuNum },${service.ram })" title="弹性伸缩"
 															style="margin-left: 5px">
 																<i class="fa fa-arrows"></i>
 														</a> 
@@ -203,7 +203,7 @@
                                                           </c:otherwise>
                                                        </c:choose>
 														<a id="${service.id}_changeConfiguration" class="a-live changeConfiguration_a " 
-															href="javascript:oneChangeContainerConf(${service.id },'${service.serviceName }',${service.cpuNum },${service.ram });" title="更改配置"
+															href="javascript:oneChangeContainerConf(${service.id },'${service.serviceName }',${service.instanceNum },${service.cpuNum },${service.ram },${service.status });" title="更改配置"
 															style="margin-left: 5px">
 																<i class="fa fa-cog"></i>
 														</a> 														
@@ -293,7 +293,7 @@
 							min="${cpumin }"
 							max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
 							id="confCpu" name="confCpu"> <span class="unit">个</span>
-						<span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" >${leftcpu }</label></span>
+						<span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" >${leftcpu>0?leftcpu:0 }</label></span>
 					</div>
 				</li>
 				<li class="line-h-3 c-ser">
