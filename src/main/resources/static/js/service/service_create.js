@@ -543,7 +543,7 @@ $(document).ready(function(){
 	                        	
 		                        html += "<li class='image-item'><span class='img_icon span2'>"+
 								"<img src='"+ctx+"/images/image-1.png'>"+
-						"</span> <span class='span5 type' type='database'>"+
+						"</span> <span class='span5 type span5add' type='database'>"+
 								"<div class='list-item-description'>"+
 									"<div class='name h4'>"+
 										""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"../registry/detail/"+image.id+"'>"+
@@ -761,7 +761,7 @@ function loadImageList() {
                         	
 	                        html += "<li class='image-item'><span class='img_icon span2'>"+
 							"<img src='"+ctx+"/images/image-1.png'>"+
-					"</span> <span class='span5 type' type='database'>"+
+					"</span> <span class='span5 type span5add' type='database'>"+
 							"<div class='list-item-description'>"+
 								"<div class='name h4'>"+
 									""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"/registry/detail/"+image.id+"'>"+

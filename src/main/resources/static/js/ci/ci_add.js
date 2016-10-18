@@ -86,7 +86,6 @@ $(document).ready(function () {
         var imgNameVersion = $("#imgNameVersion").val().trim();
         var projectName = $('#projectName').val().trim();
         var description = $('#description').val().trim();
-
         // 验证仓库名称
         imgNameLast = imgNameLast.toLowerCase();
         $('#imgNameLast').val(imgNameLast);
@@ -138,20 +137,6 @@ $(document).ready(function () {
         	return false;
         }
         
-       //如果有codeUrl 则 验证codeUrl
-
-        if($('#codeUrl').length>0){
-	        var codeUrl = $('#codeUrl').val().trim();
-	        if ($('#codeUrl').attr('type') !== 'hidden') {
-	            if(codeUrl.length === 0){
-	                layer.tips('代码仓库地址不能为空', '#codeUrl', {
-	                    tips: [1, '#0FA6D8'] //还可配置颜色
-	                });
-	                $('#codeUrl').focus();
-	                return false;
-	            }
-	        }
-        }
         // 验证简介
         if(description.length === 0){
             layer.tips('项目简介不能为空', '#description', {
@@ -160,6 +145,33 @@ $(document).ready(function () {
             return false;
             $('#description').focus();
         }
+        
+        //如果有codeUrl 则 验证codeUrl
+        if($('#codeUrl').length>0){
+        	var codeUrl = $('#codeUrl').val().trim();
+        	if ($('#codeUrl').attr('type') !== 'hidden') {
+        		if(codeUrl.length === 0){
+        			layer.tips('代码仓库地址不能为空', '#codeUrl', {
+        				tips: [1, '#0FA6D8'] //还可配置颜色
+        			});
+        			$('#codeUrl').focus();
+        			return false;
+        		}
+        	}
+        }
+        
+        //如果有上传代码，则验证上传代码是否为空
+        if ($('#sourceCode').length > 0) {
+        	var sourceCode = $('#sourceCode').val().trim();
+        	if(sourceCode.length === 0){
+    			layer.tips('上传代码不能为空', '#sourceCode', {
+    				tips: [1, '#0FA6D8'] //还可配置颜色
+    			});
+    			$('#sourceCode').focus();
+    			return false;
+    		}
+        }
+        
         // 验证项目名称
         if(projectName.length === 0){
             layer.tips('项目名称不能为空', '#projectName', {

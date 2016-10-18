@@ -1937,7 +1937,12 @@ public class ServiceController {
         Map<String, Object> datamap = new HashMap<String, Object>();
 
         try {
-        	logStr = client.getPodLog(podName, container, false, sinceTime, false);
+        	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000000000Z'");
+        	Calendar calendar = Calendar.getInstance();
+        	calendar.setTime(simpleDateFormat.parse(sinceTime));
+        	calendar.add(Calendar.MINUTE, -3);
+        	String sinceTime3 = simpleDateFormat.format(calendar.getTime());
+        	logStr = client.getPodLog(podName, container, false, sinceTime3, false);
         	logStr = logStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
             datamap.put("logStr", logStr);
