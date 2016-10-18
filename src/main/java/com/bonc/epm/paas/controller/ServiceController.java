@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.server.PathParam;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1993,5 +1994,23 @@ public class ServiceController {
         catch (Exception e) {
         	LOG.error("日志读取错误：" + e);
         }
+    }
+
+    /**
+     * Description: <br>
+     *  跳转进入服务DEBUG页面
+     * @param model 
+     * @return String
+     */
+    @RequestMapping(value = { "service/debug/{id}" }, method = RequestMethod.GET)
+	public String debug(Model model,@PathVariable long id) {
+	    System.out.printf("id: " + id);
+	    User currentUser = CurrentUserUtils.getInstance().getUser();
+	    Service service = serviceDao.findOne(id);
+        model.addAttribute("namespace",currentUser.getNamespace());
+        model.addAttribute("id", id);
+        model.addAttribute("service", service);
+        model.addAttribute("menu_flag", "service");
+       return "service/service-debug.jsp";
     }
 }

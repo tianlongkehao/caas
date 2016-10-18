@@ -207,6 +207,11 @@
 															style="margin-left: 5px">
 																<i class="fa fa-cog"></i>
 														</a> 														
+														<a id="${service.id}_changeConfiguration" class="a-live changeConfiguration_a " 
+															href="<%=path %>/service/debug/${service.id}" title="更改配置"
+															style="margin-left: 5px">
+																<i class="fa fa-cog"></i>
+														</a> 														
 														<a id="${service.id}_del" class="a-live deleteButton_a "
 															href="javascript:oneDeleteContainer(${service.id})"
 															style="margin-left: 5px" title="删除"> 
