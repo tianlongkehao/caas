@@ -61,8 +61,8 @@ $(document).ready(function(){
 			      $('#checkSerStatus_input').focus();
 			      return;
 			}
-		    if(checkPath.search(/^[a-zA-Z][a-zA-Z0-9-\/]*$/) === -1){
-		      layer.tips('测试路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+		    if(checkPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+		      layer.tips('测试路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
 		      $('#checkSerStatus_input').focus();
 		      return;
 		    }
@@ -79,8 +79,8 @@ $(document).ready(function(){
 		      $('#webPath').focus();
 		      return;
 		}
-	    if(servicePath.search(/^[a-zA-Z][a-zA-Z0-9-\/]*$/) === -1){
-	      layer.tips('服务路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#webPath',{tips: [1, '#3595CC'],time: 3000});
+	    if(servicePath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+	      layer.tips('服务路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#webPath',{tips: [1, '#3595CC'],time: 3000});
 	      $('#webPath').focus();
 	      return;
 	    }
@@ -97,13 +97,13 @@ $(document).ready(function(){
 		      $('#nginxPath').focus();
 		      return;
 		}
-	    if(proxyPath.search(/^[a-zA-Z][a-zA-Z0-9-\/]*$/) === -1){
-		      layer.tips('服务路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+	    if(proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+		      layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
 		      $('#nginxPath').focus();
 		      return;
 	    }
 	    if(proxyPath.length > 64 || proxyPath.length < 3){
-	      layer.tips('服务路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+	      layer.tips('nginx代理路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
 	      $('#nginxPath').focus();
 	      return;
 	    }
