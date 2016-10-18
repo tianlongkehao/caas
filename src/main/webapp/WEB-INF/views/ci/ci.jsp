@@ -144,7 +144,7 @@
                                                     <a target="_blank" title="" class="${cursorClass}"  ${hrefValue}>${ci.imgNameFirst}/${ci.imgNameLast}:${ci.imgNameVersion}</a>
                                                 </td>
                                                 <td style="width:10%; text-indent:10px;">
-                                                    <span class="bj-build ${btnCursorClass}" data-toggle="tooltip" data-placement="right" title="构建" data-original-title="重新构建" constructionStatus="${ci.constructionStatus}"  ciId="${ci.id}"><i class="fa fa-arrow-circle-right"></i></span>
+                                                    <span class="bj-green ${btnCursorClass}" data-toggle="tooltip" data-placement="right" title="构建" data-original-title="重新构建" constructionStatus="${ci.constructionStatus}"  ciId="${ci.id}"><i class="fa fa-arrow-circle-right"></i></span>
                                                 </td>
                                             </tr>
 
