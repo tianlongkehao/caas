@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>代码构建</title>
+    <title>快速构建</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
     <script type="text/javascript" src="<%=path %>/js/ci/ci_add.js"></script>

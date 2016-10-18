@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-<title>上传构建</title>
+<title>Dockerfile构建</title>
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
 <link rel="stylesheet" type="text/css"

@@ -129,9 +129,7 @@ $(document).ready(function(){
             var un = userName.toLowerCase();
             console.info(un);
             $("#userName").val(un);
-            $.get(
-                "/user/checkUsername/" + un,
-                function (data, status) {
+            $.get("/user/checkUsername/" + un,function (data, status) {
                     console.info("Data: " + data + "\nStatus: " + status);
                     var data = eval("(" + data + ")");
                     if (data.status == "400") {
