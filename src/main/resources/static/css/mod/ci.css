@@ -38,9 +38,9 @@
     color: #fff;
 }
 
-.bj-green i{
-    color:#fff;
-    font-size:18px
+.bj-build i{
+    color:#3c7bca;
+    font-size:21px
 }
 
 .bj-drop{
@@ -476,4 +476,8 @@ tr.focus{
     border: 1px solid #eee;
     text-indent: 5px;
 }
-
+.fa-img{
+	background-color: #3c7bca;
+	border-radius: 2px;
+	width:17px;
+}
