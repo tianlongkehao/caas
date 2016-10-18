@@ -332,9 +332,16 @@ public class KubernetesClientService {
 		podMeta.setName(name);
 		Map<String,String> labels = new HashMap<String,String>();
 		labels.put("app", name);
-		labels.put("servicePath", servicePath);
-		labels.put("proxyPath", proxyPath);
-		labels.put("healthcheck", checkPath);
+		if (StringUtils.isNotBlank(servicePath)) {
+		    labels.put("servicePath", servicePath.replaceAll("/", "---")); 
+		}
+		if (StringUtils.isNotBlank(proxyPath)) {
+		    labels.put("proxyPath", proxyPath.replaceAll("/", "---"));
+		}
+		// 添加服务检查路径
+		if (StringUtils.isNotBlank(checkPath)) {
+		    labels.put("healthcheck", checkPath.replaceAll("/", "---"));  
+		}
 		if (StringUtils.isNotBlank(nginxObj)) {
 			String[] proxyArray = nginxObj.split(",");
 			for (int i = 0; i < proxyArray.length;i++) {
@@ -444,47 +451,50 @@ public class KubernetesClientService {
 	}
 	
 	public Service generateService(String appName,List<PortConfig> portConfigs, 
-            																	String proxyZone, String servicePath, String proxyPath){
-			Service service = new Service();
-			ObjectMeta meta = new ObjectMeta();
-			meta.setName(appName);
-			Map<String,String> labels = new HashMap<String,String>();
-			labels.put("app", appName);
-			labels.put("servicePath", servicePath);
-			labels.put("proxyPath", proxyPath);
-			if (StringUtils.isNotBlank(proxyZone)) {
-			String[] proxyArray = proxyZone.split(",");
-			for (int i = 0; i < proxyArray.length;i++) {
-			labels.put(proxyArray[i], proxyArray[i]);
-			}
-			}
-			meta.setLabels(labels);
-			service.setMetadata(meta);
-			ServiceSpec spec = new ServiceSpec();
-			spec.setType("NodePort");
-			spec.setSessionAffinity("ClientIP");
-			
-			Map<String,String> selector = new HashMap<String,String>();
-			selector.put("app", appName);
-			spec.setSelector(selector);
-			if (CollectionUtils.isNotEmpty(portConfigs)) {
-			List<ServicePort> ports = new ArrayList<ServicePort>();
-			for (PortConfig oneRow : portConfigs) {
-			ServicePort portObj = new ServicePort();
-			portObj.setName("http");
-			portObj.setProtocol("TCP");
-			portObj.setPort(Integer.valueOf(oneRow.getContainerPort().trim()));
-			portObj.setTargetPort(Integer.valueOf(oneRow.getContainerPort().trim()));
-			portObj.setNodePort(Integer.valueOf(oneRow.getMapPort().trim()));
-			ports.add(portObj);
-			}
-			spec.setPorts(ports);
-}
-
-
-service.setSpec(spec);
-return service;
-}
+	                                       String proxyZone, String servicePath, String proxyPath){
+	    Service service = new Service();
+		ObjectMeta meta = new ObjectMeta();
+		meta.setName(appName);
+		Map<String,String> labels = new HashMap<String,String>();
+		labels.put("app", appName);
+		if (StringUtils.isNotBlank(servicePath)) {
+		    labels.put("servicePath", servicePath.replaceAll("/", "---"));
+		}
+		if (StringUtils.isNotBlank(proxyPath)) {
+		    labels.put("proxyPath", proxyPath.replaceAll("/", "---"));
+		}
+		
+		if (StringUtils.isNotBlank(proxyZone)) {
+		    String[] proxyArray = proxyZone.split(",");
+		    for (int i = 0; i < proxyArray.length;i++) {
+		        labels.put(proxyArray[i], proxyArray[i]);
+		    }
+		}
+		meta.setLabels(labels);
+		service.setMetadata(meta);
+		ServiceSpec spec = new ServiceSpec();
+		spec.setType("NodePort");
+		spec.setSessionAffinity("ClientIP");
+		
+		Map<String,String> selector = new HashMap<String,String>();
+		selector.put("app", appName);
+		spec.setSelector(selector);
+		if (CollectionUtils.isNotEmpty(portConfigs)) {
+		    List<ServicePort> ports = new ArrayList<ServicePort>();
+		    for (PortConfig oneRow : portConfigs) {
+		        ServicePort portObj = new ServicePort();
+		        portObj.setName("http"+portConfigs.indexOf(oneRow));
+		        portObj.setProtocol("TCP");
+		        portObj.setPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+		        portObj.setTargetPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+		        portObj.setNodePort(Integer.valueOf(oneRow.getMapPort().trim()));
+		        ports.add(portObj);
+		    }
+		    spec.setPorts(ports);
+		}
+		service.setSpec(spec);
+		return service;
+	}
 
 	
 	public Secret generateSecret(String name, String namespace, String key){
