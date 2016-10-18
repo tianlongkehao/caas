@@ -241,7 +241,7 @@
 }
 
 .image-item {
-    height: 99px;
+    height: 60px;
     border-top: 1px solid #e2e2e4;
     border-radius: 3px;
     color: #777;
@@ -252,7 +252,6 @@
     display: inline-block;
     text-align: center;
     float: left;
-    margin: 25px 0;
 }
 
 .img_icon > img {
@@ -261,7 +260,11 @@
 }
 
 .list-item-description {
-    margin-top: 25px;
+    /* margin-top: 25px; */
+}
+
+.span5add{
+	margin-top:10px;
 }
 
 .image-item .id {
