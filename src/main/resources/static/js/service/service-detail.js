@@ -208,7 +208,7 @@ function dropdownLog(obj){
 		url:ctx+"/service/detail/getPodlogs.do?&podName="+podName,
 		success:function(data){
 			data = $.parseJSON(data);
-			if(data.status == '200' && data.logList != ""){
+			if(data.status == '200' && data.logStr != ""){
 				
 				var containerlog = data.logStr;
 				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
