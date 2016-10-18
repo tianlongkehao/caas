@@ -29,16 +29,16 @@
 }
 
 .bj-green {
-    display: inline-block;
+    /* display: inline-block;
     padding: 5px 15px;
     border-radius: 2px;
     background: #13C563;
     text-indent: 0;
     cursor: pointer;
-    color: #fff;
+    color: #fff; */
 }
 
-.bj-build i{
+.bj-green i{
     color:#3c7bca;
     font-size:21px
 }
