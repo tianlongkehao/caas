@@ -159,63 +159,76 @@
 
                                 <%--资源配额--%>
                                 <div class="host_step2" >
-                                    <ul class="safeSet" style="margin-left: 270px">
-                                        <li class="line-h-3">
-                                            <div class="param-set">
-                                                <span class="number-title">CPU数量：</span>
-                                                <input type="text" value="${resource.cpu_account}" class="number" min="1" autocomplete="off"
-                                                       placeholder="1" id="cpu_account" name="cpu_account" style="width:350px">
-                                                <span class="unit">个</span>
-                                            </div>
-                                        </li>
-                                        <li class="line-h-3">
-                                            <div class="param-set">
-                                                <span class="number-title">内存：</span>
-                                                <input type="text" class="number" min="1" autocomplete="off"
-                                                       placeholder="1" id="ram" name="ram" style="width:350px" value="${resource.ram }">
-                                                <span class="unit">GB</span>
-                                            </div>
-                                        </li>
-                                        <li class="line-h-3">
-                                            <div class="param-set">
-                                                <span class="number-title">卷组容量：</span>
-                                                <input type="text" class="number" min="1" autocomplete="off"
-                                                       placeholder="1" id="vol" name="vol" style="width:350px" value="${user.vol_size }">
-                                                <span class="unit">GB</span>
-                                            </div>
-                                        </li>
-                                        <li class="line-h-3">
-                                            <div class="param-set">
-                                                <span class="number-title">Pod数量：</span>
-                                                <input type="text" value="${resource.pod_count}" class="number" min="1" autocomplete="off" disabled="disabled"
-                                                       placeholder="1" id="pod_count" name="pod_count" style="width:350px"> <span class="unit">个</span>
-                                            </div>
-                                        </li>
-                                        <li class="line-h-3">
-                                            <div class="param-set">
-                                                <span class="number-title">副本控制器：</span>
-                                                <input type="text" value="${resource.image_control}" class="number" min="1" autocomplete="off" disabled="disabled"
-                                                       placeholder="1" id="image_control" name="image_control" style="width:350px"> <span class="unit">个</span>
-                                            </div>
-                                        </li>
-                                        <li class="line-h-3">
-                                            <div class="param-set">
-                                                <span class="number-title">服务：</span>
-                                                <input type="text" value="${resource.server_count}" class="number" min="1" autocomplete="off" disabled="disabled"
-                                                       placeholder="1" id="server_count" name="server_count"  style="width:350px"> <span class="unit">个</span>
-                                            </div>
-                                        </li>
-										<li class="line-h-3">
-                                            <div class="param-set">
-                                                <span class="number-title">卷组挂载数量：</span>
-                                                <input type="text" value="1" class="number" min="1" autocomplete="off" disabled="disabled"
-                                                       placeholder="1" id="vol_count" name="vol_count" style="width:350px" > 
-                                                <span class="unit">个</span>
-                                            </div>
-                                        </li>
-                                        
-                                    </ul>
-                                    <div class="" style="padding-top: 100px">
+                                	<div class="blankapp" style="text-align: center">
+                                		<div class="row">
+											<div class="col-md-4" align="left">
+												<label style="width: 21%; float: left; line-height: 35px">CPU数量:</label>
+												<label style="width: 2%; float: left;"><font
+													color="red">*</font></label> <input type="number" value="${resource.cpu_account}"
+													class="number form-control" min="1" autocomplete="off"
+													placeholder="1" id="cpu_account" name="cpu_account"
+													style="width: 75%; display: inline; float: right;">
+												<span class="resource-unit">个</span>
+											</div>
+											<div class="col-md-4" align="left">
+												<label style="width: 21%; float: left; line-height: 35px">内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;存:</label>
+												<label style="width: 2%; float: left;"><font
+													color="red">*</font></label> <input type="number" value="${resource.ram }"
+													class="number form-control" min="1" autocomplete="off"
+													placeholder="1" id="ram" name="ram"
+													style="width: 75%; display: inline; float: right;">
+												<span class="resource-unit">GB</span>
+											</div>
+											<div class="col-md-4" align="left">
+												<label style="width: 21%; float: left; line-height: 35px">卷组容量:</label>
+												<label style="width: 2%; float: left;"><font
+													color="red">*</font></label> <input type="number" value="${user.vol_size }"
+													class="number form-control" min="1" autocomplete="off"
+													placeholder="1" id="vol" name="vol"
+													style="width: 75%; display: inline; float: right;">
+												<span class="resource-unit">GB</span>
+
+											</div>
+										</div>
+										<div class="row" style="margin-top: 15px">
+												<div class="col-md-4" align="left">
+													<label style="width: 21%; float: left; line-height: 35px">Pod数量:</label>
+													<input type="number" value="${resource.pod_count}" class="number form-control"
+														min="1" autocomplete="off" placeholder="1" id="pod_count"
+														name="pod_count"
+														style="width: 75%; display: inline; float: right;"
+														disabled> <span class="resource-unit">个</span>
+												</div>
+												<div class="col-md-4" align="left">
+													<label style="width: 21%; float: left; line-height: 35px">副本控制器:</label>
+													<input type="number" value="${resource.image_control}" class="number form-control"
+														min="1" autocomplete="off" placeholder="1"
+														id="image_control" name="image_control"
+														style="width: 75%; display: inline; float: right;"
+														disabled> <span class="resource-unit">个</span>
+												</div>
+												<div class="col-md-4" align="left">
+													<label style="width: 21%; float: left; line-height: 35px">服&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;务:</label>
+													<input type="number" value="${resource.server_count}" class="number form-control"
+														min="1" autocomplete="off" placeholder="1"
+														id="server_count" name="server_count"
+														style="width: 75%; display: inline; float: right;"
+														disabled> <span class="resource-unit">个</span>
+
+												</div>
+											</div>
+											<div class="row" style="margin-top: 15px">
+												<div class="col-md-4" align="left">
+													<label style="width: 21%; float: left; line-height: 35px">卷组挂载量:</label>
+													<input type="number" value="0" class="number form-control"
+														min="1" autocomplete="off" placeholder="1" id="vol_count"
+														name="vol_count"
+														style="width: 75%; display: inline; float: right;"
+														disabled> <span class="resource-unit">个</span>
+												</div>
+											</div>
+                                	</div>
+                                    <div class="" style="padding-top: 160px">
                                         <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>
                                         <span id="user_update_finishBtn" class="pull-right btn btn-primary pull_confirm">修改</span>
                                     </div>
