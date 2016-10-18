@@ -1964,7 +1964,7 @@ public class ServiceController {
      * @param request request
      * @param response response
      */
-    @RequestMapping(value ="/service/detail/getPodlogFile")
+    @RequestMapping(value ="/service/detail/getPodlogFile", method = RequestMethod.GET)
 	public void downloadPodlogFile(String podName,String container, HttpServletRequest request,HttpServletResponse response) {
         if (container == null) {
 			container = "";
