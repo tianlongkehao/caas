@@ -56,7 +56,7 @@ function loadContainers(obj) {
 									+ serviceID
 									+ '">'
 									+ '<td style="width: 5%">&nbsp;</td>'
-									+ '<td style="width: 20%;">'
+									+ '<td style="width: 15%;">'
 									+ '<a style="margin-left: 19px;" href="javascript:void(0)">'
 									+ containerName
 									+ '</a>'
