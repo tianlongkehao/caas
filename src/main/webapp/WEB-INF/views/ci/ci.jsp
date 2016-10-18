@@ -49,8 +49,8 @@
                                             <th style="width: 12%;text-indent: 15px;">构建状态</th>
                                             <th style="width: 15%;text-indent: 20px;">代码源</th>
                                             <th style="width: 12%;">上次构建时间</th>
-                                            <th style="width: 10%;text-indent: 8px;">持续时间</th>
-                                            <th style="width: 15%;text-indent: 10px;">镜像</th>
+                                            <th style="width: 7%;text-indent: 8px;">持续时间</th>
+                                            <th style="width: 18%;text-indent: 10px;">镜像</th>
                                             <th style="width: 18%;text-indent: 10px;">功能</th>
                                         </tr>
                                         </thead>
@@ -107,7 +107,7 @@
                                                 </c:when>
                                                 <c:otherwise>
                                                 	<c:set var="cursorClass" value=""></c:set>
-                                                	 <c:set var="hrefValue" value="href='<%=path %>/registry/detail/${ci.imgId }'"></c:set>
+                                                	 <c:set var="hrefValue"  value="href='/registry/detail/${ci.imgId }'"></c:set>
                                                 </c:otherwise>
                                             </c:choose>
 
@@ -133,9 +133,9 @@
 		                                            </c:choose>
                                                 </td>
                                                 <td style="width: 12%;"><fmt:formatDate value="${ci.constructionDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-                                                <td style="width: 10%;"><fmt:formatNumber type="number" value="${ci.constructionTime/1000}" maxFractionDigits="0"/>s</td>
-                                                <td style="width: 15%;">
-                                                    <a target="_blank" title="" class="${cursorClass}" ${hrefValue }>${ci.imgNameFirst}/${ci.imgNameLast}</a>
+                                                <td style="width: 7%;"><fmt:formatNumber type="number" value="${ci.constructionTime/1000}" maxFractionDigits="0"/>s</td>
+                                                <td style="width: 18%;">
+                                                    <a target="_blank" title="" class="${cursorClass}"  ${hrefValue}>${ci.imgNameFirst}/${ci.imgNameLast}:${ci.imgNameVersion}</a>
                                                 </td>
                                                 <td style="width:18%">
                                                     <span class="bj-green ${btnCursorClass}" data-toggle="tooltip" data-placement="right" title="" data-original-title="重新构建" constructionStatus="${ci.constructionStatus}"  ciId="${ci.id}">构建&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></span>

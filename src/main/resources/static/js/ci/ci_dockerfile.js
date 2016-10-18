@@ -158,6 +158,7 @@ $(document).ready(
 	
 	function checkCiAdd(editor_one){
         var imgNameLast = $("#imgNameLast").val().trim();
+        var imgNameVersion = $("#imgNameVersion").val().trim();
         var projectName = $('#projectName').val().trim();
         var description = $('#description').val().trim();
         var dockerFile = editor_one.getValue();
@@ -187,6 +188,33 @@ $(document).ready(
             });
             $('#imgNameLast').focus();
             return false;
+        }
+        
+        // 验证填写的镜像名称是否重复
+        var imageFlag = false;
+        $.ajax({
+    		url : ctx + "/ci/validciinfo.do",
+    		async:false,
+    		type: "POST",
+    		data:{
+    				/*"imgNameFirst":imgNameFirst,*/
+    				"imgNameLast":imgNameLast,
+    				"imgNameVersion":imgNameVersion
+    		},
+    		success : function(data) {
+    			data = eval("(" + data + ")");
+    			if (data.status=="400") {
+    	            layer.tips('镜像版本重复', '#imgNameVersion', {
+    	                tips: [1, '#0FA6D8'] //还可配置颜色
+    	            });
+    	            $('#imgNameVersion').focus();
+    				imageFlag = true;
+    			} 
+    		}
+    	});
+        if (imageFlag) {
+        	imageFlag = false;
+        	return false;
         }
         
         // 验证简介

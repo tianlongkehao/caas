@@ -51,6 +51,7 @@ $(document).ready(function () {
     
     function checkCiAdd(){
         var name = $("#name").val().trim();
+        var version = $("#version").val().trim();
         var remark = $('#remark').val().trim();
         //var description = $('#description').val().trim();
 
@@ -78,6 +79,35 @@ $(document).ready(function () {
             $('#name').focus();
             return false;
         }
+        
+        // 验证填写的镜像名称是否重复
+        var imageFlag = false;
+        $.ajax({
+    		url : ctx + "/ci/validimageinfo.do",
+    		async:false,
+    		type: "POST",
+    		data:{
+    				/*"imgNameFirst":imgNameFirst,*/
+    				"name":name,
+    				"version":version
+    		},
+    		success : function(data) {
+    			data = eval("(" + data + ")");
+    			if (data.status=="400") {
+    	            layer.tips('镜像版本重复', '#version', {
+    	                tips: [1, '#0FA6D8'] //还可配置颜色
+    	            });
+    	            $('#version').focus();
+    				imageFlag = true;
+    			} 
+    		}
+    	});
+        if (imageFlag) {
+        	imageFlag = false;
+        	return false;
+        }
+        
+        
         
         // 验证简介
 /*        if(description.length === 0){
