@@ -34,9 +34,31 @@
                         <a id="clusterResource" class="Record action"><span class="btn btn-defaults btn-white"><span
                                 class="ic_left">集群拓扑</span></span></a>
                     </div>
-                    <c:if test="${user == 1 }">
+                    
+                    <c:if test="${user == 'user' }">
 	                    <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; margin-top:20px; float: right"
-	                             align="right">
+	                                 align="right">
+	                            <label style="line-height: 35px">服务:</label>
+	                            <select name="search_service" id="search_service" onchange="searchService(this)"
+	                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
+	                                <c:forEach items="${serviceTopo}" var="service">
+	                                    <option value="${service.serviceName }">${service.serviceName }</option>
+	                                </c:forEach>
+	                            </select>
+	                    </div>
+                   </c:if>
+                   
+                   <c:if test="${user == 'root' }">
+                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; margin-top:20px; float: right"
+                                     align="right">
+                                <label style="line-height: 35px">服务:</label>
+                                <select name="search_service" id="search_service" onchange="searchService(this)"
+                                        style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
+                                </select>
+                        </div>
+                        
+                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; margin-top:20px; float: right"
+                                 align="right">
                             <label style="line-height: 35px">租户:</label>
                             <select name="search_user" id="search_user" onchange="searchUser(this)"
                                     style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
@@ -44,8 +66,9 @@
                                     <option value="${user.namespace }">${user.namespace }</option>
                                 </c:forEach>
                             </select>
-	                   </div>
+                       </div>
                    </c:if>
+                   
                 </aside>
                 <div>
                     <div id="clusterResource_wrap" class="tab_wrap">

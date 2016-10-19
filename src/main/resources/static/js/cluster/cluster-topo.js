@@ -131,7 +131,7 @@ function searchUser() {
                  	objNode2.category = 2;
                  	objNode2.name = podName;
                  	objNode2.value = 8;
-                     nodeDataTopo.push(objNode2);
+                    nodeDataTopo.push(objNode2);
                  	
                      var objLink2 ={};
                      objLink2.source = node;
@@ -143,9 +143,15 @@ function searchUser() {
                  num = podNumber+1;
              }
              
+             
+             var html = "";
+             if (services.length == 0) {
+            	 html = "<option value=''>无服务</option>";
+             }
              for (var i = 0; i < services.length; i++) {
              	var serviceTopo = services[i];
              	var serviceName = serviceTopo.serviceName;
+             	html += "<option value='"+serviceName+"'>"+serviceName+"</option>"
              	var podNames = serviceTopo.podName;
              	if (podNames != null && serviceName != null) {
              		for (var j = 0 ; j <podNames.length; j++) {
@@ -155,7 +161,7 @@ function searchUser() {
              			objNode3.category = 3;
              			objNode3.name = serviceName;
              			objNode3.value = 10;
-                         nodeDataTopo.push(objNode3);
+                        nodeDataTopo.push(objNode3);
                          
                          var objLink3 ={};
                          objLink3.source = podName;
@@ -166,9 +172,73 @@ function searchUser() {
              	}
              	
              }
+             $("#search_service").html(html);
              showTopo(nodeDataTopo,linksDataTopo);
 	    }
  });
+}
+
+function searchService(){
+	var serviceName = $("#search_service").val();
+	var nameSpace = $("#search_user").val();
+	$.ajax({
+	    async : false,
+	    url:ctx+"/cluster/topo/findPod.do?serviceName="+serviceName+"&nameSpace="+name,
+	    success:function(data){
+	    	 var nodeDataTopo = new Array();
+	    	 var linksDataTopo = new Array();
+             data = eval("(" + data + ")");
+             var master = data.master;
+             var podTopoList = data.podTopoList;
+             //添加master节点
+             var obj0 = {
+             		category: '0',
+             		name: master,
+             		value: 12,
+             		label: 'master(主节点)'
+             };
+             nodeDataTopo.push(obj0);
+             //添加service节点
+             var obj1 = {
+            		category: '3',
+              		name: serviceName,
+              		value: 10,
+              		label: serviceName
+             }
+             nodeDataTopo.push(obj1);
+             //循环添加node节点和pod节点
+             for (var i = 0 ; i < podTopoList.length; i++) {
+            	 var objNode2 = {};
+              	 objNode2.category = 2;
+              	 objNode2.name = podTopoList[i].podName;
+              	 objNode2.value = 8;
+                 nodeDataTopo.push(objNode2);
+                 
+                 var objNode3 = {};
+                 objNode3.category = 1;
+              	 objNode3.name = podTopoList[i].nodeName;
+              	 objNode3.value = 10;
+                 nodeDataTopo.push(objNode3);
+                 
+                 var objLink1 ={};
+                 objLink1.source = master;
+                 objLink1.target = podTopoList[i].nodeName;
+                 objLink1.weight = 2;
+                 linksDataTopo.push(objLink1);
+                 var objLink2 ={};
+                 objLink2.source = podTopoList[i].nodeName;
+                 objLink2.target = podTopoList[i].podName;
+                 objLink2.weight = 3;
+                 linksDataTopo.push(objLink2);
+                 var objLink3 ={};
+                 objLink3.source = podTopoList[i].podName;
+                 objLink3.target = serviceName;
+                 objLink3.weight = 4;
+                 linksDataTopo.push(objLink3);
+             }
+             showTopo(nodeDataTopo,linksDataTopo)
+	    }
+	});
 }
 
 //画出拓扑关系图；
