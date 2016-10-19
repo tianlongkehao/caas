@@ -40,7 +40,8 @@
 
 .bj-green i{
     color:#3c7bca;
-    font-size:21px
+    font-size:21px;
+    cursor: pointer;
 }
 
 .bj-drop{
