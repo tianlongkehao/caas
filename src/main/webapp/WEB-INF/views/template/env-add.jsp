@@ -40,19 +40,22 @@
 								<div class="container" style="width: 90%">
 									<div class="form-group">
                                         <span>模板名称：</span>
-                                         <input type="hidden" id="envName" value = "" />
-                                        <input type="text" id="envTemplateName" style="width: 77%; margin-left:5px" value = "" />
-                                	</div>
-									<li class="hide-set"><span class="ve_top">环境变量：</span>
+                                        <input type="hidden" id="envName" value = "" />
+                                        <input type="text" id="envTemplateName" style="width: 60%; margin-left:5px" value = "" />
+										<span id="crateEnvVariate" class=" btn-info btn-sm">添加环境变量</span>
+										<span id="importBtn" class=" btn-info btn-sm">导入模板</span>                                	</div>
+									<li class="hide-set">
+<!-- 										<span class="ve_top">环境变量：</span> -->
 										<ol>
-											<li class="hide-select"><input type="text"
-												placeholder="name" id="envName"> <input type="text"
-												placeholder="value" id="envValue"> <a id="crateEnvVariate"><i
-													class="fa fa-plus"></i>添加</a>
-												<div style="float: right">
-													<span id="importBtn" class=" btn-info btn-sm"
-														>导入模板</span>
-												</div></li>
+<!-- 											<li class="hide-select"> -->
+<!-- 											<input type="text" placeholder="name" id="envName"> -->
+<!-- 											<input type="text" placeholder="value" id="envValue"> -->
+<!-- 											<a id="crateEnvVariate"><i class="fa fa-plus"></i>添加</a> -->
+<!-- 												<div style="float: right"> -->
+<!-- 													<span id="crateEnvVariate" class=" btn-info btn-sm">添加环境变量</span> -->
+<!-- 													<span id="importBtn" class=" btn-info btn-sm">导入模板</span> -->
+<!-- 												</div> -->
+<!-- 											</li> -->
 											<li>
 												<table class="table table-hover enabled" id="env-variate">
 													<thead>
@@ -67,7 +70,8 @@
 													</tbody>
 												</table>
 											</li>
-										</ol></li>
+										</ol>
+									</li>
 								</div>
 								<div class="container" style="width: 90%">
 									<div class="list-item-description" >
