@@ -61,8 +61,8 @@
 												<th style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" autocomplete="off" class="chkAll"
 													id="checkallbox" /></th>
-												<th style="width: 20%; padding-left: 5px;">名称</th>
-												<th style="width: 10%; text-indent: 8px;">运行状态</th>
+												<th style="width: 15%; padding-left: 5px;">名称</th>
+												<th style="width: 12%; text-indent: 8px;">运行状态</th>
 												<th style="width: 20%;">镜像</th>
 												<th style="width: 24%;">服务地址</th>
 												<th style="width: 12%;">创建于</th>
@@ -121,13 +121,13 @@
 													<td style="width: 15%; white-space: nowrap;"><b id="aaa"
 														class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>
 														<a href="<%=path %>/service/detail/${service.id}" serviceId="${service.id}"
-														class="cluster_mirrer_name">${service.serviceName}</a> <span
+														class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">${service.serviceName}</a> <span
 														class="number-node">${service.instanceNum }</span> <span
 														class="margin cursor console-code-modal"
 														data-id="#console-code-modal"> <i
 															class="fa fa-desktop" onclick="_showConsole('mysql');"></i>
 													</span></td>
-													<td style="width: 10%" class="cStatusColumn"
+													<td style="width: 12%" class="cStatusColumn"
 														id="containerStatus"><i class="${statusClassName}"></i>
 														${statusName} <img src="<%=path %>/images/loading4.gif"
 														alt="" class="${loadingImgShowClass}" /></td>
