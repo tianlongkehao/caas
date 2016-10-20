@@ -16,7 +16,7 @@ function registerConstructCiEvent(){
 		var $this = $(this);
 		var id = $this.attr("ciId");
 		layer.open({
-	        title: '快速构建',
+	        title: '构建镜像',
 	        content: '确定构建镜像？',
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ //或者使用btn1
@@ -29,18 +29,19 @@ function registerConstructCiEvent(){
 	        	layer.close(index);
 	        	$.ajax({
 	        		url:ctx+"/ci/constructCi.do?id="+id,
+	        		async:true,
 	        		success:function(data){
-	        			/*data = eval("(" + data + ")");
+	        			data = eval("(" + data + ")");
 	       			 	if(data.status=="200"){
-	       			 		layer.alert("构建成功");
+	       			 		//layer.alert("构建成功");
 	       			 	}else{
 	       			 		layer.alert(data.msg);
 	       			 	}
-	       			 	window.location.reload();*/
+	       			 	window.location.reload();
 	        		},
 	        		error:function(){
-	        			/*layer.alert("系统错误，请联系管理员");
-	        			window.location.reload();*/
+	        			layer.alert("系统错误，请联系管理员");
+	        			window.location.reload();
 	        		}
 	        	});
 	        },
