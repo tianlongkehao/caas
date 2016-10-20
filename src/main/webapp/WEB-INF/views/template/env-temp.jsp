@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/template.css" />
 <link rel="stylesheet" type="text/css"
-	href="<%=path%>/css/core/footable/footable。core.css" />
+	href="<%=path%>/css/core/footable/footable.core.css" />
 <script type="text/javascript"
 	src="<%=path%>/js/template/env-temp.js"></script>
 <script type="text/javascript"
@@ -42,13 +42,13 @@
 									<div class="ibox-tools">
 										<a href="<%=path%>/template/env/add" id="envVariableAdd"
 											title="新建环境变量模板"><i class="fa fa-plus"></i>
-										</a> 
-										<a href="javascript:window.location.reload(true);"
-											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i>
 										</a>
 										<a id="deleteButton" class="no-drop"
 											href="javascript:delEnvTemplates()" title="删除">
 											<i class="fa fa-trash"></i>
+										</a> 
+										<a href="javascript:window.location.reload(true);"
+											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i>
 										</a>
 									</div>
 								</div>
@@ -106,7 +106,8 @@
 
 	<script type="text/javascript">
 		$('.dataTables-example').dataTable({
-	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,5] }]
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,5] }],
+	        "aaSorting": [[ 4, "desc" ]]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
 	</script>
