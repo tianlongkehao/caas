@@ -149,6 +149,7 @@ $(document).ready(function(){
 													layer.msg("环境变量模板导入成功",{icon: 6});
 													layer.close(index2);
 													layer.close(index);
+													setTimeout('window.location.href = ""+ctx+"/template/env"',1500);
 												}
 											}	
 							        	});
@@ -158,6 +159,7 @@ $(document).ready(function(){
 							}else if (data.status == "200") {
 								layer.msg("环境变量模板导入成功",{icon: 6});
 								layer.close(index);
+								setTimeout('window.location.href = ""+ctx+"/template/env"',1500);
 							}
 						}	
 		        	});

@@ -1,5 +1,6 @@
 package com.bonc.epm.paas.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,6 +151,31 @@ public class DockerFileTemplateController {
             LOG.error("日志读取错误：" + e);
         }
         return JSON.toJSONString(map);
+    }
+    /**
+     * Description: <br>
+     * 批量删除dockerFile模板
+     * @param dockerfileId 删除Id
+     * @return String
+     * @see
+     */
+    @RequestMapping(value = "/dockerfiles/delete.do", method = RequestMethod.GET)
+    @ResponseBody
+    public String deletedockerfiles(String dockerfileIds){
+     // 解析获取的id List
+        ArrayList<Long> ids = new ArrayList<Long>();
+        String[] str = dockerfileIds.split(",");
+        if (str != null && str.length > 0) {
+            for (String id : str) {
+                ids.add(Long.valueOf(id));
+            }
+        }
+        Map<String, Object> maps = new HashMap<String, Object>();
+        for (long id : ids) {
+        	dockerFileTemplateDao.delete(id);
+        }
+        maps.put("status", "200");
+        return JSON.toJSONString(maps); 
     }
     
 }

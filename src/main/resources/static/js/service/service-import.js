@@ -57,7 +57,7 @@
                  var un = importSerName.toLowerCase();
                  console.info(un);
                  $("#improt-ser-name").val(un);
-                 $.get("/refservice/checkName.do?un=" + un,
+                 $.get(ctx +"/refservice/checkName.do?un=" + un,
                      function (data, status) {
                          console.info("Data: " + data + "\nStatus: " + status);
                          var data = eval("(" + data + ")");
