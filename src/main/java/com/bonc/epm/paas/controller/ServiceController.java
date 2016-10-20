@@ -1928,7 +1928,8 @@ public class ServiceController {
 	 */
     @RequestMapping("service/detail/getCurrentPodlogs.do")
 	@ResponseBody
-	public String getPodLogs(String podName,String container,String sinceTime) {
+	public String getCurrentPodLogs(String podName,/*String container,*/String sinceTime) {
+    	String container = new String();
         if (container == null) {
 			container = "";
 		}
@@ -1965,8 +1966,9 @@ public class ServiceController {
      * @param response response
      */
     @RequestMapping(value ="/service/detail/getPodlogFile", method = RequestMethod.GET)
-	public void downloadPodlogFile(String podName,String container, HttpServletRequest request,HttpServletResponse response) {
-        if (container == null) {
+	public void downloadPodlogFile(String podName,/*String container,*/ HttpServletRequest request,HttpServletResponse response) {
+    	String container = new String();
+    	if (container == null) {
 			container = "";
 		}
     	try {

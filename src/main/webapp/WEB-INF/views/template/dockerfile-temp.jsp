@@ -5,7 +5,7 @@
     <title>模板</title>
     <%@include file="../frame/header.jsp"%>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/template.css"/>
-    <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/footable/footable。core.css"/>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/footable/footable.core.css"/>
     <script type="text/javascript" src="<%=path%>/js/template/dockerfile-temp.js"></script>
 </head>
 <body>
@@ -37,6 +37,9 @@
 									<div class="ibox-tools">
 										<a href="<%=path %>/template/dockerfile/add" id="dockerfileAdd" title="新建dockerfile"><i
 											class="fa fa-plus"></i></a>
+										<a id="deleteButton" class="no-drop" href="javascript:delDockerfiles()" title="删除">
+											<i id = "delBtn" class="fa fa-trash self_a"></i>
+										</a>
 										<a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 									</div>
@@ -124,7 +127,8 @@
 </div>
 <script type="text/javascript">
 	$('.dataTables-example').dataTable({
-        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }]
+        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
+        "aaSorting": [[ 2, "desc" ]]
 	});
 	$("#checkallbox").parent().removeClass("sorting_asc");
 </script>
