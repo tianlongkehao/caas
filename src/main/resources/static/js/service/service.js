@@ -323,10 +323,9 @@ function versionUpgrade() {
 						$('#myModal').modal('show');
 						var imgVersion1 = $('#imgVersionName').val();
 						$.ajax({
-							url : ctx + "/service/modifyimgVersion.do?id=" + id
-									+ "&serviceName=" + serviceName
-									+ "&imgVersion=" + imgVersion1
-									+ "&imgName=" + imgName,
+							url : ctx + "/service/modifyimgVersion.do?id=" + id+ "&serviceName=" + serviceName
+																			+ "&imgVersion=" + imgVersion1 + "&imgName=" + imgName,
+							async:true,		
 							success : function(data) {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
