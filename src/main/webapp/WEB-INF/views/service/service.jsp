@@ -37,9 +37,6 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="javascript:window.location.reload(true);" id="serviceReloadBtn" title="刷新">
-											<i class="fa fa-repeat"></i>
-										</a>
 										<a href="<%=path%>/service/add" id="serviceCreateBtn" title="创建服务">
 											<i class="fa fa-plus"></i>
 										</a>
@@ -51,6 +48,9 @@
 										</a>
 										<a id="deleteButton" class="no-drop" href="javascript:delContainer()" title="删除">
 											<i id = "deleteButtonFa" class="fa fa-trash self_a"></i>
+										</a>
+										<a href="javascript:window.location.reload(true);" id="serviceReloadBtn" title="刷新">
+											<i class="fa fa-repeat"></i>
 										</a>
 									</div>
 								</div>

@@ -38,11 +38,6 @@
 							<form id="buildForm" name="buildForm"
 								action="<%=path%>/template/env/build" method="post">
 								<div class="container" style="width: 90%">
-									<div class="form-group">
-                                        <span>模板名称：</span>
-                                         <input type="hidden" id="envName" value = "" />
-                                        <input type="text" id="envTemplateName" style="width: 77%; margin-left:5px" value = "" />
-                                	</div>
 									<li class="hide-set"><span class="ve_top">环境变量：</span>
 										<ol>
 											<li class="hide-select"><input type="text"

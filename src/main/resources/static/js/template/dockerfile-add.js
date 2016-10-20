@@ -1,11 +1,12 @@
 $(document).ready(function(){
+	$("#dockerFile").focus();
 	var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
         lineNumbers: true,
         matchBrackets: true,
         styleActiveLine: true,
         theme: "ambiance"
     });
-	$("#dockerfile").focus();
+	
 	
 	
 	// 导入模板文件选项对勾

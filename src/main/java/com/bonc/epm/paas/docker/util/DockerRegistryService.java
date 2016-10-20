@@ -93,9 +93,9 @@ public class DockerRegistryService {
      * @param args 
      * @see
      */
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         DockerRegistryService service = new DockerRegistryService();
         service.deleteRepositoryTag();
         //service.searchRegistry("nodejs");
-    }
+    }*/
 }

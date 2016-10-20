@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	
 });
-
+//单个删除
 function deletedockerfile(obj){
 	var dockerfileId = $(obj).attr("dockerfileId");
 	layer.open({
@@ -17,10 +17,10 @@ function deletedockerfile(obj){
    		     		success:function(data){
 			     		data = eval("(" + data + ")");
 		    			if (data.status=="200") {
-		    				layer.alert("删除成功");
-		    				window.location.href = ""+ctx+"/template/dockerfile";
+		    				layer.msg("dockerfile模板删除成功",{icon: 6})
+							setTimeout('window.location.href = ""+ctx+"/template/dockerfile"',1500);
 		    			} else if (data.status=="400") {
-		    				layer.alert("删除失败");
+		    				layer.alert("dockerfile模板删除失败，请检查服务器连接");
 		    			}
    		     		}
    		     	});
@@ -28,4 +28,38 @@ function deletedockerfile(obj){
 	 });
 }
 
-
+//批量删除
+function delDockerfiles(){
+		obj = document.getElementsByName("chkItem");
+		var ids = [];
+	    for (k in obj) {
+	        if (obj[k].checked) {
+	        	ids.push(obj[k].value);
+	        }
+	    }
+	 layer.open({
+	        title: '删除dockerfile模板',
+	        content: '确定批量删除dockerfile模板？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ 
+	        	layer.close(index);
+	        	if(""==ids){
+	        		alert("你总要选一个呀");
+	        		return;
+	        	}
+	        	$.ajax({
+					url:""+ctx+"/template/dockerfiles/delete.do?dockerfileIds="+ids,
+	        		success: function (data) {
+						data = eval("(" + data + ")");
+						if(data.status=="200"){
+							layer.msg("dockerfile模板删除成功",{icon: 6})
+							setTimeout('window.location.reload()',1500);
+						}else{
+							layer.alert("dockerfile模板删除失败，请检查服务器连接");
+						}
+	        		}
+	        	})  
+	        }
+	 })
+	 
+}

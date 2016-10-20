@@ -23,6 +23,7 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
 import com.bonc.epm.paas.kubernetes.model.EnvVar;
+import com.bonc.epm.paas.kubernetes.model.HTTPGetAction;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
@@ -30,6 +31,7 @@ import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
+import com.bonc.epm.paas.kubernetes.model.Probe;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerSpec;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
@@ -65,6 +67,9 @@ public class KubernetesClientService {
      */
     @Value("${ratio.memtocpu}")
     public String RATIO_MEMTOCPU = "4";
+    
+    public static final Integer INITIAL_DELAY_SECONDS= 30*60;
+    public static final Integer TIME_SECONDS = 5;
 	
 	public int getK8sEndPort() {
 		return Integer.valueOf(endPort);
@@ -356,6 +361,15 @@ public class KubernetesClientService {
 		container.setName(name);
 		container.setImage(image);
 		container.setImagePullPolicy("Always");
+		if (StringUtils.isNotBlank(checkPath)) {
+		    Probe livenessProbe = new Probe();
+	        livenessProbe.setInitialDelaySeconds(INITIAL_DELAY_SECONDS);
+	        livenessProbe.setTimeoutSeconds(TIME_SECONDS);
+	        HTTPGetAction httpGet = new HTTPGetAction();
+	        httpGet.setPath(checkPath);
+	        httpGet.setPort("8080");
+	        container.setLivenessProbe(livenessProbe); 
+		}
 		
 		if (null != envVariables && envVariables.size() > 0) {
 		    List<EnvVar> envVars = new ArrayList<EnvVar>();
