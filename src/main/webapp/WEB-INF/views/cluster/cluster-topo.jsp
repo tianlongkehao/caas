@@ -41,6 +41,8 @@
 	                            <label style="line-height: 35px">服务:</label>
 	                            <select name="search_service" id="search_service" onchange="searchService(this)"
 	                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
+	                                    <option value="">-----请选择-----</option>
+	                                    <option value="all">All</option>
 	                                <c:forEach items="${serviceTopo}" var="service">
 	                                    <option value="${service.serviceName }">${service.serviceName }</option>
 	                                </c:forEach>
@@ -62,13 +64,15 @@
                             <label style="line-height: 35px">租户:</label>
                             <select name="search_user" id="search_user" onchange="searchUser(this)"
                                     style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
+                                    <option value="">-----请选择-----</option>
+                                    <option value="all">All</option>
                                 <c:forEach items="${userList}" var="user">
                                     <option value="${user.namespace }">${user.namespace }</option>
                                 </c:forEach>
                             </select>
                        </div>
                    </c:if>
-                   
+                   <input type = "hidden" id = "userType" value = "${user }">
                 </aside>
                 <div>
                     <div id="clusterResource_wrap" class="tab_wrap">

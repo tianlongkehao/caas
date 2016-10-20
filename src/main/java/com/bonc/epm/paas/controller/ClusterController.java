@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.slf4j.Logger;
@@ -228,7 +229,7 @@ public class ClusterController {
         else {
             User currentUser = CurrentUserUtils.getInstance().getUser();
             //判断当前用户是否是超级管理员权限
-            if (currentUser.getNamespace().equals("admin")) {
+            if (currentUser.getUser_autority().equals("1")) {
                 // 取得所有NAMESPACE
                 NamespaceList namespaceList = client.getAllNamespaces();
                 for (Namespace namespace : namespaceList.getItems()) {
@@ -263,9 +264,15 @@ public class ClusterController {
     @RequestMapping(value = { "/topo/findPod.do" }, method = RequestMethod.GET)
     @ResponseBody
     public String findPodByService(String serviceName,String nameSpace) {
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient(nameSpace);
+        KubernetesAPIClientInterface client = null;
+        if (StringUtils.isNotEmpty(nameSpace)) {
+            client = kubernetesClientService.getClient(nameSpace);
+        } else {
+            client = kubernetesClientService.getClient();
+        }
         Map<String,Object> map = new HashMap<String, Object>();
         List<PodTopo> podTopoList = new ArrayList<>();
+        serviceName = serviceName.substring(serviceName.indexOf("/")+1);
         Service service = client.getService(serviceName);
         Map<String,String> labelSelector = service.getSpec().getSelector();
         PodList podList = client.getLabelSelectorPods(labelSelector);
@@ -278,7 +285,7 @@ public class ClusterController {
             podTopo.setPodName(podName);
             podTopo.setNodeName(pod.getSpec().getNodeName());
             podTopo.setHostIp(pod.getStatus().getHostIP());
-            podTopo.setServiceName(serviceName);
+            podTopo.setServiceName(nameSpace +"/"+serviceName);
             podTopoList.add(podTopo);
         }
         map.put("master", "master/"+masterAddress);
@@ -310,7 +317,8 @@ public class ClusterController {
                     podTopo.setPodName(podName);
                     podTopo.setNodeName(pod.getSpec().getNodeName());
                     podTopo.setHostIp(pod.getStatus().getHostIP());
-                    podTopo.setServiceName(namespace +"/"+ pod.getMetadata().getLabels().get("app"));
+//                    podTopo.setServiceName(namespace +"/"+ pod.getMetadata().getLabels().get("app"));
+                    podTopo.setServiceName(pod.getMetadata().getLabels().get("app"));
                     String key = podTopo.getNodeName();
                     List<PodTopo> podTopoList = nodeMap.get(key);
                     podTopoList.add(podTopo);
@@ -347,6 +355,7 @@ public class ClusterController {
                 }
                 serviceTopo.setPodName(podName);
                 serviceTopo.setNamespace(service.getMetadata().getNamespace());
+//                serviceTopo.setServiceName(namespace +"/"+service.getMetadata().getName());
                 serviceTopo.setServiceName(service.getMetadata().getName());
                 serviceTopoList.add(serviceTopo);
             }
