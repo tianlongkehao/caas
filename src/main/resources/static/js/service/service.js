@@ -49,14 +49,14 @@ function loadContainers(obj) {
 						var containerLength = data.containerList.length;
 						for (var i = 0; i < containerLength; i++) {
 							var containerName = data.containerList[i].containerName;
-							var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动" : "启动中";
+							var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动" : "运行中";
 							var statusClassName = data.containerList[i].containerStatus == 1 ? "fa_stop" : "fa_run";
 							var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide" : "hide";
 							containersHtml += '<tr class="tr-row" serviceidcon="'
 									+ serviceID
 									+ '">'
 									+ '<td style="width: 5%">&nbsp;</td>'
-									+ '<td style="width: 20%;">'
+									+ '<td style="width: 15%;">'
 									+ '<a style="margin-left: 19px;" href="javascript:void(0)">'
 									+ containerName
 									+ '</a>'

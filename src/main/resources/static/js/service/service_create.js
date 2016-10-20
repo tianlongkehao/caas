@@ -61,8 +61,8 @@ $(document).ready(function(){
 			      $('#checkSerStatus_input').focus();
 			      return;
 			}
-		    if(checkPath.search(/^[a-zA-Z][a-zA-Z0-9-\/]*$/) === -1){
-		      layer.tips('测试路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+		    if(checkPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+		      layer.tips('测试路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
 		      $('#checkSerStatus_input').focus();
 		      return;
 		    }
@@ -79,8 +79,8 @@ $(document).ready(function(){
 		      $('#webPath').focus();
 		      return;
 		}
-	    if(servicePath.search(/^[a-zA-Z][a-zA-Z0-9-\/]*$/) === -1){
-	      layer.tips('服务路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#webPath',{tips: [1, '#3595CC'],time: 3000});
+	    if(servicePath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+	      layer.tips('服务路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#webPath',{tips: [1, '#3595CC'],time: 3000});
 	      $('#webPath').focus();
 	      return;
 	    }
@@ -97,13 +97,13 @@ $(document).ready(function(){
 		      $('#nginxPath').focus();
 		      return;
 		}
-	    if(proxyPath.search(/^[a-zA-Z][a-zA-Z0-9-\/]*$/) === -1){
-		      layer.tips('服务路径只能由字母、数字及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+	    if(proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+		      layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
 		      $('#nginxPath').focus();
 		      return;
 	    }
 	    if(proxyPath.length > 64 || proxyPath.length < 3){
-	      layer.tips('服务路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+	      layer.tips('nginx代理路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
 	      $('#nginxPath').focus();
 	      return;
 	    }
@@ -543,7 +543,7 @@ $(document).ready(function(){
 	                        	
 		                        html += "<li class='image-item'><span class='img_icon span2'>"+
 								"<img src='"+ctx+"/images/image-1.png'>"+
-						"</span> <span class='span5 type' type='database'>"+
+						"</span> <span class='span5 type span5add' type='database'>"+
 								"<div class='list-item-description'>"+
 									"<div class='name h4'>"+
 										""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"../registry/detail/"+image.id+"'>"+
@@ -761,7 +761,7 @@ function loadImageList() {
                         	
 	                        html += "<li class='image-item'><span class='img_icon span2'>"+
 							"<img src='"+ctx+"/images/image-1.png'>"+
-					"</span> <span class='span5 type' type='database'>"+
+					"</span> <span class='span5 type span5add' type='database'>"+
 							"<div class='list-item-description'>"+
 								"<div class='name h4'>"+
 									""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"/registry/detail/"+image.id+"'>"+

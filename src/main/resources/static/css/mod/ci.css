@@ -29,18 +29,19 @@
 }
 
 .bj-green {
-    display: inline-block;
+    /* display: inline-block;
     padding: 5px 15px;
     border-radius: 2px;
     background: #13C563;
     text-indent: 0;
     cursor: pointer;
-    color: #fff;
+    color: #fff; */
 }
 
 .bj-green i{
-    color:#fff;
-    font-size:18px
+    color:#3c7bca;
+    font-size:21px;
+    cursor: pointer;
 }
 
 .bj-drop{
@@ -476,4 +477,8 @@ tr.focus{
     border: 1px solid #eee;
     text-indent: 5px;
 }
-
+.fa-img{
+	background-color: #3c7bca;
+	border-radius: 2px;
+	width:17px;
+}
