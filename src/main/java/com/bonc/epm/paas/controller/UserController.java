@@ -98,6 +98,12 @@ public class UserController {
     private String CEPH_KEY;
     
     /**
+     * 内存和cpu的比例大小
+     */
+    @Value("${ratio.memtocpu}")
+    private String RATIO_MEMTOCPU = "4";
+    
+    /**
      * Model
      */
     public Model model;
@@ -458,7 +464,8 @@ public class UserController {
                 ResourceQuota quota = client.getResourceQuota(user.getNamespace());
                 if (null != quota) {
                     Map<String, String> map = quota.getSpec().getHard();
-                    resource.setCpu_account(map.get("cpu"));// CPU数量
+                    String leftCpu = String.valueOf(kubernetesClientService.transCpu(map.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU));
+                    resource.setCpu_account(leftCpu);// CPU数量
                     resource.setRam(map.get("memory").replace("G", "").replace("i", ""));// 内存
                     LOG.info("+++++++++++++" + map.get("cpu") + "------" + map.get("memory"));
                     /* resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
@@ -865,7 +872,7 @@ public class UserController {
         
         Map<String, String> hard = quota.getSpec().getHard();
         hard.put("memory", resource.getRam() + "G"); // 内存
-        hard.put("cpu", resource.getCpu_account() + "");// CPU数量
+        hard.put("cpu", Integer.valueOf(resource.getCpu_account())/Integer.valueOf(RATIO_MEMTOCPU) + "");// CPU数量
 		// hard.put("pods", resource.getPod_count() + "");//POD数量
 		// hard.put("services", resource.getServer_count() + "");//服务
 		// hard.put("replicationcontrollers", resource.getImage_control() +
@@ -926,7 +933,7 @@ public class UserController {
         try {
             Map<String, String> map = new HashMap<String, String>();
             map.put("memory", resource.getRam() + "G"); // 内存
-            map.put("cpu", resource.getCpu_account() + "");// CPU数量(个)
+            map.put("cpu", Integer.valueOf(resource.getCpu_account())/Integer.valueOf(RATIO_MEMTOCPU) + "");// CPU数量(个)
             map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
             //map.put("pods", resource.getPod_count() + "");//POD数量
             //map.put("services", resource.getServer_count() + "");//服务
@@ -1112,7 +1119,7 @@ public class UserController {
             model.addAttribute("user", user);
             
             Map<String, String> hard = quota.getStatus().getHard();
-            model.addAttribute("servCpuNum", hard.get("cpu")); // cpu个数
+            model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
             model.addAttribute("servMemoryNum", hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数

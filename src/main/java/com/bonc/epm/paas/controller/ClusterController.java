@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -318,7 +319,16 @@ public class ClusterController {
                     podTopo.setNodeName(pod.getSpec().getNodeName());
                     podTopo.setHostIp(pod.getStatus().getHostIP());
 //                    podTopo.setServiceName(namespace +"/"+ pod.getMetadata().getLabels().get("app"));
-                    podTopo.setServiceName(pod.getMetadata().getLabels().get("app"));
+                    String serviceName = "";
+                    Iterator<Map.Entry<String, String>> it = pod.getMetadata().getLabels().entrySet().iterator();
+                    while (it.hasNext() && StringUtils.isBlank(serviceName)) {
+                         Map.Entry<String, String> entry = it.next();
+                         Service service = clientName.getService(entry.getValue());
+                         if (null != service) {
+                             serviceName =  service.getMetadata().getName();
+                         }
+                    }
+                    podTopo.setServiceName(serviceName);
                     String key = podTopo.getNodeName();
                     List<PodTopo> podTopoList = nodeMap.get(key);
                     podTopoList.add(podTopo);
