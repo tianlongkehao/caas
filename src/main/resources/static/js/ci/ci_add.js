@@ -136,14 +136,22 @@ $(document).ready(function () {
         	imageFlag = false;
         	return false;
         }
+        //验证镜像版本imgNameVersion
+        if(imgNameVersion.length === 0){
+            layer.tips('镜像版本不能为空', '#imgNameVersion', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+            $('#imgNameVersion').focus();
+            return false;
+        }
         
         // 验证简介
         if(description.length === 0){
             layer.tips('项目简介不能为空', '#description', {
                 tips: [1, '#0FA6D8'] //还可配置颜色
             });
-            return false;
             $('#description').focus();
+            return false;
         }
         
         //如果有codeUrl 则 验证codeUrl

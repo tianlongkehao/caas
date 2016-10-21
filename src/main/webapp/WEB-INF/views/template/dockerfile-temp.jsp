@@ -64,9 +64,9 @@
 															<input type="checkbox" class="chkItem" name="chkItem"
 																autocomplete="off" id="checkboxID" value="${dockerfile.id }" />
 														</td>
-														<td style="width: 30%;text-indent:30px;cursor: pointer;">
+														<td class="textOverflow" style="width: 670px;text-indent:30px;cursor: pointer;">
 														<a href="<%=path %>/template/dockerfile/detail/${dockerfile.id }"
-                                                            title="查看详细信息"
+                                                            title="查看${dockerfile.templateName }详细信息" 
                                                             onmousemove="style.textDecoration='underline'"
                                                             onmouseout="style.textDecoration='none'">${dockerfile.templateName }</a>
 														</td>

@@ -226,7 +226,21 @@ li.line-h-3 {
     border: 0;
     vertical-align: middle;
 }
-
+.textOverflow{
+	display:block;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+	line-height:60px!important; 
+	cursor: pointer;
+	float:left;
+}
+.textOverflow1{
+	display:block;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 .table .table {
     background-color: #fff;
 }
