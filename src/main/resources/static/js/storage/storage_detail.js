@@ -66,7 +66,7 @@ $(document).ready(function () {
 	 				var data = eval("("+data+")");
 	 				if("200"==data.status && flag==0){
 	 						$('#myModal').modal('hide');
-							creatable(null,null,null);
+	 						refreshtable();
  							$('#hasUsed').html(data.used);
  							layer.closeAll();
 	 				}else if ("500"==data.status) {
@@ -77,13 +77,13 @@ $(document).ready(function () {
 	 						title:'上传失败',
 	 						btn:['确定'],
 	 						yes: function(index, layero){ 
-	 							creatable(null,null,null);
+	 							refreshtable();
 	 							layer.closeAll();
 	 						}
 	 					 });
 					}else {
 						$('#myModal').modal('hide');
-						creatable(null,null,null);
+						refreshtable();
 						$('#hasUsed').html(data.used);
 						layer.closeAll();
 					}
@@ -109,6 +109,15 @@ function hasUsed(){
     	}
 	})
 }
+
+/**
+ * 刷新ceph列表
+ */
+function refreshtable(){
+	var path=$('#downfilepath').val();
+	creatable(null,path,null);
+}
+
 /**
  * 生成ceph的文件列表
  * @param isDir
@@ -125,6 +134,7 @@ function  creatable(isDir,path,dirName){
 		if(null==path||null==path){
 		 param="path=&dirName=&storageName=/"+storageName+"/";
 		}else{
+			if(null==dirName){dirName="";}
 			param="path="+path+"&dirName="+dirName+"/&storageName=/"+storageName+"/";
 		}
 		context.empty();
@@ -234,7 +244,7 @@ function unzipFile(){
            url: ctx + "/storage/unZipFile.do?path="+path+"&fileName="+fileNames+"&storageName=/"+storageName,
         	});
         	layer.close(index);
-        	creatable(null,null,null);
+        	refreshtable();
 		}
 	})
 }
@@ -254,7 +264,7 @@ function createdir(){
            url: ctx + "/storage/createFile.do?path="+path+"&dirName="+dirName+"&storageName=/"+storageName,
         	});
         	layer.close(index);
-        	creatable(null,null,null);
+        	refreshtable();
 		}
 	})
 }
@@ -306,7 +316,7 @@ function delfiles(){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
 							layer.alert("服务已删除");
-							window.location.reload();
+							refreshtable();
 						}else{
 							layer.alert("服务删除失败，请检查服务器连接");
 						}

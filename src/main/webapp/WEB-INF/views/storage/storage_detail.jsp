@@ -101,7 +101,7 @@
 											</h5>
 
 											<div class="ibox-tools">
-												<a href="javascript:window.location.reload(true);"
+												<a href="javascript:refreshtable()"
 													id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 												<a href="javascript:createdir()" id="adddir" title="新建"><i
 	                                          class="fa fa-plus"></i></a>  
