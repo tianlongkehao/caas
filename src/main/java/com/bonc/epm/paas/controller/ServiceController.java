@@ -582,17 +582,17 @@ public class ServiceController {
 	 */
     private List<PortConfig> getBaseImageExposedPorts(String imgID) {
         try {
-            Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
-            if (null != ci) {
-                Image image = imageDao.findById(Long.valueOf(imgID));
-                if (null == image) {
+            Image image = imageDao.findById(Long.valueOf(imgID));
+            if (null == image) {
+                Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
+                if (null != ci) {
                     image = imageDao.findById(ci.getBaseImageId());
                 }
-                 
-                if (null != image && StringUtils.isNotBlank(image.getImageId())) {
-                    dockerClientService.pullImage(image.getName(), image.getVersion());
-                    InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
-                    // v1.9
+            }
+            if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+                dockerClientService.pullImage(image.getName(), image.getVersion());
+                InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
+                if (null != iir) {
                     long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
                     if (countOfExposedPort > 0) {
                         ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
@@ -664,15 +664,15 @@ public class ServiceController {
                 long hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
                 long used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
 
-                System.out.println(quota.getStatus().getHard().get("cpu"));
-                System.out.println(quota.getStatus().getUsed().get("cpu"));
+                //System.out.println(quota.getStatus().getHard().get("cpu"));
+                //System.out.println(quota.getStatus().getUsed().get("cpu"));
 
                 double leftCpu = kubernetesClientService.transCpu(quota.getStatus().getHard().get("cpu"))
 						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu"));
 
                 long leftmemory = hard - used;
 
-                System.out.println(hard + "  " + used);
+                //System.out.println(hard + "  " + used);
                 model.addAttribute("leftcpu", leftCpu * Integer.valueOf(RATIO_MEMTOCPU));
                 model.addAttribute("leftmemory", leftmemory / 1024);
             } else {
