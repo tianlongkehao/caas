@@ -2,6 +2,8 @@ package com.bonc.epm.paas.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -21,10 +23,13 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	public Image findById(long id);
 	
 	@Query("select i from Image i where i.imageType = ?1 and i.isDelete != 1 order by  i.name,i.createTime ")
-	public List<Image> findByImageType(Integer type);
+	public Page<Image> findByImageType(Integer type,Pageable request);
 	
 	@Query("select i from Image i where  i.creator = ?1 and i.isDelete != 1 order by  i.name,i.createTime")
-	public List<Image> findAllByCreator(long creator);
+	public Page<Image> findAllByCreator(long creator,Pageable request);
+	
+	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 order by  i.name,i.createTime")
+    public Page<Image> findAllFavor(long creator,Pageable request);
 	
 	@Query("select i from Image i where (i.imageType = 1 or i.creator = ?1) and i.isDelete != 1 order by  i.name,i.createTime")
 	public List<Image> findAll(long creator);

@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +38,7 @@ import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.ResultPager;
 
 /**
  * 
@@ -102,32 +105,125 @@ public class RegistryController {
      * @param model 添加返回数据
      * @return String
      */
+//    @RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
+//    public String index(@PathVariable int index,String pageNumberStr,String pageSizeStr, Model model) {
+//        PageRequest pageRequest = ResultPager.buildPageRequest(pageNumberStr, pageSizeStr);
+//        Page<Image> images = null;
+//        String active = null;
+//        long userId = CurrentUserUtils.getInstance().getUser().getId();
+//        if(index == 0){
+//            images = imageDao.findByImageType(1,pageRequest);
+//            active = "镜像中心";
+//        }else if(index == 1){
+//            images = imageDao.findAllByCreator(userId,pageRequest);
+//            active = "我的镜像";
+//        }else if(index == 2){
+//            images = imageDao.findAllFavor(userId,pageRequest);
+//            active = "我的收藏";
+//        }
+//        addCurrUserFavor(images.getContent());
+//        addCreatorName(images.getContent());
+//        
+//        model.addAttribute("images", images.getContent());
+//        model.addAttribute("totalPageNumber",images.getTotalElements());
+//        model.addAttribute("pageSize",pageRequest.getPageSize());
+//        model.addAttribute("menu_flag", "registry");
+//        model.addAttribute("index", index);
+//        model.addAttribute("active",active);
+//        model.addAttribute("editImage",userId);
+//
+//        return "docker-registry/registry.jsp";
+//    }
+    
+    
     @RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
-	public String index(@PathVariable int index, Model model) {
-        List<Image> images = null;
+    public String index(@PathVariable int index,String pageNumberStr,String pageSizeStr, Model model) {
+//        PageRequest pageRequest = ResultPager.buildPageRequest(pageNumberStr, pageSizeStr);
+//        Page<Image> images = null;
         String active = null;
         long userId = CurrentUserUtils.getInstance().getUser().getId();
-        if (index == 0) {
-            images = imageDao.findByImageType(1);
+        if(index == 0){
+//          images = imageDao.findByImageType(1,pageRequest);
             active = "镜像中心";
-        } 
-        else if (index == 1) {
-            images = imageDao.findAllByCreator(userId);
+        }else if(index == 1){
+//          images = imageDao.findAllByCreator(userId,pageRequest);
             active = "我的镜像";
-        }
-        else if(index == 2){
-            images = userDao.findAllFavor(userId);
+        }else if(index == 2){
+//          images = imageDao.findAllFavor(userId,pageRequest);
             active = "我的收藏";
         }
-        addCurrUserFavor(images);
-        addCreatorName(images);
-        model.addAttribute("images", images);
+//      addCurrUserFavor(images.getContent());
+//      addCreatorName(images.getContent());
+        
+//      model.addAttribute("images", images.getContent());
+//      model.addAttribute("totalPageNumber",images.getTotalElements());
+//      model.addAttribute("pageSize",pageRequest.getPageSize());
+        model.addAttribute("menu_flag", "registry");
         model.addAttribute("index", index);
         model.addAttribute("active",active);
         model.addAttribute("editImage",userId);
-        model.addAttribute("menu_flag", "registry");
+
         return "docker-registry/registry.jsp";
     }
+    
+    @RequestMapping(value = {"registry/pager/{index}"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String findByPagerImage(@PathVariable int index,String draw, int start,int length){
+        Map<String,Object> map = new HashMap<String, Object>();
+        PageRequest pageRequest = null;
+        if (start == 0) {
+            pageRequest = ResultPager.buildPageRequest(null, length);
+            
+        }else {
+            pageRequest = ResultPager.buildPageRequest(start/length + 1, length);
+        }
+        
+        Page<Image> images = null;
+        String active = null;
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        if(index == 0){
+            images = imageDao.findByImageType(1,pageRequest);
+        }else if(index == 1){
+            images = imageDao.findAllByCreator(userId,pageRequest);
+        }else if(index == 2){
+            images = imageDao.findAllFavor(userId,pageRequest);
+        }
+        addCurrUserFavor(images.getContent());
+        addCreatorName(images.getContent());
+        map.put("draw", draw);
+        map.put("recordsTotal", images.getTotalElements());
+        map.put("recordsFiltered", images.getTotalElements());
+        map.put("data", images.getContent());
+        
+        return JSON.toJSONString(map);
+    }
+    
+//    @RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
+//	public String index(@PathVariable int index, Model model) {
+//        List<Image> images = null;
+//        String active = null;
+//        long userId = CurrentUserUtils.getInstance().getUser().getId();
+//        if (index == 0) {
+//            images = imageDao.findByImageType(1);
+//            active = "镜像中心";
+//        } 
+//        else if (index == 1) {
+//            images = imageDao.findAllByCreator(userId);
+//            active = "我的镜像";
+//        }
+//        else if(index == 2){
+//            images = userDao.findAllFavor(userId);
+//            active = "我的收藏";
+//        }
+//        addCurrUserFavor(images);
+//        addCreatorName(images);
+//        model.addAttribute("images", images);
+//        model.addAttribute("index", index);
+//        model.addAttribute("active",active);
+//        model.addAttribute("editImage",userId);
+//        model.addAttribute("menu_flag", "registry");
+//        return "docker-registry/registry.jsp";
+//    }
 	
 	/**
 	 * 镜像搜索

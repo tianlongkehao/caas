@@ -12,7 +12,6 @@
 	<jsp:include page="../frame/menu.jsp" flush="true">
 		<jsp:param name="registry" value="0" />
 	</jsp:include>
-
 	<div class="page-container">
 		<article>
 			<div class="page-main">
@@ -21,7 +20,7 @@
 						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">${active }</li>
+						<li class="active" id="nav2" value = "${index}">${active }</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -143,9 +142,9 @@
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('.dataTables-example').dataTable( {
+			/* $('.dataTables-example').dataTable( {
 		        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
-			});
+			}); */
 			$("#checkallbox").parent().removeClass("sorting_asc");
 		})
 	</script>

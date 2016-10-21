@@ -1,5 +1,6 @@
 $(document).ready(function () {
 
+	findImages();
     $(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
     });
@@ -112,6 +113,55 @@ $(document).ready(function () {
     });
 });
 
+
+function findImages(){
+	var index = $("#nav2").val();
+	 $('.dataTables-example').dataTable({
+		 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
+	        "processing": true,
+	        "serverSide": true,
+	        "ajax": ctx+"/registry/pager/"+index,
+	        "columns": [
+	                    {   data: "id",
+	                    	render: function ( data, type, row ) {
+	                    		var html = '<input type="checkbox" class="chkItem" name="ids" value="'+data+'">'
+	                    		return html;
+	                    	}
+	                    },
+	                    { "data": "name" },
+	                    { "data": "version" },
+	                    { "data": "remark" },
+	                    { "data": "creatorName" },
+	                    { 
+	                    	data: 'createTime',
+	                    	render: function ( data, type, row ) {
+	                            var date = new Date(data);
+	                            var y = date.getFullYear();  
+	                            var m = date.getMonth() + 1;  
+	                            m = m < 10 ? ('0' + m) : m;  
+	                            var d = date.getDate();  
+	                            d = d < 10 ? ('0' + d) : d;  
+	                            var h = date.getHours();  
+	                            h=h < 10 ? ('0' + h) : h;  
+	                            var minute = date.getMinutes();  
+	                            minute = minute < 10 ? ('0' + minute) : minute;  
+	                            var second=date.getSeconds();  
+	                            second=second < 10 ? ('0' + second) : second;  
+	                            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;  
+	                           
+	                        }
+	                    },
+	                    { 	
+	                    	data: "id" ,
+	                    	render: function ( data, type, row ) {
+	                    		var a = '<a class="no-drop a-oper forkquick" imageId="'+data+'">'+
+	                    				'<i class="fa fa-star-o star-style" style="color: #4280CB;margin-left:35px;"></i></a>'
+	                    		return a;
+	                    	}
+	                    }
+	                ]
+	  });
+}
 
 /*删除单个镜像*/
 function deleteImage(obj){
