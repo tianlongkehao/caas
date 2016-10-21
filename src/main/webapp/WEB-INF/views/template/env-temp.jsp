@@ -65,8 +65,7 @@
 <!-- 												<th style="width: 15%; text-indent: 15px;">主鍵</th> -->
 <!-- 												<th style="width: 30%; text-indent: 8px;">值</th> -->
 												<th style="width: 20%;">创建时间</th>
-												<th style="width: 10%; text-indent: 10px;"
-													class="del-operation">操作</th>
+												<th style="width: 10%; text-indent: 10px;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="envTemplateList">
@@ -76,6 +75,7 @@
 														<input type="checkbox" class="chkItem" name="chkItem"
 															autocomplete="off" id="checkboxID" value="${envTemplate.id }" />
 													</td>
+<!-- <<<<<<< HEAD -->
 													<td style="width: 60%;text-indent:30px;">${envTemplate.templateName }</td>
 <%-- 		                                            <td style="width: 15%;text-indent: 15px;">${envTemplate.envKey }</td> --%>
 <%-- 		                                            <td style="width: 30%;text-indent: 8px;">${envTemplate.envValue }</td> --%>

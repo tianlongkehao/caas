@@ -513,25 +513,26 @@ function oneVersionUpgrade(id,serviceName,imgName) {
 			 content: $("#versionUpgrade"),
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){
+		        var cStatusHtml = "<i class='fa_success'></i>"+
+	                				"升级中"+
+	                				"<img src='"+ctx+"/images/loading4.gif' alt=''/>";
+		        $(".cStatusColumn").html(cStatusHtml);
 				 layer.close(index);
-				 $('#myModal').modal('show');
 				 var imgVersion1 = $('#imgVersionName').val();
 				 $.ajax({
-					 url:ctx+"/service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
+					 url:ctx+"/service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion=" +imgVersion1 +"&imgName="+imgName,
 					 success:function(data){
 	 						data = eval("(" + data + ")");
 	 						if(data.status=="200"){
-	 							$('#myModal').modal('hide');
-	 							layer.alert("升级完成");
-	 							window.location.reload();
+	 							//layer.alert("升级完成");
 	 						}else if(data.status=="500"){
-	 							 $('#myModal').modal('hide');
+	 							 //$('#myModal').modal('hide');
 	 							layer.alert("请选择需要升级的版本号！");
 	 						}else{
-	 							 $('#myModal').modal('hide');
+	 							 //$('#myModal').modal('hide');
 	 							layer.alert("请检查配置服务！");
 	 						}
-			
+	 						window.location.reload();
 	 					}
 				 })
 			 },
@@ -742,6 +743,7 @@ function findImageVersion(imageName) {
 	$.ajax({
 		url : ctx + "/service/findImageVersion.do",
 		type : "post",
+		async:false,
 		data : {
 			"imageName" : imageName
 		},

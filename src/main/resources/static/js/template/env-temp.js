@@ -1,4 +1,4 @@
- // 响应每一行上的删除按钮
+// 响应每一行上的删除按钮
  function oneDeleteEnvTemplate(id) {
 	var envTemplateIDs = [];
 	envTemplateIDs.push(id);
