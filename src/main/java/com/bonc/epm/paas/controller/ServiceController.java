@@ -1,9 +1,6 @@
 package com.bonc.epm.paas.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,7 +75,6 @@ import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.ESClient;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
 import com.github.dockerjava.api.command.InspectImageResponse;
@@ -672,12 +668,12 @@ public class ServiceController {
                 System.out.println(quota.getStatus().getUsed().get("cpu"));
 
                 double leftCpu = kubernetesClientService.transCpu(quota.getStatus().getHard().get("cpu"))
-						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU);
+						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu"));
 
                 long leftmemory = hard - used;
 
                 System.out.println(hard + "  " + used);
-                model.addAttribute("leftcpu", leftCpu);
+                model.addAttribute("leftcpu", leftCpu * Integer.valueOf(RATIO_MEMTOCPU));
                 model.addAttribute("leftmemory", leftmemory / 1024);
             } else {
                 LOG.info("用户 " + currentUser.getUserName() + " 没有定义名称为 " + currentUser.getNamespace() + " 的Namespace ");
@@ -1928,7 +1924,8 @@ public class ServiceController {
 	 */
     @RequestMapping("service/detail/getCurrentPodlogs.do")
 	@ResponseBody
-	public String getPodLogs(String podName,String container,String sinceTime) {
+	public String getCurrentPodLogs(String podName,/*String container,*/String sinceTime) {
+    	String container = new String();
         if (container == null) {
 			container = "";
 		}
@@ -1965,8 +1962,9 @@ public class ServiceController {
      * @param response response
      */
     @RequestMapping(value ="/service/detail/getPodlogFile", method = RequestMethod.GET)
-	public void downloadPodlogFile(String podName,String container, HttpServletRequest request,HttpServletResponse response) {
-        if (container == null) {
+	public void downloadPodlogFile(String podName,/*String container,*/ HttpServletRequest request,HttpServletResponse response) {
+    	String container = new String();
+    	if (container == null) {
 			container = "";
 		}
     	try {

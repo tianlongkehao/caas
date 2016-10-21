@@ -199,7 +199,7 @@ function dropdownLog(obj){
 	clearInterval(interval);
 	if(obj != null){
 		$('#podName').val($(obj).attr("podName"));
-		var a= '/service/detail/getPodlogFile?podName='+$(obj).attr("podName");
+		var a= ctx + '/service/detail/getPodlogFile?podName='+$(obj).attr("podName");
 		$('#getPodlogFile').attr("href",a);
 	}
 	var podName = $('#podName').val();
