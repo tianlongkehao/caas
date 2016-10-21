@@ -10,9 +10,14 @@ $(document).ready(function(){
 			return;
 		}
 		//判断value长度
+		if(addName.length >= 20){
+	    	layer.tips('value字符长度不能超过20','#envName',{tips: [1, '#3595CC']});
+		      $('#envName').focus();
+		      return;
+	    }
 		if(addValue.length >= 4096){
 	    	layer.tips('value字符长度不能超过4096','#envValue',{tips: [1, '#3595CC']});
-		      $('#Value').focus();
+		      $('#envValue').focus();
 		      return;
 	    }
 		//判断key是否重复，
@@ -116,6 +121,10 @@ $(document).ready(function(){
 		        	var templateName = $("#envTemplateName").val();
 		        	if (templateName == null || templateName == "") {
 		        		layer.tips('模板名称不能为空','#envTemplateName',{tips: [1, '#3595CC']});
+						$('#envTemplateName').focus();
+						return;
+		        	}else if (templateName.length > 20) {
+		        		layer.tips('模板名称字符长度不能超过20','#envTemplateName',{tips: [1, '#3595CC']});
 						$('#envTemplateName').focus();
 						return;
 		        	}
