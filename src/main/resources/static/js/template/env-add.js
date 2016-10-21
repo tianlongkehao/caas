@@ -28,43 +28,43 @@ $(document).ready(function(){
 	//导入模板
 	$("#importBtn").click(function(){
 		loadEnvironment();
-		layer.open({
-		 	type:1,
-	        title: '环境变量模板',
-	        content: $("#environment-variable"),
-	        btn: ['导入', '取消'],
-	        scrollbar: false,
-	        yes: function(index, layero){
-	        	 var arrayKey = $("#arrayKey").val().split(",");
-	        	 $.ajax({
-	         		url : ctx + "/template/importEnvTemplate.do",
-	         		type: "POST",
-	         		data:{"templateName":templateName},
-	         		success : function(data) {
-	         			data = eval("(" + data + ")");
-	         			var html = "";
-	    	            if (data != null) {
-	    	                if (data['data'].length > 0) {
-	    	                	for (var i in data.data) {
-	    	                		var envTemplate = data.data[i];
-	    	                		html += '<tr>'+
-		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envTemplate.envKey+'"></td>'+
-		    	    	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envTemplate.envValue+'"></td>'+
-		    	    	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-		    	    	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
-		    	    	    			'</td>'+
-		    	    	    		'</tr>'
-		    	    	    		arrayKey.push(envTemplate.envKey+",");
-	    	                	}
-	    	                }
-	    	            }
-	    	            $("#env-oper1").append(html);
-	    	            $("#arrayKey").attr("value",arrayKey);
-	         		}
-	         	});
-	        	layer.close(index);
-	        }
-		})
+//		layer.open({
+//		 	type:1,
+//	        title: '环境变量模板',
+//	        content: $("#environment-variable"),
+//	        btn: ['导入', '取消'],
+//	        scrollbar: false,
+//	        yes: function(index, layero){
+//	        	 var arrayKey = $("#arrayKey").val().split(",");
+//	        	 $.ajax({
+//	         		url : ctx + "/template/importEnvTemplate.do",
+//	         		type: "POST",
+//	         		data:{"templateName":templateName},
+//	         		success : function(data) {
+//	         			data = eval("(" + data + ")");
+//	         			var html = "";
+//	    	            if (data != null) {
+//	    	                if (data['data'].length > 0) {
+//	    	                	for (var i in data.data) {
+//	    	                		var envTemplate = data.data[i];
+//	    	                		html += '<tr>'+
+//		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envTemplate.envKey+'"></td>'+
+//		    	    	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envTemplate.envValue+'"></td>'+
+//		    	    	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
+//		    	    	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
+//		    	    	    			'</td>'+
+//		    	    	    		'</tr>'
+//		    	    	    		arrayKey.push(envTemplate.envKey+",");
+//	    	                	}
+//	    	                }
+//	    	            }
+//	    	            $("#env-oper1").append(html);
+//	    	            $("#arrayKey").attr("value",arrayKey);
+//	         		}
+//	         	});
+//	        	layer.close(index);
+//	        }
+//		})
 	});
 	
 	//保存模板
@@ -167,30 +167,33 @@ function saveEnvVariable() {
 	var dataJson="";  
 	var arrayKey = new Array(1) ;
 	var flag = 0;
-    $("#env-oper1 tr").each(function (index, domEle){
-        var envKey = "";  
+	$("#env-oper1 tr").each(function (index, domEle){
+    	var envKey = "";  
         var envValue = "";  
         $(domEle).find("input").each(function(index,data){  
             if(index == 0){  
             	envKey = $(data).val();
             } else if (index == 1){  
             	envValue = $(data).val();
-            }  
+            }
         });  
         if(envKey==""){
-			layer.tips('环境变量Key不能为空','#env-variate',{tips: [1, '#3595CC']});
+			layer.tips('环境变量Key不能为空',this.children[0].children,{tips: [1, '#3595CC']});
 			$('#env-variate').focus();
 			flag = 1;
+			return false;
         }else if(envValue == ""){
-			layer.tips('环境变量Value不能为空','#env-variate',{tips: [1, '#3595CC']});
+			layer.tips('环境变量Value不能为空',this.children[1].children,{tips: [1, '#3595CC']});
 			$('#env-variate').focus();
 			flag = 1;
+			return false;
         }else{
         	for (var i = 0; i<arrayKey.length;i++) {
         		if (envKey == arrayKey[i]) {
-        			layer.tips('环境变量Key不能重复','#env-variate',{tips: [1, '#3595CC']});
+        			layer.tips('环境变量Key不能重复',this.children[0].children,{tips: [1, '#3595CC']});
         			$('#env-variate').focus();
         			flag = 1;
+        			return false;
         			break;
         		}
         	}
@@ -198,7 +201,6 @@ function saveEnvVariable() {
         
 		arrayKey.push(envKey);
         
-//        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},"; 
 		dataJson += envKey+","+envValue+";";
     });
     
@@ -207,7 +209,6 @@ function saveEnvVariable() {
     }
     if (dataJson != "") {  
         dataJson = dataJson.substring(0,dataJson.length -1);  
-//        dataJson ="[" +dataJson+ "]";  
     }
     $('#envVariable').val(dataJson);
     return true;
@@ -221,18 +222,57 @@ function loadEnvironment(){
   			data = eval("(" + data + ")");
   			var html = "";
 	            if (data != null) {
-                	for (var i in data.data) {
-                		var templateName = data.data[i];
-                		html += '<tr>'+
-                				'<td class="vals vals-env">'+templateName+'<span class="vals-path hide"><i class="fa fa-check"></i></span>'+
-                				'<input type="hidden" class="templateName" value="'+templateName+'" /></td>'+
-                			'</tr>'
-                	}
-	            } else {
-	            	html += '<tr><td>没有保存的模板</td></tr>'	
-	            }
+	            	if (data['data'].length > 0){
+	                	for (var i in data.data) {
+	                		var templateName = data.data[i];
+	                		html += '<tr>'+
+	                				'<td class="vals vals-env">'+templateName+'<span class="vals-path hide"><i class="fa fa-check"></i></span>'+
+	                				'<input type="hidden" class="templateName" value="'+templateName+'" /></td>'+
+	                			'</tr>'
+	                	}
+	            	}else {
+	            		html += '<tr><td>没有保存的模板</td></tr>'	
+	            	}
+	            } 
 	            $("#Path-env").empty();
 	            $("#Path-env").append(html);
+	    		layer.open({
+	    		 	type:1,
+	    	        title: '环境变量模板',
+	    	        content: $("#environment-variable"),
+	    	        btn: ['导入', '取消'],
+	    	        scrollbar: false,
+	    	        yes: function(index, layero){
+	    	        	 var arrayKey = $("#arrayKey").val().split(",");
+	    	        	 $.ajax({
+	    	         		url : ctx + "/template/importEnvTemplate.do",
+	    	         		type: "POST",
+	    	         		data:{"templateName":templateName},
+	    	         		success : function(data) {
+	    	         			data = eval("(" + data + ")");
+	    	         			var html = "";
+	    	    	            if (data != null) {
+	    	    	                if (data['data'].length > 0) {
+	    	    	                	for (var i in data.data) {
+	    	    	                		var envTemplate = data.data[i];
+	    	    	                		html += '<tr>'+
+	    		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envTemplate.envKey+'"></td>'+
+	    		    	    	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envTemplate.envValue+'"></td>'+
+	    		    	    	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
+	    		    	    	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
+	    		    	    	    			'</td>'+
+	    		    	    	    		'</tr>'
+	    		    	    	    		arrayKey.push(envTemplate.envKey+",");
+	    	    	                	}
+	    	    	                }
+	    	    	            }
+	    	    	            $("#env-oper1").append(html);
+	    	    	            $("#arrayKey").attr("value",arrayKey);
+	    	         		}
+	    	         	});
+	    	        	layer.close(index);
+	    	        }
+	    		})
   			}
 	 });
 }
