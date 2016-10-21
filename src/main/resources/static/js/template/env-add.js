@@ -85,15 +85,7 @@ $(document).ready(function(){
 						$('#envTemplateName').focus();
 						return;
 		        	}
-		        	
-		        	var envVariable = $("#envVariable").val();
-		        	if (envVariable == null || envVariable == "") {
-		        		layer.tips('环境变量不能为空','#env-variate',{tips: [1, '#3595CC']});
-						$('#env-variate').focus();
-						layer.close(index);
-						return;
-		        	}
-		        	
+		        	var envVariable = $('#envVariable').val();
 		        	$.ajax({
 						url:ctx+"/template/saveEnvTemplate.do",
 						type: "POST",
@@ -178,23 +170,22 @@ function saveEnvVariable() {
             }
         });  
         if(envKey==""){
-			layer.tips('环境变量Key不能为空',this.children[0].children,{tips: [1, '#3595CC']});
-			$('#env-variate').focus();
+			layer.tips('环境变量Key不能为空',this.children[0].children[0],{tips: [1, '#3595CC']});
+			this.children[0].children[0].focus();
 			flag = 1;
 			return false;
         }else if(envValue == ""){
-			layer.tips('环境变量Value不能为空',this.children[1].children,{tips: [1, '#3595CC']});
-			$('#env-variate').focus();
+			layer.tips('环境变量Value不能为空',this.children[1].children[0],{tips: [1, '#3595CC']});
+			this.children[1].children[0].focus();
 			flag = 1;
 			return false;
         }else{
         	for (var i = 0; i<arrayKey.length;i++) {
         		if (envKey == arrayKey[i]) {
-        			layer.tips('环境变量Key不能重复',this.children[0].children,{tips: [1, '#3595CC']});
-        			$('#env-variate').focus();
+        			layer.tips('环境变量Key不能重复',this.children[0].children[0],{tips: [1, '#3595CC']});
+        			this.children[0].children[0].focus();
         			flag = 1;
         			return false;
-        			break;
         		}
         	}
         }
@@ -208,10 +199,16 @@ function saveEnvVariable() {
     	return false;
     }
     if (dataJson != "") {  
-        dataJson = dataJson.substring(0,dataJson.length -1);  
+        dataJson = dataJson.substring(0,dataJson.length -1);
+        $('#envVariable').val(dataJson);
+        return true;
+    } else {
+		layer.tips('环境变量不能为空','#env-variate',{tips: [1, '#3595CC']});
+		$('#env-variate').focus();
+		return false;
     }
-    $('#envVariable').val(dataJson);
-    return true;
+    
+
 }
 
 //单击导入模板，加载模板数据
