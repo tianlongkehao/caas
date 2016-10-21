@@ -38,10 +38,10 @@
 							<form id="buildForm" name="buildForm"
 								action="<%=path%>/template/env/build" method="post">
 								<div class="container" style="width: 90%">
-									<div class="form-group">
-                                        <span>模板名称：</span>
-                                        <input type="hidden" id="envName" value = "" />
-                                        <input type="text" id="envTemplateName" style="width: 60%; margin-left:5px" value = "" />
+									<div class="form-group" style="float:right">
+<!--                                         <span>模板名称：</span> -->
+<!--                                         <input type="hidden" id="envName" value = "" /> -->
+<!--                                         <input type="text" id="envTemplateName" style="width: 60%; margin-left:5px" value = "" /> -->
 										<span id="crateEnvVariate" class=" btn-info btn-sm">添加环境变量</span>
 										<span id="importBtn" class=" btn-info btn-sm">导入模板</span>                                	</div>
 									<li class="hide-set">
