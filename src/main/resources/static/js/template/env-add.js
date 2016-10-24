@@ -1,7 +1,6 @@
 $(document).ready(function(){
 //	 添加环境变量
 	$("#crateEnvVariate").click(function(){
-//<<<<<<< HEAD
 	var tr = '<tr>'+
 				'<td class="keys"><input type="text" style="width: 98%" value=""></td>'+
 				'<td class="vals"><input type="text" style="width: 98%" value=""></td>'+
@@ -10,114 +9,25 @@ $(document).ready(function(){
 				'</td>'+
 			'</tr>'
 	$("#env-oper1").append(tr);
+	
 	//调节界面高度
 	var imagePage_height = $(".host_step2").height();
 	$(".step-inner").height(imagePage_height+100);	
-//=======
-//		var addName = $("#envName").val();
-//		var addValue = $("#envValue").val();
-//		//环境变量Key只能是字母数字下划线；
-//		if(addName.search(/^[0-9a-zA-Z_]+$/) === -1){
-//			layer.tips('环境变量key只能是字母数字下划线','#envName',{tips: [1, '#3595CC']});
-//			$('#envName').focus();
-//			return;
-//		}
-//		//判断value长度
-//		if(addName.length >= 20){
-//	    	layer.tips('value字符长度不能超过20','#envName',{tips: [1, '#3595CC']});
-//		      $('#envName').focus();
-//		      return;
-//	    }
-//		if(addValue.length >= 4096){
-//	    	layer.tips('value字符长度不能超过4096','#envValue',{tips: [1, '#3595CC']});
-//		      $('#envValue').focus();
-//		      return;
-//	    }
-//		//判断key是否重复，
-//		var arrayKey = $("#arrayKey").val().split(",");
-//		for(var i = 0; i<arrayKey.length; i++){
-//			if(addName == arrayKey[i]){
-//				layer.tips('环境变量key不能重复','#envName',{tips: [1, '#3595CC']});
-//				$('#envName').focus();
-//				return;
-//			}
-//		}
-//		//判断value长度
-//		if(addValue.length >= 4096){
-//	    	layer.tips('value字符长度不能超过4096','#Value',{tips: [1, '#3595CC']});
-//		      $('#Value').focus();
-//		      return;
-//	    }
-//		arrayKey.push(addName);
-//		$("#arrayKey").attr("value",arrayKey);
-//		
-//		if(addName != "" && addValue != ""){
-//			var tr = '<tr>'+
-//			'<td class="keys"><input type="text" style="width: 98%" value="'+addName+'"></td>'+
-//			'<td class="vals"><input type="text" style="width: 98%" value="'+addValue+'"></td>'+
-//			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-//			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+addName+'">'+
-//			'</td>'+
-//		'</tr>'
-//		$("#env-oper1").append(tr);
-//		}
-//		//调节界面高度
-//		var imagePage_height = $(".host_step2").height();
-//    	$(".step-inner").height(imagePage_height+100);	
-//>>>>>>> refs/heads/develop
 	});
 	
 	//导入模板文件选项对勾
-	var templateName = null;
-	$("#Path-table>tbody>tr").on("click", function () {
-		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
-		$(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
-		//$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
+	$(document).on("click","#Path-table tr", function () {
+		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");//取消原先选中行
+		$(this).parent().find("tr.focus").toggleClass("focus");
 		$(this).toggleClass("focus");//设定当前行为选中行
 		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
-		templateName = $(this).parent().find("tr.focus").find(".templateName").val();
+		selectedTemplateName = $(this).parent().find("tr.focus").find(".templateName").val();
+		console.log(selectedTemplateName);
 	});
-	
+
 	//导入模板
 	$("#importBtn").click(function(){
 		loadEnvironment();
-//		layer.open({
-//		 	type:1,
-//	        title: '环境变量模板',
-//	        content: $("#environment-variable"),
-//	        btn: ['导入', '取消'],
-//	        scrollbar: false,
-//	        yes: function(index, layero){
-//	        	 var arrayKey = $("#arrayKey").val().split(",");
-//	        	 $.ajax({
-//	         		url : ctx + "/template/importEnvTemplate.do",
-//	         		type: "POST",
-//	         		data:{"templateName":templateName},
-//	         		success : function(data) {
-//	         			data = eval("(" + data + ")");
-//	         			var html = "";
-//	    	            if (data != null) {
-//	    	                if (data['data'].length > 0) {
-//	    	                	for (var i in data.data) {
-//	    	                		var envTemplate = data.data[i];
-//	    	                		html += '<tr>'+
-//		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envTemplate.envKey+'"></td>'+
-//		    	    	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envTemplate.envValue+'"></td>'+
-//		    	    	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-//		    	    	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
-//		    	    	    			'</td>'+
-//		    	    	    		'</tr>'
-//		    	    	    		arrayKey.push(envTemplate.envKey+",");
-//	    	                	}
-//	    	                }
-//	    	            }
-//	    	            $("#env-oper1").append(html);
-//	    	            $("#arrayKey").attr("value",arrayKey);
-//	         		}
-//	         	});
-//	        	layer.close(index);
-//	        }
-//		})
 	});
 	
 	//保存模板
@@ -183,18 +93,9 @@ $(document).ready(function(){
 		}
 	});
 
-	//导入模板文件选项对勾
-	var templateName = null;
-	$(document).on("click","#Path-table tr", function () {
-		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");//取消原先选中行
-		$(this).parent().find("tr.focus").toggleClass("focus");
-		$(this).toggleClass("focus");//设定当前行为选中行
-		$(this).parent().find("tr.focus").find("span.vals-path").toggleClass("hide");
-		templateName = $(this).parent().find("tr.focus").find(".templateName").val();
-		console.log(templateName);
-	});
 
 });
+var selectedTemplateName = null;
 
 //删除环境变量
 function deleteRow(obj){
@@ -301,7 +202,7 @@ function loadEnvironment(){
 	    	        	 $.ajax({
 	    	         		url : ctx + "/template/importEnvTemplate.do",
 	    	         		type: "POST",
-	    	         		data:{"templateName":templateName},
+	    	         		data:{"templateName":selectedTemplateName},
 	    	         		success : function(data) {
 	    	         			data = eval("(" + data + ")");
 	    	         			var html = "";
