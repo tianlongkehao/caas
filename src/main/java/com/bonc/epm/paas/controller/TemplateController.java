@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -175,5 +176,22 @@ public class TemplateController {
         maps.put("status", "200");
         return JSON.toJSONString(maps); 
 	}
+	/**
+     * Description: <br>
+     *  根据userId和templateName查找envTemplates，跳转进入环境变量模板详细页面
+     * @param model 
+     * @param templateName 环境变量模板名称
+     * @return String
+     */
+	@RequestMapping(value = { "/env/detail/{templateName}" }, method = RequestMethod.GET)
+	public String detail(Model model, @PathVariable String templateName){
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		List<EnvTemplate> envTemplates = envTemplateDao.findByCreateByAndTemplateName(cUser.getId(), templateName);
+		model.addAttribute("envTemplateList",envTemplates);
+		model.addAttribute("menu_flag", "template"); 
+		return "template/env-edit.jsp";
+	}
+    
+
 	
 }

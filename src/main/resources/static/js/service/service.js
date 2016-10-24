@@ -109,8 +109,8 @@ function createContainer() {
 							success : function(data) {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
-									layer.alert("服务启动成功");
-									window.location.reload();
+									layer.msg("服务启动成功",{icon: 6});
+									setTimeout('window.location.reload()',1500);
 								} else {
 									layer.alert("服务启动失败");
 								}
@@ -138,8 +138,8 @@ function stopContainer() {
 							success : function(data) {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
-									layer.alert("服务已停止");
-									window.location.reload();
+									layer.msg("服务已停止",{icon: 6});
+									setTimeout('window.location.reload()',1500);
 								} else {
 									layer.alert("服务停止失败，请检查服务器连接");
 								}
@@ -168,8 +168,8 @@ function delContainer() {
 							success : function(data) {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
-									layer.alert("服务已删除");
-									window.location.reload();
+									layer.msg("服务已删除",{icon: 6});
+									setTimeout('window.location.reload()',1500);
 								} else {
 									layer.alert("服务删除失败，请检查服务器连接");
 								}
@@ -211,8 +211,8 @@ function upGradeContainer() {
 							success : function(data) {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
-									layer.alert("弹性扩容成功！");
-									window.location.reload();
+									layer.msg("弹性扩容成功",{icon: 6});
+									setTimeout('window.location.reload()',1500);
 								} else if (data.status == "400") {
 									layer.alert("弹性扩容失败，请检查服务器连接");
 								} else if (data.status == "300") {
@@ -284,8 +284,8 @@ function changeContainerConf() {
 							success : function(data) {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
-									layer.alert("更改成功");
-									window.location.reload();
+									layer.msg("更改成功",{icon: 6});
+									setTimeout('window.location.reload()',1500);
 								} else {
 									layer.alert("更改失败，请检查服务器连接");
 								}
@@ -330,8 +330,8 @@ function versionUpgrade() {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
 									$('#myModal').modal('hide');
-									layer.alert("升级完成");
-									window.location.reload();
+									layer.msg("升级完成",{icon: 6});
+									setTimeout('window.location.reload()',1500);
 								} else if (data.status == "500") {
 									$('#myModal').modal('hide');
 									layer.alert("请选择需要升级的版本号！");
@@ -374,8 +374,8 @@ function oneStartContainer(id, status) {
 		success : function(data) {
 			data = eval("(" + data + ")");
 			if (data.status == "200") {
-				layer.alert("服务启动成功");
-				window.location.reload();
+				layer.msg("服务启动成功",{icon: 6});
+				setTimeout('window.location.reload()',1500);
 			} else {
 				layer.alert("服务启动失败");
 			}
@@ -402,8 +402,8 @@ function oneStopContainer(id, status) {
 				success : function(data) {
 					data = eval("(" + data + ")");
 					if (data.status == "200") {
-						layer.alert("服务已停止");
-						window.location.reload();
+						layer.msg("服务已停止",{icon: 6});
+						setTimeout('window.location.reload()',1500);
 					} else {
 						layer.alert("服务停止失败，请检查服务器连接");
 					}
@@ -430,8 +430,8 @@ function oneDeleteContainer(id) {
 				success : function(data) {
 					data = eval("(" + data + ")");
 					if (data.status == "200") {
-						layer.alert("服务已删除");
-						window.location.reload();
+						layer.msg("服务已删除",{icon: 6});
+						setTimeout('window.location.reload()',1500);
 					} else {
 						layer.alert("服务删除失败，请检查服务器连接");
 					}
@@ -484,8 +484,8 @@ function oneUpGradeContainer(id,containerName,nums,cpu,ram) {
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
-							layer.alert("弹性扩容成功！");
-							window.location.reload();
+							layer.msg("弹性扩容成功",{icon: 6});
+							setTimeout('window.location.reload()',1500);
 						}else if(data.status=="400"){
 							layer.alert("弹性扩容失败，请检查服务器连接");
 						}else if(data.status=="300"){
@@ -601,8 +601,8 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
-							layer.alert("更改成功");
-							window.location.reload();
+							layer.msg("更改完成",{icon: 6});
+							setTimeout('window.location.reload()',1500);
 						}else{
 							layer.alert("更改失败，请检查服务器连接");
 						}

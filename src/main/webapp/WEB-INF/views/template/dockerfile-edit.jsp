@@ -29,7 +29,7 @@
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" id="nav2">模板</li>
 						<li style="margin-left: -44px;"><i class="fa fa-angle-right"></i></li>
-						<li class="active">编辑dockerfile</li>
+						<li class="active" style="width:108px;">编辑dockerfile</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -44,15 +44,10 @@
 								action="<%=path%>/template/dockerfile/build" method="post">
 								<div class="container" style="width: 90%">
 									<div class="row">
-									
-									<div class="form-group col-md-12 ">
-                                        <label>编写dockerfile</label>
-                                    </div>
-                                    
                                     <div class="form-group col-md-12">
-                                        <span>模板名称：</span>
+                                        <span style="float:left;line-height:34px">模板名称：</span>
                                          <input type="hidden" id="dockerFileId" value = "${dockerFileTemp.id }" />
-                                        <input type="text" id="dockerFileTemplateName" style="width: 77%" disabled value = "${dockerFileTemp.templateName }" />
+                                        <input type="text" class="form-control" id="dockerFileTemplateName" style="width: 93%" disabled value = "${dockerFileTemp.templateName }" />
                                     </div>
 									<div class="form-group col-md-12">
 										<textarea id="dockerFile" name="dockerFile">${dockerFileTemp.dockerFile }</textarea>
