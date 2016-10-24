@@ -3,6 +3,7 @@ package com.bonc.epm.paas.dao;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,4 +47,16 @@ public interface CiDao extends CrudRepository<Ci, Long> {
      * @see 
      */
     Ci findByImgId(Long imgID);
+
+    /**
+     * Description:
+     * @param imgNameFirst
+     * @param imgNameLast
+     * @param imgNameVersion
+     * @return 
+     * @see 
+     */
+    @Query("select ci from Ci ci where ci.imgNameFirst =?1 and ci.imgNameLast = ?2 and ci.imgNameVersion = ?3")
+    List<Ci> findByImgNameFirstAndImgNameLastAndImgNameVersion(String imgNameFirst, String imgNameLast,
+                                                         String imgNameVersion);
 } 

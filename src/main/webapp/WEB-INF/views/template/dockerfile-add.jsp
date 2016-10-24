@@ -49,9 +49,9 @@
 											class=" btn-info btn-sm pull-right" style="cursor: pointer">导入模板</span>
 									</div>
 									<div class="form-group col-md-12">
-                                        <span>模板名称：</span>
-                                         <input type="hidden" id="dockerFileId" value = "" />
-                                        <input type="text" id="dockerFileTemplateName" style="width: 77%" value = "" />
+                                        <!-- <span>模板名称：</span>
+                                         <input type="hidden" id="dockerFileId" value = "" /> -->
+                                        <!-- <input type="text" id="dockerFileTemplateName" style="width: 77%" value = "" /> -->
                                     </div>
 									<div class="form-group col-md-12" id = "dockerfiletext">
 										<textarea id="dockerFile" name="dockerFile"></textarea>
@@ -90,7 +90,7 @@
                                <td class="vals vals-doc">${dockerFile.templateName }<span
                                    class="doc-tr hide"><i class="fa fa-check"></i></span> <input
                                    type="hidden" class="dockerFileTemplate"
-                                   value='${dockerFile.dockerFile }' />
+                                   value='${dockerFile.id }' />
                                </td>
                            </tr>
                        </c:forEach>

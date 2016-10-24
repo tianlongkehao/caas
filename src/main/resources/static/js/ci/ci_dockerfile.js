@@ -38,7 +38,19 @@ $(document).ready(
 		        //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
 		        $(this).toggleClass("focus");//设定当前行为选中行
 		        $(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
-		        dockerFile = $(this).parent().find("tr.focus").find(".dockerFileTemplate").val();
+				$.ajax({
+					url : ctx + "/template/dockerfile/content",
+					type : "GET",
+					data : {
+						"id":$(this).parent().find("tr.focus").find(".dockerFileTemplate").val()
+					},
+					success : function(data) {
+						data = eval("(" + data + ")");
+						if (data != null) {
+							dockerFile = data.dockerFile;
+						}
+					}
+				});
 		    });
 
 			// 导入模板
@@ -131,7 +143,7 @@ $(document).ready(
 	                		var dockerFile = data.data[i];
 	                		html += "<tr>"+
 	                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
-	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.dockerFile+"' /></td>"+
+	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
 	                			"</tr>"
 	                	}
 		            } 
@@ -146,6 +158,7 @@ $(document).ready(
 	
 	function checkCiAdd(editor_one){
         var imgNameLast = $("#imgNameLast").val().trim();
+        var imgNameVersion = $("#imgNameVersion").val().trim();
         var projectName = $('#projectName').val().trim();
         var description = $('#description').val().trim();
         var dockerFile = editor_one.getValue();
@@ -175,6 +188,33 @@ $(document).ready(
             });
             $('#imgNameLast').focus();
             return false;
+        }
+        
+        // 验证填写的镜像名称是否重复
+        var imageFlag = false;
+        $.ajax({
+    		url : ctx + "/ci/validciinfo.do",
+    		async:false,
+    		type: "POST",
+    		data:{
+    				/*"imgNameFirst":imgNameFirst,*/
+    				"imgNameLast":imgNameLast,
+    				"imgNameVersion":imgNameVersion
+    		},
+    		success : function(data) {
+    			data = eval("(" + data + ")");
+    			if (data.status=="400") {
+    	            layer.tips('镜像版本重复', '#imgNameVersion', {
+    	                tips: [1, '#0FA6D8'] //还可配置颜色
+    	            });
+    	            $('#imgNameVersion').focus();
+    				imageFlag = true;
+    			} 
+    		}
+    	});
+        if (imageFlag) {
+        	imageFlag = false;
+        	return false;
         }
         
         // 验证简介

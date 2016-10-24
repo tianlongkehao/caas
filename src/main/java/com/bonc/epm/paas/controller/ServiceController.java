@@ -1,9 +1,6 @@
 package com.bonc.epm.paas.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,7 +76,6 @@ import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.ESClient;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
 import com.github.dockerjava.api.command.InspectImageResponse;
@@ -587,17 +583,17 @@ public class ServiceController {
 	 */
     private List<PortConfig> getBaseImageExposedPorts(String imgID) {
         try {
-            Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
-            if (null != ci) {
-                Image image = imageDao.findById(Long.valueOf(imgID));
-                if (null == image) {
+            Image image = imageDao.findById(Long.valueOf(imgID));
+            if (null == image) {
+                Ci ci = ciDao.findByImgId(Long.valueOf(imgID));
+                if (null != ci) {
                     image = imageDao.findById(ci.getBaseImageId());
                 }
-                 
-                if (null != image && StringUtils.isNotBlank(image.getImageId())) {
-                    dockerClientService.pullImage(image.getName(), image.getVersion());
-                    InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId());
-                    // v1.9
+            }
+            if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+                dockerClientService.pullImage(image.getName(), image.getVersion());
+                InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
+                if (null != iir) {
                     long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
                     if (countOfExposedPort > 0) {
                         ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
@@ -669,16 +665,16 @@ public class ServiceController {
                 long hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
                 long used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
 
-                System.out.println(quota.getStatus().getHard().get("cpu"));
-                System.out.println(quota.getStatus().getUsed().get("cpu"));
+                //System.out.println(quota.getStatus().getHard().get("cpu"));
+                //System.out.println(quota.getStatus().getUsed().get("cpu"));
 
                 double leftCpu = kubernetesClientService.transCpu(quota.getStatus().getHard().get("cpu"))
-						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU);
+						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu"));
 
                 long leftmemory = hard - used;
 
-                System.out.println(hard + "  " + used);
-                model.addAttribute("leftcpu", leftCpu);
+                //System.out.println(hard + "  " + used);
+                model.addAttribute("leftcpu", leftCpu * Integer.valueOf(RATIO_MEMTOCPU));
                 model.addAttribute("leftmemory", leftmemory / 1024);
             } else {
                 LOG.info("用户 " + currentUser.getUserName() + " 没有定义名称为 " + currentUser.getNamespace() + " 的Namespace ");
@@ -1929,7 +1925,8 @@ public class ServiceController {
 	 */
     @RequestMapping("service/detail/getCurrentPodlogs.do")
 	@ResponseBody
-	public String getPodLogs(String podName,String container,String sinceTime) {
+	public String getCurrentPodLogs(String podName,/*String container,*/String sinceTime) {
+    	String container = new String();
         if (container == null) {
 			container = "";
 		}
@@ -1938,7 +1935,12 @@ public class ServiceController {
         Map<String, Object> datamap = new HashMap<String, Object>();
 
         try {
-        	logStr = client.getPodLog(podName, container, false, sinceTime, false);
+        	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000000000Z'");
+        	Calendar calendar = Calendar.getInstance();
+        	calendar.setTime(simpleDateFormat.parse(sinceTime));
+        	calendar.add(Calendar.MINUTE, -3);
+        	String sinceTime3 = simpleDateFormat.format(calendar.getTime());
+        	logStr = client.getPodLog(podName, container, false, sinceTime3, false);
         	logStr = logStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
             datamap.put("logStr", logStr);
@@ -1960,9 +1962,10 @@ public class ServiceController {
      * @param request request
      * @param response response
      */
-    @RequestMapping(value ="/service/detail/getPodlogFile")
-	public void downloadPodlogFile(String podName,String container, HttpServletRequest request,HttpServletResponse response) {
-        if (container == null) {
+    @RequestMapping(value ="/service/detail/getPodlogFile", method = RequestMethod.GET)
+	public void downloadPodlogFile(String podName,/*String container,*/ HttpServletRequest request,HttpServletResponse response) {
+    	String container = new String();
+    	if (container == null) {
 			container = "";
 		}
     	try {

@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.slf4j.Logger;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
+import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
 import com.bonc.epm.paas.entity.PodTopo;
@@ -84,7 +87,13 @@ public class ClusterController {
      */
     @Autowired
 	private ClusterDao clusterDao;
-
+    
+    /**
+     * userDao 数据库操作接口
+     */
+    @Autowired
+    private UserDao userDao;
+    
     /**
      * 获取配置文件中的 yumConf.io.address 的数据信息；
      */
@@ -177,15 +186,27 @@ public class ClusterController {
      */
     @RequestMapping(value = { "/topo" }, method = RequestMethod.GET)
 	public String clusterTopo(Model model) {
-        
+        User currentUser = CurrentUserUtils.getInstance().getUser();
+        //判断是否是超级用户
+        if (!currentUser.getUser_autority().equals("1")) {
+            List<ServiceTopo> serviceTopoList = new ArrayList<>();
+            addServiceTopo(currentUser.getNamespace(),serviceTopoList);
+            model.addAttribute("serviceTopo",serviceTopoList);
+            model.addAttribute("user", "user");
+        } 
+        else {
+            List<User> userList = userDao.checkUser(currentUser.getId());
+            model.addAttribute("userList", userList);
+            model.addAttribute("user", "root");
+        }
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster-topo.jsp";
     }
     
     @RequestMapping(value = { "/topo/data.do" }, method = RequestMethod.GET)
     @ResponseBody
-    public String clusterTopoData(){
-     // 创建client
+    public String clusterTopoData(String nameSpace){
+        // 创建client
         KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
         //以node节点名称为key，node节点中包含的pod信息为value；
         Map<String,Object> jsonData = new HashMap<String,Object>();
@@ -196,27 +217,35 @@ public class ClusterController {
         NodeList nodeList = client.getAllNodes();
         for (Node node : nodeList.getItems()) {
             String minionName = node.getMetadata().getName();
-            String hostIp = node.getStatus().getAddresses().get(0).getAddress();
+            //String hostIp = node.getStatus().getAddresses().get(0).getAddress();
             List<PodTopo> podTopoList = new ArrayList<PodTopo>();
-            nodeMap.put(minionName +"/"+ hostIp, podTopoList);
+            nodeMap.put(minionName, podTopoList);
         }
-        
-        User currentUser = CurrentUserUtils.getInstance().getUser();
-        if (currentUser.getNamespace().equals("admin")) {
-            // 取得所有NAMESPACE
-            NamespaceList namespaceList = client.getAllNamespaces();
-            for (Namespace namespace : namespaceList.getItems()) {
-                String name = namespace.getMetadata().getName();
-                //添加pod数据
-                addPodTopo(name,nodeMap);
-                //添加service数据
-                addServiceTopo(name,serviceTopoList);
-            }
-        } else {
+        if (nameSpace != null) {
             //添加pod数据
-            addPodTopo(currentUser.getNamespace(),nodeMap);
+            addPodTopo(nameSpace,nodeMap);
             //添加service数据
-            addServiceTopo(currentUser.getNamespace(),serviceTopoList);
+            addServiceTopo(nameSpace,serviceTopoList);
+        }
+        else {
+            User currentUser = CurrentUserUtils.getInstance().getUser();
+            //判断当前用户是否是超级管理员权限
+            if (currentUser.getUser_autority().equals("1")) {
+                // 取得所有NAMESPACE
+                NamespaceList namespaceList = client.getAllNamespaces();
+                for (Namespace namespace : namespaceList.getItems()) {
+                    String name = namespace.getMetadata().getName();
+                    //添加pod数据
+                    addPodTopo(name,nodeMap);
+                    //添加service数据
+                    addServiceTopo(name,serviceTopoList);
+                }
+            } else {
+                //添加pod数据
+                addPodTopo(currentUser.getNamespace(),nodeMap);
+                //添加service数据
+                addServiceTopo(currentUser.getNamespace(),serviceTopoList);
+            }
         }
         
         System.out.println(nodeMap.toString());
@@ -225,6 +254,44 @@ public class ClusterController {
         jsonData.put("nodes", nodeMap);
         jsonData.put("services", serviceTopoList);
         return JSON.toJSONString(jsonData);
+    }
+    
+    /**
+     * Description: <br>
+     * 通过服务名称查询当前服务的pod，展示当前的pod拓扑图；
+     * @param serviceName 服务名称；
+     * @return String
+     */
+    @RequestMapping(value = { "/topo/findPod.do" }, method = RequestMethod.GET)
+    @ResponseBody
+    public String findPodByService(String serviceName,String nameSpace) {
+        KubernetesAPIClientInterface client = null;
+        if (StringUtils.isNotEmpty(nameSpace)) {
+            client = kubernetesClientService.getClient(nameSpace);
+        } else {
+            client = kubernetesClientService.getClient();
+        }
+        Map<String,Object> map = new HashMap<String, Object>();
+        List<PodTopo> podTopoList = new ArrayList<>();
+        serviceName = serviceName.substring(serviceName.indexOf("/")+1);
+        Service service = client.getService(serviceName);
+        Map<String,String> labelSelector = service.getSpec().getSelector();
+        PodList podList = client.getLabelSelectorPods(labelSelector);
+        for (Pod pod : podList.getItems()) {
+            PodTopo podTopo = new PodTopo();
+            String podName = pod.getMetadata().getName();
+            if (podName.length() > 32) {
+                podName = podName.substring(0, podName.indexOf("-")+6);
+            }
+            podTopo.setPodName(podName);
+            podTopo.setNodeName(pod.getSpec().getNodeName());
+            podTopo.setHostIp(pod.getStatus().getHostIP());
+            podTopo.setServiceName(nameSpace +"/"+serviceName);
+            podTopoList.add(podTopo);
+        }
+        map.put("master", "master/"+masterAddress);
+        map.put("podTopoList", podTopoList);
+        return JSON.toJSONString(map);
     }
     
     /**
@@ -244,11 +311,25 @@ public class ClusterController {
                 for (Pod pod : podList.getItems()) {
                     PodTopo podTopo = new PodTopo();
                     podTopo.setNamespace(namespace);
-                    podTopo.setPodName(pod.getMetadata().getName());
+                    String podName = pod.getMetadata().getName();
+                    if (podName.length() > 32) {
+                        podName = podName.substring(0, podName.indexOf("-")+6);
+                    }
+                    podTopo.setPodName(podName);
                     podTopo.setNodeName(pod.getSpec().getNodeName());
                     podTopo.setHostIp(pod.getStatus().getHostIP());
-                    podTopo.setServiceName(namespace +"/"+ pod.getMetadata().getLabels().get("app"));
-                    String key = podTopo.getNodeName() + "/" + podTopo.getHostIp();
+//                    podTopo.setServiceName(namespace +"/"+ pod.getMetadata().getLabels().get("app"));
+                    String serviceName = "";
+                    Iterator<Map.Entry<String, String>> it = pod.getMetadata().getLabels().entrySet().iterator();
+                    while (it.hasNext() && StringUtils.isBlank(serviceName)) {
+                         Map.Entry<String, String> entry = it.next();
+                         Service service = clientName.getService(entry.getValue());
+                         if (null != service) {
+                             serviceName =  service.getMetadata().getName();
+                         }
+                    }
+                    podTopo.setServiceName(serviceName);
+                    String key = podTopo.getNodeName();
                     List<PodTopo> podTopoList = nodeMap.get(key);
                     podTopoList.add(podTopo);
                     nodeMap.replace(key, podTopoList);
@@ -284,7 +365,8 @@ public class ClusterController {
                 }
                 serviceTopo.setPodName(podName);
                 serviceTopo.setNamespace(service.getMetadata().getNamespace());
-                serviceTopo.setServiceName(service.getMetadata().getNamespace() + "/" + service.getMetadata().getName());
+//                serviceTopo.setServiceName(namespace +"/"+service.getMetadata().getName());
+                serviceTopo.setServiceName(service.getMetadata().getName());
                 serviceTopoList.add(serviceTopo);
             }
         }
@@ -313,7 +395,7 @@ public class ClusterController {
         model.addAttribute("menu_flag", "cluster");
         return "cluster/cluster-detail.jsp";
     }
-
+    
     /**
      * Description: <br>
      *  取得单一主机资源使用情况

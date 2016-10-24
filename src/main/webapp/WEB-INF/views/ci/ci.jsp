@@ -25,7 +25,7 @@
             </div>
             <div class="contentMain">
 
-                <div class="caption clearfix">
+                <div class="caption clearfix hide">
                     <ul class="toolbox clearfix">
                         <li><a href="javascript:void(0);" id="ciReloadBtn"><i class="fa fa-repeat"></i></a></li>
                         <li><a href="<%=path %>/ci/add" id="ciAddBtn">代码构建</a></li>
@@ -37,35 +37,41 @@
                     </ul>
                 </div>
                 <div class="itemTable">
-                    <table class="table ci-table">
-                        <thead>
-                        <tr>
-                            <th>
-                                <div class="table-head">
-                                    <table class="table" style="margin:0px;">
-                                        <thead>
-                                        <tr style="height:40px;">
-                                            <th style="width: 15%;text-indent:30px;">项目名称</th>
-                                            <th style="width: 12%;text-indent: 15px;">构建状态</th>
-                                            <th style="width: 15%;text-indent: 20px;">代码源</th>
-                                            <th style="width: 12%;">上次构建时间</th>
-                                            <th style="width: 10%;text-indent: 8px;">持续时间</th>
-                                            <th style="width: 15%;text-indent: 10px;">镜像</th>
-                                            <th style="width: 18%;text-indent: 10px;">功能</th>
-                                        </tr>
-                                        </thead>
-                                    </table>
-                                </div>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody id="projectsBody">
-                        <tr>
-                            <td>
-                                <div class="content-table">
-                                    <table class="table tables">
-                                        <tbody id="ciList">
-                                        <c:forEach items="${ciList}" var="ci" >
+                	<div class="row">
+						<div class="col-md-12">
+							<div class="ibox float-e-margins">
+								<div class="ibox-title">
+									<h5>
+										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>构建
+									</h5>
+
+									<div class="ibox-tools">
+										<a href="<%=path %>/ci/add" id="ciAddBtn"><img src="<%=path %>/images/code.png" class="fa-img" alt="代码构建" title="代码构建"></a>
+										<a href="<%=path %>/ci/addCodeSource" id="ciAddCodeSourceBtn"><img src="<%=path %>/images/quick.png" class="fa-img" alt="快速构建" title="快速构建"></a>
+										<a href="<%=path %>/ci/uploadImage" id="ciAddSourceBtn"><img src="<%=path %>/images/upload.png" class="fa-img" alt="上传镜像" title="上传镜像"></a>
+										<a href="<%=path %>/ci/dockerfile"><img src="<%=path %>/images/dockerfile.png" class="fa-img" alt="Dockerfile构建" title="Dockerfile构建"></a>
+										<a href="javascript:window.location.reload(true);" id="ciReloadBtn" title="刷新">
+											<i class="fa fa-repeat"></i>
+										</a>
+									</div>
+								</div>
+								<div class="ibox-content">
+									<table class="table table-stripped table-hover dataTables-example">
+											<thead>
+												<tr style="height: 40px;">
+													<th style="width: 15%; text-indent: 30px;">项目名称</th>
+													<th style="width: 12%; text-indent: 15px;">构建状态</th>
+													<th style="width: 15%; text-indent: 20px;">代码源</th>
+													<th style="width: 12%;">上次构建时间</th>
+													<th style="width: 10%; text-indent: 8px;">持续时间</th>
+													<th style="width: 18%; text-indent: 10px;">镜像</th>
+													<th style="width: 10%; text-indent: 10px;">功能</th>
+												</tr>
+											</thead>
+
+											<tbody id="ciList">
+
+											<c:forEach items="${ciList}" var="ci" >
 
                                             <c:choose>
                                                 <c:when test="${ci.constructionStatus == 1}">
@@ -107,19 +113,19 @@
                                                 </c:when>
                                                 <c:otherwise>
                                                 	<c:set var="cursorClass" value=""></c:set>
-                                                	 <c:set var="hrefValue" value="href='<%=path %>/registry/detail/${ci.imgId }'"></c:set>
+                                                	 <c:set var="hrefValue"  value="href='/registry/detail/${ci.imgId }'"></c:set>
                                                 </c:otherwise>
                                             </c:choose>
 
                                             <tr class="ci-listTr" style="cursor:auto">
-                                                <td style="width: 15%; text-indent:22px;">
+                                                <td style="width: 15%; text-indent:30px;">
                                                     <a href="<%=path %>/ci/detail/${ci.id}" title="查看详细信息">${ci.projectName}</a>
                                                 </td>
-                                                <td style="width: 12%;" class="cStatusColumn">
+                                                <td style="width: 12%; text-indent:15px;" class="cStatusColumn">
                                                     <i class="${statusClassName}"></i> ${statusName}
                                                     <img src="<%=path %>/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
                                                 </td>
-                                                <td style="width: 15%;">
+                                                <td style="width: 15%; text-indent:20px;">
                                                 	<c:choose>
 		                                                <c:when test="${ci.type == 2||ci.type == 3}">
 		                                                </c:when>
@@ -133,30 +139,44 @@
 		                                            </c:choose>
                                                 </td>
                                                 <td style="width: 12%;"><fmt:formatDate value="${ci.constructionDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-                                                <td style="width: 10%;"><fmt:formatNumber type="number" value="${ci.constructionTime/1000}" maxFractionDigits="0"/>s</td>
-                                                <td style="width: 15%;">
-                                                    <a target="_blank" title="" class="${cursorClass}" ${hrefValue }>${ci.imgNameFirst}/${ci.imgNameLast}</a>
+                                                <td style="width: 10%; text-indent:8px;"><fmt:formatNumber type="number" value="${ci.constructionTime/1000}" maxFractionDigits="0"/>s</td>
+                                                <td style="width: 18%; text-indent:10px;">
+                                                    <a target="_blank" title="" class="${cursorClass}"  ${hrefValue}>${ci.imgNameFirst}/${ci.imgNameLast}:${ci.imgNameVersion}</a>
                                                 </td>
-                                                <td style="width:18%">
-                                                    <span class="bj-green ${btnCursorClass}" data-toggle="tooltip" data-placement="right" title="" data-original-title="重新构建" constructionStatus="${ci.constructionStatus}"  ciId="${ci.id}">构建&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></span>
+                                                <td style="width:10%; text-indent:10px;">
+                                                    <span class="bj-green ${btnCursorClass}" data-toggle="tooltip" data-placement="right" title="构建" data-original-title="重新构建" constructionStatus="${ci.constructionStatus}"  ciId="${ci.id}"><i class="fa fa-arrow-circle-right"></i></span>
                                                 </td>
                                             </tr>
 
                                         </c:forEach>
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+												
+										</tbody>
+										<tfoot class="hide">
+											<tr>
+												<td colspan="7">
+													<ul class="pagination pull-right"></ul>
+												</td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
                 </div>
 
             </div>
         </div>
     </article>
 </div>
-
+	<script type="text/javascript">
+		 $('.dataTables-example').dataTable({
+			"aoColumnDefs" : [ {
+				"bSortable" : false,
+				"aTargets" : [ 6 ]
+			} ],
+			"aaSorting": [[ 3, "desc" ]]
+		});
+	</script>
 </body>
 </html>

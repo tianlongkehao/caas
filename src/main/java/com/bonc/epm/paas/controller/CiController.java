@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -918,6 +919,32 @@ public class CiController {
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
-	    
-	
+    
+    @RequestMapping(value = {"ci/validciinfo.do"} , method = RequestMethod.POST)
+    @ResponseBody
+    public String validCiInfo(Model model, String imgNameLast, String imgNameVersion) {
+        Map<String,Object> result = new HashMap<String, Object>();
+        String imgNameFirst = CurrentUserUtils.getInstance().getUser().getUserName();
+        if (!StringUtils.isEmpty(imgNameFirst) && !StringUtils.isEmpty(imgNameLast) && !StringUtils.isEmpty(imgNameVersion)) {
+            List<Ci> ciList = ciDao.findByImgNameFirstAndImgNameLastAndImgNameVersion(imgNameFirst,imgNameLast,imgNameVersion);
+            if (!CollectionUtils.isEmpty(ciList)) {
+                result.put("status", "400");
+            }
+        }
+        return JSON.toJSONString(result);
+    }
+    
+    @RequestMapping(value = {"ci/validimageinfo.do"} , method = RequestMethod.POST)
+    @ResponseBody
+    public String validImageInfo(Model model, String name, String version) {
+        Map<String,Object> result = new HashMap<String, Object>();
+        name = CurrentUserUtils.getInstance().getUser().getUserName()+"/"+name;
+        if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(version)) {
+            Image image = imageDao.findByNameAndVersion(name, version);
+            if (null != image) {
+                result.put("status", "400");
+            }
+        }
+        return JSON.toJSONString(result);
+    }
 }

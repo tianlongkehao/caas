@@ -1,4 +1,4 @@
- // 响应每一行上的删除按钮
+// 响应每一行上的删除按钮
  function oneDeleteEnvTemplate(id) {
 	var envTemplateIDs = [];
 	envTemplateIDs.push(id);
@@ -13,10 +13,8 @@
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
-							layer.msg("环境变量删除成功",{btn: ['确定'],icon: 6
-							  ,yes: function(index2){
-									window.location.reload();
-							  }});
+							layer.msg("环境变量删除成功",{icon: 6})
+							setTimeout('window.location.reload()',1500);
 						}else{
 							layer.alert("环境变量删除失败，请检查环境变量器连接");
 						}
@@ -42,10 +40,8 @@
 		        					success:function(data){
 		        						data = eval("(" + data + ")");
 		        						if(data.status=="200"){
-		        							layer.msg("环境变量删除成功",{btn: ['确定'],icon: 6
-		        							  ,yes: function(index2){
-		        									window.location.reload();
-		        							  }});
+		        							layer.msg("环境变量删除成功",{icon: 6})
+		        							setTimeout('window.location.reload()',1500);
 		        						}else{
 		        							layer.alert("环境变量删除失败，请检查服务器连接");
 		        						}

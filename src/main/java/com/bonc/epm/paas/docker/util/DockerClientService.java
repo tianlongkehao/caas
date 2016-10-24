@@ -15,10 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.bonc.epm.paas.dao.CiRecordDao;
-import com.bonc.epm.paas.docker.api.DockerRegistryAPI;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.Image;
-import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
@@ -66,9 +64,9 @@ public class DockerClientService {
 	 * @return 
 	 * @see
 	 */
-	public DockerRegistryAPI getDockerRegistryAPIClient() {
+/*	public DockerRegistryAPI getDockerRegistryAPIClient() {
         return new RestFactory().createDockerRegistryAPI(serverAddress, username, password);
-	}
+	}*/
 	
 	/**
 	 * 
@@ -150,21 +148,29 @@ public class DockerClientService {
 	/**
 	 * 
 	 * Description:
-	 * 查看镜像信息
+	 * 查看镜像信息 ,兼容v1仓库和v2仓库  docker 版本1.19
 	 * @param imageId String
+	 * @param imageVersion 
+	 * @param imageName 
 	 * @return InspectImageResponse 
 	 * @see InspectImageResponse 
 	 */
-	public InspectImageResponse inspectImage(String imageId) {
+	public InspectImageResponse inspectImage(String imageId, String imageName, String imageVersion) {
+	    DockerClient dockerClient = this.getSpecialDockerClientInstance();
+	    InspectImageResponse response = null;
 	    try {
-            DockerClient dockerClient = this.getSpecialDockerClientInstance();
-            return dockerClient.inspectImageCmd(imageId).exec();
+             response = dockerClient.inspectImageCmd(this.generateRegistryImageName(imageName, imageVersion)).exec();
         }
         catch (Exception e) {
            log.error("error inspect image,message:-"+e.getMessage());
-           e.printStackTrace();
-           return null;
+           try {
+               response =  dockerClient.inspectImageCmd(imageId).exec();
+           }
+           catch (Exception e2) {
+               log.error("error message."+e.getMessage());
+           }
         }
+	    return response;
 	}
 	
 	/**

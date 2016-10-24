@@ -32,7 +32,15 @@ public class TemplateController {
 	public String envTemp(Model model) {
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		List<EnvTemplate> envTemplates = envTemplateDao.findByCreateBy(cUser.getId());
-		model.addAttribute("envTemplateList",envTemplates);
+		List<EnvTemplate> envTemplates2 = new ArrayList<EnvTemplate>();
+		for (int i = 0; i<envTemplates.size(); i++) {
+			if (i == 0) {
+				envTemplates2.add(envTemplates.get(i));
+			}else if (!envTemplates.get(i).getTemplateName().equals(envTemplates.get(i-1).getTemplateName())) {
+				envTemplates2.add(envTemplates.get(i));
+			}
+		}
+		model.addAttribute("envTemplateList",envTemplates2);
 		model.addAttribute("menu_flag", "template"); 
 		return "template/env-temp.jsp";
 	}

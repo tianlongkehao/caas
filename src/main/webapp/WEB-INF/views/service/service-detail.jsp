@@ -69,7 +69,8 @@
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podNameList}" var="pod" >
-								 		<li class="LOG"><a podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)">${pod.podName }</a></li>
+								 		<li class="LOG"><a podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)" 
+								 			style="width: 150px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
 								 	</c:forEach>
 									
 								</ul>

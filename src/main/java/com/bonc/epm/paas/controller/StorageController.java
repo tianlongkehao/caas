@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.StorageConstant;
@@ -38,6 +39,7 @@ import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.SFTPUtil;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.ZipCompressing;
@@ -389,35 +391,28 @@ public class StorageController {
 
     @RequestMapping(value = { "upload" }, method = RequestMethod.POST)
     @ResponseBody
-    public String handleFileUpload(@RequestParam("file") MultipartFile file, String path, String storageName, long id) {
-        if (!file.isEmpty()) {
+    public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path, String storageName, long id) {
             try {
                 Map map = new HashMap();
-                long fileSize =file.getSize() /1024/1024;
+                for(int i =0;i<files.length;i++){
+                long fileSize =files[i].getSize() /1024/1024;
                 String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
                 File dir = new File(cephController.getMountpoint() + namespace + "/" + storageName);
                 storageDao.findOne(id).getStorageSize();
                 long used = (fileSize + dir.length()) / 1024 / 1024;
                 long result = storageDao.findOne(id).getStorageSize() - used;
                 if (0 >= result) {
-                    // 上传文件大小超过可用大小，返回失败
                     map.put("status", "500");
                     return JSON.toJSONString(map);
                 }
-//                if(fileSize<=50){
                     BufferedOutputStream out = new BufferedOutputStream(
-                            new FileOutputStream(new File(path + file.getOriginalFilename())));
-                    out.write(file.getBytes());
+                            new FileOutputStream(new File(path + files[i].getOriginalFilename())));
+                    out.write(files[i].getBytes());
                     out.flush();
                     out.close();
-//                }else{
-//                    SFTPUtil sf = new SFTPUtil();
-//                    ChannelSftp sftp = sf.connect(cephController.getUrl(), 22, cephController.getUsername()
-//                        , cephController.getPassword());
-//                    sf.upload(path, file, sftp);
-//                                   }
                 map.put("used", used);
                 map.put("status", "200");
+                }
                 return JSON.toJSONString(map);
             } 
             catch (FileNotFoundException e) {
@@ -429,11 +424,6 @@ public class StorageController {
                 return "上传失败," + e.getMessage();
             }
         } 
-        else {
-            return "上传失败，因为文件是空的.";
-        }
-
-    }
 
     /**
      * 
@@ -494,6 +484,72 @@ public class StorageController {
         }
 
     } 
+    /**
+     * 手动创建文件夹
+     * 
+     * @param storageName
+     * @param isVolReadOnly
+     * @return 
+     * @see
+     */
+    @RequestMapping(value = { "storage/createFile.do" }, method = RequestMethod.POST)
+    @ResponseBody
+    public String createFile(String storageName,String dirName,String path){
+        Map map = new HashMap();
+        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+//        String directory = cephController.getMountpoint() + namespace + storageName;
+        File file = new File(path+"/"+dirName);
+        if(true==file.mkdir()){
+            map.put("status", "200");
+        }else{
+            map.put("status", "500");
+                }
+        return JSON.toJSONString(map);
+
+    } 
+    /**
+     * 手动删除文件或文件夹
+     * 
+     * @param storageName
+     * @param isVolReadOnly
+     * @return 
+     * @see
+     */
+    @RequestMapping(value = { "storage/delFile.do" }, method = RequestMethod.GET)
+    @ResponseBody
+    public String delFile(String storageName,String fileNames,String path){
+        Map map = new HashMap();
+        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+//        String directory = cephController.getMountpoint() + namespace + storageName;
+        String[] fileName = fileNames.split(",");
+        for(int i=0 ;i<fileName.length;i++){
+           File file = new File(path+"/"+fileName[i]);
+           if(file.isDirectory()){
+               //删除文件夹下文件和此文件夹
+               FileUtils.delAllFile(path+"/"+fileName[i]);
+               file.delete();
+           }else{
+               file.delete();
+                       }
+                  }
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+
+
+    } 
+    @RequestMapping(value = { "storage/unZipFile.do" }, method = RequestMethod.GET)
+    @ResponseBody
+    public String unZipFile(String storageName,String fileName,String path){
+        Map map = new HashMap();
+        try {
+            CmdUtil.exeCmd( "unzip -o "+fileName, path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+    }
+    
 //    public static void main(String[] args) {
 //        try {
 //            CephController ccl = new CephController();

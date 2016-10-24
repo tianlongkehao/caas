@@ -320,12 +320,21 @@
             // over node 
             for (var i = 0; i < clusterDataYval.val.length; i++) {
             	//遍历overall和node
-            	debugger
             	//gaodu
-            	var obj = computerSize(clusterDataYval1); 
-            	var abcHeight = obj.abcHeight;
-            	var abcpercent = obj.abcpercent;
-                
+            	//var obj = computerSize(clusterDataYval1);
+                //var abcHeight = obj.abcHeight;
+                //var abcpercent = obj.abcpercent;
+            	
+            	debugger
+                var obj = computerSize(clusterDataYval1);
+                var abcHeight = "280px";
+                var abcpercent = "14%";
+            	if(clusterDataYval.val[i].title.indexOf("BY NODE") != -1){
+            		abcHeight = obj.abcHeight;
+                    abcpercent = obj.abcpercent;
+            	}
+            	
+            	
                 var option = {
                     title: {
                         text: ''
@@ -353,7 +362,7 @@
                     yAxis: [],
                     series: []
                 };
-
+                
                 //根据titleText确定纵坐标的单位
                 var titleText = clusterDataYval.val[i].title;
                 option.title.text = titleText;
@@ -458,6 +467,7 @@
                 //minion的个数
                 var titleTextMin = clusterDataYVal1.val[min].titleText + " " + clusterDataYVal1.val[min].val[j].title;
                 option.title.text = titleTextMin;
+                option.grid.bottom = "14%";
 
 //                for(var memNum = 0; memNum < 2; memNum++){
 //                    var memoryNode = {

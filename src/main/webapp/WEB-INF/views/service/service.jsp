@@ -37,9 +37,6 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="javascript:window.location.reload(true);" id="serviceReloadBtn" title="刷新">
-											<i class="fa fa-repeat"></i>
-										</a>
 										<a href="<%=path%>/service/add" id="serviceCreateBtn" title="创建服务">
 											<i class="fa fa-plus"></i>
 										</a>
@@ -52,6 +49,9 @@
 										<a id="deleteButton" class="no-drop" href="javascript:delContainer()" title="删除">
 											<i id = "deleteButtonFa" class="fa fa-trash self_a"></i>
 										</a>
+										<a href="javascript:window.location.reload(true);" id="serviceReloadBtn" title="刷新">
+											<i class="fa fa-repeat"></i>
+										</a>
 									</div>
 								</div>
 								<div class="ibox-content">
@@ -61,8 +61,8 @@
 												<th style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" autocomplete="off" class="chkAll"
 													id="checkallbox" /></th>
-												<th style="width: 20%; padding-left: 5px;">名称</th>
-												<th style="width: 10%; text-indent: 8px;">运行状态</th>
+												<th style="width: 15%; padding-left: 5px;">名称</th>
+												<th style="width: 12%; text-indent: 8px;">运行状态</th>
 												<th style="width: 20%;">镜像</th>
 												<th style="width: 24%;">服务地址</th>
 												<th style="width: 12%;">创建于</th>
@@ -121,13 +121,13 @@
 													<td style="width: 15%; white-space: nowrap;"><b id="aaa"
 														class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>
 														<a href="<%=path %>/service/detail/${service.id}" serviceId="${service.id}"
-														class="cluster_mirrer_name">${service.serviceName}</a> <span
+														class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">${service.serviceName}</a> <span
 														class="number-node">${service.instanceNum }</span> <span
 														class="margin cursor console-code-modal"
 														data-id="#console-code-modal"> <i
 															class="fa fa-desktop" onclick="_showConsole('mysql');"></i>
 													</span></td>
-													<td style="width: 10%" class="cStatusColumn"
+													<td style="width: 12%" class="cStatusColumn"
 														id="containerStatus"><i class="${statusClassName}"></i>
 														${statusName} <img src="<%=path %>/images/loading4.gif"
 														alt="" class="${loadingImgShowClass}" /></td>
@@ -182,7 +182,7 @@
                                                         </c:otherwise>
                                                     </c:choose>
 														<a id="${service.id}_scaleCluster" class="a-live scaleCluster_a " 
-															href="javascript:oneUpGradeContainer(${service.id },'${service.serviceName }',${service.instanceNum })" title="弹性伸缩"
+															href="javascript:oneUpGradeContainer(${service.id },'${service.serviceName }',${service.instanceNum },${service.cpuNum },${service.ram })" title="弹性伸缩"
 															style="margin-left: 5px">
 																<i class="fa fa-arrows"></i>
 														</a> 
@@ -203,7 +203,7 @@
                                                           </c:otherwise>
                                                        </c:choose>
 														<a id="${service.id}_changeConfiguration" class="a-live changeConfiguration_a " 
-															href="javascript:oneChangeContainerConf(${service.id },'${service.serviceName }',${service.cpuNum },${service.ram });" title="更改配置"
+															href="javascript:oneChangeContainerConf(${service.id },'${service.serviceName }',${service.instanceNum },${service.cpuNum },${service.ram },${service.status });" title="更改配置"
 															style="margin-left: 5px">
 																<i class="fa fa-cog"></i>
 														</a> 														
@@ -298,7 +298,7 @@
 							min="${cpumin }"
 							max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
 							id="confCpu" name="confCpu"> <span class="unit">个</span>
-						<span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" >${leftcpu }</label></span>
+						<span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" >${leftcpu>0?leftcpu:0 }</label></span>
 					</div>
 				</li>
 				<li class="line-h-3 c-ser">

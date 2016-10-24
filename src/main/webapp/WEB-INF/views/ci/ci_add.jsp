@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>快速构建</title>
+    <title>代码构建</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
     <script type="text/javascript" src="<%=path %>/js/ci/ci_add.js"></script>
@@ -37,11 +37,9 @@
 
                                     <div class="">
                                         <span class="name-note">${username } /&nbsp;</span>
-                                        <input name="imgNameFirst" type="hidden" value="${username }">
-                                        <input id="imgNameLast" name="imgNameLast" type="text" class="name-input"
-                                               value=""> :
-                                        <input id="imgNameVersion" name="imgNameVersion" type="text" value="latest"
-                                               class="name-input">
+                                        <input id="imgNameFirst" name="imgNameFirst" type="hidden" class="name-input" value="${username }">
+                                        <input id="imgNameLast" name="imgNameLast" type="text" class="name-input" value=""> :
+                                        <input id="imgNameVersion" name="imgNameVersion" type="text" value="latest" class="name-input">
                                     </div>
                                 </div>
                                 <div class="form-group col-md-5">

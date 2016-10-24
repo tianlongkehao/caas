@@ -188,16 +188,18 @@ var sinceTime;
 var interval;
 function clearLog() {
 	sinceTime = new Date().Format("yyyy-MM-ddThh:mm:ss.000000000Z")
+	$("#containerlogList").html("");
 	getCurrentPodlogs();
 	clearInterval(interval);
 	interval = setInterval("getCurrentPodlogs()",5000);
 }
 //下拉列表选中项对应的log
 function dropdownLog(obj){
+	$("#containerlogList").html("");
 	clearInterval(interval);
 	if(obj != null){
 		$('#podName').val($(obj).attr("podName"));
-		var a= '/service/detail/getPodlogFile?podName='+$(obj).attr("podName");
+		var a= ctx + '/service/detail/getPodlogFile?podName='+$(obj).attr("podName");
 		$('#getPodlogFile').attr("href",a);
 	}
 	var podName = $('#podName').val();
@@ -206,7 +208,7 @@ function dropdownLog(obj){
 		url:ctx+"/service/detail/getPodlogs.do?&podName="+podName,
 		success:function(data){
 			data = $.parseJSON(data);
-			if(data.status == '200' && data.logList != ""){
+			if(data.status == '200' && data.logStr != ""){
 				
 				var containerlog = data.logStr;
 				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
@@ -216,7 +218,7 @@ function dropdownLog(obj){
 				$("#containerlogList").html("");
 				$("#containerlogList").html(html);
 			}else{
-				var html = '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
+				var html = '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;"> 该实例没有产生日志。</pre>'
 				$("#containerlogList").html("");
 				$("#containerlogList").html(html);	
 			}
@@ -232,7 +234,7 @@ function getCurrentPodlogs(){
 		url:ctx+"/service/detail/getCurrentPodlogs.do?&podName="+podName+"&sinceTime="+sinceTime,
 		success:function(data){
 			data = $.parseJSON(data);
-			if(data.status == '200' && data.logList != ""){
+			if(data.status == '200' && data.logStr != ""){
 				
 				var containerlog = data.logStr;
 				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
@@ -242,9 +244,9 @@ function getCurrentPodlogs(){
 				$("#containerlogList").html("");
 				$("#containerlogList").html(html);
 			}else{
-				html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
+				var html = '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">实时刷新中，当前无新日志产生。</pre>'
 				$("#containerlogList").html("");
-				$("#containerlogList").html(html);	
+				$("#containerlogList").html(html);
 			}
 			
 			}

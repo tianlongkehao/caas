@@ -49,14 +49,14 @@ function loadContainers(obj) {
 						var containerLength = data.containerList.length;
 						for (var i = 0; i < containerLength; i++) {
 							var containerName = data.containerList[i].containerName;
-							var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动" : "启动中";
+							var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动" : "运行中";
 							var statusClassName = data.containerList[i].containerStatus == 1 ? "fa_stop" : "fa_run";
 							var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide" : "hide";
 							containersHtml += '<tr class="tr-row" serviceidcon="'
 									+ serviceID
 									+ '">'
 									+ '<td style="width: 5%">&nbsp;</td>'
-									+ '<td style="width: 20%;">'
+									+ '<td style="width: 15%;">'
 									+ '<a style="margin-left: 19px;" href="javascript:void(0)">'
 									+ containerName
 									+ '</a>'
@@ -323,10 +323,9 @@ function versionUpgrade() {
 						$('#myModal').modal('show');
 						var imgVersion1 = $('#imgVersionName').val();
 						$.ajax({
-							url : ctx + "/service/modifyimgVersion.do?id=" + id
-									+ "&serviceName=" + serviceName
-									+ "&imgVersion=" + imgVersion1
-									+ "&imgName=" + imgName,
+							url : ctx + "/service/modifyimgVersion.do?id=" + id+ "&serviceName=" + serviceName
+																			+ "&imgVersion=" + imgVersion1 + "&imgName=" + imgName,
+							async:true,		
 							success : function(data) {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
@@ -444,12 +443,25 @@ function oneDeleteContainer(id) {
 }
 
 // 响应每一行上的弹性伸缩
-function oneUpGradeContainer(id,containerName,nums) {
+function oneUpGradeContainer(id,containerName,nums,cpu,ram) {
 	 $('#upgradeServiceName').val(containerName);
 	 $('#numberChange').val(nums);
+	 
+	 var leftcpu = $("#leftcpu").html();
+	 var leftram = $("#leftram").html();
+	 
+	 var maxcpu = parseInt(leftcpu)/parseInt(cpu);
+	 var maxram = parseInt(leftram)/parseInt(ram);
+	 
 	 var total = 0;
-	 total = parseInt($('#numberChange').attr('max'))+parseInt(nums);
-	 $('#numberChange').attr("max",total);
+	 if (parseInt(maxcpu) > parseInt(maxram)) {
+		 total = maxram;
+	 } else {
+		 total = maxcpu;
+	 }
+	 
+	 total += parseInt(nums);
+	 $('#numberChange').attr("max",parseInt(total));
 	 $('#leftpod').text(total);
 
 	 layer.open({
@@ -459,9 +471,14 @@ function oneUpGradeContainer(id,containerName,nums) {
 		 btn: ['确定', '取消'],
 		 yes: function(index, layero){ //或者使用btn1
 		 	//按钮【按钮一】的回调
-			 layer.close(index);
 			 var num = $('#numberChange').val();
-			// alert(num);
+			 if (parseInt(num) > parseInt(total)) {
+				 layer.tips('租户资源不足',"#numberChange",{tips: [1, '#3595CC']});
+			     $("#numberChange").focus();
+				 return;
+			 }
+			 
+			 layer.close(index);
 			 $.ajax({
 					url:""+ctx+"/service/modifyServiceNum.do?id="+id+"&addservice="+num,
 					success:function(data){
@@ -496,25 +513,26 @@ function oneVersionUpgrade(id,serviceName,imgName) {
 			 content: $("#versionUpgrade"),
 			 btn: ['确定', '取消'],
 			 yes: function(index, layero){
+		        var cStatusHtml = "<i class='fa_success'></i>"+
+	                				"升级中"+
+	                				"<img src='"+ctx+"/images/loading4.gif' alt=''/>";
+		        $(".cStatusColumn").html(cStatusHtml);
 				 layer.close(index);
-				 $('#myModal').modal('show');
 				 var imgVersion1 = $('#imgVersionName').val();
 				 $.ajax({
-					 url:ctx+"/service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion="+imgVersion1+"&imgName="+imgName,
+					 url:ctx+"/service/modifyimgVersion.do?id="+id+"&serviceName="+serviceName+"&imgVersion=" +imgVersion1 +"&imgName="+imgName,
 					 success:function(data){
 	 						data = eval("(" + data + ")");
 	 						if(data.status=="200"){
-	 							$('#myModal').modal('hide');
-	 							layer.alert("升级完成");
-	 							window.location.reload();
+	 							//layer.alert("升级完成");
 	 						}else if(data.status=="500"){
-	 							 $('#myModal').modal('hide');
+	 							 //$('#myModal').modal('hide');
 	 							layer.alert("请选择需要升级的版本号！");
 	 						}else{
-	 							 $('#myModal').modal('hide');
+	 							 //$('#myModal').modal('hide');
 	 							layer.alert("请检查配置服务！");
 	 						}
-			
+	 						window.location.reload();
 	 					}
 				 })
 			 },
@@ -525,13 +543,13 @@ function oneVersionUpgrade(id,serviceName,imgName) {
 }
 
 // 响应每一行上的修改配置
-function oneChangeContainerConf(id,containerName,cpu,ram) {
+function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 	 $('#confServiceName').val(containerName);
 	 $('#confCpu').val(cpu);
 	 $('#confRamSlider_input').val(ram);
 	 var totalcpu = 0;
 	 var totalram = 0;
-	 totalcpu = parseInt($('#confCpu').attr('max'))+parseInt(cpu);
+	 totalcpu = parseInt($('#confCpu').attr('max'))+parseFloat(cpu);
 	 totalram = '1024';
 	 $('#confCpu').attr("max",totalcpu);
 	 //var confRamSlider = sliderFn('confRamSlider', totalram,0, Number(ram));
@@ -547,17 +565,36 @@ function oneChangeContainerConf(id,containerName,cpu,ram) {
 			 var cpus = $('#confCpu').val();
 			 var rams = $('#confRamSlider_input').val();
 			 var leftcpu = $("#leftcpu").html();
-			 if (parseInt(cpus) > parseInt(leftcpu)) {
-		    	 layer.tips('cpu剩余不足',"#confCpu",{tips: [1, '#3595CC']});
-			     $("#confCpu").focus();
-				 return;
-			 }
 			 var leftmemory = $("#leftram").html();
-			 if (parseInt(rams) > parseInt(leftmemory)) {
-				 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
-				 $("#confRamSlider_input").focus();
-				 return;
+			 //服务在运行中
+			 if (status == 3) {
+				 
+				 if ((parseFloat(cpus)*parseFloat(instanceNum)) > ( parseFloat(leftcpu) + parseFloat(cpu)*parseFloat(instanceNum))) {
+					 layer.tips('cpu剩余不足,pod数量为'+instanceNum,"#confCpu",{tips: [1, '#3595CC']});
+					 $("#confCpu").focus();
+					 return;
+				 }
+			 
+				 if ((parseFloat(rams)*parseFloat(instanceNum)) > (parseFloat(leftmemory) + parseFloat(ram)*parseFloat(instanceNum) )) {
+					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
+					 $("#confRamSlider_input").focus();
+					 return;
+				 }
+			 } else {
+				 if ((parseFloat(cpus)*parseFloat(instanceNum)) > parseFloat(leftcpu)) {
+					 layer.tips('cpu剩余不足,pod数量为'+instanceNum,"#confCpu",{tips: [1, '#3595CC']});
+					 $("#confCpu").focus();
+					 return;
+				 }
+				 
+				 if ((parseFloat(rams)*parseFloat(instanceNum)) > parseFloat(leftmemory)) {
+					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
+					 $("#confRamSlider_input").focus();
+					 return;
+				 }
 			 }
+			 
+			 
 			 layer.close(index);
 			 $.ajax({
 					url:""+ctx+"/service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
@@ -706,6 +743,7 @@ function findImageVersion(imageName) {
 	$.ajax({
 		url : ctx + "/service/findImageVersion.do",
 		type : "post",
+		async:false,
 		data : {
 			"imageName" : imageName
 		},

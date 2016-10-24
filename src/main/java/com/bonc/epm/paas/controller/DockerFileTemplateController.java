@@ -1,5 +1,6 @@
 package com.bonc.epm.paas.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
@@ -93,6 +95,20 @@ public class DockerFileTemplateController {
     
     /**
      * Description: <br>
+     * 进入dockerfile详细页面
+     * @param index id
+     * @param model modle
+     * @return String
+     */
+    @RequestMapping(value = "/dockerfile/content", method = RequestMethod.GET)
+    @ResponseBody
+    public String getockerfile(long id, Model model){
+        DockerFileTemplate dockerFileTemp = dockerFileTemplateDao.findOne(id);
+        return JSON.toJSONString(dockerFileTemp).replace("&gt;", ">").replace("&lt;", "<").replace("&quot", " ");
+    }
+    
+    /**
+     * Description: <br>
      * 编辑修改dockerFile
      * @param dockerFileId id
      * @param dockerFile dockerfile命令
@@ -135,6 +151,31 @@ public class DockerFileTemplateController {
             LOG.error("日志读取错误：" + e);
         }
         return JSON.toJSONString(map);
+    }
+    /**
+     * Description: <br>
+     * 批量删除dockerFile模板
+     * @param dockerfileId 删除Id
+     * @return String
+     * @see
+     */
+    @RequestMapping(value = "/dockerfiles/delete.do", method = RequestMethod.GET)
+    @ResponseBody
+    public String deletedockerfiles(String dockerfileIds){
+     // 解析获取的id List
+        ArrayList<Long> ids = new ArrayList<Long>();
+        String[] str = dockerfileIds.split(",");
+        if (str != null && str.length > 0) {
+            for (String id : str) {
+                ids.add(Long.valueOf(id));
+            }
+        }
+        Map<String, Object> maps = new HashMap<String, Object>();
+        for (long id : ids) {
+        	dockerFileTemplateDao.delete(id);
+        }
+        maps.put("status", "200");
+        return JSON.toJSONString(maps); 
     }
     
 }
