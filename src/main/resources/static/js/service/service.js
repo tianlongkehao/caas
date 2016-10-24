@@ -502,7 +502,7 @@ function oneUpGradeContainer(id,containerName,nums,cpu,ram) {
 }
 
 // 响应每一行上的版本升级
-function oneVersionUpgrade(id,serviceName,imgName) {
+function oneVersionUpgrade(id,serviceName,imgName,obj) {
 		 $('#upgradeVersionServiceName').val(serviceName);
 		 //查询镜像版本
 		 findImageVersion(imgName);
@@ -516,7 +516,7 @@ function oneVersionUpgrade(id,serviceName,imgName) {
 		        var cStatusHtml = "<i class='fa_success'></i>"+
 	                				"升级中"+
 	                				"<img src='"+ctx+"/images/loading4.gif' alt=''/>";
-		        $(".cStatusColumn").html(cStatusHtml);
+		        $("#"+id+"_upgradeCluster").parent().parent().find(".cStatusColumn").html(cStatusHtml);
 				 layer.close(index);
 				 var imgVersion1 = $('#imgVersionName').val();
 				 $.ajax({
