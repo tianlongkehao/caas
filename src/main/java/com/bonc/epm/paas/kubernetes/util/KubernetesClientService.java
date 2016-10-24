@@ -338,15 +338,15 @@ public class KubernetesClientService {
 		Map<String,String> labels = new HashMap<String,String>();
 		labels.put("app", name);
 		if (StringUtils.isNotBlank(servicePath)) {
-		    labels.put("servicePath", servicePath.replaceAll("/", "---")); 
+		    labels.put("servicePath", servicePath.replaceAll("/", "LINE")); 
 		}
 		if (StringUtils.isNotBlank(proxyPath)) {
-		    labels.put("proxyPath", proxyPath.replaceAll("/", "---"));
+		    labels.put("proxyPath", proxyPath.replaceAll("/", "LINE"));
 		}
 		// 添加服务检查路径
-		if (StringUtils.isNotBlank(checkPath)) {
+/*		if (StringUtils.isNotBlank(checkPath)) {
 		    labels.put("healthcheck", checkPath.replaceAll("/", "---"));  
-		}
+		}*/
 		if (StringUtils.isNotBlank(nginxObj)) {
 			String[] proxyArray = nginxObj.split(",");
 			for (int i = 0; i < proxyArray.length;i++) {
@@ -367,7 +367,9 @@ public class KubernetesClientService {
 	        livenessProbe.setTimeoutSeconds(TIME_SECONDS);
 	        HTTPGetAction httpGet = new HTTPGetAction();
 	        httpGet.setPath(checkPath);
-	        httpGet.setPort("8080");
+	        httpGet.setPort(8080); // 修改了HTTPGetAction的port字段类型定义
+	        httpGet.setScheme("HTTP");
+	        livenessProbe.setHttpGet(httpGet);
 	        container.setLivenessProbe(livenessProbe); 
 		}
 		
@@ -472,10 +474,10 @@ public class KubernetesClientService {
 		Map<String,String> labels = new HashMap<String,String>();
 		labels.put("app", appName);
 		if (StringUtils.isNotBlank(servicePath)) {
-		    labels.put("servicePath", servicePath.replaceAll("/", "---"));
+		    labels.put("servicePath", servicePath.replaceAll("/", "LINE"));
 		}
 		if (StringUtils.isNotBlank(proxyPath)) {
-		    labels.put("proxyPath", proxyPath.replaceAll("/", "---"));
+		    labels.put("proxyPath", proxyPath.replaceAll("/", "LINE"));
 		}
 		
 		if (StringUtils.isNotBlank(proxyZone)) {

@@ -196,7 +196,7 @@
                                                           </c:when>
                                                           <c:otherwise>
                                                              <a id="${service.id}_upgradeCluster" class="no-drop upgradeCluster_a " 
-                                                                href="javascript:oneVersionUpgrade(${service.id },'${service.serviceName }','${service.imgName }')" title="版本升级"
+                                                                href="javascript:oneVersionUpgrade(${service.id },'${service.serviceName }','${service.imgName }',this)" title="版本升级"
                                                                 style="margin-left: 5px">
                                                                 <i class="fa fa-arrow-up self_a"></i>
                                                             </a>    

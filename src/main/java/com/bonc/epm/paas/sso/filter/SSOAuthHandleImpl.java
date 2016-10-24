@@ -121,7 +121,8 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                     // 统一平台的userId
                     if (null != attributes.get("userId")) {
                          //是租户而且不是管理员
-                        if ("1".equals(tenantAdmin) && !"1".equals(attributes.get("userId").toString().trim())) {
+                        if ("1".equals(tenantAdmin) && 
+                                ((!"1".equals(attributes.get("userId").toString().trim())) || (!"admin".equals(attributes.get("loginId").toString().trim())))) {
                             if (createNamespace(namespace)) { // 创建命名空间
                                 createQuota(tenantId, namespace); // 创建资源
                                 createCeph(namespace); // 创建ceph
@@ -191,9 +192,6 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
         }
         if (null != attributes.get("userId")) { // 统一平台的userId
             user.setOpen_user_id(attributes.get("userId").toString());
-            if("1".equals(attributes.get("userId").toString())){ //判断是否为超级管理员
-                user.setUser_autority(UserConstant.AUTORITY_MANAGER);
-            }
         }
         if (null != attributes.get("email")) { // email
             user.setEmail(attributes.get("email").toString());
@@ -206,7 +204,12 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
         }
         if (null != attributes.get("tenantAdmin")) {
             String tenantAdmin = attributes.get("tenantAdmin").toString();
-            if ("1".equals(tenantAdmin)) { // 是租户
+            if("1".equals(tenantAdmin) && 
+                        (("1".equals(attributes.get("userId").toString())) || 
+                            ("admin".equals(loginId.trim())))){ //判断是否为超级管理员
+                user.setUser_autority(UserConstant.AUTORITY_MANAGER);
+            }
+            else if ("1".equals(tenantAdmin)) { // 是租户
                 user.setUser_autority(UserConstant.AUTORITY_TENANT);
             } 
             else if ("0".equals(tenantAdmin)) {

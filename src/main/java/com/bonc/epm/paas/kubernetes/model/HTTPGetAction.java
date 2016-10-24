@@ -2,7 +2,7 @@ package com.bonc.epm.paas.kubernetes.model;
 
 public class HTTPGetAction {
 	private String path;
-	private String port;
+	private int port;
 	private String host;
 	private String scheme;
 	public String getPath() {
@@ -11,10 +11,10 @@ public class HTTPGetAction {
 	public void setPath(String path) {
 		this.path = path;
 	}
-	public String getPort() {
+	public int getPort() {
 		return port;
 	}
-	public void setPort(String port) {
+	public void setPort(int port) {
 		this.port = port;
 	}
 	public String getHost() {
