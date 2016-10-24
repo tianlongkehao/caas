@@ -8,10 +8,10 @@
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/service.css" />
 <script type="text/javascript"
-	src="<%=path%>/js/service/service-detail.js"></script>
+	src="<%=path%>/js/service/service-debug.js"></script>
 <script type="text/javascript"
-	src="<%=path%>/js/service/laydate/laydate.js"></script>
-<!-- <script src="https://192.168.110.141/static/gateone.js"></script> -->
+	src="<%=path%>/plugins/gateone/gateone.js"></script>
+<!-- <script src="https://192.168.247.129/static/gateone.js"></script> -->
 
 </head>
 <body>
@@ -32,22 +32,14 @@
 					</ol>
 				</div>
 				<div class="contentMain">
-<!-- 					<div id="gateone_container" style="position: relative; width: 60em; height: 30em;">
+ 					<div id="gateone_container" style="position: relative; width: 60em; height: 30em;">
 						<div id="gateone"></div>
 					</div>
- -->
-					<iframe src="https://192.168.247.129:4200" width="800px" height="500px"></iframe>
+<!-- 					<iframe src="https://192.168.247.129:4200" width="800px" height="500px"></iframe> -->
 				</div>
 			</div>
 					
 		</article>
 	</div>
 </body>
-<!-- <script>
-	window.onload = function() {
-		// Initialize Gate One:
-		GateOne.init({url: 'https://192.168.110.141'});
-	}
-</script>
- -->
 </html>
