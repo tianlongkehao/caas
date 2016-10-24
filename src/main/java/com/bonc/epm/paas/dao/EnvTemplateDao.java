@@ -21,6 +21,7 @@ import com.bonc.epm.paas.entity.EnvTemplate;
 @Transactional
 public interface EnvTemplateDao extends CrudRepository<EnvTemplate, Long>{
 	
+	@Query("select env from EnvTemplate env where env.createBy = ?1 order by env.templateName")
     public List<EnvTemplate> findByCreateBy(long id);
     
     @Query("select distinct env.templateName from EnvTemplate env where env.createBy = ?1")

@@ -61,12 +61,11 @@
 												<th style="width: 5%; text-indent: 30px;">
 													<input type="checkbox" autocomplete="off" class="chkAll" id="checkallbox"/>
 												</th>
-												<th class="textOverflow" style="width: 15%; text-indent: 5px;">名称</th>
-												<th class="textOverflow" style="width: 20%; text-indent:10px">主鍵</th>
-												<th class="textOverflow" style="width: 40%; text-indent:10px">值</th>
-												<th class="textOverflow" style="width: 15%;">创建时间</th>
-												<th class="textOverflow" style="width: 8%; text-indent: 10px;"
-													class="del-operation">操作</th>
+												<th style="width: 60%; text-indent: 30px;">名称</th>
+<!-- 												<th style="width: 15%; text-indent: 15px;">主鍵</th> -->
+<!-- 												<th style="width: 30%; text-indent: 8px;">值</th> -->
+												<th style="width: 20%;">创建时间</th>
+												<th style="width: 10%; text-indent: 10px;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="envTemplateList">
@@ -76,20 +75,21 @@
 														<input type="checkbox" class="chkItem" name="chkItem"
 															autocomplete="off" id="checkboxID" value="${envTemplate.id }" />
 													</td>
-													<td class="textOverflow" style="width: 15%;text-indent:5px;" title="${envTemplate.templateName }">${envTemplate.templateName }</td>
-		                                            <td class="textOverflow" style="width: 20%; text-indent:10px" title="${envTemplate.envKey }">${envTemplate.envKey }</td>
-		                                            <td class="textOverflow" style="width: 40%; text-indent:10px" title="${envTemplate.envValue }">${envTemplate.envValue }</td>
-		                                            <td class="textOverflow" style="width: 15%;">${envTemplate.createDate }</td>
-		                                            <td class="textOverflow" style="width: 8%;text-indent: 10px;" >
-														<a class="no-drop" href="javascript:oneDeleteEnvTemplate(${envTemplate.id })" title="删除">
-														<i class="fa fa-trash"></i></a>
+<!-- <<<<<<< HEAD -->
+													<td style="width: 60%;text-indent:30px;">${envTemplate.templateName }</td>
+<%-- 		                                            <td style="width: 15%;text-indent: 15px;">${envTemplate.envKey }</td> --%>
+<%-- 		                                            <td style="width: 30%;text-indent: 8px;">${envTemplate.envValue }</td> --%>
+		                                            <td style="width: 20%;">${envTemplate.createDate }</td>
+		                                            <td style="width: 10%;text-indent: 10px;" >
+														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate(${envTemplate.id })" title="删除"></a>
+														<i class="fa fa-trash"></i>
 		                                            </td>
 												</tr>
 											</c:forEach>
 										</tbody>
 										<tfoot class="hide">
 											<tr>
-												<td colspan="6">
+												<td colspan="4">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
@@ -106,8 +106,8 @@
 
 	<script type="text/javascript">
 		$('.dataTables-example').dataTable({
-	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,5] }],
-	        "aaSorting": [[ 4, "desc" ]]
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
+	        "aaSorting": [[ 2, "desc" ]]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
 	</script>
