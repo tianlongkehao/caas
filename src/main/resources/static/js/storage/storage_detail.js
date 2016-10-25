@@ -157,12 +157,15 @@ function  creatable(isDir,path,dirName){
 	        	for (i in data.fileList) {
 	        		var	fileInfo =	JSON.stringify(data.fileList[i]);
 	    				fileInfo = eval("(" + fileInfo + ")");
+	    				$('#downfilepath').val(fileInfo.path);
+   					 fileInfo.path = encodeURI(fileInfo.path);
+   					 fileInfo.fileNameEnc=encodeURI(fileInfo.fileName);
 	    				//alert(fileInfo.day);
 	    				if(fileInfo.fileName=='..'){
 			    				tbody+='<tr class="vol_list" style="cursor:pointer">'+
 									'<td style="width: 5%;text-indent: 14px;">'+
 									'</td>'+
-									'<td style="width: 25%; text-indent: 30px;"  onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileName+'") >'+
+									'<td style="width: 25%; text-indent: 30px;"  onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileNameEnc+'") >'+
 									'<a hrer="">'
 									if(true==fileInfo.dir){
 										tbody+='<img src="/images/img-file.png" >'
@@ -182,7 +185,7 @@ function  creatable(isDir,path,dirName){
 									'<td style="width: 5%;text-indent: 14px;">'+
 									'<input type="checkbox" class="chkItem" name="downfiles" value="'+fileInfo.fileName+'" >'+
 									'</td>'+
-									'<td style="width: 25%;text-indent: 30px;" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileName+'") >'+
+									'<td style="width: 25%;text-indent: 30px;" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileNameEnc+'") >'+
 									'<a hrer="">'
 									if(true==fileInfo.dir){
 										tbody+='<img src="/images/img-file.png" >'
@@ -199,7 +202,7 @@ function  creatable(isDir,path,dirName){
 								'</tr>';
 	    				}
 	           
-	           $('#downfilepath').val(fileInfo.path);
+
 	        	} 
 	        	$('#mybody').html($(tbody)); 
 	  	      //showDataTable();
