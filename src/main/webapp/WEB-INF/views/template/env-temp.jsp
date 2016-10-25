@@ -71,7 +71,7 @@
 												<tr>
 													<td style="width: 5%; text-indent: 30px;">
 														<input type="checkbox" class="chkItem" name="chkItem"
-															autocomplete="off" id="checkboxID" value="${envTemplate.id }" />
+															autocomplete="off" id="checkboxID" value="${envTemplate.templateName }" />
 													</td>
 													<td style="width: 60%;text-indent:30px;">
 														<a href="<%=path %>/template/env/detail/${envTemplate.templateName }"
@@ -81,7 +81,7 @@
 													</td>
 		                                            <td style="width: 20%;">${envTemplate.createDate }</td>
 		                                            <td style="width: 10%;text-indent: 10px;" >
-														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate(${envTemplate.id })" title="删除">
+														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate('${envTemplate.templateName }')" title="删除">
 														<i class="fa fa-trash"></i></a>
 		                                            </td>
 												</tr>

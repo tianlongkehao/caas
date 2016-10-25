@@ -160,19 +160,15 @@ public class TemplateController {
 	 */
 	@RequestMapping("/delEnvTemplates.do")
 	@ResponseBody
-	public String delEnvTemplates(String envTemplateIDs) {
+	public String delEnvTemplates(String templateNames) {
 		// 解析获取的id List
-        ArrayList<Long> ids = new ArrayList<Long>();
-        String[] str = envTemplateIDs.split(",");
+        String[] str = templateNames.split(",");
         if (str != null && str.length > 0) {
-            for (String id : str) {
-                ids.add(Long.valueOf(id));
+            for (String template : str) {
+            	delEnvTemplate(template);
             }
         }
         Map<String, Object> maps = new HashMap<String, Object>();
-        for (long id : ids) {
-            envTemplateDao.delete(id);
-        }
         maps.put("status", "200");
         return JSON.toJSONString(maps); 
 	}
