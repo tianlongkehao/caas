@@ -57,7 +57,7 @@
 											</tr>
 										</thead>
 										<tbody id="imageList">
-											<c:forEach items="${images}" var="image">
+											<%-- <c:forEach items="${images}" var="image">
 
 												<c:if test="${cur_image.id != image.id}">
 													<tr class="userTr" id="${image.id }">
@@ -121,7 +121,7 @@
 														</td>
 													</tr>
 												</c:if>
-											</c:forEach>
+											</c:forEach> --%>
 										</tbody>
 										<tfoot class="hide">
 											<tr>
@@ -131,7 +131,7 @@
 											</tr>
 										</tfoot>
 									</table>
-
+                                   <input type = "hidden" value = "${userId }" id = "userId"> 
 								</div>
 							</div>
 						</div>

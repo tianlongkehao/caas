@@ -2,6 +2,8 @@ package com.bonc.epm.paas.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -22,7 +24,7 @@ public interface UserDao extends CrudRepository<User, Long> {
 	public List<Image> findAllFavor(long creator);
 	
 	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 and i.name like ?2 order by  i.name,i.createTime")
-	public List<Image> findByNameCondition(long creator,String imageName);
+	public Page<Image> findByNameCondition(long creator,String imageName,Pageable request);
 	
 	@Query("select u from User u "
 			+ "where 1=1 "

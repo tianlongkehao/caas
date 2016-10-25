@@ -35,13 +35,13 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	public List<Image> findAll(long creator);
 	
 	@Query("select i from Image i where i.imageType = 1 and i.isDelete != 1 and i.name like ?1 order by  i.name,i.createTime")
-	public List<Image> findByNameCondition(String name);
+	public Page<Image> findByNameCondition(String name,Pageable request);
 	
 	@Query("select i from Image i where (i.imageType = 1 or i.creator = ?1) and i.isDelete != 1 and i.name like ?2 order by  i.name,i.createTime")
 	public List<Image> findByNameOf(long creator,String name);
 	
 	@Query("select i from Image i where (i.imageType = 2 or i.creator = ?1) and i.isDelete != 1 and i.name like ?2 order by  i.name,i.createTime")
-	public List<Image> findByNameOfUser(long creator,String name);
+	public Page<Image> findByNameOfUser(long creator,String name,Pageable request);
 	
 	@Query("select count(u) from User u join u.favorImages fi where fi.id= ?1 and fi.isDelete != 1")
 	public int findAllUserById(long imageId);
