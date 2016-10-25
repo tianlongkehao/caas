@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -861,15 +862,27 @@ public class CiController {
     public List<Image> findByBaseImages(){
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
         List<Image> images = imageDao.findByBaseImage(cuurentUser.getId());
+        List<Image> result = new ArrayList<Image>();
         //去掉镜像名称相同的镜像
-        for (int i = 0; i < images.size() ; i++)    {
-            for (int j = 0; j < images.size() ; j++) {
-                if (images.get(i).getName().equals(images.get(j).getName()) && i != j) {
-                    images.remove(j);
+        if (!CollectionUtils.isEmpty(images)) {
+            for (Image oneRow : images) {
+                if (result.size() < 0) {
+                    result.add(oneRow);
+                } else {
+                    boolean flag = false;
+                    for (Image image : result) {
+                        if (oneRow.getName().trim().equals(image.getName().trim())) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (!flag) {
+                        result.add(oneRow);
+                    }
                 }
             }
         }
-        return images;
+        return result;
     }
 	
 	/**
