@@ -38,10 +38,6 @@ function registerConstructCiEvent(){
 	       			 		layer.alert(data.msg);
 	       			 	}
 	       			 	window.location.reload();
-	        		},
-	        		error:function(){
-	        			layer.alert("系统错误，请联系管理员");
-	        			window.location.reload();
 	        		}
 	        	});
 	        },

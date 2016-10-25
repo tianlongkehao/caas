@@ -61,12 +61,9 @@
 												<th style="width: 5%; text-indent: 30px;">
 													<input type="checkbox" autocomplete="off" class="chkAll" id="checkallbox"/>
 												</th>
-												<th style="width: 15%; text-indent: 30px;">名称</th>
-												<th style="width: 15%; text-indent: 15px;">主鍵</th>
-												<th style="width: 30%; text-indent: 8px;">值</th>
+												<th style="width: 60%; text-indent: 30px;">名称</th>
 												<th style="width: 20%;">创建时间</th>
-												<th style="width: 10%; text-indent: 10px;"
-													class="del-operation">操作</th>
+												<th style="width: 10%; text-indent: 10px;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="envTemplateList">
@@ -74,22 +71,25 @@
 												<tr>
 													<td style="width: 5%; text-indent: 30px;">
 														<input type="checkbox" class="chkItem" name="chkItem"
-															autocomplete="off" id="checkboxID" value="${envTemplate.id }" />
+															autocomplete="off" id="checkboxID" value="${envTemplate.templateName }" />
 													</td>
-													<td style="width: 15%;text-indent:30px;">${envTemplate.templateName }</td>
-		                                            <td style="width: 15%;text-indent: 15px;">${envTemplate.envKey }</td>
-		                                            <td style="width: 30%;text-indent: 8px;">${envTemplate.envValue }</td>
+													<td style="width: 60%;text-indent:30px;">
+														<a href="<%=path %>/template/env/detail/${envTemplate.templateName }"
+                                                            title="查看${envTemplate.templateName }详细信息" 
+                                                            onmousemove="style.textDecoration='underline'"
+                                                            onmouseout="style.textDecoration='none'">${envTemplate.templateName }</a>
+													</td>
 		                                            <td style="width: 20%;">${envTemplate.createDate }</td>
 		                                            <td style="width: 10%;text-indent: 10px;" >
-														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate(${envTemplate.id })" title="删除"></a>
-														<i class="fa fa-trash"></i>
+														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate('${envTemplate.templateName }')" title="删除">
+														<i class="fa fa-trash"></i></a>
 		                                            </td>
 												</tr>
 											</c:forEach>
 										</tbody>
 										<tfoot class="hide">
 											<tr>
-												<td colspan="6">
+												<td colspan="4">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
@@ -106,8 +106,8 @@
 
 	<script type="text/javascript">
 		$('.dataTables-example').dataTable({
-	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,5] }],
-	        "aaSorting": [[ 4, "desc" ]]
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
+	        "aaSorting": [[ 2, "desc" ]]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
 	</script>

@@ -6,7 +6,7 @@
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/template.css" />
-<script type="text/javascript" src="<%=path%>/js/template/env-add.js"></script>
+<script type="text/javascript" src="<%=path%>/js/template/env-edit.js"></script>
 </head>
 <body>
 
@@ -32,30 +32,23 @@
 						<div class="steps-main">
 							<div class="progre">
                                 <ul style="padding: 0 4rem;">
-                                    <li class="radius_step action" style="width:100%">新增环境变量</li>
+                                    <li class="radius_step action" style="width:100%">编辑环境变量</li>
                                 </ul>
                             </div>
 							<form id="buildForm" name="buildForm"
 								action="<%=path%>/template/env/build" method="post">
 								<div class="container" style="width: 90%">
+									<div class="form-group ">
+                                        <span style="float:left;line-height:34px">模板名称：</span>
+                                         <input type="hidden" id="envId" value = "" />
+                                        <input type="text" class="form-control" id="envTemplateName" style="width: 72%;float:left" disabled value = "${templateName }" />
+                                    </div>
 									<div class="form-group" style="float:right">
-<!--                                         <span>模板名称：</span> -->
-<!--                                         <input type="hidden" id="envName" value = "" /> -->
-<!--                                         <input type="text" id="envTemplateName" style="width: 60%; margin-left:5px" value = "" /> -->
 										<span id="crateEnvVariate" class=" btn-info btn-sm">添加环境变量</span>
-										<span id="importBtn" class=" btn-info btn-sm">导入模板</span>                                	</div>
+										<span id="importBtn" class=" btn-info btn-sm">导入模板</span>
+									</div>
 									<li class="hide-set">
-<!-- 										<span class="ve_top">环境变量：</span> -->
 										<ol>
-<!-- 											<li class="hide-select"> -->
-<!-- 											<input type="text" placeholder="name" id="envName"> -->
-<!-- 											<input type="text" placeholder="value" id="envValue"> -->
-<!-- 											<a id="crateEnvVariate"><i class="fa fa-plus"></i>添加</a> -->
-<!-- 												<div style="float: right"> -->
-<!-- 													<span id="crateEnvVariate" class=" btn-info btn-sm">添加环境变量</span> -->
-<!-- 													<span id="importBtn" class=" btn-info btn-sm">导入模板</span> -->
-<!-- 												</div> -->
-<!-- 											</li> -->
 											<li>
 												<table class="table table-hover enabled" id="env-variate">
 													<thead>
@@ -65,9 +58,28 @@
 															<th style="width: 10%">操作</th>
 														</tr>
 													</thead>
-													<tbody id="env-oper1">
-														<input type="hidden" id="arrayKey" value="" />
+													<tbody id="envList">
+														<c:forEach items="${envTemplateList }" var="envTemplateList">
+															<tr>
+																<td class="keys"><input type="text" style="width: 98%" value="${envTemplateList.envKey }"></td>
+																<td class="vals"><input type="text" style="width: 98%" value="${envTemplateList.envValue }"></td>
+																<td class="func">
+																	<a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">
+																	<i class="fa fa-trash-o fa-lg"></i></a>
+																	<input type="hidden" class="oldValue" value="">
+																</td>
+																<%-- <td style="width: 45%; text-indent: 15px;">${envTemplateList.envKey }</td>
+																<td style="width: 45%; text-indent: 8px;">${envTemplateList.envValue }</td>
+																<td style="width: 10%; text-indent: 10px;"><a
+																	title="删除" href="javascript:void(0)"
+																	onclick="deleteRow(this)"
+																	dockerfileId="${dockerfile.id }"> <i
+																		class="fa fa-trash"></i>
+																</a></td> --%>
+															</tr>
+														</c:forEach>
 													</tbody>
+													<input type="hidden" id="arrayKey" value="" />
 												</table>
 											</li>
 										</ol>

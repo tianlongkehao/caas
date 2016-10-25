@@ -148,21 +148,29 @@ public class DockerClientService {
 	/**
 	 * 
 	 * Description:
-	 * 查看镜像信息
+	 * 查看镜像信息 ,兼容v1仓库和v2仓库  docker 版本1.19
 	 * @param imageId String
+	 * @param imageVersion 
+	 * @param imageName 
 	 * @return InspectImageResponse 
 	 * @see InspectImageResponse 
 	 */
-	public InspectImageResponse inspectImage(String imageId) {
+	public InspectImageResponse inspectImage(String imageId, String imageName, String imageVersion) {
+	    DockerClient dockerClient = this.getSpecialDockerClientInstance();
+	    InspectImageResponse response = null;
 	    try {
-            DockerClient dockerClient = this.getSpecialDockerClientInstance();
-            return dockerClient.inspectImageCmd(imageId).exec();
+             response = dockerClient.inspectImageCmd(this.generateRegistryImageName(imageName, imageVersion)).exec();
         }
         catch (Exception e) {
            log.error("error inspect image,message:-"+e.getMessage());
-           e.printStackTrace();
-           return null;
+           try {
+               response =  dockerClient.inspectImageCmd(imageId).exec();
+           }
+           catch (Exception e2) {
+               log.error("error message."+e.getMessage());
+           }
         }
+	    return response;
 	}
 	
 	/**
