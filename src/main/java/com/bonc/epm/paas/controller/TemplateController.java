@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -159,21 +160,34 @@ public class TemplateController {
 	 */
 	@RequestMapping("/delEnvTemplates.do")
 	@ResponseBody
-	public String delEnvTemplates(String envTemplateIDs) {
+	public String delEnvTemplates(String templateNames) {
 		// 解析获取的id List
-        ArrayList<Long> ids = new ArrayList<Long>();
-        String[] str = envTemplateIDs.split(",");
+        String[] str = templateNames.split(",");
         if (str != null && str.length > 0) {
-            for (String id : str) {
-                ids.add(Long.valueOf(id));
+            for (String template : str) {
+            	delEnvTemplate(template);
             }
         }
         Map<String, Object> maps = new HashMap<String, Object>();
-        for (long id : ids) {
-            envTemplateDao.delete(id);
-        }
         maps.put("status", "200");
         return JSON.toJSONString(maps); 
 	}
+	/**
+     * Description: <br>
+     *  根据userId和templateName查找envTemplates，跳转进入环境变量模板详细页面
+     * @param model 
+     * @param templateName 环境变量模板名称
+     * @return String
+     */
+	@RequestMapping(value = { "/env/detail/{templateName}" }, method = RequestMethod.GET)
+	public String detail(Model model, @PathVariable String templateName){
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		List<EnvTemplate> envTemplates = envTemplateDao.findByCreateByAndTemplateName(cUser.getId(), templateName);
+		model.addAttribute("envTemplateList",envTemplates);
+		model.addAttribute("menu_flag", "template"); 
+		return "template/env-edit.jsp";
+	}
+    
+
 	
 }

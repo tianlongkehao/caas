@@ -248,7 +248,7 @@
                     <exclude>application.properties</exclude>
                     <exclude>application-dev.properties</exclude>
                     <exclude>application-profile.properties</exclude>
-                    <exclude>application-yq.properties</exclude>
+                    <exclude>application-prepare.properties</exclude>
                 </excludes>
             </resource>
             <resource>
