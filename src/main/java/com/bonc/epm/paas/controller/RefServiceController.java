@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.RefServiceConstant;
+import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.dao.RefServiceDao;
 import com.bonc.epm.paas.entity.RefService;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
 /**
@@ -49,6 +56,11 @@ public class RefServiceController {
      */
     @Autowired
     private RefServiceDao refServiceDao;
+    /**
+     * KubernetesClientService接口
+     */
+    @Autowired
+    private KubernetesClientService kubernetesClientService;
     
     /**
      * 
@@ -81,17 +93,44 @@ public class RefServiceController {
     @RequestMapping(value="refservice/add.do", method = RequestMethod.POST)
     @ResponseBody
     private String add(String serName,String serAddress,String refAddress ,int viDomain){
-        Map map = new HashMap();
-        String user = CurrentUserUtils.getInstance().getUser().getNamespace();
+        Map<String, Object> map = new HashMap<String, Object>();
         RefService refService = new RefService();
-        refService.setCreateBy(user);
-        refService.setCreateDate(new Date());
         refService.setRefAddress(refAddress);
         refService.setSerAddress(serAddress);
-        refService.setViDomain(viDomain);
+        refService.setViDomain(viDomain == RefServiceConstant.ALL_TENANT ? RefServiceConstant.ALL_TENANT : RefServiceConstant.SELF_TENANT);
         refService.setSerName(serName);
+        refService.setCreateBy(CurrentUserUtils.getInstance().getUser().getNamespace());
+        refService.setCreateDate(new Date());
         refServiceDao.save(refService);
-        map.put("status", 200);
+        map.put("status", "200");
+        
+        // 创建指定clusterIp的服务
+/*        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+        try {
+            k8sService = client.getService(refService.getSerName());
+        } 
+        catch (KubernetesClientException e) {
+            k8sService = null;
+        }
+        try {
+            if (k8sService == null) {
+                k8sService = kubernetesClientService.generateRefService();
+                k8sService = client.createService(k8sService);
+            }
+            if (k8sService == null) {
+                map.put("status", "500");
+            }
+            else {
+                map.put("status", "200");
+                refServiceDao.save(refService);
+            }
+        }
+        catch (KubernetesClientException e) {
+            map.put("status", "500");
+            map.put("msg", e.getStatus().getMessage());
+            LOG.error("create service error:" + e.getStatus().getMessage());
+        }*/
         return JSON.toJSONString(map);
     }
     /**
