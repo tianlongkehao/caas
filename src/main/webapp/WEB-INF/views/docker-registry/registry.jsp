@@ -12,7 +12,6 @@
 	<jsp:include page="../frame/menu.jsp" flush="true">
 		<jsp:param name="registry" value="0" />
 	</jsp:include>
-
 	<div class="page-container">
 		<article>
 			<div class="page-main">
@@ -21,7 +20,7 @@
 						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">${active }</li>
+						<li class="active" id="nav2" value = "${index}">${active }</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -58,7 +57,7 @@
 											</tr>
 										</thead>
 										<tbody id="imageList">
-											<c:forEach items="${images}" var="image">
+											<%-- <c:forEach items="${images}" var="image">
 
 												<c:if test="${cur_image.id != image.id}">
 													<tr class="userTr" id="${image.id }">
@@ -122,7 +121,7 @@
 														</td>
 													</tr>
 												</c:if>
-											</c:forEach>
+											</c:forEach> --%>
 										</tbody>
 										<tfoot class="hide">
 											<tr>
@@ -132,7 +131,7 @@
 											</tr>
 										</tfoot>
 									</table>
-
+                                   <input type = "hidden" value = "${userId }" id = "userId"> 
 								</div>
 							</div>
 						</div>
@@ -143,9 +142,9 @@
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('.dataTables-example').dataTable( {
+			/* $('.dataTables-example').dataTable( {
 		        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
-			});
+			}); */
 			$("#checkallbox").parent().removeClass("sorting_asc");
 		})
 	</script>

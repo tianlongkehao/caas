@@ -1,5 +1,6 @@
 $(document).ready(function () {
 
+	findImages();
     $(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
     });
@@ -42,36 +43,36 @@ $(document).ready(function () {
     });
     
 	// 快速收藏
-    $(".forkquick").each(function(){
-    	$(this).click(function(){
-        	var imageId = $(this).attr('imageId');
-        	var _this = $(this);
-        	$.ajax({
-        		url:""+ctx+"/registry/detail/favor",
-        		type:"post",
-        		data:{"imageId":imageId},
-        		success:function(data){
-        			if(data == "success"){
-        				_this.children(".star-style").removeClass("fa-star-o").addClass("fa-star");
-        				_this.addClass('live');
-        				layer.msg( "收藏成功。", {
-    							icon: 1
-    					});
-        			}else{
-        				_this.children(".star-style").removeClass("fa-star").addClass("fa-star-o");
-        				_this.removeClass('live');
-        				layer.msg( "取消收藏。", {
-    							icon: 0.5
-    					});
-        			}
-        		}
-        	});
-        });
+    
+    $(document).on("click",".forkquick",function(){
+    
+    	var imageId = $(this).attr('imageId');
+    	var _this = $(this);
+    	$.ajax({
+    		async:false, 
+    		url:""+ctx+"/registry/detail/favor",
+    		type:"post",
+    		data:{"imageId":imageId},
+    		success:function(data){
+    			if(data == "success"){
+    				_this.children(".star-style").removeClass("fa-star-o").addClass("fa-star");
+    				_this.addClass('live');
+    				layer.msg( "收藏成功。", {
+							icon: 1
+					});
+    			}else{
+    				_this.children(".star-style").removeClass("fa-star").addClass("fa-star-o");
+    				_this.removeClass('live');
+    				layer.msg( "取消收藏。", {
+							icon: 0.5
+					});
+    			}
+    		}
+    	});
     });
     
     // 导出镜像
-    $(".downloadImage").each(function(){
-    	$(this).click(function(){
+    $(document).on("click",".downloadImage",function(){
     		var _this = $(this);
         	$.ajax({
     			async : false,
@@ -114,9 +115,115 @@ $(document).ready(function () {
          		}
          	});
         });
-    });
 });
 
+
+function findImages(){
+	var index = $("#nav2").val();
+	var userId = $("#userId").val();
+	$('.dataTables-example').dataTable({
+		 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
+	        "processing": true,
+	        "serverSide": true,
+//	        "bStateSave":true,
+	        "ajax": ctx+"/registry/pager/"+index,
+	        "columns": [
+	                    {   
+	                    	data : null,
+	                    	render : function ( data, type, row ) {
+	                    		var html = '<input type="checkbox" class="chkItem" name="ids" style="margin-left:22px;"  value="'+row.id+'">'
+	                    		return html;
+	                    	}
+	                    },
+	                    { 	
+	                    	data : null ,
+	                    	render : function ( data, type, row ) {
+	                    		var html = '<a href="'+ctx+'/registry/detail/'+row.id+'" title="查看详细信息" >'+row.name+'</a>'
+	                    		return html;
+	                    	}
+	                    },
+	                    { 
+	                    	data : "version" ,
+                    		render : function ( data, type, row ) {
+	                    		if (data == null || data == "") {
+	                    			return "";
+	                    		}
+	                    		return data;
+	                    	}	
+	                    },
+	                    {	
+	                    	data : "remark",
+	                    	render : function ( data, type, row ) {
+	                    		if (data == null || data == "") {
+	                    			return "";
+	                    		}
+	                    		return data;
+	                    	}
+	                    	
+	                    },
+	                    { 
+	                    	data : "creatorName" ,
+                    		render : function ( data, type, row ) {
+	                    		if (data == null || data == "") {
+	                    			return "租户已注销";
+	                    		}
+	                    		return data;
+	                    	}
+	                    },
+	                    { 
+	                    	data : 'createTime',
+	                    	render : function ( data, type, row ) {
+	                    		var date = calendarFormat(data);
+	                    		return date;
+	                        }
+	                    },
+	                    { 	
+	                    	data: null,
+	                    	render: function ( data, type, row ) {
+	                    		var html = "";
+	                    		if (row.isDelete == 1 ) {
+	                    			if (row.currUserFavor == 0) {
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
+	                    						'<i class="fa fa-star-o star-style" style="color: #4280CB;margin-left:35px;"></i>'+
+	                    					'</a>'
+	                    			} else {
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
+                									'<i class="fa fa-star star-style" style="color: #337ab7;margin-left:35px;"></i>'+
+                								'</a>'
+	                    			}
+	                    		} else {
+	                    			html += '<a class="no-drop" href="'+ctx+'/service/add?imageName='+row.name+'&imageVersion='+row.version+'&imgID='+row.id+'&resourceName='+row.resourceName+'"'+
+										 		'imageversion="'+row.version+'" imagename="'+row.name+'" title="部署">'+
+										 		'<i class="fa fa-wrench"></i>'+
+										 	'</a>'+
+										 	'<a class="no-drop a-oper downloadImage" imageversion="'+row.version+'" imagename="'+row.name+'" imgID="'+row.id+'" resourcename= "'+row.resourceName+'" title="导出">'+ 
+										 		'<i class="fa fa-share-square-o" style="margin-left:10px;"></i>'+
+										 	'</a>' 
+							 		if (row.currUserFavor == 0) {
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
+	                    						'<i class="fa fa-star-o star-style" style="color: #4280CB;margin-left:10px;"></i>'+
+	                    					'</a>'
+	                    			} else {
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
+                									'<i class="fa fa-star star-style" style="color: #337ab7;margin-left:10px;"></i>'+
+                								'</a>'
+	                    			}
+	                    			
+	                    			if (userId == row.creator) {
+	                    				html +=	'<a class="no-drop a-oper" href="javascript:void(0)" onclick="deleteImage(this)"'+
+													'title="删除" imageversion="'+row.version+'" imagename="'+row.name+'" imageid="'+row.id+'">' +
+													'<i class="fa fa-trash" style="margin-left:10px;"></i>'+
+												'</a>'
+	                    			}
+	                    		}
+	                    		
+	                    		return html;
+	                    	}
+	                    }
+	                ]
+	  });
+	
+}
 
 /*删除单个镜像*/
 function deleteImage(obj){
