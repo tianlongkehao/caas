@@ -266,10 +266,19 @@ public class RegistryController {
 	@ResponseBody
 	public String judgeFileExist(String imageName, String imageVersion){
         Map<String, Object> map = new HashMap<String, Object>();
+        File path = new File(imagePath);
+        if (null != path.listFiles()) {
+            File[] currentFiles = path.listFiles();
+            if (null != currentFiles) {
+                for (File oneRow : currentFiles) {
+                    oneRow.delete();
+                }
+            }
+        }
+        
     	String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
         File file = new File(imagePath+"/"+downName+".tar");
-        boolean exist = file.exists();
-        if (exist) {
+        if (file.exists()) {
             map.put("status", "200");
         } 
         else {
@@ -299,6 +308,7 @@ public class RegistryController {
         if (!path.exists() && !path.isDirectory()) {
             path.mkdirs();
         }
+
         File file = new File(imagePath+"/"+downName+".tar");
         boolean exist = file.exists();
         if (exist) {
@@ -310,11 +320,12 @@ public class RegistryController {
             if (complete) {
                 try {
                     String cmd = imageCmdPath +" "+ imagePath +"/"
-                        + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
+                        + downName + ".tar  "+ url +"/"+ imageName + ":" + imageVersion;
                     flag = CmdUtil.exeCmd(cmd);
                 }
                 catch (IOException e) {
-                    e.printStackTrace();
+                   LOG.error("error message:-" + e.getMessage());
+                   map.put("status", "500");
                 }
             }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null);
@@ -348,7 +359,7 @@ public class RegistryController {
         } 
         catch (IOException e) {  
             LOG.error("downloadImage error:"+e.getMessage());
-        }  
+        }
     }
     
 	/**

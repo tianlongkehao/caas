@@ -100,6 +100,11 @@ $(document).ready(function () {
          	        			if(data1.status == "200"){
          	        				layer.close(load);
          	        				window.location.href = ctx + "/registry/download?imageName="+_this.attr("imagename") +"&imageVersion="+_this.attr("imageversion");
+         	        			} 
+         	        			else {
+           		   		     		layer.msg( "导出镜像失败", {
+           		   						icon: 1
+           		   					}); 
          	        			}
          	        		}
          	        	});
