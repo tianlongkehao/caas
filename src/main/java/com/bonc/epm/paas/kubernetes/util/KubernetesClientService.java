@@ -467,7 +467,7 @@ public class KubernetesClientService {
 	}
 	
 	public Service generateService(String appName,List<PortConfig> portConfigs, 
-	                                       String proxyZone, String servicePath, String proxyPath){
+	                                       String proxyZone, String servicePath, String proxyPath,String sessionAffinity){
 	    Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(appName);
@@ -490,7 +490,7 @@ public class KubernetesClientService {
 		service.setMetadata(meta);
 		ServiceSpec spec = new ServiceSpec();
 		spec.setType("NodePort");
-		spec.setSessionAffinity("ClientIP");
+		spec.setSessionAffinity(sessionAffinity);
 		
 		Map<String,String> selector = new HashMap<String,String>();
 		selector.put("app", appName);

@@ -792,7 +792,7 @@ public class ServiceController {
                 controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
             }
             if (k8sService == null) {
-                k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs,service.getProxyZone(),service.getServicePath(),service.getProxyPath());
+                k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs,service.getProxyZone(),service.getServicePath(),service.getProxyPath(),service.getSessionAffinity());
                 k8sService = client.createService(k8sService);
             }
             if (controller == null || k8sService == null || controller.getSpec().getReplicas() != service.getInstanceNum()) {
@@ -829,6 +829,9 @@ public class ServiceController {
         service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
         service.setCreateDate(new Date());
         service.setCreateBy(currentUser.getId());
+        if (StringUtils.isEmpty(service.getSessionAffinity())) {
+            service.setSessionAffinity(null);
+        }
 /*        if (!StringUtils.isEmpty(resourceName) && !service.getServicePath().trim().equals(resourceName.substring(0, resourceName.indexOf(".")).trim())) {
             service.setServicePath(resourceName.substring(0, resourceName.indexOf(".")).trim());
         }*/
