@@ -114,7 +114,12 @@ public class Service {
 	 */
 	private String proxyPath;
 	
-	public long getImgID() {
+	/**
+	 * 会话黏连方式
+	 */
+	private String sessionAffinity;
+	
+    public long getImgID() {
 		return imgID;
 	}
 
@@ -330,6 +335,13 @@ public class Service {
 		this.proxyPath = proxyPath;
 	}
 	
+    public String getSessionAffinity() {
+        return sessionAffinity;
+    }
+
+    public void setSessionAffinity(String sessionAffinity) {
+        this.sessionAffinity = sessionAffinity;
+    }
 	
 	
 }

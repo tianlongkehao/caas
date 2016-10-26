@@ -1128,7 +1128,7 @@ public class UserController {
             Map<String, String> used = quota.getStatus().getUsed();
             ReplicationControllerList rcList = client.getAllReplicationControllers();
             PodList podList = client.getAllPods();                   
-            model.addAttribute("usedCpuNum", Float.valueOf(this.computeCpuOut(used))); // 已使用CPU个数
+            model.addAttribute("usedCpuNum", Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
             model.addAttribute("usedMemoryNum", Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
             model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数

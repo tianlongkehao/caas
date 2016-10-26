@@ -137,7 +137,13 @@
 												<input type="text" value="" class="in_style" id="nginxPath" name="proxyPath">
 												<span style="color:#1dd2af" id="proxy-path"><i class="fa fa-info-circle"></i></span>
 											</li>
-
+											<li class="line-h-3"> <span class="ve_top">会话黏连方式：</span>
+	                                            <select class="selectVolume" id="sessionAffinity" name="sessionAffinity"
+	                                                style="height: 30px; width: 230px;">
+	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
+	                                                <option name="sessionAffinity" value="" >NONE</option>
+	                                            </select>
+                                            </li>
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
                                         <span class="clusterText" data="tenx_district2">北京二区</span>
