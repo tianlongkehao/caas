@@ -68,9 +68,6 @@ public class KubernetesClientService {
     @Value("${ratio.memtocpu}")
     public String RATIO_MEMTOCPU = "4";
     
-    public static final Integer INITIAL_DELAY_SECONDS= 30*60;
-    public static final Integer TIME_SECONDS = 5;
-	
 	public int getK8sEndPort() {
 		return Integer.valueOf(endPort);
 	}
@@ -321,10 +318,11 @@ public class KubernetesClientService {
 
 	
 	public ReplicationController generateSimpleReplicationController(String name,int replicas,
-	                                                                     String image,List<PortConfig> portConfigs,
-	                                                                         Double cpu,String ram,String nginxObj, 
-	                                                                             String servicePath, String proxyPath,String checkPath,
-	                                                                                 List<EnvVariable> envVariables, List<String> command, List<String> args){
+	                                                                     Integer initialDelay,Integer timeoutDetction,Integer periodDetction,
+	                                                                         String image,List<PortConfig> portConfigs,
+	                                                                             Double cpu,String ram,String nginxObj, 
+	                                                                                 String servicePath, String proxyPath,String checkPath,
+	                                                                                     List<EnvVariable> envVariables, List<String> command, List<String> args){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -363,8 +361,9 @@ public class KubernetesClientService {
 		container.setImagePullPolicy("Always");
 		if (StringUtils.isNotBlank(checkPath)) {
 		    Probe livenessProbe = new Probe();
-	        livenessProbe.setInitialDelaySeconds(INITIAL_DELAY_SECONDS);
-	        livenessProbe.setTimeoutSeconds(TIME_SECONDS);
+	        livenessProbe.setInitialDelaySeconds(initialDelay);
+	        livenessProbe.setTimeoutSeconds(timeoutDetction);
+	        livenessProbe.setPeriodSeconds(periodDetction);
 	        HTTPGetAction httpGet = new HTTPGetAction();
 	        httpGet.setPath(checkPath);
 	        httpGet.setPort(8080); // 修改了HTTPGetAction的port字段类型定义
