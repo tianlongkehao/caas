@@ -309,30 +309,35 @@ public class ClusterController {
             PodList podList = clientName.getAllPods();
             if (podList != null) {
                 for (Pod pod : podList.getItems()) {
-                    PodTopo podTopo = new PodTopo();
-                    podTopo.setNamespace(namespace);
-                    String podName = pod.getMetadata().getName();
-                    if (podName.length() > 32) {
-                        podName = podName.substring(0, podName.indexOf("-")+6);
+                    try {
+                        PodTopo podTopo = new PodTopo();
+                        podTopo.setNamespace(namespace);
+                        String podName = pod.getMetadata().getName();
+                        if (podName.length() > 32) {
+                            podName = podName.substring(0, podName.indexOf("-")+6);
+                        }
+                        podTopo.setPodName(podName);
+                        podTopo.setNodeName(pod.getSpec().getNodeName());
+                        podTopo.setHostIp(pod.getStatus().getHostIP());
+//                      podTopo.setServiceName(namespace +"/"+ pod.getMetadata().getLabels().get("app"));
+                        String serviceName = "";
+                        Iterator<Map.Entry<String, String>> it = pod.getMetadata().getLabels().entrySet().iterator();
+                        while (it.hasNext() && StringUtils.isBlank(serviceName)) {
+                            Map.Entry<String, String> entry = it.next();
+                            Service service = clientName.getService(entry.getValue());
+                            if (null != service) {
+                                serviceName =  service.getMetadata().getName();
+                            }
+                        }
+                        podTopo.setServiceName(serviceName);
+                        String key = podTopo.getNodeName();
+                        List<PodTopo> podTopoList = nodeMap.get(key);
+                        podTopoList.add(podTopo);
+                        nodeMap.replace(key, podTopoList);
                     }
-                    podTopo.setPodName(podName);
-                    podTopo.setNodeName(pod.getSpec().getNodeName());
-                    podTopo.setHostIp(pod.getStatus().getHostIP());
-//                    podTopo.setServiceName(namespace +"/"+ pod.getMetadata().getLabels().get("app"));
-                    String serviceName = "";
-                    Iterator<Map.Entry<String, String>> it = pod.getMetadata().getLabels().entrySet().iterator();
-                    while (it.hasNext() && StringUtils.isBlank(serviceName)) {
-                         Map.Entry<String, String> entry = it.next();
-                         Service service = clientName.getService(entry.getValue());
-                         if (null != service) {
-                             serviceName =  service.getMetadata().getName();
-                         }
+                    catch (Exception e) {
+                        LOG.debug(e.getMessage());
                     }
-                    podTopo.setServiceName(serviceName);
-                    String key = podTopo.getNodeName();
-                    List<PodTopo> podTopoList = nodeMap.get(key);
-                    podTopoList.add(podTopo);
-                    nodeMap.replace(key, podTopoList);
                 }
             }
         }
