@@ -897,4 +897,21 @@ tr.focus{
 	line-height: 26px;
 	border-radius: 5px;
 }
+.checkitems{
+	margin-left:150px;
+}
+.checkitems li{
+	float:left;
+	width:33%;
+}
+.checkitems li .c-unit{
+	margin-left: -34px;
+    display: inline-block;
+}
+.checkitems li input{
+	border: 1px solid #ccc;
+	text-indent: 8px;
+	width:226px;
+	line-height:24px;
+}
 

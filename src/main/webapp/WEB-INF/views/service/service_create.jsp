@@ -114,12 +114,25 @@
                     <li class="line-h-3" id="checkSerStatus_li"><input
                       type="text" value="" class="in_style"
                       id="checkSerStatus_input" name="checkPath"
-                      style="margin-left: 150px"></li>		
+                      style="margin-left: 150px"></li>
+                      <li class="line-h-3" id="checkItems">
+	                      <ul class="checkitems">
+	                      	<li><span class="check-lable">检测延迟：</span>
+								<input type="number" value="" class="number"id="initialDelay"
+								name="initialDelay"> <span class="c-unit">s</span></li>
+							<li><span class="check-lable">检测超时：</span>
+								<input type="number" value="" class="number" id="timeoutDetction"
+								name="timeoutDetction"> <span class="c-unit">s</span></li>
+							<li><span class="check-lable">检测频率：</span>
+								<input type="number" value="1" class="number" placeholder="1" id="periodDetction"
+								name="periodDetction"> <span class="c-unit">s</span></li>
+	                      </ul>
+                      </li>		
                       										
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
 													color="red">*</font></span>
 												<input type="text" value="" class="in_style" id="webPath" name="servicePath">
-												<span style="color:#1dd2af" id="service-path"><i class="fa fa-info-circle"></i></span>
+												<span style="color:#1dd2af;border: 1px solid #ccc" id="service-path"><i class="fa fa-info-circle"></i></span>
 											</li>
 											<c:if test="${DMZ!=null && USER!=null  }">
 												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
