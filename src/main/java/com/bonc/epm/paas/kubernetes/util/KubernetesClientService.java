@@ -361,9 +361,21 @@ public class KubernetesClientService {
 		container.setImagePullPolicy("Always");
 		if (StringUtils.isNotBlank(checkPath)) {
 		    Probe livenessProbe = new Probe();
-	        livenessProbe.setInitialDelaySeconds(initialDelay);
-	        livenessProbe.setTimeoutSeconds(timeoutDetction);
-	        livenessProbe.setPeriodSeconds(periodDetction);
+		    if (initialDelay == null || initialDelay == 0) {
+		        livenessProbe.setInitialDelaySeconds(600);
+		    } else {
+		        livenessProbe.setInitialDelaySeconds(initialDelay);
+		    }
+		    if (timeoutDetction == null || timeoutDetction == 0) {
+		        livenessProbe.setTimeoutSeconds(5);
+		    } else {
+		        livenessProbe.setTimeoutSeconds(timeoutDetction);
+		    }
+		    if (periodDetction == null || periodDetction == 0) {
+		        livenessProbe.setPeriodSeconds(10);
+		    } else {
+		        livenessProbe.setPeriodSeconds(periodDetction);
+		    }
 	        HTTPGetAction httpGet = new HTTPGetAction();
 	        httpGet.setPath(checkPath);
 	        httpGet.setPort(8080); // 修改了HTTPGetAction的port字段类型定义
