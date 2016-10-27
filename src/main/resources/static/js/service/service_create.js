@@ -296,8 +296,10 @@ $(document).ready(function(){
 	
 	// 启动命令
 	$("#checkSerStatus_li").hide();
+	$("#checkItems").hide();
 	$("#checkSerStatus").click(function(){
 		$("#checkSerStatus_li").toggle();
+		$("#checkItems").toggle();
 		$("#checkSerStatus_input").focus();
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
