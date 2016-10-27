@@ -37,7 +37,7 @@ $(document).ready(function(){
 		} else {
 			layer.open({
 			 	type:1,
-		        title: '保存为为模板',
+		        title: '保存为模板',
 		        content: $("#environment-template"),
 		        btn: ['保存', '取消'],
 		        scrollbar: false,
