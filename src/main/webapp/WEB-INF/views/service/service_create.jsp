@@ -118,15 +118,15 @@
                       <li class="line-h-3" id="checkItems">
 	                      <ul class="checkitems">
 	                      	<li><span class="check-lable">检测延迟：</span>
-								<input type="number" value="" class="number" id="initialDelay" 
+								<input type="number" value="600" class="number" id="initialDelay" 
 								onkeyup="this.value=this.value.replace(/\D/g,'')" min="0"
 								name="initialDelay"> <span class="c-unit">s</span></li>
 							<li><span class="check-lable">检测超时：</span>
-								<input type="number" value="" class="number" id="timeoutDetction"
+								<input type="number" value="5" class="number" id="timeoutDetction"
 								onkeyup="this.value=this.value.replace(/\D/g,'')" min="0"
 								name="timeoutDetction"> <span class="c-unit">s</span></li>
 							<li><span class="check-lable">检测频率：</span>
-								<input type="number" value="1" class="number" placeholder="1" id="periodDetction"
+								<input type="number" value="10" class="number" placeholder="1" id="periodDetction"
 								onkeyup="this.value=this.value.replace(/\D/g,'')" min="1"
 								name="periodDetction"> <span class="c-unit">s</span></li>
 	                      </ul>

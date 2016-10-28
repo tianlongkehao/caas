@@ -784,7 +784,8 @@ public class ServiceController {
 						service.getServicePath(),service.getProxyPath(),service.getCheckPath(),envVariables,command,args);
 				// 给controller设置卷组挂载的信息
                 System.out.println("给rc绑定vol");
-                if (!"0".equals(service.getVolName())) {
+//                if (!"0".equals(service.getVolName())) {
+                if (StringUtils.isNotBlank(service.getVolName())) {
                     controller = this.setVolumeStorage(controller, service.getVolName(), service.getMountPath());
                 }
                 controller = client.createReplicationController(controller);
