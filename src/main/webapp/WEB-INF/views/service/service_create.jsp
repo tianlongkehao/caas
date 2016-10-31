@@ -156,8 +156,8 @@
 											<li class="line-h-3"> <span class="ve_top">会话黏连方式：</span>
 	                                            <select class="selectVolume" id="sessionAffinity" name="sessionAffinity"
 	                                                style="height: 30px; width: 230px;">
-	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
 	                                                <option name="sessionAffinity" value="" >NONE</option>
+	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
 	                                            </select>
                                             </li>
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
