@@ -148,7 +148,6 @@ public class RegistryController {
         //判断事第几页
         if (start == 0) {
             pageRequest = ResultPager.buildPageRequest(null, length);
-            
         }else {
             pageRequest = ResultPager.buildPageRequest(start/length + 1, length);
         }

@@ -214,7 +214,7 @@ public class ServiceController {
         User currentUser = CurrentUserUtils.getInstance().getUser();
 		// 获取特殊条件的pods
         try {
-            getServiceSource(model, currentUser.getId());
+//            getServiceSource(model, currentUser.getId());
             getNginxServer(model);
             getleftResource(model);
         } 
@@ -225,6 +225,13 @@ public class ServiceController {
         }
         model.addAttribute("menu_flag", "service");
         return "service/service.jsp";
+    }
+    
+    @RequestMapping(value = {"registry/pager/{index}"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String findServiceByPage(String draw, int start,int length,
+                                    HttpServletRequest request){
+        return null;
     }
     
     /**
