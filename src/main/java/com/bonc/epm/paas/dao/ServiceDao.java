@@ -49,8 +49,8 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
      * @return List<Service>
      * @see
      */
-    @Query("select i from Service i where  i.createBy = ?1 and i.serviceName like ?2 order by  i.serviceName,i.createDate")
-    List<Service> findByNameOf(long createBy,String serviceName);
+    @Query("select i from Service i where  i.createBy = ?1 and i.serviceName like ?2 order by i.createDate")
+    Page<Service> findByNameOf(long createBy,String serviceName,Pageable request);
     /**
      * 
      * @return HashSet<Integer>
@@ -66,5 +66,7 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
      * @param request：分页数据
      * @return Page
      */
+    @Query("select i from Service i where  i.createBy = ?1 order by i.createDate desc")
     Page<Service> findByCreateBy(long createBy,Pageable request);
+    
 }

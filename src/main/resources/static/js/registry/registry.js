@@ -125,6 +125,7 @@ function findImages(){
 		 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
 	        "processing": true,
 	        "serverSide": true,
+	        "ordering":false,
 //	        "bStateSave":true,
 	        "ajax": ctx+"/registry/pager/"+index,
 	        "columns": [

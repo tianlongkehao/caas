@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -75,6 +77,7 @@ import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
 import com.github.dockerjava.api.command.InspectImageResponse;
@@ -227,11 +230,44 @@ public class ServiceController {
         return "service/service.jsp";
     }
     
-    @RequestMapping(value = {"registry/pager/{index}"}, method = RequestMethod.GET)
+    /**
+     * Description: <br>
+     * 服务在服务端分页查询
+     * @param draw ：画板
+     * @param start 开始页数
+     * @param length 每页的条数
+     * @param request 获取模糊查询的数据
+     * @return 
+     * @see
+     */
+    @RequestMapping(value = {"service/page.do"}, method = RequestMethod.GET)
     @ResponseBody
     public String findServiceByPage(String draw, int start,int length,
                                     HttpServletRequest request){
-        return null;
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        String search = request.getParameter("search[value]");
+        Map<String,Object> map = new HashMap<String, Object>();
+        Page<Service> services = null;
+        PageRequest pageRequest = null;
+        //判断是第几页
+        if (start == 0) {
+            pageRequest = ResultPager.buildPageRequest(null, length);
+        }else {
+            pageRequest = ResultPager.buildPageRequest(start/length + 1, length);
+        }
+        //判断是否需要搜索服务
+        if (StringUtils.isEmpty(search)) {
+            services = serviceDao.findByCreateBy(userId,pageRequest);
+        } else {
+            services = serviceDao.findByNameOf(userId, "%" + search + "%",pageRequest);
+        }
+        map.put("draw", draw);
+        map.put("recordsTotal", services.getTotalElements());
+        map.put("recordsFiltered", services.getTotalElements());
+        map.put("data", services.getContent());
+        
+        return JSON.toJSONString(map);
+        
     }
     
     /**
@@ -297,7 +333,7 @@ public class ServiceController {
         List<Container> containerList = new ArrayList<Container>();
 		// 获取特殊条件的pods
 		try {
-			for (Service service : serviceDao.findByNameOf(currentUser.getId(), "%" + searchNames + "%")) {
+			for (Service service : serviceDao.findByNameOf(currentUser.getId(), "%" + searchNames + "%",null)) {
 				Map<String, String> map = new HashMap<String, String>();
 				map.put("app", service.getServiceName());
 				PodList podList = client.getLabelSelectorPods(map);

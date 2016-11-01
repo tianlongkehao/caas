@@ -1,15 +1,23 @@
  $(document).ready(function () {
+	 loadServices();
 	$("#serviceReloadBtn").click(function(){
-		loadService();
+		debugger;
+		var table = $('.dataTables-example').DataTable();
+		table.state.clear();
+		window.location.reload();
 	});
 	
 	$(document).on('click','.no-drop',function(){
 		  return false;
-		});	
+	});	
 	
 	_refreshCreateTime(60000);
-	
-	
+	 $(".dataTables-example tbody").on("click","tr",function(){
+		 var table = $('.dataTables-example').DataTable();
+		 var serviceId = table.row( this ).data().id;
+		 loadContainers(this,serviceId);
+	 });
+
 	$("#checkallbox").click(function(){
 		 if($(this).prop("checked")){
 		     $("input[type='checkbox']").prop("checked",true);
@@ -30,8 +38,8 @@
 	checkbox();
  });
  
-function loadContainers(obj) {
-	var serviceID = $(obj).attr("serviceid");
+function loadContainers(obj,serviceId) {
+	var serviceID = serviceId;
 	var aaa = 'tr[serviceidcon = "' + serviceID + '"]'
 	if ($(obj).children().eq(1).children("b").attr("rotate") == "show") {
 		$(aaa).remove();
@@ -621,9 +629,7 @@ function refresh() {
 }
 
 function checkbox() {
-	
-	$('input[name="chkItem"]').click(
-			function() {
+	$(document).on("click",".chkItem",function(){
 				if ($(this).prop("checked")) {
 					$('#startContainer').removeClass('no-drop').addClass('a-live');
 					$('#startContainerFa').removeClass('self_a');
@@ -764,7 +770,171 @@ function findImageVersion(imageName) {
 }
 
 
-function loadService() {
-	
+function loadServices() {
+	$('.dataTables-example').dataTable({
+	 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
+	 	"autoWidth": false,
+        "processing": true,
+        "serverSide": true,
+        "stateSave":true,
+        "ordering":false,
+        "ajax": ctx+"/service/page.do",
+        "columns": [
+					{   
+						data : null,
+						render : function ( data, type, row ) {
+							var html = '<input type= "checkbox" class="chkItem" style="margin-left:30px;" name="chkItem"'+
+								'autocomplete="off" id="checkboxID" value="'+row.id+'"'+
+								'serviceName="'+row.serviceName+'"'+
+								'serviceNum="'+row.instanceNum +'"'+
+								'confRam="'+row.ram +'" status="'+row.status +'"'+
+								'imagename="'+row.imgName +'"'+
+								'imageversion="'+row.imgVersion +'"'+
+								'confCpu="'+row.cpuNum + '"/>';
+							return html;
+						}
+					},
+					
+					{
+						data : null,
+						render : function (data,type,row) {
+							var html = '<b id="aaa"'+
+								'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>'+
+								'<a href="'+ctx+'/service/detail/'+row.id +'" serviceId="'+row.id +'"'+
+								'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">'+ row.serviceName +'</a>'+
+								'<span class="number-node">' + row.instanceNum + '</span>'+ 
+								'<span class="margin cursor console-code-modal"'+
+								'data-id="#console-code-modal">'+
+								'<i class="fa fa-desktop"></i></span>';
+							return html;
+						}
+					},
+                    
+					{
+						data : null,
+						render : function (data,type,row) {
+							var html = '';
+							if (row.status == 1) {
+								html = '<i class="fa_stop"></i>' +
+									'未启动 <img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" class="hide" />';
+							}
+							if (row.status == 2) {
+								html = '<i class="fa_success"></i>' +
+									'启动中 <img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" class="hide" />';
+							}
+							if (row.status == 3) {
+								html = '<i class="fa_run"></i>' +
+									'运行中 <img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" class="hide" />';
+							}
+							if (row.status == 4) {
+								html = '<i class="fa_stop"></i>' +
+									'已停止<img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" class="hide" />';
+							}
+							if (row.status == 5) {
+								html = '<i class="fa_stop"></i>' +
+									'启动失败<img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" class="hide" />';
+							}
+							return html;
+						}
+					},
+					
+					{
+						data:null,
+						render : function (data,type,row) {
+							var html = '<span class="cluster_mirrer">'+
+									'<a title="点击查看镜像" target="_blank"'+
+									'href="'+ctx+'/registry/detail/'+row.imgID +'">'+row.imgName +'</a>'+
+									'</span>';
+							return html;
+						}
+					},
+					
+					{
+						data : null,
+						render : function (data,type,row) {
+							var html = '<span class="url">';
+							if (row.serviceAddr!=null && row.serviceAddr!='') {
+								html += '<a href="'+row.serviceAddr +'/'+ row.proxyPath +'"'+
+									'target="_blank">'+row.serviceAddr +'/'+ row.proxyPath +'</a>';
+							}
+							html += '</span>'
+							return html;
+						}
+					},
+					
+					{
+						data : null,
+						render : function (data,type,row) {
+							var html = '<input type="hidden" class="timeStrap" value="">'+
+								'<i class="fa_time"></i><span>' + row.createDate +'</span>';
+							return html;
+						}
+					},
+					
+					{
+						data : null,
+						render : function (data,type,row) {
+							var html = '';
+							
+							if (row.status == 3) {
+								
+								html += '<a id="'+row.id+'_start" class="no-drop startContainer_a "'+
+										'href="javascript:oneStartContainer('+ row.id +','+ row.status +')"'+
+										'style="margin-left: 5px" title="启动"><i class="fa fa-play self_a"></i></a>';
+								
+								html += '<a id="'+row.id+'_stop" class="a-live stopContainer_a "'+
+										'href="javascript:oneStopContainer('+ row.id +','+ row.status +')"'+
+										'style="margin-left: 5px" title="停止"> '+
+	                                    '<i class="fa fa-power-off"></i></a>';
+															
+							} else {
+								html += '<a id="'+row.id+'_start" class="a-live startContainer_a "'+
+                                        'href="javascript:oneStartContainer('+ row.id +','+ row.status +')"'+
+                                        'style="margin-left: 5px" title="启动"><i class="fa fa-play"></i></a>';
+								
+								html += '<a id="'+row.id+'_stop" class="no-drop stopContainer_a "'+
+										'href="javascript:oneStopContainer('+ row.id +','+ row.status +')"'+
+										'style="margin-left: 5px" title="停止"> '+
+										'<i class="fa fa-power-off self_a"></i></a>';
+							}
+							
+							html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
+									'href="javascript:oneUpGradeContainer('+row.id+',&apos;'+row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram + ')" title="弹性伸缩"'+
+									'style="margin-left: 5px"> <i class="fa fa-arrows"></i></a>';
+							
+							if (row.status == 3) {
+								html += '<a id="'+row.id+'_upgradeCluster" class="a-live upgradeCluster_a " '+
+										'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+ row.serviceName +'&apos;,&apos;'+row.imgName+'&apos;)" title="版本升级"'+
+										'style="margin-left: 5px"><i class="fa fa-arrow-up"></i></a> ';
+							} else {
+								html += ' <a id="'+row.id+'_upgradeCluster" class="no-drop upgradeCluster_a " '+
+                                    	'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+row.serviceName+'&apos;,&apos;'+row.imgName+'&apos;,this)" title="版本升级"'+
+                                        'style="margin-left: 5px"><i class="fa fa-arrow-up self_a"></i></a>';
+							}
+							
+							html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
+									'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
+									'style="margin-left: 5px"><i class="fa fa-cog"></i></a> '+														
+									'<a id="'+row.id+'_del" class="a-live deleteButton_a "'+
+									'href="javascript:oneDeleteContainer('+row.id+')"'+
+									'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
+							
+							return html;
+						}
+					}
+					
+                   ],
+                   
+		"createdRow": function( row, data, dataIndex ) {
+	          $(row).addClass( 'clusterId' );
+	          $(row).data(row.id);
+		}
+        
+	})
 }
 

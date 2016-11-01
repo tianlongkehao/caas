@@ -49,7 +49,7 @@
 										<a id="deleteButton" class="no-drop" href="javascript:delContainer()" title="删除">
 											<i id = "deleteButtonFa" class="fa fa-trash self_a"></i>
 										</a>
-										<a href="javascript:window.location.reload(true);" id="serviceReloadBtn" title="刷新">
+										<a href="" id="serviceReloadBtn" title="刷新">
 											<i class="fa fa-repeat"></i>
 										</a>
 									</div>
@@ -64,9 +64,9 @@
 												<th style="width: 15%; padding-left: 5px;">名称</th>
 												<th style="width: 12%; text-indent: 8px;">运行状态</th>
 												<th style="width: 20%;">镜像</th>
-												<th style="width: 24%;">服务地址</th>
+												<th style="width: 20%;">服务地址</th>
 												<th style="width: 12%;">创建于</th>
-												<th style="width: 8%;">操作</th>
+												<th style="width: 12%;">操作</th>
 											</tr>
 										</thead>
 
@@ -328,13 +328,13 @@
 		</script>
 	</c:if>
 	<script type="text/javascript">
-		 $('.dataTables-example').dataTable({
+		 /* $('.dataTables-example').dataTable({
 			"aoColumnDefs" : [ {
 				"bSortable" : false,
 				"aTargets" : [ 0, 6 ]
 			} ],
 			"aaSorting": [[ 5, "desc" ]]
-		});
+		}); */
 		$("#checkallbox").parent().removeClass("sorting_asc"); 
 	</script>
 </body>
