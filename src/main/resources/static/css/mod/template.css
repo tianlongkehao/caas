@@ -750,7 +750,10 @@ span.i {
     text-indent: 5px;
 }
 #crateEnv, #importBtn, #crateEnvVariate{
-	cursor: pointer
+	cursor: pointer;
+}
+.vals-env{
+	cursor: pointer;
 }
 
 

@@ -68,14 +68,6 @@
 																	<i class="fa fa-trash-o fa-lg"></i></a>
 																	<input type="hidden" class="oldValue" value="">
 																</td>
-																<%-- <td style="width: 45%; text-indent: 15px;">${envTemplateList.envKey }</td>
-																<td style="width: 45%; text-indent: 8px;">${envTemplateList.envValue }</td>
-																<td style="width: 10%; text-indent: 10px;"><a
-																	title="删除" href="javascript:void(0)"
-																	onclick="deleteRow(this)"
-																	dockerfileId="${dockerfile.id }"> <i
-																		class="fa fa-trash"></i>
-																</a></td> --%>
 															</tr>
 														</c:forEach>
 													</tbody>

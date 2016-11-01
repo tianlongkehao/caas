@@ -23,7 +23,20 @@ $(document).ready(function(){
 	            		category: '0',
 	            		name: master,
 	            		value: 12,
-	            		label: 'master(主节点)'
+	            		label: 'master(主节点)',
+	            		symbol: 'image://../images/master.png' ,
+                        symbolSize: [30, 25],
+                        draggable: true,
+                        itemStyle: {
+                            normal: {
+                                label: {
+                                    position: 'bottom',
+                                    textStyle: {
+                                        color: 'black'
+                                    }
+                                }
+                            }
+                        }
 	             };
 	             nodeDataTopo.push(obj0);
 	             
@@ -33,6 +46,18 @@ $(document).ready(function(){
 	             	objNode1.category = 1;
 	             	objNode1.name = node;
 	             	objNode1.value = 10;
+	             	objNode1.symbol = 'image://../images/node.png';
+                 	objNode1.symbolSize = [18, 28];
+                 	objNode1.draggable = true;
+                 	objNode1.itemStyle = {
+                            normal: {
+                                label: {
+                                    position: 'bottom',
+                                    textStyle: {
+                                        color: 'black'
+                                    }
+                                }
+                            }};
 	             	nodeDataTopo.push(objNode1);
 	             	
 	             	var podNumber = num;
@@ -52,6 +77,18 @@ $(document).ready(function(){
 	                 	objNode2.category = 2;
 	                 	objNode2.name = podName;
 	                 	objNode2.value = 8;
+	                 	objNode2.symbol = 'image://../images/pod.png';
+	                 	objNode2.symbolSize = [25, 26];
+	                 	objNode2.draggable = true;
+	                 	objNode2.itemStyle = {
+	                            normal: {
+	                                label: {
+	                                    position: 'bottom',
+	                                    textStyle: {
+	                                        color: 'black'
+	                                    }
+	                                }
+	                            }};
 	                     nodeDataTopo.push(objNode2);
 	                 	
 	                     var objLink2 ={};
@@ -78,11 +115,31 @@ $(document).ready(function(){
 	             	objNode3.category = 3;
 	             	objNode3.name = serviceName;
 	             	objNode3.value = 10;
+	             	objNode3.symbol = 'image://../images/service.png';
+                 	objNode3.symbolSize = [26, 18];
+                 	objNode3.draggable = true;
+                 	objNode3.itemStyle = {
+                            normal: {
+                                label: {
+                                    position: 'bottom',
+                                    textStyle: {
+                                        color: 'black'
+                                    }
+                                }
+                            }};
 	             	nodeDataTopo.push(objNode3);
 	             }
 	             var legend =  {
             	        x: 'left',
-            	        data:['master','node','pod','service'],
+            	        data:[{name:'master',
+            	               icon :'image://../images/master.png'
+                        },{name:'node',
+            	               icon :'image://../images/node.png'
+                        },{name:'pod',
+            	               icon :'image://../images/pod.png'
+                        },{name:'service',
+            	               icon :'image://../images/service.png'
+                        }],
             	        selected: {
             	            'pod' : false,
             	            'service' : false
@@ -123,7 +180,20 @@ function searchUser() {
             		category: '0',
             		name: master,
             		value: 12,
-            		label: 'master(主节点)'
+            		label: 'master(主节点)',
+            		symbol: 'image://../images/master.png' ,
+                    symbolSize: [30, 25],
+                    draggable: true,
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                position: 'bottom',
+                                textStyle: {
+                                    color: 'black'
+                                }
+                            }
+                        }
+                    }
              };
              nodeDataTopo.push(obj0);
              
@@ -133,6 +203,18 @@ function searchUser() {
              	objNode1.category = 1;
              	objNode1.name = node;
              	objNode1.value = 10;
+             	objNode1.symbol = 'image://../images/node.png';
+             	objNode1.symbolSize = [18, 28];
+             	objNode1.draggable = true;
+             	objNode1.itemStyle = {
+                        normal: {
+                            label: {
+                                position: 'bottom',
+                                textStyle: {
+                                    color: 'black'
+                                }
+                            }
+                        }};
              	nodeDataTopo.push(objNode1);
              	
              	var podNumber = num;
@@ -152,6 +234,18 @@ function searchUser() {
                  	objNode2.category = 2;
                  	objNode2.name = podName;
                  	objNode2.value = 8;
+                 	objNode2.symbol = 'image://../images/pod.png';
+                 	objNode2.symbolSize = [25, 26];
+                 	objNode2.draggable = true;
+                 	objNode2.itemStyle = {
+                            normal: {
+                                label: {
+                                    position: 'bottom',
+                                    textStyle: {
+                                        color: 'black'
+                                    }
+                                }
+                            }};
                     nodeDataTopo.push(objNode2);
                  	
                      var objLink2 ={};
@@ -185,6 +279,18 @@ function searchUser() {
              	objNode3.category = 3;
              	objNode3.name = serviceName;
              	objNode3.value = 10;
+             	objNode3.symbol = 'image://../images/service.png';
+             	objNode3.symbolSize = [26, 18];
+             	objNode3.draggable = true;
+             	objNode3.itemStyle = {
+                        normal: {
+                            label: {
+                                position: 'bottom',
+                                textStyle: {
+                                    color: 'black'
+                                }
+                            }
+                        }};
              	nodeDataTopo.push(objNode3);
 //             	var podNames = serviceTopo.podName;
 //             	if (podNames != null && serviceName != null) {
@@ -198,7 +304,15 @@ function searchUser() {
              $("#search_service").html(html);
              var legend =  {
             	        x: 'left',
-            	        data:['master','node','pod','service'],
+            	        data:[{name:'master',
+		         	               icon :'image://../images/master.png'
+		                     },{name:'node',
+		         	               icon :'image://../images/node.png'
+		                     },{name:'pod',
+		         	               icon :'image://../images/pod.png'
+		                     },{name:'service',
+		         	               icon :'image://../images/service.png'
+		                     }],
             	        selected: {
             	            'service' : false
             	        },
@@ -240,7 +354,20 @@ function searchService(){
              		category: '0',
              		name: master,
              		value: 12,
-             		label: 'master(主节点)'
+             		label: 'master(主节点)',
+             		symbol: 'image://../images/master.png' ,
+                    symbolSize: [30, 25],
+                    draggable: true,
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                position: 'bottom',
+                                textStyle: {
+                                    color: 'black'
+                                }
+                            }
+                        }
+                    }
              };
              nodeDataTopo.push(obj0);
              //添加service节点
@@ -248,7 +375,19 @@ function searchService(){
             		category: '3',
               		name: serviceName,
               		value: 10,
-              		label: serviceName
+              		label: serviceName,
+              		symbol : 'image://../images/node.png',
+          			symbolSize : [18, 28],
+          			draggable : true,
+          	        itemStyle : {
+                     normal: {
+                         label: {
+                             position: 'bottom',
+                             textStyle: {
+                                 color: 'black'
+                             }
+                         }
+                     }}
              }
              nodeDataTopo.push(obj1);
              //循环添加node节点和pod节点
@@ -257,12 +396,36 @@ function searchService(){
               	 objNode2.category = 2;
               	 objNode2.name = podTopoList[i].podName;
               	 objNode2.value = 8;
+              	objNode2.symbol = 'image://../images/pod.png';
+             	objNode2.symbolSize = [25, 26];
+             	objNode2.draggable = true;
+             	objNode2.itemStyle = {
+                        normal: {
+                            label: {
+                                position: 'bottom',
+                                textStyle: {
+                                    color: 'black'
+                                }
+                            }
+                        }};
                  nodeDataTopo.push(objNode2);
                  
                  var objNode3 = {};
                  objNode3.category = 1;
               	 objNode3.name = podTopoList[i].nodeName;
               	 objNode3.value = 10;
+              	objNode3.symbol = 'image://../images/service.png';
+             	objNode3.symbolSize = [26, 18];
+             	objNode3.draggable = true;
+             	objNode3.itemStyle = {
+                        normal: {
+                            label: {
+                                position: 'bottom',
+                                textStyle: {
+                                    color: 'black'
+                                }
+                            }
+                        }};
                  nodeDataTopo.push(objNode3);
                  
                  //匹配连线
@@ -286,7 +449,15 @@ function searchService(){
              $("#clusterTopo").css("height","500px");
              var legend =  {
             	        x: 'left',
-            	        data:['master','node','pod','service'],
+            	        data:[{name:'master',
+	         	               icon :'image://../images/master.png'
+	                     },{name:'node',
+	         	               icon :'image://../images/node.png'
+	                     },{name:'pod',
+	         	               icon :'image://../images/pod.png'
+	                     },{name:'service',
+	         	               icon :'image://../images/service.png'
+	                     }],
             	        selected: {
             	            'master' : false
             	        },

@@ -80,7 +80,6 @@ public class KubernetesClientService {
     
     @Autowired
     public ServiceController serviceController;
-	
 	public int getK8sEndPort() {
 		return Integer.valueOf(endPort);
 	}
@@ -331,10 +330,11 @@ public class KubernetesClientService {
 
 	
 	public ReplicationController generateSimpleReplicationController(String name,int replicas,
-	                                                                     String image,List<PortConfig> portConfigs,
-	                                                                         Double cpu,String ram,String nginxObj, 
-	                                                                             String servicePath, String proxyPath,String checkPath,
-	                                                                                 List<EnvVariable> envVariables, List<String> command, List<String> args){
+	                                                                     Integer initialDelay,Integer timeoutDetction,Integer periodDetction,
+	                                                                         String image,List<PortConfig> portConfigs,
+	                                                                             Double cpu,String ram,String nginxObj, 
+	                                                                                 String servicePath, String proxyPath,String checkPath,
+	                                                                                     List<EnvVariable> envVariables, List<String> command, List<String> args){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
@@ -373,8 +373,21 @@ public class KubernetesClientService {
 		container.setImagePullPolicy("Always");
 		if (StringUtils.isNotBlank(checkPath)) {
 		    Probe livenessProbe = new Probe();
-	        livenessProbe.setInitialDelaySeconds(INITIAL_DELAY_SECONDS);
-	        livenessProbe.setTimeoutSeconds(TIME_SECONDS);
+		    if (initialDelay == null || initialDelay == 0) {
+		        livenessProbe.setInitialDelaySeconds(600);
+		    } else {
+		        livenessProbe.setInitialDelaySeconds(initialDelay);
+		    }
+		    if (timeoutDetction == null || timeoutDetction == 0) {
+		        livenessProbe.setTimeoutSeconds(5);
+		    } else {
+		        livenessProbe.setTimeoutSeconds(timeoutDetction);
+		    }
+		    if (periodDetction == null || periodDetction == 0) {
+		        livenessProbe.setPeriodSeconds(10);
+		    } else {
+		        livenessProbe.setPeriodSeconds(periodDetction);
+		    }
 	        HTTPGetAction httpGet = new HTTPGetAction();
 	        httpGet.setPath(checkPath);
 	        httpGet.setPort(8080); // 修改了HTTPGetAction的port字段类型定义

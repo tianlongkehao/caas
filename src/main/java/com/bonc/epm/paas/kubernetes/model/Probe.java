@@ -6,6 +6,7 @@ public class Probe {
 	private TCPSocketAction tcpSocket;
 	private Integer initialDelaySeconds;
 	private Integer timeoutSeconds;
+	private Integer periodSeconds;
 	public ExecAction getExec() {
 		return exec;
 	}
@@ -36,5 +37,11 @@ public class Probe {
 	public void setTimeoutSeconds(Integer timeoutSeconds) {
 		this.timeoutSeconds = timeoutSeconds;
 	}
+    public Integer getPeriodSeconds() {
+        return periodSeconds;
+    }
+    public void setPeriodSeconds(Integer periodSeconds) {
+        this.periodSeconds = periodSeconds;
+    }
 	
 }
