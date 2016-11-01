@@ -160,6 +160,13 @@
 	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
 	                                            </select>
                                             </li>
+                    <li class="line-h-3"> <span class="ve_top">Pod黏连方式：</span>
+                                                <select class="selectVolume" id="nodeIpAffinity" name="nodeIpAffinity"
+                                                    style="height: 30px; width: 230px;">
+                                                    <option name="nodeIpAffinity" value="" >NONE</option>
+                                                    <option name="nodeIpAffinity" value="nodeIpAffinity">nodeIpAffinity</option>
+                                                </select>
+                                            </li>
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
                                         <span class="clusterText" data="tenx_district2">北京二区</span>

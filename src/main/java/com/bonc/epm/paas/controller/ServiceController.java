@@ -794,7 +794,9 @@ public class ServiceController {
                 controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
             }
             if (k8sService == null) {
-                k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs,service.getProxyZone(),service.getServicePath(),service.getProxyPath(),service.getSessionAffinity());
+                k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs
+                        ,service.getProxyZone(),service.getServicePath(),service.getProxyPath()
+                        ,service.getSessionAffinity(),service.getNodeIpAffinity());
                 k8sService = client.createService(k8sService);
             }
             if (controller == null || k8sService == null || controller.getSpec().getReplicas() != service.getInstanceNum()) {
