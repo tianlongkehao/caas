@@ -215,6 +215,7 @@
 	 $("#improt-ser-name").val($(obj).attr("serName"));
 	 $("#improt-ser-in").val($(obj).attr("serIn"));
 	 $("#improt-ser-out").val($(obj).attr("serOut"));
+//	 $("#improt-ser-out-port").val($(obj).attr("serOut"));
 	 $("#improt-ser-visibility").val($(obj).attr("serVi"));
 	 $("#improt-ser-name").attr("disabled","disabled")
 	 layer.open({
@@ -223,11 +224,17 @@
 	        content: $("#import-service"),
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ 
-	        	var importSerName = $("#improt-ser-name").val();
+/*	        	var importSerName = $("#improt-ser-name").val();
 	        	 var importSerIn = $("#improt-ser-in").val();
 	        	 var importSerOut = $("#improt-ser-out").val();
 	        	 var importSerVis = $("#improt-ser-visibility").val();
-	        	 
+*/
+	        	 var importSerName = $("#improt-ser-name").val();
+	        	 var importSerIn = $("#improt-ser-in").val();
+	        	 var importSerOut = $("#improt-ser-out").val();
+	        	 var importSerOutPort = $("#improt-ser-out-port").val();
+	        	 var importSerVis = $("#improt-ser-visibility").val();
+	        	 var improtSerMode = $("#improt-ser-mode").val();
 	        	 if (importSerName.length === 0) {
 	                 layer.tips('服务名称不能为空', '#improt-ser-name', {
 	                     tips: [1, '#0FA6D8'] //还可配置颜色
@@ -261,7 +268,7 @@
 		         		url : ctx + "/refservice/edit.do",
 		         		type: "POST",
 		         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
-		         			,"refAddress":importSerOut,"viDomain":importSerVis},
+		         			,"refAddress":importSerOut,"viDomain":importSerVis,"refPort":importSerOutPort,"improtSerMode":improtSerMode},
 		         		success: function(data) {
 		         			window.location.reload();
 		         		}

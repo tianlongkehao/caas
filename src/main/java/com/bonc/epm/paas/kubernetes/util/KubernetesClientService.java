@@ -563,9 +563,9 @@ public class KubernetesClientService {
         Service service = new Service();
         ObjectMeta meta = new ObjectMeta();
         meta.setName(serName);
-        Map<String,String> labels = new HashMap<String,String>();
-        labels.put("app", serName);
-        meta.setLabels(labels);
+//        Map<String,String> labels = new HashMap<String,String>();
+//        labels.put("app", serName);
+//        meta.setLabels(labels);
         service.setMetadata(meta);
         
         ServiceSpec spec = new ServiceSpec();

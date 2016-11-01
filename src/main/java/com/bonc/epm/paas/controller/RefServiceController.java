@@ -277,7 +277,14 @@ public class RefServiceController {
                 k8sService = client.createService(k8sServiceTmp);
             } 
             else {
-                k8sService = client.updateService(refService.getSerName(), k8sServiceTmp);
+                try {
+                    client.deleteService(refService.getSerName());
+                    k8sService = client.createService(k8sServiceTmp);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    e.getMessage();
+                }
+                
             }
             
             Endpoints k8sEndpointsTmp = kubernetesClientService.generateEndpoints(refService.getSerName(),refService.getRefAddress(),refService.getRefPort());
