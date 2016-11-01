@@ -13,15 +13,22 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.bonc.epm.paas.controller.ServiceController;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
+import com.bonc.epm.paas.kubernetes.model.EndpointAddress;
+import com.bonc.epm.paas.kubernetes.model.EndpointPort;
+import com.bonc.epm.paas.kubernetes.model.EndpointSubset;
+import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.EnvVar;
 import com.bonc.epm.paas.kubernetes.model.HTTPGetAction;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
@@ -70,6 +77,9 @@ public class KubernetesClientService {
     
     public static final Integer INITIAL_DELAY_SECONDS= 30*60;
     public static final Integer TIME_SECONDS = 5;
+    
+    @Autowired
+    public ServiceController serviceController;
 	
 	public int getK8sEndPort() {
 		return Integer.valueOf(endPort);
@@ -526,5 +536,73 @@ public class KubernetesClientService {
 		secret.setData(data);
 		return secret;
 	}
+    /**
+     * Description:
+     * 创建k8s Service
+     * @param refPort 
+     * @param nameSpace
+     * @param serAddress
+     * @param refAddress
+     * @return 
+     * @see 
+     */
+    public Service generateRefService(String serName, int refPort) {
+        Service service = new Service();
+        ObjectMeta meta = new ObjectMeta();
+        meta.setName(serName);
+        Map<String,String> labels = new HashMap<String,String>();
+        labels.put("app", serName);
+        meta.setLabels(labels);
+        service.setMetadata(meta);
+        
+        ServiceSpec spec = new ServiceSpec();
+        spec.setType("NodePort");
+        List<ServicePort> ports = new ArrayList<ServicePort>();
+        ServicePort portObj = new ServicePort();
+        portObj.setName("http");
+        portObj.setProtocol("TCP");
+        portObj.setPort(refPort);
+        portObj.setNodePort(serviceController.vailPortSet());
+        ports.add(portObj);
+        spec.setPorts(ports);
+        
+        service.setSpec(spec);
+        return service;
+    }
+    /**
+     * Description:
+     * create a new Endpoint Object
+     * @param serAddress String
+     * @param refAddress String
+     * @param refPort 
+     * @return 
+     * @see 
+     */
+    public Endpoints generateEndpoints(String serName, String refAddress, int refPort) {
+        Endpoints endpoints = new Endpoints();
+        ObjectMeta meta = new ObjectMeta();
+        meta.setName(serName);
+        Map<String,String> labels = new HashMap<String,String>();
+        labels.put("app", serName);
+        meta.setLabels(labels);
+        endpoints.setMetadata(meta);
+        
+        List<EndpointSubset> subsets = new ArrayList<EndpointSubset>();
+        EndpointSubset subset = new EndpointSubset();
+        List<EndpointAddress> addresses = new ArrayList<EndpointAddress>();
+        EndpointAddress address = new EndpointAddress();
+        address.setIp(refAddress);
+        addresses.add(address);
+        subset.setAddresses(addresses);
+        //List<EndpointAddress> notReadyAddresses = new ArrayList<EndpointAddress>();
+        List<EndpointPort> ports = new ArrayList<EndpointPort>();
+        EndpointPort port = new EndpointPort();
+        port.setPort(refPort);
+        ports.add(port);
+        subset.setPorts(ports);
+        subsets.add(subset);
+        endpoints.setSubsets(subsets);
+        return endpoints;
+    }
 }
 

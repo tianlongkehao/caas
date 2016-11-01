@@ -10,6 +10,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.Endpoints;
+import com.bonc.epm.paas.kubernetes.model.EndpointsList;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
@@ -180,6 +182,15 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
         }
+    }
+    
+    public Service updateService(String name,Service service) throws KubernetesClientException {
+        try {
+            return api.updateService(namespace, name, service);
+        } catch (Exception e) {
+            throw new KubernetesClientException(e);
+        }
+        
     }
 
 	public Namespace getNamespace(String name) throws KubernetesClientException {
@@ -361,4 +372,39 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
 	}
+
+    @Override
+    public Endpoints createEndpoints(Endpoints endpoints) throws KubernetesClientException {
+        try {
+            return api.createEndpoints(namespace, endpoints);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+    @Override
+    public EndpointsList getAllEndpoints() throws KubernetesClientException {
+        try {
+            return api.getAllEndpoints(namespace);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    @Override
+    public Endpoints getEndpoints(String name) throws KubernetesClientException {
+        try {
+            return api.getEndpoints(namespace, name);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    @Override
+    public Endpoints updateEndpoints(String name, Endpoints endpoints) throws KubernetesClientException {
+        try {
+            return api.updateEndpoints(namespace, name, endpoints);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
 }

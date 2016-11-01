@@ -26,6 +26,8 @@ import javax.ws.rs.QueryParam;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.Endpoints;
+import com.bonc.epm.paas.kubernetes.model.EndpointsList;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
@@ -373,6 +375,15 @@ public interface KubernetesAPIClientInterface {
     public Service createService(Service service) throws KubernetesClientException;
 
     /**
+     * update a new Kubernetes service.
+     * 
+     * @param service
+     *            service to be updated.
+     * @throws KubernetesClientException
+     */
+    public Service updateService(String name, Service service) throws KubernetesClientException;
+
+    /**
      * Delete a Service.
      * 
      * @param name
@@ -380,6 +391,47 @@ public interface KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     public Status deleteService(String name) throws KubernetesClientException;
+
+    /** Endpoints API**/
+    /**
+     * Create a new Kubernetes endpoints.
+     * 
+     * @param endpoints
+     *            endpoints to be created.
+     * @throws KubernetesClientException
+     */
+    public Endpoints createEndpoints(Endpoints endpoints) throws KubernetesClientException;
+    
+    /**
+     * Get All Kubernetes endpoints.
+     * 
+     * @throws KubernetesClientException
+     */
+    public EndpointsList getAllEndpoints() throws KubernetesClientException;
+    
+    /**
+     * Get the Endpoints with the given id.
+     * 
+     * @param name
+     *            id of the endpoints.
+     * @return {@link Endpoints}
+     * @throws KubernetesClientException
+     */
+    public Endpoints getEndpoints(String name) throws KubernetesClientException;
+    
+    /**
+     * 
+     * Description:
+     * replace specified endpoints
+     * @param name
+     *            id of the endpoints.
+     * @param endpoints
+     *            endpoints
+     * @throws KubernetesClientException 
+     * @see
+     */
+    public Endpoints updateEndpoints(String name,Endpoints endpoints) throws KubernetesClientException;
+    
     /**
      * Create a new Secret
      * 
