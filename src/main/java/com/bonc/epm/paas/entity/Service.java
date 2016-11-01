@@ -133,6 +133,9 @@ public class Service {
 	 * 服务检测频率
 	 */
 	private Integer periodDetction;
+	/**
+	 */
+	private String nodeIpAffinity;
 	
     public long getImgID() {
 		return imgID;
@@ -380,6 +383,14 @@ public class Service {
 
     public void setPeriodDetction(Integer periodDetction) {
         this.periodDetction = periodDetction;
+    }
+
+    public String getNodeIpAffinity() {
+        return nodeIpAffinity;
+    }
+
+    public void setNodeIpAffinity(String nodeIpAffinity) {
+        this.nodeIpAffinity = nodeIpAffinity;
     }
 
 }
