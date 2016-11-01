@@ -160,7 +160,7 @@
 	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
 	                                            </select>
                                             </li>
-                    <li class="line-h-3"> <span class="ve_top">Pod黏连方式：</span>
+                    <li class="line-h-3"> <span class="ve_top">NodeIp黏连方式：</span>
                                                 <select class="selectVolume" id="nodeIpAffinity" name="nodeIpAffinity"
                                                     style="height: 30px; width: 230px;">
                                                     <option name="nodeIpAffinity" value="" >NONE</option>
