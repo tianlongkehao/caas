@@ -872,7 +872,7 @@ public class UserController {
         
         Map<String, String> hard = quota.getSpec().getHard();
         hard.put("memory", resource.getRam() + "G"); // 内存
-        hard.put("cpu", Integer.valueOf(resource.getCpu_account())/Integer.valueOf(RATIO_MEMTOCPU) + "");// CPU数量
+        hard.put("cpu", Double.valueOf(resource.getCpu_account())/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量
 		// hard.put("pods", resource.getPod_count() + "");//POD数量
 		// hard.put("services", resource.getServer_count() + "");//服务
 		// hard.put("replicationcontrollers", resource.getImage_control() +
@@ -933,7 +933,7 @@ public class UserController {
         try {
             Map<String, String> map = new HashMap<String, String>();
             map.put("memory", resource.getRam() + "G"); // 内存
-            map.put("cpu", Integer.valueOf(resource.getCpu_account())/Integer.valueOf(RATIO_MEMTOCPU) + "");// CPU数量(个)
+            map.put("cpu", Double.valueOf(resource.getCpu_account())/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量(个)
             map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
             //map.put("pods", resource.getPod_count() + "");//POD数量
             //map.put("services", resource.getServer_count() + "");//服务
