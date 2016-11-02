@@ -2,6 +2,9 @@ package com.bonc.epm.paas.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -10,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -428,14 +432,14 @@ public class CiController {
         image.setIsDelete(CommConstant.TYPE_NO_VALUE);
         
         try {
-/*            String imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
+            String imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
             File file = new File(imagePath);
             if(!file.exists()) {
                 file.mkdirs();
             }
             if (!sourceCode.isEmpty()) {
                 FileUtils.storeFile(sourceCode.getInputStream(), imagePath+"/"+sourceCode.getOriginalFilename());
-            }*/
+            }
             boolean flag = createAndPushImage(image,sourceCode.getInputStream());
             if(flag){
                 //排重添加镜像数据
@@ -476,12 +480,17 @@ public class CiController {
      * @return flag boolean
      * @see
      */
-    private boolean createAndPushImage(Image image,InputStream inputStream){
-        // import and push image
-        boolean flag = dockerClientService.createAndPushImage(image, inputStream);
-        if(flag){
-               //删除本地镜像
-            flag = dockerClientService.removeImage(image.getName(), image.getVersion(),null,null,null);
+    private boolean createAndPushImage(Image image,InputStream inputStream) throws IOException{
+        boolean flag = false;
+        try {
+            // import and push image
+            flag = dockerClientService.createAndPushImage(image, inputStream);
+            if(flag){
+                //删除本地镜像
+                flag = dockerClientService.removeImage(image.getName(), image.getVersion(),null,null,null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return flag;
     }
