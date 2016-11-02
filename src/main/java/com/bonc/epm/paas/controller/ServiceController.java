@@ -788,11 +788,13 @@ public class ServiceController {
                     }
                 }
                 controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
-						service.getInstanceNum(), registryImgName, portConfigs, service.getCpuNum(), service.getRam(),
-						service.getProxyZone(),service.getServicePath(),service.getProxyPath(),service.getCheckPath(),envVariables,command,args);
+                        service.getInstanceNum(),service.getInitialDelay(),service.getTimeoutDetction(),service.getPeriodDetction(),
+						registryImgName, portConfigs, service.getCpuNum(), service.getRam(),service.getProxyZone(),
+						service.getServicePath(),service.getProxyPath(),service.getCheckPath(),envVariables,command,args);
 				// 给controller设置卷组挂载的信息
                 System.out.println("给rc绑定vol");
-                if (!"0".equals(service.getVolName())) {
+//                if (!"0".equals(service.getVolName())) {
+                if (StringUtils.isNotBlank(service.getVolName())) {
                     controller = this.setVolumeStorage(controller, service.getVolName(), service.getMountPath());
                 }
                 controller = client.createReplicationController(controller);
@@ -801,7 +803,9 @@ public class ServiceController {
                 controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
             }
             if (k8sService == null) {
-                k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs,service.getProxyZone(),service.getServicePath(),service.getProxyPath());
+                k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs
+                        ,service.getProxyZone(),service.getServicePath(),service.getProxyPath()
+                        ,service.getSessionAffinity(),service.getNodeIpAffinity());
                 k8sService = client.createService(k8sService);
             }
             if (controller == null || k8sService == null || controller.getSpec().getReplicas() != service.getInstanceNum()) {
@@ -838,6 +842,9 @@ public class ServiceController {
         service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
         service.setCreateDate(new Date());
         service.setCreateBy(currentUser.getId());
+        if (StringUtils.isEmpty(service.getSessionAffinity())) {
+            service.setSessionAffinity(null);
+        }
 /*        if (!StringUtils.isEmpty(resourceName) && !service.getServicePath().trim().equals(resourceName.substring(0, resourceName.indexOf(".")).trim())) {
             service.setServicePath(resourceName.substring(0, resourceName.indexOf(".")).trim());
         }*/

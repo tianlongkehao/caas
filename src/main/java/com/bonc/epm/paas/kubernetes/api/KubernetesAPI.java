@@ -33,6 +33,8 @@ import javax.ws.rs.core.MediaType;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.Endpoints;
+import com.bonc.epm.paas.kubernetes.model.EndpointsList;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
@@ -526,8 +528,56 @@ public interface KubernetesAPI {
     @DELETE
     @Path("/namespaces/{namespace}/services/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Status deleteService(@PathParam("namespace")String namespace,@PathParam("name") String name) throws KubernetesClientException;
+    public Status deleteService(@PathParam("namespace") String namespace,@PathParam("name") String name) throws KubernetesClientException;
+
+    @PUT
+    @Path("/namespaces/{namespace}/services/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Service updateService(@PathParam("namespace") String namespace,@PathParam("name") String name,
+                                 Service service) throws KubernetesClientException;
     
+    /**
+     * Create a new Kubernetes endpoints.
+     * 
+     * @param endpoints
+     *            endpoints to be created.
+     * @throws KubernetesClientException
+     */
+    @POST
+    @Path("/namespaces/{namespace}/endpoints")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Endpoints createEndpoints(@PathParam("namespace")String namespace,
+                                     Endpoints endpoints) throws KubernetesClientException;
+    
+    @PUT
+    @Path("/namespaces/{namespace}/endpoints/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Endpoints updateEndpoints(@PathParam("namespace")String namespace,@PathParam("name") String name, 
+                                     Endpoints endpoints) throws KubernetesClientException;
+    
+    /**
+     * Get all the endpoints.
+     * 
+     * @return array of {@link Endpoints}s
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/endpoints")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public EndpointsList getAllEndpoints(@PathParam("namespace")String namespace) throws KubernetesClientException;
+    
+    /**
+     * Get the Endpoints with the given id.
+     * 
+     * @param endpointsId
+     *            id of the endpoints.
+     * @return {@link Endpoints}
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/endpoints/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Endpoints getEndpoints(@PathParam("namespace")String namespace,@PathParam("name") String name) throws KubernetesClientException;
 
     /**
      * Create a new secret

@@ -87,7 +87,7 @@
 						<th style="width: 35%">服务名称：</th>
 						<td><input class="" type="text" id="improt-ser-name" value=""></td>
 					</tr>
-					<tr>
+ 					<tr>
 						<th style="width: 35%">服务访问地址：</th>
 						<td><input class="" type="text" id="improt-ser-in" value=""></td>
 					</tr>
@@ -96,13 +96,23 @@
 						<td><input class="" type="text" id="improt-ser-out" value=""></td>
 					</tr>
 					<tr>
+                        <th style="width: 35%">外部服务端口：</th>
+                        <td><input class="" type="text" id="improt-ser-out-port" value=""></td>
+                    </tr>
+					<tr>
 						<th style="width: 35%">可见域：</th>
 						<td><select class="" id="improt-ser-visibility">
 								<option value="0">仅本租户可见</option>
 								<option value="1">所有租户可见</option>
 						</select></td>
 					</tr>
-
+                    <tr>
+                        <th style="width: 35%">引入服务方式：</th>
+                        <td><select class="" id="improt-ser-mode">
+                                <option value="0">service</option>
+                                <option value="1">etcd</option>
+                        </select></td>
+                    </tr>
 				</tbody>
 			</table>
 		</form>

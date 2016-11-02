@@ -114,7 +114,30 @@ public class Service {
 	 */
 	private String proxyPath;
 	
-	public long getImgID() {
+	/**
+	 * 服务会话黏连方式
+	 */
+	private String sessionAffinity;
+	
+	/**
+	 * 服务检测延迟
+	 */
+	private Integer initialDelay;
+	
+	/**
+	 * 服务检测超时
+	 */
+	private Integer timeoutDetction;
+	
+	/**
+	 * 服务检测频率
+	 */
+	private Integer periodDetction;
+	/**
+	 */
+	private String nodeIpAffinity;
+	
+    public long getImgID() {
 		return imgID;
 	}
 
@@ -330,6 +353,44 @@ public class Service {
 		this.proxyPath = proxyPath;
 	}
 	
-	
-	
+    public String getSessionAffinity() {
+        return sessionAffinity;
+    }
+
+    public void setSessionAffinity(String sessionAffinity) {
+        this.sessionAffinity = sessionAffinity;
+    }
+
+    public Integer getInitialDelay() {
+        return initialDelay;
+    }
+
+    public void setInitialDelay(Integer initialDelay) {
+        this.initialDelay = initialDelay;
+    }
+
+    public Integer getTimeoutDetction() {
+        return timeoutDetction;
+    }
+
+    public void setTimeoutDetction(Integer timeoutDetction) {
+        this.timeoutDetction = timeoutDetction;
+    }
+
+    public Integer getPeriodDetction() {
+        return periodDetction;
+    }
+
+    public void setPeriodDetction(Integer periodDetction) {
+        this.periodDetction = periodDetction;
+    }
+
+    public String getNodeIpAffinity() {
+        return nodeIpAffinity;
+    }
+
+    public void setNodeIpAffinity(String nodeIpAffinity) {
+        this.nodeIpAffinity = nodeIpAffinity;
+    }
+
 }

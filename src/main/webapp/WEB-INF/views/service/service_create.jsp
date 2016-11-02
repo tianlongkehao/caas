@@ -114,12 +114,28 @@
                     <li class="line-h-3" id="checkSerStatus_li"><input
                       type="text" value="" class="in_style"
                       id="checkSerStatus_input" name="checkPath"
-                      style="margin-left: 150px"></li>		
+                      style="margin-left: 150px"></li>
+                      <li class="line-h-3" id="checkItems">
+	                      <ul class="checkitems">
+	                      	<li><span class="check-lable">检测延迟：</span>
+								<input type="number" value="600" class="number" id="initialDelay" 
+								onkeyup="this.value=this.value.replace(/\D/g,'')" min="0"
+								name="initialDelay"> <span class="c-unit">s</span></li>
+							<li><span class="check-lable">检测超时：</span>
+								<input type="number" value="5" class="number" id="timeoutDetction"
+								onkeyup="this.value=this.value.replace(/\D/g,'')" min="0"
+								name="timeoutDetction"> <span class="c-unit">s</span></li>
+							<li><span class="check-lable">检测频率：</span>
+								<input type="number" value="10" class="number" placeholder="1" id="periodDetction"
+								onkeyup="this.value=this.value.replace(/\D/g,'')" min="1"
+								name="periodDetction"> <span class="c-unit">s</span></li>
+	                      </ul>
+                      </li>		
                       										
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
 													color="red">*</font></span>
 												<input type="text" value="" class="in_style" id="webPath" name="servicePath">
-												<span style="color:#1dd2af" id="service-path"><i class="fa fa-info-circle"></i></span>
+												<span style="color:#1dd2af;border: 1px solid #ccc" id="service-path"><i class="fa fa-info-circle"></i></span>
 											</li>
 											<c:if test="${DMZ!=null && USER!=null  }">
 												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
@@ -137,7 +153,20 @@
 												<input type="text" value="" class="in_style" id="nginxPath" name="proxyPath">
 												<span style="color:#1dd2af" id="proxy-path"><i class="fa fa-info-circle"></i></span>
 											</li>
-
+											<li class="line-h-3"> <span class="ve_top">会话黏连方式：</span>
+	                                            <select class="selectVolume" id="sessionAffinity" name="sessionAffinity"
+	                                                style="height: 30px; width: 230px;">
+	                                                <option name="sessionAffinity" value="" >NONE</option>
+	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
+	                                            </select>
+                                            </li>
+                    <li class="line-h-3"> <span class="ve_top">NodeIp黏连方式：</span>
+                                                <select class="selectVolume" id="nodeIpAffinity" name="nodeIpAffinity"
+                                                    style="height: 30px; width: 230px;">
+                                                    <option name="nodeIpAffinity" value="" >NONE</option>
+                                                    <option name="nodeIpAffinity" value="nodeIpAffinity">nodeIpAffinity</option>
+                                                </select>
+                                            </li>
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
                                         <span class="clusterText" data="tenx_district2">北京二区</span>
@@ -158,6 +187,7 @@
 													<span class="ve_top">实例数量：<font color="red">*</font></span>
 													<input type="number" value="1" class="number" min="1"
 														autocomplete="off" max="" placeholder="1" id="instanceNum"
+														onkeyup="this.value=this.value.replace(/\D/g,'')"
 														name="instanceNum"> <span class="unit">个</span>
 													<%-- 													<span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span>
 													<span class="dynamic-scale"> <input type="checkbox"

@@ -22,7 +22,9 @@
 	        	 var importSerName = $("#improt-ser-name").val();
 	        	 var importSerIn = $("#improt-ser-in").val();
 	        	 var importSerOut = $("#improt-ser-out").val();
+	        	 var importSerOutPort = $("#improt-ser-out-port").val();
 	        	 var importSerVis = $("#improt-ser-visibility").val();
+	        	 var improtSerMode = $("#improt-ser-mode").val();
 	        	 
 	        	 if (importSerName.length === 0) {
 	                 layer.tips('服务名称不能为空', '#improt-ser-name', {
@@ -44,7 +46,7 @@
 	                 });
 	                 $('#improt-ser-in').focus();
 	                 return ;
-	             } 
+	             }
 	             if (importSerOut.length === 0) {
 	                 layer.tips('外部服务地址不能为空', '#improt-ser-out', {
 	                     tips: [1, '#0FA6D8']
@@ -72,8 +74,10 @@
                         	 $.ajax({
          		         		url : ctx + "/refservice/add.do",
          		         		type: "POST",
-         		         		data: {"serName":importSerName,"serAddress":importSerIn
-         		         			,"refAddress":importSerOut,"viDomain":importSerVis},
+         		         		data: {"serName":importSerName,"serAddress":importSerIn,
+         		         			   "refAddress":importSerOut,"refPort":importSerOutPort,
+         		         			   "viDomain":importSerVis,"improtSerMode":improtSerMode
+         		         		},
          		         		success: function(data) {
          		         			window.location.reload();
          		         		}
@@ -133,7 +137,7 @@
          });
          $('#improt-ser-in').focus();
          return false;
-     } 
+     }
      if (serOut.length === 0) {
          layer.tips('外部服务地址不能为空', '#improt-ser-out', {
              tips: [1, '#0FA6D8']

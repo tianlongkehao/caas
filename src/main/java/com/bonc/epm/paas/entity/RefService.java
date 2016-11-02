@@ -44,7 +44,7 @@ public class RefService {
     /**
      * 创建者
      */
-    private String createBy;
+    private long createBy;
     /**
      * 服务访问地址
      */
@@ -54,9 +54,19 @@ public class RefService {
      */
     private String refAddress;
     /**
+     * 外部服务端口
+     */
+    private int refPort;
+    /**
      * 可见域 （0：本租户；1：所有租户）
      */
     private int viDomain;
+    
+    /**
+     * 服务引入方式 （0：service方式 ；1：etcd方式）
+     */
+    private int improtSerMode;
+    
     /**
      * 创建时间
      */
@@ -70,10 +80,10 @@ public class RefService {
     public void setId(long id) {
         this.id = id;
     }
-    public String getCreateBy() {
+    public long getCreateBy() {
         return createBy;
     }
-    public void setCreateBy(String createBy) {
+    public void setCreateBy(long createBy) {
         this.createBy = createBy;
     }
     public String getSerAddress() {
@@ -94,11 +104,23 @@ public class RefService {
     public void setRefAddress(String refAddress) {
         this.refAddress = refAddress;
     }
+    public int getRefPort() {
+        return refPort;
+    }
+    public void setRefPort(int refPort) {
+        this.refPort = refPort;
+    }
     public int getViDomain() {
         return viDomain;
     }
     public void setViDomain(int viDomain) {
         this.viDomain = viDomain;
+    }
+    public int getImprotSerMode() {
+        return improtSerMode;
+    }
+    public void setImprotSerMode(int improtSerMode) {
+        this.improtSerMode = improtSerMode;
     }
     public Date getCreateDate() {
         return createDate;

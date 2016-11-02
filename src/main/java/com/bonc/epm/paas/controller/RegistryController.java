@@ -17,8 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +39,7 @@ import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.ResultPager;
 
 /**
  * 
@@ -94,7 +98,7 @@ public class RegistryController {
      */
     @Value("${docker.image.cmdpath}")
     private String imageCmdPath;
-	
+    
     /**
      * Description: <br>
      * 进入镜像显示页面，镜像显示分三层分隔显示
@@ -103,31 +107,105 @@ public class RegistryController {
      * @return String
      */
     @RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
-	public String index(@PathVariable int index, Model model) {
-        List<Image> images = null;
-        String active = null;
+    public String index(@PathVariable int index, Model model) {
         long userId = CurrentUserUtils.getInstance().getUser().getId();
-        if (index == 0) {
-            images = imageDao.findByImageType(1);
+        String active = null;
+        if(index == 0){
             active = "镜像中心";
-        } 
-        else if (index == 1) {
-            images = imageDao.findAllByCreator(userId);
+        }else if(index == 1){
             active = "我的镜像";
-        }
-        else if(index == 2){
-            images = userDao.findAllFavor(userId);
+        }else if(index == 2){
             active = "我的收藏";
         }
-        addCurrUserFavor(images);
-        addCreatorName(images);
-        model.addAttribute("images", images);
+        
+        model.addAttribute("menu_flag", "registry");
         model.addAttribute("index", index);
         model.addAttribute("active",active);
-        model.addAttribute("editImage",userId);
-        model.addAttribute("menu_flag", "registry");
+        model.addAttribute("userId",userId);
+
         return "docker-registry/registry.jsp";
     }
+    
+    /**
+     * Description: <br>
+     * 使用datatable对镜像进行服务端分页操作；
+     * @param index :镜像的级别；
+     * @param draw ：画板；
+     * @param start ：开始页数；
+     * @param length : 每页的长度；
+     * @param request ：接受搜索参数；
+     * @return String
+     */
+    @RequestMapping(value = {"registry/pager/{index}"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String findByPagerImage(@PathVariable int index,String draw, int start,int length,
+                                   HttpServletRequest request ){
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        String search = request.getParameter("search[value]");
+        Map<String,Object> map = new HashMap<String, Object>();
+        PageRequest pageRequest = null;
+        Page<Image> images = null;
+        //判断事第几页
+        if (start == 0) {
+            pageRequest = ResultPager.buildPageRequest(null, length);
+            
+        }else {
+            pageRequest = ResultPager.buildPageRequest(start/length + 1, length);
+        }
+        //判断是否需要搜索镜像
+        if (StringUtils.isEmpty(search)) {
+            if(index == 0){
+                images = imageDao.findByImageType(1,pageRequest);
+            }else if(index == 1){
+                images = imageDao.findAllByCreator(userId,pageRequest);
+            }else if(index == 2){
+                images = imageDao.findAllFavor(userId,pageRequest);
+            }
+        } else {
+            if(index == 0){
+                images = imageDao.findByNameCondition("%"+search+"%",pageRequest);
+            }else if(index == 1){
+                images = imageDao.findByNameOfUser(userId,"%"+search+"%",pageRequest);
+            }else if(index == 2){
+                images = userDao.findByNameCondition(userId,"%"+search+"%",pageRequest);
+            }
+        }
+        addCurrUserFavor(images.getContent());
+        addCreatorName(images.getContent());
+        map.put("draw", draw);
+        map.put("recordsTotal", images.getTotalElements());
+        map.put("recordsFiltered", images.getTotalElements());
+        map.put("data", images.getContent());
+        
+        return JSON.toJSONString(map);
+    }
+    
+//    @RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
+//	public String index(@PathVariable int index, Model model) {
+//        List<Image> images = null;
+//        String active = null;
+//        long userId = CurrentUserUtils.getInstance().getUser().getId();
+//        if (index == 0) {
+//            images = imageDao.findByImageType(1);
+//            active = "镜像中心";
+//        } 
+//        else if (index == 1) {
+//            images = imageDao.findAllByCreator(userId);
+//            active = "我的镜像";
+//        }
+//        else if(index == 2){
+//            images = userDao.findAllFavor(userId);
+//            active = "我的收藏";
+//        }
+//        addCurrUserFavor(images);
+//        addCreatorName(images);
+//        model.addAttribute("images", images);
+//        model.addAttribute("index", index);
+//        model.addAttribute("active",active);
+//        model.addAttribute("editImage",userId);
+//        model.addAttribute("menu_flag", "registry");
+//        return "docker-registry/registry.jsp";
+//    }
 	
 	/**
 	 * 镜像搜索
@@ -136,33 +214,33 @@ public class RegistryController {
 	 * @param model 添加返回页面的数据
 	 * @return String 
 	 */
-    @RequestMapping(value = {"registry/{index}"},method = RequestMethod.POST)
-	public String findByName(@PathVariable int index,@RequestParam String imageName,Model model) {
-        List<Image> images = null;
-        String active = null;
-        long userId = CurrentUserUtils.getInstance().getUser().getId();
-        if (index == 0) {
-            images = imageDao.findByNameCondition("%"+imageName+"%");
-            addCurrUserFavor(images);
-            active = "镜像中心";
-        } 
-        else if (index == 1) {
-            images = imageDao.findByNameOfUser(userId,"%"+imageName+"%");
-            addCurrUserFavor(images);
-            active = "我的镜像";
-        }
-        else if (index == 2) {
-            images = userDao.findByNameCondition(userId, "%"+imageName+"%");
-            addCurrUserFavor(images);
-            active = "我的收藏";
-        }
-		
-        model.addAttribute("type", index);
-        model.addAttribute("images", images);
-        model.addAttribute("active",active);
-		
-        return "docker-registry/registry.jsp";
-    }
+//    @RequestMapping(value = {"registry/{index}"},method = RequestMethod.POST)
+//	public String findByName(@PathVariable int index,@RequestParam String imageName,Model model) {
+//        List<Image> images = null;
+//        String active = null;
+//        long userId = CurrentUserUtils.getInstance().getUser().getId();
+//        if (index == 0) {
+//            images = imageDao.findByNameCondition("%"+imageName+"%");
+//            addCurrUserFavor(images);
+//            active = "镜像中心";
+//        } 
+//        else if (index == 1) {
+//            images = imageDao.findByNameOfUser(userId,"%"+imageName+"%");
+//            addCurrUserFavor(images);
+//            active = "我的镜像";
+//        }
+//        else if (index == 2) {
+//            images = userDao.findByNameCondition(userId, "%"+imageName+"%");
+//            addCurrUserFavor(images);
+//            active = "我的收藏";
+//        }
+//		
+//        model.addAttribute("type", index);
+//        model.addAttribute("images", images);
+//        model.addAttribute("active",active);
+//		
+//        return "docker-registry/registry.jsp";
+//    }
 	
 	/**
 	 * 显示当前镜像详细信息
@@ -194,10 +272,15 @@ public class RegistryController {
             model.addAttribute("editImage", 2);
         }
 		
+        if (StringUtils.isEmpty(user)) {
+            model.addAttribute("creator", "租户已注销");
+        } else {
+            model.addAttribute("creator", user.getUserName());
+        }
         model.addAttribute("whetherFavor", whetherFavor);
         model.addAttribute("image", image);
         model.addAttribute("favorUser",favorUser);
-        model.addAttribute("creator", user.getUserName());
+//        model.addAttribute("creator", user.getUserName());
         model.addAttribute("menu_flag", "registry");
 		
         return "docker-registry/detail.jsp";
@@ -266,10 +349,19 @@ public class RegistryController {
 	@ResponseBody
 	public String judgeFileExist(String imageName, String imageVersion){
         Map<String, Object> map = new HashMap<String, Object>();
+        File path = new File(imagePath);
+        if (null != path.listFiles()) {
+            File[] currentFiles = path.listFiles();
+            if (null != currentFiles) {
+                for (File oneRow : currentFiles) {
+                    oneRow.delete();
+                }
+            }
+        }
+        
     	String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
         File file = new File(imagePath+"/"+downName+".tar");
-        boolean exist = file.exists();
-        if (exist) {
+        if (file.exists()) {
             map.put("status", "200");
         } 
         else {
@@ -299,6 +391,7 @@ public class RegistryController {
         if (!path.exists() && !path.isDirectory()) {
             path.mkdirs();
         }
+
         File file = new File(imagePath+"/"+downName+".tar");
         boolean exist = file.exists();
         if (exist) {
@@ -310,11 +403,12 @@ public class RegistryController {
             if (complete) {
                 try {
                     String cmd = imageCmdPath +" "+ imagePath +"/"
-                        + downName + ".tar "+ url +"/"+ imageName + ":" + imageVersion;
+                        + downName + ".tar  "+ url +"/"+ imageName + ":" + imageVersion;
                     flag = CmdUtil.exeCmd(cmd);
                 }
                 catch (IOException e) {
-                    e.printStackTrace();
+                   LOG.error("error message:-" + e.getMessage());
+                   map.put("status", "500");
                 }
             }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null);
@@ -348,7 +442,7 @@ public class RegistryController {
         } 
         catch (IOException e) {  
             LOG.error("downloadImage error:"+e.getMessage());
-        }  
+        }
     }
     
 	/**
@@ -413,6 +507,7 @@ public class RegistryController {
         long userId = CurrentUserUtils.getInstance().getUser().getId();
         for(Image image:images){
             image.setCurrUserFavor(imageDao.findByUserIdAndImageId(image.getId(), userId));
+            image.setFavorUsers(null);
         }
     }
     

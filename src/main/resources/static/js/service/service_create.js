@@ -51,10 +51,15 @@ $(document).ready(function(){
 		    	$('#startCommand_input').focus();
 		    	return;
 		    }*/
+	    } else {
+	    	$("#startCommand_input").val(null);
 	    }
 	    
 	  //检查服务状态的判断
 	    var checkPath = $("#checkSerStatus_input").val();
+	    var initialDelay = $("#initialDelay").val();
+	    var timeoutDetction = $("#timeoutDetction").val();
+	    var periodDetction = $("#periodDetction").val();
 	    if($("#checkSerStatus").prop("checked")==true){
 		    if(!checkPath || checkPath.length < 1){
 			      layer.tips('测试路径不能为空','#checkSerStatus_input',{tips: [1, '#3595CC']});
@@ -62,15 +67,39 @@ $(document).ready(function(){
 			      return;
 			}
 		    if(checkPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
-		      layer.tips('测试路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
-		      $('#checkSerStatus_input').focus();
-		      return;
+			      layer.tips('测试路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+			      $('#checkSerStatus_input').focus();
+			      return;
 		    }
 		    if(checkPath.length > 64 || checkPath.length < 3){
-		      layer.tips('测试路径为3~64个字符','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
-		      $('#checkSerStatus_input').focus();
-		      return;
+			      layer.tips('测试路径为3~64个字符','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+			      $('#checkSerStatus_input').focus();
+			      return;
 		    }
+		    
+		    if (!initialDelay || initialDelay.length < 1) {
+		    	  layer.tips('检测延迟时间不能为空','#initialDelay',{tips: [1, '#3595CC'],time: 3000});
+			      $('#initialDelay').focus();
+			      return;
+		    }
+		    
+		    if (!timeoutDetction || timeoutDetction.length < 1) {
+		    	  layer.tips('检测超时时间不能为空','#timeoutDetction',{tips: [1, '#3595CC'],time: 3000});
+			      $('#timeoutDetction').focus();
+			      return;
+		    }
+		    
+		    if (!periodDetction || periodDetction.length < 1) {
+		    	  layer.tips('检测频率时间不能为空','#periodDetction',{tips: [1, '#3595CC'],time: 3000});
+			      $('#periodDetction').focus();
+			      return;
+		    }
+		    
+	    } else {
+	    	$("#checkSerStatus_input").val(null);
+		    $("#initialDelay").val(null);
+		    $("#timeoutDetction").val(null);
+		    $("#periodDetction").val(null);
 	    }
 	    //服务路径的判断
 	    var servicePath = $("#webPath").val();
@@ -103,9 +132,9 @@ $(document).ready(function(){
 		      return;
 	    }
 	    if(proxyPath.length > 64 || proxyPath.length < 3){
-	      layer.tips('nginx代理路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
-	      $('#nginxPath').focus();
-	      return;
+		      layer.tips('nginx代理路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+		      $('#nginxPath').focus();
+		      return;
 	    }
 	    
 	    //判断实例数量是否超过上限
@@ -122,6 +151,11 @@ $(document).ready(function(){
 	    	max=max2;
 	    }
 	    var instNum = $("#instanceNum").val();
+	    if(!instNum || instNum.length < 1){
+		      layer.tips('实例数量不能为空','#instanceNum',{tips: [1, '#3595CC']});
+		      $('#instanceNum').focus();
+		      return;
+		}
 	    if(instNum>=max){
 	    	layer.tips('您可以创建的实例数量不能大于'+Math.floor(max)+',请调整CPU数量和内存',"#instanceNum",{tips: [1, '#3595CC']});
 	    	$('#instanceNum').focus();
@@ -170,6 +204,9 @@ $(document).ready(function(){
 			      $('#selectVolume').focus();
 			      return;
 		    }
+	    } else {
+	    	$("#mountPath").val(null);
+	    	$("#selectVolume").val(null);
 	    }
 	    
 /*	    var nginxstr = "{";
@@ -296,8 +333,10 @@ $(document).ready(function(){
 	
 	// 启动命令
 	$("#checkSerStatus_li").hide();
+	$("#checkItems").hide();
 	$("#checkSerStatus").click(function(){
 		$("#checkSerStatus_li").toggle();
+		$("#checkItems").toggle();
 		$("#checkSerStatus_input").focus();
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();

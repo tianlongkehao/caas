@@ -15,34 +15,35 @@ function registerConstructCiEvent(){
 		}
 		var $this = $(this);
 		var id = $this.attr("ciId");
-		layer.open({
+		var cStatusHtml = "<i class='fa_success'></i>"+
+		        "构建中"+
+		        "<img src='"+ctx+"/images/loading4.gif' alt=''/>";
+		$this.parent().parent().find(".cStatusColumn").html(cStatusHtml);
+		$this.css("cursor","no-drop");
+		$(this).unbind("click");
+		//layer.close(index);
+		$.ajax({
+			url:ctx+"/ci/constructCi.do?id="+id,
+			async:true,
+			success:function(data){
+				data = eval("(" + data + ")");
+				if(data.status=="200"){
+					//layer.alert("构建成功");
+				}else{
+					layer.alert(data.msg);
+				}
+				setTimeout('window.location.reload()',2000);
+			}
+		});
+		/*layer.open({
 	        title: '构建镜像',
 	        content: '确定构建镜像？',
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ //或者使用btn1
-	        	var cStatusHtml = "<i class='fa_success'></i>"+
-					                "构建中"+
-					                "<img src='"+ctx+"/images/loading4.gif' alt=''/>";
-	        	$this.parent().parent().find(".cStatusColumn").html(cStatusHtml);
-	        	$this.css("cursor","no-drop");
-	        	$(this).unbind("click");
-	        	layer.close(index);
-	        	$.ajax({
-	        		url:ctx+"/ci/constructCi.do?id="+id,
-	        		async:true,
-	        		success:function(data){
-	        			data = eval("(" + data + ")");
-	       			 	if(data.status=="200"){
-	       			 		//layer.alert("构建成功");
-	       			 	}else{
-	       			 		layer.alert(data.msg);
-	       			 	}
-	       			 	window.location.reload();
-	        		}
-	        	});
+	        	
 	        },
 	        cancel: function(index){ //或者使用btn2
 	        }
-	    });
+	    });*/
 	});
 }
