@@ -595,9 +595,9 @@ public class KubernetesClientService {
         Endpoints endpoints = new Endpoints();
         ObjectMeta meta = new ObjectMeta();
         meta.setName(serName);
-        Map<String,String> labels = new HashMap<String,String>();
-        labels.put("app", serName);
-        meta.setLabels(labels);
+//        Map<String,String> labels = new HashMap<String,String>();
+//        labels.put("app", serName);
+//        meta.setLabels(labels);
         endpoints.setMetadata(meta);
         
         List<EndpointSubset> subsets = new ArrayList<EndpointSubset>();

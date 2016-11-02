@@ -20,7 +20,8 @@
 	        yes: function(index, layero){
 	        	 $('#improt-ser-name').focus();
 	        	 var importSerName = $("#improt-ser-name").val();
-	        	 var importSerIn = $("#improt-ser-in").val();
+//	        	 var importSerIn = $("#improt-ser-in").val();
+	        	 var importSerIn = "default";
 	        	 var importSerOut = $("#improt-ser-out").val();
 	        	 var importSerOutPort = $("#improt-ser-out-port").val();
 	        	 var importSerVis = $("#improt-ser-visibility").val();
@@ -174,7 +175,7 @@
 			     			tr+='<td style="width: 14%;">仅本租户可见</td>';
 			     		}
 			     		tr+='<td style="width: 10%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash fa-lg"></i></a>'+
-			     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" serOut="'+refservice.refAddress+'" serVi="'+refservice.viDomain+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
+			     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort+'" serOut="'+refservice.refAddress+'" serVi="'+refservice.viDomain+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
 			     	'</tr>';
          	}
             $("#importSerList").append(tr);
@@ -215,7 +216,7 @@
 	 $("#improt-ser-name").val($(obj).attr("serName"));
 	 $("#improt-ser-in").val($(obj).attr("serIn"));
 	 $("#improt-ser-out").val($(obj).attr("serOut"));
-//	 $("#improt-ser-out-port").val($(obj).attr("serOut"));
+	 $("#improt-ser-out-port").val($(obj).attr("rePort"));
 	 $("#improt-ser-visibility").val($(obj).attr("serVi"));
 	 $("#improt-ser-name").attr("disabled","disabled")
 	 layer.open({
@@ -230,7 +231,8 @@
 	        	 var importSerVis = $("#improt-ser-visibility").val();
 */
 	        	 var importSerName = $("#improt-ser-name").val();
-	        	 var importSerIn = $("#improt-ser-in").val();
+//	        	 var importSerIn = $("#improt-ser-in").val();
+	        	 var importSerIn = "default";
 	        	 var importSerOut = $("#improt-ser-out").val();
 	        	 var importSerOutPort = $("#improt-ser-out-port").val();
 	        	 var importSerVis = $("#improt-ser-visibility").val();
