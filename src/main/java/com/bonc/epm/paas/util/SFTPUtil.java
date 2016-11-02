@@ -28,6 +28,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
 /**
@@ -281,14 +282,8 @@ public class SFTPUtil {
 //        String deleteFile = "delete.txt";
 //        ChannelSftp sftp=sf.connect(host, port, username, password);
 //            try{
-//                //sftp.cd(directory);
-//                //sftp.mkdir("ss");
-////            	Vector<LsEntry> vector = sftp.ls("/");
-////            	sftp.cd("/");
-////            	vector = sftp.ls("/");
-////            	sftp.cd("lib");
-////            	sftp.cd("../");
-////            	System.out.println(vector.toString());
+//            	sftp.cd("/");
+//            	sftp.cd("./");
 //                System.out.println(sftp.pwd());
 //            }catch(Exception e){
 //                e.printStackTrace();

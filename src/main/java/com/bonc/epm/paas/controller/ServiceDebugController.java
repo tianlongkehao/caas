@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,8 @@ import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.SFTPUtil;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ChannelSftp.LsEntry;
+import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
 /**
@@ -38,7 +41,7 @@ public class ServiceDebugController {
 	private int port = 22;
 	private String username = "root";
 	private String password = "123456";
-	private ChannelSftp sftp;
+	private static ChannelSftp sftp;
     /**
      * 服务数据层接口
      */
@@ -108,8 +111,6 @@ public class ServiceDebugController {
         	map.put("status","400");
         	return JSON.toJSONString(map);
         }
-    	//断开connect
-    	sftp.disconnect();
         map.put("fileList", fileList);
         
         return JSON.toJSONString(map);
@@ -124,18 +125,42 @@ public class ServiceDebugController {
      */
     @RequestMapping(value = { "service/delFile.do" }, method = RequestMethod.GET)
     @ResponseBody
-    public String delFile(String path, String fileNames){
-        Map map = new HashMap();
+    public String delFile(String fileNames){
+        Map<String, String> map = new HashMap();
         String[] fileName = fileNames.split(",");
-        for(int i=0 ;i<fileName.length;i++){
-//        	LsEntry file = new File(path+"/"+fileName[i]);
-//        	if(file.isDirectory()){
-//        		//删除文件夹下文件和此文件夹
-//        		FileUtils.delAllFile(path+"/"+fileName[i]);
-//        		file.delete();
-//        	}else{
-//        		file.delete();
-//        	}
+        String path = root;
+        String filename = new String();
+        try {
+        	path = sftp.pwd();
+        	for(int i=0 ;i<fileName.length;i++){
+        		filename = fileName[i];
+				SftpATTRS sftpATTRS = sftp.lstat(filename);
+	        	if(sftpATTRS.isDir()){
+	        		//删除文件夹下文件和此文件夹
+	        		sftp.cd(fileName[i]);
+	        		Vector<LsEntry> list = sftp.ls(sftp.pwd());
+	        		for (LsEntry lsEntry : list) {
+	        			if (!lsEntry.getFilename().equals(".") && !lsEntry.getFilename().equals("..")) {
+	        				delFile(lsEntry.getFilename());
+						}
+					}
+	        		sftp.cd(path);
+	        		sftp.rmdir(filename);
+	        	}else{
+	        		sftp.rm(filename);
+	        	}
+        	}
+        } catch (SftpException e) {
+        	try {
+				sftp.cd(path);
+			} catch (SftpException e1) {
+				e1.printStackTrace();
+			}
+        	//找不到该文件
+        	map.put("status", "400");
+        	map.put("fileName", filename);
+        	e.printStackTrace();
+        	return JSON.toJSONString(map);
         }
         map.put("status", "200");
         return JSON.toJSONString(map);
