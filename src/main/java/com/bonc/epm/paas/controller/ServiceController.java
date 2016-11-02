@@ -1,5 +1,6 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,6 +56,7 @@ import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
+import com.bonc.epm.paas.entity.FileInfo;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
@@ -76,10 +79,15 @@ import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.FileUtils;
+import com.bonc.epm.paas.util.SFTPUtil;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ChannelSftp.LsEntry;
+import com.jcraft.jsch.SftpException;
 
 /**
  * ServiceController
@@ -1999,21 +2007,5 @@ public class ServiceController {
         }
     }
 
-    /**
-     * Description: <br>
-     *  跳转进入服务DEBUG页面
-     * @param model 
-     * @return String
-     */
-    @RequestMapping(value = { "service/debug/{id}" }, method = RequestMethod.GET)
-	public String debug(Model model,@PathVariable long id) {
-	    System.out.printf("id: " + id);
-	    User currentUser = CurrentUserUtils.getInstance().getUser();
-	    Service service = serviceDao.findOne(id);
-        model.addAttribute("namespace",currentUser.getNamespace());
-        model.addAttribute("id", id);
-        model.addAttribute("service", service);
-        model.addAttribute("menu_flag", "service");
-       return "service/service-debug.jsp";
-    }
+
 }

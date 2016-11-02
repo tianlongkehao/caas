@@ -24,6 +24,10 @@ public class FileInfo {
      */
     private boolean isDir;
     /**
+     * 是否是链接
+     */
+    private boolean isLink = false;
+    /**
      * 文件大小kb
      */
     private String size;
@@ -104,4 +108,12 @@ public class FileInfo {
     // String a="abcdef";
     // System.out.println(a.charAt(0));
     // }
+
+	public boolean isLink() {
+		return isLink;
+	}
+
+	public void setLink(boolean isLink) {
+		this.isLink = isLink;
+	}
 }
