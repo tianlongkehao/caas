@@ -187,7 +187,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     public Service updateService(String name,Service service) throws KubernetesClientException {
         try {
             return api.updateService(namespace, name, service);
-        } catch (Exception e) {
+        } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
         }
         

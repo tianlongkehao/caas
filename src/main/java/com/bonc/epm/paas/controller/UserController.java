@@ -124,7 +124,14 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-    
+//    public static void main(String[] args) {
+////        Integer.valueOf("40.0".toString());
+////        Integer.parseInt("40.0");
+//        Double.parseDouble("40.0");
+//        System.out.println(Double.parseDouble("40"));
+//        int a =(int) Double.parseDouble("40.0");
+//        System.out.println(a);
+//    }
 
     /**
      * 
