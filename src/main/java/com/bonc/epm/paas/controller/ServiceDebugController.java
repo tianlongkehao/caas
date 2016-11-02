@@ -87,18 +87,13 @@ public class ServiceDebugController {
 
     @RequestMapping(value = { "service/listFile" }, method = RequestMethod.GET)
     @ResponseBody
-    public String fileList(String path, String dirName) {
-    	
+    public String fileList(String dirName) {
     	
         List<FileInfo> fileList = new ArrayList<FileInfo>();
         Map<String, Object> map = new HashMap<String, Object>();
         String directory = new String();
         
-        if ("".equals(path)) {
-			path = root;
-		}
         try {
-			sftp.cd(path);
 	        //没有目标目录时，返回根目录
 	        if ("".equals(dirName)) {
 	            directory = root;

@@ -26,7 +26,13 @@ $(document).ready(function(){
 //        var termNum = GateOne.Terminal.newTerminal(null, null, container); 
 //    });
 });
+$(window).load(function() {
+	alert(load);
+});
 
+$(window).unload(function() {
+	alert(unload);
+});
 
 function  creatable(isDir,path,dirName){
 	
