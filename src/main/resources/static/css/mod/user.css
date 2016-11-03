@@ -930,7 +930,16 @@ i.pushOrg {
 	top: 7px;
 	left: 288px;
 }
-
+.blankapp .row .col-md-4 label{
+	line-height:34px;
+	display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.blankapp .row .col-md-4 input{
+	text-indent: 9px;
+}
 
 
 

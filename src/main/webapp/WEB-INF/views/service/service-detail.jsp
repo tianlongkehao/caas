@@ -99,7 +99,7 @@
 							</thead>
 							<tbody class="BORDER">
 								<tr>
-									<td>名称：${service.serviceName }</td>
+									<td>服务名称：${service.serviceName }</td>
 									<c:if test="${service.status==1 }">
 										<td>运行状态：未启动</td>
 									</c:if>
@@ -141,8 +141,23 @@
 									<td>nginx代理路径：${service.proxyPath }</td>
 								</tr>
 								<tr>
-									<td>服务类型：${service.serviceType }</td>
+									<c:if test="${service.serviceType==1 }">
+									<td>服务类型：有状态服务</td>
+									</c:if>
+									<c:if test="${service.serviceType==2 }">
+									<td>服务类型：无状态服务</td>
+									</c:if>
+									<td>会话黏连方式：${service.sessionAffinity }</td>
 								</tr>
+								<c:if test="${service.checkPath!='' }">
+								<tr>
+									<td>检查状态：${service.checkPath }</td>
+									<td>检测延迟：${service.initialDelay }s</td>
+								</tr>
+								<tr>
+									<td>检测超时：${service.timeoutDetction }s</td>
+									<td>检测频率：${service.periodDetction }s</td>
+								</tr></c:if>
 							</tbody>
 						</table>
 
