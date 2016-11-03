@@ -38,9 +38,21 @@ public interface RefServiceDao extends CrudRepository<RefService, Long>{
      * @see
      */
     List<RefService> findByCreateByOrViDomain(long byCreate,int viDomain);
-    
+    /**
+     * 根据创建者和服务名查询服务
+     * @param byCreate
+     * @param name
+     * @return List<RefService>
+     * @see
+     */
     List<RefService> findByCreateByAndSerName(long byCreate,String name);
-    
+    /**
+     * 
+     * 根据服务名查询服务
+     * @param name
+     * @return List<RefService>
+     * @see
+     */
     List<RefService> findBySerName(String name);
     
     /**
