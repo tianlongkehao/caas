@@ -144,6 +144,31 @@ function delfiles(){
 	})
 }
 
+//新建文件夹
+function createdir(){
+	layer.open({
+		type:1,
+		content:$('#createdir-templat'),
+		title:'新建文件夹',
+		btn:['新建','取消'],
+		yes: function(index, layero){
+			layer.close(index);
+			var dirName=$('#newdir').val();
+			$.ajax({
+        		type: "POST",
+        		url: ctx + "/service/createFile.do?dirName="+dirName,
+        		success:function(data){
+		        	var data = eval("("+data+")");
+		        	if(data.status=="500"){
+		        		failedMSG("新建文件夹失败");
+		        		return;
+		        	}
+		        	creatable(null,".");
+				}
+			});
+		}
+	})
+}
 
 
 //弹出失败消息
@@ -155,7 +180,7 @@ function failedMSG(title){
 		yes: function(index){
 			layer.close(index);
 			//刷新页面
-			creatable(null,"./");
+			creatable(null,".");
 		}
 	});
 }

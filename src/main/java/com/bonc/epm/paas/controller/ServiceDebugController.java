@@ -1,5 +1,6 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -102,6 +103,7 @@ public class ServiceDebugController {
 	            directory = root;
 	        } else {
 	        	//有目标目录时，cd到目标目录获取pwd绝对路径
+	        	System.out.println(sftp.pwd());
 	        	sftp.cd(dirName);
 	        	directory = sftp.pwd();
 	        }
@@ -164,6 +166,29 @@ public class ServiceDebugController {
         }
         map.put("status", "200");
         return JSON.toJSONString(map);
+    } 
+    
+    /**
+     * 手动创建文件夹
+     * 
+     * @param isVolReadOnly
+     * @return 
+     * @see
+     */
+    @RequestMapping(value = { "service/createFile.do" }, method = RequestMethod.POST)
+    @ResponseBody
+    public String createFile(String dirName){
+        Map<String,String> map = new HashMap<String,String>();
+        try {
+			sftp.mkdir(dirName);
+		} catch (SftpException e) {
+			map.put("status", "500");
+			e.printStackTrace();
+			return JSON.toJSONString(map);
+		}
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+
     } 
 
 }
