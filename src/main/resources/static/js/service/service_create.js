@@ -207,6 +207,7 @@ $(document).ready(function(){
 	    } else {
 	    	$("#mountPath").val(null);
 	    	$("#selectVolume").val(null);
+	    	$("#serviceType").val(2);
 	    }
 	    
 /*	    var nginxstr = "{";

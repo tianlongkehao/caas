@@ -73,6 +73,11 @@ public class RefService {
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
     
+    /**
+     * 服务node暴露端口
+     */
+    private Integer nodePort;
+    
     
     public long getId() {
         return id;
@@ -127,6 +132,12 @@ public class RefService {
     }
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
+    }
+    public Integer getNodePort() {
+        return nodePort;
+    }
+    public void setNodePort(Integer nodePort) {
+        this.nodePort = nodePort;
     }
     
 }

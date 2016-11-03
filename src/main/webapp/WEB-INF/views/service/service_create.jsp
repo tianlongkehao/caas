@@ -250,6 +250,7 @@
 													id="state_service" stateless="0"> <label
 													for="state_service"><font color="blue">有状态服务</font></label>
 													<span class="mountTips"></span>
+												<input type="hidden" id = "serviceType" name ="serviceType" value = "1"/>
 											</span></li>
 											<li class="hide-set" id="save_roll_dev">
 												<ul id="mountPathList">

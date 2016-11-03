@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,6 +34,7 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
+import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
@@ -298,6 +300,10 @@ public class RefServiceController {
             }
             else {
                 map.put("status", "200");
+                List<ServicePort> servicePort = k8sService.getSpec().getPorts();
+                if (!StringUtils.isEmpty(servicePort)) {
+                    refService.setNodePort(servicePort.get(0).getNodePort());
+                }
                 refService.setSerAddress(k8sService.getSpec().getClusterIP());
                 refServiceDao.save(refService);
             }
