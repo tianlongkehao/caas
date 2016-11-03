@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -939,8 +940,9 @@ public class CiController {
         Map<String,Object> result = new HashMap<String, Object>();
         String imgNameFirst = CurrentUserUtils.getInstance().getUser().getUserName();
         if (!StringUtils.isEmpty(imgNameFirst) && !StringUtils.isEmpty(imgNameLast) && !StringUtils.isEmpty(imgNameVersion)) {
-            List<Ci> ciList = ciDao.findByImgNameFirstAndImgNameLastAndImgNameVersion(imgNameFirst,imgNameLast,imgNameVersion);
-            if (!CollectionUtils.isEmpty(ciList)) {
+            Image image = imageDao.findByNameAndVersion(imgNameFirst+"/"+imgNameLast, imgNameVersion);
+//            List<Ci> ciList = ciDao.findByImgNameFirstAndImgNameLastAndImgNameVersion(imgNameFirst,imgNameLast,imgNameVersion);
+            if (!StringUtils.isEmpty(image)) {
                 result.put("status", "400");
             }
         }
