@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -240,27 +241,26 @@ public class ServiceDebugController {
      * @param directory 所在目录
      * @param request 
      * @param response 
+     * @throws SftpException 
+     * @throws IOException 
      * @see
      */
 
-    @RequestMapping(value = { "service/downloadFile.do" }, method = RequestMethod.GET)
-    public void downloadFile(String downfiles,  HttpServletRequest request,HttpServletResponse response) {
+    @RequestMapping(value = { "service/downloadFile" }, method = RequestMethod.GET)
+    public void downloadFile(String downfiles,  HttpServletRequest request,HttpServletResponse response) throws SftpException, IOException {
     	String path="";
-		try {
-			path = sftp.pwd();
-		} catch (SftpException e1) {
-		}
+		path = sftp.pwd();
         List<String> resultList = new ArrayList<String>();
 
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
         String newdownfile = df.format(new Date()) + ".zip";
         String[] downfile = downfiles.split(",");
+        byte[] buf = new byte[1024];
         
         File zipFile = new File("batchDownload.zip");
         ZipOutputStream out;
 		try {
 			out = new ZipOutputStream(new FileOutputStream(zipFile));
-	        byte[] buf = new byte[1024];
 	        for (String fileName : downfile) {
 	            if (fileName != null) {
 	                InputStream in = null;
@@ -285,37 +285,24 @@ public class ServiceDebugController {
 			e.printStackTrace();
 		}
         
-//        response.setHeader("Content-Disposition", "attachment;fileName="
-//                + new String(zipFile.getName().getBytes("GBK"), "ISO8859-1"));
-//        response.setContentType(request.getServletContext().getMimeType(zipFile.getName()));
-//        OutputStream ot = response.getOutputStream();
-//        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(zipFile));
-//        BufferedOutputStream bos = new BufferedOutputStream(ot);
-//        int length = 0;
-//        while ((length = bis.read(buf)) > 0) {
-//            bos.write(buf, 0, length);
-//        }
-//        bos.flush();
-//        ot.flush();
-//        bos.close();
-//        bis.close();
-//        ot.close();
-//        zipFile.delete();
+        response.setHeader("Content-Disposition", "attachment;fileName="
+                + new String(zipFile.getName().getBytes("GBK"), "ISO8859-1"));
+        response.setContentType(request.getServletContext().getMimeType(zipFile.getName()));
+        OutputStream ot = response.getOutputStream();
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(zipFile));
+        BufferedOutputStream bos = new BufferedOutputStream(ot);
+        int length = 0;
+        while ((length = bis.read(buf)) > 0) {
+            bos.write(buf, 0, length);
+        }
+        bos.flush();
+        ot.flush();
+        bos.close();
+        bis.close();
+        ot.close();
+        zipFile.delete();
 
-    	try {
-            response.setContentType(request.getServletContext().getMimeType("test"));
-            response.setHeader("Content-Disposition", "attachment;filename=test.log");  
-            ServletOutputStream outputStream= response.getOutputStream();
-            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-            String logStr = "123123123123123";
-            writer.write(logStr);
-            writer.flush();
-            outputStream.flush();
-            writer.close();
-            outputStream.close();
-       } catch (Exception e) {
-        	e.printStackTrace();
-       }
+
 
         
         

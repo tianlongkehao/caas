@@ -92,11 +92,22 @@
 <!--  					<div id="gateone_container" style="position: relative; width: 60em; height: 30em;"> -->
 <!-- 						<div id="gateone"></div> -->
 <!-- 					</div> -->
-					<iframe src="https://192.168.247.129:4200" width="100%" height="500px"></iframe>
+					<iframe id="shellinabox" src="https://192.168.247.129:4200" width="100%" height="500px"></iframe>
+					<script type="text/javascript">
+					$(document).ready(function(){
+						var fillseo_window=window.frames["shellinabox"];
+						fillseo_window.window.alert=function(){
+						alert("弹弹弹！");
+						//也可以写你想写的东东
+						};
+						alert("弹弹弹！");
+					});
+					</script>
 				</div>
 			</div>
 					
 		</article>
 	</div>
+	
 </body>
 </html>

@@ -1,14 +1,14 @@
 $(document).ready(function(){
 	creatable(null,null);
-});
-//$(window).load(function() {
-//	alert("load");
-//});
+	$(window).unbind("onbeforeunload")
+//	window.frames["shellinabox"].unbind("onbeforeunload")
+	var fillseo_window=window.frames["shellinabox"];
+	fillseo_window.window.alert=function(){
+	alert("弹弹弹！");
+	//也可以写你想写的东东
+	};
 
-$(window).unload(function() {
-	alert("unload");
 });
-
 function  creatable(isDir,dirName){
 	
 	if(null==isDir ||"true"==isDir ){
@@ -181,10 +181,7 @@ function download(){
     	failedMSG("请选择需要下载的文件",false);
     	return;
 	}
-	$.ajax({
-		type: "GET",
-		url: ctx + "/service/downloadFile.do?downfiles=" + fileNames,
-	});
+	location.href = ctx + "/service/downloadFile?downfiles=" + fileNames;
 }
 
 
