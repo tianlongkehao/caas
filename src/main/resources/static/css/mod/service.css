@@ -829,7 +829,7 @@ i.pushOrg {
 
 
 .popWin {
-	padding: 18px 5px 5px 30px;
+	padding: 18px 30px 5px 30px;
 }
 
 #serviceBody tr:hover{
@@ -911,7 +911,15 @@ tr.focus{
 .checkitems li input{
 	border: 1px solid #ccc;
 	text-indent: 8px;
-	width:226px;
+	width:208px;
 	line-height:24px;
 }
-
+#imgVersionName{
+	width: 165px;
+	height: 34px;
+	border-radius: 5px;
+	margin-top: 10px; 
+}
+#confCpu,#numberChange{
+	text-indent: 6px;
+}
