@@ -1265,18 +1265,23 @@ public class ServiceController {
         } 
         else {
             try {
-                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-                ReplicationController controller = client.updateReplicationController(service.getServiceName(),
-						addservice);
-                if (controller != null && controller.getSpec().getReplicas() == addservice) {
+                if (service.getStatus() == 3) {
+                    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+                    ReplicationController controller = client.updateReplicationController(service.getServiceName(),
+                        addservice);
+                    if (controller != null && controller.getSpec().getReplicas() == addservice) {
+                        map.put("status", "200");
+                        service.setInstanceNum(addservice);
+                        serviceDao.save(service);
+                    } else {
+                        map.put("status", "400");
+                    }
+                } else {
                     map.put("status", "200");
                     service.setInstanceNum(addservice);
                     serviceDao.save(service);
-                } 
-                else {
-                    map.put("status", "400");
                 }
-
+               
             } 
             catch (KubernetesClientException e) {
                 map.put("status", "400");
