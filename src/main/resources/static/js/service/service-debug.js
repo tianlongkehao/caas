@@ -26,7 +26,7 @@ function  creatable(isDir,dirName){
 	        	//alert(data);
 	        	var data = eval("("+data+")");
 	        	if(data.status=="400"){
-	        		failedMSG("没有找到相应的目录");
+	        		failedMSG("没有找到相应的目录",true);
 	        		return;
 	        	}
 	        	for (i in data.fileList) {
@@ -98,7 +98,7 @@ function delfile(obj){
 		        success : function(data) {
 		        	var data = eval("("+data+")");
 		        	if(data.status=="400"){
-		        		failedMSG("删除失败");
+		        		failedMSG("删除失败",true);
 		        		return;
 		        	}
 		        	creatable(null,"./");
@@ -126,7 +126,7 @@ function delfiles(){
 		yes: function(index, layero){ 
 			layer.close(index);
 			if(""==fileNames){
-				failedMSG("没有文件被选中");
+				failedMSG("没有文件被选中",true);
 				return;
 			}
 			$.ajax({
@@ -134,7 +134,7 @@ function delfiles(){
 				success:function(data){
 		        	var data = eval("("+data+")");
 		        	if(data.status=="400"){
-		        		failedMSG("删除失败");
+		        		failedMSG("删除失败",true);
 		        		return;
 		        	}
 		        	creatable(null,"./");
@@ -160,7 +160,7 @@ function createdir(){
         		success:function(data){
 		        	var data = eval("("+data+")");
 		        	if(data.status=="500"){
-		        		failedMSG("新建文件夹失败");
+		        		failedMSG("新建文件夹失败",true);
 		        		return;
 		        	}
 		        	creatable(null,".");
@@ -169,18 +169,37 @@ function createdir(){
 		}
 	})
 }
+function download(){
+	obj = document.getElementsByName("downfiles");
+	var fileNames = [];
+    for (k in obj) {
+        if (obj[k].checked) {
+        	fileNames.push(obj[k].value);
+        }
+    }
+	if(""==fileNames){
+    	failedMSG("请选择需要下载的文件",false);
+    	return;
+	}
+	$.ajax({
+		type: "GET",
+		url: ctx + "/service/downloadFile.do?downfiles=" + fileNames,
+	});
+}
 
 
 //弹出失败消息
-function failedMSG(title){
+function failedMSG(title,flag){
 	layer.msg(title,{
 		icon: 5,
 		btn: ['確定'],
 		time: 0, //不自动关闭
 		yes: function(index){
 			layer.close(index);
-			//刷新页面
-			creatable(null,".");
+			if(flag==true){
+				//刷新页面
+				creatable(null,".");
+			}
 		}
 	});
 }

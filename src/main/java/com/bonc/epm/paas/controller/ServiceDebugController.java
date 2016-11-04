@@ -1,12 +1,30 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,9 +38,12 @@ import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.entity.FileInfo;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.SFTPUtil;
+import com.bonc.epm.paas.util.ZipCompressing;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
@@ -188,7 +209,133 @@ public class ServiceDebugController {
 		}
         map.put("status", "200");
         return JSON.toJSONString(map);
+    }
 
-    } 
+	public static void main(String[] args) {
+		SFTPUtil sf = new SFTPUtil();
+		String host = "192.168.247.129";
+		int port = 22;
+		String username = "root";
+		String password = "123456";
+		String directory = "/mnt/k8s";
+		String uploadFile = "D:\\tmp\\upload.txt";
+		String downloadFile = "upload.txt";
+		String saveFile = "D:\\tmp\\download.txt";
+		String deleteFile = "delete.txt";
+		ChannelSftp sftp = sf.connect(host, port, username, password);
+		try {
+			sftp.cd("/");
+			sftp.cd("./");
+			System.out.println(sftp.pwd());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+    /**
+     * 
+     * Description: 下载文件
+     * 
+     * @param downfiles 需要下载的文件和文件夹名们
+     * @param directory 所在目录
+     * @param request 
+     * @param response 
+     * @see
+     */
+
+    @RequestMapping(value = { "service/downloadFile.do" }, method = RequestMethod.GET)
+    public void downloadFile(String downfiles,  HttpServletRequest request,HttpServletResponse response) {
+    	String path="";
+		try {
+			path = sftp.pwd();
+		} catch (SftpException e1) {
+		}
+        List<String> resultList = new ArrayList<String>();
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        String newdownfile = df.format(new Date()) + ".zip";
+        String[] downfile = downfiles.split(",");
+        
+        File zipFile = new File("batchDownload.zip");
+        ZipOutputStream out;
+		try {
+			out = new ZipOutputStream(new FileOutputStream(zipFile));
+	        byte[] buf = new byte[1024];
+	        for (String fileName : downfile) {
+	            if (fileName != null) {
+	                InputStream in = null;
+	                try {
+	                    in = sftp.get(path+"/"+fileName);
+	                } catch (SftpException e) {
+	                    e.printStackTrace();
+	                    resultList.add(fileName + "下载失败,文件不存在!");
+	                    return;
+	                }
+	                out.putNextEntry(new ZipEntry(fileName));
+	                int len;
+	                while ((len = in.read(buf)) > 0) {
+	                    out.write(buf, 0, len);
+	                }
+	                out.closeEntry();
+	                in.close();
+	            }
+	        }
+	        out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
+//        response.setHeader("Content-Disposition", "attachment;fileName="
+//                + new String(zipFile.getName().getBytes("GBK"), "ISO8859-1"));
+//        response.setContentType(request.getServletContext().getMimeType(zipFile.getName()));
+//        OutputStream ot = response.getOutputStream();
+//        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(zipFile));
+//        BufferedOutputStream bos = new BufferedOutputStream(ot);
+//        int length = 0;
+//        while ((length = bis.read(buf)) > 0) {
+//            bos.write(buf, 0, length);
+//        }
+//        bos.flush();
+//        ot.flush();
+//        bos.close();
+//        bis.close();
+//        ot.close();
+//        zipFile.delete();
+
+    	try {
+            response.setContentType(request.getServletContext().getMimeType("test"));
+            response.setHeader("Content-Disposition", "attachment;filename=test.log");  
+            ServletOutputStream outputStream= response.getOutputStream();
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+            String logStr = "123123123123123";
+            writer.write(logStr);
+            writer.flush();
+            outputStream.flush();
+            writer.close();
+            outputStream.close();
+       } catch (Exception e) {
+        	e.printStackTrace();
+       }
+
+        
+        
+        
+        
+//        // 下载
+//        response.setContentType(request.getServletContext().getMimeType(fullPath));
+//        response.setHeader("Content-Disposition", "attachment;filename=" + newdownfile);
+//        try {
+//            InputStream myStream = new FileInputStream(fullPath);
+//            IOUtils.copy(myStream, response.getOutputStream());
+//            response.flushBuffer();
+//            System.out.println("下载成功");
+//        } 
+//        catch (IOException e) {
+//        } 
+//        finally {
+//            File rm = new File(fullPath);
+//            rm.delete();
+//        }
+    }
 
 }
