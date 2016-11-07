@@ -79,6 +79,13 @@
 	                 $('#improt-ser-out-port').focus();
 	                 return ;
 	             }
+	             if (importSerOutPort <=0 |importSerOutPort>=65535) {
+	            	 layer.tips('外部服务端口要在0～65535之间', '#improt-ser-out-port', {
+	                     tips: [1, '#0FA6D8']
+	                 });
+	                 $('#improt-ser-out-port').focus();
+	                 return ;
+	             }
 	             
 	             if (importSerOutPort.search(/^[0-9]*$/) === -1) {
 	            	 layer.tips('外部服务端口只能为数字', '#improt-ser-out-port', {
