@@ -430,19 +430,24 @@ public class RegistryController {
     @RequestMapping(value = {"registry/download"}, method = RequestMethod.GET)
     public void getDownload(String imageName, String imageVersion,
                                 HttpServletRequest request, HttpServletResponse response) {
-        String fileName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion + ".tar";
-        //设置文件MIME类型  
-        response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
-        //设置Content-Disposition  
-        response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
-        try {  
-            InputStream myStream = new FileInputStream(imagePath+"/"+fileName);  
-            IOUtils.copy(myStream, response.getOutputStream());  
-            response.flushBuffer();  
-        } 
-        catch (IOException e) {  
-            LOG.error("downloadImage error:"+e.getMessage());
-        }
+           Thread thread = new Thread() {
+               public void run() {
+                   String fileName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion + ".tar";
+                   //设置文件MIME类型  
+                   response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
+                   //设置Content-Disposition  
+                   response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
+                   try {  
+                       InputStream myStream = new FileInputStream(imagePath+"/"+fileName);  
+                       IOUtils.copy(myStream, response.getOutputStream());  
+                       response.flushBuffer();  
+                   } 
+                   catch (IOException e) {  
+                       LOG.error("downloadImage error:"+e.getMessage());
+                   }
+               }
+            };
+            thread.start();
     }
     
 	/**
