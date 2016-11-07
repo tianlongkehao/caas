@@ -349,23 +349,24 @@ public class RegistryController {
 	@ResponseBody
 	public String judgeFileExist(String imageName, String imageVersion){
         Map<String, Object> map = new HashMap<String, Object>();
-        File path = new File(imagePath);
-        if (null != path.listFiles()) {
-            File[] currentFiles = path.listFiles();
-            if (null != currentFiles) {
-                for (File oneRow : currentFiles) {
-                    oneRow.delete();
+        try {           
+            String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
+            File file = new File(imagePath+"/"+downName+".tar");
+            if (file.exists()) {
+                LOG.info("filename:-"+file.getName()+"; filesize:-" + file.length());
+                if (file.length() <=0) {
+                    file.delete();
+                    map.put("status", "500");
+                } else {
+                    map.put("status", "200"); 
                 }
+            } else {
+                map.put("status", "500");
             }
         }
-        
-    	String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
-        File file = new File(imagePath+"/"+downName+".tar");
-        if (file.exists()) {
-            map.put("status", "200");
-        } 
-        else {
-            map.put("status", "500");
+        catch (Exception e) {
+            LOG.error("error judgeFileExist:" + e.getMessage());
+            e.printStackTrace();
         }
         return JSON.toJSONString(map);
     }
@@ -429,25 +430,20 @@ public class RegistryController {
      */
     @RequestMapping(value = {"registry/download"}, method = RequestMethod.GET)
     public void getDownload(String imageName, String imageVersion,
-                                HttpServletRequest request, HttpServletResponse response) {
-           Thread thread = new Thread() {
-               public void run() {
-                   String fileName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion + ".tar";
-                   //设置文件MIME类型  
-                   response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
-                   //设置Content-Disposition  
-                   response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
-                   try {  
-                       InputStream myStream = new FileInputStream(imagePath+"/"+fileName);  
-                       IOUtils.copy(myStream, response.getOutputStream());  
-                       response.flushBuffer();  
-                   } 
-                   catch (IOException e) {  
-                       LOG.error("downloadImage error:"+e.getMessage());
-                   }
-               }
-            };
-            thread.start();
+                                HttpServletRequest request, HttpServletResponse response) {            
+            String fileName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion + ".tar";
+            //设置文件MIME类型  
+            response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
+            //设置Content-Disposition  
+            response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
+            try {  
+                InputStream myStream = new FileInputStream(imagePath+"/"+fileName);  
+                IOUtils.copy(myStream, response.getOutputStream());  
+                response.flushBuffer();  
+            } 
+            catch (IOException e) {  
+                LOG.error("downloadImage error:"+e.getMessage());
+            }
     }
     
 	/**
