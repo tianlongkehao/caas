@@ -118,7 +118,7 @@
 														imagename="${service.imgName }"
 														imageversion="${service.imgVersion }"
 														confCpu="${service.cpuNum }" /></td>
-													<td style="width: 15%; white-space: nowrap;"><b id="aaa"
+													<td style="width: 15%; white-space: nowrap;" ><b id="aaa"
 														class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>
 														<a href="<%=path %>/service/detail/${service.id}" serviceId="${service.id}"
 														class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">${service.serviceName}</a> <span
@@ -233,17 +233,19 @@
 			</div>
 		</article>
 	</div>
+	
 	<div class="caption clearfix">
+		<!-- 弹性伸缩 -->
 		<div id="upgrade" style="display: none">
 			<ul class="popWin">
 				<li class="line-h-3"><span class="edit-name-c">服务名称：</span> <input
-					id="upgradeServiceName" disabled="disabled"
+					id="upgradeServiceName" disabled="disabled" class="c-con"
 					style="margin-top: 5px; width: 165px;" type="text" value="">
 				</li>
 				<li class="line-h-3" id="instsizeChange">
 					<div class="param-set">
 						<span class="edit-name-c" style="margin-top: 5px;">实例数量：</span> <input
-							value="1" id="numberChange" class="" min="1" max=""
+							value="1" id="numberChange" class="c-con" min="1" max=""
 							style="margin-top: 10px; width: 165px;" type="number"> <span
 							class="unit">个</span>
 						<!-- <span  style="color: grey;margin-left: 50px;">可用实例数量：<label id="leftpod" ></label></span> -->
@@ -254,11 +256,11 @@
 		<div id="versionUpgrade" style="display: none">
 			<ul class="popWin">
 				<li class="line-h-3"><span class="edit-name-c">服务名称：</span> <input
-					id="upgradeVersionServiceName" disabled="disabled"
+					id="upgradeVersionServiceName" disabled="disabled" class="c-con"
 					style="margin-top: 5px; width: 165px;" type="text" value="">
 				</li>
 				<li class="line-h-3"><span class="edit-name-c">镜像名称：</span> <input
-					id="upgradeimgName" disabled="disabled"
+					id="upgradeimgName" disabled="disabled" class="c-con"
 					style="margin-top: 5px; width: 165px;" type="text" value="">
 				</li>
 				<li class="line-h-3" id="instsizeChange">
@@ -268,8 +270,7 @@
                                      <option name="user_autority" value="2">租户</option>
                                      <option name="user_autority" value="1">管理员</option>
                                                     </select>  -->
-						<select id="imgVersionName" name="imgVersionName"
-							style="margin-top: 10px; width: 165px;">
+						<select id="imgVersionName" name="imgVersionName">
 
 						</select>
 						<!--  <input value="" id="imgVersionName" class=""  style="margin-top: 10px;width: 165px;" type="text"> -->

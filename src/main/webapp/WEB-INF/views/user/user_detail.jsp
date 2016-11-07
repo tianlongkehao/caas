@@ -200,7 +200,7 @@
 														disabled> <span class="resource-unit">个</span>
 												</div>
 												<div class="col-md-4" align="left">
-													<label style="width: 21%; float: left; line-height: 35px">副本控制器:</label>
+													<label style="width: 21%; float: left; line-height: 35px" title="副本控制器">副本控制器:</label>
 													<input type="number" value="${resource.image_control}" class="number form-control"
 														min="1" autocomplete="off" placeholder="1"
 														id="image_control" name="image_control"
@@ -219,7 +219,7 @@
 											</div>
 											<div class="row" style="margin-top: 15px">
 												<div class="col-md-4" align="left">
-													<label style="width: 21%; float: left; line-height: 35px">卷组挂载量:</label>
+													<label style="width: 21%; float: left; line-height: 35px" title="卷组挂载量">卷组挂载量:</label>
 													<input type="number" value="0" class="number form-control"
 														min="1" autocomplete="off" placeholder="1" id="vol_count"
 														name="vol_count"

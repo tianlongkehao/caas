@@ -17,4 +17,14 @@ public class RefServiceConstant {
      * 外部服务可见域 1 所有租户
      */
     public static final Integer ALL_TENANT= 1;
+    
+    /**
+     * 服务引入方式--service方式
+     */
+    public static final Integer SERVICE_MODE = 0;
+    
+    /**
+     * 服务引入方式--etcd方式
+     */
+    public static final Integer ETCD_MODE = 1;
 }

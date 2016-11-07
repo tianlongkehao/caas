@@ -160,6 +160,13 @@
 	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
 	                                            </select>
                                             </li>
+                    <li class="line-h-3"> <span class="ve_top">NodeIp黏连方式：</span>
+                                                <select class="selectVolume" id="nodeIpAffinity" name="nodeIpAffinity"
+                                                    style="height: 30px; width: 230px;">
+                                                    <option name="nodeIpAffinity" value="" >NONE</option>
+                                                    <option name="nodeIpAffinity" value="nodeIpAffinity">nodeIpAffinity</option>
+                                                </select>
+                                            </li>
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
                                         <span class="clusterText" data="tenx_district2">北京二区</span>
@@ -243,6 +250,7 @@
 													id="state_service" stateless="0"> <label
 													for="state_service"><font color="blue">有状态服务</font></label>
 													<span class="mountTips"></span>
+												<input type="hidden" id = "serviceType" name ="serviceType" value = "1"/>
 											</span></li>
 											<li class="hide-set" id="save_roll_dev">
 												<ul id="mountPathList">

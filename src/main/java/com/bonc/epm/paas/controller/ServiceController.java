@@ -48,6 +48,7 @@ import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
+import com.bonc.epm.paas.dao.RefServiceDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
@@ -57,6 +58,7 @@ import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
+import com.bonc.epm.paas.entity.RefService;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
@@ -120,6 +122,12 @@ public class ServiceController {
      */
     @Autowired
 	private PortConfigDao portConfigDao;
+    
+    /**
+     * refService数据层接口
+     */
+    @Autowired
+    private RefServiceDao refServiceDao;
     
     /**
      * 镜像数据接口
@@ -383,18 +391,6 @@ public class ServiceController {
         return "service/service.jsp";
     }
 	
-    /**
-     * Description: <br>
-     * 跳转进入service-import.jsp页面
-     * @param model 
-     * @return String
-     */
-    @RequestMapping(value = { "service/import" })
-	public String serviceImport(Model model) {
-        model.addAttribute("menu_flag", "service");
-        return "service/service-import.jsp";
-    }
-
     /**
      * Description: <br>
      *  根据Id查找container和servies，跳转进入服务详细页面
@@ -837,7 +833,9 @@ public class ServiceController {
                 controller = client.updateReplicationController(service.getServiceName(), service.getInstanceNum());
             }
             if (k8sService == null) {
-                k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs,service.getProxyZone(),service.getServicePath(),service.getProxyPath(),service.getSessionAffinity());
+                k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs
+                        ,service.getProxyZone(),service.getServicePath(),service.getProxyPath()
+                        ,service.getSessionAffinity(),service.getNodeIpAffinity());
                 k8sService = client.createService(k8sService);
             }
             if (controller == null || k8sService == null || controller.getSpec().getReplicas() != service.getInstanceNum()) {
@@ -961,19 +959,18 @@ public class ServiceController {
 	@ResponseBody
 	public String matchServicePathAndProxyPath (String proxyPath,String serviceName) {
         Map<String, Object> map = new HashMap<String, Object>();
-        User cUser = CurrentUserUtils.getInstance().getUser();
-        for (Service service : serviceDao.findByCreateBy(cUser.getId())) {
-            if (service.getServiceName().equals(serviceName)) {
-                map.put("status", "500");
-                break;
-            } 
-            else if (service.getProxyPath().equals(proxyPath)) {
-                map.put("status", "400");
-                break;
-            }
-            else {
-                map.put("status", "200");
-            }
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        int refsize = refServiceDao.findByCreateByAndSerName(createBy, serviceName).size();
+        int serSize = serviceDao.findByNameOf(createBy, serviceName).size();
+        int proxySize = serviceDao.findByCreateByAndProxyPath(createBy,proxyPath).size();
+        if(0<refsize | 0<serSize){
+            map.put("status", "500");
+        }
+        else if (0<proxySize) {
+            map.put("status", "400");
+        }
+        else{
+            map.put("status", "200");
         }
         return JSON.toJSONString(map);
     }
@@ -1056,6 +1053,7 @@ public class ServiceController {
                                        .limit(offset)
                                        .collect(Collectors.toSet());
             smalSet.addAll(portConfigDao.findPortSets());
+            smalSet.addAll(refServiceDao.findPortSets());
             smalSet.remove(null);
             bigSet.removeAll(smalSet);
             if (CollectionUtils.isEmpty(bigSet)) {
@@ -1298,18 +1296,23 @@ public class ServiceController {
         } 
         else {
             try {
-                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-                ReplicationController controller = client.updateReplicationController(service.getServiceName(),
-						addservice);
-                if (controller != null && controller.getSpec().getReplicas() == addservice) {
+                if (service.getStatus() == 3) {
+                    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+                    ReplicationController controller = client.updateReplicationController(service.getServiceName(),
+                        addservice);
+                    if (controller != null && controller.getSpec().getReplicas() == addservice) {
+                        map.put("status", "200");
+                        service.setInstanceNum(addservice);
+                        serviceDao.save(service);
+                    } else {
+                        map.put("status", "400");
+                    }
+                } else {
                     map.put("status", "200");
                     service.setInstanceNum(addservice);
                     serviceDao.save(service);
-                } 
-                else {
-                    map.put("status", "400");
                 }
-
+               
             } 
             catch (KubernetesClientException e) {
                 map.put("status", "400");
