@@ -66,11 +66,11 @@
 	                 return ;
 	             }
 	        	 
-	             if(importSerOut.search(/^[a-zA-Z0-9-:.\/]*$/) === -1){
+/*	             if(importSerOut.search(/^[a-zA-Z0-9-:.\/]*$/) === -1){
 	       	      	layer.tips('外部服务地址中有非法字符，请您检查之后重新填写','#improt-ser-out',{tips: [1, '#3595CC'],time: 3000});
 	       	      	$('#improt-ser-out').focus();
 	       	      	return;
-	       	     }
+	       	     }*/
 	             
 	             if (importSerOutPort.length === 0) {
 	            	 layer.tips('外部服务端口不能为空', '#improt-ser-out-port', {
