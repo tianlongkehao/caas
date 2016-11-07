@@ -428,7 +428,7 @@ public class RegistryController {
      * @see
      */
     @RequestMapping(value = {"registry/download"}, method = RequestMethod.GET)
-    public void getDownload(String imageName, String imageVersion,
+    public String getDownload(String imageName, String imageVersion,
                                 HttpServletRequest request, HttpServletResponse response) {            
             String fileName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion + ".tar";
             //设置文件MIME类型  
@@ -443,6 +443,7 @@ public class RegistryController {
             catch (IOException e) {  
                 LOG.error("downloadImage error:"+e.getMessage());
             }
+            return "redirect:registry/0";
     }
     
 	/**
