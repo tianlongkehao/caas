@@ -48,6 +48,18 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
      */
     @Query("select i from Service i where  i.createBy = ?1 and i.serviceName like ?2 order by  i.serviceName,i.createDate")
     List<Service> findByNameOf(long createBy,String serviceName);
+    
+    /**
+     * Description: <br>
+     * 根据服务名称和创建者查询服务
+     * @param createBy
+     * @param serviceName
+     * @return 
+     * @see
+     */
+    @Query("select i from Service i where  i.createBy = ?1 and i.proxyPath like ?2")
+    List<Service> findByCreateByAndProxyPath (long createBy,String proxyPath);
+    
     /**
      * 
      * @return HashSet<Integer>

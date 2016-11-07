@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -83,6 +84,18 @@ public class RefServiceController {
     private EtcdClientService etcdClientService;
     
     /**
+     * Description: <br>
+     * 跳转进入service-import.jsp页面
+     * @param model 
+     * @return String
+     */
+    @RequestMapping(value = { "service/import" })
+    public String serviceImport(Model model) {
+        model.addAttribute("menu_flag", "service");
+        return "service/service-import.jsp";
+    }
+    
+    /**
      * 
      * Description: 外部服务列表
      * @return json
@@ -92,7 +105,8 @@ public class RefServiceController {
     @ResponseBody
     private String list(){
         Map<String,Object> map = new HashMap<String,Object>();
-        List<RefService> list = refServiceDao.findByCreateByOrViDomain(CurrentUserUtils.getInstance().getUser().getId(),1);
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        List<RefService> list = refServiceDao.findByCreateByOrViDomainOrderByCreateDateDesc(userId,1);
         map.put("data", list);
         return JSON.toJSONString(map);
     }

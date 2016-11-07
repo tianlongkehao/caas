@@ -67,6 +67,10 @@ $(document).ready(function () {
         var storageName = $("#storageName").val();
         $("#defVolNum")[0].value = $("#defVol").val()*1024;
         var storageSize = $(".storageSize:checked").val();
+    if(storageSize.search(/^[1-9]\d*$/) === -1){
+        layer.tips('自定义大小请填写正整数', $('#defVolNum'),{tips: [1, '#EF6578']});
+            return;
+        }
         //var options=$("#format option:selected");
         //var format = options.text();
         
