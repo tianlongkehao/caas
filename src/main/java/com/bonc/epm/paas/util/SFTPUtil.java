@@ -7,17 +7,18 @@
 package com.bonc.epm.paas.util;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.mockito.internal.verification.api.VerificationDataInOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +29,6 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
 /**
@@ -188,7 +188,8 @@ public class SFTPUtil {
     * @return fileList List<FileInfo>
     * @throws SftpException
     */
-    public static List<FileInfo> listFileInfo(String directory, ChannelSftp sftp) throws SftpException{
+    @SuppressWarnings("unchecked")
+	public static List<FileInfo> listFileInfo(String directory, ChannelSftp sftp) throws SftpException{
         List<FileInfo> fileList = new ArrayList<FileInfo>();
         Vector<LsEntry> v =sftp.ls(directory);
         fileList.add(fillFileInfo(true, "..", directory, "", ""));
@@ -213,7 +214,8 @@ public class SFTPUtil {
     * @return
     * @throws SftpException
     */
-    public static Vector<LsEntry> listFiles(String directory, ChannelSftp sftp) throws SftpException{
+    @SuppressWarnings("unchecked")
+	public static Vector<LsEntry> listFiles(String directory, ChannelSftp sftp) throws SftpException{
     	return sftp.ls(directory);
     }
     
@@ -269,6 +271,82 @@ public class SFTPUtil {
         return  String.valueOf(size);
     }
 
+    /**
+     * 
+     * Description:
+     * 批量上传文件
+     * @param ChannelSftp sftp
+     * @param file File
+     * @param String pwd
+     */
+    public static void upLoadFile(ChannelSftp sftp, File file, String pwd) {
+
+        if (file.isDirectory()) {
+            File[] list = file.listFiles();
+            try {
+                try {
+                    String fileName = file.getName();
+                    sftp.cd(pwd);
+                    System.out.println("正在创建目录:" + sftp.pwd() + "/" + fileName);
+                    sftp.mkdir(fileName);
+                    System.out.println("目录创建成功:" + sftp.pwd() + "/" + fileName);
+                } catch (Exception e) {
+                	e.printStackTrace();
+                }
+                pwd = pwd + "/" + file.getName();
+                try {
+                    sftp.cd(file.getName());
+                } catch (SftpException e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            for (int i = 0; i < list.length; i++) {
+            	upLoadFile(sftp, list[i], pwd);
+            }
+        } else {
+
+            try {
+                sftp.cd(pwd);
+            } catch (SftpException e1) {
+                e1.printStackTrace();
+            }
+            System.out.println("正在复制文件:" + file.getAbsolutePath());
+            InputStream instream = null;
+            OutputStream outstream = null;
+            try {
+                outstream = sftp.put(file.getName());
+                instream = new FileInputStream(file);
+
+                byte b[] = new byte[1024];
+                int n;
+                try {
+                    while ((n = instream.read(b)) != -1) {
+                        outstream.write(b, 0, n);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (SftpException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    outstream.flush();
+                    outstream.close();
+                    instream.close();
+
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                }
+            }
+        }
+    }
+
+    
 //    public static void main(String[] args) {
 //        SFTPUtil sf = new SFTPUtil(); 
 //        String host = "192.168.247.129";
