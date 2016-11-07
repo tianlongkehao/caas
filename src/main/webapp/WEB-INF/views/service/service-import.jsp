@@ -87,10 +87,10 @@
 						<th style="width: 35%">服务名称：</th>
 						<td><input class="" type="text" id="improt-ser-name" value=""></td>
 					</tr>
- 					<tr>
+ 					<!-- <tr>
 						<th style="width: 35%">服务访问地址：</th>
 						<td><input class="" type="text" id="improt-ser-in" value=""></td>
-					</tr>
+					</tr> -->
 					<tr>
 						<th style="width: 35%">外部服务地址：</th>
 						<td><input class="" type="text" id="improt-ser-out" value=""></td>

@@ -61,7 +61,7 @@ public class Service {
 	 */
 	private String serviceAddr;
 	/**
-	 * 运行状态(1运行中 2等待中 3创建中 4已停止 5创建失败 6服务异常)
+	 * 运行状态(1未启动 2创建中 3运行中 4已停止 5创建失败 6服务异常)
 	 */
 	private Integer status;
 	/**
@@ -133,6 +133,9 @@ public class Service {
 	 * 服务检测频率
 	 */
 	private Integer periodDetction;
+	/**
+	 */
+	private String nodeIpAffinity;
 	
     public long getImgID() {
 		return imgID;
@@ -380,6 +383,14 @@ public class Service {
 
     public void setPeriodDetction(Integer periodDetction) {
         this.periodDetction = periodDetction;
+    }
+
+    public String getNodeIpAffinity() {
+        return nodeIpAffinity;
+    }
+
+    public void setNodeIpAffinity(String nodeIpAffinity) {
+        this.nodeIpAffinity = nodeIpAffinity;
     }
 
 }

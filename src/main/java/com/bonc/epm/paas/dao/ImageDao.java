@@ -22,8 +22,8 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	@Query("select i from Image i where i.id=?1 and i.isDelete != 1")
 	public Image findById(long id);
 	
-	@Query("select i from Image i where i.imageType = ?1 and i.isDelete != 1 order by  i.name,i.createTime ")
-	public Page<Image> findByImageType(Integer type,Pageable request);
+	@Query("select i from Image i where (i.imageType = 1 or i.creator = ?1) and i.isDelete != 1 order by  i.name,i.createTime ")
+	public Page<Image> findByImageType(long userId,Pageable request);
 	
 	@Query("select i from Image i where  i.creator = ?1 and i.isDelete != 1 order by  i.name,i.createTime")
 	public Page<Image> findAllByCreator(long creator,Pageable request);
@@ -34,8 +34,8 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	@Query("select i from Image i where (i.imageType = 1 or i.creator = ?1) and i.isDelete != 1 order by  i.name,i.createTime")
 	public List<Image> findAll(long creator);
 	
-	@Query("select i from Image i where i.imageType = 1 and i.isDelete != 1 and i.name like ?1 order by  i.name,i.createTime")
-	public Page<Image> findByNameCondition(String name,Pageable request);
+	@Query("select i from Image i where (i.imageType = 1 or i.creator = ?2) and i.isDelete != 1 and i.name like ?1 order by  i.name,i.createTime")
+	public Page<Image> findByNameCondition(String name,long userId,Pageable request);
 	
 	@Query("select i from Image i where (i.imageType = 1 or i.creator = ?1) and i.isDelete != 1 and i.name like ?2 order by  i.name,i.createTime")
 	public List<Image> findByNameOf(long creator,String name);

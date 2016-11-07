@@ -10,8 +10,10 @@
 
 package com.bonc.epm.paas.dao;
 
+import java.util.HashSet;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,28 @@ public interface RefServiceDao extends CrudRepository<RefService, Long>{
      * @see
      */
     List<RefService> findByCreateByOrViDomain(long byCreate,int viDomain);
-    
+    /**
+     * 根据创建者和服务名查询服务
+     * @param byCreate
+     * @param name
+     * @return List<RefService>
+     * @see
+     */
+    List<RefService> findByCreateByAndSerName(long byCreate,String name);
+    /**
+     * 
+     * 根据服务名查询服务
+     * @param name
+     * @return List<RefService>
+     * @see
+     */
     List<RefService> findBySerName(String name);
+    
+    /**
+     * 查询所有的映射端口信息
+     * @return HashSet
+     * @see
+     */
+    @Query("select rs.nodePort from RefService rs") 
+    HashSet<Integer> findPortSets();
 }

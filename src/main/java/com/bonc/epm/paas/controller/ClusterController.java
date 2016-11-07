@@ -359,20 +359,24 @@ public class ClusterController {
             // 取得所有此NAMESPACE下的service
             ServiceList serviceList = clientName.getAllServices();
             for (Service service : serviceList.getItems()) {
-                ServiceTopo serviceTopo = new ServiceTopo();
-                List<String> podName = new ArrayList<>();
-                Map<String,String> labelSelector = service.getSpec().getSelector();
-                PodList podList = clientName.getLabelSelectorPods(labelSelector);
-                if (podList != null) {
-                    for (Pod pod : podList.getItems()) {
-                       podName.add(pod.getMetadata().getName());
+                try {
+                    ServiceTopo serviceTopo = new ServiceTopo();
+                    List<String> podName = new ArrayList<>();
+                    Map<String,String> labelSelector = service.getSpec().getSelector();
+                    PodList podList = clientName.getLabelSelectorPods(labelSelector);
+                    if (podList != null) {
+                        for (Pod pod : podList.getItems()) {
+                            podName.add(pod.getMetadata().getName());
+                        }
                     }
+                    serviceTopo.setPodName(podName);
+                    serviceTopo.setNamespace(service.getMetadata().getNamespace());
+//                  serviceTopo.setServiceName(namespace +"/"+service.getMetadata().getName());
+                    serviceTopo.setServiceName(service.getMetadata().getName());
+                    serviceTopoList.add(serviceTopo);
+                } catch (Exception e) {
+                    LOG.debug(e.getMessage());
                 }
-                serviceTopo.setPodName(podName);
-                serviceTopo.setNamespace(service.getMetadata().getNamespace());
-//                serviceTopo.setServiceName(namespace +"/"+service.getMetadata().getName());
-                serviceTopo.setServiceName(service.getMetadata().getName());
-                serviceTopoList.add(serviceTopo);
             }
         }
         catch (Exception e) {

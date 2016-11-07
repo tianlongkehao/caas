@@ -37,7 +37,7 @@
 									<div class="">
 										<select id="baseImageName" name="baseImageName"  style="width:218px; height:48px">
 											<c:forEach var = "image" items = "${baseImage }">
-												<option type="text" value="${image.name }">${docker_regisgtry_address }/${image.name }</option>
+												<option type="text" value="${image.name }">${image.name }</option>
 											</c:forEach>
 										</select> : 
 										<select id="baseImageId" name="baseImageId" style="height:48px">

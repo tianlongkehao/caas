@@ -490,7 +490,7 @@ public class KubernetesClientService {
 	}
 	
 	public Service generateService(String appName,List<PortConfig> portConfigs, 
-	                                       String proxyZone, String servicePath, String proxyPath,String sessionAffinity){
+	                                       String proxyZone, String servicePath, String proxyPath,String sessionAffinity,String nodeIpAffinity){
 	    Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(appName);
@@ -509,6 +509,9 @@ public class KubernetesClientService {
 		        labels.put(proxyArray[i], proxyArray[i]);
 		    }
 		}
+		if (StringUtils.isNotBlank(nodeIpAffinity)) {
+		    labels.put("nodeIpAffinity", nodeIpAffinity);
+          }
 		meta.setLabels(labels);
 		service.setMetadata(meta);
 		ServiceSpec spec = new ServiceSpec();
@@ -563,22 +566,24 @@ public class KubernetesClientService {
         Service service = new Service();
         ObjectMeta meta = new ObjectMeta();
         meta.setName(serName);
-        Map<String,String> labels = new HashMap<String,String>();
+/*        Map<String,String> labels = new HashMap<String,String>();
         labels.put("app", serName);
-        meta.setLabels(labels);
+        meta.setLabels(labels);*/
         service.setMetadata(meta);
         
         ServiceSpec spec = new ServiceSpec();
         spec.setType("NodePort");
         List<ServicePort> ports = new ArrayList<ServicePort>();
         ServicePort portObj = new ServicePort();
-        portObj.setName("http");
+        //portObj.setName("http");
         portObj.setProtocol("TCP");
         portObj.setPort(refPort);
-        portObj.setNodePort(serviceController.vailPortSet());
+        //portObj.setNodePort(serviceController.vailPortSet());
         ports.add(portObj);
         spec.setPorts(ports);
-        
+/*        Map<String,String> selector = new HashMap<String,String>();
+        selector.put("app", serName);
+        spec.setSelector(selector);*/
         service.setSpec(spec);
         return service;
     }
@@ -595,9 +600,9 @@ public class KubernetesClientService {
         Endpoints endpoints = new Endpoints();
         ObjectMeta meta = new ObjectMeta();
         meta.setName(serName);
-        Map<String,String> labels = new HashMap<String,String>();
+/*        Map<String,String> labels = new HashMap<String,String>();
         labels.put("app", serName);
-        meta.setLabels(labels);
+        meta.setLabels(labels);*/
         endpoints.setMetadata(meta);
         
         List<EndpointSubset> subsets = new ArrayList<EndpointSubset>();

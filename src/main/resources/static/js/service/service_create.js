@@ -113,11 +113,11 @@ $(document).ready(function(){
 	      $('#webPath').focus();
 	      return;
 	    }
-	    if(servicePath.length > 64 || servicePath.length < 3){
-	      layer.tips('服务路径为3~64个字符','#webPath',{tips: [1, '#3595CC'],time: 3000});
-	      $('#webPath').focus();
-	      return;
-	    }
+//	    if(servicePath.length > 64 || servicePath.length < 3){
+//	      layer.tips('服务路径为3~64个字符','#webPath',{tips: [1, '#3595CC'],time: 3000});
+//	      $('#webPath').focus();
+//	      return;
+//	    }
 	    
 	    //nginx代理路径的判断
 	    var proxyPath = $("#nginxPath").val();
@@ -131,11 +131,11 @@ $(document).ready(function(){
 		      $('#nginxPath').focus();
 		      return;
 	    }
-	    if(proxyPath.length > 64 || proxyPath.length < 3){
-		      layer.tips('nginx代理路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
-		      $('#nginxPath').focus();
-		      return;
-	    }
+//	    if(proxyPath.length > 64 || proxyPath.length < 3){
+//		      layer.tips('nginx代理路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+//		      $('#nginxPath').focus();
+//		      return;
+//	    }
 	    
 	    //判断实例数量是否超过上限
 	    var cpuNum = $("input[name='cpuNum']:checked").val();
@@ -207,6 +207,7 @@ $(document).ready(function(){
 	    } else {
 	    	$("#mountPath").val(null);
 	    	$("#selectVolume").val(null);
+	    	$("#serviceType").val(2);
 	    }
 	    
 /*	    var nginxstr = "{";
