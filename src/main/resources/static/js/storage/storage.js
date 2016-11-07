@@ -29,7 +29,7 @@ function loadStorageList(){
         				storage.mountPoint = "未挂载";
         			}
         			itemsHtml += ' <tr class="ci-listTr" style="cursor:auto">'+
-        							'<td style="width: 5%; text-indent: 30px;"><input type="checkbox" class="chkItem" name="chkItem" /></td>'+
+        							'<td style="width: 5%; text-indent: 30px;"><input type="checkbox" class="chkItem" name="chkItem" value='+storage.id+' /></td>'+
         							' <td style="width: 15%; text-indent:30px;" id = "storageName">'+
         							'<a href="'+ctx+'/service/storage/detail/'+storage.id+'" title="查看详细信息">'+storage.storageName +'</a>'+
         							'</td>'+
@@ -134,11 +134,13 @@ function formatStorage(){
 		 });
 	});
 }
-
+/**
+ * 删除
+ */
 function delStorage() {
 
 	$(document).on("click",".deleteStorage",function(){
-		var storageId = $(this).attr("storageId");
+		var ids = $(this).attr("storageId");
    		 layer.open({
    		        title: '删除卷组',
    		        content: '确定删除卷组？',
@@ -148,7 +150,7 @@ function delStorage() {
    		        	$.ajax({
 		   		     		url:""+ctx+"/service/storage/delete",
 		   		     		type:"post",
-		   		     		data:{"storageId":storageId},
+		   		     		data:{"ids":ids},
 		   		     		success:function(data){
 		   		     		data = eval("(" + data + ")");
 							if(data.status=="200"){
@@ -157,7 +159,13 @@ function delStorage() {
 				   					},function(){
 				   						window.location.href = ""+ctx+"/service/storage";
 				   					});
-		   		     			}
+
+		   		   }
+		   		   if(data.status=="500"){
+  		     			layer.msg( "删除失败，卷组正在使用！", {
+	   						icon: 1
+		   					});
+			   			   }
 		   		     		},
 		   		     		error:function(){
 			   		     		layer.msg( "删除失败", {
@@ -171,8 +179,49 @@ function delStorage() {
     });
     
 };
+/**
+ * 批量删除
+ */
+function delStorages(){
+	obj = document.getElementsByName("chkItem");
+	var ids = [];
+    for (k in obj) {
+        if (obj[k].checked) {
+        	ids.push(obj[k].value);
+        }
+    }
+ layer.open({
+        title: '删除外部引入服务',
+        content: '确定批量删除外部引入服务？',
+        btn: ['确定', '取消'],
+        yes: function(index, layero){ 
+        	layer.close(index);
+        	if(""==ids){
+        		alert("你总要选一个呀");
+        		return;
+        	}
+			$.ajax({
+				url:""+ctx+"/service/storage/delete?ids="+ids,
+				success:function(data){
+					data = eval("(" + data + ")");
+   		   if(data.status=="500"){
+	     			layer.msg( "删除失败，有卷组正在使用，你不考虑一下？", {
+						icon: 1
+	     				});
+   		   			}
+					if(data.status=="200"){
+						layer.alert("服务已删除");
+						window.location.reload();
+					}else{
+						layer.alert("服务删除失败，请检查服务器连接");
+					}
 
-
+				}
+			})
+        }
+ })
+ 
+};
 function dilatationStorage(){
 //	$(".dilatationStorage").on("click",function(){
 	$(document).on("click",".dilatationStorage",function(){
@@ -191,10 +240,15 @@ function dilatationStorage(){
 			btn: ['确定', '取消'],
 			yes: function(index, layero){ //或者使用btn1
 				//按钮【按钮一】的回调
-				layer.close(index);
+
 				//var storageUpdateSize = $("#storageSizeUpdateSlider_input").val();
-				$("#updatedefVolNum")[0].value = $("#updatedefVol").val()*1024;
+				
+				$("#updatedefVolNum")[0].value = ($("#updatedefVol").val()*1024);
 				var storageUpdateSize = $(".updateStorageSize:checked").val();
+				if(storageUpdateSize.search(/^[1-9]\d*$/) === -1){
+			        layer.tips('自定义大小请填正整数', $('#updatedefVol'),{tips: [1, '#EF6578']});
+			            return;
+			        }
 				$.ajax({
 					url:""+ctx+"/service/storage/dilatation",
 					type:"post",
@@ -216,6 +270,7 @@ function dilatationStorage(){
 
 					}
 				})
+				layer.close(index);
 			},
 			cancel: function(index){ //或者使用btn2
 				//按钮【按钮二】的回调

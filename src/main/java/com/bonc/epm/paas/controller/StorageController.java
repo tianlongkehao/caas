@@ -227,16 +227,17 @@ public class StorageController {
     public String dilatationStorage(long storageId, Integer storageUpdateSize) {
         Map<String, Object> map = new HashMap<String, Object>();
         User cUser = CurrentUserUtils.getInstance().getUser();
-        int leftstorage=0;
+        Storage storage = storageDao.findOne(storageId);
+        int usedStorage=0;
         List<Storage> list = storageDao.findByCreateBy(cUser.getId());
-        for (Storage storage : list) {
-            leftstorage = leftstorage + (int) storage.getStorageSize();
+        for (Storage stor : list) {
+            usedStorage = usedStorage + (int) stor.getStorageSize();
         }
-        if (storageUpdateSize/1024>((int) cUser.getVol_size() - leftstorage / 1024)){
+        if (storageUpdateSize/1024 - storage.getStorageSize()/1024>((int) cUser.getVol_size() - usedStorage / 1024)){
             map.put("status", "500");
             return JSON.toJSONString(map);
         }
-        Storage storage = storageDao.findOne(storageId);
+        
         storage.setStorageSize(storageUpdateSize);
         storageDao.save(storage);
         map.put("status", "200");
@@ -258,20 +259,25 @@ public class StorageController {
      */
     @RequestMapping(value = { "service/storage/delete" })
     @ResponseBody
-    public String deleteStorage(@RequestParam long storageId) {
+    public String deleteStorage(@RequestParam String ids) {
         Map<String, Object> map = new HashMap<String, Object>();
-        Storage storage = storageDao.findOne(storageId);
+        String[] id = ids.split(",");
+        Storage storage= new Storage();
+        for(int i=0 ;i<id.length;i++){
+        storage = storageDao.findOne(Long.parseLong(id[i]));
         if (StorageConstant.IS_USER == storage.getUseType()) {
             map.put("status", "500");
-        } 
-        else {
-            storageDao.delete(storageId);
+            return JSON.toJSONString(map);
+                } 
+        }
+        for(int i=0 ;i<id.length;i++){
+        
+            storageDao.delete(Long.parseLong(id[i]));
             CephController cephCon = new CephController();
             try {
                 cephCon.connectCephFS();
             }
             catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             cephCon.deleteStorageCephFS(storage.getStorageName());
@@ -279,7 +285,6 @@ public class StorageController {
         }
         return JSON.toJSONString(map);
     }
-
     /**
      * 卷组已使用的大小
      * @param storageName 卷组名
