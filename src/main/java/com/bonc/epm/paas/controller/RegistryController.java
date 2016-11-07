@@ -155,7 +155,7 @@ public class RegistryController {
         //判断是否需要搜索镜像
         if (StringUtils.isEmpty(search)) {
             if(index == 0){
-                images = imageDao.findByImageType(1,pageRequest);
+                images = imageDao.findByImageType(userId,pageRequest);
             }else if(index == 1){
                 images = imageDao.findAllByCreator(userId,pageRequest);
             }else if(index == 2){
@@ -163,7 +163,7 @@ public class RegistryController {
             }
         } else {
             if(index == 0){
-                images = imageDao.findByNameCondition("%"+search+"%",pageRequest);
+                images = imageDao.findByNameCondition("%"+search+"%",userId,pageRequest);
             }else if(index == 1){
                 images = imageDao.findByNameOfUser(userId,"%"+search+"%",pageRequest);
             }else if(index == 2){

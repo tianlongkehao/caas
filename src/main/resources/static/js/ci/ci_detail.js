@@ -5,7 +5,7 @@ $(document).ready(function(){
         $(".ci-tab").removeClass("active");
         $(this).addClass("active");
     });
-
+    changeBaseImageVersion();
     registerCiRecordEvent();
     registerDeployEvent();
     registerConstructCiEvent();
@@ -155,28 +155,31 @@ function registerCiEditEvent(){
     });
 	
 	$("#baseImageName").change(function(){
-		var baseImageName = $("#baseImageName").val();
-		$.ajax({
-			url:""+ctx+"/ci/findBaseImageVersion.do",
-			type:"post",
-			data:{"baseImageName":baseImageName}, 
-			success: function (data) {
-	            data = eval("(" + data + ")");
-	            var html = "";
-	            if (data != null) {
-	            	if (data['data'].length > 0) {
-	            		for (var i in data.data) {
-	            			var image = data.data[i];
-	            			html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>"
-	            		}
-	            	}
-	            }
-	            $("#baseImageId").html(html);    
-			}
-		})
+		changeBaseImageVersion();
 	});
 }
 
+function changeBaseImageVersion () {
+	var baseImageName = $("#baseImageName").val();
+	$.ajax({
+		url:""+ctx+"/ci/findBaseImageVersion.do",
+		type:"post",
+		data:{"baseImageName":baseImageName}, 
+		success: function (data) {
+            data = eval("(" + data + ")");
+            var html = "";
+            if (data != null) {
+            	if (data['data'].length > 0) {
+            		for (var i in data.data) {
+            			var image = data.data[i];
+            			html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>"
+            		}
+            	}
+            }
+            $("#baseImageId").html(html);    
+		}
+	})
+}
 
 function registerCiDelEvent(id){
 	 $("#delCiBtn").click(function(){

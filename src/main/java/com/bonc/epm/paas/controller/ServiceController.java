@@ -46,6 +46,7 @@ import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
+import com.bonc.epm.paas.dao.RefServiceDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
@@ -117,6 +118,12 @@ public class ServiceController {
      */
     @Autowired
 	private PortConfigDao portConfigDao;
+    
+    /**
+     * refService数据层接口
+     */
+    @Autowired
+    private RefServiceDao refServiceDao;
     
     /**
      * 镜像数据接口
@@ -1015,6 +1022,7 @@ public class ServiceController {
                                        .limit(offset)
                                        .collect(Collectors.toSet());
             smalSet.addAll(portConfigDao.findPortSets());
+            smalSet.addAll(refServiceDao.findPortSets());
             smalSet.remove(null);
             bigSet.removeAll(smalSet);
             if (CollectionUtils.isEmpty(bigSet)) {
@@ -1257,18 +1265,23 @@ public class ServiceController {
         } 
         else {
             try {
-                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-                ReplicationController controller = client.updateReplicationController(service.getServiceName(),
-						addservice);
-                if (controller != null && controller.getSpec().getReplicas() == addservice) {
+                if (service.getStatus() == 3) {
+                    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+                    ReplicationController controller = client.updateReplicationController(service.getServiceName(),
+                        addservice);
+                    if (controller != null && controller.getSpec().getReplicas() == addservice) {
+                        map.put("status", "200");
+                        service.setInstanceNum(addservice);
+                        serviceDao.save(service);
+                    } else {
+                        map.put("status", "400");
+                    }
+                } else {
                     map.put("status", "200");
                     service.setInstanceNum(addservice);
                     serviceDao.save(service);
-                } 
-                else {
-                    map.put("status", "400");
                 }
-
+               
             } 
             catch (KubernetesClientException e) {
                 map.put("status", "400");

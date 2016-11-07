@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.RefServiceConstant;
 import com.bonc.epm.paas.dao.RefServiceDao;
+import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.RefService;
 import com.bonc.epm.paas.etcd.util.EtcdClientService;
@@ -33,6 +35,7 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
+import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
@@ -52,7 +55,11 @@ public class RefServiceController {
      * 日志
      */
     private static final Logger LOG = LoggerFactory.getLogger(RefServiceController.class);
-    
+    /**
+     * serviceDao
+     */
+    @Autowired
+  private  ServiceDao serviceDao;
     /**
      * refSreviceDao
      */
@@ -241,8 +248,10 @@ public class RefServiceController {
     @ResponseBody
     private String checkName(String un){
         Map<String, Object> map = new HashMap<String,Object>();
-        int size = refServiceDao.findBySerName(un).size();
-        if(0<size){
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        int refsize = refServiceDao.findByCreateByAndSerName(createBy, un).size();
+        int serSize = serviceDao.findByNameOf(createBy, un).size();
+        if(0<refsize | 0<serSize){
             map.put("status", "400");
         }else{
             map.put("status", "200");
@@ -298,6 +307,10 @@ public class RefServiceController {
             }
             else {
                 map.put("status", "200");
+                List<ServicePort> servicePort = k8sService.getSpec().getPorts();
+                if (!StringUtils.isEmpty(servicePort)) {
+                    refService.setNodePort(servicePort.get(0).getNodePort());
+                }
                 refService.setSerAddress(k8sService.getSpec().getClusterIP());
                 refServiceDao.save(refService);
             }
