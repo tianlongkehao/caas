@@ -9,9 +9,11 @@
 	_refreshCreateTime(60000);
 	//添加外部服务地址
 	$("#importServiceBtn").click(function(){
+		 $("#improt-ser-name").removeAttr("disabled");
 		 $("#improt-ser-name").val("");
 		 $("#improt-ser-in").val("");
 		 $("#improt-ser-out").val("");
+		 $("#improt-ser-out-port").val("");
 		layer.open({
 		 	type:1,
 	        title: '引入外部服务',
@@ -29,11 +31,19 @@
 	        	 
 	        	 if (importSerName.length === 0) {
 	                 layer.tips('服务名称不能为空', '#improt-ser-name', {
-	                     tips: [1, '#0FA6D8'] //还可配置颜色
+	                     tips: [1, '#0FA6D8']
 	                 });
 	                 $('#improt-ser-name').focus();
 	                 return ;
-	             } else if (importSerName.length < 4) {
+	             } 
+	        	 
+	        	 if(importSerName.search(/^[a-z0-9-]*$/) === -1){
+	        		 layer.tips('服务名称只能由小写字母、数字及横线组成','#improt-ser-name',{tips: [1, '#3595CC'],time: 3000});
+	        		 $('#improt-ser-name').focus();
+	        		 return;
+	       	     }
+	        	
+	        	 if (importSerName.length < 1) {
 	                 layer.tips('服务名称过短', '#improt-ser-name', {
 	                     tips: [1, '#0FA6D8']
 	                 });
@@ -56,6 +66,28 @@
 	                 return ;
 	             }
 	        	 
+	             if(importSerOut.search(/^[a-zA-Z0-9-:.\/]*$/) === -1){
+	       	      	layer.tips('外部服务地址中有非法字符，请您检查之后重新填写','#improt-ser-out',{tips: [1, '#3595CC'],time: 3000});
+	       	      	$('#improt-ser-out').focus();
+	       	      	return;
+	       	     }
+	             
+	             if (importSerOutPort.length === 0) {
+	            	 layer.tips('外部服务端口不能为空', '#improt-ser-out-port', {
+	                     tips: [1, '#0FA6D8']
+	                 });
+	                 $('#improt-ser-out-port').focus();
+	                 return ;
+	             }
+	             
+	             if (importSerOutPort.search(/^[0-9]*$/) === -1) {
+	            	 layer.tips('外部服务端口只能为数字', '#improt-ser-out-port', {
+	                     tips: [1, '#0FA6D8']
+	                 });
+	                 $('#improt-ser-out-port').focus();
+	                 return ;
+	             }
+	             
 	             var flag=0;
                  var un = importSerName.toLowerCase();
                  console.info(un);
@@ -205,6 +237,16 @@
 		        	$.ajax({
 		        		type: "GET",
 		                url: ctx + "/refservice/delete.do?ids="+id,
+		                success : function(data) {
+		                 	var data = eval("("+data+")");
+		                 	if (data.status == 200) {
+		                 		layer.msg("删除外部服务成功！",{icon: 6});
+		                 		window.location.reload();
+		                 	} 
+		                 	else {
+		                 		layer.alert("删除外部服务失败！请检查服务器连接");
+		                 	}
+		                }
 		        	});
 		        	layer.close(index);
 		        }
@@ -225,13 +267,7 @@
 	        content: $("#import-service"),
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ 
-/*	        	var importSerName = $("#improt-ser-name").val();
-	        	 var importSerIn = $("#improt-ser-in").val();
-	        	 var importSerOut = $("#improt-ser-out").val();
-	        	 var importSerVis = $("#improt-ser-visibility").val();
-*/
 	        	 var importSerName = $("#improt-ser-name").val();
-//	        	 var importSerIn = $("#improt-ser-in").val();
 	        	 var importSerIn = "default";
 	        	 var importSerOut = $("#improt-ser-out").val();
 	        	 var importSerOutPort = $("#improt-ser-out-port").val();
@@ -239,11 +275,19 @@
 	        	 var improtSerMode = $("#improt-ser-mode").val();
 	        	 if (importSerName.length === 0) {
 	                 layer.tips('服务名称不能为空', '#improt-ser-name', {
-	                     tips: [1, '#0FA6D8'] //还可配置颜色
+	                     tips: [1, '#0FA6D8']
 	                 });
 	                 $('#improt-ser-name').focus();
 	                 return ;
-	             } else if (importSerName.length < 4) {
+	             } 
+	        	 
+	        	 if(importSerName.search(/^[a-z0-9-]*$/) === -1){
+	        		 layer.tips('服务名称只能由小写字母、数字及横线组成','#improt-ser-name',{tips: [1, '#3595CC'],time: 3000});
+	        		 $('#improt-ser-name').focus();
+	        		 return;
+	       	     }
+	        	
+	        	 if (importSerName.length < 1) {
 	                 layer.tips('服务名称过短', '#improt-ser-name', {
 	                     tips: [1, '#0FA6D8']
 	                 });
@@ -251,18 +295,33 @@
 	                 return ;
 	             } 
 	             
-	             if (importSerIn.length === 0) {
-	                 layer.tips('服务访问地址不能为空', '#improt-ser-in', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-in').focus();
-	                 return ;
-	             } 
 	             if (importSerOut.length === 0) {
 	                 layer.tips('外部服务地址不能为空', '#improt-ser-out', {
 	                     tips: [1, '#0FA6D8']
 	                 });
 	                 $('#improt-ser-out').focus();
+	                 return ;
+	             }
+	        	 
+	             if(importSerOut.search(/^[a-zA-Z0-9-:.\/]*$/) === -1){
+	       	      	layer.tips('外部服务地址中有非法字符，请您检查之后重新填写','#improt-ser-out',{tips: [1, '#3595CC'],time: 3000});
+	       	      	$('#improt-ser-out').focus();
+	       	      	return;
+	       	     }
+	             
+	             if (importSerOutPort.length === 0) {
+	            	 layer.tips('外部服务端口不能为空', '#improt-ser-out-port', {
+	                     tips: [1, '#0FA6D8']
+	                 });
+	                 $('#improt-ser-out-port').focus();
+	                 return ;
+	             }
+	             
+	             if (importSerOutPort.search(/^[0-9]*$/) === -1) {
+	            	 layer.tips('外部服务端口只能为数字', '#improt-ser-out-port', {
+	                     tips: [1, '#0FA6D8']
+	                 });
+	                 $('#improt-ser-out-port').focus();
 	                 return ;
 	             }
 	             
@@ -272,7 +331,14 @@
 		         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
 		         			,"refAddress":importSerOut,"viDomain":importSerVis,"refPort":importSerOutPort,"improtSerMode":improtSerMode},
 		         		success: function(data) {
-		         			window.location.reload();
+		         			var data = eval("("+data+")");
+		                 	if (data.status == 200) {
+		                 		layer.msg("修改外部服务参数成功！",{icon: 6});
+		                 			window.location.reload();
+		                 	} 
+		                 	else {
+		                 		layer.alert("修改外部服务参数失败！请检查服务器连接");
+		                 	}
 		         		}
 		         	}); 
 	             layer.close(index);
@@ -296,7 +362,7 @@
 	        yes: function(index, layero){ 
 	        	layer.close(index);
 	        	if(""==ids){
-	        		alert("你总要选一个呀");
+	        		layer.alert("未选中需要删除的外部服务！");
 	        		return;
 	        	}
 				$.ajax({
@@ -316,8 +382,6 @@
 	 })
 	 
  }
- 
- 
  
  function refresh(){
 	 window.location.reload();//刷新当前页面.

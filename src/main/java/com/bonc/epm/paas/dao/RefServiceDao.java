@@ -37,7 +37,7 @@ public interface RefServiceDao extends CrudRepository<RefService, Long>{
      * @return List<RefService>
      * @see
      */
-    List<RefService> findByCreateByOrViDomain(long byCreate,int viDomain);
+    List<RefService> findByCreateByOrViDomainOrderByCreateDateDesc(long byCreate,int viDomain);
     /**
      * 根据创建者和服务名查询服务
      * @param byCreate
@@ -62,4 +62,13 @@ public interface RefServiceDao extends CrudRepository<RefService, Long>{
      */
     @Query("select rs.nodePort from RefService rs") 
     HashSet<Integer> findPortSets();
+    
+    /**
+     * Description: <br>
+     * 根据创建者id查询当前租户的服务
+     * @param userId 用户Id
+     * @return list
+     * @see
+     */
+    List<RefService> findByCreateBy(long userId);
 }
