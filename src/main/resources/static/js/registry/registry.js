@@ -72,6 +72,7 @@ $(document).ready(function () {
     });
     
     // 导出镜像
+    var downloadIndex;
     $(document).on("click",".downloadImage",function(){
     		var _this = $(this);
         	$.ajax({
@@ -85,7 +86,7 @@ $(document).ready(function () {
          		success:function(data){
          			data = eval("(" + data + ")");
          			if(data.status == "500"){ //判断有没有用户下载过该镜像，没有人下载过，页面加载一个遮罩层；
-         				load = layer.load(0, {shade: [0.3, '#000'],time:15000});
+         				downloadIndex = layer.load(0, {shade: [0.3, '#000']});
          	        	$.ajax({
          	        		url:""+ctx+"/registry/downloadImage",
          	        		type:"get",
@@ -97,9 +98,9 @@ $(document).ready(function () {
          	        			"resourceName" :_this.attr("resourcename")
          	        		},
          	        		success:function(data){
+         	        			layer.close(downloadIndex);
          	        			var data1 = eval("(" + data + ")");
          	        			if(data1.status == "200"){
-         	        				layer.close(load);
          	        				window.location.href = ctx + "/registry/download?imageName="+_this.attr("imagename") +"&imageVersion="+_this.attr("imageversion");
          	        			} 
          	        			else {
