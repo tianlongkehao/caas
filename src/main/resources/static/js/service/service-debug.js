@@ -87,6 +87,9 @@ function creatable(isDir, dirName) {
 								+ '<a class="deleteButton" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
 								+ fileInfo.fileName
 								+ '"> <i class="fa fa-trash fa-lg"></i></a>'
+								+ '<a class="downloadButton" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
+								+ fileInfo.fileName
+								+ '"> <i class="fa fa-download fa-lg"></i></a>'
 								+ '</td>' + '</tr>';
 					}
 
@@ -183,7 +186,7 @@ function createdir() {
 	})
 }
 /**
- * 下载文件
+ * 批量下载文件
  */
 function download() {
 	obj = document.getElementsByName("downfiles");
@@ -197,6 +200,13 @@ function download() {
 		failedMSG("请选择需要下载的文件", false);
 		return;
 	}
+	location.href = ctx + "/service/downloadFile?downfiles=" + fileNames;
+}
+
+/**
+ * 下载文件
+ */
+function download(fileNames) {
 	location.href = ctx + "/service/downloadFile?downfiles=" + fileNames;
 }
 

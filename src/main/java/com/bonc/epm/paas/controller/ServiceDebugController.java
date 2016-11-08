@@ -54,9 +54,9 @@ import com.jcraft.jsch.SftpException;
 public class ServiceDebugController {
 
 	private String root = "/";
-	private String host = "192.168.247.129";
+	private String host = "192.168.254.129";
 	private int port = 22;
-	private String username = "root";
+	private String username = "longlong";
 	private String password = "123456";
 	private static ChannelSftp sftp;
 	/**
