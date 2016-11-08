@@ -14,12 +14,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -47,11 +51,13 @@ import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.Image;
+import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.bonc.epm.paas.util.FileUtils;
+import com.bonc.epm.paas.util.ResultPager;
 import com.github.dockerjava.api.DockerClient;
 /**
  * 构建容器
@@ -113,13 +119,42 @@ public class CiController {
      */
     @RequestMapping(value={"ci"},method=RequestMethod.GET)
 	public String index(Model model){
-        User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        List<Ci> ciList = ciDao.findByCreateBy(cuurentUser.getId(), new Sort(new Order(Direction.DESC,"createDate")));
-        model.addAttribute("ciList", ciList);
+//        User cuurentUser = CurrentUserUtils.getInstance().getUser();
+//        List<Ci> ciList = ciDao.findByCreateBy(cuurentUser.getId(), new Sort(new Order(Direction.DESC,"createDate")));
+//        model.addAttribute("ciList", ciList);
         model.addAttribute("menu_flag", "ci");
         return "ci/ci.jsp";
     }
 
+    @RequestMapping(value = {"ci/page.do"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String findServiceByPage(String draw, int start,int length,
+                                    HttpServletRequest request){
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        String search = request.getParameter("search[value]");
+        Map<String,Object> map = new HashMap<String, Object>();
+        Page<Ci> cis = null;
+        PageRequest pageRequest = null;
+        //判断是第几页
+        if (start == 0) {
+            pageRequest = ResultPager.buildPageRequest(null, length);
+        }else {
+            pageRequest = ResultPager.buildPageRequest(start/length + 1, length);
+        }
+        //判断是否需要搜索服务
+        if (StringUtils.isEmpty(search)) {
+            cis = ciDao.findByCreateByOrderByCreateDateDesc(userId,pageRequest);
+        } else {
+            cis = ciDao.findByNameOf(userId, "%" + search + "%",pageRequest);
+        }
+        map.put("draw", draw);
+        map.put("recordsTotal", cis.getTotalElements());
+        map.put("recordsFiltered", cis.getTotalElements());
+        map.put("data", cis.getContent());
+        
+        return JSON.toJSONString(map);
+    }
+    
     /**
      * 
      * Description: <br>

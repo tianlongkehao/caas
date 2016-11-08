@@ -2,12 +2,15 @@ package com.bonc.epm.paas.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.Ci;
+import com.bonc.epm.paas.entity.Service;
 
 /**
  * 
@@ -38,7 +41,28 @@ public interface CiDao extends CrudRepository<Ci, Long> {
      * @see
      */
     List<Ci> findByCreateBy(Long createBy,Sort sort);
+    
+    /**
+     * Description: <br>
+     * 根据分页信息查询数据
+     * @param createBy ：创建者
+     * @param sort ： 排序
+     * @param request ：分页
+     * @return page
+     */
+    Page<Ci> findByCreateByOrderByCreateDateDesc(long createBy,Pageable request);
 	
+    /**
+     * Description: <br>
+     * 根据项目名称搜索构建数据
+     * @param createBy 创建者
+     * @param projectName ：搜索名称
+     * @param request ： 分页信息
+     * @return page
+     */
+    @Query("select i from Ci i where  i.createBy = ?1 and i.projectName like ?2 order by i.createDate")
+    Page<Ci> findByNameOf(long createBy,String projectName,Pageable request);
+    
     /**
      * 根据构建镜像Id查询构建数据
      * 

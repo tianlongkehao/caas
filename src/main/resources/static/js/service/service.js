@@ -1,9 +1,6 @@
  $(document).ready(function () {
-	 loadServices();
+	loadServices();
 	$("#serviceReloadBtn").click(function(){
-		debugger;
-		var table = $('.dataTables-example').DataTable();
-		table.state.clear();
 		window.location.reload();
 	});
 	
