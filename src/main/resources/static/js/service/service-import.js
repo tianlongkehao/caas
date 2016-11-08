@@ -158,7 +158,7 @@
             		tr+='<tr>'+
 	     			'<td style="width: 5%; text-indent: 30px;">'+
 	     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
-			     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'</td>'+
+			     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'<i class="fa fa-info-circle info-importService"></i></td>'+
 			     		'<td style="width: 20%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
 			     		'<td style="width: 20%;">'+refservice.refAddress+'</td>';
 			     		if('1'==refservice.viDomain){
