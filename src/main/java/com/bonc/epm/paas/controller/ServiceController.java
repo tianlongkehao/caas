@@ -1,6 +1,5 @@
 package com.bonc.epm.paas.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
@@ -12,14 +11,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.websocket.server.PathParam;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -57,7 +56,6 @@ import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
-import com.bonc.epm.paas.entity.FileInfo;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
@@ -80,15 +78,11 @@ import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.FileUtils;
-import com.bonc.epm.paas.util.SFTPUtil;
+import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.ChannelSftp.LsEntry;
-import com.jcraft.jsch.SftpException;
 
 /**
  * ServiceController
@@ -230,7 +224,7 @@ public class ServiceController {
         User currentUser = CurrentUserUtils.getInstance().getUser();
 		// 获取特殊条件的pods
         try {
-            getServiceSource(model, currentUser.getId());
+//            getServiceSource(model, currentUser.getId());
             getNginxServer(model);
             getleftResource(model);
         } 
@@ -241,6 +235,46 @@ public class ServiceController {
         }
         model.addAttribute("menu_flag", "service");
         return "service/service.jsp";
+    }
+    
+    /**
+     * Description: <br>
+     * 服务在服务端分页查询
+     * @param draw ：画板
+     * @param start 开始页数
+     * @param length 每页的条数
+     * @param request 获取模糊查询的数据
+     * @return 
+     * @see
+     */
+    @RequestMapping(value = {"service/page.do"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String findServiceByPage(String draw, int start,int length,
+                                    HttpServletRequest request){
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        String search = request.getParameter("search[value]");
+        Map<String,Object> map = new HashMap<String, Object>();
+        Page<Service> services = null;
+        PageRequest pageRequest = null;
+        //判断是第几页
+        if (start == 0) {
+            pageRequest = ResultPager.buildPageRequest(null, length);
+        }else {
+            pageRequest = ResultPager.buildPageRequest(start/length + 1, length);
+        }
+        //判断是否需要搜索服务
+        if (StringUtils.isEmpty(search)) {
+            services = serviceDao.findByCreateBy(userId,pageRequest);
+        } else {
+            services = serviceDao.findByNameOf(userId, "%" + search + "%",pageRequest);
+        }
+        map.put("draw", draw);
+        map.put("recordsTotal", services.getTotalElements());
+        map.put("recordsFiltered", services.getTotalElements());
+        map.put("data", services.getContent());
+        
+        return JSON.toJSONString(map);
+        
     }
     
     /**
@@ -306,7 +340,7 @@ public class ServiceController {
         List<Container> containerList = new ArrayList<Container>();
 		// 获取特殊条件的pods
 		try {
-			for (Service service : serviceDao.findByNameOf(currentUser.getId(), "%" + searchNames + "%")) {
+			for (Service service : serviceDao.findByNameOf(currentUser.getId(), "%" + searchNames + "%",null)) {
 				Map<String, String> map = new HashMap<String, String>();
 				map.put("app", service.getServiceName());
 				PodList podList = client.getLabelSelectorPods(map);
@@ -356,18 +390,6 @@ public class ServiceController {
         return "service/service.jsp";
     }
 	
-    /**
-     * Description: <br>
-     * 跳转进入service-import.jsp页面
-     * @param model 
-     * @return String
-     */
-    @RequestMapping(value = { "service/import" })
-	public String serviceImport(Model model) {
-        model.addAttribute("menu_flag", "service");
-        return "service/service-import.jsp";
-    }
-
     /**
      * Description: <br>
      *  根据Id查找container和servies，跳转进入服务详细页面
@@ -936,19 +958,18 @@ public class ServiceController {
 	@ResponseBody
 	public String matchServicePathAndProxyPath (String proxyPath,String serviceName) {
         Map<String, Object> map = new HashMap<String, Object>();
-        User cUser = CurrentUserUtils.getInstance().getUser();
-        for (Service service : serviceDao.findByCreateBy(cUser.getId())) {
-            if (service.getServiceName().equals(serviceName)) {
-                map.put("status", "500");
-                break;
-            } 
-            else if (service.getProxyPath().equals(proxyPath)) {
-                map.put("status", "400");
-                break;
-            }
-            else {
-                map.put("status", "200");
-            }
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        int refsize = refServiceDao.findByCreateByAndSerName(createBy, serviceName).size();
+        int serSize = serviceDao.findByNameOf(createBy, serviceName).size();
+        int proxySize = serviceDao.findByCreateByAndProxyPath(createBy,proxyPath).size();
+        if(0<refsize | 0<serSize){
+            map.put("status", "500");
+        }
+        else if (0<proxySize) {
+            map.put("status", "400");
+        }
+        else{
+            map.put("status", "200");
         }
         return JSON.toJSONString(map);
     }

@@ -39,7 +39,7 @@
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 										<a href="<%=path %>/service/storage/add" id="storageAdd" title="创建存储卷"><i
 											class="fa fa-plus"></i></a>
-										<a href="" id="storagedel" title="删除存储卷"><i
+										<a id="storagedel" title="删除存储卷"  onclick="delStorages()"><i
 											class="fa fa-trash"></i></a>
 									</div>
 								</div>

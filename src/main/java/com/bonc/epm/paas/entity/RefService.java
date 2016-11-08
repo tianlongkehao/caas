@@ -77,7 +77,10 @@ public class RefService {
      * 服务node暴露端口
      */
     private Integer nodePort;
-    
+    /**
+     * 描述
+     */
+    private String refSerDesc;
     
     public long getId() {
         return id;
@@ -121,10 +124,10 @@ public class RefService {
     public void setViDomain(int viDomain) {
         this.viDomain = viDomain;
     }
-    public int getImprotSerMode() {
+    public int getimprotSerMode() {
         return improtSerMode;
     }
-    public void setImprotSerMode(int improtSerMode) {
+    public void setimprotSerMode(int improtSerMode) {
         this.improtSerMode = improtSerMode;
     }
     public Date getCreateDate() {
@@ -138,6 +141,12 @@ public class RefService {
     }
     public void setNodePort(Integer nodePort) {
         this.nodePort = nodePort;
+    }
+    public String getRefSerDesc() {
+        return refSerDesc;
+    }
+    public void setRefSerDesc(String refSerDesc) {
+        this.refSerDesc = refSerDesc;
     }
     
 }

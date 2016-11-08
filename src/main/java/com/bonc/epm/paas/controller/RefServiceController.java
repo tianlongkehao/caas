@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,6 +40,7 @@ import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
+import mousio.etcd4j.responses.EtcdKeyAction;
 import mousio.etcd4j.responses.EtcdKeysResponse;
 
 /**
@@ -83,6 +85,18 @@ public class RefServiceController {
     private EtcdClientService etcdClientService;
     
     /**
+     * Description: <br>
+     * 跳转进入service-import.jsp页面
+     * @param model 
+     * @return String
+     */
+    @RequestMapping(value = { "service/import" })
+    public String serviceImport(Model model) {
+        model.addAttribute("menu_flag", "service");
+        return "service/service-import.jsp";
+    }
+    
+    /**
      * 
      * Description: 外部服务列表
      * @return json
@@ -92,7 +106,8 @@ public class RefServiceController {
     @ResponseBody
     private String list(){
         Map<String,Object> map = new HashMap<String,Object>();
-        List<RefService> list = refServiceDao.findByCreateByOrViDomain(CurrentUserUtils.getInstance().getUser().getId(),1);
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        List<RefService> list = refServiceDao.findByCreateByOrViDomainOrderByCreateDateDesc(userId,1);
         map.put("data", list);
         return JSON.toJSONString(map);
     }
@@ -110,10 +125,10 @@ public class RefServiceController {
     @SuppressWarnings("static-access")
     @RequestMapping(value="refservice/add.do", method = RequestMethod.POST)
     @ResponseBody
-    private String add(String serName,String serAddress,String refAddress, int refPort, int viDomain,int improtSerMode){
+    private String add(String serName,String serAddress,String refAddress, int refPort, int viDomain,int importSerMode,String refSerDesc){
         Map<String, Object> map = new HashMap<String, Object>();
         
-        RefService refService = fillRefServiceInfo(null, serName, serAddress, refAddress, refPort, viDomain, improtSerMode);
+        RefService refService = fillRefServiceInfo(null, serName, serAddress, refAddress, refPort, viDomain, importSerMode,refSerDesc);
         String nameSpace = "";
         if (RefServiceConstant.ALL_TENANT == refService.getViDomain()) {
             nameSpace = "default";
@@ -121,13 +136,14 @@ public class RefServiceController {
             nameSpace = CurrentUserUtils.getInstance().getUser().getNamespace();
         }
         // etcd 和 service
-        if (RefServiceConstant.ETCD_MODE == refService.getImprotSerMode()) {
+        if (RefServiceConstant.ETCD_MODE == refService.getimprotSerMode()) {
             EtcdKeysResponse response = etcdClientService.putRecord(nameSpace, refService.getSerAddress(), refService.getRefAddress());
             if (null == response) {
                 map.put("status", "500");
             }
             else {
-                if (response.getAction().create.name().equals("create"))
+                response.getAction();
+                if (EtcdKeyAction.create.name().equals("create"))
                 map.put("status", "200");
                 refServiceDao.save(refService); 
             }
@@ -152,10 +168,10 @@ public class RefServiceController {
     @SuppressWarnings("static-access")
     @RequestMapping(value = "refservice/edit.do", method = RequestMethod.POST)
     @ResponseBody
-    private String editRefService(Long id, String serName,String serAddress,String refAddress ,int refPort, int viDomain,int improtSerMode){
+    private String editRefService(Long id, String serName,String serAddress,String refAddress ,int refPort, int viDomain,int importSerMode,String refSerDesc){
         Map<String, Object> map = new HashMap<String,Object>();
 
-        RefService refService = fillRefServiceInfo(id, serName, serAddress, refAddress, refPort, viDomain, improtSerMode);
+        RefService refService = fillRefServiceInfo(id, serName, serAddress, refAddress, refPort, viDomain, importSerMode,refSerDesc);
         String nameSpace = "";
         if (RefServiceConstant.ALL_TENANT == refService.getViDomain()) {
             nameSpace = "default";
@@ -175,13 +191,14 @@ public class RefServiceController {
             }
         }
         // etcd 和 service
-        if (RefServiceConstant.ETCD_MODE == refService.getImprotSerMode()) {
+        if (RefServiceConstant.ETCD_MODE == refService.getimprotSerMode()) {
             EtcdKeysResponse response = etcdClientService.putRecord(nameSpace, refService.getSerAddress(), refService.getRefAddress());
             if (null == response) {
                 map.put("status", "500");
             }
             else {
-                if (response.getAction().create.name().equals("create"))
+                response.getAction();
+                if (EtcdKeyAction.create.name().equals("create"))
                 map.put("status", "200");
                 refServiceDao.save(refService); 
             }
@@ -226,7 +243,7 @@ public class RefServiceController {
             } else {
                 nameSpace = userDao.findById(localRefService.getCreateBy()).getNamespace();
             }
-            if (RefServiceConstant.ETCD_MODE == localRefService.getImprotSerMode()) {
+            if (RefServiceConstant.ETCD_MODE == localRefService.getimprotSerMode()) {
                 //TODO etcd
             }
             else {
@@ -330,13 +347,13 @@ public class RefServiceController {
      * @param serAddress String
      * @param refAddress String
      * @param viDomain int
-     * @param improtSerMode int
-     * @param improtSerMode2 
+     * @param importSerMode int
+     * @param importSerMode2 
      * @return refService RefService
      * @see
      */
     private RefService fillRefServiceInfo(Long id, String serName, String serAddress, String refAddress,
-                                                              int refPort,int viDomain, int improtSerMode) {
+                                                              int refPort,int viDomain, int importSerMode,String refSerDesc) {
         RefService refService = null;
         if (null == id || id < 0) {
             refService = new RefService(); 
@@ -347,8 +364,9 @@ public class RefServiceController {
         refService.setRefAddress(refAddress);
         refService.setSerAddress(serAddress);
         refService.setRefPort(refPort);
+        refService.setRefSerDesc(refSerDesc);
         refService.setViDomain(viDomain == RefServiceConstant.ALL_TENANT ? RefServiceConstant.ALL_TENANT : RefServiceConstant.SELF_TENANT);
-        refService.setImprotSerMode(improtSerMode == RefServiceConstant.SERVICE_MODE ? RefServiceConstant.SERVICE_MODE : RefServiceConstant.ETCD_MODE);
+        refService.setimprotSerMode(importSerMode == RefServiceConstant.SERVICE_MODE ? RefServiceConstant.SERVICE_MODE : RefServiceConstant.ETCD_MODE);
         refService.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
         refService.setCreateDate(new Date());
         return refService;

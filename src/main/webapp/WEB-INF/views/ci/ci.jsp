@@ -169,7 +169,7 @@
         </div>
     </article>
 </div>
-	<script type="text/javascript">
+	<!-- <script type="text/javascript">
 		 $('.dataTables-example').dataTable({
 			"aoColumnDefs" : [ {
 				"bSortable" : false,
@@ -177,6 +177,6 @@
 			} ],
 			"aaSorting": [[ 3, "desc" ]]
 		});
-	</script>
+	</script> -->
 </body>
 </html>

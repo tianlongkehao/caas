@@ -85,30 +85,34 @@
 				<tbody class="BORDER">
 					<tr>
 						<th style="width: 35%">服务名称：</th>
-						<td><input class="" type="text" id="improt-ser-name" value=""></td>
+						<td><input class="" type="text" id="import-ser-name" value=""></td>
 					</tr>
  					<!-- <tr>
 						<th style="width: 35%">服务访问地址：</th>
-						<td><input class="" type="text" id="improt-ser-in" value=""></td>
+						<td><input class="" type="text" id="import-ser-in" value=""></td>
 					</tr> -->
 					<tr>
 						<th style="width: 35%">外部服务地址：</th>
-						<td><input class="" type="text" id="improt-ser-out" value=""></td>
+						<td><input class="" type="text" id="import-ser-out" value=""></td>
 					</tr>
 					<tr>
-                        <th style="width: 35%">外部服务端口：</th>
-                        <td><input class="" type="text" id="improt-ser-out-port" value=""></td>
-                    </tr>
+          <th style="width: 35%">外部服务端口：</th>
+          <td><input class="" type="text" id="import-ser-out-port" value=""></td>
+      </tr>
+      <tr>
+      <th style="width: 35%">服务描述：</th>
+          <td><input class="" type="text" id="import-ser-desc" value=""></td>
+      </tr>
 					<tr>
 						<th style="width: 35%">可见域：</th>
-						<td><select class="" id="improt-ser-visibility">
+						<td><select class="" id="import-ser-visibility">
 								<option value="0">仅本租户可见</option>
 								<option value="1">所有租户可见</option>
 						</select></td>
 					</tr>
                     <tr>
                         <th style="width: 35%">引入服务方式：</th>
-                        <td><select class="" id="improt-ser-mode">
+                        <td><select class="" id="import-ser-mode">
                                 <option value="0">service</option>
                                 <option value="1">etcd</option>
                         </select></td>
