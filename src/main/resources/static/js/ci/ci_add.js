@@ -1,16 +1,20 @@
 $(document).ready(function () {
     //codeType
+	$(".git-config").hide();
     $("#codeType").change(function(){
     	var codeType = $("#codeType").val();
     	if(codeType == 1){
-    		$(".git-config").removeClass("hide");
+    		$(".git-config").show();
+    		$("#git-higher").show();
+    		$(".git-higher").hide();
     	}else{
-    		$(".git-config").addClass("hide");
+    		$(".git-config").hide();
+    		$(".git-higher").hide();
     	}
     });
     //git-higher
     $("#git-higher").click(function(){
-    	$(".git-higher-config").removeClass("hide");
+    	$(".git-higher").show();
     	$("#git-higher").hide();
     });
     //maven
@@ -23,6 +27,7 @@ $(document).ready(function () {
     		$(".ant").hide();
     	}else if(addciStep == 2){
     		$(".ant-config").show();
+    		$("#ant-higher").show();
     		$(".maven").hide();
     	}else{
     		$(".maven").hide();
