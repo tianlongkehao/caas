@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -441,7 +443,7 @@ public class CiController {
             if (!sourceCode.isEmpty()) {
                 FileUtils.storeFile(sourceCode.getInputStream(), imagePath+"/"+sourceCode.getOriginalFilename());
             }
-            boolean flag = createAndPushImage(image,sourceCode.getInputStream());
+            boolean flag = loadAndPushImage(image,imagePath+"/"+sourceCode.getOriginalFilename());
             if(flag){
                 //排重添加镜像数据
                 Image img = null;
@@ -481,14 +483,17 @@ public class CiController {
      * @return flag boolean
      * @see
      */
-    private boolean createAndPushImage(Image image,InputStream inputStream) throws IOException{
+    private boolean loadAndPushImage(Image image,String tarPath) throws IOException{
+        InputStream uploadStream = Files.newInputStream(Paths.get(tarPath));
         boolean flag = false;
         try {
-            // import and push image
-            flag = dockerClientService.createAndPushImage(image, inputStream);
+            // load and push image
+            //String cmd = "docker load --input "+tarPath;
+            //CmdUtil.exeCmd(cmd);
+            flag = dockerClientService.loadAndPushImage(image, uploadStream);
             if(flag){
                 //删除本地镜像
-                flag = dockerClientService.removeImage(image.getName(), image.getVersion(),null,null,null);
+                flag = dockerClientService.removeImage(image.getName().split("/")[1], image.getVersion(),null,null,null);
             }
         } catch (Exception e) {
             e.printStackTrace();

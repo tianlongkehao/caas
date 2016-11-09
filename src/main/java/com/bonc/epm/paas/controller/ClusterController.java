@@ -49,6 +49,7 @@ import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateFormatUtils;
 import com.bonc.epm.paas.util.SshConnect;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -996,8 +997,8 @@ public class ClusterController {
             return "拷贝安装脚本失败";
         }
 		// 读取私有仓库地址
-        DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder().build();
-        String imageHostPort = config.getUsername();
+        DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
+        String imageHostPort = config.getRegistryUsername();
 		// ssh连接
         try {
             SshConnect.connect(user, pass, ip, port);

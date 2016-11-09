@@ -5,9 +5,11 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,7 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.Ports;
 import com.github.dockerjava.api.model.PullResponseItem;
 import com.github.dockerjava.api.model.PushResponseItem;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.BuildImageResultCallback;
@@ -51,6 +54,8 @@ public class DockerClientService {
 	private String email;
 	@Value("${docker.io.serverAddress}")
 	private String serverAddress;
+	@Value("${docker.io.apiVersion}")
+	private String apiVersion;
 	@Value("${docker.io.nodeUrl}")
 	private String nodeUrl;
 	private HashMap<String,Integer> nodeMap = null;
@@ -76,14 +81,15 @@ public class DockerClientService {
 	 * @see
 	 */
 	public DockerClient getSpecialDockerClientInstance(){
-		DockerClientConfig config = DockerClientConfig
+		DockerClientConfig config = DefaultDockerClientConfig
 				.createDefaultConfigBuilder()
-				.withUri(url)
+				.withDockerHost(url)
+				.withApiVersion(apiVersion)
 				.withDockerCertPath(dockerCertPath)
-				.withUsername(username)
-				.withPassword(password)
-				.withEmail(email)
-				.withServerAddress(serverAddress)
+				.withRegistryUsername(username)
+				.withRegistryPassword(password)
+				.withRegistryEmail(email)
+				.withRegistryUrl(serverAddress)
 				.build();
 		DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
 		return dockerClient;
@@ -124,17 +130,17 @@ public class DockerClientService {
        nodeMap.put(url, nodeMap.get(url) + 1);
        System.out.println("当前使用的docker客户端地址是：-" + url);
        
-        DockerClientConfig config = DockerClientConfig
+        DockerClientConfig config = DefaultDockerClientConfig
                 .createDefaultConfigBuilder()
-                .withUri(url)
+                .withDockerHost(url)
+                .withApiVersion(apiVersion)
                 .withDockerCertPath(dockerCertPath)
-                .withUsername(username)
-                .withPassword(password)
-                .withEmail(email)
-                .withServerAddress(serverAddress)
+                .withRegistryUsername(username)
+                .withRegistryPassword(password)
+                .withRegistryEmail(email)
+                .withRegistryUrl(serverAddress)
                 .build();
         DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
-
         return dockerClient;
     }
    
@@ -173,6 +179,23 @@ public class DockerClientService {
 	    return response;
 	}
 	
+	   /**
+     * 
+     * Description:
+     * load 镜像
+     * @return InspectImageResponse 
+     * @see InspectImageResponse 
+     */
+    public void loadImage(InputStream imageStream) {
+        DockerClient dockerClient = this.getSpecialDockerClientInstance();
+        try {
+            dockerClient.loadImageCmd(imageStream).exec();
+        }
+        catch (Exception e) {
+            log.error("load image error-:"+e.getMessage());
+        }
+    }
+	
 	/**
 	 * 
 	 * Description:
@@ -182,14 +205,17 @@ public class DockerClientService {
 	 * @return 
 	 * @see
 	 */
-	@SuppressWarnings("deprecation")
-	public boolean createAndPushImage(Image image, InputStream inputStream) {
+	public boolean loadAndPushImage(Image image, InputStream inputStream) {
 	    try {
             DockerClient dockerClient = this.getSpecialDockerClientInstance();
+            log.info("==========开始执行load image api");
+            dockerClient.loadImageCmd(inputStream).exec();
+            log.info("==========结束执行load image api");
+            log.info("image name");
             
-            String imageId = dockerClient.createImageCmd(image.getName(), inputStream).withTag(image.getVersion()).exec().getId();
-            imageId = imageId.substring(0,12); // ?? why is not the response same with building image.
-            dockerClient.tagImageCmd(imageId, username +"/"+image.getName(), image.getVersion()).withForce().exec();
+            //String imageId = dockerClient.createImageCmd(image.getName(), inputStream).withTag(image.getVersion()).exec().getId();
+            //imageId = imageId.substring(0,12); // ?? why is not the response same with building image.
+            dockerClient.tagImageCmd(image.getName().split("/")[1], username +"/"+image.getName(), image.getVersion()).withForce().exec();
             
             // push image
             PushImageResultCallback callback = new PushImageResultCallback() {
@@ -200,7 +226,7 @@ public class DockerClientService {
                    }
                };
             dockerClient.pushImageCmd(username +"/"+ image.getName()).withTag(image.getVersion()).exec(callback).awaitSuccess();
-            image.setImageId(imageId);
+            //image.setImageId(imageId);
             return true;
         }
         catch (Exception e) {
@@ -311,7 +337,7 @@ public class DockerClientService {
 		    if (null == dockerClient) {
 		         dockerClient = this.getSpecialDockerClientInstance(); 
 		    }
-			dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce().exec();
+			dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec();
 			if (null != ciRecord && null != ciRecordDao) {
 	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);
 	          ciRecordDao.save(ciRecord); 
@@ -374,7 +400,7 @@ public class DockerClientService {
 			DockerClient dockerClient = this.getSpecialDockerClientInstance();
 	        ExposedPort tcp = ExposedPort.tcp(exposedPort);
 	        Ports portBindings = new Ports();
-	        portBindings.bind(tcp, Ports.Binding(bindPort));
+	        portBindings.bind(tcp, Ports.Binding.bindPort(bindPort));
 	        dockerClient.createContainerCmd(username+"/"+imageName+":"+imageVersion).withName(containerName)
 	                .withExposedPorts(tcp).withPortBindings(portBindings).exec();
 			return true;
