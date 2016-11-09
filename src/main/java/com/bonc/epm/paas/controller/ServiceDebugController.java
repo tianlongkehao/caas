@@ -53,12 +53,8 @@ import com.jcraft.jsch.SftpException;
 @Controller
 public class ServiceDebugController {
 
-	private String root = "/";
-	private String host = "192.168.254.129";
-	private int port = 22;
-	private String username = "longlong";
-	private String password = "123456";
-	private static ChannelSftp sftp;
+	private static final String ROOT = "/";
+	private ChannelSftp sftp;
 	/**
 	 * 服务数据层接口
 	 */
@@ -77,12 +73,17 @@ public class ServiceDebugController {
 		System.out.printf("id: " + id);
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		Service service = serviceDao.findOne(id);
+		
+		String host = "192.168.0.76";
+		int port = 22;
+		String username = "root";
+		String password = "root.123";
 
 		// 建立connect
 		sftp = SFTPUtil.connect(host, port, username, password);
 		try {
 			// 跳转至初始目录
-			sftp.cd(root);
+			sftp.cd(ROOT);
 		} catch (SftpException e) {
 			e.printStackTrace();
 		}
@@ -119,7 +120,7 @@ public class ServiceDebugController {
 		try {
 			// 没有目标目录时，返回根目录
 			if ("".equals(dirName)) {
-				directory = root;
+				directory = ROOT;
 			} else {
 				// 有目标目录时，cd到目标目录获取pwd绝对路径
 				System.out.println(sftp.pwd());
@@ -151,7 +152,7 @@ public class ServiceDebugController {
 	public String delFile(String fileNames) {
 		Map<String, String> map = new HashMap<String, String>();
 		String[] fileName = fileNames.split(",");
-		String path = root;
+		String path = ROOT;
 		String filename = new String();
 		try {
 			path = sftp.pwd();

@@ -38,7 +38,7 @@
 										<a href="javascript:creatable(null,'./');" id="volReloadBtn" title="刷新"> <i class="fa fa-repeat"></i></a>
 										<a href="javascript:createdir()" id="adddir" title="新建"> <i class="fa fa-plus"></i></a>
 										<a href="javascript:fileUpload()" id="fileUpload" title="上传文件"> <i class="fa fa-upload"></i></a>
-										<a href="javascript:download()" id="fileDownload" title="导出文件"> <i class="fa fa-download"></i></a>
+<!-- 										<a href="javascript:download()" id="fileDownload" title="导出文件"> <i class="fa fa-download"></i></a> -->
 										<a href="javascript:delfiles()" id="deleteButton" title="删除"> <i class="fa fa-trash"></i></a>
 									</div>
 								</div>
@@ -48,9 +48,9 @@
 											<tr>
 												<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
 												<th style="width: 25%; text-indent: 30px;">文件名</th>
-												<th style="width: 20%; text-indent: 15px;">大小</th>
+												<th style="width: 20%; text-indent: 5px;">大小</th>
 												<th style="width: 25%; text-indent: 8px;">修改日期</th>
-												<th style="width: 10%; text-indent: 100px;">操作</th>
+												<th style="width: 10%; text-indent: 80px;">操作</th>
 											</tr>
 										</thead>
 										<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%">

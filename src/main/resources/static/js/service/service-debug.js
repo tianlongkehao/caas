@@ -46,11 +46,11 @@ function creatable(isDir, dirName) {
 								+ '</span>'
 								+ '</a>'
 								+ '</td>'
-								+ '<td style="width: 20%;">'
+								+ '<td style="width: 20%; text-indent: 2px;">'
 								+ fileInfo.size
 								+ '</td>'
-								+ '<td style="width: 25%;"></td>'
-								+ '<td style="width: 10%;text-indent: 56px;"></td>'
+								+ '<td style="width: 25%; text-indent: 0px;"></td>'
+								+ '<td style="width: 10%;text-indent: 0px;"></td>'
 								+ '</tr>';
 					} else {
 						tbody += '<tr class="vol_list" style="cursor:pointer">'
@@ -77,17 +77,17 @@ function creatable(isDir, dirName) {
 								+ '</span>'
 								+ '</a>'
 								+ '</td>'
-								+ '<td style="width: 20%;">'
+								+ '<td style="width: 20%; text-indent: 0px;">'
 								+ fileInfo.size
 								+ 'KB</td>'
-								+ '<td style="width: 25%;">'
+								+ '<td style="width: 25%; text-indent: 0px;">'
 								+ fileInfo.modifiedTime
 								+ '</td>'
-								+ '<td style="width: 10%;text-indent: 56px;">'
-								+ '<a class="deleteButton" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
+								+ '<td style="width: 10%;text-indent: 71px;">'
+								+ '<a class="deleteButton" style="text-indent: 0px;" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
 								+ fileInfo.fileName
 								+ '"> <i class="fa fa-trash fa-lg"></i></a>'
-								+ '<a class="downloadButton" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
+								+ '<a class="downloadButton" style="text-indent: 1px;" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
 								+ fileInfo.fileName
 								+ '"> <i class="fa fa-download fa-lg"></i></a>'
 								+ '</td>' + '</tr>';
