@@ -230,7 +230,8 @@ public class DockerClientService {
             return true;
         }
         catch (Exception e) {
-            log.error("createImage error:"+e.getMessage());
+            log.error("load or push error:"+e.getMessage());
+            e.printStackTrace();
             return false;
         }
 	}
