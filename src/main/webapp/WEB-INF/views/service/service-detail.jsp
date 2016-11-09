@@ -62,6 +62,7 @@
 						<ul class="nav navbar-nav">
 							<li><a class="BASE btn-prim">基本信息</a></li>
 							<li><a class="INSTANCES">容器实例</a></li>
+							<li><a class="ENVS">环境变量</a></li>
 							<li><a class="PORTS">端口</a></li>
 							<li class="dropdown">
 								<a class="dropdown-toggle" id="dropdown-log"
@@ -160,28 +161,6 @@
 								</tr></c:if>
 							</tbody>
 						</table>
-
-						<table class="table basicInfo w50">
-                            <thead>
-                                <tr>
-                                    <th >环境变量</th>
-                                    <th >&nbsp;</th>
-                                </tr>
-                            </thead>
-                            <tbody class="BORDER">
-                                <tr>
-                                    <td> 键</td>
-                                    <td> 值</td>
-                                </tr>
-                                <c:forEach items="${envVariableList }" var="envVariable">
-                                    <tr>
-                                        <td> ${envVariable.envKey }</td>
-                                        <td> ${envVariable.envValue }</td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-						
 					</div>
 					<div class="containerInstances hide" style="min-height: 300px;">
 						<table class="table">
@@ -275,12 +254,37 @@
 							<div class="bind-status" style="display: none;">添加成功！</div>
 						</section>
 					</div>
+					<div class="envMapping hide" style="min-height: 500px;">
+						<section class="paddingrow">
+							<div class="envlabel hide"><label class="forEnvName">环境变量模板名称：</label>
+								<input type="text" class="form-control envName" value="${envTemplate.templateName }" readonly>
+							</div>
+							<table class="table table-normal" style="border: 1px solid #eee;">
+								<thead style="background: #F5F6F6;">
+									<tr style="height: 40px;">
+										<th style="width:40%;text-indent: 15px;">键</th>
+										<th>值</th>
+										
+									</tr>
+								</thead>
+								<tbody>
+	                                <c:forEach items="${envVariableList }" var="envVariable">
+	                                    <tr>
+	                                        <td style="width:40%;text-indent: 15px;"> ${envVariable.envKey }</td>
+	                                        <td> ${envVariable.envValue }</td>
+	                                    </tr>
+	                                </c:forEach>
+									
+								</tbody>
+							</table>
+						</section>
+					</div>
 					<div class="portMapping hide" style="min-height: 500px;">
 						<section class="paddingrow">
 							<table class="table table-normal" style="border: 1px solid #eee;">
 								<thead style="background: #F5F6F6;">
 									<tr style="height: 40px;">
-										<td>名称</td>
+										<td style="width:10%;text-indent: 15px;">名称</td>
 										<td>容器端口</td>
 										<td>协议</td>
 										<td>映射端口</td>
@@ -290,7 +294,7 @@
 								<tbody>
 									<c:forEach items="${portConfigList }" var="portConfig">
 										<tr>
-											<td>${service.serviceName }</td>
+											<td style="width:10%;text-indent: 15px;">${service.serviceName }</td>
 											<td>${portConfig.containerPort }</td>
 											<td>${portConfig.protocol }</td>
 											<td>${portConfig.mapPort }</td>

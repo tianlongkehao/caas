@@ -71,15 +71,13 @@
 		                                </select>
 		                            </div>
 	                            </div>
-	                            <div class="row git-config hide">
+	                            <div class="row git-config">
 	                            	<div class="form-group col-md-12">
 		                                <label class="c-project-tit">代码仓库地址</label>
 		                                <input id="codeUrl" name="codeUrl" class="form-control c-project-con" type="text"
                                            placeholder="例如：https://github.com/tenxcloud/php-hello-world.git">
 		                            </div>
-	                            </div>
-	                            <div class="row git-config hide">
-	                            	<div class="form-group col-md-12">
+		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">认证方式</label>
 		                                <select id="codeType" name="codeType" class="form-control c-project-con">
 		                                    <option value="0">-none-</option>
@@ -87,11 +85,16 @@
 	                                      	<option value="2">root/**********(gitlab HTTPS方式认证)</option>
 		                                </select>
 		                            </div>
+		                            <div class="form-group col-md-12">
+		                                <label class="c-project-tit">创建分支</label>
+		                                <input id="buildBranch" name="buildBranch" type="text" class="form-control c-project-con"
+                                                   value="*/master">
+		                            </div>
 	                            </div>
-	                            <div class="row git-config hide">
+	                            <div class="row git-config">
 	                            	<button id="git-higher" type="button" style="float:right!important">高级...</button>
 	                            </div>
-	                            <div class="row git-higher-config hide">
+	                            <div class="row git-config git-higher">
 	                            	<div class="form-group col-md-12">
 		                                <label class="c-project-tit">代码库用户名</label>
 		                                <input id="codeUsername" name="codeUsername" type="text" class="form-control c-project-con reg-input"
@@ -103,14 +106,7 @@
                                                    class="form-control c-project-con reg-input" value="">
 		                            </div>
                                 </div>
-                                <div class="row">
-	                            	<div class="form-group col-md-12">
-		                                <label class="c-project-tit">创建分支</label>
-		                                <input id="buildBranch" name="buildBranch" type="text" class="form-control c-project-con"
-                                                   value="*/master">
-		                            </div>
-		                            
-                                </div>
+                               
                             </section>
                             <h4 class="c-title">构建</h4>
                             <section class="registryinfo">
