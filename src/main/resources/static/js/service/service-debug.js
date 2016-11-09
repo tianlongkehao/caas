@@ -87,7 +87,7 @@ function creatable(isDir, dirName) {
 								+ '<a class="deleteButton" style="text-indent: 0px;" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
 								+ fileInfo.fileName
 								+ '"> <i class="fa fa-trash fa-lg"></i></a>'
-								+ '<a class="downloadButton" style="text-indent: 1px;" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
+								+ '<a class="downloadButton" style="text-indent: 1px;" href="javascript:void(0)" onclick="download("'+ fileInfo.fileName+'")"  fileName="'
 								+ fileInfo.fileName
 								+ '"> <i class="fa fa-download fa-lg"></i></a>'
 								+ '</td>' + '</tr>';
@@ -300,7 +300,7 @@ function failedMSG(title, flag) {
 			layer.close(index);
 			if (flag == true) {
 				// 刷新页面
-				creatable(null, ".");
+				creatable(null, "/");
 			}
 		}
 	});
