@@ -5,7 +5,7 @@
     <title>快速构建</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
-    <script type="text/javascript" src="<%=path %>/js/ci/ci_add.js"></script>
+    <script type="text/javascript" src="<%=path %>/js/ci/ci_quick.js"></script>
 </head>
 <body>
 
