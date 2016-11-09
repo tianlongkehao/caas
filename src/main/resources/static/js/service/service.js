@@ -66,15 +66,15 @@ function loadContainers(obj,serviceId) {
 									+ containerName
 									+ '</a>'
 									+ '</td>'
-									+ '<td colspan="2" style="width: 30%"><i class="'
+									+ '<td colspan="2" style="width: 32%"><i class="'
 									+ statusClassName
 									+ '"></i>'
 									+ containerStatus
 									+ '<img src=" '+ctx+'/images/loading4.gif" alt="" class="'
 									+ loadingImgShowClass
 									+ '"/></td>'
-									+ '<td style="width: 24%"></td>'
-									+ '<td colspan="2" style="width: 20%"></td>'
+									+ '<td style="width: 12%"></td>'
+									+ '<td colspan="2" style="width: 32%"></td>'
 									+ '</tr>';
 						}
 						$(obj).after(containersHtml);
@@ -916,7 +916,12 @@ function loadServices() {
 							
 							html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
 									'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
-									'style="margin-left: 5px"><i class="fa fa-cog"></i></a> '+														
+									'style="margin-left: 5px"><i class="fa fa-cog"></i></a> '+	
+									'<a id="'+row.id+'_change" class="a-live change " '+
+										'href="'+ctx+'/service/debug/'+row.id+'" title="更改配置"'+
+										'style="margin-left: 5px">'+
+											'<i class="fa fa-bug"></i>'
+									+'</a> '+
 									'<a id="'+row.id+'_del" class="a-live deleteButton_a "'+
 									'href="javascript:oneDeleteContainer('+row.id+')"'+
 									'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
