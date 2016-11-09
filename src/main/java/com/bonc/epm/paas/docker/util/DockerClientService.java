@@ -209,10 +209,9 @@ public class DockerClientService {
 	    try {
             DockerClient dockerClient = this.getSpecialDockerClientInstance();
             log.info("==========开始执行load image api");
-            dockerClient.loadImageCmd(inputStream).exec();
+            //dockerClient.loadImageCmd(inputStream).exec();
             log.info("==========结束执行load image api");
             log.info("image name");
-            
             //String imageId = dockerClient.createImageCmd(image.getName(), inputStream).withTag(image.getVersion()).exec().getId();
             //imageId = imageId.substring(0,12); // ?? why is not the response same with building image.
             dockerClient.tagImageCmd(image.getName().split("/")[1], username +"/"+image.getName(), image.getVersion()).withForce().exec();
@@ -338,7 +337,12 @@ public class DockerClientService {
 		    if (null == dockerClient) {
 		         dockerClient = this.getSpecialDockerClientInstance(); 
 		    }
-			dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec();
+		    if (!imageName.trim().contains("/")) {
+		        dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
+		    } else {
+		        dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec();
+		    }
+			
 			if (null != ciRecord && null != ciRecordDao) {
 	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);
 	          ciRecordDao.save(ciRecord); 
