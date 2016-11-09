@@ -53,9 +53,9 @@
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">JDK</label>
 	                                    <select id="jdk-version" name="jdk-version" class="form-control c-project-con">
-	                                    	<option></option>
+	                                    	<option value="jdk1.7">jdk1.7</option>
+	                                    	<option value="jdk1.8">jdk1.8</option>
 	                                    </select>
-	                                    
 	                                </div>
 	                            </div>
                         	</section>

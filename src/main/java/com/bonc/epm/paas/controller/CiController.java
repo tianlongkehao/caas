@@ -339,7 +339,7 @@ public class CiController {
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_add.jsp";
     }
-	
+
     /**
      * 进入上传镜像页面
      * 
