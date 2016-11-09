@@ -85,15 +85,15 @@
 									<div class="host_step2">
 										<ul class="safeSet">
 											<li class="line-h-3"><span class="ve_top">镜像名称：</span> <input
-												type="text" value="" class="in_style" id="imgName"
+												type="text" value="" class="in_style form-control" id="imgName"
 												name="imgName" readOnly="readOnly"> <input
 												type="hidden" value="" id="imgID" name="imgID"></li>
 											<li class="line-h-3"><span class="ve_top">镜像版本：</span> <input
-												type="text" value="" class="in_style" id="imgVersion"
+												type="text" value="" class="in_style form-control" id="imgVersion"
 												name="imgVersion" readOnly="readOnly"></li>
 											<li class="line-h-3"><span class="ve_top">服务名称：<font
 													color="red">*</font></span><input type="text" value=""
-												class="in_style" id="serviceName" name="serviceName">
+												class="in_style form-control" id="serviceName" name="serviceName">
 												<input type="hidden" value="" class="in_style"
 												id="resourceName" name="resourceName"></li>
 											<li id="service_type"><span class="ve_top">启动命令：</span>
@@ -102,7 +102,7 @@
 														color="blue">自定义启动命令</font></label>
 											</span></li>
 											<li class="line-h-3" id="startCommand_li"><input
-												type="text" value="" class="in_style"
+												type="text" value="" class="in_style form-control"
 												id="startCommand_input" name="startCommand"
 												style="margin-left: 150px"></li>
 											<!-- 检查服务状态 -->
@@ -112,21 +112,21 @@
                           color="blue">检查服务状态</font></label>
                     </span></li>
                     <li class="line-h-3" id="checkSerStatus_li"><input
-                      type="text" value="" class="in_style"
+                      type="text" value="" class="in_style form-control"
                       id="checkSerStatus_input" name="checkPath"
                       style="margin-left: 150px"></li>
                       <li class="line-h-3" id="checkItems">
 	                      <ul class="checkitems">
 	                      	<li><span class="check-lable">检测延迟：</span>
-								<input type="number" value="600" class="number" id="initialDelay" 
+								<input type="number" value="600" class="number form-control" id="initialDelay" 
 								onkeyup="this.value=this.value.replace(/\D/g,'')" min="0"
 								name="initialDelay"> <span class="c-unit">s</span></li>
 							<li><span class="check-lable">检测超时：</span>
-								<input type="number" value="5" class="number" id="timeoutDetction"
+								<input type="number" value="5" class="number form-control" id="timeoutDetction"
 								onkeyup="this.value=this.value.replace(/\D/g,'')" min="0"
 								name="timeoutDetction"> <span class="c-unit">s</span></li>
 							<li><span class="check-lable">检测频率：</span>
-								<input type="number" value="10" class="number" placeholder="1" id="periodDetction"
+								<input type="number" value="10" class="number form-control" placeholder="1" id="periodDetction"
 								onkeyup="this.value=this.value.replace(/\D/g,'')" min="1"
 								name="periodDetction"> <span class="c-unit">s</span></li>
 	                      </ul>
@@ -134,8 +134,8 @@
                       										
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
 													color="red">*</font></span>
-												<input type="text" value="" class="in_style" id="webPath" name="servicePath">
-												<span style="color:#1dd2af;border: 1px solid #ccc" id="service-path"><i class="fa fa-info-circle"></i></span>
+												<input type="text" value="" class="in_style form-control" id="webPath" name="servicePath">
+												<span style="color:#1dd2af;" id="service-path"><i class="fa fa-info-circle"></i></span>
 											</li>
 											<c:if test="${DMZ!=null && USER!=null  }">
 												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
@@ -150,19 +150,19 @@
 											</c:if>
 											<li class="line-h-3"><span class="ve_top">nginx代理路径：<font
 													color="red">*</font></span>
-												<input type="text" value="" class="in_style" id="nginxPath" name="proxyPath">
+												<input type="text" value="" class="in_style form-control" id="nginxPath" name="proxyPath">
 												<span style="color:#1dd2af" id="proxy-path"><i class="fa fa-info-circle"></i></span>
 											</li>
 											<li class="line-h-3"> <span class="ve_top">会话黏连方式：</span>
-	                                            <select class="selectVolume" id="sessionAffinity" name="sessionAffinity"
-	                                                style="height: 30px; width: 230px;">
+	                                            <select class="selectVolume form-control" id="sessionAffinity" name="sessionAffinity"
+	                                                style="height: 34px; width: 230px;">
 	                                                <option name="sessionAffinity" value="" >NONE</option>
 	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
 	                                            </select>
                                             </li>
                     <li class="line-h-3"> <span class="ve_top">NodeIp黏连方式：</span>
-                                                <select class="selectVolume" id="nodeIpAffinity" name="nodeIpAffinity"
-                                                    style="height: 30px; width: 230px;">
+                                                <select class="selectVolume form-control" id="nodeIpAffinity" name="nodeIpAffinity"
+                                                    style="height: 34px; width: 230px;">
                                                     <option name="nodeIpAffinity" value="" >NONE</option>
                                                     <option name="nodeIpAffinity" value="nodeIpAffinity">nodeIpAffinity</option>
                                                 </select>
@@ -185,10 +185,10 @@
 											<li class="line-h-3" id="instsize">
 												<div class="param-set">
 													<span class="ve_top">实例数量：<font color="red">*</font></span>
-													<input type="number" value="1" class="number" min="1"
+													<input type="number" value="1" class="number form-control" min="1"
 														autocomplete="off" max="" placeholder="1" id="instanceNum"
 														onkeyup="this.value=this.value.replace(/\D/g,'')"
-														name="instanceNum"> <span class="unit">个</span>
+														name="instanceNum"> <span class="s-unit">个</span>
 													<%-- 													<span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span>
 													<span class="dynamic-scale"> <input type="checkbox"
 														id="dynamic-service"> <label for="dynamic-service"><font
@@ -258,11 +258,11 @@
 														<table class="pull-left">
 															<tbody>
 																<tr>
-																	<td><input type="text" id="mountPath"
+																	<td><input type="text" id="mountPath" class="form-control"
 																		name="mountPath" value="" /></td>
 																	<td style="padding-left: 10px;"><select
-																		class="selectVolume" id="selectVolume" name="volName"
-																		style="height: 30px; width: 230px;">
+																		class="selectVolume form-control" id="selectVolume" name="volName"
+																		style="height: 34px; width: 230px;">
 																			<option name="volName" value="0">选择一个存储卷</option>
 																	</select></td>
 																	<!-- <td>
@@ -291,8 +291,8 @@
 											</li>
 											<li class="hide-set"><span class="ve_top">环境变量：</span>
 												<ol>
-													<li class="hide-select"><input type="text"
-														placeholder="name" id="Name"> <input type="text"
+													<li class="hide-select"><input type="text" class="form-control"
+														placeholder="name" id="Name"> <input type="text" class="form-control"
 														placeholder="value" id="Value"> <a id="cratePATH"><i
 															class="fa fa-plus"></i>添加</a>
 														<div style="float: right">
