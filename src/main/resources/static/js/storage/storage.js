@@ -191,8 +191,8 @@ function delStorages(){
         }
     }
  layer.open({
-        title: '删除外部引入服务',
-        content: '确定批量删除外部引入服务？',
+        title: '删除卷组',
+        content: '确定批量删除卷组？',
         btn: ['确定', '取消'],
         yes: function(index, layero){ 
         	layer.close(index);
@@ -208,13 +208,12 @@ function delStorages(){
 	     			layer.msg( "删除失败，有卷组正在使用，你不考虑一下？", {
 						icon: 1
 	     				});
-   		   			}
-					if(data.status=="200"){
+   		   	}else if(data.status=="200"){
 						layer.alert("服务已删除");
-						window.location.reload();
-					}else{
-						layer.alert("服务删除失败，请检查服务器连接");
-					}
+						window.location.reload();   		   				 
+   		   	}else{
+   		   	layer.alert("服务删除失败，请检查服务器连接");
+   		   	}
 
 				}
 			})
@@ -245,7 +244,7 @@ function dilatationStorage(){
 				
 				$("#updatedefVolNum")[0].value = ($("#updatedefVol").val()*1024);
 				var storageUpdateSize = $(".updateStorageSize:checked").val();
-				if(storageUpdateSize.search(/^[1-9]\d*$/) === -1){
+				if($("#updatedefVol").val().search(/^[1-9]\d*$/) === -1){
 			        layer.tips('自定义大小请填正整数', $('#updatedefVol'),{tips: [1, '#EF6578']});
 			            return;
 			        }

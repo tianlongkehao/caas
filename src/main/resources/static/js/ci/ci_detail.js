@@ -161,6 +161,7 @@ function registerCiEditEvent(){
 
 function changeBaseImageVersion () {
 	var baseImageName = $("#baseImageName").val();
+	var baseVersion = $("#ownBase").html();
 	$.ajax({
 		url:""+ctx+"/ci/findBaseImageVersion.do",
 		type:"post",
@@ -172,11 +173,15 @@ function changeBaseImageVersion () {
             	if (data['data'].length > 0) {
             		for (var i in data.data) {
             			var image = data.data[i];
-            			html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>"
+            			if (baseVersion == image.version) {
+            				html = "" + html;
+            			}else {
+            				html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>"
+            			}
             		}
             	}
             }
-            $("#baseImageId").html(html);    
+            $("#baseImageId").append(html);    
 		}
 	})
 }

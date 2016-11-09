@@ -229,7 +229,7 @@
                                                     </c:forEach>
                                                 </select> : 
                                                 <select id="baseImageId" name="baseImageId" style="height:48px">
-                                                    <option type="text"  value="${ci.baseImageId }">${ci.baseImageVersion }</option>
+                                                    <option type="text" id = "ownBase" value="${ci.baseImageId }">${ci.baseImageVersion }</option>
                                                 </select>
                                             
                                                <%--  <input id="baseImageName" name="baseImageName" type="text" 

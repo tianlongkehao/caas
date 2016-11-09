@@ -923,3 +923,9 @@ tr.focus{
 #confCpu,#numberChange{
 	text-indent: 6px;
 }
+.info-importService{
+	margin-left:10px;
+	color:#5cb85c;
+	cursor: pointer;
+}
+

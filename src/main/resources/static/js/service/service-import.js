@@ -9,180 +9,140 @@
 	_refreshCreateTime(60000);
 	//添加外部服务地址
 	$("#importServiceBtn").click(function(){
-		 $("#improt-ser-name").removeAttr("disabled");
-		 $("#improt-ser-name").val("");
-		 $("#improt-ser-in").val("");
-		 $("#improt-ser-out").val("");
-		 $("#improt-ser-out-port").val("");
+		 $("#import-ser-name").removeAttr("disabled");
+		 $("#import-ser-name").val("");
+		 $("#import-ser-in").val("");
+		 $("#import-ser-out").val("");
+		 $("#import-ser-out-port").val("");
+		 $("#import-ser-desc").val("");
 		layer.open({
 		 	type:1,
 	        title: '引入外部服务',
 	        content: $("#import-service"),
 	        btn: ['保存', '取消'],
 	        yes: function(index, layero){
-	        	 $('#improt-ser-name').focus();
-	        	 var importSerName = $("#improt-ser-name").val();
-//	        	 var importSerIn = $("#improt-ser-in").val();
-	        	 var importSerIn = "default";
-	        	 var importSerOut = $("#improt-ser-out").val();
-	        	 var importSerOutPort = $("#improt-ser-out-port").val();
-	        	 var importSerVis = $("#improt-ser-visibility").val();
-	        	 var improtSerMode = $("#improt-ser-mode").val();
-	        	 
-	        	 if (importSerName.length === 0) {
-	                 layer.tips('服务名称不能为空', '#improt-ser-name', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-name').focus();
-	                 return ;
-	             } 
-	        	 
-	        	 if(importSerName.search(/^[a-z0-9-]*$/) === -1){
-	        		 layer.tips('服务名称只能由小写字母、数字及横线组成','#improt-ser-name',{tips: [1, '#3595CC'],time: 3000});
-	        		 $('#improt-ser-name').focus();
-	        		 return;
-	       	     }
-	        	
-	        	 if (importSerName.length < 1) {
-	                 layer.tips('服务名称过短', '#improt-ser-name', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-name').focus();
-	                 return ;
-	             } 
-	             
-	             if (importSerIn.length === 0) {
-	                 layer.tips('服务访问地址不能为空', '#improt-ser-in', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-in').focus();
-	                 return ;
-	             }
-	             if (importSerOut.length === 0) {
-	                 layer.tips('外部服务地址不能为空', '#improt-ser-out', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-out').focus();
-	                 return ;
-	             }
-	        	 
-	             if(importSerOut.search(/^[a-zA-Z0-9-:.\/]*$/) === -1){
-	       	      	layer.tips('外部服务地址中有非法字符，请您检查之后重新填写','#improt-ser-out',{tips: [1, '#3595CC'],time: 3000});
-	       	      	$('#improt-ser-out').focus();
-	       	      	return;
-	       	     }
-	             
-	             if (importSerOutPort.length === 0) {
-	            	 layer.tips('外部服务端口不能为空', '#improt-ser-out-port', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-out-port').focus();
-	                 return ;
-	             }
-	             
-	             if (importSerOutPort.search(/^[0-9]*$/) === -1) {
-	            	 layer.tips('外部服务端口只能为数字', '#improt-ser-out-port', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-out-port').focus();
-	                 return ;
-	             }
-	             
-	             var flag=0;
-                 var un = importSerName.toLowerCase();
-                 console.info(un);
-                 $("#improt-ser-name").val(un);
-                 $.get(ctx +"/refservice/checkName.do?un=" + un,
-                     function (data, status) {
-                         console.info("Data: " + data + "\nStatus: " + status);
-                         var data = eval("(" + data + ")");
-                         if (data.status == "400") {
-                             //layer.alert("登陆帐号已经被使用，请输入新的帐号！");
-                             layer.tips('服务名已经被使用，请输入新的服务名！', '#improt-ser-name', {
-                                 tips: [1, '#0FA6D8']
-                             });
-                             $('#improt-ser-name').focus();
-                             return ;
-                         }else {
-                        	 $.ajax({
-         		         		url : ctx + "/refservice/add.do",
-         		         		type: "POST",
-         		         		data: {"serName":importSerName,"serAddress":importSerIn,
-         		         			   "refAddress":importSerOut,"refPort":importSerOutPort,
-         		         			   "viDomain":importSerVis,"improtSerMode":improtSerMode
-         		         		},
-         		         		success: function(data) {
-         		         			window.location.reload();
-         		         		}
-         		         	});
-                         }
-                     });
+	        	$('#import-ser-name').focus();
+	       	 var importSerName = $("#import-ser-name").val();
+//	       	 var importSerIn = $("#import-ser-in").val();
+	       	 var importSerIn = "default";
+	       	 var importSerOut = $("#import-ser-out").val();
+	       	 var importSerOutPort = $("#import-ser-out-port").val();
+	       	 var importSerVis = $("#import-ser-visibility").val();
+	       	 var importSerMode = $("#import-ser-mode").val();
+	       	 var importSerDesc =$("#import-ser-desc").val();
+	       if(true!=	checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort
+	       			,importSerVis,importSerMode,importSerDesc)){return;}
+	       	var flag=0;
+	        var un = importSerName.toLowerCase();
+	        console.info(un);
+	        $("#import-ser-name").val(un);
+	        $.get(ctx +"/refservice/checkName.do?un=" + un,
+	            function (data, status) {
+	                console.info("Data: " + data + "\nStatus: " + status);
+	                var data = eval("(" + data + ")");
+	                if (data.status == "400") {
+	                    //layer.alert("登陆帐号已经被使用，请输入新的帐号！");
+	                    layer.tips('服务名已经被使用，请输入新的服务名！', '#import-ser-name', {
+	                        tips: [1, '#0FA6D8']
+	                    });
+	                    $('#import-ser-name').focus();
+	                    return ;
+	                }else {
+	               	 $.ajax({
+	   		         		url : ctx + "/refservice/add.do",
+	   		         		type: "POST",
+	   		         		data: {"serName":importSerName,"serAddress":importSerIn,
+	   		         			   "refAddress":importSerOut,"refPort":importSerOutPort,
+	   		         			   "viDomain":importSerVis,"importSerMode":importSerMode,"refSerDesc":importSerDesc
+	   		         		},
+	   		         		success: function(data) {
+	   		         			window.location.reload();
+	   		         		}
+	   		         	});
+	                }
+	            });
 	        }
 		})
 	});
  });
- 
- //验证
- function check(){
-     var serName = $('#improt-ser-name').val().trim();
-     var serIn = $("#improt-ser-in").val().trim();
-	 var serOut = $("#improt-ser-out").val().trim();
-     if (serName.length === 0) {
-         layer.tips('服务名称不能为空', '#improt-ser-name', {
-             tips: [1, '#0FA6D8'] //还可配置颜色
-         });
-         $('#improt-ser-name').focus();
-         return false;
-     } else if (serName.length < 4) {
-         layer.tips('服务名称过短', '#improt-ser-name', {
+
+	 
+
+	function checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort,importSerVis,importSerMode,importSerDesc){
+	 if (importSerName.length === 0) {
+         layer.tips('服务名称不能为空', '#import-ser-name', {
              tips: [1, '#0FA6D8']
          });
-         $('#improt-ser-name').focus();
-         return false;
-     } else {
-    	 //var flag=0;
-         var un = serName.toLowerCase();
-         console.info(un);
-         $("#improt-ser-name").val(un);
-         $.get(
-             "/refservice/checkName.do?un=" + un,
-             function (data, status) {
-                 console.info("Data: " + data + "\nStatus: " + status);
-                 var data = eval("(" + data + ")");
-                 if (data.status == "400") {
-                     //layer.alert("登陆帐号已经被使用，请输入新的帐号！");
-                     layer.tips('服务名已经被使用，请输入新的服务名！', '#improt-ser-name', {
-                         tips: [1, '#0FA6D8']
-                     });
-                     $('#improt-ser-name').focus();
-                     return false;
-                     //flag=1;
-                 }
-             });
-//         if(1==flag){
-//         	return false;
-//         }
+         $('#import-ser-name').focus();
+         return ;
+     } 
+	 
+	 if(importSerName.search(/^[a-z0-9-]*$/) === -1){
+		 layer.tips('服务名称只能由小写字母、数字及横线组成','#import-ser-name',{tips: [1, '#3595CC'],time: 3000});
+		 $('#import-ser-name').focus();
+		 return;
+	     }
+	
+	 if (importSerName.length < 1) {
+         layer.tips('服务名称过短', '#import-ser-name', {
+             tips: [1, '#0FA6D8']
+         });
+         $('#import-ser-name').focus();
+         return ;
      } 
      
-     if (serIn.length === 0) {
-         layer.tips('服务访问地址不能为空', '#improt-ser-in', {
+     if (importSerIn.length === 0) {
+         layer.tips('服务访问地址不能为空', '#import-ser-in', {
              tips: [1, '#0FA6D8']
          });
-         $('#improt-ser-in').focus();
-         return false;
+         $('#import-ser-in').focus();
+         return ;
      }
-     if (serOut.length === 0) {
-         layer.tips('外部服务地址不能为空', '#improt-ser-out', {
+     if (importSerOut.length === 0) {
+         layer.tips('外部服务地址不能为空', '#import-ser-out', {
              tips: [1, '#0FA6D8']
          });
-         $('#improt-ser-out').focus();
-         return false;
+         $('#import-ser-out').focus();
+         return ;
      }
-     $("#improt-ser-name").attr("value", serName);
-     $("#improt-ser-in").attr("value", serName);
-     $("#improt-ser-out").attr("value", serName);
-     return true;
-}
+	 
+/*	             if(importSerOut.search(/^[a-zA-Z0-9-:.\/]*$/) === -1){
+	      	layer.tips('外部服务地址中有非法字符，请您检查之后重新填写','#import-ser-out',{tips: [1, '#3595CC'],time: 3000});
+	      	$('#import-ser-out').focus();
+	      	return;
+	     }*/
+     
+     if (importSerOutPort.length === 0) {
+    	 layer.tips('外部服务端口不能为空', '#import-ser-out-port', {
+             tips: [1, '#0FA6D8']
+         });
+         $('#import-ser-out-port').focus();
+         return ;
+     }
+     if (importSerOutPort <=0 |importSerOutPort>=65535) {
+    	 layer.tips('外部服务端口要在0～65535之间', '#import-ser-out-port', {
+             tips: [1, '#0FA6D8']
+         });
+         $('#import-ser-out-port').focus();
+         return ;
+     }
+     
+     if (importSerOutPort.search(/^[0-9]*$/) === -1) {
+    	 layer.tips('外部服务端口只能为数字', '#import-ser-out-port', {
+             tips: [1, '#0FA6D8']
+         });
+         $('#import-ser-out-port').focus();
+         return ;
+     }
+     if (importSerDesc.length >20 ) {
+         layer.tips('不要超过20个字，谢谢', '#import-ser-desc', {
+             tips: [1, '#0FA6D8']
+         });
+         $('#import-ser-desc').focus();
+         return ;
+     } 
+    return true;
+ }
  //展示列表
  function  creatable(){
  	var tr="";
@@ -198,7 +158,7 @@
             		tr+='<tr>'+
 	     			'<td style="width: 5%; text-indent: 30px;">'+
 	     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
-			     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'</td>'+
+			     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'<i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
 			     		'<td style="width: 20%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
 			     		'<td style="width: 20%;">'+refservice.refAddress+'</td>';
 			     		if('1'==refservice.viDomain){
@@ -207,7 +167,8 @@
 			     			tr+='<td style="width: 14%;">仅本租户可见</td>';
 			     		}
 			     		tr+='<td style="width: 10%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash fa-lg"></i></a>'+
-			     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort+'" serOut="'+refservice.refAddress+'" serVi="'+refservice.viDomain+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
+			     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
+			     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
 			     	'</tr>';
          	}
             $("#importSerList").append(tr);
@@ -255,81 +216,35 @@
  }
  //修改
  function editImportSer(obj,id){
-	 $("#improt-ser-name").val($(obj).attr("serName"));
-	 $("#improt-ser-in").val($(obj).attr("serIn"));
-	 $("#improt-ser-out").val($(obj).attr("serOut"));
-	 $("#improt-ser-out-port").val($(obj).attr("rePort"));
-	 $("#improt-ser-visibility").val($(obj).attr("serVi"));
-	 $("#improt-ser-name").attr("disabled","disabled")
+	 $("#import-ser-name").val($(obj).attr("serName"));
+	 $("#import-ser-in").val($(obj).attr("serIn"));
+	 $("#import-ser-out").val($(obj).attr("serOut"));
+	 $("#import-ser-out-port").val($(obj).attr("rePort"));
+	 $("#import-ser-visibility").val($(obj).attr("serVi"));
+	 $("#import-ser-desc").val($(obj).attr("serDesc"));
+	 $("#import-ser-name").attr("disabled","disabled")
 	 layer.open({
 		 	type: 1,
 	        title: '修改外部引入服务',
 	        content: $("#import-service"),
 	        btn: ['确定', '取消'],
-	        yes: function(index, layero){ 
-	        	 var importSerName = $("#improt-ser-name").val();
+	        yes: function(index, layero){
+	        	 var importSerName = $("#import-ser-name").val();
 	        	 var importSerIn = "default";
-	        	 var importSerOut = $("#improt-ser-out").val();
-	        	 var importSerOutPort = $("#improt-ser-out-port").val();
-	        	 var importSerVis = $("#improt-ser-visibility").val();
-	        	 var improtSerMode = $("#improt-ser-mode").val();
-	        	 if (importSerName.length === 0) {
-	                 layer.tips('服务名称不能为空', '#improt-ser-name', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-name').focus();
-	                 return ;
-	             } 
-	        	 
-	        	 if(importSerName.search(/^[a-z0-9-]*$/) === -1){
-	        		 layer.tips('服务名称只能由小写字母、数字及横线组成','#improt-ser-name',{tips: [1, '#3595CC'],time: 3000});
-	        		 $('#improt-ser-name').focus();
-	        		 return;
-	       	     }
-	        	
-	        	 if (importSerName.length < 1) {
-	                 layer.tips('服务名称过短', '#improt-ser-name', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-name').focus();
-	                 return ;
-	             } 
-	             
-	             if (importSerOut.length === 0) {
-	                 layer.tips('外部服务地址不能为空', '#improt-ser-out', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-out').focus();
-	                 return ;
-	             }
-	        	 
-	             if(importSerOut.search(/^[a-zA-Z0-9-:.\/]*$/) === -1){
-	       	      	layer.tips('外部服务地址中有非法字符，请您检查之后重新填写','#improt-ser-out',{tips: [1, '#3595CC'],time: 3000});
-	       	      	$('#improt-ser-out').focus();
-	       	      	return;
-	       	     }
-	             
-	             if (importSerOutPort.length === 0) {
-	            	 layer.tips('外部服务端口不能为空', '#improt-ser-out-port', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-out-port').focus();
-	                 return ;
-	             }
-	             
-	             if (importSerOutPort.search(/^[0-9]*$/) === -1) {
-	            	 layer.tips('外部服务端口只能为数字', '#improt-ser-out-port', {
-	                     tips: [1, '#0FA6D8']
-	                 });
-	                 $('#improt-ser-out-port').focus();
-	                 return ;
-	             }
-	             
+	        	 var importSerOut = $("#import-ser-out").val();
+	        	 var importSerOutPort = $("#import-ser-out-port").val();
+	        	 var importSerVis = $("#import-ser-visibility").val();
+	        	 var importSerMode = $("#import-ser-mode").val();
+	        	 var importSerDesc =$("#import-ser-desc").val();
+	  	       if(true!=	checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort
+		       			,importSerVis,importSerMode,importSerDesc)){return;}
+	            
 	             $.ajax({
 		         		url : ctx + "/refservice/edit.do",
 		         		type: "POST",
 		         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
-		         			,"refAddress":importSerOut,"viDomain":importSerVis,"refPort":importSerOutPort,"improtSerMode":improtSerMode},
+		         			,"refAddress":importSerOut,"viDomain":importSerVis
+		         			,"refPort":importSerOutPort,"importSerMode":importSerMode,"refSerDesc":importSerDesc},
 		         		success: function(data) {
 		         			var data = eval("("+data+")");
 		                 	if (data.status == 200) {
