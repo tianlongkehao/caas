@@ -512,4 +512,6 @@ textarea.c-project-con{
 	background-color:#cdcdcd;
 	border: 1px solid #ccc;
 }
-
+.m-checkbox{
+	line-height: 34px;
+}

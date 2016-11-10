@@ -125,7 +125,7 @@
 		                                <label class="c-project-tit">maven版本</label>
 		                                <select id="mavenVis" name="mavenVis" class="form-control c-project-con" >
 		                                	<option value="0">default</option>
-		                                    <option value="1">maven1111</option>
+		                                    <option value="1">maven</option>
 		                                </select>
 		                            </div>
 		                            <div class="form-group col-md-12">
@@ -149,8 +149,12 @@
                                                    value="">
 		                            </div>
 		                            <div class="form-group col-md-12">
-		                                <label style="margin-left:10px">使用私人maven存储库</label>
-		                                <input type="checkbox">
+		                                <label style="margin-left:10px" class="c-project-tit">注入建立变量</label>
+		                                <div class="m-checkbox"><input type="checkbox"  id="InjectBuildVariables" name="InjectBuildVariables"></div>
+		                            </div>
+		                            <div class="form-group col-md-12">
+		                                <label style="margin-left:10px" class="c-project-tit" title="使用私人maven存储库">使用私人maven存储库</label>
+		                                <div class="m-checkbox"><input type="checkbox" id="privateMavenRepository" name="privateMavenRepository"></div>
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">配置文件</label>
@@ -166,18 +170,28 @@
 		                                    <option value="1">global settings file in filesystem</option>
 		                                </select>
 		                            </div>
+		                            <div class="form-group col-md-12">
+		                                <label class="c-project-tit">dockerfile路径</label>
+		                                <input id="mavenDockerfilePath" name="mavenDockerfilePath" type="text" class="form-control c-project-con"
+                                                   value="">
+		                            </div>
 	                            </div>
 	                            <div class="row ant ant-config">
 	                            	<div class="form-group col-md-12">
 		                                <label class="c-project-tit">ant版本</label>
 		                                <select id="antVis" name="antVis" class="form-control c-project-con" >
 		                                	<option value="0">default</option>
-		                                    <option value="1">ant1111</option>
+		                                    <option value="1">ant</option>
 		                                </select>
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">目标</label>
 		                                <input id="Targets" name="Targets" type="text" class="form-control c-project-con"
+                                                   value="">
+		                            </div>
+		                            <div class="form-group col-md-12">
+		                                <label class="c-project-tit">dockerfile路径</label>
+		                                <input id="antDockerfilePath" name="antDockerfilePath" type="text" class="form-control c-project-con"
                                                    value="">
 		                            </div>
 	                            </div>
