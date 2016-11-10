@@ -38,12 +38,12 @@
 										<a href="javascript:creatable(null,'./');" id="volReloadBtn" title="刷新"> <i class="fa fa-repeat"></i></a>
 										<a href="javascript:createdir()" id="adddir" title="新建"> <i class="fa fa-plus"></i></a>
 										<a href="javascript:fileUpload()" id="fileUpload" title="上传文件"> <i class="fa fa-upload"></i></a>
-<!-- 										<a href="javascript:download()" id="fileDownload" title="导出文件"> <i class="fa fa-download"></i></a> -->
+<!-- 										<a href="javascript:download()" id="fileDownloadFiles" title="导出文件"> <i class="fa fa-download"></i></a> -->
 										<a href="javascript:delfiles()" id="deleteButton" title="删除"> <i class="fa fa-trash"></i></a>
 									</div>
 								</div>
 								<div class="ibox-content">
-									<table style="border-collapse: collapse; margin: 0 auto;" class="table table-stripped table-hover dataTables-example">
+									<table style="border-collapse: collapse; margin: 0 auto;" class="table">
 										<thead style="display: block;">
 											<tr>
 												<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
@@ -75,7 +75,7 @@
 							<p>
 								文件：<input type="file" multiple="multiple" name="file" id="file" />
 							</p>
-							<input type="hidden" name="path" value="sfasf" id="path" /> <input type="hidden" name="storageName" value=${storage.storageName } /> <input type="hidden" name="id" value=${storage.id }>
+							<input type="hidden" name="path" value="" id="path" />
 						</form>
 					</div>
 				</div>
@@ -93,10 +93,15 @@
 					</div>
 				</div>
 				<div class="contentMain">
-					<iframe id="shellinabox" src="https://192.168.254.129:4200/ssh" width="100%" height="500px"></iframe>
+					<iframe id="shellinabox" src="https://192.168.0.76:4200/ssh" width="100%" height="500px"></iframe>
 				</div>
 			</div>
-
+<script>
+var fillseo_window=window.frames["shellinabox"];
+fillseo_window.window.onbeforeunload=function(){
+alert("弹弹弹！");
+};
+</script>
 		</article>
 	</div>
 </body>

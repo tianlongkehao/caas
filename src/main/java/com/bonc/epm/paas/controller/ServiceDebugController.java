@@ -31,11 +31,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.entity.FileInfo;
+import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.SFTPUtil;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
@@ -60,6 +63,12 @@ public class ServiceDebugController {
 	 */
 	@Autowired
 	private ServiceDao serviceDao;
+	
+    /**
+     * portConfig数据层接口
+     */
+    @Autowired
+	private PortConfigDao portConfigDao;
 
 	/**
 	 * Description: <br>
@@ -73,11 +82,11 @@ public class ServiceDebugController {
 		System.out.printf("id: " + id);
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		Service service = serviceDao.findOne(id);
-		
-		String host = "192.168.0.76";
-		int port = 22;
-		String username = "root";
-		String password = "root.123";
+		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+		String host = "192.168.0.80";
+		int port = 32364;
+		String username = "debug";
+		String password = "debug";
 
 		// 建立connect
 		sftp = SFTPUtil.connect(host, port, username, password);
@@ -230,11 +239,18 @@ public class ServiceDebugController {
 		String path = "";
 		path = sftp.pwd();
 		List<String> resultList = new ArrayList<String>();
-
+		
 		String[] downfile = downfiles.split(",");
 		byte[] buf = new byte[1024];
+		
+		String filename = new String();
+		if (downfile.length == 1) {
+			filename = downfile[0]+".zip"; 
+		} else {
+			filename = "download.zip"; 
+		}
 
-		File zipFile = new File("batchDownload.zip");
+		File zipFile = new File(filename);
 		ZipOutputStream out;
 
 		try {
@@ -282,7 +298,7 @@ public class ServiceDebugController {
 
 	/**
 	 * 
-	 * Description: 上传文件到卷组
+	 * Description: 上传文件
 	 * 
 	 * @param file
 	 *            上传文件名
@@ -302,10 +318,13 @@ public class ServiceDebugController {
 		try {
 			Map<String, String> map = new HashMap<String, String>();
 			for (int i = 0; i < files.length; i++) {
-				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File(path + files[i].getOriginalFilename())));
+				File file = new File(files[i].getOriginalFilename());
+				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 				out.write(files[i].getBytes());
 				out.flush();
 				out.close();
+				SFTPUtil.upLoadFile(sftp, new File(files[i].getOriginalFilename()), sftp.pwd());
+				file.delete();
 				map.put("status", "200");
 			}
 			return JSON.toJSONString(map);
@@ -313,6 +332,9 @@ public class ServiceDebugController {
 			e.printStackTrace();
 			return "上传失败," + e.getMessage();
 		} catch (IOException e) {
+			e.printStackTrace();
+			return "上传失败," + e.getMessage();
+		} catch(Exception e){
 			e.printStackTrace();
 			return "上传失败," + e.getMessage();
 		}

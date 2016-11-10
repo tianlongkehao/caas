@@ -2,7 +2,7 @@ $(document).ready(function() {
 	creatable(null, null);
 });
 function creatable(isDir, dirName) {
-
+	$(".chkAll").prop('checked', $(this).is(":checked"));
 	if (null == isDir || "true" == isDir) {
 		var tbody = "";
 		var context = $('#mybody');
@@ -87,10 +87,14 @@ function creatable(isDir, dirName) {
 								+ '<a class="deleteButton" style="text-indent: 0px;" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
 								+ fileInfo.fileName
 								+ '"> <i class="fa fa-trash fa-lg"></i></a>'
-								+ '<a class="downloadButton" style="text-indent: 1px;" href="javascript:void(0)" onclick="download("'+ fileInfo.fileName+'")"  fileName="'
-								+ fileInfo.fileName
-								+ '"> <i class="fa fa-download fa-lg"></i></a>'
-								+ '</td>' + '</tr>';
+						if (true == fileInfo.dir) {
+						} else if (true == fileInfo.link) {
+						} else {
+							tbody += '<a class="downloadButton" style="text-indent: 1px;" href="javascript:void(0)" onclick="downloadFile(this)"  fileName="'
+									+ fileInfo.fileName
+									+ '"> <i class="fa fa-download fa-lg"></i></a>'
+						}
+						tbody += '</td>' + '</tr>';
 					}
 
 					$('#downfilepath').val(fileInfo.path);
@@ -188,7 +192,7 @@ function createdir() {
 /**
  * 批量下载文件
  */
-function download() {
+function downloadFiles() {
 	obj = document.getElementsByName("downfiles");
 	var fileNames = [];
 	for (k in obj) {
@@ -206,8 +210,9 @@ function download() {
 /**
  * 下载文件
  */
-function download(fileNames) {
-	location.href = ctx + "/service/downloadFile?downfiles=" + fileNames;
+function downloadFile(obj) {
+	var fileName = $(obj).attr("fileName");
+	location.href = ctx + "/service/downloadFile?downfiles=" + fileName;
 }
 
 /**
