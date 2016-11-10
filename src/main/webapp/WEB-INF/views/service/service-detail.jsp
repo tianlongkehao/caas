@@ -51,11 +51,12 @@
 								href="${service.serviceAddr}/${service.proxyPath}"
 								target="_blank">${service.serviceAddr}/${service.proxyPath}</a></li> --%>
 							<li class="oldCon">服务地址：<a href="${service.serviceAddr}/${service.proxyPath}"target="_blank">
-								<span>${service.serviceAddr}</span>/
-								<span>${service.proxyPath}</span>
+								<span id="oldServiceAddr">${service.serviceAddr}</span>/
+								<span id="oldProxyPath">${service.proxyPath}</span>
 								</a><i id="editServiceAddrBtn" style="margin-left:20px" class="fa fa-edit"></i></li>
 							<li class="editCon">服务地址：
-								<input id="editServiceAddr" type="text" value="${service.serviceAddr}">/
+							  <prex id=addrPrex ></prex>
+								<input id="editServiceAddr" type="text" value="">/
 								<input id="editProxyPath" type="text" value="${service.proxyPath}">
 								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i></li>
 							<li>创建时间：${service.createDate }</li>

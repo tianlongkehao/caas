@@ -160,11 +160,13 @@ $(document).ready(function(){
        //可编辑的服务地址
        $(".editCon").hide();
        $("#editServiceAddrBtn").click(function(){
+    	   getprex();
     	   $(".editCon").show();
     	   $(".oldCon").hide();
        });
        $("#saveEdit").click(function(){
     	   $(".editCon").hide();
+    	   editSerAddr();
     	   $(".oldCon").show();
        });
        
@@ -335,29 +337,33 @@ function ServiceEvent(obj) {
 	}
 }
 
-
+//获取前缀
+function getprex(){
+	$.ajax({
+		type: "GET",
+   url: ctx + "/service/detail/getprex.do",
+   success : function(data) {
+	  data = eval("(" + data + ")");
+	  $('#addrPrex').html(data.prex);
+	  }
+	});
+}
 //修改服务地址
 function editSerAddr(){
-	var storageName=$('#storageName').html();
-	var path =$('#downfilepath').val();
-	layer.open({
-		type:1,
-		content:$('#edit_serAddr'),
-		title:'修改服务地址',
-		btn:['确定','取消'],
-		yes: function(index, layero){
-			var serAddrPrex=$('#SerAddrPrex').html();
-			var newSerAddr=$('#newSerAddr').val();
-			var serId=$('#serId').val();
-			checkSerAddr(serAddrPrex,newSerAddr);
-     layer.close(index);
-			newSerAddr=serAddrPrex+newSerAddr;
+		var editServiceAddr=$('#editServiceAddr').val();
+		var editProxyPath=$('#editProxyPath').val();
+		var serId=$('#serId').val();
+		var prex=	$('#addrPrex').html();
+//		checkSerAddr(serAddrPrex,newSerAddr);
+    editServiceAddr=prex+editServiceAddr;
 			$.ajax({
         		type: "GET",
-           url: ctx + "/service/detail/editSerAddr.do?serviceAddr="+newSerAddr+"&serId="+serId,
+           url: ctx + "/service/detail/editSerAddr.do?serviceAddr="+editServiceAddr+"&proxyPath="+editProxyPath+"&serId="+serId,
            success : function(data) {
         	  data = eval("(" + data + ")");
         	  if(data.status=="200"){
+        		  $('#oldServiceAddr').html(editServiceAddr);
+        		  $('#oldProxyPath').html(editProxyPath)
 	     			layer.msg( "修改成功，重启服务后生效", {
    						icon: 1
 	   					});
@@ -372,8 +378,6 @@ function editSerAddr(){
 	        			}
            	}
         	});
-		}
-	})
 }
 function checkSerAddr(SerAddrPrex,newSerAddr){
 	
