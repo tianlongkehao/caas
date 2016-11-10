@@ -105,6 +105,11 @@ public class Ci {
 	 * 代码分支
 	 */
     private String codeBranch;
+    
+    /**
+     * 代码认证方式
+     */
+    private String codeCredentials;
 	
     /**
 	 * 代码位置
@@ -142,13 +147,19 @@ public class Ci {
     private Integer constructionStatus;
 	
     /**
-	 * 上次构建日期
+	 * 上次成功构建日期
 	 */
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date constructionDate;
+    
+    /**
+     * 上次失败构建日期
+     */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    private Date constructionFailDate;
 	
     /**
-	 * 构建持续时间
+	 * 上次构建持续时间
 	 */
     private long constructionTime;
 	
@@ -167,6 +178,81 @@ public class Ci {
 	 */
     private Date createDate;
 	
+    /**
+     * 代码构建jdk版本
+     */
+    private String jdkVersion;
+    
+    /**
+     * 构建时调动的方式：ant、maven
+     */
+    private String invokeType;
+    
+    /**
+     * ant版本
+     */
+    private String antVersion;
+    
+    /**
+     * ant构建目标
+     */
+    private String antTargets;
+    
+    /**
+     * ant构建文件路径
+     */
+    private String antBuildFileLocation;
+    
+    /**
+     * ant性能
+     */
+    private String antProperties;
+    
+    /**
+     * ant java选择项
+     */
+    private String antJavaOpts;
+    
+    /**
+     * maven版本
+     */
+    private String mavenVersion;
+    
+    /**
+     * maven目标
+     */
+    private String mavenGoals;
+    
+    /**
+     * maven中的pom文件路径
+     */
+    private String pomLocation;
+    
+    /**
+     * jvm选项
+     */
+    private String mavenJVMOptions;
+    
+    /**
+     * maven属性
+     */
+    private String mavenProperty;
+    
+    /**
+     * 是否使用maven私有仓库，0：不使用，1：使用
+     */
+    private Integer isUserPrivateRegistry;
+    
+    /**
+     * maven配置文件路径
+     */
+    private String mavenSetFileLocation;
+    
+    /**
+     * maven全局配置文件路径
+     */
+    private String mavenGlobalSetFileLocation;
+    
     public long getId() {
         return id;
     }
@@ -279,6 +365,14 @@ public class Ci {
         this.codeBranch = codeBranch;
     }
     
+    public String getCodeCredentials() {
+        return codeCredentials;
+    }
+
+    public void setCodeCredentials(String codeCredentials) {
+        this.codeCredentials = codeCredentials;
+    }
+
     public String getCodeLocation() {
         return codeLocation;
     }
@@ -343,6 +437,14 @@ public class Ci {
         this.constructionDate = constructionDate;
     }
     
+    public Date getConstructionFailDate() {
+        return constructionFailDate;
+    }
+
+    public void setConstructionFailDate(Date constructionFailDate) {
+        this.constructionFailDate = constructionFailDate;
+    }
+
     public long getConstructionTime() {
         return constructionTime;
     }
@@ -398,5 +500,127 @@ public class Ci {
     public void setResourceName(String resourceName) {
         this.resourceName = resourceName;
     }
-	
+
+    public String getJdkVersion() {
+        return jdkVersion;
+    }
+
+    public void setJdkVersion(String jdkVersion) {
+        this.jdkVersion = jdkVersion;
+    }
+
+    public String getInvokeType() {
+        return invokeType;
+    }
+
+    public void setInvokeType(String invokeType) {
+        this.invokeType = invokeType;
+    }
+
+    public String getAntVersion() {
+        return antVersion;
+    }
+
+    public void setAntVersion(String antVersion) {
+        this.antVersion = antVersion;
+    }
+
+    public String getAntTargets() {
+        return antTargets;
+    }
+
+    public void setAntTargets(String antTargets) {
+        this.antTargets = antTargets;
+    }
+
+    public String getAntBuildFileLocation() {
+        return antBuildFileLocation;
+    }
+
+    public void setAntBuildFileLocation(String antBuildFileLocation) {
+        this.antBuildFileLocation = antBuildFileLocation;
+    }
+
+    public String getAntProperties() {
+        return antProperties;
+    }
+
+    public void setAntProperties(String antProperties) {
+        this.antProperties = antProperties;
+    }
+
+    public String getAntJavaOpts() {
+        return antJavaOpts;
+    }
+
+    public void setAntJavaOpts(String antJavaOpts) {
+        this.antJavaOpts = antJavaOpts;
+    }
+
+    public String getMavenVersion() {
+        return mavenVersion;
+    }
+
+    public void setMavenVersion(String mavenVersion) {
+        this.mavenVersion = mavenVersion;
+    }
+
+    public String getMavenGoals() {
+        return mavenGoals;
+    }
+
+    public void setMavenGoals(String mavenGoals) {
+        this.mavenGoals = mavenGoals;
+    }
+
+    public String getPomLocation() {
+        return pomLocation;
+    }
+
+    public void setPomLocation(String pomLocation) {
+        this.pomLocation = pomLocation;
+    }
+
+    public String getMavenJVMOptions() {
+        return mavenJVMOptions;
+    }
+
+    public void setMavenJVMOptions(String mavenJVMOptions) {
+        this.mavenJVMOptions = mavenJVMOptions;
+    }
+
+    public String getMavenProperty() {
+        return mavenProperty;
+    }
+
+    public void setMavenProperty(String mavenProperty) {
+        this.mavenProperty = mavenProperty;
+    }
+
+    public Integer getIsUserPrivateRegistry() {
+        return isUserPrivateRegistry;
+    }
+
+    public void setIsUserPrivateRegistry(Integer isUserPrivateRegistry) {
+        this.isUserPrivateRegistry = isUserPrivateRegistry;
+    }
+
+    public String getMavenSetFileLocation() {
+        return mavenSetFileLocation;
+    }
+
+    public void setMavenSetFileLocation(String mavenSetFileLocation) {
+        this.mavenSetFileLocation = mavenSetFileLocation;
+    }
+
+    public String getMavenGlobalSetFileLocation() {
+        return mavenGlobalSetFileLocation;
+    }
+
+    public void setMavenGlobalSetFileLocation(String mavenGlobalSetFileLocation) {
+        this.mavenGlobalSetFileLocation = mavenGlobalSetFileLocation;
+    }
+    
+    
+    
 }
