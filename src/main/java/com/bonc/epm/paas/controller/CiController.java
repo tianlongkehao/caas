@@ -395,6 +395,25 @@ public class CiController {
      * @return String
      * @see
      */
+    @RequestMapping("ci/addCodeCi.do")
+    public String addCodeCi(Ci ci){
+        User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        ci.setCreateBy(cuurentUser.getId());
+        ci.setCreateDate(new Date());
+        ci.setType(CiConstant.TYPE_CODE);
+        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
+        ciDao.save(ci);
+        LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+        return "redirect:/ci";
+    }
+    
+    /**
+     * 快速构建的创建
+     * 
+     * @param ci ： ci
+     * @return String
+     * @see
+     */
     @RequestMapping("ci/addCi.do")
 	public String addCi(Ci ci) {
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
@@ -409,6 +428,7 @@ public class CiController {
         return "redirect:/ci";
 		
     }
+    
 	/**
 	 * 最开始的dockerfile构建
 	 * 

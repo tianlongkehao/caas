@@ -82,7 +82,7 @@ public class Ci {
     private String description;
 	
     /**
-	 * 代码类型：1svn、2git
+	 * 代码类型：0:none、1:git、2:svn
 	 */
     private Integer codeType;
 	
@@ -184,9 +184,9 @@ public class Ci {
     private String jdkVersion;
     
     /**
-     * 构建时调动的方式：ant、maven
+     * 构建时调动的方式：1:maven、2:ant
      */
-    private String invokeType;
+    private Integer invokeType;
     
     /**
      * ant版本
@@ -244,14 +244,14 @@ public class Ci {
     private Integer isUserPrivateRegistry;
     
     /**
-     * maven配置文件路径
+     * maven配置文件
      */
-    private String mavenSetFileLocation;
+    private String mavenSetFile;
     
     /**
-     * maven全局配置文件路径
+     * maven全局配置文件
      */
-    private String mavenGlobalSetFileLocation;
+    private String mavenGlobalSetFile;
     
     public long getId() {
         return id;
@@ -509,11 +509,11 @@ public class Ci {
         this.jdkVersion = jdkVersion;
     }
 
-    public String getInvokeType() {
+    public Integer getInvokeType() {
         return invokeType;
     }
 
-    public void setInvokeType(String invokeType) {
+    public void setInvokeType(Integer invokeType) {
         this.invokeType = invokeType;
     }
 
@@ -605,22 +605,22 @@ public class Ci {
         this.isUserPrivateRegistry = isUserPrivateRegistry;
     }
 
-    public String getMavenSetFileLocation() {
-        return mavenSetFileLocation;
+    public String getMavenSetFile() {
+        return mavenSetFile;
     }
 
-    public void setMavenSetFileLocation(String mavenSetFileLocation) {
-        this.mavenSetFileLocation = mavenSetFileLocation;
+    public void setMavenSetFile(String mavenSetFile) {
+        this.mavenSetFile = mavenSetFile;
     }
 
-    public String getMavenGlobalSetFileLocation() {
-        return mavenGlobalSetFileLocation;
+    public String getMavenGlobalSetFile() {
+        return mavenGlobalSetFile;
     }
 
-    public void setMavenGlobalSetFileLocation(String mavenGlobalSetFileLocation) {
-        this.mavenGlobalSetFileLocation = mavenGlobalSetFileLocation;
+    public void setMavenGlobalSetFile(String mavenGlobalSetFile) {
+        this.mavenGlobalSetFile = mavenGlobalSetFile;
     }
-    
+
     
     
 }
