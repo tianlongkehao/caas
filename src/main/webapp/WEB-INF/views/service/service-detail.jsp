@@ -28,6 +28,7 @@
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">${service.serviceName }</li>
 					</ol>
+					<input hidden="true" value="${service.id }" id="serId"/>
 				</div>
 				<div class="contentMain">
 					<section class="detail-succeed">
@@ -48,7 +49,10 @@
 							</c:if>
 							<li>服务地址：<a
 								href="${service.serviceAddr}/${service.proxyPath}"
-								target="_blank">${service.serviceAddr}/${service.proxyPath}</a></li>
+								target="_blank">${service.serviceAddr}/${service.proxyPath}</a>
+								<a id="140_changeConfiguration" class="a-live changeConfiguration_a " href="javascript:editSerAddr();" title="修改地址" style="margin-left: 5px">
+                <i class="fa fa-cog"></i></a>
+								</li>
 							<li>创建时间：${service.createDate }</li>
 							<li>更新时间：${service.createDate }</li>
 						</ul>
@@ -90,6 +94,12 @@
 --%>
 						</ul>
 					</div>
+
+					<div id="edit_serAddr" hidden="true">
+                <div style="width: 345px; margin: 5px 10px 5px 10px">
+                     <p>新服务地址：<p1 id="SerAddrPrex">http://${service.serviceName }.</p1><input type="text" name="newSerAddr" id="newSerAddr" /></p>
+                 </div>
+         </div>
 					<div class="containerInfo">
 						<table class="table w50">
 							<thead>

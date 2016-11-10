@@ -1,6 +1,5 @@
 $(document).ready(function(){
 
-
     $(".baseInfo>ul>li>a").click(function(){
 
         $(".baseInfo>ul>li>a").removeClass("btn-prim");
@@ -323,5 +322,48 @@ function ServiceEvent(obj) {
 		$(obj).children(".fa_caret").css("transform", "rotate(90deg)");
 		$(obj).addClass("lives");
 	}
+}
 
+
+//修改服务地址
+function editSerAddr(){
+	var storageName=$('#storageName').html();
+	var path =$('#downfilepath').val();
+	layer.open({
+		type:1,
+		content:$('#edit_serAddr'),
+		title:'修改服务地址',
+		btn:['确定','取消'],
+		yes: function(index, layero){
+			var serAddrPrex=$('#SerAddrPrex').html();
+			var newSerAddr=$('#newSerAddr').val();
+			var serId=$('#serId').val();
+			checkSerAddr(serAddrPrex,newSerAddr);
+     layer.close(index);
+			newSerAddr=serAddrPrex+newSerAddr;
+			$.ajax({
+        		type: "GET",
+           url: ctx + "/service/detail/editSerAddr.do?serviceAddr="+newSerAddr+"&serId="+serId,
+           success : function(data) {
+        	  data = eval("(" + data + ")");
+        	  if(data.status=="200"){
+	     			layer.msg( "修改成功，重启服务后生效", {
+   						icon: 1
+	   					});
+	         }else if(data.status=="500"){
+	     			layer.msg( "修改失败，服务地址同名", {
+   						icon: 1
+	   					});
+	         }else{
+	        	 layer.msg( "修改失败，请检查连接", {
+							icon: 1
+	   					});
+	        			}
+           	}
+        	});
+		}
+	})
+}
+function checkSerAddr(SerAddrPrex,newSerAddr){
+	
 }

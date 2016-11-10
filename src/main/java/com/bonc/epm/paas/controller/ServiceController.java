@@ -2048,4 +2048,25 @@ public class ServiceController {
         	LOG.error("日志读取错误：" + e);
         }
     }
+    
+    @RequestMapping("service/detail/editSerAddr.do")
+    @ResponseBody
+    public String editSerAddr(String serviceAddr,Long serId){
+        Map<String, Object> map = new HashMap<String, Object>();
+        if(serviceDao.findByServiceAddr(serviceAddr).size()>0){
+            map.put("status", "500");
+        }else{
+        Service service = serviceDao.findOne(serId);
+        service.setServiceAddr(serviceAddr);
+        try {
+            
+            serviceDao.save(service);
+            map.put("status", "200");
+        } catch (Exception e) {
+            map.put("status", "400");
+            e.printStackTrace();
+            }
+        }
+        return JSON.toJSONString(map);
+    }
 }
