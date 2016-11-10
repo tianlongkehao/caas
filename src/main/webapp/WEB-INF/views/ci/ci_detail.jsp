@@ -246,6 +246,11 @@
 					                                    <option value="1">global settings file in filesystem</option>
 					                                </select></div>
 					                            </div>
+					                            <div class="form-group">
+					                                <label class="col-2x control-label">dockerfile路径：</label>
+					                                <div class="col-sm-9"><input id="mavenDockerfilePath" name="mavenDockerfilePath" type="text" class="form-control"
+			                                                   value=""></div>
+					                            </div>
 				                            </div>
 				                            <div class="row ant ant-config">
 				                            	<div class="form-group">
@@ -258,6 +263,11 @@
 					                            <div class="form-group">
 					                                <label class="col-2x control-label">目标：</label>
 					                                <div class="col-sm-9"><input id="Targets" name="Targets" type="text" class="form-control"
+			                                                   value=""></div>
+					                            </div>
+					                            <div class="form-group">
+					                                <label class="col-2x control-label">dockerfile路径：</label>
+					                                <div class="col-sm-9"><input id="antDockerfilePath" name="antDockerfilePath" type="text" class="form-control"
 			                                                   value=""></div>
 					                            </div>
 				                            </div>

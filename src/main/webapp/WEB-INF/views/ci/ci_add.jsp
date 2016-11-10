@@ -35,7 +35,6 @@
                         		<div class="row depot-name">
 	                                <div class=" col-md-12">
 	                                    <label class="c-project-tit">项目名称</label>
-	
 	                                    <input id="projectName" name="projectName" class="form-control c-project-con" type="text"
 	                                           required="">
 	                                </div>
@@ -149,6 +148,8 @@
 		                            <div class="form-group col-md-12">
 		                                <label style="margin-left:10px">使用私人maven存储库</label>
 		                                <input type="checkbox" id = "isUserPrivateRegistry" name = "isUserPrivateRegistry" value = "0">
+		                                <label style="margin-left:10px" class="c-project-tit">注入建立变量</label>
+		                                <div style="line-height:34px"><input type="checkbox"  id="InjectBuildVariables" name="InjectBuildVariables" value="0"></div>
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">配置文件</label>
@@ -164,6 +165,11 @@
 		                                    <option value="global settings file in filesystem">global settings file in filesystem</option>
 		                                </select>
 		                            </div>
+		                            <div class="form-group col-md-12">
+		                                <label class="c-project-tit">dockerfile路径</label>
+		                                <input id="mavenDockerfilePath" name="mavenDockerfilePath" type="text" class="form-control c-project-con"
+                                                   value="">
+		                            </div>
 	                            </div>
 	                            <div class="row ant ant-config">
 	                            	<div class="form-group col-md-12">
@@ -176,6 +182,11 @@
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">目标</label>
 		                                <input id="antTargets" name="antTargets" type="text" class="form-control c-project-con"
+                                                   value="">
+		                            </div>
+		                            <div class="form-group col-md-12">
+		                                <label class="c-project-tit">dockerfile路径</label>
+		                                <input id="antDockerfilePath" name="antDockerfilePath" type="text" class="form-control c-project-con"
                                                    value="">
 		                            </div>
 	                            </div>
