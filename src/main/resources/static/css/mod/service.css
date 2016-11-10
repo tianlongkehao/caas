@@ -601,7 +601,8 @@ table.w50 thead tr th {
 
 .containerEvent,
 .bindDomain,
-.portMapping {
+.portMapping,
+.envMapping {
     width: 98%;
     margin-left: 1%;
     background: white;
@@ -611,7 +612,7 @@ table.w50 thead tr th {
 }
 
 .paddingrow {
-    padding: 50px;
+    padding: 30px 50px 30px 50px;
 }
 
 .orgmain {
@@ -949,4 +950,15 @@ li.line-h-3 span i{
 .check-lable{
 	float:left;
 	line-height:34px;
+}
+.forEnvName{
+	float:left;
+	width:15%;
+	line-height:34px;
+}
+.envName{
+	width:85%;
+}
+.envlabel{
+	margin-bottom:15px;
 }

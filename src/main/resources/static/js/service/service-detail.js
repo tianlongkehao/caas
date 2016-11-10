@@ -27,6 +27,11 @@ $(document).ready(function(){
         $(".bindDomain").removeClass("hide");
     });
 
+    $(".ENVS").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".envMapping").removeClass("hide");
+    });
 
     $(".PORTS").click(function(){
 
