@@ -157,7 +157,18 @@ $(document).ready(function(){
     		   }
     	   })
        });
-});
+       //可编辑的服务地址
+       $(".editCon").hide();
+       $("#editServiceAddrBtn").click(function(){
+    	   $(".editCon").show();
+    	   $(".oldCon").hide();
+       });
+       $("#saveEdit").click(function(){
+    	   $(".editCon").hide();
+    	   $(".oldCon").show();
+       });
+       
+});/*ready*/
   
 Date.prototype.Format = function(fmt){
 	var o = {
