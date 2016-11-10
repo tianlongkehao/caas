@@ -26,7 +26,7 @@
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">服务</li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">${service.serviceName }</li>
+						<li class="active" style="width:200px">${service.serviceName }</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -46,9 +46,17 @@
 							<c:if test="${service.status==4 }">
 								<li>运行状态：已停止</li>
 							</c:if>
-							<li>服务地址：<a
+							<%-- <li>服务地址：<a
 								href="${service.serviceAddr}/${service.proxyPath}"
-								target="_blank">${service.serviceAddr}/${service.proxyPath}</a></li>
+								target="_blank">${service.serviceAddr}/${service.proxyPath}</a></li> --%>
+							<li class="oldCon">服务地址：<a href="${service.serviceAddr}/${service.proxyPath}"target="_blank">
+								<span>${service.serviceAddr}</span>/
+								<span>${service.proxyPath}</span>
+								</a><i id="editServiceAddrBtn" style="margin-left:20px" class="fa fa-edit"></i></li>
+							<li class="editCon">服务地址：
+								<input id="editServiceAddr" type="text" value="${service.serviceAddr}">/
+								<input id="editProxyPath" type="text" value="${service.proxyPath}">
+								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i></li>
 							<li>创建时间：${service.createDate }</li>
 							<li>更新时间：${service.createDate }</li>
 						</ul>
@@ -125,30 +133,31 @@
 								</tr>
 							</thead>
 							<tbody class="BORDER">
-								<!-- <tr>
-					<td>带宽：10 MB（公有网络）</td>
-					<td>系统盘：10GB</td>
-				</tr> -->
 								<tr>
 									<td>CPU：${service.cpuNum }</td>
 									<td>内存：${service.ram }MB</td>
 								</tr>
 								<tr>
+									<c:if test="${service.startCommand == '' }">
+									<td>启动命令：未设置</td>
+									</c:if>
+									<c:if test="${service.startCommand != '' }">
 									<td>启动命令：${service.startCommand }</td>
+									</c:if>
 									<td>服务访问路径：${service.servicePath }</td>
 								</tr>
 								<tr>
+									<c:if test="${service.proxyZone == '' }">
+									<td>nginx代理区域：未设置</td>
+									</c:if>
+									<c:if test="${service.proxyZone != '' }">
 									<td>nginx代理区域：${service.proxyZone }</td>
+									</c:if>
 									<td>nginx代理路径：${service.proxyPath }</td>
 								</tr>
 								<tr>
-									<c:if test="${service.serviceType==1 }">
-									<td>服务类型：有状态服务</td>
-									</c:if>
-									<c:if test="${service.serviceType==2 }">
-									<td>服务类型：无状态服务</td>
-									</c:if>
 									<td>会话黏连方式：${service.sessionAffinity }</td>
+									<td>NodeIp黏连方式：${service.nodeIpAffinity }</td>
 								</tr>
 								<c:if test="${service.checkPath!='' }">
 								<tr>
@@ -158,7 +167,22 @@
 								<tr>
 									<td>检测超时：${service.timeoutDetction }s</td>
 									<td>检测频率：${service.periodDetction }s</td>
-								</tr></c:if>
+								</tr>
+								</c:if>
+								<tr>
+									<c:if test="${service.serviceType==1 }">
+									<td>服务类型：有状态服务</td>
+									<td>挂载地址：${service.mountPath }</td>
+									</c:if>
+									<c:if test="${service.serviceType==2 }">
+									<td>服务类型：无状态服务</td>
+									</c:if>
+								</tr>
+								<c:if test="${service.serviceType==1 }">
+								<tr>
+									<td>存储卷：${service.volName }</td>
+								</tr>
+								</c:if>
 							</tbody>
 						</table>
 					</div>
