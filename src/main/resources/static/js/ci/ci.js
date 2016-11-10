@@ -85,7 +85,7 @@ function loadCi() {
 							}
 							if (row.constructionStatus == 3) {
 								html = '<i class="fa_success"></i>' +
-									'完成 <img src="'+ctx+'/images/loading4.gif"'+
+									'成功 <img src="'+ctx+'/images/loading4.gif"'+
 									'alt="" class="hide" />';
 							}
 							if (row.constructionStatus == 4) {
