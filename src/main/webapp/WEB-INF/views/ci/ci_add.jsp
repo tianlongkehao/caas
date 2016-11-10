@@ -146,11 +146,17 @@
                                                    value="">
 		                            </div>
 		                            <div class="form-group col-md-12">
-		                                <label style="margin-left:10px">使用私人maven存储库</label>
-		                                <input type="checkbox" id = "isUserPrivateRegistry" name = "isUserPrivateRegistry" value = "0">
-		                                <label style="margin-left:10px" class="c-project-tit">注入建立变量</label>
-		                                <div style="line-height:34px"><input type="checkbox"  id="InjectBuildVariables" name="InjectBuildVariables" value="0"></div>
+		                                <div style="line-height:34px">
+			                                <label style="margin-left:10px">使用私人maven存储库</label>
+			                                <input type="checkbox" id = "isUserPrivateRegistry" name = "isUserPrivateRegistry" value = "0">
+		                                </div>
 		                            </div>
+		                             <div class="form-group col-md-12">
+                                        <div style="line-height:34px">
+	                                        <label style="margin-left:10px" class="c-project-tit">注入建立变量</label>
+	                                        <input type="checkbox"  id="injectBuildVariables" name="injectBuildVariables" value="0">
+                                        </div>
+                                    </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">配置文件</label>
 		                                <select id="mavenSetFile" name="mavenSetFile" class="form-control c-project-con" >

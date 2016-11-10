@@ -239,9 +239,14 @@ public class Ci {
     private String mavenProperty;
     
     /**
-     * 是否使用maven私有仓库，0：不使用，1：使用
+     * 是否使用maven私有仓库，0：不使用、1：使用
      */
     private Integer isUserPrivateRegistry;
+    
+    /**
+     * 是否注入建立变量， 0：不注入、1：注入
+     */
+    private Integer injectBuildVariables;
     
     /**
      * maven配置文件
@@ -603,6 +608,14 @@ public class Ci {
 
     public void setIsUserPrivateRegistry(Integer isUserPrivateRegistry) {
         this.isUserPrivateRegistry = isUserPrivateRegistry;
+    }
+
+    public Integer getInjectBuildVariables() {
+        return injectBuildVariables;
+    }
+
+    public void setInjectBuildVariables(Integer injectBuildVariables) {
+        this.injectBuildVariables = injectBuildVariables;
     }
 
     public String getMavenSetFile() {
