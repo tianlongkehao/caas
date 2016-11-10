@@ -22,50 +22,78 @@ public class Job {
     private String id;
     private String nextExecTime;
     private String jdkVersion;
-/**
- * {
-  "id": "string",
-  "nextExecTime": "string",
-  "jdkVersion": "string",
-  "buildImgCmd": "string",
-  "pushImgCmd": "string",
-  "currentNumber": 0,
-  "maxExecutionRecords": 0,
-  "maxKeepDays": 0,
-  "jobRemoved": 0,
-  "codeManager": {
-    "gitConfig": {
-      "branch": "string",
-      "repo": {
-        "url": "string",
-        "credentials": "string",
-        "advanced": {
-          "name": "string",
-          "refspec": "string"
-        }
-      }
+    private String buildImgCmd;
+    private String pushImgCmd;
+    private Integer currentNumber;
+    private Integer maxExecutionRecords;
+    private Integer maxKeepDays;
+    private Integer jobRemoved;
+    private CodeManager codeManager;
+    private BuildManager buildManager;
+    public String getId() {
+        return id;
     }
-  },
-  "buildManager": {
-    "antConfig": {
-      "version": "string",
-      "targets": "string",
-      "buildFile": "string",
-      "properties": "string",
-      "javaopts": "string"
-    },
-    "mvnConfig": {
-      "version": "string",
-      "goals": "string",
-      "pom": "string",
-      "properties": "string",
-      "jvmopts": "string",
-      "settingFile": "string",
-      "globalSettingFile": "string"
+    public void setId(String id) {
+        this.id = id;
     }
-  }
-}
- */
-    
-    
+    public String getNextExecTime() {
+        return nextExecTime;
+    }
+    public void setNextExecTime(String nextExecTime) {
+        this.nextExecTime = nextExecTime;
+    }
+    public String getJdkVersion() {
+        return jdkVersion;
+    }
+    public void setJdkVersion(String jdkVersion) {
+        this.jdkVersion = jdkVersion;
+    }
+    public String getBuildImgCmd() {
+        return buildImgCmd;
+    }
+    public void setBuildImgCmd(String buildImgCmd) {
+        this.buildImgCmd = buildImgCmd;
+    }
+    public String getPushImgCmd() {
+        return pushImgCmd;
+    }
+    public void setPushImgCmd(String pushImgCmd) {
+        this.pushImgCmd = pushImgCmd;
+    }
+    public Integer getCurrentNumber() {
+        return currentNumber;
+    }
+    public void setCurrentNumber(Integer currentNumber) {
+        this.currentNumber = currentNumber;
+    }
+    public Integer getMaxExecutionRecords() {
+        return maxExecutionRecords;
+    }
+    public void setMaxExecutionRecords(Integer maxExecutionRecords) {
+        this.maxExecutionRecords = maxExecutionRecords;
+    }
+    public Integer getMaxKeepDays() {
+        return maxKeepDays;
+    }
+    public void setMaxKeepDays(Integer maxKeepDays) {
+        this.maxKeepDays = maxKeepDays;
+    }
+    public Integer getJobRemoved() {
+        return jobRemoved;
+    }
+    public void setJobRemoved(Integer jobRemoved) {
+        this.jobRemoved = jobRemoved;
+    }
+    public CodeManager getCodeManager() {
+        return codeManager;
+    }
+    public void setCodeManager(CodeManager codeManager) {
+        this.codeManager = codeManager;
+    }
+    public BuildManager getBuildManager() {
+        return buildManager;
+    }
+    public void setBuildManager(BuildManager buildManager) {
+        this.buildManager = buildManager;
+    }
 }
