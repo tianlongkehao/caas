@@ -124,7 +124,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                         if ("1".equals(tenantAdmin) && 
                                 ((!"1".equals(attributes.get("userId").toString().trim())) || (!"admin".equals(attributes.get("loginId").toString().trim())))) {
                             if (createNamespace(namespace)) { // 创建命名空间
-                                createQuota(tenantId, namespace); // 创建资源
+                                createQuota(user,tenantId, namespace); // 创建资源
                                 createCeph(namespace); // 创建ceph
                             }
                         }
@@ -262,7 +262,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      * @param namespace  
      * @exception Exception 
      */
-    private void createQuota(String tenantId, String namespace) throws Exception{
+    private void createQuota(User user,String tenantId, String namespace) throws Exception{
         String openCpu = "0";
         String openMem = "0";
         try {
@@ -283,9 +283,11 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                     JSONArray jsPro = (JSONArray) jsObj2.get("property");
                     JSONObject cpuObject = (JSONObject) jsPro.get(0);
                     JSONObject memObject = (JSONObject) jsPro.get(1);
+                    JSONObject volObject = (JSONObject) jsPro.get(1);
                     // 获取CPU和MEM的值
                     openCpu = (String) cpuObject.get("prop_value");
                     openMem = (String) memObject.get("prop_value");
+                    user.setVol_size(Long.parseLong((String)volObject.get("prop_value")));
                     LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem + "}");
                     createResourceQuota(namespace, openCpu, openMem);
                 }
