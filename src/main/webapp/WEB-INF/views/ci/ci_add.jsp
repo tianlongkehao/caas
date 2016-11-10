@@ -167,7 +167,7 @@
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">dockerfile路径</label>
-		                                <input id="mavenDockerfilePath" name="mavenDockerfilePath" type="text" class="form-control c-project-con"
+		                                <input id="dockerFileLocation" name="dockerFileLocation" type="text" class="form-control c-project-con"
                                                    value="">
 		                            </div>
 	                            </div>
@@ -186,7 +186,7 @@
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">dockerfile路径</label>
-		                                <input id="antDockerfilePath" name="antDockerfilePath" type="text" class="form-control c-project-con"
+		                                <input id="dockerFileLocation" name="dockerFileLocation" type="text" class="form-control c-project-con"
                                                    value="">
 		                            </div>
 	                            </div>
