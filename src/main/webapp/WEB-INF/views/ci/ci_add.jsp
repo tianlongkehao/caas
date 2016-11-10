@@ -150,11 +150,11 @@
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label style="margin-left:10px" class="c-project-tit">注入建立变量</label>
-		                                <div class="m-checkbox"><input type="checkbox"  id="InjectBuildVariables" name="InjectBuildVariables"></div>
+		                                <div style="line-height:34px"><input type="checkbox"  id="InjectBuildVariables" name="InjectBuildVariables" value="0"></div>
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label style="margin-left:10px" class="c-project-tit" title="使用私人maven存储库">使用私人maven存储库</label>
-		                                <div class="m-checkbox"><input type="checkbox" id="privateMavenRepository" name="privateMavenRepository"></div>
+		                                <div style="line-height:34px"><input type="checkbox" id="isUserPrivateRegistry" name="isUserPrivateRegistry" value="0"></div>
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">配置文件</label>
