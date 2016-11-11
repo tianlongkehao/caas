@@ -59,7 +59,7 @@ $(document).ready(function () {
                 '<div class="row ant-config">'+
                 	'<button class="ant-higherBtn" type="button" style="float:right!important">高级...</button>'+
                 '</div>'+
-                '<div class="row ant-higherCon">'+
+                '<div class="row ant-higherCon hide">'+
                 	'<div class="form-group col-md-12">'+
                         '<label class="c-project-tit">构建文件</label>'+
                         '<input id="antBuildFileLocation-'+count+'" name="antBuildFileLocation" type="text" class="form-control c-project-con" value="">'+
@@ -103,7 +103,11 @@ $(document).ready(function () {
                         '<label class="c-project-tit">目标</label>'+
                         '<input id="mavenGoals-'+count+'" name="mavenGoals" type="text" class="form-control c-project-con" value="">'+
                     '</div>'+
-                    '<div class="form-group col-md-12">'+
+                    '<div class="row maven-config">'+
+	                	'<button class="maven-higherBtn" type="button" style="float:right!important">高级...</button>'+
+	                '</div>'+
+	                
+                    '<div class="maven-higherCon hide"><div class="form-group col-md-12">'+
                         '<label class="c-project-tit">POM</label>'+
                         '<input id="pomLocation-'+count+'" name="pomLocation" type="text" class="form-control c-project-con" value="">'+
                     '</div>'+
@@ -141,7 +145,7 @@ $(document).ready(function () {
                             '<option value="global settings file in filesystem">global settings file in filesystem</option>'+
                         '</select>'+
                     '</div>'+
-                    '</div></div></div></div></div>';
+                    '</div></div></div></div></div></div>';
     	return mavenHtml;
     }
     
@@ -170,28 +174,37 @@ $(document).ready(function () {
     	return shellHtml;
     }
     
-    
+    //构建maven
     $("#maven").click(function(){
     	count++;
     	var maven = loadMaven(count);
     	$("#sortable").append(maven);
     });
+    
+    //maven高级按钮选项
+    $(document).on('click','.maven-higherBtn',function(){
+    	$(this).parent().hide();
+    	$(this).parent().next('.maven-higherCon').removeClass("hide");
+    });
+    
+    //构建ant
     $("#ant").click(function(){
     	count++;
     	var ant = loadAnt(count);
     	$("#sortable").append(ant);
-    	$(".ant-higherBtn").show();
-		$(".ant-higherCon").hide();
     });
+    
+    //ant高级按钮选项
+    $(document).on('click','.ant-higherBtn',function(){
+    	$(this).parent().hide();
+    	$(this).parent().next('.ant-higherCon').removeClass("hide");
+    });
+    
+    //构建shell
     $("#shell").click(function(){
     	count++;
     	var shell = loadShell(count);
     	$("#sortable").append(shell);
-    });
-    //ant-higher
-    $(document).on('click','.ant-higherBtn',function(){
-    	$(".ant-higherBtn").hide();
-    	$(".ant-higherCon").show();
     });
     
     //折叠ibox
@@ -214,6 +227,7 @@ $(document).ready(function () {
         var content = $(this).closest('div.ibox');
         content.remove();
     });
+    
     //拖拽
     $( "#sortable" ).sortable({
         revert: true
