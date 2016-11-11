@@ -155,9 +155,9 @@
 						                            </div>
 					                            </div>
 					                            <div class="row ant-config">
-					                            	<button id="ant-higher" type="button" style="float:right!important">高级...</button>
+					                            	<button class="ant-higherBtn" type="button" style="float:right!important">高级...</button>
 					                            </div>
-					                            <div class="row ant-higherCon">
+					                            <div class="row ant-higherCon hide">
 					                            	<div class="form-group col-md-12">
 						                                <label class="c-project-tit">构建文件</label>
 						                                <input id="antBuildFileLocation" name="antBuildFileLocation" type="text" class="form-control c-project-con"
@@ -206,6 +206,12 @@
 						                                <input id="mavenGoals" name="mavenGoals" type="text" class="form-control c-project-con"
 				                                                   value="">
 						                            </div>
+						                            <div class="row maven-config">
+						                            	<button class="maven-higherBtn" type="button" style="float:right!important">高级...</button>
+						                            </div>
+						                            
+						                            
+						                            <div class="maven-higherCon">
 						                            <div class="form-group col-md-12">
 						                                <label class="c-project-tit">POM</label>
 						                                <input id="pomLocation" name="pomLocation" type="text" class="form-control c-project-con"
@@ -247,10 +253,7 @@
 						                                    <option value="global settings file in filesystem">global settings file in filesystem</option>
 						                                </select>
 						                            </div>
-						                            <div class="form-group col-md-12">
-						                                <label class="c-project-tit">dockerfile路径</label>
-						                                <input id="dockerFileLocation" name="dockerFileLocation" type="text" class="form-control c-project-con"
-				                                                   value="">
+						                            
 						                            </div>
 					                            </div>
 											</div>
