@@ -47,7 +47,7 @@ import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.DateFormatUtils;
+import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -1100,11 +1100,11 @@ public class ClusterController {
         for (int i = 0; i < lst.size(); i++) {
             String strDate = lst.get(i);
 			// String转为Date
-            Date dateDate = DateFormatUtils.formatStringToDate(strDate);
+            Date dateDate = DateUtils.formatStringToDate(strDate);
 			// 加8小时
-            Date comStrDate = DateFormatUtils.dateCompute(dateDate, "hour", 8);
+            Date comStrDate = DateUtils.dateCompute(dateDate, "hour", 8);
 			// Date转为String
-            String comDateDate = DateFormatUtils.formatDateToString(comStrDate, DateFormatUtils.YYYY_MM_DD_HH_MM_SS);
+            String comDateDate = DateUtils.formatDateToString(comStrDate, DateUtils.YYYY_MM_DD_HH_MM_SS);
 			// 拼接字符串
             val.append("\"").append(comDateDate).append("\",");
         }

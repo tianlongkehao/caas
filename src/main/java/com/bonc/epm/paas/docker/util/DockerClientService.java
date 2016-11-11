@@ -5,11 +5,9 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,7 @@ import org.springframework.stereotype.Service;
 import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.Image;
-import com.bonc.epm.paas.util.DateFormatUtils;
+import com.bonc.epm.paas.util.DateUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.BuildResponseItem;
@@ -258,7 +256,7 @@ public class DockerClientService {
 			    public void onNext(BuildResponseItem item) {
 			    	if(item!=null&&item.getStream()!=null){
 				    	if(item.getStream().contains("Step")||item.getStream().contains("--->")||item.getStream().contains("Downloading")||item.getStream().contains("[INFO]")||item.getStream().contains("Removing")||item.getStream().contains("Successfully")){
-				    		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getStream());
+				    		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getStream());
 				    		ciRecordDao.save(ciRecord);
 				    	}
 			    	}
@@ -271,12 +269,12 @@ public class DockerClientService {
 			dockerClient.tagImageCmd(imgId, username+"/"+imageName, imageVersion).withForce().exec();
 			// 得到镜像的ImageId
 			imageId.setImageId(imgId.substring(0,12));
-			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"tagImageCmd:"+imageId+":"+username+"/"+imageName+":"+imageVersion);
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"tagImageCmd:"+imageId+":"+username+"/"+imageName+":"+imageVersion);
 	    	ciRecordDao.save(ciRecord);
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
-			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 	    	ciRecordDao.save(ciRecord);
 			log.error("buildImage error:"+e.getMessage());
 			return false;
@@ -302,7 +300,7 @@ public class DockerClientService {
 				public void onNext(PushResponseItem item) {
 					if(item!=null&&item.getStream()!=null){
 						if(!item.getStream().contains("null")){
-							ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getProgress());
+							ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getProgress());
 					    	ciRecordDao.save(ciRecord);
 						}
 					}
@@ -311,12 +309,12 @@ public class DockerClientService {
 				}
 			};
 			dockerClient.pushImageCmd(username+"/"+imageName).withTag(imageVersion).exec(callback).awaitSuccess();
-			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"push image complete");
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"push image complete");
 	    	ciRecordDao.save(ciRecord);
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
-			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 	    	ciRecordDao.save(ciRecord);
 			log.error("pushImage error:"+e.getMessage());
 			return false;
@@ -344,14 +342,14 @@ public class DockerClientService {
 		    }
 			
 			if (null != ciRecord && null != ciRecordDao) {
-	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);
+	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);
 	          ciRecordDao.save(ciRecord); 
 			}
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
 			if (null != ciRecord && null != ciRecordDao) {
-	            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+	            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 	            ciRecordDao.save(ciRecord);			    
 			}
 			log.error("removeImage error:"+e.getMessage());

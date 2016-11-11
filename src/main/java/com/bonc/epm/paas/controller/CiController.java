@@ -2,15 +2,11 @@ package com.bonc.epm.paas.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +14,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,11 +47,10 @@ import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.Image;
-import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.DateFormatUtils;
+import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.ResultPager;
 import com.github.dockerjava.api.DockerClient;
@@ -736,7 +729,7 @@ public class CiController {
         ciRecord.setCiVersion(ci.getImgNameVersion());
         ciRecord.setConstructDate(ci.getConstructionDate());
         ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_ING);
-        ciRecord.setLogPrint("["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");
+        ciRecord.setLogPrint("["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");
         ciRecordDao.save(ciRecord);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
@@ -785,7 +778,7 @@ public class CiController {
         try{
             if(CiConstant.CODE_TYPE_SVN.equals(ci.getCodeType())){
                 String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
-                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
+                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
                 ciRecordDao.save(ciRecord);
                 LOG.info("==========svnCommandStr:"+svnCommandStr);
                 return CmdUtil.exeCmd(svnCommandStr);
@@ -813,14 +806,14 @@ public class CiController {
                 String logmsg = "git clone " +
                                     codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername() +
                                     ":******@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length())+" "+ci.getCodeLocation();
-                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+logmsg);
+                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+logmsg);
                 ciRecordDao.save(ciRecord);
                 LOG.info("==========gitCommandStr:"+gitCommandStr);
                 return CmdUtil.exeCmd(gitCommandStr);
             }
         }
         catch(Exception e){
-            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
             ciRecordDao.save(ciRecord);
             LOG.error("==========fetchCode error:"+e.getMessage());
         }
@@ -853,7 +846,7 @@ public class CiController {
 			//删除本地镜像
             flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient);
         }
-        ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
+        ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
         ciRecordDao.save(ciRecord);
         if(flag){
 			//排重添加镜像数据
