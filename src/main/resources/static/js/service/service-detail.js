@@ -371,9 +371,7 @@ function editSerAddr(){
    						icon: 1
 	   					});
 	         }else if(data.status=="500"){
-	     			layer.msg( "修改失败，服务地址同名", {
-   						icon: 1
-	   					});
+	        	 layer.alert("服务名称重复，请重新输入！");
 	         }else{
 	        	 layer.msg( "修改失败，请检查连接", {
 							icon: 1
