@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,6 +59,25 @@ public class ServiceDebugController {
 
 	private static final String ROOT = "/";
 	private ChannelSftp sftp;
+	
+    /**
+     * 获取SFTP数据
+     */
+    @Value("${sftp.host}")
+	private String SFTP_HOST;
+
+    /**
+     * 获取SFTP用户
+     */
+    @Value("${sftp.user}")
+	private String SFTP_USER;
+
+    /**
+     * 获取SFTP密码
+     */
+    @Value("${sftp.password}")
+	private String SFTP_PASSWORD;
+
 	/**
 	 * 服务数据层接口
 	 */
@@ -83,13 +103,15 @@ public class ServiceDebugController {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		Service service = serviceDao.findOne(id);
 		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
-		String host = "192.168.0.80";
-		int port = 32364;
-		String username = "debug";
-		String password = "debug";
+		int port = 0;
+		for (PortConfig portConfig : portConfigList) {
+			if (portConfig.getContainerPort().equals("22")){
+				port = Integer.parseInt(portConfig.getMapPort());
+			}
+		}
 
 		// 建立connect
-		sftp = SFTPUtil.connect(host, port, username, password);
+		sftp = SFTPUtil.connect(SFTP_HOST, port, SFTP_USER, SFTP_PASSWORD);
 		try {
 			// 跳转至初始目录
 			sftp.cd(ROOT);
@@ -99,6 +121,7 @@ public class ServiceDebugController {
 
 		model.addAttribute("namespace", currentUser.getNamespace());
 		model.addAttribute("id", id);
+		model.addAttribute("port",port);
 		model.addAttribute("service", service);
 		model.addAttribute("menu_flag", "service");
 		return "service/service-debug.jsp";

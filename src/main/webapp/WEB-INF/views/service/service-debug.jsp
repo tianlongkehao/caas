@@ -8,7 +8,7 @@
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/service.css" />
 <script type="text/javascript" src="<%=path%>/js/service/service-debug.js"></script>
 </head>
-<body>
+<body >
 
 	<jsp:include page="../frame/menu.jsp" flush="true">
 		<jsp:param name="ci" value="" />
@@ -93,14 +93,30 @@
 					</div>
 				</div>
 				<div class="contentMain">
-					<iframe id="shellinabox" src="https://192.168.0.76:4200/ssh" width="100%" height="500px"></iframe>
+					<iframe id="shellinabox" src="https://192.168.0.75:4200/ssh" width="100%" height="500px"></iframe>
 				</div>
 			</div>
 <script>
-var fillseo_window=window.frames["shellinabox"];
-fillseo_window.window.onbeforeunload=function(){
-alert("弹弹弹！");
-};
+// //创建ifame对象
+// var iframe = document.createElement("shellinabox");
+// //设置ifame对象src属性
+// iframe.src = "https://192.168.0.75:4200/ssh";
+
+// if (!/*@cc_on!@*/0) { //如果不是ie
+//     iframe.onload = function(){ 加载
+//         alert("Local iframe is now loaded.");
+//     };
+// } else {
+//     iframe.onreadystatechange = function(){
+//         if (iframe.readyState == "complete"){ 完成状态判断
+//             alert("Local iframe is now loaded.");
+//         }
+//     };
+// }
+
+// fillseo_window.onbeforeunload=function(){
+// alert("弹弹弹！");
+// };
 </script>
 		</article>
 	</div>

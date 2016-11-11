@@ -1,6 +1,15 @@
 $(document).ready(function() {
 	creatable(null, null);
+	var oFrm = document.getElementById('shellinabox');
+	oFrm.onreadystatechange = function() {
+		if ( this.readyState == 'complete') {
+			onComplete();
+		}
+	}
 });
+function creatable(){
+	alert("test")
+}
 function creatable(isDir, dirName) {
 	$(".chkAll").prop('checked', $(this).is(":checked"));
 	if (null == isDir || "true" == isDir) {
@@ -10,7 +19,7 @@ function creatable(isDir, dirName) {
 		if (null == dirName) {
 			dirName = "";
 		}
-		param = "dirName=" + dirName;
+		param = "dirName=" + encodeURIComponent(dirName);
 		context.empty();
 
 		$.ajax({
