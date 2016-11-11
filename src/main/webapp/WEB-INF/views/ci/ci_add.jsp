@@ -103,7 +103,6 @@
                                                    class="form-control c-project-con reg-input" value="">
 		                            </div>
                                 </div>
-                               
                             </section>
                             <h4 class="c-title">构建</h4>
                             <section class="registryinfo">
@@ -173,7 +172,7 @@
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">dockerfile路径</label>
-		                                <input id="dockerFileLocation" name="dockerFileLocation" type="text" class="form-control c-project-con"
+		                                <input id="mvnDockerFileLocation" name="mvnDockerFileLocation" type="text" class="form-control c-project-con"
                                                    value="">
 		                            </div>
 	                            </div>
@@ -192,7 +191,7 @@
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">dockerfile路径</label>
-		                                <input id="dockerFileLocation" name="dockerFileLocation" type="text" class="form-control c-project-con"
+		                                <input id="antDockerFileLocation" name="antDockerFileLocation" type="text" class="form-control c-project-con"
                                                    value="">
 		                            </div>
 	                            </div>
@@ -218,6 +217,7 @@
 	                            </div>
 	                         
                             </section>
+                            <input id="dockerFileLocation" name="dockerFileLocation" type="hidden" value="">
 							<h4 class="c-title">构建后操作</h4>
                             <section class="registryinfo">
                             	<div class="row">
