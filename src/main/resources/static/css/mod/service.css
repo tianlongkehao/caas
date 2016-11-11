@@ -967,7 +967,7 @@ li.line-h-3 span i{
 .editCon input{
 	border-radius: 5px;
 }
-#editServiceAddrBtn,#saveEdit{
+#editServiceAddrBtn,#saveEdit,#canclEdit{
 	color: #337ab7;
 }
 #editServiceAddr{
