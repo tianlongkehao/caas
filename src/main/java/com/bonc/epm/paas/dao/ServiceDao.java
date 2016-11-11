@@ -91,5 +91,5 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
          * @return list
          * @see
          */
-     List<Service> findByServiceAddr (String serviceAddr);
+     List<Service> findByServiceAddrAndProxyPath (String serviceAddr,String proxyPath);
     }

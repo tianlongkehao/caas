@@ -2077,12 +2077,12 @@ public class ServiceController {
     @ResponseBody
     public String editSerAddr(String serviceAddr,String proxyPath,Long serId){
         Map<String, Object> map = new HashMap<String, Object>();
-        if(serviceDao.findByServiceAddr(serviceAddr).size()>0){
+        if(serviceDao.findByServiceAddrAndProxyPath(serviceAddr,proxyPath).size()>0){
             map.put("status", "500");
         }else{
         Service service = serviceDao.findOne(serId);
-//        serviceAddr=serviceAddr+proxyPath;
         service.setServiceAddr(serviceAddr);
+        service.setProxyPath(proxyPath);
         try {
             
             serviceDao.save(service);

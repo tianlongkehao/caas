@@ -58,7 +58,9 @@
 							  <prex id=addrPrex ></prex>
 								<input id="editServiceAddr" type="text" value="">/
 								<input id="editProxyPath" type="text" value="${service.proxyPath}">
-								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i></li>
+								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i>
+								<i id="canclEdit" ><input style="margin-left:20px" type="button" value="取消"  /></i>
+								</li>
 							<li>创建时间：${service.createDate }</li>
 							<li>更新时间：${service.createDate }</li>
 						</ul>

@@ -165,11 +165,15 @@ $(document).ready(function(){
     	   $(".oldCon").hide();
        });
        $("#saveEdit").click(function(){
+   			if(false==checkSerAddr()){return ;};
     	   $(".editCon").hide();
     	   editSerAddr();
     	   $(".oldCon").show();
        });
-       
+       $("#canclEdit").click(function(){
+    	   $(".editCon").hide();
+    	   $(".oldCon").show();
+       });
 });/*ready*/
   
 Date.prototype.Format = function(fmt){
@@ -354,7 +358,6 @@ function editSerAddr(){
 		var editProxyPath=$('#editProxyPath').val();
 		var serId=$('#serId').val();
 		var prex=	$('#addrPrex').html();
-//		checkSerAddr(serAddrPrex,newSerAddr);
     editServiceAddr=prex+editServiceAddr;
 			$.ajax({
         		type: "GET",
@@ -379,6 +382,15 @@ function editSerAddr(){
            	}
         	});
 }
-function checkSerAddr(SerAddrPrex,newSerAddr){
-	
+function checkSerAddr(){
+    if ($('#editServiceAddr').val() === '') {
+        layer.tips('服务路径不能为空', $('#editServiceAddr'),{tips: [1, '#EF6578']});
+        $('#editServiceAddr').focus();
+        return false;
+    }
+    if ($('#editProxyPath').val() === '') {
+        layer.tips('代理不能为空', $('#editProxyPath'),{tips: [1, '#EF6578']});
+        $('#editProxyPath').focus();
+        return false;
+    }
 }
