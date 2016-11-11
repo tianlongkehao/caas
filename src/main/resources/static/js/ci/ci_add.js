@@ -290,19 +290,20 @@ function checkCodeCiAdd(){
     		return;
 	    }
     	//maven属性判断
-    	var mavenProperty = $("#mavenProperty").val();
-    	if(!mavenProperty || mavenProperty.length < 1){
-    		layer.tips('maven属性不能为空','#mavenProperty',{tips: [1, '#3595CC']});
-    		$('#mavenProperty').focus();
-    		return;
-	    }
+//    	var mavenProperty = $("#mavenProperty").val();
+//    	if(!mavenProperty || mavenProperty.length < 1){
+//    		layer.tips('maven属性不能为空','#mavenProperty',{tips: [1, '#3595CC']});
+//    		$('#mavenProperty').focus();
+//    		return;
+//	    }
     	//mvnJVM选项判断
-    	var mavenJVMOptions = $("#mavenJVMOptions").val();
-    	if(!mavenJVMOptions || mavenJVMOptions.length < 1){
-    		layer.tips('maven属性不能为空','#mavenJVMOptions',{tips: [1, '#3595CC']});
-    		$('#mavenJVMOptions').focus();
-    		return;
-	    }
+//    	var mavenJVMOptions = $("#mavenJVMOptions").val();
+//    	if(!mavenJVMOptions || mavenJVMOptions.length < 1){
+//    		layer.tips('maven属性不能为空','#mavenJVMOptions',{tips: [1, '#3595CC']});
+//    		$('#mavenJVMOptions').focus();
+//    		return;
+//	    }
+    	
     	//maven存储库的判断
     	if($("#isUserPrivateRegistry").prop("checked")==true){
     		$("#isUserPrivateRegistry").val("1");
@@ -311,19 +312,6 @@ function checkCodeCiAdd(){
     	if($("#injectBuildVariables").prop("checked")==true){
     		$("#injectBuildVariables").val("1");
         }
-    	//daockerfile文件路径的判断
-    	var dockerFileLocation = $("#mvnDockerFileLocation").val();
-    	if(!dockerFileLocation || dockerFileLocation.length < 1){
-    		layer.tips('dockerfile文件路径不能为空','#mvnDockerFileLocation',{tips: [1, '#3595CC']});
-    		$('#mvnDockerFileLocation').focus();
-    		return;
-	    }
-    	$("#dockerFileLocation").val(dockerFileLocation);
-    	$("#antVersion").val("");
-    	$("#antTargets").val("");
-    	$("#antBuildFileLocation").val("");
-    	$("#antProperties").val("");
-    	$("#antJavaOpts").val("");
     }
     //ant构建
     if (invokeType == 2) {
@@ -334,22 +322,6 @@ function checkCodeCiAdd(){
     		$('#antTargets').focus();
     		return;
 	    }
-    	//doackerFile文件路径的判断
-    	var dockerFileLocation = $("#antDockerFileLocation").val();
-    	if(!dockerFileLocation || dockerFileLocation.length < 1){
-    		layer.tips('dockerfile文件路径不能为空','#antDockerFileLocation',{tips: [1, '#3595CC']});
-    		$('#antDockerFileLocation').focus();
-    		return;
-	    }
-    	$("#dockerFileLocation").val(dockerFileLocation);
-    	$("#mavenVersion").val("");
-    	$("#mavenGoals").val("");
-    	$("#pomLocation").val("");
-    	$("#mavenProperty").val("");
-    	$("#mavenJVMOptions").val("");
-    	$("#isUserPrivateRegistry").val("");
-    	$("#injectBuildVariables").val("");
-    	$("#mavenGlobalSetFile").val("");
     }
     //构建方式为none
     if (invokeType == 0) {
@@ -369,6 +341,14 @@ function checkCodeCiAdd(){
     	$("#antJavaOpts").val("");
     	
     	$("#dockerFileLocation").val("");
+    }
+    
+  //doackerFile文件路径的判断
+	var dockerFileLocation = $("#dockerFileLocation").val();
+	if(!dockerFileLocation || dockerFileLocation.length < 1){
+		layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
+		$('#dockerFileLocation').focus();
+		return;
     }
     
     return true;

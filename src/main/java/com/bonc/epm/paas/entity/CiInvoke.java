@@ -13,12 +13,13 @@ package com.bonc.epm.paas.entity;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.alibaba.fastjson.annotation.JSONField;
-
+@Entity
 public class CiInvoke {
     /**
      * 主键Id
