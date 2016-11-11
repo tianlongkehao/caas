@@ -42,7 +42,7 @@
                                                value=""> :
                                         <input id="version" name="version" type="text" value="latest"
                                                class="name-input">
-                                        <span style="color:#1dd2af" id="image_name_version"><i class="fa fa-info-circle"></i></span>
+                                        <span style="color:#FF0000" id="image_name_version"><i class="fa fa-info-circle"></i></span>
                                     </div>
                                 </div>
                                 <div class="form-group col-md-5">

@@ -18,9 +18,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 
-import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
-import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.Job;
+import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
 
 /**
@@ -37,9 +37,9 @@ public interface SheraAPI {
      * @return {@link JobExec}s
      */
     @GET
-    @Path("/She-Ra/jobs/getall/{namespace}")
+    @Path("/jobs/getall/{namespace}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public JobExecList getAllJobs(@PathParam("namespace") String namespace);
+    public JobExecList getAllJobs(@PathParam("namespace") String namespace) throws SheraClientException;
     
     /**
      * Create a new Job
@@ -48,7 +48,19 @@ public interface SheraAPI {
      *            job to be created
      */
     @POST
-    @Path("/She-Ra/jobs/create/{namespace}")
+    @Path("/jobs/create/{namespace}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Job createJob(@PathParam("namespace") String namespace, Job job);
+    public Job createJob(@PathParam("namespace") String namespace, Job job) throws SheraClientException;
+
+    /**
+     * exec a Job
+     * 
+     * @param namespace 
+     * @param job-id 
+     *              job to be exec
+     */
+    @POST
+    @Path("/jobs/exec/{namespace}/{job-id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public JobExec execJob(@PathParam("namespace") String namespace, @PathParam("job-id") String jobId) throws SheraClientException;
 }

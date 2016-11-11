@@ -526,3 +526,7 @@ table.dataTable thead .sorting:after {
 .dataTables_wrapper {
     padding-bottom: 30px;
 }
+
+.fa-info-circle{
+    cursor: pointer;
+}
