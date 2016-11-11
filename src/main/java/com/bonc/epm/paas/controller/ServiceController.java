@@ -2048,4 +2048,50 @@ public class ServiceController {
         	LOG.error("日志读取错误：" + e);
         }
     }
+    
+    /**
+     * 获取前缀
+     * 
+     * @return prex
+     * @see
+     */
+   @RequestMapping("service/detail/getprex.do")
+   @ResponseBody
+   public String getprex(){
+       Map<String, Object> map = new HashMap<String, Object>();
+       String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+       String prex="http://"+namespace+".";
+       map.put("prex", prex);
+       return JSON.toJSONString(map);
+    }
+   /**
+    * 修改服务地址
+    * 
+    * @param serviceAddr
+    * @param proxyPath
+    * @param serId
+    * @return status 
+    * @see
+    */
+    @RequestMapping("service/detail/editSerAddr.do")
+    @ResponseBody
+    public String editSerAddr(String serviceAddr,String proxyPath,Long serId){
+        Map<String, Object> map = new HashMap<String, Object>();
+        if(serviceDao.findByServiceAddrAndProxyPath(serviceAddr,proxyPath).size()>0){
+            map.put("status", "500");
+        }else{
+        Service service = serviceDao.findOne(serId);
+        service.setServiceAddr(serviceAddr);
+        service.setProxyPath(proxyPath);
+        try {
+            
+            serviceDao.save(service);
+            map.put("status", "200");
+        } catch (Exception e) {
+            map.put("status", "400");
+            e.printStackTrace();
+            }
+        }
+        return JSON.toJSONString(map);
+    }
 }
