@@ -2,15 +2,11 @@ package com.bonc.epm.paas.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +14,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +39,7 @@ import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ImageConstant;
 import com.bonc.epm.paas.dao.CiDao;
+import com.bonc.epm.paas.dao.CiInvokeDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.ImageDao;
@@ -53,7 +48,6 @@ import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.Image;
-import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -87,6 +81,12 @@ public class CiController {
      */
     @Autowired
 	private CiRecordDao ciRecordDao;
+    
+    /**
+     * ciInvokeDao接口
+     */
+    @Autowired
+    private CiInvokeDao ciInvokeDao;
     
     /**
      * ImageDao接口
