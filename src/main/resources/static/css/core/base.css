@@ -527,6 +527,6 @@ table.dataTable thead .sorting:after {
     padding-bottom: 30px;
 }
 
-.fa-info-circle{
+.fa-info-circle,.fa-edit, .fa-save, .fa-times{
     cursor: pointer;
 }
