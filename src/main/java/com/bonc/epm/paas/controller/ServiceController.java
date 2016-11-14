@@ -1878,7 +1878,7 @@ public class ServiceController {
         Map<String, Object> datamap = new HashMap<String, Object>();
 
         try {
-        	logStr = client.getPodLog(podName, container, false, true, 5000);
+        	logStr = client.getPodLog(podName, container, false, false, 5000);
         	logStr = logStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
             datamap.put("logStr", logStr);
