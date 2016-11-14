@@ -53,6 +53,7 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.ResultPager;
+import com.bonc.epm.paas.util.ZipUtil;
 import com.github.dockerjava.api.DockerClient;
 /**
  * 构建容器
@@ -471,7 +472,7 @@ public class CiController {
             if (!sourceCode.isEmpty()) {
                 FileUtils.storeFile(sourceCode.getInputStream(), imagePath+"/"+sourceCode.getOriginalFilename());
             }
-            boolean flag = loadAndPushImage(image,imagePath+"/"+sourceCode.getOriginalFilename());
+            boolean flag = loadOrSaveAndPushImage(image,imagePath+"/"+sourceCode.getOriginalFilename());
             if(flag){
                 //排重添加镜像数据
                 Image img = null;
@@ -511,17 +512,22 @@ public class CiController {
      * @return flag boolean
      * @see
      */
-    private boolean loadAndPushImage(Image image,String tarPath) throws IOException{
+    private boolean loadOrSaveAndPushImage(Image image,String tarPath) throws IOException{
         InputStream uploadStream = Files.newInputStream(Paths.get(tarPath));
         boolean flag = false;
         try {
-            // load and push image
-            //String cmd = "docker load --input "+tarPath;
-            //CmdUtil.exeCmd(cmd);
-            flag = dockerClientService.loadAndPushImage(image, uploadStream);
-            if(flag){
-                //删除本地镜像
-                flag = dockerClientService.removeImage(image.getName().split("/")[1], image.getVersion(),null,null,null);
+            flag = ZipUtil.visitTAR(new File(tarPath), "repositories");
+            if (flag) {
+                flag = dockerClientService.loadAndPushImage(image, uploadStream);
+                if(flag){
+                    //删除本地镜像
+                    flag = dockerClientService.removeImage(image.getName().split("/")[1], image.getVersion(),null,null,null);
+                } 
+            } else {
+                flag = dockerClientService.importAndPushImage(image, uploadStream);
+                if (flag) {
+                    flag = dockerClientService.removeImage(image.getName(), image.getVersion(), null, null, null);
+                }  
             }
         } catch (Exception e) {
             e.printStackTrace();
