@@ -209,7 +209,7 @@ public class DockerClientService {
             DockerClient dockerClient = this.getSpecialDockerClientInstance();
             String imageId = dockerClient.createImageCmd(image.getName(), inputStream).withTag(image.getVersion()).exec().getId();
             imageId = imageId.substring(0,12); // ?? why is not the response same with building image.
-            dockerClient.tagImageCmd(image.getName(), username +"/"+image.getName(), image.getVersion()).withForce().exec();
+            dockerClient.tagImageCmd(imageId, username +"/"+image.getName(), image.getVersion()).withForce().exec();
             
             // push image
             PushImageResultCallback callback = new PushImageResultCallback() {
