@@ -5,7 +5,9 @@
 <title>服务</title>
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
+<link rel="stylesheet" type="text/css" href="<%=path%>/css/core/jquery-ui.min.css" />
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/service.css" />
+<script type="text/javascript" src="<%=path%>/js/plugins/jquery-ui.min.js"></script>
 <script type="text/javascript" src="<%=path%>/js/service/service-debug.js"></script>
 </head>
 <body >
@@ -25,50 +27,92 @@
 						<li class="active">${service.serviceName }</li>
 					</ol>
 				</div>
-				<div style="width: 100%; float: right; background-color: #fff;">
-					<div class="row">
-						<div class="col-sm-12">
-							<div class="ibox float-e-margins">
-								<div class="ibox-title">
-									<h5>
-										<span>全部文件</span>
-									</h5>
-
-									<div class="ibox-tools">
-										<a href="javascript:creatable(null,'./');" id="volReloadBtn" title="刷新"> <i class="fa fa-repeat"></i></a>
-										<a href="javascript:createdir()" id="adddir" title="新建"> <i class="fa fa-plus"></i></a>
-										<a href="javascript:fileUpload()" id="fileUpload" title="上传文件"> <i class="fa fa-upload"></i></a>
-<!-- 										<a href="javascript:download()" id="fileDownloadFiles" title="导出文件"> <i class="fa fa-download"></i></a> -->
-										<a href="javascript:delfiles()" id="deleteButton" title="删除"> <i class="fa fa-trash"></i></a>
+				<div id="tabs">
+					<ul>
+						<li><a href="#doc">文件</a></li>
+						<li><a href="#ftp">ftp</a></li>
+					</ul>
+					<div id="doc" >
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="ibox float-e-margins" style="margin-bottom:0px">
+									<div class="ibox-title">
+										<h5>
+											<span>本地文件</span>
+										</h5>
+	
+										<div class="ibox-tools">
+											<a href="javascript:creatable(null,'./');" id="volReloadBtn" title="刷新"> <i class="fa fa-repeat"></i></a>
+											
+										</div>
+									</div>
+									<div class="ibox-content">
+										<table style="border-collapse: collapse; margin: 0 auto;" class="table">
+											<thead style="display: block;">
+												<tr>
+													<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
+													<th style="width: 25%; ">文件名</th>
+													<th style="width: 15%; ">大小</th>
+													<th style="width: 30%; ">修改日期</th>
+													<th style="width: 20%; ">操作</th>
+												</tr>
+											</thead>
+											<tbody id="mybody1" style="overflow-y: auto; height: 400px; display: block; width: 100%">
+	
+											</tbody>
+											<tfoot class="hide">
+												<tr>
+													<td colspan="5">
+														<ul class="pagination pull-right"></ul>
+													</td>
+												</tr>
+											</tfoot>
+										</table>
 									</div>
 								</div>
-								<div class="ibox-content">
-									<table style="border-collapse: collapse; margin: 0 auto;" class="table">
-										<thead style="display: block;">
-											<tr>
-												<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
-												<th style="width: 25%; text-indent: 30px;">文件名</th>
-												<th style="width: 20%; text-indent: 5px;">大小</th>
-												<th style="width: 25%; text-indent: 8px;">修改日期</th>
-												<th style="width: 10%; text-indent: 80px;">操作</th>
-											</tr>
-										</thead>
-										<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%">
-
-										</tbody>
-										<tfoot class="hide">
-											<tr>
-												<td colspan="5">
-													<ul class="pagination pull-right"></ul>
-												</td>
-											</tr>
-										</tfoot>
-									</table>
+							</div>
+							<div class="col-sm-6">
+								<div class="ibox float-e-margins" style="margin-bottom:0px">
+									<div class="ibox-title">
+										<h5>
+											<span>远程文件</span>
+										</h5>
+	
+										<div class="ibox-tools">
+											<a href="javascript:creatable(null,'./');" id="volReloadBtn" title="刷新"> <i class="fa fa-repeat"></i></a>
+											<a href="javascript:createdir()" id="adddir" title="新建"> <i class="fa fa-plus"></i></a>
+											<a href="javascript:fileUpload()" id="fileUpload" title="上传文件"> <i class="fa fa-upload"></i></a>
+	<!-- 										<a href="javascript:download()" id="fileDownloadFiles" title="导出文件"> <i class="fa fa-download"></i></a> -->
+											<a href="javascript:delfiles()" id="deleteButton" title="删除"> <i class="fa fa-trash"></i></a>
+										</div>
+									</div>
+									<div class="ibox-content">
+										<table style="border-collapse: collapse; margin: 0 auto;" class="table">
+											<thead style="display: block;">
+												<tr>
+													<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
+													<th style="width: 25%; text-indent: 10px;">文件名</th>
+													<th style="width: 15%; text-indent: 0px;">大小</th>
+													<th style="width: 30%; text-indent: 0px;">修改日期</th>
+													<th style="width: 15%; text-indent: 10px;">操作</th>
+												</tr>
+											</thead>
+											<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%">
+	
+											</tbody>
+											
+										</table>
+									</div>
 								</div>
 							</div>
+							
 						</div>
 					</div>
+					<div class="contentMain" id="ftp">
+						<iframe id="shellinabox" src="https://192.168.0.75:4200/ssh" width="100%" height="500px"></iframe>
+					</div>
 				</div>
+				
 				<div id="upload-template" hidden="true">
 					<div style="width: 345px; margin: 5px 10px 5px 10px">
 						<form method="POST" enctype="multipart/form-data" action="upload" id="form1" name="form1">
@@ -92,11 +136,16 @@
 						</p>
 					</div>
 				</div>
-				<div class="contentMain">
-					<iframe id="shellinabox" src="https://192.168.0.75:4200/ssh" width="100%" height="500px"></iframe>
-				</div>
+				
 			</div>
 <script>
+$(document).ready(function () {
+	$( "#tabs" ).tabs();
+    /* $(".sortable-list").sortable({
+        connectWith: ".connectList"
+    }).disableSelection(); */
+
+});
 // //创建ifame对象
 // var iframe = document.createElement("shellinabox");
 // //设置ifame对象src属性
