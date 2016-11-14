@@ -20,6 +20,7 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -34,10 +35,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.ServiceDao;
+import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.FileInfo;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.model.Pod;
+import com.bonc.epm.paas.kubernetes.model.PodList;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.SFTPUtil;
@@ -90,6 +96,12 @@ public class ServiceDebugController {
     @Autowired
 	private PortConfigDao portConfigDao;
 
+    /**
+     * KubernetesClientService接口
+     */
+    @Autowired
+	private KubernetesClientService kubernetesClientService;
+
 	/**
 	 * Description: <br>
 	 * 跳转进入服务DEBUG页面
@@ -100,8 +112,8 @@ public class ServiceDebugController {
 	@RequestMapping(value = { "service/debug/{id}" }, method = RequestMethod.GET)
 	public String debug(Model model, @PathVariable long id) {
 		System.out.printf("id: " + id);
-		User currentUser = CurrentUserUtils.getInstance().getUser();
 		Service service = serviceDao.findOne(id);
+		//获取端口信息
 		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
 		int port = 0;
 		for (PortConfig portConfig : portConfigList) {
@@ -109,8 +121,24 @@ public class ServiceDebugController {
 				port = Integer.parseInt(portConfig.getMapPort());
 			}
 		}
+		//获取pod信息
+	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
-		// 建立connect
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("app", service.getServiceName());
+  		// 通过服务名获取pod列表
+        PodList podList = client.getLabelSelectorPods(map);
+        String podIP = new String();
+        if (podList != null) {
+            List<Pod> pods = podList.getItems();
+	        if (CollectionUtils.isNotEmpty(pods)) {
+	            for (Pod pod : pods) {
+	            	podIP = pod.getStatus().getPodIP();
+	            }
+	        }
+        }
+
+		// 建立SFTP connect
 		sftp = SFTPUtil.connect(SFTP_HOST, port, SFTP_USER, SFTP_PASSWORD);
 		try {
 			// 跳转至初始目录
@@ -119,8 +147,8 @@ public class ServiceDebugController {
 			e.printStackTrace();
 		}
 
-		model.addAttribute("namespace", currentUser.getNamespace());
 		model.addAttribute("id", id);
+		model.addAttribute("podip", podIP);
 		model.addAttribute("port",port);
 		model.addAttribute("service", service);
 		model.addAttribute("menu_flag", "service");
