@@ -39,7 +39,7 @@ function creatable(isDir, dirName) {
 						tbody += '<tr class="vol_list" style="cursor:pointer">'
 								+ '<td style="width: 5%;text-indent: 14px;">'
 								+ '</td>'
-								+ '<td style="width: 25%; text-indent: 30px;"  onclick=creatable("'
+								+ '<td style="width: 25%; text-indent: 13px;"  onclick=creatable("'
 								+ fileInfo.dir
 								+ '","'
 								+ fileInfo.fileName
@@ -55,11 +55,11 @@ function creatable(isDir, dirName) {
 								+ '</span>'
 								+ '</a>'
 								+ '</td>'
-								+ '<td style="width: 20%; text-indent: 2px;">'
+								+ '<td style="width: 15%; text-indent: 2px;">'
 								+ fileInfo.size
 								+ '</td>'
-								+ '<td style="width: 25%; text-indent: 0px;"></td>'
-								+ '<td style="width: 10%;text-indent: 0px;"></td>'
+								+ '<td style="width: 30%; text-indent: 0px;"></td>'
+								+ '<td style="width: 15%;text-indent: 0px;"></td>'
 								+ '</tr>';
 					} else {
 						tbody += '<tr class="vol_list" style="cursor:pointer">'
@@ -68,7 +68,7 @@ function creatable(isDir, dirName) {
 								+ fileInfo.fileName
 								+ '" >'
 								+ '</td>'
-								+ '<td style="width: 25%;text-indent: 30px;" onclick=creatable("'
+								+ '<td style="width: 25%;text-indent: 13px;" onclick=creatable("'
 								+ (fileInfo.dir || fileInfo.link)
 								+ '","'
 								+ fileInfo.fileName
@@ -86,13 +86,13 @@ function creatable(isDir, dirName) {
 								+ '</span>'
 								+ '</a>'
 								+ '</td>'
-								+ '<td style="width: 20%; text-indent: 0px;">'
+								+ '<td style="width: 15%; text-indent: 8px;">'
 								+ fileInfo.size
 								+ 'KB</td>'
-								+ '<td style="width: 25%; text-indent: 0px;">'
+								+ '<td style="width: 30%; text-indent: 0px;">'
 								+ fileInfo.modifiedTime
 								+ '</td>'
-								+ '<td style="width: 10%;text-indent: 71px;">'
+								+ '<td style="width: 15%;text-indent: 30px;">'
 								+ '<a class="deleteButton" style="text-indent: 0px;" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
 								+ fileInfo.fileName
 								+ '"> <i class="fa fa-trash fa-lg"></i></a>'
