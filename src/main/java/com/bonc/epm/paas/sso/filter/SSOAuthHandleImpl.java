@@ -302,7 +302,6 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
         catch (Exception e) {
             LOG.error("获取能力平台租户资源出错！" + e.getMessage());
             e.printStackTrace();
-            throw new Exception();
         }
     }
     /**
