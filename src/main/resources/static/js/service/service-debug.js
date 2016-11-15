@@ -1,15 +1,19 @@
 $(document).ready(function() {
 	creatable(null, null);
-	var oFrm = document.getElementById('shellinabox');
-	oFrm.onreadystatechange = function() {
-		if ( this.readyState == 'complete') {
-			onComplete();
-		}
-	}
+//	var oFrm = document.getElementById('shellinabox');
+//	oFrm.onreadystatechange = function() {
+//		if ( this.readyState == 'complete') {
+//			onComplete();
+//		}
+//	}
+	setInterval(onComplete, 1000); 
 });
-function creatable(){
-	alert("test")
-}
+function onComplete() 
+{
+//	var shell = document.getElementById("shellinabox");
+	window.onbeforeunload = function(){}
+} 
+
 function creatable(isDir, dirName) {
 	$(".chkAll").prop('checked', $(this).is(":checked"));
 	if (null == isDir || "true" == isDir) {
@@ -39,7 +43,7 @@ function creatable(isDir, dirName) {
 						tbody += '<tr class="vol_list" style="cursor:pointer">'
 								+ '<td style="width: 5%;text-indent: 14px;">'
 								+ '</td>'
-								+ '<td style="width: 25%; text-indent: 13px;"  onclick=creatable("'
+								+ '<td style="width: 25%; text-indent: 22px;"  onclick=creatable("'
 								+ fileInfo.dir
 								+ '","'
 								+ fileInfo.fileName
@@ -55,11 +59,11 @@ function creatable(isDir, dirName) {
 								+ '</span>'
 								+ '</a>'
 								+ '</td>'
-								+ '<td style="width: 15%; text-indent: 2px;">'
+								+ '<td style="width: 15%; text-indent: 61px;">'
 								+ fileInfo.size
 								+ '</td>'
-								+ '<td style="width: 30%; text-indent: 0px;"></td>'
-								+ '<td style="width: 15%;text-indent: 0px;"></td>'
+								+ '<td style="width: 30%; text-indent: 152px;"></td>'
+								+ '<td style="width: 15%;text-indent: 131px;"></td>'
 								+ '</tr>';
 					} else {
 						tbody += '<tr class="vol_list" style="cursor:pointer">'
@@ -68,7 +72,7 @@ function creatable(isDir, dirName) {
 								+ fileInfo.fileName
 								+ '" >'
 								+ '</td>'
-								+ '<td style="width: 25%;text-indent: 13px;" onclick=creatable("'
+								+ '<td style="width: 25%;text-indent: 22px;" onclick=creatable("'
 								+ (fileInfo.dir || fileInfo.link)
 								+ '","'
 								+ fileInfo.fileName
@@ -86,13 +90,13 @@ function creatable(isDir, dirName) {
 								+ '</span>'
 								+ '</a>'
 								+ '</td>'
-								+ '<td style="width: 15%; text-indent: 8px;">'
+								+ '<td style="width: 15%; text-indent: 56px;">'
 								+ fileInfo.size
 								+ 'KB</td>'
-								+ '<td style="width: 30%; text-indent: 0px;">'
+								+ '<td style="width: 30%; text-indent: 148px;">'
 								+ fileInfo.modifiedTime
 								+ '</td>'
-								+ '<td style="width: 15%;text-indent: 30px;">'
+								+ '<td style="width: 15%;text-indent: 123px;">'
 								+ '<a class="deleteButton" style="text-indent: 0px;" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
 								+ fileInfo.fileName
 								+ '"> <i class="fa fa-trash fa-lg"></i></a>'

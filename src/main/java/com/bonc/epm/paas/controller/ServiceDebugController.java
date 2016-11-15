@@ -194,6 +194,7 @@ public class ServiceDebugController {
 			return JSON.toJSONString(map);
 		}
 		map.put("fileList", fileList);
+		map.put("path", directory);
 
 		return JSON.toJSONString(map);
 	}
