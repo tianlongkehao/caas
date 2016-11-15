@@ -934,43 +934,77 @@ tr.focus{
 	color:#5cb85c;
 	cursor: pointer;
 }
-li.line-h-3 {
-    margin-bottom: 8px;
+/* <<<<<<< HEAD */
+/* li.line-h-3 { */
+/*     margin-bottom: 8px; */
+/* } */
+/* li.line-h-3 input.in_style,#instanceNum,#Name,#Value,#mountPath,#selectVolume{ */
+/*     float:left; */
+/* } */
+/* li.line-h-3 span i{ */
+/*     line-height:34px; */
+/*     margin-left:4px; */
+/* } */
+/* .s-unit{ */
+/* 	line-height: 34px; */
+/*     margin-left: -50px; */
+/*     display: inline-block; */
+/* } */
+/* .check-lable{ */
+/* 	float:left; */
+/* 	line-height:34px; */
+/* } */
+/* .forEnvName{ */
+/* 	float:left; */
+/* 	width:15%; */
+/* 	line-height:34px; */
+/* } */
+/* .envName{ */
+/* 	width:85%; */
+/* } */
+/* .envlabel{ */
+/* 	margin-bottom:15px; */
+/* } */
+/* .editCon input{ */
+/* 	border-radius: 5px; */
+/* } */
+/* #editServiceAddrBtn,#saveEdit,#canclEdit{ */
+/* 	color: #337ab7; */
+/* } */
+/* #editServiceAddr{ */
+/* 	margin-right: 6px; */
+/* 	width:36%; */
+/* } */
+/* ======= */
+/* AGILE BOARD */
+.agile-list tr:hover {
+    cursor: pointer;
+    background: #fff;
 }
-li.line-h-3 input.in_style,#instanceNum,#Name,#Value,#mountPath,#selectVolume{
-    float:left;
+
+#scp-path{
+	margin-left: 8px;
+    border-radius: 3px;
 }
-li.line-h-3 span i{
-    line-height:34px;
-    margin-left:4px;
+/* service-debuge */
+.localDoc{
+	padding-left: 0px;
+	padding-right: 2px;
+	border-left: 1px solid #e7eaec;
+	border-bottom: 1px solid #e7eaec;
+	
 }
-.s-unit{
-	line-height: 34px;
-    margin-left: -50px;
-    display: inline-block;
+.localDoc div.ibox{
+	border-right: 1px solid #e7eaec;
 }
-.check-lable{
-	float:left;
-	line-height:34px;
+.scpDoc{
+	padding-left: 2px;
+	padding-right: 0px;
+	border-left: 1px solid #e7eaec;
+	border-right: 1px solid #e7eaec;
+	border-bottom: 1px solid #e7eaec;
 }
-.forEnvName{
-	float:left;
-	width:15%;
-	line-height:34px;
-}
-.envName{
-	width:85%;
-}
-.envlabel{
-	margin-bottom:15px;
-}
-.editCon input{
-	border-radius: 5px;
-}
-#editServiceAddrBtn,#saveEdit,#canclEdit{
-	color: #337ab7;
-}
-#editServiceAddr{
-	margin-right: 6px;
-	width:36%;
-}
+.scpDoc div.ibox{
+	border-left: 1px solid #e7eaec;
+} 
+/* >>>>>>> refs/heads/develop_shellinabox */

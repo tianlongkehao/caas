@@ -1,13 +1,25 @@
 $(document).ready(function() {
 	creatable(null, null);
-//	var oFrm = document.getElementById('shellinabox');
-//	oFrm.onreadystatechange = function() {
-//		if ( this.readyState == 'complete') {
-//			onComplete();
-//		}
-//	}
 	setInterval(onComplete, 1000); 
+	window.onunload = function(){
+		closeFtp();
+	}
+	
+	window.onbeforeunload = function(){
+		closeFtp();
+	}
 });
+function EnterPress(e) { // 传入 event
+	var e = e || window.event;
+	if (e.keyCode == 13) {
+		var dictionary = document.getElementById("scp-path").value;
+		creatable(true,dictionary);
+	}
+} 
+
+function closeFtp(){
+	alert();
+}
 function onComplete() 
 {
 //	var shell = document.getElementById("shellinabox");
@@ -16,7 +28,7 @@ function onComplete()
 
 function creatable(isDir, dirName) {
 	$(".chkAll").prop('checked', $(this).is(":checked"));
-	if (null == isDir || "true" == isDir) {
+	if (null == isDir || true == isDir) {
 		var tbody = "";
 		var context = $('#mybody');
 		var param = "";
@@ -36,6 +48,7 @@ function creatable(isDir, dirName) {
 					failedMSG("没有找到相应的目录", true);
 					return;
 				}
+				$("#scp-path").val(data.path);
 				for (i in data.fileList) {
 					var fileInfo = JSON.stringify(data.fileList[i]);
 					fileInfo = eval("(" + fileInfo + ")");
@@ -43,9 +56,9 @@ function creatable(isDir, dirName) {
 						tbody += '<tr class="vol_list" style="cursor:pointer">'
 								+ '<td style="width: 5%;text-indent: 14px;">'
 								+ '</td>'
-								+ '<td style="width: 25%; text-indent: 22px;"  onclick=creatable("'
+								+ '<td style="width: 25%; text-indent: 22px;"  onclick=creatable('
 								+ fileInfo.dir
-								+ '","'
+								+ ',"'
 								+ fileInfo.fileName
 								+ '") >'
 								+ '<a hrer="">'
@@ -72,9 +85,9 @@ function creatable(isDir, dirName) {
 								+ fileInfo.fileName
 								+ '" >'
 								+ '</td>'
-								+ '<td style="width: 25%;text-indent: 22px;" onclick=creatable("'
+								+ '<td style="width: 25%;text-indent: 22px;" onclick=creatable('
 								+ (fileInfo.dir || fileInfo.link)
-								+ '","'
+								+ ',"'
 								+ fileInfo.fileName
 								+ '") >'
 								+ '<a hrer="">'
