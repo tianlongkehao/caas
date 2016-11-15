@@ -110,199 +110,109 @@
 
                             <%-- 基本设置 --%>
                             <div class="config-details hide">
-                                <c:if test="${ci.type == 1}">
+                                <%-- <c:if test="${ci.type == 1}"> --%>
                                 	<form id="editCiForm" class="form-horizontal" method="post" action="" role="form">
-			                        	<section class="registryinfo">
+                                		<section class="registryinfo">
 			                        		<div class="row depot-name">
-				                                <div class="form-group">
-				                                    <label class="col-2x control-label">项目名称：</label>
-		                                            <div class="col-sm-9">
-				                                    <input id="description" name="description" class="form-control" type="text"
+				                                <div class=" col-md-12">
+				                                    <label class="c-project-tit">项目名称</label>
+				                                    <input id="projectName" name="projectName" class="form-control c-project-con" type="text"
 				                                           required="">
-				                                    </div>
 				                                </div>
-				                               
 				                            </div>
-				                            <div class="row">
-				                                <div class="form-group">
-				                                    <label class="col-2x control-label">描述：</label>
-				                                    <div class="col-sm-9"><textarea id="description" name="description" class="form-control" type="text"
-				                                           required="" row="5"></textarea></div>
-				                                    
+				                            <div class="row" style="margin-bottom: 12px;">
+				                                <div class=" col-md-12">
+				                                    <label class="c-project-tit">描述</label>
+				                                    <textarea id="description" name="description" class="form-control c-project-con" type="text"
+				                                           required="" row="5"></textarea>
 				                                </div>
 				                            </div>
 				                            <div class="row">
-				                                <div class="form-group">
-				                                    <label class="col-2x control-label">JDK：</label>
-				                                    <div class="col-sm-9"><select id="jdk-version" name="jdk-version" class="form-control">
+				                                <div class=" col-md-12">
+				                                    <label class="c-project-tit">JDK</label>
+				                                    <select id="jdk-version" name="jdkVersion" class="form-control c-project-con">
 				                                    	<option value="jdk1.7">jdk1.7</option>
 				                                    	<option value="jdk1.8">jdk1.8</option>
-				                                    </select></div>
+				                                    </select>
 				                                </div>
 				                            </div>
 			                        	</section>
+			                        	
 			                        	<hr>
 			                            <h4 class="c-title">代码管理</h4>
 			                            <section class="registryinfo">
 			                            	<div class="row">
-				                            	<div class="form-group">
-					                                <label class="col-2x control-label">代码库类型：</label>
-					                                <div class="col-sm-9"><select id="codeType" name="codeType" class="form-control" >
+				                            	<div class=" col-md-12">
+					                                <label class="c-project-tit">代码库类型</label>
+					                                <select id="codeType" name="codeType" class="form-control c-project-con" >
 					                                	<option value="0">-none-</option>
 					                                    <option value="1">git</option>
-					                                </select></div>
+					                                </select>
 					                            </div>
 				                            </div>
 				                            <div class="row git-config">
-				                            	<div class="form-group">
-					                                <label class="col-2x control-label">代码仓库地址：</label>
-					                                <div class="col-sm-9"><input id="codeUrl" name="codeUrl" class="form-control" type="text"
-			                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git"></div>
+				                            	<div class=" col-md-12">
+					                                <label class="c-project-tit">代码仓库地址</label>
+					                                <input id="codeUrl" name="codeUrl" class="form-control c-project-con" type="text"
+			                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git">
 					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">认证方式：</label>
-					                                <div class="col-sm-9"><select id="codeType" name="codeType" class="form-control">
-					                                    <option value="0">-none-</option>
-					                                    <option value="1">gitlab(SSH)(gitlab SSH方式认证)</option>
-				                                      	<option value="2">root/**********(gitlab HTTPS方式认证)</option>
-					                                </select></div>
+					                            <div class=" col-md-12">
+					                                <label class="c-project-tit">认证方式</label>
+					                                <select id="codeCredentials" name="codeCredentials" class="form-control c-project-con">
+					                                    <option value="">-none-</option>
+					                                    <option value="gitlab(SSH)(gitlab SSH方式认证)">gitlab(SSH)(gitlab SSH方式认证)</option>
+				                                      	<option value="root/**********(gitlab HTTPS方式认证)">root/**********(gitlab HTTPS方式认证)</option>
+					                                </select>
 					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">创建分支：</label>
-					                                <div class="col-sm-9"><input id="buildBranch" name="buildBranch" type="text" class="form-control"
-			                                                   value="*/master"></div>
+					                            <div class=" col-md-12">
+					                                <label class="c-project-tit">创建分支</label>
+					                                <input id="codeBranch" name="codeBranch" type="text" class="form-control c-project-con"
+			                                                   value="*/master">
 					                            </div>
 				                            </div>
+				                            <div class="row git-config">
+				                            	<button id="git-higher" type="button" style="float:right!important">高级...</button>
+				                            </div>
 				                            <div class="row git-config git-higher">
-				                            	<div class="form-group">
-					                                <label class="col-2x control-label">代码库用户名：</label>
-					                                <div class="col-sm-9"><input id="codeUsername" name="codeUsername" type="text" class="form-control"
-			                                                   value=""></div>
+				                            	<div class=" col-md-12">
+					                                <label class="c-project-tit">代码库用户名</label>
+					                                <input id="codeUsername" name="codeUsername" type="text" class="form-control c-project-con reg-input"
+			                                                   value="">
 					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">代码库密码：</label>
-					                                <div class="col-sm-9"><input id="codePassword" name="codePassword" type="password"
-			                                                   class="form-control" value=""></div>
+					                            <div class=" col-md-12">
+					                                <label class="c-project-tit">代码库密码</label>
+					                                <input id="codePassword" name="codePassword" type="password"
+			                                                   class="form-control c-project-con reg-input" value="">
 					                            </div>
 			                                </div>
-			                               
 			                            </section>
 			                            <hr>
 			                            <h4 class="c-title">构建</h4>
-			                            <section class="registryinfo">
-			                            	<div class="row">
-				                            	<div class="form-group">
-					                                <label class="col-2x control-label">增加构建步骤：</label>
-					                                <div class="col-sm-9"><select id="addciStep" name="addciStep" class="form-control" >
-					                                	<option value="0">-none-</option>
-					                                    <option value="1">maven</option>
-					                                    <option value="2">ant</option>
-					                                </select></div>
-					                            </div>
+			                            	<section class="registryinfo">
+					                            <ul class="nav nav-bar">
+					                               <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">增加构建步骤<span class="caret"></span></a>
+					                                	<ul class="dropdown-menu">
+						                                	<li><a id="maven">Maven</a></li>
+						                                	<li><a id="ant">Ant</a></li>
+						                                	<li><a id="shell">Execute shell</a></li>
+						                                </ul>
+					                                </li>
+					                            </ul>
+				                            <div id="sortable">
+				                            
 				                            </div>
-				                            <div class="row maven">
-				                            	<div class="form-group">
-					                                <label class="col-2x control-label">maven版本：</label>
-					                                <div class="col-sm-9"><select id="mavenVis" name="mavenVis" class="form-control" >
-					                                	<option value="0">default</option>
-					                                    <option value="1">maven1111</option>
-					                                </select></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">目标：</label>
-					                                <div class="col-sm-9"><input id="Goals" name="Goals" type="text" class="form-control"
-			                                                   value=""></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">POM：</label>
-					                                <div class="col-sm-9"><input id="pom" name="pom" type="text" class="form-control"
-			                                                   value=""></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">属性：</label>
-					                                <div class="col-sm-9"><input id="Properties" name="Properties" type="text" class="form-control"
-			                                                   value=""></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">JVM选项：</label>
-					                                <div class="col-sm-9"><input id="JVMOptions" name="JVMOptions" type="text" class="form-control"
-			                                                   value=""></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">使用私人maven存储库：</label>
-					                                <div class="col-sm-9" style="line-height:34px"><input type="checkbox"></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">配置文件：</label>
-					                                <div class="col-sm-9"><select id="Settings-file" name="Settings-file" class="form-control" >
-					                                	<option value="0">use default maven setting</option>
-					                                    <option value="1">settings file in filesystem</option>
-					                                </select></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">全局配置文件：</label>
-					                                <div class="col-sm-9"><select id="GlobalSettingsfile" name="GlobalSettingsfile" class="form-control" >
-					                                	<option value="0">use default maven global setting</option>
-					                                    <option value="1">global settings file in filesystem</option>
-					                                </select></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">dockerfile路径：</label>
-					                                <div class="col-sm-9"><input id="mavenDockerfilePath" name="mavenDockerfilePath" type="text" class="form-control"
-			                                                   value=""></div>
-					                            </div>
-				                            </div>
-				                            <div class="row ant ant-config">
-				                            	<div class="form-group">
-					                                <label class="col-2x control-label">ant版本：</label>
-					                                <div class="col-sm-9"><select id="antVis" name="antVis" class="form-control" >
-					                                	<option value="0">default</option>
-					                                    <option value="1">ant1111</option>
-					                                </select></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">目标：</label>
-					                                <div class="col-sm-9"><input id="Targets" name="Targets" type="text" class="form-control"
-			                                                   value=""></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">dockerfile路径：</label>
-					                                <div class="col-sm-9"><input id="antDockerfilePath" name="antDockerfilePath" type="text" class="form-control"
-			                                                   value=""></div>
-					                            </div>
-				                            </div>
-				                            <div class="row ant ant-higher">
-				                            	<div class="form-group">
-					                                <label class="col-2x control-label">构建文件：</label>
-					                                <div class="col-sm-9"><input id="antBuildFile" name="antBuildFile" type="text" class="form-control"
-			                                                   value=""></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">性能：</label>
-					                                <div class="col-sm-9"><input id="antProperties" name="antProperties" type="text" class="form-control"
-			                                                   value=""></div>
-					                            </div>
-					                            <div class="form-group">
-					                                <label class="col-2x control-label">java选项：</label>
-					                                <div class="col-sm-9"><input id="antJavaOptions" name="antJavaOptions" type="text" class="form-control"
-			                                                   value=""></div>
-					                            </div>
-				                            </div>
-				                         
 			                            </section>
 			                            <hr>
-										<h4 class="c-title">构建后操作</h4>
+										<h4 class="c-title">构建路径</h4>
 			                            <section class="registryinfo">
-			                            	<div class="row">
-				                            	<div class="form-group">
-					                                <label class="col-2x control-label" title="增加构建后操作步骤">增加构建后操作步骤：</label>
-					                                <div class="col-sm-9"><select id="codeType" name="codeType" class="form-control" >
-					                                	<option value="0">-none-</option>
-					                                    
-					                                </select></div>
-					                            </div>
+				                            <div class="row">
+				                                <div class=" col-md-12">
+				                                    <label class="c-project-tit">dockerfile路径</label>
+				                                    <textarea id="dockerfilePath" name="dockerfilePath" class="form-control c-project-con" type="text"
+				                                           required="" row="5"></textarea>
+				                                </div>
 				                            </div>
-				                        </section>
+			                        	</section>
 			                            <div class="form-group">
                                             <label class="col-2x control-label"></label>
                                             <div class="col-sm-9">
@@ -316,7 +226,7 @@
                                         
                                         
                                    
-                                </c:if>
+                                <%-- </c:if> --%>
 
                                 <c:if test="${ci.type == 2}">
                                     <form id="editCiUploadForm" class="form-horizontal" method="post" action="" role="form" enctype="multipart/form-data">

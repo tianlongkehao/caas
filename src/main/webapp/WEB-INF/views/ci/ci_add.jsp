@@ -4,8 +4,8 @@
 <head lang="en">
     <title>代码构建</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/jquery-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
     <script type="text/javascript" src="<%=path %>/js/plugins/jquery-ui.min.js"></script>
     <script type="text/javascript" src="<%=path %>/js/ci/ci_add.js"></script>
     
