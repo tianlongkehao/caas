@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.Image;
-import com.bonc.epm.paas.util.DateFormatUtils;
+import com.bonc.epm.paas.util.DateUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.BuildResponseItem;
@@ -25,6 +25,7 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.Ports;
 import com.github.dockerjava.api.model.PullResponseItem;
 import com.github.dockerjava.api.model.PushResponseItem;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.BuildImageResultCallback;
@@ -51,6 +52,8 @@ public class DockerClientService {
 	private String email;
 	@Value("${docker.io.serverAddress}")
 	private String serverAddress;
+	@Value("${docker.io.apiVersion}")
+	private String apiVersion;
 	@Value("${docker.io.nodeUrl}")
 	private String nodeUrl;
 	private HashMap<String,Integer> nodeMap = null;
@@ -76,14 +79,15 @@ public class DockerClientService {
 	 * @see
 	 */
 	public DockerClient getSpecialDockerClientInstance(){
-		DockerClientConfig config = DockerClientConfig
+		DockerClientConfig config = DefaultDockerClientConfig
 				.createDefaultConfigBuilder()
-				.withUri(url)
+				.withDockerHost(url)
+				.withApiVersion(apiVersion)
 				.withDockerCertPath(dockerCertPath)
-				.withUsername(username)
-				.withPassword(password)
-				.withEmail(email)
-				.withServerAddress(serverAddress)
+				.withRegistryUsername(username)
+				.withRegistryPassword(password)
+				.withRegistryEmail(email)
+				.withRegistryUrl(serverAddress)
 				.build();
 		DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
 		return dockerClient;
@@ -124,17 +128,17 @@ public class DockerClientService {
        nodeMap.put(url, nodeMap.get(url) + 1);
        System.out.println("当前使用的docker客户端地址是：-" + url);
        
-        DockerClientConfig config = DockerClientConfig
+        DockerClientConfig config = DefaultDockerClientConfig
                 .createDefaultConfigBuilder()
-                .withUri(url)
+                .withDockerHost(url)
+                .withApiVersion(apiVersion)
                 .withDockerCertPath(dockerCertPath)
-                .withUsername(username)
-                .withPassword(password)
-                .withEmail(email)
-                .withServerAddress(serverAddress)
+                .withRegistryUsername(username)
+                .withRegistryPassword(password)
+                .withRegistryEmail(email)
+                .withRegistryUrl(serverAddress)
                 .build();
         DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
-
         return dockerClient;
     }
    
@@ -173,20 +177,36 @@ public class DockerClientService {
 	    return response;
 	}
 	
-	/**
-	 * 
-	 * Description:
-	 * 导入镜像并push到远程
-	 * @param image
-	 * @param inputStream
-	 * @return 
-	 * @see
-	 */
-	@SuppressWarnings("deprecation")
-	public boolean createAndPushImage(Image image, InputStream inputStream) {
-	    try {
+	   /**
+     * 
+     * Description:
+     * load 镜像
+     * @return InspectImageResponse 
+     * @see InspectImageResponse 
+     */
+    public void loadImage(InputStream imageStream) {
+        DockerClient dockerClient = this.getSpecialDockerClientInstance();
+        try {
+            dockerClient.loadImageCmd(imageStream).exec();
+        }
+        catch (Exception e) {
+            log.error("load image error-:"+e.getMessage());
+        }
+    }
+
+    /**
+     * 
+     * Description:
+     * 导入容器快照并push到远程
+     * @param image
+     * @param inputStream
+     * @return 
+     * @see
+     */
+    @SuppressWarnings("deprecation")
+    public boolean importAndPushImage(Image image,InputStream inputStream) {
+        try {
             DockerClient dockerClient = this.getSpecialDockerClientInstance();
-            
             String imageId = dockerClient.createImageCmd(image.getName(), inputStream).withTag(image.getVersion()).exec().getId();
             imageId = imageId.substring(0,12); // ?? why is not the response same with building image.
             dockerClient.tagImageCmd(imageId, username +"/"+image.getName(), image.getVersion()).withForce().exec();
@@ -204,7 +224,44 @@ public class DockerClientService {
             return true;
         }
         catch (Exception e) {
-            log.error("createImage error:"+e.getMessage());
+            log.error("load or push error:"+e.getMessage());
+            e.printStackTrace();
+            return false;
+        }        
+    }
+    
+	/**
+	 * 
+	 * Description:
+	 * 导入镜像并push到远程
+	 * @param image
+	 * @param inputStream
+	 * @return 
+	 * @see
+	 */
+	public boolean loadAndPushImage(Image image, InputStream inputStream) {
+	    try {
+            DockerClient dockerClient = this.getSpecialDockerClientInstance();
+            log.info("==========开始执行load image api");
+            dockerClient.loadImageCmd(inputStream).exec();
+            log.info("==========结束执行load image api");
+            log.info("image name");
+            dockerClient.tagImageCmd(image.getName().split("/")[1], username +"/"+image.getName(), image.getVersion()).withForce().exec();
+            
+            // push image
+            PushImageResultCallback callback = new PushImageResultCallback() {
+                @Override
+                public void onNext(PushResponseItem item) {
+                    log.info("==========PushResponseItem:"+item);
+                    super.onNext(item);
+                   }
+               };
+            dockerClient.pushImageCmd(username +"/"+ image.getName()).withTag(image.getVersion()).exec(callback).awaitSuccess();
+            return true;
+        }
+        catch (Exception e) {
+            log.error("load or push error:"+e.getMessage());
+            e.printStackTrace();
             return false;
         }
 	}
@@ -232,7 +289,7 @@ public class DockerClientService {
 			    public void onNext(BuildResponseItem item) {
 			    	if(item!=null&&item.getStream()!=null){
 				    	if(item.getStream().contains("Step")||item.getStream().contains("--->")||item.getStream().contains("Downloading")||item.getStream().contains("[INFO]")||item.getStream().contains("Removing")||item.getStream().contains("Successfully")){
-				    		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getStream());
+				    		ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getStream());
 				    		ciRecordDao.save(ciRecord);
 				    	}
 			    	}
@@ -245,12 +302,12 @@ public class DockerClientService {
 			dockerClient.tagImageCmd(imgId, username+"/"+imageName, imageVersion).withForce().exec();
 			// 得到镜像的ImageId
 			imageId.setImageId(imgId.substring(0,12));
-			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"tagImageCmd:"+imageId+":"+username+"/"+imageName+":"+imageVersion);
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"tagImageCmd:"+imageId+":"+username+"/"+imageName+":"+imageVersion);
 	    	ciRecordDao.save(ciRecord);
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
-			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 	    	ciRecordDao.save(ciRecord);
 			log.error("buildImage error:"+e.getMessage());
 			return false;
@@ -276,7 +333,7 @@ public class DockerClientService {
 				public void onNext(PushResponseItem item) {
 					if(item!=null&&item.getStream()!=null){
 						if(!item.getStream().contains("null")){
-							ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getProgress());
+							ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+item.getProgress());
 					    	ciRecordDao.save(ciRecord);
 						}
 					}
@@ -285,12 +342,12 @@ public class DockerClientService {
 				}
 			};
 			dockerClient.pushImageCmd(username+"/"+imageName).withTag(imageVersion).exec(callback).awaitSuccess();
-			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"push image complete");
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"push image complete");
 	    	ciRecordDao.save(ciRecord);
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
-			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+			ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 	    	ciRecordDao.save(ciRecord);
 			log.error("pushImage error:"+e.getMessage());
 			return false;
@@ -311,16 +368,18 @@ public class DockerClientService {
 		    if (null == dockerClient) {
 		         dockerClient = this.getSpecialDockerClientInstance(); 
 		    }
-			dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce().exec();
+		    
+		    dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
+			
 			if (null != ciRecord && null != ciRecordDao) {
-	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);
+	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);
 	          ciRecordDao.save(ciRecord); 
 			}
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
 			if (null != ciRecord && null != ciRecordDao) {
-	            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+	            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
 	            ciRecordDao.save(ciRecord);			    
 			}
 			log.error("removeImage error:"+e.getMessage());
@@ -374,7 +433,7 @@ public class DockerClientService {
 			DockerClient dockerClient = this.getSpecialDockerClientInstance();
 	        ExposedPort tcp = ExposedPort.tcp(exposedPort);
 	        Ports portBindings = new Ports();
-	        portBindings.bind(tcp, Ports.Binding(bindPort));
+	        portBindings.bind(tcp, Ports.Binding.bindPort(bindPort));
 	        dockerClient.createContainerCmd(username+"/"+imageName+":"+imageVersion).withName(containerName)
 	                .withExposedPorts(tcp).withPortBindings(portBindings).exec();
 			return true;

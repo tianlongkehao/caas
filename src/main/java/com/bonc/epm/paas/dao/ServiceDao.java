@@ -84,4 +84,12 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
     @Query("select i from Service i where  i.createBy = ?1 order by i.createDate desc")
     Page<Service> findByCreateBy(long createBy,Pageable request);
     
-}
+        /**
+         * 
+         * 查找相同服务地址的数据
+         * @param serviceAddr
+         * @return list
+         * @see
+         */
+     List<Service> findByServiceAddrAndProxyPath (String serviceAddr,String proxyPath);
+    }

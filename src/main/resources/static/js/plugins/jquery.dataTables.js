@@ -4685,14 +4685,14 @@
 			var type = ext.sErrMode || ext.errMode;
 	
 			if ( type == 'alert' ) {
-				alert( msg );
+//				alert( msg );
 			}
 			else {
 				throw new Error(msg);
 			}
 		}
 		else if ( window.console && console.log ) {
-			console.log( msg );
+//			console.log( msg );
 		}
 	}
 	

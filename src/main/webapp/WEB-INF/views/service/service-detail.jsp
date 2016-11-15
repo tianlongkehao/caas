@@ -26,8 +26,9 @@
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">服务</li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">${service.serviceName }</li>
+						<li class="active" style="width:200px">${service.serviceName }</li>
 					</ol>
+					<input hidden="true" value="${service.id }" id="serId"/>
 				</div>
 				<div class="contentMain">
 					<section class="detail-succeed">
@@ -46,9 +47,20 @@
 							<c:if test="${service.status==4 }">
 								<li>运行状态：已停止</li>
 							</c:if>
-							<li>服务地址：<a
+							<%-- <li>服务地址：<a
 								href="${service.serviceAddr}/${service.proxyPath}"
-								target="_blank">${service.serviceAddr}/${service.proxyPath}</a></li>
+								target="_blank">${service.serviceAddr}/${service.proxyPath}</a></li> --%>
+							<li class="oldCon">服务地址：<a href="${service.serviceAddr}/${service.proxyPath}"target="_blank">
+								<span id="oldServiceAddr">${service.serviceAddr}</span>/
+								<span id="oldProxyPath">${service.proxyPath}</span>
+								</a><i id="editServiceAddrBtn" style="margin-left:20px" class="fa fa-edit"></i></li>
+							<li class="editCon">服务地址：
+							  <prex id=addrPrex ></prex>
+								<input id="editServiceAddr" type="text" value="">/
+								<input id="editProxyPath" type="text" value="${service.proxyPath}">
+								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i>
+								<i id="canclEdit" style="margin-left:6px" class="fa fa-times"></i>
+								</li>
 							<li>创建时间：${service.createDate }</li>
 							<li>更新时间：${service.createDate }</li>
 						</ul>
@@ -62,6 +74,7 @@
 						<ul class="nav navbar-nav">
 							<li><a class="BASE btn-prim">基本信息</a></li>
 							<li><a class="INSTANCES">容器实例</a></li>
+							<li><a class="ENVS">环境变量</a></li>
 							<li><a class="PORTS">端口</a></li>
 							<li class="dropdown">
 								<a class="dropdown-toggle" id="dropdown-log"
@@ -89,6 +102,12 @@
 --%>
 						</ul>
 					</div>
+
+					<div id="edit_serAddr" hidden="true">
+                <div style="width: 345px; margin: 5px 10px 5px 10px">
+                     <p>新服务地址：<p1 id="SerAddrPrex">http://${service.serviceName }.</p1><input type="text" name="newSerAddr" id="newSerAddr" /></p>
+                 </div>
+         </div>
 					<div class="containerInfo">
 						<table class="table w50">
 							<thead>
@@ -124,30 +143,31 @@
 								</tr>
 							</thead>
 							<tbody class="BORDER">
-								<!-- <tr>
-					<td>带宽：10 MB（公有网络）</td>
-					<td>系统盘：10GB</td>
-				</tr> -->
 								<tr>
 									<td>CPU：${service.cpuNum }</td>
 									<td>内存：${service.ram }MB</td>
 								</tr>
 								<tr>
+									<c:if test="${service.startCommand == '' }">
+									<td>启动命令：未设置</td>
+									</c:if>
+									<c:if test="${service.startCommand != '' }">
 									<td>启动命令：${service.startCommand }</td>
+									</c:if>
 									<td>服务访问路径：${service.servicePath }</td>
 								</tr>
 								<tr>
+									<c:if test="${service.proxyZone == '' }">
+									<td>nginx代理区域：未设置</td>
+									</c:if>
+									<c:if test="${service.proxyZone != '' }">
 									<td>nginx代理区域：${service.proxyZone }</td>
+									</c:if>
 									<td>nginx代理路径：${service.proxyPath }</td>
 								</tr>
 								<tr>
-									<c:if test="${service.serviceType==1 }">
-									<td>服务类型：有状态服务</td>
-									</c:if>
-									<c:if test="${service.serviceType==2 }">
-									<td>服务类型：无状态服务</td>
-									</c:if>
 									<td>会话黏连方式：${service.sessionAffinity }</td>
+									<td>NodeIp黏连方式：${service.nodeIpAffinity }</td>
 								</tr>
 								<c:if test="${service.checkPath!='' }">
 								<tr>
@@ -157,31 +177,24 @@
 								<tr>
 									<td>检测超时：${service.timeoutDetction }s</td>
 									<td>检测频率：${service.periodDetction }s</td>
-								</tr></c:if>
+								</tr>
+								</c:if>
+								<tr>
+									<c:if test="${service.serviceType==1 }">
+									<td>服务类型：有状态服务</td>
+									<td>挂载地址：${service.mountPath }</td>
+									</c:if>
+									<c:if test="${service.serviceType==2 }">
+									<td>服务类型：无状态服务</td>
+									</c:if>
+								</tr>
+								<c:if test="${service.serviceType==1 }">
+								<tr>
+									<td>存储卷：${service.volName }</td>
+								</tr>
+								</c:if>
 							</tbody>
 						</table>
-
-						<table class="table basicInfo w50">
-                            <thead>
-                                <tr>
-                                    <th >环境变量</th>
-                                    <th >&nbsp;</th>
-                                </tr>
-                            </thead>
-                            <tbody class="BORDER">
-                                <tr>
-                                    <td> 键</td>
-                                    <td> 值</td>
-                                </tr>
-                                <c:forEach items="${envVariableList }" var="envVariable">
-                                    <tr>
-                                        <td> ${envVariable.envKey }</td>
-                                        <td> ${envVariable.envValue }</td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-						
 					</div>
 					<div class="containerInstances hide" style="min-height: 300px;">
 						<table class="table">
@@ -275,12 +288,37 @@
 							<div class="bind-status" style="display: none;">添加成功！</div>
 						</section>
 					</div>
+					<div class="envMapping hide" style="min-height: 500px;">
+						<section class="paddingrow">
+							<div class="envlabel hide"><label class="forEnvName">环境变量模板名称：</label>
+								<input type="text" class="form-control envName" value="${envTemplate.templateName }" readonly>
+							</div>
+							<table class="table table-normal" style="border: 1px solid #eee;">
+								<thead style="background: #F5F6F6;">
+									<tr style="height: 40px;">
+										<th style="width:40%;text-indent: 15px;">键</th>
+										<th>值</th>
+										
+									</tr>
+								</thead>
+								<tbody>
+	                                <c:forEach items="${envVariableList }" var="envVariable">
+	                                    <tr>
+	                                        <td style="width:40%;text-indent: 15px;"> ${envVariable.envKey }</td>
+	                                        <td> ${envVariable.envValue }</td>
+	                                    </tr>
+	                                </c:forEach>
+									
+								</tbody>
+							</table>
+						</section>
+					</div>
 					<div class="portMapping hide" style="min-height: 500px;">
 						<section class="paddingrow">
 							<table class="table table-normal" style="border: 1px solid #eee;">
 								<thead style="background: #F5F6F6;">
 									<tr style="height: 40px;">
-										<td>名称</td>
+										<td style="width:10%;text-indent: 15px;">名称</td>
 										<td>容器端口</td>
 										<td>协议</td>
 										<td>映射端口</td>
@@ -290,7 +328,7 @@
 								<tbody>
 									<c:forEach items="${portConfigList }" var="portConfig">
 										<tr>
-											<td>${service.serviceName }</td>
+											<td style="width:10%;text-indent: 15px;">${service.serviceName }</td>
 											<td>${portConfig.containerPort }</td>
 											<td>${portConfig.protocol }</td>
 											<td>${portConfig.mapPort }</td>
