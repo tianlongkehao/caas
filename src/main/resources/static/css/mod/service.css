@@ -938,5 +938,24 @@ tr.focus{
 	margin-left: 8px;
     border-radius: 3px;
 }
-
-
+/* service-debuge */
+.localDoc{
+	padding-left: 0px;
+	padding-right: 2px;
+	border-left: 1px solid #e7eaec;
+	border-bottom: 1px solid #e7eaec;
+	
+}
+.localDoc div.ibox{
+	border-right: 1px solid #e7eaec;
+}
+.scpDoc{
+	padding-left: 2px;
+	padding-right: 0px;
+	border-left: 1px solid #e7eaec;
+	border-right: 1px solid #e7eaec;
+	border-bottom: 1px solid #e7eaec;
+}
+.scpDoc div.ibox{
+	border-left: 1px solid #e7eaec;
+} 

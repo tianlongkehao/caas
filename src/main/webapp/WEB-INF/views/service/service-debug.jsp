@@ -35,7 +35,7 @@
 					</ul>
 					<div id="doc" >
 						<div class="row">
-							<div class="col-sm-6">
+							<div class="col-sm-6 localDoc">
 								<div class="ibox float-e-margins" style="margin-bottom:0px">
 									<div class="ibox-title">
 										<h5>
@@ -73,7 +73,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-sm-6">
+							<div class="col-sm-6 scpDoc">
 								<div class="ibox float-e-margins" style="margin-bottom:0px">
 									<div class="ibox-title">
 										<h5>
@@ -149,6 +149,21 @@ $(document).ready(function () {
     $(".sortable-list").sortable({
         connectWith: ".connectList"
     }).disableSelection();
+	//缩放
+	$( ".localDoc" ).resizable({
+  		autoHide: true,
+  		containment: ".row",
+  		maxHeight: 535,
+  		maxWidth:770,
+  		minWidth:413,
+  		resize: function( event, ui ) {
+  			var localDocWidth = $(".localDoc").width();
+  			var totalWidth = $(".localDoc").parent().width();
+  			var scpDocWidth = totalWidth - localDocWidth - 10;
+  			$(".scpDoc").width(scpDocWidth+"px");
+  		
+  		}
+      });
 
 });
 // //创建ifame对象
