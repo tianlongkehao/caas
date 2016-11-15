@@ -270,7 +270,7 @@ $(document).ready(
         		success:function(data){
 					data = eval("(" + data + ")");
 					if(data.status=="400"){
-						layer.msg("dockerFile首行命令不正确，必须是FROM命令，请您检查是否正确", {icon: 5});
+						layer.msg("dockerFile首行命令不正确，必须是FROM 基础镜像:版本格式，请您检查是否正确", {icon: 5});
 						flag = false;
 					}else if (data.status == "500") {
 						layer.msg("没有找到dockerFile的基础镜像，请您检查是否正确",{icon: 5});

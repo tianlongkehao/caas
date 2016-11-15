@@ -43,8 +43,8 @@
 								<div class="container" style="width:80%">
 								<div class="row">
 									<div class="form-group col-md-12">
-										<label class="col-md-2">名称：</label>
-										<div class="col-md-4">
+										<label class="col-md-2 s-title">名称：</label>
+										<div class="col-md-6" style="line-height:34px">
 											<input id="storageName" name="storageName"
 												class="form-control" type="text" required=""
 												placeholder="3到5个字符，可由字母，数字，下划线组成">
@@ -54,21 +54,16 @@
 								</div>
 								<div class="row">
 									<div class="form-group col-md-12">
-										<label class="col-md-2">存储大小：</label>
-										<%--<input id="storageSize" name="storageSize" class="form-control" type="text">--%>
-										<div class="col-md-8">
-											<%-- <input id="storageSizeSlider" data-slider-id='storageSizeSliderData' type="text" 
-                                        data-slider-min="0" data-slider-max="1024" data-slider-step="1" data-slider-value="250"/>
-                                        <input type="text" value="250" id="storageSize_input" name="storageSize">
-                                        <span>M</span> --%>
+										<label class="col-md-2 s-title">存储大小：</label>
+										<div class="col-md-8 storageSize" style="line-height:34px">
 											<input type="radio" name="storageSize" class="storageSize"
-												value="20480">20<span>G</span> <input type="radio"
-												name="storageSize" class="storageSize" value="51200">50<span>G</span>
+												value="20480">20<span class="s-unit">G</span> <input type="radio"
+												name="storageSize" class="storageSize" value="51200">50<span class="s-unit">G</span>
 											<input type="radio" name="storageSize" class="storageSize"
-												value="102400">100<span>G</span> <input type="radio"
+												value="102400">100<span class="s-unit">G</span> <input type="radio"
 												name="storageSize" class="storageSize" id="defVolNum">
-											<input id="defVol" style="width: 50px; font-size: 8px"
-												placeholder="自定义大小"><span>G</span> <span
+											<input id="defVol" type="number"
+												placeholder="自定义大小"><span class="is-unit">G</span> <span
 												style="color: #1E90FF; padding-left: 15px">总量:<span
 												id="totalVol">${cur_user.vol_size}</span>G
 											</span> <span style="color: #1E90FF; padding-left: 15px">剩余:<span
@@ -79,8 +74,8 @@
 								</div>
 								<div class="row">
 									<div class="form-group col-md-12">
-										<label class="col-md-2">读写权限：</label>
-										<div class="col-md-4">
+										<label class="col-md-2 s-title">读写权限：</label>
+										<div class="col-md-4" style="line-height:34px">
 											<input type="checkbox" id="readOnlyOp1" name="isVolumeRead"
 												class="isVolumeReadonly"> <label for="readOnlyOp1"
 												style="margin-bottom: 0px;">只读</label>

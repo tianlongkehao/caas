@@ -1,6 +1,5 @@
 $(document).ready(function(){
 
-
     $(".baseInfo>ul>li>a").click(function(){
 
         $(".baseInfo>ul>li>a").removeClass("btn-prim");
@@ -27,6 +26,11 @@ $(document).ready(function(){
         $(".bindDomain").removeClass("hide");
     });
 
+    $(".ENVS").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".envMapping").removeClass("hide");
+    });
 
     $(".PORTS").click(function(){
 
@@ -153,7 +157,24 @@ $(document).ready(function(){
     		   }
     	   })
        });
-});
+       //可编辑的服务地址
+       $(".editCon").hide();
+       $("#editServiceAddrBtn").click(function(){
+    	   getprex();
+    	   $(".editCon").show();
+    	   $(".oldCon").hide();
+       });
+       $("#saveEdit").click(function(){
+   			if(false==checkSerAddr()){return ;};
+    	   $(".editCon").hide();
+    	   editSerAddr();
+    	   $(".oldCon").show();
+       });
+       $("#canclEdit").click(function(){
+    	   $(".editCon").hide();
+    	   $(".oldCon").show();
+       });
+});/*ready*/
   
 Date.prototype.Format = function(fmt){
 	var o = {
@@ -318,5 +339,56 @@ function ServiceEvent(obj) {
 		$(obj).children(".fa_caret").css("transform", "rotate(90deg)");
 		$(obj).addClass("lives");
 	}
+}
 
+//获取前缀
+function getprex(){
+	$.ajax({
+		type: "GET",
+   url: ctx + "/service/detail/getprex.do",
+   success : function(data) {
+	  data = eval("(" + data + ")");
+	  $('#addrPrex').html(data.prex);
+	  }
+	});
+}
+//修改服务地址
+function editSerAddr(){
+		var editServiceAddr=$('#editServiceAddr').val();
+		var editProxyPath=$('#editProxyPath').val();
+		var serId=$('#serId').val();
+		var prex=	$('#addrPrex').html();
+    editServiceAddr=prex+editServiceAddr;
+			$.ajax({
+        		type: "GET",
+           url: ctx + "/service/detail/editSerAddr.do?serviceAddr="+editServiceAddr+"&proxyPath="+editProxyPath+"&serId="+serId,
+           success : function(data) {
+        	  data = eval("(" + data + ")");
+        	  if(data.status=="200"){
+        		  $('#oldServiceAddr').html(editServiceAddr);
+        		  $('#oldProxyPath').html(editProxyPath)
+	     			layer.msg( "修改成功，重启服务后生效", {
+   						icon: 1
+	   					});
+	         }else if(data.status=="500"){
+	        	 layer.alert("服务名称重复，请重新输入！");
+	         }else{
+	        	 layer.msg( "修改失败，请检查连接", {
+							icon: 1
+	   					});
+	        			}
+           	}
+        	});
+}
+function checkSerAddr(){
+    if ($('#editServiceAddr').val() === '') {
+        layer.tips('服务路径不能为空', $('#editServiceAddr'),{tips: [1, '#EF6578']});
+        $('#editServiceAddr').focus();
+        return false;
+    }
+    if ($('#editProxyPath').val() === '') {
+        layer.tips('代理不能为空', $('#editProxyPath'),{tips: [1, '#EF6578']});
+        $('#editProxyPath').focus();
+        return false;
+    }
 }
