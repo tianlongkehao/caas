@@ -24,7 +24,7 @@
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">服务</li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">${service.serviceName }</li>
+						<li class="active" style="width: inherit;">${service.serviceName }(${podip})</li>
 					</ol>
 				</div>
 				<div id="tabs">
