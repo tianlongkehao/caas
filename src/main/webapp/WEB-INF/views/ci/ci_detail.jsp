@@ -110,7 +110,7 @@
 
                             <%-- 基本设置 --%>
                             <div class="config-details hide">
-                                <%-- <c:if test="${ci.type == 1}"> --%>
+                                <c:if test="${ci.type == 1}"> 
                                 	<form id="editCiForm" class="form-horizontal" method="post" action="" role="form">
                                 		<section class="registryinfo">
 			                        		<div class="row depot-name">
@@ -220,13 +220,8 @@
                                             </div>
                                         </div>
                                         <input type="hidden" id="id" name="id" value="${ci.id}">
-			                           
 			                        </form>
-                                    
-                                        
-                                        
-                                   
-                                <%-- </c:if> --%>
+                                </c:if> 
 
                                 <c:if test="${ci.type == 2}">
                                     <form id="editCiUploadForm" class="form-horizontal" method="post" action="" role="form" enctype="multipart/form-data">
