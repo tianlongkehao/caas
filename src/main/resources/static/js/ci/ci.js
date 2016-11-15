@@ -165,7 +165,7 @@ function loadCiCode() {
         "serverSide": true,
         "stateSave":false,
         "ordering":false,
-        "ajax": ctx+"/ci/page.do",
+        "ajax": ctx+"/ci/codepage.do",
         "columns": [
 					{   
 						data : null,
@@ -204,32 +204,6 @@ function loadCiCode() {
 						}
 					
 					},
-					
-					{
-						data:null,
-						render : function (data,type,row) {
-							var html = '';
-							if (row.type == 2||row.type == 3) {
-								return html;
-							}
-							else {
-								var codeTypeName = '';
-								if (row.codeType == 1) {
-									codeTypeName = 'svn';
-								}
-								if (row.codeType == 2){
-									codeTypeName = 'git';
-								}
-								
-								html += '<a data-toggle="tooltip" data-placement="left" title="" target="_blank" href="'+row.codeUrl+'" data-original-title="查看源代码">'
-		                                    +'<span class="bj-code-source"><i class="fa fa-lg"></i>'+codeTypeName+'</span>'
-		                               +'</a>';
-							}
-							
-							return html;
-						}
-						
-					},
 					{
 						data : null,
 						render : function (data,type,row) {
@@ -240,20 +214,14 @@ function loadCiCode() {
 					{
 						data : null,
 						render : function (data,type,row) {
-							var html ="&nbsp;&nbsp;&nbsp;"+ Math.round(row.constructionTime/1000) + "s";
+							var html = row.constructionFailDate;
 							return html;
 						}
 					},
 					{
 						data : null,
 						render : function (data,type,row) {
-							var html = '';
-							if (row.imgId == null || row.imgId == 0) {
-								html += '<a target="_blank" title="" class="cursor-no-drop">'+row.imgNameFirst+'/'+row.imgNameLast+':'+row.imgNameVersion+'</a>';
-							}
-							else {
-								html += '<a target="_blank" title="" class="" href="'+ctx+'/registry/detail/'+row.imgId +'">'+row.imgNameFirst+'/'+row.imgNameLast+':'+row.imgNameVersion+'</a>';
-							}
+							var html ="&nbsp;&nbsp;&nbsp;"+ Math.round(row.constructionTime/1000) + "s";
 							return html;
 						}
 					},

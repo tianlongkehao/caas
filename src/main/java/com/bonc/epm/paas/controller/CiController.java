@@ -35,6 +35,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ImageConstant;
@@ -45,6 +47,7 @@ import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
+import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.Image;
@@ -121,16 +124,58 @@ public class CiController {
      */
     @RequestMapping(value={"ci"},method=RequestMethod.GET)
 	public String index(Model model){
-//        User cuurentUser = CurrentUserUtils.getInstance().getUser();
-//        List<Ci> ciList = ciDao.findByCreateBy(cuurentUser.getId(), new Sort(new Order(Direction.DESC,"createDate")));
-//        model.addAttribute("ciList", ciList);
         model.addAttribute("menu_flag", "ci");
         return "ci/ci.jsp";
     }
-
+    
+    /**
+     * Description: <br>
+     * 快速构建和dockerfile构建信息的查询
+     * @param draw 画图
+     * @param start 开始页码
+     * @param length 页面长度
+     * @param request ：
+     * @return String
+     */
     @RequestMapping(value = {"ci/page.do"}, method = RequestMethod.GET)
     @ResponseBody
-    public String findServiceByPage(String draw, int start,int length,
+    public String findCiByPage(String draw, int start,int length,HttpServletRequest request){
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        String search = request.getParameter("search[value]");
+        Map<String,Object> map = new HashMap<String, Object>();
+        Page<Ci> cis = null;
+        PageRequest pageRequest = null;
+        //判断是第几页
+        if (start == 0) {
+            pageRequest = ResultPager.buildPageRequest(null, length);
+        }else {
+            pageRequest = ResultPager.buildPageRequest(start/length + 1, length);
+        }
+        //判断是否需要搜索服务
+        if (StringUtils.isEmpty(search)) {
+            cis = ciDao.findByCreateByQuickCi(userId,pageRequest);
+        } else {
+            cis = ciDao.findByNameOfQuickCi(userId, "%" + search + "%",pageRequest);
+        }
+        map.put("draw", draw);
+        map.put("recordsTotal", cis.getTotalElements());
+        map.put("recordsFiltered", cis.getTotalElements());
+        map.put("data", cis.getContent());
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * codeCi构建数据的查询
+     * @param draw ： 画布
+     * @param start：开始页数
+     * @param length 页面长度
+     * @param request ：
+     * @return String
+     */
+    @RequestMapping(value = {"ci/codepage.do"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String findCodeCiByPage(String draw, int start,int length,
                                     HttpServletRequest request){
         long userId = CurrentUserUtils.getInstance().getUser().getId();
         String search = request.getParameter("search[value]");
@@ -145,15 +190,14 @@ public class CiController {
         }
         //判断是否需要搜索服务
         if (StringUtils.isEmpty(search)) {
-            cis = ciDao.findByCreateByOrderByCreateDateDesc(userId,pageRequest);
+            cis = ciDao.findByCreateByCodeCi(userId,pageRequest);
         } else {
-            cis = ciDao.findByNameOf(userId, "%" + search + "%",pageRequest);
+            cis = ciDao.findByNameOfCodeCi(userId, "%" + search + "%",pageRequest);
         }
         map.put("draw", draw);
         map.put("recordsTotal", cis.getTotalElements());
         map.put("recordsFiltered", cis.getTotalElements());
         map.put("data", cis.getContent());
-        
         return JSON.toJSONString(map);
     }
     
@@ -172,8 +216,12 @@ public class CiController {
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
         Ci ci = ciDao.findOne(id);
         List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction.DESC,"constructDate")));
-        List<Image> images = this.findByBaseImages();
-        Image currentBaseImage = imageDao.findById(ci.getBaseImageId());
+        //代码构建
+        if (ci.getType() == 1) {
+            List<CiInvoke> ciInvokeList = ciInvokeDao.findByCiId(ci.getId());
+            model.addAttribute("ciInvokeList", ciInvokeList);
+        }
+        //dockerfile构建
         if (ci.getType() == 2) {
             List<DockerFileTemplate> dockerFiles = dockerFileTemplateDao.findByCreateBy(cuurentUser.getId());
             File file = new File(ci.getCodeLocation()+"/"+"Dockerfile");
@@ -183,11 +231,15 @@ public class CiController {
             }
             model.addAttribute("dockerFiles", dockerFiles);
         }
-        model.addAttribute("id", id);
+        //快速构建
+        if (ci.getType() == 3) {
+            Image currentBaseImage = imageDao.findById(ci.getBaseImageId());
+            List<Image> images = this.findByBaseImages();
+            model.addAttribute("currentBaseImage",currentBaseImage);
+            model.addAttribute("baseImage", images);
+        }
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
-        model.addAttribute("baseImage", images);
-        model.addAttribute("currentBaseImage",currentBaseImage);
         model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_detail.jsp";
@@ -396,15 +448,74 @@ public class CiController {
      * @see
      */
     @RequestMapping("ci/addCodeCi.do")
-    public String addCodeCi(Ci ci){
+    public String addCodeCi(Ci ci,String jsonData){
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
         ci.setCreateBy(cuurentUser.getId());
         ci.setCreateDate(new Date());
         ci.setType(CiConstant.TYPE_CODE);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
         ciDao.save(ci);
-        LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
-        return "redirect:/ci";
+        List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
+        if (!StringUtils.isEmpty(ciInvokeList)) {
+            ciInvokeDao.save(ciInvokeList);
+            LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+            return "redirect:/ci";
+        }
+        else {
+            LOG.error("save codeci error:");
+            ciDao.delete(ci.getId());
+            return "redirect:/ci"; 
+        }
+        
+    }
+    
+    /**
+     * Description: <br>
+     * 将json数据封装成ciInvoke对象；
+     * @param jsonData json数据；
+     * @param ciId 构建Id
+     * @return list
+     */
+    public List<CiInvoke> addCiInvokes(String jsonData,long ciId){
+        List<CiInvoke> ciInvokeList = new ArrayList<>();
+        try {
+            JSONArray jsonArray = JSONArray.parseArray(jsonData);
+            for (int i = 0 ; i < jsonArray.size();i++) {
+                JSONObject jsonObj = jsonArray.getJSONObject(i);
+                CiInvoke ciInvoke = (CiInvoke)JSONObject.toJavaObject(jsonObj, CiInvoke.class);
+                ciInvoke.setCiId(ciId);
+                ciInvoke.setJobOrderId(i+1);
+                ciInvoke.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+                ciInvoke.setCreateDate(new Date());
+                ciInvokeList.add(ciInvoke);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return ciInvokeList;
+    }
+    
+    /**
+     * Description: <br>
+     * 根据项目名称和创建者判断项目名称的重复
+     * @param projectName ： 项目名称
+     * @return ：map
+     */
+    @RequestMapping("ci/judgeCodeCiName.do")
+    @ResponseBody
+    public String judgeCodeCiName(String projectName){
+        Map<String,Object> result = new HashMap<String, Object>();
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        List<Ci> ciList = ciDao.findByProjectNameAndCreateBy(projectName,createBy);
+        if (ciList.size() > 0) {
+            result.put("status", "400");
+        }
+        else {
+            result.put("status", "200");
+        }
+        return JSON.toJSONString(result);
     }
     
     /**

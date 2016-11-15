@@ -11,6 +11,8 @@
 
 package com.bonc.epm.paas.dao;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,5 +28,14 @@ import com.bonc.epm.paas.entity.CiInvoke;
  */
 @Transactional
 public interface CiInvokeDao extends CrudRepository<CiInvoke, Long>{
+    
+    /**
+     * Description: <br>
+     * 根据ciId查询ciInvoke中的构建信息
+     * @param ciId
+     * @return 
+     * @see
+     */
+    List<CiInvoke> findByCiId(long ciId);
 
 }

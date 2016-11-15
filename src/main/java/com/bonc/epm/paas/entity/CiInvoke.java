@@ -128,4 +128,173 @@ public class CiInvoke {
      * shell脚本命令
      */
     private String shellCommand;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getCiId() {
+        return ciId;
+    }
+
+    public void setCiId(long ciId) {
+        this.ciId = ciId;
+    }
+
+    public long getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(long createBy) {
+        this.createBy = createBy;
+    }
+
+    public Integer getJobOrderId() {
+        return jobOrderId;
+    }
+
+    public void setJobOrderId(Integer jobOrderId) {
+        this.jobOrderId = jobOrderId;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Integer getInvokeType() {
+        return invokeType;
+    }
+
+    public void setInvokeType(Integer invokeType) {
+        this.invokeType = invokeType;
+    }
+
+    public String getAntVersion() {
+        return antVersion;
+    }
+
+    public void setAntVersion(String antVersion) {
+        this.antVersion = antVersion;
+    }
+
+    public String getAntTargets() {
+        return antTargets;
+    }
+
+    public void setAntTargets(String antTargets) {
+        this.antTargets = antTargets;
+    }
+
+    public String getAntBuildFileLocation() {
+        return antBuildFileLocation;
+    }
+
+    public void setAntBuildFileLocation(String antBuildFileLocation) {
+        this.antBuildFileLocation = antBuildFileLocation;
+    }
+
+    public String getAntProperties() {
+        return antProperties;
+    }
+
+    public void setAntProperties(String antProperties) {
+        this.antProperties = antProperties;
+    }
+
+    public String getAntJavaOpts() {
+        return antJavaOpts;
+    }
+
+    public void setAntJavaOpts(String antJavaOpts) {
+        this.antJavaOpts = antJavaOpts;
+    }
+
+    public String getMavenVersion() {
+        return mavenVersion;
+    }
+
+    public void setMavenVersion(String mavenVersion) {
+        this.mavenVersion = mavenVersion;
+    }
+
+    public String getMavenGoals() {
+        return mavenGoals;
+    }
+
+    public void setMavenGoals(String mavenGoals) {
+        this.mavenGoals = mavenGoals;
+    }
+
+    public String getPomLocation() {
+        return pomLocation;
+    }
+
+    public void setPomLocation(String pomLocation) {
+        this.pomLocation = pomLocation;
+    }
+
+    public String getMavenJVMOptions() {
+        return mavenJVMOptions;
+    }
+
+    public void setMavenJVMOptions(String mavenJVMOptions) {
+        this.mavenJVMOptions = mavenJVMOptions;
+    }
+
+    public String getMavenProperty() {
+        return mavenProperty;
+    }
+
+    public void setMavenProperty(String mavenProperty) {
+        this.mavenProperty = mavenProperty;
+    }
+
+    public Integer getIsUserPrivateRegistry() {
+        return isUserPrivateRegistry;
+    }
+
+    public void setIsUserPrivateRegistry(Integer isUserPrivateRegistry) {
+        this.isUserPrivateRegistry = isUserPrivateRegistry;
+    }
+
+    public Integer getInjectBuildVariables() {
+        return injectBuildVariables;
+    }
+
+    public void setInjectBuildVariables(Integer injectBuildVariables) {
+        this.injectBuildVariables = injectBuildVariables;
+    }
+
+    public String getMavenSetFile() {
+        return mavenSetFile;
+    }
+
+    public void setMavenSetFile(String mavenSetFile) {
+        this.mavenSetFile = mavenSetFile;
+    }
+
+    public String getMavenGlobalSetFile() {
+        return mavenGlobalSetFile;
+    }
+
+    public void setMavenGlobalSetFile(String mavenGlobalSetFile) {
+        this.mavenGlobalSetFile = mavenGlobalSetFile;
+    }
+
+    public String getShellCommand() {
+        return shellCommand;
+    }
+
+    public void setShellCommand(String shellCommand) {
+        this.shellCommand = shellCommand;
+    }
+    
 }

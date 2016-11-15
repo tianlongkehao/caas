@@ -28,7 +28,7 @@ $(document).ready(function () {
     });
     var count = 0;
     function loadAnt(count){
-    	var antHtml = '<div class="row addCiStepRow ant">'+
+    	var antHtml = '<div class="row addCiStepRow ant" count ='+count+' invoke ="ant">'+
     	'<div class="col-sm-12">'+
     	'<div class="ibox float-e-margins">'+
     		'<div class="ibox-title">'+
@@ -76,7 +76,7 @@ $(document).ready(function () {
     }
     
     function loadMaven(count){
-    	var mavenHtml = '<div class="row addCiStepRow maven">'+
+    	var mavenHtml = '<div class="row addCiStepRow maven" count = '+count+' invoke = "maven">'+
     	'<div class="col-sm-12">'+
     	'<div class="ibox float-e-margins">'+
     		'<div class="ibox-title">'+
@@ -122,13 +122,13 @@ $(document).ready(function () {
                     '<div class="form-group col-md-12">'+
                         '<div style="line-height:34px">'+
                             '<label class="c-project-tit" title="使用私人maven存储库">使用私人maven存储库</label>'+
-                            '<input type="checkbox" id = "isUserPrivateRegistry" name = "isUserPrivateRegistry-'+count+'" value = "0">'+
+                            '<input type="checkbox" id = "isUserPrivateRegistry-'+count+'" name = "isUserPrivateRegistry" value = "0">'+
                         '</div>'+
                     '</div>'+
                      '<div class="form-group col-md-12">'+
                         '<div style="line-height:34px">'+
                             '<label class="c-project-tit">注入建立变量</label>'+
-                            '<input type="checkbox"  id="injectBuildVariables" name="injectBuildVariables-'+count+'" value="0">'+
+                            '<input type="checkbox"  id="injectBuildVariables-'+count+'" name="injectBuildVariables" value="0">'+
                         '</div>'+
                     '</div>'+
                     '<div class="form-group col-md-12">'+
@@ -151,7 +151,7 @@ $(document).ready(function () {
     
     
     function loadShell(count){
-    	shellHtml = '<div class="row addCiStepRow shell">'+
+    	shellHtml = '<div class="row addCiStepRow shell" count = '+count+' invoke = "shell">'+
     	'<div class="col-sm-12">'+
     	'<div class="ibox float-e-margins">'+
     		'<div class="ibox-title">'+
@@ -224,7 +224,7 @@ $(document).ready(function () {
 
     //关闭ibox
     $(document).on('click','.close-link',function(){
-        var content = $(this).closest('div.ibox');
+        var content = $(this).closest('div.addCiStepRow');
         content.remove();
     });
     
@@ -233,13 +233,13 @@ $(document).ready(function () {
         revert: true
     });
     
-    
-    
 });
 
 function checkCodeCiAdd(){
+	
 	//项目名称的判断
 	var projectName = $("#projectName").val();
+	var falgName = false;
 	if(!projectName || projectName.length < 1){
       layer.tips('项目名称不能为空','#projectName',{tips: [1, '#3595CC']});
       $('#projectName').focus();
@@ -249,7 +249,30 @@ function checkCodeCiAdd(){
       layer.tips('项目名称只能由小写字母、数字及横线下划线组成，且首字母只能为字母。','#projectName',{tips: [1, '#3595CC'],time: 3000});
       $('#projectName').focus();
       return;
+    } 
+    else {
+    	$.ajax({
+    		url : ctx + "/ci/judgeCodeCiName.do",
+    		async:false,
+    		type: "POST",
+    		data:{"projectName":projectName},
+    		success : function(data) {
+    			data = eval("(" + data + ")");
+    			if (data.status=="400") {
+    	            layer.tips('项目名称重复', '#projectName', {
+    	                tips: [1, '#0FA6D8'] //还可配置颜色
+    	            });
+    	            $('#projectName').focus();
+    	            falgName = true;
+    			} 
+    		}
+    	});
     }
+    if (falgName) {
+    	falgName = false;
+    	return false;
+    }
+    
     
     //项目描述的判断
     var description = $("#description").val();
@@ -286,85 +309,115 @@ function checkCodeCiAdd(){
     }
     
     //判断构建
-    var invokeType = $("#addciStep").val();
-    //maven构建的判断
-    if (invokeType == 1) {
-    	//maven目标判断
-    	var mavenGoals = $("#mavenGoals").val();
-    	if(!mavenGoals || mavenGoals.length < 1){
-    		layer.tips('目标不能为空','#mavenGoals',{tips: [1, '#3595CC']});
-    		$('#mavenGoals').focus();
-    		return;
-	    }
-    	//pom路径判断
-    	var pomLocation = $("#pomLocation").val();
-    	if(!pomLocation || pomLocation.length < 1){
-    		layer.tips('pom路径不能为空','#pomLocation',{tips: [1, '#3595CC']});
-    		$('#pomLocation').focus();
-    		return;
-	    }
-    	//maven属性判断
-//    	var mavenProperty = $("#mavenProperty").val();
-//    	if(!mavenProperty || mavenProperty.length < 1){
-//    		layer.tips('maven属性不能为空','#mavenProperty',{tips: [1, '#3595CC']});
-//    		$('#mavenProperty').focus();
-//    		return;
-//	    }
-    	//mvnJVM选项判断
-//    	var mavenJVMOptions = $("#mavenJVMOptions").val();
-//    	if(!mavenJVMOptions || mavenJVMOptions.length < 1){
-//    		layer.tips('maven属性不能为空','#mavenJVMOptions',{tips: [1, '#3595CC']});
-//    		$('#mavenJVMOptions').focus();
-//    		return;
-//	    }
-    	
-    	//maven存储库的判断
-    	if($("#isUserPrivateRegistry").prop("checked")==true){
-    		$("#isUserPrivateRegistry").val("1");
+    var flag = false;
+    var json = "";
+    $("#sortable >div").each(function(){
+    	debugger;
+    	if (flag) {
+    		return false;
+    	}
+        var count = $(this).attr("count");
+        var invoke = $(this).attr("invoke");
+        //maven构建的判断以及数据的封装；
+        if (invoke == "maven") {
+        	//maven目标判断
+        	var goals = "#mavenGoals-" + count;
+        	var mavenGoals = $(goals).val();
+        	if(!mavenGoals || mavenGoals.length < 1){
+        		layer.tips('目标不能为空',goals,{tips: [1, '#3595CC']});
+        		$(goals).focus();
+        		flag = true;
+        		return;
+    	    }
+        	var mvnVerId = "#mavenVersion-" + count;
+        	var pomId = "#pomLocation-" + count;
+        	var mvnProId = "#mavenProperty-" + count;
+        	var mvnJvmId = "#mavenJVMOptions-" + count;
+        	var isUPRId = "#isUserPrivateRegistry-" + count;
+        	var ijBVId = "#injectBuildVariables-" + count;
+        	var mvnSFId = "#mavenSetFile-" + count;
+        	var MVnGSFID = "#mavenGlobalSetFile-" + count;
+        	
+        	var invokeType = 1;
+        	var mavenVersion = $(mvnVerId).val();
+        	var pomLocation = $(pomId).val();
+        	var mavenProperty = $(mvnProId).val();
+        	var mavenJVMOptions = $(mvnJvmId).val();
+        	var isUserPrivateRegistry = 0 ;
+        	var injectBuildVariables = 0 ; 
+        	var mavenSetFile = $(mvnSFId).val();
+        	var mavenGlobalSetFile = $(MVnGSFID).val();
+        	//maven存储库的判断
+        	if($(isUPRId).prop("checked")==true){
+        		isUserPrivateRegistry = 1;
+            }
+        	//注入建立变量的判断
+        	if($(ijBVId).prop("checked")==true){
+        		injectBuildVariables = 1;
+            }
+        	var jsonData= '{ "invokeType": "'+invokeType+'","mavenGoals":"'+mavenGoals+'", "mavenVersion":"'+mavenVersion+'", "pomLocation": "'+pomLocation+'",'+
+        					' "mavenProperty":"'+mavenProperty+'","mavenJVMOptions": "'+mavenJVMOptions+'","isUserPrivateRegistry":"'+isUserPrivateRegistry+'",'+
+        					' "injectBuildVariables":"'+injectBuildVariables+'","mavenSetFile":"'+mavenSetFile+'","mavenGlobalSetFile":"'+mavenGlobalSetFile+'"},';
+        	json += jsonData;
         }
-    	//注入建立变量的判断
-    	if($("#injectBuildVariables").prop("checked")==true){
-    		$("#injectBuildVariables").val("1");
+        
+        if (invoke == "ant") {
+        	//ant目标判断
+        	var target = "#antTargets-" + count;
+        	var antTargets = $(target).val();
+        	if(!antTargets || antTargets.length < 1){
+        		layer.tips('ant目标不能为空',target,{tips: [1, '#3595CC']});
+        		$(target).focus();
+        		flag = true;
+        		return;
+    	    }
+        	
+        	var antVId = "#antVersion-" + count;
+        	var antBFLId = "#antBuildFileLocation-" + count;
+        	var antPId = "#antProperties-" + count;
+        	var antJOId = "#antJavaOpts-" + count;
+        	
+        	var invokeType = 2;
+        	var antVersion = $(antVId).val();
+        	var antBuildFileLocation = $(antBFLId).val();
+        	var antProperties = $(antPId).val();
+        	var antJavaOpts = $(antJOId).val();
+        	
+        	var jsonData= '{ "invokeType": "'+invokeType+'", "antTargets":"'+antTargets+'", "antVersion":"'+antVersion+'", "antBuildFileLocation": "'+antBuildFileLocation+'",'+
+							' "antProperties":"'+antProperties+'","antJavaOpts":"'+antJavaOpts+'"},';
+        	json += jsonData;
         }
-    }
-    //ant构建
-    if (invokeType == 2) {
-    	//ant目标的判断
-    	var antTargets = $("#antTargets").val();
-    	if(!antTargets || antTargets.length < 1){
-    		layer.tips('dockerfile文件路径不能为空','#antTargets',{tips: [1, '#3595CC']});
-    		$('#antTargets').focus();
-    		return;
-	    }
-    }
-    //构建方式为none
-    if (invokeType == 0) {
-    	$("#mavenVersion").val("");
-    	$("#mavenGoals").val("");
-    	$("#pomLocation").val("");
-    	$("#mavenProperty").val("");
-    	$("#mavenJVMOptions").val("");
-    	$("#isUserPrivateRegistry").val("");
-    	$("#injectBuildVariables").val("");
-    	$("#mavenGlobalSetFile").val("");
-    	
-    	$("#antVersion").val("");
-    	$("#antTargets").val("");
-    	$("#antBuildFileLocation").val("");
-    	$("#antProperties").val("");
-    	$("#antJavaOpts").val("");
-    	
-    	$("#dockerFileLocation").val("");
+        
+        if (invoke == "shell") {
+        	//shell脚本的判断
+        	var shellId = "#executeShell-" + count ;
+        	var executeShell = $(shellId).val();
+        	if (!executeShell || executeShell.length < 1) {
+        		layer.tips('shell脚本不能为空',shellId,{tips: [1, '#3595CC']});
+        		$(shellId).focus();
+        		flag = true;
+        		return;
+        	}
+        	var invokeType = 3;
+        	var jsonData= '{ "invokeType": "'+invokeType+'", "shellCommand":"'+executeShell+'"},';
+			json += jsonData;
+        }
+    });
+    
+    if (flag) {
+    	return false;
     }
     
-  //doackerFile文件路径的判断
-	var dockerFileLocation = $("#dockerFileLocation").val();
+    json = json.substring(0, json.length-1);
+    json = '[' + json + ']';
+    $("#jsonData").val(json);
+    //doackerFile文件路径的判断
+	var dockerFileLocation = $("#dockerfilePath").val();
 	if(!dockerFileLocation || dockerFileLocation.length < 1){
-		layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
-		$('#dockerFileLocation').focus();
+		layer.tips('dockerfile文件路径不能为空','#dockerfilePath',{tips: [1, '#3595CC']});
+		$('#dockerfilePath').focus();
 		return;
     }
-    
     return true;
 }
 
