@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
@@ -29,22 +30,35 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 public class SheraClientService {
     
     @Value("${shera.api.endpoint}")
-    private String endpoint;
+    private String endpoint="http://192.168.0.76:8383/";
+    private String username="shera";
+    private String password="shera";
     
     public SheraAPIClientInterface getClient() {
-        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        String namespace = "admin";
         return getclient(namespace);
     }
 
     public SheraAPIClientInterface getclient(String namespace) {
-        return new SheraAPIClient(endpoint,namespace,new RestFactory());
+        return new SheraAPIClient(endpoint, namespace, username, password,new RestFactory());
     }
     
     public Job generateJob(String id ,String nextExecTime, String jdkVersion) {
         Job job = new Job();
         job.setId(id);
-        job.setNextExecTime(nextExecTime);
         job.setJdkVersion(jdkVersion);
         return job;
+    }
+    
+    public static void main(String[] args) {
+        SheraClientService sheraClientService = new SheraClientService();
+        SheraAPIClientInterface client = sheraClientService.getClient();
+        try {
+            client.getAllJobs();
+        }
+        catch (SheraClientException e) {
+           e.printStackTrace();
+        }
+        
     }
 }

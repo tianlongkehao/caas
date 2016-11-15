@@ -21,6 +21,7 @@ public class Repository {
     private String url;
     private String credentials;
     private GitAdvancedConfig advanced;
+    
     public String getUrl() {
         return url;
     }

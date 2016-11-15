@@ -20,9 +20,12 @@ import org.apache.commons.logging.LogFactory;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
+import com.bonc.epm.paas.shera.model.JobExecution;
+import com.bonc.epm.paas.shera.model.JobExecutionList;
 
 /**
  * @author ke_wang
@@ -39,10 +42,10 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     private SheraAPI api;
     private String namespace;
     
-    public SheraAPIClient(String srUrl, String namespace, RestFactory factory) {
+    public SheraAPIClient(String srUrl, String namespace, String username, String password, RestFactory factory) {
         this.namespace = namespace;
-        this.sRURI = srUrl +"She-Ra/"+SheraAPIClientInterface.VERSION;
-        api = factory.createSheRaAPI(sRURI);
+        this.sRURI = srUrl +"She-Ra";
+        api = factory.createSheRaAPI(sRURI,username,password);
     }
 
     @Override
@@ -81,5 +84,95 @@ public class SheraAPIClient implements SheraAPIClientInterface {
         catch (WebApplicationException e) {
             throw new SheraClientException(e.getMessage());
         }
+    }
+
+    /* (non-Javadoc)
+     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteJdk(java.lang.String)
+     */
+    @Override
+    public Jdk deleteJdk(String jdkVersion)
+        throws SheraClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#createJdk(com.bonc.epm.paas.shera.model.Jdk)
+     */
+    @Override
+    public Jdk createJdk(Jdk jdk)
+        throws SheraClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteExecution(java.lang.String, java.lang.Integer)
+     */
+    @Override
+    public JobExecution deleteExecution(String jobId, Integer executionId)
+        throws SheraClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#killExecution(java.lang.String, java.lang.Integer)
+     */
+    @Override
+    public JobExecution killExecution(String jobId, Integer executionId)
+        throws SheraClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#getExecution(java.lang.String, java.lang.Integer)
+     */
+    @Override
+    public JobExecution getExecution(String jobId, Integer executionId)
+        throws SheraClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#getJobAllExecutions(java.lang.String)
+     */
+    @Override
+    public JobExecutionList getJobAllExecutions(String jobId)
+        throws SheraClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteJob(java.lang.String)
+     */
+    @Override
+    public Job deleteJob(String jobId)
+        throws SheraClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#updateJob(com.bonc.epm.paas.shera.model.Job)
+     */
+    @Override
+    public Job updateJob(Job job)
+        throws SheraClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#getJob(java.lang.String)
+     */
+    @Override
+    public Job getJob(String jobId)
+        throws SheraClientException {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

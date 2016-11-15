@@ -11,6 +11,8 @@
 
 package com.bonc.epm.paas.shera.model;
 
+import java.util.List;
+
 /**
  * @author ke_wang
  * @version 2016年11月10日
@@ -18,18 +20,33 @@ package com.bonc.epm.paas.shera.model;
  * @since
  */
 public class BuildManager {
-    private AntConfig antConfig;
-    private MvnConfig mvnConfig;
-    public AntConfig getAntConfig() {
-        return antConfig;
+    private List<Integer> seqNos;
+    private List<String> cmds;
+    private List<AntConfig> antConfigs;
+    private List<MvnConfig> mvnConfigs;
+    
+    public List<Integer> getSeqNos() {
+        return seqNos;
     }
-    public void setAntConfig(AntConfig antConfig) {
-        this.antConfig = antConfig;
+    public void setSeqNos(List<Integer> seqNos) {
+        this.seqNos = seqNos;
     }
-    public MvnConfig getMvnConfig() {
-        return mvnConfig;
+    public List<String> getCmds() {
+        return cmds;
     }
-    public void setMvnConfig(MvnConfig mvnConfig) {
-        this.mvnConfig = mvnConfig;
+    public void setCmds(List<String> cmds) {
+        this.cmds = cmds;
+    }
+    public List<AntConfig> getAntConfigs() {
+        return antConfigs;
+    }
+    public void setAntConfigs(List<AntConfig> antConfigs) {
+        this.antConfigs = antConfigs;
+    }
+    public List<MvnConfig> getMvnConfigs() {
+        return mvnConfigs;
+    }
+    public void setMvnConfigs(List<MvnConfig> mvnConfigs) {
+        this.mvnConfigs = mvnConfigs;
     }
 }

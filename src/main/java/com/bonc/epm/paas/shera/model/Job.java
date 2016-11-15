@@ -20,51 +20,30 @@ package com.bonc.epm.paas.shera.model;
  */
 public class Job {
     private String id;
-    private String nextExecTime;
     private String jdkVersion;
-    private String buildImgCmd;
-    private String pushImgCmd;
-    private Integer currentNumber;
     private Integer maxExecutionRecords;
     private Integer maxKeepDays;
-    private Integer jobRemoved;
     private CodeManager codeManager;
     private BuildManager buildManager;
+    private ImgManager imgManager;
+    
+    public ImgManager getImgManager() {
+        return imgManager;
+    }
+    public void setImgManager(ImgManager imgManager) {
+        this.imgManager = imgManager;
+    }
     public String getId() {
         return id;
     }
     public void setId(String id) {
         this.id = id;
     }
-    public String getNextExecTime() {
-        return nextExecTime;
-    }
-    public void setNextExecTime(String nextExecTime) {
-        this.nextExecTime = nextExecTime;
-    }
     public String getJdkVersion() {
         return jdkVersion;
     }
     public void setJdkVersion(String jdkVersion) {
         this.jdkVersion = jdkVersion;
-    }
-    public String getBuildImgCmd() {
-        return buildImgCmd;
-    }
-    public void setBuildImgCmd(String buildImgCmd) {
-        this.buildImgCmd = buildImgCmd;
-    }
-    public String getPushImgCmd() {
-        return pushImgCmd;
-    }
-    public void setPushImgCmd(String pushImgCmd) {
-        this.pushImgCmd = pushImgCmd;
-    }
-    public Integer getCurrentNumber() {
-        return currentNumber;
-    }
-    public void setCurrentNumber(Integer currentNumber) {
-        this.currentNumber = currentNumber;
     }
     public Integer getMaxExecutionRecords() {
         return maxExecutionRecords;
@@ -77,12 +56,6 @@ public class Job {
     }
     public void setMaxKeepDays(Integer maxKeepDays) {
         this.maxKeepDays = maxKeepDays;
-    }
-    public Integer getJobRemoved() {
-        return jobRemoved;
-    }
-    public void setJobRemoved(Integer jobRemoved) {
-        this.jobRemoved = jobRemoved;
     }
     public CodeManager getCodeManager() {
         return codeManager;
