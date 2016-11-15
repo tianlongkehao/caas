@@ -928,4 +928,15 @@ tr.focus{
 	color:#5cb85c;
 	cursor: pointer;
 }
+/* AGILE BOARD */
+.agile-list tr:hover {
+    cursor: pointer;
+    background: #fff;
+}
+
+#scp-path{
+	margin-left: 8px;
+    border-radius: 3px;
+}
+
 

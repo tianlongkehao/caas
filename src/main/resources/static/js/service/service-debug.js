@@ -6,13 +6,21 @@ $(document).ready(function() {
 			onComplete();
 		}
 	}
+	$('#scp-path').bind('keypress',function(event){
+		if (event.keyCode == "13") {
+			var dirName = $('#scp-path').val();
+//			var dirNameArr = $('#scp-path').val().split("/");
+//			var dirName = dirNameArr[dirNameArr.length-1];
+			creatable(true, dirName);
+        }
+    });
 });
 function creatable(){
 	alert("test")
 }
 function creatable(isDir, dirName) {
 	$(".chkAll").prop('checked', $(this).is(":checked"));
-	if (null == isDir || "true" == isDir) {
+	if (null == isDir || true == isDir) {
 		var tbody = "";
 		var context = $('#mybody');
 		var param = "";
@@ -32,6 +40,7 @@ function creatable(isDir, dirName) {
 					failedMSG("没有找到相应的目录", true);
 					return;
 				}
+				$("#scp-path").val(data.path);
 				for (i in data.fileList) {
 					var fileInfo = JSON.stringify(data.fileList[i]);
 					fileInfo = eval("(" + fileInfo + ")");
@@ -39,9 +48,9 @@ function creatable(isDir, dirName) {
 						tbody += '<tr class="vol_list" style="cursor:pointer">'
 								+ '<td style="width: 5%;text-indent: 14px;">'
 								+ '</td>'
-								+ '<td style="width: 25%; text-indent: 13px;"  onclick=creatable("'
+								+ '<td style="width: 25%; text-indent: 13px;"  onclick=creatable('
 								+ fileInfo.dir
-								+ '","'
+								+ ',"'
 								+ fileInfo.fileName
 								+ '") >'
 								+ '<a hrer="">'
@@ -68,9 +77,9 @@ function creatable(isDir, dirName) {
 								+ fileInfo.fileName
 								+ '" >'
 								+ '</td>'
-								+ '<td style="width: 25%;text-indent: 13px;" onclick=creatable("'
+								+ '<td style="width: 25%;text-indent: 13px;" onclick=creatable('
 								+ (fileInfo.dir || fileInfo.link)
-								+ '","'
+								+ ',"'
 								+ fileInfo.fileName
 								+ '") >'
 								+ '<a hrer="">'

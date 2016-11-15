@@ -27,6 +27,7 @@
 						<li class="active">${service.serviceName }</li>
 					</ol>
 				</div>
+				
 				<div id="tabs">
 					<ul>
 						<li><a href="#doc">文件</a></li>
@@ -54,10 +55,10 @@
 													<th style="width: 25%; ">文件名</th>
 													<th style="width: 15%; ">大小</th>
 													<th style="width: 30%; ">修改日期</th>
-													<th style="width: 20%; ">操作</th>
+													<th style="width: 15%; ">操作</th>
 												</tr>
 											</thead>
-											<tbody id="mybody1" style="overflow-y: auto; height: 400px; display: block; width: 100%">
+											<tbody id="mybody1" style="overflow-y: auto; height: 400px; display: block; width: 100%" class="sortable-list connectList agile-list">
 	
 											</tbody>
 											<tfoot class="hide">
@@ -68,6 +69,7 @@
 												</tr>
 											</tfoot>
 										</table>
+										<ul class="sortable-list connectList"></ul>
 									</div>
 								</div>
 							</div>
@@ -75,7 +77,7 @@
 								<div class="ibox float-e-margins" style="margin-bottom:0px">
 									<div class="ibox-title">
 										<h5>
-											<span>远程文件</span>
+											<span>${podip }<input type="text" id="scp-path" value=""></span>
 										</h5>
 	
 										<div class="ibox-tools">
@@ -97,11 +99,12 @@
 													<th style="width: 15%; text-indent: 10px;">操作</th>
 												</tr>
 											</thead>
-											<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%">
+											<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%" class="sortable-list connectList agile-list">
 	
 											</tbody>
 											
 										</table>
+										<ul class="sortable-list connectList"></ul>
 									</div>
 								</div>
 							</div>
@@ -140,10 +143,12 @@
 			</div>
 <script>
 $(document).ready(function () {
+	//tab页切换
 	$( "#tabs" ).tabs();
-    /* $(".sortable-list").sortable({
+	//拖动
+    $(".sortable-list").sortable({
         connectWith: ".connectList"
-    }).disableSelection(); */
+    }).disableSelection();
 
 });
 // //创建ifame对象
