@@ -162,7 +162,6 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
         }
         catch (Exception e) {
             LOG.error("create ceph error" +e.getMessage());
-            kubernetesClientService.getClient("").deleteNamespace(namespace);
             e.printStackTrace();
         }
     }
@@ -281,13 +280,20 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                     JSONArray jsArrData2 = (JSONArray) jsObj.get("data");
                     JSONObject jsObj2 = (JSONObject) jsArrData2.get(0);
                     JSONArray jsPro = (JSONArray) jsObj2.get("property");
-                    JSONObject cpuObject = (JSONObject) jsPro.get(0);
-                    JSONObject memObject = (JSONObject) jsPro.get(1);
-                    JSONObject volObject = (JSONObject) jsPro.get(1);
-                    // 获取CPU和MEM的值
-                    openCpu = (String) cpuObject.get("prop_value");
-                    openMem = (String) memObject.get("prop_value");
-                    user.setVol_size(Long.parseLong((String)volObject.get("prop_value")));
+                    if (jsPro != null && jsPro.size() > 0) { // 获取CPU、MEM和Volume的值
+                        for (Object oneRow : jsPro) {
+                            JSONObject tmp = (JSONObject) oneRow;
+                            if (((String)tmp.get("property_code")).trim().equals("CPU")) {
+                                openCpu = (String) tmp.get("prop_value");
+                            }
+                            else if (((String)tmp.get("property_code")).trim().equals("memory")) {
+                                openMem = (String) tmp.get("prop_value"); 
+                            }
+                            else if (((String)tmp.get("property_code")).trim().equals("Volume")){
+                                user.setVol_size(Long.parseLong((String)tmp.get("prop_value")));
+                            }
+                        }
+                    }
                     LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem + "}");
                     createResourceQuota(namespace, openCpu, openMem);
                 }
@@ -295,7 +301,6 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
         }
         catch (Exception e) {
             LOG.error("获取能力平台租户资源出错！" + e.getMessage());
-            kubernetesClientService.getClient("").deleteNamespace(namespace);
             e.printStackTrace();
             throw new Exception();
         }
