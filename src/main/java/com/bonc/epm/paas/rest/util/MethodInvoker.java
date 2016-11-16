@@ -52,8 +52,8 @@ public class MethodInvoker {
 	public Object invoke(Object[] args){
 		Client client = ClientBuilder.newClient(new ClientConfig()).register(JacksonJaxbJsonProvider.class).register(JacksonConfig.class);
     	WebTarget webTarget = client.target(url);
-    	HttpAuthenticationFeature.basicBuilder()
-    		    .nonPreemptive().credentials(userName, password).build();
+/*    	HttpAuthenticationFeature.basicBuilder()
+    		    .nonPreemptive().credentials(userName, password).build();*/
     	Path path = method.getAnnotation(Path.class);
     	String pathValue = path.value();
     	

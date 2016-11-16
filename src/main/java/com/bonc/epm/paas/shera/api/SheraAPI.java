@@ -23,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.Jdk;
+import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
@@ -38,6 +39,18 @@ import com.bonc.epm.paas.shera.model.JobExecutionList;
 public interface SheraAPI {
 
     /* JDK API */
+
+    /**
+     * 
+     * Description: 
+     * get all jdk
+     * @return {@link Jdk}s
+     * @throws SheraClientException 
+     */
+    @GET
+    @Path("/jdk/all")
+    @Produces(MediaType.APPLICATION_JSON)    
+    public JdkList getAllJdk() throws SheraClientException;
     /**
      * 
      * Description: 
@@ -79,9 +92,9 @@ public interface SheraAPI {
      * @throws SheraClientException 
      */
     @DELETE
-    @Path("/jobs/del/{namespace}/{job-id}/{execution_id}")
+    @Path("/jobs/del/{namespace}/{name}/{seqno}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExecution deleteExecution(@PathParam("namespace") String namespace ,@PathParam("job-id") String jobId, @PathParam("execution_id") Integer executionId) throws SheraClientException;
+    public JobExecution deleteExecution(@PathParam("namespace") String namespace ,@PathParam("name") String name, @PathParam("seqno") Integer seqno) throws SheraClientException;
     
     /**
      * 
@@ -94,9 +107,9 @@ public interface SheraAPI {
      * @throws SheraClientException 
      */
     @PUT
-    @Path("/jobs/kill/{namespace}/{job-id}/{execution_id}")
+    @Path("/jobs/kill/{namespace}/{name}/{seqno}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExecution killExecution(@PathParam("namespace") String namespace ,@PathParam("job-id") String jobId, @PathParam("execution_id") Integer executionId) throws SheraClientException;
+    public JobExecution killExecution(@PathParam("namespace") String namespace ,@PathParam("name") String name, @PathParam("seqno") Integer seqno) throws SheraClientException;
 
     /**
      * 
@@ -111,9 +124,9 @@ public interface SheraAPI {
      * @throws SheraClientException 
      */
     @GET
-    @Path("/jobs/get/{namespace}/{job-id}/{execution_id}")
+    @Path("/jobs/get/{namespace}/{name}/{seqno}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExecution getExecution(@PathParam("namespace") String namespace ,@PathParam("job-id") String jobId, @PathParam("execution_id") Integer executionId) throws SheraClientException;
+    public JobExecution getExecution(@PathParam("namespace") String namespace ,@PathParam("name") String name, @PathParam("seqno") Integer seqno) throws SheraClientException;
     
     /**
      * 
@@ -126,9 +139,9 @@ public interface SheraAPI {
      * @throws SheraClientException 
      */
     @GET
-    @Path("/jobs/get/{namespace}/{job-id}/executions")
+    @Path("/jobs/get/{namespace}/{name}/executions")
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExecutionList getJobAllExecutions(@PathParam("namespace") String namespace ,@PathParam("job-id") String jobId) throws SheraClientException;
+    public JobExecutionList getJobAllExecutions(@PathParam("namespace") String namespace ,@PathParam("name") String name) throws SheraClientException;
     
     /**
      * delete a job 
@@ -139,9 +152,9 @@ public interface SheraAPI {
      * @return {@link Job}
      */
     @DELETE
-    @Path("/jobs/del/{namespace}/{job-id}")
+    @Path("/jobs/del/{namespace}/{name}")
     @Produces(MediaType.APPLICATION_JSON)  
-    public Job deleteJob(@PathParam("namespace") String namespace ,@PathParam("job-id") String jobId) throws SheraClientException;
+    public Job deleteJob(@PathParam("namespace") String namespace ,@PathParam("name") String name) throws SheraClientException;
     
     /**
      * update a job 
@@ -203,8 +216,8 @@ public interface SheraAPI {
      *              job to be exec
      */
     @POST
-    @Path("/jobs/exec/{namespace}/{job-id}")
+    @Path("/jobs/exec/{namespace}/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExec execJob(@PathParam("namespace") String namespace, @PathParam("job-id") String jobId) throws SheraClientException;
+    public JobExec execJob(@PathParam("namespace") String namespace, @PathParam("name") String name) throws SheraClientException;
 }

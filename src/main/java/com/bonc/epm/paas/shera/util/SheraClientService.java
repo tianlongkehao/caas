@@ -30,12 +30,12 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 public class SheraClientService {
     
     @Value("${shera.api.endpoint}")
-    private String endpoint="http://192.168.0.76:8383/";
+    private String endpoint="http://192.168.0.76:8282/";
     private String username="shera";
     private String password="shera";
     
     public SheraAPIClientInterface getClient() {
-        String namespace = "admin";
+        String namespace = "admin"; //CurrentUserUtils.getInstance().getUser().getNamespace();
         return getclient(namespace);
     }
 
@@ -55,6 +55,7 @@ public class SheraClientService {
         SheraAPIClientInterface client = sheraClientService.getClient();
         try {
             client.getAllJobs();
+            System.out.println(client.getAllJobs());
         }
         catch (SheraClientException e) {
            e.printStackTrace();

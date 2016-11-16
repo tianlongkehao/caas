@@ -44,7 +44,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     
     public SheraAPIClient(String srUrl, String namespace, String username, String password, RestFactory factory) {
         this.namespace = namespace;
-        this.sRURI = srUrl +"She-Ra";
+        this.sRURI = srUrl +"she-ra";
         api = factory.createSheRaAPI(sRURI,username,password);
     }
 
@@ -72,11 +72,10 @@ public class SheraAPIClient implements SheraAPIClientInterface {
         }
     }
 
-
     @Override
-    public JobExec execJob(String jobId) throws SheraClientException {
+    public JobExec execJob(String name) throws SheraClientException {
         try {
-            return api.execJob(namespace, jobId);
+            return api.execJob(namespace, name);
         }
         catch (NotFoundException e) {
             return null;
@@ -86,93 +85,120 @@ public class SheraAPIClient implements SheraAPIClientInterface {
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteJdk(java.lang.String)
-     */
     @Override
-    public Jdk deleteJdk(String jdkVersion)
-        throws SheraClientException {
-        // TODO Auto-generated method stub
-        return null;
+    public Jdk deleteJdk(String jdkVersion) throws SheraClientException {
+        try {
+            return api.deleteJdk(jdkVersion);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#createJdk(com.bonc.epm.paas.shera.model.Jdk)
-     */
     @Override
-    public Jdk createJdk(Jdk jdk)
-        throws SheraClientException {
-        // TODO Auto-generated method stub
-        return null;
+    public Jdk createJdk(Jdk jdk) throws SheraClientException {
+        try {
+            return api.createJdk(jdk);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteExecution(java.lang.String, java.lang.Integer)
-     */
     @Override
-    public JobExecution deleteExecution(String jobId, Integer executionId)
-        throws SheraClientException {
-        // TODO Auto-generated method stub
-        return null;
+    public JobExecution deleteExecution(String name, Integer seqno) throws SheraClientException {
+        try {
+            return api.deleteExecution(namespace, name, seqno);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#killExecution(java.lang.String, java.lang.Integer)
-     */
     @Override
-    public JobExecution killExecution(String jobId, Integer executionId)
-        throws SheraClientException {
-        // TODO Auto-generated method stub
-        return null;
+    public JobExecution killExecution(String name, Integer seqno) throws SheraClientException {
+        try {
+            return api.killExecution(namespace, name, seqno);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#getExecution(java.lang.String, java.lang.Integer)
-     */
     @Override
-    public JobExecution getExecution(String jobId, Integer executionId)
-        throws SheraClientException {
-        // TODO Auto-generated method stub
-        return null;
+    public JobExecution getExecution(String name, Integer seqno) throws SheraClientException {
+        try {
+            return api.killExecution(namespace, name, seqno);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#getJobAllExecutions(java.lang.String)
-     */
     @Override
-    public JobExecutionList getJobAllExecutions(String jobId)
-        throws SheraClientException {
-        // TODO Auto-generated method stub
-        return null;
+    public JobExecutionList getJobAllExecutions(String name) throws SheraClientException {
+        try {
+            return api.getJobAllExecutions(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteJob(java.lang.String)
-     */
     @Override
-    public Job deleteJob(String jobId)
-        throws SheraClientException {
-        // TODO Auto-generated method stub
-        return null;
+    public Job deleteJob(String name) throws SheraClientException {
+        try {
+            return api.deleteJob(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#updateJob(com.bonc.epm.paas.shera.model.Job)
-     */
     @Override
-    public Job updateJob(Job job)
-        throws SheraClientException {
-        // TODO Auto-generated method stub
-        return null;
+    public Job updateJob(Job job) throws SheraClientException {
+        try {
+            return api.updateJob(namespace, job);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#getJob(java.lang.String)
-     */
     @Override
-    public Job getJob(String jobId)
-        throws SheraClientException {
-        // TODO Auto-generated method stub
-        return null;
+    public Job getJob(String name) throws SheraClientException {
+        try {
+            return api.getJob(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
     }
 }
