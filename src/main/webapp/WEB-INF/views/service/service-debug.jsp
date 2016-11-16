@@ -10,7 +10,7 @@
 <script type="text/javascript" src="<%=path%>/js/plugins/jquery-ui.min.js"></script>
 <script type="text/javascript" src="<%=path%>/js/service/service-debug.js"></script>
 </head>
-<body >
+<body onunload="alert('The onunload event was triggered')">
 
 	<jsp:include page="../frame/menu.jsp" flush="true">
 		<jsp:param name="ci" value="" />
@@ -24,58 +24,22 @@
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">服务</li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">${service.serviceName }</li>
+						<li class="active" style="width: inherit;">${service.serviceName }(${podip})</li>
 					</ol>
 				</div>
+				
 				<div id="tabs">
 					<ul>
 						<li><a href="#doc">文件</a></li>
-						<li><a href="#ftp">ftp</a></li>
+						<li><a href="#ftp">命令行</a></li>
 					</ul>
 					<div id="doc" >
 						<div class="row">
-							<div class="col-sm-6">
+							<div class="scpDoc">
 								<div class="ibox float-e-margins" style="margin-bottom:0px">
 									<div class="ibox-title">
 										<h5>
-											<span>本地文件</span>
-										</h5>
-	
-										<div class="ibox-tools">
-											<a href="javascript:creatable(null,'./');" id="volReloadBtn" title="刷新"> <i class="fa fa-repeat"></i></a>
-											
-										</div>
-									</div>
-									<div class="ibox-content">
-										<table style="border-collapse: collapse; margin: 0 auto;" class="table">
-											<thead style="display: block;">
-												<tr>
-													<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
-													<th style="width: 25%; ">文件名</th>
-													<th style="width: 15%; ">大小</th>
-													<th style="width: 30%; ">修改日期</th>
-													<th style="width: 20%; ">操作</th>
-												</tr>
-											</thead>
-											<tbody id="mybody1" style="overflow-y: auto; height: 400px; display: block; width: 100%">
-	
-											</tbody>
-											<tfoot class="hide">
-												<tr>
-													<td colspan="5">
-														<ul class="pagination pull-right"></ul>
-													</td>
-												</tr>
-											</tfoot>
-										</table>
-									</div>
-								</div>
-							</div>
-							<div class="col-sm-6">
-								<div class="ibox float-e-margins" style="margin-bottom:0px">
-									<div class="ibox-title">
-										<h5>
-											<span>远程文件</span>
+											<span>${podip }<input type="text" id="scp-path" onkeypress="EnterPress(event)" onkeydown="EnterPress()" value=""></span>
 										</h5>
 	
 										<div class="ibox-tools">
@@ -91,21 +55,21 @@
 											<thead style="display: block;">
 												<tr>
 													<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
-													<th style="width: 25%; text-indent: 10px;">文件名</th>
-													<th style="width: 15%; text-indent: 0px;">大小</th>
-													<th style="width: 30%; text-indent: 0px;">修改日期</th>
-													<th style="width: 15%; text-indent: 10px;">操作</th>
+													<th style="width: 25%; text-indent: 25px;">文件名</th>
+													<th style="width: 15%; text-indent: 61px;">大小</th>
+													<th style="width: 30%; text-indent: 151px;">修改日期</th>
+													<th style="width: 15%; text-indent: 131px;">操作</th>
 												</tr>
 											</thead>
-											<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%">
+											<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%" class="sortable-list connectList agile-list">
 	
 											</tbody>
 											
 										</table>
+										<ul class="sortable-list connectList"></ul>
 									</div>
 								</div>
 							</div>
-							
 						</div>
 					</div>
 					<div class="contentMain" id="ftp">
@@ -140,10 +104,27 @@
 			</div>
 <script>
 $(document).ready(function () {
+	//tab页切换
 	$( "#tabs" ).tabs();
-    /* $(".sortable-list").sortable({
+	//拖动
+    $(".sortable-list").sortable({
         connectWith: ".connectList"
-    }).disableSelection(); */
+    }).disableSelection();
+	//缩放
+	$( ".localDoc" ).resizable({
+  		autoHide: true,
+  		containment: ".row",
+  		maxHeight: 535,
+  		maxWidth:770,
+  		minWidth:413,
+  		resize: function( event, ui ) {
+  			var localDocWidth = $(".localDoc").width();
+  			var totalWidth = $(".localDoc").parent().width();
+  			var scpDocWidth = totalWidth - localDocWidth - 10;
+  			$(".scpDoc").width(scpDocWidth+"px");
+  		
+  		}
+      });
 
 });
 // //创建ifame对象
