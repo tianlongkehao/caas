@@ -542,6 +542,15 @@ public class StorageController {
 
 
     } 
+    /**
+     * 
+     * Description: 解压压缩文件
+     * @param storageName
+     * @param fileName
+     * @param path
+     * @return string
+     * @see
+     */
     @RequestMapping(value = { "storage/unZipFile.do" }, method = RequestMethod.GET)
     @ResponseBody
     public String unZipFile(String storageName,String fileName,String path){
@@ -555,6 +564,15 @@ public class StorageController {
         return JSON.toJSONString(map);
     }
     
+    @RequestMapping(value = { "service/storage/getVols.do" }, method = RequestMethod.GET)
+    @ResponseBody
+    public String getVol(){
+        Map map = new HashMap();
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        List<Storage> storages = storageDao.findByCreateBy(createBy);
+        map.put("storages", storages);
+        return JSON.toJSONString(map);
+    }
 //    public static void main(String[] args) {
 //        try {
 //            CephController ccl = new CephController();

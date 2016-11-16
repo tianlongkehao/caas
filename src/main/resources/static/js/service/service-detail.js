@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
     $(".baseInfo>ul>li>a").click(function(){
 
         $(".baseInfo>ul>li>a").removeClass("btn-prim");
@@ -157,6 +156,68 @@ $(document).ready(function(){
     		   }
     	   })
        });
+       //可编辑的基本信息
+       			//编辑
+       $(".editBaseCon").hide();
+       $("#restSerBtn").hide();
+       $("#editSerBtn").click(function(){
+    	   beforeEditDo();
+    	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
+    		   $(".editBaseCon").show();
+        	 $(".oldBaseCon").hide();
+    	   }else{
+    		   $(".editBaseCon_Run").show();
+          $(".oldBaseCon_Run").hide();
+    	   			}
+      	 $("#saveSerBtn").show();
+      	 $("#restSerBtn").show();
+       });
+       			//保存
+       $("#saveSerBtn").click(function(){
+    	   $(".editBaseCon").hide();
+    	   commBaseSerForm();
+    	   $(".oldBaseCon").show();
+       });
+       			//取消
+       $("#canclSerBtn").click(function(){
+    	   $(".editBaseCon").hide();
+    	   $(".oldBaseCon").show();
+    	   $("#saveSerBtn").hide();
+    	   $("#restSerBtn").hide();
+       });
+       	//reset
+       $("#restSerBtn").click(function(){
+    	   $("#BaseSerForm").resetForm();
+       });
+       function commBaseSerForm(){
+    	   $("#BaseSerForm").ajaxSubmit(function(data) {
+    		   var data = eval("(" + data + ")");
+    		   location.reload();
+    		}); 
+       }
+       function beforeEditDo(){
+    	   var serType=$('#serType').val();
+    	   var serMonPath=$('#serMonPath').val();
+    	   var serVolName=$('#serVolName').val();
+    	   var str='';
+    	   $.ajax({
+    		   url:ctx+"/service/storage/getVols.do",
+    				success:function(data){
+    					var data = eval("(" + data + ")");
+    					for(var i=0; i<data.storages.length; i++){
+    						storage=data.storages[i];
+    					str+='<option value="'+storage.id+'">'
+    					+storage.storageName+' '+storage.storageSize
+    					+'M </option>';
+    				}
+    					$('#selSerType').append(str);
+    				}
+    	   			});
+    	   
+    	  
+       }
+       
+       
        //可编辑的服务地址
        $(".editCon").hide();
        $("#editServiceAddrBtn").click(function(){

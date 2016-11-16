@@ -2094,4 +2094,84 @@ public class ServiceController {
         }
         return JSON.toJSONString(map);
     }
+    
+    /**
+     * 
+     * Description: 修改服务详情的基础信息表
+     * 
+     * @param service
+     * @return 
+     * @return 
+     * @see
+     */
+    @RequestMapping(value ="service/detail/editBaseSerForm.do")
+    @ResponseBody
+    public String editBaseSerForm(Model model,Service service){
+        Map<String, Object> map = new HashMap<String, Object>();
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        ReplicationController controller = null;
+        com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+        Service ser = serviceDao.findOne(service.getId());
+       ser.setServicePath(service.getServicePath());
+       ser.setProxyZone(service.getProxyZone());
+       ser.setProxyPath(service.getProxyPath());
+       ser.setSessionAffinity(service.getSessionAffinity());
+       ser.setNodeIpAffinity(service.getNodeIpAffinity());
+       ser.setCheckPath(service.getCheckPath());
+       ser.setTimeoutDetction(service.getTimeoutDetction());
+       ser.setPeriodDetction(service.getPeriodDetction());
+       ser.setInitialDelay(service.getInitialDelay());
+       
+       if(ser.getStatus()!=1 & ser.getStatus()!=4){ //启动状态.启动状态下可以修改一些k8s的属性
+           try {
+               controller = client.getReplicationController(service.getServiceName());
+           } 
+           catch (KubernetesClientException e) {
+               map.put("status", "500");
+               map.put("msg", e.getStatus().getMessage());
+               LOG.error("create service error:" + e.getStatus().getMessage());
+               return JSON.toJSONString(map);
+           }
+           try {
+               k8sService = client.getService(service.getServiceName());
+           } 
+           catch (KubernetesClientException e) {
+               map.put("status", "500");
+               map.put("msg", e.getStatus().getMessage());
+               LOG.error("create service error:" + e.getStatus().getMessage());
+               return JSON.toJSONString(map);
+           }
+           try {
+               //修改rc和service
+               controller=kubernetesClientService.updateSimpleReplicationController(controller,service);
+               k8sService=kubernetesClientService.updateService(k8sService,service);
+               
+               controller = client.updateReplicationController(service.getServiceName(), controller);
+               k8sService = client.updateService(service.getServiceName(), k8sService);
+
+           }
+           catch (KubernetesClientException e) {
+               map.put("status", "500");
+               map.put("msg", e.getStatus().getMessage());
+               LOG.error("create service error:" + e.getStatus().getMessage());
+               return JSON.toJSONString(map);
+           }
+       }
+       ser.setServiceName(service.getServiceName());
+       ser.setStartCommand(service.getStartCommand());
+       if(StringUtils.isNotBlank(service.getVolName())){
+           ser.setVolName(service.getVolName());
+           ser.setMountPath(ser.getMountPath());
+           ser.setServiceType("1");
+       }else{
+           ser.setVolName("");
+           ser.setMountPath("");
+           ser.setServiceType("2");
+       }
+        serviceDao.save(ser);
+        map.put("status", "200");
+        
+        return JSON.toJSONString(map);
+
+    }
 }
