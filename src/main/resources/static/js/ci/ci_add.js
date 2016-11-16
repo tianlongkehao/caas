@@ -412,10 +412,10 @@ function checkCodeCiAdd(){
     json = '[' + json + ']';
     $("#jsonData").val(json);
     //doackerFile文件路径的判断
-	var dockerFileLocation = $("#dockerfilePath").val();
+	var dockerFileLocation = $("#dockerFileLocation").val();
 	if(!dockerFileLocation || dockerFileLocation.length < 1){
-		layer.tips('dockerfile文件路径不能为空','#dockerfilePath',{tips: [1, '#3595CC']});
-		$('#dockerfilePath').focus();
+		layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
+		$('#dockerFileLocation').focus();
 		return;
     }
     return true;

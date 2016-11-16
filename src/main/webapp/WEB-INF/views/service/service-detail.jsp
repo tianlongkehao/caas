@@ -192,7 +192,7 @@
 									</c:choose>
 									<tr>
 										<td><a href="">${container.containerName }</a></td>
-										<c:if test="${service.status==4 }">
+										<c:if test="${service.status==1 }">
 											<td>waiting</td>
 										</c:if>
 										<c:if test="${service.status==2||service.status==3 }">
