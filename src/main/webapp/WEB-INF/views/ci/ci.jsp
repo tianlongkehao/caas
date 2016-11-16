@@ -38,9 +38,9 @@
                 	<div class="row">
 						<div class="col-md-12">
 							<div class="ibox float-e-margins">
-								<div class="ibox-title">
-									<h5 class="ci-h5 active" id="ciTab"><i class="fa fa-map-marker" style="margin-right: 6px;"></i>构建</h5>
-									<h5 class="ci-h5" id="ciCodeTab"><i class="fa fa-map-marker" style="margin-right: 6px;"></i>代码构建</h5>
+								<div class="ibox-title" style="padding-left:0px">
+									<div class="tab-title active" id="ciTab"><h5 class="ci-h5 ci"><i class="fa fa-map-marker"></i>构建</h5></div>
+									<div class="tab-title" id="ciCodeTab"><h5 class="ci-h5"><i class="fa fa-map-marker"></i>代码构建</h5></div>
 
 									<div class="ibox-tools">
 										<a href="<%=path %>/ci/add" id="ciAddBtn"><img src="<%=path %>/images/code.png" class="fa-img" alt="代码构建" title="代码构建"></a>

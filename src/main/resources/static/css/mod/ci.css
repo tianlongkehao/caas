@@ -518,10 +518,6 @@ textarea.c-project-con{
 	cursor: pointer!important;
 	
 }
-h5.active{
-	color: #3c7bca;
-	font-size: 15px;
-}
 .addCiStepRow{
 	width: 98%;
     margin: 0 auto;
@@ -567,4 +563,25 @@ h5.active{
 .registryinfo ul.nav-bar{
 	margin-bottom:20px;
 	margin-left:26px;
+}
+.fa-map-marker{
+	margin-right: 6px;
+}
+.tab-title{
+    width: 100px;
+    height: 48px;
+    line-height: 40px;
+    float: left;
+    margin-top: -18px;
+    border-top: 4px solid #dadada;
+}
+.tab-title.active{
+	border-top: 4px solid #3c7bca;
+}
+.tab-title h5{
+    font-size: 15px;
+    line-height: 44px;
+}
+#ciTab .ci{
+	margin-left:16px;
 }
