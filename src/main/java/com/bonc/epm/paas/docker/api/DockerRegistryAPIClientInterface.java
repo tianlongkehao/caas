@@ -11,6 +11,11 @@
 
 package com.bonc.epm.paas.docker.api;
 
+import javax.ws.rs.PathParam;
+
+import com.bonc.epm.paas.docker.model.Manifest;
+import com.bonc.epm.paas.docker.model.Tags;
+
 /**
  * 〈一句话功能简述〉
  * 〈功能详细描述〉
@@ -22,4 +27,8 @@ package com.bonc.epm.paas.docker.api;
 
 public interface DockerRegistryAPIClientInterface {
     public static final String VERSION = "v2";
+    
+    public Tags getTagsofImage(String name);
+    
+    public Manifest getManifestofImage(String name,String reference);
 }

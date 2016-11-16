@@ -11,6 +11,9 @@
 
 package com.bonc.epm.paas.docker.api;
 
+import com.bonc.epm.paas.docker.model.Manifest;
+import com.bonc.epm.paas.docker.model.Tags;
+
 /**
  * @author ke_wang
  * @version 2016年11月16日
@@ -19,5 +22,16 @@ package com.bonc.epm.paas.docker.api;
  */
 
 public class DockerRegistryAPIClient implements DockerRegistryAPIClientInterface {
+
+    private DockerRegistryAPI api;
+    @Override
+    public Tags getTagsofImage(String name) {
+        return api.getTagsofImage(name);
+    }
+
+    @Override
+    public Manifest getManifestofImage(String name, String reference) {
+        return api.getManifestofImage(name, reference);
+    }
 
 }
