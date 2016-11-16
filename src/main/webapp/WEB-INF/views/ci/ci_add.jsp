@@ -125,7 +125,7 @@
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">dockerfile路径</label>
-	                                    <textarea id="dockerfilePath" name="dockerFileLocation" class="form-control c-project-con" type="text"
+	                                    <textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text"
 	                                           required="" row="5"></textarea>
 	                                </div>
 	                            </div>

@@ -73,7 +73,7 @@
 										</a></li>
 										<li class="chapter " data-level="3.2"><a
 											href="#product-info3-2" data-toggle="tab" tabindex="-1">
-												<b>3.2.</b> 查看容器信息
+												<b>3.2.</b> 查看服务信息
 										</a></li>
 										<li class="chapter " data-level="3.3"><a
 											href="#product-info3-3" data-toggle="tab" tabindex="-1">
@@ -81,7 +81,7 @@
 										</a></li>
 										<li class="chapter " data-level="3.4"><a
 											href="#product-info3-4" data-toggle="tab" tabindex="-1">
-												<b>3.4.</b> 更改容器配置
+												<b>3.4.</b> 更改服务配置
 										</a></li>
 										<li class="chapter " data-level="3.5"><a
 											href="#product-info3-5" data-toggle="tab" tabindex="-1">
@@ -369,9 +369,9 @@
 											<p>本章主要通过以下几个方面来介绍容器服务的主要功能：</p>
 											<ul class="info">
 												<li>创建一个容器服务</li>
-												<li>查看容器信息</li>
+												<li>查看服务信息</li>
 												<li>停止/启动/删除容器</li>
-												<li>修改容器配置</li>
+												<li>修改服务配置</li>
 												<li>弹性伸缩</li>
 												<li>灰度升级</li>
 											</ul>
@@ -411,8 +411,8 @@
 												<p>（4）服务访问路径：填写内容必须和上传的项目名称一致。</p>
 												<p>（5）nginx代理区域：DMZ区表示核心区（公网可访问），USER区表示用户区（本地网络可访问）。</p>
 												<p>（6）nginx代理路径：填写服务代理路径，建议填写用户名+项目名。</p>
-												<p>（7）会话黏连方式：设置nginx代理的会话粘连。设置NONE为不黏连,设置为ClientIP黏连生效。例如某应用有多个pod，相同用户多次访问时，设置会话黏连后，每次都访问相同的pod,提高效率。</p>
-												<p>（8）NodeIp黏连方式：nodeIPAffinity 即外部地址访问该应用时，设置NodeIP黏连。</p>
+												<p>（7）ClientIp黏连方式：ClientIP即通过容器内部IP(kubernetes service对应的IP)访问黏连。例如设置ClientIP黏连后，通过内部地址访问服务，每次都访问相同的pod。</p>
+												<p>（8）NodeIp黏连方式：nodeIPAffinity 即通过外部IP地址访问该应用时，设置NodeIP黏连。例如某应用有多个pod，某个应用通过外部地址(kubernetes node的IP或nginx代理后的IP 加端口)短时间内多次访问该应用，每次都访问相同的pod。</p>
 												<p>（9）实例个数：服务启动的pod数量，用于负载均衡</p>
 												<p>（10）服务类型：默认为无状态服务，勾选为有状态服务，需要填写挂载地址和选择存储卷</p>
 												<p>存储卷需要在服务>存储与备份中创建，如下：</p>
@@ -437,23 +437,31 @@
 								<div class="page-wrapper tab-pane fade" id="product-info3-2">
 									<div class="page-inner">
 										<section class="normal">
-											<h1 id="查看容器信息">查看容器信息</h1>
-											<p>在容器列表页，将鼠标移至容器名称上方，点击容器名称“test002”：</p>
+											<h1 id="查看服务信息">查看服务信息</h1>
+											<p>在服务列表页，点击容器名称“centos”，将进入服务详情页面：</p>
 
 											<p>
-												<img src="/images/service-info1.png" alt="service">
+												<img src="/images/service-detail1.png" alt="service">
 											</p>
-											<p>在新页面中，可以看到“test002”的基本信息，如“基本信息、实例、端口、日志”，点击“打开应用”，即可访问服务页面。</p>
+											<p>在服务详情页面中，可以看到“centos”的详细信息，如“基本信息、容器实例、环境变量、端口、日志”，点击“打开应用”，即可访问服务页面。</p>
 											<p>
-												<img src="/images/service-info2.png" alt="service">
+												<img src="/images/service-detail2.png" alt="service">
 											</p>
-											<p>端口信息：</p>
+											<p>容器实例：当前是一个实例</p>
 											<p>
-												<img src="/images/service-info3.png" alt="service">
+												<img src="/images/service-detail3.png" alt="service">
 											</p>
-											<p>日志信息：</p>
+											<p>环境变量：环境变量是服务的配置信息，当启动服务时优先读取环境变量的配置信息，当环境变量中没有的配置信息才读取配置文件中的。</p>
 											<p>
-												<img src="/images/service-info4.png" alt="service">
+												<img src="/images/service-detail4.png" alt="service">
+											</p>
+											<p>端口：</p>
+											<p>
+												<img src="/images/service-detail5.png" alt="service">
+											</p>
+											<p>日志：</p>
+											<p>
+												<img src="/images/service-detail6.png" alt="service">
 											</p>
 										</section>
 									</div>
@@ -495,7 +503,7 @@
 									<div class="page-inner">
 										<section class="normal">
 
-											<h1 id="更改容器配置">更改容器配置</h1>
+											<h1 id="更改服务配置">更改服务配置</h1>
 											<p>勾选“hello”前面的复选框，点击“更多操作”按钮，选择“更改配置”：</p>
 											<p>
 												<img src="/images/service-conf1.png" alt="service">
