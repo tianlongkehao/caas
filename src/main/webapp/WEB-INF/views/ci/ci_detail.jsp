@@ -117,22 +117,27 @@
 				                                <div class=" col-md-12">
 				                                    <label class="c-project-tit">项目名称</label>
 				                                    <input id="projectName" name="projectName" class="form-control c-project-con" type="text"
-				                                           required="">
+				                                           required="" value = "${ci.projectName }">
 				                                </div>
 				                            </div>
 				                            <div class="row" style="margin-bottom: 12px;">
 				                                <div class=" col-md-12">
 				                                    <label class="c-project-tit">描述</label>
 				                                    <textarea id="description" name="description" class="form-control c-project-con" type="text"
-				                                           required="" row="5"></textarea>
+				                                           required="" row="5" value = "${ci.description }">${ci.description }</textarea>
 				                                </div>
 				                            </div>
 				                            <div class="row">
 				                                <div class=" col-md-12">
 				                                    <label class="c-project-tit">JDK</label>
 				                                    <select id="jdk-version" name="jdkVersion" class="form-control c-project-con">
-				                                    	<option value="jdk1.7">jdk1.7</option>
-				                                    	<option value="jdk1.8">jdk1.8</option>
+				                                        <option value="${ci.jdkVersion }">${ci.jdkVersion }</option>
+				                                        <c:if test="${ci.jdkVersion == 'jdk1.7' }">
+				                                           <option value="jdk1.8">jdk1.8</option>
+				                                        </c:if>
+				                                        <c:if test="${ci.jdkVersion == 'jdk1.8' }">
+                                                           <option value="jdk1.7">jdk1.7</option>
+                                                        </c:if>
 				                                    </select>
 				                                </div>
 				                            </div>
@@ -145,8 +150,14 @@
 				                            	<div class=" col-md-12">
 					                                <label class="c-project-tit">代码库类型</label>
 					                                <select id="codeType" name="codeType" class="form-control c-project-con" >
-					                                	<option value="0">-none-</option>
-					                                    <option value="1">git</option>
+					                                    <c:if test="${ci.codeType == 0 }">
+                                                           <option value="0">-none-</option>
+                                                           <option value="1">git</option>
+                                                        </c:if>
+					                                	<c:if test="${ci.codeType == 1 }">
+                                                           <option value="1">git</option>
+                                                           <option value="0">-none-</option>
+                                                        </c:if>
 					                                </select>
 					                            </div>
 				                            </div>
@@ -154,12 +165,12 @@
 				                            	<div class=" col-md-12">
 					                                <label class="c-project-tit">代码仓库地址</label>
 					                                <input id="codeUrl" name="codeUrl" class="form-control c-project-con" type="text"
-			                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git">
+			                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git" value = "${ci.codeUrl }">
 					                            </div>
 					                            <div class=" col-md-12">
 					                                <label class="c-project-tit">认证方式</label>
 					                                <select id="codeCredentials" name="codeCredentials" class="form-control c-project-con">
-					                                    <option value="">-none-</option>
+					                                    <option value="${ci.codeCredentials }">${ci.codeCredentials }</option>
 					                                    <option value="gitlab(SSH)(gitlab SSH方式认证)">gitlab(SSH)(gitlab SSH方式认证)</option>
 				                                      	<option value="root/**********(gitlab HTTPS方式认证)">root/**********(gitlab HTTPS方式认证)</option>
 					                                </select>
@@ -167,7 +178,7 @@
 					                            <div class=" col-md-12">
 					                                <label class="c-project-tit">创建分支</label>
 					                                <input id="codeBranch" name="codeBranch" type="text" class="form-control c-project-con"
-			                                                   value="*/master">
+			                                                   value="${ci.codeBranch }">
 					                            </div>
 				                            </div>
 				                            <div class="row git-config">
@@ -177,12 +188,12 @@
 				                            	<div class=" col-md-12">
 					                                <label class="c-project-tit">代码库用户名</label>
 					                                <input id="codeUsername" name="codeUsername" type="text" class="form-control c-project-con reg-input"
-			                                                   value="">
+			                                                   value="${ci.codeUsername }">
 					                            </div>
 					                            <div class=" col-md-12">
 					                                <label class="c-project-tit">代码库密码</label>
 					                                <input id="codePassword" name="codePassword" type="password"
-			                                                   class="form-control c-project-con reg-input" value="">
+			                                                   class="form-control c-project-con reg-input" value="${ci.codePassword }">
 					                            </div>
 			                                </div>
 			                            </section>
@@ -208,8 +219,8 @@
 				                            <div class="row">
 				                                <div class=" col-md-12">
 				                                    <label class="c-project-tit">dockerfile路径</label>
-				                                    <textarea id="dockerfilePath" name="dockerfilePath" class="form-control c-project-con" type="text"
-				                                           required="" row="5"></textarea>
+				                                    <textarea id="dockerfilePath" name="dockerFileLocation" class="form-control c-project-con" type="text"
+				                                           required="" row="5">${ci.dockerFileLocation }</textarea>
 				                                </div>
 				                            </div>
 			                        	</section>
@@ -220,6 +231,7 @@
                                             </div>
                                         </div>
                                         <input type="hidden" id="id" name="id" value="${ci.id}">
+                                        <input type = "hidden" id = "jsonData" name = "jsonData" value = "">
 			                        </form>
                                 </c:if> 
 

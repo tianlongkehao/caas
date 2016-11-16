@@ -246,20 +246,78 @@ public class CiController {
     }
 	
     /**
-     * 修改构建信息
+     * Description: <br>
+     * 根据构建id查询相关联的invoke数据
+     * @param id
+     * @return 
+     * @see
+     */
+    @RequestMapping("ci/invokeData.do")
+    @ResponseBody
+    public String fingCiInvokeData(long id){
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<CiInvoke> ciInvokeList = ciInvokeDao.findByCiId(id);
+        map.put("data", ciInvokeList);
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 修改构建信息判断项目名称是否重复
+     * @param projectName ： 项目名称
+     * @param id 构建Id
+     * @return 
+     */
+    @RequestMapping("ci/judgeProjectName.do")
+    @ResponseBody
+    public String judgeModifyProjectName(String projectName,long id){
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Ci> ciList = ciDao.findByProjectNameAndCreateBy(projectName,createBy);
+        if (ciList.size() > 1) {
+            map.put("status", "400");
+        }
+        if (ciList.size() == 1) {
+            if (ciList.get(0).getId() == id) {
+                map.put("status", "200");
+            }else {
+                map.put("status","400");
+            }
+        }
+        if (ciList.size() == 0) {
+            map.put("status", "200");
+        }
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * 修改代码构建信息
      * 
      * @param ci ：ci
      * @return String
      * @see
      */
-    @RequestMapping("ci/modifyCi.do")
+    @RequestMapping("ci/modifyCodeCi.do")
 	@ResponseBody
-	public String modifyCi(Ci ci) {
+	public String modifyCodeCi(Ci ci,String jsonData) {
         Ci originCi = ciDao.findOne(ci.getId());
         originCi.setProjectName(ci.getProjectName());
         originCi.setDescription(ci.getDescription());
+        originCi.setJdkVersion(ci.getJdkVersion());
+        originCi.setCodeType(ci.getCodeType());
+        originCi.setCodeUrl(ci.getCodeUrl());
+        originCi.setCodeCredentials(ci.getCodeCredentials());
+        originCi.setCodeBranch(ci.getCodeBranch());
+        originCi.setCodeUsername(ci.getCodeUsername());
+        originCi.setCodePassword(ci.getCodePassword());
         originCi.setDockerFileLocation(ci.getDockerFileLocation());
         ciDao.save(originCi);
+        List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
+        if (!StringUtils.isEmpty(ciInvokeList)) {
+            ciInvokeDao.deleteByCiId(ci.getId());
+            ciInvokeDao.save(ciInvokeList);
+            LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+        }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
         map.put("data", ci);
@@ -859,7 +917,6 @@ public class CiController {
 	public String constructCi(Long id) {
         Ci ci = ciDao.findOne(id);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
-        ci.setConstructionDate(new Date());
         ciDao.save(ci);
         long startTime = System.currentTimeMillis();
         CiRecord ciRecord = new CiRecord();
@@ -891,6 +948,9 @@ public class CiController {
         if(CiConstant.CONSTRUCTION_RESULT_FAIL!=ciRecord.getConstructResult()){
             ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
             ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
+        }
+        if (map.get("status").equals("200")) {
+            ci.setConstructionDate(new Date());
         }
         ciDao.save(ci);
         ciRecordDao.save(ciRecord);

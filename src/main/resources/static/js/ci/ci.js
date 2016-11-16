@@ -208,6 +208,9 @@ function loadCiCode() {
 						data : null,
 						render : function (data,type,row) {
 							var html = row.constructionDate;
+							if (html == null || html == "") {
+								return "无";
+							}
 							return html;
 						}
 					},
@@ -215,6 +218,9 @@ function loadCiCode() {
 						data : null,
 						render : function (data,type,row) {
 							var html = row.constructionFailDate;
+							if (html == null || html == "") {
+								return "无";
+							}
 							return html;
 						}
 					},

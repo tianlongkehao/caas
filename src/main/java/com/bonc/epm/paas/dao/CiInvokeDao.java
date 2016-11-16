@@ -37,5 +37,14 @@ public interface CiInvokeDao extends CrudRepository<CiInvoke, Long>{
      * @see
      */
     List<CiInvoke> findByCiId(long ciId);
+    
+    /**
+     * 
+     * Description: <br>
+     * 根据ciId删除ciInvoke中的构建信息
+     * @param ciId 
+     * @see
+     */
+    void deleteByCiId(long ciId);
 
 }
