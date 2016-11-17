@@ -58,7 +58,6 @@ import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
-import com.bonc.epm.paas.entity.RefService;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
@@ -2196,6 +2195,7 @@ public class ServiceController {
                          ser.setMountPath("");
                          ser.setServiceType("2");
                                              }
+                     updateStorageType(service.getVolName(), service.getServiceName());
            }catch (KubernetesClientException e) {
                map.put("status", "500");
                map.put("msg", e.getStatus().getMessage());
@@ -2254,7 +2254,6 @@ public class ServiceController {
                 ser.setMountPath("");
                 ser.setServiceType("2");
                         }
-            updateStorageType(service.getVolName(), service.getServiceName());
                 }
         serviceDao.save(ser);
         map.put("status", "200");

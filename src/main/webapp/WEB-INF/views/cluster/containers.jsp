@@ -48,11 +48,11 @@
 								<div class="searchFun"
 									style="float: left; text-align: center; margin: 0px 10px"
 									align="right">
-									<label style="line-height: 35px">租户:</label> <select
+									<label style="line-height: 35px">租户:</label> <select                                                 
 										name="search_namespace" id="search_namespace"
 										onchange="searchNamespace()"
 										style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
-										<option name="search_namespace" value="0"></option>
+										<option name="search_namespace" value="0">-----请选择-----</option>
 									</select>
 								</div>
 							</c:if>
@@ -63,7 +63,7 @@
 									name="search_pod" id="search_pod" onchange="searchPod()"
 									disabled
 									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
-									<option name="search_pod" value="0"></option>
+									<option name="search_pod" value="0">-----请选择-----</option>
 								</select>
 							</div>
 

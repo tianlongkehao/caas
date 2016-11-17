@@ -228,7 +228,13 @@
 								</tr>
 								<tr>
 									<td>会话黏连方式：
-									<span class="oldBaseCon_Run oldBaseCon">${service.sessionAffinity }</span>
+									<span class="oldBaseCon_Run oldBaseCon">
+									<c:if test="${service.sessionAffinity == '' || service.sessionAffinity == null}">
+                                    未配置
+                  </c:if>
+                  <c:if test="${service.sessionAffinity == 'ClientIP'}">
+                  ${service.sessionAffinity }
+                  </c:if></span>
                    <span id="editSeAffy" hidden="true" class="editBaseCon_Run editBaseCon">
                   <%--  <input id="newSeAffy" name="sessionAffinity" type="text" value=${service.sessionAffinity } /> --%>
                    <select id="newSeAffy" name="sessionAffinity">
@@ -238,7 +244,14 @@
                 </span>
 									</td>
 									<td>NodeIp黏连方式：
-									<span class="oldBaseCon_Run oldBaseCon">${service.nodeIpAffinity }</span>
+									<span class="oldBaseCon_Run oldBaseCon">
+									<c:if test="${service.nodeIpAffinity == '' || service.nodeIpAffinity == null}">
+									未配置
+									</c:if>
+									<c:if test="${service.nodeIpAffinity == 'nodeIpAffinity' }">
+                  ${service.nodeIpAffinity }
+                 </c:if>
+									</span>
                    <span id="editNodAffy" hidden="true" class="editBaseCon_Run editBaseCon">
                    <%-- <input id="newNodAffy" name="nodeIpAffinity" type="text" value=${service.nodeIpAffinity } /> --%>
                    <select  id="newNodAffy" name="nodeIpAffinity" >

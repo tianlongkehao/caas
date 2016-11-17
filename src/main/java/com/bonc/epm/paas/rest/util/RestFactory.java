@@ -87,7 +87,7 @@ public class RestFactory {
     	return (KubernetesAPI)Proxy.newProxyInstance(clazz.getClassLoader(),intfs,new ClientProxy(methodMap));
     }
 
-    public SheraAPI createSheRaAPI(String sRURI) {
+    public SheraAPI createSheRaAPI(String sRURI, String userName, String password) {
         Class<SheraAPI> clazz = SheraAPI.class;
         Class<?>[] intfs = 
         {
@@ -95,7 +95,7 @@ public class RestFactory {
         };
         HashMap<Method,MethodInvoker> methodMap = new HashMap<Method,MethodInvoker>();
         for (Method method : clazz.getMethods()) {
-            MethodInvoker invoker = new MethodInvoker(sRURI,null,null,method);
+            MethodInvoker invoker = new MethodInvoker(sRURI,userName,password,method);
             methodMap.put(method, invoker);
         }
         return (SheraAPI) Proxy.newProxyInstance(clazz.getClassLoader(), intfs, new ClientProxy(methodMap));

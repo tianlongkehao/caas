@@ -36,46 +36,35 @@
                     <div id="baseinfo_wrap" class="tab_wrap">
                         <form class="form-horizontal user_info_form" id="editUser" name="editUser"
                               action="" method="post">
-                            <div class="row">
+                            <div class="row" style="margin-top: 10px">
                                 <div class="col-md-4">
-                                    <label>登录账号:</label>
-                                    <input type="text" class="form-control" id="userName" name="userName"
+                                    <label class="userOwnTitle">登录账号:</label>
+                                    <input type="text" class="form-control userOwnCon" id="userName" name="userName"
                                            value="${user.userName }"  style="width: 78%;display: inline" readonly="readonly">
                                     <input type="hidden" name="id" id="user_id" value="${user.id }">
                                 </div>
                                 <div class="col-md-4">
-                                    <label>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
-                                    <input type="text" class="form-control" id="user_realname" name="user_realname"
+                                    <label class="userOwnTitle">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
+                                    <input type="text" class="form-control userOwnCon" id="user_realname" name="user_realname"
                                            value="${user.user_realname }" style="width: 78%;display: inline" readonly="readonly">
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label style="line-height: 34px;margin-bottom: 0px">权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
+                                    <label class="userOwnTitle" style="line-height: 34px;margin-bottom: 0px">权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
                                     <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
-                                    <select class="form-control" style="width: 78%;display: inline; float: right;margin-right: 17px"
+                                    <select class="form-control" style="width:78%; display: inline;"
                                             name="user_autority" id="user_autority" disabled>
                                         <option name="option" value="1" >管理员</option>
                                         <option name="option" value="2" >租户</option>
                                         <option name="option" value="3" >普通用户</option>
                                     </select>
                                 </div>
-                                <%--<div class="col-md-4">
-                                    <label>权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
-                                    <c:if test="${user.user_autority=='1' }">
-	                                    <input type="text" class="form-control" id="user_autority" name="user_autority"
-	                                           value="管理员" style="width: 78%;display: inline" readonly="readonly">
-                                    </c:if>
-                                    <c:if test="${user.user_autority=='2' }">
-	                                    <input type="text" class="form-control" id="user_autority" name="user_autority"
-	                                           value="普通用户 " style="width: 78%;display: inline" readonly="readonly">
-                                    </c:if>
-                                </div>--%>
                             </div>
-                            <div class="row" style="margin-top: 15px">
+                            <div class="row" style="margin-top: 20px">
                                 <div class="col-md-4">
-                                    <label style="line-height: 34px;margin-bottom: 0px">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
+                                    <label class="userOwnTitle" style="line-height: 34px;margin-bottom: 0px">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
                                     <input type="hidden" id="user_province_hidden" value="${user.user_province}">
-                                    <select class="form-control" style="width: 78%;display: inline; float: right;margin-right: 17px"
+                                    <select class="form-control" style="width:78%; display: inline;"
                                             name="province" id="user_province" disabled>
                                         <option name="user_province" value="1">北京</option>
                                         <option name="user_province" value="2">天津</option>
@@ -111,43 +100,43 @@
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label>公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
-                                    <input type="text" class="form-control" id="company" name="company"
+                                    <label class="userOwnTitle">公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
+                                    <input type="text" class="form-control userOwnCon" id="company" name="company"
                                            value="${user.company}" style="width: 78%;display: inline">
                                 </div>
                                 <div class="col-md-4">
-                                    <label>所属部门:</label>
-                                    <input type="text" class="form-control" id="user_department" name="user_department"
+                                    <label class="userOwnTitle">所属部门:</label>
+                                    <input type="text" class="form-control userOwnCon" id="user_department" name="user_department"
                                            value="${user.user_department }" style="width: 78%;display: inline">
                                 </div>
                             </div>
-                            <div class="row" style="margin-top: 15px">
+                            <div class="row" style="margin-top: 20px">
                                 <div class="col-md-4">
-                                    <label>工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :</label>
-                                    <input type="text" class="form-control" id="user_employee_id"
+                                    <label class="userOwnTitle">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :</label>
+                                    <input type="text" class="form-control userOwnCon" id="user_employee_id"
                                            name="user_employee_id" value="${user.user_employee_id }"
                                            style="width: 78%;display: inline" >
                                 </div>
                                 <div class="col-md-4">
-                                    <label>手机号码:</label>
-                                    <input type="text" class="form-control" id="user_cellphone" name="user_cellphone"
+                                    <label class="userOwnTitle">手机号码:</label>
+                                    <input type="text" class="form-control userOwnCon" id="user_cellphone" name="user_cellphone"
                                            value="${user.user_cellphone }" style="width: 78%;display: inline">
                                 </div>
                                 <div class="col-md-4">
-                                    <label>固定电话:</label>
-                                    <input type="text" class="form-control" id="user_phone" name="user_phone"
+                                    <label class="userOwnTitle">固定电话:</label>
+                                    <input type="text" class="form-control userOwnCon" id="user_phone" name="user_phone"
                                            value="${user.user_phone }" style="width: 78%;display: inline">
                                 </div>
                             </div>
-                            <div class="row" style="margin-top: 15px">
+                            <div class="row" style="margin-top: 20px">
                                 <div class="col-md-4">
-                                    <label>邮箱地址:</label>
-                                    <input type="text" class="form-control" id="email" name="email"
+                                    <label class="userOwnTitle">邮箱地址:</label>
+                                    <input type="text" class="form-control userOwnCon" id="email" name="email"
                                            value="${user.email}" style="width: 78%;display: inline">
                                 </div>
                             </div>
                             <c:if test="${!cas_enable}">
-                            <div style="margin-top: 25px">
+                            <div class="basicInfoSaveBtn">
                                 <span class="pull-right btn btn-primary" id="basicInfo">保存</span>
                             </div>
                             </c:if>
@@ -278,25 +267,26 @@
 
 
                     <div id="pwd_wrap" class="tab_wrap hide">
-
+                    	<div class="col-md-4 pwd-img"><img src="/images/pwd.png" alt="修改密码"></div>
+						<div class="col-md-8 pwd-con">
                         <form class="edit_pwd_form form-horizontal" action="" id="pswSave"
                               name="pswSave" method="post">
                             <div class="form-group">
-                                <label for="originalPwd" class="col-md-offset-2 col-md-2">原密码：</label>
-                                <div class="col-md-5">
+                                <label for="originalPwd" class="col-md-2">原密码：</label>
+                                <div class="col-md-7">
                                     <input type="password" class="form-control" id="originalPwd" name="originalPwd"
                                            value="">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="newPwd" class="col-md-offset-2 col-md-2">新密码：</label>
-                                <div class="col-md-5">
+                                <label for="newPwd" class="col-md-2">新密码：</label>
+                                <div class="col-md-7">
                                     <input type="password" class="form-control" id="newPwd" name="newPwd">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="confirmNewPwd" class="col-md-offset-2 col-md-2">确认新密码：</label>
-                                <div class="col-md-5">
+                                <label for="confirmNewPwd" class="col-md-2">确认新密码：</label>
+                                <div class="col-md-7">
                                     <input type="password" class="form-control" id="confirmNewPwd" name="confirmNewPwd">
                                 </div>
                             </div>
@@ -308,7 +298,7 @@
                             </div>
 
                         </form>
-
+						</div>
                     </div>
 
                 </div>

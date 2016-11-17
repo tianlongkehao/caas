@@ -11,10 +11,15 @@
 
 package com.bonc.epm.paas.shera.api;
 
+import javax.ws.rs.PathParam;
+
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
+import com.bonc.epm.paas.shera.model.JobExecution;
+import com.bonc.epm.paas.shera.model.JobExecutionList;
 
 /**
  * @author ke_wang
@@ -55,4 +60,23 @@ public interface SheraAPIClientInterface {
      * @throws SheraClientException
      */
     public JobExec execJob(String jobId) throws SheraClientException;
+    
+    public Jdk deleteJdk(String jdkVersion) throws SheraClientException;
+    
+    public Jdk createJdk(Jdk jdk) throws SheraClientException;
+    
+    public JobExecution deleteExecution(String jobId, Integer executionId) throws SheraClientException;
+    
+    public JobExecution killExecution(String jobId, Integer executionId) throws SheraClientException;
+    
+    public JobExecution getExecution(String jobId, Integer executionId) throws SheraClientException;
+    
+    public JobExecutionList getJobAllExecutions(String jobId) throws SheraClientException;
+    
+    public Job deleteJob(String jobId) throws SheraClientException;
+    
+    public Job updateJob(Job job) throws SheraClientException;
+    
+    public Job getJob(String jobId) throws SheraClientException;
+    
 }

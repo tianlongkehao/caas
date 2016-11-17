@@ -193,7 +193,43 @@ public class DockerClientService {
             log.error("load image error-:"+e.getMessage());
         }
     }
-	
+
+    /**
+     * 
+     * Description:
+     * 导入容器快照并push到远程
+     * @param image
+     * @param inputStream
+     * @return 
+     * @see
+     */
+    @SuppressWarnings("deprecation")
+    public boolean importAndPushImage(Image image,InputStream inputStream) {
+        try {
+            DockerClient dockerClient = this.getSpecialDockerClientInstance();
+            String imageId = dockerClient.createImageCmd(image.getName(), inputStream).withTag(image.getVersion()).exec().getId();
+            imageId = imageId.substring(0,12); // ?? why is not the response same with building image.
+            dockerClient.tagImageCmd(imageId, username +"/"+image.getName(), image.getVersion()).withForce().exec();
+            
+            // push image
+            PushImageResultCallback callback = new PushImageResultCallback() {
+                @Override
+                public void onNext(PushResponseItem item) {
+                    log.info("==========PushResponseItem:"+item);
+                    super.onNext(item);
+                   }
+               };
+            dockerClient.pushImageCmd(username +"/"+ image.getName()).withTag(image.getVersion()).exec(callback).awaitSuccess();
+            image.setImageId(imageId);
+            return true;
+        }
+        catch (Exception e) {
+            log.error("load or push error:"+e.getMessage());
+            e.printStackTrace();
+            return false;
+        }        
+    }
+    
 	/**
 	 * 
 	 * Description:
@@ -207,11 +243,9 @@ public class DockerClientService {
 	    try {
             DockerClient dockerClient = this.getSpecialDockerClientInstance();
             log.info("==========开始执行load image api");
-            //dockerClient.loadImageCmd(inputStream).exec();
+            dockerClient.loadImageCmd(inputStream).exec();
             log.info("==========结束执行load image api");
             log.info("image name");
-            //String imageId = dockerClient.createImageCmd(image.getName(), inputStream).withTag(image.getVersion()).exec().getId();
-            //imageId = imageId.substring(0,12); // ?? why is not the response same with building image.
             dockerClient.tagImageCmd(image.getName().split("/")[1], username +"/"+image.getName(), image.getVersion()).withForce().exec();
             
             // push image
@@ -223,7 +257,6 @@ public class DockerClientService {
                    }
                };
             dockerClient.pushImageCmd(username +"/"+ image.getName()).withTag(image.getVersion()).exec(callback).awaitSuccess();
-            //image.setImageId(imageId);
             return true;
         }
         catch (Exception e) {
@@ -335,11 +368,8 @@ public class DockerClientService {
 		    if (null == dockerClient) {
 		         dockerClient = this.getSpecialDockerClientInstance(); 
 		    }
-		    if (!imageName.trim().contains("/")) {
-		        dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
-		    } else {
-		        dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec();
-		    }
+		    
+		    dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
 			
 			if (null != ciRecord && null != ciRecordDao) {
 	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);

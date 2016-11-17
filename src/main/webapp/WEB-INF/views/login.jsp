@@ -69,7 +69,6 @@
 <script type="text/javascript">
 var showAuthCode = ${showAuthCode};
     $(function(){
-
         checkEnter();
 
         $("#userName").on("keyup", function(){

@@ -9,7 +9,6 @@
 <script type="text/javascript" src="<%=path%>/js/service/service.js"></script>
 </head>
 <body>
-
 	<jsp:include page="../frame/menu.jsp" flush="true">
 		<jsp:param name="service" value="" />
 	</jsp:include>
@@ -64,9 +63,9 @@
 												<th style="width: 15%; padding-left: 5px;">名称</th>
 												<th style="width: 12%; text-indent: 8px;">运行状态</th>
 												<th style="width: 20%;">镜像</th>
-												<th style="width: 20%;">服务地址</th>
+												<th style="width: 12%;">服务地址</th>
 												<th style="width: 12%;">创建于</th>
-												<th style="width: 12%;">操作</th>
+												<th style="width: 20%;">操作</th>
 											</tr>
 										</thead>
 
@@ -206,6 +205,11 @@
 															href="javascript:oneChangeContainerConf(${service.id },'${service.serviceName }',${service.instanceNum },${service.cpuNum },${service.ram },${service.status });" title="更改配置"
 															style="margin-left: 5px">
 																<i class="fa fa-cog"></i>
+														</a> 														
+														<a id="${service.id}_change" class="a-live change " 
+															href="<%=path %>/service/debug/${service.id}" title="更改配置"
+															style="margin-left: 5px">
+																<i class="fa fa-bug"></i>
 														</a> 														
 														<a id="${service.id}_del" class="a-live deleteButton_a "
 															href="javascript:oneDeleteContainer(${service.id})"

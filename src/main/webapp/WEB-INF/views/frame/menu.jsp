@@ -35,7 +35,7 @@
                         <li><a href="<%=path %>/user/detail/${cur_user.id }/a"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
                      
                         <c:if test="${!cas_enable}">
-                        	<li><a href="<%=path %>/user/detail/${cur_user.id }/b"><i class="fa fa-pencil"></i>&nbsp;&nbsp修改密码</a></li>
+                        	<li><a href="<%=path %>/user/detail/${cur_user.id }/b"><i class="fa fa-unlock-alt"></i>&nbsp;&nbsp修改密码</a></li>
                         
 	                        <li class="logout">
 		                        <c:choose>

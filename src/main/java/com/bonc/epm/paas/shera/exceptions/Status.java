@@ -12,6 +12,7 @@
 package com.bonc.epm.paas.shera.exceptions;
 
 import com.bonc.epm.paas.shera.model.AbstractSheRaModel;
+import com.bonc.epm.paas.shera.model.Kind;
 
 /**
  * @author ke_wang
@@ -20,6 +21,10 @@ import com.bonc.epm.paas.shera.model.AbstractSheRaModel;
  * @since
  */
 public class Status extends AbstractSheRaModel {
+    
+/*    protected Status() {
+        super(Kind.STATUS);
+    }*/
     private String status, message, reason;
     private int code;
     public String getStatus() {

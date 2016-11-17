@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 public class MethodInvoker {
@@ -100,12 +101,16 @@ public class MethodInvoker {
     		response = invocationBuilder.put(entity);
     	}
     	response.bufferEntity();
-//    	log.info(url+pathValue+" -X"+get+":"+post+":"+delete+":"+put+"========response:"+response.readEntity(String.class));
+    	if (response.readEntity(String.class).length() < 200) {
+    	    log.info(url+pathValue+" -X"+get+":"+post+":"+delete+":"+put+"========response:"+response.readEntity(String.class));
+    	}
     	try{
     		return response.readEntity(method.getReturnType());
-    	}catch(Exception e){
+    	}catch(KubernetesClientException e){
     		Status status = response.readEntity(Status.class);
     		throw new KubernetesClientException("unexpect k8s response",status);
-    	}
+    	} catch (SheraClientException e) {
+            throw new SheraClientException("unexpect shera response");
+        }
 	}
 }

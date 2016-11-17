@@ -20,9 +20,12 @@ import org.apache.commons.logging.LogFactory;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
+import com.bonc.epm.paas.shera.model.JobExecution;
+import com.bonc.epm.paas.shera.model.JobExecutionList;
 
 /**
  * @author ke_wang
@@ -39,10 +42,10 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     private SheraAPI api;
     private String namespace;
     
-    public SheraAPIClient(String srUrl, String namespace, RestFactory factory) {
+    public SheraAPIClient(String srUrl, String namespace, String username, String password, RestFactory factory) {
         this.namespace = namespace;
-        this.sRURI = srUrl +"She-Ra/"+SheraAPIClientInterface.VERSION;
-        api = factory.createSheRaAPI(sRURI);
+        this.sRURI = srUrl +"she-ra";
+        api = factory.createSheRaAPI(sRURI,username,password);
     }
 
     @Override
@@ -69,11 +72,127 @@ public class SheraAPIClient implements SheraAPIClientInterface {
         }
     }
 
+    @Override
+    public JobExec execJob(String name) throws SheraClientException {
+        try {
+            return api.execJob(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
 
     @Override
-    public JobExec execJob(String jobId) throws SheraClientException {
+    public Jdk deleteJdk(String jdkVersion) throws SheraClientException {
         try {
-            return api.execJob(namespace, jobId);
+            return api.deleteJdk(jdkVersion);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Jdk createJdk(Jdk jdk) throws SheraClientException {
+        try {
+            return api.createJdk(jdk);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public JobExecution deleteExecution(String name, Integer seqno) throws SheraClientException {
+        try {
+            return api.deleteExecution(namespace, name, seqno);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public JobExecution killExecution(String name, Integer seqno) throws SheraClientException {
+        try {
+            return api.killExecution(namespace, name, seqno);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public JobExecution getExecution(String name, Integer seqno) throws SheraClientException {
+        try {
+            return api.killExecution(namespace, name, seqno);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public JobExecutionList getJobAllExecutions(String name) throws SheraClientException {
+        try {
+            return api.getJobAllExecutions(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Job deleteJob(String name) throws SheraClientException {
+        try {
+            return api.deleteJob(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Job updateJob(Job job) throws SheraClientException {
+        try {
+            return api.updateJob(namespace, job);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Job getJob(String name) throws SheraClientException {
+        try {
+            return api.getJob(namespace, name);
         }
         catch (NotFoundException e) {
             return null;
