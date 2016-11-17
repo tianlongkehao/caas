@@ -22,8 +22,8 @@ public class JobExecList extends AbstractSheRaModelList<JobExec> {
     /**
      * @param kind
      */
-    public JobExecList() {
+/*    public JobExecList() {
         super(Kind.JOBEXECLIST);
-    }
+    }*/
 
 }

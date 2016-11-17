@@ -10,10 +10,10 @@ import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
  * @since
  */
 public class AbstractSheRaModel {
-    private Kind kind;
-    private String apiVersion = SheraAPIClientInterface.VERSION;
+    //private Kind kind;
+    //private String apiVersion = SheraAPIClientInterface.VERSION;
     
-    protected AbstractSheRaModel(Kind kind) {
+/*    protected AbstractSheRaModel(Kind kind) {
         this.kind = kind;
     }
 
@@ -30,6 +30,6 @@ public class AbstractSheRaModel {
 
     public void setApiVersion(String apiVersion) {
         this.apiVersion = apiVersion;
-    }
+    }*/
     
 }

@@ -3,6 +3,7 @@ package com.bonc.epm.paas.shera.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+@Deprecated
 public enum Kind {
     JOBVIEW("JobView"),STATUS("Status"),
     JOBEXEC("JobExec"),JOBEXECLIST("JobExecList"),

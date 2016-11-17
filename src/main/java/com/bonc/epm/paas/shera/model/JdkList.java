@@ -21,8 +21,8 @@ package com.bonc.epm.paas.shera.model;
 
 public class JdkList extends AbstractSheRaModelList<Jdk>{
 
-    protected JdkList() {
+/*    protected JdkList() {
         super(Kind.JDKLIST);
-    }
+    }*/
 
 }
