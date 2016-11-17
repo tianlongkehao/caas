@@ -193,7 +193,6 @@ public interface SheraAPI {
     @GET
     @Path("/jobs/getall/{namespace}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public JobExecList getAllJobs(@PathParam("namespace") String namespace) throws SheraClientException;
     
     /**

@@ -13,11 +13,10 @@ package com.bonc.epm.paas.shera.exceptions;
 
 import javax.ws.rs.WebApplicationException;
 
-import com.bonc.epm.paas.kubernetes.exceptions.Status;
 
 /**
  * @author ke_wang
- * @version 2016年11月10日
+ * @version 2016年11月10日     
  * @see SheraClientException
  * @since
  */

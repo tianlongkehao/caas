@@ -11,13 +11,19 @@
 
 package com.bonc.epm.paas.shera.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 
+import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.Job;
+import com.bonc.epm.paas.shera.model.JobExec;
+import com.bonc.epm.paas.shera.model.JobExecList;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
 /**
@@ -60,6 +66,5 @@ public class SheraClientService {
         catch (SheraClientException e) {
            e.printStackTrace();
         }
-        
     }
 }

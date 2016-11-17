@@ -17,9 +17,9 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+
+
 /**
- * 〈一句话功能简述〉
- * 〈功能详细描述〉
  * @author ke_wang
  * @version 2016年11月10日
  * @see AbstractSheRaModelList
@@ -29,9 +29,9 @@ import org.apache.commons.lang.StringUtils;
 public abstract class AbstractSheRaModelList<T> extends AbstractSheRaModel implements Iterable<T> {
     private List<T> items = new ArrayList<T>();
 
-   protected AbstractSheRaModelList() {
-       super();
-   }
+    protected AbstractSheRaModelList(Kind kind) {
+        super(kind);
+    }
     
     public List<T> getItems() {
         return items;

@@ -19,4 +19,11 @@ package com.bonc.epm.paas.shera.model;
  */
 public class JobExecList extends AbstractSheRaModelList<JobExec> {
 
+    /**
+     * @param kind
+     */
+    public JobExecList() {
+        super(Kind.JOBEXECLIST);
+    }
+
 }
