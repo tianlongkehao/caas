@@ -56,7 +56,7 @@ public class SheraClientService {
         return job;
     }
     
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         SheraClientService sheraClientService = new SheraClientService();
         SheraAPIClientInterface client = sheraClientService.getClient();
         try {
@@ -66,5 +66,5 @@ public class SheraClientService {
         catch (SheraClientException e) {
            e.printStackTrace();
         }
-    }
+    }*/
 }
