@@ -636,9 +636,16 @@ public class KubernetesClientService {
      * @see 
      */
     public ReplicationController updateSimpleReplicationController(ReplicationController controller,
-            com.bonc.epm.paas.entity.Service service) {
+            com.bonc.epm.paas.entity.Service service,List<String> command,int flag) {
         
-        
+        if(flag==0){
+            controller.getMetadata().setName(service.getServiceName());
+            controller.getMetadata().getLabels().put("app",service.getServiceName());
+            controller.getSpec().getTemplate().getSpec().getContainers().get(0).setCommand(command);
+            if(!StringUtils.isNotBlank(service.getVolName())){
+                controller.getSpec().getTemplate().getSpec().getContainers().get(0).setVolumeMounts(null);
+                        }
+                }
         controller.getMetadata().getLabels().remove("dmz");
         controller.getMetadata().getLabels().remove("user");
         if(StringUtils.isNotBlank(service.getProxyZone())){
@@ -648,6 +655,8 @@ public class KubernetesClientService {
           }
           controller.getMetadata().getLabels().put("proxyPath",service.getProxyPath());
           controller.getMetadata().getLabels().put("servicePath", service.getServicePath());
+//          controller.getSpec().setSelector(controller.getMetadata().getLabels());
+//          controller.getSpec().getTemplate().getMetadata().setLabels(controller.getMetadata().getLabels());
         }
         if (StringUtils.isNotBlank(service.getCheckPath())) {
             Probe livenessProbe = new Probe();
@@ -666,6 +675,7 @@ public class KubernetesClientService {
             } else {
                 livenessProbe.setPeriodSeconds(service.getPeriodDetction());
             }
+
             HTTPGetAction httpGet = new HTTPGetAction();
             httpGet.setPath(service.getCheckPath());
             httpGet.setPort(8080); // 修改了HTTPGetAction的port字段类型定义
@@ -673,8 +683,9 @@ public class KubernetesClientService {
             livenessProbe.setHttpGet(httpGet);
             controller.getSpec().getTemplate().getSpec()
             .getContainers().get(0).setLivenessProbe(livenessProbe);
-           // container.setLivenessProbe(livenessProbe); 
+//---------------------
         }
+        
         return controller;
         
     }
@@ -686,9 +697,11 @@ public class KubernetesClientService {
      * @return service
      * @see
      */
-    public Service updateService(Service k8sService ,com.bonc.epm.paas.entity.Service service){
+    public Service updateService(Service k8sService ,com.bonc.epm.paas.entity.Service service ){
+        k8sService.getMetadata().setName(service.getServiceName());
         k8sService.getMetadata().getLabels().remove("dmz");
         k8sService.getMetadata().getLabels().remove("user");
+        k8sService.getMetadata().getLabels().put("app", service.getServiceName());
         if(StringUtils.isNotBlank(service.getProxyZone())){
           String ProxyZones[] = service.getProxyZone().split(",");
           for(int i=0;i<ProxyZones.length;i++){

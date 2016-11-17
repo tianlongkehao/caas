@@ -206,7 +206,7 @@ $(document).ready(function(){
     					var data = eval("(" + data + ")");
     					for(var i=0; i<data.storages.length; i++){
     						storage=data.storages[i];
-    					str+='<option value="'+storage.id+'">'
+    					str+='<option value="'+storage.storageName+'">'
     					+storage.storageName+' '+storage.storageSize
     					+'M </option>';
     				}

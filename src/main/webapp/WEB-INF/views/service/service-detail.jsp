@@ -185,13 +185,24 @@
 									</c:if>
 									<td >服务访问路径：<span class="oldBaseCon_Run oldBaseCon">${service.servicePath }</span>
 									<span id="editSerPath" hidden="true" class="editBaseCon editBaseCon_Run">
-                   <input id="newSerPath" name="servicePath" type="text" value=${service.servicePath } />
+                   <input id="newSerPath" name="servicePath" type="text" value="${service.servicePath }" />
                 </span>
 									</td>
 								</tr>
 								<tr>
 									<c:if test="${service.proxyZone == '' }">
-									<td>nginx代理区域：未设置</td>
+									<td>nginx代理区域：
+									<span class="oldBaseCon_Run oldBaseCon">未设置</span>
+									 <span id="editProxyZone" hidden="true" class="editBaseCon_Run editBaseCon">
+                  <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz"> DMZ区
+                  </label> <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="user"> USER区
+                </label>
+                </span>
+									</td>
 									</c:if>
 									<c:if test="${service.proxyZone != '' }">
 									<td>nginx代理区域:
@@ -211,7 +222,7 @@
 									<td>nginx代理路径：
 									<span class="oldBaseCon_Run oldBaseCon">${service.proxyPath }</span>
                    <span id="editProxyPath" hidden="true" class="editBaseCon_Run editBaseCon">
-                   <input id="newProxyPath" name="proxyPath" type="text" value=${service.proxyPath } />
+                   <input id="newProxyPath" name="proxyPath" type="text" value="${service.proxyPath }" />
                 </span>
 									</td>
 								</tr>
@@ -237,18 +248,44 @@
                 </span>
 									</td>
 								</tr>
+								<c:if test="${service.checkPath=='' }">
+                 <tr hidden="true" class="editBaseCon_Run editBaseCon">
+                 <td>检查状态：
+                   <span id="editCheckPath" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newCheckPath" name="checkPath" type="text" value="${service.checkPath }"  />
+                </span>
+                  </td>
+                  <td>检测延迟：
+                  <span id="editInitDelay" hidden="true" class="editBaseCon_Run editBaseCon">
+                  <input id="newInitDelay" name="initialDelay" type="text" value="${service.initialDelay }"  />
+                </span>
+		              s</td>
+		          </tr>
+		          <tr hidden="true" class="editBaseCon_Run editBaseCon">
+		              <td>检测超时：
+                   <span id="editTiOut" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newTiOut" name="timeoutDetction" type="text" value="${service.timeoutDetction }" />
+                </span>
+                   s</td>
+                   <td>检测频率：
+                   <span id="editPeriod" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newPeriod" name="periodDetction" type="text" value="${service.periodDetction }" />
+                </span>
+                  s</td>
+              </tr>
+								</c:if>
 								<c:if test="${service.checkPath!='' }">
 								<tr>
 									<td>检查状态：
 									<span class="oldBaseCon_Run oldBaseCon">${service.checkPath }</span>
                    <span id="editCheckPath" hidden="true" class="editBaseCon_Run editBaseCon">
-                   <input id="newCheckPath" name="checkPath" type="text" value=${service.checkPath } />
+                   <input id="newCheckPath" name="checkPath" type="text" value="${service.checkPath }" />
                 </span>
 									</td>
 									<td>检测延迟：
 									<span class="oldBaseCon_Run oldBaseCon">${service.initialDelay }</span>
                    <span id="editInitDelay" hidden="true" class="editBaseCon_Run editBaseCon">
-                   <input id="newInitDelay" name="initialDelay" type="text" value=${service.initialDelay } />
+                   <input id="newInitDelay" name="initialDelay" type="text" value="${service.initialDelay }" />
                 </span>
 									s</td>
 								</tr>
@@ -256,13 +293,13 @@
 									<td>检测超时：
 									<span class="oldBaseCon_Run oldBaseCon">${service.timeoutDetction }</span>
                    <span id="editTiOut" hidden="true" class="editBaseCon_Run editBaseCon">
-                   <input id="newTiOut" name="timeoutDetction" type="text" value=${service.timeoutDetction } />
+                   <input id="newTiOut" name="timeoutDetction" type="text" value="${service.timeoutDetction }" />
                 </span>
 									s</td>
 									<td>检测频率：
 									<span class="oldBaseCon_Run oldBaseCon">${service.periodDetction }</span>
                    <span id="editPeriod" hidden="true" class="editBaseCon_Run editBaseCon">
-                   <input id="newPeriod" name="periodDetction" type="text" value=${service.periodDetction } />
+                   <input id="newPeriod" name="periodDetction" type="text" value="${service.periodDetction }" />
                 </span>
 									s</td>
 								</tr>
@@ -274,8 +311,8 @@
 									</span>
 									<span>存储卷：</span>
 									<span>
-									<select id="selSerType" name="serviceType">
-									           <option value="">请选择一个卷组</option>
+									<select id="selSerType" name="volName">
+									 <option value="">请选择一个卷组</option>
 	               </select>
 									</span>
 									</td>
@@ -283,7 +320,7 @@
 								<tr class="oldBaseCon">
 									<c:if test="${service.serviceType==1 }">
 									<td>服务类型：有状态服务</td>
-									<td>挂载地址：${service.mountPath }</td>
+									<td>挂载地址：${ service.mountPath }</td>
 									</c:if>
 									<c:if test="${service.serviceType==2 }">
 									<td>服务类型：无状态服务</td>

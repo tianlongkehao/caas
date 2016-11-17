@@ -2111,63 +2111,151 @@ public class ServiceController {
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         ReplicationController controller = null;
         com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+        int runFlag;
         Service ser = serviceDao.findOne(service.getId());
-       ser.setServicePath(service.getServicePath());
-       ser.setProxyZone(service.getProxyZone());
-       ser.setProxyPath(service.getProxyPath());
-       ser.setSessionAffinity(service.getSessionAffinity());
-       ser.setNodeIpAffinity(service.getNodeIpAffinity());
-       ser.setCheckPath(service.getCheckPath());
-       ser.setTimeoutDetction(service.getTimeoutDetction());
-       ser.setPeriodDetction(service.getPeriodDetction());
-       ser.setInitialDelay(service.getInitialDelay());
-       
-       if(ser.getStatus()!=1 & ser.getStatus()!=4){ //启动状态.启动状态下可以修改一些k8s的属性
+        if(1==ser.getStatus()){
+            ser.setServiceName(service.getServiceName());
+            ser.setStartCommand(service.getStartCommand());
+            ser.setServicePath(service.getServicePath());
+            ser.setProxyZone(service.getProxyZone());
+            ser.setProxyPath(service.getProxyPath());
+            ser.setSessionAffinity(service.getSessionAffinity());
+            ser.setNodeIpAffinity(service.getNodeIpAffinity());
+            ser.setCheckPath(service.getCheckPath());
+            ser.setTimeoutDetction(service.getTimeoutDetction());
+            ser.setPeriodDetction(service.getPeriodDetction());
+            ser.setInitialDelay(service.getInitialDelay());
+            if(StringUtils.isNotBlank(service.getVolName())){
+                ser.setVolName(service.getVolName());
+                ser.setMountPath(service.getMountPath());
+                ser.setServiceType("1");
+            }else{
+                ser.setVolName("");
+                ser.setMountPath("");
+                ser.setServiceType("2");
+                        }
+            updateStorageType(service.getVolName(), service.getServiceName());
+        }else if(4==ser.getStatus()){
+            try {
+                controller = client.getReplicationController(ser.getServiceName());
+            } catch (KubernetesClientException e) {
+                map.put("status", "500");
+                map.put("msg", e.getStatus().getMessage());
+                LOG.error("create service error:" + e.getStatus().getMessage());
+                return JSON.toJSONString(map);
+                           }
+            try {
+                k8sService = client.getService(ser.getServiceName());
+            } catch (KubernetesClientException e) {
+                map.put("status", "500");
+                map.put("msg", e.getStatus().getMessage());
+                LOG.error("create service error:" + e.getStatus().getMessage());
+                return JSON.toJSONString(map);
+                        }
+            runFlag = 0;
            try {
-               controller = client.getReplicationController(service.getServiceName());
-           } 
-           catch (KubernetesClientException e) {
+                             // 初始化自定义启动命令
+                     String startCommand = service.getStartCommand().trim();
+                     List<String> command = new ArrayList<String>();
+                     List<String> args = new ArrayList<String>();
+                     if (StringUtils.isNotBlank(startCommand)) {
+                         String[] startCommandArray = startCommand.replaceAll("\\s+", " ").split(" ");
+                         for (String item : startCommandArray) {
+                             if (CollectionUtils.isEmpty(command)) {
+                                 command.add(item);
+                                 continue;
+                             }
+                             args.add(item);
+                         }
+                     }
+                     controller=kubernetesClientService.updateSimpleReplicationController(controller,service,command,runFlag);
+                     k8sService=kubernetesClientService.updateService(k8sService,service);
+                     controller = client.updateReplicationController(ser.getServiceName(), controller);
+                     k8sService = client.updateService(ser.getServiceName(), k8sService);
+                //
+                     if(StringUtils.isNotBlank(service.getVolName())){
+                         controller = setVolumeStorage(controller, service.getVolName(),service.getMountPath());
+                                             }
+                     ser.setServiceName(service.getServiceName());
+                     ser.setStartCommand(service.getStartCommand());
+                     ser.setServicePath(service.getServicePath());
+                     ser.setProxyZone(service.getProxyZone());
+                     ser.setProxyPath(service.getProxyPath());
+                     ser.setSessionAffinity(service.getSessionAffinity());
+                     ser.setNodeIpAffinity(service.getNodeIpAffinity());
+                     ser.setCheckPath(service.getCheckPath());
+                     ser.setTimeoutDetction(service.getTimeoutDetction());
+                     ser.setPeriodDetction(service.getPeriodDetction());
+                     ser.setInitialDelay(service.getInitialDelay());
+                     if(StringUtils.isNotBlank(service.getVolName())){
+                         ser.setVolName(service.getVolName());
+                         ser.setMountPath(service.getMountPath());
+                         ser.setServiceType("1");
+                     }else{
+                         ser.setVolName("");
+                         ser.setMountPath("");
+                         ser.setServiceType("2");
+                                             }
+           }catch (KubernetesClientException e) {
                map.put("status", "500");
                map.put("msg", e.getStatus().getMessage());
                LOG.error("create service error:" + e.getStatus().getMessage());
                return JSON.toJSONString(map);
-           }
-           try {
-               k8sService = client.getService(service.getServiceName());
-           } 
-           catch (KubernetesClientException e) {
-               map.put("status", "500");
-               map.put("msg", e.getStatus().getMessage());
-               LOG.error("create service error:" + e.getStatus().getMessage());
-               return JSON.toJSONString(map);
-           }
-           try {
-               //修改rc和service
-               controller=kubernetesClientService.updateSimpleReplicationController(controller,service);
-               k8sService=kubernetesClientService.updateService(k8sService,service);
-               
-               controller = client.updateReplicationController(service.getServiceName(), controller);
-               k8sService = client.updateService(service.getServiceName(), k8sService);
+                       }
+        }else{
+            try {
+                controller = client.getReplicationController(service.getServiceName());
+            } catch (KubernetesClientException e) {
+                map.put("status", "500");
+                map.put("msg", e.getStatus().getMessage());
+                LOG.error("create service error:" + e.getStatus().getMessage());
+                return JSON.toJSONString(map);
+                        }
+            try {
+                k8sService = client.getService(service.getServiceName());
+            } catch (KubernetesClientException e) {
+                map.put("status", "500");
+                map.put("msg", e.getStatus().getMessage());
+                LOG.error("create service error:" + e.getStatus().getMessage());
+                return JSON.toJSONString(map);
+                        }
+            try {
+                runFlag=1;
+                //修改rc和service
+                controller=kubernetesClientService.updateSimpleReplicationController(controller,service,null,runFlag);
+                k8sService=kubernetesClientService.updateService(k8sService,service);
+                
+                controller = client.updateReplicationController(ser.getServiceName(), controller);
+                k8sService = client.updateService(ser.getServiceName(), k8sService);
 
-           }
-           catch (KubernetesClientException e) {
-               map.put("status", "500");
-               map.put("msg", e.getStatus().getMessage());
-               LOG.error("create service error:" + e.getStatus().getMessage());
-               return JSON.toJSONString(map);
-           }
-       }
-       ser.setServiceName(service.getServiceName());
-       ser.setStartCommand(service.getStartCommand());
-       if(StringUtils.isNotBlank(service.getVolName())){
-           ser.setVolName(service.getVolName());
-           ser.setMountPath(ser.getMountPath());
-           ser.setServiceType("1");
-       }else{
-           ser.setVolName("");
-           ser.setMountPath("");
-           ser.setServiceType("2");
-       }
+            }catch (KubernetesClientException e) {
+                map.put("status", "500");
+                map.put("msg", e.getStatus().getMessage());
+                LOG.error("create service error:" + e.getStatus().getMessage());
+                return JSON.toJSONString(map);
+            }
+//            ser.setServiceName(service.getServiceName());
+//            ser.setStartCommand(service.getStartCommand());
+            ser.setServicePath(service.getServicePath());
+            ser.setProxyZone(service.getProxyZone());
+            ser.setProxyPath(service.getProxyPath());
+            ser.setSessionAffinity(service.getSessionAffinity());
+            ser.setNodeIpAffinity(service.getNodeIpAffinity());
+            ser.setCheckPath(service.getCheckPath());
+            ser.setTimeoutDetction(service.getTimeoutDetction());
+            ser.setPeriodDetction(service.getPeriodDetction());
+            ser.setInitialDelay(service.getInitialDelay());
+            if(StringUtils.isNotBlank(service.getVolName())){
+                ser.setVolName(service.getVolName());
+                ser.setMountPath(service.getMountPath());
+                ser.setServiceType("1");
+            }else{
+                ser.setVolName("");
+                ser.setMountPath("");
+                ser.setServiceType("2");
+                        }
+            updateStorageType(service.getVolName(), service.getServiceName());
+                }
         serviceDao.save(ser);
         map.put("status", "200");
         
