@@ -166,8 +166,18 @@
 									<td>nginx代理路径：${service.proxyPath }</td>
 								</tr>
 								<tr>
-									<td>会话黏连方式：${service.sessionAffinity }</td>
+									<c:if test="${service.sessionAffinity == '' || service.sessionAffinity == null}">
+									<td>ClientIp黏连方式：未配置</td>
+									</c:if>
+									<c:if test="${service.sessionAffinity == 'ClientIP'}">
+									<td>ClientIp黏连方式：${service.sessionAffinity }</td>
+									</c:if>
+									<c:if test="${service.nodeIpAffinity == '' || service.nodeIpAffinity == null}">
+									<td>NodeIp黏连方式：未配置</td>
+									</c:if>
+									<c:if test="${service.nodeIpAffinity == 'nodeIpAffinity' }">
 									<td>NodeIp黏连方式：${service.nodeIpAffinity }</td>
+									</c:if>
 								</tr>
 								<c:if test="${service.checkPath!='' }">
 								<tr>

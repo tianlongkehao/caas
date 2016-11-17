@@ -141,11 +141,11 @@ $(function(){
 	   var confirmpwd = $.trim($("#confirmNewPwd").val());
 	   
 	   if(pwd === ''){
-		   alert("请输入原密码");
+		   layer.alert("请输入原密码");
 		   return false;
 	   }
 	   if(newpwd !== confirmpwd){
-		   alert("新密码与确认密码不一致，请重新输入");
+		   layer.alert("新密码与确认密码不一致，请重新输入");
 		   $("#newPwd").focus();
 		   return false;
 	   }
