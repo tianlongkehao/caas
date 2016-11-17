@@ -616,7 +616,7 @@ span.i {
     background: #3D8DDB;
     margin-right: 15px;
 }
-/* ´´½¨»ù±¾ÐÅÏ¢ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ */
 .modalCrealApp {
     background: #fff;
     min-height: 100%;
@@ -732,4 +732,23 @@ span.i {
     float: left;
     height: 50px;
     line-height: 35px;
+}
+.s-title{
+	line-height:34px;
+}
+#defVol{
+	width: 100px; 
+	font-size: 8px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	line-height: 30px;
+	text-indent: 8px;
+}
+.s-unit{
+	margin-right:15px;
+}
+.is-unit{
+	margin-right:15px;
+	position: relative;
+    left: -30px;
 }

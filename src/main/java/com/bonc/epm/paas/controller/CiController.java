@@ -54,9 +54,10 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.DateFormatUtils;
+import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.ResultPager;
+import com.bonc.epm.paas.util.ZipUtil;
 import com.github.dockerjava.api.DockerClient;
 /**
  * 构建容器
@@ -667,7 +668,7 @@ public class CiController {
             if (!sourceCode.isEmpty()) {
                 FileUtils.storeFile(sourceCode.getInputStream(), imagePath+"/"+sourceCode.getOriginalFilename());
             }
-            boolean flag = loadAndPushImage(image,imagePath+"/"+sourceCode.getOriginalFilename());
+            boolean flag = loadOrSaveAndPushImage(image,imagePath+"/"+sourceCode.getOriginalFilename());
             if(flag){
                 //排重添加镜像数据
                 Image img = null;
@@ -707,17 +708,22 @@ public class CiController {
      * @return flag boolean
      * @see
      */
-    private boolean loadAndPushImage(Image image,String tarPath) throws IOException{
+    private boolean loadOrSaveAndPushImage(Image image,String tarPath) throws IOException{
         InputStream uploadStream = Files.newInputStream(Paths.get(tarPath));
         boolean flag = false;
         try {
-            // load and push image
-            //String cmd = "docker load --input "+tarPath;
-            //CmdUtil.exeCmd(cmd);
-            flag = dockerClientService.loadAndPushImage(image, uploadStream);
-            if(flag){
-                //删除本地镜像
-                flag = dockerClientService.removeImage(image.getName().split("/")[1], image.getVersion(),null,null,null);
+            flag = ZipUtil.visitTAR(new File(tarPath), "repositories");
+            if (flag) {
+                flag = dockerClientService.loadAndPushImage(image, uploadStream);
+                if(flag){
+                    //删除本地镜像
+                    flag = dockerClientService.removeImage(image.getName().split("/")[1], image.getVersion(),null,null,null);
+                } 
+            } else {
+                flag = dockerClientService.importAndPushImage(image, uploadStream);
+                if (flag) {
+                    flag = dockerClientService.removeImage(image.getName(), image.getVersion(), null, null, null);
+                }  
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -924,7 +930,7 @@ public class CiController {
         ciRecord.setCiVersion(ci.getImgNameVersion());
         ciRecord.setConstructDate(ci.getConstructionDate());
         ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_ING);
-        ciRecord.setLogPrint("["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");
+        ciRecord.setLogPrint("["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");
         ciRecordDao.save(ciRecord);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
@@ -976,7 +982,7 @@ public class CiController {
         try{
             if(CiConstant.CODE_TYPE_SVN.equals(ci.getCodeType())){
                 String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
-                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
+                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
                 ciRecordDao.save(ciRecord);
                 LOG.info("==========svnCommandStr:"+svnCommandStr);
                 return CmdUtil.exeCmd(svnCommandStr);
@@ -1004,14 +1010,14 @@ public class CiController {
                 String logmsg = "git clone " +
                                     codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername() +
                                     ":******@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length())+" "+ci.getCodeLocation();
-                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+logmsg);
+                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+logmsg);
                 ciRecordDao.save(ciRecord);
                 LOG.info("==========gitCommandStr:"+gitCommandStr);
                 return CmdUtil.exeCmd(gitCommandStr);
             }
         }
         catch(Exception e){
-            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
             ciRecordDao.save(ciRecord);
             LOG.error("==========fetchCode error:"+e.getMessage());
         }
@@ -1044,7 +1050,7 @@ public class CiController {
 			//删除本地镜像
             flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient);
         }
-        ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateFormatUtils.formatDateToString(new Date(), DateFormatUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
+        ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
         ciRecordDao.save(ciRecord);
         if(flag){
 			//排重添加镜像数据

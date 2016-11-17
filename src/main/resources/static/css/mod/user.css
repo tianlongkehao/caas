@@ -924,7 +924,7 @@ i.pushOrg {
     background: #FAFAFA;
 }
 
-/* µ¥Î» */
+/* ï¿½ï¿½Î» */
 .resource-unit{
 	position: absolute;
 	top: 7px;
@@ -940,12 +940,38 @@ i.pushOrg {
 .blankapp .row .col-md-4 input{
 	text-indent: 9px;
 }
-
-
-
-
-
-
+/* user-own */
+.userOwnTitle{
+	width: 20%;
+}
+.userOwnCon{
+	width: 75%;
+}
+.basicInfoSaveBtn{
+	margin-top: 50px;
+	padding-bottom: 30px;
+}
+.pwd-img img{
+	width: 200px;
+	margin-top: 60px;
+	margin-left: 110px;]
+}
+#pwd_wrap{
+	height: 350px;
+    background-color: #fff;
+}
+.pwd-con{
+	margin-top: 50px;
+}
+#modifyPwd{
+	margin-top: 30px;
+}
+#pwd_wrap form div.form-group label{
+	line-height: 34px;
+    font-size: 15px;
+    padding-left: 36px;
+    padding-right: 0px;
+}
 
 
 
