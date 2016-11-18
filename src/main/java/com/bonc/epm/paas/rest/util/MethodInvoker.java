@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -27,6 +26,8 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
+import com.bonc.epm.paas.docker.exception.ErrorList;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
@@ -111,6 +112,9 @@ public class MethodInvoker {
     		throw new KubernetesClientException("unexpect k8s response",status);
     	} catch (SheraClientException e) {
             throw new SheraClientException("unexpect shera response");
+        } catch (DokcerRegistryClientException e) {
+            ErrorList errors = response.readEntity(ErrorList.class);
+            throw new DokcerRegistryClientException("unexpect docker registry api response", errors);
         }
 	}
 }

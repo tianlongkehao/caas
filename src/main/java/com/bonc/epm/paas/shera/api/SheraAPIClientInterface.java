@@ -11,8 +11,6 @@
 
 package com.bonc.epm.paas.shera.api;
 
-import javax.ws.rs.PathParam;
-
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.Job;

@@ -22,8 +22,6 @@ package com.bonc.epm.paas.kubernetes.api;
 
 import java.util.Map;
 
-import javax.ws.rs.QueryParam;
-
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;

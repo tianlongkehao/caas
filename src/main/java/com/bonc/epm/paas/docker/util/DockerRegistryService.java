@@ -13,7 +13,15 @@ package com.bonc.epm.paas.docker.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.bonc.epm.paas.docker.api.DockerRegistryAPIClient;
+import com.bonc.epm.paas.docker.api.DockerRegistryAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
+import com.bonc.epm.paas.rest.util.RestFactory;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 
 /**
  * DockerRegistryService
@@ -28,5 +36,21 @@ public class DockerRegistryService {
      * 日志
      */
     private static final Logger LOG = LoggerFactory.getLogger(DockerRegistryService.class);
+    
+    @Value("${docker.registry.api.url}")
+    private String url;
+    @Value("${docker.registry.api.username}")
+    private String username;
+    @Value("${docker.registry.api.password}")
+    private String password;
+    
+    public DockerRegistryAPIClientInterface getClient() {
+        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        return getClient(namespace);
+    }
+    
+    public DockerRegistryAPIClientInterface getClient(String namespace) {
+        return new DockerRegistryAPIClient(url, username, password,new RestFactory());
+    }
 
 }

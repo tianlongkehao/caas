@@ -21,8 +21,6 @@ import org.apache.tools.tar.TarInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bonc.epm.paas.controller.CiController;
-
 /**
  * java处理压缩包公共类
  * 目前支持：1.浏览tar中的文件列表
