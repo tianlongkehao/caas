@@ -49,10 +49,10 @@ public class DockerRegistryService {
         return new DockerRegistryAPIClient(url, username, password,new RestFactory());
     }
     
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         DockerRegistryService dockerRegistryService = new DockerRegistryService();
         DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
         System.out.println(client.getManifestofImage("centos", "7"));
-    }
+    }*/
 
 }
