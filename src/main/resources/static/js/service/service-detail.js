@@ -164,6 +164,7 @@ $(document).ready(function(){
        $(".editBaseCon").hide();
        $("#restSerBtn").hide();
        $("#canclSerBtn").hide();
+       $("#saveSerBtn").hide();
        $("#editSerBtn").click(function(){
     	   beforeEditDo();
     	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
