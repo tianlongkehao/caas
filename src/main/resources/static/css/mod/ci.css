@@ -554,11 +554,14 @@ textarea.c-project-con{
 .dropdown-toggle .caret{
 	margin-left: 10px;
 }
+.dropdown .dropdown-menu{
+	width:200px;
+}
 .dropdown-menu li{
 	line-height: 34px;
 }
 #dropdown-btn{
-	width:150px;
+	width:200px;
 	background-color:#dadada;
 }
 .registryinfo ul.nav-bar{

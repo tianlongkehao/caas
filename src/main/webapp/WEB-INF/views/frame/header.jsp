@@ -17,6 +17,8 @@ var ctx = "<%=path%>";
 <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/layout.css"/>
 <%-- <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/jq-pagination/jquery.list.css"/> --%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/core/dataTables.bootstrap.css">
+<link rel="stylesheet" type="text/css" href="<%=path%>/css/core/ambiance.css"/>
+<link rel="stylesheet" type="text/css" href="<%=path%>/css/core/codemirror.css"/>
 
 
 <script type="text/javascript" src="<%=path %>/js/plugins/jquery-1.11.3.js"></script>
@@ -33,5 +35,6 @@ var ctx = "<%=path%>";
 <!-- Data Tables -->
 <script type="text/javascript" src="<%=path%>/js/plugins/jquery.dataTables.js"></script>
 <script type="text/javascript" src="<%=path%>/js/plugins/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="<%=path%>/js/plugins/codemirror.js"></script>
 
 
