@@ -73,7 +73,7 @@
 						</div>
 					</div>
 					<div class="contentMain" id="ftp">
-						<iframe id="shellinabox" src="https://192.168.0.75:4200/ssh" width="100%" height="500px"></iframe>
+						<iframe id="shellinabox" src="http://192.168.0.75:4200/ssh" width="100%" height="500px"></iframe>
 					</div>
 				</div>
 				
@@ -127,26 +127,6 @@ $(document).ready(function () {
       });
 
 });
-// //创建ifame对象
-// var iframe = document.createElement("shellinabox");
-// //设置ifame对象src属性
-// iframe.src = "https://192.168.0.75:4200/ssh";
-
-// if (!/*@cc_on!@*/0) { //如果不是ie
-//     iframe.onload = function(){ 加载
-//         alert("Local iframe is now loaded.");
-//     };
-// } else {
-//     iframe.onreadystatechange = function(){
-//         if (iframe.readyState == "complete"){ 完成状态判断
-//             alert("Local iframe is now loaded.");
-//         }
-//     };
-// }
-
-// fillseo_window.onbeforeunload=function(){
-// alert("弹弹弹！");
-// };
 </script>
 		</article>
 	</div>
