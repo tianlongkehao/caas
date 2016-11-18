@@ -14,15 +14,11 @@ package com.bonc.epm.paas.docker.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.bonc.epm.paas.docker.api.DockerRegistryAPIClient;
 import com.bonc.epm.paas.docker.api.DockerRegistryAPIClientInterface;
-import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
-import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.rest.util.RestFactory;
-import com.bonc.epm.paas.util.CurrentUserUtils;
 
 /**
  * DockerRegistryService
