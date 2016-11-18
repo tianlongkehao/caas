@@ -237,20 +237,33 @@ $(document).ready(function(){
        });
        //可以编辑的段口号
        $(".editPortConfig").hide();
-       $("#editServiceAddrBtn").click(function(){
-    	   $(".editPortConfig").show();
-    	   $(".oldPortConfig").hide();
+       $("#editPortAddrBtn").click(function(){
+    	   $(this).hide();
+    	   $(this).next().show();
+    	   $(this).next().next().show();
+    	   $(this).parent().parent().find("span.oldPortConfig").hide();
+    	   $(this).parent().parent().find("span.editPortConfig").show();
+    	   //$(".editPortConfig").show();
+    	   //$(".oldPortConfig").hide();
        } );
        $("#savePortEdit").click(function(){
+    	   $(this).parent().find("i#editPortAddrBtn").show();
+    	   $(this).next().hide();
+    	   $(this).parent().parent().find("span.oldPortConfig").show();
+    	   $(this).parent().parent().find("span.editPortConfig").hide();
+    	   $(this).hide();
  // 			if(false==checkSerAddr()){return ;};
-   	   $(".editPortConfig").hide();
+//   	   $(".editPortConfig").hide();
  //  	   editSerAddr();
-   	   $(".oldCon").show();
+ //  	   $(".oldCon").show();
       });
       $("#canclPortEdit").click(function(){
-   	   $(".editPortConfig").hide();
-   	   $("#BaseSerForm").resetForm();
-   	   $(".oldPortConfig").show();
+	   	   $(this).parent().find("i#editPortAddrBtn").show();
+	   	   $(this).parent().find("i#savePortEdit").hide();
+	   	   $(this).parent().parent().find("span.oldPortConfig").show();
+	   	   $(this).parent().parent().find("span.editPortConfig").hide();
+	   	   $(this).hide();
+	   	   $("#BaseSerForm").resetForm();
       });
 });/*ready*/
   

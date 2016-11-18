@@ -476,10 +476,11 @@
 								<thead style="background: #F5F6F6;">
 									<tr style="height: 40px;">
 										<td style="width:10%;text-indent: 15px;">名称</td>
-										<td>容器端口</td>
-										<td>协议</td>
-										<td>映射端口</td>
-										<td>服务地址</td>
+										<td style="width:10%;">容器端口</td>
+										<td style="width:10%;">协议</td>
+										<td style="width:10%;">映射端口</td>
+										<td style="width:50%;">服务地址</td>
+										<td style="width:10%;">操作</td>
 									</tr>
 								</thead>
 								<form id="portConfigForm" name="portConfigForm">
@@ -488,18 +489,18 @@
 									<input name="id" hidden="true" value="${service.id} " />
 										<tr>
 											<td style="width:10%;text-indent: 15px;">${service.serviceName }</td>
-											<td><span class="oldPortConfig">${portConfig.containerPort }</span>
-											<span hidden="true" class="editPortConfig"><input type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
+											<td style="width:10%;" class="portConfig"><span class="oldPortConfig">${portConfig.containerPort }</span>
+											<span class="editPortConfig"><input type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
 											</td>
-											<td>${portConfig.protocol }</td>
-											<td>${portConfig.mapPort }</td>
-											<td><a
+											<td style="width:10%;">${portConfig.protocol }</td>
+											<td style="width:10%;">${portConfig.mapPort }</td>
+											<td style="width:50%;"><a
 												href="${service.serviceAddr}/${service.proxyPath}"
 												target="_blank">
 													${service.serviceAddr}/${service.proxyPath} </a></td>
-											<td><input id="editServiceAddrBtn" type="button" value="修改"  class="oldPortConfig" />	
-											<input id="savePortEdit" hidden=true type="button" value="提交"  class="editPortConfig" />
-                    <input id="canclPortEdit" hidden=true type="button" value="取消"  class="editPortConfig" />	</td>
+											<td style="width:10%;" class="editBtn"><i id="editPortAddrBtn" type="button" value="修改"  class="fa fa-edit oldPortConfig"></i>	
+											<i id="savePortEdit" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig"></i>
+                    						<i id="canclPortEdit" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	</td>
 										</tr>
 									</c:forEach>
 									

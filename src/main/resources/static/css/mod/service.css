@@ -1007,4 +1007,8 @@ li.line-h-3 span i{
 .scpDoc div.ibox{
 	border-left: 1px solid #e7eaec;
 } 
-
+.editBtn i{
+	color: #337ab7;
+	font-size: 16px;
+	margin-left:5px;
+}
