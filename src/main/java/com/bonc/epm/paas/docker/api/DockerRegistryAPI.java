@@ -59,7 +59,7 @@ public interface DockerRegistryAPI {
     @GET
     @Path("/{name}/manifests/{reference}")
     @Consumes(MediaType.WILDCARD)
-    @Produces(MediaType.WILDCARD)    
+    @Produces("application/vnd.docker.distribution.manifest.v1+prettyjws")    
     public Manifest getManifestofImage(@PathParam("name") String name,@PathParam("reference") String reference) throws DokcerRegistryClientException;
 
 

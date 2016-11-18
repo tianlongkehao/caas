@@ -27,8 +27,8 @@ import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
-import com.bonc.epm.paas.shera.model.JobExecution;
-import com.bonc.epm.paas.shera.model.JobExecutionList;
+import com.bonc.epm.paas.shera.model.JobExecView;
+import com.bonc.epm.paas.shera.model.JobExecViewList;
 
 /**
  * @author ke_wang
@@ -49,6 +49,7 @@ public interface SheraAPI {
      */
     @GET
     @Path("/jdk/all")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)    
     public JdkList getAllJdk() throws SheraClientException;
     /**
@@ -61,6 +62,7 @@ public interface SheraAPI {
      */
     @DELETE
     @Path("/jdk/del/{jdkVersion}")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Jdk deleteJdk(@PathParam("jdkVersion") String jdkVersion) throws SheraClientException;
 
@@ -94,7 +96,7 @@ public interface SheraAPI {
     @DELETE
     @Path("/jobs/del/{namespace}/{name}/{seqno}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExecution deleteExecution(@PathParam("namespace") String namespace ,@PathParam("name") String name, @PathParam("seqno") Integer seqno) throws SheraClientException;
+    public JobExecView deleteExecution(@PathParam("namespace") String namespace ,@PathParam("name") String name, @PathParam("seqno") Integer seqno) throws SheraClientException;
     
     /**
      * 
@@ -109,7 +111,7 @@ public interface SheraAPI {
     @PUT
     @Path("/jobs/kill/{namespace}/{name}/{seqno}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExecution killExecution(@PathParam("namespace") String namespace ,@PathParam("name") String name, @PathParam("seqno") Integer seqno) throws SheraClientException;
+    public JobExecView killExecution(@PathParam("namespace") String namespace ,@PathParam("name") String name, @PathParam("seqno") Integer seqno) throws SheraClientException;
 
     /**
      * 
@@ -126,7 +128,7 @@ public interface SheraAPI {
     @GET
     @Path("/jobs/get/{namespace}/{name}/{seqno}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExecution getExecution(@PathParam("namespace") String namespace ,@PathParam("name") String name, @PathParam("seqno") Integer seqno) throws SheraClientException;
+    public JobExecView getExecution(@PathParam("namespace") String namespace ,@PathParam("name") String name, @PathParam("seqno") Integer seqno) throws SheraClientException;
     
     /**
      * 
@@ -141,7 +143,7 @@ public interface SheraAPI {
     @GET
     @Path("/jobs/get/{namespace}/{name}/executions")
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExecutionList getJobAllExecutions(@PathParam("namespace") String namespace ,@PathParam("name") String name) throws SheraClientException;
+    public JobExecViewList getJobAllExecutions(@PathParam("namespace") String namespace ,@PathParam("name") String name) throws SheraClientException;
     
     /**
      * delete a job 
@@ -218,5 +220,5 @@ public interface SheraAPI {
     @Path("/jobs/exec/{namespace}/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExec execJob(@PathParam("namespace") String namespace, @PathParam("name") String name) throws SheraClientException;
+    public JobExecView execJob(@PathParam("namespace") String namespace, @PathParam("name") String name) throws SheraClientException;
 }
