@@ -95,13 +95,13 @@
 	                            </div>
 	                            <div class="row git-config git-higher">
 	                            	<div class="form-group col-md-12">
-		                                <label class="c-project-tit">代码库用户名</label>
-		                                <input id="codeUsername" name="codeUsername" type="text" class="form-control c-project-con reg-input"
+		                                <label class="c-project-tit">Name</label>
+		                                <input id="codeUsername" name="codeName" type="text" class="form-control c-project-con reg-input"
                                                    value="">
 		                            </div>
 		                            <div class="form-group col-md-12">
-		                                <label class="c-project-tit">代码库密码</label>
-		                                <input id="codePassword" name="codePassword" type="password"
+		                                <label class="c-project-tit">Refspec</label>
+		                                <input id="codePassword" name="codeRefspec" type="text"
                                                    class="form-control c-project-con reg-input" value="">
 		                            </div>
                                 </div>
@@ -126,7 +126,7 @@
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">镜像名称</label>
-	                                    <input id="imageName" name="imageName" type="password"
+	                                    <input id="imageName" name="imgNameLast" type="text"
                                                    class="form-control c-project-con reg-input" value="">
 		                            </div>
 	                            </div>
@@ -153,7 +153,7 @@
 									</div>
 
 									<div class="form-group col-md-12" id="dockerFiles" style="width:95%;margin-left:30px">
-										<textarea id="dockerFile" name="dockerFile"></textarea>
+										<textarea id="dockerFile" name="dockerFileContent"></textarea>
 									</div>
 	                            </div>
                         	</section>

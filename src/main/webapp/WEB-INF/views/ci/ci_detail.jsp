@@ -185,14 +185,14 @@
 				                            </div>
 				                            <div class="row git-config git-higher">
 				                            	<div class=" col-md-12">
-					                                <label class="c-project-tit">代码库用户名</label>
-					                                <input id="codeUsername" name="codeUsername" type="text" class="form-control c-project-con reg-input"
-			                                                   value="${ci.codeUsername }">
+					                                <label class="c-project-tit">Name</label>
+					                                <input id="codeUsername" name="codeName" type="text" class="form-control c-project-con reg-input"
+			                                                   value="${ci.codeName }">
 					                            </div>
 					                            <div class=" col-md-12">
-					                                <label class="c-project-tit">代码库密码</label>
-					                                <input id="codePassword" name="codePassword" type="password"
-			                                                   class="form-control c-project-con reg-input" value="${ci.codePassword }">
+					                                <label class="c-project-tit">Refspec</label>
+					                                <input id="codePassword" name="codeRefspec" type="text"
+			                                                   class="form-control c-project-con reg-input" value="${ci.codeRefspec }">
 					                            </div>
 			                                </div>
 			                            </section>

@@ -88,17 +88,6 @@ $(document).ready(function () {
     });
     //dockerfile路径&&dockerfile模板
     
-    $("#dockerfilePath").click(function(){
-    	$(".dockerfilePath").removeClass("hide");
-    	$(".dockerfileTemp").addClass("hide");
-    	
-    	
-    });
-    $(document).on('click','#dockerfileTemp',function(){
-    	$(".dockerfilePath").addClass("hide");
-    	$(".dockerfileTemp").removeClass("hide");
-    });
-    
     var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
         lineNumbers: true,
         matchBrackets: true,
@@ -106,6 +95,17 @@ $(document).ready(function () {
         theme: "ambiance"
     });
 
+    $("#dockerfilePath").click(function(){
+    	$(".dockerfilePath").removeClass("hide");
+    	$(".dockerfileTemp").addClass("hide");
+    	editor_one.setValue("");
+    });
+    $(document).on('click','#dockerfileTemp',function(){
+    	$(".dockerfilePath").addClass("hide");
+    	$(".dockerfileTemp").removeClass("hide");
+    	$("#dockerFileLocation").val("");
+    });
+    
 	$("#dockerfile").focus();
 	$("#dockerfile-import").hide();
 	$("#dockerfile-export").hide();
@@ -567,12 +567,12 @@ function checkCodeCiAdd(){
     json = '[' + json + ']';
     $("#jsonData").val(json);
     //doackerFile文件路径的判断
-	var dockerFileLocation = $("#dockerFileLocation").val();
-	if(!dockerFileLocation || dockerFileLocation.length < 1){
-		layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
-		$('#dockerFileLocation').focus();
-		return;
-    }
+//	var dockerFileLocation = $("#dockerFileLocation").val();
+//	if(!dockerFileLocation || dockerFileLocation.length < 1){
+//		layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
+//		$('#dockerFileLocation').focus();
+//		return;
+//    }
     return true;
 }
 

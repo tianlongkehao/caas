@@ -21,16 +21,16 @@ import java.util.List;
  */
 public class BuildManager {
     //0:none、1：ant、2：maven、3：shell
-    private List<Integer> seqNos;
+    private List<Integer> seqNo;
     private List<String> cmds;
     private List<AntConfig> antConfigs;
     private List<MvnConfig> mvnConfigs;
     
-    public List<Integer> getSeqNos() {
-        return seqNos;
+    public List<Integer> getSeqNo() {
+        return seqNo;
     }
-    public void setSeqNos(List<Integer> seqNos) {
-        this.seqNos = seqNos;
+    public void setSeqNo(List<Integer> seqNos) {
+        this.seqNo = seqNos;
     }
     public List<String> getCmds() {
         return cmds;

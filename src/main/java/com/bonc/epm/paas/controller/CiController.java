@@ -326,8 +326,8 @@ public class CiController {
         originCi.setCodeUrl(ci.getCodeUrl());
         originCi.setCodeCredentials(ci.getCodeCredentials());
         originCi.setCodeBranch(ci.getCodeBranch());
-        originCi.setCodeUsername(ci.getCodeUsername());
-        originCi.setCodePassword(ci.getCodePassword());
+        originCi.setCodeName(ci.getCodeName());
+        originCi.setCodeRefspec(ci.getCodeRefspec());;
         originCi.setDockerFileLocation(ci.getDockerFileLocation());
         ciDao.save(originCi);
         List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
@@ -532,19 +532,31 @@ public class CiController {
      * @see
      */
     @RequestMapping("ci/addCodeCi.do")
-    public String addCodeCi(Ci ci,String jsonData){
-        User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        ci.setCreateBy(cuurentUser.getId());
-        ci.setCreateDate(new Date());
-        ci.setType(CiConstant.TYPE_CODE);
-        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
-        ciDao.save(ci);
-        List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
-        if (!StringUtils.isEmpty(ciInvokeList)) {
-            ciInvokeDao.save(ciInvokeList);
-            LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
-        }
-//        Job job = sheraClientService.genenateJob();
+    public String addCodeCi(Ci ci,String jsonData,String dockerFileContent){
+            User cuurentUser = CurrentUserUtils.getInstance().getUser();
+            ci.setCreateBy(cuurentUser.getId());
+            ci.setCreateDate(new Date());
+            ci.setType(CiConstant.TYPE_CODE);
+            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
+            ciDao.save(ci);
+            List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
+            if (!StringUtils.isEmpty(ciInvokeList)) {
+                ciInvokeDao.save(ciInvokeList);
+                LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+            }
+            try {
+                SheraAPIClientInterface client = sheraClientService.getClient();
+                Job job = sheraClientService.generateJob(ci.getProjectName(),ci.getJdkVersion(),ci.getCodeBranch(),ci.getCodeUrl(),
+                    ci.getCodeCredentials(),ci.getCodeName(),ci.getCodeRefspec(),
+                    dockerFileContent,ci.getDockerFileLocation(),ci.getImgNameLast(),
+                    ciInvokeList);
+                client.createJob(job);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                ciInvokeDao.deleteByCiId(ci.getId());
+                ciDao.delete(ci);
+            }
         return "redirect:/ci"; 
     }
     
@@ -1000,41 +1012,41 @@ public class CiController {
             return true;
         }
         try{
-            if(CiConstant.CODE_TYPE_SVN.equals(ci.getCodeType())){
-                String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
-                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
-                ciRecordDao.save(ciRecord);
-                LOG.info("==========svnCommandStr:"+svnCommandStr);
-                return CmdUtil.exeCmd(svnCommandStr);
-            }
-            else if(CiConstant.CODE_TYPE_GIT.equals(ci.getCodeType())){
-                String codeUrl = ci.getCodeUrl();
-                if(StringUtils.isEmpty(codeUrl)||codeUrl.indexOf("//")<=0){
-                    return false;
-                }
-                String nCodeUrl = codeUrl;
-                String codeUsername = ci.getCodeUsername();
-                String codePassword = ci.getCodePassword();
-                if(!StringUtils.isEmpty(codeUsername)&&!StringUtils.isEmpty(codePassword)){
-					//如果有账号密码
-                    if(ci.getCodeUsername().indexOf("@")>0){
-						//如果git用户名是带@邮箱格式的，则去掉邮箱后缀
-                        codeUsername = codeUsername.substring(0, codeUsername.indexOf("@"));
-                    }
-                    nCodeUrl = codeUrl.substring(0,codeUrl.indexOf("//")+2)+codeUsername+":"+codePassword+"@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length());
-                }
-                String rmCommonStr = "rm -rf "+ci.getCodeLocation();
-                LOG.info("==========rmCommonStr:"+rmCommonStr);
-                CmdUtil.exeCmd(rmCommonStr);
-                String gitCommandStr = "git clone "+nCodeUrl+" "+ci.getCodeLocation();
-                String logmsg = "git clone " +
-                                    codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername() +
-                                    ":******@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length())+" "+ci.getCodeLocation();
-                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+logmsg);
-                ciRecordDao.save(ciRecord);
-                LOG.info("==========gitCommandStr:"+gitCommandStr);
-                return CmdUtil.exeCmd(gitCommandStr);
-            }
+//            if(CiConstant.CODE_TYPE_SVN.equals(ci.getCodeType())){
+//                String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
+//                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
+//                ciRecordDao.save(ciRecord);
+//                LOG.info("==========svnCommandStr:"+svnCommandStr);
+//                return CmdUtil.exeCmd(svnCommandStr);
+//            }
+//            else if(CiConstant.CODE_TYPE_GIT.equals(ci.getCodeType())){
+//                String codeUrl = ci.getCodeUrl();
+//                if(StringUtils.isEmpty(codeUrl)||codeUrl.indexOf("//")<=0){
+//                    return false;
+//                }
+//                String nCodeUrl = codeUrl;
+//                String codeUsername = ci.getCodeUsername();
+//                String codePassword = ci.getCodePassword();
+//                if(!StringUtils.isEmpty(codeUsername)&&!StringUtils.isEmpty(codePassword)){
+//					//如果有账号密码
+//                    if(ci.getCodeUsername().indexOf("@")>0){
+//						//如果git用户名是带@邮箱格式的，则去掉邮箱后缀
+//                        codeUsername = codeUsername.substring(0, codeUsername.indexOf("@"));
+//                    }
+//                    nCodeUrl = codeUrl.substring(0,codeUrl.indexOf("//")+2)+codeUsername+":"+codePassword+"@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length());
+//                }
+//                String rmCommonStr = "rm -rf "+ci.getCodeLocation();
+//                LOG.info("==========rmCommonStr:"+rmCommonStr);
+//                CmdUtil.exeCmd(rmCommonStr);
+//                String gitCommandStr = "git clone "+nCodeUrl+" "+ci.getCodeLocation();
+//                String logmsg = "git clone " +
+//                                    codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername() +
+//                                    ":******@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length())+" "+ci.getCodeLocation();
+//                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+logmsg);
+//                ciRecordDao.save(ciRecord);
+//                LOG.info("==========gitCommandStr:"+gitCommandStr);
+//                return CmdUtil.exeCmd(gitCommandStr);
+//            }
         }
         catch(Exception e){
             ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());

@@ -60,7 +60,7 @@ public class SheraClientService {
     public Job generateJob(String id ,String jdkVersion,String branch,String url,
                            String credentials,String codeName,String refspec,
                            String dockerFileContent,String dockerFile,String imgName ,
-                           String imgVersion, List<CiInvoke> ciInvokeList) {
+                           List<CiInvoke> ciInvokeList) {
         Job job = new Job();
         job.setId(id);
         job.setJdkVersion(jdkVersion);
@@ -79,16 +79,16 @@ public class SheraClientService {
         job.setCodeManager(codeManager);
         
         BuildManager buildManager = new BuildManager();
-        List<Integer> seqNos = new ArrayList<Integer>();
+        List<Integer> seqNo = new ArrayList<Integer>();
         List<String> cmds = new ArrayList<String>();
         List<AntConfig> antConfigs = new ArrayList<AntConfig>();
         List<MvnConfig> mvnConfigs = new ArrayList<MvnConfig>();
         if (ciInvokeList.size() == 0) {
-            seqNos.add(0);
+            seqNo.add(0);
         }
         for (CiInvoke ciInvoke : ciInvokeList ) {
             if (ciInvoke.getInvokeType() == 1) {
-                seqNos.add(1);
+                seqNo.add(1);
                 AntConfig antConfig = new AntConfig();
                 antConfig.setVersion(ciInvoke.getAntVersion());
                 antConfig.setTargets(ciInvoke.getAntTargets());
@@ -98,7 +98,7 @@ public class SheraClientService {
                 antConfigs.add(antConfig);
             }
             if (ciInvoke.getInvokeType() == 2) {
-                seqNos.add(2);
+                seqNo.add(2);
                 MvnConfig mvnConfig = new MvnConfig();
                 mvnConfig.setVersion(ciInvoke.getMavenVersion());
                 mvnConfig.setGoals(ciInvoke.getMavenGoals());
@@ -110,14 +110,14 @@ public class SheraClientService {
                 mvnConfigs.add(mvnConfig);
             }
             if (ciInvoke.getInvokeType() == 3) {
-                seqNos.add(3);
+                seqNo.add(3);
                 cmds.add(ciInvoke.getShellCommand());
             }
         }
         buildManager.setAntConfigs(antConfigs);
         buildManager.setCmds(cmds);
         buildManager.setMvnConfigs(mvnConfigs);
-        buildManager.setSeqNos(seqNos);
+        buildManager.setSeqNo(seqNo);
         job.setBuildManager(buildManager);
         
         ImgManager imgManager = new ImgManager();
@@ -128,21 +128,21 @@ public class SheraClientService {
             imgManager.setDockerFile(dockerFile);
         }
         imgManager.setImgName(imgName);
-        imgManager.setImgVersion(imgVersion);
         job.setImgManager(imgManager);
         return job;
     }
     
-    public static void main(String[] args) {
-        SheraClientService sheraClientService = new SheraClientService();
-        SheraAPIClientInterface client = sheraClientService.getClient();
-        try {
-            //client.getAllJobs();
-            JdkList jdkList = client.getAllJdk();
-            System.out.println(client.getAllJdk());
-        }
-        catch (SheraClientException e) {
-           e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        SheraClientService sheraClientService = new SheraClientService();
+//        SheraAPIClientInterface client = sheraClientService.getClient();
+//        try {
+//            //client.getAllJobs();
+//            JdkList jdkList = client.getAllJdk();
+//            System.out.println(client.getAllJdk());
+//        }
+//        catch (SheraClientException e) {
+//           e.printStackTrace();
+//        }
+//    }
+
 }

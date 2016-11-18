@@ -92,14 +92,14 @@ public class Ci {
     private String codeUrl;
 	
     /**
-	 * 代码账号
+	 * name;
 	 */
-    private String codeUsername;
+    private String codeName;
 	
     /**
-	 * 代码密码
+	 * Refspec
 	 */
-    private String codePassword;
+    private String codeRefspec;
 	
     /**
 	 * 代码分支
@@ -271,22 +271,22 @@ public class Ci {
         this.codeUrl = codeUrl;
     }
     
-    public String getCodeUsername() {
-        return codeUsername;
+    public String getCodeName() {
+        return codeName;
     }
-    
-    public void setCodeUsername(String codeUsername) {
-        this.codeUsername = codeUsername;
+
+    public void setCodeName(String codeName) {
+        this.codeName = codeName;
     }
-    
-    public String getCodePassword() {
-        return codePassword;
+
+    public String getCodeRefspec() {
+        return codeRefspec;
     }
-    
-    public void setCodePassword(String codePassword) {
-        this.codePassword = codePassword;
+
+    public void setCodeRefspec(String codeRefspec) {
+        this.codeRefspec = codeRefspec;
     }
-    
+
     public String getCodeBranch() {
         return codeBranch;
     }
