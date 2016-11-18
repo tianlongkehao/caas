@@ -2121,9 +2121,9 @@ public class ServiceController {
             ser.setSessionAffinity(service.getSessionAffinity());
             ser.setNodeIpAffinity(service.getNodeIpAffinity());
             ser.setCheckPath(service.getCheckPath());
-            ser.setTimeoutDetction(StringUtils.isNotBlank(service.getTimeoutDetction().toString())?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
-            ser.setPeriodDetction(StringUtils.isNotBlank(service.getPeriodDetction().toString())?service.getPeriodDetction():ServiceConstant.PERIOD);
-            ser.setInitialDelay(StringUtils.isNotBlank(service.getInitialDelay().toString())?service.getInitialDelay():ServiceConstant.INNIALDELAY);
+            ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
+            ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
+            ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
             if(StringUtils.isNotBlank(service.getVolName())){
                 ser.setVolName(service.getVolName());
                 ser.setMountPath(service.getMountPath());
@@ -2183,9 +2183,9 @@ public class ServiceController {
                      ser.setSessionAffinity(service.getSessionAffinity());
                      ser.setNodeIpAffinity(service.getNodeIpAffinity());
                      ser.setCheckPath(service.getCheckPath());
-                     ser.setTimeoutDetction(StringUtils.isNotBlank(service.getTimeoutDetction().toString())?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
-                     ser.setPeriodDetction(StringUtils.isNotBlank(service.getPeriodDetction().toString())?service.getPeriodDetction():ServiceConstant.PERIOD);
-                     ser.setInitialDelay(StringUtils.isNotBlank(service.getInitialDelay().toString())?service.getInitialDelay():ServiceConstant.INNIALDELAY);
+                     ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
+                     ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
+                     ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
                      if(StringUtils.isNotBlank(service.getVolName())){
                          ser.setVolName(service.getVolName());
                          ser.setMountPath(service.getMountPath());
@@ -2195,7 +2195,7 @@ public class ServiceController {
                          ser.setMountPath("");
                          ser.setServiceType("2");
                                              }
-                     updateStorageType(service.getVolName(), service.getServiceName());
+                     
            }catch (KubernetesClientException e) {
                map.put("status", "500");
                map.put("msg", e.getStatus().getMessage());
@@ -2242,9 +2242,9 @@ public class ServiceController {
             ser.setSessionAffinity(service.getSessionAffinity());
             ser.setNodeIpAffinity(service.getNodeIpAffinity());
             ser.setCheckPath(service.getCheckPath());
-            ser.setTimeoutDetction(StringUtils.isNotBlank(service.getTimeoutDetction().toString())?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
-            ser.setPeriodDetction(StringUtils.isNotBlank(service.getPeriodDetction().toString())?service.getPeriodDetction():ServiceConstant.PERIOD);
-            ser.setInitialDelay(StringUtils.isNotBlank(service.getInitialDelay().toString())?service.getInitialDelay():ServiceConstant.INNIALDELAY);
+            ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
+            ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
+            ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
             if(StringUtils.isNotBlank(service.getVolName())){
                 ser.setVolName(service.getVolName());
                 ser.setMountPath(service.getMountPath());
