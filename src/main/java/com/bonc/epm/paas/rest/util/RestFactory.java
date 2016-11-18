@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 
+import com.bonc.epm.paas.docker.api.DockerRegistryAPI;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPI;
 import com.bonc.epm.paas.shera.api.SheraAPI;
 
@@ -101,7 +102,7 @@ public class RestFactory {
         return (SheraAPI) Proxy.newProxyInstance(clazz.getClassLoader(), intfs, new ClientProxy(methodMap));
     }
     
-/*    public DockerRegistryAPI createDockerRegistryAPI(String url, String userName, String password){
+    public DockerRegistryAPI createDockerRegistryAPI(String url, String userName, String password){
     	Class<DockerRegistryAPI> clazz = DockerRegistryAPI.class;
     	Class<?>[] intfs =
 		{
@@ -114,6 +115,6 @@ public class RestFactory {
 	         methodMap.put(method, invoker);
 		}
     	return (DockerRegistryAPI)Proxy.newProxyInstance(clazz.getClassLoader(),intfs,new ClientProxy(methodMap));
-    }*/
+    }
     
 }

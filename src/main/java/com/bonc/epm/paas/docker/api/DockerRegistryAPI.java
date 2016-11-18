@@ -12,15 +12,16 @@
 package com.bonc.epm.paas.docker.api;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
 import com.bonc.epm.paas.docker.model.Manifest;
 import com.bonc.epm.paas.docker.model.Tags;
-import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 
 /**
  * @author ke_wang
@@ -43,7 +44,7 @@ public interface DockerRegistryAPI {
     @Path("/{name}/tags/list")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Tags getTagsofImage(@PathParam("name") String name);
+    public Tags getTagsofImage(@PathParam("name") String name) throws DokcerRegistryClientException;
     
     /**
      * 
@@ -59,5 +60,22 @@ public interface DockerRegistryAPI {
     @Path("/{name}/manifests/{reference}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)    
-    public Manifest getManifestofImage(@PathParam("name") String name,@PathParam("reference") String reference);
+    public Manifest getManifestofImage(@PathParam("name") String name,@PathParam("reference") String reference) throws DokcerRegistryClientException;
+
+
+    /**
+     * 
+     * Description:
+     * Delete the manifest identified by name and reference. Note that a manifest can only be deleted by digest.
+     * @param name
+     *            image name
+     * @param reference
+     *            a digest  
+     * @return {@link Manifest}
+     */
+    @DELETE
+    @Path("/{name}/manifests/{reference}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON) 
+    public Manifest deleteManifestofImage(@PathParam("name") String name,@PathParam("reference") String reference) throws DokcerRegistryClientException;
 }
