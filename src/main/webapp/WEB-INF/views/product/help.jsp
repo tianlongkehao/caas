@@ -108,6 +108,14 @@
 											href="#product-info4-2" tabindex="-1" data-toggle="tab"
 											id="a4next2"> <b>4.2.</b> 快速构建
 										</a></li>
+										<li class="chapter " data-level="4.3"><a
+											href="#product-info4-3" tabindex="-1" data-toggle="tab"
+											id="a4next3"> <b>4.3.</b> 上传镜像
+										</a></li>
+										<li class="chapter " data-level="4.4"><a
+											href="#product-info4-4" tabindex="-1" data-toggle="tab"
+											id="a4next4"> <b>4.4.</b> dockerfile构建
+										</a></li>
 									</ul></li>
 
 								<li class="chapter " data-level="5"><a
@@ -139,7 +147,7 @@
 										</a></li>
 										<li class="chapter " data-level="6.2"><a
 											href="#product-info6-2" tabindex="-1" data-toggle="tab">
-												<b>6.2.</b> 查看/修改/修改租户
+												<b>6.2.</b> 查看/修改/删除租户
 										</a></li>
 
 									</ul></li>
@@ -161,6 +169,10 @@
 										<li class="chapter " data-level="7.3"><a
 											href="#product-info7-3" tabindex="-1" data-toggle="tab">
 												<b>7.3.</b> 集群管理-创建集群节点
+										</a></li>
+										<li class="chapter " data-level="7.4"><a
+											href="#product-info7-4" tabindex="-1" data-toggle="tab">
+												<b>7.4.</b> 集群拓扑
 										</a></li>
 									</ul></li>
 
@@ -459,7 +471,7 @@
 											<p>
 												<img src="/images/service-detail5.png" alt="service">
 											</p>
-											<p>日志：</p>
+											<p>日志：有日志下载到本地功能。</p>
 											<p>
 												<img src="/images/service-detail6.png" alt="service">
 											</p>
@@ -471,25 +483,19 @@
 										<section class="normal">
 											<h1 id="停止启动删除容器">停止/启动/删除容器</h1>
 											<p>
-												在容器列表页，勾选容器后，我们可以进行对应的 <strong>停止/启动/删除</strong> 容器等操作：
-											</p>
-											<p>停止容器服务：</p>
-											<p>
-												<img src="/images/service-stop1.png" alt="service">
+												在服务列表页，勾选服务名称前的复选框，可以对服务进行批量的 <strong>停止<img src="/images/service-stopBtn.png" alt="service">
+												/启动<img src="/images/service-startBtn.png" alt="service">
+												/删除<img src="/images/service-delBtn.png" alt="service"></strong> 操作：
 											</p>
 											<p>
-												<img src="/images/service-stop2.png" alt="service">
+												<img src="/images/service-info1.png" alt="service">
 											</p>
-											<p>
-												<img src="/images/service-stop3.png" alt="service">
-											</p>
-											<p>删除容器服务：</p>
-											<p>
-												<img src="/images/service-del1.png" alt="service">
-											</p>
-											<p>
-												<img src="/images/service-del2.png" alt="service">
-											</p>
+											<p>服务列表中操作一栏中的功能键都是针对相应服务的一对一功能键，蓝色为当前可操作功能，灰色为当前不可操作的功能键。</p>
+											<p>启动容器服务：点击<img src="/images/service-startBtn.png" alt="service">，服务启动成功会有提示框弹出。</p>
+											<p><img src="/images/service-startOk.png" alt="service"></p>
+											
+											<p>停止和删除容启动操作类似。</p>
+											
 											<h4 id="注：">注：</h4>
 											<ul>
 												<li><strong>停止/启动/删除</strong>均可以批量操作，但是<strong>停止/启动</strong>操作对容器状态有要求，容器状态不能与操作相同，正在初始化的容器则不能进行<strong>停止/启动</strong>操作</li>
@@ -502,16 +508,12 @@
 								<div class="page-wrapper tab-pane fade" id="product-info3-4">
 									<div class="page-inner">
 										<section class="normal">
-
 											<h1 id="更改服务配置">更改服务配置</h1>
-											<p>勾选“hello”前面的复选框，点击“更多操作”按钮，选择“更改配置”：</p>
+											<p>点击<img src="/images/service-peizhiBtn.png" alt="service">更改配置按钮，填写需要更改的CPU和内存，弹出框还显示当前可用的CPU和内存资源：</p>
 											<p>
 												<img src="/images/service-conf1.png" alt="service">
 											</p>
-											<p>可以修改CPU和内存的配置，点击“确定”按钮，完成更改容器配置。</p>
-											<p>
-												<img src="/images/service-conf2.png" alt="service">
-											</p>
+											<p>修改成功后会有弹出提示框。</p>
 										</section>
 									</div>
 								</div>
@@ -522,18 +524,19 @@
 
 											<h1 id="弹性伸缩">弹性伸缩</h1>
 											<p>
-												在容器列表页，勾选容器后，我们可以 <strong>弹性伸缩</strong> 容器实例数量：
+												点击<img src="/images/service-shensuoBtn.png" alt="scale_up"> <strong>弹性伸缩</strong> 容器实例数量：
 											</p>
+											<p>在弹出框中填写实例数量，并点击“保存”按钮：</p>
 											<p>
 												<img src="/images/service-scale1.png" alt="scale_up">
 											</p>
-											<p>在弹出框中选择实例数量，并点击“保存”按钮：</p>
+											<p>弹性伸缩成功会弹出提示框：</p>
 											<p>
-												<img src="/images/service-scale2.png" alt="scale_up">
+												<img src="/images/service-scaleOk.png" alt="scale_up">
 											</p>
 											<p>此时将返回容器服务列表页，展开之前扩容的服务，可以看到实例数量改变了：</p>
 											<p>
-												<img src="/images/service-scale3.png" alt="scale_up">
+												<img src="/images/service-scale2.png" alt="scale_up">
 											</p>
 										</section>
 									</div>
@@ -545,14 +548,12 @@
 											<h1 id="版本升级">版本升级</h1>
 											<p>版本升级可以对已创建的容器服务进行镜像版本升级。使用的镜像需要有多个版本才能进行版本升级。</p>
 											<ol>
-												<li><p>勾选“hello”复选框，点击“更多操作”，选择“版本升级”。</p>
+												<li><p>点击<img src="/images/service-shengjiBtn.png" alt="updata1">版本升级，在下拉选框中选择一个版本.</p>
 													<p>
 														<img src="/images/service-update1.png" alt="updata1">
 													</p></li>
-												<li><p>弹出“更改镜像版本”复选框，选择镜像版本，点击“确定”完成版本升级。</p>
-													<p>
-														<img src="/images/service-update2.png" alt="updata1">
-													</p></li>
+												<li><p>点击“确定”完成版本升级,升级成功会弹出提示框。</p>
+												</li>
 
 											</ol>
 
@@ -568,12 +569,15 @@
 											<h1 id="构建镜像">构建镜像</h1>
 											<p>代码构建是一种软件开发实践，在软件开发过程中每天都会发生很多次集成。如果每次集成都能通过自动化的构建（包括编译、打包、自动化测试、发布）来验证，从而通过自动化系统尽快地发现集成错误，会大大减轻开发运维团队的工作，提高软件开发的效率。</p>
 											<p>
-												<img src="/images/goujian.png" alt="ci">
+												<img src="/images/ci1.png" alt="ci">
 											</p>
-											<p>本章主要介绍构建镜像的两种方法：</p>
+											<p>本章主要介绍构建镜像的四种方法：</p>
+											<p>功能键如图所示：<img src="/images/ci-ciBtn.png" alt="ciBtn"></p>
 											<ul class="info">
-												<li>快速构建</li>
 												<li>代码构建</li>
+												<li>快速构建</li>
+												<li>上传镜像</li>
+												<li>dockerfile构建</li>
 											</ul>
 										</section>
 									</div>
@@ -583,34 +587,9 @@
 										<section class="normal">
 											<h1 id="代码构建">代码构建</h1>
 											<ol>
-												<li><p>代码构建是一种软件开发实践，在软件开发过程中每天都会发生很多次集成。如果每次集成都能通过自动化的构建（包括编译、打包、自动化测试、发布）来验证，从而通过自动化系统尽快地发现集成错误，会大大减轻开发运维团队的工作，提高软件开发的效率。</p>
-													<p>
-														<img src="/images/image-create1.png" alt="ci">
-													</p></li>
-												<li><p>代码构建是通过上传镜像文件的war包，再填写相应的名称、简介、基本信息后，点击“创建”，脚本会自动创建镜像并上传到镜像仓库中。</p>
-													<p>
-														<img src="/images/image-create2.png" alt="ci">
-													</p></li>
-												<li><p></p>
-													<p>
-														<img src="/images/image-create3.png" alt="ci">
-													</p></li>
-												<li><p>创建完成的镜像，将保存到镜像中心，可以对镜像进行部署和删除操作。</p>
-													<p>
-														<img src="/images/image-create4.png" alt="ci">
-													</p></li>
-													<li><p></p>
-													<p>
-														<img src="/images/image-create5.png" alt="ci">
-													</p></li>
-													<li><p>通过脚本文件创建镜像的过程如下：</p>
-													<p>
-														<img src="/images/image-create6.png" alt="ci">
-													</p></li>
-													<li><p></p>
-													<p>
-														<img src="/images/image-create7.png" alt="ci">
-													</p></li>
+												<li>
+													<p>待更新...</p>
+												</li>
 											</ol>
 										</section>
 									</div>
@@ -622,14 +601,72 @@
 											<h1 id="快速构建">快速构建</h1>
 
 											<ol>
-												<li><p>快速构建方法如下:</p>
-													<p>
-														<img src="/images/image-create8.png" alt="ci">
-													</p></li>
-												<li><p>填写镜像名称，简介，代码仓库地址，如“https://github.com/tenxcloud/php-hellow-world.git”,选择代码库类型git或SVN，输入代码库用户名和密码，再填写基本信息，点击“创建”。</p>
-													<p>
-														<img src="/images/image-create9.png" alt="ci">
-													</p></li>
+												<li>
+													<p>快速构建方法如下:</p>
+													<p>点击下图中红框内快速构建按钮：</p>
+													<p><img src="/images/ci-quick1.png" alt="ci"></p>
+												</li>
+												<li>
+												<p>弹出如下页面：</p>
+												<p><img src="/images/ci-quick2.png" alt="ci"></p>
+												<p>选择构建镜像所需要的基础镜像的名称和版本号，填写镜像名称及版本号，填写新创建的镜像简介，上传制作镜像时需要的代码文件，填写项目名称，选择镜像性质后，点击创建，即可完成创建。示例如下图：</p>
+												<p><img src="/images/ci-quick3.png" alt="ci"></p>
+												<p>创建完成后，点击下图红框中的按钮构建镜像:</p>
+												<p><img src="/images/ci-quick4.png" alt="ci"></p>
+												<p>点击红框中按钮后，构建状态显示为构建中:</p>
+												<p><img src="/images/ci-quick5.png" alt="ci"></p>
+												<p>构建过程中点击项目名称可跳转到如下页面，查看构建日志，项目描述，基本设置，以及删除镜像等操作:</p>
+												<p><img src="/images/ci-quick6.png" alt="ci"></p>
+												</li>
+											</ol>
+										</section>
+									</div>
+								</div>
+								<div class="page-wrapper tab-pane fade" id="product-info4-3">
+									<div class="page-inner">
+										<section class="normal">
+
+											<h1 id="上传镜像">上传镜像</h1>
+
+											<ol>
+												<li>
+													<p>上传镜像方法如下：</p>
+													<p>点击下图中红框内上传镜像按钮：</p>
+													<p><img src="/images/ci-uploadimage1.png" alt="ci"></p>
+													<p>弹出如下页面：</p>
+													<p><img src="/images/ci-uploadimage2.png" alt="ci"></p>
+													<p>填写镜像名称和版本号，要求所填写的镜像名称和版本号需与上传镜像中的信息一致，上传镜像文件，选择镜像类型，填写项目名称后，点击构建即可完成创建。示例如下图：</p>
+													<p><img src="/images/ci-uploadimage3.png" alt="ci"></p>
+													<p>创建完成后，镜像可在镜像中心中查看到：</p>
+													<p><img src="/images/ci-uploadimage4.png" alt="ci"></p>
+												</li>
+											</ol>
+										</section>
+									</div>
+								</div>
+								<div class="page-wrapper tab-pane fade" id="product-info4-4">
+									<div class="page-inner">
+										<section class="normal">
+
+											<h1 id="dockerfile构建">dockerfile构建</h1>
+
+											<ol>
+												<li>
+													<p>Dockerfile构建方法如下：</p>
+													<p>点击下图中红框内Dockerfile构建按钮：</p>
+													<p><img src="/images/ci-dockerfile1.png" alt="ci"></p>
+													<p>弹出如下页面：</p>
+													<p><img src="/images/ci-dockerfile2.png" alt="ci"></p>
+													<p>填写镜像名称及版本号，填写简介，上传制作镜像需要的代码文件，选择导入模板或者自行编写Dockerfile,编写的Dockerfile文件可另存为模板，选择创建镜像公有/私有性质，点击创建即可。</p>
+													<p>如果需要导入Dockerfile模板，可点击导入模板，选择合适的Dockerfile模板，点击导入按钮即可。导入模板示例如下：</p>
+													<p><img src="/images/ci-dockerfile3.png" alt="ci"></p>
+													<p>写好的Dockerfile可点击另存为模板，即可生成新的Dockerfile模板，以供后期方便导入使用，Dockerfile编写完成之后点击另存为模板，在弹出框中输入模板名称，点击保存按钮即可。另存为模板示例如下：</p>
+													<p><img src="/images/ci-dockerfile4.png" alt="ci"></p>
+													<p>Dockerfile创建镜像示例如下：</p>
+													<p><img src="/images/ci-dockerfile5.png" alt="ci"></p>
+													<p>创建成功后，点击构建即可:</p>
+													<p><img src="/images/ci-dockerfile6.png" alt="ci"></p>
+												</li>
 											</ol>
 										</section>
 									</div>
@@ -642,7 +679,7 @@
 											<h1 id="镜像服务">镜像服务</h1>
 											<p>上面我们大概了解了“容器服务”和“持续集成”的主要功能，而且都涉及到了“镜像”的概念，所以上面的功能都离不开“镜像服务”的支持，同样我们也开通了镜像服务板块。容器应用通过镜像服务所提供的各种镜像创建出来，而持续集成最终会生成镜像，并上传到镜像服务器，供大家下载或创建容器服务。</p>
 											<p>
-												<img src="/images/jingxiang.png" alt="ci">
+												<img src="/images/image1.png" alt="image">
 											</p>
 											<p>镜像服务分为三个部分：</p>
 											<ul class="info">
@@ -658,9 +695,19 @@
 										<section class="normal">
 
 											<h1 id="浏览镜像">浏览镜像</h1>
-											<p>创建的所有镜像都将保存在镜像中心，可以通过“搜索”功能来筛选所需的镜像，直接进行“部署”操作。</p>
+											<p>创建的所有镜像都将保存在镜像中心，可以通过“查找”功能来筛选所需的镜像，直接进行
+											部署<img src="/images/image-bushuBtn.png" alt="image">
+											/导出<img src="/images/image-exportBtn.png" alt="image">
+											/收藏<img src="/images/image-shoucangBtn.png" alt="image">
+											/删除<img src="/images/service-delBtn.png" alt="image">操作。</p>
 											<p>
-												<img src="/images/image-center.png" alt="ci">
+												<img src="/images/image1.png" alt="image">
+											</p>
+											<p>
+												点击镜像名称进入镜像详情页面，可以查看镜像的基本信息和版本，进行部署和导出操作，若是该用户构建的镜像还可以进行删除镜像操作。
+											</p>
+											<p>
+												<img src="/images/image-detail.png" alt="image">
 											</p>
 										</section>
 									</div>
@@ -670,37 +717,21 @@
 										<section class="normal">
 
 											<h1 id="收藏镜像">收藏镜像</h1>
-											<p>在镜像中心中点击镜像文件，进入镜像信息，点击“收藏”，即可用把镜像文件保存我我的收藏中，以便经常使用。</p>
+											<p>点击<img src="/images/image-shoucangBtn.png" alt="image">收藏按钮，即可用把镜像文件保存我我的收藏中，以便经常使用。</p>
 											<p>
-												<img src="/images/image-info.png" alt="ci">
+												<img src="/images/image-my.png" alt="image">
 											</p>
-											<p>
-												<img src="/images/image-collect.png" alt="ci">
-											</p>
+											<p>该租户构建的镜像都保存在“我的镜像”中，可以进行批量删除操作，收藏的镜像在“我的收藏”列表中。</p>
 										</section>
 									</div>
 								</div>
-								<!-- <div class="page-wrapper tab-pane fade" id="product-info5-3">
-									<div class="page-inner">
-										<section class="normal">
-
-											<h1 id="我的收藏">我的收藏</h1>
-											<p>在镜像中心中点击镜像文件，进入镜像信息，点击“收藏”，即可用把镜像文件保存我我的收藏中，以便经常使用。</p>
-											<p>
-												<img src="/images/image-info.png" alt="ci">
-											</p>
-											<p>
-												<img src="/images/image-collect.png" alt="ci">
-											</p>
-										</section>
-									</div>
-								</div> -->
 
 								<div class="page-wrapper tab-pane fade" id="product-info6">
 									<div class="page-inner">
 										<section class="normal">
 											<h1 id="租户管理">租户管理</h1>
 											<p>在租户管理总，云平台管理员可以对租户进行创建、修改、查看、删除等操作。</p>
+											<p><img src="/images/user1.png" alt="user"></p>
 											<ul class="info">
 												<li>创建租户</li>
 												<li>查看/修改/删除租户</li>
@@ -722,22 +753,9 @@
 											<p>
 												<img src="/images/user-create6.png">
 											</p>
-											<p>填写完基本信息，点击“下一步”按钮：</p>
-											<p>
-												<img src="/images/user-create2.png" alt="user">
-											</p>
-											<p>填写资源配置信息，点击“完成”按钮：</p>
-											<p>
-												<img src="/images/user-create3.png" alt="user">
-											</p>
-											<p>弹出“确定创建新租户？”提示框，点击“确定”按钮，完成租户创建。</p>
-											<p>
-												<img src="/images/user-create4.png" alt="user">
-											</p>
+											<p>填写完符合规则的信息后，点击“保存”按钮，完成用户的创建。</p>
 											<p>页面跳转回租户列表界面，列表中新增一条租户信息。</p>
-											<p>
-												<img src="/images/user-create5.png" alt="user">
-											</p>
+											
 
 										</section>
 									</div>
@@ -749,29 +767,28 @@
 											<h1 id="修改租户信息">查看/修改/删除租户</h1>
 											<p>将鼠标移至“登录账号”名称上方，会出现提示框“查看租户信息”，点击进入租户信息页：</p>
 											<p>
-												<img src="/images/user-detail1.png">
+												<img src="/images/user-info1.png">
 											</p>
 											<p>在租户信息页也可以进行租户信息的修改，如图所示，输入框显示为灰色背景的信息项是不能被修改的信息，
 												输入框显示为白色背景的信息项为可以修改的信息。点击“下一步”进入资源配置信息的修改。</p>
 											<p>
-												<img src="/images/user-detail2.png">
+												<img src="/images/user-info2.png">
 											</p>
-											<p>点击“修改”：</p>
+											<p>当前租户查看自己的信息，并可以修改部分信息。</p>
 											<p>
-												<img src="/images/user-detail3.png">
+												<img src="/images/user-info3.png">
 											</p>
-											<p>弹出“确定修改租户信息？”提示框，点击“确定”按钮，完成租户信息的修改。</p>
+											<p>当前租户查看自己的资源使用情况，服务详情中显示当前租户所创建的服务个数和实例个数，而上线均未限制；资源使用情况显示当前租户的资源总量和资源使用量。</p>
 											<p>
-												<img src="/images/user-detail4.png">
+												<img src="/images/user-info4.png">
 											</p>
-											<p>租户信息可以多条同时删除，勾选租户前面的复选框，然后点击“更多操作”按钮，再点击“删除”按钮：</p>
+											<p>当前租户可以修改自己的登录密码。</p>
 											<p>
-												<img src="/images/user-del.png" alt="user">
+												<img src="/images/user-info5.png">
 											</p>
-											<p>弹出“确定删除多个租户吗？”提示框，点击“确定”按钮，完成租户删除。</p>
-											<p>
-												<img src="/images/user-del2.png" alt="user">
-											</p>
+											<h4>注：上述为租户创建用户和查看自己详细信息的操作，若是管理员，则可创建租户并为租户分配资源。</h4> 
+											
+											
 
 										</section>
 									</div>
@@ -885,6 +902,26 @@
 										</section>
 									</div>
 								</div>
+								
+								<div class="page-wrapper tab-pane fade" id="product-info7-4">
+									<div class="page-inner">
+										<section class="normal">
+
+											<h1 id="创建集群节点">集群拓扑</h1>
+											<p>进入集群拓扑界面：</p>
+											<p>
+												<img src="/images/cluster-topo1.png" alt="cluster">
+											</p>
+											<p>标签从左到右分别表示，master主节点、node从节点、pod容器、service服务。每个标签都可以点击，展示不同维度的集群拓扑关系。</p>
+											<p><img src="/images/cluster-topo3.png" alt="cluster"></p>
+											<p>可以通过服务筛选所需要查看的集群拓扑关系。</p>
+											<p>
+												<img src="/images/cluster-topo2.png" alt="cluster">
+											</p>
+											
+										</section>
+									</div>
+								</div>
 
 								<div class="page-wrapper tab-pane fade" id="product-info8">
 									<div class="page-inner">
@@ -922,54 +959,54 @@
 												用来创建一个自定义的image，包含了用户指定的软件依赖等。当前目录下包含Dockerfile，使用命令build来创建新的image，并命名为tenxcloud/helloworld。</p>
 											<pre>
 												<code>
-													docker build -t tenxcloud/helloworld .
+docker build -t tenxcloud/helloworld .
 												</code>
 											</pre>
 											<h3 id="dockerfile-的关键字">Dockerfile 的关键字</h3>
 											<p>如何编写Dockerfile，格式如下：</p>
 											<pre>
 												<code>
-													# Comment
-													INSTRUCTION arguments
+# Comment
+INSTRUCTION arguments
 													
-													FROM
-													基于哪个base镜像
+FROM
+基于哪个base镜像
 													
-													RUN
-													安装软件或者运行命令用
+RUN
+安装软件或者运行命令用
 													
-													MAINTAINER
-													镜像创建者
+MAINTAINER
+镜像创建者
 													
-													CMD
-													container启动时执行的命令，但是一个Dockerfile中只能有一条CMD命令，多条则只执行最后一条CMD。CMD主要用于container时启动指定的服务，当docker run command的命令匹配到CMD command时，会替换CMD执行的命令。
+CMD
+container启动时执行的命令，但是一个Dockerfile中只能有一条CMD命令，多条则只执行最后一条CMD。CMD主要用于container时启动指定的服务，当docker run command的命令匹配到CMD command时，会替换CMD执行的命令。
 													
-													ENTRYPOINT
-													container启动时执行的命令，但是一个Dockerfile中只能有一条ENTRYPOINT命令，如果多条，则只执行最后一条。ENTRYPOINT没有CMD的可替换特性
+ENTRYPOINT
+container启动时执行的命令，但是一个Dockerfile中只能有一条ENTRYPOINT命令，如果多条，则只执行最后一条。ENTRYPOINT没有CMD的可替换特性
 													
-													USER
-													使用哪个用户跑container
+USER
+使用哪个用户跑container
 													
-													EXPOSE
+EXPOSE
 													
-													container内部服务开启的端口。主机上要用还得在启动container时，做host-container的端口映射：
-													docker run -d -p 127.0.0.1:3000:22 ubuntu-ssh
-													container ssh服务的22端口被映射到主机的33301端口
+container内部服务开启的端口。主机上要用还得在启动container时，做host-container的端口映射：
+docker run -d -p 127.0.0.1:3000:22 ubuntu-ssh
+container ssh服务的22端口被映射到主机的33301端口
 													
-													ENV
-													用来设置环境变量，比如：ENV ROOT_PASS tenxcloud
+ENV
+用来设置环境变量，比如：ENV ROOT_PASS tenxcloud
 													
-													ADD
-													将文件&lt;src&gt;拷贝到container的文件系统对应的路径&lt;dest&gt;。ADD只有在build镜像的时候运行一次，后面运行container的时候不会再重新加载了。
+ADD
+将文件&lt;src&gt;拷贝到container的文件系统对应的路径&lt;dest&gt;。ADD只有在build镜像的时候运行一次，后面运行container的时候不会再重新加载了。
 													
-													VOLUME
-													可以将本地文件夹或者其他container的文件夹挂载到container中。
+VOLUME
+可以将本地文件夹或者其他container的文件夹挂载到container中。
 													
-													WORKDIR
-													切换目录用，可以多次切换(相当于cd命令)，对RUN、CMD、ENTRYPOINT生效
+WORKDIR
+切换目录用，可以多次切换(相当于cd命令)，对RUN、CMD、ENTRYPOINT生效
 													
-													ONBUILD
-													ONBUILD 指定的命令在构建镜像时并不执行，而是在它的子镜像中执行
+ONBUILD
+ONBUILD 指定的命令在构建镜像时并不执行，而是在它的子镜像中执行
 												</code>
 											</pre>
 											<p>
@@ -985,23 +1022,23 @@
 											<h3 id="一个完整的-dockerfile-的例子">一个完整的 Dockerfile 的例子</h3>
 											<pre>
 												<code>
-													# Dockerfile to create a docker image
-													# Base image
-													FROM golang:1.4.2
+# Dockerfile to create a docker image
+# Base image
+FROM golang:1.4.2
 														
-													# Add project folder to the image
-													ADD . $GOPATH/src
+# Add project folder to the image
+ADD . $GOPATH/src
 														
-													ADD run.sh /run.sh
+ADD run.sh /run.sh
 														
-													RUN chmod +x /run.sh
+RUN chmod +x /run.sh
 														
-													# Expose the container port
-													EXPOSE 8080
+# Expose the container port
+EXPOSE 8080
 														
-													WORKDIR $GOPATH/src
+WORKDIR $GOPATH/src
 														
-													CMD ["/run.sh"]
+CMD ["/run.sh"]
 												</code>
 											</pre>
 
@@ -1075,6 +1112,8 @@
 			$("#product-info4").addClass("active in");
 			$("#product-info4-1").removeClass("active in");
 			$("#product-info4-2").removeClass("active in");
+			$("#product-info4-3").removeClass("active in");
+			$("#product-info4-4").removeClass("active in");
 			$(".chapter").removeClass("active");
 		});
 		$("#a5").click(function() {
@@ -1112,6 +1151,7 @@
 			$("#product-info7-1").removeClass("active in");
 			$("#product-info7-2").removeClass("active in");
 			$("#product-info7-3").removeClass("active in");
+			$("#product-info7-4").removeClass("active in");
 			$(".chapter").removeClass("active");
 		});
 		$("#a8").click(function() {
@@ -1127,23 +1167,7 @@
 			$(".chapter").removeClass("active");
 		});
 
-		/* $(document).on('click', 'a[href="../../../index.html"]',
-				function(event) {
-					// alert('请求完成');
-					window.location = '/doc/index.html';
-				});
-		$(document).on('click', 'a[href="../index.html"]', function(event) {
-			// alert('请求完成');
-			window.location = '/doc/index.html';
-		});
-
-		var _hmt = _hmt || [];
-		(function() {
-			var hm = document.createElement("script");
-			hm.src = "//hm.baidu.com/hm.js?c0d24ad0dd4608e34018b363c3084c64";
-			var s = document.getElementsByTagName("script")[0];
-			s.parentNode.insertBefore(hm, s);
-		})(); */
+		
 	</script>
 </body>
 </html>
