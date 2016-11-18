@@ -20,6 +20,7 @@ package com.bonc.epm.paas.shera.model;
 public class GitConfig {
     private String branch;
     private Repository repo;
+    
     public String getBranch() {
         return branch;
     }

@@ -29,7 +29,9 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 public class SheraClientService {
     
     @Value("${shera.api.endpoint}")
-    private String endpoint;
+    private String endpoint="http://192.168.0.76:8282/";
+    private String username="shera";
+    private String password="shera";
     
     public SheraAPIClientInterface getClient() {
         String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
@@ -37,14 +39,25 @@ public class SheraClientService {
     }
 
     public SheraAPIClientInterface getclient(String namespace) {
-        return new SheraAPIClient(endpoint,namespace,new RestFactory());
+        return new SheraAPIClient(endpoint, namespace, username, password,new RestFactory());
     }
     
     public Job generateJob(String id ,String nextExecTime, String jdkVersion) {
         Job job = new Job();
         job.setId(id);
-        job.setNextExecTime(nextExecTime);
         job.setJdkVersion(jdkVersion);
         return job;
     }
+    
+/*    public static void main(String[] args) {
+        SheraClientService sheraClientService = new SheraClientService();
+        SheraAPIClientInterface client = sheraClientService.getClient();
+        try {
+            client.getAllJobs();
+            System.out.println(client.getAllJobs());
+        }
+        catch (SheraClientException e) {
+           e.printStackTrace();
+        }
+    }*/
 }

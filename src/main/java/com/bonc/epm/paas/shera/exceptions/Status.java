@@ -20,6 +20,10 @@ import com.bonc.epm.paas.shera.model.AbstractSheRaModel;
  * @since
  */
 public class Status extends AbstractSheRaModel {
+    
+/*    protected Status() {
+        super(Kind.STATUS);
+    }*/
     private String status, message, reason;
     private int code;
     public String getStatus() {

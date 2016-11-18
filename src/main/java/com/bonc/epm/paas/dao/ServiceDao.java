@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Service;
 /**
  * 服务DAO类
