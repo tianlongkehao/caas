@@ -235,6 +235,23 @@ $(document).ready(function(){
     	   $(".editCon").hide();
     	   $(".oldCon").show();
        });
+       //可以编辑的段口号
+       $(".editPortConfig").hide();
+       $("#editServiceAddrBtn").click(function(){
+    	   $(".editPortConfig").show();
+    	   $(".oldPortConfig").hide();
+       } );
+       $("#savePortEdit").click(function(){
+ // 			if(false==checkSerAddr()){return ;};
+   	   $(".editPortConfig").hide();
+ //  	   editSerAddr();
+   	   $(".oldCon").show();
+      });
+      $("#canclPortEdit").click(function(){
+   	   $(".editPortConfig").hide();
+   	   $("#BaseSerForm").resetForm();
+   	   $(".oldPortConfig").show();
+      });
 });/*ready*/
   
 Date.prototype.Format = function(fmt){
@@ -418,8 +435,8 @@ function editSerAddr(){
 		var editServiceAddr=$('#editServiceAddr').val();
 		var editProxyPath=$('#editProxyPath').val();
 		var serId=$('#serId').val();
-		var prex=	$('#addrPrex').html();
-    editServiceAddr=prex+editServiceAddr;
+//		var prex=	$('#addrPrex').html();
+    editServiceAddr=editServiceAddr;
 			$.ajax({
         		type: "GET",
            url: ctx + "/service/detail/editSerAddr.do?serviceAddr="+editServiceAddr+"&proxyPath="+editProxyPath+"&serId="+serId,

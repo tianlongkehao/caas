@@ -2121,9 +2121,9 @@ public class ServiceController {
             ser.setSessionAffinity(service.getSessionAffinity());
             ser.setNodeIpAffinity(service.getNodeIpAffinity());
             ser.setCheckPath(service.getCheckPath());
-            ser.setTimeoutDetction(service.getTimeoutDetction());
-            ser.setPeriodDetction(service.getPeriodDetction());
-            ser.setInitialDelay(service.getInitialDelay());
+            ser.setTimeoutDetction(StringUtils.isNotBlank(service.getTimeoutDetction().toString())?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
+            ser.setPeriodDetction(StringUtils.isNotBlank(service.getPeriodDetction().toString())?service.getPeriodDetction():ServiceConstant.PERIOD);
+            ser.setInitialDelay(StringUtils.isNotBlank(service.getInitialDelay().toString())?service.getInitialDelay():ServiceConstant.INNIALDELAY);
             if(StringUtils.isNotBlank(service.getVolName())){
                 ser.setVolName(service.getVolName());
                 ser.setMountPath(service.getMountPath());
@@ -2183,9 +2183,9 @@ public class ServiceController {
                      ser.setSessionAffinity(service.getSessionAffinity());
                      ser.setNodeIpAffinity(service.getNodeIpAffinity());
                      ser.setCheckPath(service.getCheckPath());
-                     ser.setTimeoutDetction(service.getTimeoutDetction());
-                     ser.setPeriodDetction(service.getPeriodDetction());
-                     ser.setInitialDelay(service.getInitialDelay());
+                     ser.setTimeoutDetction(StringUtils.isNotBlank(service.getTimeoutDetction().toString())?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
+                     ser.setPeriodDetction(StringUtils.isNotBlank(service.getPeriodDetction().toString())?service.getPeriodDetction():ServiceConstant.PERIOD);
+                     ser.setInitialDelay(StringUtils.isNotBlank(service.getInitialDelay().toString())?service.getInitialDelay():ServiceConstant.INNIALDELAY);
                      if(StringUtils.isNotBlank(service.getVolName())){
                          ser.setVolName(service.getVolName());
                          ser.setMountPath(service.getMountPath());
@@ -2242,9 +2242,9 @@ public class ServiceController {
             ser.setSessionAffinity(service.getSessionAffinity());
             ser.setNodeIpAffinity(service.getNodeIpAffinity());
             ser.setCheckPath(service.getCheckPath());
-            ser.setTimeoutDetction(service.getTimeoutDetction());
-            ser.setPeriodDetction(service.getPeriodDetction());
-            ser.setInitialDelay(service.getInitialDelay());
+            ser.setTimeoutDetction(StringUtils.isNotBlank(service.getTimeoutDetction().toString())?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
+            ser.setPeriodDetction(StringUtils.isNotBlank(service.getPeriodDetction().toString())?service.getPeriodDetction():ServiceConstant.PERIOD);
+            ser.setInitialDelay(StringUtils.isNotBlank(service.getInitialDelay().toString())?service.getInitialDelay():ServiceConstant.INNIALDELAY);
             if(StringUtils.isNotBlank(service.getVolName())){
                 ser.setVolName(service.getVolName());
                 ser.setMountPath(service.getMountPath());

@@ -60,8 +60,8 @@
 								<span id="oldProxyPath">${service.proxyPath}</span>
 								</a><i id="editServiceAddrBtn" style="margin-left:20px" class="fa fa-edit"></i></li>
 							<li class="editCon">服务地址：
-							  <prex id=addrPrex ></prex>
-								<input id="editServiceAddr" type="text" value="">/
+							 <!--  <prex id=addrPrex ></prex> -->
+								<input id="editServiceAddr" type="text" value="${service.serviceAddr}">/
 								<input id="editProxyPath" type="text" value="${service.proxyPath}">
 								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i>
 								<i id="canclEdit" style="margin-left:6px" class="fa fa-times"></i>
@@ -478,19 +478,27 @@
 										<td>服务地址</td>
 									</tr>
 								</thead>
+								<form id="portConfigForm" name="portConfigForm">
 								<tbody>
 									<c:forEach items="${portConfigList }" var="portConfig">
+									<input name="id" hidden="true" value="${service.id} " />
 										<tr>
 											<td style="width:10%;text-indent: 15px;">${service.serviceName }</td>
-											<td>${portConfig.containerPort }</td>
+											<td><span class="oldPortConfig">${portConfig.containerPort }</span>
+											<span hidden="true" class="editPortConfig"><input type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
+											</td>
 											<td>${portConfig.protocol }</td>
 											<td>${portConfig.mapPort }</td>
 											<td><a
 												href="${service.serviceAddr}/${service.proxyPath}"
 												target="_blank">
 													${service.serviceAddr}/${service.proxyPath} </a></td>
+											<td><input id="editServiceAddrBtn" type="button" value="修改"  class="oldPortConfig" />	
+											<input id="savePortEdit" hidden=true type="button" value="提交"  class="editPortConfig" />
+                    <input id="canclPortEdit" hidden=true type="button" value="取消"  class="editPortConfig" />	</td>
 										</tr>
 									</c:forEach>
+									
 									<%-- 									<tr>
 										<td>${service.serviceName }</td>
 										<td>8080</td>
@@ -501,6 +509,7 @@
 											target="_blank">${service.serviceAddr}/${service.proxyPath}</a></td>
 									</tr> --%>
 								</tbody>
+								 </form>
 							</table>
 						</section>
 					</div>
