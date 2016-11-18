@@ -156,10 +156,14 @@ $(document).ready(function(){
     		   }
     	   })
        });
+
+       
+ 
        //可编辑的基本信息
        			//编辑
        $(".editBaseCon").hide();
        $("#restSerBtn").hide();
+       $("#canclSerBtn").hide();
        $("#editSerBtn").click(function(){
     	   beforeEditDo();
     	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
@@ -171,9 +175,115 @@ $(document).ready(function(){
     	   			}
       	 $("#saveSerBtn").show();
       	 $("#restSerBtn").show();
+      	$("#canclSerBtn").show();
        });
        			//保存
        $("#saveSerBtn").click(function(){
+           //提交之前验证
+//           $("#BaseSerForm").click(function(){
+       		//判断服务名称
+       		var name = $('#serviceName').val();
+       		// check the name of container
+       	    if(!name || name.length < 1){
+       	      layer.tips('服务名称不能为空','#serviceName',{tips: [1, '#3595CC']});
+       	      $('#serviceName').focus();
+       	      return;
+       	    }
+       	    if(name.search(/^[a-z][a-z0-9-]*$/) === -1){
+       	      layer.tips('服务名称只能由小写字母、数字及横线组成，且首字母不能为数字及横线。','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+       	      $('#serviceName').focus();
+       	      return;
+       	    }
+       	    if(name.length > 64 || name.length < 3){
+       	      layer.tips('服务名称为3~64个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+       	      $('#serviceName').focus();
+       	      return;
+       	    }
+       	    
+       	    //自定义启动命令的判断
+       	    var startCommand_input = $("#startCommand_input").val();
+       	    if($("#startCommand").prop("checked")==true){
+       		    if(!startCommand_input || startCommand_input.length < 1){
+       			      layer.tips('自定义启动命令不能为空','#startCommand_input',{tips: [1, '#3595CC']});
+       			      $('#startCommand_input').focus();
+       			      return;
+       		    }		   
+
+       	    } else {
+       	    	$("#startCommand_input").val(null);
+       	    }
+       	    
+       	  //检查服务状态的判断
+       	    var checkPath = $("#checkSerStatus_input").val();
+       	    var initialDelay = $("#initialDelay").val();
+       	    var timeoutDetction = $("#timeoutDetction").val();
+       	    var periodDetction = $("#periodDetction").val();
+       	    if($("#checkSerStatus").prop("checked")==true){
+       		    if(!checkPath || checkPath.length < 1){
+       			      layer.tips('测试路径不能为空','#checkSerStatus_input',{tips: [1, '#3595CC']});
+       			      $('#checkSerStatus_input').focus();
+       			      return;
+       			}
+       		    if(checkPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+       			      layer.tips('测试路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+       			      $('#checkSerStatus_input').focus();
+       			      return;
+       		    }
+       		    if(checkPath.length > 64 || checkPath.length < 3){
+       			      layer.tips('测试路径为3~64个字符','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+       			      $('#checkSerStatus_input').focus();
+       			      return;
+       		    }
+       		    
+       		    if (!initialDelay || initialDelay.length < 1) {
+       		    	  layer.tips('检测延迟时间不能为空','#initialDelay',{tips: [1, '#3595CC'],time: 3000});
+       			      $('#initialDelay').focus();
+       			      return;
+       		    }
+       		    
+       		    if (!timeoutDetction || timeoutDetction.length < 1) {
+       		    	  layer.tips('检测超时时间不能为空','#timeoutDetction',{tips: [1, '#3595CC'],time: 3000});
+       			      $('#timeoutDetction').focus();
+       			      return;
+       		    }
+       		    
+       		    if (!periodDetction || periodDetction.length < 1) {
+       		    	  layer.tips('检测频率时间不能为空','#periodDetction',{tips: [1, '#3595CC'],time: 3000});
+       			      $('#periodDetction').focus();
+       			      return;
+       		    }
+       		    
+       	    } else {
+       	    	$("#checkSerStatus_input").val(null);
+       		    $("#initialDelay").val(null);
+       		    $("#timeoutDetction").val(null);
+       		    $("#periodDetction").val(null);
+       	    }
+       	    //服务路径的判断
+       	    var servicePath = $("#webPath").val();
+       	    if(!servicePath || servicePath.length < 1){
+       		      layer.tips('服务路径不能为空','#webPath',{tips: [1, '#3595CC']});
+       		      $('#webPath').focus();
+       		      return;
+       		}
+       	    if(servicePath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+       	      layer.tips('服务路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#webPath',{tips: [1, '#3595CC'],time: 3000});
+       	      $('#webPath').focus();
+       	      return;
+       	    }
+       	    //nginx代理路径的判断
+       	    var proxyPath = $("#nginxPath").val();
+       	    if(!proxyPath || proxyPath.length < 1){
+       		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
+       		      $('#nginxPath').focus();
+       		      return;
+       		}
+       	    if(proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+       		      layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+       		      $('#nginxPath').focus();
+       		      return;
+       	    }
+           //})
     	   $(".editBaseCon").hide();
     	   commBaseSerForm();
     	   $(".oldBaseCon").show();
@@ -184,6 +294,7 @@ $(document).ready(function(){
     	   $(".oldBaseCon").show();
     	   $("#saveSerBtn").hide();
     	   $("#restSerBtn").hide();
+    	   $("#canclSerBtn").hide();
        });
        	//reset
        $("#restSerBtn").click(function(){
@@ -236,24 +347,31 @@ $(document).ready(function(){
     	   $(".oldCon").show();
        });
        //可以编辑的段口号
-       $(".editPortConfig").hide();
-       $("#editServiceAddrBtn").click(function(){
-    	   $(".editPortConfig").show();
-    	   $(".oldPortConfig").hide();
-       } );
-       $("#savePortEdit").click(function(){
- // 			if(false==checkSerAddr()){return ;};
-   	   $(".editPortConfig").hide();
- //  	   editSerAddr();
-   	   $(".oldCon").show();
-      });
-      $("#canclPortEdit").click(function(){
-   	   $(".editPortConfig").hide();
-   	   $("#BaseSerForm").resetForm();
-   	   $(".oldPortConfig").show();
-      });
+       $("#editPortBtn").show();
+       $("savePortEdit").hide();
+       $("canclPortEdit").hide();
+//       $(".editCon").hide();
+//       $("#editServiceAddrBtn").click(function(){
+//    	   getprex();
+//    	   $(".editCon").show();
+//    	   $(".oldCon").hide();
+//       });
+//       $("#saveEdit").click(function(){
+//   			if(false==checkSerAddr()){return ;};
+//    	   $(".editCon").hide();
+//    	   editSerAddr();
+//    	   $(".oldCon").show();
+//       });
+//       $("#canclEdit").click(function(){
+//    	   $(".editCon").hide();
+//    	   $(".oldCon").show();
+//       });
 });/*ready*/
   
+function editPortComm(portConfigId,containerPort){
+	   alert(portConfigId);
+//	   $(this).parent().(".e")
+}
 Date.prototype.Format = function(fmt){
 	var o = {
 			"M+":this.getUTCMonth()+1,

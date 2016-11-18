@@ -135,7 +135,7 @@
 									<td>服务名称：
 									<span id="oldSerName" class="oldBaseCon">${service.serviceName }</span>
 									<span id="editSerName" hidden="true" class="editBaseCon">
-									   <input id="newSerName" name="serviceName" type="text" value=${service.serviceName } />
+									   <input id="serviceName" name="serviceName" type="text" value=${service.serviceName } />
 									</span>
 									</td>
 									<c:if test="${service.status==1 }">
@@ -171,7 +171,7 @@
 									<td>启动命令：
 									<span id="oldStartComm" class="oldBaseCon">默认</span>
                  <span id="editStartComm" hidden="true" class="editBaseCon">
-                 <input id="newStartComm" name="startCommand" type="text" value="${service.startCommand }" />
+                 <input id="startCommand_input" name="startCommand" type="text" value="${service.startCommand }" />
                  </span>
 									</td>
 									</c:if>
@@ -179,13 +179,13 @@
 									<td>启动命令：
 									<span id="oldStartComm" class="oldBaseCon">${service.startCommand }</span>
                    <span id="editStartComm" hidden="true" class="editBaseCon">
-                      <input id="newStartComm" name="startCommand" type="text" value="${service.startCommand }" />
+                      <input id="startCommand_input" name="startCommand" type="text" value="${service.startCommand }" />
                    </span>
 									</td>
 									</c:if>
 									<td >服务访问路径：<span class="oldBaseCon_Run oldBaseCon">${service.servicePath }</span>
 									<span id="editSerPath" hidden="true" class="editBaseCon editBaseCon_Run">
-                   <input id="newSerPath" name="servicePath" type="text" value="${service.servicePath }" />
+                   <input id="webPath" name="servicePath" type="text" value="${service.servicePath }" />
                 </span>
 									</td>
 								</tr>
@@ -222,7 +222,7 @@
 									<td>nginx代理路径：
 									<span class="oldBaseCon_Run oldBaseCon">${service.proxyPath }</span>
                    <span id="editProxyPath" hidden="true" class="editBaseCon_Run editBaseCon">
-                   <input id="newProxyPath" name="proxyPath" type="text" value="${service.proxyPath }" />
+                   <input id="nginxPath" name="proxyPath" type="text" value="${service.proxyPath }" />
                 </span>
 									</td>
 								</tr>
@@ -265,24 +265,24 @@
                  <tr hidden="true" class="editBaseCon_Run editBaseCon">
                  <td>检查状态：
                    <span id="editCheckPath" hidden="true" class="editBaseCon_Run editBaseCon">
-                   <input id="newCheckPath" name="checkPath" type="text" value="${service.checkPath }"  />
+                   <input id="checkSerStatus_input" name="checkPath" type="text" value="${service.checkPath }"  />
                 </span>
                   </td>
                   <td>检测延迟：
                   <span id="editInitDelay" hidden="true" class="editBaseCon_Run editBaseCon">
-                  <input id="newInitDelay" name="initialDelay" type="text" value="${service.initialDelay }"  />
+                  <input id="initialDelay" name="initialDelay" type="text" value="${service.initialDelay }"  />
                 </span>
 		              s</td>
 		          </tr>
 		          <tr hidden="true" class="editBaseCon_Run editBaseCon">
 		              <td>检测超时：
                    <span id="editTiOut" hidden="true" class="editBaseCon_Run editBaseCon">
-                   <input id="newTiOut" name="timeoutDetction" type="text" value="${service.timeoutDetction }" />
+                   <input id="timeoutDetction" name="timeoutDetction" type="text" value="${service.timeoutDetction }" />
                 </span>
                    s</td>
                    <td>检测频率：
                    <span id="editPeriod" hidden="true" class="editBaseCon_Run editBaseCon">
-                   <input id="newPeriod" name="periodDetction" type="text" value="${service.periodDetction }" />
+                   <input id="periodDetction" name="periodDetction" type="text" value="${service.periodDetction }" />
                 </span>
                   s</td>
               </tr>
@@ -478,14 +478,14 @@
 										<td>服务地址</td>
 									</tr>
 								</thead>
-								<form id="portConfigForm" name="portConfigForm">
 								<tbody>
 									<c:forEach items="${portConfigList }" var="portConfig">
 									<input name="id" hidden="true" value="${service.id} " />
 										<tr>
 											<td style="width:10%;text-indent: 15px;">${service.serviceName }</td>
 											<td><span class="oldPortConfig">${portConfig.containerPort }</span>
-											<span hidden="true" class="editPortConfig"><input type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
+											<span hidden="true" class="editPortConfig"><input type="text" value="${portConfig.containerPort }" name="containerPort"/></span> 
+											
 											</td>
 											<td>${portConfig.protocol }</td>
 											<td>${portConfig.mapPort }</td>
@@ -493,9 +493,11 @@
 												href="${service.serviceAddr}/${service.proxyPath}"
 												target="_blank">
 													${service.serviceAddr}/${service.proxyPath} </a></td>
-											<td><input id="editServiceAddrBtn" type="button" value="修改"  class="oldPortConfig" />	
-											<input id="savePortEdit" hidden=true type="button" value="提交"  class="editPortConfig" />
-                    <input id="canclPortEdit" hidden=true type="button" value="取消"  class="editPortConfig" />	</td>
+													<td>
+											<input id="editPortBtn" value="修改"  type="button" onclick="editPortComm(${portConfig.containerPort },${portConfig.containerPort })">
+                    <input id="savePortEdit" hidden="true" value="保存" type="button" >
+                    <input id="canclPortEdit" hidden="true" value="取消" type="button" >    
+													</td>
 										</tr>
 									</c:forEach>
 									
@@ -509,7 +511,6 @@
 											target="_blank">${service.serviceAddr}/${service.proxyPath}</a></td>
 									</tr> --%>
 								</tbody>
-								 </form>
 							</table>
 						</section>
 					</div>
