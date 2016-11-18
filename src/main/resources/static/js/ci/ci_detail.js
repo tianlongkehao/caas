@@ -146,7 +146,7 @@ function loadInvokeData() {
 				for (var i = 0; i<invokeList.length;i++ ) {
 					var invoke = invokeList[i];
 					var order = invoke.jobOrderId;
-					if (invoke.invokeType == 1) {
+					if (invoke.invokeType == 2) {
 						//加载是maven类型的构建数据
 						var maven = loadMavenData(order,invoke);
 				    	$("#sortable").append(maven);
@@ -160,7 +160,7 @@ function loadInvokeData() {
 				    		document.getElementById(inBV).checked = true;
 				    	}
 					}
-					if (invoke.invokeType == 2) {
+					if (invoke.invokeType == 1) {
 						//加载ant类型的构建数据
 						var ant = loadAntData(order,invoke);
 						$("#sortable").append(ant);

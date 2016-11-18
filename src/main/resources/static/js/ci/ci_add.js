@@ -340,7 +340,7 @@ function checkCodeCiAdd(){
         	var mvnSFId = "#mavenSetFile-" + count;
         	var MVnGSFID = "#mavenGlobalSetFile-" + count;
         	
-        	var invokeType = 1;
+        	var invokeType = 2;
         	var mavenVersion = $(mvnVerId).val();
         	var pomLocation = $(pomId).val();
         	var mavenProperty = $(mvnProId).val();
@@ -379,7 +379,7 @@ function checkCodeCiAdd(){
         	var antPId = "#antProperties-" + count;
         	var antJOId = "#antJavaOpts-" + count;
         	
-        	var invokeType = 2;
+        	var invokeType = 1;
         	var antVersion = $(antVId).val();
         	var antBuildFileLocation = $(antBFLId).val();
         	var antProperties = $(antPId).val();

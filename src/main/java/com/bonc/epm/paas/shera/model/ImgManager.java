@@ -21,6 +21,7 @@ public class ImgManager {
     private String dockerFileContent;
     private String dockerFile;
     private String imgName;
+    private String imgVersion;
     
     public String getDockerFileContent() {
         return dockerFileContent;
@@ -40,4 +41,11 @@ public class ImgManager {
     public void setImgName(String imgName) {
         this.imgName = imgName;
     }
+    public String getImgVersion() {
+        return imgVersion;
+    }
+    public void setImgVersion(String imgVersion) {
+        this.imgVersion = imgVersion;
+    }
+    
 }

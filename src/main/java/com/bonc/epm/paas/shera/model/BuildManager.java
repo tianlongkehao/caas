@@ -20,6 +20,7 @@ import java.util.List;
  * @since
  */
 public class BuildManager {
+    //0:none、1：ant、2：maven、3：shell
     private List<Integer> seqNos;
     private List<String> cmds;
     private List<AntConfig> antConfigs;

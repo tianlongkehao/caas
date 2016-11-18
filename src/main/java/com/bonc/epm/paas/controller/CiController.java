@@ -52,6 +52,11 @@ import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.JdkList;
+import com.bonc.epm.paas.shera.model.Job;
+import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateUtils;
@@ -116,6 +121,12 @@ public class CiController {
     @Value("${paas.codetemp.path}")
 	private String CODE_TEMP_PATH = "./codetemp";
 	
+    /**
+     * SheraClientService 接口
+     */
+    @Autowired
+    private SheraClientService sheraClientService;
+    
     /**
      * 进入构建主页面
      * 
@@ -219,8 +230,14 @@ public class CiController {
         List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction.DESC,"constructDate")));
         //代码构建
         if (ci.getType() == 1) {
-            List<CiInvoke> ciInvokeList = ciInvokeDao.findByCiId(ci.getId());
-            model.addAttribute("ciInvokeList", ciInvokeList);
+            try {
+                SheraAPIClientInterface client = sheraClientService.getClient();
+                JdkList jdkList = client.getAllJdk();
+                model.addAttribute("jdkList",jdkList.getItems());
+            }
+            catch (SheraClientException e) {
+                e.printStackTrace();
+            }
         }
         //dockerfile构建
         if (ci.getType() == 2) {
@@ -446,6 +463,14 @@ public class CiController {
     @RequestMapping(value={"ci/add"},method=RequestMethod.GET)
 	public String addProject(Model model){
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            JdkList jdkList = client.getAllJdk();
+            model.addAttribute("jdkList",jdkList.getItems());
+        }
+        catch (SheraClientException e) {
+            e.printStackTrace();
+        }
         model.addAttribute("username", cuurentUser.getUserName());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_add.jsp";
@@ -518,14 +543,9 @@ public class CiController {
         if (!StringUtils.isEmpty(ciInvokeList)) {
             ciInvokeDao.save(ciInvokeList);
             LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
-            return "redirect:/ci";
         }
-        else {
-            LOG.error("save codeci error:");
-            ciDao.delete(ci.getId());
-            return "redirect:/ci"; 
-        }
-        
+//        Job job = sheraClientService.genenateJob();
+        return "redirect:/ci"; 
     }
     
     /**

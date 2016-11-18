@@ -50,7 +50,7 @@ public class CiInvoke {
     private Date createDate;
     
     /**
-     * 构建时调动的方式：1:maven、2:ant、3：shell;
+     * 构建时调动的方式：0:none、1:ant、2:maven、3：shell;
      */
     private Integer invokeType;
     

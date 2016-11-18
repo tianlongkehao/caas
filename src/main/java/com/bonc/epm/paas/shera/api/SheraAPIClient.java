@@ -21,6 +21,7 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.Jdk;
+import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
@@ -193,6 +194,19 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     public Job getJob(String name) throws SheraClientException {
         try {
             return api.getJob(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public JdkList getAllJdk() throws SheraClientException {
+        try {
+            return api.getAllJdk();
         }
         catch (NotFoundException e) {
             return null;

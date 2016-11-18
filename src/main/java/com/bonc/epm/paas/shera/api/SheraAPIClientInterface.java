@@ -15,6 +15,7 @@ import javax.ws.rs.PathParam;
 
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.Jdk;
+import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
@@ -64,6 +65,8 @@ public interface SheraAPIClientInterface {
     public Jdk deleteJdk(String jdkVersion) throws SheraClientException;
     
     public Jdk createJdk(Jdk jdk) throws SheraClientException;
+    
+    public JdkList getAllJdk() throws SheraClientException;
     
     public JobExecution deleteExecution(String jobId, Integer executionId) throws SheraClientException;
     
