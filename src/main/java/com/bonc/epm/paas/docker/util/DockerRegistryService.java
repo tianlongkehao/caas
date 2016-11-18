@@ -14,6 +14,7 @@ package com.bonc.epm.paas.docker.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.bonc.epm.paas.docker.api.DockerRegistryAPIClient;
@@ -38,19 +39,20 @@ public class DockerRegistryService {
     private static final Logger LOG = LoggerFactory.getLogger(DockerRegistryService.class);
     
     @Value("${docker.registry.api.url}")
-    private String url;
+    private String url ="http://192.168.0.76:5000";
     @Value("${docker.registry.api.username}")
-    private String username;
+    private String username="docker";
     @Value("${docker.registry.api.password}")
-    private String password;
+    private String password="docker";
     
     public DockerRegistryAPIClientInterface getClient() {
-        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-        return getClient(namespace);
+        return new DockerRegistryAPIClient(url, username, password,new RestFactory());
     }
     
-    public DockerRegistryAPIClientInterface getClient(String namespace) {
-        return new DockerRegistryAPIClient(url, username, password,new RestFactory());
+    public static void main(String[] args) {
+        DockerRegistryService dockerRegistryService = new DockerRegistryService();
+        DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
+        System.out.println(client.getManifestofImage("centos", "7"));
     }
 
 }

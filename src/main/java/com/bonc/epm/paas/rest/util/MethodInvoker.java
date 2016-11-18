@@ -102,9 +102,9 @@ public class MethodInvoker {
     		response = invocationBuilder.put(entity);
     	}
     	response.bufferEntity();
-    	if (response.readEntity(String.class).length() < 200) {
+    	//if (response.readEntity(String.class).length() < 200) {
     	    log.info(url+pathValue+" -X"+get+":"+post+":"+delete+":"+put+"========response:"+response.readEntity(String.class));
-    	}
+    	//}
     	try{
     		return response.readEntity(method.getReturnType());
     	}catch(KubernetesClientException e){
