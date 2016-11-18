@@ -107,25 +107,23 @@ $(document).ready(function () {
 	//tab页切换
 	$( "#tabs" ).tabs();
 	//拖动
-    $(".sortable-list").sortable({
-        connectWith: ".connectList"
-    }).disableSelection();
+	$(".sortable-list").sortable({
+		connectWith: ".connectList"
+	}).disableSelection();
 	//缩放
 	$( ".localDoc" ).resizable({
   		autoHide: true,
-  		containment: ".row",
-  		maxHeight: 535,
-  		maxWidth:770,
-  		minWidth:413,
-  		resize: function( event, ui ) {
-  			var localDocWidth = $(".localDoc").width();
-  			var totalWidth = $(".localDoc").parent().width();
-  			var scpDocWidth = totalWidth - localDocWidth - 10;
-  			$(".scpDoc").width(scpDocWidth+"px");
-  		
-  		}
-      });
-
+		containment: ".row",
+		maxHeight: 535,
+		maxWidth:770,
+		minWidth:413,
+		resize: function( event, ui ) {
+			var localDocWidth = $(".localDoc").width();
+			var totalWidth = $(".localDoc").parent().width();
+			var scpDocWidth = totalWidth - localDocWidth - 10;
+			$(".scpDoc").width(scpDocWidth+"px");
+		}
+	});
 });
 </script>
 		</article>
