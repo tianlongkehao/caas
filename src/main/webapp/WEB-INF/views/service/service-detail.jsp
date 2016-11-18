@@ -93,10 +93,7 @@
 									
 								</ul>
 							</li>
-							<li><input id="editSerBtn" name="editSerBtn" type="button" value="修改"/></li>
-             <li><input id="restSerBtn" name="restSerBtn" type="button" value="还原"/></li>
-             <li><input id="saveSerBtn" name="saveSerBtn" type="button" hidden="true" value="保存"/></li>
-             <li><input id="canclSerBtn" name="canclSerBtn" type="button" value="取消"/></li>
+							
 <%-- 							<li><a class="historyLOG">历史日志</a></li>
 							<li class="dropdown">
                                 <a class="execCommand dropdown-toggle" id="dropdown-log"
@@ -127,7 +124,14 @@
 							<thead>
 								<tr>
 									<th>基本信息</th>
-									<th>&nbsp;</th>
+									<th>
+										<div style="float:right; margin-right:30px; color:#337ab7; font-size:19px">
+											<i class="fa fa-edit" id="editSerBtn" name="editSerBtn" title="修改"></i>
+											<i class="fa fa-reply" id="restSerBtn" name="restSerBtn" title="还原"></i>
+											<i class="fa fa-save" id="saveSerBtn" name="saveSerBtn" title="保存"></i>
+											<i class="fa fa-times" id="canclSerBtn" name="canclSerBtn" title="取消"></i>
+										</div>
+									</th>
 								</tr>
 							</thead>
 							<tbody class="BORDER">
