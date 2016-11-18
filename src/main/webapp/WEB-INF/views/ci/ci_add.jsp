@@ -120,16 +120,43 @@
 	                            <div id="sortable">
 	                            </div>
                             </section>
-                            <h4 class="c-title">构建路径</h4>
+                            <h4 class="c-title">镜像信息</h4>
                             <section class="registryinfo">
 	                            <div class="row">
+	                                <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">镜像名称</label>
+	                                    <input id="imageName" name="imageName" type="password"
+                                                   class="form-control c-project-con reg-input" value="">
+		                            </div>
+	                            </div>
+	                            <ul class="nav nav-bar">
+		                           <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">dockerfile构建方式<span class="caret"></span></a>
+		                              <ul class="dropdown-menu">
+			                             <li><a id="dockerfilePath">dockerfile路径</a></li>
+			                             <li><a id="dockerfileTemp">编写dockerfiel</a></li>
+			                          </ul>
+		                            </li>
+		                        </ul>
+	                            <div class="row dockerfilePath hide">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">dockerfile路径</label>
 	                                    <textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text"
 	                                           required="" row="5"></textarea>
 	                                </div>
 	                            </div>
+	                            <div class="row dockerfileTemp hide">
+	                                <div class="form-group col-md-12">
+										<label class="c-project-tit" style="line-height:20px">编写dockerfile</label> 
+										<span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>
+										<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer">另存为模板</span>
+									</div>
+
+									<div class="form-group col-md-12" id="dockerFiles" style="width:95%;margin-left:30px">
+										<textarea id="dockerFile" name="dockerFile"></textarea>
+									</div>
+	                            </div>
                         	</section>
+                            
                         	<input type = "hidden" id = "jsonData" name = "jsonData" value = "">
                             <br>
                             <div class="pull-right">
@@ -143,5 +170,21 @@
         </div>
     </article>
 </div>
+				<!--dockerfile导入模板 -->
+                <div id="dockerfile-import" style="max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+                    <table class="table table-hover enabled" id="Path-table-doc"
+                        style="width: 326px; margin: 5px 10px 5px 10px">
+                        <tbody id="dockerfile-body">
+                           
+                        </tbody>
+                    </table>
+                </div>
+                <!-- dockerfile另存为模板 -->
+                <div id="dockerfile-export">
+                    <div style="width: 345px; margin: 5px 10px 5px 10px">
+                        <span>模板名称：</span><input type="text" id="dockerFileTemplateName"
+                            style="width: 77%" autofocus="autofocus" />
+                    </div>
+                </div>
 </body>
 </html>
