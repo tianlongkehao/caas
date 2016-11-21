@@ -350,11 +350,13 @@ $(document).ready(function(){
        //可以编辑的段口号
        $(".editPortConfig").hide();
        $("#editPortAddrBtn").click(function(){
+    	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
     	   $(this).hide();
     	   $(this).next().show();
     	   $(this).next().next().show();
     	   $(this).parent().parent().find("span.oldPortConfig").hide();
     	   $(this).parent().parent().find("span.editPortConfig").show();
+    	   }
     	   //$(".editPortConfig").show();
     	   //$(".oldPortConfig").hide();
        } );
@@ -364,6 +366,21 @@ $(document).ready(function(){
     	   $(this).parent().parent().find("span.oldPortConfig").show();
     	   $(this).parent().parent().find("span.editPortConfig").hide();
     	   $(this).hide();
+    	   var thiz= $(this);
+    	   var port=$(this).parent().parent().find("input#containerPort").val();
+    	   var id =$(this).parent().parent().find("input#portId").val();
+    	   var serName =$("#serviceName").val();
+    	   $.ajax({
+    			url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id,
+    			success:function(data){
+    				var data = eval("(" + data + ")");
+    				if("200"==data.status){
+    					layer.msg( "修改成功，重启服务后生效", {
+    						icon: 1
+    	                });
+    				}
+    			}
+    	   		});
  // 			if(false==checkSerAddr()){return ;};
 //   	   $(".editPortConfig").hide();
  //  	   editSerAddr();

@@ -50,6 +50,7 @@ import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.github.dockerjava.api.model.Ports;
 
 import io.netty.util.internal.StringUtil;
 
@@ -728,6 +729,20 @@ public class KubernetesClientService {
         }
         return k8sService;
         }
+    /**
+     * Description: 更新容器端口
+     * @param controller
+     * @param containerPort
+     * @return 
+     * @see 
+     */
+    public ReplicationController updateContainPort(ReplicationController controller, String containerPort) {
+        int port = Integer.valueOf(containerPort);  
+       List<ContainerPort> ports = controller.getSpec().getTemplate().getSpec()
+        .getContainers().get(0).getPorts();
+        ports.get(0).setContainerPort(port);
+        return controller;
+    }
 
 }
 

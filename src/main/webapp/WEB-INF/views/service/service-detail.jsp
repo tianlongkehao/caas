@@ -29,6 +29,7 @@
 						<li class="active" style="width:200px">${service.serviceName }</li>
 					</ol>
 					<input hidden="true" value="${service.id }" id="serId"/>
+					<input hidden="true" value="${service.serviceName }" id="serName"/>
 					<input hidden="true" value="${service.status }" id="serStatus"/>
          <input hidden="true" value="${service.serviceType }" id="serType"/>	
          <input hidden="true" value="${service.volName }" id="serVolName"/>
@@ -198,13 +199,32 @@
 									<td>nginx代理区域：
 									<span class="oldBaseCon_Run oldBaseCon">未设置</span>
 									 <span id="editProxyZone" hidden="true" class="editBaseCon_Run editBaseCon">
-                  <label class="checkbox-inline"> <input
+                  <c:if test="${fn:contains(service.proxyZone,'dmz')==true}">
+                   <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz" checked="checked"> DMZ区
+                   </label> 
+                  </c:if> 
+                  <c:if test="${fn:contains(service.proxyZone,'dmz')==false}">
+                   <label class="checkbox-inline"> <input
                       type="checkbox"  name="proxyZone"
                       value="dmz"> DMZ区
-                  </label> <label class="checkbox-inline"> <input
+                   </label> 
+                  </c:if> 
+                 
+                  <c:if test="${fn:contains(service.proxyZone,'user')==true}">
+                  <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="user" checked="checked"> USER区
+                </label>
+                  </c:if> 
+                  <c:if test="${fn:contains(service.proxyZone,'user')==false}">
+                  <label class="checkbox-inline"> <input
                       type="checkbox"  name="proxyZone"
                       value="user"> USER区
                 </label>
+                  </c:if> 
+                  
                 </span>
 									</td>
 									</c:if>
@@ -212,13 +232,31 @@
 									<td>nginx代理区域:
 									<span class="oldBaseCon_Run oldBaseCon">${service.proxyZone }</span>
 									 <span id="editProxyZone" hidden="true" class="editBaseCon_Run editBaseCon">
-                  <label class="checkbox-inline"> <input
+                  <c:if test="${fn:contains(service.proxyZone,'dmz')==true}">
+                   <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz" checked="checked"> DMZ区
+                   </label> 
+                  </c:if> 
+                  <c:if test="${fn:contains(service.proxyZone,'dmz')==false}">
+                   <label class="checkbox-inline"> <input
                       type="checkbox"  name="proxyZone"
                       value="dmz"> DMZ区
-                  </label> <label class="checkbox-inline"> <input
+                   </label> 
+                  </c:if> 
+                 
+                  <c:if test="${fn:contains(service.proxyZone,'user')==true}">
+                  <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="user" checked="checked"> USER区
+                </label>
+                  </c:if> 
+                  <c:if test="${fn:contains(service.proxyZone,'user')==false}">
+                  <label class="checkbox-inline"> <input
                       type="checkbox"  name="proxyZone"
                       value="user"> USER区
                 </label>
+                  </c:if> 
                 </span>
 <%--                        --%>
 									</td>
@@ -242,8 +280,10 @@
                    <span id="editSeAffy" hidden="true" class="editBaseCon_Run editBaseCon">
                   <%--  <input id="newSeAffy" name="sessionAffinity" type="text" value=${service.sessionAffinity } /> --%>
                    <select id="newSeAffy" name="sessionAffinity">
+                   
                    <option name="sessionAffinity" value="" >NONE</option>
-                   <option name="sessionAffinity" value="ClientIP">ClientIP</option>
+                   <option name="sessionAffinity" value="ClientIP" <c:if test="${service.sessionAffinity == 'ClientIP'}">selected</c:if>>ClientIP</option>
+                   
                    </select>
                 </span>
 									</td>
@@ -260,7 +300,7 @@
                    <%-- <input id="newNodAffy" name="nodeIpAffinity" type="text" value=${service.nodeIpAffinity } /> --%>
                    <select  id="newNodAffy" name="nodeIpAffinity" >
                    <option name="nodeIpAffinity" value="" >NONE</option>
-                   <option name="nodeIpAffinity" value="nodeIpAffinity">nodeIpAffinity</option>
+                   <option name="nodeIpAffinity" value="nodeIpAffinity" <c:if test="${service.nodeIpAffinity == 'nodeIpAffinity' }">selected</c:if> >nodeIpAffinity</option>
                    </select>
                 </span>
 									</td>
@@ -485,11 +525,11 @@
 								</thead>
 								<tbody>
 									<c:forEach items="${portConfigList }" var="portConfig">
-									<input name="id" hidden="true" value="${service.id} " />
 										<tr>
 											<td style="width:10%;text-indent: 15px;">${service.serviceName }</td>
 											<td style="width:10%;" class="portConfig"><span class="oldPortConfig">${portConfig.containerPort }</span>
-											<span class="editPortConfig"><input type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
+											<span class="editPortConfig"><input id="containerPort" type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
+											<input id="portId" hidden="true" value="${portConfig.portId} " />
 											</td>
 											<td style="width:10%;">${portConfig.protocol }</td>
 											<td style="width:10%;">${portConfig.mapPort }</td>
@@ -497,10 +537,11 @@
 												href="${service.serviceAddr}/${service.proxyPath}"
 												target="_blank">
 													${service.serviceAddr}/${service.proxyPath} </a></td>
-											<td style="width:10%;" class="editBtn"><i id="editPortAddrBtn" onclick="editPortComm(${portConfig.containerPort },${portConfig.containerPort } type="button" value="修改"  class="fa fa-edit oldPortConfig"></i>	
+											<c:if test="${service.status==1 or service.status==4}">
+											<td style="width:10%;" class="editBtn"><i id="editPortAddrBtn"  type="button" value="修改"  class="fa fa-edit oldPortConfig"></i>	
 											<i id="savePortEdit" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig"></i>
-                    						<i id="canclPortEdit" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	</td>
-
+                    	<i id="canclPortEdit" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	</td>
+                    </c:if>
 										</tr>
 									</c:forEach>
 									

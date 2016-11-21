@@ -2261,4 +2261,35 @@ public class ServiceController {
         return JSON.toJSONString(map);
 
     }
+    @RequestMapping(value ="service/detail/editPortConfig.do")
+    @ResponseBody
+    public String editPortCfgForm(PortConfig portConfig , String serviceName){
+        Map map = new HashMap();
+        PortConfig portCfg = new PortConfig();
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        ReplicationController controller = null;
+        
+        //根据id找到对应的port
+        portCfg = portConfigDao.findOne(portConfig.getPortId());
+        //修改port
+        portCfg.setContainerPort(portConfig.getContainerPort());
+        //存入数据库
+        portConfigDao.save(portCfg);
+        try {
+          //找到对应的rc文件
+            controller = client.getReplicationController(serviceName);
+            //修改rc文件
+            controller = kubernetesClientService.updateContainPort(controller,portConfig.getContainerPort());
+            controller = client.updateReplicationController(serviceName, controller);
+        } catch (KubernetesClientException e) {
+            map.put("status", "500");
+            map.put("msg", e.getStatus().getMessage());
+            LOG.error("create service error:" + e.getStatus().getMessage());
+            return JSON.toJSONString(map);
+                  }
+        //返回状态
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+        
+    }
 }
