@@ -87,24 +87,40 @@ $(document).ready(function () {
         revert: true
     });
     //dockerfile路径&&dockerfile模板
+    var dockerfilePathHtml = '<div class="row dockerfilePath">'+
+	    '<div class="form-group col-md-12">'+
+	    '<label class="c-project-tit">dockerfile路径</label>'+
+	    '<textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5"></textarea>'+
+	'</div></div>';
+    
+    var dockerfileTempHtml = '<div class="row dockerfileTemp">'+
+	    '<div class="form-group col-md-12">'+
+		'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
+		'<span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
+		'<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
+	'</div>'+
+	'<div class="form-group col-md-12" id="dockerFiles" style="width:95%;margin-left:30px">'+
+		'<textarea id="dockerFile" name="dockerFile"></textarea>'+
+	'</div>'+
+	'</div>';
     
     $("#dockerfilePath").click(function(){
-    	$(".dockerfilePath").removeClass("hide");
-    	$(".dockerfileTemp").addClass("hide");
-    	
-    	
+    	$("#dockerfileMethod").empty();
+    	$("#dockerfileMethod").append(dockerfilePathHtml);
     });
     $(document).on('click','#dockerfileTemp',function(){
-    	$(".dockerfilePath").addClass("hide");
-    	$(".dockerfileTemp").removeClass("hide");
+    	$("#dockerfileMethod").empty();
+    	$("#dockerfileMethod").append(dockerfileTempHtml);
+    	
+    	var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
+            lineNumbers: true,
+            matchBrackets: true,
+            styleActiveLine: true,
+            theme: "ambiance"
+        });
     });
     
-    var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
-        lineNumbers: true,
-        matchBrackets: true,
-        styleActiveLine: true,
-        theme: "ambiance"
-    });
+    
 
 	$("#dockerfile").focus();
 	$("#dockerfile-import").hide();

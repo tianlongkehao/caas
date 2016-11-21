@@ -217,11 +217,22 @@
 			                            <section class="registryinfo">
 				                            <div class="row">
 				                                <div class=" col-md-12">
-				                                    <label class="c-project-tit">dockerfile路径</label>
-				                                    <textarea id="dockerfilePath" name="dockerFileLocation" class="form-control c-project-con" type="text"
-				                                           required="" row="5">${ci.dockerFileLocation }</textarea>
-				                                </div>
+				                                    <label class="c-project-tit">镜像名称</label>
+				                                    <input id="imageName" name="imageName" type="password"
+			                                                   class="form-control c-project-con reg-input" value="">
+					                            </div>
 				                            </div>
+				                            <ul class="nav nav-bar">
+					                           <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">dockerfile构建方式<span class="caret"></span></a>
+					                              <ul class="dropdown-menu">
+						                             <li><a id="dockerfilePath">dockerfile路径</a></li>
+						                             <li><a id="dockerfileTemp">编写dockerfiel</a></li>
+						                          </ul>
+					                            </li>
+					                        </ul>
+				                            <div id="dockerfileMethod">
+	                            
+	                            			</div>
 			                        	</section>
 			                            <div class="form-group">
                                             <label class="col-2x control-label"></label>

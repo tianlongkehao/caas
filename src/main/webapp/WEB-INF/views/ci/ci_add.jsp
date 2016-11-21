@@ -138,23 +138,8 @@
 			                          </ul>
 		                            </li>
 		                        </ul>
-	                            <div class="row dockerfilePath hide">
-	                                <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">dockerfile路径</label>
-	                                    <textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text"
-	                                           required="" row="5"></textarea>
-	                                </div>
-	                            </div>
-	                            <div class="row dockerfileTemp hide">
-	                                <div class="form-group col-md-12">
-										<label class="c-project-tit" style="line-height:20px">编写dockerfile</label> 
-										<span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>
-										<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer">另存为模板</span>
-									</div>
-
-									<div class="form-group col-md-12" id="dockerFiles" style="width:95%;margin-left:30px">
-										<textarea id="dockerFile" name="dockerFile"></textarea>
-									</div>
+		                        <div id="dockerfileMethod">
+	                            
 	                            </div>
                         	</section>
                             
