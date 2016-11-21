@@ -27,7 +27,7 @@ public interface DockerRegistryAPIClientInterface {
     
     public Tags getTagsofImage(String name) throws DokcerRegistryClientException;
     
-    public Manifest getManifestofImage(String name,String reference) throws DokcerRegistryClientException;
+    public Object getManifestofImage(String name,String reference) throws DokcerRegistryClientException;
     
     public Manifest deleteManifestofImage(String name,String reference) throws DokcerRegistryClientException;
 }

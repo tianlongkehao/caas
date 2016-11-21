@@ -60,7 +60,7 @@ public interface DockerRegistryAPI {
     @Path("/{name}/manifests/{reference}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)   
-    public Manifest getManifestofImage(@PathParam("name") String name,@PathParam("reference") String reference) throws DokcerRegistryClientException;
+    public Object getManifestofImage(@PathParam("name") String name,@PathParam("reference") String reference) throws DokcerRegistryClientException;
 
 
     /**

@@ -48,7 +48,7 @@ public class DockerRegistryAPIClient implements DockerRegistryAPIClientInterface
     }
 
     @Override
-    public Manifest getManifestofImage(String name, String reference) throws DokcerRegistryClientException{
+    public Object getManifestofImage(String name, String reference) throws DokcerRegistryClientException{
         try {
             return api.getManifestofImage(name, reference);
         } catch (NotFoundException e) {

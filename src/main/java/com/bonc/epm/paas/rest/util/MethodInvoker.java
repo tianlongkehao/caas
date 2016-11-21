@@ -102,11 +102,15 @@ public class MethodInvoker {
     		response = invocationBuilder.put(entity);
     	}
     	response.bufferEntity();
-    	//if (response.readEntity(String.class).length() < 200) {
+    	if (response.readEntity(String.class).length() < 200) {
     	    log.info(url+pathValue+" -X"+get+":"+post+":"+delete+":"+put+"========response:"+response.readEntity(String.class));
-    	//}
+    	}
     	try{
-    		return response.readEntity(method.getReturnType());
+    	    if (!response.getHeaders().isEmpty() && response.getHeaders().containsKey("Etag")) {
+    	        return response.getHeaders();
+    	    } else {
+    	        return response.readEntity(method.getReturnType());
+    	    }
     	}catch(KubernetesClientException e){
     		Status status = response.readEntity(Status.class);
     		throw new KubernetesClientException("unexpect k8s response",status);
