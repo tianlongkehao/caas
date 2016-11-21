@@ -16,32 +16,6 @@ $(document).ready(function(){
     registerCiDelEvent($("#id").val());
     //加载构建日志
     printLog();
-    
-    //导入模板
-	$("#docImport-btn").click(function(){
-		layer.open({
-		 	type:1,
-	        title: 'dockerfile模板',
-	        content: $("#dockerfile-import"),
-	        btn: ['导入', '取消'],
-	        yes: function(index, layero){ 
-	        	
-	        	$("#dockerFile").val(dockerFile);
-	        	layer.close(index);
-	        }
-		})
-	});
-	
-	//导入模板文件选项对勾
-	var dockerFile = null;
-	$("#Path-table-doc>tbody>tr").on("click", function () {
-		$(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
-        $(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
-        //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
-        $(this).toggleClass("focus");//设定当前行为选中行
-        $(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
-        dockerFile = $(this).parent().find("tr.focus").find(".dockerFileTemplate").val();
-    });
 	
 	//codeType
 	$(".git-config").hide();
@@ -119,19 +93,19 @@ $(document).ready(function(){
 	
 	//dockerfile路径&&dockerfile模板
     var dockerfilePathHtml = '<div class="row dockerfilePath">'+
-	    '<div class=" col-md-12">'+
+	    '<div class="form-group1 col-md-12">'+
 	    '<label class="c-project-tit">dockerfile路径</label>'+
 	    '<textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5"></textarea>'+
 	'</div></div>';
     
     var dockerfileTempHtml = '<div class="row dockerfileTemp">'+
-	    '<div class=" col-md-12">'+
+	    '<div class="form-group1 col-md-12">'+
 		'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
-		'<span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
-		'<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
+		'<span id="docImport-btn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
+		'<span id="docExport-btn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
 	'</div>'+
-	'<div class="form-group col-md-12" id="dockerFiles" style="width:95%;margin-left:30px">'+
-		'<textarea id="dockerFile" name="dockerFile"></textarea>'+
+	'<div class="form-group col-md-12" id="dockerFiles2" style="width:95%;margin-left:30px">'+
+		'<textarea id="dockerFile2" name="dockerFile2"></textarea>'+
 	'</div>'+
 	'</div>';
     
@@ -143,7 +117,7 @@ $(document).ready(function(){
     	$("#dockerfileMethod").empty();
     	$("#dockerfileMethod").append(dockerfileTempHtml);
     	
-    	var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
+    	var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile2"), {
             lineNumbers: true,
             matchBrackets: true,
             styleActiveLine: true,
@@ -151,23 +125,10 @@ $(document).ready(function(){
         });
     });
     
-    
-
 	$("#dockerfile").focus();
 	$("#dockerfile-import").hide();
 	$("#dockerfile-export").hide();
 
-	$("#buildBtn").click(function() {
-		if (checkCiAdd(editor_one)) {
-			$("#buildForm").submit();
-			layer.load(0, {
-				shade : [ 0.3, '#000' ]
-			});
-		}
-		return false;
-	});
-
-	
 	$(".btn-imageType .btns").each(function() {
 		$(this).click(function() {
 			$(".btn-imageType .btns").removeClass("active");
@@ -197,9 +158,9 @@ $(document).ready(function(){
 			}
 		});
     });
-
+	
 	// 导入模板
-	$("#docImportBtn").click(function() {
+	$(document).on('click','#docImport-btn',function(){
 		loadDockerFileTemplate();
 		layer.open({
 			type : 1,
@@ -214,7 +175,7 @@ $(document).ready(function(){
 	});
 
 	// 另存为模板
-	$("#docExportBtn").click(function() {
+	$(document).on('click','#docExport-btn',function(){
 		layer.open({
 			type : 1,
 			title : '另存为模板',
