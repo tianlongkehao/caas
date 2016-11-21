@@ -116,7 +116,175 @@ $(document).ready(function(){
 	$( "#sortable" ).sortable({
 		revert: true
 	});
+	
+	//dockerfile路径&&dockerfile模板
+    var dockerfilePathHtml = '<div class="row dockerfilePath">'+
+	    '<div class=" col-md-12">'+
+	    '<label class="c-project-tit">dockerfile路径</label>'+
+	    '<textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5"></textarea>'+
+	'</div></div>';
+    
+    var dockerfileTempHtml = '<div class="row dockerfileTemp">'+
+	    '<div class=" col-md-12">'+
+		'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
+		'<span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
+		'<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
+	'</div>'+
+	'<div class="form-group col-md-12" id="dockerFiles" style="width:95%;margin-left:30px">'+
+		'<textarea id="dockerFile" name="dockerFile"></textarea>'+
+	'</div>'+
+	'</div>';
+    
+    $("#dockerfilePath").click(function(){
+    	$("#dockerfileMethod").empty();
+    	$("#dockerfileMethod").append(dockerfilePathHtml);
+    });
+    $(document).on('click','#dockerfileTemp',function(){
+    	$("#dockerfileMethod").empty();
+    	$("#dockerfileMethod").append(dockerfileTempHtml);
+    	
+    	var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
+            lineNumbers: true,
+            matchBrackets: true,
+            styleActiveLine: true,
+            theme: "ambiance"
+        });
+    });
+    
+    
+
+	$("#dockerfile").focus();
+	$("#dockerfile-import").hide();
+	$("#dockerfile-export").hide();
+
+	$("#buildBtn").click(function() {
+		if (checkCiAdd(editor_one)) {
+			$("#buildForm").submit();
+			layer.load(0, {
+				shade : [ 0.3, '#000' ]
+			});
+		}
+		return false;
+	});
+
+	
+	$(".btn-imageType .btns").each(function() {
+		$(this).click(function() {
+			$(".btn-imageType .btns").removeClass("active");
+			$(this).addClass("active");
+		});
+	});
+
+	// 导入模板文件选项对勾
+	var dockerFile = null;
+	$(document).on("click","#Path-table-doc tr", function () {
+		$(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
+        $(this).parent().find("tr.focus").toggleClass("focus");//取消原先选中行
+        //$("#Path-table>tbody>tr").parent().find("tr.focus").find("span.vals-path").removeClass("hide")
+        $(this).toggleClass("focus");//设定当前行为选中行
+        $(this).parent().find("tr.focus").find("span.doc-tr").toggleClass("hide");
+		$.ajax({
+			url : ctx + "/template/dockerfile/content",
+			type : "GET",
+			data : {
+				"id":$(this).parent().find("tr.focus").find(".dockerFileTemplate").val()
+			},
+			success : function(data) {
+				data = eval("(" + data + ")");
+				if (data != null) {
+					dockerFile = data.dockerFile;
+				}
+			}
+		});
+    });
+
+	// 导入模板
+	$("#docImportBtn").click(function() {
+		loadDockerFileTemplate();
+		layer.open({
+			type : 1,
+			title : 'dockerfile模板',
+			content : $("#dockerfile-import"),
+			btn : [ '导入', '取消' ],
+			yes : function(index, layero) {
+				editor_one.setValue(dockerFile);
+				layer.close(index);
+			}
+		})
+	});
+
+	// 另存为模板
+	$("#docExportBtn").click(function() {
+		layer.open({
+			type : 1,
+			title : '另存为模板',
+			content : $("#dockerfile-export"),
+			btn : [ '保存', '取消' ],
+			yes : function(index, layero) {
+				var templateName = $("#dockerFileTemplateName").val();
+				if (templateName == null || templateName == "") {
+					layer.tips('模板名称不能为空', '#dockerFileTemplateName', {
+						tips : [ 1, '#3595CC' ]
+					});
+					$('#dockerFileTemplateName').focus();
+					return;
+				}
+				var dockerFile = editor_one.getValue();
+				if (dockerFile == null || dockerFile == "") {
+					layer.tips('DockerFile不能为空', '#dockerFile', {
+						tips : [ 1, '#3595CC' ]
+					});
+					$('#dockerFile').focus();
+					layer.close(index);
+					return;
+				}
+
+				$.ajax({
+					url : ctx + "/ci/saveDockerFileTemplate.do",
+					type : "POST",
+					data : {
+						"templateName" : templateName,
+						"dockerFile" : dockerFile
+					},
+					success : function(data) {
+						data = eval("(" + data + ")");
+						if (data.status == "200") {
+							layer.alert("DockerFile模板导入成功");
+							layer.close(index);
+						} else {
+							layer.alert("DockerFile模板名称重复");
+						}
+					}
+				});
+			}
+		})
+	});
 });
+
+//单击导入模板，加载模板数据
+function loadDockerFileTemplate(){
+	 $.ajax({
+  		url : ctx + "/ci/loadDockerFileTemplate.do",
+  		success : function(data) {
+  			data = eval("(" + data + ")");
+  			var html = "";
+	            if (data != null) {
+                	for (var i in data.data) {
+                		var dockerFile = data.data[i];
+                		html += "<tr>"+
+                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
+                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
+                			"</tr>"
+                	}
+	            } 
+	            if (html == "") {
+	            	html += '<tr><td>没有保存的模板</td></tr>'	
+	            }
+	            $("#dockerfile-body").empty();
+	            $("#dockerfile-body").append(html);
+  			}
+	 });
+}
 
 //代码管理信息的展示
 function changeCodeType() {

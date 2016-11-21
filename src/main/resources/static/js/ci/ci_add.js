@@ -87,12 +87,37 @@ $(document).ready(function () {
         revert: true
     });
     //dockerfile路径&&dockerfile模板
+    var dockerfilePathHtml = '<div class="row dockerfilePath">'+
+	    '<div class="form-group col-md-12">'+
+	    '<label class="c-project-tit">dockerfile路径</label>'+
+	    '<textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5"></textarea>'+
+	'</div></div>';
     
-    var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
-        lineNumbers: true,
-        matchBrackets: true,
-        styleActiveLine: true,
-        theme: "ambiance"
+    var dockerfileTempHtml = '<div class="row dockerfileTemp">'+
+	    '<div class="form-group col-md-12">'+
+		'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
+		'<span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
+		'<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
+	'</div>'+
+	'<div class="form-group col-md-12" id="dockerFiles" style="width:95%;margin-left:30px">'+
+		'<textarea id="dockerFile" name="dockerFile"></textarea>'+
+	'</div>'+
+	'</div>';
+    
+    $("#dockerfilePath").click(function(){
+    	$("#dockerfileMethod").empty();
+    	$("#dockerfileMethod").append(dockerfilePathHtml);
+    });
+    $(document).on('click','#dockerfileTemp',function(){
+    	$("#dockerfileMethod").empty();
+    	$("#dockerfileMethod").append(dockerfileTempHtml);
+    	
+    	var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
+            lineNumbers: true,
+            matchBrackets: true,
+            styleActiveLine: true,
+            theme: "ambiance"
+        });
     });
 
     $("#dockerfilePath").click(function(){
