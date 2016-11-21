@@ -196,24 +196,24 @@ public class ServiceController {
     @Autowired
 	private NginxServerConf nginxServerConf;
     
-    /**
-     * Description: <br>
-     * 查询所有的服务
-     * @return String
-     */
-    @RequestMapping("service/listService.do")
-	@ResponseBody
-	public String list() {
-        List<Service> serviceList = new ArrayList<Service>();
-        for (Service service : serviceDao.findAll()) {
-            serviceList.add(service);
-        }
-        LOG.debug("services:===========" + serviceList);
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", "200");
-        map.put("data", serviceList);
-        return JSON.toJSONString(map);
-    }
+//    /**
+//     * Description: <br>
+//     * 查询所有的服务
+//     * @return String
+//     */
+//    @RequestMapping("service/listService.do")
+//	@ResponseBody
+//	public String list() {
+//        List<Service> serviceList = new ArrayList<Service>();
+//        for (Service service : serviceDao.findAll()) {
+//            serviceList.add(service);
+//        }
+//        LOG.debug("services:===========" + serviceList);
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("status", "200");
+//        map.put("data", serviceList);
+//        return JSON.toJSONString(map);
+//    }
 
 	/**
 	 * Description: <br>
@@ -2104,4 +2104,32 @@ public class ServiceController {
         }
         return JSON.toJSONString(map);
     }
+    
+	/**
+	 * 判断服务有没有22端口
+	 * 
+	 * @param serviceId
+	 * @see
+	 */
+	@RequestMapping(value = "service/debug.do",method = RequestMethod.GET)
+	@ResponseBody
+	public String debug(long id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Service service = serviceDao.findOne(id);
+		// 获取端口信息
+		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+		int port = 0;
+		for (PortConfig portConfig : portConfigList) {
+			if (portConfig.getContainerPort().equals("22")) {
+				port = Integer.parseInt(portConfig.getMapPort());
+				break;
+			}
+		}
+		if (port == 0) {
+			map.put("status", "400");
+		} else {
+			map.put("status", "200");
+		}
+		return JSON.toJSONString(map);
+	}
 }

@@ -916,13 +916,22 @@ function loadServices() {
 							
 							html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
 									'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
-									'style="margin-left: 5px"><i class="fa fa-cog"></i></a> '+	
-									'<a id="'+row.id+'_change" class="a-live change " '+
-										'href="'+ctx+'/service/debug/'+row.id+'" title="更改配置"'+
+									'style="margin-left: 5px"><i class="fa fa-cog"></i></a> '	
+							if (row.status == 3) {
+								html += '<a id="'+row.id+'_change" class="a-live change " '+
+										'href="javascript:debug('+ row.id +','+ row.status +')" title="调试"'+
 										'style="margin-left: 5px">'+
 											'<i class="fa fa-bug"></i>'
-									+'</a> '+
-									'<a id="'+row.id+'_del" class="a-live deleteButton_a "'+
+										+'</a> '
+							} else {
+								html += '<a id="'+row.id+'_change" class="a-live change " '+
+								'href="javascript:debug('+ row.id +','+ row.status +')" title="调试"'+
+								'style="margin-left: 5px">'+
+									'<i class="fa fa-bug  self_a"></i>'
+								+'</a> '
+							}
+											
+							html += '<a id="'+row.id+'_del" class="a-live deleteButton_a "'+
 									'href="javascript:oneDeleteContainer('+row.id+')"'+
 									'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
 							
@@ -940,3 +949,21 @@ function loadServices() {
 	})
 }
 
+function debug(id, status){
+	if (3 != status) {
+		return;
+	}
+	
+	$.ajax({
+		url : "" + ctx+ "/service/debug.do?id="+ id,
+		success : function(data) {
+			data = eval("(" + data + ")");
+			if (data.status == "200") {
+                window.location.href = ctx + "/service/debug/" + id;
+			} else {
+				layer.alert("该服务不支持调试");
+			}
+
+		}
+	})
+}
