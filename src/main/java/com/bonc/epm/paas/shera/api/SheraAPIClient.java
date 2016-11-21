@@ -22,10 +22,9 @@ import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.Job;
-import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
-import com.bonc.epm.paas.shera.model.JobExecution;
-import com.bonc.epm.paas.shera.model.JobExecutionList;
+import com.bonc.epm.paas.shera.model.JobExecView;
+import com.bonc.epm.paas.shera.model.JobExecViewList;
 
 /**
  * @author ke_wang
@@ -73,7 +72,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExec execJob(String name) throws SheraClientException {
+    public JobExecView execJob(String name) throws SheraClientException {
         try {
             return api.execJob(namespace, name);
         }
@@ -112,7 +111,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExecution deleteExecution(String name, Integer seqno) throws SheraClientException {
+    public JobExecView deleteExecution(String name, Integer seqno) throws SheraClientException {
         try {
             return api.deleteExecution(namespace, name, seqno);
         }
@@ -125,7 +124,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExecution killExecution(String name, Integer seqno) throws SheraClientException {
+    public JobExecView killExecution(String name, Integer seqno) throws SheraClientException {
         try {
             return api.killExecution(namespace, name, seqno);
         }
@@ -138,7 +137,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExecution getExecution(String name, Integer seqno) throws SheraClientException {
+    public JobExecView getExecution(String name, Integer seqno) throws SheraClientException {
         try {
             return api.killExecution(namespace, name, seqno);
         }
@@ -151,7 +150,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExecutionList getJobAllExecutions(String name) throws SheraClientException {
+    public JobExecViewList getJobAllExecutions(String name) throws SheraClientException {
         try {
             return api.getJobAllExecutions(namespace, name);
         }

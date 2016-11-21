@@ -216,12 +216,12 @@ function upGradeContainer() {
 							success : function(data) {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
-									layer.msg("弹性扩容成功",{icon: 6});
+									layer.msg("弹性伸缩成功",{icon: 6});
 									setTimeout('window.location.reload()',1500);
 								} else if (data.status == "400") {
-									layer.alert("弹性扩容失败，请检查服务器连接");
+									layer.alert("弹性伸缩失败，请检查服务器连接");
 								} else if (data.status == "300") {
-									layer.alert("请填写弹性扩容的数量！");
+									layer.alert("请填写弹性伸缩的数量！");
 								}
 
 							}
@@ -489,12 +489,12 @@ function oneUpGradeContainer(id,containerName,nums,cpu,ram) {
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
-							layer.msg("弹性扩容成功",{icon: 6});
+							layer.msg("弹性伸缩成功",{icon: 6});
 							setTimeout('window.location.reload()',1500);
 						}else if(data.status=="400"){
-							layer.alert("弹性扩容失败，请检查服务器连接");
+							layer.alert("弹性伸缩失败，请检查服务器连接");
 						}else if(data.status=="300"){
-							layer.alert("请填写弹性扩容的数量！");
+							layer.alert("请填写弹性伸缩的数量！");
 						}
 	
 					}

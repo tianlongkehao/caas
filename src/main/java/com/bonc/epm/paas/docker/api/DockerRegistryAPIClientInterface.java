@@ -11,14 +11,11 @@
 
 package com.bonc.epm.paas.docker.api;
 
-import javax.ws.rs.PathParam;
-
+import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
 import com.bonc.epm.paas.docker.model.Manifest;
 import com.bonc.epm.paas.docker.model.Tags;
 
 /**
- * 〈一句话功能简述〉
- * 〈功能详细描述〉
  * @author ke_wang
  * @version 2016年11月16日
  * @see DockerRegistryAPIClientInterface
@@ -28,7 +25,9 @@ import com.bonc.epm.paas.docker.model.Tags;
 public interface DockerRegistryAPIClientInterface {
     public static final String VERSION = "v2";
     
-    public Tags getTagsofImage(String name);
+    public Tags getTagsofImage(String name) throws DokcerRegistryClientException;
     
-    public Manifest getManifestofImage(String name,String reference);
+    public Object getManifestofImage(String name,String reference) throws DokcerRegistryClientException;
+    
+    public Manifest deleteManifestofImage(String name,String reference) throws DokcerRegistryClientException;
 }

@@ -238,7 +238,7 @@ function downloadFiles() {
  */
 function downloadFile(obj) {
 	var fileName = $(obj).attr("fileName");
-	location.href = ctx + "/service/downloadFile?downfiles=" + fileName;
+	window.open(ctx + "/service/downloadFile?downfiles=" + fileName);
 }
 
 /**

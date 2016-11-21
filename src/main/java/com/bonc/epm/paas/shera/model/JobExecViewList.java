@@ -14,11 +14,11 @@ package com.bonc.epm.paas.shera.model;
 /**
  * @author ke_wang
  * @version 2016年11月15日
- * @see JobExecutionList
+ * @see JobExecViewList
  * @since
  */
 
-public class JobExecutionList extends AbstractSheRaModelList<JobExecution>{
+public class JobExecViewList extends AbstractSheRaModelList<JobExecView>{
 
     /**
      * @param kind

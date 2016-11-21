@@ -65,6 +65,8 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.ContainerState;
+import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
@@ -1701,36 +1703,45 @@ public class ServiceController {
         List<Container> containerList = new ArrayList<Container>();
 		// 获取特殊条件的pods
 		try {
-				Map<String, String> mapapp = new HashMap<String, String>();
-				mapapp.put("app", service.getServiceName());
-				PodList podList = client.getLabelSelectorPods(mapapp);
-				if (podList != null) {
-					List<Pod> pods = podList.getItems();
-					if (CollectionUtils.isNotEmpty(pods)) {
-						int i = 1;
-						for (Pod pod : pods) {
-							String podName = pod.getMetadata().getName();
-							Container container = new Container();
-							container.setContainerName(
-									service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-							container.setServiceid(service.getId());
-							if (pod.getStatus().getPhase().equals("Running")) {
-								container.setContainerStatus(0);
-							} else {
-								container.setContainerStatus(1);
+			Map<String, String> mapapp = new HashMap<String, String>();
+			mapapp.put("app", service.getServiceName());
+			PodList podList = client.getLabelSelectorPods(mapapp);
+			if (podList != null) {
+				List<Pod> pods = podList.getItems();
+				if (CollectionUtils.isNotEmpty(pods)) {
+					int i = 1;
+					for (Pod pod : pods) {
+						String podName = pod.getMetadata().getName();
+						Container container = new Container();
+						container
+								.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+						container.setServiceid(service.getId());
+						//默认状态为0
+						container.setContainerStatus(0);
+						//pod状态不是Running时候
+						if (!pod.getStatus().getPhase().equals("Running")) {
+							container.setContainerStatus(1);
+						}else{
+							//container状态
+							for (ContainerStatus status : pod.getStatus().getContainerStatuses()) {
+								if (status.getState().getRunning() == null) {
+									container.setContainerStatus(1);
+								}
 							}
-							containerList.add(container);
 						}
+
+						containerList.add(container);
 					}
 				}
-			
+			}
+
 		} catch (Exception e) {
 			LOG.error("服务查询错误：" + e);
 		}
 		map.put("service", service);
 		map.put("containerList", containerList);
 		map.put("status", "200");
-        return JSON.toJSONString(map);
+		return JSON.toJSONString(map);
 
 	}
 

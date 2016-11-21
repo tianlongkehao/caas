@@ -1,6 +1,9 @@
 package com.bonc.epm.paas.controller;
 
-import com.bonc.epm.paas.constant.MonitorConstant;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
@@ -8,9 +11,7 @@ import org.influxdb.dto.QueryResult.Series;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import com.bonc.epm.paas.constant.MonitorConstant;
 
 /**
  *MonitorController

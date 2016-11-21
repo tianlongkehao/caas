@@ -12,7 +12,6 @@
 package com.bonc.epm.paas.shera.exceptions;
 
 import com.bonc.epm.paas.shera.model.AbstractSheRaModel;
-import com.bonc.epm.paas.shera.model.Kind;
 
 /**
  * @author ke_wang

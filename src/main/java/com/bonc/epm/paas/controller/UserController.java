@@ -900,7 +900,8 @@ public class UserController {
      */
     private void fillPartUserInfo(User user, Resource resource) {
         user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
-        user.setVol_size(resource.getVol()); 
+        user.setVol_size(resource.getVol());
+        user.setImage_count(resource.getImage_count());
         user.setNamespace(user.getUserName());
         user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
     }
@@ -1010,6 +1011,7 @@ public class UserController {
         }
         //卷组更新功能
         user.setVol_size(resource.getVol());
+        user.setImage_count(resource.getImage_count());
         user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
         user.setNamespace(user.getUserName());
     }

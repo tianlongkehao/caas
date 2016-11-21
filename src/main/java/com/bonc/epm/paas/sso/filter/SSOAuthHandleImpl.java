@@ -3,7 +3,6 @@ package com.bonc.epm.paas.sso.filter;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,7 +20,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.SpringApplicationContext;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.controller.CephController;
-import com.bonc.epm.paas.controller.UserController;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
