@@ -146,7 +146,7 @@
 			                            <h4 class="c-title">代码管理</h4>
 			                            <section class="registryinfo">
 			                            	<div class="row">
-				                            	<div class=" col-md-12">
+				                            	<div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">代码库类型</label>
 					                                <select id="codeType" name="codeType" class="form-control c-project-con" >
 					                                    <c:if test="${ci.codeType == 0 }">
@@ -161,12 +161,12 @@
 					                            </div>
 				                            </div>
 				                            <div class="row git-config">
-				                            	<div class=" col-md-12">
+				                            	<div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">代码仓库地址</label>
 					                                <input id="codeUrl" name="codeUrl" class="form-control c-project-con" type="text"
 			                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git" value = "${ci.codeUrl }">
 					                            </div>
-					                            <div class=" col-md-12">
+					                            <div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">认证方式</label>
 					                                <select id="codeCredentials" name="codeCredentials" class="form-control c-project-con">
 					                                    <option value="${ci.codeCredentials }">${ci.codeCredentials }</option>
@@ -174,7 +174,7 @@
 				                                      	<option value="root/**********(gitlab HTTPS方式认证)">root/**********(gitlab HTTPS方式认证)</option>
 					                                </select>
 					                            </div>
-					                            <div class=" col-md-12">
+					                            <div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">创建分支</label>
 					                                <input id="codeBranch" name="codeBranch" type="text" class="form-control c-project-con"
 			                                                   value="${ci.codeBranch }">
@@ -184,12 +184,12 @@
 				                            	<button id="git-higher" type="button" style="float:right!important">高级...</button>
 				                            </div>
 				                            <div class="row git-config git-higher">
-				                            	<div class=" col-md-12">
+				                            	<div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">Name</label>
 					                                <input id="codeUsername" name="codeName" type="text" class="form-control c-project-con reg-input"
 			                                                   value="${ci.codeName }">
 					                            </div>
-					                            <div class=" col-md-12">
+					                            <div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">Refspec</label>
 					                                <input id="codePassword" name="codeRefspec" type="text"
 			                                                   class="form-control c-project-con reg-input" value="${ci.codeRefspec }">
@@ -216,7 +216,7 @@
 										<h4 class="c-title">构建路径</h4>
 			                            <section class="registryinfo">
 				                            <div class="row">
-				                                <div class=" col-md-12">
+				                                <div class="form-group1 col-md-12">
 				                                    <label class="c-project-tit">镜像名称</label>
 				                                    <input id="imageName" name="imageName" type="password"
 			                                                   class="form-control c-project-con reg-input" value="${ci.imgNameLast }">
@@ -255,7 +255,7 @@
 			                        	</section>
 			                            <div class="form-group">
                                             <label class="col-2x control-label"></label>
-                                            <div class="col-sm-9">
+                                            <div class="col-sm-10">
                                                 <br><input type="button" id="editCiBtn" class="btn btn-primary pull-right" value="确认修改">
                                             </div>
                                         </div>
@@ -372,9 +372,17 @@
                         </div>
                     </div>
                 </div>
-                
-                 <!--dockerfile导入模板 -->
-                <div id="dockerfile-import" style="display:none; max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+                 
+                <!--dockerfile导入模板 -->
+                <div id="dockerfile-import" style="display:none;max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+                    <table class="table table-hover enabled" id="Path-table-doc"
+                        style="width: 326px; margin: 5px 10px 5px 10px">
+                        <tbody id="dockerfile-body">
+                           
+                        </tbody>
+                    </table>
+                </div>
+                <%-- <div id="dockerfile-import" style="display:none; max-height:170px;overflow-y:scroll;overflow-x:hidden;">
                     <table class="table table-hover enabled" id="Path-table-doc"
                         style="width: 326px; margin: 5px 10px 5px 10px">
                         <tbody id="dockerfile-body">
@@ -395,6 +403,13 @@
                             </c:if>
                         </tbody>
                     </table>
+                </div> --%>
+                <!-- dockerfile另存为模板 -->
+                <div id="dockerfile-export" style="display:none;">
+                    <div style="width: 345px; margin: 5px 10px 5px 10px">
+                        <span>模板名称：</span><input type="text" id="dockerFileTemplateName"
+                            style="width: 77%" autofocus="autofocus" />
+                    </div>
                 </div>
 
             </div>

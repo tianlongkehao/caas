@@ -589,4 +589,10 @@ textarea.c-project-con{
 #ciTab .ci{
 	margin-left:16px;
 }
+.registryinfo div.form-group1{
+	margin-bottom: 8px;
+}
+.registryinfo .row input{
+	text-indent: 10px;
+}
 
