@@ -232,6 +232,8 @@ public class CiController {
             try {
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 JdkList jdkList = client.getAllJdk();
+                Job job = client.getJob(ci.getProjectName());
+                model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
                 model.addAttribute("jdkList",jdkList.getItems());
             }
             catch (SheraClientException e) {

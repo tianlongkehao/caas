@@ -100,7 +100,7 @@ $(document).ready(function () {
 		'<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
 	'</div>'+
 	'<div class="form-group col-md-12" id="dockerFiles" style="width:95%;margin-left:30px">'+
-		'<textarea id="dockerFile" name="dockerFile"></textarea>'+
+		'<textarea id="dockerFile" name="dockerFileContent"></textarea>'+
 	'</div>'+
 	'</div>';
     

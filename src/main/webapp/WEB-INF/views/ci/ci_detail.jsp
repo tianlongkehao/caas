@@ -219,7 +219,7 @@
 				                                <div class=" col-md-12">
 				                                    <label class="c-project-tit">镜像名称</label>
 				                                    <input id="imageName" name="imageName" type="password"
-			                                                   class="form-control c-project-con reg-input" value="">
+			                                                   class="form-control c-project-con reg-input" value="${ci.imgNameLast }">
 					                            </div>
 				                            </div>
 				                            <ul class="nav nav-bar">
@@ -231,7 +231,26 @@
 					                            </li>
 					                        </ul>
 				                            <div id="dockerfileMethod">
-	                            
+	                                               <c:if test="${dockerfileMethod == '' || dockerfileMethod == null }">
+	                                                   <div class="row dockerfilePath">
+                                                            <div class="form-group col-md-12">
+                                                               <label class="c-project-tit">dockerfile路径</label>
+													           <textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5">${ci.dockerFileLocation }</textarea>
+													        </div> 
+													   </div>    
+	                                               </c:if>
+	                                               <c:if test="${ci.dockerFileLocation == '' || ci.dockerFileLocation == null }">
+	                                                   <div class="row dockerfileTemp">
+                                                            <div class="form-group col-md-12">
+	                                                           <label class="c-project-tit" style="line-height:20px">编写dockerfile</label>
+	                                                           <span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>
+														    <span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
+														    </div>
+														    <div class="form-group col-md-12" id="dockerFiles" style="width:95%;margin-left:30px">
+														        <textarea id="dockerFile" name="dockerFile">${dockerFileContent }</textarea>
+														    </div>
+														</div>
+	                                               </c:if>
 	                            			</div>
 			                        	</section>
 			                            <div class="form-group">
