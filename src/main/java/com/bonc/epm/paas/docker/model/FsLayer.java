@@ -1,6 +1,6 @@
 /*
  * 文件名：FsLayer.java
- * 版权：Copyright by www.huawei.com
+ * 版权：Copyright by www.bonc.com.cn
  * 描述：
  * 修改人：ke_wang
  * 修改时间：2016年11月16日

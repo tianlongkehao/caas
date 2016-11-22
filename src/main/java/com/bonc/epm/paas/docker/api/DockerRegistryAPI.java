@@ -1,6 +1,6 @@
 /*
  * 文件名：DockerRegistryAPI.java
- * 版权：Copyright by www.huawei.com
+ * 版权：Copyright by www.bonc.com.cn
  * 描述：
  * 修改人：ke_wang
  * 修改时间：2016年11月16日
@@ -60,7 +60,7 @@ public interface DockerRegistryAPI {
     @Path("/{name}/manifests/{reference}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)   
-    public Manifest getManifestofImage(@PathParam("name") String name,@PathParam("reference") String reference) throws DokcerRegistryClientException;
+    public Object getManifestofImage(@PathParam("name") String name,@PathParam("reference") String reference) throws DokcerRegistryClientException;
 
 
     /**

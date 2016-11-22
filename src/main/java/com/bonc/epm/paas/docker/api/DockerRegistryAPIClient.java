@@ -1,6 +1,6 @@
 /*
  * 文件名：DockerRegistryAPIClient.java
- * 版权：Copyright by www.huawei.com
+ * 版权：Copyright by www.bonc.com.cn
  * 描述：
  * 修改人：ke_wang
  * 修改时间：2016年11月16日
@@ -48,7 +48,7 @@ public class DockerRegistryAPIClient implements DockerRegistryAPIClientInterface
     }
 
     @Override
-    public Manifest getManifestofImage(String name, String reference) throws DokcerRegistryClientException{
+    public Object getManifestofImage(String name, String reference) throws DokcerRegistryClientException{
         try {
             return api.getManifestofImage(name, reference);
         } catch (NotFoundException e) {

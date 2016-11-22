@@ -71,10 +71,10 @@ $(document).ready(function(){
     });
 
     $("#user_save_finishBtn").click(function () {
-        var flag = checkRestriction();
+/*        var flag = checkRestriction();
         if (flag == false) {
             return;
-        }
+        }*/
         layer.open({
             title: '租户信息',
             content: '确定创建新租户？',
@@ -485,11 +485,13 @@ function checkBasicInfo() {
 function checkResourceQuota() {
     var cpu_account = $.trim($("#cpu_account").val());
     var ram = $.trim($("#ram").val());
-    var pod_count = $.trim($("#pod_count").val());
-    var image_control = $.trim($("#image_control").val());
-    var server_count = $.trim($("#server_count").val());
-//	 var vol_count = $.trim($("#vol_count").val());
-//	 var vol = $.trim($("#vol").val());
+    var vol = $.trim($("#vol").val());
+    var image_count = $.trim($("#image_count").val());
+    //var pod_count = $.trim($("#pod_count").val());
+    //var image_control = $.trim($("#image_control").val());
+    //var server_count = $.trim($("#server_count").val());
+	//var vol_count = $.trim($("#vol_count").val());
+	 
 
     if (cpu_account === '') {
         layer.tips('请填写CPU数量', '#cpu_account', {
@@ -505,7 +507,14 @@ function checkResourceQuota() {
         $("#ram").focus();
         return false;
     }
-    if (pod_count === '') {
+    if (vol == '') {
+        layer.tips('请填写卷组容量', '#vol', {
+            tips: [1, '#0FA6D8']
+        });
+        $("#vol").focus();
+        return false;    	
+    }
+/*    if (pod_count === '') {
         layer.tips('请填写Pod数量', '#pod_count', {
             tips: [1, '#0FA6D8']
         });
@@ -525,8 +534,7 @@ function checkResourceQuota() {
         });
         $("#server_count").focus();
         return false;
-    }
-    $("#ram").attr("value", ram);
+    }*/
 }
 
 /**

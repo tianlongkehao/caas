@@ -12,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -102,19 +103,30 @@ public class MethodInvoker {
     		response = invocationBuilder.put(entity);
     	}
     	response.bufferEntity();
-    	//if (response.readEntity(String.class).length() < 200) {
+    	if (response.readEntity(String.class).length() < 200) {
     	    log.info(url+pathValue+" -X"+get+":"+post+":"+delete+":"+put+"========response:"+response.readEntity(String.class));
-    	//}
+    	}
     	try{
-    		return response.readEntity(method.getReturnType());
-    	}catch(KubernetesClientException e){
-    		Status status = response.readEntity(Status.class);
-    		throw new KubernetesClientException("unexpect k8s response",status);
-    	} catch (SheraClientException e) {
-            throw new SheraClientException("unexpect shera response");
-        } catch (DokcerRegistryClientException e) {
-            ErrorList errors = response.readEntity(ErrorList.class);
-            throw new DokcerRegistryClientException("unexpect docker registry api response", errors);
+    	    if (!response.getHeaders().isEmpty() && response.getHeaders().containsKey("Etag")) {
+    	        return response.getHeaders();
+    	    } else {
+    	        return response.readEntity(method.getReturnType());
+    	    }
+    	}
+    	catch(ProcessingException | IllegalStateException k8s) {
+    	    try {
+                Status status = response.readEntity(Status.class);
+                throw new KubernetesClientException("unexpect k8s response",status);                
+            }
+            catch (ProcessingException | IllegalStateException dockerReg) {
+                try {
+                    ErrorList errors = response.readEntity(ErrorList.class);
+                    throw new DokcerRegistryClientException("unexpect docker registry api response", errors);                     
+                }
+                catch (ProcessingException | IllegalStateException shera) {
+                    throw new SheraClientException("unexpect shera response");
+                }
+            }
         }
 	}
 }
