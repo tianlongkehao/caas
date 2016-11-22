@@ -1,6 +1,6 @@
 /*
  * 文件名：SheraAPIClient.java
- * 版权：Copyright by www.huawei.com
+ * 版权：Copyright by www.bonc.com.cn
  * 描述：
  * 修改人：ke_wang
  * 修改时间：2016年11月11日
@@ -20,13 +20,13 @@ import org.apache.commons.logging.LogFactory;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
-import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
-import com.bonc.epm.paas.shera.model.JobExecution;
-import com.bonc.epm.paas.shera.model.JobExecutionList;
+import com.bonc.epm.paas.shera.model.JobExecView;
+import com.bonc.epm.paas.shera.model.JobExecViewList;
 
 /**
  * @author ke_wang
@@ -74,7 +74,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExec execJob(String name) throws SheraClientException {
+    public JobExecView execJob(String name) throws SheraClientException {
         try {
             return api.execJob(namespace, name);
         }
@@ -113,7 +113,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExecution deleteExecution(String name, Integer seqno) throws SheraClientException {
+    public JobExecView deleteExecution(String name, Integer seqno) throws SheraClientException {
         try {
             return api.deleteExecution(namespace, name, seqno);
         }
@@ -126,7 +126,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExecution killExecution(String name, Integer seqno) throws SheraClientException {
+    public JobExecView killExecution(String name, Integer seqno) throws SheraClientException {
         try {
             return api.killExecution(namespace, name, seqno);
         }
@@ -139,7 +139,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExecution getExecution(String name, Integer seqno) throws SheraClientException {
+    public JobExecView getExecution(String name, Integer seqno) throws SheraClientException {
         try {
             return api.killExecution(namespace, name, seqno);
         }
@@ -152,7 +152,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExecutionList getJobAllExecutions(String name) throws SheraClientException {
+    public JobExecViewList getJobAllExecutions(String name) throws SheraClientException {
         try {
             return api.getJobAllExecutions(namespace, name);
         }
@@ -194,6 +194,59 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     public Job getJob(String name) throws SheraClientException {
         try {
             return api.getJob(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public com.bonc.epm.paas.shera.model.Log getExecLog(String name, String seqno,
+                                                        com.bonc.epm.paas.shera.model.Log log) throws SheraClientException {
+        try {
+            return api.getExecLog(namespace, name, seqno, log);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public ChangeGit getChangeGit(String name) throws SheraClientException {
+        try {
+            return api.getChangeGit(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public ChangeGit addGitHooks(String name, ChangeGit changeGit) throws SheraClientException {
+        try {
+            return api.addGitHooks(namespace, name, changeGit);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public ChangeGit deleteGitHooks(String name, ChangeGit changeGit) throws SheraClientException {
+        try {
+            return api.deleteGitHooks(namespace, name, changeGit);
         }
         catch (NotFoundException e) {
             return null;

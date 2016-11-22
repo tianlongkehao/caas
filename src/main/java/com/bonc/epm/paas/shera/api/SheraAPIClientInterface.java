@@ -1,6 +1,6 @@
 /*
  * 文件名：SheraAPIClientInterface.java
- * 版权：Copyright by www.huawei.com
+ * 版权：Copyright by www.bonc.com.cn
  * 描述：
  * 修改人：ke_wang
  * 修改时间：2016年11月11日
@@ -11,16 +11,16 @@
 
 package com.bonc.epm.paas.shera.api;
 
-import javax.ws.rs.PathParam;
-
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
-import com.bonc.epm.paas.shera.model.JobExecution;
-import com.bonc.epm.paas.shera.model.JobExecutionList;
+import com.bonc.epm.paas.shera.model.JobExecView;
+import com.bonc.epm.paas.shera.model.JobExecViewList;
+import com.bonc.epm.paas.shera.model.Log;
 
 /**
  * @author ke_wang
@@ -32,6 +32,8 @@ import com.bonc.epm.paas.shera.model.JobExecutionList;
 public interface SheraAPIClientInterface {
     public static final String VERSION  = "v1";
 
+    /* Job API*/
+    public Job getJob(String jobId) throws SheraClientException;
     /**
      * Get JobExecList Info
      *
@@ -50,7 +52,6 @@ public interface SheraAPIClientInterface {
      */
     public Job createJob(Job job) throws SheraClientException;
     
-    
     /**
      * exec a Job
      * 
@@ -60,26 +61,34 @@ public interface SheraAPIClientInterface {
      * @return {@link JobExec}
      * @throws SheraClientException
      */
-    public JobExec execJob(String jobId) throws SheraClientException;
+    public JobExecView execJob(String jobId) throws SheraClientException;
+    
+    public Job updateJob(Job job) throws SheraClientException;
+
+    public Log getExecLog(String name, String seqno, Log log) throws SheraClientException;
+
+    public ChangeGit getChangeGit(String name) throws SheraClientException;
+
+    public ChangeGit addGitHooks(String name, ChangeGit changeGit) throws SheraClientException;
+    
+    public ChangeGit deleteGitHooks(String name, ChangeGit changeGit) throws SheraClientException;
+
+    public Job deleteJob(String jobId) throws SheraClientException;
+    
+    public JobExecViewList getJobAllExecutions(String jobId) throws SheraClientException;
+
+    public JobExecView getExecution(String jobId, Integer executionId) throws SheraClientException;
+    
+    public JobExecView deleteExecution(String jobId, Integer executionId) throws SheraClientException;
+    
+    public JobExecView killExecution(String jobId, Integer executionId) throws SheraClientException;
+    
+    /* Job API*/
+    public JdkList getAllJdk() throws SheraClientException;
     
     public Jdk deleteJdk(String jdkVersion) throws SheraClientException;
     
     public Jdk createJdk(Jdk jdk) throws SheraClientException;
     
-    public JdkList getAllJdk() throws SheraClientException;
-    
-    public JobExecution deleteExecution(String jobId, Integer executionId) throws SheraClientException;
-    
-    public JobExecution killExecution(String jobId, Integer executionId) throws SheraClientException;
-    
-    public JobExecution getExecution(String jobId, Integer executionId) throws SheraClientException;
-    
-    public JobExecutionList getJobAllExecutions(String jobId) throws SheraClientException;
-    
-    public Job deleteJob(String jobId) throws SheraClientException;
-    
-    public Job updateJob(Job job) throws SheraClientException;
-    
-    public Job getJob(String jobId) throws SheraClientException;
     
 }
