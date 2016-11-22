@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -33,10 +34,16 @@ import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.docker.api.DockerRegistryAPIClient;
+import com.bonc.epm.paas.docker.api.DockerRegistryAPIClientInterface;
+import com.bonc.epm.paas.docker.model.Images;
+import com.bonc.epm.paas.docker.model.Tags;
 import com.bonc.epm.paas.docker.util.DockerClientService;
+import com.bonc.epm.paas.docker.util.DockerRegistryService;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.ResultPager;
@@ -82,6 +89,12 @@ public class RegistryController {
 	private DockerClientService dockerClientService;
 	
     /**
+     * DockerClientService 接口
+     */
+    @Autowired
+	private DockerRegistryService dockerRegistryService;
+	
+    /**
      * 获取docker.image.url的路径信息
      */
     @Value("${docker.image.url}")
@@ -108,7 +121,8 @@ public class RegistryController {
      */
     @RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
     public String index(@PathVariable int index, Model model) {
-        long userId = CurrentUserUtils.getInstance().getUser().getId();
+    	User user = CurrentUserUtils.getInstance().getUser();
+        long userId = user.getId();
         String active = null;
         if(index == 0){
             active = "镜像中心";
@@ -122,6 +136,7 @@ public class RegistryController {
         model.addAttribute("index", index);
         model.addAttribute("active",active);
         model.addAttribute("userId",userId);
+        model.addAttribute("user",user);
 
         return "docker-registry/registry.jsp";
     }
@@ -527,4 +542,45 @@ public class RegistryController {
             }
         }
     }
+    
+    /**
+     * 
+     * Description:
+     * 管理员添加，同步本地数据库和私有仓库的镜像信息
+     * @see
+     */
+	@RequestMapping("registry/refresh.do")
+    @ResponseBody
+	public String refresh() {
+		Map<String, Object> maps = new HashMap<String, Object>();
+		
+        DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
+        //获取数据库中所有的镜像
+        ArrayList<Image> imageList = (ArrayList<Image>) imageDao.findAll();
+        //获取所有的镜像分组名称
+        Images images = client.getImages();
+        if (images != null) {
+        	//遍历数据库中的镜像
+	        for (Image image : imageList) {
+	        	//判断仓库中是否有对应的镜像名和tag
+				if (!images.getRepositories().contains(image.getName()) ||
+						!client.getTagsofImage(image.getName()).getTags().contains(image.getVersion())) {
+					//将数据库中的镜像的isDelete字段设置为1
+					image.setIsDelete(1);
+					imageDao.save(image);
+					//删除远程仓库的镜像
+			        MultivaluedMap<String, Object> result = (MultivaluedMap<String, Object>)client.getManifestofImage(image.getName(), image.getVersion());
+			        if (null != result.get("Etag") && result.get("Etag").size() > 0) {
+			            for (Object oneRow : result.get("Etag")) {
+			                client.deleteManifestofImage(image.getName(), oneRow.toString());
+			            }
+			        }
+					LOG.info(image.getName()+":"+image.getVersion()+" is deleted");
+				};
+			}
+		}
+		maps.put("status", "200");
+		return JSON.toJSONString(maps);
+	}
+
 }
