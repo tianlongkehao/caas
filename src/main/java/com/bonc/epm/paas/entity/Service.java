@@ -137,7 +137,21 @@ public class Service {
 	 */
 	private String nodeIpAffinity;
 	
-    public long getImgID() {
+	/**
+	 * 服务中文名称
+	 */
+	private String serviceChName;
+
+	
+    public String getServiceChName() {
+		return serviceChName;
+	}
+
+	public void setServiceChName(String serviceChName) {
+		this.serviceChName = serviceChName;
+	}
+
+	public long getImgID() {
 		return imgID;
 	}
 
