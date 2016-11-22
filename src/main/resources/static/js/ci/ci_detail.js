@@ -115,7 +115,8 @@ $(document).ready(function(){
     	$("#dockerfileMethod").append(dockerfilePathHtml);
     });
     
-    $(document).on('click','#dockerfileTemp',function(){
+    $("#dockerfileTemp").click(function(){
+    //$(document).on('click','#dockerfileTemp',function(){
     	$("#dockerfileMethod").empty();
     	$("#dockerfileMethod").append(dockerfileTempHtml);
     	
@@ -130,13 +131,26 @@ $(document).ready(function(){
 	$("#dockerfile").focus();
 	$("#dockerfile-import").hide();
 	$("#dockerfile-export").hide();
-	judgeDockerFile();
 	
 	$(".btn-imageType .btns").each(function() {
 		$(this).click(function() {
 			$(".btn-imageType .btns").removeClass("active");
 			$(this).addClass("active");
 		});
+	});
+	
+	//点击基本设置tab时加载数据
+	$(".create-set").click(function(){
+		var dockerFileLocation = $("#ciLocation").val();
+		var dockerfileMethod = $("#ciMethod").val();
+		if (dockerFileLocation != '' ) {
+			$("#dockerfilePath").click();
+			$("#dockerFileLocation").val(dockerFileLocation);
+		}
+		if (dockerfileMethod != '' && dockerfileMethod != undefined) {
+			$("#dockerfileTemp").click();
+			editor_one.setValue(dockerfileMethod);
+		}
 	});
 
 	// 导入模板文件选项对勾
@@ -224,19 +238,6 @@ $(document).ready(function(){
 		})
 	});
 });
-
-function judgeDockerFile(){
-	var dockerFileLocation = $("#ciLocation").val();
-	var dockerfileMethod = $("#ciMethod").val();
-	if (dockerFileLocation != '' ) {
-		$("#dockerfilePath").click();
-		$("#dockerFileLocation").val(dockerFileLocation);
-	}
-	if (dockerfileMethod != '' && dockerfileMethod != undefined) {
-		$("#dockerfileTemp").click();
-		editor_one.setValue(dockerfileMethod);
-	}
-}
 
 //单击导入模板，加载模板数据
 function loadDockerFileTemplate(){
