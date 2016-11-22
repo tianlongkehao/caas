@@ -381,6 +381,20 @@ public class CiController {
         model.addAttribute("baseImage", images);
         return "ci/ci_addCodeSource.jsp";
     }
+    
+    @RequestMapping(value={"ci/judgeUserImages.do"},method=RequestMethod.GET)
+    @ResponseBody
+    public String judgeUserImages(Model model) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        List<Image> imagesOfUser = imageDao.findByCreator(cuurentUser.getId());
+        if (!CollectionUtils.isEmpty(imagesOfUser) && cuurentUser.getImage_count() <= imagesOfUser.size()) {
+            map.put("overwhelm", true);
+        } else {
+            map.put("overwhelm", false);
+        }
+        return JSON.toJSONString(map);
+    }
 	
     /**
      * 代码构建的创建

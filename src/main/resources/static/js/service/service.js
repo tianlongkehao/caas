@@ -355,6 +355,15 @@ function versionUpgrade() {
 
 			})
 }
+//导出excel
+	function exportExcel(){
+		$.ajax({
+			url : ctx + "/service/exportExcel.do?",
+			success : function(data) {
+				
+			}
+		});
+	}
 
 // 每一行的启动
 $(document).off("click", ".startContainer_a").on("click", ".startContainer_a",
@@ -954,7 +963,6 @@ function loadServices() {
         
 	})
 }
-
 function debug(id, status){
 	if (3 != status) {
 		return;
