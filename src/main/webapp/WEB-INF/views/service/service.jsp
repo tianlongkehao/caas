@@ -48,12 +48,13 @@
 										<a id="deleteButton" class="no-drop" href="javascript:delContainer()" title="删除">
 											<i id = "deleteButtonFa" class="fa fa-trash self_a"></i>
 										</a>
+										<a id="ExportBtn" title="导出EXCEL">
+					                        <i id = "ExportButtonFa" class="fa fa-share-square-o"></i>
+					                    </a>
 										<a href="" id="serviceReloadBtn" title="刷新">
 											<i class="fa fa-repeat"></i>
 										</a>
-										<a  id="ExportBtn" title="导出EXCEL">
-                     <i id = "ExportButtonFa" class="fa fa-bug" ></i>
-                   </a>
+										
 									</div>
 								</div>
 								<div class="ibox-content">
