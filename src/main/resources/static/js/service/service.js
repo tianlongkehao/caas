@@ -857,7 +857,13 @@ function loadServices() {
 							var html = '<span class="url">';
 							if (row.serviceAddr!=null && row.serviceAddr!='') {
 								html += '<a href="'+row.serviceAddr +'/'+ row.proxyPath +'"'+
-									'target="_blank">'+row.serviceAddr +'/'+ row.proxyPath +'</a>';
+									'target="_blank">'
+								if(row.serviceChName!=null && row.serviceChName!=''){
+									html += row.serviceChName;
+								} else {
+									html += row.serviceAddr +'/'+ row.proxyPath;
+								}
+								html += '</a>';
 							}
 							html += '</span>'
 							return html;
