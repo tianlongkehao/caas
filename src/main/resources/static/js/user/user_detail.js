@@ -125,7 +125,7 @@ $(document).ready(function(){
 			});
 		}
 	});
-	$('#pod_count').blur(function (event) {
+/*	$('#pod_count').blur(function (event) {
 		var pod_count = $('#pod_count').val().trim();
 		if (pod_count === '') {
 			layer.tips('请填写Pod数量', '#pod_count', {
@@ -148,7 +148,7 @@ $(document).ready(function(){
 				tips: [1, '#EF6578']
 			});
 		}
-	});
+	});*/
 	/**
 	 * 填写时验证资源限制信息
 	 */
@@ -341,11 +341,12 @@ function checkBasicInfo(){
 function checkResourceQuota (){
 	 var cpu_account = $.trim($("#cpu_account").val());
 	 var ram = $.trim($("#ram").val());
-	 var pod_count = $.trim($("#pod_count").val());
-	 var image_control = $.trim($("#image_control").val());
-	 var server_count = $.trim($("#server_count").val());
+	 var vol = $.trim($("#vol").val());
+	 var image_count = $.trim($("#image_count").val());
+	 //var pod_count = $.trim($("#pod_count").val());
+	 //var image_control = $.trim($("#image_control").val());
+	 //var server_count = $.trim($("#server_count").val());
 //	 var vol_count = $.trim($("#vol_count").val());
-//	 var vol = $.trim($("#vol").val());
 
 	if(cpu_account === ''){
 		layer.tips('请填写CPU数量', '#cpu_account',{
@@ -361,7 +362,7 @@ function checkResourceQuota (){
 		$("#ram").focus();
 		return false;
 	}
-	if(pod_count === ''){
+/*	if(pod_count === ''){
 		layer.tips('请填写Pod数量', '#pod_count',{
 			tips: [1, '#EF6578']
 		});
@@ -382,7 +383,7 @@ function checkResourceQuota (){
 		$("#server_count").focus();
 		return false;
 	}
-	 $("#ram").attr("value", ram);
+	 $("#ram").attr("value", ram);*/
 }
 
 

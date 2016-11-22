@@ -191,6 +191,16 @@
 											</div>
 										</div>
 										<div class="row" style="margin-top: 15px">
+                                                <div class="col-md-4" align="left">
+                                                    <label style="width: 21%; float: left; line-height: 35px" title="卷组挂载量">镜像个数:</label>
+                                                    <input type="number" value="${user.image_count }" class="number form-control"
+                                                        min="1" autocomplete="off" placeholder="1" id="image_count"
+                                                        name="image_count"
+                                                        style="width: 75%; display: inline; float: right;"
+                                                        > <span class="resource-unit">个</span>
+                                                </div>
+                                        </div>
+<%-- 										<div class="row" style="margin-top: 15px">
 												<div class="col-md-4" align="left">
 													<label style="width: 21%; float: left; line-height: 35px">Pod数量:</label>
 													<input type="number" value="${resource.pod_count}" class="number form-control"
@@ -226,7 +236,7 @@
 														style="width: 75%; display: inline; float: right;"
 														disabled> <span class="resource-unit">个</span>
 												</div>
-											</div>
+											</div> --%>
                                 	</div>
                                     <div class="" style="padding-top: 160px">
                                         <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>

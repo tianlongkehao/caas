@@ -1,7 +1,5 @@
 package com.bonc.epm.paas.shera.model;
 
-import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
-
 /**
  * SheRa抽象基类
  * @author ke_wang

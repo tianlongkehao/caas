@@ -218,8 +218,8 @@
 				                            <div class="row">
 				                                <div class="form-group1 col-md-12">
 				                                    <label class="c-project-tit">镜像名称</label>
-				                                    <input id="imageName" name="imageName" type="text"
-			                                                   class="form-control c-project-con reg-input" value="">
+				                                    <input id="imageName" name="imgNameLast" type="text"
+			                                                   class="form-control c-project-con reg-input" value="${ci.imgNameLast }">
 					                            </div>
 				                            </div>
 				                            <ul class="nav nav-bar">
@@ -230,8 +230,10 @@
 						                          </ul>
 					                            </li>
 					                        </ul>
+					                        <input type="hidden" id="ciLocation" value="${ci.dockerFileLocation}">
+                                            <input type = "hidden" id = "ciMethod" value = '${dockerFileContent }'>
 				                            <div id="dockerfileMethod">
-	                            
+	                                               
 	                            			</div>
 			                        	</section>
 			                            <div class="form-group">

@@ -1,6 +1,6 @@
 /*
  * 文件名：ZipUtil.java
- * 版权：Copyright by www.huawei.com
+ * 版权：Copyright by www.bonc.com.cn
  * 描述：
  * 修改人：ke_wang
  * 修改时间：2016年11月14日
@@ -20,8 +20,6 @@ import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.bonc.epm.paas.controller.CiController;
 
 /**
  * java处理压缩包公共类

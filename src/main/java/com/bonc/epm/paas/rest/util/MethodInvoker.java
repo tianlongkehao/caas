@@ -8,11 +8,11 @@ import java.util.Map.Entry;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -27,6 +27,8 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
+import com.bonc.epm.paas.docker.exception.ErrorList;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
@@ -105,12 +107,26 @@ public class MethodInvoker {
     	    log.info(url+pathValue+" -X"+get+":"+post+":"+delete+":"+put+"========response:"+response.readEntity(String.class));
     	}
     	try{
-    		return response.readEntity(method.getReturnType());
-    	}catch(KubernetesClientException e){
-    		Status status = response.readEntity(Status.class);
-    		throw new KubernetesClientException("unexpect k8s response",status);
-    	} catch (SheraClientException e) {
-            throw new SheraClientException("unexpect shera response");
+    	    if (!response.getHeaders().isEmpty() && response.getHeaders().containsKey("Etag")) {
+    	        return response.getHeaders();
+    	    } else {
+    	        return response.readEntity(method.getReturnType());
+    	    }
+    	}
+    	catch(ProcessingException | IllegalStateException k8s) {
+    	    try {
+                Status status = response.readEntity(Status.class);
+                throw new KubernetesClientException("unexpect k8s response",status);                
+            }
+            catch (ProcessingException | IllegalStateException dockerReg) {
+                try {
+                    ErrorList errors = response.readEntity(ErrorList.class);
+                    throw new DokcerRegistryClientException("unexpect docker registry api response", errors);                     
+                }
+                catch (ProcessingException | IllegalStateException shera) {
+                    throw new SheraClientException("unexpect shera response");
+                }
+            }
         }
 	}
 }

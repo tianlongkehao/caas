@@ -10,7 +10,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.Ci;
-import com.bonc.epm.paas.entity.Service;
 
 /**
  * 

@@ -1,6 +1,6 @@
 /*
  * 文件名：Status.java
- * 版权：Copyright by www.huawei.com
+ * 版权：Copyright by www.bonc.com.cn
  * 描述：
  * 修改人：ke_wang
  * 修改时间：2016年11月10日
@@ -12,7 +12,6 @@
 package com.bonc.epm.paas.shera.exceptions;
 
 import com.bonc.epm.paas.shera.model.AbstractSheRaModel;
-import com.bonc.epm.paas.shera.model.Kind;
 
 /**
  * @author ke_wang

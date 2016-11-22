@@ -10,8 +10,15 @@ public class Resource {
 	private String pod_count ;//Pod数量
 	private String image_control ;//副本控制器
 	private String server_count ;//服务
-
-	public String getCpu_account() {
+	private long image_count; // 最大镜像数量
+	
+	public long getImage_count() {
+        return image_count;
+    }
+    public void setImage_count(long image_count) {
+        this.image_count = image_count;
+    }
+    public String getCpu_account() {
 		return cpu_account;
 	}
 	public void setCpu_account(String cpu_account) {

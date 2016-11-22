@@ -1,13 +1,5 @@
 $(document).ready(function () {
     
-	$("#buildBtn").click(function(){
-        if(checkCodeCiAdd()) {
-        	$("#buildForm").submit();
-        	layer.load(0, {shade: [0.3, '#000']});
-        }
-        return false;
-    });
-	
 	//codeType
 	$(".git-config").hide();
     $("#codeType").change(function(){
@@ -100,7 +92,7 @@ $(document).ready(function () {
 		'<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
 	'</div>'+
 	'<div class="form-group col-md-12" id="dockerFiles" style="width:98%;margin-left:10px">'+
-		'<textarea id="dockerFile" name="dockerFile"></textarea>'+
+		'<textarea id="dockerFile" name="dockerFileContent"></textarea>'+
 	'</div>'+
 	'</div>';
     //生成dockerfile路径输入框
@@ -109,11 +101,12 @@ $(document).ready(function () {
     	$("#dockerfileMethod").append(dockerfilePathHtml);
     });
     //生成dockerfile模板输入框
+    var editor_one = null;
     $(document).on('click','#dockerfileTemp',function(){
     	$("#dockerfileMethod").empty();
     	$("#dockerfileMethod").append(dockerfileTempHtml);
     	
-    	var editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
+    	editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
             lineNumbers: true,
             matchBrackets: true,
             styleActiveLine: true,
@@ -121,7 +114,7 @@ $(document).ready(function () {
         });
     	$("#dockerfile").focus();
     });
-	
+    $("#dockerfileMethod").append(dockerfilePathHtml);
 	$("#dockerfile-import").hide();
 	$("#dockerfile-export").hide();
 
@@ -189,10 +182,10 @@ $(document).ready(function () {
 				}
 				var dockerFile = editor_one.getValue();
 				if (dockerFile == null || dockerFile == "") {
-					layer.tips('DockerFile不能为空', '#dockerFile', {
+					layer.tips('DockerFile不能为空', '#dockerFiles', {
 						tips : [ 1, '#3595CC' ]
 					});
-					$('#dockerFile').focus();
+					$('#dockerFiles').focus();
 					layer.close(index);
 					return;
 				}
@@ -218,7 +211,13 @@ $(document).ready(function () {
 		})
 	});
 	
-
+	$("#buildBtn").click(function(){
+        if(checkCodeCiAdd(editor_one)) {
+        	$("#buildForm").submit();
+        	layer.load(0, {shade: [0.3, '#000']});
+        }
+        return false;
+    });
     
 });
 		
@@ -395,7 +394,7 @@ function loadShell(count){
 	return shellHtml;
 }
 
-function checkCodeCiAdd(){
+function checkCodeCiAdd(editor_one){
 	
 	//项目名称的判断
 	var projectName = $("#projectName").val();
@@ -571,13 +570,32 @@ function checkCodeCiAdd(){
     json = json.substring(0, json.length-1);
     json = '[' + json + ']';
     $("#jsonData").val(json);
+    
+    var imageName = $("#imageName").val();
+	if(!imageName || imageName.length < 1){
+		layer.tips('镜像名称不能为空','#imageName',{tips: [1, '#3595CC']});
+		$('#imageName').focus();
+		return;
+    }
+    
     //doackerFile文件路径的判断
-//	var dockerFileLocation = $("#dockerFileLocation").val();
-//	if(!dockerFileLocation || dockerFileLocation.length < 1){
-//		layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
-//		$('#dockerFileLocation').focus();
-//		return;
-//    }
+	var dockerFileLocation = $("#dockerFileLocation").val();
+	if (dockerFileLocation != undefined) {
+		if(!dockerFileLocation || dockerFileLocation.length < 1){
+			layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
+			$('#dockerFileLocation').focus();
+			return;
+		}
+	}
+	
+	var dockerFile = editor_one.getValue();
+	if (dockerFile != undefined) {
+		if(!dockerFile || dockerFile.length < 1){
+			layer.tips('dockerfile模板不能为空','#dockerFiles',{tips: [1, '#3595CC']});
+			$('#dockerFiles').focus();
+			return;
+		}
+	}
     return true;
 }
 

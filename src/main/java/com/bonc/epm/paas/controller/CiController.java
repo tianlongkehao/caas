@@ -57,7 +57,6 @@ import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.util.SheraClientService;
-import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.FileUtils;
@@ -233,6 +232,8 @@ public class CiController {
             try {
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 JdkList jdkList = client.getAllJdk();
+                Job job = client.getJob(ci.getProjectName());
+                model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
                 model.addAttribute("jdkList",jdkList.getItems());
             }
             catch (SheraClientException e) {
@@ -317,7 +318,8 @@ public class CiController {
      */
     @RequestMapping("ci/modifyCodeCi.do")
 	@ResponseBody
-	public String modifyCodeCi(Ci ci,String jsonData) {
+	public String modifyCodeCi(Ci ci,String jsonData,String dockerFileContentEdit) {
+        Map<String, Object> map = new HashMap<String, Object>();
         Ci originCi = ciDao.findOne(ci.getId());
         originCi.setProjectName(ci.getProjectName());
         originCi.setDescription(ci.getDescription());
@@ -329,16 +331,26 @@ public class CiController {
         originCi.setCodeName(ci.getCodeName());
         originCi.setCodeRefspec(ci.getCodeRefspec());;
         originCi.setDockerFileLocation(ci.getDockerFileLocation());
-        ciDao.save(originCi);
         List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
-        if (!StringUtils.isEmpty(ciInvokeList)) {
-            ciInvokeDao.deleteByCiId(ci.getId());
-            ciInvokeDao.save(ciInvokeList);
-            LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            Job job = sheraClientService.generateJob(ci.getProjectName(),ci.getJdkVersion(),ci.getCodeBranch(),ci.getCodeUrl(),
+                ci.getCodeCredentials(),ci.getCodeName(),ci.getCodeRefspec(),
+                dockerFileContentEdit,ci.getDockerFileLocation(),ci.getImgNameLast(),
+                ciInvokeList);
+            client.updateJob(job);
+            ciDao.save(originCi);
+            if (!StringUtils.isEmpty(ciInvokeList)) {
+                ciInvokeDao.deleteByCiId(ci.getId());
+                ciInvokeDao.save(ciInvokeList);
+            }
+            map.put("status", "200");
         }
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", "200");
-        map.put("data", ci);
+        catch (Exception e) {
+            LOG.error("modifyCodeCi error:"+e.getMessage());
+            map.put("status", "400");
+        }
+        map.put("data", originCi);
         return JSON.toJSONString(map);
     }
 	
@@ -446,10 +458,21 @@ public class CiController {
     @RequestMapping(value = "ci/delCi.do", method = RequestMethod.POST)
 	@ResponseBody
 	public String delCi(@RequestParam String id) {
-        Long idl = Long.parseLong(id);
-        ciDao.delete(idl);
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", "200");
+        try {
+            Long idl = Long.parseLong(id);
+            Ci ci = ciDao.findOne(idl);
+            if (ci.getType() == CiConstant.TYPE_CODE) {
+                SheraAPIClientInterface client = sheraClientService.getClient();
+                client.deleteJob(ci.getProjectName());
+            }
+            ciDao.delete(idl);
+            map.put("status", "200");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
         return JSON.toJSONString(map);
     }
 	

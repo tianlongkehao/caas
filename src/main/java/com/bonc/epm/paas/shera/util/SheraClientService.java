@@ -1,6 +1,6 @@
 /*
  * 文件名：SheraClientService.java
- * 版权：Copyright by www.huawei.com
+ * 版权：Copyright by www.bonc.com.cn
  * 描述：
  * 修改人：ke_wang
  * 修改时间：2016年11月11日
@@ -22,17 +22,16 @@ import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
-import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.AntConfig;
 import com.bonc.epm.paas.shera.model.BuildManager;
 import com.bonc.epm.paas.shera.model.CodeManager;
 import com.bonc.epm.paas.shera.model.GitAdvancedConfig;
 import com.bonc.epm.paas.shera.model.GitConfig;
 import com.bonc.epm.paas.shera.model.ImgManager;
-import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.MvnConfig;
 import com.bonc.epm.paas.shera.model.Repository;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 
 /**
  * @author ke_wang
@@ -49,7 +48,7 @@ public class SheraClientService {
     private String password="shera";
     
     public SheraAPIClientInterface getClient() {
-        String namespace = "admin"; //CurrentUserUtils.getInstance().getUser().getNamespace();
+        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
         return getclient(namespace);
     }
 
@@ -131,18 +130,15 @@ public class SheraClientService {
         job.setImgManager(imgManager);
         return job;
     }
-    
-//    public static void main(String[] args) {
-//        SheraClientService sheraClientService = new SheraClientService();
-//        SheraAPIClientInterface client = sheraClientService.getClient();
-//        try {
-//            //client.getAllJobs();
-//            JdkList jdkList = client.getAllJdk();
-//            System.out.println(client.getAllJdk());
-//        }
-//        catch (SheraClientException e) {
-//           e.printStackTrace();
-//        }
-//    }
-
+/*    public static void main(String[] args) {
+        SheraClientService sheraClientService = new SheraClientService();
+        SheraAPIClientInterface client = sheraClientService.getClient();
+        try {
+            client.getAllJobs();
+            System.out.println(client.getAllJobs());
+        }
+        catch (SheraClientException e) {
+           e.printStackTrace();
+        }
+    }*/
 }
