@@ -318,7 +318,7 @@ public class CiController {
      */
     @RequestMapping("ci/modifyCodeCi.do")
 	@ResponseBody
-	public String modifyCodeCi(Ci ci,String jsonData,String dockerFileContent) {
+	public String modifyCodeCi(Ci ci,String jsonData,String dockerFileContentEdit) {
         Map<String, Object> map = new HashMap<String, Object>();
         Ci originCi = ciDao.findOne(ci.getId());
         originCi.setProjectName(ci.getProjectName());
@@ -336,7 +336,7 @@ public class CiController {
             SheraAPIClientInterface client = sheraClientService.getClient();
             Job job = sheraClientService.generateJob(ci.getProjectName(),ci.getJdkVersion(),ci.getCodeBranch(),ci.getCodeUrl(),
                 ci.getCodeCredentials(),ci.getCodeName(),ci.getCodeRefspec(),
-                dockerFileContent,ci.getDockerFileLocation(),ci.getImgNameLast(),
+                dockerFileContentEdit,ci.getDockerFileLocation(),ci.getImgNameLast(),
                 ciInvokeList);
             client.updateJob(job);
             ciDao.save(originCi);
