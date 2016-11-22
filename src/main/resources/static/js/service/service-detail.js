@@ -216,6 +216,10 @@ function clearLog() {
 }
 //下拉列表选中项对应的log
 function dropdownLog(obj){
+	$(".dropdown-pod").each(function(){
+		$(".dropdown-pod").removeClass("bgcolor");
+	});
+	$(obj).addClass("bgcolor");
 	$("#containerlogList").html("");
 	clearInterval(interval);
 	if(obj != null){

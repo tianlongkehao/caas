@@ -1007,4 +1007,6 @@ li.line-h-3 span i{
 .scpDoc div.ibox{
 	border-left: 1px solid #e7eaec;
 } 
-
+.bgcolor{
+	background-color:#ddd;
+}
