@@ -1,9 +1,18 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,9 +26,12 @@ import java.util.stream.Stream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.JOptionPane;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +92,7 @@ import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.PoiUtils;
 import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
@@ -196,24 +209,24 @@ public class ServiceController {
     @Autowired
 	private NginxServerConf nginxServerConf;
     
-    /**
-     * Description: <br>
-     * 查询所有的服务
-     * @return String
-     */
-    @RequestMapping("service/listService.do")
-	@ResponseBody
-	public String list() {
-        List<Service> serviceList = new ArrayList<Service>();
-        for (Service service : serviceDao.findAll()) {
-            serviceList.add(service);
-        }
-        LOG.debug("services:===========" + serviceList);
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", "200");
-        map.put("data", serviceList);
-        return JSON.toJSONString(map);
-    }
+//    /**
+//     * Description: <br>
+//     * 查询所有的服务
+//     * @return String
+//     */
+//    @RequestMapping("service/listService.do")
+//	@ResponseBody
+//	public String list() {
+//        List<Service> serviceList = new ArrayList<Service>();
+//        for (Service service : serviceDao.findAll()) {
+//            serviceList.add(service);
+//        }
+//        LOG.debug("services:===========" + serviceList);
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("status", "200");
+//        map.put("data", serviceList);
+//        return JSON.toJSONString(map);
+//    }
 
 	/**
 	 * Description: <br>
@@ -2104,4 +2117,80 @@ public class ServiceController {
         }
         return JSON.toJSONString(map);
     }
+
+    /**
+     * 
+     * Description: 服务列表导出excel
+     * @param request
+     * @param response
+     * @throws IOException 
+     * @see
+     */
+    @RequestMapping("service/exportExcel.do")
+    @ResponseBody
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        List<Service> services = serviceDao.findByCreateBy(createBy);
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        String newdownfile = df.format(new Date()) +"--"+createBy+".xls";
+        PoiUtils poiUtil = new PoiUtils();
+        String[] header ={"名称","状态","镜像","服务地址","创建时间"};
+        List<String[]> context =new ArrayList<String[]>();
+        for(int i=0;i<services.size();i++){
+           Service serviceObj = services.get(i);
+            String[] service ={serviceObj.getServiceName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
+                    ,new StringBuffer(serviceObj.getServiceAddr()).append("/").append(serviceObj.getProxyPath()).toString() 
+                    ,serviceObj.getCreateDate().toString()};
+            context.add(service);
+        }
+        HSSFWorkbook wb = poiUtil.exportTest(services,header,context);
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment;filename="+newdownfile);
+        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+        wb.write(out);
+        out.flush();
+        out.close();
+}
+    /**
+     * 
+     * Description: 服务状态号映射为中文
+     * @param status
+     * @return 
+     * @see
+     */
+    public static String mapStatus(Integer status){
+        if(1==status){return "未启动"; }
+        if(2==status){ return "启动中";}
+        if(3==status){return "运行中"; }
+        if(4==status){ return "已停止";}
+        else{ return "启动失败";}
+    }
+    
+	/**
+	 * 判断服务有没有22端口
+	 * 
+	 * @param serviceId
+	 * @see
+	 */
+	@RequestMapping(value = "service/debug.do",method = RequestMethod.GET)
+	@ResponseBody
+	public String debug(long id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Service service = serviceDao.findOne(id);
+		// 获取端口信息
+		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+		int port = 0;
+		for (PortConfig portConfig : portConfigList) {
+			if (portConfig.getContainerPort().equals("22")) {
+				port = Integer.parseInt(portConfig.getMapPort());
+				break;
+			}
+		}
+		if (port == 0) {
+			map.put("status", "400");
+		} else {
+			map.put("status", "200");
+		}
+		return JSON.toJSONString(map);
+	}
 }

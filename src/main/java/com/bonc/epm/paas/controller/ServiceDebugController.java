@@ -115,6 +115,7 @@ public class ServiceDebugController {
 		for (PortConfig portConfig : portConfigList) {
 			if (portConfig.getContainerPort().equals("22")){
 				port = Integer.parseInt(portConfig.getMapPort());
+				break;
 			}
 		}
 		//获取pod信息
@@ -130,6 +131,7 @@ public class ServiceDebugController {
 	        if (CollectionUtils.isNotEmpty(pods)) {
 	            for (Pod pod : pods) {
 	            	podIP = pod.getStatus().getPodIP();
+	            	break;
 	            }
 	        }
         }
