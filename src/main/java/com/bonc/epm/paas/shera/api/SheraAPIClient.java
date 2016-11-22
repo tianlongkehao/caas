@@ -20,7 +20,9 @@ import org.apache.commons.logging.LogFactory;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.model.Jdk;
+import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExecList;
 import com.bonc.epm.paas.shera.model.JobExecView;
@@ -192,6 +194,72 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     public Job getJob(String name) throws SheraClientException {
         try {
             return api.getJob(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public com.bonc.epm.paas.shera.model.Log getExecLog(String name, String seqno,
+                                                        com.bonc.epm.paas.shera.model.Log log) throws SheraClientException {
+        try {
+            return api.getExecLog(namespace, name, seqno, log);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public ChangeGit getChangeGit(String name) throws SheraClientException {
+        try {
+            return api.getChangeGit(namespace, name);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public ChangeGit addGitHooks(String name, ChangeGit changeGit) throws SheraClientException {
+        try {
+            return api.addGitHooks(namespace, name, changeGit);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public ChangeGit deleteGitHooks(String name, ChangeGit changeGit) throws SheraClientException {
+        try {
+            return api.deleteGitHooks(namespace, name, changeGit);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public JdkList getAllJdk() throws SheraClientException {
+        try {
+            return api.getAllJdk();
         }
         catch (NotFoundException e) {
             return null;
