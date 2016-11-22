@@ -566,7 +566,7 @@ textarea.c-project-con{
 }
 .registryinfo ul.nav-bar{
 	margin-bottom:20px;
-	margin-left:26px;
+	margin-left:10px;
 }
 .fa-map-marker{
 	margin-right: 6px;
@@ -594,5 +594,8 @@ textarea.c-project-con{
 }
 .registryinfo .row input{
 	text-indent: 10px;
+}
+#sortable .row .col-sm-12{
+	padding-left: 0px;
 }
 

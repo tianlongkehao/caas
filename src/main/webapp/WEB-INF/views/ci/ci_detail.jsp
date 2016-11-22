@@ -218,7 +218,7 @@
 				                            <div class="row">
 				                                <div class="form-group1 col-md-12">
 				                                    <label class="c-project-tit">镜像名称</label>
-				                                    <input id="imageName" name="imageName" type="password"
+				                                    <input id="imageName" name="imageName" type="text"
 			                                                   class="form-control c-project-con reg-input" value="">
 					                            </div>
 				                            </div>
