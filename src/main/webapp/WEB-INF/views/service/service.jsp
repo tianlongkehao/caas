@@ -51,6 +51,9 @@
 										<a href="" id="serviceReloadBtn" title="刷新">
 											<i class="fa fa-repeat"></i>
 										</a>
+										<a  id="ExportBtn" title="导出EXCEL">
+                     <i id = "ExportButtonFa" class="fa fa-bug" ></i>
+                   </a>
 									</div>
 								</div>
 								<div class="ibox-content">
@@ -342,5 +345,10 @@
 		}); */
 		$("#checkallbox").parent().removeClass("sorting_asc"); 
 	</script>
+	<script type="text/javascript">
+         document.getElementById('ExportBtn').onclick = function(){
+        location.href = ctx + "/service/exportExcel.do";
+        } 
+    </script>
 </body>
 </html> 
