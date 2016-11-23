@@ -732,11 +732,17 @@ public class KubernetesClientService {
      * @return 
      * @see 
      */
-    public ReplicationController updateContainPort(ReplicationController controller, String containerPort) {
-        int port = Integer.valueOf(containerPort);  
-       List<ContainerPort> ports = controller.getSpec().getTemplate().getSpec()
-        .getContainers().get(0).getPorts();
-        ports.get(0).setContainerPort(port);
+    public ReplicationController updateContainPort(ReplicationController controller, List<PortConfig> portCfg) {
+        if (CollectionUtils.isNotEmpty(portCfg)) {
+            List<ContainerPort> ports = new ArrayList<ContainerPort>();
+            for (PortConfig oneRow : portCfg) {
+                ContainerPort port = new ContainerPort();
+                port.setContainerPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+                ports.add(port); 
+            }
+            controller.getSpec().getTemplate().getSpec()
+            .getContainers().get(0).setPorts(ports);
+      }
         return controller;
     }
 

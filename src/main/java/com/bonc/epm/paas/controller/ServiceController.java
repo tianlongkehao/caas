@@ -2287,7 +2287,7 @@ public class ServiceController {
     }
     @RequestMapping(value ="service/detail/editPortConfig.do")
     @ResponseBody
-    public String editPortCfgForm(PortConfig portConfig , String serviceName){
+    public String editPortCfgForm(PortConfig portConfig , String serviceName ,long serviceId){
         Map map = new HashMap();
         PortConfig portCfg = new PortConfig();
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -2299,11 +2299,13 @@ public class ServiceController {
         portCfg.setContainerPort(portConfig.getContainerPort());
         //存入数据库
         portConfigDao.save(portCfg);
+        //查询对应的service 的port
+        List<PortConfig> portCfgs = portConfigDao.findByServiceId(serviceId);
         try {
           //找到对应的rc文件
             controller = client.getReplicationController(serviceName);
             //修改rc文件
-            controller = kubernetesClientService.updateContainPort(controller,portConfig.getContainerPort());
+            controller = kubernetesClientService.updateContainPort(controller,portCfgs);
             controller = client.updateReplicationController(serviceName, controller);
         } catch (KubernetesClientException e) {
             map.put("status", "500");

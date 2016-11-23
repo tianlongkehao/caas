@@ -349,7 +349,7 @@ $(document).ready(function(){
        });
        //可以编辑的段口号
        $(".editPortConfig").hide();
-       $("#editPortAddrBtn").click(function(){
+       editPortAddr=function (){
     	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
     	   $(this).hide();
     	   $(this).next().show();
@@ -359,8 +359,10 @@ $(document).ready(function(){
     	   }
     	   //$(".editPortConfig").show();
     	   //$(".oldPortConfig").hide();
-       } );
-       $("#savePortEdit").click(function(){
+    	} 
+ //   		   );
+//       $("#savePortEdit").click(
+    		function savePortEdit(){
     	   $(this).parent().find("i#editPortAddrBtn").show();
     	   $(this).next().hide();
     	   $(this).parent().parent().find("span.oldPortConfig").show();
@@ -370,8 +372,9 @@ $(document).ready(function(){
     	   var port=$(this).parent().parent().find("input#containerPort").val();
     	   var id =$(this).parent().parent().find("input#portId").val();
     	   var serName =$("#serviceName").val();
+    	   var serId =$("#serId").val();
     	   $.ajax({
-    			url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id,
+    			url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id+"&serviceId="+serId,
     			success:function(data){
     				var data = eval("(" + data + ")");
     				if("200"==data.status){
@@ -385,7 +388,8 @@ $(document).ready(function(){
 //   	   $(".editPortConfig").hide();
  //  	   editSerAddr();
  //  	   $(".oldCon").show();
-      });
+      }
+//    		);
       $("#canclPortEdit").click(function(){
 	   	   $(this).parent().find("i#editPortAddrBtn").show();
 	   	   $(this).parent().find("i#savePortEdit").hide();
@@ -616,4 +620,5 @@ function checkSerAddr(){
         $('#editProxyPath').focus();
         return false;
     }
+
 }

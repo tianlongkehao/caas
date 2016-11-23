@@ -527,8 +527,10 @@
 									<c:forEach items="${portConfigList }" var="portConfig">
 										<tr>
 											<td style="width:10%;text-indent: 15px;">${service.serviceName }</td>
-											<td style="width:10%;" class="portConfig"><span class="oldPortConfig">${portConfig.containerPort }</span>
-											<span class="editPortConfig"><input id="containerPort" type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
+											<td style="width:10%;" class="portConfig">
+											<span class="oldPortConfig">${portConfig.containerPort }</span>
+											<span class="editPortConfig">
+											<input id="containerPort" type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
 											<input id="portId" hidden="true" value="${portConfig.portId} " />
 											</td>
 											<td style="width:10%;">${portConfig.protocol }</td>
@@ -538,8 +540,9 @@
 												target="_blank">
 													${service.serviceAddr}/${service.proxyPath} </a></td>
 											<c:if test="${service.status==1 or service.status==4}">
-											<td style="width:10%;" class="editBtn"><i id="editPortAddrBtn"  type="button" value="修改"  class="fa fa-edit oldPortConfig"></i>	
-											<i id="savePortEdit" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig"></i>
+											<td style="width:10%;" class="editBtn">
+											<i id="editPortAddrBtn"  type="button" value="修改"  class="fa fa-edit oldPortConfig" onclick="editPortAddr()"></i>	
+											<i id="savePortEdit" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig" onclick="savePortEdit()"></i>
                     	<i id="canclPortEdit" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	</td>
                     </c:if>
 										</tr>
