@@ -53,6 +53,15 @@ $(document).ready(function () {
             });
         }
     });
+    
+    $('#version').blur(function(event){
+        var imgNameLast = $('#version').val().trim();
+        if(imgNameLast.length === 0){
+            layer.tips('镜像版本不能为空', '#version', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+        }
+    });
   
     
     function checkCiAdd(){
@@ -83,6 +92,29 @@ $(document).ready(function () {
                 tips: [1, '#0FA6D8'] //还可配置颜色
             });
             $('#name').focus();
+            return false;
+        }
+        
+        //验证镜像版本version
+        if(version.length === 0){
+            layer.tips('镜像版本不能为空', '#version', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+            $('#version').focus();
+            return false;
+        }
+        if(version.search(/^[A-Za-z0-9-_]*$/) === -1){
+            layer.tips('镜像名称只能由字母、数字、横线和下划线组成', '#version', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+            $('#version').focus();
+            return false;
+        }
+        if(version.length > 128 || version.length < 3){
+            layer.tips('镜像名称为3~128个字符', '#version', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+            $('#version').focus();
             return false;
         }
         
