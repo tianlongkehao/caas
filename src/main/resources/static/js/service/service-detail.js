@@ -324,7 +324,7 @@ $(document).ready(function(){
     				}
     					$('#selSerType').empty();
     					$('#selSerType').append(str);
-    					$("#selSerType option[value='"+storage.storageName+"']").attr("selected", true);
+    					$("#selSerType option[value='"+serVolName+"']").attr("selected", true);
     				}
     	   			});
     	   
