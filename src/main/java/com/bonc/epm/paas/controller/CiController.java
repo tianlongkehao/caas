@@ -38,6 +38,7 @@ import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ImageConstant;
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
@@ -478,7 +479,13 @@ public class CiController {
         image.setIsDelete(CommConstant.TYPE_NO_VALUE);
         
         try {
-            String imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
+            String imagePath = "";
+            if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+                imagePath = CODE_TEMP_PATH +"/"+ image.getName()+currentUser.getNamespace() + "/" + image.getVersion();
+            } else {
+                imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
+            }
+            
             File file = new File(imagePath);
             if(!file.exists()) {
                 file.mkdirs();
@@ -599,7 +606,11 @@ public class CiController {
         ci.setType(CiConstant.TYPE_DOCKERFILE);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
         ci.setConstructionDate(new Date());
-        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+cuurentUser.getNamespace()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        } else {
+            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        }
         ci.setDockerFileLocation("/");
         try {
             File file = new File(ci.getCodeLocation());
@@ -677,7 +688,12 @@ public class CiController {
         ci.setType(CiConstant.TYPE_QUICK);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
         ci.setConstructionDate(new Date());
-        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+cuurentUser.getNamespace()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        } else {
+            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        }
+        
         ci.setDockerFileLocation("/");
         try {
             File file = new File(ci.getCodeLocation());
