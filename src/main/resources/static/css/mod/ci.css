@@ -598,4 +598,22 @@ textarea.c-project-con{
 #sortable .row .col-sm-12{
 	padding-left: 0px;
 }
-
+.addCredentialsBtn{
+	border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #dadada;
+    line-height: 30px;
+    margin-left: 10px;
+}
+.infoCred{
+	margin-top: 12px;
+}
+.labelCred{
+	width: 20%;
+	float: left;
+	line-height:34px;
+	
+}
+.conCred{
+	width: 76%;
+}

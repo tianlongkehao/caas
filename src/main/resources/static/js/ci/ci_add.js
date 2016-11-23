@@ -211,6 +211,31 @@ $(document).ready(function () {
 		})
 	});
 	
+	//添加认证按钮
+	$("#addCredentialsCon").hide();
+	$(document).on('click','#addCredentialsBtn',function(){
+		layer.open({
+			type : 1,
+			title : '添加认证',
+			content : $("#addCredentialsCon"),
+			btn : [ '添加', '取消' ],
+			
+		})
+	});
+	//选择认证类型
+	$(".ssh").hide();
+	$(document).on('change','#CredentialsType',function(){
+		var credentialsType = $("#CredentialsType").val();
+		if(credentialsType == 1){
+			$(".normal").show();
+			$(".ssh").hide();
+		}else{
+			$(".normal").hide();
+			$(".ssh").show();
+		}
+	});
+	
+	//提交表单
 	$("#buildBtn").click(function(){
         if(checkCodeCiAdd(editor_one)) {
         	$("#buildForm").submit();
