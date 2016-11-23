@@ -7,6 +7,41 @@ $(document).ready(function () {
 
 });
 
+function addCiInfo(type) {
+	$.ajax({
+		url:ctx+"/ci/judgeUserImages.do",
+		async:false,
+		success:function(data){
+			data = eval("(" + data + ")");
+			if(data.overwhelm){
+				layer.open({
+			        title: '提示',
+			        content: '镜像个数已用完，是否删除无用镜像',
+			        btn: ['确定', '取消'],
+			        yes: function(index, layero){ //或者使用btn1
+			        	window.location.href = ctx + "/registry/1";
+			        },
+			        cancel: function(index){ //或者使用btn2
+			        	window.location.href = ctx + "/ci";
+			        }
+				});				
+			}else{
+				if (type == 0) {
+					window.location.href = ctx + "/ci/add";
+				}
+				if (type == 1) {
+					window.location.href = ctx + "/ci/addCodeSource";
+				}
+				if (type ==2) {
+					window.location.href = ctx + "/ci/uploadImage";
+				}
+				if (type ==3) {
+					window.location.href = ctx + "/ci/dockerfile";
+				}
+			}
+		}
+	});	
+}
 
 function registerConstructCiEvent(){
 	

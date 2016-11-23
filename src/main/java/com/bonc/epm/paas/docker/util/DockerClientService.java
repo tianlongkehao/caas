@@ -369,7 +369,12 @@ public class DockerClientService {
 		         dockerClient = this.getSpecialDockerClientInstance(); 
 		    }
 		    
-		    dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
+		    if (imageName.contains("/")) {
+		        dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec(); 
+		    } else {
+		        dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
+		    }
+		    
 			
 			if (null != ciRecord && null != ciRecordDao) {
 	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);

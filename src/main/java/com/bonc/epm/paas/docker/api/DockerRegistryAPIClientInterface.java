@@ -12,6 +12,7 @@
 package com.bonc.epm.paas.docker.api;
 
 import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
+import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.model.Manifest;
 import com.bonc.epm.paas.docker.model.Tags;
 
@@ -24,6 +25,8 @@ import com.bonc.epm.paas.docker.model.Tags;
 
 public interface DockerRegistryAPIClientInterface {
     public static final String VERSION = "v2";
+    
+    public Images getImages() throws DokcerRegistryClientException;
     
     public Tags getTagsofImage(String name) throws DokcerRegistryClientException;
     
