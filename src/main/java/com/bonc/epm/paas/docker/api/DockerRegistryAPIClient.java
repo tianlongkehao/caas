@@ -15,6 +15,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 
 import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
+import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.model.Manifest;
 import com.bonc.epm.paas.docker.model.Tags;
 import com.bonc.epm.paas.rest.util.RestFactory;
@@ -36,6 +37,17 @@ public class DockerRegistryAPIClient implements DockerRegistryAPIClientInterface
         api = factory.createDockerRegistryAPI(endpointURI, username, password);
     }
     
+    @Override
+    public Images getImages() throws DokcerRegistryClientException{
+        try {
+            return api.getImages();
+        } catch (NotFoundException e) {
+            return null;
+        } catch (WebApplicationException e) {
+            throw new DokcerRegistryClientException(e);
+        }
+    }
+
     @Override
     public Tags getTagsofImage(String name) throws DokcerRegistryClientException{
         try {

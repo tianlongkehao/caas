@@ -403,3 +403,27 @@ $(function(){
 	}
 
 });
+
+//管理员添加，同步本地数据库和私有仓库的镜像信息
+function refresh(){
+	$.ajax({
+		url:""+ctx+"/registry/refresh.do",
+		success:function(data){
+			data = eval("(" + data + ")");
+			if(data.status=="200"){
+				layer.msg("镜像同步成功",{
+					icon:1,
+					time:0,
+					btn: ['确定'],
+					yes:function(index, layero){
+						layer.close(index);
+						window.location.reload(true);
+					}
+				});
+			}else{
+				layer.alert("镜像同步失败，请检查服务器连接");
+			}
+
+		}
+	})
+}
