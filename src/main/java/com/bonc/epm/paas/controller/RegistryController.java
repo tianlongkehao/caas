@@ -549,6 +549,7 @@ public class RegistryController {
      * 管理员添加，同步本地数据库和私有仓库的镜像信息
      * @see
      */
+	@SuppressWarnings("unchecked")
 	@RequestMapping("registry/refresh.do")
     @ResponseBody
 	public String refresh() {
@@ -568,13 +569,6 @@ public class RegistryController {
 					//将数据库中的镜像的isDelete字段设置为1
 					image.setIsDelete(1);
 					imageDao.save(image);
-					//删除远程仓库的镜像
-			        MultivaluedMap<String, Object> result = (MultivaluedMap<String, Object>)client.getManifestofImage(image.getName(), image.getVersion());
-			        if (null != result.get("Etag") && result.get("Etag").size() > 0) {
-			            for (Object oneRow : result.get("Etag")) {
-			                client.deleteManifestofImage(image.getName(), oneRow.toString());
-			            }
-			        }
 					LOG.info(image.getName()+":"+image.getVersion()+" is deleted");
 				};
 			}
