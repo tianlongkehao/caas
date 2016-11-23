@@ -32,6 +32,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -2137,26 +2138,9 @@ public class ServiceController {
         int runFlag;
         Service ser = serviceDao.findOne(service.getId());
         if(1==ser.getStatus()){
+            ser=setAttrForEdit(ser, service);
             ser.setServiceName(service.getServiceName());
             ser.setStartCommand(service.getStartCommand());
-            ser.setServicePath(service.getServicePath());
-            ser.setProxyZone(service.getProxyZone());
-            ser.setProxyPath(service.getProxyPath());
-            ser.setSessionAffinity(service.getSessionAffinity());
-            ser.setNodeIpAffinity(service.getNodeIpAffinity());
-            ser.setCheckPath(service.getCheckPath());
-            ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
-            ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
-            ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
-            if(StringUtils.isNotBlank(service.getVolName())){
-                ser.setVolName(service.getVolName());
-                ser.setMountPath(service.getMountPath());
-                ser.setServiceType("1");
-            }else{
-                ser.setVolName("");
-                ser.setMountPath("");
-                ser.setServiceType("2");
-                        }
             updateStorageType(service.getVolName(), service.getServiceName());
         }else if(4==ser.getStatus()){
             try {
@@ -2199,26 +2183,9 @@ public class ServiceController {
                      if(StringUtils.isNotBlank(service.getVolName())){
                          controller = setVolumeStorage(controller, service.getVolName(),service.getMountPath());
                                              }
+                     ser=setAttrForEdit(ser, service);
                      ser.setServiceName(service.getServiceName());
                      ser.setStartCommand(service.getStartCommand());
-                     ser.setServicePath(service.getServicePath());
-                     ser.setProxyZone(service.getProxyZone());
-                     ser.setProxyPath(service.getProxyPath());
-                     ser.setSessionAffinity(service.getSessionAffinity());
-                     ser.setNodeIpAffinity(service.getNodeIpAffinity());
-                     ser.setCheckPath(service.getCheckPath());
-                     ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
-                     ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
-                     ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
-                     if(StringUtils.isNotBlank(service.getVolName())){
-                         ser.setVolName(service.getVolName());
-                         ser.setMountPath(service.getMountPath());
-                         ser.setServiceType("1");
-                     }else{
-                         ser.setVolName("");
-                         ser.setMountPath("");
-                         ser.setServiceType("2");
-                                             }
                      
            }catch (KubernetesClientException e) {
                map.put("status", "500");
@@ -2260,24 +2227,8 @@ public class ServiceController {
             }
 //            ser.setServiceName(service.getServiceName());
 //            ser.setStartCommand(service.getStartCommand());
-            ser.setServicePath(service.getServicePath());
-            ser.setProxyZone(service.getProxyZone());
-            ser.setProxyPath(service.getProxyPath());
-            ser.setSessionAffinity(service.getSessionAffinity());
-            ser.setNodeIpAffinity(service.getNodeIpAffinity());
-            ser.setCheckPath(service.getCheckPath());
-            ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
-            ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
-            ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
-            if(StringUtils.isNotBlank(service.getVolName())){
-                ser.setVolName(service.getVolName());
-                ser.setMountPath(service.getMountPath());
-                ser.setServiceType("1");
-            }else{
-                ser.setVolName("");
-                ser.setMountPath("");
-                ser.setServiceType("2");
-                        }
+            ser=setAttrForEdit(ser,service);
+            
                 }
         serviceDao.save(ser);
         map.put("status", "200");
@@ -2285,6 +2236,38 @@ public class ServiceController {
         return JSON.toJSONString(map);
 
     }
+    public Service setAttrForEdit(Service ser,Service service){
+        ser.setServicePath(service.getServicePath());
+        ser.setProxyZone(service.getProxyZone());
+        ser.setProxyPath(service.getProxyPath());
+        ser.setSessionAffinity(service.getSessionAffinity());
+        ser.setNodeIpAffinity(service.getNodeIpAffinity());
+        ser.setCheckPath(service.getCheckPath());
+        ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
+        ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
+        ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
+        if(StringUtils.isNotBlank(service.getVolName())){
+            ser.setVolName(service.getVolName());
+            ser.setMountPath(service.getMountPath());
+            ser.setServiceType("1");
+        }else{
+            ser.setVolName("");
+            ser.setMountPath("");
+            ser.setServiceType("2");
+                    }
+        return ser;
+    }
+    
+    
+    /**
+     * 
+     * Description: 编辑端口配置信息
+     * @param portConfig
+     * @param serviceName
+     * @param serviceId
+     * @return String
+     * @see
+     */
     @RequestMapping(value ="service/detail/editPortConfig.do")
     @ResponseBody
     public String editPortCfgForm(PortConfig portConfig , String serviceName ,long serviceId){
@@ -2292,7 +2275,7 @@ public class ServiceController {
         PortConfig portCfg = new PortConfig();
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         ReplicationController controller = null;
-        
+        com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
         //根据id找到对应的port
         portCfg = portConfigDao.findOne(portConfig.getPortId());
         //修改port
@@ -2302,11 +2285,15 @@ public class ServiceController {
         //查询对应的service 的port
         List<PortConfig> portCfgs = portConfigDao.findByServiceId(serviceId);
         try {
-          //找到对应的rc文件
+          //找到对应的rc和svc文件
             controller = client.getReplicationController(serviceName);
+            k8sService = client.getService(serviceName);
             //修改rc文件
-            controller = kubernetesClientService.updateContainPort(controller,portCfgs);
+            controller = kubernetesClientService.updateRcContainPort(controller,portCfgs);
             controller = client.updateReplicationController(serviceName, controller);
+            //修改service文件
+            k8sService = kubernetesClientService.updateSvcContainPort(k8sService,portCfgs);
+            k8sService = client.updateService(serviceName, k8sService);
         } catch (KubernetesClientException e) {
             map.put("status", "500");
             map.put("msg", e.getStatus().getMessage());

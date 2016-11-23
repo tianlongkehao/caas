@@ -732,7 +732,7 @@ public class KubernetesClientService {
      * @return 
      * @see 
      */
-    public ReplicationController updateContainPort(ReplicationController controller, List<PortConfig> portCfg) {
+    public ReplicationController updateRcContainPort(ReplicationController controller, List<PortConfig> portCfg) {
         if (CollectionUtils.isNotEmpty(portCfg)) {
             List<ContainerPort> ports = new ArrayList<ContainerPort>();
             for (PortConfig oneRow : portCfg) {
@@ -744,6 +744,30 @@ public class KubernetesClientService {
             .getContainers().get(0).setPorts(ports);
       }
         return controller;
+    }
+    /**
+     * Description: <br>
+     * @param k8sService
+     * @param portCfgs
+     * @return 
+     * @see 
+     */
+    public com.bonc.epm.paas.kubernetes.model.Service updateSvcContainPort(
+            com.bonc.epm.paas.kubernetes.model.Service k8sService, List<PortConfig> portCfg) {
+        if (CollectionUtils.isNotEmpty(portCfg)) {
+            List<ServicePort> ports = new ArrayList<ServicePort>();
+            for (PortConfig oneRow : portCfg) {
+                ServicePort portObj = new ServicePort();
+                portObj.setName("http"+portCfg.indexOf(oneRow));
+                portObj.setProtocol("TCP");
+                portObj.setPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+                portObj.setTargetPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+                portObj.setNodePort(Integer.valueOf(oneRow.getMapPort().trim()));
+                ports.add(portObj);
+            }
+            k8sService.getSpec().setPorts(ports);
+        }
+        return k8sService;
     }
 
 }

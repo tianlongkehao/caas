@@ -347,58 +347,8 @@ $(document).ready(function(){
     	   $(".editCon").hide();
     	   $(".oldCon").show();
        });
-       //可以编辑的段口号
+       //可以编辑的端口号
        $(".editPortConfig").hide();
-       editPortAddr=function (){
-    	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
-    	   $(this).hide();
-    	   $(this).next().show();
-    	   $(this).next().next().show();
-    	   $(this).parent().parent().find("span.oldPortConfig").hide();
-    	   $(this).parent().parent().find("span.editPortConfig").show();
-    	   }
-    	   //$(".editPortConfig").show();
-    	   //$(".oldPortConfig").hide();
-    	} 
- //   		   );
-//       $("#savePortEdit").click(
-    		function savePortEdit(){
-    	   $(this).parent().find("i#editPortAddrBtn").show();
-    	   $(this).next().hide();
-    	   $(this).parent().parent().find("span.oldPortConfig").show();
-    	   $(this).parent().parent().find("span.editPortConfig").hide();
-    	   $(this).hide();
-    	   var thiz= $(this);
-    	   var port=$(this).parent().parent().find("input#containerPort").val();
-    	   var id =$(this).parent().parent().find("input#portId").val();
-    	   var serName =$("#serviceName").val();
-    	   var serId =$("#serId").val();
-    	   $.ajax({
-    			url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id+"&serviceId="+serId,
-    			success:function(data){
-    				var data = eval("(" + data + ")");
-    				if("200"==data.status){
-    					layer.msg( "修改成功，重启服务后生效", {
-    						icon: 1
-    	                });
-    				}
-    			}
-    	   		});
- // 			if(false==checkSerAddr()){return ;};
-//   	   $(".editPortConfig").hide();
- //  	   editSerAddr();
- //  	   $(".oldCon").show();
-      }
-//    		);
-      $("#canclPortEdit").click(function(){
-	   	   $(this).parent().find("i#editPortAddrBtn").show();
-	   	   $(this).parent().find("i#savePortEdit").hide();
-	   	   $(this).parent().parent().find("span.oldPortConfig").show();
-	   	   $(this).parent().parent().find("span.editPortConfig").hide();
-	   	   $(this).hide();
-	   	   $("#BaseSerForm").resetForm();
-      });
-
 });/*ready*/
   
 function editPortComm(portConfigId,containerPort){
@@ -620,5 +570,47 @@ function checkSerAddr(){
         $('#editProxyPath').focus();
         return false;
     }
-
 }
+//端口修改按钮
+function editPortAddrBtn(obj){
+	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
+ 	   $(obj).hide();
+ 	   $(obj).next().show();
+ 	   $(obj).next().next().show();
+ 	   $(obj).parent().parent().find("span.oldPortConfig").hide();
+ 	   $(obj).parent().parent().find("span.editPortConfig").show();
+ 	   }
+}
+//端口保存按钮
+function savePortEdit(obj){
+	   $(obj).parent().find("i.editPortAddrBtn").show();
+	   $(obj).next().hide();
+	   $(obj).parent().parent().find("span.oldPortConfig").show();
+	   $(obj).parent().parent().find("span.editPortConfig").hide();
+	   $(obj).hide();
+	   var thiz= $(obj);
+	   var port=$(obj).parent().parent().find("input.containerPort").val();
+	   var id =$(obj).parent().parent().find("input.portId").val();
+	   var serId =$("#serId").val();
+	   var serName =$("#serviceName").val();
+	   $.ajax({
+			url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id+"&serviceId="+serId,
+			success:function(data){
+				var data = eval("(" + data + ")");
+				if("200"==data.status){
+					layer.msg( "修改成功，重启服务后生效", {
+						icon: 1
+	                });
+				}
+			}
+	   		});
+};
+//端口取消按钮
+function canclPortEdit(obj){
+	   $(obj).parent().find("i.editPortAddrBtn").show();
+	   $(obj).parent().find("i.savePortEdit").hide();
+	   $(obj).parent().parent().find("span.oldPortConfig").show();
+	   $(obj).parent().parent().find("span.editPortConfig").hide();
+	   $(obj).hide();
+	   $("#BaseSerForm").resetForm();
+};
