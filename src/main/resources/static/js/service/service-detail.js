@@ -311,7 +311,7 @@ $(document).ready(function(){
     	   var serType=$('#serType').val();
     	   var serMonPath=$('#serMonPath').val();
     	   var serVolName=$('#serVolName').val();
-    	   var str='';
+    	   var str='<option value="">请选择一个卷组</option>';
     	   $.ajax({
     		   url:ctx+"/service/storage/getVols.do",
     				success:function(data){
@@ -322,7 +322,9 @@ $(document).ready(function(){
     					+storage.storageName+' '+storage.storageSize
     					+'M </option>';
     				}
+    					$('#selSerType').empty();
     					$('#selSerType').append(str);
+    					$("#selSerType option[value='"+storage.storageName+"']").attr("selected", true);
     				}
     	   			});
     	   
