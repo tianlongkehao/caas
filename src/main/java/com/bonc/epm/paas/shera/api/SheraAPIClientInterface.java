@@ -13,6 +13,10 @@ package com.bonc.epm.paas.shera.api;
 
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.ChangeGit;
+import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
+import com.bonc.epm.paas.shera.model.CredentialKey;
+import com.bonc.epm.paas.shera.model.CredentialKeyList;
+import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
@@ -82,6 +86,15 @@ public interface SheraAPIClientInterface {
     public JobExecView deleteExecution(String jobId, Integer executionId) throws SheraClientException;
     
     public JobExecView killExecution(String jobId, Integer executionId) throws SheraClientException;
+    
+    /* Credential API*/
+    public CredentialCheckEntity checkCredential(CredentialCheckEntity credential) throws SheraClientException;
+    
+    public CredentialKeyList getAllCredentials() throws SheraClientException;
+    
+    public GitCredential addCredential(GitCredential gitCredential) throws SheraClientException;
+    
+    public CredentialKey deleteCredential(CredentialKey credentialKey) throws SheraClientException;
     
     /* Job API*/
     public JdkList getAllJdk() throws SheraClientException;

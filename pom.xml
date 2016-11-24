@@ -133,6 +133,11 @@
 			<artifactId>ant</artifactId>
 			<version>1.8.2</version>
 		</dependency>
+    <dependency>
+	    <groupId>org.apache.poi</groupId>
+	    <artifactId>poi</artifactId>
+	    <version>3.11</version>
+    </dependency>
 		<!-- <dependency> <groupId>net.unicon.cas</groupId> <artifactId>cas-client-autoconfig-support</artifactId> 
 			<version>1.1.0-GA</version> </dependency> -->
         <dependency>

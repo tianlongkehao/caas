@@ -37,6 +37,10 @@
 												    class="no-drop" href="javascript:void(0)" onclick = "delImages()" title="删除">
 												<i class="fa fa-trash"></i></a>
 										</c:if>
+										<c:if test="${user.user_autority == 1}">
+											<a href="javascript:refresh();" id="volRefreshBtn" title="同步"><i
+												class="fa fa-refresh"></i></a>
+										</c:if>
 										 <a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 									</div>

@@ -40,6 +40,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ImageConstant;
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiInvokeDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
@@ -582,6 +583,20 @@ public class CiController {
         model.addAttribute("baseImage", images);
         return "ci/ci_addCodeSource.jsp";
     }
+    
+    @RequestMapping(value={"ci/judgeUserImages.do"},method=RequestMethod.GET)
+    @ResponseBody
+    public String judgeUserImages(Model model) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        List<Image> imagesOfUser = imageDao.findByCreator(cuurentUser.getId());
+        if (!CollectionUtils.isEmpty(imagesOfUser) && cuurentUser.getImage_count() <= imagesOfUser.size()) {
+            map.put("overwhelm", true);
+        } else {
+            map.put("overwhelm", false);
+        }
+        return JSON.toJSONString(map);
+    }
 	
     /**
      * 代码构建的创建
@@ -752,7 +767,13 @@ public class CiController {
         image.setIsDelete(CommConstant.TYPE_NO_VALUE);
         
         try {
-            String imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
+            String imagePath = "";
+            if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+                imagePath = CODE_TEMP_PATH +"/"+ image.getName()+currentUser.getNamespace() + "/" + image.getVersion();
+            } else {
+                imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
+            }
+            
             File file = new File(imagePath);
             if(!file.exists()) {
                 file.mkdirs();
@@ -873,7 +894,11 @@ public class CiController {
         ci.setType(CiConstant.TYPE_DOCKERFILE);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
         ci.setConstructionDate(new Date());
-        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+cuurentUser.getNamespace()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        } else {
+            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        }
         ci.setDockerFileLocation("/");
         try {
             File file = new File(ci.getCodeLocation());
@@ -951,7 +976,12 @@ public class CiController {
         ci.setType(CiConstant.TYPE_QUICK);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
         ci.setConstructionDate(new Date());
-        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+cuurentUser.getNamespace()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        } else {
+            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+        }
+        
         ci.setDockerFileLocation("/");
         try {
             File file = new File(ci.getCodeLocation());

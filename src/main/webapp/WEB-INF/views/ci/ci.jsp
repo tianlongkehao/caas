@@ -43,10 +43,10 @@
 									<div class="tab-title" id="ciCodeTab"><h5 class="ci-h5"><i class="fa fa-map-marker"></i>代码构建</h5></div>
 
 									<div class="ibox-tools">
-										<a href="<%=path %>/ci/add" id="ciAddBtn"><img src="<%=path %>/images/code.png" class="fa-img" alt="代码构建" title="代码构建"></a>
-										<a href="<%=path %>/ci/addCodeSource" id="ciAddCodeSourceBtn"><img src="<%=path %>/images/quick.png" class="fa-img" alt="快速构建" title="快速构建"></a>
-										<a href="<%=path %>/ci/uploadImage" id="ciAddSourceBtn"><img src="<%=path %>/images/upload.png" class="fa-img" alt="上传镜像" title="上传镜像"></a>
-										<a href="<%=path %>/ci/dockerfile"><img src="<%=path %>/images/dockerfile.png" class="fa-img" alt="Dockerfile构建" title="Dockerfile构建"></a>
+										<a href="javascript:void(0);"  id="ciAddBtn" onclick="addCiInfo(0)"><img src="<%=path %>/images/code.png" class="fa-img" alt="代码构建" title="代码构建"></a>
+										<a href="javascript:void(0);"  id="ciAddCodeSourceBtn" onclick="addCiInfo(1)"><img src="<%=path %>/images/quick.png" class="fa-img" alt="快速构建" title="快速构建"></a>
+										<a href="javascript:void(0);"  id="ciAddSourceBtn" onclick="addCiInfo(2)"><img src="<%=path %>/images/upload.png" class="fa-img" alt="上传镜像" title="上传镜像"></a>
+										<a href="javascript:void(0);"  onclick="addCiInfo(3)"><img src="<%=path %>/images/dockerfile.png" class="fa-img" alt="Dockerfile构建" title="Dockerfile构建"></a>
 										<a href="javascript:window.location.reload(true);" id="ciReloadBtn" title="刷新">
 											<i class="fa fa-repeat"></i>
 										</a>

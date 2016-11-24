@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.StorageConstant;
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.entity.FileInfo;
 import com.bonc.epm.paas.entity.Storage;
@@ -108,7 +109,13 @@ public class StorageController {
     @ResponseBody
     public String findStorageList(Pageable pageable, Model model) {
         Map<String, Object> map = new HashMap<String, Object>();
-        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        String userType =CurrentUserUtils.getInstance().getUser().getUser_autority();
+        long createBy=0;
+        if(UserConstant.AUTORITY_USER.equals(userType)){
+            createBy = CurrentUserUtils.getInstance().getUser().getParent_id();
+        }else{
+            createBy = CurrentUserUtils.getInstance().getUser().getId();
+                }
         List<Storage> storages = storageDao.findAllByCreateByOrderByCreateDateDesc(createBy, pageable);
         map.put("storages", storages);
         map.put("status", "200");
@@ -539,6 +546,15 @@ public class StorageController {
 
 
     } 
+    /**
+     * 
+     * Description: 解压压缩文件
+     * @param storageName
+     * @param fileName
+     * @param path
+     * @return string
+     * @see
+     */
     @RequestMapping(value = { "storage/unZipFile.do" }, method = RequestMethod.GET)
     @ResponseBody
     public String unZipFile(String storageName,String fileName,String path){
@@ -552,6 +568,21 @@ public class StorageController {
         return JSON.toJSONString(map);
     }
     
+    @RequestMapping(value = { "service/storage/getVols.do" }, method = RequestMethod.GET)
+    @ResponseBody
+    public String getVol(){
+        Map map = new HashMap();
+        String userType =CurrentUserUtils.getInstance().getUser().getUser_autority();
+        long createBy=0;
+        if(UserConstant.AUTORITY_USER.equals(userType)){
+            createBy = CurrentUserUtils.getInstance().getUser().getParent_id();
+        }else{
+            createBy = CurrentUserUtils.getInstance().getUser().getId();
+                }
+        List<Storage> storages = storageDao.findByCreateBy(createBy);
+        map.put("storages", storages);
+        return JSON.toJSONString(map);
+    }
 //    public static void main(String[] args) {
 //        try {
 //            CephController ccl = new CephController();
