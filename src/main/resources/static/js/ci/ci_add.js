@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    
 	//codeType
 	$(".git-config").hide();
     $("#codeType").change(function(){
@@ -588,12 +587,14 @@ function checkCodeCiAdd(editor_one){
 		}
 	}
 	
-	var dockerFile = editor_one.getValue();
-	if (dockerFile != undefined) {
-		if(!dockerFile || dockerFile.length < 1){
-			layer.tips('dockerfile模板不能为空','#dockerFiles',{tips: [1, '#3595CC']});
-			$('#dockerFiles').focus();
-			return;
+	if (editor_one != null) {
+		var dockerFile = editor_one.getValue();
+		if (dockerFile != undefined) {
+			if(!dockerFile || dockerFile.length < 1){
+				layer.tips('dockerfile模板不能为空','#dockerFiles',{tips: [1, '#3595CC']});
+				$('#dockerFiles').focus();
+				return;
+			}
 		}
 	}
     return true;

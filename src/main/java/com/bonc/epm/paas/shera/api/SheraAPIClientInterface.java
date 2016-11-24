@@ -61,7 +61,7 @@ public interface SheraAPIClientInterface {
      * @return {@link JobExec}
      * @throws SheraClientException
      */
-    public JobExecView execJob(String jobId) throws SheraClientException;
+    public JobExecView execJob(String jobId,JobExecView jobExecView) throws SheraClientException;
     
     public Job updateJob(Job job) throws SheraClientException;
 

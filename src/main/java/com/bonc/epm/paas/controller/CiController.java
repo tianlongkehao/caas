@@ -56,6 +56,9 @@ import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
+import com.bonc.epm.paas.shera.model.JobExec;
+import com.bonc.epm.paas.shera.model.JobExecList;
+import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateUtils;
@@ -205,11 +208,43 @@ public class CiController {
         } else {
             cis = ciDao.findByNameOfCodeCi(userId, "%" + search + "%",pageRequest);
         }
+        List<Ci> ciList = findSheraData(cis.getContent());
         map.put("draw", draw);
         map.put("recordsTotal", cis.getTotalElements());
         map.put("recordsFiltered", cis.getTotalElements());
-        map.put("data", cis.getContent());
+        map.put("data", ciList);
         return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 代码构建查询shera中的job的构建状态信息；
+     * @param cis cis
+     * @return 
+     */
+    public List<Ci> findSheraData(List<Ci> cis){
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            JobExecList jobExecList = client.getAllJobs();
+            if (cis.size()!=0 && jobExecList != null) {
+                for (Ci ci :cis) {
+                    for (JobExec jobExec :jobExecList) {
+                        if (ci.getProjectName().equals(jobExec.getJobId())) {
+                            if (jobExec.getLastSuccessTime() != 0 ) {
+                                ci.setConstructionDate(DateUtils.getLongToDate(jobExec.getLastSuccessTime()));
+                            }
+                            if (jobExec.getLastFailureTime() != 0) {
+                                ci.setConstructionFailDate(DateUtils.getLongToDate(jobExec.getLastFailureTime()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cis;
     }
     
     /**
@@ -236,7 +271,7 @@ public class CiController {
                 model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
                 model.addAttribute("jdkList",jdkList.getItems());
             }
-            catch (SheraClientException e) {
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -465,6 +500,7 @@ public class CiController {
             if (ci.getType() == CiConstant.TYPE_CODE) {
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 client.deleteJob(ci.getProjectName());
+                ciInvokeDao.deleteByCiId(idl);
             }
             ciDao.delete(idl);
             map.put("status", "200");
@@ -491,7 +527,7 @@ public class CiController {
             JdkList jdkList = client.getAllJdk();
             model.addAttribute("jdkList",jdkList.getItems());
         }
-        catch (SheraClientException e) {
+        catch (Exception e) {
             e.printStackTrace();
         }
         model.addAttribute("username", cuurentUser.getUserName());
@@ -558,6 +594,7 @@ public class CiController {
     public String addCodeCi(Ci ci,String jsonData,String dockerFileContent){
             User cuurentUser = CurrentUserUtils.getInstance().getUser();
             ci.setCreateBy(cuurentUser.getId());
+            ci.setImgNameFirst(cuurentUser.getUserName());
             ci.setCreateDate(new Date());
             ci.setType(CiConstant.TYPE_CODE);
             ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
@@ -966,7 +1003,52 @@ public class CiController {
         return JSON.toJSONString(map);
     }
 	
-    /**
+//	public String constructCi(Long id) {
+//        Ci ci = ciDao.findOne(id);
+//        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
+//        ciDao.save(ci);
+//        long startTime = System.currentTimeMillis();
+//        CiRecord ciRecord = new CiRecord();
+//        ciRecord.setCiId(ci.getId());
+//        ciRecord.setCiVersion(ci.getImgNameVersion());
+//        ciRecord.setConstructDate(ci.getConstructionDate());
+//        ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_ING);
+//        ciRecord.setLogPrint("["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");
+//        ciRecordDao.save(ciRecord);
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("status", "200");
+//        boolean fetchCodeFlag = fetchCode(ci,ciRecord,ciRecordDao);
+//        if(!fetchCodeFlag){
+//            map.put("status", "500");
+//            map.put("msg", "获取代码出错,请检查代码地址和账号密码");
+//            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+//            ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+//        }
+//        boolean constructFlag = construct(ci,ciRecord,ciRecordDao);
+//        if(!constructFlag){
+//            map.put("status", "500");
+//            map.put("msg", "构建镜像失败，请检查配置是否正确");
+//            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+//            ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+//        }
+//        long endTime = System.currentTimeMillis();
+//        ci.setConstructionTime(endTime-startTime);
+//        ciRecord.setConstructTime(endTime-startTime);
+//        if(CiConstant.CONSTRUCTION_RESULT_FAIL!=ciRecord.getConstructResult()){
+//            ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
+//            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
+//        }
+//        if (map.get("status").equals("200")) {
+//            ci.setConstructionDate(new Date());
+//        }
+//        ciDao.save(ci);
+//        ciRecordDao.save(ciRecord);
+//        map.put("data", ci);
+//    
+//        return JSON.toJSONString(map);
+//    }
+    
+	 /**
      * 创建完成之后，开始构建镜像；
      * 
      * @param id ： 构建Id
@@ -974,8 +1056,8 @@ public class CiController {
      * @see
      */
     @RequestMapping("ci/constructCi.do")
-	@ResponseBody
-	public String constructCi(Long id) {
+    @ResponseBody
+    public String constructCi(Long id){
         Ci ci = ciDao.findOne(id);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
         ciDao.save(ci);
@@ -989,96 +1071,120 @@ public class CiController {
         ciRecordDao.save(ciRecord);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
-        boolean fetchCodeFlag = fetchCode(ci,ciRecord,ciRecordDao);
-        if(!fetchCodeFlag){
-            map.put("status", "500");
-            map.put("msg", "获取代码出错,请检查代码地址和账号密码");
-            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
-            ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+        if (CiConstant.TYPE_CODE.equals(ci.getType())) {
+//            boolean fetchCodeCiFlag = fetchCodeCi(ci,ciRecord,startTime,sheraClientService,imageDao,ciDao,ciInvokeDao);
+//            if (!fetchCodeCiFlag) {
+                map.put("status", "500");
+                map.put("msg", "构建镜像失败，请检查配置是否正确");
+                ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+                ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+//            }
+//            else {
+//                ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_ING);
+//                ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
+//            }
         }
-        boolean constructFlag = construct(ci,ciRecord,ciRecordDao);
-        if(!constructFlag){
-            map.put("status", "500");
-            map.put("msg", "构建镜像失败，请检查配置是否正确");
-            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
-            ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
-        }
-        long endTime = System.currentTimeMillis();
-        ci.setConstructionTime(endTime-startTime);
-        ciRecord.setConstructTime(endTime-startTime);
-        if(CiConstant.CONSTRUCTION_RESULT_FAIL!=ciRecord.getConstructResult()){
-            ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
-            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
-        }
-        if (map.get("status").equals("200")) {
-            ci.setConstructionDate(new Date());
+        else {
+            boolean constructFlag = construct(ci,ciRecord,ciRecordDao);
+            if(!constructFlag){
+                map.put("status", "500");
+                map.put("msg", "构建镜像失败，请检查配置是否正确");
+                ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+                ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+            }
+            long endTime = System.currentTimeMillis();
+            ci.setConstructionTime(endTime-startTime);
+            ciRecord.setConstructTime(endTime-startTime);
+            if(CiConstant.CONSTRUCTION_RESULT_FAIL!=ciRecord.getConstructResult()){
+                ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
+                ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
+                ci.setConstructionDate(new Date());
+            }
         }
         ciDao.save(ci);
         ciRecordDao.save(ciRecord);
         map.put("data", ci);
-    
         return JSON.toJSONString(map);
     }
-	
-	/**
-	 * 获取代码
-	 * 
-	 * @param ci ：ci
-	 * @param ciRecord : ciRecord
-	 * @param ciRecordDao : ciRecordDao
-	 * @return boolean
-	 * @see
-	 */
-    private boolean fetchCode(Ci ci,CiRecord ciRecord,CiRecordDao ciRecordDao){
-		//如果是代码上传，不需要重新下载源代码
-        if (CiConstant.TYPE_QUICK.equals(ci.getType()) || CiConstant.TYPE_DOCKERFILE.equals(ci.getType())) {
+    
+    /**
+     * Description: <br>
+     * 代码构建，添加镜像信息
+     * @param ci ci
+     * @param ciRecord ciRecord
+     * @param startTime 时间戳
+     * @return boolean
+     */
+    public boolean fetchCodeCi(final Ci ci,final CiRecord ciRecord,final long startTime,
+                               final SheraClientService sheraClientService,final ImageDao imageDao,final CiDao ciDao,final CiInvokeDao ciInvokeDao) {
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime);
+            jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
+            final Integer seqNo = jobExecViewNew.getSeqNo();
+            new Thread() {
+                public void run() {
+                    try {
+                        boolean flag = true;
+                        while(flag){
+                            Thread.sleep(2000);
+                            SheraClientService sheraClientService = new SheraClientService();
+                            SheraAPIClientInterface client = sheraClientService.getClient();
+                            JobExecView jobExecView = client.getExecution(ci.getProjectName(),seqNo);
+//                            Log log = client.getExecLog(ci.getProjectName(),seqNo,log);
+                            if (jobExecView.getFinished() == 1) {
+                                if (jobExecView.getEndStatus() == 0) {
+                                    Image image = new Image();
+                                    String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
+                                    String imageVersion = DateUtils.getLong2LStr(startTime);
+                                    image.setName(imageName);
+                                    image.setVersion(imageVersion);
+                                    image.setResourceName(ci.getCodeName());
+                                    image.setImageType(ImageConstant.privateType);
+                                    image.setRemark(ci.getDescription());
+                                    image.setCreator(ci.getCreateBy());
+                                    image.setCreateTime(DateUtils.getLongToDate(startTime));
+                                    image.setIsBaseImage(ImageConstant.NotBaseImage);
+                                    image.setIsDelete(CommConstant.TYPE_NO_VALUE);
+                                    imageDao.save(image);
+                                    
+                                    ci.setConstructionTime(jobExecView.getEndTime()-startTime);
+                                    ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
+                                    ciRecord.setConstructTime(jobExecView.getEndTime()-startTime);
+                                    ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
+                                }
+                                if (jobExecView.getEndStatus() == 1) {
+                                    ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+                                    ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+                                }
+                                ciDao.save(ci);
+                                ciRecordDao.save(ciRecord);
+                                flag = false;
+                            } else {
+//                                log = client.getExecLog(name, seqno, log);
+                            }
+                        }
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }  
+                }
+               
+            }.start();
             return true;
         }
-        try{
-//            if(CiConstant.CODE_TYPE_SVN.equals(ci.getCodeType())){
-//                String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
-//                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
-//                ciRecordDao.save(ciRecord);
-//                LOG.info("==========svnCommandStr:"+svnCommandStr);
-//                return CmdUtil.exeCmd(svnCommandStr);
-//            }
-//            else if(CiConstant.CODE_TYPE_GIT.equals(ci.getCodeType())){
-//                String codeUrl = ci.getCodeUrl();
-//                if(StringUtils.isEmpty(codeUrl)||codeUrl.indexOf("//")<=0){
-//                    return false;
-//                }
-//                String nCodeUrl = codeUrl;
-//                String codeUsername = ci.getCodeUsername();
-//                String codePassword = ci.getCodePassword();
-//                if(!StringUtils.isEmpty(codeUsername)&&!StringUtils.isEmpty(codePassword)){
-//					//如果有账号密码
-//                    if(ci.getCodeUsername().indexOf("@")>0){
-//						//如果git用户名是带@邮箱格式的，则去掉邮箱后缀
-//                        codeUsername = codeUsername.substring(0, codeUsername.indexOf("@"));
-//                    }
-//                    nCodeUrl = codeUrl.substring(0,codeUrl.indexOf("//")+2)+codeUsername+":"+codePassword+"@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length());
-//                }
-//                String rmCommonStr = "rm -rf "+ci.getCodeLocation();
-//                LOG.info("==========rmCommonStr:"+rmCommonStr);
-//                CmdUtil.exeCmd(rmCommonStr);
-//                String gitCommandStr = "git clone "+nCodeUrl+" "+ci.getCodeLocation();
-//                String logmsg = "git clone " +
-//                                    codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername() +
-//                                    ":******@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length())+" "+ci.getCodeLocation();
-//                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+logmsg);
-//                ciRecordDao.save(ciRecord);
-//                LOG.info("==========gitCommandStr:"+gitCommandStr);
-//                return CmdUtil.exeCmd(gitCommandStr);
-//            }
+        catch(SheraClientException e){
+            e.printStackTrace();
         }
-        catch(Exception e){
-            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
-            ciRecordDao.save(ciRecord);
+        catch (Exception e) {
+            CiRecord newCiRecord = ciRecord;
+            newCiRecord.setLogPrint(newCiRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+            ciRecordDao.save(newCiRecord);
             LOG.error("==========fetchCode error:"+e.getMessage());
         }
         return false;
     }
-	
+    
     /**
      * 构建镜像
      * 

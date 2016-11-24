@@ -1053,16 +1053,19 @@ function checkCodeCiAdd(){
 		}
 	}
 	
-	var dockerFile = editor_one.getValue();
-	if (dockerFile != undefined) {
-		if(!dockerFile || dockerFile.length < 1){
-			layer.tips('dockerfile模板不能为空','#dockerFiles2',{tips: [1, '#3595CC']});
-			$('#dockerFiles2').focus();
-			return;
-		}else {
-			$("#dockerFileContentEdit").val(dockerFile);
+	if (editor_one !=null) {
+		var dockerFile = editor_one.getValue();
+		if (dockerFile != undefined) {
+			if(!dockerFile || dockerFile.length < 1){
+				layer.tips('dockerfile模板不能为空','#dockerFiles2',{tips: [1, '#3595CC']});
+				$('#dockerFiles2').focus();
+				return;
+			}else {
+				$("#dockerFileContentEdit").val(dockerFile);
+			}
 		}
 	}
+	
     return true;
 }
 

@@ -74,9 +74,9 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public JobExecView execJob(String name) throws SheraClientException {
+    public JobExecView execJob(String name,JobExecView jobExecView) throws SheraClientException {
         try {
-            return api.execJob(namespace, name);
+            return api.execJob(namespace, name,jobExecView);
         }
         catch (NotFoundException e) {
             return null;
@@ -141,7 +141,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public JobExecView getExecution(String name, Integer seqno) throws SheraClientException {
         try {
-            return api.killExecution(namespace, name, seqno);
+            return api.getExecution(namespace, name, seqno);
         }
         catch (NotFoundException e) {
             return null;

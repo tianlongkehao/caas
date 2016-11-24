@@ -20,10 +20,12 @@ package com.bonc.epm.paas.shera.model;
 
 public class JobExecView {
     private Integer seqNo;
+    // 执行成功：0、执行失败：1；
     private Integer endStatus;
+    //执行没有完成：0、执行完成：1；
     private Integer finished;
-    private Integer startTime;
-    private Integer endTime;
+    private Long startTime;
+    private Long endTime;
     
     public Integer getSeqNo() {
         return seqNo;
@@ -43,16 +45,16 @@ public class JobExecView {
     public void setFinished(Integer finished) {
         this.finished = finished;
     }
-    public Integer getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
-    public void setStartTime(Integer startTime) {
+    public void setStartTime(Long startTime) {
         this.startTime = startTime;
     }
-    public Integer getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
-    public void setEndTime(Integer endTime) {
+    public void setEndTime(Long endTime) {
         this.endTime = endTime;
     }
 }

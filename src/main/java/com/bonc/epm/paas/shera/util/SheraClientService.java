@@ -22,6 +22,7 @@ import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.AntConfig;
 import com.bonc.epm.paas.shera.model.BuildManager;
 import com.bonc.epm.paas.shera.model.CodeManager;
@@ -29,6 +30,9 @@ import com.bonc.epm.paas.shera.model.GitAdvancedConfig;
 import com.bonc.epm.paas.shera.model.GitConfig;
 import com.bonc.epm.paas.shera.model.ImgManager;
 import com.bonc.epm.paas.shera.model.Job;
+import com.bonc.epm.paas.shera.model.JobExecView;
+import com.bonc.epm.paas.shera.model.JobExecViewList;
+import com.bonc.epm.paas.shera.model.Key;
 import com.bonc.epm.paas.shera.model.MvnConfig;
 import com.bonc.epm.paas.shera.model.Repository;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -56,6 +60,23 @@ public class SheraClientService {
         return new SheraAPIClient(endpoint, namespace, username, password,new RestFactory());
     }
     
+    /**
+     * Description: <br>
+     * 创建Job
+     * @param id：名称
+     * @param jdkVersion jdk版本；
+     * @param branch ：代码分之
+     * @param url ： 代码地址
+     * @param credentials ：
+     * @param codeName ： 代码名称
+     * @param refspec ： refspec
+     * @param dockerFileContent ：dockerFile文件
+     * @param dockerFile ： dockerFile地址
+     * @param imgName ： 镜像名称
+     * @param ciInvokeList ：构建信息
+     * @return 
+     * @see
+     */
     public Job generateJob(String id ,String jdkVersion,String branch,String url,
                            String credentials,String codeName,String refspec,
                            String dockerFileContent,String dockerFile,String imgName ,
@@ -68,7 +89,11 @@ public class SheraClientService {
         gitConfig.setBranch(branch);
         Repository repo = new Repository();
         repo.setUrl(url);
-        repo.setCredentials(credentials);
+//        repo.setCredentials(credentials);
+        Key key = new Key();
+        key.setUsername("peiyunbo");
+        key.setType(2);
+        repo.setKey(key);
         GitAdvancedConfig advanced = new GitAdvancedConfig();
         advanced.setName(codeName);
         advanced.setRefspec(refspec);
@@ -130,15 +155,29 @@ public class SheraClientService {
         job.setImgManager(imgManager);
         return job;
     }
-/*    public static void main(String[] args) {
-        SheraClientService sheraClientService = new SheraClientService();
-        SheraAPIClientInterface client = sheraClientService.getClient();
-        try {
-            client.getAllJobs();
-            System.out.println(client.getAllJobs());
-        }
-        catch (SheraClientException e) {
-           e.printStackTrace();
-        }
-    }*/
+    
+    public JobExecView generateJobExecView(long startTime){
+        JobExecView jobExecView = new JobExecView();
+        jobExecView.setStartTime(startTime);
+        return jobExecView;
+    }
+    
+//    public static void main(String[] args) {
+//        SheraClientService sheraClientService = new SheraClientService();
+//        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
+//        try {
+//            JobExecViewList  jobExecViewList = client.getJobAllExecutions("testdemo1");
+//            System.out.println(jobExecViewList);
+//            
+//            JobExecView jobExecView = client.getExecution("testdemo1",1);
+//            System.out.println(jobExecView);
+//           
+////            JobExecView jobExecView2 = client.killExecution("testdemo1",2);
+////            System.out.println(jobExecView2);
+//            
+//        }
+//        catch (SheraClientException e) {
+//           e.printStackTrace();
+//        }
+//    }
 }
