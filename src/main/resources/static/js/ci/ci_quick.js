@@ -46,6 +46,15 @@ $(document).ready(function () {
         }
     });
     
+    $('#imgNameVersion').blur(function(event){
+        var imgNameLast = $('#imgNameVersion').val().trim();
+        if(imgNameLast.length === 0){
+            layer.tips('镜像版本不能为空', '#imgNameVersion', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+        }
+    });
+    
     //是否为基础镜像提示信息
     $("#is-baseImage").click(function(){
     	layer.tips('默认为非基础镜像', '#is-baseImage', {
@@ -110,6 +119,29 @@ $(document).ready(function () {
             $('#imgNameLast').focus();
             return false;
         }
+        
+        //验证镜像版本imgNameVersion
+        if(imgNameVersion.length === 0){
+            layer.tips('镜像版本不能为空', '#imgNameVersion', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+            $('#imgNameVersion').focus();
+            return false;
+        }
+        if(imgNameVersion.search(/^[A-Za-z0-9-_]*$/) === -1){
+            layer.tips('镜像名称只能由字母、数字、横线和下划线组成', '#imgNameVersion', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+            $('#imgNameVersion').focus();
+            return false;
+        }
+        if(imgNameVersion.length > 128 || imgNameVersion.length < 3){
+            layer.tips('镜像名称为3~128个字符', '#imgNameVersion', {
+                tips: [1, '#0FA6D8'] //还可配置颜色
+            });
+            $('#imgNameVersion').focus();
+            return false;
+        }
         // 验证填写的镜像名称是否重复
         var imageFlag = false;
         $.ajax({
@@ -135,14 +167,6 @@ $(document).ready(function () {
         if (imageFlag) {
         	imageFlag = false;
         	return false;
-        }
-        //验证镜像版本imgNameVersion
-        if(imgNameVersion.length === 0){
-            layer.tips('镜像版本不能为空', '#imgNameVersion', {
-                tips: [1, '#0FA6D8'] //还可配置颜色
-            });
-            $('#imgNameVersion').focus();
-            return false;
         }
         
         // 验证简介

@@ -1,9 +1,18 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,9 +26,13 @@ import java.util.stream.Stream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.JOptionPane;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +93,7 @@ import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.PoiUtils;
 import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
@@ -196,24 +210,24 @@ public class ServiceController {
     @Autowired
 	private NginxServerConf nginxServerConf;
     
-    /**
-     * Description: <br>
-     * 查询所有的服务
-     * @return String
-     */
-    @RequestMapping("service/listService.do")
-	@ResponseBody
-	public String list() {
-        List<Service> serviceList = new ArrayList<Service>();
-        for (Service service : serviceDao.findAll()) {
-            serviceList.add(service);
-        }
-        LOG.debug("services:===========" + serviceList);
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", "200");
-        map.put("data", serviceList);
-        return JSON.toJSONString(map);
-    }
+//    /**
+//     * Description: <br>
+//     * 查询所有的服务
+//     * @return String
+//     */
+//    @RequestMapping("service/listService.do")
+//	@ResponseBody
+//	public String list() {
+//        List<Service> serviceList = new ArrayList<Service>();
+//        for (Service service : serviceDao.findAll()) {
+//            serviceList.add(service);
+//        }
+//        LOG.debug("services:===========" + serviceList);
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("status", "200");
+//        map.put("data", serviceList);
+//        return JSON.toJSONString(map);
+//    }
 
 	/**
 	 * Description: <br>
@@ -2104,4 +2118,315 @@ public class ServiceController {
         }
         return JSON.toJSONString(map);
     }
+    
+    /**
+     * 
+     * Description: 修改服务详情的基础信息表
+     * 
+     * @param service
+     * @return 
+     * @return 
+     * @see
+     */
+    @RequestMapping(value ="service/detail/editBaseSerForm.do")
+    @ResponseBody
+    public String editBaseSerForm(Model model,Service service){
+        Map<String, Object> map = new HashMap<String, Object>();
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        ReplicationController controller = null;
+        com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+        int runFlag;
+        Service ser = serviceDao.findOne(service.getId());
+        if(1==ser.getStatus()){
+            ser=setAttrForEdit(ser, service);
+            ser.setServiceName(service.getServiceName());
+            ser.setStartCommand(service.getStartCommand());
+            updateStorageType(service.getVolName(), service.getServiceName());
+        }else if(4==ser.getStatus()){
+            try {
+                controller = client.getReplicationController(ser.getServiceName());
+            } catch (KubernetesClientException e) {
+                map.put("status", "500");
+                map.put("msg", e.getStatus().getMessage());
+                LOG.error("create service error:" + e.getStatus().getMessage());
+                return JSON.toJSONString(map);
+                           }
+            try {
+                k8sService = client.getService(ser.getServiceName());
+            } catch (KubernetesClientException e) {
+                map.put("status", "500");
+                map.put("msg", e.getStatus().getMessage());
+                LOG.error("create service error:" + e.getStatus().getMessage());
+                return JSON.toJSONString(map);
+                        }
+            runFlag = 0;
+           try {
+                             // 初始化自定义启动命令
+                     String startCommand = service.getStartCommand().trim();
+                     List<String> command = new ArrayList<String>();
+                     List<String> args = new ArrayList<String>();
+                     if (StringUtils.isNotBlank(startCommand)) {
+                         String[] startCommandArray = startCommand.replaceAll("\\s+", " ").split(" ");
+                         for (String item : startCommandArray) {
+                             if (CollectionUtils.isEmpty(command)) {
+                                 command.add(item);
+                                 continue;
+                             }
+                             args.add(item);
+                         }
+                     }
+                     controller=kubernetesClientService.updateSimpleReplicationController(controller,service,command,runFlag);
+                     k8sService=kubernetesClientService.updateService(k8sService,service);
+                     controller = client.updateReplicationController(ser.getServiceName(), controller);
+                     k8sService = client.updateService(ser.getServiceName(), k8sService);
+                //
+                     if(StringUtils.isNotBlank(service.getVolName())){
+                         controller = setVolumeStorage(controller, service.getVolName(),service.getMountPath());
+                                             }
+                     ser=setAttrForEdit(ser, service);
+                     ser.setServiceName(service.getServiceName());
+                     ser.setStartCommand(service.getStartCommand());
+                     
+           }catch (KubernetesClientException e) {
+               map.put("status", "500");
+               map.put("msg", e.getStatus().getMessage());
+               LOG.error("create service error:" + e.getStatus().getMessage());
+               return JSON.toJSONString(map);
+                       }
+        }else{
+            try {
+                controller = client.getReplicationController(service.getServiceName());
+            } catch (KubernetesClientException e) {
+                map.put("status", "500");
+                map.put("msg", e.getStatus().getMessage());
+                LOG.error("create service error:" + e.getStatus().getMessage());
+                return JSON.toJSONString(map);
+                        }
+            try {
+                k8sService = client.getService(service.getServiceName());
+            } catch (KubernetesClientException e) {
+                map.put("status", "500");
+                map.put("msg", e.getStatus().getMessage());
+                LOG.error("create service error:" + e.getStatus().getMessage());
+                return JSON.toJSONString(map);
+                        }
+            try {
+                runFlag=1;
+                //修改rc和service
+                controller=kubernetesClientService.updateSimpleReplicationController(controller,service,null,runFlag);
+                k8sService=kubernetesClientService.updateService(k8sService,service);
+                
+                controller = client.updateReplicationController(ser.getServiceName(), controller);
+                k8sService = client.updateService(ser.getServiceName(), k8sService);
+
+            }catch (KubernetesClientException e) {
+                map.put("status", "500");
+                map.put("msg", e.getStatus().getMessage());
+                LOG.error("create service error:" + e.getStatus().getMessage());
+                return JSON.toJSONString(map);
+            }
+//            ser.setServiceName(service.getServiceName());
+//            ser.setStartCommand(service.getStartCommand());
+            ser=setAttrForEdit(ser,service);
+            
+                }
+        serviceDao.save(ser);
+        map.put("status", "200");
+        
+        return JSON.toJSONString(map);
+
+    }
+    public Service setAttrForEdit(Service ser,Service service){
+        ser.setServicePath(service.getServicePath());
+        ser.setProxyZone(service.getProxyZone());
+        ser.setProxyPath(service.getProxyPath());
+        ser.setSessionAffinity(service.getSessionAffinity());
+        ser.setNodeIpAffinity(service.getNodeIpAffinity());
+        ser.setCheckPath(service.getCheckPath());
+        ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
+        ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
+        ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
+        if(StringUtils.isNotBlank(service.getVolName())){
+            ser.setVolName(service.getVolName());
+            ser.setMountPath(service.getMountPath());
+            ser.setServiceType("1");
+        }else{
+            ser.setVolName("");
+            ser.setMountPath("");
+            ser.setServiceType("2");
+                    }
+        return ser;
+    }
+    
+    
+    /**
+     * 
+     * Description: 编辑端口配置信息
+     * @param portConfig
+     * @param serviceName
+     * @param serviceId
+     * @return String
+     * @see
+     */
+    @RequestMapping(value ="service/detail/editPortConfig.do")
+    @ResponseBody
+    public String editPortCfgForm(PortConfig portConfig , String serviceName ,long serviceId){
+        Map map = new HashMap();
+        PortConfig portCfg = new PortConfig();
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        ReplicationController controller = null;
+        com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+        //根据id找到对应的port
+        portCfg = portConfigDao.findOne(portConfig.getPortId());
+        //修改port
+        portCfg.setContainerPort(portConfig.getContainerPort());
+        //存入数据库
+        portConfigDao.save(portCfg);
+        //查询对应的service 的port
+        List<PortConfig> portCfgs = portConfigDao.findByServiceId(serviceId);
+        try {
+          //找到对应的rc和svc文件
+            controller = client.getReplicationController(serviceName);
+            k8sService = client.getService(serviceName);
+            //修改rc文件
+            controller = kubernetesClientService.updateRcContainPort(controller,portCfgs);
+            controller = client.updateReplicationController(serviceName, controller);
+            //修改service文件
+            k8sService = kubernetesClientService.updateSvcContainPort(k8sService,portCfgs);
+            k8sService = client.updateService(serviceName, k8sService);
+        } catch (KubernetesClientException e) {
+            map.put("status", "500");
+            map.put("msg", e.getStatus().getMessage());
+            LOG.error("create service error:" + e.getStatus().getMessage());
+            return JSON.toJSONString(map);
+                  }
+        //返回状态
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+        
+    }
+    /**
+     * 
+     * Description: 编辑环境变量配置信息<br>
+     * @param envVariable
+     * @param serviceName
+     * @param serviceId
+     * @return String
+     * @see
+     */
+    @RequestMapping(value ="service/detail/editEnv.do")
+    @ResponseBody
+    public String editEnvForm(EnvVariable envVariable , String serviceName ,long serviceId){
+        Map map = new HashMap();
+        EnvVariable envVar = new  EnvVariable();
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        ReplicationController controller = null;
+        com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+        //根据id找到对应的port
+        envVar = envVariableDao.findOne(envVariable.getEnvId());
+        //修改port
+        envVar.setEnvKey(envVariable.getEnvKey());
+        envVar.setEnvValue(envVariable.getEnvValue());
+        //存入数据库
+        envVariableDao.save(envVar);
+        //查询对应的service 的port
+        List<EnvVariable> envVars = envVariableDao.findByServiceId(serviceId);
+        try {
+          //找到对应的rc和svc文件
+            controller = client.getReplicationController(serviceName);
+            k8sService = client.getService(serviceName);
+            //修改rc文件
+            controller = kubernetesClientService.updateRcEnv(controller,envVars);
+            controller = client.updateReplicationController(serviceName, controller);
+            //修改service文件
+//            k8sService = kubernetesClientService.updateSvcContainPort(k8sService,envVars);
+//            k8sService = client.updateService(serviceName, k8sService);
+        } catch (KubernetesClientException e) {
+            map.put("status", "500");
+            map.put("msg", e.getStatus().getMessage());
+            LOG.error("create service error:" + e.getStatus().getMessage());
+            return JSON.toJSONString(map);
+                  }
+        //返回状态
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+        
+    }
+    
+    /**
+     * 
+     * Description: 服务列表导出excel
+     * @param request
+     * @param response
+     * @throws IOException 
+     * @see
+     */
+    @RequestMapping("service/exportExcel.do")
+    @ResponseBody
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        List<Service> services = serviceDao.findByCreateBy(createBy);
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        String newdownfile = df.format(new Date()) +"--"+createBy+".xls";
+        PoiUtils poiUtil = new PoiUtils();
+        String[] header ={"名称","状态","镜像","服务地址","创建时间"};
+        List<String[]> context =new ArrayList<String[]>();
+        for(int i=0;i<services.size();i++){
+           Service serviceObj = services.get(i);
+            String[] service ={serviceObj.getServiceName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
+                    ,new StringBuffer(serviceObj.getServiceAddr()).append("/").append(serviceObj.getProxyPath()).toString() 
+                    ,serviceObj.getCreateDate().toString()};
+            context.add(service);
+        }
+        HSSFWorkbook wb = poiUtil.exportTest(services,header,context);
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment;filename="+newdownfile);
+        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+        wb.write(out);
+        out.flush();
+        out.close();
+}
+
+    /**
+     * 
+     * Description: 服务状态号映射为中文
+     * @param status
+     * @return 
+     * @see
+     */
+    public static String mapStatus(Integer status){
+        if(1==status){return "未启动"; }
+        if(2==status){ return "启动中";}
+        if(3==status){return "运行中"; }
+        if(4==status){ return "已停止";}
+        else{ return "启动失败";}
+    }
+    
+	/**
+	 * 判断服务有没有22端口
+	 * 
+	 * @param serviceId
+	 * @see
+	 */
+	@RequestMapping(value = "service/debug.do",method = RequestMethod.GET)
+	@ResponseBody
+	public String debug(long id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Service service = serviceDao.findOne(id);
+		// 获取端口信息
+		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+		int port = 0;
+		for (PortConfig portConfig : portConfigList) {
+			if (portConfig.getContainerPort().equals("22")) {
+				port = Integer.parseInt(portConfig.getMapPort());
+				break;
+			}
+		}
+		if (port == 0) {
+			map.put("status", "400");
+		} else {
+			map.put("status", "200");
+		}
+		return JSON.toJSONString(map);
+	}
 }

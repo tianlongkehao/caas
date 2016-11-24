@@ -29,5 +29,16 @@ public class ServiceConstant {
      */
     public static final Integer CONSTRUCTION_STATUS_FAILED  = 5;
 	
-
+    /**
+     * 默认检测延迟
+     */
+    public static final Integer INNIALDELAY  = 600;
+    /**
+     * 默认检测超时
+     */
+    public static final Integer TIMEOUT  = 5;
+    /**
+     *检测频率
+     */
+    public static final Integer PERIOD  = 10;
 }

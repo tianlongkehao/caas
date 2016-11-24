@@ -96,6 +96,10 @@
 												class="in_style form-control" id="serviceName" name="serviceName">
 												<input type="hidden" value="" class="in_style"
 												id="resourceName" name="resourceName"></li>
+											<li class="line-h-3"><span class="ve_top">服务中文名称：
+<!-- 											<font color="red">*</font> -->
+											</span><input type="text" value=""
+												class="in_style form-control" id="serviceChName" name="serviceChName"></li>
 											<li id="service_type"><span class="ve_top">启动命令：</span>
 												<span class="update-mi"> <input type="checkbox"
 													id="startCommand"> <label for="startCommand"><font
