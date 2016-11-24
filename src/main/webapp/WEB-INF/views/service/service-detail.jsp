@@ -494,7 +494,7 @@
 							<div class="envlabel hide"><label class="forEnvName">环境变量模板名称：</label>
 								<input type="text" class="form-control envName" value="${envTemplate.templateName }" readonly>
 							</div>
-							<table class="table table-normal" style="border: 1px solid #eee;">
+							<table class="table table-stripped table-hover" style="border: 1px solid #eee;">
 								<thead style="background: #F5F6F6;">
 									<tr style="height: 40px;">
 										<th style="width:40%;text-indent: 15px;">键</th>
@@ -503,38 +503,38 @@
 									</tr>
 								</thead>
 								<tbody id="editEnvBody">
-               <c:forEach items="${envVariableList }" var="envVariable">
-                   <tr>
-                       <td style="width:40%;text-indent: 15px;">
-                       <span class="oldEnv">${envVariable.envKey }</span>
-                       <span class="editEnv" hidden="true"><input class="envKey" type="text" name="envKey" value="${envVariable.envKey }"  /></span>
-                       <input class="envId" hidden="true" value="${envVariable.envId} " />
-                       </td>
-                       <td>
-                       <span class="oldEnv">${envVariable.envValue }</span>
-                        <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value="${envVariable.envValue }"  /></span>
-                       </td>
-                       <c:if test="${service.status==1 or service.status==4}">
-                          <td style="width:10%;" class="editBtn">
-                              <i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i> 
-                              <i onclick="saveEnvEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editEnv saveEnv"></i>
-                              <i onclick="canclEnvEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editEnv"></i>  
-                              <i onclick="delEnvEdit(this)" type="button" value="删除"  class="fa fa-trash editEnvBtn"></i>  
-                          </td>
-                          </c:if>
-                   </tr>
-               </c:forEach>
+					               <c:forEach items="${envVariableList }" var="envVariable">
+					                   <tr>
+					                       <td style="width:40%;text-indent: 15px;">
+					                       <span class="oldEnv">${envVariable.envKey }</span>
+					                       <span class="editEnv" hidden="true"><input class="envKey" type="text" name="envKey" value="${envVariable.envKey }"  /></span>
+					                       <input class="envId" hidden="true" value="${envVariable.envId} " />
+					                       </td>
+					                       <td>
+					                       <span class="oldEnv">${envVariable.envValue }</span>
+					                        <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value="${envVariable.envValue }"  /></span>
+					                       </td>
+					                       <c:if test="${service.status==1 or service.status==4}">
+					                          <td style="width:10%;" class="editBtn">
+					                              <i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i> 
+					                              <i onclick="saveEnvEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editEnv saveEnv"></i>
+					                              <i onclick="canclEnvEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editEnv"></i>  
+					                              <i onclick="delEnvEdit(this)" type="button" value="删除"  class="fa fa-trash editEnvBtn"></i>  
+					                          </td>
+					                          </c:if>
+					                   </tr>
+					               </c:forEach>
 								</tbody>
 							</table>
 							<c:if test="${service.status==1 or service.status==4}">
-							 <input type="button" value="添加环境变量"  id="addEnvBtn" onclick="addEnvClick()">
+							<button type="button" value="添加环境变量"  id="addEnvBtn" onclick="addEnvClick()"><i class="fa fa-plus"></i>&nbsp;添加环境变量</button>
 							</c:if>
 							<div id="createEnv-templat" hidden="true">
-                <div style="width: 345px; margin: 5px 10px 5px 10px">
-                     <p>Key：<input type="text" name="newKey" id="newKey" /></p>
-                     <p>Value：<input type="text" name="newValue" id="newValue" /></p>
-                 </div>
-            </div>
+			                	<div>
+			                    	<p><span class="newEnvLab">Key：</span><input type="text" name="newKey" id="newKey" class="newEnvInput form-control" /></p>
+			                    	<p><span class="newEnvLab">Value：</span><input type="text" name="newValue" id="newValue" class="newEnvInput form-control" /></p>
+			                 	</div>
+			            	</div>
 						</section>
 					</div>
 					<div class="portMapping hide" style="min-height: 500px;">
