@@ -73,7 +73,7 @@
 						</div>
 					</div>
 					<div class="contentMain" id="ftp">
-						<iframe id="shellinabox" src="http://192.168.0.75:4200/ssh" width="100%" height="500px"></iframe>
+						<iframe id="shellinabox" src="${sshhost}" width="100%" height="500px"></iframe>
 					</div>
 				</div>
 				

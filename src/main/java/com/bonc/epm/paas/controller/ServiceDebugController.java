@@ -80,6 +80,12 @@ public class ServiceDebugController {
     @Value("${sftp.password}")
 	private String SFTP_PASSWORD;
 
+    /**
+     * 获取SFTP密码
+     */
+    @Value("${ssh.host}")
+	private String SSH_HOST;
+
 	/**
 	 * 服务数据层接口
 	 */
@@ -150,6 +156,7 @@ public class ServiceDebugController {
 		model.addAttribute("port",port);
 		model.addAttribute("service", service);
 		model.addAttribute("menu_flag", "service");
+		model.addAttribute("sshhost", SSH_HOST);
 		return "service/service-debug.jsp";
 	}
 
@@ -390,4 +397,27 @@ public class ServiceDebugController {
 		}
 	}
 
+	/**
+	 * 
+	 * Description: saveAsImage
+	 * 
+	 * @param file
+	 *            上传文件名
+	 * @param path
+	 *            路径
+	 * @param storageName
+	 *            卷组名
+	 * @param id
+	 *            卷组的id
+	 * @return JSON
+	 * @see
+	 */
+
+	@RequestMapping(value = { "service/saveAsImage" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String saveAsImage(@RequestParam("file") MultipartFile[] files, String path) {
+		return path;
+	}
+	
+	
 }
