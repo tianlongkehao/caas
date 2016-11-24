@@ -502,7 +502,7 @@
 										<th>操作</th>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody id="editEnvBody">
                <c:forEach items="${envVariableList }" var="envVariable">
                    <tr>
                        <td style="width:40%;text-indent: 15px;">
@@ -511,21 +511,30 @@
                        <input class="envId" hidden="true" value="${envVariable.envId} " />
                        </td>
                        <td>
-                       <span class="oldEnv"> ${envVariable.envValue }</span>
-                        <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value=" ${envVariable.envValue }"  /></span>
+                       <span class="oldEnv">${envVariable.envValue }</span>
+                        <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value="${envVariable.envValue }"  /></span>
                        </td>
                        <c:if test="${service.status==1 or service.status==4}">
                           <td style="width:10%;" class="editBtn">
                               <i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i> 
                               <i onclick="saveEnvEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editEnv saveEnv"></i>
                               <i onclick="canclEnvEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editEnv"></i>  
+                              <i onclick="delEnvEdit(this)" type="button" value="删除"  class="fa fa-trash editEnvBtn"></i>  
                           </td>
                           </c:if>
                    </tr>
                </c:forEach>
-									
 								</tbody>
 							</table>
+							<c:if test="${service.status==1 or service.status==4}">
+							 <input type="button" value="添加环境变量"  id="addEnvBtn" onclick="addEnvClick()">
+							</c:if>
+							<div id="createEnv-templat" hidden="true">
+                <div style="width: 345px; margin: 5px 10px 5px 10px">
+                     <p>Key：<input type="text" name="newKey" id="newKey" /></p>
+                     <p>Value：<input type="text" name="newValue" id="newValue" /></p>
+                 </div>
+            </div>
 						</section>
 					</div>
 					<div class="portMapping hide" style="min-height: 500px;">
@@ -541,7 +550,7 @@
 										<td style="width:10%;">操作</td>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody id="editPortCfgBody">
 									<c:forEach items="${portConfigList }" var="portConfig">
 										<tr>
 											<td style="width:10%;text-indent: 15px;">${service.serviceName }</td>
@@ -564,16 +573,6 @@
                     						</c:if>
 										</tr>
 									</c:forEach>
-									
-									<%-- 									<tr>
-										<td>${service.serviceName }</td>
-										<td>8080</td>
-										<td>TCP</td>
-										<td>${service.portSet }</td>
-										<td><a
-											href="${service.serviceAddr}/${service.proxyPath}"
-											target="_blank">${service.serviceAddr}/${service.proxyPath}</a></td>
-									</tr> --%>
 								</tbody>
 							</table>
 						</section>
