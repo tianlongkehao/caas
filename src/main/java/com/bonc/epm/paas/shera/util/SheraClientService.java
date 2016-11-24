@@ -22,16 +22,16 @@ import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
-import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.AntConfig;
 import com.bonc.epm.paas.shera.model.BuildManager;
 import com.bonc.epm.paas.shera.model.CodeManager;
+import com.bonc.epm.paas.shera.model.CredentialKey;
 import com.bonc.epm.paas.shera.model.GitAdvancedConfig;
 import com.bonc.epm.paas.shera.model.GitConfig;
+import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.ImgManager;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExecView;
-import com.bonc.epm.paas.shera.model.JobExecViewList;
 import com.bonc.epm.paas.shera.model.Key;
 import com.bonc.epm.paas.shera.model.MvnConfig;
 import com.bonc.epm.paas.shera.model.Repository;
@@ -78,9 +78,9 @@ public class SheraClientService {
      * @see
      */
     public Job generateJob(String id ,String jdkVersion,String branch,String url,
-                           String credentials,String codeName,String refspec,
+                           String codeName,String refspec,
                            String dockerFileContent,String dockerFile,String imgName ,
-                           List<CiInvoke> ciInvokeList) {
+                           List<CiInvoke> ciInvokeList,String userName,Integer type) {
         Job job = new Job();
         job.setId(id);
         job.setJdkVersion(jdkVersion);
@@ -91,8 +91,8 @@ public class SheraClientService {
         repo.setUrl(url);
 //        repo.setCredentials(credentials);
         Key key = new Key();
-        key.setUsername("peiyunbo");
-        key.setType(2);
+        key.setUsername(userName);
+        key.setType(type);
         repo.setKey(key);
         GitAdvancedConfig advanced = new GitAdvancedConfig();
         advanced.setName(codeName);
@@ -155,11 +155,36 @@ public class SheraClientService {
         job.setImgManager(imgManager);
         return job;
     }
-    
+
+    /**
+     * Description: <br>
+     * 封装jobExec数据
+     * @param startTime
+     * @return 
+     * @see
+     */
     public JobExecView generateJobExecView(long startTime){
         JobExecView jobExecView = new JobExecView();
         jobExecView.setStartTime(startTime);
         return jobExecView;
+    }
+    
+    /**
+     * Description: <br>
+     * 封装GitCredent数据
+     * @param secretInfo 
+     * @param username 
+     * @param type 
+     * @return 
+     */
+    public GitCredential generateGitCredential(String secretInfo,String username,Integer type){
+        GitCredential gitCredential = new GitCredential();
+        gitCredential.setSecretInfo(secretInfo);
+        CredentialKey credentialKey = new CredentialKey();
+        credentialKey.setType(type);
+        credentialKey.setUsername(username);
+        gitCredential.setKey(credentialKey);
+        return gitCredential;
     }
     
 //    public static void main(String[] args) {

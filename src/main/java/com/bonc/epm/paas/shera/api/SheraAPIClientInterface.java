@@ -96,7 +96,7 @@ public interface SheraAPIClientInterface {
     
     public CredentialKey deleteCredential(CredentialKey credentialKey) throws SheraClientException;
     
-    /* Job API*/
+    /* Jdk API*/
     public JdkList getAllJdk() throws SheraClientException;
     
     public Jdk deleteJdk(String jdkVersion) throws SheraClientException;

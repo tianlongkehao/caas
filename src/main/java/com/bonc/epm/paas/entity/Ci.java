@@ -109,7 +109,7 @@ public class Ci {
     /**
      * 代码认证方式
      */
-    private String codeCredentials;
+    private Long codeCredentials;
 	
     /**
 	 * 代码位置
@@ -295,11 +295,11 @@ public class Ci {
         this.codeBranch = codeBranch;
     }
     
-    public String getCodeCredentials() {
+    public Long getCodeCredentials() {
         return codeCredentials;
     }
 
-    public void setCodeCredentials(String codeCredentials) {
+    public void setCodeCredentials(Long codeCredentials) {
         this.codeCredentials = codeCredentials;
     }
 
