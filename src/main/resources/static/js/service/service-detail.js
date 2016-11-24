@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
     $(".baseInfo>ul>li>a").click(function(){
 
         $(".baseInfo>ul>li>a").removeClass("btn-prim");
@@ -157,6 +156,182 @@ $(document).ready(function(){
     		   }
     	   })
        });
+
+       
+ 
+       //可编辑的基本信息
+       			//编辑
+       $(".editBaseCon").hide();
+       $("#restSerBtn").hide();
+       $("#canclSerBtn").hide();
+       $("#saveSerBtn").hide();
+       $("#editSerBtn").click(function(){
+    	   beforeEditDo();
+    	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
+    		   $(".editBaseCon").show();
+        	 $(".oldBaseCon").hide();
+    	   }else{
+    		   $(".editBaseCon_Run").show();
+          $(".oldBaseCon_Run").hide();
+    	   			}
+      	 $("#saveSerBtn").show();
+      	 $("#restSerBtn").show();
+      	$("#canclSerBtn").show();
+       });
+       			//保存
+       $("#saveSerBtn").click(function(){
+           //提交之前验证
+//           $("#BaseSerForm").click(function(){
+       		//判断服务名称
+       		var name = $('#serviceName').val();
+       		// check the name of container
+       	    if(!name || name.length < 1){
+       	      layer.tips('服务名称不能为空','#serviceName',{tips: [1, '#3595CC']});
+       	      $('#serviceName').focus();
+       	      return;
+       	    }
+       	    if(name.search(/^[a-z][a-z0-9-]*$/) === -1){
+       	      layer.tips('服务名称只能由小写字母、数字及横线组成，且首字母不能为数字及横线。','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+       	      $('#serviceName').focus();
+       	      return;
+       	    }
+       	    if(name.length > 64 || name.length < 3){
+       	      layer.tips('服务名称为3~64个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+       	      $('#serviceName').focus();
+       	      return;
+       	    }
+       	    
+       	    //自定义启动命令的判断
+       	    var startCommand_input = $("#startCommand_input").val();
+       	    if($("#startCommand").prop("checked")==true){
+       		    if(!startCommand_input || startCommand_input.length < 1){
+       			      layer.tips('自定义启动命令不能为空','#startCommand_input',{tips: [1, '#3595CC']});
+       			      $('#startCommand_input').focus();
+       			      return;
+       		    }		   
+
+       	    } else {
+       	    	$("#startCommand_input").val(null);
+       	    }
+       	    
+       	  //检查服务状态的判断
+       	    var checkPath = $("#checkSerStatus_input").val();
+       	    var initialDelay = $("#initialDelay").val();
+       	    var timeoutDetction = $("#timeoutDetction").val();
+       	    var periodDetction = $("#periodDetction").val();
+       	    if($("#checkSerStatus").prop("checked")==true){
+       		    if(!checkPath || checkPath.length < 1){
+       			      layer.tips('测试路径不能为空','#checkSerStatus_input',{tips: [1, '#3595CC']});
+       			      $('#checkSerStatus_input').focus();
+       			      return;
+       			}
+       		    if(checkPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+       			      layer.tips('测试路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+       			      $('#checkSerStatus_input').focus();
+       			      return;
+       		    }
+       		    if(checkPath.length > 64 || checkPath.length < 3){
+       			      layer.tips('测试路径为3~64个字符','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+       			      $('#checkSerStatus_input').focus();
+       			      return;
+       		    }
+       		    
+       		    if (!initialDelay || initialDelay.length < 1) {
+       		    	  layer.tips('检测延迟时间不能为空','#initialDelay',{tips: [1, '#3595CC'],time: 3000});
+       			      $('#initialDelay').focus();
+       			      return;
+       		    }
+       		    
+       		    if (!timeoutDetction || timeoutDetction.length < 1) {
+       		    	  layer.tips('检测超时时间不能为空','#timeoutDetction',{tips: [1, '#3595CC'],time: 3000});
+       			      $('#timeoutDetction').focus();
+       			      return;
+       		    }
+       		    
+       		    if (!periodDetction || periodDetction.length < 1) {
+       		    	  layer.tips('检测频率时间不能为空','#periodDetction',{tips: [1, '#3595CC'],time: 3000});
+       			      $('#periodDetction').focus();
+       			      return;
+       		    }
+       		    
+       	    } else {
+       	    	$("#checkSerStatus_input").val(null);
+       		    $("#initialDelay").val(null);
+       		    $("#timeoutDetction").val(null);
+       		    $("#periodDetction").val(null);
+       	    }
+       	    //服务路径的判断
+       	    var servicePath = $("#webPath").val();
+       	    if(!servicePath || servicePath.length < 1){
+       		      layer.tips('服务路径不能为空','#webPath',{tips: [1, '#3595CC']});
+       		      $('#webPath').focus();
+       		      return;
+       		}
+       	    if(servicePath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+       	      layer.tips('服务路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#webPath',{tips: [1, '#3595CC'],time: 3000});
+       	      $('#webPath').focus();
+       	      return;
+       	    }
+       	    //nginx代理路径的判断
+       	    var proxyPath = $("#nginxPath").val();
+       	    if(!proxyPath || proxyPath.length < 1){
+       		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
+       		      $('#nginxPath').focus();
+       		      return;
+       		}
+       	    if(proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+       		      layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+       		      $('#nginxPath').focus();
+       		      return;
+       	    }
+           //})
+    	   $(".editBaseCon").hide();
+    	   commBaseSerForm();
+    	   $(".oldBaseCon").show();
+       });
+       			//取消
+       $("#canclSerBtn").click(function(){
+    	   $(".editBaseCon").hide();
+    	   $(".oldBaseCon").show();
+    	   $("#saveSerBtn").hide();
+    	   $("#restSerBtn").hide();
+    	   $("#canclSerBtn").hide();
+       });
+       	//reset
+       $("#restSerBtn").click(function(){
+    	   $("#BaseSerForm").resetForm();
+       });
+       function commBaseSerForm(){
+    	   $("#BaseSerForm").ajaxSubmit(function(data) {
+    		   var data = eval("(" + data + ")");
+    		   location.reload();
+    		}); 
+       }
+       function beforeEditDo(){
+    	   var serType=$('#serType').val();
+    	   var serMonPath=$('#serMonPath').val();
+    	   var serVolName=$('#serVolName').val();
+    	   var str='<option value="">请选择一个卷组</option>';
+    	   $.ajax({
+    		   url:ctx+"/service/storage/getVols.do",
+    				success:function(data){
+    					var data = eval("(" + data + ")");
+    					for(var i=0; i<data.storages.length; i++){
+    						storage=data.storages[i];
+    					str+='<option value="'+storage.storageName+'">'
+    					+storage.storageName+' '+storage.storageSize
+    					+'M </option>';
+    				}
+    					$('#selSerType').empty();
+    					$('#selSerType').append(str);
+    					$("#selSerType option[value='"+serVolName+"']").attr("selected", true);
+    				}
+    	   			});
+    	   
+    	  
+       }
+       
+       
        //可编辑的服务地址
        $(".editCon").hide();
        $("#editServiceAddrBtn").click(function(){
@@ -174,8 +349,14 @@ $(document).ready(function(){
     	   $(".editCon").hide();
     	   $(".oldCon").show();
        });
+       //可以编辑的端口号
+       $(".editPortConfig").hide();
 });/*ready*/
   
+function editPortComm(portConfigId,containerPort){
+	   alert(portConfigId);
+//	   $(this).parent().(".e")
+}
 Date.prototype.Format = function(fmt){
 	var o = {
 			"M+":this.getUTCMonth()+1,
@@ -357,8 +538,8 @@ function editSerAddr(){
 		var editServiceAddr=$('#editServiceAddr').val();
 		var editProxyPath=$('#editProxyPath').val();
 		var serId=$('#serId').val();
-		var prex=	$('#addrPrex').html();
-    editServiceAddr=prex+editServiceAddr;
+//		var prex=	$('#addrPrex').html();
+    editServiceAddr=editServiceAddr;
 			$.ajax({
         		type: "GET",
            url: ctx + "/service/detail/editSerAddr.do?serviceAddr="+editServiceAddr+"&proxyPath="+editProxyPath+"&serId="+serId,
@@ -392,3 +573,46 @@ function checkSerAddr(){
         return false;
     }
 }
+//端口修改按钮
+function editPortAddrBtn(obj){
+	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
+ 	   $(obj).hide();
+ 	   $(obj).next().show();
+ 	   $(obj).next().next().show();
+ 	   $(obj).parent().parent().find("span.oldPortConfig").hide();
+ 	   $(obj).parent().parent().find("span.editPortConfig").show();
+ 	   }
+}
+//端口保存按钮
+function savePortEdit(obj){
+	   $(obj).parent().find("i.editPortAddrBtn").show();
+	   $(obj).next().hide();
+	   $(obj).parent().parent().find("span.oldPortConfig").show();
+	   $(obj).parent().parent().find("span.editPortConfig").hide();
+	   $(obj).hide();
+	   var thiz= $(obj);
+	   var port=$(obj).parent().parent().find("input.containerPort").val();
+	   var id =$(obj).parent().parent().find("input.portId").val();
+	   var serId =$("#serId").val();
+	   var serName =$("#serviceName").val();
+	   $.ajax({
+			url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id+"&serviceId="+serId,
+			success:function(data){
+				var data = eval("(" + data + ")");
+				if("200"==data.status){
+					layer.msg( "修改成功，重启服务后生效", {
+						icon: 1
+	                });
+				}
+			}
+	   		});
+};
+//端口取消按钮
+function canclPortEdit(obj){
+	   $(obj).parent().find("i.editPortAddrBtn").show();
+	   $(obj).parent().find("i.savePortEdit").hide();
+	   $(obj).parent().parent().find("span.oldPortConfig").show();
+	   $(obj).parent().parent().find("span.editPortConfig").hide();
+	   $(obj).hide();
+	   $("#BaseSerForm").resetForm();
+};

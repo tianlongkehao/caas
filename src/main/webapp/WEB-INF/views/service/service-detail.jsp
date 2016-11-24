@@ -29,6 +29,12 @@
 						<li class="active" style="width:200px">${service.serviceName }</li>
 					</ol>
 					<input hidden="true" value="${service.id }" id="serId"/>
+					<input hidden="true" value="${service.serviceName }" id="serName"/>
+					<input hidden="true" value="${service.status }" id="serStatus"/>
+         <input hidden="true" value="${service.serviceType }" id="serType"/>	
+         <input hidden="true" value="${service.volName }" id="serVolName"/>
+         <input hidden="true" value="${service.mountPath }" id="serMonPath"/>
+             				
 				</div>
 				<div class="contentMain">
 					<section class="detail-succeed">
@@ -55,8 +61,8 @@
 								<span id="oldProxyPath">${service.proxyPath}</span>
 								</a><i id="editServiceAddrBtn" style="margin-left:20px" class="fa fa-edit"></i></li>
 							<li class="editCon">服务地址：
-							  <prex id=addrPrex ></prex>
-								<input id="editServiceAddr" type="text" value="">/
+							 <!--  <prex id=addrPrex ></prex> -->
+								<input id="editServiceAddr" type="text" value="${service.serviceAddr}">/
 								<input id="editProxyPath" type="text" value="${service.proxyPath}">
 								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i>
 								<i id="canclEdit" style="margin-left:6px" class="fa fa-times"></i>
@@ -88,6 +94,7 @@
 									
 								</ul>
 							</li>
+							
 <%-- 							<li><a class="historyLOG">历史日志</a></li>
 							<li class="dropdown">
                                 <a class="execCommand dropdown-toggle" id="dropdown-log"
@@ -106,19 +113,36 @@
 					<div id="edit_serAddr" hidden="true">
                 <div style="width: 345px; margin: 5px 10px 5px 10px">
                      <p>新服务地址：<p1 id="SerAddrPrex">http://${service.serviceName }.</p1><input type="text" name="newSerAddr" id="newSerAddr" /></p>
-                 </div>
+                </div>
          </div>
+         <!-- Dlag -->
+         
 					<div class="containerInfo">
+					<form id="BaseSerForm" name="BaseSerForm" 
+					 action="<%=path%>/service/detail/editBaseSerForm.do" >  
+					  <input hidden="true" value="${service.id }"  name="id"/>
 						<table class="table w50">
 							<thead>
 								<tr>
 									<th>基本信息</th>
-									<th>&nbsp;</th>
+									<th>
+										<div style="float:right; margin-right:30px; color:#337ab7; font-size:19px">
+											<i class="fa fa-edit" id="editSerBtn" name="editSerBtn" title="修改"></i>
+											<i class="fa fa-reply" id="restSerBtn" name="restSerBtn" title="还原"></i>
+											<i class="fa fa-save" id="saveSerBtn" name="saveSerBtn" title="保存"></i>
+											<i class="fa fa-times" id="canclSerBtn" name="canclSerBtn" title="取消"></i>
+										</div>
+									</th>
 								</tr>
 							</thead>
 							<tbody class="BORDER">
 								<tr>
-									<td>服务名称：${service.serviceName }</td>
+									<td>服务名称：
+									<span id="oldSerName" class="oldBaseCon">${service.serviceName }</span>
+									<span id="editSerName" hidden="true" class="editBaseCon">
+									   <input id="serviceName" name="serviceName" type="text" value=${service.serviceName } />
+									</span>
+									</td>
 									<c:if test="${service.status==1 }">
 										<td>运行状态：未启动</td>
 									</c:if>
@@ -149,63 +173,230 @@
 								</tr>
 								<tr>
 									<c:if test="${service.startCommand == '' }">
-									<td>启动命令：未设置</td>
+									<td>启动命令：
+									<span id="oldStartComm" class="oldBaseCon">默认</span>
+                 <span id="editStartComm" hidden="true" class="editBaseCon">
+                 <input id="startCommand_input" name="startCommand" type="text" value="${service.startCommand }" />
+                 </span>
+									</td>
 									</c:if>
 									<c:if test="${service.startCommand != '' }">
-									<td>启动命令：${service.startCommand }</td>
+									<td>启动命令：
+									<span id="oldStartComm" class="oldBaseCon">${service.startCommand }</span>
+                   <span id="editStartComm" hidden="true" class="editBaseCon">
+                      <input id="startCommand_input" name="startCommand" type="text" value="${service.startCommand }" />
+                   </span>
+									</td>
 									</c:if>
-									<td>服务访问路径：${service.servicePath }</td>
+									<td >服务访问路径：<span class="oldBaseCon_Run oldBaseCon">${service.servicePath }</span>
+									<span id="editSerPath" hidden="true" class="editBaseCon editBaseCon_Run">
+                   <input id="webPath" name="servicePath" type="text" value="${service.servicePath }" />
+                </span>
+									</td>
 								</tr>
 								<tr>
 									<c:if test="${service.proxyZone == '' }">
-									<td>nginx代理区域：未设置</td>
+									<td>nginx代理区域：
+									<span class="oldBaseCon_Run oldBaseCon">未设置</span>
+									 <span id="editProxyZone" hidden="true" class="editBaseCon_Run editBaseCon">
+                  <c:if test="${fn:contains(service.proxyZone,'dmz')==true}">
+                   <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz" checked="checked"> DMZ区
+                   </label> 
+                  </c:if> 
+                  <c:if test="${fn:contains(service.proxyZone,'dmz')==false}">
+                   <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz"> DMZ区
+                   </label> 
+                  </c:if> 
+                 
+                  <c:if test="${fn:contains(service.proxyZone,'user')==true}">
+                  <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="user" checked="checked"> USER区
+                </label>
+                  </c:if> 
+                  <c:if test="${fn:contains(service.proxyZone,'user')==false}">
+                  <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="user"> USER区
+                </label>
+                  </c:if> 
+                  
+                </span>
+									</td>
 									</c:if>
 									<c:if test="${service.proxyZone != '' }">
-									<td>nginx代理区域：${service.proxyZone }</td>
+									<td>nginx代理区域:
+									<span class="oldBaseCon_Run oldBaseCon">${service.proxyZone }</span>
+									 <span id="editProxyZone" hidden="true" class="editBaseCon_Run editBaseCon">
+                  <c:if test="${fn:contains(service.proxyZone,'dmz')==true}">
+                   <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz" checked="checked"> DMZ区
+                   </label> 
+                  </c:if> 
+                  <c:if test="${fn:contains(service.proxyZone,'dmz')==false}">
+                   <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz"> DMZ区
+                   </label> 
+                  </c:if> 
+                 
+                  <c:if test="${fn:contains(service.proxyZone,'user')==true}">
+                  <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="user" checked="checked"> USER区
+                </label>
+                  </c:if> 
+                  <c:if test="${fn:contains(service.proxyZone,'user')==false}">
+                  <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="user"> USER区
+                </label>
+                  </c:if> 
+                </span>
+<%--                        --%>
+									</td>
 									</c:if>
-									<td>nginx代理路径：${service.proxyPath }</td>
+									<td>nginx代理路径：
+									<span class="oldBaseCon_Run oldBaseCon">${service.proxyPath }</span>
+                   <span id="editProxyPath" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="nginxPath" name="proxyPath" type="text" value="${service.proxyPath }" />
+                </span>
+									</td>
 								</tr>
 								<tr>
+									<td>会话黏连方式：
+									<span class="oldBaseCon_Run oldBaseCon">
 									<c:if test="${service.sessionAffinity == '' || service.sessionAffinity == null}">
-									<td>ClientIp黏连方式：未配置</td>
-									</c:if>
-									<c:if test="${service.sessionAffinity == 'ClientIP'}">
-									<td>ClientIp黏连方式：${service.sessionAffinity }</td>
-									</c:if>
+                                    未配置
+                  </c:if>
+                  <c:if test="${service.sessionAffinity == 'ClientIP'}">
+                  ${service.sessionAffinity }
+                  </c:if></span>
+                   <span id="editSeAffy" hidden="true" class="editBaseCon_Run editBaseCon">
+                  <%--  <input id="newSeAffy" name="sessionAffinity" type="text" value=${service.sessionAffinity } /> --%>
+                   <select id="newSeAffy" name="sessionAffinity">
+                   
+                   <option name="sessionAffinity" value="" >NONE</option>
+                   <option name="sessionAffinity" value="ClientIP" <c:if test="${service.sessionAffinity == 'ClientIP'}">selected</c:if>>ClientIP</option>
+                   
+                   </select>
+                </span>
+									</td>
+									<td>NodeIp黏连方式：
+									<span class="oldBaseCon_Run oldBaseCon">
 									<c:if test="${service.nodeIpAffinity == '' || service.nodeIpAffinity == null}">
-									<td>NodeIp黏连方式：未配置</td>
+									未配置
 									</c:if>
 									<c:if test="${service.nodeIpAffinity == 'nodeIpAffinity' }">
-									<td>NodeIp黏连方式：${service.nodeIpAffinity }</td>
-									</c:if>
+                  ${service.nodeIpAffinity }
+                 </c:if>
+									</span>
+                   <span id="editNodAffy" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <%-- <input id="newNodAffy" name="nodeIpAffinity" type="text" value=${service.nodeIpAffinity } /> --%>
+                   <select  id="newNodAffy" name="nodeIpAffinity" >
+                   <option name="nodeIpAffinity" value="" >NONE</option>
+                   <option name="nodeIpAffinity" value="nodeIpAffinity" <c:if test="${service.nodeIpAffinity == 'nodeIpAffinity' }">selected</c:if> >nodeIpAffinity</option>
+                   </select>
+                </span>
+									</td>
 								</tr>
+								<c:if test="${service.checkPath=='' }">
+                 <tr  class="editBaseCon_Run editBaseCon">
+<td>检查状态：
+                                    <span class="oldBaseCon_Run oldBaseCon">${service.checkPath }</span>
+                   <span id="editCheckPath" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newCheckPath" name="checkPath" type="text" value="${service.checkPath }" />
+                </span>
+                                    </td>
+                                    <td>检测延迟：
+                                    <span class="oldBaseCon_Run oldBaseCon">${service.initialDelay }</span>
+                   <span id="editInitDelay" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newInitDelay" name="initialDelay" type="text" value="${service.initialDelay }" />
+                </span>
+                                    s</td>
+		          </tr>
+		          <tr  class="editBaseCon_Run editBaseCon">
+		              <td>检测超时：
+                                    <span class="oldBaseCon_Run oldBaseCon">${service.timeoutDetction }</span>
+                   <span id="editTiOut" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newTiOut" name="timeoutDetction" type="text" value="${service.timeoutDetction }" />
+                </span>
+                                    s</td>
+                                    <td>检测频率：
+                                    <span class="oldBaseCon_Run oldBaseCon">${service.periodDetction }</span>
+                   <span id="editPeriod" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newPeriod" name="periodDetction" type="text" value="${service.periodDetction }" />
+                </span>
+                                    s</td>
+              </tr>
+								</c:if>
 								<c:if test="${service.checkPath!='' }">
 								<tr>
-									<td>检查状态：${service.checkPath }</td>
-									<td>检测延迟：${service.initialDelay }s</td>
+									<td>检查状态：
+									<span class="oldBaseCon_Run oldBaseCon">${service.checkPath }</span>
+                   <span id="editCheckPath" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newCheckPath" name="checkPath" type="text" value="${service.checkPath }" />
+                </span>
+									</td>
+									<td>检测延迟：
+									<span class="oldBaseCon_Run oldBaseCon">${service.initialDelay }</span>
+                   <span id="editInitDelay" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newInitDelay" name="initialDelay" type="text" value="${service.initialDelay }" />
+                </span>
+									s</td>
 								</tr>
 								<tr>
-									<td>检测超时：${service.timeoutDetction }s</td>
-									<td>检测频率：${service.periodDetction }s</td>
+									<td>检测超时：
+									<span class="oldBaseCon_Run oldBaseCon">${service.timeoutDetction }</span>
+                   <span id="editTiOut" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newTiOut" name="timeoutDetction" type="text" value="${service.timeoutDetction }" />
+                </span>
+									s</td>
+									<td>检测频率：
+									<span class="oldBaseCon_Run oldBaseCon">${service.periodDetction }</span>
+                   <span id="editPeriod" hidden="true" class="editBaseCon_Run editBaseCon">
+                   <input id="newPeriod" name="periodDetction" type="text" value="${service.periodDetction }" />
+                </span>
+									s</td>
 								</tr>
 								</c:if>
-								<tr>
+								<tr id="newSerType" hidden="true" hidden="true" class="editBaseCon" >
+									<td>
+									<span>挂载地址：</span>
+									<span><input type="text" id="newMonPath" name="mountPath" value="${service.mountPath }" />
+									</span>
+									<span>存储卷：</span>
+									<span>
+									<select id="selSerType" name="volName">
+									 <option value="">请选择一个卷组</option>
+	               </select>
+									</span>
+									</td>
+								</tr>
+								<tr class="oldBaseCon">
 									<c:if test="${service.serviceType==1 }">
 									<td>服务类型：有状态服务</td>
-									<td>挂载地址：${service.mountPath }</td>
+									<td>挂载地址：${ service.mountPath }</td>
 									</c:if>
 									<c:if test="${service.serviceType==2 }">
 									<td>服务类型：无状态服务</td>
 									</c:if>
 								</tr>
 								<c:if test="${service.serviceType==1 }">
-								<tr>
+								<tr class="oldBaseCon">
 									<td>存储卷：${service.volName }</td>
 								</tr>
 								</c:if>
 							</tbody>
 						</table>
+						</form>
 					</div>
+					
 					<div class="containerInstances hide" style="min-height: 300px;">
 						<table class="table">
 							<thead>
@@ -329,25 +520,48 @@
 								<thead style="background: #F5F6F6;">
 									<tr style="height: 40px;">
 										<td style="width:10%;text-indent: 15px;">名称</td>
-										<td>容器端口</td>
-										<td>协议</td>
-										<td>映射端口</td>
-										<td>服务地址</td>
+										<td style="width:10%;">容器端口</td>
+										<td style="width:10%;">协议</td>
+										<td style="width:10%;">映射端口</td>
+										<td style="width:50%;">服务地址</td>
+										<td style="width:10%;">操作</td>
 									</tr>
 								</thead>
 								<tbody>
 									<c:forEach items="${portConfigList }" var="portConfig">
 										<tr>
 											<td style="width:10%;text-indent: 15px;">${service.serviceName }</td>
-											<td>${portConfig.containerPort }</td>
-											<td>${portConfig.protocol }</td>
-											<td>${portConfig.mapPort }</td>
-											<td><a
+<%-- <<<<<<< HEAD
+											<td style="width:10%;" class="portConfig"><span class="oldPortConfig">${portConfig.containerPort }</span>
+											<span class="editPortConfig"><input id="containerPort" type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
+											<input id="portId" hidden="true" value="${portConfig.portId} " />
+=======
+ --%>											<td style="width:10%;" class="portConfig"><span class="oldPortConfig">${portConfig.containerPort }</span>
+											<span class="editPortConfig"><input class="containerPort" type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
+											<input class="portId" hidden="true" value="${portConfig.portId} " />
+											</td>
+											<td style="width:10%;">${portConfig.protocol }</td>
+											<td style="width:10%;">${portConfig.mapPort }</td>
+											<td style="width:50%;"><a
 												href="${service.serviceAddr}/${service.proxyPath}"
 												target="_blank">
 													${service.serviceAddr}/${service.proxyPath} </a></td>
+											<c:if test="${service.status==1 or service.status==4}">
+											<td style="width:10%;" class="editBtn">
+<%-- <<<<<<< HEAD
+											<i id="editPortAddrBtn"  type="button" value="修改"  class="fa fa-edit oldPortConfig" onclick="editPortAddr()"></i>	
+											<i id="savePortEdit" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig" onclick="savePortEdit()"></i>
+                    	<i id="canclPortEdit" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	</td>
+                    </c:if>
+======= --%>
+												<i onclick="editPortAddrBtn(this)"  type="button" value="修改"  class="fa fa-edit oldPortConfig editPortAddrBtn"></i>	
+												<i onclick="savePortEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig savePortEdit"></i>
+                    							<i onclick="canclPortEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	
+                    						</td>
+                    						</c:if>
 										</tr>
 									</c:forEach>
+									
 									<%-- 									<tr>
 										<td>${service.serviceName }</td>
 										<td>8080</td>

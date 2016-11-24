@@ -46,6 +46,9 @@ import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.github.dockerjava.api.model.Ports;
+
+import io.netty.util.internal.StringUtil;
 
 @org.springframework.stereotype.Service
 public class KubernetesClientService {
@@ -331,7 +334,9 @@ public class KubernetesClientService {
 	                                                                             Double cpu,String ram,String nginxObj, 
 	                                                                                 String servicePath, String proxyPath,String checkPath,
 	                                                                                     List<EnvVariable> envVariables, List<String> command, List<String> args){
-		ReplicationController replicationController = new ReplicationController();
+		
+	    
+	  ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
 		replicationController.setMetadata(meta);
@@ -618,5 +623,152 @@ public class KubernetesClientService {
         endpoints.setSubsets(subsets);
         return endpoints;
     }
+    /**
+     * Description: update a rc
+
+     * 
+     * @param controller
+     * @param service 
+     * @return 
+     * @see 
+     */
+    public ReplicationController updateSimpleReplicationController(ReplicationController controller,
+            com.bonc.epm.paas.entity.Service service,List<String> command,int flag) {
+        
+        if(flag==0){
+            controller.getMetadata().setName(service.getServiceName());
+            controller.getMetadata().getLabels().put("app",service.getServiceName());
+            controller.getSpec().getTemplate().getSpec().getContainers().get(0).setCommand(command);
+            if(!StringUtils.isNotBlank(service.getVolName())){
+                controller.getSpec().getTemplate().getSpec().getContainers().get(0).setVolumeMounts(null);
+                        }
+                }
+        controller.getMetadata().getLabels().remove("dmz");
+        controller.getMetadata().getLabels().remove("user");
+        if(StringUtils.isNotBlank(service.getProxyZone())){
+          String ProxyZones[] = service.getProxyZone().split(",");
+          for(int i=0;i<ProxyZones.length;i++){
+              controller.getMetadata().getLabels().put(ProxyZones[i].toLowerCase(),ProxyZones[i]);
+          }
+          controller.getMetadata().getLabels().put("proxyPath",service.getProxyPath());
+          controller.getMetadata().getLabels().put("servicePath", service.getServicePath());
+//          controller.getSpec().setSelector(controller.getMetadata().getLabels());
+//          controller.getSpec().getTemplate().getMetadata().setLabels(controller.getMetadata().getLabels());
+        }
+        if (StringUtils.isNotBlank(service.getCheckPath())) {
+            Probe livenessProbe = new Probe();
+            if (service.getInitialDelay() == null || service.getInitialDelay() == 0) {
+                livenessProbe.setInitialDelaySeconds(600);
+            } else {
+                livenessProbe.setInitialDelaySeconds(service.getInitialDelay());
+            }
+            if (service.getTimeoutDetction() == null || service.getTimeoutDetction() == 0) {
+                livenessProbe.setTimeoutSeconds(5);
+            } else {
+                livenessProbe.setTimeoutSeconds(service.getTimeoutDetction());
+            }
+            if (service.getPeriodDetction() == null || service.getPeriodDetction() == 0) {
+                livenessProbe.setPeriodSeconds(10);
+            } else {
+                livenessProbe.setPeriodSeconds(service.getPeriodDetction());
+            }
+
+            HTTPGetAction httpGet = new HTTPGetAction();
+            httpGet.setPath(service.getCheckPath());
+            httpGet.setPort(8080); // 修改了HTTPGetAction的port字段类型定义
+            httpGet.setScheme("HTTP");
+            livenessProbe.setHttpGet(httpGet);
+            controller.getSpec().getTemplate().getSpec()
+            .getContainers().get(0).setLivenessProbe(livenessProbe);
+//---------------------
+        }
+        
+        return controller;
+        
+    }
+    /**
+     * 
+     * Description: update a service
+     * @param k8sService
+     * @param service
+     * @return service
+     * @see
+     */
+    public Service updateService(Service k8sService ,com.bonc.epm.paas.entity.Service service ){
+        k8sService.getMetadata().setName(service.getServiceName());
+        k8sService.getMetadata().getLabels().remove("dmz");
+        k8sService.getMetadata().getLabels().remove("user");
+        k8sService.getMetadata().getLabels().put("app", service.getServiceName());
+        if(StringUtils.isNotBlank(service.getProxyZone())){
+          String ProxyZones[] = service.getProxyZone().split(",");
+          for(int i=0;i<ProxyZones.length;i++){
+              k8sService.getMetadata().getLabels().put(ProxyZones[i].toLowerCase(),ProxyZones[i]);
+          }
+        if (StringUtils.isNotBlank(service.getServicePath())) {
+        k8sService.getMetadata().getLabels().put("servicePath", service.getServicePath().replaceAll("/", "LINE"));
+        }
+        if (StringUtils.isNotBlank(service.getProxyPath())) {
+        k8sService.getMetadata().getLabels().put("proxyPath", service.getProxyPath().replaceAll("/", "LINE"));
+        }
+        if (StringUtils.isNotBlank(service.getNodeIpAffinity())) {
+            k8sService.getMetadata().getLabels().put("nodeIpAffinity", service.getNodeIpAffinity());
+        }else{
+            k8sService.getMetadata().getLabels().remove("nodeIpAffinity");
+        }
+        ServiceSpec spec = new ServiceSpec();
+        spec.setType("NodePort");
+        if (StringUtils.isNotBlank(service.getSessionAffinity())) {
+            k8sService.getSpec().setSessionAffinity(service.getSessionAffinity());
+        }else{
+            k8sService.getSpec().setSessionAffinity(null);
+        }
+        }
+        return k8sService;
+        }
+    /**
+     * Description: 更新容器端口
+     * @param controller
+     * @param containerPort
+     * @return 
+     * @see 
+     */
+    public ReplicationController updateRcContainPort(ReplicationController controller, List<PortConfig> portCfg) {
+        if (CollectionUtils.isNotEmpty(portCfg)) {
+            List<ContainerPort> ports = new ArrayList<ContainerPort>();
+            for (PortConfig oneRow : portCfg) {
+                ContainerPort port = new ContainerPort();
+                port.setContainerPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+                ports.add(port); 
+            }
+            controller.getSpec().getTemplate().getSpec()
+            .getContainers().get(0).setPorts(ports);
+      }
+        return controller;
+    }
+    /**
+     * Description: <br>
+     * @param k8sService
+     * @param portCfgs
+     * @return 
+     * @see 
+     */
+    public com.bonc.epm.paas.kubernetes.model.Service updateSvcContainPort(
+            com.bonc.epm.paas.kubernetes.model.Service k8sService, List<PortConfig> portCfg) {
+        if (CollectionUtils.isNotEmpty(portCfg)) {
+            List<ServicePort> ports = new ArrayList<ServicePort>();
+            for (PortConfig oneRow : portCfg) {
+                ServicePort portObj = new ServicePort();
+                portObj.setName("http"+portCfg.indexOf(oneRow));
+                portObj.setProtocol("TCP");
+                portObj.setPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+                portObj.setTargetPort(Integer.valueOf(oneRow.getContainerPort().trim()));
+                portObj.setNodePort(Integer.valueOf(oneRow.getMapPort().trim()));
+                ports.add(portObj);
+            }
+            k8sService.getSpec().setPorts(ports);
+        }
+        return k8sService;
+    }
+
 }
 
