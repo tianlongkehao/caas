@@ -2305,7 +2305,54 @@ public class ServiceController {
         return JSON.toJSONString(map);
         
     }
-
+    /**
+     * 
+     * Description: 编辑环境变量配置信息<br>
+     * @param envVariable
+     * @param serviceName
+     * @param serviceId
+     * @return String
+     * @see
+     */
+    @RequestMapping(value ="service/detail/editEnv.do")
+    @ResponseBody
+    public String editEnvForm(EnvVariable envVariable , String serviceName ,long serviceId){
+        Map map = new HashMap();
+        EnvVariable envVar = new  EnvVariable();
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        ReplicationController controller = null;
+        com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+        //根据id找到对应的port
+        envVar = envVariableDao.findOne(envVariable.getEnvId());
+        //修改port
+        envVar.setEnvKey(envVariable.getEnvKey());
+        envVar.setEnvValue(envVariable.getEnvValue());
+        //存入数据库
+        envVariableDao.save(envVar);
+        //查询对应的service 的port
+        List<EnvVariable> envVars = envVariableDao.findByServiceId(serviceId);
+        try {
+          //找到对应的rc和svc文件
+            controller = client.getReplicationController(serviceName);
+            k8sService = client.getService(serviceName);
+            //修改rc文件
+            controller = kubernetesClientService.updateRcEnv(controller,envVars);
+            controller = client.updateReplicationController(serviceName, controller);
+            //修改service文件
+//            k8sService = kubernetesClientService.updateSvcContainPort(k8sService,envVars);
+//            k8sService = client.updateService(serviceName, k8sService);
+        } catch (KubernetesClientException e) {
+            map.put("status", "500");
+            map.put("msg", e.getStatus().getMessage());
+            LOG.error("create service error:" + e.getStatus().getMessage());
+            return JSON.toJSONString(map);
+                  }
+        //返回状态
+        map.put("status", "200");
+        return JSON.toJSONString(map);
+        
+    }
+    
     /**
      * 
      * Description: 服务列表导出excel
@@ -2322,11 +2369,11 @@ public class ServiceController {
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
         String newdownfile = df.format(new Date()) +"--"+createBy+".xls";
         PoiUtils poiUtil = new PoiUtils();
-        String[] header ={"名称","状态","镜像","服务地址","创建时间"};
+        String[] header ={"名称","中文名","状态","镜像","服务地址","创建时间"};
         List<String[]> context =new ArrayList<String[]>();
         for(int i=0;i<services.size();i++){
            Service serviceObj = services.get(i);
-            String[] service ={serviceObj.getServiceName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
+            String[] service ={serviceObj.getServiceName(),serviceObj.getServiceChName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
                     ,new StringBuffer(serviceObj.getServiceAddr()).append("/").append(serviceObj.getProxyPath()).toString() 
                     ,serviceObj.getCreateDate().toString()};
             context.add(service);
@@ -2339,6 +2386,7 @@ public class ServiceController {
         out.flush();
         out.close();
 }
+
     /**
      * 
      * Description: 服务状态号映射为中文
