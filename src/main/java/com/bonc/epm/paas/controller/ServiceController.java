@@ -2369,11 +2369,11 @@ public class ServiceController {
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
         String newdownfile = df.format(new Date()) +"--"+createBy+".xls";
         PoiUtils poiUtil = new PoiUtils();
-        String[] header ={"名称","状态","镜像","服务地址","创建时间"};
+        String[] header ={"名称","中文名","状态","镜像","服务地址","创建时间"};
         List<String[]> context =new ArrayList<String[]>();
         for(int i=0;i<services.size();i++){
            Service serviceObj = services.get(i);
-            String[] service ={serviceObj.getServiceName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
+            String[] service ={serviceObj.getServiceName(),serviceObj.getServiceChName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
                     ,new StringBuffer(serviceObj.getServiceAddr()).append("/").append(serviceObj.getProxyPath()).toString() 
                     ,serviceObj.getCreateDate().toString()};
             context.add(service);
