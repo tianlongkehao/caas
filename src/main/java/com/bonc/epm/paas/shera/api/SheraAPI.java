@@ -23,6 +23,10 @@ import javax.ws.rs.core.MediaType;
 
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.ChangeGit;
+import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
+import com.bonc.epm.paas.shera.model.CredentialKey;
+import com.bonc.epm.paas.shera.model.CredentialKeyList;
+import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
@@ -238,11 +242,64 @@ public interface SheraAPI {
      * @return {@link JobExecution}
      * @throws SheraClientException 
      */
-    @PUT
+    @GET
     @Path("/jobs/kill/{namespace}/{name}/{seqno}")
     @Produces(MediaType.APPLICATION_JSON)
     public JobExecView killExecution(@PathParam("namespace") String namespace ,@PathParam("name") String name, @PathParam("seqno") Integer seqno) throws SheraClientException;
 
+    /* Credentail API*/
+    /**
+     * 
+     * Description: 
+     * check a credential
+     * @param credential
+     *              Credential
+     * @return {@link Credential}
+     * @throws SheraClientException 
+     */    
+    @PUT
+    @Path("/credential/check")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public CredentialCheckEntity checkCredential(CredentialCheckEntity credential) throws SheraClientException;
+    
+    /**
+     * 
+     * Description: 
+     * get all credentials
+     * @return {@link CredentialKey}s
+     * @throws SheraClientException 
+     */  
+    @GET
+    @Path("/credential/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CredentialKeyList getAllCredentials() throws SheraClientException;
+    
+    /**
+     * 
+     * Description: 
+     * add a credentials
+     * @return {@link GitCredential}
+     * @throws SheraClientException 
+     */ 
+    @POST
+    @Path("/credential/add")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public GitCredential addCredential(GitCredential gitCredential) throws SheraClientException;
+    
+    /**
+     * 
+     * Description: 
+     * add a credentials
+     * @return {@link CredentialKey}
+     * @throws SheraClientException 
+     */
+    @POST
+    @Path("/credential/del")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)    
+    public CredentialKey deleteCredential(CredentialKey credentialKey) throws SheraClientException;
     
     /* JDK API */
 
