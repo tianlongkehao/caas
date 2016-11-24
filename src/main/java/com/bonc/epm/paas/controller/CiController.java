@@ -1122,6 +1122,7 @@ public class CiController {
             JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime);
             jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
             final Integer seqNo = jobExecViewNew.getSeqNo();
+            final String name =  CurrentUserUtils.getInstance().getUser().getUserName();
             new Thread() {
                 public void run() {
                     try {
@@ -1129,7 +1130,7 @@ public class CiController {
                         while(flag){
                             Thread.sleep(2000);
                             SheraClientService sheraClientService = new SheraClientService();
-                            SheraAPIClientInterface client = sheraClientService.getClient();
+                            SheraAPIClientInterface client = sheraClientService.getclient(name);
                             JobExecView jobExecView = client.getExecution(ci.getProjectName(),seqNo);
 //                            Log log = client.getExecLog(ci.getProjectName(),seqNo,log);
                             if (jobExecView.getFinished() == 1) {
