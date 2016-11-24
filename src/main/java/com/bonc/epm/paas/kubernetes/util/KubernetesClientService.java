@@ -746,7 +746,7 @@ public class KubernetesClientService {
         return controller;
     }
     /**
-     * Description: <br>
+     * Description: 更新service的容器端口信息<br>
      * @param k8sService
      * @param portCfgs
      * @return 
@@ -768,6 +768,27 @@ public class KubernetesClientService {
             k8sService.getSpec().setPorts(ports);
         }
         return k8sService;
+    }
+    /**
+     * Description: <br>
+     * @param controller
+     * @param envVars
+     * @return 
+     * @see 
+     */
+    public ReplicationController updateRcEnv(ReplicationController controller, List<EnvVariable> envVariables) {
+        if (null != envVariables && envVariables.size() > 0) {
+            List<EnvVar> envVars = new ArrayList<EnvVar>();
+            for (EnvVariable oneRow : envVariables) {
+                EnvVar envVar = new EnvVar();
+                envVar.setName(oneRow.getEnvKey());
+                envVar.setValue(oneRow.getEnvValue());
+                envVars.add(envVar);
+            }
+            controller.getSpec().getTemplate().getSpec()
+            .getContainers().get(0).setEnv(envVars);
+        }
+        return controller;
     }
 
 }

@@ -499,16 +499,30 @@
 									<tr style="height: 40px;">
 										<th style="width:40%;text-indent: 15px;">键</th>
 										<th>值</th>
-										
+										<th>操作</th>
 									</tr>
 								</thead>
 								<tbody>
-	                                <c:forEach items="${envVariableList }" var="envVariable">
-	                                    <tr>
-	                                        <td style="width:40%;text-indent: 15px;"> ${envVariable.envKey }</td>
-	                                        <td> ${envVariable.envValue }</td>
-	                                    </tr>
-	                                </c:forEach>
+               <c:forEach items="${envVariableList }" var="envVariable">
+                   <tr>
+                       <td style="width:40%;text-indent: 15px;">
+                       <span class="oldEnv">${envVariable.envKey }</span>
+                       <span class="editEnv" hidden="true"><input class="envKey" type="text" name="envKey" value="${envVariable.envKey }"  /></span>
+                       <input class="envId" hidden="true" value="${envVariable.envId} " />
+                       </td>
+                       <td>
+                       <span class="oldEnv"> ${envVariable.envValue }</span>
+                        <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value=" ${envVariable.envValue }"  /></span>
+                       </td>
+                       <c:if test="${service.status==1 or service.status==4}">
+                          <td style="width:10%;" class="editBtn">
+                              <i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i> 
+                              <i onclick="saveEnvEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editEnv saveEnv"></i>
+                              <i onclick="canclEnvEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editEnv"></i>  
+                          </td>
+                          </c:if>
+                   </tr>
+               </c:forEach>
 									
 								</tbody>
 							</table>
@@ -531,12 +545,7 @@
 									<c:forEach items="${portConfigList }" var="portConfig">
 										<tr>
 											<td style="width:10%;text-indent: 15px;">${service.serviceName }</td>
-<%-- <<<<<<< HEAD
-											<td style="width:10%;" class="portConfig"><span class="oldPortConfig">${portConfig.containerPort }</span>
-											<span class="editPortConfig"><input id="containerPort" type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
-											<input id="portId" hidden="true" value="${portConfig.portId} " />
-=======
- --%>											<td style="width:10%;" class="portConfig"><span class="oldPortConfig">${portConfig.containerPort }</span>
+										  <td style="width:10%;" class="portConfig"><span class="oldPortConfig">${portConfig.containerPort }</span>
 											<span class="editPortConfig"><input class="containerPort" type="text" value="${portConfig.containerPort }" name="containerPort"/></span>
 											<input class="portId" hidden="true" value="${portConfig.portId} " />
 											</td>
@@ -548,15 +557,9 @@
 													${service.serviceAddr}/${service.proxyPath} </a></td>
 											<c:if test="${service.status==1 or service.status==4}">
 											<td style="width:10%;" class="editBtn">
-<%-- <<<<<<< HEAD
-											<i id="editPortAddrBtn"  type="button" value="修改"  class="fa fa-edit oldPortConfig" onclick="editPortAddr()"></i>	
-											<i id="savePortEdit" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig" onclick="savePortEdit()"></i>
-                    	<i id="canclPortEdit" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	</td>
-                    </c:if>
-======= --%>
 												<i onclick="editPortAddrBtn(this)"  type="button" value="修改"  class="fa fa-edit oldPortConfig editPortAddrBtn"></i>	
 												<i onclick="savePortEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig savePortEdit"></i>
-                    							<i onclick="canclPortEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	
+           							<i onclick="canclPortEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	
                     						</td>
                     						</c:if>
 										</tr>
