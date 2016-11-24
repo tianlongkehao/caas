@@ -237,7 +237,80 @@ $(document).ready(function(){
 			}
 		})
 	});
-});
+	//添加认证按钮
+	$("#addCredentialsCon").hide();
+	$(document).on('click','#addCredentialsBtn',function(){
+		layer.open({
+			type : 1,
+			title : '添加认证',
+			content : $("#addCredentialsCon"),
+			btn : [ '添加', '取消' ],
+			scrollbar:false,
+			yes:function(index, layero){
+				var type = $("#CredentialsType").val();
+				var username = $("#userNameCred").val();
+				var password = $("#passwordCred").val();
+				var privateKey = $("#SSHpasswordCred").val();
+				if (!username || username.length < 1) {
+			    	layer.tips('用户名不能为空','#userNameCred',{tips:[1,'#3595CC']});
+			    	$("#userNameCred").focus();
+			    	return;
+				}
+				var code = "";
+				if (type == 1 ) {
+					code = "HTTP";
+					if (!password || password.length < 1) {
+				    	layer.tips('密码不能为空','#passwordCred',{tips:[1,'#3595CC']});
+				    	$("#passwordCred").focus();
+				    	return;
+					}
+				}
+				if (type == 2 ) {
+					code = "SSH";
+					if (!privateKey || privateKey.length < 1) {
+						layer.tips('密钥不能为空','#SSHpasswordCred',{tips:[1,'#3595CC']});
+						$("#SSHpasswordCred").focus();
+						return;
+					}
+				}
+				$.ajax({
+					url : ctx + "/ci/addCredential.do",
+					type : "POST",
+					data : {
+						"type" : type,
+						"userName" : username,
+						"password" : password,
+						"privateKey" : privateKey
+					},
+					success : function(data) {
+						data = eval("(" + data + ")");
+						if (data.status == "200") {
+							var html = "<option value='"+data.id+"'>"+username+"("+code+")"+"</option>"
+							$("#codeCredentials").append(html);
+							layer.alert("代码认证导入成功");
+							layer.close(index);
+						} else {
+							layer.alert("代码认证导入失败");
+						}
+					}
+				});
+			}
+			
+		})
+	});
+	//选择认证类型
+	$(".ssh").hide();
+	$(document).on('change','#CredentialsType',function(){
+		var credentialsType = $("#CredentialsType").val();
+		if(credentialsType == 1){
+			$(".normal").show();
+			$(".ssh").hide();
+		}else{
+			$(".normal").hide();
+			$(".ssh").show();
+		}
+	});
+});/*ready*/
 
 //单击导入模板，加载模板数据
 function loadDockerFileTemplate(){

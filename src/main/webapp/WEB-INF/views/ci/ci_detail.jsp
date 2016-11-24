@@ -167,12 +167,13 @@
 			                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git" value = "${ci.codeUrl }">
 					                            </div>
 					                            <div class="form-group1 col-md-12">
-					                                <label class="c-project-tit">认证方式</label>
-					                                <select id="codeCredentials" name="codeCredentials" class="form-control c-project-con">
+					                            	<label class="c-project-tit">认证方式</label>
+					                            	<select id="codeCredentials" name="codeCredentials" class="form-control c-project-con" style="width:50%;float:left;">
 					                                    <option value="${ci.codeCredentials }">${ci.codeCredentials }</option>
 					                                    <option value="gitlab(SSH)(gitlab SSH方式认证)">gitlab(SSH)(gitlab SSH方式认证)</option>
 				                                      	<option value="root/**********(gitlab HTTPS方式认证)">root/**********(gitlab HTTPS方式认证)</option>
 					                                </select>
+					                                <button type="button" id="addCredentialsBtn" class="addCredentialsBtn" value="添加证书"><i class="fa fa-key"></i>&nbsp添加证书</button>
 					                            </div>
 					                            <div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">创建分支</label>
@@ -394,7 +395,26 @@
                             style="width: 77%" autofocus="autofocus" />
                     </div>
                 </div>
-
+				<!-- 添加证书 -->
+                <div id="addCredentialsCon">
+                    <div style="width: 345px; margin: 5px 10px 5px 10px">
+                        <div class="infoCred">
+                        	<span class="labelCred">类型：</span>
+	                        <select class="form-control conCred" id="CredentialsType" name = "type">
+	                        	<option value="1">用户名和密码</option>
+	                        	<option value="2">SSH用户名和密钥</option>
+	                        </select></div>
+                        <div class="infoCred">
+	                        <span class="labelCred">用户名：</span>
+	                        <input type="text" class="form-control conCred" id="userNameCred" name="userName" value=""></div>
+                        <div class="infoCred normal">
+	                        <span class="labelCred">密码：</span>
+	                        <input type="password" class="form-control conCred" id="passwordCred" name="password" value=""></div>
+                        <div class="infoCred ssh">
+	                        <span class="labelCred">密钥：</span>
+	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="5" value="" ></textarea></div>
+                    </div>
+                </div>
             </div>
         </div>
     </article>
