@@ -105,7 +105,7 @@ $(document).ready(function(){
 		'<span id="docImport-btn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
 		'<span id="docExport-btn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
 	'</div>'+
-	'<div class="form-group col-md-12" id="dockerFiles2" style="width:95%;margin-left:30px">'+
+	'<div class="form-group col-md-12" id="dockerFiles2" style="width:98%;margin-left:10px">'+
 		'<textarea id="dockerFileContentEdit" name="dockerFileContentEdit"></textarea>'+
 	'</div>'+
 	'</div>';
@@ -115,7 +115,8 @@ $(document).ready(function(){
     	$("#dockerfileMethod").append(dockerfilePathHtml);
     });
     
-    $(document).on('click','#dockerfileTemp',function(){
+    $("#dockerfileTemp").click(function(){
+    //$(document).on('click','#dockerfileTemp',function(){
     	$("#dockerfileMethod").empty();
     	$("#dockerfileMethod").append(dockerfileTempHtml);
     	
@@ -130,13 +131,26 @@ $(document).ready(function(){
 	$("#dockerfile").focus();
 	$("#dockerfile-import").hide();
 	$("#dockerfile-export").hide();
-	judgeDockerFile();
 	
 	$(".btn-imageType .btns").each(function() {
 		$(this).click(function() {
 			$(".btn-imageType .btns").removeClass("active");
 			$(this).addClass("active");
 		});
+	});
+	
+	//点击基本设置tab时加载数据
+	$(".create-set").click(function(){
+		var dockerFileLocation = $("#ciLocation").val();
+		var dockerfileMethod = $("#ciMethod").val();
+		if (dockerFileLocation != '' ) {
+			$("#dockerfilePath").click();
+			$("#dockerFileLocation").val(dockerFileLocation);
+		}
+		if (dockerfileMethod != '' && dockerfileMethod != undefined) {
+			$("#dockerfileTemp").click();
+			editor_one.setValue(dockerfileMethod);
+		}
 	});
 
 	// 导入模板文件选项对勾
@@ -224,19 +238,6 @@ $(document).ready(function(){
 		})
 	});
 });
-
-function judgeDockerFile(){
-	var dockerFileLocation = $("#ciLocation").val();
-	var dockerfileMethod = $("#ciMethod").val();
-	if (dockerFileLocation != '' ) {
-		$("#dockerfilePath").click();
-		$("#dockerFileLocation").val(dockerFileLocation);
-	}
-	if (dockerfileMethod != '' && dockerfileMethod != undefined) {
-		$("#dockerfileTemp").click();
-		editor_one.setValue(dockerfileMethod);
-	}
-}
 
 //单击导入模板，加载模板数据
 function loadDockerFileTemplate(){

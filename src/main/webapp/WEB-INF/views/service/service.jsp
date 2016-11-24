@@ -189,7 +189,7 @@
                                                           <c:when test="${service.status == 3}">
 															<a id="${service.id}_upgradeCluster" class="a-live upgradeCluster_a " 
 																href="javascript:oneVersionUpgrade(${service.id },'${service.serviceName }','${service.imgName }')" title="版本升级"
-																style="margin-left: 5px">
+																style="margin-left: 10px">
 	                                                            <i class="fa fa-arrow-up"></i>
 															</a> 
                                                           </c:when>

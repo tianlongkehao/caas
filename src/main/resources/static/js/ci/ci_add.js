@@ -90,7 +90,7 @@ $(document).ready(function () {
 		'<span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
 		'<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
 	'</div>'+
-	'<div class="form-group col-md-12" id="dockerFiles" style="width:95%;margin-left:30px">'+
+	'<div class="form-group col-md-12" id="dockerFiles" style="width:98%;margin-left:10px">'+
 		'<textarea id="dockerFile" name="dockerFileContent"></textarea>'+
 	'</div>'+
 	'</div>';
@@ -210,6 +210,31 @@ $(document).ready(function () {
 		})
 	});
 	
+	//添加认证按钮
+	$("#addCredentialsCon").hide();
+	$(document).on('click','#addCredentialsBtn',function(){
+		layer.open({
+			type : 1,
+			title : '添加认证',
+			content : $("#addCredentialsCon"),
+			btn : [ '添加', '取消' ],
+			
+		})
+	});
+	//选择认证类型
+	$(".ssh").hide();
+	$(document).on('change','#CredentialsType',function(){
+		var credentialsType = $("#CredentialsType").val();
+		if(credentialsType == 1){
+			$(".normal").show();
+			$(".ssh").hide();
+		}else{
+			$(".normal").hide();
+			$(".ssh").show();
+		}
+	});
+	
+	//提交表单
 	$("#buildBtn").click(function(){
         if(checkCodeCiAdd(editor_one)) {
         	$("#buildForm").submit();
