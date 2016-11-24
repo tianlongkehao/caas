@@ -351,6 +351,8 @@ $(document).ready(function(){
        });
        //可以编辑的端口号
        $(".editPortConfig").hide();
+       //可编辑的环境变量
+       $(".editEnv").hide();
 });/*ready*/
   
 function editPortComm(portConfigId,containerPort){
@@ -573,6 +575,50 @@ function checkSerAddr(){
         return false;
     }
 }
+//环境变量修改按钮
+function editEnvBtn(obj){
+	$(obj).hide();
+	$(obj).next().show();
+	$(obj).next().next().show();
+	$(obj).parent().parent().find("span.oldEnv").hide();
+	$(obj).parent().parent().find("span.editEnv").show();
+}
+//环境变量保存按钮
+function saveEnvEdit(obj){
+	$(obj).parent().find("i.editEnvBtn").show();
+	   $(obj).next().hide();
+	   $(obj).parent().parent().find("span.oldEnv").show();
+	   $(obj).parent().parent().find("span.editEnv").hide();
+	   $(obj).hide();
+	   var thiz= $(obj);
+	   var envKey=$(obj).parent().parent().find("input.envKey").val();
+	   var envValue=$(obj).parent().parent().find("input.envValue").val();
+	   var id =$(obj).parent().parent().find("input.envId").val();
+	   var serId =$("#serId").val();
+	   var serName =$("#serviceName").val();
+	   $.ajax({
+			url:ctx+"/service/detail/editEnv.do?envKey="+envKey+"&envValue="+envValue+"&envId="+id+"&serviceId="+serId+"&serviceName="+serName,
+			success:function(data){
+				var data = eval("(" + data + ")");
+				if("200"==data.status){
+					layer.msg( "修改成功，重启服务后生效", {
+						icon: 1
+	                });
+				}
+			}
+	   		});
+	
+}
+//环境变量取消按钮
+function canclEnvEdit(obj){
+	$(obj).parent().find("i.editEnvBtn").show();
+  $(obj).parent().find("i.saveEnv").hide();
+  $(obj).parent().parent().find("span.oldEnv").show();
+  $(obj).parent().parent().find("span.editEnv").hide();
+  $(obj).hide();
+//  $("#BaseSerForm").resetForm();
+}
+
 //端口修改按钮
 function editPortAddrBtn(obj){
 	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
