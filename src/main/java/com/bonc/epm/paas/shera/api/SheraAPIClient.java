@@ -21,6 +21,10 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.ChangeGit;
+import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
+import com.bonc.epm.paas.shera.model.CredentialKey;
+import com.bonc.epm.paas.shera.model.CredentialKeyList;
+import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
@@ -260,6 +264,58 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     public JdkList getAllJdk() throws SheraClientException {
         try {
             return api.getAllJdk();
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public CredentialCheckEntity checkCredential(CredentialCheckEntity credential) throws SheraClientException {
+        try {
+            return api.checkCredential(credential);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public CredentialKeyList getAllCredentials() throws SheraClientException {
+        try {
+            return api.getAllCredentials();
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public GitCredential addCredential(GitCredential gitCredential) throws SheraClientException {
+        try {
+            return api.addCredential(gitCredential);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public CredentialKey deleteCredential(CredentialKey credentialKey) throws SheraClientException {
+        try {
+            return api.deleteCredential(credentialKey);
         }
         catch (NotFoundException e) {
             return null;
