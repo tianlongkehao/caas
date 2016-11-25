@@ -2276,22 +2276,15 @@ public class ServiceController {
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         ReplicationController controller = null;
         com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
-        //根据id找到对应的port
         portCfg = portConfigDao.findOne(portConfig.getPortId());
-        //修改port
         portCfg.setContainerPort(portConfig.getContainerPort());
-        //存入数据库
         portConfigDao.save(portCfg);
-        //查询对应的service 的port
         List<PortConfig> portCfgs = portConfigDao.findByServiceId(serviceId);
         try {
-          //找到对应的rc和svc文件
             controller = client.getReplicationController(serviceName);
             k8sService = client.getService(serviceName);
-            //修改rc文件
             controller = kubernetesClientService.updateRcContainPort(controller,portCfgs);
             controller = client.updateReplicationController(serviceName, controller);
-            //修改service文件
             k8sService = kubernetesClientService.updateSvcContainPort(k8sService,portCfgs);
             k8sService = client.updateService(serviceName, k8sService);
         } catch (KubernetesClientException e) {
@@ -2300,7 +2293,6 @@ public class ServiceController {
             LOG.error("create service error:" + e.getStatus().getMessage());
             return JSON.toJSONString(map);
                   }
-        //返回状态
         map.put("status", "200");
         return JSON.toJSONString(map);
         
@@ -2322,25 +2314,16 @@ public class ServiceController {
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         ReplicationController controller = null;
         com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
-        //根据id找到对应的port
         envVar = envVariableDao.findOne(envVariable.getEnvId());
-        //修改port
         envVar.setEnvKey(envVariable.getEnvKey());
         envVar.setEnvValue(envVariable.getEnvValue());
-        //存入数据库
         envVariableDao.save(envVar);
-        //查询对应的service 的port
         List<EnvVariable> envVars = envVariableDao.findByServiceId(serviceId);
         try {
-          //找到对应的rc和svc文件
             controller = client.getReplicationController(serviceName);
             k8sService = client.getService(serviceName);
-            //修改rc文件
             controller = kubernetesClientService.updateRcEnv(controller,envVars);
             controller = client.updateReplicationController(serviceName, controller);
-            //修改service文件
-//            k8sService = kubernetesClientService.updateSvcContainPort(k8sService,envVars);
-//            k8sService = client.updateService(serviceName, k8sService);
         } catch (KubernetesClientException e) {
             map.put("status", "500");
             map.put("msg", e.getStatus().getMessage());
@@ -2352,7 +2335,43 @@ public class ServiceController {
         return JSON.toJSONString(map);
         
     }
-    
+    /**
+     * 
+     * Description: 新增一个环境变量<br>
+     * @param envVariable
+     * @param serviceId
+     * @return string
+     * @see
+     */
+    @RequestMapping(value ="service/detail/addEnv.do")
+    @ResponseBody
+    public String addEvn(EnvVariable envVariable,long serviceId){
+        Map map = new HashMap();
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        EnvVariable envVar = new EnvVariable();
+        EnvVariable env=new EnvVariable();
+        envVar.setCreateBy(createBy);
+        envVar.setEnvKey(envVariable.getEnvKey());
+        envVar.setEnvValue(envVariable.getEnvValue());
+        envVar.setCreateDate(new Date());
+        envVar.setServiceId(serviceId);
+        env = envVariableDao.save(envVar);
+       // map.put("data", env);
+        return JSON.toJSONString(env);
+        
+    }
+    @RequestMapping(value ="service/detail/delEnv.do",method = RequestMethod.POST)
+    @ResponseBody
+    public String delEvn(long envId){
+        Map map = new HashMap();
+        try{
+            envVariableDao.delete(envId);
+            map.put("status", "200");
+        }catch(Exception e){
+            map.put("status", "500");
+                }
+        return JSON.toJSONString(map);
+    }
     /**
      * 
      * Description: 服务列表导出excel
