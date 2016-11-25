@@ -11,6 +11,8 @@
 
 package com.bonc.epm.paas.docker.api;
 
+import javax.ws.rs.core.MultivaluedMap;
+
 import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
 import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.model.Manifest;
@@ -30,7 +32,7 @@ public interface DockerRegistryAPIClientInterface {
     
     public Tags getTagsofImage(String name) throws DokcerRegistryClientException;
     
-    public Object getManifestofImage(String name,String reference) throws DokcerRegistryClientException;
+    public MultivaluedMap<String, Object> getManifestofImage(String name,String reference) throws DokcerRegistryClientException;
     
     public Manifest deleteManifestofImage(String name,String reference) throws DokcerRegistryClientException;
 }

@@ -2360,6 +2360,13 @@ public class ServiceController {
         return JSON.toJSONString(env);
         
     }
+    /**
+     * 
+     * Description: 删除一个环境变量 <br>
+     * @param envId
+     * @return 
+     * @see
+     */
     @RequestMapping(value ="service/detail/delEnv.do",method = RequestMethod.POST)
     @ResponseBody
     public String delEvn(long envId){
@@ -2371,6 +2378,54 @@ public class ServiceController {
             map.put("status", "500");
                 }
         return JSON.toJSONString(map);
+    }
+    /**
+     * 
+     * Description: 删除一个端口信息 <br>
+     * @param portId
+     * @return 
+     * @see
+     */
+    @RequestMapping(value ="service/detail/delPortCfg.do",method = RequestMethod.POST)
+    @ResponseBody
+    public String delPortCfg(long portId){
+        Map map = new HashMap();
+        try{
+            portConfigDao.delete(portId);
+            map.put("status", "200");
+        }catch(Exception e){
+            map.put("status", "500");
+                }
+        return JSON.toJSONString(map);
+    }
+    /**
+     * 
+     * Description: 添加一个端口信息 <br>
+     * @param portConfig
+     * @param serviceId
+     * @return 
+     * @see
+     */
+    @RequestMapping(value ="service/detail/addPortCfg.do",method = RequestMethod.GET)
+    @ResponseBody
+    public String addPortCfg(PortConfig portConfig,long serviceId){
+        PortConfig portCon = new PortConfig();
+        PortConfig pCfg = new PortConfig();
+        Service service = new Service();
+        portCon.setContainerPort(portConfig.getContainerPort());
+        portCon.setMapPort(String.valueOf(vailPortSet()));
+        portCon.setProtocol(portConfig.getProtocol());
+        //portCon.setOptions(Integer.valueOf(jsonArray.getJSONObject(i).getString("option")));
+        portCon.setCreateDate(new Date());
+        portCon.setServiceId(serviceId);
+        pCfg=portConfigDao.save(portCon);
+        service = serviceDao.findOne(serviceId);
+        Map map = new HashMap();
+        map.put("pCfg", pCfg);
+        map.put("service",service);
+            // 向map中添加生成的node端口
+        return JSON.toJSONString(map);
+        
     }
     /**
      * 

@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * @author ke_wang
  * @version 2016年11月18日
@@ -51,7 +53,7 @@ public class ErrorList implements Iterable<Error> {
 
     @Override
     public String toString() {
-        return " [items=" + StringUtils.join(getErrors(), ',') + "]";
+        return MoreObjects.toStringHelper(this).add("errors", errors).toString();
     }
 
 }
