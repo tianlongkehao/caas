@@ -209,9 +209,9 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 
     @Override
     public com.bonc.epm.paas.shera.model.Log getExecLog(String name, String seqno,
-                                                        com.bonc.epm.paas.shera.model.Log log) throws SheraClientException {
+                                                        Integer seek) throws SheraClientException {
         try {
-            return api.getExecLog(namespace, name, seqno, log);
+            return api.getExecLog(namespace, name, seqno, seek);
         }
         catch (NotFoundException e) {
             return null;

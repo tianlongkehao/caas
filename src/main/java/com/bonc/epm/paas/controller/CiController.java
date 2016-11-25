@@ -57,13 +57,13 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
-import com.bonc.epm.paas.shera.model.CredentialKeyList;
 import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExec;
 import com.bonc.epm.paas.shera.model.JobExecList;
 import com.bonc.epm.paas.shera.model.JobExecView;
+import com.bonc.epm.paas.shera.model.Log;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateUtils;
@@ -282,6 +282,8 @@ public class CiController {
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 JdkList jdkList = client.getAllJdk();
                 Job job = client.getJob(ci.getProjectName());
+                Iterable<CiCodeCredential> ciCodeList = ciCodeCredentialDao.findAll();
+                model.addAttribute("ciCodeList", ciCodeList);
                 model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
                 model.addAttribute("jdkList",jdkList.getItems());
             }
@@ -1060,10 +1062,11 @@ public class CiController {
     @RequestMapping("ci/constructCi.do")
     @ResponseBody
     public String constructCi(Long id){
+        long startTime = System.currentTimeMillis();
         Ci ci = ciDao.findOne(id);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
+        ci.setImgNameVersion(DateUtils.getLongStr(startTime));
         ciDao.save(ci);
-        long startTime = System.currentTimeMillis();
         CiRecord ciRecord = new CiRecord();
         ciRecord.setCiId(ci.getId());
         ciRecord.setCiVersion(ci.getImgNameVersion());
@@ -1129,13 +1132,17 @@ public class CiController {
                 public void run() {
                     try {
                         boolean flag = true;
+                        Integer seek = 0;
                         while(flag){
                             Thread.sleep(2000);
                             JobExecView jobExecView = new JobExecView();
+                            Log log = new Log();
                             try {
                                 SheraClientService sheraClientService = new SheraClientService();
                                 SheraAPIClientInterface client = sheraClientService.getclient(name);
                                 jobExecView = client.getExecution(ci.getProjectName(),seqNo);
+                                log = client.getExecLog(ci.getProjectName(),seqNo.toString(),seek);
+                                seek = log.getSeek();
                             }
                             catch (Exception e) {
                                 e.printStackTrace();
@@ -1144,7 +1151,7 @@ public class CiController {
                                 if (jobExecView.getEndStatus() == 0) {
                                     Image image = new Image();
                                     String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
-                                    String imageVersion = DateUtils.getLong2LStr(startTime);
+                                    String imageVersion = DateUtils.getLongStr(startTime);
                                     image.setName(imageName);
                                     image.setVersion(imageVersion);
                                     image.setResourceName(ci.getCodeName());
@@ -1166,9 +1173,10 @@ public class CiController {
                                     ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
                                 }
                                 ciDao.save(ci);
-                                ciRecordDao.save(ciRecord);
                                 flag = false;
                             } 
+                            ciRecord.setLogPrint(ciRecord.getLogPrint()+log.getContent());
+                            ciRecordDao.save(ciRecord);
                         }
                     }
                     catch (Exception e) {

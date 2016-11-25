@@ -124,7 +124,7 @@ public interface SheraAPI {
     @Path("/jobs/exec/log/{namespace}/{name}/{seqno}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)     
-    public Log getExecLog(@PathParam("namespace") String namespace, @PathParam("name") String name, @PathParam("seqno") String seqno, Log log) throws SheraClientException;
+    public Log getExecLog(@PathParam("namespace") String namespace, @PathParam("name") String name, @PathParam("seqno") String seqno, Integer seek) throws SheraClientException;
     
     /**
      * obtain git changes

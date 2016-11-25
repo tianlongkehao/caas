@@ -22,6 +22,7 @@ import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.AntConfig;
 import com.bonc.epm.paas.shera.model.BuildManager;
 import com.bonc.epm.paas.shera.model.CodeManager;
@@ -32,7 +33,9 @@ import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.ImgManager;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExecView;
+import com.bonc.epm.paas.shera.model.JobExecViewList;
 import com.bonc.epm.paas.shera.model.Key;
+import com.bonc.epm.paas.shera.model.Log;
 import com.bonc.epm.paas.shera.model.MvnConfig;
 import com.bonc.epm.paas.shera.model.Repository;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -194,10 +197,11 @@ public class SheraClientService {
 //        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
 //        try {
 //            JobExecViewList  jobExecViewList = client.getJobAllExecutions("testdemo1");
-//            System.out.println(jobExecViewList);
+//            Log log = client.getExecLog("testdemo3", "1", 2091);
+//            System.out.println(log.getContent());
 //            
-//            JobExecView jobExecView = client.getExecution("testdemo1",1);
-//            System.out.println(jobExecView);
+////            JobExecView jobExecView = client.getExecution("testdemo1",1);
+////            System.out.println(jobExecView);
 //           
 ////            JobExecView jobExecView2 = client.killExecution("testdemo1",2);
 ////            System.out.println(jobExecView2);

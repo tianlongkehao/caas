@@ -93,7 +93,7 @@
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">创建分支</label>
 		                                <input id="codeBranch" name="codeBranch" type="text" class="form-control c-project-con"
-                                                   value="*/master">
+                                                   value="master">
 		                            </div>
 	                            </div>
 	                            <div class="row git-config">
