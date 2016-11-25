@@ -500,6 +500,55 @@ public class DockerClientService {
 		}
 	}
 	
+	/**
+	 *  保存容器为镜像
+	 * @param containerName
+	 * @return
+	 */
+	public boolean commitContainer(String containerId, String repository, String tag, DockerClient dockerClient){
+		try{
+		    if (null == dockerClient) {
+		         dockerClient = this.getSpecialDockerClientInstance(); 
+		    }
+			String imageId = dockerClient.commitCmd(containerId).exec();
+			dockerClient.tagImageCmd(imageId, repository, tag).exec();
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error("commitContainer error:"+e.getMessage());
+			return false;
+		}
+	}
+	
+	/**
+	 * 上传到镜像仓库
+	 * @param imageName
+	 * @param imageVersion
+	 * @param dockerClient
+	 * @return
+	 */
+	public boolean pushImage(String imageName,String imageVersion, DockerClient dockerClient){
+		try{
+		    if (null == dockerClient) {
+		       dockerClient = this.getSpecialDockerClientInstance();
+		    }
+			
+			PushImageResultCallback callback = new PushImageResultCallback() {
+				@Override
+				public void onNext(PushResponseItem item) {
+					log.info("==========PushResponseItem:"+item);
+				    super.onNext(item);
+				}
+			};
+			dockerClient.pushImageCmd(username+"/"+imageName).withTag(imageVersion).exec(callback).awaitSuccess();
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error("pushImage error:"+e.getMessage());
+			return false;
+		}
+	}
+	
 	/*public void main(String[] args) {
 		System.out.println(DockerClientUtil.buildImage("C:\\Users\\Administrator\\Desktop\\linyiyj-helloworld-master\\helloworld\\war-test\\","admin/hw1", "latest"));
 		System.out.println(DockerClientUtil.pullImage("bonc/helloworld", "latest"));
