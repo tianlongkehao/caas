@@ -84,6 +84,8 @@ public class SheraClientService {
         Job job = new Job();
         job.setId(id);
         job.setJdkVersion(jdkVersion);
+        job.setMaxExecutionRecords(2);
+        job.setMaxKeepDays(2);
         CodeManager codeManager = new CodeManager();
         GitConfig gitConfig = new GitConfig();
         gitConfig.setBranch(branch);

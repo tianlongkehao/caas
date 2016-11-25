@@ -237,6 +237,9 @@ public class CiController {
         try {
             SheraAPIClientInterface client = sheraClientService.getClient();
             JobExecList jobExecList = client.getAllJobs();
+            if (StringUtils.isEmpty(jobExecList)) {
+                return cis;
+            }
             if (cis.size()!=0 && jobExecList != null) {
                 for (Ci ci :cis) {
                     for (JobExec jobExec :jobExecList) {
