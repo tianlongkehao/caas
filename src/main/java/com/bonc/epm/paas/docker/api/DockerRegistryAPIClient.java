@@ -13,6 +13,7 @@ package com.bonc.epm.paas.docker.api;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MultivaluedMap;
 
 import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
 import com.bonc.epm.paas.docker.model.Images;
@@ -60,7 +61,7 @@ public class DockerRegistryAPIClient implements DockerRegistryAPIClientInterface
     }
 
     @Override
-    public Object getManifestofImage(String name, String reference) throws DokcerRegistryClientException{
+    public MultivaluedMap<String, Object> getManifestofImage(String name, String reference) throws DokcerRegistryClientException{
         try {
             return api.getManifestofImage(name, reference);
         } catch (NotFoundException e) {
