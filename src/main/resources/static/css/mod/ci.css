@@ -340,7 +340,7 @@ td .dockerfileinput {
     line-height: 30px;
     color: #333;
     text-indent: 0;
-    width: 70px;
+    min-width: 70px;
     position: absolute;
     right: 0;
     margin-top: 10px;
