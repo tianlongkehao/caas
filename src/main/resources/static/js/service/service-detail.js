@@ -585,29 +585,44 @@ function editEnvBtn(obj){
 }
 //环境变量保存按钮
 function saveEnvEdit(obj){
+//	 var flag=0;
+	 var thiz= $(obj);
+   var envKey=$(obj).parent().parent().find("input.envKey").val();
+   var envValue=$(obj).parent().parent().find("input.envValue").val();
+   var id =$(obj).parent().parent().find("input.envId").val();
+   var serId =$("#serId").val();
+   var serName =$("#serviceName").val();
+   /*$('#editEnvBody tr').each(function(index,domEle){
+   var ek= $(domEle).find("input.envKey").val();
+   var ei=$(domEle).find("input.envId").val();
+   if(ei==id){return true;}
+   if(ek== envKey){
+	   layer.tips('环境变量Key不能重复',$(obj).parent().parent().find("input.envKey"),{tips: [1, '#3595CC']});
+	   $(obj).parent().parent().find("input.envKey").focus();
+	   flag=1;
+	return false;
+	}
+   });*/
+   if(1==checkRepEnv(obj,id,envKey)){return};
 	$(obj).parent().find("i.editEnvBtn").show();
-	   $(obj).next().hide();
-	   $(obj).parent().parent().find("span.oldEnv").show();
-	   $(obj).parent().parent().find("span.editEnv").hide();
-	   $(obj).hide();
-	   var thiz= $(obj);
-	   var envKey=$(obj).parent().parent().find("input.envKey").val();
-	   var envValue=$(obj).parent().parent().find("input.envValue").val();
-	   var id =$(obj).parent().parent().find("input.envId").val();
-	   var serId =$("#serId").val();
-	   var serName =$("#serviceName").val();
-	   $.ajax({
-			url:ctx+"/service/detail/editEnv.do?envKey="+envKey+"&envValue="+envValue+"&envId="+id+"&serviceId="+serId+"&serviceName="+serName,
-			success:function(data){
-				var data = eval("(" + data + ")");
-				if("200"==data.status){
-					layer.msg( "修改成功，重启服务后生效", {
-						icon: 1
-	                });
-				}
-			}
-	   		});
-	
+   $(obj).next().hide();
+   $(obj).parent().parent().find("span.oldEnv").show();
+   $(obj).parent().parent().find("span.editEnv").hide();
+   $(obj).hide();
+   
+   
+   $.ajax({
+		url:ctx+"/service/detail/editEnv.do?envKey="+envKey+"&envValue="+envValue+"&envId="+id+"&serviceId="+serId+"&serviceName="+serName,
+		success:function(data){
+		var data = eval("(" + data + ")");
+		if("200"==data.status){
+			layer.msg( "修改成功，重启服务后生效", {
+				icon: 1
+            });
+		}
+	}
+	});
+
 }
 //环境变量取消按钮
 function canclEnvEdit(obj){
@@ -631,16 +646,18 @@ function editPortAddrBtn(obj){
 }
 //端口保存按钮
 function savePortEdit(obj){
+		 var thiz= $(obj);
+	   var port=$(obj).parent().parent().find("input.containerPort").val();
+	   var id =$(obj).parent().parent().find("input.portId").val();
+	   var serId =$("#serId").val();
+	   var serName =$("#serviceName").val();
+	   if(1== checkRepPortCfg(obj,id,port)){return;}
 	   $(obj).parent().find("i.editPortAddrBtn").show();
 	   $(obj).next().hide();
 	   $(obj).parent().parent().find("span.oldPortConfig").show();
 	   $(obj).parent().parent().find("span.editPortConfig").hide();
 	   $(obj).hide();
-	   var thiz= $(obj);
-	   var port=$(obj).parent().parent().find("input.containerPort").val();
-	   var id =$(obj).parent().parent().find("input.portId").val();
-	   var serId =$("#serId").val();
-	   var serName =$("#serviceName").val();
+	   
 	   $.ajax({
 			url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id+"&serviceId="+serId,
 			success:function(data){
@@ -654,7 +671,7 @@ function savePortEdit(obj){
 	   		});
 };
 //端口新建按钮
-function addPortCfgClick(){
+function addPortCfgClick(obj){
 	layer.open({
 		type:1,
 		content:$('#createCfg-template'),
@@ -665,6 +682,10 @@ function addPortCfgClick(){
 			var protocol= $("#protocol").val();
 			var mapPort =$("#mapPort").val();
 			var serId =$("#serId").val();
+			if(1== checkRepPortCfg(obj,null,containerPort)){
+			layer.tips('容器端口不能重复',"#containerPort",{tips: [1, '#3595CC']});
+			   ("#containerPort").focus();
+			   return;}
 			$.ajax({
 				url : ctx + "/service/detail/addPortCfg.do?containerPort="+containerPort+"&protocol="+protocol+"&mapPort="+mapPort+"&serviceId="+serId,
 				type: "GET",
@@ -735,7 +756,7 @@ function canclPortEdit(obj){
 	   $("#BaseSerForm").resetForm();
 };
 //新增环境变量
-function addEnvClick(){
+function addEnvClick(obj){
 	layer.open({
 		type:1,
 		content:$('#createEnv-templat'),
@@ -745,6 +766,10 @@ function addEnvClick(){
 			var envKey	= $("#newKey").val();
 			var envValue= $("#newValue").val();
 			var serId =$("#serId").val();
+			if(1==checkRepEnv(obj,null,envKey)){
+				layer.tips('环境变量Key不能重复',"#newKey",{tips: [1, '#3595CC']});
+				   ("#newKey").focus();
+				return};
 			$.ajax({
 				url : ctx + "/service/detail/addEnv.do?envKey="+envKey+"&envValue="+envValue+"&serviceId="+serId,
 				type: "GET",
@@ -801,6 +826,41 @@ function addEnvClick(){
 				});
 			}
 		})
+	}
+	//环境变量验重
+	function checkRepEnv(obj,id,envKey){
+			 var flag =0;
+		   $('#editEnvBody tr').each(function(index,domEle){
+			   var ek= $(domEle).find("input.envKey").val();
+			   var ei=$(domEle).find("input.envId").val();
+			   if(null==id & ek== envKey){flag=1; return false;}
+			   if(ei==id){return true;}
+			   if(ek== envKey){
+				   layer.tips('环境变量Key不能重复',$(obj).parent().parent().find("input.envKey"),{tips: [1, '#3595CC']});
+				   $(obj).parent().parent().find("input.envKey").focus();
+				   flag=1;
+				return false;
+				}
+			   });
+		   return flag;
+	}
+	//端口信息验重
+	function checkRepPortCfg(obj,id,port){
+			 var flag =0;
+			 $('#editPortCfgBody tr').each(function(index,domEle){
+				   var pcp= $(domEle).find("input.containerPort").val();
+				   var pi= $(domEle).find("input.portId").val();
+				   if(null==id & port==pcp){flag=1; return false;}
+				   if(id==pi){
+					   return true;}
+				   if(port==pcp){
+					   layer.tips('容器端口不能重复',$(obj).parent().parent().find("input.containerPort"),{tips: [1, '#3595CC']});
+					   $(obj).parent().parent().find("input.containerPort").focus();
+					   flag=1;
+					   return false;
+				   }
+			   });
+			 return flag;
 	}
 // 添加端口
 /*function addPortCfg(){
