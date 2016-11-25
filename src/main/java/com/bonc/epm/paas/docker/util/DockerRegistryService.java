@@ -47,18 +47,18 @@ public class DockerRegistryService {
         return new DockerRegistryAPIClient(url, username, password,new RestFactory());
     }
     
-//    @SuppressWarnings("unchecked")
-//    public static void main(String[] args) {
-//        DockerRegistryService dockerRegistryService = new DockerRegistryService();
-//        DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
-//        System.out.println(client.getTagsofImage("tomcat"));
-//        MultivaluedMap<String, Object> result = (MultivaluedMap<String, Object>)client.getManifestofImage("tomcat", "8.jre7");
-//        //System.out.println(result.get("Etag"));
-//        if (null != result.get("Etag") && result.get("Etag").size() > 0) {
-//            for (Object oneRow : result.get("Etag")) {
-//                System.out.println(oneRow);
-//            }
-//        }
-//    }
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) {
+        DockerRegistryService dockerRegistryService = new DockerRegistryService();
+        DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
+        //System.out.println(client.getTagsofImage("tomcat"));
+        MultivaluedMap<String, Object> result = client.getManifestofImage("tomcat", "8.jre7");
+        //System.out.println(result.get("Etag"));
+        if (null != result.get("Etag") && result.get("Etag").size() > 0) {
+            for (Object oneRow : result.get("Etag")) {
+                System.out.println(oneRow);
+            }
+        }
+    }
 
 }
