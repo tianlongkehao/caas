@@ -1128,6 +1128,7 @@ public class CiController {
             jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
             final Integer seqNo = jobExecViewNew.getSeqNo();
             final String name =  CurrentUserUtils.getInstance().getUser().getUserName();
+            //获取执行状态和执行日志
             new Thread() {
                 public void run() {
                     try {
@@ -1147,8 +1148,11 @@ public class CiController {
                             catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            //执行完成
                             if (jobExecView.getFinished() == 1) {
+                                //执行成功
                                 if (jobExecView.getEndStatus() == 0) {
+                                    //添加镜像
                                     Image image = new Image();
                                     String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
                                     String imageVersion = DateUtils.getLongStr(startTime);
@@ -1162,12 +1166,13 @@ public class CiController {
                                     image.setIsBaseImage(ImageConstant.NotBaseImage);
                                     image.setIsDelete(CommConstant.TYPE_NO_VALUE);
                                     imageDao.save(image);
-                                    
+                                    //添加构建和日志的信息
                                     ci.setConstructionTime(jobExecView.getEndTime()-startTime);
                                     ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
                                     ciRecord.setConstructTime(jobExecView.getEndTime()-startTime);
                                     ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
                                 }
+                                //执行失败
                                 if (jobExecView.getEndStatus() == 1) {
                                     ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
                                     ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
@@ -1175,6 +1180,7 @@ public class CiController {
                                 ciDao.save(ci);
                                 flag = false;
                             } 
+                            //获取和保存日志
                             ciRecord.setLogPrint(ciRecord.getLogPrint()+log.getContent());
                             ciRecordDao.save(ciRecord);
                         }
