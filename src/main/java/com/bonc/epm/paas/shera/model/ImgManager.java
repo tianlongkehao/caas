@@ -40,4 +40,5 @@ public class ImgManager {
     public void setImgName(String imgName) {
         this.imgName = imgName;
     }
+    
 }

@@ -30,8 +30,6 @@
                         <li><a href="javascript:void(0);" id="ciReloadBtn"><i class="fa fa-repeat"></i></a></li>
                         <li><a href="<%=path %>/ci/add" id="ciAddBtn">代码构建</a></li>
                         <li><a href="<%=path %>/ci/addCodeSource" id="ciAddCodeSourceBtn">快速构建</a></li>
-                        <%-- <li><a href="<%=path %>/ci/addSource" id="ciAddSourceBtn">上传构建</a></li> --%>
-                        <!-- <li><a href="<%=path %>/file/downloadTemplate?fileName=Dockerfile">下载dockerfile示例</a></li> -->
                         <li><a href="<%=path %>/ci/uploadImage" id="ciAddSourceBtn">上传镜像</a></li>
                         <li><a href="<%=path %>/ci/dockerfile">Dockerfile构建</a></li>
                     </ul>
@@ -40,10 +38,9 @@
                 	<div class="row">
 						<div class="col-md-12">
 							<div class="ibox float-e-margins">
-								<div class="ibox-title">
-									<h5>
-										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>构建
-									</h5>
+								<div class="ibox-title" style="padding-left:0px">
+									<div class="tab-title active" id="ciTab"><h5 class="ci-h5 ci"><i class="fa fa-map-marker"></i>构建</h5></div>
+									<div class="tab-title" id="ciCodeTab"><h5 class="ci-h5"><i class="fa fa-map-marker"></i>代码构建</h5></div>
 
 									<div class="ibox-tools">
 										<a href="javascript:void(0);"  id="ciAddBtn" onclick="addCiInfo(0)"><img src="<%=path %>/images/code.png" class="fa-img" alt="代码构建" title="代码构建"></a>
@@ -55,16 +52,15 @@
 										</a>
 									</div>
 								</div>
-								<div class="ibox-content">
-									<table class="table table-stripped table-hover dataTables-example">
+								<div class="ibox-content ci-content">
+									<table class="table table-stripped table-hover dataTables-example1">
 											<thead>
 												<tr style="height: 40px;">
 													<th style="width: 15%; text-indent: 30px;">项目名称</th>
 													<th style="width: 12%; text-indent: 15px;">构建状态</th>
-													<th style="width: 15%; text-indent: 20px;">代码源</th>
-													<th style="width: 12%;">上次构建时间</th>
+													<th style="width: 20%;">上次构建时间</th>
 													<th style="width: 10%; text-indent: 8px;">持续时间</th>
-													<th style="width: 18%; text-indent: 10px;">镜像</th>
+													<th style="width: 20%; text-indent: 10px;">镜像</th>
 													<th style="width: 10%; text-indent: 10px;">功能</th>
 												</tr>
 											</thead>
@@ -125,22 +121,9 @@
                                                     <i class="${statusClassName}"></i> ${statusName}
                                                     <img src="<%=path %>/images/loading4.gif" alt="" class="${loadingImgShowClass}" />
                                                 </td>
-                                                <td style="width: 15%; text-indent:20px;">
-                                                	<c:choose>
-		                                                <c:when test="${ci.type == 2||ci.type == 3}">
-		                                                </c:when>
-		                                                <c:otherwise>
-		                                                	 <a data-toggle="tooltip" data-placement="left" title="" target="_blank" href="${ci.codeUrl}" data-original-title="查看源代码">
-		                                                        <span class="bj-code-source"><i class="fa fa-lg"></i>
-		                                                            ${codeTypeName}
-		                                                        </span>
-		                                                    </a>
-		                                                </c:otherwise>
-		                                            </c:choose>
-                                                </td>
-                                                <td style="width: 12%;"><fmt:formatDate value="${ci.constructionDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                                <td style="width: 20%;"><fmt:formatDate value="${ci.constructionDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                                 <td style="width: 10%; text-indent:8px;"><fmt:formatNumber type="number" value="${ci.constructionTime/1000}" maxFractionDigits="0"/>s</td>
-                                                <td style="width: 18%; text-indent:10px;">
+                                                <td style="width: 20%; text-indent:10px;">
                                                     <a target="_blank" title="" class="${cursorClass}"  ${hrefValue}>${ci.imgNameFirst}/${ci.imgNameLast}:${ci.imgNameVersion}</a>
                                                 </td>
                                                 <td style="width:10%; text-indent:10px;">
@@ -151,6 +134,31 @@
                                         </c:forEach>
 												
 										</tbody>
+										<tfoot class="hide">
+											<tr>
+												<td colspan="6">
+													<ul class="pagination pull-right"></ul>
+												</td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
+								<div class="ibox-content ci-code-content">
+									<table class="table table-stripped table-hover dataTables-example">
+											<thead>
+												<tr style="height: 40px;">
+													<th style="width: 15%; text-indent: 30px;">项目名称</th>
+													<th style="width: 12%; ">上次构建状态</th>
+													<th style="width: 22%; ">上次成功时间</th>
+													<th style="width: 22%;">上次失败时间</th>
+													<th style="width: 10%; ">上次持续时间</th>
+													<th style="width: 12%; text-indent: 10px;">功能</th>
+												</tr>
+											</thead>
+
+											<tbody id="ciList">
+
+										    </tbody>
 										<tfoot class="hide">
 											<tr>
 												<td colspan="7">

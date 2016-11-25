@@ -5,12 +5,7 @@
 <title>Dockerfile构建</title>
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
-<link rel="stylesheet" type="text/css"
-	href="<%=path%>/css/core/codemirror.css" />
-	<link rel="stylesheet" type="text/css"
-	href="<%=path%>/css/core/ambiance.css" />
 <script type="text/javascript" src="<%=path%>/js/ci/ci_dockerfile.js"></script>
-<script type="text/javascript" src="<%=path%>/js/plugins/codemirror.js"></script>
 </head>
 <body>
 

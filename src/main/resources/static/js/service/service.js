@@ -923,7 +923,7 @@ function loadServices() {
 							if (row.status == 3) {
 								html += '<a id="'+row.id+'_upgradeCluster" class="a-live upgradeCluster_a " '+
 										'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+ row.serviceName +'&apos;,&apos;'+row.imgName+'&apos;)" title="版本升级"'+
-										'style="margin-left: 5px"><i class="fa fa-arrow-up"></i></a> ';
+										'style="margin-left: 10px"><i class="fa fa-arrow-up"></i></a> ';
 							} else {
 								html += ' <a id="'+row.id+'_upgradeCluster" class="no-drop upgradeCluster_a " '+
                                     	'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+row.serviceName+'&apos;,&apos;'+row.imgName+'&apos;,this)" title="版本升级"'+

@@ -22,7 +22,7 @@ public class JobExec {
     private String JobId;
     private Long LastSuccessTime;
     private Long LastFailureTime;
-    private Integer LastDuration;
+    private Long LastDuration;
     public Integer getStatus() {
         return Status;
     }
@@ -47,10 +47,10 @@ public class JobExec {
     public void setLastFailureTime(Long lastFailureTime) {
         LastFailureTime = lastFailureTime;
     }
-    public Integer getLastDuration() {
+    public Long getLastDuration() {
         return LastDuration;
     }
-    public void setLastDuration(Integer lastDuration) {
+    public void setLastDuration(Long lastDuration) {
         LastDuration = lastDuration;
     }
 }

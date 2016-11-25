@@ -88,8 +88,8 @@
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podNameList}" var="pod" >
-								 		<li class="LOG"><a podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)" 
-								 			style="width: 150px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
+								 		<li class="LOG"><a class="dropdown-pod" podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)" 
+								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
 								 	</c:forEach>
 									
 								</ul>
@@ -427,7 +427,7 @@
 									</c:choose>
 									<tr>
 										<td><a href="">${container.containerName }</a></td>
-										<c:if test="${service.status==4 }">
+										<c:if test="${service.status==1 }">
 											<td>waiting</td>
 										</c:if>
 										<c:if test="${service.status==2||service.status==3 }">

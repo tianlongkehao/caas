@@ -94,7 +94,7 @@ public interface SheraAPI {
     @Path("/jobs/exec/{namespace}/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public JobExecView execJob(@PathParam("namespace") String namespace, @PathParam("name") String name) throws SheraClientException;
+    public JobExecView execJob(@PathParam("namespace") String namespace, @PathParam("name") String name, JobExecView jobExecView) throws SheraClientException;
     
     /**
      * update a job 
