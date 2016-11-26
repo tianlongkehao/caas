@@ -110,7 +110,7 @@ $(document).ready(function () {
             $('#version').focus();
             return false;
         }
-        if(version.length > 128 || version.length < 3){
+        if(version.length > 128 || version.length < 1){
             layer.tips('镜像名称为3~128个字符', '#version', {
                 tips: [1, '#0FA6D8'] //还可配置颜色
             });
