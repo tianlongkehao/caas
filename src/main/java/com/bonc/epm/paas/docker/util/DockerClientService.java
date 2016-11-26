@@ -246,7 +246,7 @@ public class DockerClientService {
             dockerClient.loadImageCmd(inputStream).exec();
             log.info("==========结束执行load image api");
             log.info("image name");
-            dockerClient.tagImageCmd(image.getName().split("/")[1], username +"/"+image.getName(), image.getVersion()).withForce().exec();
+            dockerClient.tagImageCmd(image.getName().split("/")[1]+":"+image.getVersion(), username +"/"+image.getName(), image.getVersion()).withForce().exec();
             
             // push image
             PushImageResultCallback callback = new PushImageResultCallback() {

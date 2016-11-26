@@ -22,7 +22,7 @@ $(document).ready(function () {
     });
     //是否和上传镜像名字和版本提示信息
     $("#image_name_version").click(function(){
-    	layer.tips('镜像名称和版本号，必须和上传镜像信息一致！！！', '#image_name_version', {
+    	layer.tips('请确认填写的镜像名称及版本号和上传镜像信息一致！！！', '#image_name_version', {
             tips: [2, '#FF0000'] //还可配置颜色
         });
     });
