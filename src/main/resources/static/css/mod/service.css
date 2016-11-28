@@ -1018,3 +1018,24 @@ li.line-h-3 span i{
 .containerPort{
 	width:105px;
 }
+#addEnvBtn{
+	margin-top:5px;
+	line-height:30px;
+	width: 140px;
+	border-radius: 5px;
+}
+#createEnv-templat div{
+	width: 345px; 
+	margin: 5px 10px 5px 10px
+}
+#createEnv-templat div p{
+	margin-top: 15px;
+}
+.newEnvLab{
+	width: 15%;
+	line-height: 34px;
+	float:left;
+}
+.newEnvInput{
+	width: 80%;
+}

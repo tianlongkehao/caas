@@ -18,6 +18,10 @@ $(document).ready(function(){
     //加载构建日志
     printLog();
 	
+    //动态给版本信息赋宽度
+    var btnVersionWidth = $(".btn-version").html().length*10;
+    $(".btn-version").css("width",btnVersionWidth);
+    
 	//codeType
 	$(".git-config").hide();
     $("#codeType").change(function(){

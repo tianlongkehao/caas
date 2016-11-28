@@ -22,7 +22,7 @@ $(document).ready(function () {
     });
     //是否和上传镜像名字和版本提示信息
     $("#image_name_version").click(function(){
-    	layer.tips('镜像名称和版本号，必须和上传镜像信息一致！！！', '#image_name_version', {
+    	layer.tips('请确认填写的镜像名称及版本号和上传镜像信息一致！！！', '#image_name_version', {
             tips: [2, '#FF0000'] //还可配置颜色
         });
     });
@@ -104,14 +104,14 @@ $(document).ready(function () {
             return false;
         }
         if(version.search(/^[A-Za-z0-9-_]*$/) === -1){
-            layer.tips('镜像名称只能由字母、数字、横线和下划线组成', '#version', {
+            layer.tips('镜像版本只能由字母、数字、横线和下划线组成', '#version', {
                 tips: [1, '#0FA6D8'] //还可配置颜色
             });
             $('#version').focus();
             return false;
         }
-        if(version.length > 128 || version.length < 3){
-            layer.tips('镜像名称为3~128个字符', '#version', {
+        if(version.length > 128 || version.length < 1){
+            layer.tips('镜像版本为1~128个字符', '#version', {
                 tips: [1, '#0FA6D8'] //还可配置颜色
             });
             $('#version').focus();

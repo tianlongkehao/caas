@@ -22,6 +22,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
@@ -116,12 +117,15 @@ public class MethodInvoker {
     	catch(ProcessingException | IllegalStateException k8s) {
     	    try {
                 Status status = response.readEntity(Status.class);
-                throw new KubernetesClientException("unexpect k8s response",status);                
+                if (status.getCode() < 0 || StringUtils.isBlank(status.getMessage())) {
+                    throw new ProcessingException("is not a k8s exception");
+                }
+                throw new KubernetesClientException("unexpect k8s response",status);  
             }
             catch (ProcessingException | IllegalStateException dockerReg) {
                 try {
                     ErrorList errors = response.readEntity(ErrorList.class);
-                    throw new DokcerRegistryClientException("unexpect docker registry api response", errors);                     
+                    throw new DokcerRegistryClientException("unexpect docker registry api response", errors); 
                 }
                 catch (ProcessingException | IllegalStateException shera) {
                     throw new SheraClientException("unexpect shera response");

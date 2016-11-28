@@ -2276,22 +2276,15 @@ public class ServiceController {
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         ReplicationController controller = null;
         com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
-        //根据id找到对应的port
         portCfg = portConfigDao.findOne(portConfig.getPortId());
-        //修改port
         portCfg.setContainerPort(portConfig.getContainerPort());
-        //存入数据库
         portConfigDao.save(portCfg);
-        //查询对应的service 的port
         List<PortConfig> portCfgs = portConfigDao.findByServiceId(serviceId);
         try {
-          //找到对应的rc和svc文件
             controller = client.getReplicationController(serviceName);
             k8sService = client.getService(serviceName);
-            //修改rc文件
             controller = kubernetesClientService.updateRcContainPort(controller,portCfgs);
             controller = client.updateReplicationController(serviceName, controller);
-            //修改service文件
             k8sService = kubernetesClientService.updateSvcContainPort(k8sService,portCfgs);
             k8sService = client.updateService(serviceName, k8sService);
         } catch (KubernetesClientException e) {
@@ -2300,7 +2293,6 @@ public class ServiceController {
             LOG.error("create service error:" + e.getStatus().getMessage());
             return JSON.toJSONString(map);
                   }
-        //返回状态
         map.put("status", "200");
         return JSON.toJSONString(map);
         
@@ -2322,25 +2314,16 @@ public class ServiceController {
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         ReplicationController controller = null;
         com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
-        //根据id找到对应的port
         envVar = envVariableDao.findOne(envVariable.getEnvId());
-        //修改port
         envVar.setEnvKey(envVariable.getEnvKey());
         envVar.setEnvValue(envVariable.getEnvValue());
-        //存入数据库
         envVariableDao.save(envVar);
-        //查询对应的service 的port
         List<EnvVariable> envVars = envVariableDao.findByServiceId(serviceId);
         try {
-          //找到对应的rc和svc文件
             controller = client.getReplicationController(serviceName);
             k8sService = client.getService(serviceName);
-            //修改rc文件
             controller = kubernetesClientService.updateRcEnv(controller,envVars);
             controller = client.updateReplicationController(serviceName, controller);
-            //修改service文件
-//            k8sService = kubernetesClientService.updateSvcContainPort(k8sService,envVars);
-//            k8sService = client.updateService(serviceName, k8sService);
         } catch (KubernetesClientException e) {
             map.put("status", "500");
             map.put("msg", e.getStatus().getMessage());
@@ -2352,7 +2335,98 @@ public class ServiceController {
         return JSON.toJSONString(map);
         
     }
-    
+    /**
+     * 
+     * Description: 新增一个环境变量<br>
+     * @param envVariable
+     * @param serviceId
+     * @return string
+     * @see
+     */
+    @RequestMapping(value ="service/detail/addEnv.do")
+    @ResponseBody
+    public String addEvn(EnvVariable envVariable,long serviceId){
+        Map map = new HashMap();
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        EnvVariable envVar = new EnvVariable();
+        EnvVariable env=new EnvVariable();
+        envVar.setCreateBy(createBy);
+        envVar.setEnvKey(envVariable.getEnvKey());
+        envVar.setEnvValue(envVariable.getEnvValue());
+        envVar.setCreateDate(new Date());
+        envVar.setServiceId(serviceId);
+        env = envVariableDao.save(envVar);
+       // map.put("data", env);
+        return JSON.toJSONString(env);
+        
+    }
+    /**
+     * 
+     * Description: 删除一个环境变量 <br>
+     * @param envId
+     * @return 
+     * @see
+     */
+    @RequestMapping(value ="service/detail/delEnv.do",method = RequestMethod.POST)
+    @ResponseBody
+    public String delEvn(long envId){
+        Map map = new HashMap();
+        try{
+            envVariableDao.delete(envId);
+            map.put("status", "200");
+        }catch(Exception e){
+            map.put("status", "500");
+                }
+        return JSON.toJSONString(map);
+    }
+    /**
+     * 
+     * Description: 删除一个端口信息 <br>
+     * @param portId
+     * @return 
+     * @see
+     */
+    @RequestMapping(value ="service/detail/delPortCfg.do",method = RequestMethod.POST)
+    @ResponseBody
+    public String delPortCfg(long portId){
+        Map map = new HashMap();
+        try{
+            portConfigDao.delete(portId);
+            map.put("status", "200");
+        }catch(Exception e){
+            map.put("status", "500");
+                }
+        return JSON.toJSONString(map);
+    }
+    /**
+     * 
+     * Description: 添加一个端口信息 <br>
+     * @param portConfig
+     * @param serviceId
+     * @return 
+     * @see
+     */
+    @RequestMapping(value ="service/detail/addPortCfg.do",method = RequestMethod.GET)
+    @ResponseBody
+    public String addPortCfg(PortConfig portConfig,long serviceId){
+        PortConfig portCon = new PortConfig();
+        PortConfig pCfg = new PortConfig();
+        Service service = new Service();
+        portCon.setContainerPort(portConfig.getContainerPort());
+        portCon.setMapPort(String.valueOf(vailPortSet()));
+        portCon.setProtocol(portConfig.getProtocol());
+        //portCon.setOptions(Integer.valueOf(jsonArray.getJSONObject(i).getString("option")));
+        portCon.setCreateDate(new Date());
+        portCon.setServiceId(serviceId);
+        pCfg=portConfigDao.save(portCon);
+        service = serviceDao.findOne(serviceId);
+        Map map = new HashMap();
+        map.put("pCfg", pCfg);
+        map.put("service",service);
+            // 向map中添加生成的node端口
+        return JSON.toJSONString(map);
+        
+    }
     /**
      * 
      * Description: 服务列表导出excel
@@ -2369,11 +2443,11 @@ public class ServiceController {
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
         String newdownfile = df.format(new Date()) +"--"+createBy+".xls";
         PoiUtils poiUtil = new PoiUtils();
-        String[] header ={"名称","状态","镜像","服务地址","创建时间"};
+        String[] header ={"名称","中文名","状态","镜像","服务地址","创建时间"};
         List<String[]> context =new ArrayList<String[]>();
         for(int i=0;i<services.size();i++){
            Service serviceObj = services.get(i);
-            String[] service ={serviceObj.getServiceName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
+            String[] service ={serviceObj.getServiceName(),serviceObj.getServiceChName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
                     ,new StringBuffer(serviceObj.getServiceAddr()).append("/").append(serviceObj.getProxyPath()).toString() 
                     ,serviceObj.getCreateDate().toString()};
             context.add(service);

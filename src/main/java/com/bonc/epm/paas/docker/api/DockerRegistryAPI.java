@@ -20,6 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 
 import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
 import com.bonc.epm.paas.docker.model.Images;
@@ -79,7 +80,7 @@ public interface DockerRegistryAPI {
     @Path("/{name}/manifests/{reference}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)   
-    public Object getManifestofImage(@PathParam("name") String name,@PathParam("reference") String reference) throws DokcerRegistryClientException;
+    public MultivaluedMap<String, Object> getManifestofImage(@PathParam("name") String name,@PathParam("reference") String reference) throws DokcerRegistryClientException;
 
 
     /**

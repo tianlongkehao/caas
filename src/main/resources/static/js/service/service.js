@@ -818,6 +818,7 @@ function loadServices() {
                     
 					{
 						data : null,
+						className:"cStatusColumn",
 						render : function (data,type,row) {
 							var html = '';
 							if (row.status == 1) {
