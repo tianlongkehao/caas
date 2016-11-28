@@ -239,14 +239,14 @@ public class DockerClientService {
 	 * @return 
 	 * @see
 	 */
-	public boolean loadAndPushImage(Image image, InputStream inputStream) {
+	public boolean loadAndPushImage(String originImageInfo, Image image, InputStream inputStream) {
 	    try {
             DockerClient dockerClient = this.getSpecialDockerClientInstance();
             log.info("==========开始执行load image api");
             dockerClient.loadImageCmd(inputStream).exec();
             log.info("==========结束执行load image api");
-            log.info("image name");
-            dockerClient.tagImageCmd(image.getName().split("/")[1]+":"+image.getVersion(), username +"/"+image.getName(), image.getVersion()).withForce().exec();
+            dockerClient.tagImageCmd(originImageInfo, username +"/"+image.getName(), image.getVersion()).withForce().exec();
+            log.info("origin Image Info:-"+originImageInfo);
             
             // push image
             PushImageResultCallback callback = new PushImageResultCallback() {
@@ -363,18 +363,17 @@ public class DockerClientService {
 	 * @param dockerClient 
 	 * @return
 	 */
-	public boolean removeImage(String imageName,String imageVersion, CiRecord ciRecord, CiRecordDao ciRecordDao, DockerClient dockerClient){
+	public boolean removeImage(String imageName,String imageVersion, 
+	                                   CiRecord ciRecord, CiRecordDao ciRecordDao, 
+	                                       DockerClient dockerClient, boolean loadFlag){
 		try{
 		    if (null == dockerClient) {
 		         dockerClient = this.getSpecialDockerClientInstance(); 
 		    }
-		    
-		    if (imageName.contains("/")) {
-		        dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec(); 
-		    } else {
+		    if (loadFlag) {
 		        dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
 		    }
-		    
+		    dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec(); 
 			
 			if (null != ciRecord && null != ciRecordDao) {
 	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);

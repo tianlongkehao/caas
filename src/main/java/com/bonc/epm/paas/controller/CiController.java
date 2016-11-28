@@ -57,7 +57,6 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
-import com.bonc.epm.paas.shera.model.CredentialKeyList;
 import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
@@ -795,7 +794,7 @@ public class CiController {
             if (!sourceCode.isEmpty()) {
                 FileUtils.storeFile(sourceCode.getInputStream(), imagePath+"/"+sourceCode.getOriginalFilename());
             }
-            boolean flag = loadOrSaveAndPushImage(image,imagePath+"/"+sourceCode.getOriginalFilename());
+            boolean flag = loadOrSaveAndPushImage(image, imagePath, sourceCode.getOriginalFilename());
             if(flag){
                 //排重添加镜像数据
                 Image img = null;
@@ -835,21 +834,26 @@ public class CiController {
      * @return flag boolean
      * @see
      */
-    private boolean loadOrSaveAndPushImage(Image image,String tarPath) throws IOException{
-        InputStream uploadStream = Files.newInputStream(Paths.get(tarPath));
+    private boolean loadOrSaveAndPushImage(Image image,String imagePath,String sourceName) throws IOException{
+        InputStream uploadStream = Files.newInputStream(Paths.get(imagePath+"/"+sourceName));
         boolean flag = false;
         try {
-            flag = ZipUtil.visitTAR(new File(tarPath), "repositories");
+            flag = ZipUtil.visitTAR(new File(imagePath+"/"+sourceName), "repositories");
             if (flag) {
-                flag = dockerClientService.loadAndPushImage(image, uploadStream);
-                if(flag){
-                    //删除本地镜像
-                    flag = dockerClientService.removeImage(image.getName().split("/")[1], image.getVersion(),null,null,null);
-                } 
+                flag = ZipUtil.extTarFileList(new File(imagePath+"/"+sourceName), imagePath, "repositories");
+                if (flag) {
+                    String originImageInfo =  ZipUtil.readFileByLines(imagePath, "repositories");
+                    flag = dockerClientService.loadAndPushImage(originImageInfo,image, uploadStream);
+                    if(flag){
+                        //删除本地镜像
+                        String[] tmp = originImageInfo.split(":");
+                        flag = dockerClientService.removeImage(tmp[0], tmp[1],null,null,null,true);
+                    }                     
+                }
             } else {
                 flag = dockerClientService.importAndPushImage(image, uploadStream);
                 if (flag) {
-                    flag = dockerClientService.removeImage(image.getName(), image.getVersion(), null, null, null);
+                    flag = dockerClientService.removeImage(image.getName(), image.getVersion(), null, null, null,false);
                 }  
             }
         } catch (Exception e) {
@@ -1216,7 +1220,7 @@ public class CiController {
         }
         if(flag){
 			//删除本地镜像
-            flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient);
+            flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient,false);
         }
         ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
         ciRecordDao.save(ciRecord);
