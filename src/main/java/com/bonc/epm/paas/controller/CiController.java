@@ -229,7 +229,7 @@ public class CiController {
     
     /**
      * Description: <br>
-     * 代码构建查询shera中的job的构建状态信息；
+     * 代码构建shera中job的构建信息查询和展示；
      * @param cis cis
      * @return 
      */
@@ -279,9 +279,11 @@ public class CiController {
         //代码构建
         if (ci.getType() == 1) {
             try {
+                //获取jdk信息
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 JdkList jdkList = client.getAllJdk();
                 Job job = client.getJob(ci.getProjectName());
+                //代码验证信息的查询和加载
                 Iterable<CiCodeCredential> ciCodeList = ciCodeCredentialDao.findAll();
                 model.addAttribute("ciCodeList", ciCodeList);
                 model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
@@ -317,7 +319,7 @@ public class CiController {
 	
     /**
      * Description: <br>
-     * 根据构建id查询相关联的invoke数据
+     * 根据构建id查询相关联的代码构建详细数据
      * @param id
      * @return 
      * @see
@@ -361,11 +363,12 @@ public class CiController {
     }
     
     /**
+     * Description: <br>
      * 修改代码构建信息
-     * 
-     * @param ci ：ci
+     * @param ci ： ci
+     * @param jsonData ： invoke数据
+     * @param dockerFileContentEdit ： dockerfile文件
      * @return String
-     * @see
      */
     @RequestMapping("ci/modifyCodeCi.do")
 	@ResponseBody
@@ -519,6 +522,7 @@ public class CiController {
                 client.deleteJob(ci.getProjectName());
                 ciInvokeDao.deleteByCiId(idl);
             }
+            ciRecordDao.deleteByCiId(idl);
             ciDao.delete(idl);
             map.put("status", "200");
         }
@@ -602,6 +606,12 @@ public class CiController {
         return "ci/ci_addCodeSource.jsp";
     }
     
+    /**
+     * Description: <br>
+     * 判断用户镜像数量
+     * @param model 
+     * @return String
+     */
     @RequestMapping(value={"ci/judgeUserImages.do"},method=RequestMethod.GET)
     @ResponseBody
     public String judgeUserImages(Model model) {
@@ -637,7 +647,10 @@ public class CiController {
                 ciInvokeDao.save(ciInvokeList);
                 LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
             }
-            CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(ci.getCodeCredentials());
+            CiCodeCredential ciCodeCredential = new CiCodeCredential();
+            if (!StringUtils.isEmpty(ci.getCodeCredentials())) {
+                ciCodeCredential = ciCodeCredentialDao.findOne(ci.getCodeCredentials());
+            }
             try {
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 Job job = sheraClientService.generateJob(ci.getProjectName(),ci.getJdkVersion(),ci.getCodeBranch(),ci.getCodeUrl(),

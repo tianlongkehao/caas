@@ -802,6 +802,14 @@ function loadMavenData(count,invoke){
 		mavenSet = '<option value="settings file in filesystem">settings file in filesystem</option>'+
 				    '<option value="use default maven setting">use default maven setting</option>';
 	}
+	var mavenVersion = invoke.mavenVersion;
+	var mavenVersionData = '';
+	if (mavenVersion == 'default') {
+		mavenVersionData = '<option value="default">default</option><option value="maven">maven</option>';
+	}
+	else {
+		mavenVersionData = '<option value="maven">maven</option><option value="default">default</option>';
+	}
 	
 	var mavenGlobalSet = '';
 	var mavenGlobalSetFile = invoke.mavenGlobalSetFile;
@@ -832,8 +840,7 @@ function loadMavenData(count,invoke){
             	'<div class="form-group col-md-12">'+
                     '<label class="c-project-tit">maven版本</label>'+
                     '<select id="mavenVersion-'+count+'" name="mavenVersion" class="form-control c-project-con" >'+
-                    	'<option value="default">default</option>'+
-                        '<option value="maven">maven</option>'+
+                    mavenVersionData + 
                     '</select>'+
                 '</div>'+
                 '<div class="form-group col-md-12">'+
