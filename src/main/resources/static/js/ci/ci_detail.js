@@ -565,7 +565,12 @@ function registerCiDelEvent(id){
 	        		success:function(data){
 	        			data = eval("(" + data + ")");
 	        			 if(data.status=="200"){
-                             window.location.href = ctx+"/ci";
+	        				 if(data.type == "1"){
+	        					 window.location.href = ctx+"/ci?code";
+	        				 }else{
+	        					 window.location.href = ctx+"/ci";
+	        				 }
+                             
 	                     } else {
 	                         layer.alert(data.msg);
 	                     }
