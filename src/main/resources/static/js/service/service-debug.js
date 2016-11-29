@@ -95,13 +95,13 @@ function creatable(isDir, dirName) {
 								+ '<td style="width: 15%;text-indent: 123px;">'
 								+ '<a class="deleteButton" style="text-indent: 0px;" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
 								+ fileInfo.fileName
-								+ '"> <i class="fa fa-trash fa-lg"></i></a>'
+								+ '"> <i class="fa fa-trash fa-lg fa-i"></i></a>'
 						if (true == fileInfo.dir) {
 						} else if (true == fileInfo.link) {
 						} else {
 							tbody += '<a class="downloadButton" style="text-indent: 1px;" href="javascript:void(0)" onclick="downloadFile(this)"  fileName="'
 									+ fileInfo.fileName
-									+ '"> <i class="fa fa-download fa-lg"></i></a>'
+									+ '"> <i class="fa fa-download fa-lg fa-i"></i></a>'
 						}
 						tbody += '</td>' + '</tr>';
 					}

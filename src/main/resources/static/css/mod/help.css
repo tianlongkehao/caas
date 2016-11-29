@@ -17,7 +17,7 @@
 	padding-right: 0px;
 	background-color: #EBEFF1;
 	border-radius: 5px;
-	height: 650px;
+	height: 600px;
 } 
 .book .book-summary ul.summary li a:hover{
   background: #fff;
@@ -48,7 +48,7 @@
 }
 .book .book-body{
 	overflow-y:scroll;
-	height: 650px;
+	height: 600px;
 	padding-bottom: 50px;
 }
 .book .book-body .body-inner{
