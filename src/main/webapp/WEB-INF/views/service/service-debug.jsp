@@ -32,7 +32,10 @@
 					<ul>
 						<li><a href="#doc">文件</a></li>
 						<li><a href="#ftp">命令行</a></li>
+						<li><a href="#export">导出</a></li>
 					</ul>
+					<input hidden="true" value="${containerId }" id="containerId"/>
+					<input hidden="true" value="${imageName }" id="imageName"/>
 					<div id="doc" >
 						<div class="row">
 							<div class="scpDoc">
@@ -74,6 +77,15 @@
 					</div>
 					<div class="contentMain" id="ftp">
 						<iframe id="shellinabox" src="${sshhost}" width="100%" height="500px"></iframe>
+					</div>
+					<div id="export">
+						<div class="">
+							<span class="name-note">${shrotImageName }</span> <input
+								name="imgNameFirst" type="hidden" value="${shrotImageName }">
+							: <input id="version" name="version"
+								type="text" value="debug" class="name-input">
+						</div>
+						<a href="javascript:saveAsImage('${containerId}','${nodeName }')" class="btn">保存容器为镜像</a>
 					</div>
 				</div>
 				

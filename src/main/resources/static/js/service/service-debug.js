@@ -1,13 +1,5 @@
 $(document).ready(function() {
 	creatable(null, null);
-	setInterval(onComplete, 1000); 
-	window.onunload = function(){
-		closeFtp();
-	}
-	
-	window.onbeforeunload = function(){
-		closeFtp();
-	}
 });
 function EnterPress(e) { // 传入 event
 	var e = e || window.event;
@@ -15,15 +7,6 @@ function EnterPress(e) { // 传入 event
 		var dictionary = document.getElementById("scp-path").value;
 		creatable(true,dictionary);
 	}
-} 
-
-function closeFtp(){
-	alert();
-}
-function onComplete() 
-{
-//	var shell = document.getElementById("shellinabox");
-	window.onbeforeunload = function(){}
 } 
 
 function creatable(isDir, dirName) {
@@ -302,7 +285,7 @@ function up(formData, flag) {
 				$('#myModal').modal('hide');
 				layer.open({
 					type : 1,
-					content : '上传失败，文件大小超过卷组可用大小！',
+					content : '上传失败，文件大小超过可用大小！',
 					title : '上传失败',
 					btn : [ '确定' ],
 					yes : function(index, layero) {
@@ -319,7 +302,48 @@ function up(formData, flag) {
 		}
 	});
 }
+//导出container为image
+function saveAsImage(containerId, nodeName) {
+    var version = $('#version').val().trim();
+    var imageName = $('#imageName').val();
+    if(version.length == 0){
+		layer.tips('对不起，镜像版本名不能为空！','#version',{tips: [1, '#3595CC']});
+		$('#version').focus();
+    	return;
+    }
+    if(version.length > 128){
+		layer.tips('对不起，镜像版本名过长！','#version',{tips: [1, '#3595CC']});
+		$('#version').focus();
+    	return;
+    }
+    reg=/^[a-zA-Z0-9_.-]+$/;     
+    if(!reg.test(version)){    
+		layer.tips('对不起，您输入的镜像版本格式不正确！','#version',{tips: [1, '#3595CC']});
+		$('#version').focus();
+		return;
+    }    
 
+    $.ajax({
+		url : ctx + "/service/saveAsImage",
+		type: "POST",
+		data:{"containerId":containerId,"nodeName":nodeName,"imageName":imageName,"version":version},
+		success : function(data) {
+			data = eval("(" + data + ")");
+			if (data.status=="200") {
+				alert(data.result);
+			}else if(data.status=="400") {
+				failedMSG("对不起，仓库中已存在该版本名！", false);
+			} else if(data.status=="401") {
+				failedMSG("对不起，container保存为本地镜像失败！", false);
+			} else if(data.status=="402") {
+				failedMSG("对不起，本地镜像推送到仓库时失败！", false);
+			} else if(data.status=="403") {
+				failedMSG("对不起，获取数据库中原始镜像的信息失败！", false);
+			}
+		}
+	});
+
+}
 
 // 弹出失败消息
 function failedMSG(title, flag) {
