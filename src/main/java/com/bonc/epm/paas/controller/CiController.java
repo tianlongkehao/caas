@@ -57,6 +57,7 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
@@ -386,7 +387,10 @@ public class CiController {
         originCi.setCodeRefspec(ci.getCodeRefspec());;
         originCi.setDockerFileLocation(ci.getDockerFileLocation());
         List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
-        CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(ci.getCodeCredentials());
+        CiCodeCredential ciCodeCredential = new CiCodeCredential();
+        if (!StringUtils.isEmpty(ci.getCodeCredentials())) {
+            ciCodeCredential = ciCodeCredentialDao.findOne(ci.getCodeCredentials());
+        }
         try {
             SheraAPIClientInterface client = sheraClientService.getClient();
             Job job = sheraClientService.generateJob(ci.getProjectName(),ci.getJdkVersion(),ci.getCodeBranch(),ci.getCodeUrl(),
@@ -626,6 +630,36 @@ public class CiController {
         return JSON.toJSONString(map);
     }
 	
+    /**
+     * Description: <br>
+     * 代码构建验证代码地址是否正确
+     * @param codeUrl
+     * @param codeCredentialId
+     * @return 
+     * @see
+     */
+    @RequestMapping(value={"ci/judgeCodeUrl.do"},method=RequestMethod.POST)
+    @ResponseBody
+    public String judgeCodeUrl(String codeUrl,long codeCredentialId){
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(codeCredentialId);
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            CredentialCheckEntity credentialCheckEntity = sheraClientService.generateCredentialCheckEntity(codeUrl, ciCodeCredential.getUserName(), ciCodeCredential.getType());
+            try {
+                credentialCheckEntity = client.checkCredential(credentialCheckEntity);
+            }
+            catch (SheraClientException e) {
+                map.put("status", "400");
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
+    }
+    
     /**
      * 代码构建的创建
      * 
@@ -1088,7 +1122,7 @@ public class CiController {
         CiRecord ciRecord = new CiRecord();
         ciRecord.setCiId(ci.getId());
         ciRecord.setCiVersion(ci.getImgNameVersion());
-        ciRecord.setConstructDate(ci.getConstructionDate());
+        ciRecord.setConstructDate(new Date());
         ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_ING);
         ciRecord.setLogPrint("["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");
         ciRecordDao.save(ciRecord);
@@ -1153,7 +1187,7 @@ public class CiController {
                         boolean flag = true;
                         Integer seek = 0;
                         while(flag){
-                            Thread.sleep(2000);
+                            Thread.sleep(10000);
                             JobExecView jobExecView = new JobExecView();
                             Log log = new Log();
                             try {

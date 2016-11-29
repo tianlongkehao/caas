@@ -22,10 +22,10 @@ import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
-import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.AntConfig;
 import com.bonc.epm.paas.shera.model.BuildManager;
 import com.bonc.epm.paas.shera.model.CodeManager;
+import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.CredentialKey;
 import com.bonc.epm.paas.shera.model.GitAdvancedConfig;
 import com.bonc.epm.paas.shera.model.GitConfig;
@@ -33,9 +33,7 @@ import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.ImgManager;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExecView;
-import com.bonc.epm.paas.shera.model.JobExecViewList;
 import com.bonc.epm.paas.shera.model.Key;
-import com.bonc.epm.paas.shera.model.Log;
 import com.bonc.epm.paas.shera.model.MvnConfig;
 import com.bonc.epm.paas.shera.model.Repository;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -190,6 +188,24 @@ public class SheraClientService {
         credentialKey.setUsername(username);
         gitCredential.setKey(credentialKey);
         return gitCredential;
+    }
+    
+    /**
+     * Description: <br>
+     * 验证代码地址是否正确
+     * @param url ： 代码地址
+     * @param username ： 用户名；
+     * @param type ： 类型
+     * @return 
+     */
+    public CredentialCheckEntity generateCredentialCheckEntity(String url,String username,Integer type){
+        CredentialCheckEntity credentialCheckEntity = new CredentialCheckEntity();
+        credentialCheckEntity.setUrl(url);
+        CredentialKey credentialKey = new CredentialKey();
+        credentialKey.setType(type);
+        credentialKey.setUsername(username);
+        credentialCheckEntity.setKey(credentialKey);
+        return credentialCheckEntity;
     }
     
 //    public static void main(String[] args) {

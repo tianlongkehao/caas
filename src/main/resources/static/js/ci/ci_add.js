@@ -472,7 +472,7 @@ function checkCodeCiAdd(editor_one){
 	
 	//项目名称的判断
 	var projectName = $("#projectName").val();
-	var falgName = false;
+	var flagName = false;
 	if(!projectName || projectName.length < 1){
       layer.tips('项目名称不能为空','#projectName',{tips: [1, '#3595CC']});
       $('#projectName').focus();
@@ -493,16 +493,16 @@ function checkCodeCiAdd(editor_one){
     			data = eval("(" + data + ")");
     			if (data.status=="400") {
     	            layer.tips('项目名称重复', '#projectName', {
-    	                tips: [1, '#0FA6D8'] //还可配置颜色
+    	                tips: [1, '#0FA6D8'] 
     	            });
     	            $('#projectName').focus();
-    	            falgName = true;
+    	            flagName = true;
     			} 
     		}
     	});
     }
-    if (falgName) {
-    	falgName = false;
+    if (flagName) {
+    	flagName = false;
     	return false;
     }
     
@@ -525,6 +525,31 @@ function checkCodeCiAdd(editor_one){
     		$('#codeUrl').focus();
     		return;
 	    }
+    	
+    	//代码地址通过代码验证是否可以通过验证
+    	var codeCredentialId = $("#codeCredentials").val();
+    	var flagUrl = false;
+    	$.ajax({
+    		url : ctx + "/ci/judgeCodeUrl.do",
+    		async:false,
+    		type: "POST",
+    		data:{"codeUrl":codeUrl,"codeCredentialId":codeCredentialId},
+    		success : function(data) {
+    			data = eval("(" + data + ")");
+    			if (data.status=="400") {
+    	            layer.tips('代码仓库地址验证失败，请您检查是否有误', '#codeUrl', {
+    	                tips: [1, '#0FA6D8'] 
+    	            });
+    	            $('#codeUrl').focus();
+    	            flagUrl = true;
+    			} 
+    		}
+    	});
+    	if (flagUrl) {
+    		flagUrl = false;
+        	return false;
+        }
+    	
     	//判断代码分支
     	var codeBranch = $("#codeBranch").val();
     	if(!codeBranch || codeBranch.length < 1){
