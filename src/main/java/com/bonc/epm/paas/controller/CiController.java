@@ -664,7 +664,7 @@ public class CiController {
                 ciInvokeDao.deleteByCiId(ci.getId());
                 ciDao.delete(ci);
             }
-        return "redirect:/ci"; 
+        return "redirect:/ci?code"; 
     }
     
     /**
