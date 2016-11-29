@@ -365,13 +365,15 @@ public class DockerClientService {
 	 */
 	public boolean removeImage(String imageName,String imageVersion, 
 	                                   CiRecord ciRecord, CiRecordDao ciRecordDao, 
-	                                       DockerClient dockerClient, boolean loadFlag){
+	                                       DockerClient dockerClient, Image image){
 		try{
 		    if (null == dockerClient) {
 		         dockerClient = this.getSpecialDockerClientInstance(); 
 		    }
-		    if (loadFlag) {
+		    if (null != image) {
 		        dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
+		        imageName = image.getName();
+		        imageVersion = image.getVersion();
 		    }
 		    dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec(); 
 			
