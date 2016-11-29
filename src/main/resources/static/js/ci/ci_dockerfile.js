@@ -198,14 +198,14 @@ $(document).ready(
             return false;
         }
         if(imgNameVersion.search(/^[A-Za-z0-9-_]*$/) === -1){
-            layer.tips('镜像名称只能由字母、数字、横线和下划线组成', '#imgNameVersion', {
+            layer.tips('镜像版本只能由字母、数字、横线和下划线组成', '#imgNameVersion', {
                 tips: [1, '#0FA6D8'] //还可配置颜色
             });
             $('#imgNameVersion').focus();
             return false;
         }
-        if(imgNameVersion.length > 128 || imgNameVersion.length < 3){
-            layer.tips('镜像名称为3~128个字符', '#imgNameVersion', {
+        if(imgNameVersion.length > 128 || imgNameVersion.length < 1){
+            layer.tips('镜像版本为1~128个字符', '#imgNameVersion', {
                 tips: [1, '#0FA6D8'] //还可配置颜色
             });
             $('#imgNameVersion').focus();

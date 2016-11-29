@@ -426,7 +426,7 @@ public class RegistryController {
                    map.put("status", "500");
                 }
             }
-            dockerClientService.removeImage(imageName, imageVersion, null, null,null);
+            dockerClientService.removeImage(imageName, imageVersion, null, null,null,false);
             if (flag) {
                 map.put("status", "200");
             }
