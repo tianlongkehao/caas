@@ -49,9 +49,10 @@
 .book .book-body{
 	overflow-y:scroll;
 	height: 650px;
+	padding-bottom: 50px;
 }
 .book .book-body .body-inner{
-	width: 80%;
+	width: 94%;
 	margin: 0px auto;
 }
 .book .book-body .body-inner section.normal ul.info li{

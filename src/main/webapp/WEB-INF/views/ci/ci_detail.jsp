@@ -31,7 +31,6 @@
                 </div>
                 <div class="ci-content-tabmain">
                     <div class="create-log ci-tab active">构建日志</div>
-                    <div class="create-detail ci-tab">项目描述</div>
                     <div class="create-set ci-tab">基本设置</div>
                     <div class="create-other ci-tab">操作</div>
                     <%-- <span class="btn btn-primary pull-right" id="buildBtn" ciId="${ci.id }" constructionStatus="${ci.constructionStatus }">构建</span> --%>
@@ -109,53 +108,145 @@
 
                             </div>
 
-                            <%-- 项目描述 --%>
-                            <div class="project-details hide">
-                                <div>
-                                    代码仓库：
-                                    <a target="_blank" class="btn btn-link" title="点击链接查看项目" href="${ci.codeUrl}" id="codeLocation">${ci.codeUrl}</a>
-                                </div>
-                            </div>
-
                             <%-- 基本设置 --%>
                             <div class="config-details hide">
-                                <c:if test="${ci.type == 1}">
-                                    <form id="editCiForm" class="form-horizontal" method="post" action="" role="form">
-                                        <br>
-                                        <div class="form-group">
-                                            <label class="col-2x control-label">项目名称：</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="projectName" name="projectName" value="${ci.projectName}">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-2x control-label">简介：</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="description" name="description" value="${ci.description}">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="dockerfileLocation" class="col-2x control-label">Dockerfile位置：</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="dockerFileLocation" name="dockerFileLocation" value="/">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-2x control-label">默认代码分支：</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="codeBranch" name="codeBranch" value="master" disabled="">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
+                                <c:if test="${ci.type == 1}"> 
+                                	<form id="editCiForm" class="form-horizontal" method="post" action="" role="form">
+                                		<section class="registryinfo">
+			                        		<div class="row depot-name">
+				                                <div class=" col-md-12">
+				                                    <label class="c-project-tit">项目名称</label>
+				                                    <input id="projectName" name="projectName" class="form-control c-project-con" type="text"
+				                                           required="" value = "${ci.projectName }">
+				                                </div>
+				                            </div>
+				                            <div class="row" style="margin-bottom: 12px;">
+				                                <div class=" col-md-12">
+				                                    <label class="c-project-tit">描述</label>
+				                                    <textarea id="description" name="description" class="form-control c-project-con" type="text"
+				                                           required="" row="5" value = "${ci.description }">${ci.description }</textarea>
+				                                </div>
+				                            </div>
+				                            <div class="row">
+				                                <div class=" col-md-12">
+				                                    <label class="c-project-tit">JDK</label>
+				                                    <select id="jdk-version" name="jdkVersion" class="form-control c-project-con">
+				                                        <option value="${ci.jdkVersion }">${ci.jdkVersion }</option>
+				                                        <c:forEach items="${jdkList}" var="jdk">
+					                                        <c:if test="${ci.jdkVersion != jdk.version }">
+                                                                <option value="${jdk.version }">${jdk.version }</option>
+	                                                        </c:if>
+                                                        </c:forEach>
+				                                    </select>
+				                                </div>
+				                            </div>
+			                        	</section>
+			                        	
+			                        	<hr>
+			                            <h4 class="c-title">代码管理</h4>
+			                            <section class="registryinfo">
+			                            	<div class="row">
+				                            	<div class="form-group1 col-md-12">
+					                                <label class="c-project-tit">代码库类型</label>
+					                                <select id="codeType" name="codeType" class="form-control c-project-con" >
+					                                    <c:if test="${ci.codeType == 0 }">
+                                                           <option value="0">-none-</option>
+                                                           <option value="1">git</option>
+                                                        </c:if>
+					                                	<c:if test="${ci.codeType == 1 }">
+                                                           <option value="1">git</option>
+                                                           <option value="0">-none-</option>
+                                                        </c:if>
+					                                </select>
+					                            </div>
+				                            </div>
+				                            <div class="row git-config">
+				                            	<div class="form-group1 col-md-12">
+					                                <label class="c-project-tit">代码仓库地址</label>
+					                                <input id="codeUrl" name="codeUrl" class="form-control c-project-con" type="text"
+			                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git" value = "${ci.codeUrl }">
+					                            </div>
+					                            <div class="form-group1 col-md-12">
+					                            	<label class="c-project-tit">认证方式</label>
+					                            	<select id="codeCredentials" name="codeCredentials" class="form-control c-project-con" style="width:50%;float:left;">
+					                                    <option value="${ci.codeCredentials }">${ci.codeCredentials }</option>
+					                                    <option value="gitlab(SSH)(gitlab SSH方式认证)">gitlab(SSH)(gitlab SSH方式认证)</option>
+				                                      	<option value="root/**********(gitlab HTTPS方式认证)">root/**********(gitlab HTTPS方式认证)</option>
+					                                </select>
+					                                <button type="button" id="addCredentialsBtn" class="addCredentialsBtn" value="添加证书"><i class="fa fa-key"></i>&nbsp添加证书</button>
+					                            </div>
+					                            <div class="form-group1 col-md-12">
+					                                <label class="c-project-tit">创建分支</label>
+					                                <input id="codeBranch" name="codeBranch" type="text" class="form-control c-project-con"
+			                                                   value="${ci.codeBranch }">
+					                            </div>
+				                            </div>
+				                            <div class="row git-config">
+				                            	<button id="git-higher" type="button" style="float:right!important">高级...</button>
+				                            </div>
+				                            <div class="row git-config git-higher">
+				                            	<div class="form-group1 col-md-12">
+					                                <label class="c-project-tit">Name</label>
+					                                <input id="codeUsername" name="codeName" type="text" class="form-control c-project-con reg-input"
+			                                                   value="${ci.codeName }">
+					                            </div>
+					                            <div class="form-group1 col-md-12">
+					                                <label class="c-project-tit">Refspec</label>
+					                                <input id="codePassword" name="codeRefspec" type="text"
+			                                                   class="form-control c-project-con reg-input" value="${ci.codeRefspec }">
+					                            </div>
+			                                </div>
+			                            </section>
+			                            <hr>
+			                            <h4 class="c-title">构建</h4>
+			                            	<section class="registryinfo">
+					                            <ul class="nav nav-bar">
+					                               <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">增加构建步骤<span class="caret"></span></a>
+					                                	<ul class="dropdown-menu">
+						                                	<li><a id="maven">Maven</a></li>
+						                                	<li><a id="ant">Ant</a></li>
+						                                	<li><a id="shell">Execute shell</a></li>
+						                                </ul>
+					                                </li>
+					                            </ul>
+				                            <div id="sortable">
+				                            
+				                            </div>
+			                            </section>
+			                            <hr>
+										<h4 class="c-title">构建路径</h4>
+			                            <section class="registryinfo">
+				                            <div class="row">
+				                                <div class="form-group1 col-md-12">
+				                                    <label class="c-project-tit">镜像名称</label>
+				                                    <input id="imageName" name="imgNameLast" type="text"
+			                                                   class="form-control c-project-con reg-input" value="${ci.imgNameLast }">
+					                            </div>
+				                            </div>
+				                            <ul class="nav nav-bar">
+					                           <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">dockerfile构建方式<span class="caret"></span></a>
+					                              <ul class="dropdown-menu">
+						                             <li><a id="dockerfilePath">dockerfile路径</a></li>
+						                             <li><a id="dockerfileTemp">编写dockerfiel</a></li>
+						                          </ul>
+					                            </li>
+					                        </ul>
+					                        <input type="hidden" id="ciLocation" value="${ci.dockerFileLocation}">
+                                            <input type = "hidden" id = "ciMethod" value = '${dockerFileContent }'>
+				                            <div id="dockerfileMethod">
+	                                               
+	                            			</div>
+			                        	</section>
+			                            <div class="form-group">
                                             <label class="col-2x control-label"></label>
-                                            <div class="col-sm-9">
-                                                <!-- <textarea class="form-control" id="ciDetail" name="ciDetail">...</textarea> -->
+                                            <div class="col-sm-10">
                                                 <br><input type="button" id="editCiBtn" class="btn btn-primary pull-right" value="确认修改">
                                             </div>
                                         </div>
                                         <input type="hidden" id="id" name="id" value="${ci.id}">
-                                    </form>
-                                </c:if>
+                                        <input type = "hidden" id = "jsonData" name = "jsonData" value = "">
+			                        </form>
+                                </c:if> 
 
                                 <c:if test="${ci.type == 2}">
                                     <form id="editCiUploadForm" class="form-horizontal" method="post" action="" role="form" enctype="multipart/form-data">
@@ -265,9 +356,17 @@
                         </div>
                     </div>
                 </div>
-                
-                 <!--dockerfile导入模板 -->
-                <div id="dockerfile-import" style="display:none; max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+                 
+                <!--dockerfile导入模板 -->
+                <div id="dockerfile-import" style="display:none;max-height:170px;overflow-y:scroll;overflow-x:hidden;">
+                    <table class="table table-hover enabled" id="Path-table-doc"
+                        style="width: 326px; margin: 5px 10px 5px 10px">
+                        <tbody id="dockerfile-body">
+                           
+                        </tbody>
+                    </table>
+                </div>
+                <%-- <div id="dockerfile-import" style="display:none; max-height:170px;overflow-y:scroll;overflow-x:hidden;">
                     <table class="table table-hover enabled" id="Path-table-doc"
                         style="width: 326px; margin: 5px 10px 5px 10px">
                         <tbody id="dockerfile-body">
@@ -288,8 +387,34 @@
                             </c:if>
                         </tbody>
                     </table>
+                </div> --%>
+                <!-- dockerfile另存为模板 -->
+                <div id="dockerfile-export" style="display:none;">
+                    <div style="width: 345px; margin: 5px 10px 5px 10px">
+                        <span>模板名称：</span><input type="text" id="dockerFileTemplateName"
+                            style="width: 77%" autofocus="autofocus" />
+                    </div>
                 </div>
-
+				<!-- 添加证书 -->
+                <div id="addCredentialsCon">
+                    <div style="width: 345px; margin: 5px 10px 5px 10px">
+                        <div class="infoCred">
+                        	<span class="labelCred">类型：</span>
+	                        <select class="form-control conCred" id="CredentialsType" name = "type">
+	                        	<option value="1">用户名和密码</option>
+	                        	<option value="2">SSH用户名和密钥</option>
+	                        </select></div>
+                        <div class="infoCred">
+	                        <span class="labelCred">用户名：</span>
+	                        <input type="text" class="form-control conCred" id="userNameCred" name="userName" value=""></div>
+                        <div class="infoCred normal">
+	                        <span class="labelCred">密码：</span>
+	                        <input type="password" class="form-control conCred" id="passwordCred" name="password" value=""></div>
+                        <div class="infoCred ssh">
+	                        <span class="labelCred">密钥：</span>
+	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="5" value="" ></textarea></div>
+                    </div>
+                </div>
             </div>
         </div>
     </article>

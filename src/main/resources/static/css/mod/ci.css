@@ -340,7 +340,7 @@ td .dockerfileinput {
     line-height: 30px;
     color: #333;
     text-indent: 0;
-    width: 70px;
+    min-width: 70px;
     position: absolute;
     right: 0;
     margin-top: 10px;
@@ -484,7 +484,7 @@ tr.focus{
 	width:17px;
 }
 .c-project-tit{
-	width:10%;
+	width:11%;
 	line-height:34px;
 	margin-left:10px;
 	float:left;
@@ -494,7 +494,7 @@ tr.focus{
     text-overflow:ellipsis;
 }
 .c-project-con{
-	width:88%;	
+	width:86%;	
 }
 textarea.c-project-con{
 	margin-top:8px;	
@@ -502,13 +502,118 @@ textarea.c-project-con{
 .c-title{
 	margin-top:20px;
 }
-#git-higher,#ant-higher{
+#git-higher,.ant-higherBtn{
 	border: 1px solid #ccc;
 	border-radius:5px;
-	margin-right:27px;
+	margin-right:38px;
 	margin-bottom: 15px;
 }
-#git-higher:hover,#ant-higher:hover{
+#git-higher:hover,.ant-higherBtn:hover{
 	background-color:#cdcdcd;
 	border: 1px solid #ccc;
+}
+
+.ci-h5{
+	padding-right: 10px!important;
+	padding-left:10px!important;
+	cursor: pointer!important;
+	
+}
+.addCiStepRow{
+	width: 98%;
+    margin: 0 auto;
+}
+.addCiStepRow .col-sm-12 .ibox-title{
+	border-top: 1px solid #dadada;
+	border-left: 4px solid #dadada;
+	border-right: 1px solid #dadada;
+}
+.addCiStepRow .col-sm-12 .ibox-content{
+	border-left: 4px solid #dadada;
+	border-right: 1px solid #dadada;
+	border-bottom: 1px solid #dadada;
+}
+.ibox-content .c-project-con{
+	width:80%;	
+}
+.ibox-content .c-project-tit{
+	width:16%;	
+}
+.ibox-content .ant-higherBtn{
+	border: 1px solid #ccc;
+	border-radius:5px;
+	margin-right:40px;
+	margin-bottom: 15px;
+}
+.ibox-content .maven-higherBtn{
+	border: 1px solid #ccc;
+	border-radius:5px;
+	margin-right:55px;
+	margin-bottom: 15px;
+}
+.dropdown-toggle .caret{
+	margin-left: 10px;
+}
+.dropdown .dropdown-menu{
+	width:200px;
+}
+.dropdown-menu li{
+	line-height: 34px;
+}
+#dropdown-btn{
+	width:200px;
+	background-color:#dadada;
+}
+.registryinfo ul.nav-bar{
+	margin-bottom:20px;
+	margin-left:10px;
+}
+.fa-map-marker{
+	margin-right: 6px;
+}
+.tab-title{
+    width: 100px;
+    height: 48px;
+    line-height: 40px;
+    float: left;
+    margin-top: -18px;
+    border-top: 4px solid #dadada;
+}
+.tab-title.active{
+	border-top: 4px solid #3c7bca;
+}
+.tab-title h5{
+    font-size: 15px;
+    line-height: 44px;
+}
+#ciTab .ci{
+	margin-left:16px;
+}
+.registryinfo div.form-group1{
+	margin-bottom: 8px;
+}
+.registryinfo .row input{
+	text-indent: 10px;
+}
+#sortable .row .col-sm-12{
+	padding-left: 0px;
+}
+.addCredentialsBtn{
+	border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #dadada;
+    line-height: 30px;
+    margin-left: 10px;
+}
+.infoCred{
+	margin-top: 12px;
+}
+.labelCred{
+	width: 20%;
+	float: left;
+	line-height:34px;
+	
+}
+.conCred{
+	width: 76%;
 }

@@ -65,7 +65,7 @@ public interface SheraAPIClientInterface {
      * @return {@link JobExec}
      * @throws SheraClientException
      */
-    public JobExecView execJob(String jobId) throws SheraClientException;
+    public JobExecView execJob(String jobId,JobExecView jobExecView) throws SheraClientException;
     
     public Job updateJob(Job job) throws SheraClientException;
 
@@ -96,12 +96,12 @@ public interface SheraAPIClientInterface {
     
     public CredentialKey deleteCredential(CredentialKey credentialKey) throws SheraClientException;
     
-    /* Job API*/
+    /* Jdk API*/
     public JdkList getAllJdk() throws SheraClientException;
     
     public Jdk deleteJdk(String jdkVersion) throws SheraClientException;
     
     public Jdk createJdk(Jdk jdk) throws SheraClientException;
-      
+    
     
 }

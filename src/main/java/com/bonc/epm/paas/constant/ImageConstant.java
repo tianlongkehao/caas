@@ -14,4 +14,8 @@ package com.bonc.epm.paas.constant;
 public class ImageConstant {
     public static final Integer BaseImage = 1;
     public static final Integer NotBaseImage = 2;
+    
+    //公有镜像：1、私有镜像：2
+    public static final Integer publicType = 1;
+    public static final Integer privateType = 2;
 }

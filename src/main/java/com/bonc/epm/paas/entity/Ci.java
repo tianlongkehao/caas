@@ -82,7 +82,7 @@ public class Ci {
     private String description;
 	
     /**
-	 * 代码类型：1svn、2git
+	 * 代码类型：0:none、1:git、2:svn
 	 */
     private Integer codeType;
 	
@@ -92,19 +92,24 @@ public class Ci {
     private String codeUrl;
 	
     /**
-	 * 代码账号
+	 * name;
 	 */
-    private String codeUsername;
+    private String codeName;
 	
     /**
-	 * 代码密码
+	 * Refspec
 	 */
-    private String codePassword;
+    private String codeRefspec;
 	
     /**
 	 * 代码分支
 	 */
     private String codeBranch;
+    
+    /**
+     * 代码认证方式
+     */
+    private Long codeCredentials;
 	
     /**
 	 * 代码位置
@@ -142,13 +147,19 @@ public class Ci {
     private Integer constructionStatus;
 	
     /**
-	 * 上次构建日期
+	 * 上次成功构建日期
 	 */
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date constructionDate;
+    
+    /**
+     * 上次失败构建日期
+     */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    private Date constructionFailDate;
 	
     /**
-	 * 构建持续时间
+	 * 上次构建持续时间
 	 */
     private long constructionTime;
 	
@@ -167,6 +178,11 @@ public class Ci {
 	 */
     private Date createDate;
 	
+    /**
+     * 代码构建jdk版本
+     */
+    private String jdkVersion;
+    
     public long getId() {
         return id;
     }
@@ -255,22 +271,22 @@ public class Ci {
         this.codeUrl = codeUrl;
     }
     
-    public String getCodeUsername() {
-        return codeUsername;
+    public String getCodeName() {
+        return codeName;
     }
-    
-    public void setCodeUsername(String codeUsername) {
-        this.codeUsername = codeUsername;
+
+    public void setCodeName(String codeName) {
+        this.codeName = codeName;
     }
-    
-    public String getCodePassword() {
-        return codePassword;
+
+    public String getCodeRefspec() {
+        return codeRefspec;
     }
-    
-    public void setCodePassword(String codePassword) {
-        this.codePassword = codePassword;
+
+    public void setCodeRefspec(String codeRefspec) {
+        this.codeRefspec = codeRefspec;
     }
-    
+
     public String getCodeBranch() {
         return codeBranch;
     }
@@ -279,6 +295,14 @@ public class Ci {
         this.codeBranch = codeBranch;
     }
     
+    public Long getCodeCredentials() {
+        return codeCredentials;
+    }
+
+    public void setCodeCredentials(Long codeCredentials) {
+        this.codeCredentials = codeCredentials;
+    }
+
     public String getCodeLocation() {
         return codeLocation;
     }
@@ -343,6 +367,14 @@ public class Ci {
         this.constructionDate = constructionDate;
     }
     
+    public Date getConstructionFailDate() {
+        return constructionFailDate;
+    }
+
+    public void setConstructionFailDate(Date constructionFailDate) {
+        this.constructionFailDate = constructionFailDate;
+    }
+
     public long getConstructionTime() {
         return constructionTime;
     }
@@ -398,5 +430,14 @@ public class Ci {
     public void setResourceName(String resourceName) {
         this.resourceName = resourceName;
     }
-	
+
+    public String getJdkVersion() {
+        return jdkVersion;
+    }
+
+    public void setJdkVersion(String jdkVersion) {
+        this.jdkVersion = jdkVersion;
+    }
+
+    
 }

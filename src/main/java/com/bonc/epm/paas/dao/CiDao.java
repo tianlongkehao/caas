@@ -45,11 +45,11 @@ public interface CiDao extends CrudRepository<Ci, Long> {
      * Description: <br>
      * 根据分页信息查询数据
      * @param createBy ：创建者
-     * @param sort ： 排序
      * @param request ：分页
      * @return page
      */
-    Page<Ci> findByCreateByOrderByCreateDateDesc(long createBy,Pageable request);
+    @Query("select i from Ci i where  i.createBy = ?1 and i.type in (2,3) order by i.createDate desc")
+    Page<Ci> findByCreateByQuickCi(long createBy,Pageable request);
 	
     /**
      * Description: <br>
@@ -59,8 +59,29 @@ public interface CiDao extends CrudRepository<Ci, Long> {
      * @param request ： 分页信息
      * @return page
      */
-    @Query("select i from Ci i where  i.createBy = ?1 and i.projectName like ?2 order by i.createDate")
-    Page<Ci> findByNameOf(long createBy,String projectName,Pageable request);
+    @Query("select i from Ci i where  i.createBy = ?1 and i.type in (2,3) and i.projectName like ?2 order by i.createDate desc")
+    Page<Ci> findByNameOfQuickCi(long createBy,String projectName,Pageable request);
+    
+    /**
+     * Description: <br>
+     * 根据分页信息查询数据
+     * @param createBy ：创建者
+     * @param request ：分页
+     * @return page
+     */
+    @Query("select i from Ci i where  i.createBy = ?1 and i.type = 1 order by i.createDate desc")
+    Page<Ci> findByCreateByCodeCi(long createBy,Pageable request);
+    
+    /**
+     * Description: <br>
+     * 根据项目名称搜索构建数据
+     * @param createBy 创建者
+     * @param projectName ：搜索名称
+     * @param request ： 分页信息
+     * @return page
+     */
+    @Query("select i from Ci i where  i.createBy = ?1 and i.type = 1 and i.projectName like ?2 order by i.createDate desc")
+    Page<Ci> findByNameOfCodeCi(long createBy,String projectName,Pageable request);
     
     /**
      * 根据构建镜像Id查询构建数据
@@ -82,4 +103,12 @@ public interface CiDao extends CrudRepository<Ci, Long> {
     @Query("select ci from Ci ci where ci.imgNameFirst =?1 and ci.imgNameLast = ?2 and ci.imgNameVersion = ?3")
     List<Ci> findByImgNameFirstAndImgNameLastAndImgNameVersion(String imgNameFirst, String imgNameLast,
                                                          String imgNameVersion);
+    /**
+     * Description: <br>
+     * 代码构建项目名称查重
+     * @param projectName:项目名称
+     * @param createBy ：创建id
+     * @return list
+     */
+    List<Ci> findByProjectNameAndCreateBy(String projectName,long createBy);
 } 

@@ -35,21 +35,35 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ImageConstant;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.CiCodeCredentialDao;
 import com.bonc.epm.paas.dao.CiDao;
+import com.bonc.epm.paas.dao.CiInvokeDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
+import com.bonc.epm.paas.entity.CiCodeCredential;
+import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
-import com.bonc.epm.paas.util.CmdUtil;
+import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.GitCredential;
+import com.bonc.epm.paas.shera.model.JdkList;
+import com.bonc.epm.paas.shera.model.Job;
+import com.bonc.epm.paas.shera.model.JobExec;
+import com.bonc.epm.paas.shera.model.JobExecList;
+import com.bonc.epm.paas.shera.model.JobExecView;
+import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.FileUtils;
@@ -84,6 +98,18 @@ public class CiController {
 	private CiRecordDao ciRecordDao;
     
     /**
+     * ciInvokeDao接口
+     */
+    @Autowired
+    private CiInvokeDao ciInvokeDao;
+    
+    /**
+     * ciCodeCredentialDao接口
+     */
+    @Autowired
+    private CiCodeCredentialDao ciCodeCredentialDao;
+    
+    /**
      * ImageDao接口
      */
     @Autowired
@@ -108,6 +134,12 @@ public class CiController {
 	private String CODE_TEMP_PATH = "./codetemp";
 	
     /**
+     * SheraClientService 接口
+     */
+    @Autowired
+    private SheraClientService sheraClientService;
+    
+    /**
      * 进入构建主页面
      * 
      * @param model ：model
@@ -116,16 +148,58 @@ public class CiController {
      */
     @RequestMapping(value={"ci"},method=RequestMethod.GET)
 	public String index(Model model){
-//        User cuurentUser = CurrentUserUtils.getInstance().getUser();
-//        List<Ci> ciList = ciDao.findByCreateBy(cuurentUser.getId(), new Sort(new Order(Direction.DESC,"createDate")));
-//        model.addAttribute("ciList", ciList);
         model.addAttribute("menu_flag", "ci");
         return "ci/ci.jsp";
     }
-
+    
+    /**
+     * Description: <br>
+     * 快速构建和dockerfile构建信息的查询
+     * @param draw 画图
+     * @param start 开始页码
+     * @param length 页面长度
+     * @param request ：
+     * @return String
+     */
     @RequestMapping(value = {"ci/page.do"}, method = RequestMethod.GET)
     @ResponseBody
-    public String findServiceByPage(String draw, int start,int length,
+    public String findCiByPage(String draw, int start,int length,HttpServletRequest request){
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        String search = request.getParameter("search[value]");
+        Map<String,Object> map = new HashMap<String, Object>();
+        Page<Ci> cis = null;
+        PageRequest pageRequest = null;
+        //判断是第几页
+        if (start == 0) {
+            pageRequest = ResultPager.buildPageRequest(null, length);
+        }else {
+            pageRequest = ResultPager.buildPageRequest(start/length + 1, length);
+        }
+        //判断是否需要搜索服务
+        if (StringUtils.isEmpty(search)) {
+            cis = ciDao.findByCreateByQuickCi(userId,pageRequest);
+        } else {
+            cis = ciDao.findByNameOfQuickCi(userId, "%" + search + "%",pageRequest);
+        }
+        map.put("draw", draw);
+        map.put("recordsTotal", cis.getTotalElements());
+        map.put("recordsFiltered", cis.getTotalElements());
+        map.put("data", cis.getContent());
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * codeCi构建数据的查询
+     * @param draw ： 画布
+     * @param start：开始页数
+     * @param length 页面长度
+     * @param request ：
+     * @return String
+     */
+    @RequestMapping(value = {"ci/codepage.do"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String findCodeCiByPage(String draw, int start,int length,
                                     HttpServletRequest request){
         long userId = CurrentUserUtils.getInstance().getUser().getId();
         String search = request.getParameter("search[value]");
@@ -140,16 +214,47 @@ public class CiController {
         }
         //判断是否需要搜索服务
         if (StringUtils.isEmpty(search)) {
-            cis = ciDao.findByCreateByOrderByCreateDateDesc(userId,pageRequest);
+            cis = ciDao.findByCreateByCodeCi(userId,pageRequest);
         } else {
-            cis = ciDao.findByNameOf(userId, "%" + search + "%",pageRequest);
+            cis = ciDao.findByNameOfCodeCi(userId, "%" + search + "%",pageRequest);
         }
+        List<Ci> ciList = findSheraData(cis.getContent());
         map.put("draw", draw);
         map.put("recordsTotal", cis.getTotalElements());
         map.put("recordsFiltered", cis.getTotalElements());
-        map.put("data", cis.getContent());
-        
+        map.put("data", ciList);
         return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 代码构建查询shera中的job的构建状态信息；
+     * @param cis cis
+     * @return 
+     */
+    public List<Ci> findSheraData(List<Ci> cis){
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            JobExecList jobExecList = client.getAllJobs();
+            if (cis.size()!=0 && jobExecList != null) {
+                for (Ci ci :cis) {
+                    for (JobExec jobExec :jobExecList) {
+                        if (ci.getProjectName().equals(jobExec.getJobId())) {
+                            if (jobExec.getLastSuccessTime() != 0 ) {
+                                ci.setConstructionDate(DateUtils.getLongToDate(jobExec.getLastSuccessTime()));
+                            }
+                            if (jobExec.getLastFailureTime() != 0) {
+                                ci.setConstructionFailDate(DateUtils.getLongToDate(jobExec.getLastFailureTime()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cis;
     }
     
     /**
@@ -167,8 +272,20 @@ public class CiController {
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
         Ci ci = ciDao.findOne(id);
         List<CiRecord> ciRecordList = ciRecordDao.findByCiId(id,new Sort(new Order(Direction.DESC,"constructDate")));
-        List<Image> images = this.findByBaseImages();
-        Image currentBaseImage = imageDao.findById(ci.getBaseImageId());
+        //代码构建
+        if (ci.getType() == 1) {
+            try {
+                SheraAPIClientInterface client = sheraClientService.getClient();
+                JdkList jdkList = client.getAllJdk();
+                Job job = client.getJob(ci.getProjectName());
+                model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
+                model.addAttribute("jdkList",jdkList.getItems());
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //dockerfile构建
         if (ci.getType() == 2) {
             List<DockerFileTemplate> dockerFiles = dockerFileTemplateDao.findByCreateBy(cuurentUser.getId());
             File file = new File(ci.getCodeLocation()+"/"+"Dockerfile");
@@ -178,34 +295,108 @@ public class CiController {
             }
             model.addAttribute("dockerFiles", dockerFiles);
         }
-        model.addAttribute("id", id);
+        //快速构建
+        if (ci.getType() == 3) {
+            Image currentBaseImage = imageDao.findById(ci.getBaseImageId());
+            List<Image> images = this.findByBaseImages();
+            model.addAttribute("currentBaseImage",currentBaseImage);
+            model.addAttribute("baseImage", images);
+        }
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
-        model.addAttribute("baseImage", images);
-        model.addAttribute("currentBaseImage",currentBaseImage);
         model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_detail.jsp";
     }
 	
     /**
-     * 修改构建信息
+     * Description: <br>
+     * 根据构建id查询相关联的invoke数据
+     * @param id
+     * @return 
+     * @see
+     */
+    @RequestMapping("ci/invokeData.do")
+    @ResponseBody
+    public String fingCiInvokeData(long id){
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<CiInvoke> ciInvokeList = ciInvokeDao.findByCiId(id);
+        map.put("data", ciInvokeList);
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 修改构建信息判断项目名称是否重复
+     * @param projectName ： 项目名称
+     * @param id 构建Id
+     * @return 
+     */
+    @RequestMapping("ci/judgeProjectName.do")
+    @ResponseBody
+    public String judgeModifyProjectName(String projectName,long id){
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Ci> ciList = ciDao.findByProjectNameAndCreateBy(projectName,createBy);
+        if (ciList.size() > 1) {
+            map.put("status", "400");
+        }
+        if (ciList.size() == 1) {
+            if (ciList.get(0).getId() == id) {
+                map.put("status", "200");
+            }else {
+                map.put("status","400");
+            }
+        }
+        if (ciList.size() == 0) {
+            map.put("status", "200");
+        }
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * 修改代码构建信息
      * 
      * @param ci ：ci
      * @return String
      * @see
      */
-    @RequestMapping("ci/modifyCi.do")
+    @RequestMapping("ci/modifyCodeCi.do")
 	@ResponseBody
-	public String modifyCi(Ci ci) {
+	public String modifyCodeCi(Ci ci,String jsonData,String dockerFileContentEdit) {
+        Map<String, Object> map = new HashMap<String, Object>();
         Ci originCi = ciDao.findOne(ci.getId());
         originCi.setProjectName(ci.getProjectName());
         originCi.setDescription(ci.getDescription());
+        originCi.setJdkVersion(ci.getJdkVersion());
+        originCi.setCodeType(ci.getCodeType());
+        originCi.setCodeUrl(ci.getCodeUrl());
+        originCi.setCodeCredentials(ci.getCodeCredentials());
+        originCi.setCodeBranch(ci.getCodeBranch());
+        originCi.setCodeName(ci.getCodeName());
+        originCi.setCodeRefspec(ci.getCodeRefspec());;
         originCi.setDockerFileLocation(ci.getDockerFileLocation());
-        ciDao.save(originCi);
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", "200");
-        map.put("data", ci);
+        List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
+        CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(ci.getCodeCredentials());
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            Job job = sheraClientService.generateJob(ci.getProjectName(),ci.getJdkVersion(),ci.getCodeBranch(),ci.getCodeUrl(),
+                ci.getCodeName(),ci.getCodeRefspec(),
+                dockerFileContentEdit,ci.getDockerFileLocation(),ci.getImgNameLast(),
+                ciInvokeList,ciCodeCredential.getUserName(),ciCodeCredential.getType());
+            client.updateJob(job);
+            ciDao.save(originCi);
+            if (!StringUtils.isEmpty(ciInvokeList)) {
+                ciInvokeDao.deleteByCiId(ci.getId());
+                ciInvokeDao.save(ciInvokeList);
+            }
+            map.put("status", "200");
+        }
+        catch (Exception e) {
+            LOG.error("modifyCodeCi error:"+e.getMessage());
+            map.put("status", "400");
+        }
+        map.put("data", originCi);
         return JSON.toJSONString(map);
     }
 	
@@ -313,10 +504,22 @@ public class CiController {
     @RequestMapping(value = "ci/delCi.do", method = RequestMethod.POST)
 	@ResponseBody
 	public String delCi(@RequestParam String id) {
-        Long idl = Long.parseLong(id);
-        ciDao.delete(idl);
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", "200");
+        try {
+            Long idl = Long.parseLong(id);
+            Ci ci = ciDao.findOne(idl);
+            if (ci.getType() == CiConstant.TYPE_CODE) {
+                SheraAPIClientInterface client = sheraClientService.getClient();
+                client.deleteJob(ci.getProjectName());
+                ciInvokeDao.deleteByCiId(idl);
+            }
+            ciDao.delete(idl);
+            map.put("status", "200");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
         return JSON.toJSONString(map);
     }
 	
@@ -330,11 +533,21 @@ public class CiController {
     @RequestMapping(value={"ci/add"},method=RequestMethod.GET)
 	public String addProject(Model model){
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            JdkList jdkList = client.getAllJdk();
+            Iterable<CiCodeCredential> ciCodeList = ciCodeCredentialDao.findAll();
+            model.addAttribute("ciCodeList", ciCodeList);
+            model.addAttribute("jdkList",jdkList.getItems());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         model.addAttribute("username", cuurentUser.getUserName());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_add.jsp";
     }
-	
+
     /**
      * 进入上传镜像页面
      * 
@@ -404,6 +617,93 @@ public class CiController {
      * @return String
      * @see
      */
+    @RequestMapping("ci/addCodeCi.do")
+    public String addCodeCi(Ci ci,String jsonData,String dockerFileContent){
+            User cuurentUser = CurrentUserUtils.getInstance().getUser();
+            ci.setCreateBy(cuurentUser.getId());
+            ci.setImgNameFirst(cuurentUser.getUserName());
+            ci.setCreateDate(new Date());
+            ci.setType(CiConstant.TYPE_CODE);
+            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
+            ciDao.save(ci);
+            List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
+            if (!StringUtils.isEmpty(ciInvokeList)) {
+                ciInvokeDao.save(ciInvokeList);
+                LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+            }
+            CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(ci.getCodeCredentials());
+            try {
+                SheraAPIClientInterface client = sheraClientService.getClient();
+                Job job = sheraClientService.generateJob(ci.getProjectName(),ci.getJdkVersion(),ci.getCodeBranch(),ci.getCodeUrl(),
+                    ci.getCodeName(),ci.getCodeRefspec(),
+                    dockerFileContent,ci.getDockerFileLocation(),ci.getImgNameLast(),
+                    ciInvokeList,ciCodeCredential.getUserName(),ciCodeCredential.getType());
+                client.createJob(job);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                ciInvokeDao.deleteByCiId(ci.getId());
+                ciDao.delete(ci);
+            }
+        return "redirect:/ci"; 
+    }
+    
+    /**
+     * Description: <br>
+     * 将json数据封装成ciInvoke对象；
+     * @param jsonData json数据；
+     * @param ciId 构建Id
+     * @return list
+     */
+    public List<CiInvoke> addCiInvokes(String jsonData,long ciId){
+        List<CiInvoke> ciInvokeList = new ArrayList<>();
+        try {
+            JSONArray jsonArray = JSONArray.parseArray(jsonData);
+            for (int i = 0 ; i < jsonArray.size();i++) {
+                JSONObject jsonObj = jsonArray.getJSONObject(i);
+                CiInvoke ciInvoke = (CiInvoke)JSONObject.toJavaObject(jsonObj, CiInvoke.class);
+                ciInvoke.setCiId(ciId);
+                ciInvoke.setJobOrderId(i+1);
+                ciInvoke.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+                ciInvoke.setCreateDate(new Date());
+                ciInvokeList.add(ciInvoke);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return ciInvokeList;
+    }
+    
+    /**
+     * Description: <br>
+     * 根据项目名称和创建者判断项目名称的重复
+     * @param projectName ： 项目名称
+     * @return ：map
+     */
+    @RequestMapping("ci/judgeCodeCiName.do")
+    @ResponseBody
+    public String judgeCodeCiName(String projectName){
+        Map<String,Object> result = new HashMap<String, Object>();
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        List<Ci> ciList = ciDao.findByProjectNameAndCreateBy(projectName,createBy);
+        if (ciList.size() > 0) {
+            result.put("status", "400");
+        }
+        else {
+            result.put("status", "200");
+        }
+        return JSON.toJSONString(result);
+    }
+    
+    /**
+     * 快速构建的创建
+     * 
+     * @param ci ： ci
+     * @return String
+     * @see
+     */
     @RequestMapping("ci/addCi.do")
 	public String addCi(Ci ci) {
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
@@ -418,6 +718,7 @@ public class CiController {
         return "redirect:/ci";
 		
     }
+    
 	/**
 	 * 最开始的dockerfile构建
 	 * 
@@ -493,7 +794,7 @@ public class CiController {
             if (!sourceCode.isEmpty()) {
                 FileUtils.storeFile(sourceCode.getInputStream(), imagePath+"/"+sourceCode.getOriginalFilename());
             }
-            boolean flag = loadOrSaveAndPushImage(image,imagePath+"/"+sourceCode.getOriginalFilename());
+            boolean flag = loadOrSaveAndPushImage(image, imagePath, sourceCode.getOriginalFilename());
             if(flag){
                 //排重添加镜像数据
                 Image img = null;
@@ -533,21 +834,26 @@ public class CiController {
      * @return flag boolean
      * @see
      */
-    private boolean loadOrSaveAndPushImage(Image image,String tarPath) throws IOException{
-        InputStream uploadStream = Files.newInputStream(Paths.get(tarPath));
+    private boolean loadOrSaveAndPushImage(Image image,String imagePath,String sourceName) throws IOException{
+        InputStream uploadStream = Files.newInputStream(Paths.get(imagePath+"/"+sourceName));
         boolean flag = false;
         try {
-            flag = ZipUtil.visitTAR(new File(tarPath), "repositories");
+            flag = ZipUtil.visitTAR(new File(imagePath+"/"+sourceName), "repositories");
             if (flag) {
-                flag = dockerClientService.loadAndPushImage(image, uploadStream);
-                if(flag){
-                    //删除本地镜像
-                    flag = dockerClientService.removeImage(image.getName().split("/")[1], image.getVersion(),null,null,null);
-                } 
+                flag = ZipUtil.extTarFileList(new File(imagePath+"/"+sourceName), imagePath, "repositories");
+                if (flag) {
+                    String originImageInfo =  ZipUtil.readFileByLines(imagePath, "repositories");
+                    flag = dockerClientService.loadAndPushImage(originImageInfo,image, uploadStream);
+                    if(flag){
+                        //删除本地镜像
+                        String[] tmp = originImageInfo.split(":");
+                        flag = dockerClientService.removeImage(tmp[0], tmp[1],null,null,null,true);
+                    }                     
+                }
             } else {
                 flag = dockerClientService.importAndPushImage(image, uploadStream);
                 if (flag) {
-                    flag = dockerClientService.removeImage(image.getName(), image.getVersion(), null, null, null);
+                    flag = dockerClientService.removeImage(image.getName(), image.getVersion(), null, null, null,false);
                 }  
             }
         } catch (Exception e) {
@@ -745,7 +1051,7 @@ public class CiController {
         return JSON.toJSONString(map);
     }
 	
-    /**
+	 /**
      * 创建完成之后，开始构建镜像；
      * 
      * @param id ： 构建Id
@@ -753,11 +1059,10 @@ public class CiController {
      * @see
      */
     @RequestMapping("ci/constructCi.do")
-	@ResponseBody
-	public String constructCi(Long id) {
+    @ResponseBody
+    public String constructCi(Long id){
         Ci ci = ciDao.findOne(id);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
-        ci.setConstructionDate(new Date());
         ciDao.save(ci);
         long startTime = System.currentTimeMillis();
         CiRecord ciRecord = new CiRecord();
@@ -769,93 +1074,128 @@ public class CiController {
         ciRecordDao.save(ciRecord);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
-        boolean fetchCodeFlag = fetchCode(ci,ciRecord,ciRecordDao);
-        if(!fetchCodeFlag){
-            map.put("status", "500");
-            map.put("msg", "获取代码出错,请检查代码地址和账号密码");
-            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
-            ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+        if (CiConstant.TYPE_CODE.equals(ci.getType())) {
+            boolean fetchCodeCiFlag = fetchCodeCi(ci,ciRecord,startTime,sheraClientService,imageDao,ciDao,ciRecordDao);
+            if (!fetchCodeCiFlag) {
+                map.put("status", "500");
+                map.put("msg", "构建镜像失败，请检查配置是否正确");
+                ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+                ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+            }
+            else {
+                ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_ING);
+                ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
+            }
         }
-        boolean constructFlag = construct(ci,ciRecord,ciRecordDao);
-        if(!constructFlag){
-            map.put("status", "500");
-            map.put("msg", "构建镜像失败，请检查配置是否正确");
-            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
-            ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
-        }
-        long endTime = System.currentTimeMillis();
-        ci.setConstructionTime(endTime-startTime);
-        ciRecord.setConstructTime(endTime-startTime);
-        if(CiConstant.CONSTRUCTION_RESULT_FAIL!=ciRecord.getConstructResult()){
-            ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
-            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
+        else {
+            boolean constructFlag = construct(ci,ciRecord,ciRecordDao);
+            if(!constructFlag){
+                map.put("status", "500");
+                map.put("msg", "构建镜像失败，请检查配置是否正确");
+                ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+                ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+            }
+            long endTime = System.currentTimeMillis();
+            ci.setConstructionTime(endTime-startTime);
+            ciRecord.setConstructTime(endTime-startTime);
+            if(CiConstant.CONSTRUCTION_RESULT_FAIL!=ciRecord.getConstructResult()){
+                ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
+                ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
+                ci.setConstructionDate(new Date());
+            }
         }
         ciDao.save(ci);
         ciRecordDao.save(ciRecord);
         map.put("data", ci);
-    
         return JSON.toJSONString(map);
     }
-	
-	/**
-	 * 获取代码
-	 * 
-	 * @param ci ：ci
-	 * @param ciRecord : ciRecord
-	 * @param ciRecordDao : ciRecordDao
-	 * @return boolean
-	 * @see
-	 */
-    private boolean fetchCode(Ci ci,CiRecord ciRecord,CiRecordDao ciRecordDao){
-		//如果是代码上传，不需要重新下载源代码
-        if (CiConstant.TYPE_QUICK.equals(ci.getType()) || CiConstant.TYPE_DOCKERFILE.equals(ci.getType())) {
+    
+    /**
+     * Description: <br>
+     * 代码构建，添加镜像信息
+     * @param ci ci
+     * @param ciRecord ciRecord
+     * @param startTime 时间戳
+     * @return boolean
+     */
+    public boolean fetchCodeCi(final Ci ci,final CiRecord ciRecord,final long startTime,
+                               final SheraClientService sheraClientService,final ImageDao imageDao,final CiDao ciDao,final CiRecordDao ciRecordDao) {
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime);
+            jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
+            final Integer seqNo = jobExecViewNew.getSeqNo();
+            final String name =  CurrentUserUtils.getInstance().getUser().getUserName();
+            new Thread() {
+                public void run() {
+                    try {
+                        boolean flag = true;
+                        while(flag){
+                            Thread.sleep(2000);
+                            JobExecView jobExecView = new JobExecView();
+                            try {
+                                SheraClientService sheraClientService = new SheraClientService();
+                                SheraAPIClientInterface client = sheraClientService.getclient(name);
+                                jobExecView = client.getExecution(ci.getProjectName(),seqNo);
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (jobExecView.getFinished() == 1) {
+                                if (jobExecView.getEndStatus() == 0) {
+                                    Image image = new Image();
+                                    String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
+                                    String imageVersion = DateUtils.getLong2LStr(startTime);
+                                    image.setName(imageName);
+                                    image.setVersion(imageVersion);
+                                    image.setResourceName(ci.getCodeName());
+                                    image.setImageType(ImageConstant.privateType);
+                                    image.setRemark(ci.getDescription());
+                                    image.setCreator(ci.getCreateBy());
+                                    image.setCreateTime(DateUtils.getLongToDate(startTime));
+                                    image.setIsBaseImage(ImageConstant.NotBaseImage);
+                                    image.setIsDelete(CommConstant.TYPE_NO_VALUE);
+                                    imageDao.save(image);
+                                    
+                                    ci.setConstructionTime(jobExecView.getEndTime()-startTime);
+                                    ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
+                                    ciRecord.setConstructTime(jobExecView.getEndTime()-startTime);
+                                    ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
+                                }
+                                if (jobExecView.getEndStatus() == 1) {
+                                    ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+                                    ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+                                }
+                                ciDao.save(ci);
+                                ciRecordDao.save(ciRecord);
+                                flag = false;
+                            } 
+                        }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+                        ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+                        ciDao.save(ci);
+                        ciRecordDao.save(ciRecord);
+                    }  
+                }
+               
+            }.start();
             return true;
         }
-        try{
-            if(CiConstant.CODE_TYPE_SVN.equals(ci.getCodeType())){
-                String svnCommandStr = "svn export --username="+ci.getCodeUsername()+" --password="+ci.getCodePassword()+" "+ci.getCodeUrl()+" "+ci.getCodeLocation();
-                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"svn export");
-                ciRecordDao.save(ciRecord);
-                LOG.info("==========svnCommandStr:"+svnCommandStr);
-                return CmdUtil.exeCmd(svnCommandStr);
-            }
-            else if(CiConstant.CODE_TYPE_GIT.equals(ci.getCodeType())){
-                String codeUrl = ci.getCodeUrl();
-                if(StringUtils.isEmpty(codeUrl)||codeUrl.indexOf("//")<=0){
-                    return false;
-                }
-                String nCodeUrl = codeUrl;
-                String codeUsername = ci.getCodeUsername();
-                String codePassword = ci.getCodePassword();
-                if(!StringUtils.isEmpty(codeUsername)&&!StringUtils.isEmpty(codePassword)){
-					//如果有账号密码
-                    if(ci.getCodeUsername().indexOf("@")>0){
-						//如果git用户名是带@邮箱格式的，则去掉邮箱后缀
-                        codeUsername = codeUsername.substring(0, codeUsername.indexOf("@"));
-                    }
-                    nCodeUrl = codeUrl.substring(0,codeUrl.indexOf("//")+2)+codeUsername+":"+codePassword+"@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length());
-                }
-                String rmCommonStr = "rm -rf "+ci.getCodeLocation();
-                LOG.info("==========rmCommonStr:"+rmCommonStr);
-                CmdUtil.exeCmd(rmCommonStr);
-                String gitCommandStr = "git clone "+nCodeUrl+" "+ci.getCodeLocation();
-                String logmsg = "git clone " +
-                                    codeUrl.substring(0,codeUrl.indexOf("//")+2)+ci.getCodeUsername() +
-                                    ":******@"+codeUrl.substring(codeUrl.indexOf("//")+2,codeUrl.length())+" "+ci.getCodeLocation();
-                ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+logmsg);
-                ciRecordDao.save(ciRecord);
-                LOG.info("==========gitCommandStr:"+gitCommandStr);
-                return CmdUtil.exeCmd(gitCommandStr);
-            }
+        catch(SheraClientException e){
+            e.printStackTrace();
         }
-        catch(Exception e){
-            ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
-            ciRecordDao.save(ciRecord);
+        catch (Exception e) {
+            CiRecord newCiRecord = ciRecord;
+            newCiRecord.setLogPrint(newCiRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
+            ciRecordDao.save(newCiRecord);
             LOG.error("==========fetchCode error:"+e.getMessage());
         }
         return false;
     }
-	
+    
     /**
      * 构建镜像
      * 
@@ -880,7 +1220,7 @@ public class CiController {
         }
         if(flag){
 			//删除本地镜像
-            flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient);
+            flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient,false);
         }
         ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
         ciRecordDao.save(ciRecord);
@@ -1012,6 +1352,15 @@ public class CiController {
         return JSON.toJSONString(map);
     }
     
+    /**
+     * Description: <br>
+     * 镜像版本查重
+     * @param model
+     * @param imgNameLast
+     * @param imgNameVersion
+     * @return 
+     * @see
+     */
     @RequestMapping(value = {"ci/validciinfo.do"} , method = RequestMethod.POST)
     @ResponseBody
     public String validCiInfo(Model model, String imgNameLast, String imgNameVersion) {
@@ -1027,6 +1376,15 @@ public class CiController {
         return JSON.toJSONString(result);
     }
     
+    /**
+     * Description: <br>
+     * 镜像名称查重
+     * @param model
+     * @param name
+     * @param version
+     * @return 
+     * @see
+     */
     @RequestMapping(value = {"ci/validimageinfo.do"} , method = RequestMethod.POST)
     @ResponseBody
     public String validImageInfo(Model model, String name, String version) {
@@ -1037,6 +1395,40 @@ public class CiController {
             if (null != image) {
                 result.put("status", "400");
             }
+        }
+        return JSON.toJSONString(result);
+    }
+    
+    /**
+     * Description: <br>
+     * 添加代码构建认证方式
+     * @param ciCodeCredential
+     * @return 
+     * @see
+     */
+    @RequestMapping(value = {"ci/addCredential.do"} , method = RequestMethod.POST)
+    @ResponseBody
+    public String saveCiCodeCredential(CiCodeCredential ciCodeCredential) {
+        Map<String,Object> result = new HashMap<String, Object>();
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            GitCredential gitCredential ;
+            if (StringUtils.isEmpty(ciCodeCredential.getPassword())) {
+                gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(), ciCodeCredential.getUserName(), ciCodeCredential.getType());
+            }
+            else {
+                gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPassword(), ciCodeCredential.getUserName(), ciCodeCredential.getType());
+            }
+            client.addCredential(gitCredential);
+            ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+            ciCodeCredential.setCreateDate(new Date());
+            ciCodeCredentialDao.save(ciCodeCredential);
+            result.put("status", "200");
+            result.put("id",ciCodeCredential.getId());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "400");
         }
         return JSON.toJSONString(result);
     }

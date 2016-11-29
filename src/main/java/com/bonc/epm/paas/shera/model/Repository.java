@@ -19,7 +19,8 @@ package com.bonc.epm.paas.shera.model;
  */
 public class Repository {
     private String url;
-    private String credentials;
+//    private String credentials;
+    private Key key;
     private GitAdvancedConfig advanced;
     
     public String getUrl() {
@@ -28,12 +29,19 @@ public class Repository {
     public void setUrl(String url) {
         this.url = url;
     }
-    public String getCredentials() {
-        return credentials;
+    
+    public Key getKey() {
+        return key;
     }
-    public void setCredentials(String credentials) {
-        this.credentials = credentials;
+    public void setKey(Key key) {
+        this.key = key;
     }
+    //    public String getCredentials() {
+//        return credentials;
+//    }
+//    public void setCredentials(String credentials) {
+//        this.credentials = credentials;
+//    }
     public GitAdvancedConfig getAdvanced() {
         return advanced;
     }

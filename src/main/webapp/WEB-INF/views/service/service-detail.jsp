@@ -88,8 +88,8 @@
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podNameList}" var="pod" >
-								 		<li class="LOG"><a podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)" 
-								 			style="width: 150px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
+								 		<li class="LOG"><a class="dropdown-pod" podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)" 
+								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
 								 	</c:forEach>
 									
 								</ul>
@@ -427,7 +427,7 @@
 									</c:choose>
 									<tr>
 										<td><a href="">${container.containerName }</a></td>
-										<c:if test="${service.status==4 }">
+										<c:if test="${service.status==1 }">
 											<td>waiting</td>
 										</c:if>
 										<c:if test="${service.status==2||service.status==3 }">
@@ -569,12 +569,25 @@
 												<i onclick="editPortAddrBtn(this)"  type="button" value="修改"  class="fa fa-edit oldPortConfig editPortAddrBtn"></i>	
 												<i onclick="savePortEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig savePortEdit"></i>
            							<i onclick="canclPortEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	
+                    		<i onclick="delPortEdit(this)" type="button" value="删除"  class="fa fa-trash editPortBtn"></i>  
                     						</td>
                     						</c:if>
 										</tr>
 									</c:forEach>
 								</tbody>
 							</table>
+              <c:if test="${service.status==1 or service.status==4}">
+              <input type="button" value="添加端口信息"  id="addPortCfgBtn" onclick="addPortCfgClick()">
+              </c:if>
+              <div id="createCfg-template" hidden="true">
+               <div style="width: 345px; margin: 5px 10px 5px 10px">
+                    <p>容器端口：<input type="text" name="containerPort" id="containerPort" /></p>
+                    <p>协议：<select class="T-http" name="protocol" id="protocol">
+                                          <option>TCP</option>
+                                           <option>HTTP</option>
+                            </select></p>
+                </div>
+            </div>
 						</section>
 					</div>
 					<div class="monitorInfo hide">

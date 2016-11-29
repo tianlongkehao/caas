@@ -12,14 +12,24 @@
 package com.bonc.epm.paas.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Iterator;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * java处理压缩包公共类
@@ -35,6 +45,7 @@ public  class ZipUtil {
      * 输出日志
      */
     private static final Logger LOG = LoggerFactory.getLogger(ZipUtil.class);
+    
     /**
      * 
      * Description: 
@@ -46,14 +57,14 @@ public  class ZipUtil {
     public static  boolean visitTAR(File targzFile,String... estimate) throws IOException {
         FileInputStream fileIn = null;
         BufferedInputStream bufIn = null;
-        TarInputStream taris = null;
+        TarArchiveInputStream taris = null;
         boolean flag = false;
         try {
                 fileIn = new FileInputStream(targzFile);
                 bufIn = new BufferedInputStream(fileIn);
-                taris = new TarInputStream(bufIn);
-                TarEntry entry = null;
-                while ((entry = taris.getNextEntry()) != null) {
+                taris = new TarArchiveInputStream(bufIn);
+                TarArchiveEntry  entry = null;
+                while ((entry = taris.getNextTarEntry()) != null) {
                     if (entry.isDirectory()) {
                         continue;
                     }
@@ -67,20 +78,104 @@ public  class ZipUtil {
                         }
                     }
                     if (flag)  break;
-/*                    if (entry.getName().trim().equals("repositories")) {
-                        System.out.println("this is a normal image.");
-                        break;
-                    }
-                    if (entry.getName().trim().equals(".dockerinit") || entry.getName().trim().equals(".dockerenv")) {
-                        System.out.println("this is a container image.");
-                        break;
-                    }*/
                 }
                 return flag;
-        } finally {
+        }
+        finally {
             taris.close();
             bufIn.close();
             fileIn.close();
         }
     }
+    
+    
+    /** 
+     * 解压tar包 
+     * @param filename 
+     *            tar文件 
+     * @param directory 
+     *            解压目录 
+     * @return 
+     */  
+    public static boolean extTarFileList(File targzFile, String directory,String fileName) {  
+        boolean flag = false;  
+        OutputStream out = null;  
+        try {  
+            TarInputStream in = new TarInputStream(new FileInputStream(targzFile));  
+            TarEntry entry = null;  
+            while ((entry = in.getNextEntry()) != null) {  
+                if (entry.isDirectory()) {  
+                    continue;  
+                }  
+                if (fileName.equals(entry.getName())) {
+                    File outfile = new File(directory +"/"+ entry.getName());  
+                    new File(outfile.getParent()).mkdirs();  
+                    out = new BufferedOutputStream(new FileOutputStream(outfile));  
+                    int x = 0;  
+                    while ((x = in.read()) != -1) {  
+                        out.write(x);  
+                    }  
+                    out.close();                      
+                }
+            }  
+            in.close();  
+            flag = true;  
+        } catch (IOException ioe) {  
+            ioe.printStackTrace();  
+            flag = false;  
+        }  
+        return flag;  
+    }
+    
+    
+    /** 
+     * 以行为单位读取文件，常用于读面向行的格式化文件 
+     */  
+    @SuppressWarnings("rawtypes")
+    public static String readFileByLines(String directory,String fileName) {
+        String result = "";
+        File file = new File(directory+"/"+fileName);  
+        BufferedReader reader = null;  
+        try {  
+            reader = new BufferedReader(new FileReader(file));  
+            String tempString = null;  
+            int line = 1;  
+            // 一次读入一行，直到读入null为文件结束  
+            while ((tempString = reader.readLine()) != null) {  
+                // 显示行号  
+                System.out.println("line " + line + ": " + tempString);
+                JSONObject jsonObj = JSONObject.parseObject(tempString); 
+                
+                Iterator it = jsonObj.keySet().iterator();  
+                while(it.hasNext()){
+                    String key = it.next().toString();
+                    result +=key;
+                    
+                    JSONObject jsonObj1 = JSONObject.parseObject(jsonObj.get(key).toString()); 
+                    Iterator it1 = jsonObj1.keySet().iterator();  
+                    while(it1.hasNext()){
+                        String key1 = it1.next().toString();
+                        result += ":"+key1;
+                    }
+                }
+                line++;  
+            }  
+            reader.close();  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        } finally {  
+            if (reader != null) {  
+                try {  
+                    reader.close();  
+                } catch (IOException e1) {  
+                }  
+            }  
+        }
+        return result;
+    }
+    
+/*    public static void main(String[] args) throws IOException {
+        //visitTAR(new File("D:/flume-sync.tar"),"repositories");
+        System.out.println(readFileByLines("D:/ok","repositories"));
+    }*/
 }
