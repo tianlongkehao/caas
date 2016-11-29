@@ -123,7 +123,7 @@ function delfile(obj) {
 		yes : function(index, layero) {
 			$.ajax({
 				type : "GET",
-				url : ctx + "/service/delFile.do?fileNames=" + fileName,
+				url : ctx + "/service/delFile.do?fileNames=" + encodeURIComponent(fileName),
 				success : function(data) {
 					var data = eval("(" + data + ")");
 					if (data.status == "400") {
@@ -159,7 +159,7 @@ function delfiles() {
 				return;
 			}
 			$.ajax({
-				url : "" + ctx + "/service/delFile.do?fileNames=" + fileNames,
+				url : "" + ctx + "/service/delFile.do?fileNames=" + encodeURIComponent(fileNames),
 				success : function(data) {
 					var data = eval("(" + data + ")");
 					if (data.status == "400") {
@@ -266,7 +266,7 @@ function fileUpload() {
 
 function up(formData, flag) {
 	$('#myModal').modal('show');
-	$.ajax({
+	setTimeout($.ajax({
 		type : 'POST',
 		url : ctx + '/service/uploadFile',
 		data : formData,
@@ -300,7 +300,7 @@ function up(formData, flag) {
 				layer.closeAll();
 			}
 		}
-	});
+	}),111110)
 }
 //导出container为image
 function saveAsImage(containerId, nodeName) {
