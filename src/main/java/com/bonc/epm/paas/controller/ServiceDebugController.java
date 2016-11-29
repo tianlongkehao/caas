@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +20,14 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,16 +36,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.ServiceDao;
+import com.bonc.epm.paas.docker.api.DockerRegistryAPIClientInterface;
+import com.bonc.epm.paas.docker.model.Images;
+import com.bonc.epm.paas.docker.util.DockerClientService;
+import com.bonc.epm.paas.docker.util.DockerRegistryService;
 import com.bonc.epm.paas.entity.FileInfo;
+import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
+import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.SFTPUtil;
+import com.github.dockerjava.api.DockerClient;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.SftpATTRS;
@@ -99,11 +112,29 @@ public class ServiceDebugController {
 	private PortConfigDao portConfigDao;
 
     /**
+     * ImageDao接口
+     */
+    @Autowired
+	private ImageDao imageDao;
+    
+   /**
      * KubernetesClientService接口
      */
     @Autowired
-	private KubernetesClientService kubernetesClientService;
+    private KubernetesClientService kubernetesClientService;
+    
+    /**
+     * KubernetesClientService接口
+     */
+    @Autowired
+	private DockerClientService dockerClientService;
 
+    /**
+     * DockerClientService 接口
+     */
+    @Autowired
+	private DockerRegistryService dockerRegistryService;
+	
 	/**
 	 * Description: <br>
 	 * 跳转进入服务DEBUG页面
@@ -114,6 +145,7 @@ public class ServiceDebugController {
 	@RequestMapping(value = { "service/debug/{id}" }, method = RequestMethod.GET)
 	public String debug(Model model, @PathVariable long id) {
 		System.out.printf("id: " + id);
+		User user = CurrentUserUtils.getInstance().getUser();
 		Service service = serviceDao.findOne(id);
 		//获取端口信息
 		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
@@ -131,12 +163,18 @@ public class ServiceDebugController {
 		map.put("app", service.getServiceName());
   		// 通过服务名获取pod列表
         PodList podList = client.getLabelSelectorPods(map);
-        String podIP = new String();
+        String podIP = null;
+        String containerId = null;
+        String nodeName = null;
+        String imageName = null;
         if (podList != null) {
             List<Pod> pods = podList.getItems();
 	        if (CollectionUtils.isNotEmpty(pods)) {
 	            for (Pod pod : pods) {
 	            	podIP = pod.getStatus().getPodIP();
+	            	containerId = pod.getStatus().getContainerStatuses().get(0).getContainerID();
+	            	nodeName = pod.getSpec().getNodeName();
+	            	imageName =pod.getStatus().getContainerStatuses().get(0).getImage();
 	            	break;
 	            }
 	        }
@@ -151,10 +189,14 @@ public class ServiceDebugController {
 			e.printStackTrace();
 		}
 
-		model.addAttribute("id", id);
+		String shrotImageName = imageName.substring(imageName.indexOf('/') + 1, imageName.lastIndexOf(':'));
 		model.addAttribute("podip", podIP);
-		model.addAttribute("port",port);
 		model.addAttribute("service", service);
+		model.addAttribute("containerId", containerId);
+		model.addAttribute("nodeName",nodeName);
+		model.addAttribute("userName", user.getUserName());
+		model.addAttribute("shrotImageName", shrotImageName);
+		model.addAttribute("imageName", imageName);
 		model.addAttribute("menu_flag", "service");
 		model.addAttribute("sshhost", SSH_HOST);
 		return "service/service-debug.jsp";
@@ -415,8 +457,78 @@ public class ServiceDebugController {
 
 	@RequestMapping(value = { "service/saveAsImage" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String saveAsImage(@RequestParam("file") MultipartFile[] files, String path) {
-		return path;
+	public String saveAsImage(@RequestParam String containerId,@RequestParam String nodeName,@RequestParam String imageName,@RequestParam String version) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		// 去掉containerId开头的"docker://"
+		containerId = containerId.substring(containerId.lastIndexOf('/') + 1);
+		//取得原始tag
+		String tag = imageName.substring(imageName.lastIndexOf(':')+1);
+		// 去掉imageName末尾的tag
+		imageName = imageName.substring(0, imageName.lastIndexOf(':'));
+		// 去掉imageName前的远程地址名"192.168.0.xx:5000/"
+		String repository = imageName.substring(imageName.indexOf('/') + 1);
+
+		DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
+		// 获取所有的镜像分组名称
+		Images images = client.getImages();
+		if (images != null) {
+			// 判断仓库中是否有重复的镜像名和tag
+			if (images.getRepositories().contains(repository)
+					&& client.getTagsofImage(repository).getTags().contains(version)) {
+				// 仓库中有重名，返回400
+				map.put("status", 400);
+				return JSON.toJSONString(map);
+			}
+		}
+
+		DockerClient dockerClient = dockerClientService.getSpecialDockerClientInstance(nodeName);
+		// 将container保存为本地镜像
+		String imageId = dockerClientService.commitContainer(containerId, imageName, version, dockerClient);
+		if (imageId != null) {
+			// 本地镜像push到仓库
+			if (dockerClientService.pushImage(repository, version, dockerClient)) {
+		        User currentUser = CurrentUserUtils.getInstance().getUser();
+		        //获取数据库中原始镜像的对象
+		        Image oriImage = imageDao.findByNameAndVersion(repository, tag);
+		        if (oriImage == null) {
+					// 获取数据库中原始镜像的对象失败，返回403
+		            MultivaluedMap<String, Object> result = client.getManifestofImage(repository, version);
+		            if (null != result.get("Etag") && result.get("Etag").size() > 0) {
+		                for (Object oneRow : result.get("Etag")) {
+		                    System.out.println(oneRow);
+		                    client.deleteManifestofImage(repository, oneRow.toString());
+		                }
+		            }
+
+					map.put("status", 403);
+					return JSON.toJSONString(map);
+				}
+		        //保存当前debug的镜像到数据库中
+		        Image image = new Image();
+		        image.setCreateTime(new Date());
+		        image.setCreator(currentUser.getId());
+		        image.setImageId(imageId);
+		        image.setImageType(oriImage.getImageType());
+		        image.setIsBaseImage(oriImage.getIsBaseImage());
+		        image.setName(repository);
+		        image.setVersion(version);
+		        image.setIsDelete(CommConstant.TYPE_NO_VALUE);
+		        imageDao.save(image);
+				map.put("status", 200);
+			} else {
+				// 本地镜像push到仓库时失败，删除本地镜像，返回402
+				dockerClient.removeImageCmd(imageId).withForce(true).exec();
+				map.put("status", 402);
+				return JSON.toJSONString(map);
+				
+			}
+		} else {
+			// container保存commit为本地镜像失败，返回401
+			map.put("status", 401);
+			return JSON.toJSONString(map);
+		}
+
+		return JSON.toJSONString(map);
 	}
 	
 	

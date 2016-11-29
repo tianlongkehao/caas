@@ -32,7 +32,10 @@
 					<ul>
 						<li><a href="#doc">文件</a></li>
 						<li><a href="#ftp">命令行</a></li>
+						<li><a href="#export">导出</a></li>
 					</ul>
+					<input hidden="true" value="${containerId }" id="containerId"/>
+					<input hidden="true" value="${imageName }" id="imageName"/>
 					<div id="doc" >
 						<div class="row">
 							<div class="scpDoc">
@@ -43,11 +46,11 @@
 										</h5>
 	
 										<div class="ibox-tools">
-											<a href="javascript:creatable(null,'./');" id="volReloadBtn" title="刷新"> <i class="fa fa-repeat"></i></a>
-											<a href="javascript:createdir()" id="adddir" title="新建"> <i class="fa fa-plus"></i></a>
-											<a href="javascript:fileUpload()" id="fileUpload" title="上传文件"> <i class="fa fa-upload"></i></a>
+											<a href="javascript:creatable(null,'./');" id="volReloadBtn" title="刷新"> <i class="fa fa-repeat fa-i"></i></a>
+											<a href="javascript:createdir()" id="adddir" title="新建"> <i class="fa fa-plus fa-i"></i></a>
+											<a href="javascript:fileUpload()" id="fileUpload" title="上传文件"> <i class="fa fa-upload fa-i"></i></a>
 	<!-- 										<a href="javascript:download()" id="fileDownloadFiles" title="导出文件"> <i class="fa fa-download"></i></a> -->
-											<a href="javascript:delfiles()" id="deleteButton" title="删除"> <i class="fa fa-trash"></i></a>
+											<a href="javascript:delfiles()" id="deleteButton" title="删除"> <i class="fa fa-trash fa-i"></i></a>
 										</div>
 									</div>
 									<div class="ibox-content">
@@ -74,6 +77,15 @@
 					</div>
 					<div class="contentMain" id="ftp">
 						<iframe id="shellinabox" src="${sshhost}" width="100%" height="500px"></iframe>
+					</div>
+					<div id="export">
+						<div class="">
+							<span class="name-note" style="float:left;line-height:34px">${shrotImageName }：</span> <input
+								name="imgNameFirst" type="hidden" value="${shrotImageName }">
+							<input id="version" name="version" style="width:20%;"
+								type="text" value="debug" class="name-input form-control">
+						</div>
+						<a href="javascript:saveAsImage('${containerId}','${nodeName }')" type="button" class="btn btn-primary" style="margin-top:10px">保存容器为镜像</a>
 					</div>
 				</div>
 				
