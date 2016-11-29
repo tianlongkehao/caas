@@ -34,16 +34,13 @@ import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
-import com.bonc.epm.paas.docker.api.DockerRegistryAPIClient;
 import com.bonc.epm.paas.docker.api.DockerRegistryAPIClientInterface;
 import com.bonc.epm.paas.docker.model.Images;
-import com.bonc.epm.paas.docker.model.Tags;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.docker.util.DockerRegistryService;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
-import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.ResultPager;
@@ -426,7 +423,7 @@ public class RegistryController {
                    map.put("status", "500");
                 }
             }
-            dockerClientService.removeImage(imageName, imageVersion, null, null,null,false);
+            dockerClientService.removeImage(imageName, imageVersion, null, null,null,null);
             if (flag) {
                 map.put("status", "200");
             }
@@ -469,12 +466,17 @@ public class RegistryController {
     @RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteImage(@RequestParam long imageId){
-        
         Image image = imageDao.findOne(imageId);
         if (null != image) {
+            DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
+            MultivaluedMap<String, Object> mult = client.getManifestofImage(image.getName(), image.getVersion());
+            if (null != mult.get("Etag") && mult.get("Etag").size() > 0) {
+                for (Object oneRow : mult.get("Etag")) {
+                    client.deleteManifestofImage(image.getName(), String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
+                }
+            }
             image.setIsDelete(CommConstant.TYPE_YES_VALUE);
             imageDao.save(image);
-            // TODO 应该删除本地镜像和仓库中的镜像
             return "ok";
         } 
         else {
