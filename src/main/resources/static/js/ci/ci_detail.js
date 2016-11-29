@@ -19,8 +19,10 @@ $(document).ready(function(){
     printLog();
 	
     //动态给版本信息赋宽度
-    var btnVersionWidth = $(".btn-version").html().length*10;
-    $(".btn-version").css("width",btnVersionWidth);
+    if(printLog()){
+    	var btnVersionWidth = $(".btn-version").html().length*10;
+        $(".btn-version").css("width",btnVersionWidth);
+    }
     
 	//codeType
 	$(".git-config").hide();
@@ -563,7 +565,12 @@ function registerCiDelEvent(id){
 	        		success:function(data){
 	        			data = eval("(" + data + ")");
 	        			 if(data.status=="200"){
-                             window.location.href = ctx+"/ci";
+	        				 if(data.type == "1"){
+	        					 window.location.href = ctx+"/ci?code";
+	        				 }else{
+	        					 window.location.href = ctx+"/ci";
+	        				 }
+                             
 	                     } else {
 	                         layer.alert(data.msg);
 	                     }

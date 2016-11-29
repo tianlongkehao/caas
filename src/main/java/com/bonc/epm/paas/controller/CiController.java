@@ -529,6 +529,7 @@ public class CiController {
             ciRecordDao.deleteByCiId(idl);
             ciDao.delete(idl);
             map.put("status", "200");
+            map.put("type", ci.getType());
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -698,7 +699,7 @@ public class CiController {
                 ciInvokeDao.deleteByCiId(ci.getId());
                 ciDao.delete(ci);
             }
-        return "redirect:/ci"; 
+        return "redirect:/ci?code"; 
     }
     
     /**
