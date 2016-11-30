@@ -37,9 +37,9 @@ public class NginxCfgAPIClient implements NginxCfgAPIClientInterface {
         api = factory.createNginxCfgAPI(nginxUrl,username,password);
     }
     @Override
-    public NginxCfgs getNginxCfgs(String servername) {
+    public NginxCfgs getNginxCfgs(String nginxcfg, String servername) {
         try {
-            return api.getNginxCfgs(servername);
+            return api.getNginxCfgs(nginxcfg, servername);
         } catch (NotFoundException e) {
             return new NginxCfgs();
         } catch (WebApplicationException e) {
@@ -59,9 +59,9 @@ public class NginxCfgAPIClient implements NginxCfgAPIClientInterface {
     }
 
     @Override
-    public boolean addNginxCfgs(NginxCfgs nginxCfgs) {
+    public boolean addNginxCfgs(String nginxcfg, NginxCfgs nginxCfgs) {
         try {
-            return api.addNginxCfgs(nginxCfgs);
+            return api.addNginxCfgs(nginxcfg, nginxCfgs);
         } catch (NotFoundException e) {
             return false;
         } catch (WebApplicationException e) {
@@ -70,31 +70,9 @@ public class NginxCfgAPIClient implements NginxCfgAPIClientInterface {
     }
 
     @Override
-    public boolean updateNginxCfgs(String servername, NginxCfgs nginxCfgs) {
+    public boolean updateNginxCfgs(String nginxcfg, String servername, NginxCfgs nginxCfgs) {
         try {
-            return api.updateNginxCfgs(servername, nginxCfgs);
-        } catch (NotFoundException e) {
-            return false;
-        } catch (WebApplicationException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean addExternCfgs(NginxCfgs nginxCfgs) {
-        try {
-            return api.addExternCfgs(nginxCfgs);
-        } catch (NotFoundException e) {
-            return false;
-        } catch (WebApplicationException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean updateExternCfgs(String servername, NginxCfgs nginxCfgs) {
-        try {
-            return api.updateExternCfgs(servername, nginxCfgs);
+            return api.updateNginxCfgs(nginxcfg, servername, nginxCfgs);
         } catch (NotFoundException e) {
             return false;
         } catch (WebApplicationException e) {
@@ -121,6 +99,17 @@ public class NginxCfgAPIClient implements NginxCfgAPIClientInterface {
             return new ArrayList<String>();
         } catch (WebApplicationException e) {
             return new ArrayList<String>();
+        }
+    }
+
+    @Override
+    public boolean deleteNginxCfgs(String nginxcfg, String servername) {
+        try {
+            return api.deleteNginxCfgs(nginxcfg, servername);
+        } catch (NotFoundException e) {
+            return false;
+        } catch (WebApplicationException e) {
+            return false;
         }
     }
 }

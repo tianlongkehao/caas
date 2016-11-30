@@ -47,7 +47,7 @@ public class DockerRegistryService {
         return new DockerRegistryAPIClient(url, username, password,new RestFactory());
     }
     
-    @SuppressWarnings("unchecked")
+/*    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         DockerRegistryService dockerRegistryService = new DockerRegistryService();
         DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
@@ -59,6 +59,6 @@ public class DockerRegistryService {
                 System.out.println(String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
             }
         }
-    }
+    }*/
 
 }

@@ -249,6 +249,7 @@ function fileUpload() {
 			});
 			if (flag == 0) {
 				layer.closeAll();
+				$('.progress-bar-info').text("文件上传中...");
 				$('#myModal').modal('show');
 		        $.when(up(formData, flag)).done(function(data){
 		        	$('#myModal').modal('hide');
@@ -260,6 +261,7 @@ function fileUpload() {
 					time : 0, // 不自动关闭
 					yes : function(index) {
 						layer.closeAll();
+						$('.progress-bar-info').text("文件上传中...");
 						$('#myModal').modal('show');
 				        $.when(up(formData, flag)).done(function(data){
 				        	$('#myModal').modal('hide');
@@ -314,6 +316,7 @@ function saveAsImage(containerId, nodeName) {
 		$('#version').focus();
 		return;
     }
+    $('.progress-bar-info').text("容器保存中...");
 	$('#myModal').modal('show');
     $.when(getdata(containerId, nodeName)).done(function(data){
     	$('#myModal').modal('hide');

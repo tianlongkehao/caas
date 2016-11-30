@@ -38,7 +38,7 @@
 												<i class="fa fa-trash"></i></a>
 										</c:if>
 										<c:if test="${user.user_autority == 1}">
-											<a href="javascript:refresh();" id="volRefreshBtn" title="同步"><i
+											<a href="javascript:syncImages();" id="volRefreshBtn" title="同步"><i
 												class="fa fa-refresh"></i></a>
 										</c:if>
 										 <a href="javascript:window.location.reload(true);"
