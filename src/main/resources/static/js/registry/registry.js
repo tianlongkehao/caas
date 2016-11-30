@@ -405,7 +405,7 @@ $(function(){
 });
 
 //管理员添加，同步本地数据库和私有仓库的镜像信息
-function refresh(){
+function syncImages(){
 	$.ajax({
 		url:""+ctx+"/registry/refresh.do",
 		success:function(data){

@@ -34,5 +34,5 @@ public interface DockerRegistryAPIClientInterface {
     
     public MultivaluedMap<String, Object> getManifestofImage(String name,String reference) throws DokcerRegistryClientException;
     
-    public Manifest deleteManifestofImage(String name,String reference) throws DokcerRegistryClientException;
+    public void deleteManifestofImage(String name,String reference) throws DokcerRegistryClientException;
 }

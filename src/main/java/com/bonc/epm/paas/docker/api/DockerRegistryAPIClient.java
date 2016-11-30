@@ -72,11 +72,11 @@ public class DockerRegistryAPIClient implements DockerRegistryAPIClientInterface
     }
 
     @Override
-    public Manifest deleteManifestofImage(String name, String reference) throws DokcerRegistryClientException{
+    public void deleteManifestofImage(String name, String reference) throws DokcerRegistryClientException{
         try {
-            return api.deleteManifestofImage(name, reference);
+            api.deleteManifestofImage(name, reference);
         } catch (NotFoundException e) {
-            return null;
+            throw new NotFoundException();
         } catch (WebApplicationException e) {
             throw new DokcerRegistryClientException(e);
         }
