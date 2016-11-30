@@ -14,6 +14,7 @@ package com.bonc.epm.paas.nginxcfgs.api;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -33,44 +34,50 @@ import com.bonc.epm.paas.nginxcfgs.model.NginxCfgs;
 public interface NginxCfgAPI {
 
     /**
-     * get a k8snginxcfgs by servername
+     * get a nginxcfgs by servername
+     * @param nginxcfg
+     *           nginxcfg is string, value is  k8s or extern
      * @param servername
-     *           servername of k8snginxcfgs
+     *           servername of nginxcfgs
      * @return {@link NginxCfgs}
      * @throws  
      */
     @GET
-    @Path("/k8snginxcfgs/{servername}")
+    @Path("/nginxcfgs/{nginxcfg}/{servername}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public NginxCfgs getNginxCfgs(@PathParam("servername") String servername);
+    public NginxCfgs getNginxCfgs(@PathParam("nginxcfg") String nginxcfg,  @PathParam("servername") String servername);
 
     /**
-     * get all k8snginxcfgs
+     * get all nginxcfgs
      * @return {@link NginxCfgs}s
      * @throws  
      */
     @GET
-    @Path("/k8snginxcfgs")
+    @Path("/nginxcfgs")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public List<NginxCfgs> getAllNginxCfgs();
     
     /**
-     * add a k8snginxcfgs
+     * add a nginxcfgs
+     * @param nginxcfg
+     *           nginxcfg is string, value is  k8s or extern
      * @param nginxCfgs
      *           NginxCfgs
      * @return {@link NginxCfgs}
      * @throws  
      */    
     @POST
-    @Path("/k8snginxcfgs")
+    @Path("/nginxcfgs/{nginxcfg}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean addNginxCfgs(NginxCfgs nginxCfgs);
+    public boolean addNginxCfgs(@PathParam("nginxcfg") String nginxcfg, NginxCfgs nginxCfgs);
 
     /**
-     * update a k8snginxcfgs
+     * update a nginxcfgs
+     * @param nginxcfg
+     *           nginxcfg is string, value is  k8s or extern
      * @param servername
      *           servername of k8snginxcfgs
      * @param nginxCfgs
@@ -79,38 +86,25 @@ public interface NginxCfgAPI {
      * @throws  
      */    
     @PUT
-    @Path("/k8snginxcfgs/{servername}")
+    @Path("/nginxcfgs/{nginxcfg}/{servername}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean updateNginxCfgs(@PathParam("servername") String servername, NginxCfgs nginxCfgs);
+    public boolean updateNginxCfgs(@PathParam("nginxcfg") String nginxcfg, @PathParam("servername") String servername, NginxCfgs nginxCfgs);
 
     /**
-     * add a externnginxcfgs
-     * @param nginxCfgs
-     *           NginxCfgs
+     * delete a nginxcfgs
+     * @param nginxcfg
+     *           nginxcfg is string, value is  k8s or extern
+     * @param servername
+     *           servername of k8snginxcfgs
      * @return {@link NginxCfgs}
      * @throws  
-     */ 
-    @POST
-    @Path("/externnginxcfgs")
+     */      
+    @DELETE
+    @Path("/nginxcfgs/{nginxcfg}/{servername}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean addExternCfgs(NginxCfgs nginxCfgs);
-    
-    /**
-     * update a externnginxcfgs
-     * @param  servername
-     *           servername of k8snginxcfgs
-     * @param nginxCfgs
-     *           NginxCfgs
-     * @return {@link NginxCfgs}
-     * @throws  
-     */
-    @PUT
-    @Path("/externnginxcfgs/{servername}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)    
-    public boolean updateExternCfgs(@PathParam("servername") String servername, NginxCfgs nginxCfgs);
+    public boolean deleteNginxCfgs(@PathParam("nginxcfg") String nginxcfg, @PathParam("servername") String servername);
     
     /**
      * add a testtoolinfo
