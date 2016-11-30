@@ -187,6 +187,8 @@ public class ServiceDebugController {
 			sftp.cd(ROOT);
 		} catch (SftpException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		String shrotImageName = imageName.substring(imageName.indexOf('/') + 1, imageName.lastIndexOf(':'));
