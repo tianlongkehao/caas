@@ -56,6 +56,8 @@ public class DockerClientService {
 	private String apiVersion;
 	@Value("${docker.io.nodeUrl}")
 	private String nodeUrl;
+	@Value("${docker.io.node}")
+	private String node;
 	private HashMap<String,Integer> nodeMap = null;
 	
 	private static final Logger log = LoggerFactory.getLogger(DockerClientService.class);
@@ -82,6 +84,44 @@ public class DockerClientService {
 		DockerClientConfig config = DefaultDockerClientConfig
 				.createDefaultConfigBuilder()
 				.withDockerHost(url)
+				.withApiVersion(apiVersion)
+				.withDockerCertPath(dockerCertPath)
+				.withRegistryUsername(username)
+				.withRegistryPassword(password)
+				.withRegistryEmail(email)
+				.withRegistryUrl(serverAddress)
+				.build();
+		DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
+		return dockerClient;
+	}
+	
+	/**
+	 * 
+	 * Description: <br>
+     *  获取指定node节点的dockerClient实例
+	 * @param nodeName String
+	 * @return 
+	 * @see
+	 */
+	public DockerClient getSpecialDockerClientInstance(String nodeName){
+		String nodeUrl = null;
+		if (StringUtils.isNoneBlank(node)) {
+			String[] nodeArray = node.split(",");
+			for (int i = 0; i < nodeArray.length; i++) {
+				String[] key_value = nodeArray[i].split("=");
+				if (key_value[0].equals(nodeName)) {
+					nodeUrl = key_value[1];
+					break;
+				}
+			}
+		}
+		//如果没有找到对应节点，则返回null
+		if (nodeUrl == null) {
+			return null;
+		}
+		DockerClientConfig config = DefaultDockerClientConfig
+				.createDefaultConfigBuilder()
+				.withDockerHost(nodeUrl)
 				.withApiVersion(apiVersion)
 				.withDockerCertPath(dockerCertPath)
 				.withRegistryUsername(username)
@@ -365,13 +405,15 @@ public class DockerClientService {
 	 */
 	public boolean removeImage(String imageName,String imageVersion, 
 	                                   CiRecord ciRecord, CiRecordDao ciRecordDao, 
-	                                       DockerClient dockerClient, boolean loadFlag){
+	                                       DockerClient dockerClient, Image image){
 		try{
 		    if (null == dockerClient) {
 		         dockerClient = this.getSpecialDockerClientInstance(); 
 		    }
-		    if (loadFlag) {
+		    if (null != image) {
 		        dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
+		        imageName = image.getName();
+		        imageVersion = image.getVersion();
 		    }
 		    dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec(); 
 			
@@ -499,10 +541,70 @@ public class DockerClientService {
 		}
 	}
 	
-	/*public void main(String[] args) {
-		System.out.println(DockerClientUtil.buildImage("C:\\Users\\Administrator\\Desktop\\linyiyj-helloworld-master\\helloworld\\war-test\\","admin/hw1", "latest"));
-		System.out.println(DockerClientUtil.pullImage("bonc/helloworld", "latest"));
-		System.out.println(DockerClientUtil.createContainer("bonc/helloworld", "latest","container3",8080,10002));
-		System.out.println(DockerClientUtil.startContainer("container3"));
-	}*/
+	/**
+	 *  保存容器为镜像
+	 * @param containerName
+	 * @return
+	 */
+	public String commitContainer(String containerId, String repository, String tag, DockerClient dockerClient){
+		try{
+		    if (null == dockerClient) {
+		         dockerClient = this.getSpecialDockerClientInstance(); 
+		    }
+			String imageId = dockerClient.commitCmd(containerId).exec();
+			dockerClient.tagImageCmd(imageId, repository, tag).exec();
+			return imageId;
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error("commitContainer error:"+e.getMessage());
+			return null;
+		}
+	}
+	
+	/**
+	 * 上传到镜像仓库
+	 * @param imageName
+	 * @param imageVersion
+	 * @param dockerClient
+	 * @return
+	 */
+	public boolean pushImage(String imageName,String imageVersion, DockerClient dockerClient){
+		try{
+		    if (null == dockerClient) {
+		       dockerClient = this.getSpecialDockerClientInstance();
+		    }
+			
+			PushImageResultCallback callback = new PushImageResultCallback() {
+				@Override
+				public void onNext(PushResponseItem item) {
+					log.info("==========PushResponseItem:"+item);
+				    super.onNext(item);
+				}
+			};
+			dockerClient.pushImageCmd(username+"/"+imageName).withTag(imageVersion).exec(callback).awaitSuccess();
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error("pushImage error:"+e.getMessage());
+			return false;
+		}
+	}
+	
+//	public static void main(String[] args) {
+//		
+//		
+//		DockerClientService dockerClientService = new DockerClientService();
+//		
+//		dockerClientService.url = "tcp://192.168.0.76:28015";
+//		dockerClientService.apiVersion = "1.21";
+//		dockerClientService.dockerCertPath = "/etc/docker";
+//		dockerClientService.username = "192.168.0.76:5000";
+//		dockerClientService.password = "root";
+//		dockerClientService.email = "xx@bonc.com.cn";
+//		dockerClientService.serverAddress = "http://192.168.0.76:5000/v1/";
+//		dockerClientService.nodeUrl = "tcp://192.168.0.80:28015,tcp://192.168.0.81:28015,tcp://192.168.0.82:28015";
+//		dockerClientService.node = "kube-node80=tcp://192.168.0.80:28015,kube-node81=tcp://192.168.0.81:28015,kube-node82=tcp://192.168.0.82:28015";
+//		DockerClient dockerClient = dockerClientService.getSpecialDockerClientInstance("kube-node81");
+//		System.out.println(dockerClientService.commitContainer("73427403d162", "test1128", "1128", dockerClient));
+//	}
 }

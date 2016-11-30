@@ -902,13 +902,13 @@ public class CiController {
                     if(flag){
                         //删除本地镜像
                         String[] tmp = originImageInfo.split(":");
-                        flag = dockerClientService.removeImage(tmp[0], tmp[1],null,null,null,true);
+                        flag = dockerClientService.removeImage(tmp[0], tmp[1],null,null,null,image);
                     }                     
                 }
             } else {
                 flag = dockerClientService.importAndPushImage(image, uploadStream);
                 if (flag) {
-                    flag = dockerClientService.removeImage(image.getName(), image.getVersion(), null, null, null,false);
+                    flag = dockerClientService.removeImage(image.getName(), image.getVersion(), null, null, null,null);
                 }  
             }
         } catch (Exception e) {
@@ -1288,7 +1288,7 @@ public class CiController {
         }
         if(flag){
 			//删除本地镜像
-            flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient,false);
+            flag = dockerClientService.removeImage(imageName, imageVersion,ciRecord,ciRecordDao,dockerClient,null);
         }
         ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"end");
         ciRecordDao.save(ciRecord);

@@ -5,6 +5,8 @@
 <title>产品</title>
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/help.css" />
+<link rel="stylesheet" type="text/css" href="<%=path%>/css/core/jquery-ui.min.css" />
+<script type="text/javascript" src="<%=path%>/js/plugins/jquery-ui.min.js"></script>
 </head>
 
 <body>
@@ -24,7 +26,7 @@
 					</ol>
 				</div>
 				<div class="container" style="margin: 0px; width: 100%">
-					<div class="book row">
+					<div class="book row book-row">
 						<div class="book-summary col-md-3">
 
 							<ul class="summary" id="book-tab" class="nav nav-tabs">
@@ -1068,6 +1070,20 @@ CMD ["/run.sh"]
 		$(document).on('click', 'a', function(event) {
 			//alert(this.attr('href'))
 		})
+		//缩放
+		$( ".book-summary" ).resizable({
+	  		autoHide: true,
+			containment: ".book-row",
+			maxWidth:470,
+			minWidth:50,
+			resize: function( event, ui ) {
+				var sumWidth = $(".book-summary").width();
+				var totalWidth = $(".book-row").width();
+				var bodyWidth = totalWidth - sumWidth -40;
+				$(".book-body").width(bodyWidth+"px");
+			}
+		});
+		
 		$("#a1").click(function() {
 			for (var i = 0; i < 9; i++) {
 				$("#a" + i + "child").slideUp();

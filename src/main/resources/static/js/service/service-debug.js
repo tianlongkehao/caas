@@ -1,13 +1,5 @@
 $(document).ready(function() {
 	creatable(null, null);
-	setInterval(onComplete, 1000); 
-	window.onunload = function(){
-		closeFtp();
-	}
-	
-	window.onbeforeunload = function(){
-		closeFtp();
-	}
 });
 function EnterPress(e) { // 传入 event
 	var e = e || window.event;
@@ -15,15 +7,6 @@ function EnterPress(e) { // 传入 event
 		var dictionary = document.getElementById("scp-path").value;
 		creatable(true,dictionary);
 	}
-} 
-
-function closeFtp(){
-	alert();
-}
-function onComplete() 
-{
-//	var shell = document.getElementById("shellinabox");
-	window.onbeforeunload = function(){}
 } 
 
 function creatable(isDir, dirName) {
@@ -112,13 +95,13 @@ function creatable(isDir, dirName) {
 								+ '<td style="width: 15%;text-indent: 123px;">'
 								+ '<a class="deleteButton" style="text-indent: 0px;" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
 								+ fileInfo.fileName
-								+ '"> <i class="fa fa-trash fa-lg"></i></a>'
+								+ '"> <i class="fa fa-trash fa-lg fa-i"></i></a>'
 						if (true == fileInfo.dir) {
 						} else if (true == fileInfo.link) {
 						} else {
 							tbody += '<a class="downloadButton" style="text-indent: 1px;" href="javascript:void(0)" onclick="downloadFile(this)"  fileName="'
 									+ fileInfo.fileName
-									+ '"> <i class="fa fa-download fa-lg"></i></a>'
+									+ '"> <i class="fa fa-download fa-lg fa-i"></i></a>'
 						}
 						tbody += '</td>' + '</tr>';
 					}
@@ -140,7 +123,7 @@ function delfile(obj) {
 		yes : function(index, layero) {
 			$.ajax({
 				type : "GET",
-				url : ctx + "/service/delFile.do?fileNames=" + fileName,
+				url : ctx + "/service/delFile.do?fileNames=" + encodeURIComponent(fileName),
 				success : function(data) {
 					var data = eval("(" + data + ")");
 					if (data.status == "400") {
@@ -176,7 +159,7 @@ function delfiles() {
 				return;
 			}
 			$.ajax({
-				url : "" + ctx + "/service/delFile.do?fileNames=" + fileNames,
+				url : "" + ctx + "/service/delFile.do?fileNames=" + encodeURIComponent(fileNames),
 				success : function(data) {
 					var data = eval("(" + data + ")");
 					if (data.status == "400") {
@@ -254,6 +237,8 @@ function fileUpload() {
 		yes : function(index, layero) {
 			var formData = new FormData($("#form1")[0]);
 			var fileName = document.getElementById("file").value;
+			var arr = fileName.split("\\");
+			fileName = arr[arr.length-1];
 			var flag = 0;
 			$("#mybody tr").each(function(index, domEle) {
 				$(domEle).find("span").each(function(index, data) {
@@ -264,16 +249,21 @@ function fileUpload() {
 			});
 			if (flag == 0) {
 				layer.closeAll();
-				up(formData, flag);
+				$('#myModal').modal('show');
+		        $.when(up(formData, flag)).done(function(data){
+		        	$('#myModal').modal('hide');
+		        });
 			} else {
-				layer.open({
-					type : 1,
-					content : '存在同名的文件，确定要覆盖吗？',
-					title : '确认',
-					btn : [ '确认', '取消' ],
-					yes : function(index, layero) {
+				layer.msg('存在同名的文件，确定要覆盖吗？', {
+					icon : 7,
+					btn : [ '確定', '取消' ],
+					time : 0, // 不自动关闭
+					yes : function(index) {
 						layer.closeAll();
-						up(formData, flag);
+						$('#myModal').modal('show');
+				        $.when(up(formData, flag)).done(function(data){
+				        	$('#myModal').modal('hide');
+				        });
 					}
 				});
 			}
@@ -282,43 +272,88 @@ function fileUpload() {
 };
 
 function up(formData, flag) {
-	$('#myModal').modal('show');
+	var defer = $.Deferred();
 	$.ajax({
 		type : 'POST',
 		url : ctx + '/service/uploadFile',
 		data : formData,
-		async : false,
+//		async : false,
 		cache : false,
 		contentType : false,
 		processData : false,
 		success : function(data) {
+			defer.resolve(data);
 			var data = eval("(" + data + ")");
-			if ("200" == data.status && flag == 0) {
-				$('#myModal').modal('hide');
+			if ("200" == data.status) {
 				creatable(null, ".");
 				$('#hasUsed').html(data.used);
 				layer.closeAll();
-			} else if ("500" == data.status) {
-				$('#myModal').modal('hide');
-				layer.open({
-					type : 1,
-					content : '上传失败，文件大小超过卷组可用大小！',
-					title : '上传失败',
-					btn : [ '确定' ],
-					yes : function(index, layero) {
-						refreshtable();
-						layer.closeAll();
-					}
-				});
 			} else {
-				$('#myModal').modal('hide');
-				refreshtable();
-				$('#hasUsed').html(data.used);
-				layer.closeAll();
+				failedMSG("文件上传失败！", true);
 			}
 		}
 	});
+	return defer.promise();
 }
+//导出container为image
+function saveAsImage(containerId, nodeName) {
+    var version = $('#version').val().trim();
+    if(version.length == 0){
+		layer.tips('对不起，镜像版本名不能为空！','#version',{tips: [1, '#3595CC']});
+		$('#version').focus();
+    	return;
+    }
+    if(version.length > 128){
+		layer.tips('对不起，镜像版本名过长！','#version',{tips: [1, '#3595CC']});
+		$('#version').focus();
+    	return;
+    }
+    reg=/^[a-zA-Z0-9_.-]+$/;     
+    if(!reg.test(version)){    
+		layer.tips('对不起，您输入的镜像版本格式不正确！','#version',{tips: [1, '#3595CC']});
+		$('#version').focus();
+		return;
+    }
+	$('#myModal').modal('show');
+    $.when(getdata(containerId, nodeName)).done(function(data){
+    	$('#myModal').modal('hide');
+    });
+}
+
+function getdata(containerId, nodeName){
+	var defer = $.Deferred();
+    var imageName = $('#imageName').val();
+    var version = $('#version').val().trim();
+    $.ajax({
+		url : ctx + "/service/saveAsImage",
+		type: "POST",
+		data:{"containerId":containerId,"nodeName":nodeName,"imageName":imageName,"version":version},
+		success : function(data) {
+			defer.resolve(data);
+			data = eval("(" + data + ")");
+			if (data.status=="200") {
+				layer.msg('容器已成功保存为镜像', {
+					icon : 1,
+					btn : [ '確定' ],
+					time : 0, // 不自动关闭
+					yes : function(index) {
+						layer.closeAll();
+					}
+				});
+			}else if(data.status=="400") {
+				failedMSG("对不起，仓库中已存在该版本名！", false);
+			} else if(data.status=="401") {
+				failedMSG("对不起，container保存为本地镜像失败！", false);
+			} else if(data.status=="402") {
+				failedMSG("对不起，本地镜像推送到仓库时失败！", false);
+			} else if(data.status=="403") {
+				failedMSG("对不起，获取数据库中原始镜像的信息失败！", false);
+			}
+		}
+	});
+	return defer.promise();
+}
+
 
 
 // 弹出失败消息

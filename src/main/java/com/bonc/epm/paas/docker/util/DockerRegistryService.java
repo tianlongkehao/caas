@@ -37,7 +37,7 @@ public class DockerRegistryService {
     private static final Logger LOG = LoggerFactory.getLogger(DockerRegistryService.class);
     
     @Value("${docker.registry.api.url}")
-    private String url ="http://192.168.0.76:5000";
+    private String url="http://192.168.0.76:5000";
     @Value("${docker.registry.api.username}")
     private String username="docker";
     @Value("${docker.registry.api.password}")
@@ -47,18 +47,18 @@ public class DockerRegistryService {
         return new DockerRegistryAPIClient(url, username, password,new RestFactory());
     }
     
-/*    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         DockerRegistryService dockerRegistryService = new DockerRegistryService();
         DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
         //System.out.println(client.getTagsofImage("tomcat"));
-        MultivaluedMap<String, Object> result = client.getManifestofImage("tomcat", "8.jre7");
+        MultivaluedMap<String, Object> result = client.getManifestofImage("tomcat", "8-jre7-ths");
         //System.out.println(result.get("Etag"));
         if (null != result.get("Etag") && result.get("Etag").size() > 0) {
             for (Object oneRow : result.get("Etag")) {
-                System.out.println(oneRow);
+                System.out.println(String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
             }
         }
-    }*/
+    }
 
 }
