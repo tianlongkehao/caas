@@ -237,6 +237,8 @@ function fileUpload() {
 		yes : function(index, layero) {
 			var formData = new FormData($("#form1")[0]);
 			var fileName = document.getElementById("file").value;
+			var arr = fileName.split("\\");
+			fileName = arr[arr.length-1];
 			var flag = 0;
 			$("#mybody tr").each(function(index, domEle) {
 				$(domEle).find("span").each(function(index, data) {
@@ -247,16 +249,21 @@ function fileUpload() {
 			});
 			if (flag == 0) {
 				layer.closeAll();
-				up(formData, flag);
+				$('#myModal').modal('show');
+		        $.when(up(formData, flag)).done(function(data){
+		        	$('#myModal').modal('hide');
+		        });
 			} else {
-				layer.open({
-					type : 1,
-					content : '存在同名的文件，确定要覆盖吗？',
-					title : '确认',
-					btn : [ '确认', '取消' ],
-					yes : function(index, layero) {
+				layer.msg('存在同名的文件，确定要覆盖吗？', {
+					icon : 7,
+					btn : [ '確定', '取消' ],
+					time : 0, // 不自动关闭
+					yes : function(index) {
 						layer.closeAll();
-						up(formData, flag);
+						$('#myModal').modal('show');
+				        $.when(up(formData, flag)).done(function(data){
+				        	$('#myModal').modal('hide');
+				        });
 					}
 				});
 			}
@@ -265,47 +272,32 @@ function fileUpload() {
 };
 
 function up(formData, flag) {
-	$('#myModal').modal('show');
-	setTimeout($.ajax({
+	var defer = $.Deferred();
+	$.ajax({
 		type : 'POST',
 		url : ctx + '/service/uploadFile',
 		data : formData,
-		async : false,
+//		async : false,
 		cache : false,
 		contentType : false,
 		processData : false,
 		success : function(data) {
+			defer.resolve(data);
 			var data = eval("(" + data + ")");
-			if ("200" == data.status && flag == 0) {
-				$('#myModal').modal('hide');
+			if ("200" == data.status) {
 				creatable(null, ".");
 				$('#hasUsed').html(data.used);
 				layer.closeAll();
-			} else if ("500" == data.status) {
-				$('#myModal').modal('hide');
-				layer.open({
-					type : 1,
-					content : '上传失败，文件大小超过可用大小！',
-					title : '上传失败',
-					btn : [ '确定' ],
-					yes : function(index, layero) {
-						refreshtable();
-						layer.closeAll();
-					}
-				});
 			} else {
-				$('#myModal').modal('hide');
-				refreshtable();
-				$('#hasUsed').html(data.used);
-				layer.closeAll();
+				failedMSG("文件上传失败！", true);
 			}
 		}
-	}),111110)
+	});
+	return defer.promise();
 }
 //导出container为image
 function saveAsImage(containerId, nodeName) {
     var version = $('#version').val().trim();
-    var imageName = $('#imageName').val();
     if(version.length == 0){
 		layer.tips('对不起，镜像版本名不能为空！','#version',{tips: [1, '#3595CC']});
 		$('#version').focus();
@@ -321,16 +313,33 @@ function saveAsImage(containerId, nodeName) {
 		layer.tips('对不起，您输入的镜像版本格式不正确！','#version',{tips: [1, '#3595CC']});
 		$('#version').focus();
 		return;
-    }    
+    }
+	$('#myModal').modal('show');
+    $.when(getdata(containerId, nodeName)).done(function(data){
+    	$('#myModal').modal('hide');
+    });
+}
 
+function getdata(containerId, nodeName){
+	var defer = $.Deferred();
+    var imageName = $('#imageName').val();
+    var version = $('#version').val().trim();
     $.ajax({
 		url : ctx + "/service/saveAsImage",
 		type: "POST",
 		data:{"containerId":containerId,"nodeName":nodeName,"imageName":imageName,"version":version},
 		success : function(data) {
+			defer.resolve(data);
 			data = eval("(" + data + ")");
 			if (data.status=="200") {
-				alert(data.result);
+				layer.msg('容器已成功保存为镜像', {
+					icon : 1,
+					btn : [ '確定' ],
+					time : 0, // 不自动关闭
+					yes : function(index) {
+						layer.closeAll();
+					}
+				});
 			}else if(data.status=="400") {
 				failedMSG("对不起，仓库中已存在该版本名！", false);
 			} else if(data.status=="401") {
@@ -342,8 +351,10 @@ function saveAsImage(containerId, nodeName) {
 			}
 		}
 	});
-
+	return defer.promise();
 }
+
+
 
 // 弹出失败消息
 function failedMSG(title, flag) {
