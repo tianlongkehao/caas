@@ -278,9 +278,11 @@ $(document).ready(function () {
 		if(credentialsType == 1){
 			$(".normal").show();
 			$(".ssh").hide();
+			$("#SSHpasswordCred").val("");
 		}else{
 			$(".normal").hide();
 			$(".ssh").show();
+			$("#passwordCred").val("");
 		}
 	});
 	

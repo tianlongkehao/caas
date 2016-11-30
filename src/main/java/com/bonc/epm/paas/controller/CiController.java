@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -1220,6 +1221,7 @@ public class CiController {
                                     image.setIsDelete(CommConstant.TYPE_NO_VALUE);
                                     imageDao.save(image);
                                     //添加构建和日志的信息
+                                    ci.setImgId(image.getId());
                                     ci.setConstructionTime(jobExecView.getEndTime()-startTime);
                                     ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
                                     ciRecord.setConstructTime(jobExecView.getEndTime()-startTime);
@@ -1483,7 +1485,8 @@ public class CiController {
                 gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(), ciCodeCredential.getUserName(), ciCodeCredential.getType());
             }
             else {
-                gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPassword(), ciCodeCredential.getUserName(), ciCodeCredential.getType());
+                String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");
+                gitCredential = sheraClientService.generateGitCredential(password, ciCodeCredential.getUserName(), ciCodeCredential.getType());
             }
             client.addCredential(gitCredential);
             ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());

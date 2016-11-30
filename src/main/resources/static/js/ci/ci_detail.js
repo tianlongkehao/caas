@@ -311,9 +311,11 @@ $(document).ready(function(){
 		if(credentialsType == 1){
 			$(".normal").show();
 			$(".ssh").hide();
+			$("#SSHpasswordCred").val("");
 		}else{
 			$(".normal").hide();
 			$(".ssh").show();
+			$("#passwordCred").val("");
 		}
 	});
 });/*ready*/
@@ -450,17 +452,17 @@ function registerConstructCiEvent(){
 
 function registerCiEditEvent(){
 	$("#editCiBtn").click(function(){
-//		var dockerFile = editor_one.getValue();
 		if (checkCodeCiAdd()) {
+			var load = layer.load(0, {shade: [0.3, '#000']});
 			$("#editCiForm").ajaxSubmit({
 				url: ctx+"/ci/modifyCodeCi.do",
-//				data:{"dockerFileContent":dockerFile},
 				type: "post",
 				success: function (data) {
 					data = eval("(" + data + ")");
 					if (data.status == "200") {
 						layer.alert("修改成功");
 						$("#projectNameSpan").text($("#projectName").val());
+						layer.close(load);
 					} else {
 						layer.alert(data.msg);
 					}

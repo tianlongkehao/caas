@@ -11,6 +11,9 @@
 
 package com.bonc.epm.paas.shera.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,8 +153,10 @@ public class SheraClientService {
         ImgManager imgManager = new ImgManager();
         if (StringUtils.isNotEmpty(dockerFileContent)) {
             imgManager.setDockerFileContent(dockerFileContent);
+            imgManager.setDockerFile("");
         }
         if (StringUtils.isNotEmpty(dockerFile)) {
+            imgManager.setDockerFileContent("");
             imgManager.setDockerFile(dockerFile);
         }
         imgManager.setImgName(imgName);

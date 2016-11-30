@@ -101,7 +101,12 @@ function registerConstructCiEvent(){
 			success:function(data){
 				data = eval("(" + data + ")");
 				if(data.status=="200"){
-					window.location.reload();
+					if(data.ci.type == "1"){
+   					 	window.location.href = ctx+"/ci?code";
+	   				 }else{
+	   					 window.location.href = ctx+"/ci";
+	   				 }
+//					window.location.reload();
 				}else{
 					layer.alert(data.msg);
 				}
