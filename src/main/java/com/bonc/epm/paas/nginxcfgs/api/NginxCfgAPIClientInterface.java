@@ -23,17 +23,15 @@ import com.bonc.epm.paas.nginxcfgs.model.NginxCfgs;
  */
 public interface NginxCfgAPIClientInterface {
     
-    public NginxCfgs getNginxCfgs(String servername);
+    public NginxCfgs getNginxCfgs(String nginxcfg, String servername);
     
     public List<NginxCfgs> getAllNginxCfgs();
     
-    public boolean addNginxCfgs(NginxCfgs nginxCfgs);
+    public boolean addNginxCfgs(String nginxcfg, NginxCfgs nginxCfgs);
     
-    public boolean updateNginxCfgs(String servername, NginxCfgs nginxCfgs);
+    public boolean updateNginxCfgs(String nginxcfg, String servername, NginxCfgs nginxCfgs);
     
-    public boolean addExternCfgs(NginxCfgs nginxCfgs);
-    
-    public boolean updateExternCfgs(String servername, NginxCfgs nginxCfgs);
+    public boolean deleteNginxCfgs(String nginxcfg, String servername);
     
     public boolean addTesttool(String name);
     
