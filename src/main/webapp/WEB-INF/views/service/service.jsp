@@ -121,7 +121,7 @@
 														imagename="${service.imgName }"
 														imageversion="${service.imgVersion }"
 														confCpu="${service.cpuNum }" /></td>
-													<td style="width: 15%; white-space: nowrap;" ><b id="aaa"
+													<td style="width: 15%; white-space: nowrap;" ><b
 														class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>
 														<a href="<%=path %>/service/detail/${service.id}" serviceId="${service.id}"
 														class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">${service.serviceName}</a> <span
@@ -200,7 +200,7 @@
                                                           <c:otherwise>
                                                              <a id="${service.id}_upgradeCluster" class="no-drop upgradeCluster_a " 
                                                                 href="javascript:oneVersionUpgrade(${service.id },'${service.serviceName }','${service.imgName }',this)" title="版本升级"
-                                                                style="margin-left: 5px">
+                                                                style="margin-left: 5px;margin-right:5px">
                                                                 <i class="fa fa-arrow-up self_a"></i>
                                                             </a>    
                                                           </c:otherwise>
