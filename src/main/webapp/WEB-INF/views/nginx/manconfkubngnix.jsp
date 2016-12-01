@@ -5,24 +5,8 @@
 <title>nginx</title>
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css"
-	href="<%=path%>/css/mod/service.css" />
-<script type="text/javascript" src="<%=path%>/js/service/service.js"></script>
-<style type="text/css">
-.nginxCon{
-	margin-top:10px;
-}
-.nginxCon span{
-	float:left;
-	line-height:34px;
-	width:20%;
-}
-.nginxCon input{
-	width:50%;
-}	
-.nginxSubBtn{
-	margin-top:20px;
-}
-</style>
+	href="<%=path%>/css/mod/nginx.css" />
+<script type="text/javascript" src="<%=path%>/js/nginx/k8snginxcfg.js"></script>
 </head>
 <body>
 	<jsp:include page="../frame/menu.jsp" flush="true">
@@ -41,81 +25,75 @@
 					</ol>
 				</div>
 				<div class="contentMain">
-				<form id="nginxForm">
-					<div>
-						<select id="nginxType" class="form-control" style="width:50%">
-							<option value="0">---请选择---</option>
-							<option value="1">K8s</option>
-							<option value="2">Extern</option>
-							<option value="3">TestTool</option>
-						</select>
-					</div>
-					<div class="k8s">
-						<div class="nginxCon"><span>ServerName:</span><input type="text" id="serverName" name="serverName" class="form-control"></div>
-						<div class="nginxCon"><span>ListenPort:</span><input type="text" id="ListenPort" name="ListenPort" class="form-control"></div>
-						<div class="nginxCon"><span>RealServerPath:</span><input type="text" id="RealServerPath" name="RealServerPath" class="form-control"></div>
-						<div class="nginxCon"><span>Namespace:</span><input type="text" id="Namespace" name="Namespace" class="form-control"></div>
-						<div class="nginxCon"><span>AppName:</span><input type="text" id="AppName" name="AppName" class="form-control"></div>
-						<div class="nginxCon"><span>Location:</span><input type="text" id="Location" name="Location" class="form-control"></div>
-						<div class="nginxCon"><span>ProxyRedirectSrcPath:</span><input type="text" id="ProxyRedirectSrcPath" name="ProxyRedirectSrcPath" class="form-control"></div>
-						<div class="nginxCon"><span>ProxyRedirectDestPath:</span><input type="text" id="ProxyRedirectDestPath" name="ProxyRedirectDestPath" class="form-control"></div>
-						<div class="nginxCon"><span>UpstreamIPs:</span><input type="text" id="UpstreamIPs" name="UpstreamIPs" class="form-control"></div>
-						<div class="nginxCon"><span>UpstreamPort:</span><input type="text" id="UpstreamPort" name="UpstreamPort" class="form-control"></div>
-						
-					</div>
-					<div class="extrn">
-						<div class="nginxCon"><span>ExternNginxServerName:</span><input type="text" id="ExternNginxServerName" name="ExternNginxServerName" class="form-control"></div>
-						<div class="nginxCon"><span>ExternNginxListenPort:</span><input type="text" id="ExternNginxListenPort" name="ExternNginxListenPort" class="form-control"></div>
-						<div class="nginxCon"><span>ExternNginxRealServerPath:</span><input type="text" id="ExternNginxRealServerPath" name="ExternNginxRealServerPath" class="form-control"></div>
-						<div class="nginxCon"><span>ExternNginxNamespace:</span><input type="text" id="ExternNginxNamespace" name="ExternNginxNamespace" class="form-control"></div>
-						<div class="nginxCon"><span>ExternNginxAppName:</span><input type="text" id="ExternNginxAppName" name="ExternNginxAppName" class="form-control"></div>
-						<div class="nginxCon"><span>ExternNginxLocation:</span><input type="text" id="ExternNginxLocation" name="ExternNginxLocation" class="form-control"></div>
-						<div class="nginxCon"><span>ExternNginxProxyRedirectSrcPath:</span><input type="text" id="ExternNginxProxyRedirectSrcPath" name="ExternNginxProxyRedirectSrcPath" class="form-control"></div>
-						<div class="nginxCon"><span>ExternNginxProxyRedirectDestPath:</span><input type="text" id="ExternNginxProxyRedirectDestPath" name="ExternNginxProxyRedirectDestPath" class="form-control"></div>
-						<div class="nginxCon"><span>ExternNginxUpstreamIPs:</span><input type="text" id="ExternNginxUpstreamIPs" name="ExternNginxUpstreamIPs" class="form-control"></div>
-						
-					</div>
-					<div class="ishash"><div class="nginxCon"><span>IsUpstreamIPHash:</span><input type="text" id="IsUpstreamIPHash" name="IsUpstreamIPHash" class="form-control"></div></div>
-					<div class="testTool">
-						<div class="nginxCon"><span>NginxCmd:</span><input type="text" id="NginxCmd" name="NginxCmd" class="form-control"></div>
-						
-					</div>
-				</form>
-				<div class="nginxSubBtn"><input type="button" value="提交" class="btn btn-default"><div>
+					<div class="row">
+                    <div class="col-md-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5>
+										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>租户管理
+									</h5>
+
+									<div class="ibox-tools">
+										<a href="javascript:window.location.reload(true);"
+											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a>
+									</div>
+                            </div>
+                            <div class="ibox-content">
+                                <table class="table table-striped table-hover dataTables-example">
+                                    <thead>
+                                        <tr>
+												<th style="width: 5%; text-indent: 30px;">
+													<input type="checkbox" class="chkAll" id="checkallbox" /></th>
+												<th style="width: 15%; padding-left: 5px;">登录账号</th>
+												<th style="width: 15%;">姓名</th>
+												
+												<th style="width: 10%;" class="del-operation">操作</th>
+											</tr>
+                                    </thead>
+                                    <tbody id="userList">
+											<c:forEach items="${userList }" var="user">
+												<c:if test="${user.id == null || user.id == 0}">
+													<c:set var="cursorClass" value="cursor-no-drop"></c:set>
+												</c:if>
+												<c:if test="${cur_user.id != user.id}">
+													<tr class="userTr" id="${user.id }">
+														<td style="width: 5%; text-indent: 30px;"><input
+															type="checkbox" class="chkItem" name="ids"
+															value="${user.id }"></td>
+														<td style="width: 15%;"><a
+															href="<%=path %>/user/detail/${user.id }" title="查看详细信息"
+															onmousemove="style.textDecoration='underline'"
+															onmouseout="style.textDecoration='none'">${user.userName }</a>
+														</td>
+														<td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
+														
+														<td style="width: 10%;"><a id="deleteButton"
+															class="no-drop" href="javascript:delOneTenement(${user.id })"
+															style="margin-left: 10px"> <i class="fa fa-trash"></i>
+														</a></td>
+													</tr>
+												</c:if>
+											</c:forEach> 
+										</tbody>
+                                    	<tfoot class="hide">
+											<tr>
+												<td colspan="9">
+													<ul class="pagination pull-right"></ul>
+												</td>
+											</tr>
+										</tfoot>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				
+				<a href="<%=path%>/nginx/k8snginxcfg"><span type="button" class="btn btn-default" value="k8snginxcfg">k8snginxcfg</span></a>
 				
 				</div>
 			</div>
 		</article>
 	</div>
-	
-	<script type="text/javascript">
-	$(document).ready(function(){
-		$(".k8s").hide();
-		$(".extrn").hide();
-		$(".testTool").hide();
-		$(".ishash").hide();
-		$("#nginxType").change(function(){
-			var nginxType = $("#nginxType").val();
-			if(nginxType == 1){
-				$(".k8s").show();
-				$(".ishash").show();
-				$(".extrn").hide();
-				$(".testTool").hide();
-			}else if(nginxType == 2){
-				$(".k8s").hide();
-				$(".ishash").show();
-				$(".extrn").show();
-				$(".testTool").hide();
-			}else{
-				$(".k8s").hide();
-				$(".ishash").hide();
-				$(".extrn").hide();
-				$(".testTool").show();
-			}
-		});
-	})
-	
-	</script>
-	
 </body>
 </html> 
