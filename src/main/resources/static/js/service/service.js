@@ -804,7 +804,7 @@ function loadServices() {
 					{
 						data : null,
 						render : function (data,type,row) {
-							var html = '<b id="aaa"'+
+							var html = '<b '+
 								'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>'+
 								'<a href="'+ctx+'/service/detail/'+row.id +'" serviceId="'+row.id +'"'+
 								'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">'+ row.serviceName +'</a>'+
@@ -927,7 +927,7 @@ function loadServices() {
 							} else {
 								html += ' <a id="'+row.id+'_upgradeCluster" class="no-drop upgradeCluster_a " '+
                                     	'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+row.serviceName+'&apos;,&apos;'+row.imgName+'&apos;,this)" title="版本升级"'+
-                                        'style="margin-left: 5px"><i class="fa fa-arrow-up self_a"></i></a>';
+                                        'style="margin-left: 5px;margin-right:5px"><i class="fa fa-arrow-up self_a"></i></a>';
 							}
 							
 							html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+

@@ -44,9 +44,7 @@
                                         <tr>
 											<th style="width: 5%; text-indent: 30px;">
 												<input type="checkbox" class="chkAll" id="checkallbox" /></th>
-											<th style="width: 30%; padding-left: 5px;">登录账号</th>
-											<th style="width: 20%;">姓名</th>
-											<th style="width: 20%;">角色权限</th>
+											<th style="width: 30%;">登录账号</th>
 											<th style="width: 10%;" class="del-operation">操作</th>
 										</tr>
                                     </thead>
@@ -61,20 +59,9 @@
 															type="checkbox" class="chkItem" name="ids"
 															value="${user.id }"></td>
 														<td style="width: 30%;">
-															<b id="aaa" class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>
 															${user.userName }
 														</td>
-														<td style="width: 20%; text-indent: 0;">${user.user_realname }</td>
-														
-														<td style="width: 20%; text-indent: 0;"
-															id="user.user_autority" name="user.user_autority"><input
-															type="hidden" id="user_autority_hidden"
-															value="${user.user_autority}"> <select
-															class="hidden" id="user_autority" name="user_autority">
-																<option name="user_autority" value="2">租户</option>
-																<option name="user_autority" value="1">管理员</option>
-														</select></td>
-														<td style="width: 10%;"><a id="k8snginxcfgButton" title="k8snginxcfg"
+														<td style="width: 10%;"><a class="k8snginxcfgButton" title="k8snginxcfg"
 															class="no-drop" href="<%=path%>/nginx/k8snginxcfg"
 															style="margin-left: 10px"> <i class="fa fa-gears"></i>
 														</a></td>
@@ -84,7 +71,7 @@
 										</tbody>
                                     	<tfoot class="hide">
 											<tr>
-												<td colspan="5">
+												<td colspan="3">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
@@ -106,7 +93,7 @@
 		 $('.dataTables-example').dataTable({
 			"aoColumnDefs" : [ {
 				"bSortable" : false,
-				"aTargets" : [ 0, 4 ]
+				"aTargets" : [ 0, 2 ]
 			} ],
 			//"aaSorting": [[ 5, "desc" ]]
 		});
