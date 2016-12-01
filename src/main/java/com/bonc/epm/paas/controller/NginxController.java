@@ -71,7 +71,7 @@ public class NginxController {
     
     @RequestMapping(value = "/k8snginxcfg", method = RequestMethod.GET)
 	public String k8snginxcfg(Model model) {
-       
+    	model.addAttribute("menu_flag", "service");
         return "nginx/k8snginxcfg.jsp";
     }
 
