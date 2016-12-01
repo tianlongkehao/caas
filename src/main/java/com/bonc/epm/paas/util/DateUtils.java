@@ -436,6 +436,10 @@ public class DateUtils {
         return getDate2Str("yyyy-MM-dd HH:mm:ss", date);
     }
 
+    public static String getDateStr(Date date) {
+        return getDate2Str("yyyy-MM-dd-HH-mm-ss", date);
+    }
+    
     /**
      * 将日期转换为长字符串（包含：年-月-日 时:分:秒）
      * 
@@ -564,6 +568,11 @@ public class DateUtils {
     public static String getLong2LStr(long l) {
     	DATE = getLongToDate(l);
         return getDate2LStr(DATE);
+    }
+    
+    public static String getLongStr(long l) {
+        DATE = getLongToDate(l);
+        return getDateStr(DATE);
     }
 
     /**

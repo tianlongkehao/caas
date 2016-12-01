@@ -102,7 +102,7 @@
 				<!--进度条 -->
 				<div class="modal fade container" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 30%">
 					<div class="progress progress-striped active" id="loading" style="margin-top: 87%;">
-						<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+						<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;font-size:130%;"></div>
 					</div>
 				</div>
 				<div id="createdir-templat" hidden="true">
@@ -119,23 +119,23 @@ $(document).ready(function () {
 	//tab页切换
 	$( "#tabs" ).tabs();
 	//拖动
-	$(".sortable-list").sortable({
-		connectWith: ".connectList"
-	}).disableSelection();
+// 	$(".sortable-list").sortable({
+// 		connectWith: ".connectList"
+// 	}).disableSelection();
 	//缩放
-	$( ".localDoc" ).resizable({
-  		autoHide: true,
-		containment: ".row",
-		maxHeight: 535,
-		maxWidth:770,
-		minWidth:413,
-		resize: function( event, ui ) {
-			var localDocWidth = $(".localDoc").width();
-			var totalWidth = $(".localDoc").parent().width();
-			var scpDocWidth = totalWidth - localDocWidth - 10;
-			$(".scpDoc").width(scpDocWidth+"px");
-		}
-	});
+// 	$( ".localDoc" ).resizable({
+//   		autoHide: true,
+// 		containment: ".row",
+// 		maxHeight: 535,
+// 		maxWidth:770,
+// 		minWidth:413,
+// 		resize: function( event, ui ) {
+// 			var localDocWidth = $(".localDoc").width();
+// 			var totalWidth = $(".localDoc").parent().width();
+// 			var scpDocWidth = totalWidth - localDocWidth - 10;
+// 			$(".scpDoc").width(scpDocWidth+"px");
+// 		}
+// 	});
 });
 </script>
 		</article>

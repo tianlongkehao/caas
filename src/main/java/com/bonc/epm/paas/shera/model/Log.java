@@ -21,7 +21,7 @@ package com.bonc.epm.paas.shera.model;
 public class Log {
     private String content;
     private boolean flag;
-    private Long seek;
+    private Integer seek;
     public String getContent() {
         return content;
     }
@@ -34,10 +34,10 @@ public class Log {
     public void setFlag(boolean flag) {
         this.flag = flag;
     }
-    public Long getSeek() {
+    public Integer getSeek() {
         return seek;
     }
-    public void setSeek(Long seek) {
+    public void setSeek(Integer seek) {
         this.seek = seek;
     }
 }

@@ -41,7 +41,6 @@
                             <div class="log-details" id="ciRecordList">
 
                                 <c:forEach items="${ciRecordList}" var="ciRecord" varStatus="status">
-
                                     <c:choose>
                                         <c:when test="${ciRecord.constructResult == 1}">
                                             <c:set var="statusClass" value="fa_run"></c:set>
@@ -54,6 +53,12 @@
                                             <c:set var="eventStatusClass" value="fa-times"></c:set>
                                             <c:set var="statusName" value="失败"></c:set>
                                             <c:set var="eventStatus" value="error"></c:set>
+                                        </c:when>
+                                        <c:when test="${ciRecord.constructResult == 3}">
+                                            <c:set var="statusClass" value="fa_run"></c:set>
+                                            <c:set var="eventStatusClass" value="fa-check"></c:set>
+                                            <c:set var="statusName" value="构建中"></c:set>
+                                            <c:set var="eventStatus" value=""></c:set>
                                         </c:when>
                                     </c:choose>
                                     
@@ -169,9 +174,26 @@
 					                            <div class="form-group1 col-md-12">
 					                            	<label class="c-project-tit">认证方式</label>
 					                            	<select id="codeCredentials" name="codeCredentials" class="form-control c-project-con" style="width:50%;float:left;">
-					                                    <option value="${ci.codeCredentials }">${ci.codeCredentials }</option>
-					                                    <option value="gitlab(SSH)(gitlab SSH方式认证)">gitlab(SSH)(gitlab SSH方式认证)</option>
-				                                      	<option value="root/**********(gitlab HTTPS方式认证)">root/**********(gitlab HTTPS方式认证)</option>
+					                            	  <c:forEach items="${ciCodeList}" var="ciCode" >
+					                            	      <c:if test="${ciCode.id == ci.codeCredentials }">
+	                                                          <c:if test="${ciCode.type == 1 }">
+	                                                              <option value="${ciCode.id }">${ciCode.userName }(HTTP)</option>
+	                                                          </c:if>
+	                                                          <c:if test="${ciCode.type == 2 }">
+	                                                              <option value="${ciCode.id }">${ciCode.userName }(SSH)</option>
+	                                                          </c:if>
+					                            	      </c:if>
+                                                      </c:forEach>
+					                            	  <c:forEach items="${ciCodeList}" var="ciCode" >
+					                            	      <c:if test="${ciCode.id != ci.codeCredentials }">
+				                                              <c:if test="${ciCode.type == 1 }">
+				                                                  <option value="${ciCode.id }">${ciCode.userName }(HTTP)</option>
+				                                              </c:if>
+				                                              <c:if test="${ciCode.type == 2 }">
+				                                                  <option value="${ciCode.id }">${ciCode.userName }(SSH)</option>
+				                                              </c:if>
+					                            	      </c:if>
+			                                          </c:forEach>
 					                                </select>
 					                                <button type="button" id="addCredentialsBtn" class="addCredentialsBtn" value="添加证书"><i class="fa fa-key"></i>&nbsp添加证书</button>
 					                            </div>

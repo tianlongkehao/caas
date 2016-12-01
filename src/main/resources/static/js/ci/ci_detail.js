@@ -19,8 +19,10 @@ $(document).ready(function(){
     printLog();
 	
     //动态给版本信息赋宽度
-    var btnVersionWidth = $(".btn-version").html().length*10;
-    $(".btn-version").css("width",btnVersionWidth);
+    if(printLog()){
+    	var btnVersionWidth = $(".btn-version").html().length*10;
+        $(".btn-version").css("width",btnVersionWidth);
+    }
     
 	//codeType
 	$(".git-config").hide();
@@ -309,9 +311,11 @@ $(document).ready(function(){
 		if(credentialsType == 1){
 			$(".normal").show();
 			$(".ssh").hide();
+			$("#SSHpasswordCred").val("");
 		}else{
 			$(".normal").hide();
 			$(".ssh").show();
+			$("#passwordCred").val("");
 		}
 	});
 });/*ready*/
@@ -448,17 +452,17 @@ function registerConstructCiEvent(){
 
 function registerCiEditEvent(){
 	$("#editCiBtn").click(function(){
-//		var dockerFile = editor_one.getValue();
 		if (checkCodeCiAdd()) {
+			var load = layer.load(0, {shade: [0.3, '#000']});
 			$("#editCiForm").ajaxSubmit({
 				url: ctx+"/ci/modifyCodeCi.do",
-//				data:{"dockerFileContent":dockerFile},
 				type: "post",
 				success: function (data) {
 					data = eval("(" + data + ")");
 					if (data.status == "200") {
 						layer.alert("修改成功");
 						$("#projectNameSpan").text($("#projectName").val());
+						layer.close(load);
 					} else {
 						layer.alert(data.msg);
 					}
@@ -563,7 +567,12 @@ function registerCiDelEvent(id){
 	        		success:function(data){
 	        			data = eval("(" + data + ")");
 	        			 if(data.status=="200"){
-                             window.location.href = ctx+"/ci";
+	        				 if(data.type == "1"){
+	        					 window.location.href = ctx+"/ci?code";
+	        				 }else{
+	        					 window.location.href = ctx+"/ci";
+	        				 }
+                             
 	                     } else {
 	                         layer.alert(data.msg);
 	                     }
@@ -806,6 +815,14 @@ function loadMavenData(count,invoke){
 		mavenSet = '<option value="settings file in filesystem">settings file in filesystem</option>'+
 				    '<option value="use default maven setting">use default maven setting</option>';
 	}
+	var mavenVersion = invoke.mavenVersion;
+	var mavenVersionData = '';
+	if (mavenVersion == 'default') {
+		mavenVersionData = '<option value="default">default</option><option value="maven">maven</option>';
+	}
+	else {
+		mavenVersionData = '<option value="maven">maven</option><option value="default">default</option>';
+	}
 	
 	var mavenGlobalSet = '';
 	var mavenGlobalSetFile = invoke.mavenGlobalSetFile;
@@ -836,8 +853,7 @@ function loadMavenData(count,invoke){
             	'<div class="form-group col-md-12">'+
                     '<label class="c-project-tit">maven版本</label>'+
                     '<select id="mavenVersion-'+count+'" name="mavenVersion" class="form-control c-project-con" >'+
-                    	'<option value="default">default</option>'+
-                        '<option value="maven">maven</option>'+
+                    mavenVersionData + 
                     '</select>'+
                 '</div>'+
                 '<div class="form-group col-md-12">'+
@@ -995,6 +1011,31 @@ function checkCodeCiAdd(){
     		$('#codeUrl').focus();
     		return;
 	    }
+    	
+    	//代码地址通过代码验证是否可以通过验证
+    	var codeCredentialId = $("#codeCredentials").val();
+    	var flagUrl = false;
+    	$.ajax({
+    		url : ctx + "/ci/judgeCodeUrl.do",
+    		async:false,
+    		type: "POST",
+    		data:{"codeUrl":codeUrl,"codeCredentialId":codeCredentialId},
+    		success : function(data) {
+    			data = eval("(" + data + ")");
+    			if (data.status=="400") {
+    	            layer.tips('代码仓库地址验证失败，请您检查是否有误', '#codeUrl', {
+    	                tips: [1, '#0FA6D8'] 
+    	            });
+    	            $('#codeUrl').focus();
+    	            flagUrl = true;
+    			} 
+    		}
+    	});
+    	if (flagUrl) {
+    		flagUrl = false;
+        	return false;
+        }
+    	
     	//判断代码分支
     	var codeBranch = $("#codeBranch").val();
     	if(!codeBranch || codeBranch.length < 1){

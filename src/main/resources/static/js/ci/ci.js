@@ -2,26 +2,46 @@ $(document).ready(function () {
 	$("#ciReloadBtn").click(function(){
 		window.location.reload();
 	});
-	loadCi();
+	$(".ci-code-content").hide();
+	
+	loadList();
+	
     registerConstructCiEvent();
     
     //ci and ci-code 列表切换
-    $(".ci-code-content").hide();
+    
     $(document).on('click','#ciTab',function(){
-    	loadCi();
-    	$(".ci-code-content").hide();
-    	$(".ci-content").show();
-    	$("#ciCodeTab").removeClass("active");
-    	$("#ciTab").addClass("active");
+    	ciClick();
     });
     $(document).on('click','#ciCodeTab',function(){
-    	loadCiCode();
-    	$(".ci-code-content").show();
-    	$(".ci-content").hide();
-    	$("#ciCodeTab").addClass("active");
-    	$("#ciTab").removeClass("active");
+    	cicodeClick();
     });
 });
+
+function loadList(){
+	var locationUrl = window.location.href;
+	var str1 = "code";
+	if(locationUrl.indexOf(str1) != -1){
+		cicodeClick();
+	}else{
+		ciClick();
+	}
+}
+function ciClick(){
+	loadCi();
+	$(".ci-code-content").hide();
+	$(".ci-content").show();
+	$("#ciCodeTab").removeClass("active");
+	$("#ciTab").addClass("active");
+}
+function cicodeClick(){
+	
+	$(".ci-code-content").show();
+	$(".ci-content").hide();
+	$("#ciCodeTab").addClass("active");
+	$("#ciTab").removeClass("active");
+	loadCiCode();
+}
 
 function addCiInfo(type) {
 	$.ajax({
@@ -81,7 +101,12 @@ function registerConstructCiEvent(){
 			success:function(data){
 				data = eval("(" + data + ")");
 				if(data.status=="200"){
-					window.location.reload();
+					if(data.ci.type == "1"){
+   					 	window.location.href = ctx+"/ci?code";
+	   				 }else{
+	   					 window.location.href = ctx+"/ci";
+	   				 }
+//					window.location.reload();
 				}else{
 					layer.alert(data.msg);
 				}

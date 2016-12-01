@@ -111,7 +111,11 @@ public class MethodInvoker {
     	    if (!response.getHeaders().isEmpty() && response.getHeaders().containsKey("Etag")) {
     	        return response.getHeaders();
     	    } else {
-    	        return response.readEntity(method.getReturnType());
+    	    	if ("void".equals(method.getReturnType().toString())) {
+    	    		return null;
+    	    	} else {
+    	    		return response.readEntity(method.getReturnType());
+    	    	}
     	    }
     	}
     	catch(ProcessingException | IllegalStateException k8s) {
