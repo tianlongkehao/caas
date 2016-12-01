@@ -83,6 +83,11 @@
                         引入外部服务
                     </a>
                 </li>
+                <li>
+                    <a href="<%=path %>/nginx/list">
+                       服务代理
+                    </a>
+                </li>
             </ul>
         </li>
         <li id="menu_ci">

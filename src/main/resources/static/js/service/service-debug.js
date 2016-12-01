@@ -10,6 +10,8 @@ function EnterPress(e) { // 传入 event
 } 
 
 function creatable(isDir, dirName) {
+	var path = document.getElementById("path").value;
+	var hostkey = document.getElementById("hostkey").value;
 	$(".chkAll").prop('checked', $(this).is(":checked"));
 	if (null == isDir || true == isDir) {
 		var tbody = "";
@@ -18,7 +20,7 @@ function creatable(isDir, dirName) {
 		if (null == dirName) {
 			dirName = "";
 		}
-		param = "dirName=" + encodeURIComponent(dirName);
+		param = "dirName=" + encodeURIComponent(dirName) + "&path=" + encodeURIComponent(path) + "&hostkey=" + encodeURIComponent(hostkey);
 		context.empty();
 
 		$.ajax({
@@ -32,6 +34,7 @@ function creatable(isDir, dirName) {
 					return;
 				}
 				$("#scp-path").val(data.path);
+				$("#path").val(data.path);
 				for (i in data.fileList) {
 					var fileInfo = JSON.stringify(data.fileList[i]);
 					fileInfo = eval("(" + fileInfo + ")");
@@ -115,6 +118,7 @@ function creatable(isDir, dirName) {
 }
 // 删除某一行
 function delfile(obj) {
+	var hostkey = document.getElementById("hostkey").value;
 	var fileName = $(obj).attr("fileName");
 	layer.open({
 		title : '删除文件',
@@ -123,7 +127,7 @@ function delfile(obj) {
 		yes : function(index, layero) {
 			$.ajax({
 				type : "GET",
-				url : ctx + "/service/delFile.do?fileNames=" + encodeURIComponent(fileName),
+				url : ctx + "/service/delFile.do?fileNames=" + encodeURIComponent(fileName) + "&hostkey=" + encodeURIComponent(hostkey),
 				success : function(data) {
 					var data = eval("(" + data + ")");
 					if (data.status == "400") {
@@ -140,6 +144,7 @@ function delfile(obj) {
 
 // 批量删除
 function delfiles() {
+	var hostkey = document.getElementById("hostkey").value;
 	var path = $('#downfilepath').val();
 	obj = document.getElementsByName("downfiles");
 	var fileNames = [];
@@ -159,7 +164,7 @@ function delfiles() {
 				return;
 			}
 			$.ajax({
-				url : "" + ctx + "/service/delFile.do?fileNames=" + encodeURIComponent(fileNames),
+				url : "" + ctx + "/service/delFile.do?fileNames=" + encodeURIComponent(fileNames) + "&hostkey=" + encodeURIComponent(hostkey),
 				success : function(data) {
 					var data = eval("(" + data + ")");
 					if (data.status == "400") {
@@ -175,6 +180,7 @@ function delfiles() {
 
 // 新建文件夹
 function createdir() {
+	var hostkey = document.getElementById("hostkey").value;
 	layer.open({
 		type : 1,
 		content : $('#createdir-templat'),
@@ -185,7 +191,7 @@ function createdir() {
 			var dirName = $('#newdir').val();
 			$.ajax({
 				type : "POST",
-				url : ctx + "/service/createFile.do?dirName=" + dirName,
+				url : ctx + "/service/createFile.do?dirName=" + dirName + "&hostkey=" + encodeURIComponent(hostkey),
 				success : function(data) {
 					var data = eval("(" + data + ")");
 					if (data.status == "500") {
@@ -203,6 +209,7 @@ function createdir() {
  */
 function downloadFiles() {
 	obj = document.getElementsByName("downfiles");
+	var hostkey = document.getElementById("hostkey").value;
 	var fileNames = [];
 	for (k in obj) {
 		if (obj[k].checked) {
@@ -213,15 +220,16 @@ function downloadFiles() {
 		failedMSG("请选择需要下载的文件", false);
 		return;
 	}
-	location.href = ctx + "/service/downloadFile?downfiles=" + fileNames;
+	location.href = ctx + "/service/downloadFile?downfiles=" + fileNames + "&hostkey=" + encodeURIComponent(hostkey);
 }
 
 /**
  * 下载文件
  */
 function downloadFile(obj) {
+	var hostkey = document.getElementById("hostkey").value;
 	var fileName = $(obj).attr("fileName");
-	window.open(ctx + "/service/downloadFile?downfiles=" + fileName);
+	window.open(ctx + "/service/downloadFile?downfiles=" + fileName + "&hostkey=" + encodeURIComponent(hostkey));
 }
 
 /**
