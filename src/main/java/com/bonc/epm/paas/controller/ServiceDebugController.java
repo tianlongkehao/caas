@@ -74,7 +74,7 @@ import com.jcraft.jsch.SftpException;
 public class ServiceDebugController {
 
 	private static final String ROOT = "/";
-	private ChannelSftp sftp;
+	private Map<String, ChannelSftp> sftpPool = new HashMap<String, ChannelSftp>();
 	
     /**
      * 获取SFTP数据
@@ -182,7 +182,9 @@ public class ServiceDebugController {
         }
 
 		// 建立SFTP connect
-		sftp = SFTPUtil.connect(SFTP_HOST, port, SFTP_USER, SFTP_PASSWORD);
+    	ChannelSftp sftp = SFTPUtil.connect(SFTP_HOST, port, SFTP_USER, SFTP_PASSWORD);
+    	sftpPool.put(SFTP_HOST+":"+ port, sftp);
+    	
 		try {
 			// 跳转至初始目录
 			sftp.cd(ROOT);
@@ -202,6 +204,7 @@ public class ServiceDebugController {
 		model.addAttribute("imageName", imageName);
 		model.addAttribute("menu_flag", "service");
 		model.addAttribute("sshhost", SSH_HOST);
+		model.addAttribute("hostkey", SFTP_HOST+":"+ port);
 		return "service/service-debug.jsp";
 	}
 
@@ -221,10 +224,16 @@ public class ServiceDebugController {
 
 	@RequestMapping(value = { "service/listFile" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String fileList(String dirName) {
-
-		List<FileInfo> fileList = new ArrayList<FileInfo>();
+	public String fileList(String dirName, String path, String hostkey) {
 		Map<String, Object> map = new HashMap<String, Object>();
+	
+		ChannelSftp sftp = sftpPool.get(hostkey);
+		if (sftp == null) {
+			// 连接已经断开
+			map.put("status", "401");
+			return JSON.toJSONString(map);
+		}
+		List<FileInfo> fileList = new ArrayList<FileInfo>();
 		String directory = new String();
 
 		try {
@@ -234,6 +243,7 @@ public class ServiceDebugController {
 			} else {
 				// 有目标目录时，cd到目标目录获取pwd绝对路径
 				System.out.println(sftp.pwd());
+				sftp.cd(path);
 				sftp.cd(dirName);
 				directory = sftp.pwd();
 			}
@@ -260,8 +270,14 @@ public class ServiceDebugController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = { "service/delFile.do" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String delFile(String fileNames) {
+	public String delFile(String fileNames, String hostkey) {
 		Map<String, String> map = new HashMap<String, String>();
+		ChannelSftp sftp = sftpPool.get(hostkey);
+		if (sftp == null) {
+			// 连接已经断开
+			map.put("status", "401");
+			return JSON.toJSONString(map);
+		}
 		String[] fileName = fileNames.split(",");
 		String path = ROOT;
 		String filename = new String();
@@ -276,7 +292,7 @@ public class ServiceDebugController {
 					Vector<LsEntry> list = sftp.ls(sftp.pwd());
 					for (LsEntry lsEntry : list) {
 						if (!lsEntry.getFilename().equals(".") && !lsEntry.getFilename().equals("..")) {
-							delFile(lsEntry.getFilename());
+							delFile(lsEntry.getFilename(), hostkey);
 						}
 					}
 					sftp.cd(path);
@@ -310,8 +326,14 @@ public class ServiceDebugController {
 	 */
 	@RequestMapping(value = { "service/createFile.do" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String createFile(String dirName) {
+	public String createFile(String dirName, String hostkey) {
 		Map<String, String> map = new HashMap<String, String>();
+		ChannelSftp sftp = sftpPool.get(hostkey);
+		if (sftp == null) {
+			// 连接已经断开
+			map.put("status", "401");
+			return JSON.toJSONString(map);
+		}
 		try {
 			sftp.mkdir(dirName);
 		} catch (SftpException e) {
@@ -337,8 +359,13 @@ public class ServiceDebugController {
 	 */
 
 	@RequestMapping(value = { "service/downloadFile" }, method = RequestMethod.GET)
-	public void downloadFile(String downfiles, HttpServletRequest request, HttpServletResponse response) throws SftpException, IOException {
+	public void downloadFile(String downfiles, String hostkey, HttpServletRequest request, HttpServletResponse response) throws SftpException, IOException {
 		String path = "";
+		ChannelSftp sftp = sftpPool.get(hostkey);
+		if (sftp == null) {
+			System.out.println("连接已经断开");
+			return;
+		}
 		path = sftp.pwd();
 		List<String> resultList = new ArrayList<String>();
 		
@@ -416,9 +443,15 @@ public class ServiceDebugController {
 
 	@RequestMapping(value = { "service/uploadFile" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path) {
+	public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path, String hostkey) {
 		try {
 			Map<String, String> map = new HashMap<String, String>();
+			ChannelSftp sftp = sftpPool.get(hostkey);
+			if (sftp == null) {
+				// 连接已经断开
+				map.put("status", "401");
+				return JSON.toJSONString(map);
+			}
 			for (int i = 0; i < files.length; i++) {
 				File file = new File(files[i].getOriginalFilename());
 				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
