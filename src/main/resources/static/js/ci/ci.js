@@ -94,6 +94,7 @@ function registerConstructCiEvent(){
 		        "<img src='"+ctx+"/images/loading4.gif' alt=''/>";
 		$this.parent().parent().find(".cStatusColumn").html(cStatusHtml);
 		$this.css("cursor","no-drop");
+		$this.find("i").removeClass("bj-no-drop");
 		$(this).unbind("click");
 		$.ajax({
 			url:ctx+"/ci/constructCi.do?id="+id,
@@ -209,7 +210,7 @@ function loadCi() {
 							}
 							var html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
 											'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
-											'<i class="fa fa-arrow-circle-right"></i>'+
+											'<i class="fa fa-arrow-circle-right bj-no-drop"></i>'+
 										'</span>';
 							return html;
 						}
@@ -297,11 +298,16 @@ function loadCiCode() {
 							var btnCursorClass = '';
 							if (row.constructionStatus == 2 ) {
 								btnCursorClass = 'cursor-no-drop';
+								var html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
+								'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
+								'<i class="fa fa-arrow-circle-right "></i>'+
+							'</span>';
+							}else{
+								var html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
+								'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
+								'<i class="fa fa-arrow-circle-right bj-no-drop"></i>'+
+							'</span>';
 							}
-							var html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
-											'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
-											'<i class="fa fa-arrow-circle-right"></i>'+
-										'</span>';
 							return html;
 						}
 					}

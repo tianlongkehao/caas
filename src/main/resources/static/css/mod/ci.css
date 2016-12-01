@@ -39,9 +39,11 @@
 }
 
 .bj-green i{
-    color:#3c7bca;
     font-size:21px;
-    cursor: pointer;
+}
+.bj-no-drop{
+	color:#3c7bca;
+	cursor: pointer;
 }
 
 .bj-drop{
