@@ -33,3 +33,28 @@
 i.self_a {
 	color: #676a6c;
 }
+.aside-btn {
+    height: 60px;
+    position: relative;
+    padding: 0 20px;
+    background: #EAEEF1;
+}
+.aside-btn .btns-group {
+    position: absolute;
+    bottom: -1px;
+}
+.btns-group .btn-white {
+    background: #fff;
+    color: #3C7BCA;
+}
+.searchFun{
+    text-align: center;
+    margin: 0px 10px;
+    margin-top: 20px;
+    float: right;
+}
+
+
+
+
+

@@ -28,6 +28,51 @@
 					</ol>
 				</div>
 				<div class="contentMain">
+					<aside class="aside-btn">
+	                    <div class="btns-group">
+	                        <a id="clusterResource" class="Record action"><span class="btn btn-defaults btn-white"><span
+	                                class="ic_left">代理配置</span></span></a>
+	                    </div>
+	                    
+	                    <c:if test="${user == 'user' }">
+		                    <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; margin-top:20px; float: right"
+		                                 align="right">
+		                            <label style="line-height: 35px">服务:</label>
+		                            <select name="search_service" id="search_service" onchange="searchService(this)"
+		                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
+		                                    <option value="">-----请选择-----</option>
+		                                    <option value="all">All</option>
+		                                <c:forEach items="${serviceTopo}" var="service">
+		                                    <option value="${service.serviceName }">${service.serviceName }</option>
+		                                </c:forEach>
+		                            </select>
+		                    </div>
+	                   </c:if>
+	                   
+	                   <%-- <c:if test="${user == 'root' }"> --%>
+	                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; margin-top:20px; float: right"
+	                                     align="right">
+	                                <label style="line-height: 35px">服务:</label>
+	                                <select name="search_service" id="search_service" onchange="searchService(this)"
+	                                        style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
+	                                </select>
+	                        </div>
+	                        
+	                        <div class="searchFun" style="float: left; text-align: center; margin: 0px 10px; margin-top:20px; float: right"
+	                                 align="right">
+	                            <label style="line-height: 35px">用户:</label>
+	                            <select name="search_user" id="search_user" onchange="searchUser(this)"
+	                                    style="height: 30px;display: inline; width: 140px; border-radius: 5px; ">
+	                                    <option value="">-----请选择-----</option>
+	                                    <option value="all">All</option>
+	                                <c:forEach items="${userList}" var="user">
+	                                    <option value="${user.namespace }">${user.namespace }</option>
+	                                </c:forEach>
+	                            </select>
+	                       </div>
+	                   <%-- </c:if> --%>
+	                   <input type = "hidden" id = "userType" value = "${user }">
+	                </aside>
 					<div class="item-obj">
 						<div class="container">
 							<form id="nginxForm" class="">
