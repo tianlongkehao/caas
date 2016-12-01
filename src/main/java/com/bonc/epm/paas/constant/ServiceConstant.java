@@ -28,6 +28,10 @@ public class ServiceConstant {
      * 容器状态 启动失败
      */
     public static final Integer CONSTRUCTION_STATUS_FAILED  = 5;
+    /**
+     * 容器状态 调试中
+     */
+    public static final Integer CONSTRUCTION_STATUS_DEBUG = 6;
 	
     /**
      * 默认检测延迟

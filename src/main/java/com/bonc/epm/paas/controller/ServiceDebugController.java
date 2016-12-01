@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.constant.ImageConstant;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.ServiceDao;
@@ -491,27 +492,27 @@ public class ServiceDebugController {
 			if (dockerClientService.pushImage(repository, version, dockerClient)) {
 		        User currentUser = CurrentUserUtils.getInstance().getUser();
 		        //获取数据库中原始镜像的对象
-		        Image oriImage = imageDao.findByNameAndVersion(repository, tag);
-		        if (oriImage == null) {
-					// 获取数据库中原始镜像的对象失败，返回403
-		            MultivaluedMap<String, Object> result = client.getManifestofImage(repository, version);
-		            if (null != result.get("Etag") && result.get("Etag").size() > 0) {
-		                for (Object oneRow : result.get("Etag")) {
-		                    System.out.println(oneRow);
-		                    client.deleteManifestofImage(repository, oneRow.toString());
-		                }
-		            }
-
-					map.put("status", 403);
-					return JSON.toJSONString(map);
-				}
+//		        Image oriImage = imageDao.findByNameAndVersion(repository, tag);
+//		        if (oriImage == null) {
+//					// 获取数据库中原始镜像的对象失败，返回403
+//		            MultivaluedMap<String, Object> result = client.getManifestofImage(repository, version);
+//		            if (null != result.get("Etag") && result.get("Etag").size() > 0) {
+//		                for (Object oneRow : result.get("Etag")) {
+//		                    System.out.println(oneRow);
+//		                    client.deleteManifestofImage(repository, oneRow.toString());
+//		                }
+//		            }
+//
+//					map.put("status", 403);
+//					return JSON.toJSONString(map);
+//				}
 		        //保存当前debug的镜像到数据库中
 		        Image image = new Image();
 		        image.setCreateTime(new Date());
 		        image.setCreator(currentUser.getId());
 		        image.setImageId(imageId);
-		        image.setImageType(oriImage.getImageType());
-		        image.setIsBaseImage(oriImage.getIsBaseImage());
+		        image.setImageType(ImageConstant.privateType);
+		        image.setIsBaseImage(ImageConstant.NotBaseImage);
 		        image.setName(repository);
 		        image.setVersion(version);
 		        image.setIsDelete(CommConstant.TYPE_NO_VALUE);
