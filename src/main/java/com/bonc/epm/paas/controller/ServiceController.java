@@ -1183,7 +1183,8 @@ public class ServiceController {
                 map.put("status", "500");
             }
             else {
-                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+                
+/*                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
                 ReplicationController controller = client.getReplicationController(serviceName);
                 String NS = controller.getMetadata().getNamespace();
                 String cmd = "kubectl rolling-update " + serviceName + " --namespace=" + NS
@@ -1199,7 +1200,7 @@ public class ServiceController {
                     String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS + " --rollback";
                     cmdexec(rollBackCmd);
                     map.put("status", "400");
-                }
+                }*/
             }
         }
         catch (KubernetesClientException e) {
