@@ -1,18 +1,10 @@
 package com.bonc.epm.paas.controller;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,13 +18,10 @@ import java.util.stream.Stream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.JOptionPane;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +67,6 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
-import com.bonc.epm.paas.kubernetes.model.ContainerState;
 import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
@@ -1218,6 +1206,10 @@ public class ServiceController {
             map.put("status", "400");
             map.put("msg", e.getStatus().getMessage());
             LOG.error("modify imageVersion error:" + e.getStatus().getMessage());
+        }               
+        catch (Exception ex) {
+            map.put("status", 400);
+            map.put("msg", ex.getMessage());
         }
 
         return JSON.toJSONString(map);
