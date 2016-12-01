@@ -43,6 +43,7 @@ import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ImageConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiCodeCredentialDao;
+import com.bonc.epm.paas.dao.CiCodeHookDao;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiInvokeDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
@@ -51,6 +52,7 @@ import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeCredential;
+import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
@@ -58,6 +60,7 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.JdkList;
@@ -111,6 +114,12 @@ public class CiController {
      */
     @Autowired
     private CiCodeCredentialDao ciCodeCredentialDao;
+    
+    /**
+     * 代码挂钩接口
+     */
+    @Autowired
+    private CiCodeHookDao ciCodeHookDao;
     
     /**
      * ImageDao接口
@@ -678,11 +687,13 @@ public class CiController {
             ci.setType(CiConstant.TYPE_CODE);
             ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
             ciDao.save(ci);
+            //查询代码构建详细信息
             List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
             if (!StringUtils.isEmpty(ciInvokeList)) {
                 ciInvokeDao.save(ciInvokeList);
                 LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
             }
+            //查询代码认证
             CiCodeCredential ciCodeCredential = new CiCodeCredential();
             if (!StringUtils.isEmpty(ci.getCodeCredentials())) {
                 ciCodeCredential = ciCodeCredentialDao.findOne(ci.getCodeCredentials());
@@ -694,6 +705,21 @@ public class CiController {
                     dockerFileContent,ci.getDockerFileLocation(),ci.getImgNameLast(),
                     ciInvokeList,ciCodeCredential.getUserName(),ciCodeCredential.getType());
                 client.createJob(job);
+                //添加代码挂钩
+                if (ci.getIsHookCode() == 1) {
+                    ChangeGit changeGit = sheraClientService.generateChangeGit(cuurentUser.getUserName(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
+                    changeGit = client.addGitHooks(ci.getProjectName(), changeGit);
+                    CiCodeHook ciCodeHook = new CiCodeHook();
+                    ciCodeHook.setCreateDate(new Date());
+                    ciCodeHook.setNamespace(changeGit.getNamespace());
+                    ciCodeHook.setName(changeGit.getName());
+                    ciCodeHook.setBranch(changeGit.getBranch());
+                    ciCodeHook.setGiturl(changeGit.getGiturl());
+                    ciCodeHook.setFlag(changeGit.isFlag());
+                    ciCodeHookDao.save(ciCodeHook);
+                    ci.setHookCodeId(ciCodeHook.getId());
+                    ciDao.save(ci);
+                }
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -1488,7 +1514,7 @@ public class CiController {
                 String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");
                 gitCredential = sheraClientService.generateGitCredential(password, ciCodeCredential.getUserName(), ciCodeCredential.getType());
             }
-            client.addCredential(gitCredential);
+            gitCredential = client.addCredential(gitCredential);
             ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
             ciCodeCredential.setCreateDate(new Date());
             ciCodeCredentialDao.save(ciCodeCredential);
@@ -1501,4 +1527,10 @@ public class CiController {
         }
         return JSON.toJSONString(result);
     }
+    
+    public String delCodeHook(long ciId){
+        Map<String,Object> map = new HashMap<String, Object>();
+        return JSON.toJSONString(map);
+    }
+    
 }
