@@ -28,4 +28,12 @@ public interface CiRecordDao extends JpaRepository<CiRecord, Long> {
      * @see
      */
     List<CiRecord> findByCiId(long ciId,Sort sort);
+    
+    /**
+     * Description: <br>
+     * 根据构建id删除日志数据
+     * @param ciId ： 构建Id
+     * @see
+     */
+    void deleteByCiId(long ciId);
 } 

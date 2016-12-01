@@ -11,6 +11,9 @@
 
 package com.bonc.epm.paas.shera.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,7 @@ import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.AntConfig;
 import com.bonc.epm.paas.shera.model.BuildManager;
 import com.bonc.epm.paas.shera.model.CodeManager;
+import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.CredentialKey;
 import com.bonc.epm.paas.shera.model.GitAdvancedConfig;
 import com.bonc.epm.paas.shera.model.GitConfig;
@@ -84,6 +88,8 @@ public class SheraClientService {
         Job job = new Job();
         job.setId(id);
         job.setJdkVersion(jdkVersion);
+        job.setMaxExecutionRecords(2);
+        job.setMaxKeepDays(2);
         CodeManager codeManager = new CodeManager();
         GitConfig gitConfig = new GitConfig();
         gitConfig.setBranch(branch);
@@ -147,8 +153,10 @@ public class SheraClientService {
         ImgManager imgManager = new ImgManager();
         if (StringUtils.isNotEmpty(dockerFileContent)) {
             imgManager.setDockerFileContent(dockerFileContent);
+            imgManager.setDockerFile("");
         }
         if (StringUtils.isNotEmpty(dockerFile)) {
+            imgManager.setDockerFileContent("");
             imgManager.setDockerFile(dockerFile);
         }
         imgManager.setImgName(imgName);
@@ -187,15 +195,34 @@ public class SheraClientService {
         return gitCredential;
     }
     
+    /**
+     * Description: <br>
+     * 验证代码地址是否正确
+     * @param url ： 代码地址
+     * @param username ： 用户名；
+     * @param type ： 类型
+     * @return 
+     */
+    public CredentialCheckEntity generateCredentialCheckEntity(String url,String username,Integer type){
+        CredentialCheckEntity credentialCheckEntity = new CredentialCheckEntity();
+        credentialCheckEntity.setUrl(url);
+        CredentialKey credentialKey = new CredentialKey();
+        credentialKey.setType(type);
+        credentialKey.setUsername(username);
+        credentialCheckEntity.setKey(credentialKey);
+        return credentialCheckEntity;
+    }
+    
 //    public static void main(String[] args) {
 //        SheraClientService sheraClientService = new SheraClientService();
 //        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
 //        try {
 //            JobExecViewList  jobExecViewList = client.getJobAllExecutions("testdemo1");
-//            System.out.println(jobExecViewList);
+//            Log log = client.getExecLog("testdemo3", "1", 2091);
+//            System.out.println(log.getContent());
 //            
-//            JobExecView jobExecView = client.getExecution("testdemo1",1);
-//            System.out.println(jobExecView);
+////            JobExecView jobExecView = client.getExecution("testdemo1",1);
+////            System.out.println(jobExecView);
 //           
 ////            JobExecView jobExecView2 = client.killExecution("testdemo1",2);
 ////            System.out.println(jobExecView2);

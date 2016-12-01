@@ -39,9 +39,11 @@
 }
 
 .bj-green i{
-    color:#3c7bca;
     font-size:21px;
-    cursor: pointer;
+}
+.bj-no-drop{
+	color:#3c7bca;
+	cursor: pointer;
 }
 
 .bj-drop{
@@ -440,6 +442,15 @@ td .dockerfileinput {
     border: 0;
     background: #EF7772;
 }
+.other-details .col-9x .btn-deleteHook {
+    width: 100%;
+    height: 50px;
+    font-size: 16px;
+    line-height: 50px;
+    padding: 0;
+    margin: 10px 0;
+    border: 0;
+}
 
 .other-details .col-9x .other-hint {
     color: #666;
@@ -617,3 +628,7 @@ textarea.c-project-con{
 .conCred{
 	width: 76%;
 }
+.c-project-checkbox{
+	height: 24px;
+}
+

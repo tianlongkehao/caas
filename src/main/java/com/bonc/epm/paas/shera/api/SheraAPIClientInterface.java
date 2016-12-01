@@ -69,7 +69,7 @@ public interface SheraAPIClientInterface {
     
     public Job updateJob(Job job) throws SheraClientException;
 
-    public Log getExecLog(String name, String seqno, Log log) throws SheraClientException;
+    public Log getExecLog(String name, String seqno, Integer seek) throws SheraClientException;
 
     public ChangeGit getChangeGit(String name) throws SheraClientException;
 

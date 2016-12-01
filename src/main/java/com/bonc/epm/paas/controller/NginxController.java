@@ -48,16 +48,31 @@ import com.bonc.epm.paas.util.EncryptUtils;
 @Controller
 @RequestMapping(value = "/nginx")
 public class NginxController {
+	 
     
     /**
      * LOG
      */
     private static final Logger LOG = LoggerFactory.getLogger(NginxController.class);
+    /**
+     * UserDao
+     */
+    @Autowired
+    private UserDao userDao;
     
     @RequestMapping(value = "/list", method = RequestMethod.GET)
 	public String index(Model model) {
+    	List<User> userList = userDao.getByParentId(CurrentUserUtils.getInstance().getUser().getId());
+        model.addAttribute("userList", userList);
+        model.addAttribute("menu_flag", "service");
        
         return "nginx/manconfkubngnix.jsp";
+    }
+    
+    @RequestMapping(value = "/k8snginxcfg", method = RequestMethod.GET)
+	public String k8snginxcfg(Model model) {
+    	model.addAttribute("menu_flag", "service");
+        return "nginx/k8snginxcfg.jsp";
     }
 
 }
