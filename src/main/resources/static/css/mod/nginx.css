@@ -1,6 +1,6 @@
-#nginxForm{
-	margin-top:20px;
-	margin-bottom:20px;
+.nginxForm{
+	margin-top:10px;
+	margin-bottom:10px;
 }
 .item-obj{
 	background-color: #fff;
@@ -53,6 +53,26 @@ i.self_a {
     margin-top: 20px;
     float: right;
 }
+/* ibox */
+.addNginxCfg{
+	padding-top:30px;
+}
+.addNginxStepRow{
+	width: 96%;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+.addNginxStepRow .col-sm-12 .ibox-title{
+	border-top: 1px solid #dadada;
+	border-left: 4px solid #dadada;
+	border-right: 1px solid #dadada;
+}
+.addNginxStepRow .col-sm-12 .ibox-content{
+	border-left: 4px solid #dadada;
+	border-right: 1px solid #dadada;
+	border-bottom: 1px solid #dadada;
+}
+
 
 
 
