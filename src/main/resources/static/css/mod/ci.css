@@ -98,6 +98,7 @@
     text-indent: 5px;
     position: relative;
     left: -1px;
+    border-radius: 4px;
 }
 
 .item-obj .depot-name #tag {
@@ -631,4 +632,11 @@ textarea.c-project-con{
 .c-project-checkbox{
 	height: 24px;
 }
-
+.ci-quick-baseImage select{
+	height: 40px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+.ci-quick-baseImage select#baseImageName{
+	width: 218px;
+}
