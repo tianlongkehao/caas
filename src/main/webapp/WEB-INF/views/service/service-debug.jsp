@@ -96,6 +96,7 @@
 								文件：<input type="file" multiple="multiple" name="file" id="file" />
 							</p>
 							<input type="hidden" name="path" value="" id="path" />
+							<input hidden="true" value="${hostkey }" name="hostkey" id="hostkey"/>
 						</form>
 					</div>
 				</div>

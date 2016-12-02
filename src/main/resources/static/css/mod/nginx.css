@@ -1,6 +1,6 @@
-#nginxForm{
-	margin-top:20px;
-	margin-bottom:20px;
+.nginxForm{
+	margin-top:10px;
+	margin-bottom:10px;
 }
 .item-obj{
 	background-color: #fff;
@@ -33,3 +33,48 @@
 i.self_a {
 	color: #676a6c;
 }
+.aside-btn {
+    height: 60px;
+    position: relative;
+    padding: 0 20px;
+    background: #EAEEF1;
+}
+.aside-btn .btns-group {
+    position: absolute;
+    bottom: -1px;
+}
+.btns-group .btn-white {
+    background: #fff;
+    color: #3C7BCA;
+}
+.searchFun{
+    text-align: center;
+    margin: 0px 10px;
+    margin-top: 20px;
+    float: right;
+}
+/* ibox */
+.addNginxCfg{
+	padding-top:30px;
+}
+.addNginxStepRow{
+	width: 96%;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+.addNginxStepRow .col-sm-12 .ibox-title{
+	border-top: 1px solid #dadada;
+	border-left: 4px solid #dadada;
+	border-right: 1px solid #dadada;
+}
+.addNginxStepRow .col-sm-12 .ibox-content{
+	border-left: 4px solid #dadada;
+	border-right: 1px solid #dadada;
+	border-bottom: 1px solid #dadada;
+}
+
+
+
+
+
+
