@@ -57,10 +57,10 @@
 											<thead>
 												<tr style="height: 40px;">
 													<th style="width: 15%; text-indent: 30px;">项目名称</th>
-													<th style="width: 12%; text-indent: 15px;">构建状态</th>
+													<th style="width: 12%; text-indent: 8px;">构建状态</th>
 													<th style="width: 20%;">上次构建时间</th>
 													<th style="width: 10%; text-indent: 8px;">持续时间</th>
-													<th style="width: 20%; text-indent: 10px;">镜像</th>
+													<th style="width: 20%;">镜像</th>
 													<th style="width: 10%; text-indent: 10px;">功能</th>
 												</tr>
 											</thead>
