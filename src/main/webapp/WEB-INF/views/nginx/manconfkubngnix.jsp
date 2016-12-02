@@ -30,7 +30,7 @@
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
                                 <h5>
-										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>租户管理
+										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>租户
 									</h5>
 
 									<div class="ibox-tools">
@@ -42,13 +42,11 @@
                                 <table class="table table-striped table-hover dataTables-example">
                                     <thead>
                                         <tr>
-												<th style="width: 5%; text-indent: 30px;">
-													<input type="checkbox" class="chkAll" id="checkallbox" /></th>
-												<th style="width: 15%; padding-left: 5px;">登录账号</th>
-												<th style="width: 15%;">姓名</th>
-												
-												<th style="width: 10%;" class="del-operation">操作</th>
-											</tr>
+											<th style="width: 5%; text-indent: 30px;">
+												<input type="checkbox" class="chkAll" id="checkallbox" /></th>
+											<th style="width: 30%;">登录账号</th>
+											<th style="width: 10%;" class="del-operation">操作</th>
+										</tr>
                                     </thead>
                                     <tbody id="userList">
 											<c:forEach items="${userList }" var="user">
@@ -60,16 +58,12 @@
 														<td style="width: 5%; text-indent: 30px;"><input
 															type="checkbox" class="chkItem" name="ids"
 															value="${user.id }"></td>
-														<td style="width: 15%;"><a
-															href="<%=path %>/user/detail/${user.id }" title="查看详细信息"
-															onmousemove="style.textDecoration='underline'"
-															onmouseout="style.textDecoration='none'">${user.userName }</a>
+														<td style="width: 30%;">
+															${user.userName }
 														</td>
-														<td style="width: 15%; text-indent: 0;">${user.user_realname }</td>
-														
-														<td style="width: 10%;"><a id="deleteButton"
-															class="no-drop" href="javascript:delOneTenement(${user.id })"
-															style="margin-left: 10px"> <i class="fa fa-trash"></i>
+														<td style="width: 10%;"><a class="k8snginxcfgButton" title="k8snginxcfg"
+															class="no-drop" href="<%=path%>/nginx/k8snginxcfg"
+															style="margin-left: 10px"> <i class="fa fa-gears"></i>
 														</a></td>
 													</tr>
 												</c:if>
@@ -77,7 +71,7 @@
 										</tbody>
                                     	<tfoot class="hide">
 											<tr>
-												<td colspan="9">
+												<td colspan="3">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
@@ -89,11 +83,21 @@
                     </div>
                 </div>
 				
-				<a href="<%=path%>/nginx/k8snginxcfg"><span type="button" class="btn btn-default" value="k8snginxcfg">k8snginxcfg</span></a>
+				
 				
 				</div>
 			</div>
 		</article>
 	</div>
+	<script type="text/javascript">
+		 $('.dataTables-example').dataTable({
+			"aoColumnDefs" : [ {
+				"bSortable" : false,
+				"aTargets" : [ 0, 2 ]
+			} ],
+			//"aaSorting": [[ 5, "desc" ]]
+		});
+		$("#checkallbox").parent().removeClass("sorting_asc"); 
+	</script>
 </body>
 </html> 

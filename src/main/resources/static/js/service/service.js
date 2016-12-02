@@ -62,7 +62,7 @@ function loadContainers(obj,serviceId) {
 									+ '">'
 									+ '<td style="width: 5%">&nbsp;</td>'
 									+ '<td style="width: 15%;">'
-									+ '<a style="margin-left: 19px;" href="javascript:void(0)">'
+									+ '<a style="margin-left: 19px;" href="javascript:debug('+serviceID+','+data.containerList[i].containerStatus+')">'
 									+ containerName
 									+ '</a>'
 									+ '</td>'
@@ -804,7 +804,7 @@ function loadServices() {
 					{
 						data : null,
 						render : function (data,type,row) {
-							var html = '<b id="aaa"'+
+							var html = '<b '+
 								'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>'+
 								'<a href="'+ctx+'/service/detail/'+row.id +'" serviceId="'+row.id +'"'+
 								'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">'+ row.serviceName +'</a>'+
@@ -846,6 +846,11 @@ function loadServices() {
 									'启动失败<img src="'+ctx+'/images/loading4.gif"'+
 									'alt="" class="hide" />';
 							}
+							if (row.status == 6) {
+								html = '<i class="fa_run"></i>' +
+									'调试中<img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" class="hide" />';
+							}
 							return html;
 						}
 					},
@@ -867,7 +872,7 @@ function loadServices() {
 							var html = '<span class="url">';
 							if (row.serviceAddr!=null && row.serviceAddr!='') {
 								html += '<a href="'+row.serviceAddr +'/'+ row.proxyPath +'"'+
-									'target="_blank">'
+									'target="_blank" title="'+row.serviceAddr +'/'+ row.proxyPath+'">'
 								if(row.serviceChName!=null && row.serviceChName!=''){
 									html += row.serviceChName;
 								} else {
@@ -894,7 +899,7 @@ function loadServices() {
 						render : function (data,type,row) {
 							var html = '';
 							
-							if (row.status == 3) {
+							if (row.status == 3 || row.status == 6) {
 								
 								html += '<a id="'+row.id+'_start" class="no-drop startContainer_a "'+
 										'href="javascript:oneStartContainer('+ row.id +','+ row.status +')"'+
@@ -915,10 +920,15 @@ function loadServices() {
 										'style="margin-left: 5px" title="停止"> '+
 										'<i class="fa fa-power-off self_a"></i></a>';
 							}
-							
-							html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
-									'href="javascript:oneUpGradeContainer('+row.id+',&apos;'+row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram + ')" title="弹性伸缩"'+
-									'style="margin-left: 5px"> <i class="fa fa-arrows"></i></a>';
+							if ( row.status == 6){
+								html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
+								'href="javascript:void(0)" title="弹性伸缩"'+
+								'style="margin-left: 5px"> <i class="fa fa-arrows self_a"></i></a>';
+							} else {
+								html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
+								'href="javascript:oneUpGradeContainer('+row.id+',&apos;'+row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram + ')" title="弹性伸缩"'+
+								'style="margin-left: 5px"> <i class="fa fa-arrows"></i></a>';
+							}
 							
 							if (row.status == 3) {
 								html += '<a id="'+row.id+'_upgradeCluster" class="a-live upgradeCluster_a " '+
@@ -927,21 +937,26 @@ function loadServices() {
 							} else {
 								html += ' <a id="'+row.id+'_upgradeCluster" class="no-drop upgradeCluster_a " '+
                                     	'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+row.serviceName+'&apos;,&apos;'+row.imgName+'&apos;,this)" title="版本升级"'+
-                                        'style="margin-left: 5px"><i class="fa fa-arrow-up self_a"></i></a>';
+                                        'style="margin-left: 5px;margin-right:5px"><i class="fa fa-arrow-up self_a"></i></a>';
 							}
-							
-							html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
-									'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
-									'style="margin-left: 5px"><i class="fa fa-cog"></i></a> '	
-							if (row.status == 3) {
+							if ( row.status == 6){
+								html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
+								'href="javascript:void(0);" title="更改配置"'+
+								'style="margin-left: 5px"><i class="fa fa-cog self_a"></i></a> '	
+							} else {
+								html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
+								'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
+								'style="margin-left: 5px"><i class="fa fa-cog"></i></a> '	
+							}
+							if (row.status != 3 && row.status != 6) {
 								html += '<a id="'+row.id+'_change" class="a-live change " '+
-										'href="javascript:debug('+ row.id +','+ row.status +')" title="调试"'+
+										'href="javascript:startdebug('+ row.id +','+ row.status +')" title="调试"'+
 										'style="margin-left: 5px">'+
 											'<i class="fa fa-bug"></i>'
 										+'</a> '
 							} else {
 								html += '<a id="'+row.id+'_change" class="a-live change " '+
-								'href="javascript:debug('+ row.id +','+ row.status +')" title="调试"'+
+								'href="javascript:void(0)" title="调试"'+
 								'style="margin-left: 5px">'+
 									'<i class="fa fa-bug  self_a"></i>'
 								+'</a> '
@@ -964,8 +979,25 @@ function loadServices() {
         
 	})
 }
+function startdebug(id, status){
+	if (3 == status) {
+		return;
+	}
+	$.ajax({
+		url : "" + ctx + "/service/createContainer.do?id=" + id + "&isDebug=" + true,
+		success : function(data) {
+			data = eval("(" + data + ")");
+			if (data.status == "200") {
+				layer.msg("服务启动成功",{icon: 6});
+				setTimeout('window.location.reload()',1500);
+			} else {
+				layer.alert("服务启动失败");
+			}
+		}
+	})
+}
 function debug(id, status){
-	if (3 != status) {
+	if (1 == status) {
 		return;
 	}
 	
@@ -974,11 +1006,15 @@ function debug(id, status){
 		success : function(data) {
 			data = eval("(" + data + ")");
 			if (data.status == "200") {
-                window.location.href = ctx + "/service/debug/" + id;
-			} else {
-				layer.alert("该服务不支持调试");
+				window.location.href = ctx + "/service/debug/" + id;
 			}
-
+//			else if (data.status == "400") {
+//				layer.alert("该服务不支持调试");
+//			} else if(data.status == "401") {
+//				layer.alert("该服务不是调试状态");
+//			}
+			
 		}
 	})
 }
+

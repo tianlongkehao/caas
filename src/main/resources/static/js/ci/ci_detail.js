@@ -20,7 +20,7 @@ $(document).ready(function(){
 	
     //动态给版本信息赋宽度
     if(printLog()){
-    	var btnVersionWidth = $(".btn-version").html().length*10;
+    	var btnVersionWidth = $(".btn-version").html().length*14;
         $(".btn-version").css("width",btnVersionWidth);
     }
     
