@@ -144,6 +144,9 @@
 			</div>
 		</article>
 	</div>
+	<div id="delItemcfg">
+	dddd
+	</div>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			/* $('.dataTables-example').dataTable( {

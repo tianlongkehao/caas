@@ -266,7 +266,17 @@ function deleteImage(obj){
 
 //批量删除镜像
 function delImages(){
-	obj = document.getElementsByName("ids");
+	layer.open({
+		type: 1,
+        title: '配置删除条件',
+        content: $("#delItemcfg"),
+        btn: ['确定', '取消'],
+        yes: function(index, layero){ 
+        	layer.close(index);
+			
+        }
+    })
+	/*obj = document.getElementsByName("ids");
 	var imageIds = [];
     for (k in obj) {
         if (obj[k].checked) {
@@ -297,7 +307,7 @@ function delImages(){
 				}
 			})
         }
- })
+    })*/
     
 }
 
