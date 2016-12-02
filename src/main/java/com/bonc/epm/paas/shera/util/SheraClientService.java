@@ -230,6 +230,15 @@ public class SheraClientService {
         return changeGit;
     }
     
+    
+//    public static void main(String[] args) {
+//        SheraClientService sheraClientService = new SheraClientService();
+//        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
+//        ChangeGit chengeGit = client.getChangeGit("test-wxwl1");
+//        chengeGit = client.deleteGitHooks("test-wxwl1", chengeGit);
+//        System.err.println(chengeGit);
+//    }
+    
 //    public static void main(String[] args) {
 //        SheraClientService sheraClientService = new SheraClientService();
 //        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");

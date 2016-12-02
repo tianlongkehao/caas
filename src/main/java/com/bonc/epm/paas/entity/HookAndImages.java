@@ -37,4 +37,29 @@ public class HookAndImages {
      * 镜像Id
      */
     private long imageId;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getHookId() {
+        return hookId;
+    }
+
+    public void setHookId(long hookId) {
+        this.hookId = hookId;
+    }
+
+    public long getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(long imageId) {
+        this.imageId = imageId;
+    }
+    
 }
