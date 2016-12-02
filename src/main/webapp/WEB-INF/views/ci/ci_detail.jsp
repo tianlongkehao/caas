@@ -337,8 +337,8 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="col-2x control-label">基础镜像：</label>
-                                            <div class="col-sm-9">
-                                                <select id="baseImageName" name="baseImageName"  style="width:218px; height:48px">
+                                            <div class="col-sm-9 ci-quick-baseImage">
+                                                <select id="baseImageName" name="baseImageName">
                                                     <option type="text" value="${currentBaseImage.name }">${currentBaseImage.name }</option>
                                                     <c:forEach var = "image" items = "${baseImage }">
                                                         <c:if test = "${currentBaseImage.name ne image.name }">
@@ -346,7 +346,7 @@
                                                         </c:if>
                                                     </c:forEach>
                                                 </select> : 
-                                                <select id="baseImageId" name="baseImageId" style="height:48px">
+                                                <select id="baseImageId" name="baseImageId">
                                                     <option type="text" id = "ownBase" value="${ci.baseImageId }">${ci.baseImageVersion }</option>
                                                 </select>
                                             
