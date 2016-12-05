@@ -438,7 +438,7 @@ public class CiController {
                 ciCodeHook.setName(changeGit.getName());
                 ciCodeHook.setBranch(changeGit.getBranch());
                 ciCodeHook.setGiturl(changeGit.getGiturl());
-                ciCodeHook.setFlag(changeGit.isFlag());
+                ciCodeHook.setFlag(false);
                 ciCodeHookDao.save(ciCodeHook);
                 originCi.setHookCodeId(ciCodeHook.getId());
             }
@@ -565,9 +565,16 @@ public class CiController {
         try {
             Long idl = Long.parseLong(id);
             Ci ci = ciDao.findOne(idl);
+            //判断是否为代码构建
             if (ci.getType() == CiConstant.TYPE_CODE) {
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 client.deleteJob(ci.getProjectName());
+                //删除关联的hook数据
+                if (!StringUtils.isEmpty(ci.getHookCodeId())) {
+                    CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ci.getHookCodeId());
+                    hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
+                    ciCodeHookDao.delete(ciCodeHook);
+                }
                 ciInvokeDao.deleteByCiId(idl);
             }
             ciRecordDao.deleteByCiId(idl);
@@ -1613,4 +1620,18 @@ public class CiController {
         return JSON.toJSONString(map);
     }
     
+    /**
+     * Description: <br>
+     * 根据镜像id，查询相关联的构建数据，跳转进入构建详细页面
+     * @param imgId  镜像Id
+     * @see
+     */
+    @RequestMapping(value = {"ci/findCodeCiId.do"}, method = RequestMethod.GET)
+    public String  redirectCodeDetail(long imgId){
+        Ci ci = ciDao.fingByImageIdAndHookId(imgId);
+        if (!StringUtils.isEmpty(ci)) {
+            return "redirect:/ci/detail/"+ci.getId();
+        }
+        return "redirect:/error"; 
+    }
 }
