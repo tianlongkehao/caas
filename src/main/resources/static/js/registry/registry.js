@@ -266,13 +266,16 @@ function deleteImage(obj){
 
 //批量删除镜像
 function delImages(){
+	
 	layer.open({
 		type: 1,
         title: '配置删除条件',
         content: $("#delItemcfg"),
+        area: ['470px'],
         btn: ['确定', '取消'],
         yes: function(index, layero){ 
-        	layer.close(index);
+        	
+        	
 			
         }
     })
