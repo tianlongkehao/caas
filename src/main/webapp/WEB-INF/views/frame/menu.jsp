@@ -211,7 +211,7 @@
         </c:if>
         <li id="menu_template">
             <a href="<%=path %>/template/dockerfile">
-                <img class="nav-icon" src="<%=path %>/images/help.png" alt=""/>
+                <img class="nav-icon" src="<%=path %>/images/tem-image.png" alt=""/>
                 <span class="nav-title">模板</span>
             </a>
             <ul class="nav-item-hover">

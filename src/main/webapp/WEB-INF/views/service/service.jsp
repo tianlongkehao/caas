@@ -128,7 +128,7 @@
 														class="number-node">${service.instanceNum }</span> <span
 														class="margin cursor console-code-modal"
 														data-id="#console-code-modal"> <i
-															class="fa fa-desktop" onclick="_showConsole('mysql');"></i>
+															class="fa fa-fork" onclick="_showConsole('mysql');"></i>
 													</span></td>
 													<td style="width: 12%" class="cStatusColumn"
 														id="containerStatus"><i class="${statusClassName}"></i>
