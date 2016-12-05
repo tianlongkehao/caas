@@ -137,7 +137,7 @@
 	                    <a class="icon-view" href="javascript:void(0);" action="<%=path %>/template/dockerfile">
 	                        <div class="icon-wrapper">
 	                            <div class="icon-img">
-	                                <span><img src="<%=path %>/images/help.png" alt=""/></span>
+	                                <span><img src="<%=path %>/images/tem-image.png" alt=""/></span>
 	                            </div>
 	                            <div class="icon-name">模板管理</div>
 	                        </div>

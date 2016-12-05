@@ -1263,6 +1263,9 @@ public class ServiceController {
                 boolean flag = cmdexec(cmd);
                 if (flag) {
                     service.setImgVersion(imgVersion);
+                    //取得对应的imageid
+                    Image image = imageDao.findByNameAndVersion(service.getImgName(), imgVersion);
+                    service.setImgID(image.getId());
                     serviceDao.save(service);
                     map.put("status", "200");
                 }
