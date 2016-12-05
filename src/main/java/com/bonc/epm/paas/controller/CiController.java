@@ -1600,4 +1600,18 @@ public class CiController {
         return JSON.toJSONString(map);
     }
     
+    /**
+     * Description: <br>
+     * 根据镜像id，查询相关联的构建数据，跳转进入构建详细页面
+     * @param imgId  镜像Id
+     * @see
+     */
+    @RequestMapping(value = {"ci/findCodeCiId.do"}, method = RequestMethod.GET)
+    public String  redirectCodeDetail(long imgId){
+        Ci ci = ciDao.fingByImageIdAndHookId(imgId);
+        if (!StringUtils.isEmpty(ci)) {
+            return "redirect:/ci/detail/"+ci.getId();
+        }
+        return "redirect:/error"; 
+    }
 }

@@ -418,6 +418,24 @@ function registerDeployEvent(){
 			window.open(ctx+"/registry/detail/"+imgId);
 		}
 	});
+	
+	$("#replayci").unbind("click").click(function(){
+		ciId = $(this).attr("ciId");
+		$.ajax({
+			url:ctx+"/ci/constructCi.do?id="+ciId,
+			async:true,
+			success:function(data){
+				data = eval("(" + data + ")");
+				if(data.status=="200"){
+					window.location.reload();
+				}else{
+					layer.alert(data.msg);
+				}
+				setTimeout('window.location.reload()',2000);
+			}
+		});
+	});
+	
 }
 function registerConstructCiEvent(){
 	$("#buildBtn").unbind("click").click(function(){

@@ -111,4 +111,16 @@ public interface CiDao extends CrudRepository<Ci, Long> {
      * @return list
      */
     List<Ci> findByProjectNameAndCreateBy(String projectName,long createBy);
+    
+    /**
+     * Description: <br>
+     * 根据镜像Id，查询关联的hookid，在查询ci数据
+     * @param imgId :镜像Id
+     * @return ci
+     * @see
+     */
+    @Query("select ci from Ci ci where ci.hookCodeId = "
+        + "(select cck.id from CiCodeHook cck where cck.id = "
+        + "(select hi.hookId from HookAndImages hi where hi.imageId = ?1))")
+    Ci fingByImageIdAndHookId(long imgId);
 } 
