@@ -97,8 +97,8 @@
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">HookCode</label>
-		                                <input type="checkbox" id="HookCode" name="HookCode" class="c-project-checkbox"
-                                                   value="hook">
+		                                <input type="checkbox" id="HookCode" class="c-project-checkbox" >
+                                        <input type="hidden" id = "isHookCode" name ="isHookCode" value = "0"/>
 		                            </div>
 	                            </div>
 	                            <div class="row git-config">

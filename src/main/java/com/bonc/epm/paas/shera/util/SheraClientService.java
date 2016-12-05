@@ -11,9 +11,6 @@
 
 package com.bonc.epm.paas.shera.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +24,7 @@ import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.AntConfig;
 import com.bonc.epm.paas.shera.model.BuildManager;
+import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.model.CodeManager;
 import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.CredentialKey;
@@ -212,6 +210,34 @@ public class SheraClientService {
         credentialCheckEntity.setKey(credentialKey);
         return credentialCheckEntity;
     }
+    
+    /**
+     * Description: <br>
+     * 封装hookgit数据参数
+     * @param namespace ：命名空间
+     * @param name ： 项目名称
+     * @param giturl ： git地址
+     * @param branch ： 分支
+     * @return ChangeGit
+     */
+    public ChangeGit generateChangeGit(String namespace,String name,String giturl,String branch){
+        ChangeGit changeGit = new ChangeGit();
+        changeGit.setNamespace(namespace);
+        changeGit.setName(name);
+        changeGit.setGiturl(giturl);
+        changeGit.setBranch(branch);
+        changeGit.setFlag(false);
+        return changeGit;
+    }
+    
+    
+//    public static void main(String[] args) {
+//        SheraClientService sheraClientService = new SheraClientService();
+//        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
+//        ChangeGit chengeGit = client.getChangeGit("test-wxwl1");
+//        chengeGit = client.deleteGitHooks("test-wxwl1", chengeGit);
+//        System.err.println(chengeGit);
+//    }
     
 //    public static void main(String[] args) {
 //        SheraClientService sheraClientService = new SheraClientService();

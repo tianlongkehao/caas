@@ -75,7 +75,7 @@ public interface SheraAPIClientInterface {
 
     public ChangeGit addGitHooks(String name, ChangeGit changeGit) throws SheraClientException;
     
-    public ChangeGit deleteGitHooks(String name, ChangeGit changeGit) throws SheraClientException;
+    public ChangeGit deleteGitHooks(String name) throws SheraClientException;
 
     public Job deleteJob(String jobId) throws SheraClientException;
     

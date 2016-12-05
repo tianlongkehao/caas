@@ -204,8 +204,8 @@
 					                            </div>
 					                            <div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">HookCode</label>
-					                                <input type="checkbox" id="HookCode" name="HookCode" class="c-project-checkbox"
-			                                                   value="hook">
+					                               <input type="checkbox" id="HookCode" class="c-project-checkbox" >
+                                                   <input type="hidden" id = "isHookCode" name ="isHookCode" value = "${ci.isHookCode }"/>
 					                            </div>
 				                            </div>
 				                            <div class="row git-config">
@@ -371,7 +371,9 @@
                             <%-- 操作 --%>
                             <div class="other-details hide">
                                 <div class="col-9x">
-                                	<a href="javascript:void(0);" id="delHookBtn" class="deletebutton btn btn-primary btn-deleteHook">删除Hook</a>
+                                    <c:if test="${ci.isHookCode == 1 }">
+                                    	<a href="javascript:void(0);" id="delHookBtn" class="deletebutton btn btn-primary btn-deleteHook">删除Hook</a>
+                                    </c:if>
                                     <a href="javascript:void(0);" id="delCiBtn" class="deletebutton btn btn-danger btn-deleteitem">删除项目</a>
                                     <p class="other-hint">
                                         <span class="gray-radius">
