@@ -597,13 +597,16 @@ public class KubernetesClientService {
      * @return 
      * @see 
      */
-    public Endpoints generateEndpoints(String serName, String refAddress, int refPort) {
+    public Endpoints generateEndpoints(String serName, String refAddress, int refPort,String useProxy) {
         Endpoints endpoints = new Endpoints();
         ObjectMeta meta = new ObjectMeta();
         meta.setName(serName);
-/*        Map<String,String> labels = new HashMap<String,String>();
+        Map<String,String> labels = new HashMap<String,String>();
         labels.put("app", serName);
-        meta.setLabels(labels);*/
+        if (StringUtils.isNotBlank(useProxy)) {
+            labels.put("useProxy", useProxy);
+                }
+        meta.setLabels(labels);
         endpoints.setMetadata(meta);
         
         List<EndpointSubset> subsets = new ArrayList<EndpointSubset>();

@@ -92,7 +92,9 @@ public class RefServiceController {
      */
     @RequestMapping(value = { "service/import" })
     public String serviceImport(Model model) {
+        String  namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
         model.addAttribute("menu_flag", "service");
+        model.addAttribute("namespace", namespace);
         return "service/service-import.jsp";
     }
     
@@ -125,16 +127,16 @@ public class RefServiceController {
     @SuppressWarnings("static-access")
     @RequestMapping(value="refservice/add.do", method = RequestMethod.POST)
     @ResponseBody
-    private String add(String serName,String serAddress,String refAddress, int refPort, int viDomain,int importSerMode,String refSerDesc){
+    private String add(String serName,String serAddress,String refAddress, int refPort, int viDomain,int importSerMode,String refSerDesc,String useProxy){
         Map<String, Object> map = new HashMap<String, Object>();
         
-        RefService refService = fillRefServiceInfo(null, serName, serAddress, refAddress, refPort, viDomain, importSerMode,refSerDesc);
+        RefService refService = fillRefServiceInfo(null, serName, serAddress, refAddress, refPort, viDomain, importSerMode,refSerDesc,useProxy);
         String nameSpace = "";
         if (RefServiceConstant.ALL_TENANT == refService.getViDomain()) {
             nameSpace = "default";
         } else {
             nameSpace = CurrentUserUtils.getInstance().getUser().getNamespace();
-        }
+                }
         // etcd 和 service
         if (RefServiceConstant.ETCD_MODE == refService.getimprotSerMode()) {
             EtcdKeysResponse response = etcdClientService.putRecord(nameSpace, refService.getSerAddress(), refService.getRefAddress());
@@ -168,10 +170,10 @@ public class RefServiceController {
     @SuppressWarnings("static-access")
     @RequestMapping(value = "refservice/edit.do", method = RequestMethod.POST)
     @ResponseBody
-    private String editRefService(Long id, String serName,String serAddress,String refAddress ,int refPort, int viDomain,int importSerMode,String refSerDesc){
+    private String editRefService(Long id, String serName,String serAddress,String refAddress ,int refPort, int viDomain,int importSerMode,String refSerDesc,String useProxy){
         Map<String, Object> map = new HashMap<String,Object>();
 
-        RefService refService = fillRefServiceInfo(id, serName, serAddress, refAddress, refPort, viDomain, importSerMode,refSerDesc);
+        RefService refService = fillRefServiceInfo(id, serName, serAddress, refAddress, refPort, viDomain, importSerMode, refSerDesc, useProxy);
         String nameSpace = "";
         if (RefServiceConstant.ALL_TENANT == refService.getViDomain()) {
             nameSpace = "default";
@@ -302,7 +304,7 @@ public class RefServiceController {
             if (k8sService == null) {
                 k8sService = client.createService(k8sServiceTmp);
             } 
-            else {
+            else { 
                 try {
                     client.deleteService(refService.getSerName());
                     k8sService = client.createService(k8sServiceTmp);
@@ -313,7 +315,7 @@ public class RefServiceController {
                 
             }
             
-            Endpoints k8sEndpointsTmp = kubernetesClientService.generateEndpoints(refService.getSerName(),refService.getRefAddress(),refService.getRefPort());
+            Endpoints k8sEndpointsTmp = kubernetesClientService.generateEndpoints(refService.getSerName(),refService.getRefAddress(),refService.getRefPort(),refService.getUseProxy());
             if (null == k8sEndpoints) {
                 k8sEndpoints = client.createEndpoints(k8sEndpointsTmp);
             } /*else {
@@ -353,7 +355,7 @@ public class RefServiceController {
      * @see
      */
     private RefService fillRefServiceInfo(Long id, String serName, String serAddress, String refAddress,
-                                                              int refPort,int viDomain, int importSerMode,String refSerDesc) {
+                                                              int refPort,int viDomain, int importSerMode,String refSerDesc,String useProxy) {
         RefService refService = null;
         if (null == id || id < 0) {
             refService = new RefService(); 
@@ -369,6 +371,7 @@ public class RefServiceController {
         refService.setimprotSerMode(importSerMode == RefServiceConstant.SERVICE_MODE ? RefServiceConstant.SERVICE_MODE : RefServiceConstant.ETCD_MODE);
         refService.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
         refService.setCreateDate(new Date());
+        refService.setUseProxy(useProxy);
         return refService;
     }
 }

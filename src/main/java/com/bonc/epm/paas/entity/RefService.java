@@ -81,7 +81,17 @@ public class RefService {
      * 描述
      */
     private String refSerDesc;
-    
+    /**
+     * 是否使用代理
+     */
+    private String useProxy;
+
+    public String getUseProxy() {
+        return useProxy;
+    }
+    public void setUseProxy(String useProxy) {
+        this.useProxy = useProxy;
+    }
     public long getId() {
         return id;
     }
