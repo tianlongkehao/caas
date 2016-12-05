@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+	$("#delItemcfg").hide();
 	findImages();
     $(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
@@ -269,11 +269,13 @@ function delImages(){
 	
 	layer.open({
 		type: 1,
-        title: '配置删除条件',
+        title: '批量删除条件',
         content: $("#delItemcfg"),
-        area: ['470px'],
+        area: ['880px'],
         btn: ['确定', '取消'],
         yes: function(index, layero){ 
+        	var startTime = $("#startTime").val();
+        	var endTime = $("#endTime").val();
         	
         	
 			
