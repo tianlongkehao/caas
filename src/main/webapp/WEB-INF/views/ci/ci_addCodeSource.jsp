@@ -34,13 +34,13 @@
                             <div class="row depot-name">
 								<div class="form-group col-md-7">
 									<label>基础镜像</label>
-									<div class="">
-										<select id="baseImageName" name="baseImageName"  style="width:218px; height:48px">
+									<div class="ci-quick-baseImage">
+										<select id="baseImageName" name="baseImageName">
 											<c:forEach var = "image" items = "${baseImage }">
 												<option type="text" value="${image.name }">${image.name }</option>
 											</c:forEach>
 										</select> : 
-										<select id="baseImageId" name="baseImageId" style="height:48px">
+										<select id="baseImageId" name="baseImageId">
 										
 										</select>
 										<%-- <input id="baseImageName" name="baseImageName" type="text" 

@@ -811,7 +811,7 @@ function loadServices() {
 								'<span class="number-node">' + row.instanceNum + '</span>'+ 
 								'<span class="margin cursor console-code-modal"'+
 								'data-id="#console-code-modal">'+
-								'<i class="fa fa-desktop"></i></span>';
+								'<i class="fa fa-code-fork" title="代码已更新是否重新构建"></i></span>';
 							return html;
 						}
 					},
