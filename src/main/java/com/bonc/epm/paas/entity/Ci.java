@@ -90,6 +90,16 @@ public class Ci {
 	 * 代码url
 	 */
     private String codeUrl;
+    
+    /**
+     * 是否需要挂钩代码，0：不挂钩、1：挂钩代码
+     */
+    private Integer isHookCode;
+    
+    /**
+     * 代码挂钩Id
+     */
+    private long hookCodeId;
 	
     /**
 	 * name;
@@ -267,6 +277,22 @@ public class Ci {
         return codeUrl;
     }
     
+    public Integer getIsHookCode() {
+        return isHookCode;
+    }
+
+    public void setIsHookCode(Integer isHookCode) {
+        this.isHookCode = isHookCode;
+    }
+    
+    public long getHookCodeId() {
+        return hookCodeId;
+    }
+
+    public void setHookCodeId(long hookCodeId) {
+        this.hookCodeId = hookCodeId;
+    }
+
     public void setCodeUrl(String codeUrl) {
         this.codeUrl = codeUrl;
     }

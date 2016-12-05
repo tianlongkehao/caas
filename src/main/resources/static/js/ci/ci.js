@@ -56,9 +56,6 @@ function addCiInfo(type) {
 			        btn: ['确定', '取消'],
 			        yes: function(index, layero){ //或者使用btn1
 			        	window.location.href = ctx + "/registry/1";
-			        },
-			        cancel: function(index){ //或者使用btn2
-			        	window.location.href = ctx + "/ci";
 			        }
 				});				
 			}else{
