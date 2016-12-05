@@ -48,6 +48,7 @@ import com.bonc.epm.paas.dao.CiInvokeDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.ImageDao;
+import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeCredential;
@@ -87,6 +88,12 @@ public class CiController {
      * 输出日志
      */
     private static final Logger LOG = LoggerFactory.getLogger(CiController.class);
+
+    /**
+     * UserDao
+     */
+    @Autowired
+    private UserDao userDao;
     
     /**
      * CiDao接口
@@ -622,9 +629,22 @@ public class CiController {
     @ResponseBody
     public String judgeUserImages(Model model) {
         Map<String, Object> map = new HashMap<String, Object>();
-        User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        List<Image> imagesOfUser = imageDao.findByCreator(cuurentUser.getId());
-        if (!CollectionUtils.isEmpty(imagesOfUser) && cuurentUser.getImage_count() <= imagesOfUser.size()) {
+        User currentUser = CurrentUserUtils.getInstance().getUser();
+        //取得当前用户的所有镜像
+        List<Image> imagesOfUser = imageDao.findByCreator(currentUser.getId());
+        long maxSize = 0;
+        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
+        	//当前是租户的场合，maxSize为租户的ImageCount字段
+        	maxSize = currentUser.getImage_count();
+		} else if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+			//当前是用户的场合，maxSize为该用户所在租户的ImageCount字段
+			maxSize = userDao.findById(currentUser.getParent_id()).getImage_count();
+		} else {
+			map.put("overwhelm", true);
+			return JSON.toJSONString(map);
+		}
+        //如果当前用户创建镜像不为空&&创建的镜像数大于maxSize时，返回true
+        if (!CollectionUtils.isEmpty(imagesOfUser) && maxSize <= imagesOfUser.size()) {
             map.put("overwhelm", true);
         } else {
             map.put("overwhelm", false);
