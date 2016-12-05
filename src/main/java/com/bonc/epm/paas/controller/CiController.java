@@ -431,7 +431,7 @@ public class CiController {
                 ciCodeHook.setName(changeGit.getName());
                 ciCodeHook.setBranch(changeGit.getBranch());
                 ciCodeHook.setGiturl(changeGit.getGiturl());
-                ciCodeHook.setFlag(changeGit.isFlag());
+                ciCodeHook.setFlag(false);
                 ciCodeHookDao.save(ciCodeHook);
                 originCi.setHookCodeId(ciCodeHook.getId());
             }
@@ -558,9 +558,16 @@ public class CiController {
         try {
             Long idl = Long.parseLong(id);
             Ci ci = ciDao.findOne(idl);
+            //判断是否为代码构建
             if (ci.getType() == CiConstant.TYPE_CODE) {
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 client.deleteJob(ci.getProjectName());
+                //删除关联的hook数据
+                if (!StringUtils.isEmpty(ci.getHookCodeId())) {
+                    CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ci.getHookCodeId());
+                    hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
+                    ciCodeHookDao.delete(ciCodeHook);
+                }
                 ciInvokeDao.deleteByCiId(idl);
             }
             ciRecordDao.deleteByCiId(idl);

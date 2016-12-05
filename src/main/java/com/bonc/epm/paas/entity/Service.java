@@ -141,6 +141,11 @@ public class Service {
 	 * 服务中文名称
 	 */
 	private String serviceChName;
+	
+	/**
+	 * 根据代码仓库中的代码是否发生变化，来提醒用户是否需要重新构建镜像
+	 */
+	private boolean updateImage;
 
 	
     public String getServiceChName() {
@@ -407,4 +412,13 @@ public class Service {
         this.nodeIpAffinity = nodeIpAffinity;
     }
 
+    public boolean isUpdateImage() {
+        return updateImage;
+    }
+
+    public void setUpdateImage(boolean updateImage) {
+        this.updateImage = updateImage;
+    }
+    
+    
 }
