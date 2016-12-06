@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+	$("#delItemcfg").hide();
 	findImages();
     $(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
@@ -116,8 +116,32 @@ $(document).ready(function () {
          		}
          	});
         });
-});
+    // 删除条件筛选中的   全选checkbox 
+    var count = 1;
+    var checkAllItem = '.checkAllItem'+count;
+    var checkItem = '.checkItem'+count;
+    $(checkAllItem).click(function(){
+        $(checkItem).prop('checked',$(checkAllItem).is(":checked"));
+    });
+ 
+    // 删除条件筛选中的  选项
+    $(document).on("click",checkItem, function(){
+        if($(this).is(":checked")){
+            if ($(checkItem+":checked").length == $(checkItem).length) {
+                $(checkAllItem).prop("checked", "checked");
+            }
+        }else{
+            $(checkAllItem).prop('checked', $(this).is(":checked"));
+        }
+    });
+  
+   
+});/*ready*/
 
+//折叠三角的方向
+function filters(obj){
+	$(obj).find("span.caret").toggleClass('caret-filter');
+}
 
 function findImages(){
 	var index = $("#nav2").val();
@@ -266,7 +290,22 @@ function deleteImage(obj){
 
 //批量删除镜像
 function delImages(){
-	obj = document.getElementsByName("ids");
+	
+	layer.open({
+		type: 1,
+        title: '批量删除条件',
+        content: $("#delItemcfg"),
+        area: ['880px'],
+        btn: ['确定删除', '取消'],
+        yes: function(index, layero){ 
+        	var startTime = $("#startTime").val();
+        	var endTime = $("#endTime").val();
+        	
+        	
+			
+        }
+    })
+	/*obj = document.getElementsByName("ids");
 	var imageIds = [];
     for (k in obj) {
         if (obj[k].checked) {
@@ -297,7 +336,7 @@ function delImages(){
 				}
 			})
         }
- })
+    })*/
     
 }
 

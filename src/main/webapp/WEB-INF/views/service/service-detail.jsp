@@ -9,8 +9,6 @@
 	href="<%=path%>/css/mod/service.css" />
 <script type="text/javascript"
 	src="<%=path%>/js/service/service-detail.js"></script>
-<script type="text/javascript"
-	src="<%=path%>/js/service/laydate/laydate.js"></script>
 </head>
 <body>
 

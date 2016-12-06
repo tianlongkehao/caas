@@ -6,6 +6,7 @@
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/docker-registry.css" />
+<script src="<%=path%>/plugins/layer/laydate/laydate.js"></script>
 <script type="text/javascript" src="<%=path%>/js/registry/registry.js"></script>
 </head>
 <body>
@@ -142,14 +143,181 @@
 					</div>
 				</div>
 			</div>
+			
 		</article>
+	</div>
+	<div id="delItemcfg" style="display:none;min-height:200px;max-height:690px;">
+	
+		<div class="panel-group" id="namefilter">
+			<div class="panel panel-success">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion" 
+						   href="#collapseOne" onclick="filters(this)">
+							<span class="">按名称筛选</span><span class="caret caret-filter"></span>
+						</a>
+					</h4>
+				</div>
+				<div id="collapseOne" class="panel-collapse collapse in">
+					<div class="panel-body">
+						<div class="panel-group filter" id="accordion1">
+							<div class="panel panel-success">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<input type="checkbox" class="checkAllItem1">
+										<a data-toggle="collapse" data-parent="#accordion1" 
+										   href="#collapseOne1" onclick="filters(this)">
+											<span class="">demo1</span><span class="caret caret-filter"></span>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseOne1" class="panel-collapse collapse in">
+									<div class="panel-body">
+										<ul class="image-version">
+											<li><input type="checkbox" class="checkItem1"><span title="title">v19v1-555-55-7v1-555-55-7v1-555-55-7v1-555-55-7</span></li>
+											<li><input type="checkbox" class="checkItem1"><span title="title">v1-555-55-7</span></li>
+											<li title="title"><input type="checkbox" class="checkItem1"><span>v144444</span></li>
+											<li title="title"><input type="checkbox" class="checkItem1"><span>v1-155-555-5</span></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel-group filter" id="accordion2">
+							<div class="panel panel-success">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<input type="checkbox">
+										<a data-toggle="collapse" data-parent="#accordion2" 
+										   href="#collapseOne2" onclick="filters(this)">
+											<span class="">demo2</span><span class="caret caret-filter"></span>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseOne2" class="panel-collapse collapse in">
+									<div class="panel-body">
+										<ul class="image-version">
+											<li><input type="checkbox"><span>v19</span></li>
+											<li><input type="checkbox"><span>v1-555-55-7</span></li>
+											<li><input type="checkbox"><span>v144444</span></li>
+											<li><input type="checkbox"><span>v1-155-555-5</span></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="panel-group" id="timefilter">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#timefilter" 
+						   href="#timeOne" onclick="filters(this)">
+							<span class="">按时间筛选</span><span class="caret caret-filter"></span>
+						</a>
+					</h4>
+				</div>
+				<div id="timeOne" class="panel-collapse collapse in">
+					<div class="panel-body">
+						<div class="panel-group filter" id="timeAccordion1">
+							<div class="panel panel-info">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<input type="checkbox">
+										<a data-toggle="collapse" data-parent="#timeAccordion1" 
+										   href="#timecollapseOne1" onclick="filters(this)">
+											<span class="">一个月前</span><span class="caret caret-filter"></span>
+										</a>
+									</h4>
+								</div>
+								<div id="timecollapseOne1" class="panel-collapse collapse in">
+									<div class="panel-body">
+										<ul class="image-version">
+											<li><input type="checkbox"><span>name+nv19</span></li>
+											<li><input type="checkbox"><span>name+v1-555-55-7</span></li>
+											<li><input type="checkbox"><span>name+v144444</span></li>
+											<li><input type="checkbox"><span>name+v1-155-555-5</span></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel-group filter" id="timeAccordion2">
+							<div class="panel panel-info">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<input type="checkbox">
+										<a data-toggle="collapse" data-parent="#timeAccordion2" 
+										   href="#timecollapseOne2" onclick="filters(this)">
+											<span class="">两个月前</span><span class="caret caret-filter"></span>
+										</a>
+									</h4>
+								</div>
+								<div id="timecollapseOne2" class="panel-collapse collapse in">
+									<div class="panel-body">
+										<ul class="image-version">
+											<li><input type="checkbox"><span>name+v19</span></li>
+											<li><input type="checkbox"><span>name+v1-555-55-7</span></li>
+											<li><input type="checkbox"><span>name+v144444</span></li>
+											<li><input type="checkbox"><span>name+v1-155-555-5</span></li>
+											<li><input type="checkbox"><span>name+v19</span></li>
+											<li><input type="checkbox"><span>name+v1-555-55-7</span></li>
+											<li><input type="checkbox"><span>name+v144444</span></li>
+											<li><input type="checkbox"><span>name+v1-155-555-5</span></li>
+											<li><input type="checkbox"><span>name+v19</span></li>
+											<li><input type="checkbox"><span>name+v1-555-55-7</span></li>
+											<li><input type="checkbox"><span>name+v144444</span></li>
+											<li><input type="checkbox"><span>name+v1-155-555-5</span></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			/* $('.dataTables-example').dataTable( {
-		        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
+			    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
 			}); */
 			$("#checkallbox").parent().removeClass("sorting_asc");
+			//日期范围限制
+	        var startTime = {
+	            elem: '#startTime',
+	            format: 'YYYY-MM-DD hh:mm:ss',
+	            //min: laydate.now(), //设定最小日期为当前日期
+	            max: '2099-06-16 23:59:59', //最大日期
+	            istime: true,
+	            istoday: false,
+	            choose: function (datas) {
+	                end.min = datas; //开始日选好后，重置结束日的最小日期
+	                end.start = datas //将结束日的初始值设定为开始日
+	            }
+	        };
+	        var endTime = {
+	            elem: '#endTime',
+	            format: 'YYYY-MM-DD hh:mm:ss',
+	            //min: laydate.now(),
+	            max: '2099-06-16 23:59:59',
+	            istime: true,
+	            istoday: false,
+	            choose: function (datas) {
+	                start.max = datas; //结束日选好后，重置开始日的最大日期
+	            }
+	        };
+	        laydate(startTime);
+	        laydate(endTime);
+
 		})
 	</script>
 
