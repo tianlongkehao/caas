@@ -141,17 +141,15 @@
 												<input type="text" value="" class="in_style form-control" id="webPath" name="servicePath">
 												<span style="color:#1dd2af;" id="service-path"><i class="fa fa-info-circle"></i></span>
 											</li>
-											<c:if test="${DMZ!=null && USER!=null  }">
-												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
-													<label class="checkbox-inline"> <input
-														type="checkbox" id="${DMZ }" name="nginxserv"
-														value="${DMZ }"> DMZ区
-												</label> <label class="checkbox-inline"> <input
-														type="checkbox" id="${USER }" name="nginxserv"
-														value="${USER }"> USER区
-												</label> <input type="hidden" value="" class="in_style"
-													id="proxyZone" name="proxyZone"></li>
-											</c:if>
+											<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
+												<c:forEach items="${zoneList}" var="zone">
+                                                    <label class="checkbox-inline"> <input
+                                                        type="checkbox" id="${zone }" name="nginxserv"
+                                                        value="${zone }"> ${zone }区
+                                                     </label>
+												</c:forEach>
+											    <input type="hidden" value="" class="in_style" id="proxyZone" name="proxyZone">
+                                            </li>
 											<li class="line-h-3"><span class="ve_top">nginx代理路径：<font
 													color="red">*</font></span>
 												<input type="text" value="" class="in_style form-control" id="nginxPath" name="proxyPath">
@@ -242,9 +240,9 @@
 											<li class="line-h-3">
 												<div class="param-set">
 													<span class="ve_top" id = "ve_ram" >内存：<font color="red">*</font></span> 
-													<input type="radio" class="ram" name="ram" id = "ram1" value="2048"checked>2<span>G</span>
-													<input type="radio" class="ram" name="ram" id = "ram2" value="4096">4<span>G</span>
-													<input type="radio" class="ram" name="ram" id = "ram4" value="8192">8<span>G</span>
+													<input type="radio" class="ram" name="ram" id = "ram1" value="4096"checked>4<span>G</span>
+													<input type="radio" class="ram" name="ram" id = "ram2" value="8192">8<span>G</span>
+													<input type="radio" class="ram" name="ram" id = "ram4" value="16384">16<span>G</span>
 													<span style="color: #1E90FF; margin-left: 60px;">当前可用内存：${leftmemory }G</span>
 													<input type="hidden" id = "leftmemory" value = "${leftmemory * 1024 }"/>
 												</div>
