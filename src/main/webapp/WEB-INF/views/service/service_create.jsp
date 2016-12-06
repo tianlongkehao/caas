@@ -236,9 +236,9 @@
 											<li class="line-h-3">
 												<div class="param-set">
 													<span class="ve_top" id = "ve_ram" >内存：<font color="red">*</font></span> 
-													<input type="radio" class="ram" name="ram" id = "ram1" value="2048"checked>2<span>G</span>
-													<input type="radio" class="ram" name="ram" id = "ram2" value="4096">4<span>G</span>
-													<input type="radio" class="ram" name="ram" id = "ram4" value="8192">8<span>G</span>
+													<input type="radio" class="ram" name="ram" id = "ram1" value="4096"checked>4<span>G</span>
+													<input type="radio" class="ram" name="ram" id = "ram2" value="8192">8<span>G</span>
+													<input type="radio" class="ram" name="ram" id = "ram4" value="16384">16<span>G</span>
 													<span style="color: #1E90FF; margin-left: 60px;">当前可用内存：${leftmemory }G</span>
 													<input type="hidden" id = "leftmemory" value = "${leftmemory * 1024 }"/>
 												</div>
