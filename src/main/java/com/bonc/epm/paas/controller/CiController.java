@@ -567,15 +567,20 @@ public class CiController {
             Ci ci = ciDao.findOne(idl);
             //判断是否为代码构建
             if (ci.getType() == CiConstant.TYPE_CODE) {
-                SheraAPIClientInterface client = sheraClientService.getClient();
-                client.deleteJob(ci.getProjectName());
-                //删除关联的hook数据
-                if (!StringUtils.isEmpty(ci.getHookCodeId())) {
-                    CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ci.getHookCodeId());
-                    hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
-                    ciCodeHookDao.delete(ciCodeHook);
+                try {
+                    SheraAPIClientInterface client = sheraClientService.getClient();
+                    client.deleteJob(ci.getProjectName());
+                    //删除关联的hook数据
+                    if (!StringUtils.isEmpty(ci.getHookCodeId()) && ci.getHookCodeId() !=0 ) {
+                        CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ci.getHookCodeId());
+                        hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
+                        ciCodeHookDao.delete(ciCodeHook);
+                    }
+                    ciInvokeDao.deleteByCiId(idl);
                 }
-                ciInvokeDao.deleteByCiId(idl);
+                catch (SheraClientException e) {
+                    e.printStackTrace();
+                }
             }
             ciRecordDao.deleteByCiId(idl);
             ciDao.delete(idl);
