@@ -40,10 +40,10 @@ public class NginxCfgClientService {
     }
     
     
-  public static void main(String[] args) {
+/*  public static void main(String[] args) {
       NginxCfgClientService nginxCfgClientService = new NginxCfgClientService();
       NginxCfgAPIClientInterface client = nginxCfgClientService.getclient();
       List<NginxCfgs> cfgs = client.getAllNginxCfgs();
       System.out.println(cfgs);
-  }
+  }*/
 }
