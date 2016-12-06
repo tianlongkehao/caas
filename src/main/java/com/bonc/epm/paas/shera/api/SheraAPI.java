@@ -134,7 +134,7 @@ public interface SheraAPI {
      * @throws SheraClientException 
      * @return {@link ChangeGit}
      */  
-    @POST
+    @GET
     @Path("/git/changes/{namespace}/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)        
@@ -170,7 +170,7 @@ public interface SheraAPI {
     @Path("/git/hooks/del/{namespace}/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ChangeGit deleteGitHooks(@PathParam("namespace") String namespace, @PathParam("name") String name,ChangeGit changeGit) throws SheraClientException;
+    public ChangeGit deleteGitHooks(@PathParam("namespace") String namespace, @PathParam("name") String name) throws SheraClientException;
     
     /**
      * delete a job 

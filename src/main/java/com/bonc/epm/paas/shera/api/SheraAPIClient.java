@@ -248,9 +248,9 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public ChangeGit deleteGitHooks(String name, ChangeGit changeGit) throws SheraClientException {
+    public ChangeGit deleteGitHooks(String name) throws SheraClientException {
         try {
-            return api.deleteGitHooks(namespace, name, changeGit);
+            return api.deleteGitHooks(namespace, name);
         }
         catch (NotFoundException e) {
             return null;

@@ -30,6 +30,11 @@
 	       	 var importSerVis = $("#import-ser-visibility").val();
 	       	 var importSerMode = $("#import-ser-mode").val();
 	       	 var importSerDesc =$("#import-ser-desc").val();
+	       	 var namespace =$("#namespace").val();
+	       	 if(1==$("#useProxy").val()){
+	       		 var useProxy=namespace+"."+importSerName;
+	       	 }
+	       	 var importSerProxy =$("#useProxy").val();
 	       if(true!=	checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort
 	       			,importSerVis,importSerMode,importSerDesc)){return;}
 	       	var flag=0;
@@ -48,15 +53,17 @@
 	                    $('#import-ser-name').focus();
 	                    return ;
 	                }else {
+	                	layer.close(layer.index);
 	               	 $.ajax({
 	   		         		url : ctx + "/refservice/add.do",
 	   		         		type: "POST",
 	   		         		data: {"serName":importSerName,"serAddress":importSerIn,
 	   		         			   "refAddress":importSerOut,"refPort":importSerOutPort,
-	   		         			   "viDomain":importSerVis,"importSerMode":importSerMode,"refSerDesc":importSerDesc
+	   		         			   "viDomain":importSerVis,"importSerMode":importSerMode,
+	   		         			   "refSerDesc":importSerDesc,"useProxy":useProxy
 	   		         		},
 	   		         		success: function(data) {
-	   		         			window.location.reload();
+	   		         		creatable();
 	   		         		}
 	   		         	});
 	                }
@@ -105,7 +112,14 @@
          $('#import-ser-out').focus();
          return ;
      }
-	 
+     
+	 if (importSerOut.search(/((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)/) === -1 ) {
+         layer.tips('你的外部服务地址格式不是xxx.xxx.xxx.xxx', '#import-ser-out', {
+             tips: [1, '#0FA6D8']
+         });
+         $('#import-ser-out').focus();
+         return ;
+     }
 /*	             if(importSerOut.search(/^[a-zA-Z0-9-:.\/]*$/) === -1){
 	      	layer.tips('外部服务地址中有非法字符，请您检查之后重新填写','#import-ser-out',{tips: [1, '#3595CC'],time: 3000});
 	      	$('#import-ser-out').focus();
@@ -160,7 +174,8 @@
 	     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
 			     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'<i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
 			     		'<td style="width: 20%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
-			     		'<td style="width: 20%;">'+refservice.refAddress+'</td>';
+			     		'<td style="width: 20%;">'+refservice.refAddress+'</td>'+
+			     		'<td style="width: 20%;">'+refservice.useProxy+'</td>';
 			     		if('1'==refservice.viDomain){
 			     			tr+='<td style="width: 14%;">所有租户可见</td>';
 			     		}else{
@@ -168,7 +183,7 @@
 			     		}
 			     		tr+='<td style="width: 10%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash fa-lg"></i></a>'+
 			     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
-			     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
+			     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
 			     	'</tr>';
          	}
             $("#importSerList").append(tr);
@@ -222,7 +237,15 @@
 	 $("#import-ser-out-port").val($(obj).attr("rePort"));
 	 $("#import-ser-visibility").val($(obj).attr("serVi"));
 	 $("#import-ser-desc").val($(obj).attr("serDesc"));
-	 $("#import-ser-name").attr("disabled","disabled")
+	 $("#import-ser-name").attr("disabled","disabled");
+	 var usePxy =$(obj).attr('usePxy');
+	 if("undefined"==usePxy){
+		 $("#useProxy option[value=0]").attr("selected", true); 
+	 }else{
+		 $("#useProxy option[value=1]").attr("selected", true); 
+	 }
+	 
+	 
 	 layer.open({
 		 	type: 1,
 	        title: '修改外部引入服务',
@@ -236,27 +259,31 @@
 	        	 var importSerVis = $("#import-ser-visibility").val();
 	        	 var importSerMode = $("#import-ser-mode").val();
 	        	 var importSerDesc =$("#import-ser-desc").val();
+	        	 var namespace =$("#namespace").val();
+		       	 if(1==$("#useProxy").val()){
+		       		 var useProxy=namespace+"."+importSerName;
+		       	 }
 	  	       if(true!=	checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort
 		       			,importSerVis,importSerMode,importSerDesc)){return;}
-	            
+	             layer.close(index);
 	             $.ajax({
 		         		url : ctx + "/refservice/edit.do",
 		         		type: "POST",
 		         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
 		         			,"refAddress":importSerOut,"viDomain":importSerVis
-		         			,"refPort":importSerOutPort,"importSerMode":importSerMode,"refSerDesc":importSerDesc},
+		         			,"refPort":importSerOutPort,"importSerMode":importSerMode,"refSerDesc":importSerDesc,"useProxy":useProxy},
 		         		success: function(data) {
 		         			var data = eval("("+data+")");
 		                 	if (data.status == 200) {
 		                 		layer.msg("修改外部服务参数成功！",{icon: 6});
-		                 			window.location.reload();
+		                 		creatable();
 		                 	} 
 		                 	else {
 		                 		layer.alert("修改外部服务参数失败！请检查服务器连接");
 		                 	}
 		         		}
 		         	}); 
-	             layer.close(index);
+
 	        }
 	 })
  }

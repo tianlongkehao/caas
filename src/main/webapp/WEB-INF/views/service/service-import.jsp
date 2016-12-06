@@ -46,6 +46,7 @@
 									</div>
 								</div>
 								<div class="ibox-content">
+								<input hidden="ture" value="${namespace}" name="namespace" id="namespace"   />
 									<table class="table table-striped table-hover dataTables-example">
 										<thead>
 											<tr>
@@ -55,6 +56,7 @@
 												<th style="width: 18%; padding-left: 5px;">服务名称</th>
 												<th style="width: 20%; text-indent: 8px;">服务访问地址</th>
 												<th style="width: 20%;">外部服务地址</th>
+										    <th style="width: 20%;">代理路径</th>
 												<th style="width: 14%;">可见域</th>
 												<th style="width: 10%;" class="del-operation">操作</th>
 											</tr>
@@ -103,20 +105,27 @@
       <th style="width: 35%">服务描述：</th>
           <td><input class="" type="text" id="import-ser-desc" value=""></td>
       </tr>
-					<tr>
-						<th style="width: 35%">可见域：</th>
-						<td><select class="" id="import-ser-visibility">
-								<option value="0">仅本租户可见</option>
-								<option value="1">所有租户可见</option>
-						</select></td>
-					</tr>
-                    <tr>
-                        <th style="width: 35%">引入服务方式：</th>
-                        <td><select class="" id="import-ser-mode">
-                                <option value="0">service</option>
-                                <option value="1">etcd</option>
-                        </select></td>
-                    </tr>
+			<tr>
+				<th style="width: 35%">可见域：</th>
+				<td><select class="" id="import-ser-visibility">
+						<option value="0">仅本租户可见</option>
+						<option value="1">所有租户可见</option>
+				</select></td>
+			</tr>
+      <tr>
+          <th style="width: 35%">引入服务方式：</th>
+          <td><select class="" id="import-ser-mode">
+                  <option value="0">service</option>
+                  <option value="1">etcd</option>
+          </select></td>
+      </tr>
+      <tr>
+      <th style="width: 35%">是否使用代理：</th>
+          <td><select class="" id="useProxy">
+                  <option value="0">不使用</option>
+                  <option value="1">nginx代理</option>
+          </select></td>
+      </tr>
 				</tbody>
 			</table>
 		</form>

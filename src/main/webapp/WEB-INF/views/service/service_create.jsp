@@ -141,17 +141,15 @@
 												<input type="text" value="" class="in_style form-control" id="webPath" name="servicePath">
 												<span style="color:#1dd2af;" id="service-path"><i class="fa fa-info-circle"></i></span>
 											</li>
-											<c:if test="${DMZ!=null && USER!=null  }">
-												<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
-													<label class="checkbox-inline"> <input
-														type="checkbox" id="${DMZ }" name="nginxserv"
-														value="${DMZ }"> DMZ区
-												</label> <label class="checkbox-inline"> <input
-														type="checkbox" id="${USER }" name="nginxserv"
-														value="${USER }"> USER区
-												</label> <input type="hidden" value="" class="in_style"
-													id="proxyZone" name="proxyZone"></li>
-											</c:if>
+											<li class="line-h-3"><span class="ve_top">nginx代理区域：</span>
+												<c:forEach items="${zoneList}" var="zone">
+                                                    <label class="checkbox-inline"> <input
+                                                        type="checkbox" id="${zone }" name="nginxserv"
+                                                        value="${zone }"> ${zone }区
+                                                     </label>
+												</c:forEach>
+											    <input type="hidden" value="" class="in_style" id="proxyZone" name="proxyZone">
+                                            </li>
 											<li class="line-h-3"><span class="ve_top">nginx代理路径：<font
 													color="red">*</font></span>
 												<input type="text" value="" class="in_style form-control" id="nginxPath" name="proxyPath">

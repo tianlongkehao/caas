@@ -55,6 +55,7 @@ import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
+import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
@@ -80,13 +81,15 @@ import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
+import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
+import com.bonc.epm.paas.shera.model.ChangeGit;
+import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.PoiUtils;
 import com.bonc.epm.paas.util.RandomString;
 import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
-import com.carrotsearch.hppc.Containers;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 
@@ -171,6 +174,12 @@ public class ServiceController {
 	private KubernetesClientService kubernetesClientService;
     
     /**
+     * sheraClientService接口
+     */
+    @Autowired
+    private SheraClientService sheraClientService;
+    
+    /**
      * TemplateConf
      */
     @Autowired
@@ -193,7 +202,13 @@ public class ServiceController {
      */
     @Value("${ratio.memtocpu}")
     private String RATIO_MEMTOCPU = "4";
-	
+    
+    /**
+     * 获取nginx中的服务分区
+     */
+    @Value("${nginx.service.zone}")
+    private String NGINX_SERVICE_ZONE;
+    
     /**
      * NginxServerConf
      */
@@ -231,7 +246,7 @@ public class ServiceController {
 		// 获取特殊条件的pods
         try {
 //            getServiceSource(model, currentUser.getId());
-            getNginxServer(model);
+//            getNginxServer(model);
             getleftResource(model);
         } 
         catch (KubernetesClientException e) {
@@ -277,10 +292,35 @@ public class ServiceController {
         map.put("draw", draw);
         map.put("recordsTotal", services.getTotalElements());
         map.put("recordsFiltered", services.getTotalElements());
-        map.put("data", services.getContent());
+        map.put("data", findIsUpdateCode(services.getContent()));
         
         return JSON.toJSONString(map);
         
+    }
+    
+    /**
+     * Description: <br>
+     * 查询代码构建中的代码是否更新，服务中添加提醒代码更新
+     * @param listService 需要查询的服务
+     * @return 
+     * @see
+     */
+    public List<Service> findIsUpdateCode(List<Service> listService){
+        for (Service service : listService) {
+            CiCodeHook ciCodeHook = serviceDao.findByImgId(service.getImgID());
+            if (ciCodeHook != null) {
+                try {
+                    SheraAPIClientInterface client = sheraClientService.getClient();
+                    ChangeGit changeGit = client.getChangeGit(ciCodeHook.getName());
+//                    service.setUpdateImage(changeGit.isFlag());
+                    service.setUpdateImage(true);
+                }
+                catch (Exception e) {
+                   e.printStackTrace();
+                }
+            }
+        }
+        return listService;
     }
     
     /**
@@ -289,8 +329,16 @@ public class ServiceController {
      * @param model  
      */
     public void getNginxServer(Model model) {
-        model.addAttribute("DMZ", nginxServerConf.getDMZ());
-        model.addAttribute("USER", nginxServerConf.getUSER());
+//        model.addAttribute("DMZ", nginxServerConf.getDMZ());
+//        model.addAttribute("USER", nginxServerConf.getUSER());
+        List<String> serviceZone = new ArrayList<>();
+        if (StringUtils.isNoneBlank(NGINX_SERVICE_ZONE)) {
+            String[] zoneArray = NGINX_SERVICE_ZONE.split(",");
+            for (String zone :zoneArray) {
+                serviceZone.add(zone);
+            }
+        }
+        model.addAttribute("zoneList", serviceZone);
     }
     
     /**
@@ -1313,6 +1361,9 @@ public class ServiceController {
                 boolean flag = cmdexec(cmd);
                 if (flag) {
                     service.setImgVersion(imgVersion);
+                    //取得对应的imageid
+                    Image image = imageDao.findByNameAndVersion(service.getImgName(), imgVersion);
+                    service.setImgID(image.getId());
                     serviceDao.save(service);
                     map.put("status", "200");
                 }

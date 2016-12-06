@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.Service;
 /**
  * 服务DAO类
@@ -91,4 +92,14 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
          * @see
          */
      List<Service> findByServiceAddrAndProxyPath (String serviceAddr,String proxyPath);
-    }
+     
+     /**
+      * Description: <br>
+      * 根据镜像Id查询ciCodeHook数据
+      * @param imgId 镜像Id
+      * @return 
+      * @see
+      */
+     @Query("select cck from CiCodeHook cck where cck.id = (select hi.hookId from HookAndImages hi where hi.imageId = ?1)")
+     CiCodeHook findByImgId(long imgId);
+}

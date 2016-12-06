@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
@@ -174,27 +175,29 @@ public class MonitorController {
     private List<String> dbSearch(String sql, Integer divisor) {
         Query sqlQuery = new Query(sql, dbName);
         QueryResult result_mem_limit = influxDB.query(sqlQuery);
-        List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
         List<String> listString = new ArrayList<>();
-        for (List<Object> aListObject : listObject) {
-            //判断值是否为null
-            if (aListObject.get(1) != null) {
-                Double ad = (Double) aListObject.get(1)/divisor;
-                String strDouble = ad.toString();
-                BigDecimal bigDecimal = new BigDecimal(strDouble);
-                String str = bigDecimal.toPlainString();
-                //判断小数点位数
-                if (str.length() <= str.indexOf(".") + 3) {
-                    listString.add(str);
-                }
-                else {
-                    listString.add(str.substring(0, str.indexOf(".") + 3));
-                }
-            } 
-            else {
-            	listString.add(null);
-            }
-        }
+        if (!CollectionUtils.isEmpty(result_mem_limit.getResults().get(0).getSeries())) {
+        	List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
+        	for (List<Object> aListObject : listObject) {
+        		//判断值是否为null
+        		if (aListObject.get(1) != null) {
+        			Double ad = (Double) aListObject.get(1)/divisor;
+        			String strDouble = ad.toString();
+        			BigDecimal bigDecimal = new BigDecimal(strDouble);
+        			String str = bigDecimal.toPlainString();
+        			//判断小数点位数
+        			if (str.length() <= str.indexOf(".") + 3) {
+        				listString.add(str);
+        			}
+        			else {
+        				listString.add(str.substring(0, str.indexOf(".") + 3));
+        			}
+        		} 
+        		else {
+        			listString.add(null);
+        		}
+        	}
+		}
         return listString;
     }
     

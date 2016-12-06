@@ -15,6 +15,8 @@ $(document).ready(function(){
     registerCiEditEvent();
     //删除事件
     registerCiDelEvent($("#id").val());
+    //删除hookcode
+    registerHookCode($("#id").val());
     //加载构建日志
     printLog();
 	
@@ -22,6 +24,11 @@ $(document).ready(function(){
     if(printLog()){
     	var btnVersionWidth = $(".btn-version").html().length*14;
         $(".btn-version").css("width",btnVersionWidth);
+    }
+    
+    //是否选中hook
+    if ($("#isHookCode").val() == 1) {
+    	document.getElementById("HookCode").checked=true
     }
     
 	//codeType
@@ -411,6 +418,24 @@ function registerDeployEvent(){
 			window.open(ctx+"/registry/detail/"+imgId);
 		}
 	});
+	
+	$("#replayci").unbind("click").click(function(){
+		ciId = $(this).attr("ciId");
+		$.ajax({
+			url:ctx+"/ci/constructCi.do?id="+ciId,
+			async:true,
+			success:function(data){
+				data = eval("(" + data + ")");
+				if(data.status=="200"){
+					window.location.reload();
+				}else{
+					layer.alert(data.msg);
+				}
+				setTimeout('window.location.reload()',2000);
+			}
+		});
+	});
+	
 }
 function registerConstructCiEvent(){
 	$("#buildBtn").unbind("click").click(function(){
@@ -462,10 +487,10 @@ function registerCiEditEvent(){
 					if (data.status == "200") {
 						layer.alert("修改成功");
 						$("#projectNameSpan").text($("#projectName").val());
-						layer.close(load);
 					} else {
-						layer.alert(data.msg);
+						layer.alert("修改失败"+data.msg);
 					}
+					layer.close(load);
 				},
 				error: function (e) {
 					layer.alert("请求出错");
@@ -486,7 +511,7 @@ function registerCiEditEvent(){
 						layer.alert("修改成功");
 						$("#projectNameSpan").text($("#projectName").val());
 					} else {
-						layer.alert(data.msg);
+						layer.alert("修改失败"+data.msg);
 					}
 				},
 				error: function (e) {
@@ -510,7 +535,7 @@ function registerCiEditEvent(){
 						layer.alert("修改成功");
 						$("#projectNameSpan").text($("#projectName").val());
 					} else {
-						layer.alert(data.msg);
+						layer.alert("修改失败"+data.msg);
 					}
 				},
 				error: function (e) {
@@ -575,6 +600,36 @@ function registerCiDelEvent(id){
                              
 	                     } else {
 	                         layer.alert(data.msg);
+	                     }
+	        		},
+                    error: function(e) {
+                        layer.alert("请求出错");
+                    }
+	        	});
+	        },
+	        cancel: function(index){ //或者使用btn2
+	        }
+	    });
+    });
+}
+
+function registerHookCode(ciId){
+	 $("#delHookBtn").click(function(){
+		 layer.open({
+	        title: '删除HookCode',
+	        content: '确定删除HookCode？',
+	        btn: ['确定', '取消'],
+	        yes: function(index, layero){ //或者使用btn1
+	        	$.ajax({
+                    type:"post",
+	        		url:ctx+"/ci/delCodeHook.do",
+                    data: {"ciId" : ciId},
+	        		success:function(data){
+	        			data = eval("(" + data + ")");
+	        			 if(data.status=="200"){
+	        				 window.location.reload();
+	                     } else {
+	                         layer.alert("修改失败"+data.msg);
 	                     }
 	        		},
                     error: function(e) {
@@ -1043,6 +1098,12 @@ function checkCodeCiAdd(){
     		$('#codeBranch').focus();
     		return;
 	    }
+    	
+    	if ($("#HookCode").prop("checked")==true) {
+    		$("#isHookCode").val("1");
+    	} else {
+    		$("#isHookCode").val("0");
+    	}
     }
     if (codeType == 0) {
     	$("#codeUrl").val("");

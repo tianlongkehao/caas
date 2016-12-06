@@ -35,6 +35,18 @@
 	checkbox();
  });
  
+ //代码仓库代码发生变化，跳转进入构建详细页面
+ function redirectCiCode(serviceId){
+	 alert(serviceId);
+	 $.ajax({
+		 url : ""+ ctx + "service/findCodeId.do?serviceId=" + serviceId ,
+		 type : "get",
+		 success : function(data){
+			 var data = eval("(" + data + ")");
+		 }
+	 });
+ }
+ 
 function loadContainers(obj,serviceId) {
 	var serviceID = serviceId;
 	var aaa = 'tr[serviceidcon = "' + serviceID + '"]'
@@ -808,10 +820,12 @@ function loadServices() {
 								'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>'+
 								'<a href="'+ctx+'/service/detail/'+row.id +'" serviceId="'+row.id +'"'+
 								'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">'+ row.serviceName +'</a>'+
-								'<span class="number-node">' + row.instanceNum + '</span>'+ 
-								'<span class="margin cursor console-code-modal"'+
-								'data-id="#console-code-modal">'+
-								'<i class="fa fa-desktop"></i></span>';
+								'<span class="number-node">' + row.instanceNum + '</span>';
+							if (row.updateImage == true) {
+								html += '<a id="'+row.id+'_code" class="margin cursor console-code-modal"'+
+											'href="'+ctx+'ci/findCodeCiId.do?imgId='+row.imgID+'"'+
+										'style="margin-left: 5px" ><img src="'+ctx+'/images/sd.png" title="代码更新"></a>';
+							}
 							return html;
 						}
 					},

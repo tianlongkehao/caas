@@ -559,6 +559,9 @@ function checkCodeCiAdd(editor_one){
     		$('#codeBranch').focus();
     		return;
 	    }
+    	if ($("#HookCode").prop("checked")==true) {
+    		$("#isHookCode").val("1");
+    	}
     }
     if (codeType == 0) {
     	$("#codeUrl").val("");
