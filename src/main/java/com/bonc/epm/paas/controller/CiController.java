@@ -676,7 +676,8 @@ public class CiController {
         //取得当前用户的所有镜像
         List<Image> imagesOfUser = imageDao.findByCreator(currentUser.getId());
         long maxSize = 0;
-        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
+        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT) || 
+                    currentUser.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
         	//当前是租户的场合，maxSize为租户的ImageCount字段
         	maxSize = currentUser.getImage_count();
 		} else if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
