@@ -86,6 +86,7 @@ import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.PoiUtils;
+import com.bonc.epm.paas.util.RandomString;
 import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
@@ -1269,6 +1270,7 @@ public class ServiceController {
                 map.put("status", "500");
             }
             else {
+                
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
                 ReplicationController controller = client.getReplicationController(serviceName);
                 String NS = controller.getMetadata().getNamespace();
@@ -1299,6 +1301,7 @@ public class ServiceController {
         catch (Exception ex) {
             map.put("status", 400);
             map.put("msg", ex.getMessage());
+            LOG.error(ex.getMessage());
         }
 
         return JSON.toJSONString(map);
