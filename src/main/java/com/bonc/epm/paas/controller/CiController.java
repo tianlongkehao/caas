@@ -683,7 +683,7 @@ public class CiController {
 			//当前是用户的场合，maxSize为该用户所在租户的ImageCount字段
 			maxSize = userDao.findById(currentUser.getParent_id()).getImage_count();
 		} else {
-			map.put("overwhelm", true);
+			map.put("overwhelm", false);
 			return JSON.toJSONString(map);
 		}
         //如果当前用户创建镜像不为空&&创建的镜像数大于maxSize时，返回true
