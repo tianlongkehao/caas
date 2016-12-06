@@ -188,7 +188,13 @@ public class ServiceController {
      */
     @Value("${ratio.memtocpu}")
     private String RATIO_MEMTOCPU = "4";
-	
+    
+    /**
+     * 获取nginx中的服务分区
+     */
+    @Value("${nginx.service.zone}")
+    private String NGINX_SERVICE_ZONE;
+    
     /**
      * NginxServerConf
      */
@@ -226,7 +232,7 @@ public class ServiceController {
 		// 获取特殊条件的pods
         try {
 //            getServiceSource(model, currentUser.getId());
-            getNginxServer(model);
+//            getNginxServer(model);
             getleftResource(model);
         } 
         catch (KubernetesClientException e) {
@@ -284,8 +290,16 @@ public class ServiceController {
      * @param model  
      */
     public void getNginxServer(Model model) {
-        model.addAttribute("DMZ", nginxServerConf.getDMZ());
-        model.addAttribute("USER", nginxServerConf.getUSER());
+//        model.addAttribute("DMZ", nginxServerConf.getDMZ());
+//        model.addAttribute("USER", nginxServerConf.getUSER());
+        List<String> serviceZone = new ArrayList<>();
+        if (StringUtils.isNoneBlank(NGINX_SERVICE_ZONE)) {
+            String[] zoneArray = NGINX_SERVICE_ZONE.split(",");
+            for (String zone :zoneArray) {
+                serviceZone.add(zone);
+            }
+        }
+        model.addAttribute("zoneList", serviceZone);
     }
     
     /**
