@@ -1367,8 +1367,7 @@ public class CiController {
      * 停止正在执行的代码构建
      * @param projectName 项目名称
      * @param executionId 项目版本号
-     * @return 
-     * @see
+     * @return String
      */
     @RequestMapping("ci/stopCodeCi.do")
     @ResponseBody
@@ -1377,6 +1376,31 @@ public class CiController {
         try {
             SheraAPIClientInterface client = sheraClientService.getClient();
             client.killExecution(projectName, executionId);
+            map.put("status", "200");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 删除一个代码构建执行
+     * @param projectName 项目名称
+     * @param executionId 项目版本号
+     * @param ciRecordId 构建记录
+     * @return String
+     */
+    @RequestMapping("ci/deleteCodeCi.do")
+    @ResponseBody
+    public String deleteCodeCiExecution(String projectName,int executionId,long ciRecordId){
+        Map<String,Object> map = new HashMap<String,Object>();
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            client.deleteExecution(projectName, executionId);
+            ciRecordDao.delete(ciRecordId);
             map.put("status", "200");
         }
         catch (Exception e) {
