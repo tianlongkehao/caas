@@ -26,6 +26,8 @@ $(document).ready(function(){
         $(".btn-version").css("width",btnVersionWidth);
     }
     
+    
+    
     //是否选中hook
     if ($("#isHookCode").val() == 1) {
     	document.getElementById("HookCode").checked=true
@@ -421,21 +423,33 @@ function registerDeployEvent(){
 	
 	$("#replayci").unbind("click").click(function(){
 		ciId = $(this).attr("ciId");
-		$.ajax({
-			url:ctx+"/ci/constructCi.do?id="+ciId,
-			async:true,
-			success:function(data){
-				data = eval("(" + data + ")");
-				if(data.status=="200"){
-					window.location.reload();
-				}else{
-					layer.alert(data.msg);
-				}
-				setTimeout('window.location.reload()',2000);
+		var ciList = $("#ciRecordList").children().length;
+		if(ciList == 0){
+			replayciEvent(ciId)
+		}else {
+			var ciStatus = $(".ciStatus")[0].innerHTML;
+			if(ciStatus == "构建中"){
+		    	$("#replayci").css("cursor","no-drop");
+			}else{
+				replayciEvent(ciId)
 			}
-		});
+	    }
 	});
-	
+}
+function replayciEvent(ciId){
+	$.ajax({
+		url:ctx+"/ci/constructCi.do?id="+ciId,
+		async:true,
+		success:function(data){
+			data = eval("(" + data + ")");
+			if(data.status=="200"){
+				window.location.reload();
+			}else{
+				layer.alert(data.msg);
+			}
+			setTimeout('window.location.reload()',2000);
+		}
+	});
 }
 function registerConstructCiEvent(){
 	$("#buildBtn").unbind("click").click(function(){
