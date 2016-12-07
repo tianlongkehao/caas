@@ -343,6 +343,7 @@
 	float:left;
 	margin-left:15px;
 	width:23%;
+	line-height: 30px;
 	display:block;
     white-space:nowrap;
     overflow:hidden;

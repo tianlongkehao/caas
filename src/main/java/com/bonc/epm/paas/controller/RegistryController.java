@@ -641,7 +641,8 @@ public class RegistryController {
 		//上两个月月份yyyyMM
 		calendar.add(Calendar.MONTH, -1);
 		String Period2 = DateUtils.getDate2SStr3(calendar.getTime());
-		
+		//用于存放所有的分组
+		List<Object> allImages = new ArrayList<>();
 		//用于存放当月的镜像
 		List<Image> images = new ArrayList<Image>();
 		//用于存放上一个月的镜像
@@ -668,10 +669,14 @@ public class RegistryController {
 				images3.add(image);
 			}
 		}
-		maps.put("images", images);
-		maps.put("images1", images1);
-		maps.put("images2", images2);
-		maps.put("images3", images3);
+		allImages.add(images);
+		allImages.add(images1);
+		allImages.add(images2);
+		allImages.add(images3);
+		maps.put("allImages", allImages);
+//		maps.put("images1", images1);
+//		maps.put("images2", images2);
+//		maps.put("images3", images3);
 		maps.put("status", "200");
 		return JSON.toJSONString(maps);
 	}

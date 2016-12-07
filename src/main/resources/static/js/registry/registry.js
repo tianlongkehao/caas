@@ -292,7 +292,7 @@ function checkbox(count){
 //批量删除镜像
 function delImages(){
 	$(".namefiltercon").empty();
-	$('.versionList').empty();
+	$(".timefiltercon").empty();
 	var count = 1;
 	$.ajax({
 		url:""+ctx+"/registry/getImagesGroupByName.do",
@@ -336,58 +336,79 @@ function delImages(){
 		type:"post",
 		success:function(data){
 			data = eval("(" + data + ")");
-			var images = data.images; var imagesLength = data.images.length;
-			var images1 = data.images1; 
-			var images2 = data.images2;
-			var images3 = data.images3;
-			
-			
-			var timeImagesHtml = '<div class="panel-group filter" id="accordion'+count+'">'+
-			'<div class="panel panel-info">'+
-			'<div class="panel-heading">'+
-				'<h4 class="panel-title">'+
-					'<input type="checkbox" class="checkAllItem'+count+'">'+
-					'<a data-toggle="collapse" data-parent="#accordion'+count+'" href="#collapseOne'+count+'" onclick="filters(this)" class="imageName">'+
-						'<span class="">2016年12月</span><span class="caret caret-filter"></span>'+
-					'</a>'+
-				'</h4>'+
-			'</div>'+
-			'<div id="collapseOne'+count+'" class="panel-collapse collapse in">'+
-				'<div class="panel-body">'+
-					'<ul class="image-version timeImageList'+count+'">'+
-						
-					'</ul>'+
-				'</div></div></div></div>';
-			$(".timefiltercon").append(timeImagesHtml);
-			var timeImageList = '';
-			for(var m = 0; m < imagesLength; m++){
-				var timeImagesListName = data.images[m].name;
-				var timeImagesListVersion = data.images[m].version;
-				timeImageList += '<li><input type="checkbox" class="checkItem'+count+'"><span title="'+timeImagesListName+'">'+timeImagesListName+'</span><br><span class="timeVersion">'+timeImagesListVersion+'</span></li>';
+			var allImages = data.allImages;
+			for(var num=0; num<allImages.length; num++){
+				var images = allImages[num];
+				if(images.length != 0){
+					var image0date = calendarFormat(images[0].createTime);
+					var image0year = image0date.substring(0,4);
+					var image0month = image0date.substring(5,7);
+					var timeImages0Html = '<div class="panel-group filter" id="accordion'+count+'">'+
+					'<div class="panel panel-info">'+
+					'<div class="panel-heading">'+
+						'<h4 class="panel-title">'+
+							'<input type="checkbox" class="checkAllItem'+count+'">'+
+							'<a data-toggle="collapse" data-parent="#accordion'+count+'" href="#collapseOne'+count+'" onclick="filters(this)" class="imageName">'+
+								'<span class="">'+image0year+'年'+image0month+'月</span><span class="caret caret-filter"></span>'+
+							'</a>'+
+						'</h4>'+
+					'</div>'+
+					'<div id="collapseOne'+count+'" class="panel-collapse collapse in">'+
+						'<div class="panel-body">'+
+							'<ul class="image-version timeImageList'+count+'">'+
+								
+							'</ul>'+
+						'</div></div></div></div>';
+					$(".timefiltercon").append(timeImages0Html);
+					var timeImageList = '';
+					for(var m = 0; m < images.length; m++){
+						var timeImagesListName = images[m].name;
+						var timeImagesListVersion = images[m].version;
+						timeImageList += '<li><input type="checkbox" class="checkItem'+count+'"><span title="'+timeImagesListName+'">'+timeImagesListName+'</span><br><span class="timeVersion"><i class="fa fa-tag"></i>&nbsp;&nbsp;'+timeImagesListVersion+'</span></li>';
+					}
+					$('.timeImageList'+count+'').append(timeImageList);
+					checkbox(count);
+					count++;
+				}
 			}
-			$('.timeImageList'+count+'').append(timeImageList);
-			checkbox(count);
-			count++;
-			
-			
-			/*for (var m = 0; m < 4; m++){
-				var images = 'images'+m
-				var images = data.images; var imagesLength = data.images.length;
-			}*/
 			
 		}
 	})
-	layer.open({
-		type: 1,
+//	obj = document.getElementsByName("ids");
+//	var imageIds = [];
+//    for (k in obj) {
+//        if (obj[k].checked) {
+//        	imageIds.push(obj[k].value);
+//        }
+//    }
+//    if (imageIds.length <=0) {
+//    	layer.msg( "请选择需要删除的镜像", {icon: 2 });
+//    	return;
+//    }
+    layer.open({
+    	type: 1,
         title: '批量删除条件',
         content: $("#delItemcfg"),
         area: ['880px','690px'],
         btn: ['确定删除', '取消'],
         yes: function(index, layero){ 
-        	
-        	
+        	layer.close(index);
+//			$.ajax({
+//				url:""+ctx+"/registry/delImages.do?imageIds="+imageIds,
+//				success:function(data){
+//					data = eval("(" + data + ")");
+//					if(data.status=="200"){
+//						layer.alert("镜像删除成功");
+//						window.location.reload(true);
+//					}else{
+//						layer.alert("镜像删除失败，请检查服务器连接");
+//					}
+//
+//				}
+//			})
         }
     })
+	
 	/*obj = document.getElementsByName("ids");
 	var imageIds = [];
     for (k in obj) {
