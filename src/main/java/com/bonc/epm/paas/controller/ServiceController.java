@@ -1270,8 +1270,101 @@ public class ServiceController {
                 map.put("status", "500");
             }
             else {
+                LOG.info("***************版本升级开始****************************");
+                String random = RandomString.getStringRandom(32);
+                String nextControllerName = serviceName+"-"+random;
+                String image = dockerClientService.generateRegistryImageName(imgName, imgVersion);
                 
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+                ReplicationController originalController = client.getReplicationController(serviceName);
+                
+                Map<String, String> annotations = new HashMap<String, String>();
+                annotations.put("kubectl.kubernetes.io/next-controller-id", nextControllerName);
+                originalController.getMetadata().setAnnotations(annotations);
+                ReplicationController updateOriginalController = client.updateReplicationController(serviceName, originalController);
+                LOG.info("update originalController.  put next-controller-id:-"+nextControllerName);
+                
+                ReplicationController nextController = null;
+                try {
+                    nextController = client.getReplicationController(nextControllerName);
+                } 
+                catch (KubernetesClientException e) {
+                    nextController = null;
+                }
+                if (null == nextController) {
+                    nextController = originalController;
+                    nextController.getMetadata().setName(nextControllerName);
+                    nextController.getMetadata().setResourceVersion("");
+                    Map<String, String> nextAnnotations = new HashMap<String, String>();
+                    nextAnnotations.put("kubectl.kubernetes.io/desired-replicas", String.valueOf(originalController.getSpec().getReplicas()));
+                    nextAnnotations.put("kubectl.kubernetes.io/update-source-id", originalController.getMetadata().getName()+":"+originalController.getMetadata().getUid());
+                    nextController.getMetadata().setAnnotations(nextAnnotations);
+                    
+                    nextController.getSpec().setReplicas(0);
+                    nextController.getSpec().getSelector().put("deployment", random);
+                    
+                    nextController.getSpec().getTemplate().getMetadata().getLabels().put("deployment", random);
+                    
+                    
+                    nextController.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(image);
+                    
+                    nextController = client.createReplicationController(nextController);
+                    
+                }
+                LOG.info("create new replicationController "+nextControllerName +"successed!");
+                
+                updateOriginalController = client.getReplicationController(serviceName);
+                updateOriginalController.getMetadata().getAnnotations().put("kubectl.kubernetes.io/original-replicas", String.valueOf(updateOriginalController.getSpec().getReplicas()));
+                client.updateReplicationController(serviceName, updateOriginalController);
+                LOG.info("update originalController.  put original-replicas:-"+updateOriginalController.getSpec().getReplicas());
+                
+                int replicas = updateOriginalController.getSpec().getReplicas();
+                nextController = client.getReplicationController(nextControllerName);
+                for (int i=1, j=replicas-1;i<=replicas && j>=0;i++,j--) {
+                    LOG.info("Scaling up "+nextControllerName+" from "+(i-1)+" to "+i+";scaling down "+serviceName+" from "+(j+1)+" to "+j);
+                    nextController = client.updateReplicationController(nextControllerName, i);
+                    boolean podStatus = true;
+                    PodList podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
+                    while (podStatus && null != podList) {
+                        for (Pod pod : podList.getItems()) {
+                            if (pod.getStatus().getPhase().equals("Running")) {
+                                podStatus = false;
+                            } else {
+                                podStatus = true;
+                            }
+                        }
+                        if (podStatus) {
+                            podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
+                        }
+                    }
+                    
+                    updateOriginalController = client.updateReplicationController(serviceName, j);
+                    while (!(client.getLabelSelectorPods(updateOriginalController.getSpec().getSelector()).size() == j)) {
+                        continue;
+                    }
+                   LOG.info("Scaling "+nextControllerName+" up to "+i+" and scaling "+serviceName+" down to " +j +" Update succeeded."); 
+                }
+                
+                client.deleteReplicationController(serviceName);
+                LOG.info("Deleting old controller:"+serviceName);
+                
+                
+                ReplicationController resultController = client.getReplicationController(nextControllerName);
+                
+                resultController.getMetadata().setName(serviceName);
+                resultController.getMetadata().setResourceVersion("");
+                
+                resultController = client.createReplicationController(resultController);
+                
+                client.deleteReplicationController(nextControllerName);
+                LOG.info("Renaming controller:"+nextControllerName+" to "+serviceName);
+                
+                service.setImgVersion(imgVersion);
+                serviceDao.save(service);
+                map.put("status", "200");
+                LOG.info("replicationController:"+serviceName+" rolling updated.");
+                
+/*                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
                 ReplicationController controller = client.getReplicationController(serviceName);
                 String NS = controller.getMetadata().getNamespace();
                 String cmd = "kubectl rolling-update " + serviceName + " --namespace=" + NS
@@ -1290,7 +1383,7 @@ public class ServiceController {
                     String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS + " --rollback";
                     cmdexec(rollBackCmd);
                     map.put("status", "400");
-                }
+                }*/
             }
         }
         catch (KubernetesClientException e) {
