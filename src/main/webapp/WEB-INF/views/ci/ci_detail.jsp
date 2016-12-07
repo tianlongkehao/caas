@@ -90,6 +90,7 @@
                                                 </div>
                                                 <div class='time-line-time'>
                                                     <div class='event-sign'><i class='fa fa-angle-right fa_caret' style='transform: rotate(${transformClass});'></i></div>
+                                                    <div class='event-del'><i class='fa fa-trash'></i></div>
                                                     <c:if test="${ciRecord.constructResult == 3}">
                                                         <div class='event-stop' title="停止构建"><span id = "stopCodeCi" projectName = "${ci.projectName }" executionId = "${ciRecord.executionId }"><i class='fa fa-power-off'></i></span></div>
                                                     </c:if>
