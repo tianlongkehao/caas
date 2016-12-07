@@ -1269,8 +1269,9 @@ public class CiController {
             SheraAPIClientInterface client = sheraClientService.getClient();
             JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime);
             jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
-            final Integer seqNo = jobExecViewNew.getSeqNo();
-            final String name =  CurrentUserUtils.getInstance().getUser().getUserName();
+            ciRecord.setExecutionId(jobExecViewNew.getSeqNo());
+            ciRecordDao.save(ciRecord);
+            final String nameSpace =  CurrentUserUtils.getInstance().getUser().getNamespace();
             //获取执行状态和执行日志
             new Thread() {
                 public void run() {
@@ -1283,9 +1284,9 @@ public class CiController {
                             Log log = new Log();
                             try {
                                 SheraClientService sheraClientService = new SheraClientService();
-                                SheraAPIClientInterface client = sheraClientService.getclient(name);
-                                jobExecView = client.getExecution(ci.getProjectName(),seqNo);
-                                log = client.getExecLog(ci.getProjectName(),seqNo.toString(),seek);
+                                SheraAPIClientInterface client = sheraClientService.getclient(nameSpace);
+                                jobExecView = client.getExecution(ci.getProjectName(),ciRecord.getExecutionId());
+                                log = client.getExecLog(ci.getProjectName(),ciRecord.getExecutionId().toString(),seek);
                                 seek = log.getSeek();
                             }
                             catch (Exception e) {
@@ -1358,6 +1359,30 @@ public class CiController {
             LOG.error("==========fetchCode error:"+e.getMessage());
         }
         return false;
+    }
+    
+    /**
+     * Description: <br>
+     * 停止正在执行的代码构建
+     * @param projectName 项目名称
+     * @param executionId 项目版本号
+     * @return 
+     * @see
+     */
+    @RequestMapping("ci/stopCodeCi.do")
+    @ResponseBody
+    public String stopCodeCi(String projectName,int executionId){
+        Map<String,Object> map = new HashMap<String,Object>();
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            client.killExecution(projectName, executionId);
+            map.put("status", "200");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
     }
     
     /**

@@ -89,9 +89,10 @@
                                                 </span>
                                                 </div>
                                                 <div class='time-line-time'>
-                                                	
                                                     <div class='event-sign'><i class='fa fa-angle-right fa_caret' style='transform: rotate(${transformClass});'></i></div>
-                                                    <div class='event-stop' title="停止构建"><i class='fa fa-power-off'></i></div>
+                                                    <c:if test="${ciRecord.constructResult == 3}">
+                                                        <div class='event-stop' title="停止构建"><span id = "stopCodeCi" projectName = "${ci.projectName }" executionId = "${ciRecord.executionId }"><i class='fa fa-power-off'></i></span></div>
+                                                    </c:if>
                                                     <div class='datetimes'><i class='fa fa-calendar margin'></i><fmt:formatDate value="${ciRecord.constructDate}" pattern="yyyy-MM-dd HH:mm:ss"/></div>
                                                     <div class='time-on-timeout'><i class='fa fa-time'></i><fmt:formatNumber type="number" value="${ciRecord.constructTime/1000}" maxFractionDigits="0"/>s</div>
                                                 </div>

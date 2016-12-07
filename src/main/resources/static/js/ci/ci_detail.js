@@ -19,6 +19,8 @@ $(document).ready(function(){
     registerHookCode($("#id").val());
     //加载构建日志
     printLog();
+    //停止构建
+    stopCodeCi();
 	
     //动态给版本信息赋宽度
     if(printLog()){
@@ -328,6 +330,31 @@ $(document).ready(function(){
 		}
 	});
 });/*ready*/
+
+
+function stopCodeCi(){
+	$("#stopCodeCi").click(function(){
+		var projectName = $(this).attr("projectName");
+		var executionId = $(this).attr("executionId");
+		$.ajax({
+			url : ctx + "/ci/stopCodeCi.do",
+			type : "POST",
+			data : {
+				"projectName" : projectName,
+				"executionId" : executionId
+			},
+			success : function(data) {
+				data = eval("(" + data + ")");
+				if (data.status == "200") {
+					window.location.reload();
+				} else {
+					layer.alert("停止构建失败");
+				}
+			}
+		});
+	})
+}
+
 
 //单击导入模板，加载模板数据
 function loadDockerFileTemplate(){
