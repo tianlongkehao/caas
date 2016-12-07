@@ -375,6 +375,16 @@ td .dockerfileinput {
     margin-left: 1px;
     cursor: pointer;
 }
+.event-del {
+    width: 30px;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    float: right;
+    margin-top: 5px;
+    margin-left: 1px;
+    cursor: pointer;
+}
 .event-sign {
     width: 50px;
     display: inline-block;
