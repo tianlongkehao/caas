@@ -323,7 +323,8 @@ function delImages(){
 				var imageList = '';
 				for(var j = 0; j < imageLength; j++){
 					var imageListVersion = data.imagesGroupByName[i][j].version;
-					imageList += '<li><input type="checkbox" class="checkItem'+count+'"><span title="title">'+imageListVersion+'</span></li>';
+					var imageListId = data.imagesGroupByName[i][j].id;
+					imageList += '<li><input type="checkbox" name="ids" value="'+imageListId+'" class="checkItem'+count+'"><span title="title"><i class="fa fa-tag"></i>&nbsp;'+imageListVersion+'</span></li>';
 				}
 				$('.versionList'+count+'').append(imageList);
 				checkbox(count);
@@ -364,7 +365,8 @@ function delImages(){
 					for(var m = 0; m < images.length; m++){
 						var timeImagesListName = images[m].name;
 						var timeImagesListVersion = images[m].version;
-						timeImageList += '<li><input type="checkbox" class="checkItem'+count+'"><span title="'+timeImagesListName+'">'+timeImagesListName+'</span><br><span class="timeVersion"><i class="fa fa-tag"></i>&nbsp;&nbsp;'+timeImagesListVersion+'</span></li>';
+						var imageId = images[m].id;
+						timeImageList += '<li><input type="checkbox" name="ids" value="'+imageId+'" class="checkItem'+count+'"><span title="'+timeImagesListName+'">'+timeImagesListName+'</span><br><span class="timeVersion"><i class="fa fa-tag"></i>&nbsp;'+timeImagesListVersion+'</span></li>';
 					}
 					$('.timeImageList'+count+'').append(timeImageList);
 					checkbox(count);
@@ -374,17 +376,7 @@ function delImages(){
 			
 		}
 	})
-//	obj = document.getElementsByName("ids");
-//	var imageIds = [];
-//    for (k in obj) {
-//        if (obj[k].checked) {
-//        	imageIds.push(obj[k].value);
-//        }
-//    }
-//    if (imageIds.length <=0) {
-//    	layer.msg( "请选择需要删除的镜像", {icon: 2 });
-//    	return;
-//    }
+	
     layer.open({
     	type: 1,
         title: '批量删除条件',
@@ -392,56 +384,34 @@ function delImages(){
         area: ['880px','690px'],
         btn: ['确定删除', '取消'],
         yes: function(index, layero){ 
-        	layer.close(index);
-//			$.ajax({
-//				url:""+ctx+"/registry/delImages.do?imageIds="+imageIds,
-//				success:function(data){
-//					data = eval("(" + data + ")");
-//					if(data.status=="200"){
-//						layer.alert("镜像删除成功");
-//						window.location.reload(true);
-//					}else{
-//						layer.alert("镜像删除失败，请检查服务器连接");
-//					}
-//
-//				}
-//			})
-        }
-    })
-	
-	/*obj = document.getElementsByName("ids");
-	var imageIds = [];
-    for (k in obj) {
-        if (obj[k].checked) {
-        	imageIds.push(obj[k].value);
-        }
-    }
-    if (imageIds.length <=0) {
-    	layer.msg( "请选择需要删除的镜像", {icon: 2 });
-    	return;
-    }
-    layer.open({
-        title: '删除镜像',
-        content: '确定删除镜像？',
-        btn: ['确定', '取消'],
-        yes: function(index, layero){ 
-        	layer.close(index);
+        	obj = document.getElementsByName("ids");
+        	var imageIds = [];
+            for (k in obj) {
+                if (obj[k].checked) {
+                	imageIds.push(obj[k].value);
+                }
+            }
+            if (imageIds.length <=0) {
+            	layer.msg( "请选择需要删除的镜像", {icon: 2 });
+            	return;
+            }
+        	
 			$.ajax({
 				url:""+ctx+"/registry/delImages.do?imageIds="+imageIds,
 				success:function(data){
 					data = eval("(" + data + ")");
 					if(data.status=="200"){
-						layer.alert("镜像删除成功");
-						window.location.reload(true);
+						layer.msg("镜像删除成功", {icon: 1 });
+						setTimeout("window.location.reload(true)",1000);
 					}else{
 						layer.alert("镜像删除失败，请检查服务器连接");
 					}
 
 				}
 			})
+            layer.close(index);
         }
-    })*/
-    
+    })
 }
 
 $(function(){

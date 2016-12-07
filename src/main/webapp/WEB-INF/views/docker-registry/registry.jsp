@@ -52,7 +52,7 @@
 												<th style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" class="chkAll" id="checkallbox" /></th>
 												<th style="width: 15%; text-indent: 10px;">名称</th>
-												<th style="width: 15%; text-indent: 5px;">版本</th>
+												<th style="width: 15%; text-indent: 8px;">版本</th>
 												<th style="width: 15%; text-indent: 8px;">镜像信息</th>
 												<th style="width: 15%; text-indent: 5px;">创建人</th>
 												<th style="width: 20%; text-indent: 10px;">创建时间</th>
