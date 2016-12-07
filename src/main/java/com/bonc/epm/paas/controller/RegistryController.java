@@ -593,7 +593,8 @@ public class RegistryController {
 	 */
 	@RequestMapping("registry/getImagesGroupByName.do")
 	@ResponseBody
-	public String getImagesGroupByName(Long creator) {
+	public String getImagesGroupByName() {
+		long creator = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> maps = new HashMap<String, Object>();
 		//获取所有的镜像
 		List<Image> imageList = imageDao.findByCreatorOrderByName(creator);
@@ -624,7 +625,8 @@ public class RegistryController {
      */
 	@RequestMapping("registry/getImagesGroupByMonth.do")
     @ResponseBody
-	public String getImagesGroupByMonth(Long creator) {
+	public String getImagesGroupByMonth() {
+		long creator = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> maps = new HashMap<String, Object>();
 		//获取该用户的所有镜像
 		List<Image> imageList = imageDao.findByCreatorOrderByCreatTime(creator);

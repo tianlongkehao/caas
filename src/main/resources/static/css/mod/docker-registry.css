@@ -365,3 +365,9 @@
 	-moz-transform: rotate(-90deg);
 	-webkit-transform: rotate(-90deg);
 }
+.imageName span{
+	margin-left:15px;
+}
+.timeVersion{
+	margin-left:18px!important;
+}

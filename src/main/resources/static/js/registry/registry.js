@@ -116,24 +116,7 @@ $(document).ready(function () {
          		}
          	});
         });
-    // 删除条件筛选中的   全选checkbox 
-    var count = 1;
-    var checkAllItem = '.checkAllItem'+count;
-    var checkItem = '.checkItem'+count;
-    $(checkAllItem).click(function(){
-        $(checkItem).prop('checked',$(checkAllItem).is(":checked"));
-    });
- 
-    // 删除条件筛选中的  选项
-    $(document).on("click",checkItem, function(){
-        if($(this).is(":checked")){
-            if ($(checkItem+":checked").length == $(checkItem).length) {
-                $(checkAllItem).prop("checked", "checked");
-            }
-        }else{
-            $(checkAllItem).prop('checked', $(this).is(":checked"));
-        }
-    });
+    
   
    
 });/*ready*/
@@ -287,22 +270,122 @@ function deleteImage(obj){
 	        }
 	 });
 }
-
+function checkbox(count){
+	// 删除条件筛选中的   全选checkbox 
+    var checkAllItem = '.checkAllItem'+count;
+    var checkItem = '.checkItem'+count;
+    $(checkAllItem).click(function(){
+        $(checkItem).prop('checked',$(checkAllItem).is(":checked"));
+    });
+ 
+    // 删除条件筛选中的  选项
+    $(document).on("click",checkItem, function(){
+        if($(this).is(":checked")){
+            if ($(checkItem+":checked").length == $(checkItem).length) {
+                $(checkAllItem).prop("checked", "checked");
+            }
+        }else{
+            $(checkAllItem).prop('checked', $(this).is(":checked"));
+        }
+    });
+}
 //批量删除镜像
 function delImages(){
-	
+	$(".namefiltercon").empty();
+	$('.versionList').empty();
+	var count = 1;
+	$.ajax({
+		url:""+ctx+"/registry/getImagesGroupByName.do",
+		type:"post",
+		success:function(data){
+			data = eval("(" + data + ")");
+			var dataLength = data.imagesGroupByName.length;
+			for(var i = 0; i < dataLength; i++){
+				var imageLength = data.imagesGroupByName[i].length;
+				var imageName = data.imagesGroupByName[i][0].name;
+				var imageHtml = '<div class="panel-group filter" id="accordion'+count+'">'+
+				'<div class="panel panel-success">'+
+				'<div class="panel-heading">'+
+					'<h4 class="panel-title">'+
+						'<input type="checkbox" class="checkAllItem'+count+'">'+
+						'<a data-toggle="collapse" data-parent="#accordion'+count+'" href="#collapseOne'+count+'" onclick="filters(this)" class="imageName">'+
+							'<span class="">'+imageName+'</span><span class="caret caret-filter"></span>'+
+						'</a>'+
+					'</h4>'+
+				'</div>'+
+				'<div id="collapseOne'+count+'" class="panel-collapse collapse in">'+
+					'<div class="panel-body">'+
+						'<ul class="image-version versionList'+count+'">'+
+							
+						'</ul>'+
+					'</div></div></div></div>';
+				$(".namefiltercon").append(imageHtml);
+				var imageList = '';
+				for(var j = 0; j < imageLength; j++){
+					var imageListVersion = data.imagesGroupByName[i][j].version;
+					imageList += '<li><input type="checkbox" class="checkItem'+count+'"><span title="title">'+imageListVersion+'</span></li>';
+				}
+				$('.versionList'+count+'').append(imageList);
+				checkbox(count);
+				count++;
+			}
+		}
+	})
+	$.ajax({
+		url:""+ctx+"/registry/getImagesGroupByMonth.do",
+		type:"post",
+		success:function(data){
+			data = eval("(" + data + ")");
+			var images = data.images; var imagesLength = data.images.length;
+			var images1 = data.images1; 
+			var images2 = data.images2;
+			var images3 = data.images3;
+			
+			
+			var timeImagesHtml = '<div class="panel-group filter" id="accordion'+count+'">'+
+			'<div class="panel panel-info">'+
+			'<div class="panel-heading">'+
+				'<h4 class="panel-title">'+
+					'<input type="checkbox" class="checkAllItem'+count+'">'+
+					'<a data-toggle="collapse" data-parent="#accordion'+count+'" href="#collapseOne'+count+'" onclick="filters(this)" class="imageName">'+
+						'<span class="">2016年12月</span><span class="caret caret-filter"></span>'+
+					'</a>'+
+				'</h4>'+
+			'</div>'+
+			'<div id="collapseOne'+count+'" class="panel-collapse collapse in">'+
+				'<div class="panel-body">'+
+					'<ul class="image-version timeImageList'+count+'">'+
+						
+					'</ul>'+
+				'</div></div></div></div>';
+			$(".timefiltercon").append(timeImagesHtml);
+			var timeImageList = '';
+			for(var m = 0; m < imagesLength; m++){
+				var timeImagesListName = data.images[m].name;
+				var timeImagesListVersion = data.images[m].version;
+				timeImageList += '<li><input type="checkbox" class="checkItem'+count+'"><span title="'+timeImagesListName+'">'+timeImagesListName+'</span><br><span class="timeVersion">'+timeImagesListVersion+'</span></li>';
+			}
+			$('.timeImageList'+count+'').append(timeImageList);
+			checkbox(count);
+			count++;
+			
+			
+			/*for (var m = 0; m < 4; m++){
+				var images = 'images'+m
+				var images = data.images; var imagesLength = data.images.length;
+			}*/
+			
+		}
+	})
 	layer.open({
 		type: 1,
         title: '批量删除条件',
         content: $("#delItemcfg"),
-        area: ['880px'],
+        area: ['880px','690px'],
         btn: ['确定删除', '取消'],
         yes: function(index, layero){ 
-        	var startTime = $("#startTime").val();
-        	var endTime = $("#endTime").val();
         	
         	
-			
         }
     })
 	/*obj = document.getElementsByName("ids");
