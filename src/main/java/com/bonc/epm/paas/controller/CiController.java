@@ -339,6 +339,7 @@ public class CiController {
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
         model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
+        model.addAttribute("userAutority", cuurentUser.getUser_autority());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_detail.jsp";
     }
@@ -427,7 +428,7 @@ public class CiController {
             client.updateJob(job);
             //添加代码挂钩
             if (ci.getIsHookCode() == 1) {
-                ChangeGit changeGit = sheraClientService.generateChangeGit(user.getUserName(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
+                ChangeGit changeGit = sheraClientService.generateChangeGit(user.getNamespace(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
                 changeGit = client.addGitHooks(ci.getProjectName(), changeGit);
                 CiCodeHook ciCodeHook = new CiCodeHook();
                 if (!StringUtils.isEmpty(originCi.getHookCodeId()) && originCi.getHookCodeId() !=0 ) {
@@ -615,6 +616,7 @@ public class CiController {
             e.printStackTrace();
         }
         model.addAttribute("username", cuurentUser.getUserName());
+        model.addAttribute("userAutority", cuurentUser.getUser_autority());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_add.jsp";
     }
@@ -768,7 +770,7 @@ public class CiController {
                 client.createJob(job);
                 //添加代码挂钩
                 if (ci.getIsHookCode() == 1) {
-                    ChangeGit changeGit = sheraClientService.generateChangeGit(cuurentUser.getUserName(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
+                    ChangeGit changeGit = sheraClientService.generateChangeGit(cuurentUser.getNamespace(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
                     changeGit = client.addGitHooks(ci.getProjectName(), changeGit);
                     CiCodeHook ciCodeHook = new CiCodeHook();
                     ciCodeHook.setCreateDate(new Date());
@@ -1268,8 +1270,9 @@ public class CiController {
             SheraAPIClientInterface client = sheraClientService.getClient();
             JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime);
             jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
-            final Integer seqNo = jobExecViewNew.getSeqNo();
-            final String name =  CurrentUserUtils.getInstance().getUser().getUserName();
+            ciRecord.setExecutionId(jobExecViewNew.getSeqNo());
+            ciRecordDao.save(ciRecord);
+            final String nameSpace =  CurrentUserUtils.getInstance().getUser().getNamespace();
             //获取执行状态和执行日志
             new Thread() {
                 public void run() {
@@ -1282,9 +1285,9 @@ public class CiController {
                             Log log = new Log();
                             try {
                                 SheraClientService sheraClientService = new SheraClientService();
-                                SheraAPIClientInterface client = sheraClientService.getclient(name);
-                                jobExecView = client.getExecution(ci.getProjectName(),seqNo);
-                                log = client.getExecLog(ci.getProjectName(),seqNo.toString(),seek);
+                                SheraAPIClientInterface client = sheraClientService.getclient(nameSpace);
+                                jobExecView = client.getExecution(ci.getProjectName(),ciRecord.getExecutionId());
+                                log = client.getExecLog(ci.getProjectName(),ciRecord.getExecutionId().toString(),seek);
                                 seek = log.getSeek();
                             }
                             catch (Exception e) {
@@ -1357,6 +1360,30 @@ public class CiController {
             LOG.error("==========fetchCode error:"+e.getMessage());
         }
         return false;
+    }
+    
+    /**
+     * Description: <br>
+     * 停止正在执行的代码构建
+     * @param projectName 项目名称
+     * @param executionId 项目版本号
+     * @return 
+     * @see
+     */
+    @RequestMapping("ci/stopCodeCi.do")
+    @ResponseBody
+    public String stopCodeCi(String projectName,int executionId){
+        Map<String,Object> map = new HashMap<String,Object>();
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            client.killExecution(projectName, executionId);
+            map.put("status", "200");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
     }
     
     /**
