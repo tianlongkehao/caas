@@ -124,6 +124,12 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
+    @RequestMapping(value = "/secretKey", method = RequestMethod.GET)
+    public String secretKey(Model model) {
+        model.addAttribute("menu_flag", "user");
+        return "user/secretKey.jsp";
+    }
+    
 //    public static void main(String[] args) {
 ////        Integer.valueOf("40.0".toString());
 ////        Integer.parseInt("40.0");

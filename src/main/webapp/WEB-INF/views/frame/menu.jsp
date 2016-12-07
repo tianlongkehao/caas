@@ -139,6 +139,11 @@
 	                        用户管理
 	                    </a>
 	                </li>
+	                <li id="menuSecretKey" action="">
+	                    <a href="<%=path %>/user/secretKey">
+	                       密钥管理
+	                    </a>
+	                </li>
 	            </ul>
 	        </li>
 	        </c:if>
@@ -155,6 +160,11 @@
                             租户管理
                         </a>
                     </li>
+                    <li id="menuSecretKey" action="">
+	                    <a href="<%=path %>/user/secretKey">
+	                       密钥管理
+	                    </a>
+	                </li>
                 </ul>
             </li>
             </c:if>
