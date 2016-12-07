@@ -339,6 +339,7 @@ public class CiController {
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
         model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
+        model.addAttribute("userAutority", cuurentUser.getUser_autority());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_detail.jsp";
     }
@@ -427,7 +428,7 @@ public class CiController {
             client.updateJob(job);
             //添加代码挂钩
             if (ci.getIsHookCode() == 1) {
-                ChangeGit changeGit = sheraClientService.generateChangeGit(user.getUserName(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
+                ChangeGit changeGit = sheraClientService.generateChangeGit(user.getNamespace(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
                 changeGit = client.addGitHooks(ci.getProjectName(), changeGit);
                 CiCodeHook ciCodeHook = new CiCodeHook();
                 if (!StringUtils.isEmpty(originCi.getHookCodeId()) && originCi.getHookCodeId() !=0 ) {
@@ -615,6 +616,7 @@ public class CiController {
             e.printStackTrace();
         }
         model.addAttribute("username", cuurentUser.getUserName());
+        model.addAttribute("userAutority", cuurentUser.getUser_autority());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_add.jsp";
     }
@@ -767,7 +769,7 @@ public class CiController {
                 client.createJob(job);
                 //添加代码挂钩
                 if (ci.getIsHookCode() == 1) {
-                    ChangeGit changeGit = sheraClientService.generateChangeGit(cuurentUser.getUserName(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
+                    ChangeGit changeGit = sheraClientService.generateChangeGit(cuurentUser.getNamespace(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
                     changeGit = client.addGitHooks(ci.getProjectName(), changeGit);
                     CiCodeHook ciCodeHook = new CiCodeHook();
                     ciCodeHook.setCreateDate(new Date());

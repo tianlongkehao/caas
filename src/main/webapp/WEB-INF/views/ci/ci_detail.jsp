@@ -196,7 +196,9 @@
 					                            	      </c:if>
 			                                          </c:forEach>
 					                                </select>
-					                                <button type="button" id="addCredentialsBtn" class="addCredentialsBtn" value="添加证书"><i class="fa fa-key"></i>&nbsp添加证书</button>
+					                                <c:if test="${userAutority ==1 || userAutority ==2 }">
+						                                <button type="button" id="addCredentialsBtn" class="addCredentialsBtn" value="添加证书"><i class="fa fa-key"></i>&nbsp添加证书</button>
+			                                        </c:if>
 					                            </div>
 					                            <div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">创建分支</label>
