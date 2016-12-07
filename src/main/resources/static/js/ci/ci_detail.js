@@ -368,14 +368,15 @@ function deleteCodeCi(){
 			type : "POST",
 			data : {
 				"projectName" : projectName,
-				"executionId" : executionId
+				"executionId" : executionId,
+				"ciRecordId" :ciRecordId
 			},
 			success : function(data) {
 				data = eval("(" + data + ")");
 				if (data.status == "200") {
 					window.location.reload();
 				} else {
-					layer.alert("停止构建失败");
+					layer.alert("删除当前构建失败");
 				}
 			}
 		});
