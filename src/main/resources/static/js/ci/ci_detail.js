@@ -19,9 +19,11 @@ $(document).ready(function(){
     registerHookCode($("#id").val());
     //加载构建日志
     printLog();
-    //停止构建
+    //停止构建执行
     stopCodeCi();
-	
+	//删除一个执行
+    deleteCodeCi();
+    
     //动态给版本信息赋宽度
     if(printLog()){
     	var btnVersionWidth = $(".btn-version").html().length*14;
@@ -331,7 +333,7 @@ $(document).ready(function(){
 	});
 });/*ready*/
 
-
+//停止一个构建执行
 function stopCodeCi(){
 	$("#stopCodeCi").click(function(){
 		var projectName = $(this).attr("projectName");
@@ -355,6 +357,30 @@ function stopCodeCi(){
 	})
 }
 
+//删除一个构建执行
+function deleteCodeCi(){
+	$("#deleteCodeCi").click(function(){
+		var projectName = $(this).attr("projectName");
+		var executionId = $(this).attr("executionId");
+		var ciRecordId = $(this).attr("ciRecordId");
+		$.ajax({
+			url : ctx + "/ci/deleteCodeCi.do",
+			type : "POST",
+			data : {
+				"projectName" : projectName,
+				"executionId" : executionId
+			},
+			success : function(data) {
+				data = eval("(" + data + ")");
+				if (data.status == "200") {
+					window.location.reload();
+				} else {
+					layer.alert("停止构建失败");
+				}
+			}
+		});
+	})
+}
 
 //单击导入模板，加载模板数据
 function loadDockerFileTemplate(){
