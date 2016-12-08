@@ -659,3 +659,33 @@ textarea.c-project-con{
 .ci-quick-baseImage select#baseImageName{
 	width: 218px;
 }
+/* shera */
+
+#jdkPaht{
+	margin-left: 5px;
+}
+.addJDK{
+	line-height: 34px;
+    margin-left: 12px;
+    font-size: 20px;
+    color: #3c7bca;
+}
+.createjdk {
+    background: #e4eaec;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 16px;
+    color: #3f8ec3;
+    cursor: pointer;
+    margin-top: -20px;
+    width: 76%;
+    float: right;
+    margin-right: 31px;
+}
+.jdkCon thead{
+	background: #E4EAEC;
+}
+.jdkName, .jdkPath{
+	width:96%;
+}
