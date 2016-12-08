@@ -202,7 +202,7 @@
 	                        <input type="password" class="form-control conCred" id="passwordCred" name="password" value=""></div>
                         <div class="infoCred ssh">
 	                        <span class="labelCred">密钥：</span>
-	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="5" value="" ></textarea></div>
+	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="8" value="" ></textarea></div>
                     </div>
                 </div>
 </body>
