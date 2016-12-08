@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.cluster.entity.CatalogResource;
+import com.bonc.epm.paas.cluster.entity.ClusterResources;
+import com.bonc.epm.paas.cluster.util.InfluxdbSearchService;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.dao.UserDao;
@@ -134,6 +137,9 @@ public class ClusterController {
      * 获取InfluxDB；
      */
     private InfluxDB influxDB;
+    
+    @Autowired
+    InfluxdbSearchService influxdbSearchService;
 
     /**
      * 
@@ -432,8 +438,13 @@ public class ClusterController {
     @RequestMapping(value = { "/getClusterMonitor" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getClusterMonitor(String timePeriod) {
-        StringBuilder xValue = new StringBuilder();
-        StringBuilder yValue = new StringBuilder();
+        ClusterResources clusterResources =  new ClusterResources(); 
+        InfluxDB influxDB = influxdbSearchService.getInfluxdbClient();
+        List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
+        List<CatalogResource> yValue= influxdbSearchService.generateYValue(influxDB,timePeriod);
+        clusterResources.setxValue(xValue);
+        //StringBuilder xValue = new StringBuilder();
+        //StringBuilder yValue = new StringBuilder();
         try {
             influxDB = InfluxDBFactory.connect(url, username, password);
             xValue.append("\"xValue\": [");
