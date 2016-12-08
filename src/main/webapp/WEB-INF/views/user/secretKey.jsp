@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-<title>租户</title>
+<title>密钥</title>
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/secretKey.css" />
 <script type="text/javascript" src="<%=path%>/js/user/secretKey.js"></script>
@@ -43,43 +43,42 @@
                             </div>
                             <div class="ibox-content">
                                 <table class="table table-striped table-hover dataTables-example">
-                                    <thead>
-                                        <tr>
-												<th style="width: 5%; text-indent: 30px;">
-													<input type="checkbox" class="chkAll" id="checkallbox" /></th>
+										<thead>
+											<tr>
+												<th style="width: 5%; text-indent: 30px;"><input
+													type="checkbox" class="chkAll" id="checkallbox" /></th>
 												<th style="width: 15%;">名称</th>
 												<th style="width: 10%;">类型</th>
 												<th style="width: 10%;" class="del-operation">操作</th>
 											</tr>
-                                    </thead>
-                                    <tbody id="secretKeyList">
-											
-													<tr class="userTr" id="${user.id }">
-														<td style="width: 5%; text-indent: 30px;"><input
-															type="checkbox" class="chkItem" name="ids"
-															value="${user.id }"></td>
-														<td style="width: 15%;"><a
-															href="<%=path %>/user/detail/${user.id }" title="查看详细信息"
-															onmousemove="style.textDecoration='underline'"
-															onmouseout="style.textDecoration='none'">name</a>
-														</td>
-														
-														<td style="width: 10%; text-indent: 0;"
-															id="user.user_autority" name="user.user_autority"><input
-															type="hidden" id="user_autority_hidden"
-															value="${user.user_autority}"> 
-															<select class="hidden" id="secretType" name="secretType">
-																<option value="2">HTTP</option>
-																<option value="1">SSH</option>
-														    </select></td>
-														<td style="width: 10%;"><a id="deleteButton"
-															class="no-drop" href="javascript:delOneTenement(${user.id })"
-															style="margin-left: 10px"> <i class="fa fa-trash"></i>
-														</a></td>
-													</tr>
-											
+										</thead>
+										<tbody id="secretKeyList">
+
+											<tr class="userTr" id="${key.id }">
+												<td style="width: 5%; text-indent: 30px;"><input
+													type="checkbox" class="chkItem" name="ids"
+													value="${key.id }"></td>
+												<td style="width: 15%;cursor:pointer"><a title="查看详细信息" onclick="keyDetail(this)" keyName="name"
+													onmousemove="style.textDecoration='underline'"
+													onmouseout="style.textDecoration='none'">name</a></td>
+
+												<td style="width: 10%; text-indent: 0;"
+													id="key-type" name="key-type"><input
+													type="hidden" id="key-type-hidden"
+													value="http">http <select
+													class="hidden" id="secretType" name="secretType">
+														<option value="1">HTTP</option>
+														<option value="2">SSH</option>
+												</select></td>
+												<td style="width: 10%;"><a id="deleteKeyBtn"
+													class="no-drop"
+													href="javascript:delOneTenement(${key.id })"
+													style="margin-left: 10px"> <i class="fa fa-trash"></i>
+												</a></td>
+											</tr>
+
 										</tbody>
-                                    	<tfoot class="hide">
+										<tfoot class="hide">
 											<tr>
 												<td colspan="4">
 													<ul class="pagination pull-right"></ul>
@@ -100,8 +99,36 @@
 	
 	</article>
 	</div>
-	<div id="createKeyCon" style="display:none">
-		ddd
+	<div id="createKeyCon" style="display: none">
+		<div style="width:345px;margin: 15px 15px">
+			<div class="infoCred">
+				<span class="labelCred">类型：</span> <select
+					class="form-control conCred" id="CredentialsType" name="type">
+					<option value="1">用户名和密码</option>
+					<option value="2">SSH用户名和密钥</option>
+				</select>
+			</div>
+			<div class="infoCred">
+				<span class="labelCred">用户名：</span> <input type="text"
+					class="form-control conCred" id="userNameCred" name="userName"
+					value="">
+			</div>
+			<div class="infoCred normal">
+				<span class="labelCred">密码：</span> <input type="password"
+					class="form-control conCred" id="passwordCred" name="password"
+					value="">
+			</div>
+			<div class="infoCred ssh">
+				<span class="labelCred">密钥：</span>
+				<textarea type="text" class="form-control conCred"
+					id="SSHpasswordCred" name="privateKey" row="8" value=""></textarea>
+			</div>
+			<div class="infoCred">
+				<span class="labelCred">描述：</span> <input type="text"
+					class="form-control conCred" id="keyRemark" name="keyRemark"
+					value="">
+			</div>
+		</div>
 	</div>
 
 	<script type="text/javascript">
