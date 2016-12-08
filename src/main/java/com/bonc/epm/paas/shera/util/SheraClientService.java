@@ -32,6 +32,7 @@ import com.bonc.epm.paas.shera.model.GitAdvancedConfig;
 import com.bonc.epm.paas.shera.model.GitConfig;
 import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.ImgManager;
+import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.Key;
@@ -230,6 +231,19 @@ public class SheraClientService {
         return changeGit;
     }
     
+    /**
+     * Description: <br>
+     * 封装jdk数据
+     * @param version 版本
+     * @param path 路径
+     * @return jdk
+     */
+    public Jdk generateJdk(String version,String path){
+        Jdk jdk = new Jdk();
+        jdk.setPath(path);
+        jdk.setVersion(version);
+        return jdk;
+    }
     
 //    public static void main(String[] args) {
 //        SheraClientService sheraClientService = new SheraClientService();
