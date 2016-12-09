@@ -40,7 +40,6 @@
 
                             <%-- 构建日志 --%>
                             <div class="log-details" id="ciRecordList">
-
                                 <c:forEach items="${ciRecordList}" var="ciRecord" varStatus="status">
                                     <c:choose>
                                         <c:when test="${ciRecord.constructResult == 1}">
@@ -62,7 +61,6 @@
                                             <c:set var="eventStatus" value=""></c:set>
                                         </c:when>
                                     </c:choose>
-                                    
                                     <c:choose>
                                         <c:when test="${status.index==0 }">
                                             <c:set var="liveClass" value="lives"></c:set>
@@ -75,7 +73,6 @@
                                             <c:set var="displayClass" value="none"></c:set>
                                         </c:otherwise>
                                     </c:choose>
-                                    
                                     <div class='event-line ${liveClass}' repotype='' status='${eventStatus}'>
                                         <div class='event-status ${eventStatus}'>
                                             <i class='fa ${eventStatusClass} notes'></i>
@@ -88,11 +85,19 @@
                                                 <span class='btn-version'>${ciRecord.ciVersion}</span>
                                                 </span>
                                                 <span class='time-on-status'>
-                                                    <i class='${statusClass}'></i>${statusName}
+                                                    <i class='${statusClass}'></i><span class="ciStatus" value="${statusName}">${statusName}</span>
                                                 </span>
                                                 </div>
                                                 <div class='time-line-time'>
                                                     <div class='event-sign'><i class='fa fa-angle-right fa_caret' style='transform: rotate(${transformClass});'></i></div>
+                                                    <c:if test="${ci.type == 1}">
+	                                                    <c:if test="${ciRecord.constructResult == 1 || ciRecord.constructResult == 2}">
+	                                                        <div class='event-del' title="删除当前执行"><span id = "deleteCodeCi"  ciRecordId = "${ciRecord.id }" projectName = "${ci.projectName }" executionId = "${ciRecord.executionId }"><i class='fa fa-trash'></i></span></div>
+	                                                    </c:if>
+	                                                    <c:if test="${ciRecord.constructResult == 3}">
+	                                                        <div class='event-stop' title="停止构建"><span id = "stopCodeCi" projectName = "${ci.projectName }" executionId = "${ciRecord.executionId }" ><i class='fa fa-power-off'></i></span></div>
+	                                                    </c:if>
+                                                    </c:if>
                                                     <div class='datetimes'><i class='fa fa-calendar margin'></i><fmt:formatDate value="${ciRecord.constructDate}" pattern="yyyy-MM-dd HH:mm:ss"/></div>
                                                     <div class='time-on-timeout'><i class='fa fa-time'></i><fmt:formatNumber type="number" value="${ciRecord.constructTime/1000}" maxFractionDigits="0"/>s</div>
                                                 </div>
@@ -109,9 +114,7 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </c:forEach>
-
                             </div>
 
                             <%-- 基本设置 --%>
@@ -196,7 +199,9 @@
 					                            	      </c:if>
 			                                          </c:forEach>
 					                                </select>
-					                                <button type="button" id="addCredentialsBtn" class="addCredentialsBtn" value="添加证书"><i class="fa fa-key"></i>&nbsp添加证书</button>
+					                                <c:if test="${userAutority ==1 || userAutority ==2 }">
+						                                <button type="button" id="addCredentialsBtn" class="addCredentialsBtn" value="添加证书"><i class="fa fa-key"></i>&nbsp添加证书</button>
+			                                        </c:if>
 					                            </div>
 					                            <div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">创建分支</label>
