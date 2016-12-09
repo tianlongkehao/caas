@@ -257,9 +257,10 @@ public class SheraClientService {
 //        SheraClientService sheraClientService = new SheraClientService();
 //        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
 //        try {
-//            JobExecViewList  jobExecViewList = client.getJobAllExecutions("testdemo1");
-//            Log log = client.getExecLog("testdemo3", "1", 2091);
-//            System.out.println(log.getContent());
+//            JdkList jdkList  = client.getAllJdk();
+//            for (Jdk jdk : jdkList) {
+//                System.out.println(jdk.toString());
+//            }
 //            
 ////            JobExecView jobExecView = client.getExecution("testdemo1",1);
 ////            System.out.println(jobExecView);
