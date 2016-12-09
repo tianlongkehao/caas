@@ -860,6 +860,8 @@ public class ServiceController {
             	List<String> args = new ArrayList<String>();
             	//debug模式下
             	if (isDebug) {
+            		command.add("/debug.sh");
+//            		args.add("-D");
 					controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 							1,service.getInitialDelay(),service.getTimeoutDetction(),service.getPeriodDetction(),
 							registryImgName, portConfigs, service.getCpuNum(), service.getRam(),service.getProxyZone(),
@@ -906,6 +908,9 @@ public class ServiceController {
 							args.add(item);
 						}
 					}
+				} else {
+            		command.add("/debug.sh");
+//            		args.add("-D");
 				}
             	for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
 						container.setCommand(command);
