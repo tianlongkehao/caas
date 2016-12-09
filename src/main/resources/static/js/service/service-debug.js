@@ -1,4 +1,5 @@
 $(document).ready(function() {
+	$("#uuid").val(generateUUID());
 	creatable(null, null);
 });
 function EnterPress(e) { // 传入 event
@@ -233,7 +234,7 @@ function downloadFile(obj) {
 }
 
 /**
- * 上传文件
+ * 上传文件选择窗口
  */
 function fileUpload() {
 	$('#file').val("");
@@ -257,11 +258,7 @@ function fileUpload() {
 			});
 			if (flag == 0) {
 				layer.closeAll();
-				$('.progress-bar-info').text("文件上传中...");
-				$('#myModal').modal('show');
-		        $.when(up(formData, flag)).done(function(data){
-		        	$('#myModal').modal('hide');
-		        });
+				upload(formData);
 			} else {
 				layer.msg('存在同名的文件，确定要覆盖吗？', {
 					icon : 7,
@@ -270,10 +267,7 @@ function fileUpload() {
 					yes : function(index) {
 						layer.closeAll();
 						$('.progress-bar-info').text("文件上传中...");
-						$('#myModal').modal('show');
-				        $.when(up(formData, flag)).done(function(data){
-				        	$('#myModal').modal('hide');
-				        });
+						upload(formData);
 					}
 				});
 			}
@@ -281,30 +275,70 @@ function fileUpload() {
 	})
 };
 
-function up(formData, flag) {
+//上传文件的方法
+function upload(formData) {
+	$('.progress-bar-info').text("文件上传中...");
+	$('#myModal').modal('show');
+	setTimeout("",500);
+    $.when(uploadAjax(formData)).done(function(data){
+		var data = eval("(" + data + ")");
+		if ("200" == data.status) {
+//        	$('#myModal').modal('hide');
+//			creatable(null, ".");
+//			layer.closeAll();
+		} else {
+        	$('#myModal').modal('hide');
+			failedMSG("文件上传失败！", true);
+		}
+    });
+}
+//上传文件的ajax异步请求
+function uploadAjax(formData){
 	var defer = $.Deferred();
 	$.ajax({
 		type : 'POST',
 		url : ctx + '/service/uploadFile',
 		data : formData,
-//		async : false,
 		cache : false,
 		contentType : false,
 		processData : false,
 		success : function(data) {
 			defer.resolve(data);
-			var data = eval("(" + data + ")");
-			if ("200" == data.status) {
-				creatable(null, ".");
-				$('#hasUsed').html(data.used);
-				layer.closeAll();
-			} else {
-				failedMSG("文件上传失败！", true);
-			}
 		}
 	});
 	return defer.promise();
 }
+//获取文件上传的进度
+function getUploadProgress(formData, flag) {
+	var defer = $.Deferred();
+	$.ajax({
+		type : 'POST',
+		url : ctx + '/service/getUploadProgress',
+		data : formData,
+		cache : false,
+		contentType : false,
+		processData : false,
+		success : function(data) {
+			var data = eval("(" + data + ")");
+			if ("200" == data.status) {
+				$('.progress-bar-info').text("文件上传中"+data.progress+"...");
+				if (data.progress != 1) {
+					setTimeout("getUploadProgress()",500);
+				} else {
+
+				}
+			} else {
+	        	$('#myModal').modal('hide');
+				failedMSG("上传进度获取失败！", true);
+			}
+
+			defer.resolve(data);
+		}
+	});
+	return defer.promise();
+
+}
+
 //导出container为image
 function saveAsImage(containerId, nodeName) {
     var version = $('#version').val().trim();
@@ -382,3 +416,13 @@ function failedMSG(title, flag) {
 		}
 	});
 }
+
+function generateUUID(){
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+    });
+    return uuid;
+};

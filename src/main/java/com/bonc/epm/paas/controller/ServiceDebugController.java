@@ -20,9 +20,11 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.ProgressMonitorInputStream;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.tomcat.util.http.fileupload.ProgressListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
@@ -46,6 +49,7 @@ import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.docker.util.DockerRegistryService;
 import com.bonc.epm.paas.entity.FileInfo;
+import com.bonc.epm.paas.entity.FileUploadProgress;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
@@ -55,6 +59,7 @@ import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.FileUploadProgressManager;
 import com.bonc.epm.paas.util.SFTPUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.jcraft.jsch.ChannelSftp;
@@ -135,7 +140,12 @@ public class ServiceDebugController {
      */
     @Autowired
 	private DockerRegistryService dockerRegistryService;
-	
+
+    /**
+     * 进度条
+     */
+	private int progress;
+
 	/**
 	 * Description: <br>
 	 * 跳转进入服务DEBUG页面
@@ -433,47 +443,77 @@ public class ServiceDebugController {
 	 *            上传文件名
 	 * @param path
 	 *            路径
-	 * @param storageName
-	 *            卷组名
-	 * @param id
-	 *            卷组的id
 	 * @return JSON
 	 * @see
 	 */
 
 	@RequestMapping(value = { "service/uploadFile" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path, String hostkey) {
+	public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path, String hostkey, String uuid) {
+		Map<String, String> map = new HashMap<String, String>();
+		long currentUserId = CurrentUserUtils.getInstance().getUser().getId();
+		//获取进度对象
+		FileUploadProgress progress = FileUploadProgressManager.createFileUploadProgress(uuid, files[0]);
 		try {
-			Map<String, String> map = new HashMap<String, String>();
 			ChannelSftp sftp = sftpPool.get(hostkey);
 			if (sftp == null) {
 				// 连接已经断开
 				map.put("status", "401");
 				return JSON.toJSONString(map);
 			}
+			
 			for (int i = 0; i < files.length; i++) {
-				File file = new File(files[i].getOriginalFilename());
-				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-				out.write(files[i].getBytes());
+				//获取输入流
+				InputStream in = files[i].getInputStream();
+				//获取输出流
+				OutputStream out = sftp.put(files[i].getOriginalFilename());
+
+				//每次读取1024字节到temp中
+				byte[] temp = new byte[1024];
+				//每次读取的字节数
+				int length;
+				while ((length = in.read(temp)) != -1) {
+					out.write(temp, 0, length);
+                    progress.setRead(progress.getRead() + length);
+                    System.out.println(progress.getProgress());
+				}
 				out.flush();
 				out.close();
-				SFTPUtil.upLoadFile(sftp, new File(files[i].getOriginalFilename()), sftp.pwd());
-				file.delete();
-				map.put("status", "200");
 			}
-			return JSON.toJSONString(map);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return "上传失败," + e.getMessage();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return "上传失败," + e.getMessage();
-		} catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			return "上传失败," + e.getMessage();
 		}
+		map.put("status", "200");
+		return JSON.toJSONString(map);
 	}
+
+	/**
+	 * 
+	 * Description: 上传文件
+	 * 
+	 * @param file
+	 *            上传文件名
+	 * @param path
+	 *            路径
+	 * @return JSON
+	 * @see
+	 */
+
+	@RequestMapping(value = { "service/getUploadProgress" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String getUploadProgress(@RequestParam String uuid) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		FileUploadProgress progress = FileUploadProgressManager.getFileUploadProgress(uuid);
+		if (progress != null) {
+			map.put("progress", progress.getProgress());
+		} else {
+			map.put("progress", 0);
+		}
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
 
 	/**
 	 * 
