@@ -101,6 +101,11 @@
                         构建
                     </a>
                 </li>
+                <li id="menuShera" action="">
+	                <a href="<%=path %>/ci/shera">
+	                    shera管理
+	                </a>
+	            </li>
             </ul>
         </li>
         <li id="menu_registry">
@@ -160,11 +165,6 @@
                             租户管理
                         </a>
                     </li>
-                    <li id="menuSecretKey" action="">
-	                    <a href="<%=path %>/user/secretKey">
-	                       密钥管理
-	                    </a>
-	                </li>
                 </ul>
             </li>
             </c:if>

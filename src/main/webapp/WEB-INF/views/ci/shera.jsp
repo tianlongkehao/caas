@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-<title>密钥</title>
+<title>shera</title>
 <%@include file="../frame/header.jsp"%>
-<link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/secretKey.css" />
-<script type="text/javascript" src="<%=path%>/js/user/secretKey.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
+<script type="text/javascript" src="<%=path%>/js/ci/shera.js"></script>
 </head>
 <body>
 	<jsp:include page="../frame/menu.jsp" flush="true">
@@ -20,7 +20,7 @@
 						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">密钥管理</li>
+						<li class="active" id="nav2">shera管理</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -29,15 +29,15 @@
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
                                 <h5>
-										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>密钥管理
+										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>shera管理
 									</h5>
 
 									<div class="ibox-tools">
 										<a href="javascript:window.location.reload(true);"
 											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
-										<a id="createKeyBtn" title="创建用户"><i
+										<a id="createSheraBtn" title="创建用户"><i
 											class="fa fa-plus"></i></a> 
-										<a href="javascript:delTenement()" title="删除"><i
+										<a href="javascript:delShera()" title="删除"><i
 											class="fa fa-trash"></i></a>
 									</div>
                             </div>
@@ -47,8 +47,10 @@
 											<tr>
 												<th style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" class="chkAll" id="checkallbox" /></th>
-												<th style="width: 15%;">名称</th>
-												<th style="width: 10%;">类型</th>
+												<th style="width: 10%;">IP</th>
+												<th style="width: 20%;">账号</th>
+												<th style="width: 20%;">密码</th>
+												<th style="width: 20%;">描述</th>
 												<th style="width: 10%;" class="del-operation">操作</th>
 											</tr>
 										</thead>
@@ -58,18 +60,12 @@
 												<td style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" class="chkItem" name="ids"
 													value="${key.id }"></td>
-												<td style="width: 15%;cursor:pointer"><a title="查看详细信息" onclick="keyDetail(this)" keyName="name"
+												<td style="width: 10%;cursor:pointer"><a title="查看详细信息" onclick="sheraDetail(this)" keyName="name"
 													onmousemove="style.textDecoration='underline'"
-													onmouseout="style.textDecoration='none'">name</a></td>
-
-												<td style="width: 10%; text-indent: 0;"
-													id="key-type" name="key-type"><input
-													type="hidden" id="key-type-hidden"
-													value="http">http <select
-													class="hidden" id="secretType" name="secretType">
-														<option value="1">HTTP</option>
-														<option value="2">SSH</option>
-												</select></td>
+													onmouseout="style.textDecoration='none'">ip</a></td>
+												<td style="width: 20%;">name</td>
+												<td style="width: 20%;">password</td>
+												<td style="width: 20%;">remark</td>
 												<td style="width: 10%;"><a id="deleteKeyBtn"
 													class="no-drop"
 													href="javascript:delOneTenement(${key.id })"
@@ -80,7 +76,7 @@
 										</tbody>
 										<tfoot class="hide">
 											<tr>
-												<td colspan="4">
+												<td colspan="6">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
@@ -99,42 +95,63 @@
 	
 	</article>
 	</div>
-	<div id="createKeyCon" style="display: none">
-		<div style="width:345px;margin: 15px 15px">
+	<div id="createSheraCon" style="display: none">
+		<div style="margin: 15px 20px">
 			<div class="infoCred">
-				<span class="labelCred">类型：</span> <select
-					class="form-control conCred" id="CredentialsType" name="type">
-					<option value="1">用户名和密码</option>
-					<option value="2">SSH用户名和密钥</option>
-				</select>
-			</div>
-			<div class="infoCred">
-				<span class="labelCred">用户名：</span> <input type="text"
-					class="form-control conCred" id="userNameCred" name="userName"
+				<span class="labelCred">IP：</span> <input type="text"
+					class="form-control conCred" id="sheraIp" name="sheraIp"
 					value="">
 			</div>
-			<div class="infoCred normal">
+			<div class="infoCred">
+				<span class="labelCred">账号：</span> <input type="text"
+					class="form-control conCred" id="shreaName" name="shreaName"
+					value="">
+			</div>
+			<div class="infoCred">
 				<span class="labelCred">密码：</span> <input type="password"
-					class="form-control conCred" id="passwordCred" name="password"
+					class="form-control conCred" id="shreaPassword" name="shreaPassword"
 					value="">
 			</div>
-			<div class="infoCred ssh">
-				<span class="labelCred">密钥：</span>
-				<textarea type="text" class="form-control conCred" style="height:100px"
-					id="SSHpasswordCred" name="privateKey" row="8" value=""></textarea>
-			</div>
 			<div class="infoCred">
-				<span class="labelCred">描述：</span>
-				<textarea type="text" class="form-control conCred" style="height:100px"
-					id="keyRemark" name="keyRemark" row="8" value=""></textarea>
+				<span class="labelCred">JDK：</span>
+				<table class="table enabled conCred jdkCon">
+					<thead>
+						<tr>
+							<th style="width: 35%">name</th>
+							<th style="width: 35%">path</th>
+							<th style="vertical-align: middle; width: 10%">操作</th>
+						</tr>
+					</thead>
+					<tbody class="jdktbody">
+						<tr class="plus-row">
+							<td><input class="jdkName" type="text" value="home"></td>
+							<td><input class="jdkPath" type="text" value="/opt"></td>
+							<td><a
+								onclick="deleteRow(this)" class="gray"> <i
+									class="fa fa-trash-o fa-lg"></i>
+							</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="createjdk" style="background: #fafafa">
+					<span id="createjdk"><i class="fa fa-plus margin"></i>添加JDK</span>
+				</div>
+				
 			</div>
+			<br>
+			<div class="infoCred">
+				<span class="labelCred">描述：</span> 
+				<textarea class="form-control conCred" style="height:100px"
+					id="sheraRemark" name="sheraRemark" row="8" value=""></textarea>
+			</div>
+			
 		</div>
 	</div>
 
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$('.dataTables-example').dataTable({
-	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,3] }]
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
 		

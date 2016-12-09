@@ -223,6 +223,10 @@
                                                         style="width: 75%; display: inline; float: right;">
                                                         <span class="resource-unit">个</span>
                                                 </div>
+                                                <div class="col-md-4" align="left">
+                                                    <label style="width: 21%; float: left; line-height: 35px">Shera环境:</label>
+                                                    <select class="form-control" style="width: 75%; display: inline; float: right;"></select>
+                                                </div>
                                             </div>
 <!-- 											<div class="row" style="margin-top: 15px">
 												<div class="col-md-4" align="left">
