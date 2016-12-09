@@ -31,6 +31,7 @@ import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserAndShera;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
@@ -46,6 +47,7 @@ import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.Jdk;
+import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
@@ -222,7 +224,7 @@ public class UserController {
      */
     @RequestMapping(value = { "/save.do" }, method = RequestMethod.POST)
     @ResponseBody
-	public String userSave(User user, Resource resource, Restriction restriction, Model model) {
+	public String userSave(User user, Resource resource, Restriction restriction,long sheraId, Model model) {
         Map<String, Object> map = new HashMap<String, Object>();
         try {
             fillPartUserInfo(user, resource);
@@ -261,6 +263,10 @@ public class UserController {
             
 			// DB保存用户信息
             userDao.save(user);
+            UserAndShera userAndShera = new UserAndShera();
+            userAndShera.setSheraId(sheraId);
+            userAndShera.setUserId(user.getId());
+            userAndSheraDao.save(userAndShera);
             map.put("creatFlag", "200");
         } 
         catch (Exception e) {
@@ -319,7 +325,7 @@ public class UserController {
      * @see
      */
     @RequestMapping(value = { "/update.do" }, method = RequestMethod.POST)
-	public String userUpdate(User user, Resource resource, Restriction restriction, Model model) {
+	public String userUpdate(User user, Resource resource, Restriction restriction,long sheraId, Model model) {
         try {
             updateUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，创建client
@@ -349,13 +355,31 @@ public class UserController {
         catch (KubernetesClientException e) {
             LOG.error("error message:-"+ e.getMessage());
         }
-
+        userAndSheraUpdate(user.getId(),sheraId);
         List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
         model.addAttribute("userList", userList);
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-
+    
+    /**
+     * Description: <br>
+     * userAndShera数据的更新
+     * @param userId 用户Id
+     * @param sheraId  sheraId
+     */
+    public void userAndSheraUpdate(long userId,long sheraId){
+        UserAndShera userAndShera = userAndSheraDao.findByUserId(userId);
+        if (org.springframework.util.StringUtils.isEmpty(userAndShera)) {
+            userAndShera.setSheraId(sheraId);
+            userAndShera.setUserId(userId);
+        }
+        else {
+            userAndShera.setSheraId(sheraId);
+        }
+        userAndSheraDao.save(userAndShera);
+    }
+    
     /**
      * 
      * Description:
@@ -1205,6 +1229,18 @@ public class UserController {
     
     /**
      * Description: <br>
+     * 查询所有的shera
+     * @return jsp
+     */
+    @RequestMapping("/shera/find")
+    public String findShera(Model model){
+        Iterable<Shera> sheraList = sheraDao.findAll();
+        model.addAttribute("sheraList", sheraList);
+        return "ci/shera.jsp";
+    }
+    
+    /**
+     * Description: <br>
      * 创建shera路由信息
      * @param shera shera
      * @param jdkData jdk数据
@@ -1214,7 +1250,7 @@ public class UserController {
     public String createShera(Shera shera,String jdkJson){
         sheraDao.save(shera);
         try {
-            SheraAPIClientInterface client = sheraClientService.getClient();
+            SheraAPIClientInterface client = sheraClientService.getClient(shera);
             if (StringUtils.isNotEmpty(jdkJson)) {
                 String[] jdkData = jdkJson.split(";");
                 for (String jdkRow : jdkData ) {
@@ -1228,7 +1264,7 @@ public class UserController {
         catch (Exception e) {
            e.printStackTrace();
         }
-        return "shera.jsp";
+        return "ci/shera.jsp";
     }
     
     /**
@@ -1261,7 +1297,7 @@ public class UserController {
      */
     @RequestMapping("/shera/updateShera.do")
     @ResponseBody
-    public String updateShera(Shera shera){
+    public String updateShera(Shera shera,String jdkJson){
         Map<String,Object> map = new HashMap<String,Object>();
         try {
             Shera oldShera = sheraDao.findOne(shera.getId());
@@ -1269,25 +1305,46 @@ public class UserController {
             oldShera.setUserName(shera.getUserName());
             oldShera.setPassword(shera.getPassword());
             sheraDao.save(oldShera);
+            SheraAPIClientInterface client = sheraClientService.getClient(oldShera);
+            if (StringUtils.isNotEmpty(jdkJson)) {
+                String[] jdkData = jdkJson.split(";");
+                for (String jdkRow : jdkData ) {
+                    String jdkVersion = jdkRow.substring(0,jdkRow.indexOf(","));
+                    String jdkPath = jdkRow.substring(jdkRow.indexOf(",")+1);
+                    Jdk jdk = sheraClientService.generateJdk(jdkVersion, jdkPath);
+                    client.createJdk(jdk);
+                }
+            }
             map.put("status", "200");
         }
         catch (Exception e) {
             e.printStackTrace();
-            map.put("status", "200");
+            map.put("status", "400");
         }
         return JSON.toJSONString(map);
     }
     
     /**
      * Description: <br>
-     * 查询所有的shera
-     * @return jsp
+     * 获取shera的详细信息
+     * @param sheraId id；
+     * @return String
+     * @see
      */
-    @RequestMapping("/shera/find")
-    public String findShera(Model model){
-        Iterable<Shera> sheraList = sheraDao.findAll();
-        model.addAttribute("sheraList", sheraList);
-        return "shera.jsp";
+    @RequestMapping("/shera/detail.do")
+    @ResponseBody
+    public String detailShera(long sheraId){
+        Map<String,Object> map = new HashMap<String,Object>();
+        try {
+            Shera shera = sheraDao.findOne(sheraId);
+            SheraAPIClientInterface client = sheraClientService.getClient(shera);
+            JdkList jdkList = client.getAllJdk();
+            map.put("jdkList", jdkList);
+            map.put("shera", shera);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return JSON.toJSONString(map);
     }
-    
 }

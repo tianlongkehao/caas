@@ -30,4 +30,8 @@ public interface UserAndSheraDao extends CrudRepository<UserAndShera, Long> {
      * @see
      */
     void deleteBySheraId(long sheraId);
+    
+    UserAndShera findByUserId(long userId);
+    
+    UserAndShera fingBySheraId(long sheraId);
 }

@@ -15,10 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.entity.CiInvoke;
+import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
@@ -54,11 +57,23 @@ public class SheraClientService {
     private String username="shera";
     private String password="shera";
     
+    @Autowired
+    private SheraDao sheraDao;
+    
     public SheraAPIClientInterface getClient() {
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        Shera shera = sheraDao.findByUserId(userId);
+        return getClient(shera);
+    }
+    
+    public SheraAPIClientInterface getClient(Shera shera){
         String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        this.endpoint = shera.getSheraUrl();
+        this.username = shera.getUserName();
+        this.password = shera.getPassword();
         return getclient(namespace);
     }
-
+    
     public SheraAPIClientInterface getclient(String namespace) {
         return new SheraAPIClient(endpoint, namespace, username, password,new RestFactory());
     }

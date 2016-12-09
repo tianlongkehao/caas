@@ -50,6 +50,7 @@ import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.HookAndImagesDao;
 import com.bonc.epm.paas.dao.ImageDao;
+import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
@@ -60,6 +61,7 @@ import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.HookAndImages;
 import com.bonc.epm.paas.entity.Image;
+import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
@@ -129,6 +131,12 @@ public class CiController {
      */
     @Autowired
     private CiCodeHookDao ciCodeHookDao;
+    
+    /**
+     * sheraDao数据接口
+     */
+    @Autowired
+    private SheraDao sheraDao;
     
     /**
      * hookAndImages中间表接口
@@ -706,6 +714,28 @@ public class CiController {
         return JSON.toJSONString(map);
     }
 	
+    /**
+     * Description: <br>
+     * 进行代码构建时判断当前租户是否添加了shera环境
+     * @return String
+     * @see
+     */
+    @RequestMapping("ci/judgeShera.do")
+    @ResponseBody
+    public String judgeShera(){
+        Map<String,Object> map = new HashMap<>();
+        long userId = CurrentUserUtils.getInstance().getUser().getId();
+        Shera shera = sheraDao.findByUserId(userId);
+        if (StringUtils.isEmpty(shera)) {
+            map.put("status", "400");
+        }
+        else {
+            map.put("status", "200");
+        }
+        return JSON.toJSONString(map);
+        
+    }
+    
     /**
      * Description: <br>
      * 代码构建验证代码地址是否正确
