@@ -162,7 +162,7 @@
 	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
 	                                            </select>
                                             </li>
-                    <li class="line-h-3"> <span class="ve_top">NodeIp黏连方式：</span>
+                    						<li class="line-h-3"> <span class="ve_top">NodeIp黏连方式：</span>
                                                 <select class="selectVolume form-control" id="nodeIpAffinity" name="nodeIpAffinity"
                                                     style="height: 34px; width: 230px;">
                                                     <option name="nodeIpAffinity" value="" >NONE</option>
