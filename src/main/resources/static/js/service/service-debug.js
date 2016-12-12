@@ -259,6 +259,7 @@ function fileUpload() {
 			if (flag == 0) {
 				layer.closeAll();
 				upload(formData);
+				getUploadProgress();
 			} else {
 				layer.msg('存在同名的文件，确定要覆盖吗？', {
 					icon : 7,
@@ -268,6 +269,7 @@ function fileUpload() {
 						layer.closeAll();
 						$('.progress-bar-info').text("文件上传中...");
 						upload(formData);
+						getUploadProgress();
 					}
 				});
 			}
@@ -309,8 +311,9 @@ function uploadAjax(formData){
 	return defer.promise();
 }
 //获取文件上传的进度
-function getUploadProgress(formData, flag) {
+function getUploadProgress() {
 	var defer = $.Deferred();
+	var formData = new FormData($("#form1")[0]);
 	$.ajax({
 		type : 'POST',
 		url : ctx + '/service/getUploadProgress',
@@ -322,17 +325,19 @@ function getUploadProgress(formData, flag) {
 			var data = eval("(" + data + ")");
 			if ("200" == data.status) {
 				$('.progress-bar-info').text("文件上传中"+data.progress+"...");
-				if (data.progress != 1) {
+				if (data.progress != "100%") {
 					setTimeout("getUploadProgress()",500);
 				} else {
-
+		        	$('#myModal').modal('hide');
+					creatable(null, ".");
+					layer.closeAll();
+					defer.resolve(data);
 				}
 			} else {
 	        	$('#myModal').modal('hide');
 				failedMSG("上传进度获取失败！", true);
 			}
 
-			defer.resolve(data);
 		}
 	});
 	return defer.promise();
