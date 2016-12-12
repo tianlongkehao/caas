@@ -102,7 +102,7 @@
                     </a>
                 </li>
                 <li id="menuShera" action="">
-	                <a href="<%=path %>/ci/shera">
+	                <a href="<%=path %>/user/shera">
 	                    shera管理
 	                </a>
 	            </li>

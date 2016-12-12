@@ -11,6 +11,8 @@
 
 package com.bonc.epm.paas.dao;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
 import com.bonc.epm.paas.entity.UserAndShera;
@@ -32,6 +34,4 @@ public interface UserAndSheraDao extends CrudRepository<UserAndShera, Long> {
     void deleteBySheraId(long sheraId);
     
     UserAndShera findByUserId(long userId);
-    
-    UserAndShera fingBySheraId(long sheraId);
 }

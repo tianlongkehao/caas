@@ -37,7 +37,7 @@
 											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
 										<a id="createSheraBtn" title="创建用户"><i
 											class="fa fa-plus"></i></a> 
-										<a href="javascript:delShera()" title="删除"><i
+										<a href="javascript:delSheras()" title="删除"><i
 											class="fa fa-trash"></i></a>
 									</div>
                             </div>
@@ -55,24 +55,24 @@
 											</tr>
 										</thead>
 										<tbody id="secretKeyList">
-
-											<tr class="userTr" id="${key.id }">
-												<td style="width: 5%; text-indent: 30px;"><input
-													type="checkbox" class="chkItem" name="ids"
-													value="${key.id }"></td>
-												<td style="width: 10%;cursor:pointer"><a title="查看详细信息" onclick="sheraDetail(this)" keyName="name"
-													onmousemove="style.textDecoration='underline'"
-													onmouseout="style.textDecoration='none'">ip</a></td>
-												<td style="width: 20%;">name</td>
-												<td style="width: 20%;">password</td>
-												<td style="width: 20%;">remark</td>
-												<td style="width: 10%;"><a id="deleteKeyBtn"
-													class="no-drop"
-													href="javascript:delOneTenement(${key.id })"
-													style="margin-left: 10px"> <i class="fa fa-trash"></i>
-												</a></td>
-											</tr>
-
+										    <c:forEach items="${sheraList }" var="shera">
+												<tr class="userTr" id="${shera.id }">
+													<td style="width: 5%; text-indent: 30px;"><input
+														type="checkbox" class="chkItem" name="ids"
+														value="${shera.id }"></td>
+													<td style="width: 10%;cursor:pointer"><a title="查看详细信息" onclick="sheraDetail(${shera.id})" keyName="name"
+														onmousemove="style.textDecoration='underline'"
+														onmouseout="style.textDecoration='none'">${shera.sheraUrl }</a></td>
+													<td style="width: 20%;">${shera.userName }</td>
+													<td style="width: 20%;">${shera.password }</td>
+													<td style="width: 20%;">${shera.remark }</td>
+													<td style="width: 10%;"><a id="deleteKeyBtn"
+														class="no-drop"
+														href="javascript:delOneTenement(${shera.id })"
+														style="margin-left: 10px"> <i class="fa fa-trash"></i></a>
+													</td>
+												</tr>
+                                            </c:forEach>
 										</tbody>
 										<tfoot class="hide">
 											<tr>
@@ -99,7 +99,7 @@
 		<div style="margin: 15px 20px">
 			<div class="infoCred">
 				<span class="labelCred">IP：</span> <input type="text"
-					class="form-control conCred" id="sheraIp" name="sheraIp"
+					class="form-control conCred" id="sheraIp" name="sheraIp" placeholder="http://192.168.0.76:8282/"
 					value="">
 			</div>
 			<div class="infoCred">
@@ -108,10 +108,15 @@
 					value="">
 			</div>
 			<div class="infoCred">
-				<span class="labelCred">密码：</span> <input type="password"
+				<span class="labelCred">密码：</span> <input type="text"
 					class="form-control conCred" id="shreaPassword" name="shreaPassword"
 					value="">
 			</div>
+			<div class="infoCred">
+                <span class="labelCred">描述：</span> 
+                <textarea class="form-control conCred" style="height:100px"
+                    id="sheraRemark" name="sheraRemark" row="8" value=""></textarea>
+            </div>
 			<div class="infoCred">
 				<span class="labelCred">JDK：</span>
 				<table class="table enabled conCred jdkCon">
@@ -123,28 +128,14 @@
 						</tr>
 					</thead>
 					<tbody class="jdktbody">
-						<tr class="plus-row">
-							<td><input class="jdkName" type="text" value="home"></td>
-							<td><input class="jdkPath" type="text" value="/opt"></td>
-							<td><a
-								onclick="deleteRow(this)" class="gray"> <i
-									class="fa fa-trash-o fa-lg"></i>
-							</a></td>
-						</tr>
+					
 					</tbody>
 				</table>
 				<div class="createjdk" style="background: #fafafa">
 					<span id="createjdk"><i class="fa fa-plus margin"></i>添加JDK</span>
 				</div>
-				
+				<input type="hidden" id="arrayJdk" value="" />
 			</div>
-			<br>
-			<div class="infoCred">
-				<span class="labelCred">描述：</span> 
-				<textarea class="form-control conCred" style="height:100px"
-					id="sheraRemark" name="sheraRemark" row="8" value=""></textarea>
-			</div>
-			
 		</div>
 	</div>
 

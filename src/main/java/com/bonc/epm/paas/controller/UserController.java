@@ -1232,10 +1232,11 @@ public class UserController {
      * 查询所有的shera
      * @return jsp
      */
-    @RequestMapping("/shera/find")
+    @RequestMapping("/shera")
     public String findShera(Model model){
         Iterable<Shera> sheraList = sheraDao.findAll();
         model.addAttribute("sheraList", sheraList);
+        model.addAttribute("menu_flag", "ci");
         return "ci/shera.jsp";
     }
     
@@ -1247,10 +1248,12 @@ public class UserController {
      * @return jsp
      */
     @RequestMapping("/shera/creatShera.do")
+    @ResponseBody
     public String createShera(Shera shera,String jdkJson){
-        sheraDao.save(shera);
+        Map<String,Object> map = new HashMap<>();
         try {
             SheraAPIClientInterface client = sheraClientService.getClient(shera);
+            JdkList jdkList = client.getAllJdk();
             if (StringUtils.isNotEmpty(jdkJson)) {
                 String[] jdkData = jdkJson.split(";");
                 for (String jdkRow : jdkData ) {
@@ -1260,11 +1263,14 @@ public class UserController {
                     client.createJdk(jdk);
                 }
             }
+            sheraDao.save(shera);
+            map.put("status", "200");
         }
         catch (Exception e) {
-           e.printStackTrace();
+           LOG.error("创建shera失败");
+           map.put("status", "400");
         }
-        return "ci/shera.jsp";
+        return JSON.toJSONString(map);
     }
     
     /**
@@ -1283,10 +1289,40 @@ public class UserController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("shera删除错误！");
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 批量删除shera
+     * @param sheraIds sheraids
+     * @return String
+     */
+    @RequestMapping("/shera/delsheras.do")
+    @ResponseBody
+    public String delSheras(String sheraIds){
+        Map<String,Object> map = new HashMap<>();
+        ArrayList<Long> ids = new ArrayList<Long>();
+        String[] str = sheraIds.split(",");
+        if (str != null && str.length > 0) {
+            for (String id : str) {
+                ids.add(Long.valueOf(id));
+            }
+        }
+        try {
+            for (long id : ids) {
+                deleteShera(id);
+            }
+            map.put("status", "200");
+        } 
+        catch (Exception e) {
+            map.put("status", "400");
+            LOG.error("shera删除错误！");
+        }
+        return JSON.toJSONString(map); 
     }
     
     /**
@@ -1304,8 +1340,38 @@ public class UserController {
             oldShera.setSheraUrl(shera.getSheraUrl());
             oldShera.setUserName(shera.getUserName());
             oldShera.setPassword(shera.getPassword());
+            oldShera.setRemark(shera.getRemark());
             sheraDao.save(oldShera);
-            SheraAPIClientInterface client = sheraClientService.getClient(oldShera);
+            if (updateJdk(oldShera, jdkJson)) {
+                map.put("status", "200");
+            }
+            else {
+                map.put("status", "400");
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 更新jdk信息
+     * @param shera shera
+     * @param jdkJson jdk数据
+     * @return boolean
+     */
+    public boolean updateJdk(Shera shera,String jdkJson){
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient(shera);
+            JdkList jdkList = client.getAllJdk();
+            if (jdkList.size() > 0) {
+                for (Jdk jdk : jdkList) {
+                    client.deleteJdk(jdk.getVersion());
+                }
+            }
             if (StringUtils.isNotEmpty(jdkJson)) {
                 String[] jdkData = jdkJson.split(";");
                 for (String jdkRow : jdkData ) {
@@ -1315,13 +1381,12 @@ public class UserController {
                     client.createJdk(jdk);
                 }
             }
-            map.put("status", "200");
         }
         catch (Exception e) {
-            e.printStackTrace();
-            map.put("status", "400");
+            LOG.error("更新jdk出错");
+            return false;
         }
-        return JSON.toJSONString(map);
+        return true;
     }
     
     /**
@@ -1335,12 +1400,12 @@ public class UserController {
     @ResponseBody
     public String detailShera(long sheraId){
         Map<String,Object> map = new HashMap<String,Object>();
+        Shera shera = sheraDao.findOne(sheraId);
+        map.put("shera", shera);
         try {
-            Shera shera = sheraDao.findOne(sheraId);
             SheraAPIClientInterface client = sheraClientService.getClient(shera);
             JdkList jdkList = client.getAllJdk();
-            map.put("jdkList", jdkList);
-            map.put("shera", shera);
+            map.put("jdkList", jdkList.getItems());
         }
         catch (Exception e) {
             e.printStackTrace();

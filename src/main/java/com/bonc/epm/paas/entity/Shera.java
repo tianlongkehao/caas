@@ -39,6 +39,11 @@ public class Shera {
      * 密码
      */
     private String password;
+    
+    /**
+     * 描述
+     */
+    private String remark;
 
     public long getId() {
         return id;
@@ -70,6 +75,14 @@ public class Shera {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
     
 }
