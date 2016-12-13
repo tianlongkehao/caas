@@ -7,11 +7,10 @@
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/core/jquery-ui.min.css" />
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/service.css" />
-<script type="text/javascript" src="<%=path%>/js/plugins/jquery-ui.min.js"></script>
+
 <script type="text/javascript" src="<%=path%>/js/service/service-debug.js"></script>
 </head>
-<body onunload="alert('The onunload event was triggered')">
-
+<body>
 	<jsp:include page="../frame/menu.jsp" flush="true">
 		<jsp:param name="ci" value="" />
 	</jsp:include>
@@ -28,66 +27,110 @@
 					</ol>
 				</div>
 				
-				<div id="tabs">
-					<ul>
-						<li><a href="#doc">文件</a></li>
-						<li><a href="#ftp">命令行</a></li>
-						<li><a href="#export">导出</a></li>
-					</ul>
-					<input hidden="true" value="${containerId }" id="containerId"/>
-					<input hidden="true" value="${imageName }" id="imageName"/>
-					<div id="doc" >
-						<div class="row">
-							<div class="scpDoc">
-								<div class="ibox float-e-margins" style="margin-bottom:0px">
-									<div class="ibox-title">
-										<h5>
-											<span>${podip }<input type="text" id="scp-path" onkeypress="EnterPress(event)" onkeydown="EnterPress()" value=""></span>
-										</h5>
-	
-										<div class="ibox-tools">
-											<a href="javascript:creatable(null,'./');" id="volReloadBtn" title="刷新"> <i class="fa fa-repeat fa-i"></i></a>
-											<a href="javascript:createdir()" id="adddir" title="新建"> <i class="fa fa-plus fa-i"></i></a>
-											<a href="javascript:fileUpload()" id="fileUpload" title="上传文件"> <i class="fa fa-upload fa-i"></i></a>
-	<!-- 										<a href="javascript:download()" id="fileDownloadFiles" title="导出文件"> <i class="fa fa-download"></i></a> -->
-											<a href="javascript:delfiles()" id="deleteButton" title="删除"> <i class="fa fa-trash fa-i"></i></a>
+				<div class="contentMain">
+<!-- 					<section class="detail-succeed"> -->
+<!-- 						<div class="icon-img"> -->
+<!-- 							<div class="type-icon"> -->
+<%-- 								<img src="<%=path%>/images/podSimple.png" height="100%"> --%>
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<ul class="succeed-content pull-left"> -->
+<%-- 							<c:if test="${service.status==1 }"> --%>
+<!-- 								<li>运行状态：未启动</li> -->
+<%-- 							</c:if> --%>
+<%-- 							<c:if test="${service.status==2||service.status==3}"> --%>
+<!-- 								<li>运行状态：正在运行</li> -->
+<%-- 							</c:if> --%>
+<%-- 							<c:if test="${service.status==4 }"> --%>
+<!-- 								<li>运行状态：已停止</li> -->
+<%-- 							</c:if> --%>
+<%-- 							<c:if test="${service.status==6 }"> --%>
+<!-- 								<li>运行状态：调试中</li> -->
+<%-- 							</c:if> --%>
+							
+<%-- 							<li>实例名称：<span>${service.serviceName } - ${service.imgVersion} - 1</span></li> --%>
+<%-- 							<li>镜像名称：<span>${service.imgName }</span></li> --%>
+<%-- 							<li>创建时间：${service.createDate }</li> --%>
+							
+<!-- 						</ul> -->
+<!-- 						<div class="applocation hide"> -->
+<!-- 							<a href="" -->
+<!-- 								target="_blank" class="open">导出</a> -->
+<!-- 						</div> -->
+<!-- 					</section> -->
+					
+					<div class="baseInfo center-style">
+						<ul class="nav navbar-nav">
+							<li><a class="DOC btn-prim">文件</a></li>
+							<li><a class="CMD">命令行</a></li>
+							<li><a class="EXPORT">导出</a></li>
+						</ul>
+					</div>
+					
+					<div class="docInfo container">
+						<div id="doc" >
+							<div class="row">
+								<div class="scpDoc">
+									<div class="ibox float-e-margins" style="margin-bottom:0px">
+										<div class="ibox-title">
+											<h5>
+												<span>${podip }<input type="text" id="scp-path" onkeypress="EnterPress(event)" onkeydown="EnterPress()" value=""></span>
+											</h5>
+		
+											<div class="ibox-tools">
+												<a href="javascript:creatable(null,'./');" id="volReloadBtn" title="刷新"> <i class="fa fa-repeat fa-i"></i></a>
+												<a href="javascript:createdir()" id="adddir" title="新建"> <i class="fa fa-plus fa-i"></i></a>
+												<a href="javascript:fileUpload()" id="fileUpload" title="上传文件"> <i class="fa fa-upload fa-i"></i></a>
+		<!-- 										<a href="javascript:download()" id="fileDownloadFiles" title="导出文件"> <i class="fa fa-download"></i></a> -->
+												<a href="javascript:delfiles()" id="deleteButton" title="删除"> <i class="fa fa-trash fa-i"></i></a>
+											</div>
 										</div>
-									</div>
-									<div class="ibox-content">
-										<table style="border-collapse: collapse; margin: 0 auto;" class="table">
-											<thead style="display: block;">
-												<tr>
-													<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
-													<th style="width: 25%; text-indent: 25px;">文件名</th>
-													<th style="width: 15%; text-indent: 61px;">大小</th>
-													<th style="width: 30%; text-indent: 151px;">修改日期</th>
-													<th style="width: 15%; text-indent: 131px;">操作</th>
-												</tr>
-											</thead>
-											<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%" class="sortable-list connectList agile-list">
-	
-											</tbody>
-											
-										</table>
-										<ul class="sortable-list connectList"></ul>
+										<div class="ibox-content">
+											<table style="border-collapse: collapse; margin: 0 auto;" class="table">
+												<thead style="display: block;">
+													<tr>
+														<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
+														<th style="width: 25%; text-indent: 25px;">文件名</th>
+														<th style="width: 15%; text-indent: 61px;">大小</th>
+														<th style="width: 30%; text-indent: 151px;">修改日期</th>
+														<th style="width: 15%; text-indent: 131px;">操作</th>
+													</tr>
+												</thead>
+												<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%" class="sortable-list connectList agile-list">
+		
+												</tbody>
+												
+											</table>
+											<ul class="sortable-list connectList"></ul>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="contentMain" id="ftp">
-						<iframe id="shellinabox" src="${sshhost}" width="100%" height="500px"></iframe>
-					</div>
-					<div id="export">
-						<div class="">
-							<span class="name-note" style="float:left;line-height:34px">${shrotImageName }：</span> <input
-								name="imgNameFirst" type="hidden" value="${shrotImageName }">
-							<input id="version" name="version" style="width:20%;"
-								type="text" value="debug" class="name-input form-control">
+					
+					<div class="cmdInfo container hide">
+						<div class="contentMain" id="ftp">
+							<iframe id="shellinabox" src="" value="" width="100%" height="500px"></iframe>
 						</div>
-						<a href="javascript:saveAsImage('${containerId}','${nodeName }')" type="button" class="btn btn-primary" style="margin-top:10px;color:white;">保存容器为镜像</a>
+					</div>
+					
+					<div class="exportInfo container hide">
+						<div id="export">
+							<div class="">
+								<span class="name-note" style="float:left;line-height:34px">${shrotImageName }：</span> <input
+									name="imgNameFirst" type="hidden" value="${shrotImageName }">
+								<input id="version" name="version" style="width:20%;"
+									type="text" value="debug" class="name-input form-control">
+							</div>
+							<a href="javascript:saveAsImage('${containerId}','${nodeName }')" type="button" class="btn btn-primary" style="margin-top:10px;color:white;">保存容器为镜像</a>
+						</div>
 					</div>
 				</div>
+					
+				<input hidden="true" value="${containerId }" id="containerId"/>
+				<input hidden="true" value="${imageName }" id="imageName"/>
+				<input hidden="true" value="${sshhost}" id="ssh_host"/>
 				
 				<div id="upload-template" hidden="true">
 					<div style="width: 345px; margin: 5px 10px 5px 10px">

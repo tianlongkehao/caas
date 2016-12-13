@@ -1,6 +1,41 @@
 $(document).ready(function() {
+	$(".baseInfo>ul>li>a").click(function(){
+
+        $(".baseInfo>ul>li>a").removeClass("btn-prim");
+        $(this).addClass("btn-prim");
+    });
+
+    $(".DOC").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".docInfo").removeClass("hide");
+    });
+
+
+    $(".CMD").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".cmdInfo").removeClass("hide");
+    });
+
+
+    $(".EXPORT").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".exportInfo").removeClass("hide");
+    });
+    
 	$("#uuid").val(generateUUID());
 	creatable(null, null);
+	
+	$(".CMD").click(function(){
+		var ssh = $('#shellinabox').val();
+		if (ssh == ""){
+			ssh = document.getElementById("ssh_host").value;
+			$('#shellinabox').val(ssh);
+			document.getElementById("shellinabox").src = ssh;
+		}
+	});
 });
 function EnterPress(e) { // 传入 event
 	var e = e || window.event;
