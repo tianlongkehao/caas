@@ -824,7 +824,7 @@ function loadServices() {
 							if (row.updateImage == true) {
 								html += '<a id="'+row.id+'_code" class="margin cursor console-code-modal"'+
 											'href="'+ctx+'ci/findCodeCiId.do?imgId='+row.imgID+'"'+
-										'style="margin-left: 5px" ><img src="'+ctx+'/images/sd.png" title="代码更新"></a>';
+										'style="margin-left: 5px" ><img src="'+ctx+'/images/sd.gif" title="代码更新"></a>';
 							}
 							return html;
 						}

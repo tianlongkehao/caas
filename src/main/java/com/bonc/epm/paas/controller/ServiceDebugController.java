@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,14 +19,12 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,6 +43,7 @@ import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.docker.util.DockerRegistryService;
 import com.bonc.epm.paas.entity.FileInfo;
+import com.bonc.epm.paas.entity.FileUploadProgress;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
@@ -55,6 +53,7 @@ import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.FileUploadProgressManager;
 import com.bonc.epm.paas.util.SFTPUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.jcraft.jsch.ChannelSftp;
@@ -135,7 +134,7 @@ public class ServiceDebugController {
      */
     @Autowired
 	private DockerRegistryService dockerRegistryService;
-	
+
 	/**
 	 * Description: <br>
 	 * 跳转进入服务DEBUG页面
@@ -228,7 +227,7 @@ public class ServiceDebugController {
 		Map<String, Object> map = new HashMap<String, Object>();
 	
 		ChannelSftp sftp = sftpPool.get(hostkey);
-		if (sftp == null) {
+		if (sftp == null || !sftp.isConnected()) {
 			// 连接已经断开
 			map.put("status", "401");
 			return JSON.toJSONString(map);
@@ -273,7 +272,7 @@ public class ServiceDebugController {
 	public String delFile(String fileNames, String hostkey) {
 		Map<String, String> map = new HashMap<String, String>();
 		ChannelSftp sftp = sftpPool.get(hostkey);
-		if (sftp == null) {
+		if (sftp == null || !sftp.isConnected()) {
 			// 连接已经断开
 			map.put("status", "401");
 			return JSON.toJSONString(map);
@@ -329,7 +328,7 @@ public class ServiceDebugController {
 	public String createFile(String dirName, String hostkey) {
 		Map<String, String> map = new HashMap<String, String>();
 		ChannelSftp sftp = sftpPool.get(hostkey);
-		if (sftp == null) {
+		if (sftp == null || !sftp.isConnected()) {
 			// 连接已经断开
 			map.put("status", "401");
 			return JSON.toJSONString(map);
@@ -362,7 +361,7 @@ public class ServiceDebugController {
 	public void downloadFile(String downfiles, String hostkey, HttpServletRequest request, HttpServletResponse response) throws SftpException, IOException {
 		String path = "";
 		ChannelSftp sftp = sftpPool.get(hostkey);
-		if (sftp == null) {
+		if (sftp == null || !sftp.isConnected()) {
 			System.out.println("连接已经断开");
 			return;
 		}
@@ -433,47 +432,76 @@ public class ServiceDebugController {
 	 *            上传文件名
 	 * @param path
 	 *            路径
-	 * @param storageName
-	 *            卷组名
-	 * @param id
-	 *            卷组的id
 	 * @return JSON
 	 * @see
 	 */
 
 	@RequestMapping(value = { "service/uploadFile" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path, String hostkey) {
+	public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path, String hostkey, String uuid) {
+		Map<String, String> map = new HashMap<String, String>();
+		//获取进度对象
+		FileUploadProgress progress = FileUploadProgressManager.createFileUploadProgress(uuid, files[0]);
 		try {
-			Map<String, String> map = new HashMap<String, String>();
 			ChannelSftp sftp = sftpPool.get(hostkey);
-			if (sftp == null) {
+			if (sftp == null || !sftp.isConnected()) {
 				// 连接已经断开
 				map.put("status", "401");
 				return JSON.toJSONString(map);
 			}
+			
 			for (int i = 0; i < files.length; i++) {
-				File file = new File(files[i].getOriginalFilename());
-				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-				out.write(files[i].getBytes());
+				//获取输入流
+				InputStream in = files[i].getInputStream();
+				//获取输出流
+				OutputStream out = sftp.put(files[i].getOriginalFilename());
+
+				//每次读取1024字节到temp中
+				byte[] temp = new byte[1024];
+				//每次读取的字节数
+				int length;
+				while ((length = in.read(temp)) != -1) {
+					out.write(temp, 0, length);
+                    progress.setRead(progress.getRead() + length);
+                    System.out.println(progress.getProgress());
+				}
 				out.flush();
 				out.close();
-				SFTPUtil.upLoadFile(sftp, new File(files[i].getOriginalFilename()), sftp.pwd());
-				file.delete();
-				map.put("status", "200");
 			}
-			return JSON.toJSONString(map);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return "上传失败," + e.getMessage();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return "上传失败," + e.getMessage();
-		} catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			return "上传失败," + e.getMessage();
 		}
+		map.put("status", "200");
+		return JSON.toJSONString(map);
 	}
+
+	/**
+	 * 
+	 * Description: 上传文件
+	 * 
+	 * @param file
+	 *            上传文件名
+	 * @param path
+	 *            路径
+	 * @return JSON
+	 * @see
+	 */
+
+	@RequestMapping(value = { "service/getUploadProgress" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String getUploadProgress(@RequestParam String uuid) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		FileUploadProgress progress = FileUploadProgressManager.getFileUploadProgress(uuid);
+		if (progress != null) {
+			map.put("progress", (int)(progress.getProgress()*100) + "%");
+		} else {
+			map.put("progress", 0);
+		}
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
 
 	/**
 	 * 
@@ -497,8 +525,6 @@ public class ServiceDebugController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		// 去掉containerId开头的"docker://"
 		containerId = containerId.substring(containerId.lastIndexOf('/') + 1);
-		//取得原始tag
-		String tag = imageName.substring(imageName.lastIndexOf(':')+1);
 		// 去掉imageName末尾的tag
 		imageName = imageName.substring(0, imageName.lastIndexOf(':'));
 		// 去掉imageName前的远程地址名"192.168.0.xx:5000/"
@@ -524,21 +550,6 @@ public class ServiceDebugController {
 			// 本地镜像push到仓库
 			if (dockerClientService.pushImage(repository, version, dockerClient)) {
 		        User currentUser = CurrentUserUtils.getInstance().getUser();
-		        //获取数据库中原始镜像的对象
-//		        Image oriImage = imageDao.findByNameAndVersion(repository, tag);
-//		        if (oriImage == null) {
-//					// 获取数据库中原始镜像的对象失败，返回403
-//		            MultivaluedMap<String, Object> result = client.getManifestofImage(repository, version);
-//		            if (null != result.get("Etag") && result.get("Etag").size() > 0) {
-//		                for (Object oneRow : result.get("Etag")) {
-//		                    System.out.println(oneRow);
-//		                    client.deleteManifestofImage(repository, oneRow.toString());
-//		                }
-//		            }
-//
-//					map.put("status", 403);
-//					return JSON.toJSONString(map);
-//				}
 		        //保存当前debug的镜像到数据库中
 		        Image image = new Image();
 		        image.setCreateTime(new Date());
