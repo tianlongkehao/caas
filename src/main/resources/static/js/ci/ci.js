@@ -65,7 +65,7 @@ function addCiInfo(type) {
 						url:ctx + "/ci/judgeShera.do",
 						async : false,
 						success : function(data){
-							data = evel("("+data+")");
+							data = eval("("+data+")");
 							if (data.status == "200") {
 								window.location.href = ctx + "/ci/add";
 							}

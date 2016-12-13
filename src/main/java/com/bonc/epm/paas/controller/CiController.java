@@ -257,11 +257,16 @@ public class CiController {
         } else {
             cis = ciDao.findByNameOfCodeCi(userId, "%" + search + "%",pageRequest);
         }
-        List<Ci> ciList = findSheraData(cis.getContent());
+        //判断是否获取shera信息
+        if (cis.getContent().size() > 0) {
+            List<Ci> ciList = findSheraData(cis.getContent());
+            map.put("data", ciList);
+        } else { 
+            map.put("data", cis.getContent());
+        }
         map.put("draw", draw);
         map.put("recordsTotal", cis.getTotalElements());
         map.put("recordsFiltered", cis.getTotalElements());
-        map.put("data", ciList);
         return JSON.toJSONString(map);
     }
     
@@ -724,8 +729,14 @@ public class CiController {
     @ResponseBody
     public String judgeShera(){
         Map<String,Object> map = new HashMap<>();
-        long userId = CurrentUserUtils.getInstance().getUser().getId();
-        Shera shera = sheraDao.findByUserId(userId);
+        User user = CurrentUserUtils.getInstance().getUser();
+        Shera shera = new Shera();
+        if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            shera = sheraDao.findByUserId(user.getParent_id());
+        }
+        else {
+            shera = sheraDao.findByUserId(user.getId());
+        }
         if (StringUtils.isEmpty(shera)) {
             map.put("status", "400");
         }

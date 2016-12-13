@@ -199,6 +199,19 @@
                                                         style="width: 75%; display: inline; float: right;"
                                                         > <span class="resource-unit">个</span>
                                                 </div>
+                                                <div class="col-md-4" align="left">
+                                                    <label style="width: 21%; float: left; line-height: 35px">Shera环境:</label>
+                                                    <select class="form-control" name = "sheraId" style="width: 75%; display: inline; float: right;">
+                                                        <c:if test="${userShera != null }">
+                                                            <option  value="${userShera.id }">${userShera.sheraUrl }</option>
+                                                        </c:if>
+                                                        <c:forEach items="${sheraList }" var = "shera">
+                                                            <c:if test="${shera.id != userShera.id }">
+	                                                            <option value="${shera.id }">${shera.sheraUrl }</option>
+                                                            </c:if>
+                                                        </c:forEach>
+                                                    </select>
+                                                </div>
                                         </div>
 <%-- 										<div class="row" style="margin-top: 15px">
 												<div class="col-md-4" align="left">

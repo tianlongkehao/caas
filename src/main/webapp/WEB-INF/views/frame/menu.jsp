@@ -101,11 +101,13 @@
                         构建
                     </a>
                 </li>
-                <li id="menuShera" action="">
-	                <a href="<%=path %>/user/shera">
-	                    shera管理
-	                </a>
-	            </li>
+                 <c:if test="${cur_user.user_autority == 1}">
+	                <li id="menuShera" action="">
+		                <a href="<%=path %>/user/shera">
+		                    shera管理
+		                </a>
+		            </li>
+                 </c:if>
             </ul>
         </li>
         <li id="menu_registry">

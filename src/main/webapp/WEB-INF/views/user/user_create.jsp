@@ -225,7 +225,11 @@
                                                 </div>
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 21%; float: left; line-height: 35px">Shera环境:</label>
-                                                    <select class="form-control" style="width: 75%; display: inline; float: right;"></select>
+                                                    <select class="form-control" name = "sheraId" style="width: 75%; display: inline; float: right;">
+                                                        <c:forEach items="${sheraList }" var = "shera">
+	                                                        <option value="${shera.id }">${shera.sheraUrl }</option>
+                                                        </c:forEach>
+                                                    </select>
                                                 </div>
                                             </div>
 <!-- 											<div class="row" style="margin-top: 15px">

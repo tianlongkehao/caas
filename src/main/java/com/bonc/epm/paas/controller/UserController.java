@@ -191,6 +191,8 @@ public class UserController {
      */
     @RequestMapping(value = { "/add" }, method = RequestMethod.GET)
 	public String useradd(Model model) {
+        Iterable<Shera> sheraList = sheraDao.findAll();
+        model.addAttribute("sheraList", sheraList);
         model.addAttribute("menu_flag", "user");
         return "user/user_create.jsp";
     }
@@ -371,6 +373,7 @@ public class UserController {
     public void userAndSheraUpdate(long userId,long sheraId){
         UserAndShera userAndShera = userAndSheraDao.findByUserId(userId);
         if (org.springframework.util.StringUtils.isEmpty(userAndShera)) {
+            userAndShera = new UserAndShera();
             userAndShera.setSheraId(sheraId);
             userAndShera.setUserId(userId);
         }
@@ -569,6 +572,10 @@ public class UserController {
         catch (KubernetesClientException e) {
             LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
         }
+        Shera shera = sheraDao.findByUserId(id);
+        Iterable<Shera> sheraList = sheraDao.findAll();
+        model.addAttribute("userShera", shera);
+        model.addAttribute("sheraList", sheraList);
         model.addAttribute("restriction", restriction);
         model.addAttribute("resource", resource);
         model.addAttribute("user", user);
@@ -1367,7 +1374,7 @@ public class UserController {
         try {
             SheraAPIClientInterface client = sheraClientService.getClient(shera);
             JdkList jdkList = client.getAllJdk();
-            if (jdkList.size() > 0) {
+            if (jdkList.getItems() != null) {
                 for (Jdk jdk : jdkList) {
                     client.deleteJdk(jdk.getVersion());
                 }

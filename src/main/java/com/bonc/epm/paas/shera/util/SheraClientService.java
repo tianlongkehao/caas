@@ -19,9 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.Shera;
+import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
@@ -52,17 +54,22 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 @Service
 public class SheraClientService {
     
-    @Value("${shera.api.endpoint}")
-    private String endpoint="http://192.168.0.76:8282/";
-    private String username="shera";
-    private String password="shera";
+    private String endpoint="";
+    private String username="";
+    private String password="";
     
     @Autowired
     private SheraDao sheraDao;
     
     public SheraAPIClientInterface getClient() {
-        long userId = CurrentUserUtils.getInstance().getUser().getId();
-        Shera shera = sheraDao.findByUserId(userId);
+        User user = CurrentUserUtils.getInstance().getUser();
+        Shera shera = new Shera();
+        if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            shera = sheraDao.findByUserId(user.getParent_id());
+        }
+        else {
+            shera = sheraDao.findByUserId(user.getId());
+        }
         return getClient(shera);
     }
     
