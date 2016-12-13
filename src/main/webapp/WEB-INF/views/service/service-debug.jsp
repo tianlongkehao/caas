@@ -5,9 +5,7 @@
 <title>服务</title>
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
-<link rel="stylesheet" type="text/css" href="<%=path%>/css/core/jquery-ui.min.css" />
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/service.css" />
-
 <script type="text/javascript" src="<%=path%>/js/service/service-debug.js"></script>
 </head>
 <body>
@@ -28,37 +26,6 @@
 				</div>
 				
 				<div class="contentMain">
-<!-- 					<section class="detail-succeed"> -->
-<!-- 						<div class="icon-img"> -->
-<!-- 							<div class="type-icon"> -->
-<%-- 								<img src="<%=path%>/images/podSimple.png" height="100%"> --%>
-<!-- 							</div> -->
-<!-- 						</div> -->
-<!-- 						<ul class="succeed-content pull-left"> -->
-<%-- 							<c:if test="${service.status==1 }"> --%>
-<!-- 								<li>运行状态：未启动</li> -->
-<%-- 							</c:if> --%>
-<%-- 							<c:if test="${service.status==2||service.status==3}"> --%>
-<!-- 								<li>运行状态：正在运行</li> -->
-<%-- 							</c:if> --%>
-<%-- 							<c:if test="${service.status==4 }"> --%>
-<!-- 								<li>运行状态：已停止</li> -->
-<%-- 							</c:if> --%>
-<%-- 							<c:if test="${service.status==6 }"> --%>
-<!-- 								<li>运行状态：调试中</li> -->
-<%-- 							</c:if> --%>
-							
-<%-- 							<li>实例名称：<span>${service.serviceName } - ${service.imgVersion} - 1</span></li> --%>
-<%-- 							<li>镜像名称：<span>${service.imgName }</span></li> --%>
-<%-- 							<li>创建时间：${service.createDate }</li> --%>
-							
-<!-- 						</ul> -->
-<!-- 						<div class="applocation hide"> -->
-<!-- 							<a href="" -->
-<!-- 								target="_blank" class="open">导出</a> -->
-<!-- 						</div> -->
-<!-- 					</section> -->
-					
 					<div class="baseInfo center-style">
 						<ul class="nav navbar-nav">
 							<li><a class="DOC btn-prim">文件</a></li>
@@ -159,30 +126,6 @@
 				</div>
 				
 			</div>
-<script>
-$(document).ready(function () {
-	//tab页切换
-	$( "#tabs" ).tabs();
-	//拖动
-// 	$(".sortable-list").sortable({
-// 		connectWith: ".connectList"
-// 	}).disableSelection();
-	//缩放
-// 	$( ".localDoc" ).resizable({
-//   		autoHide: true,
-// 		containment: ".row",
-// 		maxHeight: 535,
-// 		maxWidth:770,
-// 		minWidth:413,
-// 		resize: function( event, ui ) {
-// 			var localDocWidth = $(".localDoc").width();
-// 			var totalWidth = $(".localDoc").parent().width();
-// 			var scpDocWidth = totalWidth - localDocWidth - 10;
-// 			$(".scpDoc").width(scpDocWidth+"px");
-// 		}
-// 	});
-});
-</script>
 		</article>
 	</div>
 </body>
