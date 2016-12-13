@@ -689,3 +689,16 @@ textarea.c-project-con{
 .jdkName, .jdkPath{
 	width:96%;
 }
+td.autocut{
+	width:350px; 
+	line-height:40px!important;
+	display:block; 
+    overflow:hidden;  
+    white-space:nowrap;  
+    text-overflow:ellipsis;  
+    -o-text-overflow:ellipsis;  
+    -icab-text-overflow: ellipsis;  
+    -khtml-text-overflow: ellipsis;  
+    -moz-text-overflow: ellipsis;  
+    -webkit-text-overflow: ellipsis;
+}
