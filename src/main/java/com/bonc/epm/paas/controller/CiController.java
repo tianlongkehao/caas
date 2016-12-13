@@ -186,11 +186,6 @@ public class CiController {
         model.addAttribute("menu_flag", "ci");
         return "ci/ci.jsp";
     }
-    @RequestMapping(value={"ci/shera"},method=RequestMethod.GET)
-	public String shera(Model model){
-        model.addAttribute("menu_flag", "ci");
-        return "ci/shera.jsp";
-    }
     /**
      * Description: <br>
      * 快速构建和dockerfile构建信息的查询

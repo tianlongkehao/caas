@@ -65,7 +65,7 @@
 														onmouseout="style.textDecoration='none'">${shera.sheraUrl }</a></td>
 													<td style="width: 20%;">${shera.userName }</td>
 													<td style="width: 20%;">${shera.password }</td>
-													<td class="autocut">${shera.remark }</td>
+													<td class="autocut" title="${shera.remark }">${shera.remark }</td>
 													<td style="width: 8%;"><a id="deleteKeyBtn"
 														class="no-drop"
 														href="javascript:delOneTenement(${shera.id })"
