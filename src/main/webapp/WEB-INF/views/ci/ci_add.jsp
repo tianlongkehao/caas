@@ -36,21 +36,21 @@
                         		<div class="row depot-name">
 	                                <div class=" col-md-12">
 	                                    <label class="c-project-tit">项目名称</label>
-	                                    <input id="projectName" name="projectName" class="form-control c-project-con" type="text"
+	                                    <input id="projectName" autocomplete = 'off' name="projectName" class="form-control c-project-con" type="text"
 	                                           required="">
 	                                </div>
 	                            </div>
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">描述</label>
-	                                    <textarea id="description" name="description" class="form-control c-project-con" type="text"
+	                                    <textarea id="description" autocomplete = 'off' name="description" class="form-control c-project-con" type="text"
 	                                           required="" row="5"></textarea>
 	                                </div>
 	                            </div>
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">JDK</label>
-	                                    <select id="jdk-version" name="jdkVersion" class="form-control c-project-con">
+	                                    <select id="jdk-version" autocomplete = 'off' name="jdkVersion" class="form-control c-project-con">
 	                                       <c:forEach items="${jdkList}" var="jdk">
 	                                    	  <option value="${jdk.version }">${jdk.version }</option>
 	                                       </c:forEach>
@@ -64,8 +64,8 @@
                             	<div class="row">
 	                            	<div class="form-group col-md-12">
 		                                <label class="c-project-tit">代码库类型</label>
-		                                <select id="codeType" name="codeType" class="form-control c-project-con" >
-		                                	<option value="0">-none-</option>
+		                                <select id="codeType" autocomplete = 'off' name="codeType" class="form-control c-project-con" >
+		                                	<option value="0" >-none-</option>
 		                                    <option value="1">git</option>
 		                                </select>
 		                            </div>
