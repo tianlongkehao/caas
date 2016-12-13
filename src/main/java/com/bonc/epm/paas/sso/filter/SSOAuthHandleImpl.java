@@ -292,7 +292,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                             }
                         }
                     }
-                    LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem + "}");
+                    LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem +",volume:"+user.getVol_size()+"}");
                     createResourceQuota(namespace, openCpu, openMem);
                 }
             }
