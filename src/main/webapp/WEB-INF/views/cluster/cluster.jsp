@@ -175,7 +175,8 @@
         		for (var arrayCluster = 0; arrayCluster < clusterDataNodeValY.length; arrayCluster++) {
                     var usageVal = clusterDataNodeVal.val[1].yAxis[arrayCluster];
                     var limitVal = clusterDataNodeVal.val[0].yAxis[arrayCluster];
-                    if (usageVal >= limitVal * 0.9 && clusterDataNodeVal.title.indexOf("NETWORK") == -1) {
+                    
+                    if (null !=usageVal && null !=limitVal && usageVal >= limitVal * 0.9 && clusterDataNodeVal.title.indexOf("NETWORK") == -1) {
                     	clusterDataNodeVal.title.indexOf("NETWORK");
                         var nodeSeriesLabel = {
 				                normal: {
@@ -282,7 +283,7 @@
             	 for (var arrayMinNum = 0; arrayMinNum < clusterYVal.length; arrayMinNum++) {
                      var usageVal = clusterYValNum.val[1].yAxis[arrayMinNum];
                      var limitVal = clusterYValNum.val[0].yAxis[arrayMinNum];
-                     if (usageVal >= limitVal * 0.9 && titleTextMin.indexOf("network") == -1) {
+                     if (null != usageVal && null != limitVal && usageVal >= limitVal * 0.9 && titleTextMin.indexOf("network") == -1) {
                          var minSeriesLabel = {
  				                normal: {
  				                    show: true,

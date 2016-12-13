@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.influxdb.InfluxDB;
-import org.influxdb.InfluxDBFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +48,6 @@ import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -76,10 +73,6 @@ public class ClusterController {
      */
     private static final Logger LOG = LoggerFactory.getLogger(ClusterController.class);
 
-    private static final int ArrayList = 0;
-
-    private static final int PodTopo = 0;
-
     /**
      * KubernetesClientService 服务接口
      */
@@ -103,40 +96,11 @@ public class ClusterController {
      */
     @Value("${yumConf.io.address}")
 	private String yumSource;
-    
-    /**
-     * 获取配置文件中的监控器的url地址信息
-     */
-    @Value("${monitor.url}")
-	private String url;
-    
-    /**
-     * 获取监控器的username数据信息；
-     */
-    @Value("${monitor.username}")
-	private String username;
-    
-    /**
-     * 获取监控器的密码；
-     */
-    @Value("${monitor.password}")
-	private String password;
-    
-    /**
-     * 获取监控器的dbName;
-     */
-    @Value("${monitor.dbName}")
-	private String dbName;
-    
     /**
      * master主节点地址信息
      */
     @Value("${kubernetes.api.address}")
     private String masterAddress;
-    /**
-     * 获取InfluxDB；
-     */
-    private InfluxDB influxDB;
     
     @Autowired
     InfluxdbSearchService influxdbSearchService;
@@ -429,461 +393,89 @@ public class ClusterController {
     }
     
     /**
-     * 
-     * Description: <br>
-     * 取得集群监控数据
-     * @param timePeriod  timePeriod
-     * @return String
+     * Description: 
+     * 取得集群监控数据 包含master节点和node节点
+     * 包含的信息内容有cpu、mem、disk、network等
+     * @param timePeriod String
+     * @return clusterResources JOSNString
      */
-    @RequestMapping(value = { "/getClusterMonitor" }, method = RequestMethod.GET)
+    @RequestMapping(value={ "/getClusterMonitor" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getClusterMonitor(String timePeriod) {
         ClusterResources clusterResources =  new ClusterResources(); 
-        InfluxDB influxDB = influxdbSearchService.getInfluxdbClient();
-        List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
-        List<CatalogResource> yValue= influxdbSearchService.generateYValue(influxDB,timePeriod);
-        clusterResources.setxValue(xValue);
-        //StringBuilder xValue = new StringBuilder();
-        //StringBuilder yValue = new StringBuilder();
         try {
-            influxDB = InfluxDBFactory.connect(url, username, password);
-            xValue.append("\"xValue\": [");
+            InfluxDB influxDB = influxdbSearchService.getInfluxdbClient();
+            List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
+            clusterResources.setxValue(xValue);
             
-			// xValue
-            xValue = joinXValue(xValue, timePeriod);
-            
-			// yValue
-            yValue.append("\"yValue\": [");
-            
-			// cluster
-            yValue.append("{\"name\": \"cluster\",\"val\": [");
-            
-			// memory
-            yValue.append("{\"titleText\": \"memory\",\"val\": [");
-            
-			// OVERALL CLUSTER MEMORY USAGE
-            yValue.append("{\"title\": \"OVERALL CLUSTER MEMORY USAGE\",\"val\": [");
-            
-			// overall cluster memory usage:mem_limit
-            yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitOverAll", "");
-			
-            // overall cluster memory usage:mem_use
-            yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseOverAll", "");
-			
-            // overall cluster memory usage:mem_workingSet
-            yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetOverAll", "");
-			
-            // 去掉最后一个逗号
-            yValue = this.deleteLastStr(yValue);
-            
-            yValue.append("]},");
-			
-            // MEMORY USAGE GROUP BY NODE
-            yValue.append("{\"title\": \"MEMORY USAGE GROUP BY NODE\",\"val\": [");
-			
-            // MEM NODE结束,MEM结束
-            yValue.append("]}]},");
-			
-            // CPU
-            yValue.append("{\"titleText\": \"CPU\",\"val\": [");
-			
-            // CPU USAGE GROUP BY NODE
-            yValue.append("{\"title\": \"CPU USAGE GROUP BY NODE\",\"val\": [");
-            
-			// CPU结束
-            yValue.append("]}]},");
-            
-			// DISK
-            yValue.append("{\"titleText\": \"DISK\",\"val\": [");
-            
-			// OVERALL CLUSTER DISK USAGE
-            yValue.append("{\"title\": \"OVERALL CLUSTER DISK USAGE\",\"val\": [");
-            
-			// overall cluster disk usage:disk_limit
-            yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitOverAll", "");
-            
-			// overall cluster disk usage:disk_use
-            yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseOverAll", "");
-            
-			// 去掉最后一个逗号
-            yValue = this.deleteLastStr(yValue);
-            
-            yValue.append("]},");
-			
-            // DISK USAGE GROUP BY NODE
-            yValue.append("{\"title\": \"DISK USAGE GROUP BY NODE\",\"val\": [");
-			
-            // DISK结束
-            yValue.append("]}]},");
-			
-            // NETWORK
-            yValue.append("{\"titleText\": \"NETWORK\",\"val\": [");
-			
-            // NETWORK USAGE GROUP BY NODE
-            yValue.append("{\"title\": \"NETWORK USAGE GROUP BY NODE\",\"val\": [");
-			
-            // NET结束
-            yValue.append("]}]}]},");
-			
-            // minion
-            yValue.append("{\"name\": \"minmon\",\"val\": [");
-			
-            // 创建client
-            KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-			
-            // 取得所有node
-            NodeList nodeLst = client.getAllNodes();
-            
-            if (nodeLst != null) {
-				
-            	// 循环处理minion的监控信息
-            	for (int i = 0; i < nodeLst.size(); i++) {
-            		
-            		Node minionItem = nodeLst.getItems().get(i);
-            		// 子节点名称
-            		String minionName = minionItem.getMetadata().getName();
-            		// 子节点类型
-            		String minionType= "";
-            		String minionType0 = minionItem.getStatus().getConditions().get(0).getType();
-            		String minionType1 = minionItem.getStatus().getConditions().get(1).getType();
-            		if ("Ready".equals(minionType0) || "Ready".equals(minionType1)){
-            			minionType= "Ready";
-            		}
-            		// 子节点状态
-            		String minionStatus = "";
-            		String minionStatus0 = minionItem.getStatus().getConditions().get(0).getStatus();
-            		String minionStatus1 = minionItem.getStatus().getConditions().get(1).getStatus();
-            		if ("True".equals(minionStatus0) || "True".equals(minionStatus1)){
-            			minionStatus= "True";
-            		}
-            		
-            		// 判斷节点非master,type为Ready,status为True
-            		if (!"127.0.0.1".equals(minionName) && "Ready".equals(minionType) && "True".equals(minionStatus)) {
-            			
-            			// memory
-            			yValue.append("{\"titleText\": \"").append(minionName).append("\",\"val\": [");
-            			
-            			// memory
-            			yValue.append("{\"title\": \"memory\",\"val\": [");
-            			
-            			// individual node memory usage： mem_limit
-            			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getMemLimitMinion", minionName);
-            			
-            			// individual node memory usage:memUse
-            			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getMemUseMinion", minionName);
-            			
-            			// individual node memory usage:memory_working_set
-            			yValue = joinClusterYValue(yValue, "WorkingSetCurrent", timePeriod, "getMemSetMinion", minionName);
-            			
-            			// 去掉最后一个逗号
-            			yValue = this.deleteLastStr(yValue);
-            			
-            			// memory结束
-            			yValue.append("]},");
-            			
-            			// CPU
-            			yValue.append("{\"title\": \"cpu\",\"val\": [");
-            			
-            			// individual node CPU usage:cpu_limit
-            			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getCpuLimitMinion", minionName);
-            			
-            			// individual node CPU usage:cpu_use
-            			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getCpuUseMinion", minionName);
-            			
-            			// 去掉最后一个逗号
-            			yValue = this.deleteLastStr(yValue);
-            			
-            			// CPU结束
-            			yValue.append("]},");
-            			
-            			// disk
-            			yValue.append("{\"title\": \"disk\",\"val\": [");
-            			
-            			// individual node disk usage:disk_limit
-            			yValue = joinClusterYValue(yValue, "LimitCurrent", timePeriod, "getDiskLimitMinion", minionName);
-            			
-            			// individual node disk usage:disk_use
-            			yValue = joinClusterYValue(yValue, "UsageCurrent", timePeriod, "getDiskUseMinion", minionName);
-            			
-            			// 去掉最后一个逗号
-            			yValue = this.deleteLastStr(yValue);
-            			
-            			// disk结束
-            			yValue.append("]},");
-            			
-            			// network
-            			yValue.append("{\"title\": \"network\",\"val\": [");
-            			
-            			// individual node network usage:tx
-            			yValue = joinClusterYValue(yValue, "TxCurrent", timePeriod, "getTxMinion", minionName);
-            			
-            			// individual node network usage:rx
-            			yValue = joinClusterYValue(yValue, "RxCurrent", timePeriod, "getRxMinion", minionName);
-            			
-            			// 去掉最后一个逗号
-            			yValue = this.deleteLastStr(yValue);
-            			
-            			// network结束
-            			yValue.append("]},");
-            			
-            			// 去掉最后一个逗号
-            			yValue = this.deleteLastStr(yValue);
-            			
-            			// minion节点串结束
-            			yValue.append("]},");
-            		}
-            	}
-			} else {
-				LOG.error("Get all Nodes failed");
-			}
-			// 去掉最后一个逗号
-            yValue = this.deleteLastStr(yValue);
-			// 所有minion结束
-            yValue.append("]}");
-
-			// yValue结束
-            yValue.append("]");
+            List<CatalogResource> yValue = new ArrayList<CatalogResource>();
+            yValue.add(influxdbSearchService.generateYValueOfCluster(influxDB, timePeriod));
+            yValue.add(influxdbSearchService.generateYValueOfMinmon(influxDB, timePeriod));
+            clusterResources.setyValue(yValue);
         } 
         catch (Exception e) {
-            LOG.debug(e.getMessage());
-            System.out.println(e.getMessage());
+            LOG.error("get cluster monitor data failed. error message:-" + e.getMessage());
+            e.printStackTrace();
         }
-		// 拼接总串
-        return "{" + xValue.toString() + yValue.toString() + "}";
+        return JSON.toJSONString(clusterResources);
     }
 
     /**
      * 
-     * Description: <br>
+     * Description:
      * 取得所有的namespace
      * @return rtnValue String
      */
-    @RequestMapping(value = { "/getAllNamespace" }, method = RequestMethod.GET)
+    @RequestMapping(value={"/getAllNamespace"}, method=RequestMethod.GET)
 	@ResponseBody
 	public String getAllNamespace() {
-        StringBuilder rtnValue = new StringBuilder();
-
 		// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-
 		// 取得所有NAMESPACE
         NamespaceList namespaceLst = client.getAllNamespaces();
-        
+        List<String> namespaceArray = new ArrayList<String>();
         if (namespaceLst != null) {
-        	// 循环处理每个NAMESPACE
         	for (int i = 0; i < namespaceLst.size(); i++) {
-        		// 命名空间名称
-        		String namespaceName = namespaceLst.get(i).getMetadata().getName();
-        		rtnValue.append("\"").append(namespaceName).append("\"").append(",");
+        	    namespaceArray.add(namespaceLst.get(i).getMetadata().getName());
         	}
 		} else {
 			LOG.error("Get all Namespaces failed");
 		}
-
-		// 去掉最后一个逗号
-        rtnValue = this.deleteLastStr(rtnValue);
-
-		// 拼接总串
-        return "[" + rtnValue.toString() + "]";
+        return JSON.toJSONString(namespaceArray);
     }
     
     /**
      * 
      * Description: <br>
-     * 取得容器资源的使用情况
-     * @param nameSpace 
-     * @param podName 
-     * @param timePeriod  
+     * 获取Pod资源的使用情况
+     * @param nameSpace String
+     * @param podName String
+     * @param timePeriod String
      * @return String
      */
     @RequestMapping(value = { "/getContainerMonitor" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getContainerMonitor(String nameSpace, String podName, String timePeriod) {
-
-        influxDB = InfluxDBFactory.connect(url, username, password);
-		// 当前登陆用户
+        ClusterResources clusterResources =  new ClusterResources(); 
+		// 当前登陆用户是租户
         User curUser = CurrentUserUtils.getInstance().getUser();
-		// 当前用户为租户
         if (UserConstant.AUTORITY_TENANT.equals(curUser.getUser_autority())) {
             nameSpace = curUser.getNamespace();
         }
-
-        StringBuilder xValue = new StringBuilder();
-        StringBuilder yValue = new StringBuilder();
-
         try {
-            xValue.append("\"xValue\": [");
-
-			// xValue
-            xValue = joinXValue(xValue, timePeriod);
-
-			// yValue
-            yValue.append("\"yValue\": [");
-
-			// 判断是否单一NAMESPACE
-            if ("".equals(nameSpace) || nameSpace == null) {
-
-				// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
-                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-
-				// 取得所有NAMESPACE
-                NamespaceList namespaceLst = client.getAllNamespaces();
-                
-                if (namespaceLst != null) {
-                	System.out.print("namespaceLst.size()=" + namespaceLst.size());
-                	// 循环处理每个NAMESPACE
-                	for (int i = 0; i < namespaceLst.size(); i++) {
-                		// 命名空间名称
-                		String namespaceName = namespaceLst.get(i).getMetadata().getName();
-                		
-                		// 取得单一NAMESPACE的JSON数据
-                		yValue = createNamespaceJson(yValue, timePeriod, namespaceName, "");
-                	}
-				} else {
-					LOG.error("Get all Namespaces failed");
-				}
-            }
-            else if ("".equals(podName) || podName == null) {
-				// 取得单一NAMESPACE的JSON数据
-                yValue = createNamespaceJson(yValue, timePeriod, nameSpace, "");
-            }
-            else {
-				// 取得单一POD的JSON数据
-                yValue = createNamespaceJson(yValue, timePeriod, nameSpace, podName);
-            }
-			// 去掉最后一个逗号
-            yValue = this.deleteLastStr(yValue);
-
-			// yValue结束
-            yValue.append("]");
+            InfluxDB influxDB = influxdbSearchService.getInfluxdbClient();
+            List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
+            List<CatalogResource> yValue = influxdbSearchService.generateContainerMonitorYValue(influxDB, timePeriod,nameSpace,podName);
+            clusterResources.setxValue(xValue);
+            clusterResources.setyValue(yValue);
         }
         catch (Exception e) {
-            LOG.debug(e.getMessage());
+            LOG.error(e.getMessage());
             System.out.println(e.getMessage());
         }
-		// 拼接总串
-        return "{" + xValue.toString() + yValue.toString() + "}";
-    }
-    
-    /**
-     * 
-     * Description: <br>
-     * 拼接单一NAMESPACE串
-     * @param yValue  yValue
-     * @param timePeriod timePeriod
-     * @param nameSpace namespace
-     * @param podName podName
-     * @return String
-     */
-    private StringBuilder createNamespaceJson(StringBuilder yValue, String timePeriod, String nameSpace,
-			String podName) {
-		// 判断podName是否为空
-        if ("".equals(podName)) {
-			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
-            KubernetesAPIClientInterface clientNamespace = kubernetesClientService.getClient(nameSpace);
-
-			// 取得所有此NAMESPACE下的POD
-            PodList podLst = clientNamespace.getAllPods();
-
-            System.out.print("podLst=" + podLst);
-            System.out.print("podLst.size=" + String.valueOf(podLst.size()));
-            if (podLst != null && podLst.getItems() != null && podLst.size() != 0) {
-				// 循环所有POD
-                for (int i = 0; i < podLst.size(); i++) {
-					// POD
-                    Pod indexPod = podLst.get(i);
-					// 实例名称
-                    String indexPodName = indexPod.getMetadata().getName();
-					// 拼接POD的JSON数据
-                    yValue = createPodJson(yValue, timePeriod, nameSpace, indexPodName);
-                }
-            }
-        } 
-        else {
-			// 拼接POD的JSON串
-            yValue = createPodJson(yValue, timePeriod, nameSpace, podName);
-        }
-        return yValue;
+        return JSON.toJSONString(clusterResources);
     }
 
-    /**
-     * 
-     * Description: <br>
-     * 拼接POD的JSON串
-     * @param yValue 
-     * @param timePeriod 
-     * @param namespace 
-     * @param podName 
-     * @return String
-     */
-    private StringBuilder createPodJson(StringBuilder yValue, String timePeriod, String namespace, String podName) {
-
-        System.out.print("podName=" + podName);
-		// POD开始
-        yValue.append("{\"name\": \"" + podName + "\",\"val\": [");
-
-		// 取得CONTAINER_NAME
-        MonitorController monCon = new MonitorController();
-        influxDB = InfluxDBFactory.connect(url, username, password);
-        List<String> containerNameLst = monCon.getAllContainerName(influxDB, dbName, namespace, podName);
-
-        System.out.print("containerNameLst=" + containerNameLst.toString());
-		// 循环处理所有container
-        for (String containerName : containerNameLst) {
-
-			// CONTAINER开始
-            yValue.append("{\"titleText\": \"" + containerName + "\",\"val\": [");
-
-			// memory开始
-            yValue.append("{\"title\": \"memory\",\"val\": [");
-
-			// MEM LIMIT
-            yValue = joinContainerYValue(yValue, "memoryLimitCurrent", timePeriod, "getMemLimit", namespace, podName,
-					containerName);
-
-			// MEM USE
-            yValue = joinContainerYValue(yValue, "memoryUsageCurrent", timePeriod, "getMemUse", namespace, podName,
-					containerName);
-
-			// MEM WORKING SET
-            yValue = joinContainerYValue(yValue, "memoryWorkingSetCurrent", timePeriod, "getMemSet", namespace, podName,
-					containerName);
-
-			// 去掉最后一个逗号
-            yValue = this.deleteLastStr(yValue);
-
-			// MEM结束
-            yValue.append("]},");
-
-			// CPU开始
-            yValue.append("{\"title\": \"cpu\",\"val\": [");
-
-			// CPU LIMIT
-            yValue = joinContainerYValue(yValue, "cpuLimitCurrent", timePeriod, "getCpuLimit", namespace, podName,
-					containerName);
-
-			// CPU USE
-            yValue = joinContainerYValue(yValue, "cpuUsageCurrent", timePeriod, "getCpuUse", namespace, podName,
-					containerName);
-
-			// 去掉最后一个逗号
-            yValue = this.deleteLastStr(yValue);
-
-			// CPU结束
-            yValue.append("]}");
-
-			// CONTAINER结束
-            yValue.append("]},");
-        }
-
-		// 去掉最后一个逗号
-        yValue = this.deleteLastStr(yValue);
-		// POD结束
-        yValue.append("]},");
-
-        System.out.print("yValue=" + yValue.toString());
-        return yValue;
-    }
     
     /**
      * Description: <br>
@@ -1094,108 +686,5 @@ public class ClusterController {
         catch (SftpException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 
-     * Description: <br>
-     * 从数据库中读取时间数据，并进行拼接
-     * @param val 需要拼接的数据
-     * @param timePeriod 间隔时间
-     * @return String
-     */
-    private StringBuilder joinXValue(StringBuilder val, String timePeriod) {
-        MonitorController monCon = new MonitorController();
-        List<String> lst = monCon.getXValue(influxDB, dbName, timePeriod);
-        System.out.println("XValue=" + lst.toString());
-        for (int i = 0; i < lst.size(); i++) {
-            String strDate = lst.get(i);
-			// String转为Date
-            Date dateDate = DateUtils.formatStringToDate(strDate);
-			// 加8小时
-            Date comStrDate = DateUtils.dateCompute(dateDate, "hour", 8);
-			// Date转为String
-            String comDateDate = DateUtils.formatDateToString(comStrDate, DateUtils.YYYY_MM_DD_HH_MM_SS);
-			// 拼接字符串
-            val.append("\"").append(comDateDate).append("\",");
-        }
-		// 去掉最后一个逗号
-        val = this.deleteLastStr(val);
-        val.append("],");
-        return val;
-    }
-
-    /**
-     * 
-     * Description: <br>
-     * 从数据库中读取监控数据，并进行拼接
-     * @param val 需要拼接的数据
-     * @param legendName legendName
-     * @param timePeriod 时间周期
-     * @param dataType 日期
-     * @param minionName minionName
-     * @return String
-     */
-    private StringBuilder joinClusterYValue(StringBuilder val, String legendName, String timePeriod, String dataType,
-			String minionName) {
-        MonitorController monCon = new MonitorController();
-        val.append("{\"legendName\": \"");
-        val.append(legendName);
-        val.append("\",\"yAxis\": [");
-        List<String> lst = monCon.getClusterData(influxDB, dbName, timePeriod, dataType, minionName);
-        for (int i = 0; i < lst.size(); i++) {
-            val.append("\"").append(lst.get(i)).append("\",");
-        }
-		// 去掉最后一个逗号
-        val = this.deleteLastStr(val);
-        val.append("]},");
-        return val;
-    }
-
-    /**
-     * 
-     * Description: <br>
-     * 从数据库中读取监控数据，并进行拼接
-     * @param val 需要拼接的数据
-     * @param legendName legendName
-     * @param timePeriod 时间周期
-     * @param dataType dataType
-     * @param namespace namespace
-     * @param podName podName
-     * @param containerName containerName
-     * @return String
-     */
-    private StringBuilder joinContainerYValue(StringBuilder val, String legendName, 
-                                                      String timePeriod, String dataType,
-                                                      String namespace, String podName, String containerName) {
-        MonitorController monCon = new MonitorController();
-        val.append("{\"legendName\": \"");
-        val.append(legendName);
-        val.append("\",\"yAxis\": [");
-        List<String> lst = monCon.getContainerData(influxDB, dbName, timePeriod, dataType, namespace, podName,
-				containerName);
-        for (int i = 0; i < lst.size(); i++) {
-            val.append("\"").append(lst.get(i)).append("\",");
-        }
-		// 去掉最后一个逗号
-        val = this.deleteLastStr(val);
-        val.append("]},");
-        return val;
-    }
-
-    /**
-     * Description: <br>
-     * 判断字符最后一位是否为逗号，如果是删除
-     * @param str  需要判断的字符串
-     * @return String
-     * @see
-     */
-    private StringBuilder deleteLastStr(StringBuilder str) {
-		// 判断最后一位是不是逗号
-        if (",".equals(str.substring(str.length() - 1))) {
-			// 去掉最后一个NAMESPACE的逗号
-            str.deleteCharAt(str.length() - 1);
-        }
-        return str;
     }
 }

@@ -15,8 +15,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,8 +32,13 @@ import com.bonc.epm.paas.cluster.entity.DetailResource;
 import com.bonc.epm.paas.cluster.entity.Kind;
 import com.bonc.epm.paas.controller.MonitorController;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.model.Container;
+import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Node;
 import com.bonc.epm.paas.kubernetes.model.NodeList;
+import com.bonc.epm.paas.kubernetes.model.Pod;
+import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.DateUtils;
 
@@ -41,6 +50,11 @@ import com.bonc.epm.paas.util.DateUtils;
  */
 @Service
 public class InfluxdbSearchService {
+    
+    /**
+     * InfluxdbSearchService日志实例
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(InfluxdbSearchService.class);
     /**
      * 获取配置文件中的监控器的url地址信息
      */
@@ -77,6 +91,13 @@ public class InfluxdbSearchService {
     @Autowired
     private KubernetesClientService kubernetesClientService;
     
+    /**
+     * 
+     * Description:
+     * 获取容器运行的influxDB客户端 
+     * @return InfluxDB 
+     * @see InfluxDB
+     */
     public InfluxDB getInfluxdbClient() {
         return InfluxDBFactory.connect(url, username, password);
     }
@@ -85,22 +106,19 @@ public class InfluxdbSearchService {
     /**
      * 
      * Description:
-     * 生成X轴坐标信息
-     * @param influxDB
-     * @param timePeriod
-     * @return 
-     * @see
+     * 根据后台收集的数据 按时间等分 用来生成X轴坐标信息
+     * @param influxDB InfluxDB
+     * @param timePeriod String
+     * @return result
+     * @see InfluxDB
      */
     public List<String> generateXValue(InfluxDB influxDB, String timePeriod) {
         List<String> result = new ArrayList<String>();
         MonitorController monCon = new MonitorController();
         List<String> lst = monCon.getXValue(influxDB, dbName, timePeriod);
-        for (int i = 0; i < lst.size(); i++) {
-            String strDate = lst.get(i);
-            // String转为Date
-            Date dateDate = DateUtils.formatStringToDate(strDate);
+        for (String strDate : lst) {
             // 加8小时
-            Date comStrDate = DateUtils.dateCompute(dateDate, "hour", 8);
+            Date comStrDate = DateUtils.dateCompute(DateUtils.formatStringToDate(strDate), "hour", 8);
             // Date转为String
             String comDateDate = DateUtils.formatDateToString(comStrDate, DateUtils.YYYY_MM_DD_HH_MM_SS);
             result.add(comDateDate);
@@ -108,52 +126,52 @@ public class InfluxdbSearchService {
         return result;
     }
 
-
     /**
      * 
      * Description:
-     * 生成Y轴坐标集群信息
-     * @param influxDB
-     * @param timePeriod
-     * @return 
-     * @see
+     * 获得集群概要信息 
+     * 包含mem、cpu、disk、network
+     * @param influxDB InfluxDB
+     * @param timePeriod String
+     * @return catalogResource CatalogResource
+     * @see InfluxDB
+     * @see CatalogResource
      */
     public CatalogResource generateYValueOfCluster(InfluxDB influxDB, String timePeriod) {
         MonitorController monCon = new MonitorController();
-        
         // memory
         List<DetailInfo> memDetails = new ArrayList<DetailInfo>();
         DetailInfo limitDetailInfo = new DetailInfo();
-        limitDetailInfo.setLegendName(Kind.LIMITCURRENT.name());
-        limitDetailInfo.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETMEMLIMITOVERALL.name(), ""));
+        limitDetailInfo.setLegendName(Kind.LIMITCURRENT.toString());
+        limitDetailInfo.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETMEMLIMITOVERALL.toString(), ""));
         memDetails.add(limitDetailInfo);
         
         DetailInfo usageDetailInfo = new DetailInfo();
-        usageDetailInfo.setLegendName(Kind.USAGECURRENT.name());
-        usageDetailInfo.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETMEMUSEOVERALL.name(), ""));
+        usageDetailInfo.setLegendName(Kind.USAGECURRENT.toString());
+        usageDetailInfo.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETMEMUSEOVERALL.toString(), ""));
         memDetails.add(usageDetailInfo);
         
         DetailInfo workDetailInfo = new DetailInfo();
-        workDetailInfo.setLegendName(Kind.WORKINGSETCURRENT.name());
-        usageDetailInfo.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETMEMSETOVERALL.name(), ""));
+        workDetailInfo.setLegendName(Kind.WORKINGSETCURRENT.toString());
+        workDetailInfo.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETMEMSETOVERALL.toString(), ""));
         memDetails.add(workDetailInfo);
         
         List<Collectivity> memCollectivitys = new ArrayList<Collectivity>();
         
         Collectivity memCollectivity = new Collectivity();
-        memCollectivity.setTitle(Kind.OVERALLCLUSTERMEMORYUSAGE.name());
+        memCollectivity.setTitle(Kind.OVERALLCLUSTERMEMORYUSAGE.toString());
         memCollectivity.setVal(memDetails);
         memCollectivitys.add(memCollectivity);
         
         Collectivity memNodeCollectivity = new Collectivity();
-        memNodeCollectivity.setTitle(Kind.MEMORYUSAGEGROUPBYNODE.name());
+        memNodeCollectivity.setTitle(Kind.MEMORYUSAGEGROUPBYNODE.toString());
+        memNodeCollectivity.setVal(new ArrayList<DetailInfo>());
         memCollectivitys.add(memNodeCollectivity);
-        
         
         List<DetailResource> clusterDetailResources = new ArrayList<DetailResource>();
         
         DetailResource memDetailResource = new DetailResource();
-        memDetailResource.setTitleText(Kind.MEMORY.name());
+        memDetailResource.setTitleText(Kind.MEMORY.toString());
         memDetailResource.setVal(memCollectivitys);
         clusterDetailResources.add(memDetailResource);
         
@@ -161,40 +179,42 @@ public class InfluxdbSearchService {
         // CPU
         List<Collectivity> cpuCollectivitys = new ArrayList<Collectivity>();
         Collectivity cpuNodeCollectivity = new Collectivity();
-        cpuNodeCollectivity.setTitle(Kind.CPUUSAGEGROUPBYNODE.name());
+        cpuNodeCollectivity.setTitle(Kind.CPUUSAGEGROUPBYNODE.toString());
+        cpuNodeCollectivity.setVal(new ArrayList<DetailInfo>());
         cpuCollectivitys.add(cpuNodeCollectivity);
         
         DetailResource cpuDetailResource = new DetailResource();
-        cpuDetailResource.setTitleText(Kind.CPU.name());
+        cpuDetailResource.setTitleText(Kind.CPU.toString());
         cpuDetailResource.setVal(cpuCollectivitys);
         
         clusterDetailResources.add(cpuDetailResource);
         
+        
         //DISK
         List<DetailInfo> diskDetailInfos = new ArrayList<DetailInfo>();
         DetailInfo diskLimitDetailInfo = new DetailInfo();
-        diskLimitDetailInfo.setLegendName(Kind.LIMITCURRENT.name());
-        diskLimitDetailInfo.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETDISKLIMITOVERALL.name(), ""));
+        diskLimitDetailInfo.setLegendName(Kind.LIMITCURRENT.toString());
+        diskLimitDetailInfo.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETDISKLIMITOVERALL.toString(), ""));
         diskDetailInfos.add(diskLimitDetailInfo);
         
         DetailInfo diskUsageDetailInfo = new DetailInfo();
-        diskLimitDetailInfo.setLegendName(Kind.USAGECURRENT.name());
-        diskLimitDetailInfo.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETDISKUSEOVERALL.name(), ""));
+        diskUsageDetailInfo.setLegendName(Kind.USAGECURRENT.toString());
+        diskUsageDetailInfo.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETDISKUSEOVERALL.toString(), ""));
         diskDetailInfos.add(diskUsageDetailInfo);
-        
         
         List<Collectivity> diskCollectivitys = new ArrayList<Collectivity>();
         Collectivity diskCollectivity = new Collectivity();
-        diskCollectivity.setTitle(Kind.OVERALLCLUSTERDISKUSAGE.name());
+        diskCollectivity.setTitle(Kind.OVERALLCLUSTERDISKUSAGE.toString());
         diskCollectivity.setVal(diskDetailInfos);
         diskCollectivitys.add(diskCollectivity);
         
         Collectivity diskNodeCollectivity = new Collectivity();
-        diskNodeCollectivity.setTitle(Kind.DISKUSAGEGROUPBYNODE.name());
+        diskNodeCollectivity.setTitle(Kind.DISKUSAGEGROUPBYNODE.toString());
+        diskNodeCollectivity.setVal(new ArrayList<DetailInfo>());
         diskCollectivitys.add(diskNodeCollectivity);
         
         DetailResource diskDetailResource = new DetailResource();
-        diskDetailResource.setTitleText(Kind.DISK.name());
+        diskDetailResource.setTitleText(Kind.DISK.toString());
         diskDetailResource.setVal(diskCollectivitys);
         clusterDetailResources.add(diskDetailResource);
         
@@ -202,17 +222,18 @@ public class InfluxdbSearchService {
         //NETWORK
         List<Collectivity> networkCollectivitys = new ArrayList<Collectivity>();
         Collectivity networkCollectivity = new Collectivity();
-        networkCollectivity.setTitle(Kind.DISKUSAGEGROUPBYNODE.name());
+        networkCollectivity.setTitle(Kind.DISKUSAGEGROUPBYNODE.toString());
+        networkCollectivity.setVal(new ArrayList<DetailInfo>());
         networkCollectivitys.add(networkCollectivity);
         
         DetailResource networkDetailResource = new DetailResource();
-        networkDetailResource.setTitleText(Kind.NETWORK.name());
+        networkDetailResource.setTitleText(Kind.NETWORK.toString());
         networkDetailResource.setVal(networkCollectivitys);
         clusterDetailResources.add(networkDetailResource);
         
         // cluster
         CatalogResource catalogResource = new CatalogResource();
-        catalogResource.setName(Kind.CLUSTER.name());
+        catalogResource.setName(Kind.CLUSTER.toString());
         catalogResource.setVal(clusterDetailResources);
         return catalogResource;
     }
@@ -228,18 +249,15 @@ public class InfluxdbSearchService {
      */
     public CatalogResource generateYValueOfMinmon(InfluxDB influxDB, String timePeriod) {
         MonitorController monCon = new MonitorController();
-        
-        
-        
-        // 创建client
+        CatalogResource minmonCatalogResource = new CatalogResource();
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        
-        // 取得所有node
         NodeList nodeLst = client.getAllNodes();
         if (null != nodeLst) {
+            minmonCatalogResource.setName(Kind.MINMON.toString());
+            
+            List<DetailResource> minmonDetailResources = new ArrayList<DetailResource>();
             // 循环处理minion的监控信息
-            for (int i = 0; i < nodeLst.size(); i++) {
-                Node minionItem = nodeLst.getItems().get(i);
+            for (Node minionItem : nodeLst.getItems()) {
                 // 子节点名称
                 String minionName = minionItem.getMetadata().getName();
                 // 子节点类型
@@ -259,21 +277,264 @@ public class InfluxdbSearchService {
                 
                 // 判断节点非master,type为Ready,status为True
                 if (!"127.0.0.1".equals(minionName) && "Ready".equals(minionType) && "True".equals(minionStatus)) {
+                    List<Collectivity> minmonCollectivitys = new ArrayList<Collectivity>();
                     
+                    // memory
+                    List<DetailInfo> memDetailInfos = new ArrayList<DetailInfo>();
+                    
+                    DetailInfo memLimitCurrent = new DetailInfo();
+                    memLimitCurrent.setLegendName(Kind.LIMITCURRENT.toString());
+                    memLimitCurrent.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETMEMLIMITMINION.toString(), minionName));
+                    memDetailInfos.add(memLimitCurrent);
+                    
+                    DetailInfo memUsageCurrent = new DetailInfo();
+                    memUsageCurrent.setLegendName(Kind.USAGECURRENT.toString());
+                    memUsageCurrent.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETMEMUSEMINION.toString(), minionName));
+                    memDetailInfos.add(memUsageCurrent);
+                    
+                    DetailInfo memWorkingSetCurrent = new DetailInfo();
+                    memWorkingSetCurrent.setLegendName(Kind.WORKINGSETCURRENT.toString());
+                    memWorkingSetCurrent.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETMEMSETMINION.toString(), minionName));
+                    memDetailInfos.add(memWorkingSetCurrent);
+                    
+                    Collectivity memcollectivity = new Collectivity();
+                    memcollectivity.setTitle(Kind.MEMORY.toString());
+                    memcollectivity.setVal(memDetailInfos);
+                    
+                    minmonCollectivitys.add(memcollectivity);
+                    
+                    
+                    // CPU
+                    List<DetailInfo> cpuDetailInfos = new ArrayList<DetailInfo>();
+                    
+                    DetailInfo cpuLimitCurrent = new DetailInfo();
+                    cpuLimitCurrent.setLegendName(Kind.LIMITCURRENT.toString());
+                    cpuLimitCurrent.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETCPULIMITMINION.toString(), minionName));
+                    cpuDetailInfos.add(cpuLimitCurrent);
+                    
+                    DetailInfo cpuUsageCurrent = new DetailInfo();
+                    cpuUsageCurrent.setLegendName(Kind.USAGECURRENT.toString());
+                    cpuUsageCurrent.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETCPUUSEMINION.toString(), minionName));
+                    cpuDetailInfos.add(cpuUsageCurrent);
+                    
+                    Collectivity cpuCollectivity = new Collectivity();
+                    cpuCollectivity.setTitle(Kind.LOWERCPU.toString());
+                    cpuCollectivity.setVal(cpuDetailInfos);
+                    
+                    minmonCollectivitys.add(cpuCollectivity);
+                    
+                    
+                    // DISK
+                    List<DetailInfo> diskDetailInfos = new ArrayList<DetailInfo>();
+                    
+                    DetailInfo diskLimitCurrent = new DetailInfo();
+                    diskLimitCurrent.setLegendName(Kind.LIMITCURRENT.toString());
+                    diskLimitCurrent.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETDISKLIMITMINION.toString(), minionName));
+                    diskDetailInfos.add(diskLimitCurrent);
+                    
+                    DetailInfo diskUsageCurrent = new DetailInfo();
+                    diskUsageCurrent.setLegendName(Kind.USAGECURRENT.toString());
+                    diskUsageCurrent.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETDISKUSEMINION.toString(), minionName));
+                    diskDetailInfos.add(diskUsageCurrent);
+                    
+                    Collectivity diskCollectivity = new Collectivity();
+                    diskCollectivity.setTitle(Kind.LOWERDISK.toString());
+                    diskCollectivity.setVal(diskDetailInfos);
+                    
+                    minmonCollectivitys.add(diskCollectivity);
+                    
+                    
+                    // NETWORK
+                    List<DetailInfo> networkDetailInfos = new ArrayList<DetailInfo>();
+                    
+                    DetailInfo networkTxCurrent = new DetailInfo();
+                    networkTxCurrent.setLegendName(Kind.TXCURRENT.toString());
+                    networkTxCurrent.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETTXMINION.toString(), minionName));
+                    networkDetailInfos.add(networkTxCurrent);
+                    
+                    DetailInfo networkRxCurrent = new DetailInfo();
+                    networkRxCurrent.setLegendName(Kind.RXCURRENT.toString());
+                    networkRxCurrent.setyAxis(monCon.getClusterData(influxDB, dbName, timePeriod, Kind.GETRXMINION.toString(), minionName));
+                    networkDetailInfos.add(networkRxCurrent);
+                    
+                    Collectivity networkCollectivity = new Collectivity();
+                    networkCollectivity.setTitle(Kind.LOWERNETWORK.toString());
+                    networkCollectivity.setVal(networkDetailInfos);
+                    
+                    minmonCollectivitys.add(networkCollectivity);
+                    
+                    DetailResource minmonDetailResource = new DetailResource();
+                    minmonDetailResource.setTitleText(minionName);
+                    minmonDetailResource.setVal(minmonCollectivitys);
+                    
+                    minmonDetailResources.add(minmonDetailResource);
                 }
-                
-                
-                
-                
-                
+            }
+            minmonCatalogResource.setVal(minmonDetailResources);
+        }
+        return minmonCatalogResource;
+    }
+
+
+    /**
+     * Description:
+     * 获取Pod中容器资源使用的监控信息
+     * @param influxDB InfluxDB
+     * @param timePeriod String
+     * @param podName String
+     * @param nameSpace String
+     * @return containerCatalogResources List<CatalogResource>
+     * @see CatalogResource
+     */
+    public List<CatalogResource> generateContainerMonitorYValue(InfluxDB influxDB,String timePeriod, 
+                                                                            String nameSpaceParam, String podNameParam) {
+        List<CatalogResource> containerCatalogResources = new ArrayList<CatalogResource>();
+        MonitorController monCon = new MonitorController();
+        
+        if (StringUtils.isBlank(nameSpaceParam) && StringUtils.isBlank(podNameParam)) { // 查询所有的pod容器
+            LOG.info("查询所有pod的container监控信息.");
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+            NamespaceList namespaceLst = client.getAllNamespaces();
+            if (null != namespaceLst) {
+                // 循环处理每个NAMESPACE
+                for (Namespace namespace : namespaceLst) {
+                    String namespaceName = namespace.getMetadata().getName();
+                    KubernetesAPIClientInterface clientNamespace = kubernetesClientService.getClient(namespaceName);
+                    PodList podLst = clientNamespace.getAllPods();
+                    if (null != podLst) {
+                        for (Pod pod : podLst) {
+                            CatalogResource podCatalogResource = new CatalogResource();
+                            
+                            String indexPodName = pod.getMetadata().getName();
+                            podCatalogResource.setName(indexPodName);
+                            
+                            List<DetailResource> containersOfPod= new ArrayList<DetailResource>();
+                            List<String> containerNameLst = monCon.getAllContainerName(influxDB, dbName, namespaceName, indexPodName);
+                            // 如果集群还未收集到container的监控信息，则使用k8s集群中的容器名字
+                            if (CollectionUtils.isEmpty(containerNameLst)) { 
+                                List<Container> containers = pod.getSpec().getContainers();
+                                if (CollectionUtils.isNotEmpty(containers)) {
+                                    for (Container container : containers) {
+                                        containerNameLst.add(container.getName());
+                                    }
+                                }
+                            }
+                            if (CollectionUtils.isNotEmpty(containerNameLst)) {
+                                for (String containerName : containerNameLst) {
+                                    DetailResource detailResource = generateContainerMonitorInfo(influxDB, timePeriod, namespaceName, indexPodName,containerName);
+                                    containersOfPod.add(detailResource);
+                                }
+                            }
+                            podCatalogResource.setVal(containersOfPod); 
+                            containerCatalogResources.add(podCatalogResource);
+                        }
+                    }
+                }
             }
         }
-        
-        
-        
-        CatalogResource catalogResource = new CatalogResource();
-        return catalogResource;
-        
+        else if (StringUtils.isNotBlank(nameSpaceParam) && StringUtils.isBlank(podNameParam)) { // 查询指定命名空间下的pod监控数据
+            KubernetesAPIClientInterface clientNamespace = kubernetesClientService.getClient(nameSpaceParam);
+            PodList podLst = clientNamespace.getAllPods();
+            if (null != podLst) {
+                for (Pod pod : podLst) {
+                    CatalogResource podCatalogResource = new CatalogResource();
+                    
+                    String indexPodName = pod.getMetadata().getName();
+                    podCatalogResource.setName(indexPodName);
+                    
+                    List<DetailResource> containersOfPod= new ArrayList<DetailResource>();
+                    List<String> containerNameLst = monCon.getAllContainerName(influxDB, dbName, nameSpaceParam, indexPodName);
+                    if (CollectionUtils.isNotEmpty(containerNameLst)) {
+                        for (String containerName : containerNameLst) {
+                            DetailResource detailResource = generateContainerMonitorInfo(influxDB, timePeriod, nameSpaceParam, indexPodName,containerName);
+                            containersOfPod.add(detailResource);
+                        }
+                    }
+                    podCatalogResource.setVal(containersOfPod); 
+                    containerCatalogResources.add(podCatalogResource);
+                }
+            }
+        } else if (StringUtils.isNotBlank(nameSpaceParam) && StringUtils.isNotBlank(podNameParam)) {  //以namespace和podName过滤
+            CatalogResource podCatalogResource = new CatalogResource();
+            podCatalogResource.setName(podNameParam);
+            List<DetailResource> containersOfPod= new ArrayList<DetailResource>();
+            List<String> containerNameLst = monCon.getAllContainerName(influxDB, dbName, nameSpaceParam, podNameParam);
+            if (CollectionUtils.isNotEmpty(containerNameLst)) {
+                for (String containerName : containerNameLst) {
+                    DetailResource detailResource = generateContainerMonitorInfo(influxDB, timePeriod, nameSpaceParam, podNameParam,containerName);
+                    containersOfPod.add(detailResource);
+                }
+            }
+            podCatalogResource.setVal(containersOfPod);
+            containerCatalogResources.add(podCatalogResource);
+        }
+        return containerCatalogResources;
     }
     
+    /**
+     * 
+     * Description:
+     * 获取指定命名空间和pod，以及容器的监控信息
+     * @param influxDB InfluxDB
+     * @param timePeriod String
+     * @param nameSpace String
+     * @param podName String
+     * @param containerName String
+     * @return containerDetailResource DetailResource
+     * @see InfluxDB
+     * @see DetailResource
+     */
+    public DetailResource generateContainerMonitorInfo(InfluxDB influxDB,String timePeriod, 
+                                                                    String nameSpace, String podName,String containerName) {
+        DetailResource containerDetailResource = new DetailResource();
+        containerDetailResource.setTitleText(containerName);
+        
+        MonitorController monCon = new MonitorController();
+        
+        // memory
+        List<DetailInfo> memDetailInfos = new ArrayList<DetailInfo>();
+        DetailInfo memLimitCurrent = new DetailInfo();
+        memLimitCurrent.setLegendName(Kind.MEMORYLIMITCURRENT.toString());
+        memLimitCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETMEMLIMIT.toString(), nameSpace, podName,containerName));
+        memDetailInfos.add(memLimitCurrent);
+        
+        DetailInfo memUsageCurrent = new DetailInfo();
+        memUsageCurrent.setLegendName(Kind.MEMORYUSAGECURRENT.toString());
+        memUsageCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETMEMUSE.toString(), nameSpace, podName,containerName));
+        memDetailInfos.add(memUsageCurrent);
+        
+        DetailInfo memWorkSet = new DetailInfo();
+        memWorkSet.setLegendName(Kind.MEMORYWORKINGSETCURRENT.toString());
+        memWorkSet.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETMEMSET.toString(), nameSpace, podName,containerName));
+        memDetailInfos.add(memWorkSet);
+        
+        Collectivity memCollectivity = new Collectivity();
+        memCollectivity.setTitle(Kind.MEMORY.toString());
+        memCollectivity.setVal(memDetailInfos);
+        
+        
+        // CPU
+        List<DetailInfo> cpuDetailInfos = new ArrayList<DetailInfo>();
+        DetailInfo cpuLimitCurrent = new DetailInfo();
+        cpuLimitCurrent.setLegendName(Kind.CPULIMITCURRENT.toString());
+        cpuLimitCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETCPULIMIT.toString(), nameSpace, podName,containerName));
+        cpuDetailInfos.add(cpuLimitCurrent);
+        
+        DetailInfo cpuUsageCurrent = new DetailInfo();
+        cpuUsageCurrent.setLegendName(Kind.CPUUSAGECURRENT.toString());
+        cpuUsageCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETCPUUSE.toString(), nameSpace, podName,containerName));
+        cpuDetailInfos.add(cpuUsageCurrent);
+        
+        Collectivity cpuCollectivity = new Collectivity();
+        cpuCollectivity.setTitle(Kind.LOWERCPU.toString());
+        cpuCollectivity.setVal(cpuDetailInfos);
+        
+        List<Collectivity> containerCollectivity = new ArrayList<Collectivity>();
+        containerCollectivity.add(memCollectivity);
+        containerCollectivity.add(cpuCollectivity);
+        
+        containerDetailResource.setVal(containerCollectivity);
+        return containerDetailResource;
+        
+    }
 }
