@@ -27,6 +27,15 @@ $(document).ready(function() {
     
 	$("#uuid").val(generateUUID());
 	creatable(null, null);
+	
+	$(".CMD").click(function(){
+		var ssh = $('#shellinabox').val();
+		if (ssh == ""){
+			ssh = document.getElementById("ssh_host").value;
+			$('#shellinabox').val(ssh);
+			document.getElementById("shellinabox").src = ssh;
+		}
+	});
 });
 function EnterPress(e) { // 传入 event
 	var e = e || window.event;
