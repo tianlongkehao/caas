@@ -37,7 +37,7 @@
 											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
 										<a id="createKeyBtn" title="创建用户"><i
 											class="fa fa-plus"></i></a> 
-										<a href="javascript:delTenement()" title="删除"><i
+										<a href="javascript:delSecretKey()" title="删除"><i
 											class="fa fa-trash"></i></a>
 									</div>
                             </div>
@@ -72,7 +72,7 @@
 												</select></td>
 												<td style="width: 10%;"><a id="deleteKeyBtn"
 													class="no-drop"
-													href="javascript:delOneTenement(${key.id })"
+													href="javascript:delOneSecretKey(${key.id })"
 													style="margin-left: 10px"> <i class="fa fa-trash"></i>
 												</a></td>
 											</tr>

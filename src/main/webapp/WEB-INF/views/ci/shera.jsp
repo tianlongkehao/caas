@@ -47,11 +47,11 @@
 											<tr>
 												<th style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" class="chkAll" id="checkallbox" /></th>
-												<th style="width: 10%;">IP</th>
+												<th style="width: 20%;">IP</th>
 												<th style="width: 20%;">账号</th>
 												<th style="width: 20%;">密码</th>
-												<th style="width: 20%;">描述</th>
-												<th style="width: 10%;" class="del-operation">操作</th>
+												<th style="width: 200px;">描述</th>
+												<th style="width: 8%;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="secretKeyList">
@@ -60,13 +60,13 @@
 													<td style="width: 5%; text-indent: 30px;"><input
 														type="checkbox" class="chkItem" name="ids"
 														value="${shera.id }"></td>
-													<td style="width: 10%;cursor:pointer"><a title="查看详细信息" onclick="sheraDetail(${shera.id})" keyName="name"
+													<td style="width: 20%;cursor:pointer"><a title="查看详细信息" onclick="sheraDetail(${shera.id})" keyName="name"
 														onmousemove="style.textDecoration='underline'"
 														onmouseout="style.textDecoration='none'">${shera.sheraUrl }</a></td>
 													<td style="width: 20%;">${shera.userName }</td>
 													<td style="width: 20%;">${shera.password }</td>
-													<td style="width: 20%;">${shera.remark }</td>
-													<td style="width: 10%;"><a id="deleteKeyBtn"
+													<td class="autocut">${shera.remark }</td>
+													<td style="width: 8%;"><a id="deleteKeyBtn"
 														class="no-drop"
 														href="javascript:delOneTenement(${shera.id })"
 														style="margin-left: 10px"> <i class="fa fa-trash"></i></a>
