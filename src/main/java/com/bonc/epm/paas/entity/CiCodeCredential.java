@@ -36,6 +36,11 @@ public class CiCodeCredential {
     private long createBy;
     
     /**
+     * 唯一约束
+     */
+    private String uniqueKey;
+    
+    /**
      * 创建时间
      */
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
@@ -61,6 +66,11 @@ public class CiCodeCredential {
      */
     @Column(columnDefinition="TEXT" , nullable =true)
     private String privateKey;
+    
+    /**
+     * 描述
+     */
+    private String remark;
 
     public long getId() {
         return id;
@@ -76,6 +86,14 @@ public class CiCodeCredential {
 
     public void setCreateBy(long createBy) {
         this.createBy = createBy;
+    }
+
+    public String getUniqueKey() {
+        return uniqueKey;
+    }
+
+    public void setUniqueKey(String uniqueKey) {
+        this.uniqueKey = uniqueKey;
     }
 
     public Date getCreateDate() {
@@ -116,6 +134,14 @@ public class CiCodeCredential {
 
     public void setPrivateKey(String privateKey) {
         this.privateKey = privateKey;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
     
 }

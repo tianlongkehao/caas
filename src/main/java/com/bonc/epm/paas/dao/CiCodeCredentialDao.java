@@ -11,10 +11,15 @@
 
 package com.bonc.epm.paas.dao;
 
+import java.util.List;
+
+import javax.transaction.Transactional;
+
 import org.springframework.data.repository.CrudRepository;
 
 import com.bonc.epm.paas.entity.CiCodeCredential;
-
+@Transactional
 public interface CiCodeCredentialDao extends CrudRepository<CiCodeCredential,Long> {
     
+    List<CiCodeCredential> findByCreateBy(long createBy);
 }

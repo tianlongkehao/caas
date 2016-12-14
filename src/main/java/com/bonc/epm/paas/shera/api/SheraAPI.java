@@ -286,7 +286,7 @@ public interface SheraAPI {
     @Path("/credential/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public GitCredential addCredential(GitCredential gitCredential) throws SheraClientException;
+    public CredentialKey addCredential(GitCredential gitCredential) throws SheraClientException;
     
     /**
      * 
@@ -299,7 +299,7 @@ public interface SheraAPI {
     @Path("/credential/del")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)    
-    public CredentialKey deleteCredential(CredentialKey credentialKey) throws SheraClientException;
+    public CredentialKey deleteCredential(@PathParam("username") String username,@PathParam("type") Integer type) throws SheraClientException;
     
     /* JDK API */
 

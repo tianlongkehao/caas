@@ -300,7 +300,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public GitCredential addCredential(GitCredential gitCredential) throws SheraClientException {
+    public CredentialKey addCredential(GitCredential gitCredential) throws SheraClientException {
         try {
             return api.addCredential(gitCredential);
         }
@@ -313,9 +313,9 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public CredentialKey deleteCredential(CredentialKey credentialKey) throws SheraClientException {
+    public CredentialKey deleteCredential(String username,Integer type) throws SheraClientException {
         try {
-            return api.deleteCredential(credentialKey);
+            return api.deleteCredential(username,type);
         }
         catch (NotFoundException e) {
             return null;

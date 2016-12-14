@@ -186,11 +186,7 @@ public class CiController {
         model.addAttribute("menu_flag", "ci");
         return "ci/ci.jsp";
     }
-    @RequestMapping(value={"ci/shera"},method=RequestMethod.GET)
-	public String shera(Model model){
-        model.addAttribute("menu_flag", "ci");
-        return "ci/shera.jsp";
-    }
+    
     /**
      * Description: <br>
      * 快速构建和dockerfile构建信息的查询
@@ -1653,41 +1649,6 @@ public class CiController {
             if (null != image) {
                 result.put("status", "400");
             }
-        }
-        return JSON.toJSONString(result);
-    }
-    
-    /**
-     * Description: <br>
-     * 添加代码构建认证方式
-     * @param ciCodeCredential
-     * @return 
-     * @see
-     */
-    @RequestMapping(value = {"ci/addCredential.do"} , method = RequestMethod.POST)
-    @ResponseBody
-    public String saveCiCodeCredential(CiCodeCredential ciCodeCredential) {
-        Map<String,Object> result = new HashMap<String, Object>();
-        try {
-            SheraAPIClientInterface client = sheraClientService.getClient();
-            GitCredential gitCredential ;
-            if (StringUtils.isEmpty(ciCodeCredential.getPassword())) {
-                gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(), ciCodeCredential.getUserName(), ciCodeCredential.getType());
-            }
-            else {
-                String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");
-                gitCredential = sheraClientService.generateGitCredential(password, ciCodeCredential.getUserName(), ciCodeCredential.getType());
-            }
-            gitCredential = client.addCredential(gitCredential);
-            ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
-            ciCodeCredential.setCreateDate(new Date());
-            ciCodeCredentialDao.save(ciCodeCredential);
-            result.put("status", "200");
-            result.put("id",ciCodeCredential.getId());
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            result.put("status", "400");
         }
         return JSON.toJSONString(result);
     }

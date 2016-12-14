@@ -18,8 +18,16 @@ package com.bonc.epm.paas.shera.model;
  * @since
  */
 public class CredentialKey {
+    private String uuid;
     private String username;
     private Integer type;
+    
+    public String getUuid() {
+        return uuid;
+    }
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
     public String getUsername() {
         return username;
     }
