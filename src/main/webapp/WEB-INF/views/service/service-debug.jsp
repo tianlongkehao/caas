@@ -90,7 +90,7 @@
 								<input id="version" name="version" style="width:20%;"
 									type="text" value="debug" class="name-input form-control">
 							</div>
-							<a href="javascript:saveAsImage('${containerId}','${nodeName }')" type="button" class="btn btn-primary" style="margin-top:10px;color:white;">保存容器为镜像</a>
+							<a href="javascript:saveAsImage('${containerId}','${nodeIP }')" type="button" class="btn btn-primary" style="margin-top:10px;color:white;">保存容器为镜像</a>
 						</div>
 					</div>
 				</div>

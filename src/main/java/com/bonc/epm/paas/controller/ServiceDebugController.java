@@ -165,7 +165,7 @@ public class ServiceDebugController {
         PodList podList = client.getLabelSelectorPods(map);
         String podIP = null;
         String containerId = null;
-        String nodeName = null;
+        String nodeIP = null;
         String imageName = null;
         if (podList != null) {
             List<Pod> pods = podList.getItems();
@@ -173,7 +173,7 @@ public class ServiceDebugController {
 	            for (Pod pod : pods) {
 	            	podIP = pod.getStatus().getPodIP();
 	            	containerId = pod.getStatus().getContainerStatuses().get(0).getContainerID();
-	            	nodeName = pod.getSpec().getNodeName();
+	            	nodeIP = pod.getStatus().getHostIP();
 	            	imageName =pod.getStatus().getContainerStatuses().get(0).getImage();
 	            	break;
 	            }
@@ -197,7 +197,7 @@ public class ServiceDebugController {
 		model.addAttribute("podip", podIP);
 		model.addAttribute("service", service);
 		model.addAttribute("containerId", containerId);
-		model.addAttribute("nodeName",nodeName);
+		model.addAttribute("nodeIP",nodeIP);
 		model.addAttribute("userName", user.getUserName());
 		model.addAttribute("shrotImageName", shrotImageName);
 		model.addAttribute("imageName", imageName);
@@ -521,7 +521,7 @@ public class ServiceDebugController {
 
 	@RequestMapping(value = { "service/saveAsImage" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String saveAsImage(@RequestParam String containerId,@RequestParam String nodeName,@RequestParam String imageName,@RequestParam String version) {
+	public String saveAsImage(@RequestParam String containerId,@RequestParam String nodeIP,@RequestParam String imageName,@RequestParam String version) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		// 去掉containerId开头的"docker://"
 		containerId = containerId.substring(containerId.lastIndexOf('/') + 1);
@@ -543,7 +543,7 @@ public class ServiceDebugController {
 			}
 		}
 
-		DockerClient dockerClient = dockerClientService.getSpecialDockerClientInstance(nodeName);
+		DockerClient dockerClient = dockerClientService.getSpecifiedDockerClientInstance(nodeIP);
 		// 将container保存为本地镜像
 		String imageId = dockerClientService.commitContainer(containerId, imageName, version, dockerClient);
 		if (imageId != null) {
