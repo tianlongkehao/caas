@@ -291,15 +291,15 @@ public interface SheraAPI {
     /**
      * 
      * Description: 
-     * add a credentials
+     * delete a credentials
      * @return {@link CredentialKey}
      * @throws SheraClientException 
      */
-    @POST
-    @Path("/credential/del")
+    @DELETE
+    @Path("/credential/del/{uuid}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)    
-    public CredentialKey deleteCredential(@PathParam("username") String username,@PathParam("type") Integer type) throws SheraClientException;
+    public CredentialKey deleteCredential(@PathParam("uuid") String uuid) throws SheraClientException;
     
     /* JDK API */
 

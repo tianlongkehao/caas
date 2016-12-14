@@ -313,9 +313,9 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     }
 
     @Override
-    public CredentialKey deleteCredential(String username,Integer type) throws SheraClientException {
+    public CredentialKey deleteCredential(String uuid) throws SheraClientException {
         try {
-            return api.deleteCredential(username,type);
+            return api.deleteCredential(uuid);
         }
         catch (NotFoundException e) {
             return null;

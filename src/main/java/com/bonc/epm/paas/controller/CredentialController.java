@@ -85,19 +85,19 @@ public class CredentialController {
     public String saveCiCodeCredential(CiCodeCredential ciCodeCredential) {
         Map<String,Object> result = new HashMap<String, Object>();
         try {
-//            SheraAPIClientInterface client = sheraClientService.getClient();
-//            GitCredential gitCredential;
-//            if (StringUtils.isEmpty(ciCodeCredential.getPassword())) {
-//                gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(), ciCodeCredential.getUserName(), ciCodeCredential.getType());
-//            }
-//            else {
-//                String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");
-//                gitCredential = sheraClientService.generateGitCredential(password, ciCodeCredential.getUserName(), ciCodeCredential.getType());
-//            }
-//            CredentialKey credentialKey = client.addCredential(gitCredential);
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            GitCredential gitCredential;
+            if (StringUtils.isEmpty(ciCodeCredential.getPassword())) {
+                gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(), ciCodeCredential.getUserName(), ciCodeCredential.getType());
+            }
+            else {
+                String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");
+                gitCredential = sheraClientService.generateGitCredential(password, ciCodeCredential.getUserName(), ciCodeCredential.getType());
+            }
+            CredentialKey credentialKey = client.addCredential(gitCredential);
+            ciCodeCredential.setUniqueKey(credentialKey.getUuid());
             ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
             ciCodeCredential.setCreateDate(new Date());
-//            ciCodeCredential.setUniqueKey(credentialKey.getUuid());
             ciCodeCredentialDao.save(ciCodeCredential);
             result.put("status", "200");
             result.put("id",ciCodeCredential.getId());
@@ -121,8 +121,8 @@ public class CredentialController {
         Map<String,Object> map = new HashMap<String,Object>();
         CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(id);
         try {
-//            SheraAPIClientInterface client = sheraClientService.getClient();
-//            client.deleteCredential(ciCodeCredential.getUserName(),ciCodeCredential.getType());
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            client.deleteCredential(ciCodeCredential.getUniqueKey());
             ciCodeCredentialDao.delete(ciCodeCredential);
             map.put("status", "200");
         }
@@ -173,18 +173,18 @@ public class CredentialController {
     public String updateCredential(CiCodeCredential ciCodeCredential) {
         Map<String,Object> map = new HashMap<String,Object>();
         try {
-//            SheraAPIClientInterface client = sheraClientService.getClient();
-//            client.deleteCredential(ciCodeCredential.getUserName(),ciCodeCredential.getType());
-//            GitCredential gitCredential;
-//            if (StringUtils.isEmpty(ciCodeCredential.getPassword())) {
-//                gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(), ciCodeCredential.getUserName(), ciCodeCredential.getType());
-//            }
-//            else {
-//                String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");
-//                gitCredential = sheraClientService.generateGitCredential(password, ciCodeCredential.getUserName(), ciCodeCredential.getType());
-//            }
-//            CredentialKey credentialKey = client.addCredential(gitCredential);
-//            ciCodeCredential.setUniqueKey(credentialKey.getUuid());
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            client.deleteCredential(ciCodeCredentialDao.findOne(ciCodeCredential.getId()).getUniqueKey());
+            GitCredential gitCredential;
+            if (StringUtils.isEmpty(ciCodeCredential.getPassword())) {
+                gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(), ciCodeCredential.getUserName(), ciCodeCredential.getType());
+            }
+            else {
+                String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");
+                gitCredential = sheraClientService.generateGitCredential(password, ciCodeCredential.getUserName(), ciCodeCredential.getType());
+            }
+            CredentialKey credentialKey = client.addCredential(gitCredential);
+            ciCodeCredential.setUniqueKey(credentialKey.getUuid());
             ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
             ciCodeCredential.setCreateDate(new Date());
             ciCodeCredentialDao.save(ciCodeCredential);

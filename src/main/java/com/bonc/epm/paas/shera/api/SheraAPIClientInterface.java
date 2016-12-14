@@ -94,7 +94,7 @@ public interface SheraAPIClientInterface {
     
     public CredentialKey addCredential(GitCredential gitCredential) throws SheraClientException;
     
-    public CredentialKey deleteCredential(String username,Integer type) throws SheraClientException;
+    public CredentialKey deleteCredential(String uuid) throws SheraClientException;
     
     /* Jdk API*/
     public JdkList getAllJdk() throws SheraClientException;
