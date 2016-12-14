@@ -69,7 +69,7 @@
 												<th style="width: 20%;">镜像</th>
 												<th style="width: 12%;">服务地址</th>
 												<th style="width: 12%;">创建于</th>
-												<th style="width: 20%;">操作</th>
+												<th style="width: 12%;">操作</th>
 											</tr>
 										</thead>
 
@@ -150,7 +150,7 @@
 														<input type="hidden" class="timeStrap" value=""> 
 														<i class="fa_time"></i><span>${service.createDate }</span>
 													</td>
-													<td style="width: 23%">
+													<td style="width: 23%" class="optBtn">
 														<!-- 未运行 -->
 													<c:choose>
 													    <c:when test="${service.status == 3}">
