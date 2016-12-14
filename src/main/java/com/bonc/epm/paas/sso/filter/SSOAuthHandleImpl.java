@@ -77,6 +77,11 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      */
     @Value("${resourceMmanage.address}")
     private String resManUrl;
+    /**
+     * 内存和cpu的比例大小
+     */
+    @Value("${ratio.memtocpu}")
+    private String RATIO_MEMTOCPU = "4";
     
     @Override   
     public boolean onSuccess(HttpServletRequest request, HttpServletResponse response, String loginId) {
@@ -116,6 +121,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                 try {
                     // 同步统一平台租户用户到本地
                     User user = fillUserInfo(assertion, namespace);
+                    user.setVol_size(200); // 目前先使用默认值
                     // 统一平台的userId
                     if (null != attributes.get("userId")) {
                          //是租户而且不是管理员
@@ -293,7 +299,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                         }
                     }
                     LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem +",volume:"+user.getVol_size()+"}");
-                    createResourceQuota(namespace, openCpu, openMem);
+                    createResourceQuota(namespace, openCpu, openMem, user.getVol_size());
                 }
             }
         }
@@ -310,7 +316,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      * @param openCpu 
      * @param openMem  
      */
-    private void createResourceQuota(String namespace, String openCpu, String openMem) {
+    private void createResourceQuota(String namespace, String openCpu, String openMem, Long volSize) {
         // 是否创建resourceQuota
         boolean isCreate = false;
         // KUBERNETES是否可以连接
@@ -335,8 +341,10 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
         if (isConnect) {
             // 为client创建资源配额
             Map<String, String> openMap = new HashMap<String, String>();
-            openMap.put("cpu", openCpu + "");// CPU数量(核)
             openMap.put("memory", openMem + "G");// 内存（G）
+            openMap.put("cpu", Double.valueOf(openCpu)/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量(个)
+            openMap.put("persistentvolumeclaims", volSize + "");// 卷组数量
+            
             ResourceQuota openQuota = kubernetesClientService.generateSimpleResourceQuota(namespace, openMap);
             if (isCreate) { // 是否新建quota
                 openQuota = client.createResourceQuota(openQuota); // 创建quota
