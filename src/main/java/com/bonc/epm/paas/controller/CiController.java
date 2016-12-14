@@ -1208,7 +1208,6 @@ public class CiController {
         long startTime = System.currentTimeMillis();
         Ci ci = ciDao.findOne(id);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
-        ci.setImgNameVersion(DateUtils.getLongStr(startTime));
         ciDao.save(ci);
         CiRecord ciRecord = new CiRecord();
         ciRecord.setCiId(ci.getId());
@@ -1220,6 +1219,8 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
         if (CiConstant.TYPE_CODE.equals(ci.getType())) {
+            ci.setImgNameVersion(DateUtils.getLongStr(startTime));
+            ciRecord.setCiVersion(ci.getImgNameVersion());
             boolean fetchCodeCiFlag = fetchCodeCi(ci,ciRecord,startTime,sheraClientService,imageDao,ciDao,ciRecordDao,hookAndImagesDao);
             if (!fetchCodeCiFlag) {
                 map.put("status", "500");
