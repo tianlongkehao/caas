@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import com.bonc.epm.paas.docker.api.DockerRegistryAPI;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPI;
-import com.bonc.epm.paas.nginxcfgs.api.NginxCfgAPI;
 import com.bonc.epm.paas.shera.api.SheraAPI;
 
 public class RestFactory {
@@ -117,20 +116,4 @@ public class RestFactory {
 		}
     	return (DockerRegistryAPI)Proxy.newProxyInstance(clazz.getClassLoader(),intfs,new ClientProxy(methodMap));
     }
-    
-    public NginxCfgAPI createNginxCfgAPI(String url, String userName, String password){
-        Class<NginxCfgAPI> clazz = NginxCfgAPI.class;
-        Class<?>[] intfs =
-        {
-            clazz
-        };
-        HashMap<Method, MethodInvoker> methodMap = new HashMap<Method, MethodInvoker>();
-        for (Method method : clazz.getMethods())
-        {
-             MethodInvoker invoker = new MethodInvoker(url,userName,password,method);
-             methodMap.put(method, invoker);
-        }
-        return (NginxCfgAPI)Proxy.newProxyInstance(clazz.getClassLoader(),intfs,new ClientProxy(methodMap));
-    }
-    
 }

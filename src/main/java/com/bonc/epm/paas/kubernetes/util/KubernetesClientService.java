@@ -573,7 +573,7 @@ public class KubernetesClientService {
         service.setMetadata(meta);
         
         ServiceSpec spec = new ServiceSpec();
-        spec.setType("NodePort");
+        //spec.setType("NodePort");
         List<ServicePort> ports = new ArrayList<ServicePort>();
         ServicePort portObj = new ServicePort();
         //portObj.setName("http");

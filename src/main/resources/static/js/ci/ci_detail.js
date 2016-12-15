@@ -19,12 +19,18 @@ $(document).ready(function(){
     registerHookCode($("#id").val());
     //加载构建日志
     printLog();
-	
+    //停止构建执行
+    stopCodeCi();
+	//删除一个执行
+    deleteCodeCi();
+    
     //动态给版本信息赋宽度
     if(printLog()){
     	var btnVersionWidth = $(".btn-version").html().length*14;
         $(".btn-version").css("width",btnVersionWidth);
     }
+    
+    
     
     //是否选中hook
     if ($("#isHookCode").val() == 1) {
@@ -327,6 +333,56 @@ $(document).ready(function(){
 	});
 });/*ready*/
 
+//停止一个构建执行
+function stopCodeCi(){
+	$("#stopCodeCi").click(function(){
+		var projectName = $(this).attr("projectName");
+		var executionId = $(this).attr("executionId");
+		$.ajax({
+			url : ctx + "/ci/stopCodeCi.do",
+			type : "POST",
+			data : {
+				"projectName" : projectName,
+				"executionId" : executionId
+			},
+			success : function(data) {
+				data = eval("(" + data + ")");
+				if (data.status == "200") {
+					window.location.reload();
+				} else {
+					layer.alert("停止构建失败");
+				}
+			}
+		});
+	})
+}
+
+//删除一个构建执行
+function deleteCodeCi(){
+	$("#deleteCodeCi").click(function(){
+		var projectName = $(this).attr("projectName");
+		var executionId = $(this).attr("executionId");
+		var ciRecordId = $(this).attr("ciRecordId");
+		$.ajax({
+			url : ctx + "/ci/deleteCodeCi.do",
+			type : "POST",
+			data : {
+				"projectName" : projectName,
+				"executionId" : executionId,
+				"ciRecordId" :ciRecordId
+			},
+			success : function(data) {
+				data = eval("(" + data + ")");
+				if (data.status == "200") {
+					window.location.reload();
+				} else {
+					layer.alert("删除当前构建失败");
+				}
+			}
+		});
+	})
+}
+
 //单击导入模板，加载模板数据
 function loadDockerFileTemplate(){
 	 $.ajax({
@@ -421,21 +477,33 @@ function registerDeployEvent(){
 	
 	$("#replayci").unbind("click").click(function(){
 		ciId = $(this).attr("ciId");
-		$.ajax({
-			url:ctx+"/ci/constructCi.do?id="+ciId,
-			async:true,
-			success:function(data){
-				data = eval("(" + data + ")");
-				if(data.status=="200"){
-					window.location.reload();
-				}else{
-					layer.alert(data.msg);
-				}
-				setTimeout('window.location.reload()',2000);
+		var ciList = $("#ciRecordList").children().length;
+		if(ciList == 0){
+			replayciEvent(ciId)
+		}else {
+			var ciStatus = $(".ciStatus")[0].innerHTML;
+			if(ciStatus == "构建中"){
+		    	$("#replayci").css("cursor","no-drop");
+			}else{
+				replayciEvent(ciId)
 			}
-		});
+	    }
 	});
-	
+}
+function replayciEvent(ciId){
+	$.ajax({
+		url:ctx+"/ci/constructCi.do?id="+ciId,
+		async:true,
+		success:function(data){
+			data = eval("(" + data + ")");
+			if(data.status=="200"){
+				window.location.reload();
+			}else{
+				layer.alert(data.msg);
+			}
+			setTimeout('window.location.reload()',2000);
+		}
+	});
 }
 function registerConstructCiEvent(){
 	$("#buildBtn").unbind("click").click(function(){
@@ -573,7 +641,7 @@ function changeBaseImageVersion () {
             		}
             	}
             }
-            $("#baseImageId").append(html);    
+            $("#baseImageId").html(html);    
 		}
 	})
 }

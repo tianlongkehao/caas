@@ -339,6 +339,7 @@ public class CiController {
         model.addAttribute("ci", ci);
         model.addAttribute("ciRecordList", ciRecordList);
         model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
+        model.addAttribute("userAutority", cuurentUser.getUser_autority());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_detail.jsp";
     }
@@ -427,7 +428,7 @@ public class CiController {
             client.updateJob(job);
             //添加代码挂钩
             if (ci.getIsHookCode() == 1) {
-                ChangeGit changeGit = sheraClientService.generateChangeGit(user.getUserName(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
+                ChangeGit changeGit = sheraClientService.generateChangeGit(user.getNamespace(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
                 changeGit = client.addGitHooks(ci.getProjectName(), changeGit);
                 CiCodeHook ciCodeHook = new CiCodeHook();
                 if (!StringUtils.isEmpty(originCi.getHookCodeId()) && originCi.getHookCodeId() !=0 ) {
@@ -567,15 +568,20 @@ public class CiController {
             Ci ci = ciDao.findOne(idl);
             //判断是否为代码构建
             if (ci.getType() == CiConstant.TYPE_CODE) {
-                SheraAPIClientInterface client = sheraClientService.getClient();
-                client.deleteJob(ci.getProjectName());
-                //删除关联的hook数据
-                if (!StringUtils.isEmpty(ci.getHookCodeId())) {
-                    CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ci.getHookCodeId());
-                    hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
-                    ciCodeHookDao.delete(ciCodeHook);
+                try {
+                    SheraAPIClientInterface client = sheraClientService.getClient();
+                    client.deleteJob(ci.getProjectName());
+                    //删除关联的hook数据
+                    if (!StringUtils.isEmpty(ci.getHookCodeId()) && ci.getHookCodeId() !=0 ) {
+                        CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ci.getHookCodeId());
+                        hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
+                        ciCodeHookDao.delete(ciCodeHook);
+                    }
+                    ciInvokeDao.deleteByCiId(idl);
                 }
-                ciInvokeDao.deleteByCiId(idl);
+                catch (SheraClientException e) {
+                    e.printStackTrace();
+                }
             }
             ciRecordDao.deleteByCiId(idl);
             ciDao.delete(idl);
@@ -610,6 +616,7 @@ public class CiController {
             e.printStackTrace();
         }
         model.addAttribute("username", cuurentUser.getUserName());
+        model.addAttribute("userAutority", cuurentUser.getUser_autority());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_add.jsp";
     }
@@ -676,14 +683,15 @@ public class CiController {
         //取得当前用户的所有镜像
         List<Image> imagesOfUser = imageDao.findByCreator(currentUser.getId());
         long maxSize = 0;
-        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
+        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT) || 
+                    currentUser.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
         	//当前是租户的场合，maxSize为租户的ImageCount字段
         	maxSize = currentUser.getImage_count();
 		} else if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
 			//当前是用户的场合，maxSize为该用户所在租户的ImageCount字段
 			maxSize = userDao.findById(currentUser.getParent_id()).getImage_count();
 		} else {
-			map.put("overwhelm", true);
+			map.put("overwhelm", false);
 			return JSON.toJSONString(map);
 		}
         //如果当前用户创建镜像不为空&&创建的镜像数大于maxSize时，返回true
@@ -762,7 +770,7 @@ public class CiController {
                 client.createJob(job);
                 //添加代码挂钩
                 if (ci.getIsHookCode() == 1) {
-                    ChangeGit changeGit = sheraClientService.generateChangeGit(cuurentUser.getUserName(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
+                    ChangeGit changeGit = sheraClientService.generateChangeGit(cuurentUser.getNamespace(), ci.getProjectName(), ci.getCodeUrl(), ci.getCodeBranch());
                     changeGit = client.addGitHooks(ci.getProjectName(), changeGit);
                     CiCodeHook ciCodeHook = new CiCodeHook();
                     ciCodeHook.setCreateDate(new Date());
@@ -1200,7 +1208,6 @@ public class CiController {
         long startTime = System.currentTimeMillis();
         Ci ci = ciDao.findOne(id);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
-        ci.setImgNameVersion(DateUtils.getLongStr(startTime));
         ciDao.save(ci);
         CiRecord ciRecord = new CiRecord();
         ciRecord.setCiId(ci.getId());
@@ -1212,6 +1219,8 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
         if (CiConstant.TYPE_CODE.equals(ci.getType())) {
+            ci.setImgNameVersion(DateUtils.getLongStr(startTime));
+            ciRecord.setCiVersion(ci.getImgNameVersion());
             boolean fetchCodeCiFlag = fetchCodeCi(ci,ciRecord,startTime,sheraClientService,imageDao,ciDao,ciRecordDao,hookAndImagesDao);
             if (!fetchCodeCiFlag) {
                 map.put("status", "500");
@@ -1262,8 +1271,9 @@ public class CiController {
             SheraAPIClientInterface client = sheraClientService.getClient();
             JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime);
             jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
-            final Integer seqNo = jobExecViewNew.getSeqNo();
-            final String name =  CurrentUserUtils.getInstance().getUser().getUserName();
+            ciRecord.setExecutionId(jobExecViewNew.getSeqNo());
+            ciRecordDao.save(ciRecord);
+            final String nameSpace =  CurrentUserUtils.getInstance().getUser().getNamespace();
             //获取执行状态和执行日志
             new Thread() {
                 public void run() {
@@ -1276,9 +1286,9 @@ public class CiController {
                             Log log = new Log();
                             try {
                                 SheraClientService sheraClientService = new SheraClientService();
-                                SheraAPIClientInterface client = sheraClientService.getclient(name);
-                                jobExecView = client.getExecution(ci.getProjectName(),seqNo);
-                                log = client.getExecLog(ci.getProjectName(),seqNo.toString(),seek);
+                                SheraAPIClientInterface client = sheraClientService.getclient(nameSpace);
+                                jobExecView = client.getExecution(ci.getProjectName(),ciRecord.getExecutionId());
+                                log = client.getExecLog(ci.getProjectName(),ciRecord.getExecutionId().toString(),seek);
                                 seek = log.getSeek();
                             }
                             catch (Exception e) {
@@ -1351,6 +1361,54 @@ public class CiController {
             LOG.error("==========fetchCode error:"+e.getMessage());
         }
         return false;
+    }
+    
+    /**
+     * Description: <br>
+     * 停止正在执行的代码构建
+     * @param projectName 项目名称
+     * @param executionId 项目版本号
+     * @return String
+     */
+    @RequestMapping("ci/stopCodeCi.do")
+    @ResponseBody
+    public String stopCodeCi(String projectName,int executionId){
+        Map<String,Object> map = new HashMap<String,Object>();
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            client.killExecution(projectName, executionId);
+            map.put("status", "200");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 删除一个代码构建执行
+     * @param projectName 项目名称
+     * @param executionId 项目版本号
+     * @param ciRecordId 构建记录
+     * @return String
+     */
+    @RequestMapping("ci/deleteCodeCi.do")
+    @ResponseBody
+    public String deleteCodeCiExecution(String projectName,int executionId,long ciRecordId){
+        Map<String,Object> map = new HashMap<String,Object>();
+        try {
+            SheraAPIClientInterface client = sheraClientService.getClient();
+            client.deleteExecution(projectName, executionId);
+            ciRecordDao.delete(ciRecordId);
+            map.put("status", "200");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            map.put("status", "400");
+        }
+        return JSON.toJSONString(map);
     }
     
     /**

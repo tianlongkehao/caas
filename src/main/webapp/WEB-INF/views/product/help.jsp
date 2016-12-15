@@ -260,7 +260,7 @@
 											<p>
 												下面的图片比较了 Docker
 												和传统虚拟化方式的不同之处，可见容器是在操作系统层面上实现虚拟化，直接复用本地主机的操作系统，而传统方式则是在硬件层面实现。
-												<img src="/images/containers.png" alt="container1"> </br>(图片来自Docker官方网站)
+												<img src="<%=path%>/images/containers.png" alt="container1"> </br>(图片来自Docker官方网站)
 											</p>
 											<p>Docker
 												Engine可以自动化部署应用到可移植的的容器中，这些容器独立于硬件、语言、框架、打包系统。一个标准的Docker容器
@@ -401,16 +401,16 @@
 											<ol>
 												<li><p>进入 “容器服务” -&gt; “服务” 页面，点击 “创建” 按钮:</p>
 													<p>
-														<img src="/images/service-create1.png" alt="create1">
+														<img src="<%=path%>/images/service-create1.png" alt="create1">
 													</p></li>
 												<li><p>在新的页面中选择镜像，可以通过“搜索”功能筛选镜像，并点击“部署”按钮开始创建该镜像的容器服务项目。</p>
 													<p>
-														<img src="/images/service-create2.png" alt="create2">
+														<img src="<%=path%>/images/service-create2.png" alt="create2">
 													</p></li>
 												<li><p>创建服务的第二步配置容器资源，有几点需要注意：</p>
 													<p>
-														<img src="/images/service-create3.png" alt="create3">
-														<img src="/images/service-create3.1.png" alt="create3.1">
+														<img src="<%=path%>/images/service-create3.png" alt="create3">
+														<img src="<%=path%>/images/service-create3.1.png" alt="create3.1">
 													</p></li>
 												<li>
 												<p>（1）带红星的为必填项；</p>
@@ -420,7 +420,7 @@
 												检测延迟：此时间参照服务启动所需时间，即为检测生效的时间。例如，应用启动需要5分钟，则设置600s,即6分钟后开始检测；
 												检测超时：即访问等待时间。例如：等待时间设置为5秒，则5秒内访问失败则说明应用挂了；
 												检测频率：即多久检测一次。</p>
-												<p><img src="/images/service-create3.2.png" alt="create3.2">
+												<p><img src="<%=path%>/images/service-create3.2.png" alt="create3.2">
 													</p>
 												<p>（4）服务访问路径：填写内容必须和上传的项目名称一致。</p>
 												<p>（5）nginx代理区域：DMZ区表示核心区（公网可访问），USER区表示用户区（本地网络可访问）。</p>
@@ -430,19 +430,19 @@
 												<p>（9）实例个数：服务启动的pod数量，用于负载均衡</p>
 												<p>（10）服务类型：默认为无状态服务，勾选为有状态服务，需要填写挂载地址和选择存储卷</p>
 												<p>存储卷需要在服务>存储与备份中创建，如下：</p>
-												<p><img src="/images/storage01.png" alt="create3.3"></p>
+												<p><img src="<%=path%>/images/storage01.png" alt="create3.3"></p>
 												<p>填写存储卷名称和存储大小，选择读写权限</p>
-												<p><img src="/images/storage02.png" alt="create3.3"></p>
+												<p><img src="<%=path%>/images/storage02.png" alt="create3.3"></p>
 												<p>点击名称查看存储卷的详细信息，有新建文件夹，上传文件，下载文件，删除，解压zip文件功能</p>
-												<p><img src="/images/storage03-detail.png" alt="create3.3"></p>
+												<p><img src="<%=path%>/images/storage03-detail.png" alt="create3.3"></p>
 												<p>（11）环境变量：服务启动中的配置参数，环境变量的优先级比配置文件高，当环境变量中没有配置的参数才会读取配置文件中的。</p>
 												<p>（12）容器端口：默认配置的是镜像暴露的端口和对应映射到node上的端口，也可手动增加。</p>
-												<p><img src="/images/service-create3.3.png" alt="create3.3"></p>
+												<p><img src="<%=path%>/images/service-create3.3.png" alt="create3.3"></p>
 												
 													</li>
 												<li><p>此时会跳转回到容器服务列表，可以看到列表中新增一条“未启动”的容器服务，点击启动按钮，提示服务启动成功后，运行状态更新为运行中。</p>
 													<p>
-														<img src="/images/service-create4.png" alt="create4">
+														<img src="<%=path%>/images/service-create4.png" alt="create4">
 													</p></li>
 											</ol>
 										</section>
@@ -455,27 +455,27 @@
 											<p>在服务列表页，点击容器名称“centos”，将进入服务详情页面：</p>
 
 											<p>
-												<img src="/images/service-detail1.png" alt="service">
+												<img src="<%=path%>/images/service-detail1.png" alt="service">
 											</p>
 											<p>在服务详情页面中，可以看到“centos”的详细信息，如“基本信息、容器实例、环境变量、端口、日志”，点击“打开应用”，即可访问服务页面。</p>
 											<p>
-												<img src="/images/service-detail2.png" alt="service">
+												<img src="<%=path%>/images/service-detail2.png" alt="service">
 											</p>
 											<p>容器实例：当前是一个实例</p>
 											<p>
-												<img src="/images/service-detail3.png" alt="service">
+												<img src="<%=path%>/images/service-detail3.png" alt="service">
 											</p>
 											<p>环境变量：环境变量是服务的配置信息，当启动服务时优先读取环境变量的配置信息，当环境变量中没有的配置信息才读取配置文件中的。</p>
 											<p>
-												<img src="/images/service-detail4.png" alt="service">
+												<img src="<%=path%>/images/service-detail4.png" alt="service">
 											</p>
 											<p>端口：</p>
 											<p>
-												<img src="/images/service-detail5.png" alt="service">
+												<img src="<%=path%>/images/service-detail5.png" alt="service">
 											</p>
 											<p>日志：有日志下载到本地功能。</p>
 											<p>
-												<img src="/images/service-detail6.png" alt="service">
+												<img src="<%=path%>/images/service-detail6.png" alt="service">
 											</p>
 										</section>
 									</div>
@@ -485,16 +485,16 @@
 										<section class="normal">
 											<h1 id="停止启动删除容器">停止/启动/删除容器</h1>
 											<p>
-												在服务列表页，勾选服务名称前的复选框，可以对服务进行批量的 <strong>停止<img src="/images/service-stopBtn.png" alt="service">
-												/启动<img src="/images/service-startBtn.png" alt="service">
-												/删除<img src="/images/service-delBtn.png" alt="service"></strong> 操作：
+												在服务列表页，勾选服务名称前的复选框，可以对服务进行批量的 <strong>停止<img src="<%=path%>/images/service-stopBtn.png" alt="service">
+												/启动<img src="<%=path%>/images/service-startBtn.png" alt="service">
+												/删除<img src="<%=path%>/images/service-delBtn.png" alt="service"></strong> 操作：
 											</p>
 											<p>
-												<img src="/images/service-info1.png" alt="service">
+												<img src="<%=path%>/images/service-info1.png" alt="service">
 											</p>
 											<p>服务列表中操作一栏中的功能键都是针对相应服务的一对一功能键，蓝色为当前可操作功能，灰色为当前不可操作的功能键。</p>
-											<p>启动容器服务：点击<img src="/images/service-startBtn.png" alt="service">，服务启动成功会有提示框弹出。</p>
-											<p><img src="/images/service-startOk.png" alt="service"></p>
+											<p>启动容器服务：点击<img src="<%=path%>/images/service-startBtn.png" alt="service">，服务启动成功会有提示框弹出。</p>
+											<p><img src="<%=path%>/images/service-startOk.png" alt="service"></p>
 											
 											<p>停止和删除容启动操作类似。</p>
 											
@@ -511,9 +511,9 @@
 									<div class="page-inner">
 										<section class="normal">
 											<h1 id="更改服务配置">更改服务配置</h1>
-											<p>点击<img src="/images/service-peizhiBtn.png" alt="service">更改配置按钮，填写需要更改的CPU和内存，弹出框还显示当前可用的CPU和内存资源：</p>
+											<p>点击<img src="<%=path%>/images/service-peizhiBtn.png" alt="service">更改配置按钮，填写需要更改的CPU和内存，弹出框还显示当前可用的CPU和内存资源：</p>
 											<p>
-												<img src="/images/service-conf1.png" alt="service">
+												<img src="<%=path%>/images/service-conf1.png" alt="service">
 											</p>
 											<p>修改成功后会有弹出提示框。</p>
 										</section>
@@ -526,19 +526,19 @@
 
 											<h1 id="弹性伸缩">弹性伸缩</h1>
 											<p>
-												点击<img src="/images/service-shensuoBtn.png" alt="scale_up"> <strong>弹性伸缩</strong> 容器实例数量：
+												点击<img src="<%=path%>/images/service-shensuoBtn.png" alt="scale_up"> <strong>弹性伸缩</strong> 容器实例数量：
 											</p>
 											<p>在弹出框中填写实例数量，并点击“保存”按钮：</p>
 											<p>
-												<img src="/images/service-scale1.png" alt="scale_up">
+												<img src="<%=path%>/images/service-scale1.png" alt="scale_up">
 											</p>
 											<p>弹性伸缩成功会弹出提示框：</p>
 											<p>
-												<img src="/images/service-scaleOk.png" alt="scale_up">
+												<img src="<%=path%>/images/service-scaleOk.png" alt="scale_up">
 											</p>
 											<p>此时将返回容器服务列表页，展开之前扩容的服务，可以看到实例数量改变了：</p>
 											<p>
-												<img src="/images/service-scale2.png" alt="scale_up">
+												<img src="<%=path%>/images/service-scale2.png" alt="scale_up">
 											</p>
 										</section>
 									</div>
@@ -550,9 +550,9 @@
 											<h1 id="版本升级">版本升级</h1>
 											<p>版本升级可以对已创建的容器服务进行镜像版本升级。使用的镜像需要有多个版本才能进行版本升级。</p>
 											<ol>
-												<li><p>点击<img src="/images/service-shengjiBtn.png" alt="updata1">版本升级，在下拉选框中选择一个版本.</p>
+												<li><p>点击<img src="<%=path%>/images/service-shengjiBtn.png" alt="updata1">版本升级，在下拉选框中选择一个版本.</p>
 													<p>
-														<img src="/images/service-update1.png" alt="updata1">
+														<img src="<%=path%>/images/service-update1.png" alt="updata1">
 													</p></li>
 												<li><p>点击“确定”完成版本升级,升级成功会弹出提示框。</p>
 												</li>
@@ -571,10 +571,10 @@
 											<h1 id="构建镜像">构建镜像</h1>
 											<p>代码构建是一种软件开发实践，在软件开发过程中每天都会发生很多次集成。如果每次集成都能通过自动化的构建（包括编译、打包、自动化测试、发布）来验证，从而通过自动化系统尽快地发现集成错误，会大大减轻开发运维团队的工作，提高软件开发的效率。</p>
 											<p>
-												<img src="/images/ci1.png" alt="ci">
+												<img src="<%=path%>/images/ci1.png" alt="ci">
 											</p>
 											<p>本章主要介绍构建镜像的四种方法：</p>
-											<p>功能键如图所示：<img src="/images/ci-ciBtn.png" alt="ciBtn"></p>
+											<p>功能键如图所示：<img src="<%=path%>/images/ci-ciBtn.png" alt="ciBtn"></p>
 											<ul class="info">
 												<li>代码构建</li>
 												<li>快速构建</li>
@@ -606,19 +606,19 @@
 												<li>
 													<p>快速构建方法如下:</p>
 													<p>点击下图中红框内快速构建按钮：</p>
-													<p><img src="/images/ci-quick1.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-quick1.png" alt="ci"></p>
 												</li>
 												<li>
 												<p>弹出如下页面：</p>
-												<p><img src="/images/ci-quick2.png" alt="ci"></p>
+												<p><img src="<%=path%>/images/ci-quick2.png" alt="ci"></p>
 												<p>选择构建镜像所需要的基础镜像的名称和版本号，填写镜像名称及版本号，填写新创建的镜像简介，上传制作镜像时需要的代码文件，填写项目名称，选择镜像性质后，点击创建，即可完成创建。示例如下图：</p>
-												<p><img src="/images/ci-quick3.png" alt="ci"></p>
+												<p><img src="<%=path%>/images/ci-quick3.png" alt="ci"></p>
 												<p>创建完成后，点击下图红框中的按钮构建镜像:</p>
-												<p><img src="/images/ci-quick4.png" alt="ci"></p>
+												<p><img src="<%=path%>/images/ci-quick4.png" alt="ci"></p>
 												<p>点击红框中按钮后，构建状态显示为构建中:</p>
-												<p><img src="/images/ci-quick5.png" alt="ci"></p>
+												<p><img src="<%=path%>/images/ci-quick5.png" alt="ci"></p>
 												<p>构建过程中点击项目名称可跳转到如下页面，查看构建日志，项目描述，基本设置，以及删除镜像等操作:</p>
-												<p><img src="/images/ci-quick6.png" alt="ci"></p>
+												<p><img src="<%=path%>/images/ci-quick6.png" alt="ci"></p>
 												</li>
 											</ol>
 										</section>
@@ -634,13 +634,13 @@
 												<li>
 													<p>上传镜像方法如下：</p>
 													<p>点击下图中红框内上传镜像按钮：</p>
-													<p><img src="/images/ci-uploadimage1.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-uploadimage1.png" alt="ci"></p>
 													<p>弹出如下页面：</p>
-													<p><img src="/images/ci-uploadimage2.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-uploadimage2.png" alt="ci"></p>
 													<p>填写镜像名称和版本号，要求所填写的镜像名称和版本号需与上传镜像中的信息一致，上传镜像文件，选择镜像类型，填写项目名称后，点击构建即可完成创建。示例如下图：</p>
-													<p><img src="/images/ci-uploadimage3.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-uploadimage3.png" alt="ci"></p>
 													<p>创建完成后，镜像可在镜像中心中查看到：</p>
-													<p><img src="/images/ci-uploadimage4.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-uploadimage4.png" alt="ci"></p>
 												</li>
 											</ol>
 										</section>
@@ -656,18 +656,18 @@
 												<li>
 													<p>Dockerfile构建方法如下：</p>
 													<p>点击下图中红框内Dockerfile构建按钮：</p>
-													<p><img src="/images/ci-dockerfile1.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-dockerfile1.png" alt="ci"></p>
 													<p>弹出如下页面：</p>
-													<p><img src="/images/ci-dockerfile2.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-dockerfile2.png" alt="ci"></p>
 													<p>填写镜像名称及版本号，填写简介，上传制作镜像需要的代码文件，选择导入模板或者自行编写Dockerfile,编写的Dockerfile文件可另存为模板，选择创建镜像公有/私有性质，点击创建即可。</p>
 													<p>如果需要导入Dockerfile模板，可点击导入模板，选择合适的Dockerfile模板，点击导入按钮即可。导入模板示例如下：</p>
-													<p><img src="/images/ci-dockerfile3.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-dockerfile3.png" alt="ci"></p>
 													<p>写好的Dockerfile可点击另存为模板，即可生成新的Dockerfile模板，以供后期方便导入使用，Dockerfile编写完成之后点击另存为模板，在弹出框中输入模板名称，点击保存按钮即可。另存为模板示例如下：</p>
-													<p><img src="/images/ci-dockerfile4.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-dockerfile4.png" alt="ci"></p>
 													<p>Dockerfile创建镜像示例如下：</p>
-													<p><img src="/images/ci-dockerfile5.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-dockerfile5.png" alt="ci"></p>
 													<p>创建成功后，点击构建即可:</p>
-													<p><img src="/images/ci-dockerfile6.png" alt="ci"></p>
+													<p><img src="<%=path%>/images/ci-dockerfile6.png" alt="ci"></p>
 												</li>
 											</ol>
 										</section>
@@ -681,7 +681,7 @@
 											<h1 id="镜像服务">镜像服务</h1>
 											<p>上面我们大概了解了“容器服务”和“持续集成”的主要功能，而且都涉及到了“镜像”的概念，所以上面的功能都离不开“镜像服务”的支持，同样我们也开通了镜像服务板块。容器应用通过镜像服务所提供的各种镜像创建出来，而持续集成最终会生成镜像，并上传到镜像服务器，供大家下载或创建容器服务。</p>
 											<p>
-												<img src="/images/image1.png" alt="image">
+												<img src="<%=path%>/images/image1.png" alt="image">
 											</p>
 											<p>镜像服务分为三个部分：</p>
 											<ul class="info">
@@ -698,18 +698,18 @@
 
 											<h1 id="浏览镜像">浏览镜像</h1>
 											<p>创建的所有镜像都将保存在镜像中心，可以通过“查找”功能来筛选所需的镜像，直接进行
-											部署<img src="/images/image-bushuBtn.png" alt="image">
-											/导出<img src="/images/image-exportBtn.png" alt="image">
-											/收藏<img src="/images/image-shoucangBtn.png" alt="image">
-											/删除<img src="/images/service-delBtn.png" alt="image">操作。</p>
+											部署<img src="<%=path%>/images/image-bushuBtn.png" alt="image">
+											/导出<img src="<%=path%>/images/image-exportBtn.png" alt="image">
+											/收藏<img src="<%=path%>/images/image-shoucangBtn.png" alt="image">
+											/删除<img src="<%=path%>/images/service-delBtn.png" alt="image">操作。</p>
 											<p>
-												<img src="/images/image1.png" alt="image">
+												<img src="<%=path%>/images/image1.png" alt="image">
 											</p>
 											<p>
 												点击镜像名称进入镜像详情页面，可以查看镜像的基本信息和版本，进行部署和导出操作，若是该用户构建的镜像还可以进行删除镜像操作。
 											</p>
 											<p>
-												<img src="/images/image-detail.png" alt="image">
+												<img src="<%=path%>/images/image-detail.png" alt="image">
 											</p>
 										</section>
 									</div>
@@ -719,9 +719,9 @@
 										<section class="normal">
 
 											<h1 id="收藏镜像">收藏镜像</h1>
-											<p>点击<img src="/images/image-shoucangBtn.png" alt="image">收藏按钮，即可用把镜像文件保存我我的收藏中，以便经常使用。</p>
+											<p>点击<img src="<%=path%>/images/image-shoucangBtn.png" alt="image">收藏按钮，即可用把镜像文件保存我我的收藏中，以便经常使用。</p>
 											<p>
-												<img src="/images/image-my.png" alt="image">
+												<img src="<%=path%>/images/image-my.png" alt="image">
 											</p>
 											<p>该租户构建的镜像都保存在“我的镜像”中，可以进行批量删除操作，收藏的镜像在“我的收藏”列表中。</p>
 										</section>
@@ -733,7 +733,7 @@
 										<section class="normal">
 											<h1 id="租户管理">租户管理</h1>
 											<p>在租户管理总，云平台管理员可以对租户进行创建、修改、查看、删除等操作。</p>
-											<p><img src="/images/user1.png" alt="user"></p>
+											<p><img src="<%=path%>/images/user1.png" alt="user"></p>
 											<ul class="info">
 												<li>创建租户</li>
 												<li>查看/修改/删除租户</li>
@@ -749,11 +749,11 @@
 											<p>创建租户的步骤如下：</p>
 											<p>进入 “租户管理” -&gt; “租户” 页面，点击 “创建” 按钮:</p>
 											<p>
-												<img src="/images/user-create1.png" alt="user">
+												<img src="<%=path%>/images/user-create1.png" alt="user">
 											</p>
 											<p>填写基本信息，带红星的为必填项，当填写的信息不符合填写规则时，会弹出提示框，</p>
 											<p>
-												<img src="/images/user-create6.png">
+												<img src="<%=path%>/images/user-create6.png">
 											</p>
 											<p>填写完符合规则的信息后，点击“保存”按钮，完成用户的创建。</p>
 											<p>页面跳转回租户列表界面，列表中新增一条租户信息。</p>
@@ -769,24 +769,24 @@
 											<h1 id="修改租户信息">查看/修改/删除租户</h1>
 											<p>将鼠标移至“登录账号”名称上方，会出现提示框“查看租户信息”，点击进入租户信息页：</p>
 											<p>
-												<img src="/images/user-info1.png">
+												<img src="<%=path%>/images/user-info1.png">
 											</p>
 											<p>在租户信息页也可以进行租户信息的修改，如图所示，输入框显示为灰色背景的信息项是不能被修改的信息，
 												输入框显示为白色背景的信息项为可以修改的信息。点击“下一步”进入资源配置信息的修改。</p>
 											<p>
-												<img src="/images/user-info2.png">
+												<img src="<%=path%>/images/user-info2.png">
 											</p>
 											<p>当前租户查看自己的信息，并可以修改部分信息。</p>
 											<p>
-												<img src="/images/user-info3.png">
+												<img src="<%=path%>/images/user-info3.png">
 											</p>
 											<p>当前租户查看自己的资源使用情况，服务详情中显示当前租户所创建的服务个数和实例个数，而上线均未限制；资源使用情况显示当前租户的资源总量和资源使用量。</p>
 											<p>
-												<img src="/images/user-info4.png">
+												<img src="<%=path%>/images/user-info4.png">
 											</p>
 											<p>当前租户可以修改自己的登录密码。</p>
 											<p>
-												<img src="/images/user-info5.png">
+												<img src="<%=path%>/images/user-info5.png">
 											</p>
 											<h4>注：上述为租户创建用户和查看自己详细信息的操作，若是管理员，则可创建租户并为租户分配资源。</h4> 
 											
@@ -804,7 +804,7 @@
 											<h1 id="集群管理">集群管理</h1>
 											<p>集群管理与实时监控是BONC-PaaS云平台一个特色功能，我们希望通过自身平台的技术和优势为用户提供集群的部署、管理和监控的一整套解决方案。通过集群化的管理用户自己的实体主机、虚拟机或者云主机上的资源，合理规划和充分利用现有的计算和存储资源，并在自己的私有集群上尝试、运用镜像和容器技术，通过这些新技术推进自己的产品在开发、运维、部署、交付等各个环节上的变革及创新，逐渐搭建和形成自己的私有云架构。</p>
 											<p>
-												<img src="/images/jiqun.png" alt="cluster">
+												<img src="<%=path%>/images/jiqun.png" alt="cluster">
 											</p>
 											<p>本章主要介绍镜像服务的主要功能：</p>
 											<ul class="info">
@@ -824,13 +824,13 @@
 											<h1 id="集群监控">集群监控</h1>
 											<p>集群监控可以查看整个集群的资源使用情况，例如memory、cpu、disk、network使用情况。</p>
 											<p>
-												<img src="/images/cluster-jiankong.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-jiankong.png" alt="cluster">
 											</p>
 											<p>
-												<img src="/images/cluster-jiankong1.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-jiankong1.png" alt="cluster">
 											</p>
 											<p>
-												<img src="/images/cluster-jiankong2.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-jiankong2.png" alt="cluster">
 											</p>
 											<h4>监控图说明：</h4>
 											<ul>
@@ -859,7 +859,7 @@
 											<h1 id="容器监控">容器监控</h1>
 											<p>监控各容器的memory和CPU使用情况，可以通过租户和实例来筛选容器监控范围，默认为全部容器，还可以选定查看的时间范围，默认值为最近5分钟。</p>
 											<p>
-												<img src="/images/container-jiankong1.png" alt="cluster">
+												<img src="<%=path%>/images/container-jiankong1.png" alt="cluster">
 											</p>
 
 											<h4>注：</h4>
@@ -879,27 +879,27 @@
 											<h1 id="创建集群节点">集群管理-创建集群节点</h1>
 											<p>进入集群管理界面，点击“创建”按钮：</p>
 											<p>
-												<img src="/images/cluster-create1.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-create1.png" alt="cluster">
 											</p>
 											<p>在输入框内输入查询节点的IP或者IP范围，点击“查找”按钮：</p>
 											<p>
-												<img src="/images/cluster-create2.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-create2.png" alt="cluster">
 											</p>
 											<p>在查询的IP范围内，查询出可以部署的机器，勾选需要安装集群节点IP的复选框，点击“下一步”：</p>
 											<p>
-												<img src="/images/cluster-create3.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-create3.png" alt="cluster">
 											</p>
 											<p>输入ssh登录密码，点击“下一步”：</p>
 											<p>
-												<img src="/images/cluster-create4.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-create4.png" alt="cluster">
 											</p>
 											<p>配置集群节点为master或slave，点击“安装”：</p>
 											<p>
-												<img src="/images/cluster-create5.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-create5.png" alt="cluster">
 											</p>
 											<p>进入集群节点安装界面，进度条和安装状态为“安装进行中。。。”，当安装成功后状态为“安装成功”，若失败则显示“安装失败”：</p>
 											<p>
-												<img src="/images/cluster-create6.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-create6.png" alt="cluster">
 											</p>
 										</section>
 									</div>
@@ -912,13 +912,13 @@
 											<h1 id="创建集群节点">集群拓扑</h1>
 											<p>进入集群拓扑界面：</p>
 											<p>
-												<img src="/images/cluster-topo1.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-topo1.png" alt="cluster">
 											</p>
 											<p>标签从左到右分别表示，master主节点、node从节点、pod容器、service服务。每个标签都可以点击，展示不同维度的集群拓扑关系。</p>
-											<p><img src="/images/cluster-topo3.png" alt="cluster"></p>
+											<p><img src="<%=path%>/images/cluster-topo3.png" alt="cluster"></p>
 											<p>可以通过服务筛选所需要查看的集群拓扑关系。</p>
 											<p>
-												<img src="/images/cluster-topo2.png" alt="cluster">
+												<img src="<%=path%>/images/cluster-topo2.png" alt="cluster">
 											</p>
 											
 										</section>
@@ -946,7 +946,7 @@
 											<h1 id="常见问题">常见问题</h1>
 
 											<h4 id="权限问题">1.管理员、租户、用户的权限区别是什么？</h4>
-											<p><img src="/images/authority.png"></p>
+											<p><img src="<%=path%>/images/authority.png"></p>
 											
 										</section>
 									</div>

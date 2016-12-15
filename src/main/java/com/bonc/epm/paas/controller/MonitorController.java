@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
@@ -64,7 +65,6 @@ public class MonitorController {
     private Integer netDivisor = 1000;
 	
 	/**
-
 	 * 根据timePeriod计算timeGroup
 	 * @param timePeriod 
 	 * @return String
@@ -103,71 +103,55 @@ public class MonitorController {
     }
 	
     /**
-
      * 根据Cluster条件拼接SQL
-     * @param selCol 
-     * @param tabName 
-     * @param minionName  
-     * @return String
+     * @param selCol String
+     * @param tabName String
+     * @param minionName String
+     * @return sql String
      */
     private String joinClusterSQL(String selCol, String tabName, String minionName) {
         //根据查询时间段取得间隔时间
-
-
         String timeGroup = getTimeGroup(timePeriod);
-        //拼SQL
-
-
-        String sql = "SELECT " + selCol + " FROM " + tabName + " WHERE \"container_name\" = 'machine' ";
-        if (!"".equals(minionName)){
-            sql = sql + " AND \"hostname\" =~ /" + minionName + "/";
+        StringBuilder sqlSb = new StringBuilder();
+        sqlSb.append("SELECT " + selCol + " FROM " + tabName + " WHERE \"container_name\" = 'machine' ");
+        if (StringUtils.isNotBlank(minionName)){
+            sqlSb.append(" AND \"hostname\" =~ /" + minionName + "/");
         }
-        
-        sql = sql + " AND time > now() - " + timePeriod + " GROUP BY time(" + timeGroup + ")";
-        return sql;
+        sqlSb.append(" AND time > now() - " + timePeriod + " GROUP BY time(" + timeGroup + ")");
+        return sqlSb.toString();
     }
     
     /**
-
      * 根据Container条件拼接SQL
-
-     * 
-     * @param selCol 
-     * @param tabName 
+     * @param selCol 查询结果应该包含的信息
+     * @param tabName 被查询的表名
      * @param namespace 
      * @param podName 
      * @param containerName 
-     * @return String
+     * @return sqlSb
      */
     private String joinContainerSQL(String selCol, String tabName, String namespace, String podName, String containerName) {
         //根据查询时间段取得间隔时间
-
-
         String timeGroup = getTimeGroup(timePeriod);
-        
         //拼SQL
-
-
-        String sql = "SELECT " + selCol + " FROM " + tabName + " WHERE 1=1 ";
+        StringBuilder sqlSb = new StringBuilder();
+        sqlSb.append("SELECT " + selCol + " FROM " + tabName + " WHERE 1=1 ");
         
-        if (namespace != null && !"".equals(namespace)) {
-            sql += " and \"pod_namespace\" =\'" + namespace + "\'";
+        if (StringUtils.isNotBlank(namespace)) {
+            sqlSb.append(" and \"pod_namespace\" =\'" + namespace + "\'");
         }
-        if (podName != null && !"".equals(podName)) {
-            sql += " and \"pod_name\" =\'" + podName + "\'";
+        if (StringUtils.isNotBlank(podName)) {
+            sqlSb.append(" and \"pod_name\" =\'" + podName + "\'");
         }
-        if (containerName != null && !"".equals(containerName)) {
-            sql += " and \"container_name\" =\'" + containerName + "\'";
+        if (StringUtils.isNotBlank(containerName)) {
+            sqlSb.append(" and \"container_name\" =\'" + containerName + "\'");
         }
-        sql = sql + " AND time > now() - " + timePeriod + " GROUP BY pod_namespace ,pod_name ,container_name, time(" + timeGroup + ") fill(null)";
-        return sql;
+        sqlSb.append(" AND time > now() - " + timePeriod + " GROUP BY pod_namespace ,pod_name ,container_name, time(" + timeGroup + ") fill(null)");
+        return sqlSb.toString();
     }
     
     /**
-
      * 查詢INFLUXDB
-
-     * 
      * @param sql 
      * @param divisor 
      * @return List
@@ -176,69 +160,73 @@ public class MonitorController {
         Query sqlQuery = new Query(sql, dbName);
         QueryResult result_mem_limit = influxDB.query(sqlQuery);
         List<String> listString = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(result_mem_limit.getResults().get(0).getSeries())) {
-        	List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
-        	for (List<Object> aListObject : listObject) {
-        		//判断值是否为null
-        		if (aListObject.get(1) != null) {
-        			Double ad = (Double) aListObject.get(1)/divisor;
-        			String strDouble = ad.toString();
-        			BigDecimal bigDecimal = new BigDecimal(strDouble);
-        			String str = bigDecimal.toPlainString();
-        			//判断小数点位数
-        			if (str.length() <= str.indexOf(".") + 3) {
-        				listString.add(str);
-        			}
-        			else {
-        				listString.add(str.substring(0, str.indexOf(".") + 3));
-        			}
-        		} 
-        		else {
-        			listString.add(null);
-        		}
-        	}
-		}
+        try {
+            if (!CollectionUtils.isEmpty(result_mem_limit.getResults().get(0).getSeries())) {
+                List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
+                for (List<Object> aListObject : listObject) {
+                    //判断值是否为null
+                    if (aListObject.get(1) != null) {
+                        Double ad = (Double) aListObject.get(1)/divisor;
+                        String strDouble = ad.toString();
+                        BigDecimal bigDecimal = new BigDecimal(strDouble);
+                        String str = bigDecimal.toPlainString();
+                        //判断小数点位数
+                        if (str.length() <= str.indexOf(".") + 3) {
+                            listString.add(str);
+                        }
+                        else {
+                            listString.add(str.substring(0, str.indexOf(".") + 3));
+                        }
+                    } 
+                    else {
+                        listString.add(null);
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            LOG.error("execute sql failed. sql:-"+sqlQuery);
+            LOG.error("failed message is :-"+ e.getMessage());
+            return listString;
+        }
         return listString;
     }
     
     /**
-
-     *  取得CONTAINER监控数据
-
-     * 
-     * @param influxDB 
-     * @param dbName 
-     * @param timePeriod 
-     * @param dataType 
-     * @param namespace 
-     * @param podName 
-     * @param containerName 
+     * 获取指定容器的各项监控数据
+     * @param influxDB InfluxDB
+     * @param dbName String
+     * @param timePeriod String
+     * @param dataType String
+     * @param namespace String
+     * @param podName String
+     * @param containerName String
      * @return List
      */
     public List<String> getContainerData(InfluxDB influxDB,String dbName, String timePeriod, 
-                                         String dataType, String namespace, String podName, String containerName){
+                                                 String dataType, String namespace, String podName, String containerName){
     	this.influxDB = influxDB;
     	this.timePeriod = timePeriod;
     	this.dbName = dbName;
-    	switch (dataType) {
-    	    case "getMemLimit":
+        switch (dataType) {
+            case "getMemLimit":
                 //mem_limit
-            	return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.MEMORY_LIMIT, namespace, podName, containerName), memDivisor);
-    	    case "getMemUse":
+                return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.MEMORY_LIMIT, namespace, podName, containerName), memDivisor);
+            case "getMemUse":
                 //mem_use
-            	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_USAGE, namespace, podName, containerName), memDivisor);
-    	    case "getMemSet":
+                return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_USAGE, namespace, podName, containerName), memDivisor);
+            case "getMemSet":
                 //mem_set
-            	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, namespace, podName, containerName), memDivisor);
+                return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.MEMORY_WORKING_SET, namespace, podName, containerName), memDivisor);
             case "getCpuLimit":
                 //cpu_limit
-            	return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, namespace, podName, containerName), cpuDivisor);
+                return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, namespace, podName, containerName), cpuDivisor);
             case "getCpuUse":
                 //cpu_use
-            	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.CPU_USAGE, namespace, podName, containerName), cpuDivisor);
+                return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.CPU_USAGE, namespace, podName, containerName), cpuDivisor);
             default:
                 return new ArrayList<String>(); 
-    	}
+        }
     }
 
     /**
@@ -255,30 +243,34 @@ public class MonitorController {
     	this.influxDB = influxDB;
     	this.timePeriod = timePeriod;
     	this.dbName = dbName;
-    	String sql = joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_LIMIT, "");
-    	Query sqlQuery = new Query(sql, dbName);
-        QueryResult result_mem_limit = influxDB.query(sqlQuery);
-        List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
-        List<String> listString = new ArrayList<>();
-        for (List<Object> aListObject : listObject) {
-            listString.add(aListObject.get(0).toString().replace("T", " ").replace("Z", ""));
+    	List<String> listString = new ArrayList<>();
+    	try {
+            String sql = joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_LIMIT, "");
+            Query sqlQuery = new Query(sql, dbName);
+            QueryResult result_mem_limit = influxDB.query(sqlQuery);
+            List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
+            for (List<Object> aListObject : listObject) {
+                listString.add(aListObject.get(0).toString().replace("T", " ").replace("Z", ""));
+            }
+        }
+        catch (Exception e) {
+            LOG.error("obtain X axis failed. the error message:-"+e.getMessage());
+            LOG.info("the reason perhaps is that time isnot enough.");
         }
         return listString;
     }
     
     /**
-
-     *  取得CLUSTER监控数据
-
-     * 
-     * @param influxDB 
-     * @param dbName 
-     * @param timePeriod 
-     * @param dataType 
-     * @param minionName 
-     * @return String
+     * 取得CLUSTER监控数据
+     * @param influxDB InfluxDB
+     * @param dbName String
+     * @param timePeriod String
+     * @param dataType String
+     * @param minionName String
+     * @return str List<String>
      */
-    public List<String> getClusterData(InfluxDB influxDB, String dbName, String timePeriod, String dataType, String minionName){
+    public List<String> getClusterData(InfluxDB influxDB, String dbName, 
+                                               String timePeriod, String dataType, String minionName){
     	this.influxDB = influxDB;
     	this.timePeriod = timePeriod;
     	this.dbName = dbName;
@@ -336,33 +328,31 @@ public class MonitorController {
     }
 
 	/**
-
-	 * 取得所有容器名称
-	 * @param influxDB 
-	 * @param dbName 
-	 * @param namespace  
-	 * @param podName  
-	 * @return List
+	 * 取得指定命名空间和pod下的所有容器
+	 * @param influxDB InfluxDB
+	 * @param dbName String
+	 * @param namespace String
+	 * @param podName String 
+	 * @return listString List<String>
 	 */
     public List<String> getAllContainerName(InfluxDB influxDB, String dbName, String namespace, String podName) {
         List<String> listString = new ArrayList<>();
         String sql = "SELECT  container_name, last(\"value\")  FROM  \"memory/limit_bytes_gauge\"  WHERE 1=1  and "
 				+ "\"pod_namespace\" = \'" + namespace + "\'  AND \"pod_name\" = \'" + podName
 				+ "\' AND time > now() - 5m GROUP BY pod_namespace ,pod_name ,container_name, time(1m) fill(null)";
-        Query sqlQuery = new Query(sql, dbName);
-        QueryResult result_mem_limit = influxDB.query(sqlQuery);
-        List<Series> seriesLst = result_mem_limit.getResults().get(0).getSeries();
         try {
+            Query sqlQuery = new Query(sql, dbName);
+            QueryResult result_mem_limit = influxDB.query(sqlQuery);
+            List<Series> seriesLst = result_mem_limit.getResults().get(0).getSeries();
             for (Series series : seriesLst) {
                 List<List<Object>> listObject = series.getValues();
                 listString.add(listObject.get(1).get(1).toString());
             }
         } 
         catch (Exception e) {
-            LOG.debug(e.getMessage());
-            System.out.println(e.getMessage());
+            LOG.error("get container info failed. namespace:-"+ namespace +";podName:-"+podName+",error message:-"+e.getMessage());
+            return new ArrayList<>();
         }
-
         return listString;
     }
 }

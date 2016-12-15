@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bonc.epm.paas.entity.FileInfo;
+import com.bonc.epm.paas.entity.FileUploadProgress;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
@@ -279,7 +280,7 @@ public class SFTPUtil {
      * @param file File
      * @param String pwd
      */
-    public static void upLoadFile(ChannelSftp sftp, File file, String pwd) {
+    public static void upLoadFile(ChannelSftp sftp, File file, String pwd, FileUploadProgress progress) {
 
         if (file.isDirectory()) {
             File[] list = file.listFiles();
@@ -303,7 +304,7 @@ public class SFTPUtil {
                 e.printStackTrace();
             }
             for (int i = 0; i < list.length; i++) {
-            	upLoadFile(sftp, list[i], pwd);
+            	upLoadFile(sftp, list[i], pwd, progress);
             }
         } else {
 
@@ -324,6 +325,7 @@ public class SFTPUtil {
                 try {
                     while ((n = instream.read(b)) != -1) {
                         outstream.write(b, 0, n);
+                        progress.setRead(progress.getRead() + n);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

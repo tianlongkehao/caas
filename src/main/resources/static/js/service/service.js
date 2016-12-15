@@ -824,7 +824,7 @@ function loadServices() {
 							if (row.updateImage == true) {
 								html += '<a id="'+row.id+'_code" class="margin cursor console-code-modal"'+
 											'href="'+ctx+'ci/findCodeCiId.do?imgId='+row.imgID+'"'+
-										'style="margin-left: 5px" ><img src="'+ctx+'/images/sd.png" title="代码更新"></a>';
+										'style="margin-left: 5px" ><img src="'+ctx+'/images/sd.gif" title="代码更新"></a>';
 							}
 							return html;
 						}
@@ -934,34 +934,6 @@ function loadServices() {
 										'style="margin-left: 5px" title="停止"> '+
 										'<i class="fa fa-power-off self_a"></i></a>';
 							}
-							if ( row.status == 6){
-								html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
-								'href="javascript:void(0)" title="弹性伸缩"'+
-								'style="margin-left: 5px"> <i class="fa fa-arrows self_a"></i></a>';
-							} else {
-								html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
-								'href="javascript:oneUpGradeContainer('+row.id+',&apos;'+row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram + ')" title="弹性伸缩"'+
-								'style="margin-left: 5px"> <i class="fa fa-arrows"></i></a>';
-							}
-							
-							if (row.status == 3) {
-								html += '<a id="'+row.id+'_upgradeCluster" class="a-live upgradeCluster_a " '+
-										'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+ row.serviceName +'&apos;,&apos;'+row.imgName+'&apos;)" title="版本升级"'+
-										'style="margin-left: 10px"><i class="fa fa-arrow-up"></i></a> ';
-							} else {
-								html += ' <a id="'+row.id+'_upgradeCluster" class="no-drop upgradeCluster_a " '+
-                                    	'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+row.serviceName+'&apos;,&apos;'+row.imgName+'&apos;,this)" title="版本升级"'+
-                                        'style="margin-left: 5px;margin-right:5px"><i class="fa fa-arrow-up self_a"></i></a>';
-							}
-							if ( row.status == 6){
-								html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
-								'href="javascript:void(0);" title="更改配置"'+
-								'style="margin-left: 5px"><i class="fa fa-cog self_a"></i></a> '	
-							} else {
-								html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
-								'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
-								'style="margin-left: 5px"><i class="fa fa-cog"></i></a> '	
-							}
 							if (row.status != 3 && row.status != 6) {
 								html += '<a id="'+row.id+'_change" class="a-live change " '+
 										'href="javascript:startdebug('+ row.id +','+ row.status +')" title="调试"'+
@@ -975,7 +947,49 @@ function loadServices() {
 									'<i class="fa fa-bug  self_a"></i>'
 								+'</a> '
 							}
-											
+							
+							html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="'+row.id+'" serviceName="'+row.serviceName+'" imgName="'+row.imgName+'">'+
+							'<li class="dropdown">'+
+								'<a class="dropdown-toggle a-live" data-toggle="dropdown" style="margin-left: 5px" title="更过配置">'+
+								'<i class="fa fa-gears"></i></a>'+
+								'<ul class="dropdown-menu">'+
+									'<li>';
+							if ( row.status == 6){
+								html += '<a id="'+row.id+'_scaleCluster" class="no-drop scaleCluster_a "'+ 
+								'href="javascript:void(0)" title="弹性伸缩"'+
+								'> <i class="fa fa-arrows self_a"></i>弹性伸缩</a>';
+							} else {
+								html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
+								'href="javascript:oneUpGradeContainer('+row.id+',&apos;'+row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram + ')" title="弹性伸缩"'+
+								'> <i class="fa fa-arrows"></i>弹性伸缩</a>';
+							}
+							html +='</li>'+
+									'<li>';
+							if (row.status == 3) {
+								html += '<a id="'+row.id+'_upgradeCluster" class="a-live upgradeCluster_a " '+
+										'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+ row.serviceName +'&apos;,&apos;'+row.imgName+'&apos;)" title="版本升级"'+
+										'><i class="fa fa-arrow-up"></i>版本升级</a> ';
+							} else {
+								html += ' <a id="'+row.id+'_upgradeCluster" class="no-drop upgradeCluster_a " '+
+                                    	'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+row.serviceName+'&apos;,&apos;'+row.imgName+'&apos;,this)" title="版本升级"'+
+                                        '><i class="fa fa-arrow-up self_a"></i>版本升级</a>';
+							}
+							html +=	'</li>'+
+									'<li>';
+							if ( row.status == 6){
+								html += '<a id="'+row.id+'_changeConfiguration" class="no-drop changeConfiguration_a " '+
+								'href="javascript:void(0);" title="更改配置"'+
+								'><i class="fa fa-cog self_a"></i>更改配置</a> '	
+							} else {
+								html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
+								'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
+								'><i class="fa fa-cog"></i>更改配置</a> '	
+							}
+							html +=	'</li>'+
+								'</ul>'+
+							'</li>'+
+							'</ul>';
+							
 							html += '<a id="'+row.id+'_del" class="a-live deleteButton_a "'+
 									'href="javascript:oneDeleteContainer('+row.id+')"'+
 									'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
