@@ -53,29 +53,31 @@
 											</tr>
 										</thead>
 										<tbody id="secretKeyList">
-
-											<tr class="userTr" id="${key.id }">
-												<td style="width: 5%; text-indent: 30px;"><input
-													type="checkbox" class="chkItem" name="ids"
-													value="${key.id }"></td>
-												<td style="width: 15%;cursor:pointer"><a title="查看详细信息" onclick="keyDetail(this)" keyName="name"
-													onmousemove="style.textDecoration='underline'"
-													onmouseout="style.textDecoration='none'">name</a></td>
-
-												<td style="width: 10%; text-indent: 0;"
-													id="key-type" name="key-type"><input
-													type="hidden" id="key-type-hidden"
-													value="http">http <select
-													class="hidden" id="secretType" name="secretType">
-														<option value="1">HTTP</option>
-														<option value="2">SSH</option>
-												</select></td>
-												<td style="width: 10%;"><a id="deleteKeyBtn"
-													class="no-drop"
-													href="javascript:delOneSecretKey(${key.id })"
-													style="margin-left: 10px"> <i class="fa fa-trash"></i>
-												</a></td>
-											</tr>
+										    <c:forEach items="${creList }" var = "cre">
+												<tr class="userTr" id="${cre.id }">
+													<td style="width: 5%; text-indent: 30px;"><input
+														type="checkbox" class="chkItem" name="ids"
+														value="${cre.id }"></td>
+													<td style="width: 15%;cursor:pointer"><a title="查看详细信息" onclick="keyDetail(this)" id = "${cre.id }" keyType="${cre.type }"
+														onmousemove="style.textDecoration='underline'"
+														onmouseout="style.textDecoration='none'">${cre.userName }  (${cre.remark })</a></td>
+	                                                <c:if test="${cre.type == 1}">
+														<td style="width: 10%; text-indent: 0;"
+															id="key-type" name="key-type">HTTP
+													    </td>
+	                                                </c:if>
+	                                                <c:if test="${cre.type == 2}">
+                                                        <td style="width: 10%; text-indent: 0;"
+                                                            id="key-type" name="key-type">SSH
+                                                        </td>
+                                                    </c:if>
+													<td style="width: 10%;"><a id="deleteKeyBtn"
+														class="no-drop"
+														href="javascript:delOneSecretKey(${cre.id })"
+														style="margin-left: 10px"> <i class="fa fa-trash"></i>
+													</a></td>
+												</tr>
+											</c:forEach>
 
 										</tbody>
 										<tfoot class="hide">

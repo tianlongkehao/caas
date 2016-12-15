@@ -286,20 +286,20 @@ public interface SheraAPI {
     @Path("/credential/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public GitCredential addCredential(GitCredential gitCredential) throws SheraClientException;
+    public CredentialKey addCredential(GitCredential gitCredential) throws SheraClientException;
     
     /**
      * 
      * Description: 
-     * add a credentials
+     * delete a credentials
      * @return {@link CredentialKey}
      * @throws SheraClientException 
      */
-    @POST
-    @Path("/credential/del")
+    @DELETE
+    @Path("/credential/del/{uuid}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)    
-    public CredentialKey deleteCredential(CredentialKey credentialKey) throws SheraClientException;
+    public CredentialKey deleteCredential(@PathParam("uuid") String uuid) throws SheraClientException;
     
     /* JDK API */
 

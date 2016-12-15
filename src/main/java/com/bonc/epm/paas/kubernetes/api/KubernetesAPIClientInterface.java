@@ -30,6 +30,7 @@ import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
+import com.bonc.epm.paas.kubernetes.model.Node;
 import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
@@ -439,5 +440,14 @@ public interface KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     public Secret createSecret(Secret secret) throws KubernetesClientException;
+
+	/**
+	 * read the specified Node
+	 * 
+	 * @param name
+	 *            name of the node
+	 * @throws KubernetesClientException
+	 */
+    public Node getSpecifiedNode(String name) throws KubernetesClientException;
 
 }

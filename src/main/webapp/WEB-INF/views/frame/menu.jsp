@@ -147,7 +147,7 @@
 	                    </a>
 	                </li>
 	                <li id="menuSecretKey" action="">
-	                    <a href="<%=path %>/user/secretKey">
+	                    <a href="<%=path %>/secret/Credential">
 	                       密钥管理
 	                    </a>
 	                </li>

@@ -186,6 +186,7 @@ public class CiController {
         model.addAttribute("menu_flag", "ci");
         return "ci/ci.jsp";
     }
+
     /**
      * Description: <br>
      * 快速构建和dockerfile构建信息的查询
@@ -275,7 +276,7 @@ public class CiController {
         try {
             SheraAPIClientInterface client = sheraClientService.getClient();
             JobExecList jobExecList = client.getAllJobs();
-            if (StringUtils.isEmpty(jobExecList)) {
+            if (StringUtils.isEmpty(jobExecList.getItems())) {
                 return cis;
             }
             if (cis.size()!=0 && jobExecList != null) {
@@ -294,6 +295,7 @@ public class CiController {
             }
         }
         catch (Exception e) {
+            LOG.error("find all job data error : " + e.getMessage());
             e.printStackTrace();
         }
         return cis;
@@ -463,7 +465,7 @@ public class CiController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            LOG.error("modifyCodeCi error:"+e.getMessage());
+            LOG.error("modifyCodeCi error : "+e.getMessage());
             map.put("status", "400");
         }
         map.put("data", originCi);
@@ -501,7 +503,7 @@ public class CiController {
         } 
         catch (Exception e) {
             e.printStackTrace();
-            LOG.error("modifyResourceCi error:"+e.getMessage());
+            LOG.error("modifyResourceCi error : "+e.getMessage());
             map.put("status", "500");
             map.put("msg","上传文件出错");
           
@@ -552,7 +554,7 @@ public class CiController {
         } 
         catch (Exception e) {
             e.printStackTrace();
-            LOG.error("modifyResourceCi error:"+e.getMessage());
+            LOG.error("modifyResourceCi error : "+e.getMessage());
             map.put("status", "500");
             map.put("msg","上传文件出错");
             
@@ -601,7 +603,7 @@ public class CiController {
             map.put("type", ci.getType());
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("delete Ci error : " + e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -695,14 +697,15 @@ public class CiController {
         //取得当前用户的所有镜像
         List<Image> imagesOfUser = imageDao.findByCreator(currentUser.getId());
         long maxSize = 0;
-        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
+        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT) || 
+                    currentUser.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
         	//当前是租户的场合，maxSize为租户的ImageCount字段
         	maxSize = currentUser.getImage_count();
 		} else if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
 			//当前是用户的场合，maxSize为该用户所在租户的ImageCount字段
 			maxSize = userDao.findById(currentUser.getParent_id()).getImage_count();
 		} else {
-			map.put("overwhelm", true);
+			map.put("overwhelm", false);
 			return JSON.toJSONString(map);
 		}
         //如果当前用户创建镜像不为空&&创建的镜像数大于maxSize时，返回true
@@ -762,11 +765,12 @@ public class CiController {
                 credentialCheckEntity = client.checkCredential(credentialCheckEntity);
             }
             catch (SheraClientException e) {
+                LOG.error("judge codeUrl by credential error : "+e.getMessage());
                 map.put("status", "400");
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("shera connection error : "+e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -824,7 +828,7 @@ public class CiController {
                 }
             }
             catch (Exception e) {
-                e.printStackTrace();
+                LOG.error("create job error : "+e.getMessage());
                 ciInvokeDao.deleteByCiId(ci.getId());
                 ciDao.delete(ci);
             }
@@ -853,7 +857,7 @@ public class CiController {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("add ciInvoke error : "+e.getMessage());
             return null;
         }
         return ciInvokeList;
@@ -1002,7 +1006,7 @@ public class CiController {
             }
         } 
         catch (Exception e) {
-            LOG.error("uploadImage error:"+e.getMessage());
+            LOG.error("uploadImage error : "+e.getMessage());
             return "redirect:/error"; 
         }
         return "redirect:/registry/1";
@@ -1118,7 +1122,7 @@ public class CiController {
             }
         } 
         catch (Exception e) {
-            LOG.error("modifyResourceCi error:"+e.getMessage());
+            LOG.error("add dockerfileCi error:"+e.getMessage());
             return "redirect:/error"; 
         }
         
@@ -1153,7 +1157,7 @@ public class CiController {
             }
         }
         catch (Exception e) {
-            LOG.error(e.getMessage());
+            LOG.error("find dockerfile baseImage error : "+e.getMessage());
             e.printStackTrace();
         }
         return baseImage;
@@ -1247,7 +1251,6 @@ public class CiController {
         long startTime = System.currentTimeMillis();
         Ci ci = ciDao.findOne(id);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
-        ci.setImgNameVersion(DateUtils.getLongStr(startTime));
         ciDao.save(ci);
         CiRecord ciRecord = new CiRecord();
         ciRecord.setCiId(ci.getId());
@@ -1259,6 +1262,8 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
         if (CiConstant.TYPE_CODE.equals(ci.getType())) {
+            ci.setImgNameVersion(DateUtils.getLongStr(startTime));
+            ciRecord.setCiVersion(ci.getImgNameVersion());
             boolean fetchCodeCiFlag = fetchCodeCi(ci,ciRecord,startTime,sheraClientService,imageDao,ciDao,ciRecordDao,hookAndImagesDao);
             if (!fetchCodeCiFlag) {
                 map.put("status", "500");
@@ -1306,12 +1311,11 @@ public class CiController {
                                final SheraClientService sheraClientService,final ImageDao imageDao,
                                final CiDao ciDao,final CiRecordDao ciRecordDao,final HookAndImagesDao hookAndImagesDao) {
         try {
-            SheraAPIClientInterface client = sheraClientService.getClient();
+            final SheraAPIClientInterface client = sheraClientService.getClient();
             JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime);
             jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
             ciRecord.setExecutionId(jobExecViewNew.getSeqNo());
             ciRecordDao.save(ciRecord);
-            final String nameSpace =  CurrentUserUtils.getInstance().getUser().getNamespace();
             //获取执行状态和执行日志
             new Thread() {
                 public void run() {
@@ -1319,18 +1323,16 @@ public class CiController {
                         boolean flag = true;
                         Integer seek = 0;
                         while(flag){
-                            Thread.sleep(10000);
+                            Thread.sleep(5000);
                             JobExecView jobExecView = new JobExecView();
                             Log log = new Log();
                             try {
-                                SheraClientService sheraClientService = new SheraClientService();
-                                SheraAPIClientInterface client = sheraClientService.getclient(nameSpace);
                                 jobExecView = client.getExecution(ci.getProjectName(),ciRecord.getExecutionId());
                                 log = client.getExecLog(ci.getProjectName(),ciRecord.getExecutionId().toString(),seek);
                                 seek = log.getSeek();
                             }
                             catch (Exception e) {
-                                e.printStackTrace();
+                                LOG.error("exec job error : "+e.getMessage());
                             }
                             //执行完成
                             if (jobExecView.getFinished() == 1) {
@@ -1378,7 +1380,7 @@ public class CiController {
                         }
                     }
                     catch (Exception e) {
-                        e.printStackTrace();
+                        LOG.error("exec job error : "+e.getMessage());
                         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
                         ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
                         ciDao.save(ci);
@@ -1418,7 +1420,7 @@ public class CiController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("stop codeCi error : "+e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -1443,7 +1445,7 @@ public class CiController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("delete codeCi error : "+e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -1521,7 +1523,6 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         List<Image> images = imageDao.findByBaseImageVarsionOfName(cUser.getId(), baseImageName);
         map.put("data", images);
-        
         return JSON.toJSONString(map);
     }
 	
@@ -1654,41 +1655,6 @@ public class CiController {
     
     /**
      * Description: <br>
-     * 添加代码构建认证方式
-     * @param ciCodeCredential
-     * @return 
-     * @see
-     */
-    @RequestMapping(value = {"ci/addCredential.do"} , method = RequestMethod.POST)
-    @ResponseBody
-    public String saveCiCodeCredential(CiCodeCredential ciCodeCredential) {
-        Map<String,Object> result = new HashMap<String, Object>();
-        try {
-            SheraAPIClientInterface client = sheraClientService.getClient();
-            GitCredential gitCredential ;
-            if (StringUtils.isEmpty(ciCodeCredential.getPassword())) {
-                gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(), ciCodeCredential.getUserName(), ciCodeCredential.getType());
-            }
-            else {
-                String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");
-                gitCredential = sheraClientService.generateGitCredential(password, ciCodeCredential.getUserName(), ciCodeCredential.getType());
-            }
-            gitCredential = client.addCredential(gitCredential);
-            ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
-            ciCodeCredential.setCreateDate(new Date());
-            ciCodeCredentialDao.save(ciCodeCredential);
-            result.put("status", "200");
-            result.put("id",ciCodeCredential.getId());
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            result.put("status", "400");
-        }
-        return JSON.toJSONString(result);
-    }
-    
-    /**
-     * Description: <br>
      * 删除代码挂钩
      * @param ciId ciId
      * @return String
@@ -1702,15 +1668,12 @@ public class CiController {
             CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ci.getHookCodeId());
             SheraAPIClientInterface client = sheraClientService.getClient();
             client.deleteGitHooks(ciCodeHook.getName());
-//            hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
-//            ciCodeHookDao.delete(ciCodeHook);
             ci.setIsHookCode(0);
-//            ci.setHookCodeId(0);
             ciDao.save(ci);
             map.put("status", "200");
         }
         catch (Exception e) {
-           e.printStackTrace();
+           LOG.error("delete CodeHook error : "+e.getMessage());
            map.put("status", "400");
         }
         return JSON.toJSONString(map);

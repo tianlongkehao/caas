@@ -150,22 +150,8 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-    @RequestMapping(value = "/secretKey", method = RequestMethod.GET)
-    public String secretKey(Model model) {
-        model.addAttribute("menu_flag", "user");
-        return "user/secretKey.jsp";
-    }
     
-//    public static void main(String[] args) {
-////        Integer.valueOf("40.0".toString());
-////        Integer.parseInt("40.0");
-//        Double.parseDouble("40.0");
-//        System.out.println(Double.parseDouble("40"));
-//        int a =(int) Double.parseDouble("40.0");
-//        System.out.println(a);
-//    }
-
-    /**
+    /**s
      * 
      * Description:
      * @param model Model
@@ -614,8 +600,8 @@ public class UserController {
      * @return .jsp String
      */
     @RequestMapping(value = { "/searchByCondition" }, method = RequestMethod.POST)
-	public String searchByCondition(String search_company, String search_department, String search_autority,
-	                                            String search_userName, String search_province, Model model) {
+	public String searchByCondition(String search_company, String search_department, 
+	                                        String search_autority,String search_userName, String search_province, Model model) {
         String company = "";
         String department = "";
         String realName = "";
@@ -1274,7 +1260,7 @@ public class UserController {
             map.put("status", "200");
         }
         catch (Exception e) {
-           LOG.error("创建shera失败");
+           LOG.error("create shera error : " + e.getMessage());
            map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -1296,7 +1282,7 @@ public class UserController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            LOG.error("shera删除错误！");
+            LOG.error("delete shera error : " + e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -1327,7 +1313,7 @@ public class UserController {
         } 
         catch (Exception e) {
             map.put("status", "400");
-            LOG.error("shera删除错误！");
+            LOG.error("delete sheras error : " + e.getMessage());
         }
         return JSON.toJSONString(map); 
     }
@@ -1357,7 +1343,7 @@ public class UserController {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("update shera error" + e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -1390,7 +1376,7 @@ public class UserController {
             }
         }
         catch (Exception e) {
-            LOG.error("更新jdk出错");
+            LOG.error("update JDK error : " + e.getMessage());
             return false;
         }
         return true;
@@ -1415,7 +1401,7 @@ public class UserController {
             map.put("jdkList", jdkList.getItems());
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("get shera detail error : " + e.getMessage());
         }
         return JSON.toJSONString(map);
     }

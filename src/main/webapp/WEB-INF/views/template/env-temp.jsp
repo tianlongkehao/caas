@@ -74,15 +74,25 @@
 															autocomplete="off" id="checkboxID" value="${envTemplate.templateName }" />
 													</td>
 													<td style="width: 60%;text-indent:30px;">
-														<a href="<%=path %>/template/env/detail/${envTemplate.templateName }"
+														<a href="<%=path %>/template/env/detail/${envTemplate.templateName }" style="float:left;line-height:40px"
                                                             title="查看${envTemplate.templateName }详细信息" 
                                                             onmousemove="style.textDecoration='underline'"
                                                             onmouseout="style.textDecoration='none'">${envTemplate.templateName }</a>
 													</td>
 		                                            <td style="width: 20%;">${envTemplate.createDate }</td>
 		                                            <td style="width: 10%;text-indent: 10px;" >
-														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate('${envTemplate.templateName }')" title="删除">
+														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate('${envTemplate.templateName }')" title="删除" style="float:left;line-height:40px">
 														<i class="fa fa-trash"></i></a>
+														<ul class="" style="margin-bottom:0px;line-height:40px;">
+															<li class="dropdown">
+																<a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-gears"></i></a>
+																<ul class="dropdown-menu">
+																	<li><a><i class="fa fa-arrows"></i>弹性伸缩</a></li>
+																	<li><a><i class="fa fa-arrow-up"></i>版本升级</a></li>
+																	<li><a><i class="fa fa-cog"></i>更改配置</a></li>
+																</ul>
+															</li>
+														</ul>
 		                                            </td>
 												</tr>
 											</c:forEach>

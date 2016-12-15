@@ -81,10 +81,10 @@
 		                                <select id="codeCredentials" name="codeCredentials" class="form-control c-project-con" style="width:50%;float:left;">
 		                                  <c:forEach items="${ciCodeList}" var="ciCode" >
 		                                      <c:if test="${ciCode.type == 1 }">
-		                                          <option value="${ciCode.id }">${ciCode.userName }(HTTP)</option>
+		                                          <option value="${ciCode.id }">${ciCode.userName } (HTTP) (${ciCode.remark })</option>
 		                                      </c:if>
 		                                      <c:if test="${ciCode.type == 2 }">
-                                                  <option value="${ciCode.id }">${ciCode.userName }(SSH)</option>
+                                                  <option value="${ciCode.id }">${ciCode.userName } (SSH) (${ciCode.remark })</option>
                                               </c:if>
 		                                  </c:forEach>
 		                                </select>
@@ -134,13 +134,28 @@
 	                            <div id="sortable">
 	                            </div>
                             </section>
-                            <h4 class="c-title">镜像信息</h4>
-                            <section class="registryinfo">
+                            <h4 class="c-title">镜像信息<input type="checkbox" id="imageInfo"></h4>
+                            <section class="registryinfo imageInfoCon">
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">镜像名称</label>
 	                                    <input id="imageName" name="imgNameLast" type="text"
-                                                   class="form-control c-project-con reg-input" value="">
+                                                   class="form-control c-project-con reg-input imgInput" value="">
+		                            </div>
+	                            </div>
+	                            <div class="row">
+		                            <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">镜像版本</label>
+	                                    <input id="imageVersion" name="imgVersion" type="text"
+                                                   class="form-control c-project-con reg-input imgInput" value="">
+                                        <i class="fa fa-info-circle imgVersionFA"></i>
+		                            </div>
+	                            </div>
+	                            <div class="row">
+		                            <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">是否基础镜像</label>
+	                                    <input id="isBaseImage" name="isBaseImage" type="checkbox"
+                                                   style="height:26px" value="">
 		                            </div>
 	                            </div>
 	                            <ul class="nav nav-bar">
@@ -186,7 +201,38 @@
                     </div>
                 </div>
                 <!-- 添加证书 -->
-                <div id="addCredentialsCon">
+			     <div id="addCredentialsCon">           
+			        <div style="width:345px;margin: 15px 15px">
+			            <div class="infoCred">
+			                <span class="labelCred">类型：</span> <select
+			                    class="form-control conCred" id="CredentialsType" name="type">
+			                    <option value="1">用户名和密码</option>
+			                    <option value="2">SSH用户名和密钥</option>
+			                </select>
+			            </div>
+			            <div class="infoCred">
+			                <span class="labelCred">用户名：</span> <input type="text"
+			                    class="form-control conCred" id="userNameCred" name="userName"
+			                    value="">
+			            </div>
+			            <div class="infoCred normal">
+			                <span class="labelCred">密码：</span> <input type="password"
+			                    class="form-control conCred" id="passwordCred" name="password"
+			                    value="">
+			            </div>
+			            <div class="infoCred ssh">
+			                <span class="labelCred">密钥：</span>
+			                <textarea type="text" class="form-control conCred" style="height:100px"
+			                    id="SSHpasswordCred" name="privateKey" row="8" value=""></textarea>
+			            </div>
+			            <div class="infoCred">
+			                <span class="labelCred">描述：</span>
+			                <textarea type="text" class="form-control conCred" style="height:100px"
+			                    id="keyRemark" name="keyRemark" row="8" value=""></textarea>
+			            </div>
+			        </div>
+                 </div>
+               <!--  <div id="addCredentialsCon">
                     <div style="width: 345px; margin: 5px 10px 5px 10px">
                         <div class="infoCred">
                         	<span class="labelCred">类型：</span>
@@ -204,6 +250,6 @@
 	                        <span class="labelCred">密钥：</span>
 	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="8" value="" ></textarea></div>
                     </div>
-                </div>
+                </div> -->
 </body>
 </html>

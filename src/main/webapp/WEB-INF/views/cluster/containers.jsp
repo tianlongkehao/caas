@@ -550,7 +550,7 @@
 						console.log("usageVal"+usageVal);
 						console.log("limitVal"+limitVal);
 						
-						if ( usageVal >= limitVal * 0.9) {
+						if (null!=usageVal && null!=limitVal && usageVal >= limitVal * 0.9) {
 							
 							var dangerSeriesLabel = {
 									normal : {
@@ -608,7 +608,7 @@
 					for (var arrayNumCpu = 0; arrayNumCpu < containerYCpuval.length; arrayNumCpu++) {
 						var usageVal = containerDataYcpu.val[1].yAxis[arrayNumCpu];
 						var limitVal = containerDataYcpu.val[0].yAxis[arrayNumCpu];
-						if (usageVal >= limitVal * 0.9) {
+						if (null!=usageVal && null!=limitVal && usageVal >= limitVal * 0.9) {
 							var dangerCpuSeriesLabel = {
 									normal : {
 										show : true,
