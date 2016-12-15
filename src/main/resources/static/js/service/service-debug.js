@@ -1,5 +1,41 @@
 $(document).ready(function() {
+	$(".baseInfo>ul>li>a").click(function(){
+
+        $(".baseInfo>ul>li>a").removeClass("btn-prim");
+        $(this).addClass("btn-prim");
+    });
+
+    $(".DOC").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".docInfo").removeClass("hide");
+    });
+
+
+    $(".CMD").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".cmdInfo").removeClass("hide");
+    });
+
+
+    $(".EXPORT").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".exportInfo").removeClass("hide");
+    });
+    
+	$("#uuid").val(generateUUID());
 	creatable(null, null);
+	
+	$(".CMD").click(function(){
+		var ssh = $('#shellinabox').val();
+		if (ssh == ""){
+			ssh = document.getElementById("ssh_host").value;
+			$('#shellinabox').val(ssh);
+			document.getElementById("shellinabox").src = ssh;
+		}
+	});
 });
 function EnterPress(e) { // 传入 event
 	var e = e || window.event;
@@ -233,7 +269,7 @@ function downloadFile(obj) {
 }
 
 /**
- * 上传文件
+ * 上传文件选择窗口
  */
 function fileUpload() {
 	$('#file').val("");
@@ -257,11 +293,8 @@ function fileUpload() {
 			});
 			if (flag == 0) {
 				layer.closeAll();
-				$('.progress-bar-info').text("文件上传中...");
-				$('#myModal').modal('show');
-		        $.when(up(formData, flag)).done(function(data){
-		        	$('#myModal').modal('hide');
-		        });
+				upload(formData);
+				getUploadProgress();
 			} else {
 				layer.msg('存在同名的文件，确定要覆盖吗？', {
 					icon : 7,
@@ -270,10 +303,8 @@ function fileUpload() {
 					yes : function(index) {
 						layer.closeAll();
 						$('.progress-bar-info').text("文件上传中...");
-						$('#myModal').modal('show');
-				        $.when(up(formData, flag)).done(function(data){
-				        	$('#myModal').modal('hide');
-				        });
+						upload(formData);
+						getUploadProgress();
 					}
 				});
 			}
@@ -281,32 +312,75 @@ function fileUpload() {
 	})
 };
 
-function up(formData, flag) {
+//上传文件的方法
+function upload(formData) {
+	$('.progress-bar-info').text("文件上传中...");
+	$('#myModal').modal('show');
+	setTimeout("",500);
+    $.when(uploadAjax(formData)).done(function(data){
+		var data = eval("(" + data + ")");
+		if ("200" == data.status) {
+//        	$('#myModal').modal('hide');
+//			creatable(null, ".");
+//			layer.closeAll();
+		} else {
+        	$('#myModal').modal('hide');
+			failedMSG("文件上传失败！", true);
+		}
+    });
+}
+//上传文件的ajax异步请求
+function uploadAjax(formData){
 	var defer = $.Deferred();
 	$.ajax({
 		type : 'POST',
 		url : ctx + '/service/uploadFile',
 		data : formData,
-//		async : false,
 		cache : false,
 		contentType : false,
 		processData : false,
 		success : function(data) {
 			defer.resolve(data);
-			var data = eval("(" + data + ")");
-			if ("200" == data.status) {
-				creatable(null, ".");
-				$('#hasUsed').html(data.used);
-				layer.closeAll();
-			} else {
-				failedMSG("文件上传失败！", true);
-			}
 		}
 	});
 	return defer.promise();
 }
+//获取文件上传的进度
+function getUploadProgress() {
+	var defer = $.Deferred();
+	var formData = new FormData($("#form1")[0]);
+	$.ajax({
+		type : 'POST',
+		url : ctx + '/service/getUploadProgress',
+		data : formData,
+		cache : false,
+		contentType : false,
+		processData : false,
+		success : function(data) {
+			var data = eval("(" + data + ")");
+			if ("200" == data.status) {
+				$('.progress-bar-info').text("文件上传中"+data.progress+"...");
+				if (data.progress != "100%") {
+					setTimeout("getUploadProgress()",500);
+				} else {
+		        	$('#myModal').modal('hide');
+					creatable(null, ".");
+					layer.closeAll();
+					defer.resolve(data);
+				}
+			} else {
+	        	$('#myModal').modal('hide');
+				failedMSG("上传进度获取失败！", true);
+			}
+
+		}
+	});
+	return defer.promise();
+
+}
+
 //导出container为image
-function saveAsImage(containerId, nodeName) {
+function saveAsImage(containerId, nodeIP) {
     var version = $('#version').val().trim();
     if(version.length == 0){
 		layer.tips('对不起，镜像版本名不能为空！','#version',{tips: [1, '#3595CC']});
@@ -326,19 +400,19 @@ function saveAsImage(containerId, nodeName) {
     }
     $('.progress-bar-info').text("容器保存中...");
 	$('#myModal').modal('show');
-    $.when(getdata(containerId, nodeName)).done(function(data){
+    $.when(getdata(containerId, nodeIP)).done(function(data){
     	$('#myModal').modal('hide');
     });
 }
 
-function getdata(containerId, nodeName){
+function getdata(containerId, nodeIP){
 	var defer = $.Deferred();
     var imageName = $('#imageName').val();
     var version = $('#version').val().trim();
     $.ajax({
 		url : ctx + "/service/saveAsImage",
 		type: "POST",
-		data:{"containerId":containerId,"nodeName":nodeName,"imageName":imageName,"version":version},
+		data:{"containerId":containerId,"nodeIP":nodeIP,"imageName":imageName,"version":version},
 		success : function(data) {
 			defer.resolve(data);
 			data = eval("(" + data + ")");
@@ -382,3 +456,13 @@ function failedMSG(title, flag) {
 		}
 	});
 }
+
+function generateUUID(){
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+    });
+    return uuid;
+};

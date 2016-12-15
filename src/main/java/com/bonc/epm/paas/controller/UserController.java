@@ -600,8 +600,8 @@ public class UserController {
      * @return .jsp String
      */
     @RequestMapping(value = { "/searchByCondition" }, method = RequestMethod.POST)
-	public String searchByCondition(String search_company, String search_department, String search_autority,
-	                                            String search_userName, String search_province, Model model) {
+	public String searchByCondition(String search_company, String search_department, 
+	                                        String search_autority,String search_userName, String search_province, Model model) {
         String company = "";
         String department = "";
         String realName = "";

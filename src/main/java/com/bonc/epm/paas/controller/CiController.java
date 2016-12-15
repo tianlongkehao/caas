@@ -697,14 +697,15 @@ public class CiController {
         //取得当前用户的所有镜像
         List<Image> imagesOfUser = imageDao.findByCreator(currentUser.getId());
         long maxSize = 0;
-        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
+        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT) || 
+                    currentUser.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
         	//当前是租户的场合，maxSize为租户的ImageCount字段
         	maxSize = currentUser.getImage_count();
 		} else if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
 			//当前是用户的场合，maxSize为该用户所在租户的ImageCount字段
 			maxSize = userDao.findById(currentUser.getParent_id()).getImage_count();
 		} else {
-			map.put("overwhelm", true);
+			map.put("overwhelm", false);
 			return JSON.toJSONString(map);
 		}
         //如果当前用户创建镜像不为空&&创建的镜像数大于maxSize时，返回true
@@ -1250,7 +1251,6 @@ public class CiController {
         long startTime = System.currentTimeMillis();
         Ci ci = ciDao.findOne(id);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
-        ci.setImgNameVersion(DateUtils.getLongStr(startTime));
         ciDao.save(ci);
         CiRecord ciRecord = new CiRecord();
         ciRecord.setCiId(ci.getId());
@@ -1262,6 +1262,8 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
         if (CiConstant.TYPE_CODE.equals(ci.getType())) {
+            ci.setImgNameVersion(DateUtils.getLongStr(startTime));
+            ciRecord.setCiVersion(ci.getImgNameVersion());
             boolean fetchCodeCiFlag = fetchCodeCi(ci,ciRecord,startTime,sheraClientService,imageDao,ciDao,ciRecordDao,hookAndImagesDao);
             if (!fetchCodeCiFlag) {
                 map.put("status", "500");

@@ -168,9 +168,9 @@ function  creatable(isDir,path,dirName){
 									'<td style="width: 25%; text-indent: 30px;"  onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileNameEnc+'") >'+
 									'<a hrer="">'
 									if(true==fileInfo.dir){
-										tbody+='<img src="/images/img-file.png" >'
+										tbody+='<img src="'+ctx+'"/images/img-file.png" >'
 									}else{
-										tbody+='<img src="/images/file-f.png" >'
+										tbody+='<img src="'+ctx+'"/images/file-f.png" >'
 									 }
 									tbody+='<span style="margin-left:5px"  >'+
 									fileInfo.fileName+'</span>'+
@@ -188,9 +188,9 @@ function  creatable(isDir,path,dirName){
 									'<td style="width: 25%;text-indent: 30px;" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileNameEnc+'") >'+
 									'<a hrer="">'
 									if(true==fileInfo.dir){
-										tbody+='<img src="/images/img-file.png" >'
+										tbody+='<img src="'+ctx+'"/images/img-file.png" >'
 									}else{
-										tbody+='<img src="/images/file-f.png" >'
+										tbody+='<img src="'+ctx+'"/images/file-f.png" >'
 									 }
 			    				tbody+='<span style="margin-left:5px"  >'+
 									fileInfo.fileName+'</span>'+
@@ -460,9 +460,9 @@ function expand(obj) {
 						+ datas[i].val[j].modDate + '</td></tr>';
 				$("#tbody-vol").append(_tr);
 				if(datas[i].val[j].imgtype == "box"){
-					$("#tbody-vol").find("img.imgSrc")[j].src = "/images/img-file.png";
+					$("#tbody-vol").find("img.imgSrc")[j].src = ctx +"/images/img-file.png";
 				}else{
-					$("#tbody-vol").find("img.imgSrc")[j].src = "/images/file-f.png";
+					$("#tbody-vol").find("img.imgSrc")[j].src = ctx +"/images/file-f.png";
 				}
 			}
 			
@@ -501,9 +501,9 @@ function volList(){
 				+ datas[i].modDate + '</td>' + '</tr>';
 		$("#tbody-vol").append(tableTr);
 		if(datas[i].imgtype == "box"){
-			$("#tbody-vol").find("img.imgSrc")[i].src = "/images/img-file.png";
+			$("#tbody-vol").find("img.imgSrc")[i].src = ctx +"/images/img-file.png";
 		}else{
-			$("#tbody-vol").find("img.imgSrc")[i].src = "/images/file-f.png";
+			$("#tbody-vol").find("img.imgSrc")[i].src = ctx +"/images/file-f.png";
 		}
 	}
 }
@@ -517,3 +517,4 @@ $(document)
 					 */
 					volList();
 				});
+>>>>>>> refs/heads/develop

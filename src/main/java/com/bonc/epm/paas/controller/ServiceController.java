@@ -86,6 +86,7 @@ import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.PoiUtils;
+import com.bonc.epm.paas.util.RandomString;
 import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
@@ -665,6 +666,45 @@ public class ServiceController {
         return "service/service_create.jsp";
     }
 	
+    /**
+     * Description: <br>
+     * 获取镜像的启动命令
+     * @param imgName
+     * @param imgVersion
+     * @return List
+     */
+    private String getBaseImageStartCommand(String imgName, String imgVersion) {
+    	StringBuffer startCommand = new StringBuffer();
+    	try {
+    		//获取镜像信息
+    		Image image = imageDao.findByNameAndVersion(imgName, imgVersion);
+    		if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+    			//从仓库中拉取镜像到本地
+    			dockerClientService.pullImage(image.getName(), image.getVersion());
+    			//获取镜像inspect
+    			InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
+    			if (null != iir) {
+    				//获取Entrypoint信息
+    				for (String entrypoint : iir.getConfig().getEntrypoint()) {
+    					startCommand.append(entrypoint);
+					}
+    				//获取cmd信息
+    				for (String cmd : iir.getContainerConfig().getCmd()) {
+    					if (startCommand.length() > 0) {
+    						startCommand.append(" ");
+    					}
+    					startCommand.append(cmd);
+					}
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		LOG.error(e.getMessage());
+    		e.printStackTrace();
+    	}
+    	return startCommand.toString();
+    }
+    
 	/**
 	 * Description: <br>
 	 * 获取基础镜像的端口
@@ -857,30 +897,31 @@ public class ServiceController {
             if (controller == null) {
             	List<String> command = new ArrayList<String>();
             	List<String> args = new ArrayList<String>();
+            	// 初始化自定义启动命令
+            	String startCommand = service.getStartCommand().trim();
             	//debug模式下
             	if (isDebug) {
-					controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
-							1,service.getInitialDelay(),service.getTimeoutDetction(),service.getPeriodDetction(),
-							registryImgName, portConfigs, service.getCpuNum(), service.getRam(),service.getProxyZone(),
-							service.getServicePath(),service.getProxyPath(),service.getCheckPath(),envVariables,command,args);
-				} else {
-					// 初始化自定义启动命令
-					String startCommand = service.getStartCommand().trim();
-					if (StringUtils.isNotBlank(startCommand)) {
-						String[] startCommandArray = startCommand.replaceAll("\\s+", " ").split(" ");
-						for (String item : startCommandArray) {
-							if (CollectionUtils.isEmpty(command)) {
-								command.add(item);
-								continue;
-							}
-							args.add(item);
-						}
+            		command.add("/debug.sh");
+            		if (StringUtils.isBlank(startCommand)) {
+						startCommand = getBaseImageStartCommand(service.getImgName(), service.getImgVersion());
 					}
-					controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
-							service.getInstanceNum(),service.getInitialDelay(),service.getTimeoutDetction(),service.getPeriodDetction(),
-							registryImgName, portConfigs, service.getCpuNum(), service.getRam(),service.getProxyZone(),
-							service.getServicePath(),service.getProxyPath(),service.getCheckPath(),envVariables,command,args);
+            	}
+            	if (StringUtils.isNotBlank(startCommand)) {
+            		String[] startCommandArray = startCommand.replaceAll("\\s+", " ").replaceAll("/debug.sh", "").trim().split(" ");
+            		for (String item : startCommandArray) {
+            			if (CollectionUtils.isEmpty(command)) {
+            				command.add(item);
+            				continue;
+            			}
+            			args.add(item);
+            		}
+            	} else {
+            		
 				}
+            	controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
+            			service.getInstanceNum(),service.getInitialDelay(),service.getTimeoutDetction(),service.getPeriodDetction(),
+            			registryImgName, portConfigs, service.getCpuNum(), service.getRam(),service.getProxyZone(),
+            			service.getServicePath(),service.getProxyPath(),service.getCheckPath(),envVariables,command,args);
 				// 给controller设置卷组挂载的信息
                 System.out.println("给rc绑定vol");
                 if (StringUtils.isNotBlank(service.getVolName())) {
@@ -892,18 +933,23 @@ public class ServiceController {
             	//设置启动命令
             	List<String> command = new ArrayList<String>();
             	List<String> args = new ArrayList<String>();
-            	if (!isDebug) {
-					// 初始化自定义启动命令
-					String startCommand = service.getStartCommand().trim();
-					if (StringUtils.isNotBlank(startCommand)) {
-						String[] startCommandArray = startCommand.replaceAll("\\s+", " ").split(" ");
-						for (String item : startCommandArray) {
-							if (CollectionUtils.isEmpty(command)) {
-								command.add(item);
-								continue;
-							}
-							args.add(item);
+				// 初始化自定义启动命令
+				String startCommand = service.getStartCommand().trim();
+				//debug模式下
+				if (isDebug) {
+					command.add("/debug.sh");
+					if (StringUtils.isBlank(startCommand)) {
+						startCommand = getBaseImageStartCommand(service.getImgName(), service.getImgVersion());
+					}
+				}
+				if (StringUtils.isNotBlank(startCommand)) {
+					String[] startCommandArray = startCommand.replaceAll("\\s+", " ").replaceAll("/debug.sh", "").trim().split(" ");
+					for (String item : startCommandArray) {
+						if (CollectionUtils.isEmpty(command)) {
+							command.add(item);
+							continue;
 						}
+						args.add(item);
 					}
 				}
             	for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
@@ -1269,6 +1315,7 @@ public class ServiceController {
                 map.put("status", "500");
             }
             else {
+                
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
                 ReplicationController controller = client.getReplicationController(serviceName);
                 String NS = controller.getMetadata().getNamespace();
@@ -1299,6 +1346,7 @@ public class ServiceController {
         catch (Exception ex) {
             map.put("status", 400);
             map.put("msg", ex.getMessage());
+            LOG.error(ex.getMessage());
         }
 
         return JSON.toJSONString(map);

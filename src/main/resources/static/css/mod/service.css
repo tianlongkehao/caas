@@ -856,6 +856,7 @@ i.pushOrg {
 
 i.self_a {
 	color: #676a6c;
+	cursor: no-drop;
 }
 
 /* 闁告柣鍔嶉敓鎴掔劍婢ц法锟界櫢鎷� */
@@ -1045,4 +1046,36 @@ li.line-h-3 span i{
 .fa-code-fork{
 	font-size: 16px;
     color: #337ab7;
+}
+/* debug */
+.docInfo, .cmdInfo, .exportInfo{
+	width:98%;
+	margin: 0 auto;
+}
+.exportInfo{
+	background-color: #fff;
+    min-height: 200px;
+    padding-top: 20px;
+}
+#serviceList tr td a.no-drop{
+	line-height:40px;
+	float:left;
+	cursor:no-drop;
+}
+#serviceList tr td a.a-live{
+	line-height:40px;
+	float:left;
+	color:#3c7bca;
+}
+#serviceList tr td ul.dropdown-menu{
+	margin-top:36px!important;
+}
+#serviceList tr td ul.dropdown-menu li a{
+	margin-left:0px;
+	line-height:20px;
+	width:100%;
+	padding-left:20px;
+}
+#serviceList tr td ul.dropdown-menu li a i{
+	padding-right:8px;
 }
