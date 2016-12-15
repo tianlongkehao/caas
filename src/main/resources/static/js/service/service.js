@@ -948,14 +948,14 @@ function loadServices() {
 								+'</a> '
 							}
 							
-							html += '<ul class="" style="margin-bottom:0px;line-height:40px;" id="'+row.id+'" serviceName="'+row.serviceName+'" imgName="'+row.imgName+'">'+
+							html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="'+row.id+'" serviceName="'+row.serviceName+'" imgName="'+row.imgName+'">'+
 							'<li class="dropdown">'+
 								'<a class="dropdown-toggle a-live" data-toggle="dropdown" style="margin-left: 5px" title="更过配置">'+
 								'<i class="fa fa-gears"></i></a>'+
 								'<ul class="dropdown-menu">'+
 									'<li>';
 							if ( row.status == 6){
-								html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
+								html += '<a id="'+row.id+'_scaleCluster" class="no-drop scaleCluster_a "'+ 
 								'href="javascript:void(0)" title="弹性伸缩"'+
 								'> <i class="fa fa-arrows self_a"></i>弹性伸缩</a>';
 							} else {
@@ -977,7 +977,7 @@ function loadServices() {
 							html +=	'</li>'+
 									'<li>';
 							if ( row.status == 6){
-								html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
+								html += '<a id="'+row.id+'_changeConfiguration" class="no-drop changeConfiguration_a " '+
 								'href="javascript:void(0);" title="更改配置"'+
 								'><i class="fa fa-cog self_a"></i>更改配置</a> '	
 							} else {
