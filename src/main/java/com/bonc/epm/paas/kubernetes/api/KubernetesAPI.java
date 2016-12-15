@@ -39,6 +39,7 @@ import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
+import com.bonc.epm.paas.kubernetes.model.Node;
 import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
@@ -590,5 +591,17 @@ public interface KubernetesAPI {
     @Path("/namespaces/{namespace}/secrets")
     @Consumes(MediaType.APPLICATION_JSON)
     public Secret createSecret(@PathParam("namespace")String namespace, Secret secret) throws KubernetesClientException;
+    
+	/**
+	 * read the specified Node
+	 * 
+	 * @param name
+	 *            name of the node
+	 * @throws KubernetesClientException
+	 */
+	@GET
+	@Path("/nodes/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Node getSpecifiedNode(@PathParam("name") String name) throws KubernetesClientException;
 
 }

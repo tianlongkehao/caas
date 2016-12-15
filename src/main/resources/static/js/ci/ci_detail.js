@@ -641,7 +641,7 @@ function changeBaseImageVersion () {
             		}
             	}
             }
-            $("#baseImageId").append(html);    
+            $("#baseImageId").html(html);    
 		}
 	})
 }

@@ -380,7 +380,7 @@ function getUploadProgress() {
 }
 
 //导出container为image
-function saveAsImage(containerId, nodeName) {
+function saveAsImage(containerId, nodeIP) {
     var version = $('#version').val().trim();
     if(version.length == 0){
 		layer.tips('对不起，镜像版本名不能为空！','#version',{tips: [1, '#3595CC']});
@@ -400,19 +400,19 @@ function saveAsImage(containerId, nodeName) {
     }
     $('.progress-bar-info').text("容器保存中...");
 	$('#myModal').modal('show');
-    $.when(getdata(containerId, nodeName)).done(function(data){
+    $.when(getdata(containerId, nodeIP)).done(function(data){
     	$('#myModal').modal('hide');
     });
 }
 
-function getdata(containerId, nodeName){
+function getdata(containerId, nodeIP){
 	var defer = $.Deferred();
     var imageName = $('#imageName').val();
     var version = $('#version').val().trim();
     $.ajax({
 		url : ctx + "/service/saveAsImage",
 		type: "POST",
-		data:{"containerId":containerId,"nodeName":nodeName,"imageName":imageName,"version":version},
+		data:{"containerId":containerId,"nodeIP":nodeIP,"imageName":imageName,"version":version},
 		success : function(data) {
 			defer.resolve(data);
 			data = eval("(" + data + ")");
