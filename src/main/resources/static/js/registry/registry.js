@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+	$("#delItemcfg").hide();
 	findImages();
     $(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
@@ -116,8 +116,15 @@ $(document).ready(function () {
          		}
          	});
         });
-});
+    
+  
+   
+});/*ready*/
 
+//折叠三角的方向
+function filters(obj){
+	$(obj).find("span.caret").toggleClass('caret-filter');
+}
 
 function findImages(){
 	var index = $("#nav2").val();
@@ -263,42 +270,148 @@ function deleteImage(obj){
 	        }
 	 });
 }
-
+function checkbox(count){
+	// 删除条件筛选中的   全选checkbox 
+    var checkAllItem = '.checkAllItem'+count;
+    var checkItem = '.checkItem'+count;
+    $(checkAllItem).click(function(){
+        $(checkItem).prop('checked',$(checkAllItem).is(":checked"));
+    });
+ 
+    // 删除条件筛选中的  选项
+    $(document).on("click",checkItem, function(){
+        if($(this).is(":checked")){
+            if ($(checkItem+":checked").length == $(checkItem).length) {
+                $(checkAllItem).prop("checked", "checked");
+            }
+        }else{
+            $(checkAllItem).prop('checked', $(this).is(":checked"));
+        }
+    });
+}
 //批量删除镜像
 function delImages(){
-	obj = document.getElementsByName("ids");
-	var imageIds = [];
-    for (k in obj) {
-        if (obj[k].checked) {
-        	imageIds.push(obj[k].value);
-        }
-    }
-    if (imageIds.length <=0) {
-    	layer.msg( "请选择需要删除的镜像", {icon: 2 });
-    	return;
-    }
+	$(".namefiltercon").empty();
+	$(".timefiltercon").empty();
+	var count = 1;
+	$.ajax({
+		url:""+ctx+"/registry/getImagesGroupByName.do",
+		type:"post",
+		success:function(data){
+			data = eval("(" + data + ")");
+			var dataLength = data.imagesGroupByName.length;
+			for(var i = 0; i < dataLength; i++){
+				var imageLength = data.imagesGroupByName[i].length;
+				var imageName = data.imagesGroupByName[i][0].name;
+				var imageHtml = '<div class="panel-group filter" id="accordion'+count+'">'+
+				'<div class="panel panel-success">'+
+				'<div class="panel-heading">'+
+					'<h4 class="panel-title">'+
+						'<input type="checkbox" class="checkAllItem'+count+'">'+
+						'<a data-toggle="collapse" data-parent="#accordion'+count+'" href="#collapseOne'+count+'" onclick="filters(this)" class="imageName">'+
+							'<span class="">'+imageName+'</span><span class="caret caret-filter"></span>'+
+						'</a>'+
+					'</h4>'+
+				'</div>'+
+				'<div id="collapseOne'+count+'" class="panel-collapse collapse in">'+
+					'<div class="panel-body">'+
+						'<ul class="image-version versionList'+count+'">'+
+							
+						'</ul>'+
+					'</div></div></div></div>';
+				$(".namefiltercon").append(imageHtml);
+				var imageList = '';
+				for(var j = 0; j < imageLength; j++){
+					var imageListVersion = data.imagesGroupByName[i][j].version;
+					var imageListId = data.imagesGroupByName[i][j].id;
+					imageList += '<li><input type="checkbox" name="ids" value="'+imageListId+'" class="checkItem'+count+'"><span title="title"><i class="fa fa-tag"></i>&nbsp;'+imageListVersion+'</span></li>';
+				}
+				$('.versionList'+count+'').append(imageList);
+				checkbox(count);
+				count++;
+			}
+		}
+	})
+	$.ajax({
+		url:""+ctx+"/registry/getImagesGroupByMonth.do",
+		type:"post",
+		success:function(data){
+			data = eval("(" + data + ")");
+			var allImages = data.allImages;
+			for(var num=0; num<allImages.length; num++){
+				var images = allImages[num];
+				if(images.length != 0){
+					var image0date = calendarFormat(images[0].createTime);
+					var image0year = image0date.substring(0,4);
+					var image0month = image0date.substring(5,7);
+					var timeImages0Html = '<div class="panel-group filter" id="accordion'+count+'">'+
+					'<div class="panel panel-info">'+
+					'<div class="panel-heading">'+
+						'<h4 class="panel-title">'+
+							'<input type="checkbox" class="checkAllItem'+count+'">'+
+							'<a data-toggle="collapse" data-parent="#accordion'+count+'" href="#collapseOne'+count+'" onclick="filters(this)" class="imageName">'+
+								'<span class="">'+image0year+'年'+image0month+'月</span><span class="caret caret-filter"></span>'+
+							'</a>'+
+						'</h4>'+
+					'</div>'+
+					'<div id="collapseOne'+count+'" class="panel-collapse collapse in">'+
+						'<div class="panel-body">'+
+							'<ul class="image-version timeImageList'+count+'">'+
+								
+							'</ul>'+
+						'</div></div></div></div>';
+					$(".timefiltercon").append(timeImages0Html);
+					var timeImageList = '';
+					for(var m = 0; m < images.length; m++){
+						var timeImagesListName = images[m].name;
+						var timeImagesListVersion = images[m].version;
+						var imageId = images[m].id;
+						timeImageList += '<li><input type="checkbox" name="ids" value="'+imageId+'" class="checkItem'+count+'"><span title="'+timeImagesListName+'">'+timeImagesListName+'</span><br><span class="timeVersion"><i class="fa fa-tag"></i>&nbsp;'+timeImagesListVersion+'</span></li>';
+					}
+					$('.timeImageList'+count+'').append(timeImageList);
+					checkbox(count);
+					count++;
+				}
+			}
+			
+		}
+	})
+	
     layer.open({
-        title: '删除镜像',
-        content: '确定删除镜像？',
-        btn: ['确定', '取消'],
+    	type: 1,
+        title: '批量删除条件',
+        content: $("#delItemcfg"),
+        area: ['880px','690px'],
+        btn: ['确定删除', '取消'],
         yes: function(index, layero){ 
-        	layer.close(index);
+        	obj = document.getElementsByName("ids");
+        	var imageIds = [];
+            for (k in obj) {
+                if (obj[k].checked) {
+                	imageIds.push(obj[k].value);
+                }
+            }
+            if (imageIds.length <=0) {
+            	layer.msg( "请选择需要删除的镜像", {icon: 2 });
+            	return;
+            }
+        	
 			$.ajax({
 				url:""+ctx+"/registry/delImages.do?imageIds="+imageIds,
 				success:function(data){
 					data = eval("(" + data + ")");
 					if(data.status=="200"){
-						layer.alert("镜像删除成功");
-						window.location.reload(true);
+						layer.msg("镜像删除成功", {icon: 1 });
+						setTimeout("window.location.reload(true)",1000);
 					}else{
 						layer.alert("镜像删除失败，请检查服务器连接");
 					}
 
 				}
 			})
+            layer.close(index);
         }
     })
-    
 }
 
 $(function(){
