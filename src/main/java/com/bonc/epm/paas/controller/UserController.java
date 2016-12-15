@@ -1260,7 +1260,7 @@ public class UserController {
             map.put("status", "200");
         }
         catch (Exception e) {
-           LOG.error("创建shera失败");
+           LOG.error("create shera error : " + e.getMessage());
            map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -1282,7 +1282,7 @@ public class UserController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            LOG.error("shera删除错误！");
+            LOG.error("delete shera error : " + e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -1313,7 +1313,7 @@ public class UserController {
         } 
         catch (Exception e) {
             map.put("status", "400");
-            LOG.error("shera删除错误！");
+            LOG.error("delete sheras error : " + e.getMessage());
         }
         return JSON.toJSONString(map); 
     }
@@ -1343,7 +1343,7 @@ public class UserController {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("update shera error" + e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -1376,7 +1376,7 @@ public class UserController {
             }
         }
         catch (Exception e) {
-            LOG.error("更新jdk出错");
+            LOG.error("update JDK error : " + e.getMessage());
             return false;
         }
         return true;
@@ -1401,7 +1401,7 @@ public class UserController {
             map.put("jdkList", jdkList.getItems());
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("get shera detail error : " + e.getMessage());
         }
         return JSON.toJSONString(map);
     }

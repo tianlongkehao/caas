@@ -103,7 +103,7 @@ public class CredentialController {
             result.put("id",ciCodeCredential.getId());
         }
         catch (Exception e) {
-            LOG.error("添加密钥失败");
+            LOG.error("add credential error : " + e.getMessage());
             result.put("status", "400");
         }
         return JSON.toJSONString(result);
@@ -127,7 +127,7 @@ public class CredentialController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            LOG.error("Credential删除失败");
+            LOG.error("delete credential error : " + e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -158,7 +158,7 @@ public class CredentialController {
         } 
         catch (Exception e) {
             map.put("status", "400");
-            LOG.error("Credential删除错误！");
+            LOG.error("delete cerdentials error : " + e.getMessage());
         }
         return JSON.toJSONString(map); 
     }
@@ -191,7 +191,7 @@ public class CredentialController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            LOG.error("更新Credential失败");
+            LOG.error("update credential error : " + e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);

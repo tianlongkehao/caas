@@ -276,7 +276,7 @@ public class CiController {
         try {
             SheraAPIClientInterface client = sheraClientService.getClient();
             JobExecList jobExecList = client.getAllJobs();
-            if (StringUtils.isEmpty(jobExecList)) {
+            if (StringUtils.isEmpty(jobExecList.getItems())) {
                 return cis;
             }
             if (cis.size()!=0 && jobExecList != null) {
@@ -295,6 +295,7 @@ public class CiController {
             }
         }
         catch (Exception e) {
+            LOG.error("find all job data error : " + e.getMessage());
             e.printStackTrace();
         }
         return cis;
@@ -464,7 +465,7 @@ public class CiController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            LOG.error("modifyCodeCi error:"+e.getMessage());
+            LOG.error("modifyCodeCi error : "+e.getMessage());
             map.put("status", "400");
         }
         map.put("data", originCi);
@@ -502,7 +503,7 @@ public class CiController {
         } 
         catch (Exception e) {
             e.printStackTrace();
-            LOG.error("modifyResourceCi error:"+e.getMessage());
+            LOG.error("modifyResourceCi error : "+e.getMessage());
             map.put("status", "500");
             map.put("msg","上传文件出错");
           
@@ -553,7 +554,7 @@ public class CiController {
         } 
         catch (Exception e) {
             e.printStackTrace();
-            LOG.error("modifyResourceCi error:"+e.getMessage());
+            LOG.error("modifyResourceCi error : "+e.getMessage());
             map.put("status", "500");
             map.put("msg","上传文件出错");
             
@@ -602,7 +603,7 @@ public class CiController {
             map.put("type", ci.getType());
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("delete Ci error : " + e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -763,11 +764,12 @@ public class CiController {
                 credentialCheckEntity = client.checkCredential(credentialCheckEntity);
             }
             catch (SheraClientException e) {
+                LOG.error("judge codeUrl by credential error : "+e.getMessage());
                 map.put("status", "400");
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("shera connection error : "+e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -825,7 +827,7 @@ public class CiController {
                 }
             }
             catch (Exception e) {
-                e.printStackTrace();
+                LOG.error("create job error : "+e.getMessage());
                 ciInvokeDao.deleteByCiId(ci.getId());
                 ciDao.delete(ci);
             }
@@ -854,7 +856,7 @@ public class CiController {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("add ciInvoke error : "+e.getMessage());
             return null;
         }
         return ciInvokeList;
@@ -1003,7 +1005,7 @@ public class CiController {
             }
         } 
         catch (Exception e) {
-            LOG.error("uploadImage error:"+e.getMessage());
+            LOG.error("uploadImage error : "+e.getMessage());
             return "redirect:/error"; 
         }
         return "redirect:/registry/1";
@@ -1119,7 +1121,7 @@ public class CiController {
             }
         } 
         catch (Exception e) {
-            LOG.error("modifyResourceCi error:"+e.getMessage());
+            LOG.error("add dockerfileCi error:"+e.getMessage());
             return "redirect:/error"; 
         }
         
@@ -1154,7 +1156,7 @@ public class CiController {
             }
         }
         catch (Exception e) {
-            LOG.error(e.getMessage());
+            LOG.error("find dockerfile baseImage error : "+e.getMessage());
             e.printStackTrace();
         }
         return baseImage;
@@ -1307,12 +1309,11 @@ public class CiController {
                                final SheraClientService sheraClientService,final ImageDao imageDao,
                                final CiDao ciDao,final CiRecordDao ciRecordDao,final HookAndImagesDao hookAndImagesDao) {
         try {
-            SheraAPIClientInterface client = sheraClientService.getClient();
+            final SheraAPIClientInterface client = sheraClientService.getClient();
             JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime);
             jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
             ciRecord.setExecutionId(jobExecViewNew.getSeqNo());
             ciRecordDao.save(ciRecord);
-            final String nameSpace =  CurrentUserUtils.getInstance().getUser().getNamespace();
             //获取执行状态和执行日志
             new Thread() {
                 public void run() {
@@ -1320,18 +1321,16 @@ public class CiController {
                         boolean flag = true;
                         Integer seek = 0;
                         while(flag){
-                            Thread.sleep(10000);
+                            Thread.sleep(5000);
                             JobExecView jobExecView = new JobExecView();
                             Log log = new Log();
                             try {
-                                SheraClientService sheraClientService = new SheraClientService();
-                                SheraAPIClientInterface client = sheraClientService.getclient(nameSpace);
                                 jobExecView = client.getExecution(ci.getProjectName(),ciRecord.getExecutionId());
                                 log = client.getExecLog(ci.getProjectName(),ciRecord.getExecutionId().toString(),seek);
                                 seek = log.getSeek();
                             }
                             catch (Exception e) {
-                                e.printStackTrace();
+                                LOG.error("exec job error : "+e.getMessage());
                             }
                             //执行完成
                             if (jobExecView.getFinished() == 1) {
@@ -1379,7 +1378,7 @@ public class CiController {
                         }
                     }
                     catch (Exception e) {
-                        e.printStackTrace();
+                        LOG.error("exec job error : "+e.getMessage());
                         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
                         ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
                         ciDao.save(ci);
@@ -1419,7 +1418,7 @@ public class CiController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("stop codeCi error : "+e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -1444,7 +1443,7 @@ public class CiController {
             map.put("status", "200");
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("delete codeCi error : "+e.getMessage());
             map.put("status", "400");
         }
         return JSON.toJSONString(map);
@@ -1522,7 +1521,6 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         List<Image> images = imageDao.findByBaseImageVarsionOfName(cUser.getId(), baseImageName);
         map.put("data", images);
-        
         return JSON.toJSONString(map);
     }
 	
@@ -1668,15 +1666,12 @@ public class CiController {
             CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ci.getHookCodeId());
             SheraAPIClientInterface client = sheraClientService.getClient();
             client.deleteGitHooks(ciCodeHook.getName());
-//            hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
-//            ciCodeHookDao.delete(ciCodeHook);
             ci.setIsHookCode(0);
-//            ci.setHookCodeId(0);
             ciDao.save(ci);
             map.put("status", "200");
         }
         catch (Exception e) {
-           e.printStackTrace();
+           LOG.error("delete CodeHook error : "+e.getMessage());
            map.put("status", "400");
         }
         return JSON.toJSONString(map);
