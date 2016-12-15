@@ -1262,8 +1262,13 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
         if (CiConstant.TYPE_CODE.equals(ci.getType())) {
-            ci.setImgNameVersion(DateUtils.getLongStr(startTime));
-            ciRecord.setCiVersion(ci.getImgNameVersion());
+//            ci.setImgNameVersion(DateUtils.getLongStr(startTime));
+            if (StringUtils.isEmpty(ci.getImgNameVersion())) {
+                ciRecord.setCiVersion(DateUtils.getLongStr(startTime));
+            }
+            else {
+                ciRecord.setCiVersion(ci.getImgNameVersion());
+            }
             boolean fetchCodeCiFlag = fetchCodeCi(ci,ciRecord,startTime,sheraClientService,imageDao,ciDao,ciRecordDao,hookAndImagesDao);
             if (!fetchCodeCiFlag) {
                 map.put("status", "500");
