@@ -277,8 +277,17 @@ $(document).ready(function () {
         }
         return false;
     });
+	
+	//镜像信息
+	$(".imageInfoCon").hide()
+	
+	$("#imageInfo").click(function(){
+		$(".imageInfoCon").toggle();
+	})
+		
+	
     
-});
+});/*ready*/
 		
 			
 //单击导入模板，加载模板数据

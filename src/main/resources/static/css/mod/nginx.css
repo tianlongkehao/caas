@@ -66,11 +66,11 @@ i.self_a {
 	border-top: 1px solid #dadada;
 	border-left: 4px solid #dadada;
 	border-right: 1px solid #dadada;
+	border-bottom: 1px solid #dadada;
 }
 .addNginxStepRow .col-sm-12 .ibox-content{
 	border-left: 4px solid #dadada;
 	border-right: 1px solid #dadada;
-	border-bottom: 1px solid #dadada;
 }
 
 

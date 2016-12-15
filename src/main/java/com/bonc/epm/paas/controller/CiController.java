@@ -186,7 +186,7 @@ public class CiController {
         model.addAttribute("menu_flag", "ci");
         return "ci/ci.jsp";
     }
-    
+
     /**
      * Description: <br>
      * 快速构建和dockerfile构建信息的查询

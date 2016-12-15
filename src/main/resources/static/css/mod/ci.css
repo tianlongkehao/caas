@@ -702,3 +702,17 @@ td.autocut{
     -moz-text-overflow: ellipsis;  
     -webkit-text-overflow: ellipsis;
 }
+.imgVersionFA{
+	line-height:34px;
+	margin-left:4px;
+	color:#5cb85c;
+}
+#imageVersion{
+	float: left;
+}
+#imageInfo{
+	margin-left:10px;
+}
+.imgInput{
+	width:40%;
+}

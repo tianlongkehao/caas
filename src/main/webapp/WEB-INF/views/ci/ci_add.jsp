@@ -134,13 +134,28 @@
 	                            <div id="sortable">
 	                            </div>
                             </section>
-                            <h4 class="c-title">镜像信息</h4>
-                            <section class="registryinfo">
+                            <h4 class="c-title">镜像信息<input type="checkbox" id="imageInfo"></h4>
+                            <section class="registryinfo imageInfoCon">
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">镜像名称</label>
 	                                    <input id="imageName" name="imgNameLast" type="text"
-                                                   class="form-control c-project-con reg-input" value="">
+                                                   class="form-control c-project-con reg-input imgInput" value="">
+		                            </div>
+	                            </div>
+	                            <div class="row">
+		                            <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">镜像版本</label>
+	                                    <input id="imageVersion" name="imgVersion" type="text"
+                                                   class="form-control c-project-con reg-input imgInput" value="">
+                                        <i class="fa fa-info-circle imgVersionFA"></i>
+		                            </div>
+	                            </div>
+	                            <div class="row">
+		                            <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">是否基础镜像</label>
+	                                    <input id="isBaseImage" name="isBaseImage" type="checkbox"
+                                                   style="height:26px" value="">
 		                            </div>
 	                            </div>
 	                            <ul class="nav nav-bar">
