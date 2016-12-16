@@ -260,21 +260,25 @@
 					                            <div class="form-group1 col-md-12">
 				                                    <label class="c-project-tit">镜像版本</label>
 				                                    <input id="imgNameVersion" name="imgNameVersion" type="text" placeholder = "填写之后重新构建镜像不会进行迭代，而是覆盖"
-			                                                   class="form-control c-project-con reg-input imgInput" value="">
+			                                                   class="form-control c-project-con reg-input imgInput" value="${ci.imgNameVersion }">
 					                            </div>
 				                            </div>
+				                            
 				                            <div class="row">
-					                            <div class="form-group1 col-md-12">
-				                                    <label class="c-project-tit">是否为基础镜像</label>
-				                                    <input id="isBaseImage" name="isBaseImage" type="checkbox"
+			                                    <div class="form-group1 col-md-12">
+			                                        <label class="c-project-tit">是否为基础镜像</label>
+			                                        <input id="baseImage" name="baseImage" type="checkbox"
 			                                                   style="height:26px" value="">
-					                            </div>
-					                            <div class="form-group1 col-md-12">
-			                                        <label class="c-project-tit">是否为公有镜像</label>
-			                                        <input id="imgType" name="imgType" type="checkbox"
-			                                                   style="height:26px" value="">
+			                                        <input type = "hidden" id = "isBaseImage" name = "isBaseImage" value = "${ci.isBaseImage }">
 			                                    </div>
-				                            </div>
+			                                    <div class="form-group1 col-md-12">
+			                                        <label class="c-project-tit">是否为公有镜像</label>
+			                                        <input id="imageType" name="imageType" type="checkbox"
+			                                                   style="height:26px" value="">
+			                                        <input type = "hidden" id = "imgType" name = "imgType" value = "${ci.imgType }">
+			                                    </div>
+			                                </div>
+				                            
 				                            <ul class="nav nav-bar">
 					                           <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">dockerfile构建方式<span class="caret"></span></a>
 					                              <ul class="dropdown-menu">

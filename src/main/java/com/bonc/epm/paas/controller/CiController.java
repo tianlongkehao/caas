@@ -419,6 +419,7 @@ public class CiController {
         Ci originCi = ciDao.findOne(ci.getId());
         originCi.setProjectName(ci.getProjectName());
         originCi.setImgNameVersion(ci.getImgNameVersion());
+        originCi.setImgNameLast(ci.getImgNameLast());
         originCi.setIsBaseImage(ci.getIsBaseImage());
         originCi.setImgType(ci.getImgType());
         originCi.setDescription(ci.getDescription());
