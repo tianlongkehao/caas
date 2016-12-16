@@ -153,13 +153,15 @@
 	                            <div class="row">
 		                            <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">是否为基础镜像</label>
-	                                    <input id="isBaseImage" name="isBaseImage" type="checkbox"
+	                                    <input id="baseImage" name="baseImage" type="checkbox"
                                                    style="height:26px" value="">
+                                        <input type = "hidden" id = "isBaseImage" name = "isBaseImage" value = "">
 		                            </div>
 		                            <div class="form-group col-md-12">
                                         <label class="c-project-tit">是否为公有镜像</label>
-                                        <input id="imgType" name="imgType" type="checkbox"
+                                        <input id="imageType" name="imageType" type="checkbox"
                                                    style="height:26px" value="">
+                                        <input type = "hidden" id = "imgType" name = "imgType" value = "">
                                     </div>
 	                            </div>
 	                            <ul class="nav nav-bar">

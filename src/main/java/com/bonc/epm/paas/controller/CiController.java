@@ -418,6 +418,9 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         Ci originCi = ciDao.findOne(ci.getId());
         originCi.setProjectName(ci.getProjectName());
+        originCi.setImgNameVersion(ci.getImgNameVersion());
+        originCi.setIsBaseImage(ci.getIsBaseImage());
+        originCi.setImgType(ci.getImgType());
         originCi.setDescription(ci.getDescription());
         originCi.setJdkVersion(ci.getJdkVersion());
         originCi.setCodeType(ci.getCodeType());

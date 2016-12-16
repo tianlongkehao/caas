@@ -686,14 +686,14 @@ function checkCodeCiAdd(editor_one){
 		}
 		
 		//判断是否为基础镜像
-	    if ($("#isBaseImage").prop("checked")) {
+	    if ($("#baseImage").prop("checked")) {
 	    	$("#isBaseImage").val(1);
 	    }
 	    else{
 	    	$("#isBaseImage").val(2);
 	    }
 	    //判断是否为公有镜像
-	    if ($("#imgType").prop("checked")) {
+	    if ($("#imageType").prop("checked")) {
 	    	$("#imgType").val(1);
 	    }
 	    else {
