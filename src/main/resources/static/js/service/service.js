@@ -542,7 +542,7 @@ function oneVersionUpgrade(id,serviceName,imgName,obj) {
 		        var cStatusHtml = "<i class='fa_success'></i>"+
 	                				"升级中"+
 	                				"<img src='"+ctx+"/images/loading4.gif' alt=''/>";
-		        $("#"+id+"_upgradeCluster").parent().parent().find(".cStatusColumn").html(cStatusHtml);
+		        $("#"+id+"_upgradeCluster").parent().parent().parent().parent().parent().parent().find(".cStatusColumn").html(cStatusHtml);
 				 layer.close(index);
 				 var imgVersion1 = $('#imgVersionName').val();
 				 $.ajax({
@@ -950,7 +950,7 @@ function loadServices() {
 							
 							html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="'+row.id+'" serviceName="'+row.serviceName+'" imgName="'+row.imgName+'">'+
 							'<li class="dropdown">'+
-								'<a class="dropdown-toggle a-live" data-toggle="dropdown" style="margin-left: 5px" title="更过配置">'+
+								'<a class="dropdown-toggle a-live" data-toggle="dropdown" style="margin-left: 5px" title="更多配置">'+
 								'<i class="fa fa-gears"></i></a>'+
 								'<ul class="dropdown-menu">'+
 									'<li>';
