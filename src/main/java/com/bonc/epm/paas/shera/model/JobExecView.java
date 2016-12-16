@@ -26,6 +26,7 @@ public class JobExecView {
     private Integer finished;
     private Long startTime;
     private Long endTime;
+    private String imgVersion;
     
     public Integer getSeqNo() {
         return seqNo;
@@ -57,4 +58,11 @@ public class JobExecView {
     public void setEndTime(Long endTime) {
         this.endTime = endTime;
     }
+    public String getImgVersion() {
+        return imgVersion;
+    }
+    public void setImgVersion(String imgVersion) {
+        this.imgVersion = imgVersion;
+    }
+    
 }
