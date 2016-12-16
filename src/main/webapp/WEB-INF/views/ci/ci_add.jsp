@@ -146,17 +146,21 @@
 	                            <div class="row">
 		                            <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">镜像版本</label>
-	                                    <input id="imageVersion" name="imgVersion" type="text"
+	                                    <input id="imgNameVersion" name="imgNameVersion" type="text" placeholder = "填写之后重新构建镜像不会进行迭代，而是覆盖"
                                                    class="form-control c-project-con reg-input imgInput" value="">
-                                        <i class="fa fa-info-circle imgVersionFA"></i>
 		                            </div>
 	                            </div>
 	                            <div class="row">
 		                            <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">是否基础镜像</label>
+	                                    <label class="c-project-tit">是否为基础镜像</label>
 	                                    <input id="isBaseImage" name="isBaseImage" type="checkbox"
                                                    style="height:26px" value="">
 		                            </div>
+		                            <div class="form-group col-md-12">
+                                        <label class="c-project-tit">是否为公有镜像</label>
+                                        <input id="imgType" name="imgType" type="checkbox"
+                                                   style="height:26px" value="">
+                                    </div>
 	                            </div>
 	                            <ul class="nav nav-bar">
 		                           <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">dockerfile构建方式<span class="caret"></span></a>

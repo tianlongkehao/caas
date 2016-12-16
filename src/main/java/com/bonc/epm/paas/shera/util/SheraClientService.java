@@ -192,9 +192,10 @@ public class SheraClientService {
      * @return 
      * @see
      */
-    public JobExecView generateJobExecView(long startTime){
+    public JobExecView generateJobExecView(long startTime,String imgVersion){
         JobExecView jobExecView = new JobExecView();
         jobExecView.setStartTime(startTime);
+        jobExecView.setImgVersion(imgVersion);
         return jobExecView;
     }
     
