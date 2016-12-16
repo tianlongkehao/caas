@@ -331,6 +331,10 @@ $(document).ready(function(){
 			$("#passwordCred").val("");
 		}
 	});
+	//镜像信息
+	$("#imageInfo").click(function(){
+		$(".imageInfoCon").toggle();
+	})
 });/*ready*/
 
 //停止一个构建执行
