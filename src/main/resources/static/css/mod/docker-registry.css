@@ -335,3 +335,40 @@
 	margin-left:10px;
 	cursor: pointer;
 }
+.filter{
+	width:98%;
+	margin: 0 auto;
+}
+.image-version li{
+	float:left;
+	margin-left:15px;
+	width:23%;
+	line-height: 30px;
+	display:block;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.image-version li span{
+	margin-left:5px;
+}
+.caret-filter{
+	transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	-webkit-transform: rotate(-90deg);
+}
+.caret-filter-down{
+	transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	-webkit-transform: rotate(-90deg);
+}
+.imageName span{
+	margin-left:15px;
+}
+.timeVersion{
+	margin-left:18px!important;
+}

@@ -88,7 +88,7 @@
 						                            </a>
 												</div>
 											</div>
-											<div class="ibox-content">
+											<div class="ibox-content" style="display:none">
 												<form class="nginxForm">
 													<div class="nginx-label">
 														<span>upstream</span><input type="text" class="appNameAndNamespace" name="appNameAndNamespace" value="demo-testbonc" disabled>{

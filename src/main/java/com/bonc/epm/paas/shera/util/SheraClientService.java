@@ -15,10 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.entity.CiInvoke;
+import com.bonc.epm.paas.entity.Shera;
+import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
@@ -32,6 +37,7 @@ import com.bonc.epm.paas.shera.model.GitAdvancedConfig;
 import com.bonc.epm.paas.shera.model.GitConfig;
 import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.ImgManager;
+import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.Key;
@@ -48,16 +54,33 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 @Service
 public class SheraClientService {
     
-    @Value("${shera.api.endpoint}")
-    private String endpoint="http://192.168.0.76:8282/";
-    private String username="shera";
-    private String password="shera";
+    private String endpoint="";
+    private String username="";
+    private String password="";
+    
+    @Autowired
+    private SheraDao sheraDao;
     
     public SheraAPIClientInterface getClient() {
+        User user = CurrentUserUtils.getInstance().getUser();
+        Shera shera = new Shera();
+        if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            shera = sheraDao.findByUserId(user.getParent_id());
+        }
+        else {
+            shera = sheraDao.findByUserId(user.getId());
+        }
+        return getClient(shera);
+    }
+    
+    public SheraAPIClientInterface getClient(Shera shera){
         String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        this.endpoint = shera.getSheraUrl();
+        this.username = shera.getUserName();
+        this.password = shera.getPassword();
         return getclient(namespace);
     }
-
+    
     public SheraAPIClientInterface getclient(String namespace) {
         return new SheraAPIClient(endpoint, namespace, username, password,new RestFactory());
     }
@@ -230,6 +253,19 @@ public class SheraClientService {
         return changeGit;
     }
     
+    /**
+     * Description: <br>
+     * 封装jdk数据
+     * @param version 版本
+     * @param path 路径
+     * @return jdk
+     */
+    public Jdk generateJdk(String version,String path){
+        Jdk jdk = new Jdk();
+        jdk.setPath(path);
+        jdk.setVersion(version);
+        return jdk;
+    }
     
 //    public static void main(String[] args) {
 //        SheraClientService sheraClientService = new SheraClientService();
@@ -243,9 +279,10 @@ public class SheraClientService {
 //        SheraClientService sheraClientService = new SheraClientService();
 //        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
 //        try {
-//            JobExecViewList  jobExecViewList = client.getJobAllExecutions("testdemo1");
-//            Log log = client.getExecLog("testdemo3", "1", 2091);
-//            System.out.println(log.getContent());
+//            JdkList jdkList  = client.getAllJdk();
+//            for (Jdk jdk : jdkList) {
+//                System.out.println(jdk.toString());
+//            }
 //            
 ////            JobExecView jobExecView = client.getExecution("testdemo1",1);
 ////            System.out.println(jobExecView);

@@ -67,7 +67,7 @@
                                 <div class="icon-img">
                                     <span><img src="<%=path %>/images/factory_new.svg" alt=""/></span>
                                 </div>
-                                <div class="icon-name">代码构建</div>
+                                <div class="icon-name">镜像构建</div>
                             </div>
                         </a>
                     </li>

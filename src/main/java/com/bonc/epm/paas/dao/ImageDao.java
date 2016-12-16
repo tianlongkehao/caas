@@ -16,8 +16,14 @@ public interface ImageDao extends CrudRepository<Image, Long>{
     @Query("select i from Image i where i.name=?1 and i.isDelete != 1")
 	public List<Image> findByName(String name);
 	
-	@Query("select i from Image i where i.creator=?1 and i.isDelete != 1")
-	public List<Image> findByCreator(long creator);
+    @Query("select i from Image i where i.creator=?1 and i.isDelete != 1")
+    public List<Image> findByCreator(long creator);
+    
+    @Query("select i from Image i where i.creator=?1 and i.isDelete != 1 order by i.name, i.createTime desc")
+    public List<Image> findByCreatorOrderByName(long creator);
+    
+	@Query("select i from Image i where i.creator=?1 and i.isDelete != 1 order by i.createTime desc")
+	public List<Image> findByCreatorOrderByCreatTime(long creator);
 	
 	@Query("select i from Image i where i.id=?1 and i.isDelete != 1")
 	public Image findById(long id);
