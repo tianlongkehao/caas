@@ -562,6 +562,8 @@ public class ServiceDebugController {
 		        image.setIsDelete(CommConstant.TYPE_NO_VALUE);
 		        imageDao.save(image);
 				map.put("status", 200);
+				// 删除本地镜像
+				dockerClient.removeImageCmd(imageId).withForce(true).exec();
 			} else {
 				// 本地镜像push到仓库时失败，删除本地镜像，返回402
 				dockerClient.removeImageCmd(imageId).withForce(true).exec();
