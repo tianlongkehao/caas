@@ -241,7 +241,7 @@ public class ServiceDebugController {
 				directory = ROOT;
 			} else {
 				// 有目标目录时，cd到目标目录获取pwd绝对路径
-				System.out.println(sftp.pwd());
+//				System.out.println(sftp.pwd());
 				sftp.cd(path);
 				sftp.cd(dirName);
 				directory = sftp.pwd();
@@ -463,7 +463,7 @@ public class ServiceDebugController {
 				while ((length = in.read(temp)) != -1) {
 					out.write(temp, 0, length);
                     progress.setRead(progress.getRead() + length);
-                    System.out.println(progress.getProgress());
+//                    System.out.println(progress.getProgress());
 				}
 				out.flush();
 				out.close();
@@ -488,7 +488,7 @@ public class ServiceDebugController {
 	 * @see
 	 */
 
-	@RequestMapping(value = { "service/getUploadProgress" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "service/getUploadProgress" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getUploadProgress(@RequestParam String uuid) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -496,7 +496,7 @@ public class ServiceDebugController {
 		if (progress != null) {
 			map.put("progress", (int)(progress.getProgress()*100) + "%");
 		} else {
-			map.put("progress", 0);
+			map.put("progress", "0%");
 		}
 		map.put("status", "200");
 		return JSON.toJSONString(map);
@@ -562,6 +562,8 @@ public class ServiceDebugController {
 		        image.setIsDelete(CommConstant.TYPE_NO_VALUE);
 		        imageDao.save(image);
 				map.put("status", 200);
+				// 删除本地镜像
+				dockerClient.removeImageCmd(imageId).withForce(true).exec();
 			} else {
 				// 本地镜像push到仓库时失败，删除本地镜像，返回402
 				dockerClient.removeImageCmd(imageId).withForce(true).exec();

@@ -66,7 +66,7 @@ function creatable(isDir, dirName) {
 				// alert(data);
 				var data = eval("(" + data + ")");
 				if (data.status == "400") {
-					failedMSG("没有找到相应的目录", true);
+					failedMSG("连接超时，请刷新页面", false);
 					return;
 				}
 				$("#scp-path").val(data.path);
@@ -293,8 +293,11 @@ function fileUpload() {
 			});
 			if (flag == 0) {
 				layer.closeAll();
-				upload(formData);
-				getUploadProgress();
+				$('.progress-bar-info').text("文件上传中...");
+				$('#myModal').modal('show');
+//				upload(formData);
+//				getUploadProgress();
+				UpladFile();
 			} else {
 				layer.msg('存在同名的文件，确定要覆盖吗？', {
 					icon : 7,
@@ -303,8 +306,10 @@ function fileUpload() {
 					yes : function(index) {
 						layer.closeAll();
 						$('.progress-bar-info').text("文件上传中...");
-						upload(formData);
-						getUploadProgress();
+						$('#myModal').modal('show');
+//						upload(formData);
+//						getUploadProgress();
+						UpladFile();
 					}
 				});
 			}
@@ -314,9 +319,6 @@ function fileUpload() {
 
 //上传文件的方法
 function upload(formData) {
-	$('.progress-bar-info').text("文件上传中...");
-	$('#myModal').modal('show');
-	setTimeout("",500);
     $.when(uploadAjax(formData)).done(function(data){
 		var data = eval("(" + data + ")");
 		if ("200" == data.status) {
@@ -335,6 +337,7 @@ function uploadAjax(formData){
 	$.ajax({
 		type : 'POST',
 		url : ctx + '/service/uploadFile',
+		async: true,
 		data : formData,
 		cache : false,
 		contentType : false,
@@ -347,30 +350,33 @@ function uploadAjax(formData){
 }
 //获取文件上传的进度
 function getUploadProgress() {
+	$('.progress-bar-info').text("文件转送至容器中...");
+    $.when(getUploadProgressAjax()).done(function(data){
+    });
+}
+//获取文件上传的进度的ajax请求
+function getUploadProgressAjax() {
 	var defer = $.Deferred();
-	var formData = new FormData($("#form1")[0]);
+	var uuid = $('#uuid').val();
 	$.ajax({
-		type : 'POST',
-		url : ctx + '/service/getUploadProgress',
-		data : formData,
-		cache : false,
-		contentType : false,
-		processData : false,
+		type : 'GET',
+		async: true,
+		url : ctx + '/service/getUploadProgress?uuid='+uuid,
 		success : function(data) {
 			var data = eval("(" + data + ")");
 			if ("200" == data.status) {
-				$('.progress-bar-info').text("文件上传中"+data.progress+"...");
+				$('.progress-bar-info').text("文件转送至容器中"+data.progress+"...");
 				if (data.progress != "100%") {
-					setTimeout("getUploadProgress()",500);
+					setTimeout("getUploadProgressAjax()",500);
 				} else {
-		        	$('#myModal').modal('hide');
-					creatable(null, ".");
 					layer.closeAll();
-					defer.resolve(data);
+			    	$('#myModal').modal('hide');
+					creatable(null, ".");
+//					defer.resolve(data);
 				}
 			} else {
 	        	$('#myModal').modal('hide');
-				failedMSG("上传进度获取失败！", true);
+				failedMSG("文件转送进度获取失败！", true);
 			}
 
 		}
@@ -466,3 +472,39 @@ function generateUUID(){
     });
     return uuid;
 };
+
+
+function UpladFile() {
+	var fileObj = document.getElementById("file").files[0]; // js 获取文件对象
+	var FileController = ctx + '/service/uploadFile'; // 接收上传文件的后台地址 
+
+	// FormData 对象
+	var form = new FormData($("#form1")[0]);
+	// XMLHttpRequest 对象
+	var xhr = new XMLHttpRequest();
+	xhr.open("post", FileController, true);
+	xhr.onload = function() {
+		// alert("上传完成!");
+	};
+
+	xhr.upload.addEventListener("progress", progressFunction, false);
+	xhr.send(form);
+}
+
+function progressFunction(evt) {
+//	var progressBar = document.getElementById("progressBar");
+//	var percentageDiv = document.getElementById("percentage");
+	if (evt.lengthComputable) {
+//		progressBar.max = evt.total;
+//		progressBar.value = evt.loaded;
+		var progress = Math.round(evt.loaded / evt.total * 100)
+				+ "%";
+		$('.progress-bar-info').text("文件上传中"+progress+"...");
+		if (evt.loaded == evt.total) {
+			setTimeout("getUploadProgress()",1000);
+		}
+	}
+}  
+
+
+
