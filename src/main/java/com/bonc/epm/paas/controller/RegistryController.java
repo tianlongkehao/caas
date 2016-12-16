@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.lucene.util.CollectionUtil;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +48,7 @@ import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.ResultPager;
 
 /**
@@ -575,6 +581,102 @@ public class RegistryController {
 				};
 			}
 		}
+		maps.put("status", "200");
+		return JSON.toJSONString(maps);
+	}
+	
+	/**
+	 * 
+	 * Description:
+	 * 获取创建者按镜像名称分组的镜像 
+	 * @see
+	 */
+	@RequestMapping("registry/getImagesGroupByName.do")
+	@ResponseBody
+	public String getImagesGroupByName() {
+		long creator = CurrentUserUtils.getInstance().getUser().getId();
+		Map<String, Object> maps = new HashMap<String, Object>();
+		//获取所有的镜像
+		List<Image> imageList = imageDao.findByCreatorOrderByName(creator);
+		//用于存放分组后所有的镜像
+		List<Object> images = new ArrayList<>();
+		String lastImageName= null;
+		List<Image> sameNameImages = new ArrayList<Image>();
+		for (Image image : imageList) {
+			//镜像名和上一个镜像名不同，且上个镜像不是空的时候
+			if (!image.getName().equals(lastImageName) && CollectionUtils.isNotEmpty(sameNameImages)) {
+				images.add(sameNameImages);
+				sameNameImages = new ArrayList<Image>();
+			}
+			lastImageName = image.getName();
+			sameNameImages.add(image);
+		}
+		images.add(sameNameImages);
+		maps.put("imagesGroupByName", images);
+		maps.put("status", "200");
+		return JSON.toJSONString(maps);
+	}
+	
+    /**
+     * 
+     * Description:
+     * 获取创建者按创建月份分组的镜像 
+     * @see
+     */
+	@RequestMapping("registry/getImagesGroupByMonth.do")
+    @ResponseBody
+	public String getImagesGroupByMonth() {
+		long creator = CurrentUserUtils.getInstance().getUser().getId();
+		Map<String, Object> maps = new HashMap<String, Object>();
+		//获取该用户的所有镜像
+		List<Image> imageList = imageDao.findByCreatorOrderByCreatTime(creator);
+		//获取当前的时间
+		Calendar calendar = Calendar.getInstance();
+		
+		//当月月份yyyyMM
+		String Period = DateUtils.getDate2SStr3(calendar.getTime());
+		//上一个月月份yyyyMM
+		calendar.add(Calendar.MONTH, -1);
+		String Period1 = DateUtils.getDate2SStr3(calendar.getTime());
+		//上两个月月份yyyyMM
+		calendar.add(Calendar.MONTH, -1);
+		String Period2 = DateUtils.getDate2SStr3(calendar.getTime());
+		//用于存放所有的分组
+		List<Object> allImages = new ArrayList<>();
+		//用于存放当月的镜像
+		List<Image> images = new ArrayList<Image>();
+		//用于存放上一个月的镜像
+		List<Image> images1 = new ArrayList<Image>();
+		//用于存放上两个月的镜像
+		List<Image> images2 = new ArrayList<Image>();
+		//用于存放更早的的镜像
+		List<Image> images3 = new ArrayList<Image>();
+		
+		for (Image image : imageList) {
+			//获取格式化的镜像创建时间yyyyMM
+			String creatTime = DateUtils.getDate2SStr3(image.getCreateTime());
+			//根据月份放入对应的集合
+			if (creatTime.equals(Period)) {
+				images.add(image);
+				continue;
+			} else if (creatTime.equals(Period1)) {
+				images1.add(image);
+				continue;
+			} else if (creatTime.equals(Period2)) {
+				images2.add(image);
+				continue;
+			} else {
+				images3.add(image);
+			}
+		}
+		allImages.add(images);
+		allImages.add(images1);
+		allImages.add(images2);
+		allImages.add(images3);
+		maps.put("allImages", allImages);
+//		maps.put("images1", images1);
+//		maps.put("images2", images2);
+//		maps.put("images3", images3);
 		maps.put("status", "200");
 		return JSON.toJSONString(maps);
 	}
