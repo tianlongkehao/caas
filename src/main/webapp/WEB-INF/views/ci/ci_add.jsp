@@ -51,6 +51,7 @@
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">JDK</label>
 	                                    <select id="jdk-version" autocomplete = 'off' name="jdkVersion" class="form-control c-project-con">
+	                                       <option value="">system</option>
 	                                       <c:forEach items="${jdkList}" var="jdk">
 	                                    	  <option value="${jdk.version }">${jdk.version }</option>
 	                                       </c:forEach>
