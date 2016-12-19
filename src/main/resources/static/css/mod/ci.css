@@ -365,7 +365,26 @@ td .dockerfileinput {
     width: 40%;
     height: 50px;
 }
-
+.event-stop {
+    width: 30px;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    float: right;
+    margin-top: 7px;
+    margin-left: 1px;
+    cursor: pointer;
+}
+.event-del {
+    width: 30px;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    float: right;
+    margin-top: 5px;
+    margin-left: 1px;
+    cursor: pointer;
+}
 .event-sign {
     width: 50px;
     display: inline-block;
@@ -639,4 +658,61 @@ textarea.c-project-con{
 }
 .ci-quick-baseImage select#baseImageName{
 	width: 218px;
+}
+/* shera */
+
+#jdkPaht{
+	margin-left: 5px;
+}
+.addJDK{
+	line-height: 34px;
+    margin-left: 12px;
+    font-size: 20px;
+    color: #3c7bca;
+}
+.createjdk {
+    background: #e4eaec;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 16px;
+    color: #3f8ec3;
+    cursor: pointer;
+    margin-top: -20px;
+    width: 76%;
+    float: right;
+    margin-right: 31px;
+}
+.jdkCon thead{
+	background: #E4EAEC;
+}
+.jdkName, .jdkPath{
+	width:96%;
+}
+td.autocut{
+	width:350px; 
+	line-height:40px!important;
+	display:block; 
+    overflow:hidden;  
+    white-space:nowrap;  
+    text-overflow:ellipsis;  
+    -o-text-overflow:ellipsis;  
+    -icab-text-overflow: ellipsis;  
+    -khtml-text-overflow: ellipsis;  
+    -moz-text-overflow: ellipsis;  
+    -webkit-text-overflow: ellipsis;
+}
+.imgVersionFA{
+	line-height:34px;
+	margin-left:4px;
+	color:#5cb85c;
+}
+#imageVersion{
+	float: left;
+}
+#imageInfo{
+	margin-left:10px;
+}
+.imgInput{
+	width:40%;
 }

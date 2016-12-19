@@ -55,6 +55,11 @@ public class CiRecord {
 	 * 构建结果：1成功2失败3构建中
 	 */
     private Integer constructResult;
+    
+    /**
+     * 代码构建的seqNo
+     */
+    private Integer executionId;
 	
 	/**
 	 * 构建日志
@@ -111,6 +116,14 @@ public class CiRecord {
         this.constructResult = constructResult;
     }
 	
+    public Integer getExecutionId() {
+        return executionId;
+    }
+
+    public void setExecutionId(Integer executionId) {
+        this.executionId = executionId;
+    }
+
     public String getLogPrint() {
         return logPrint;
     }

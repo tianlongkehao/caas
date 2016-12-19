@@ -530,3 +530,6 @@ table.dataTable thead .sorting:after {
 .fa-info-circle,.fa-edit, .fa-save, .fa-times{
     cursor: pointer;
 }
+.ibox-tools{
+	font-size: 16px;
+}

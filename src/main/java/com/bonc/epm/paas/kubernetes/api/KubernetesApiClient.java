@@ -16,6 +16,7 @@ import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
+import com.bonc.epm.paas.kubernetes.model.Node;
 import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
@@ -401,8 +402,17 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
     @Override
     public Endpoints updateEndpoints(String name, Endpoints endpoints) throws KubernetesClientException {
+    	try {
+    		return api.updateEndpoints(namespace, name, endpoints);
+    	} catch (WebApplicationException e) {
+    		throw new KubernetesClientException(e);
+    	}
+    }
+    
+    @Override
+    public Node getSpecifiedNode(String name) throws KubernetesClientException {
         try {
-            return api.updateEndpoints(namespace, name, endpoints);
+            return api.getSpecifiedNode(name);
         } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
         }

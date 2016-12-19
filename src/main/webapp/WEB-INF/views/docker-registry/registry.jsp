@@ -52,7 +52,7 @@
 												<th style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" class="chkAll" id="checkallbox" /></th>
 												<th style="width: 15%; text-indent: 10px;">名称</th>
-												<th style="width: 15%; text-indent: 5px;">版本</th>
+												<th style="width: 15%; text-indent: 8px;">版本</th>
 												<th style="width: 15%; text-indent: 8px;">镜像信息</th>
 												<th style="width: 15%; text-indent: 5px;">创建人</th>
 												<th style="width: 20%; text-indent: 10px;">创建时间</th>
@@ -135,19 +135,137 @@
 											</tr>
 										</tfoot>
 									</table>
-                                   <input type = "hidden" value = "${userId }" id = "userId"> 
+                                   <input type = "hidden" value = "${userId }" id = "userId">
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+			
 		</article>
+	</div>
+	<div id="delItemcfg" style="display:none;min-height:200px;max-height:690px;">
+	
+		<div class="panel-group" id="namefilter">
+			<div class="panel panel-success">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion" 
+						   href="#collapseOne" onclick="filters(this)">
+							<span class="">按名称筛选</span><span class="caret caret-filter"></span>
+						</a>
+					</h4>
+				</div>
+				<div id="collapseOne" class="panel-collapse collapse in">
+					<div class="panel-body namefiltercon">
+						<!-- <div class="panel-group filter" id="accordion1">
+							<div class="panel panel-success">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<input type="checkbox" class="checkAllItem1">
+										<a data-toggle="collapse" data-parent="#accordion1" 
+										   href="#collapseOne1" onclick="filters(this)">
+											<span class="">demo1</span><span class="caret caret-filter"></span>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseOne1" class="panel-collapse collapse in">
+									<div class="panel-body">
+										<ul class="image-version">
+											<li><input type="checkbox" class="checkItem1"><span title="title">v19v1-555-55-7v1-555-55-7v1-555-55-7v1-555-55-7</span></li>
+											<li><input type="checkbox" class="checkItem1"><span title="title">v1-555-55-7</span></li>
+											<li title="title"><input type="checkbox" class="checkItem1"><span>v144444</span></li>
+											<li title="title"><input type="checkbox" class="checkItem1"><span>v1-155-555-5</span></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div> -->
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="panel-group" id="timefilter">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#timefilter" 
+						   href="#timeOne" onclick="filters(this)">
+							<span class="">按时间筛选</span><span class="caret caret-filter"></span>
+						</a>
+					</h4>
+				</div>
+				<div id="timeOne" class="panel-collapse collapse in">
+					<div class="panel-body timefiltercon">
+						<!-- <div class="panel-group filter" id="timeAccordion1">
+							<div class="panel panel-info">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<input type="checkbox">
+										<a data-toggle="collapse" data-parent="#timeAccordion1" 
+										   href="#timecollapseOne1" onclick="filters(this)">
+											<span class="">一个月前</span><span class="caret caret-filter"></span>
+										</a>
+									</h4>
+								</div>
+								<div id="timecollapseOne1" class="panel-collapse collapse in">
+									<div class="panel-body">
+										<ul class="image-version">
+											<li><input type="checkbox"><span>name</span><br><span>nv19</span></li>
+											<li><input type="checkbox"><span>name+v1-555-55-7</span></li>
+											<li><input type="checkbox"><span>name+v144444</span></li>
+											<li><input type="checkbox"><span>name+v1-155-555-5</span></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div> -->
+						<!-- <div class="panel-group filter" id="timeAccordion2">
+							<div class="panel panel-info">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<input type="checkbox">
+										<a data-toggle="collapse" data-parent="#timeAccordion2" 
+										   href="#timecollapseOne2" onclick="filters(this)">
+											<span class="">两个月前</span><span class="caret caret-filter"></span>
+										</a>
+									</h4>
+								</div>
+								<div id="timecollapseOne2" class="panel-collapse collapse in">
+									<div class="panel-body">
+										<ul class="image-version">
+											<li><input type="checkbox"><span>name+v19</span></li>
+											<li><input type="checkbox"><span>name+v1-555-55-7</span></li>
+											<li><input type="checkbox"><span>name+v144444</span></li>
+											<li><input type="checkbox"><span>name+v1-155-555-5</span></li>
+											<li><input type="checkbox"><span>name+v19</span></li>
+											<li><input type="checkbox"><span>name+v1-555-55-7</span></li>
+											<li><input type="checkbox"><span>name+v144444</span></li>
+											<li><input type="checkbox"><span>name+v1-155-555-5</span></li>
+											<li><input type="checkbox"><span>name+v19</span></li>
+											<li><input type="checkbox"><span>name+v1-555-55-7</span></li>
+											<li><input type="checkbox"><span>name+v144444</span></li>
+											<li><input type="checkbox"><span>name+v1-155-555-5</span></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			/* $('.dataTables-example').dataTable( {
-		        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
+			    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
 			}); */
 			$("#checkallbox").parent().removeClass("sorting_asc");
 		})

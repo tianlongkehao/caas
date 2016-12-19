@@ -9,8 +9,6 @@
 	href="<%=path%>/css/mod/service.css" />
 <script type="text/javascript"
 	src="<%=path%>/js/service/service-detail.js"></script>
-<script type="text/javascript"
-	src="<%=path%>/js/service/laydate/laydate.js"></script>
 </head>
 <body>
 
@@ -47,7 +45,7 @@
 							<c:if test="${service.status==1 }">
 								<li>运行状态：未启动</li>
 							</c:if>
-							<c:if test="${service.status==2||service.status==3 }">
+							<c:if test="${service.status==2||service.status==3||service.status==6 }">
 								<li>运行状态：正在运行</li>
 							</c:if>
 							<c:if test="${service.status==4 }">
@@ -143,6 +141,14 @@
 									   <input id="serviceName" name="serviceName" type="text" value=${service.serviceName } />
 									</span>
 									</td>
+									<c:if test="${service.serviceChName == '' }">
+									<td>服务中文名称：未设置</td>
+									</c:if>
+									<c:if test="${service.serviceChName != '' }">
+									<td>服务中文名称：${service.serviceChName }</td>
+									</c:if>
+								</tr>
+								<tr>
 									<c:if test="${service.status==1 }">
 										<td>运行状态：未启动</td>
 									</c:if>
@@ -152,9 +158,12 @@
 									<c:if test="${service.status==4 }">
 										<td>运行状态：已停止</td>
 									</c:if>
+									<c:if test="${service.status==6 }">
+										<td>运行状态：调试中</td>
+									</c:if>
+									<td>镜像名称：${service.imgName } : ${service.imgVersion }</td>
 								</tr>
 								<tr>
-									<td>镜像名称：${service.imgName } : ${service.imgVersion }</td>
 									<td>创建时间：${service.createDate }</td>
 								</tr>
 							</tbody>
@@ -210,7 +219,20 @@
                       type="checkbox"  name="proxyZone"
                       value="dmz"> DMZ区
                    </label> 
+                  </c:if>
+                  
+                  <c:if test="${fn:contains(service.proxyZone,'dmz1')==true}">
+                   <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz1" checked="checked"> DMZ1区
+                   </label> 
                   </c:if> 
+                  <c:if test="${fn:contains(service.proxyZone,'dmz1')==false}">
+                   <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz1"> DMZ1区
+                   </label> 
+                  </c:if>  
                  
                   <c:if test="${fn:contains(service.proxyZone,'user')==true}">
                   <label class="checkbox-inline"> <input
@@ -242,6 +264,19 @@
                    <label class="checkbox-inline"> <input
                       type="checkbox"  name="proxyZone"
                       value="dmz"> DMZ区
+                   </label> 
+                  </c:if>
+                  
+                  <c:if test="${fn:contains(service.proxyZone,'dmz1')==true}">
+                   <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz1" checked="checked"> DMZ1区
+                   </label> 
+                  </c:if> 
+                  <c:if test="${fn:contains(service.proxyZone,'dmz1')==false}">
+                   <label class="checkbox-inline"> <input
+                      type="checkbox"  name="proxyZone"
+                      value="dmz1"> DMZ1区
                    </label> 
                   </c:if> 
                  
@@ -430,7 +465,7 @@
 										<c:if test="${service.status==1 }">
 											<td>waiting</td>
 										</c:if>
-										<c:if test="${service.status==2||service.status==3 }">
+										<c:if test="${service.status==2||service.status==3||service.status==6 }">
 											<td>Running</td>
 										</c:if>
 										<c:if test="${service.status==4 }">
@@ -615,9 +650,16 @@
 								<i id="fullScreen" class="fa fa-expand margin cursor" title="满屏"></i>
 							</div>
 						</div>
-						<div id="containerlogList" class="weblog">
-							 
-						</div>
+<!--                         <div id="containerlogList" class="weblog">
+                        
+                        </div> -->
+                        <div class='containerlogList weblog' style='overflow: auto;margin-top:10px;background-color:black;color: #37fc34'>
+                            <pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">
+                                   <span class='printLogSpan' style="overflow: hidden; float: left;"></span>
+                            </pre>
+                        </div>
+                        
+                        
 						<input id="serviceInstances" type="hidden" value="">
 						<input id="creationTime" type="hidden" value="${service.createDate }">
 					</div>

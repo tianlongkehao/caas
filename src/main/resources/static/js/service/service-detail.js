@@ -392,7 +392,7 @@ var sinceTime;
 var interval;
 function clearLog() {
 	sinceTime = new Date().Format("yyyy-MM-ddThh:mm:ss.000000000Z")
-	$("#containerlogList").html("");
+	//$("#containerlogList").html("");
 	getCurrentPodlogs();
 	clearInterval(interval);
 	interval = setInterval("getCurrentPodlogs()",5000);
@@ -403,7 +403,7 @@ function dropdownLog(obj){
 		$(".dropdown-pod").removeClass("bgcolor");
 	});
 	$(obj).addClass("bgcolor");
-	$("#containerlogList").html("");
+	//$("#containerlogList").html("");
 	clearInterval(interval);
 	if(obj != null){
 		$('#podName').val($(obj).attr("podName"));
@@ -419,18 +419,21 @@ function dropdownLog(obj){
 			if(data.status == '200' && data.logStr != ""){
 				
 				var containerlog = data.logStr;
-				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
+/*				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
 					+ containerlog
 				+ '</pre>'
 				
 				$("#containerlogList").html("");
-				$("#containerlogList").html(html);
+				$("#containerlogList").html(html);*/
+				$(".printLogSpan").html(containerlog);
+				
 			}else{
-				var html = '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;"> 该实例没有产生日志。</pre>'
+/*				var html = '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;"> 该实例没有产生日志。</pre>'
 				$("#containerlogList").html("");
-				$("#containerlogList").html(html);	
+				$("#containerlogList").html(html);*/
+				$(".printLogSpan").html("该实例没有产生日志。");
 			}
-			
+			   $(".printLogSpan").parent().parent().scrollTop($(".printLogSpan").parent().parent()[0].scrollHeight);
 			}
 	})
 }
@@ -445,6 +448,29 @@ function getCurrentPodlogs(){
 			if(data.status == '200' && data.logStr != ""){
 				
 				var containerlog = data.logStr;
+/*				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
+					+ containerlog
+				+ '</pre>'
+				
+				$("#containerlogList").html("");
+				$("#containerlogList").html(html);*/
+				$(".printLogSpan").html(containerlog);
+				
+			}else{
+/*				var html = '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;"> 该实例没有产生日志。</pre>'
+				$("#containerlogList").html("");
+				$("#containerlogList").html(html);*/
+				$(".printLogSpan").html("该实例没有产生日志。");
+			}
+			   $(".printLogSpan").parent().parent().scrollTop($(".printLogSpan").parent().parent()[0].scrollHeight);
+			
+			
+			
+			
+/*			data = $.parseJSON(data);
+			if(data.status == '200' && data.logStr != ""){
+				
+				var containerlog = data.logStr;
 				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
 					+ containerlog
 				+ '</pre>'
@@ -455,7 +481,7 @@ function getCurrentPodlogs(){
 				var html = '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">实时刷新中，当前无新日志产生。</pre>'
 				$("#containerlogList").html("");
 				$("#containerlogList").html(html);
-			}
+			}*/
 			
 			}
 	})

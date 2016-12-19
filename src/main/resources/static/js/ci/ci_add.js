@@ -213,6 +213,7 @@ $(document).ready(function () {
 	//添加认证按钮
 	$("#addCredentialsCon").hide();
 	$(document).on('click','#addCredentialsBtn',function(){
+		delData();
 		layer.open({
 			type : 1,
 			title : '添加认证',
@@ -220,45 +221,28 @@ $(document).ready(function () {
 			btn : [ '添加', '取消' ],
 			scrollbar:false,
 			yes:function(index, layero){
-				var type = $("#CredentialsType").val();
+				if (!judgeCredData()) {
+	        		return;
+	        	}
+	        	var type = $("#CredentialsType").val();
 				var username = $("#userNameCred").val();
 				var password = $("#passwordCred").val();
 				var privateKey = $("#SSHpasswordCred").val();
-				if (!username || username.length < 1) {
-			    	layer.tips('用户名不能为空','#userNameCred',{tips:[1,'#3595CC']});
-			    	$("#userNameCred").focus();
-			    	return;
-				}
-				var code = "";
-				if (type == 1 ) {
-					code = "HTTP";
-					if (!password || password.length < 1) {
-				    	layer.tips('密码不能为空','#passwordCred',{tips:[1,'#3595CC']});
-				    	$("#passwordCred").focus();
-				    	return;
-					}
-				}
-				if (type == 2 ) {
-					code = "SSH";
-					if (!privateKey || privateKey.length < 1) {
-						layer.tips('密钥不能为空','#SSHpasswordCred',{tips:[1,'#3595CC']});
-						$("#SSHpasswordCred").focus();
-						return;
-					}
-				}
+				var remark = $("#keyRemark").val();
+				var code = type==1?"HTTP":"SSH";
 				$.ajax({
-					url : ctx + "/ci/addCredential.do",
-					type : "POST",
+					url : ctx + "/secret/addCredential.do",
 					data : {
 						"type" : type,
 						"userName" : username,
 						"password" : password,
-						"privateKey" : privateKey
+						"privateKey" : privateKey,
+						"remark" : remark
 					},
 					success : function(data) {
 						data = eval("(" + data + ")");
 						if (data.status == "200") {
-							var html = "<option value='"+data.id+"'>"+username+"("+code+")"+"</option>"
+							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>"
 							$("#codeCredentials").append(html);
 							layer.alert("代码认证导入成功");
 							layer.close(index);
@@ -268,7 +252,6 @@ $(document).ready(function () {
 					}
 				});
 			}
-			
 		})
 	});
 	//选择认证类型
@@ -294,8 +277,17 @@ $(document).ready(function () {
         }
         return false;
     });
+	
+	//镜像信息
+	$(".imageInfoCon").hide()
+	
+	$("#imageInfo").click(function(){
+		$(".imageInfoCon").toggle();
+	})
+		
+	
     
-});
+});/*ready*/
 		
 			
 //单击导入模板，加载模板数据
@@ -675,33 +667,116 @@ function checkCodeCiAdd(editor_one){
     json = '[' + json + ']';
     $("#jsonData").val(json);
     
-    var imageName = $("#imageName").val();
-	if(!imageName || imageName.length < 1){
-		layer.tips('镜像名称不能为空','#imageName',{tips: [1, '#3595CC']});
-		$('#imageName').focus();
-		return;
-    }
-    
-    //doackerFile文件路径的判断
-	var dockerFileLocation = $("#dockerFileLocation").val();
-	if (dockerFileLocation != undefined) {
-		if(!dockerFileLocation || dockerFileLocation.length < 1){
-			layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
-			$('#dockerFileLocation').focus();
+    if ($("#imageInfo").prop("checked")) {
+    	var imageName = $("#imageName").val();
+		if(!imageName || imageName.length < 1){
+			layer.tips('镜像名称不能为空','#imageName',{tips: [1, '#3595CC']});
+			$('#imageName').focus();
 			return;
+	    }
+		var imgNameVersion = $("#imgNameVersion").val();
+		if (imgNameVersion || imageName.length > 0) {
+			if(imgNameVersion.search(/^[A-Za-z0-9-_]*$/) === -1){
+				layer.tips('镜像版本只能由字母、数字、横线和下划线组成', '#imgNameVersion', {
+					tips: [1, '#0FA6D8'] //还可配置颜色
+				});
+				$('#imgNameVersion').focus();
+				return false;
+			}
 		}
-	}
-	
-	if (editor_one != null) {
-		var dockerFile = editor_one.getValue();
-		if (dockerFile != undefined) {
-			if(!dockerFile || dockerFile.length < 1){
-				layer.tips('dockerfile模板不能为空','#dockerFiles',{tips: [1, '#3595CC']});
-				$('#dockerFiles').focus();
+		
+		//判断是否为基础镜像
+	    if ($("#baseImage").prop("checked")) {
+	    	$("#isBaseImage").val(1);
+	    }
+	    else{
+	    	$("#isBaseImage").val(2);
+	    }
+	    //判断是否为公有镜像
+	    if ($("#imageType").prop("checked")) {
+	    	$("#imgType").val(1);
+	    }
+	    else {
+	    	$("#imgType").val(2);
+	    }
+	    
+	    //doackerFile文件路径的判断
+		var dockerFileLocation = $("#dockerFileLocation").val();
+		if (dockerFileLocation != undefined) {
+			if(!dockerFileLocation || dockerFileLocation.length < 1){
+				layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
+				$('#dockerFileLocation').focus();
 				return;
 			}
 		}
-	}
+		if (editor_one != null) {
+			var dockerFile = editor_one.getValue();
+			if (dockerFile != undefined) {
+				if(!dockerFile || dockerFile.length < 1){
+					layer.tips('dockerfile模板不能为空','#dockerFiles',{tips: [1, '#3595CC']});
+					$('#dockerFiles').focus();
+					return;
+				}
+			}
+		}
+    }
+    else {
+    	$("#imageName").val("");
+    	$("#imgNameVersion").val("");
+    	$("#dockerFileLocation").val("");
+    	if (editor_one != null) {
+    		editor_one.setValue("");
+    	}
+    }
+    
     return true;
 }
+
+//数据格式判断
+function judgeCredData(){
+	var type = $("#CredentialsType").val();
+	var username = $("#userNameCred").val();
+	var password = $("#passwordCred").val();
+	var privateKey = $("#SSHpasswordCred").val();
+	var remark = $("#keyRemark").val();
+	if (!username || username.length < 1) {
+    	layer.tips('用户名不能为空','#userNameCred',{tips:[1,'#3595CC']});
+    	$("#userNameCred").focus();
+    	return;
+	}
+	var code = "";
+	if (type == 1 ) {
+		code = "HTTP";
+		if (!password || password.length < 1) {
+	    	layer.tips('密码不能为空','#passwordCred',{tips:[1,'#3595CC']});
+	    	$("#passwordCred").focus();
+	    	return;
+		}
+	}
+	if (type == 2 ) {
+		code = "SSH";
+		if (!privateKey || privateKey.length < 1) {
+			layer.tips('密钥不能为空','#SSHpasswordCred',{tips:[1,'#3595CC']});
+			$("#SSHpasswordCred").focus();
+			return;
+		}
+	}
+	if (!remark || remark.length < 1) {
+    	layer.tips('描述信息不能为空','#keyRemark',{tips:[1,'#3595CC']});
+    	$("#keyRemark").focus();
+    	return;
+	}
+	return true;
+}
+
+function delData(){
+	$("#CredentialsType").val(1);
+	$(".normal").show();
+	$(".ssh").hide();
+	$("#userNameCred").val("");
+	$("#keyRemark").val("");
+	$("#passwordCred").val("");
+	$("#SSHpasswordCred").val("");
+}
+
 

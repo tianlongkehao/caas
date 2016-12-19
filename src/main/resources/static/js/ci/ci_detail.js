@@ -19,16 +19,37 @@ $(document).ready(function(){
     registerHookCode($("#id").val());
     //加载构建日志
     printLog();
-	
+    //停止构建执行
+    stopCodeCi();
+	//删除一个执行
+    deleteCodeCi();
+    
     //动态给版本信息赋宽度
     if(printLog()){
     	var btnVersionWidth = $(".btn-version").html().length*14;
         $(".btn-version").css("width",btnVersionWidth);
     }
     
+    
+    
     //是否选中hook
     if ($("#isHookCode").val() == 1) {
     	document.getElementById("HookCode").checked=true
+    }
+    
+    if ($("#imageName").val()) {
+    	document.getElementById("imageInfo").checked=true
+    }
+    else {
+    	$(".imageInfoCon").toggle();
+    }
+    
+    if ($("#isBaseImage").val() == 1) {
+    	document.getElementById("baseImage").checked=true
+    }
+    
+    if ($("#imgType").val() == 1) {
+    	document.getElementById("imageType").checked=true
     }
     
 	//codeType
@@ -325,7 +346,61 @@ $(document).ready(function(){
 			$("#passwordCred").val("");
 		}
 	});
+	//镜像信息
+	$("#imageInfo").click(function(){
+		$(".imageInfoCon").toggle();
+	})
 });/*ready*/
+
+//停止一个构建执行
+function stopCodeCi(){
+	$("#stopCodeCi").click(function(){
+		var projectName = $(this).attr("projectName");
+		var executionId = $(this).attr("executionId");
+		$.ajax({
+			url : ctx + "/ci/stopCodeCi.do",
+			type : "POST",
+			data : {
+				"projectName" : projectName,
+				"executionId" : executionId
+			},
+			success : function(data) {
+				data = eval("(" + data + ")");
+				if (data.status == "200") {
+					window.location.reload();
+				} else {
+					layer.alert("停止构建失败");
+				}
+			}
+		});
+	})
+}
+
+//删除一个构建执行
+function deleteCodeCi(){
+	$("#deleteCodeCi").click(function(){
+		var projectName = $(this).attr("projectName");
+		var executionId = $(this).attr("executionId");
+		var ciRecordId = $(this).attr("ciRecordId");
+		$.ajax({
+			url : ctx + "/ci/deleteCodeCi.do",
+			type : "POST",
+			data : {
+				"projectName" : projectName,
+				"executionId" : executionId,
+				"ciRecordId" :ciRecordId
+			},
+			success : function(data) {
+				data = eval("(" + data + ")");
+				if (data.status == "200") {
+					window.location.reload();
+				} else {
+					layer.alert("删除当前构建失败");
+				}
+			}
+		});
+	})
+}
 
 //单击导入模板，加载模板数据
 function loadDockerFileTemplate(){
@@ -421,21 +496,33 @@ function registerDeployEvent(){
 	
 	$("#replayci").unbind("click").click(function(){
 		ciId = $(this).attr("ciId");
-		$.ajax({
-			url:ctx+"/ci/constructCi.do?id="+ciId,
-			async:true,
-			success:function(data){
-				data = eval("(" + data + ")");
-				if(data.status=="200"){
-					window.location.reload();
-				}else{
-					layer.alert(data.msg);
-				}
-				setTimeout('window.location.reload()',2000);
+		var ciList = $("#ciRecordList").children().length;
+		if(ciList == 0){
+			replayciEvent(ciId)
+		}else {
+			var ciStatus = $(".ciStatus")[0].innerHTML;
+			if(ciStatus == "构建中"){
+		    	$("#replayci").css("cursor","no-drop");
+			}else{
+				replayciEvent(ciId)
 			}
-		});
+	    }
 	});
-	
+}
+function replayciEvent(ciId){
+	$.ajax({
+		url:ctx+"/ci/constructCi.do?id="+ciId,
+		async:true,
+		success:function(data){
+			data = eval("(" + data + ")");
+			if(data.status=="200"){
+				window.location.reload();
+			}else{
+				layer.alert(data.msg);
+			}
+			setTimeout('window.location.reload()',2000);
+		}
+	});
 }
 function registerConstructCiEvent(){
 	$("#buildBtn").unbind("click").click(function(){
@@ -573,7 +660,7 @@ function changeBaseImageVersion () {
             		}
             	}
             }
-            $("#baseImageId").append(html);    
+            $("#baseImageId").html(html);    
 		}
 	})
 }
@@ -1216,36 +1303,72 @@ function checkCodeCiAdd(){
     json = json.substring(0, json.length-1);
     json = '[' + json + ']';
     $("#jsonData").val(json);
-    //doackerFile文件路径的判断
-	var imageName = $("#imageName").val();
-	if(!imageName || imageName.length < 1){
-		layer.tips('镜像名称不能为空','#imageName',{tips: [1, '#3595CC']});
-		$('#imageName').focus();
-		return;
-    }
-	 //doackerFile文件路径的判断
-	var dockerFileLocation = $("#dockerFileLocation").val();
-	if (dockerFileLocation != undefined) {
-		if(!dockerFileLocation || dockerFileLocation.length < 1){
-			layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
-			$('#dockerFileLocation').focus();
+    
+    
+    if ($("#imageInfo").prop("checked")) {
+    	var imageName = $("#imageName").val();
+		if(!imageName || imageName.length < 1){
+			layer.tips('镜像名称不能为空','#imageName',{tips: [1, '#3595CC']});
+			$('#imageName').focus();
 			return;
-		}
-	}
-	
-	if (editor_one !=null) {
-		var dockerFile = editor_one.getValue();
-		if (dockerFile != undefined) {
-			if(!dockerFile || dockerFile.length < 1){
-				layer.tips('dockerfile模板不能为空','#dockerFiles2',{tips: [1, '#3595CC']});
-				$('#dockerFiles2').focus();
-				return;
-			}else {
-				$("#dockerFileContentEdit").val(dockerFile);
+	    }
+		var imgNameVersion = $("#imgNameVersion").val();
+		if (imgNameVersion || imageName.length > 0) {
+			if(imgNameVersion.search(/^[A-Za-z0-9-_]*$/) === -1){
+				layer.tips('镜像版本只能由字母、数字、横线和下划线组成', '#imgNameVersion', {
+					tips: [1, '#0FA6D8'] //还可配置颜色
+				});
+				$('#imgNameVersion').focus();
+				return false;
 			}
 		}
-	}
-	
+		
+		//判断是否为基础镜像
+	    if ($("#baseImage").prop("checked")) {
+	    	$("#isBaseImage").val(1);
+	    }
+	    else{
+	    	$("#isBaseImage").val(2);
+	    }
+	    //判断是否为公有镜像
+	    if ($("#imageType").prop("checked")) {
+	    	$("#imgType").val(1);
+	    }
+	    else {
+	    	$("#imgType").val(2);
+	    }
+	    
+	    var dockerFileLocation = $("#dockerFileLocation").val();
+		if (dockerFileLocation != undefined) {
+			if(!dockerFileLocation || dockerFileLocation.length < 1){
+				layer.tips('dockerfile文件路径不能为空','#dockerFileLocation',{tips: [1, '#3595CC']});
+				$('#dockerFileLocation').focus();
+				return;
+			}
+		}
+		
+		if (editor_one !=null) {
+			var dockerFile = editor_one.getValue();
+			if (dockerFile != undefined) {
+				if(!dockerFile || dockerFile.length < 1){
+					layer.tips('dockerfile模板不能为空','#dockerFiles2',{tips: [1, '#3595CC']});
+					$('#dockerFiles2').focus();
+					return;
+				}else {
+					$("#dockerFileContentEdit").val(dockerFile);
+				}
+			}
+		}
+    }
+    else {
+    	$("#imageName").val("");
+    	$("#imgNameVersion").val("");
+    	$("#dockerFileLocation").val("");
+    	if (editor_one != null) {
+    		editor_one.setValue("");
+    	}
+    }
+
     return true;
 }
 

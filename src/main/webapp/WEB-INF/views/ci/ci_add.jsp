@@ -36,21 +36,21 @@
                         		<div class="row depot-name">
 	                                <div class=" col-md-12">
 	                                    <label class="c-project-tit">项目名称</label>
-	                                    <input id="projectName" name="projectName" class="form-control c-project-con" type="text"
+	                                    <input id="projectName" autocomplete = 'off' name="projectName" class="form-control c-project-con" type="text"
 	                                           required="">
 	                                </div>
 	                            </div>
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">描述</label>
-	                                    <textarea id="description" name="description" class="form-control c-project-con" type="text"
+	                                    <textarea id="description" autocomplete = 'off' name="description" class="form-control c-project-con" type="text"
 	                                           required="" row="5"></textarea>
 	                                </div>
 	                            </div>
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">JDK</label>
-	                                    <select id="jdk-version" name="jdkVersion" class="form-control c-project-con">
+	                                    <select id="jdk-version" autocomplete = 'off' name="jdkVersion" class="form-control c-project-con">
 	                                       <c:forEach items="${jdkList}" var="jdk">
 	                                    	  <option value="${jdk.version }">${jdk.version }</option>
 	                                       </c:forEach>
@@ -64,8 +64,8 @@
                             	<div class="row">
 	                            	<div class="form-group col-md-12">
 		                                <label class="c-project-tit">代码库类型</label>
-		                                <select id="codeType" name="codeType" class="form-control c-project-con" >
-		                                	<option value="0">-none-</option>
+		                                <select id="codeType" autocomplete = 'off' name="codeType" class="form-control c-project-con" >
+		                                	<option value="0" >-none-</option>
 		                                    <option value="1">git</option>
 		                                </select>
 		                            </div>
@@ -81,14 +81,16 @@
 		                                <select id="codeCredentials" name="codeCredentials" class="form-control c-project-con" style="width:50%;float:left;">
 		                                  <c:forEach items="${ciCodeList}" var="ciCode" >
 		                                      <c:if test="${ciCode.type == 1 }">
-		                                          <option value="${ciCode.id }">${ciCode.userName }(HTTP)</option>
+		                                          <option value="${ciCode.id }">${ciCode.userName } (HTTP) (${ciCode.remark })</option>
 		                                      </c:if>
 		                                      <c:if test="${ciCode.type == 2 }">
-                                                  <option value="${ciCode.id }">${ciCode.userName }(SSH)</option>
+                                                  <option value="${ciCode.id }">${ciCode.userName } (SSH) (${ciCode.remark })</option>
                                               </c:if>
 		                                  </c:forEach>
 		                                </select>
-		                                <button type="button" id="addCredentialsBtn" class="addCredentialsBtn" value="添加证书"><i class="fa fa-key"></i>&nbsp添加证书</button>
+		                                <c:if test="${userAutority ==1 || userAutority ==2 }">
+			                                <button type="button" id="addCredentialsBtn" class="addCredentialsBtn" value="添加证书"><i class="fa fa-key"></i>&nbsp添加证书</button>
+		                                </c:if>
 		                            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">创建分支</label>
@@ -132,14 +134,35 @@
 	                            <div id="sortable">
 	                            </div>
                             </section>
-                            <h4 class="c-title">镜像信息</h4>
-                            <section class="registryinfo">
+                            <h4 class="c-title">镜像信息<input type="checkbox" id="imageInfo"></h4>
+                            <section class="registryinfo imageInfoCon">
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">镜像名称</label>
 	                                    <input id="imageName" name="imgNameLast" type="text"
-                                                   class="form-control c-project-con reg-input" value="">
+                                                   class="form-control c-project-con reg-input imgInput" value="">
 		                            </div>
+	                            </div>
+	                            <div class="row">
+		                            <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">镜像版本</label>
+	                                    <input id="imgNameVersion" name="imgNameVersion" type="text" placeholder = "填写之后重新构建镜像不会进行迭代，而是覆盖"
+                                                   class="form-control c-project-con reg-input imgInput" value="">
+		                            </div>
+	                            </div>
+	                            <div class="row">
+		                            <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">是否为基础镜像</label>
+	                                    <input id="baseImage" name="baseImage" type="checkbox"
+                                                   style="height:26px" value="">
+                                        <input type = "hidden" id = "isBaseImage" name = "isBaseImage" value = "">
+		                            </div>
+		                            <div class="form-group col-md-12">
+                                        <label class="c-project-tit">是否为公有镜像</label>
+                                        <input id="imageType" name="imageType" type="checkbox"
+                                                   style="height:26px" value="">
+                                        <input type = "hidden" id = "imgType" name = "imgType" value = "">
+                                    </div>
 	                            </div>
 	                            <ul class="nav nav-bar">
 		                           <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">dockerfile构建方式<span class="caret"></span></a>
@@ -184,7 +207,38 @@
                     </div>
                 </div>
                 <!-- 添加证书 -->
-                <div id="addCredentialsCon">
+			     <div id="addCredentialsCon">           
+			        <div style="width:345px;margin: 15px 15px">
+			            <div class="infoCred">
+			                <span class="labelCred">类型：</span> <select
+			                    class="form-control conCred" id="CredentialsType" name="type">
+			                    <option value="1">用户名和密码</option>
+			                    <option value="2">SSH用户名和密钥</option>
+			                </select>
+			            </div>
+			            <div class="infoCred">
+			                <span class="labelCred">用户名：</span> <input type="text"
+			                    class="form-control conCred" id="userNameCred" name="userName"
+			                    value="">
+			            </div>
+			            <div class="infoCred normal">
+			                <span class="labelCred">密码：</span> <input type="password"
+			                    class="form-control conCred" id="passwordCred" name="password"
+			                    value="">
+			            </div>
+			            <div class="infoCred ssh">
+			                <span class="labelCred">密钥：</span>
+			                <textarea type="text" class="form-control conCred" style="height:100px"
+			                    id="SSHpasswordCred" name="privateKey" row="8" value=""></textarea>
+			            </div>
+			            <div class="infoCred">
+			                <span class="labelCred">描述：</span>
+			                <textarea type="text" class="form-control conCred" style="height:100px"
+			                    id="keyRemark" name="keyRemark" row="8" value=""></textarea>
+			            </div>
+			        </div>
+                 </div>
+               <!--  <div id="addCredentialsCon">
                     <div style="width: 345px; margin: 5px 10px 5px 10px">
                         <div class="infoCred">
                         	<span class="labelCred">类型：</span>
@@ -200,8 +254,8 @@
 	                        <input type="password" class="form-control conCred" id="passwordCred" name="password" value=""></div>
                         <div class="infoCred ssh">
 	                        <span class="labelCred">密钥：</span>
-	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="5" value="" ></textarea></div>
+	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="8" value="" ></textarea></div>
                     </div>
-                </div>
+                </div> -->
 </body>
 </html>

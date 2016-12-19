@@ -101,6 +101,13 @@
                         构建
                     </a>
                 </li>
+                 <c:if test="${cur_user.user_autority == 1}">
+	                <li id="menuShera" action="">
+		                <a href="<%=path %>/user/shera">
+		                    shera管理
+		                </a>
+		            </li>
+                 </c:if>
             </ul>
         </li>
         <li id="menu_registry">
@@ -137,6 +144,11 @@
 	                <li id="menuUserUser" action="">
 	                    <a href="<%=path %>/user/manage/list/${cur_user.id }">
 	                        用户管理
+	                    </a>
+	                </li>
+	                <li id="menuSecretKey" action="">
+	                    <a href="<%=path %>/secret/Credential">
+	                       密钥管理
 	                    </a>
 	                </li>
 	            </ul>

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +57,10 @@ public class DockerClientService {
 	private String apiVersion;
 	@Value("${docker.io.nodeUrl}")
 	private String nodeUrl;
-	@Value("${docker.io.node}")
-	private String node;
+	@Value("${docker.io.type}")
+	private String type;
+	@Value("${docker.io.port}")
+	private String port;
 	private HashMap<String,Integer> nodeMap = null;
 	
 	private static final Logger log = LoggerFactory.getLogger(DockerClientService.class);
@@ -99,29 +102,14 @@ public class DockerClientService {
 	 * 
 	 * Description: <br>
      *  获取指定node节点的dockerClient实例
-	 * @param nodeName String
+	 * @param nodeIP String
 	 * @return 
 	 * @see
 	 */
-	public DockerClient getSpecialDockerClientInstance(String nodeName){
-		String nodeUrl = null;
-		if (StringUtils.isNoneBlank(node)) {
-			String[] nodeArray = node.split(",");
-			for (int i = 0; i < nodeArray.length; i++) {
-				String[] key_value = nodeArray[i].split("=");
-				if (key_value[0].equals(nodeName)) {
-					nodeUrl = key_value[1];
-					break;
-				}
-			}
-		}
-		//如果没有找到对应节点，则返回null
-		if (nodeUrl == null) {
-			return null;
-		}
+	public DockerClient getSpecifiedDockerClientInstance(String nodeIP){
 		DockerClientConfig config = DefaultDockerClientConfig
 				.createDefaultConfigBuilder()
-				.withDockerHost(nodeUrl)
+				.withDockerHost(type + "://" + nodeIP + ":" + port)
 				.withApiVersion(apiVersion)
 				.withDockerCertPath(dockerCertPath)
 				.withRegistryUsername(username)
@@ -233,7 +221,26 @@ public class DockerClientService {
             log.error("load image error-:"+e.getMessage());
         }
     }
-
+    
+    /**
+     * 
+     * Description:
+     * save 镜像
+     * @param image Image
+     * @return inputStream InputStream
+     */
+    public InputStream saveImage(String imageName, String imageVersion) {
+        DockerClient dockerClient = this.getSpecialDockerClientInstance();
+        try {
+            return IOUtils.toBufferedInputStream(dockerClient.saveImageCmd(username+"/"+imageName+":"+imageVersion).exec());
+        }
+        catch (Exception e) {
+            log.error("save image error:"+e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
     /**
      * 
      * Description:
@@ -589,6 +596,7 @@ public class DockerClientService {
 			return false;
 		}
 	}
+ 
 	
 //	public static void main(String[] args) {
 //		
