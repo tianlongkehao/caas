@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -220,7 +221,26 @@ public class DockerClientService {
             log.error("load image error-:"+e.getMessage());
         }
     }
-
+    
+    /**
+     * 
+     * Description:
+     * save 镜像
+     * @param image Image
+     * @return inputStream InputStream
+     */
+    public InputStream saveImage(String imageName, String imageVersion) {
+        DockerClient dockerClient = this.getSpecialDockerClientInstance();
+        try {
+            return IOUtils.toBufferedInputStream(dockerClient.saveImageCmd(username+"/"+imageName+":"+imageVersion).exec());
+        }
+        catch (Exception e) {
+            log.error("save image error:"+e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
     /**
      * 
      * Description:
@@ -576,6 +596,7 @@ public class DockerClientService {
 			return false;
 		}
 	}
+ 
 	
 //	public static void main(String[] args) {
 //		
