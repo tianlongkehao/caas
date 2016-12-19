@@ -75,6 +75,12 @@ public class Ci {
 	 * 镜像类型：1公有、2私有
 	 */
     private Integer imgType;
+    
+    /**
+     * 是否为基础镜像
+     * 1 是基础镜像，2不是基础镜像；
+     */
+    private Integer isBaseImage;
 	
     /**
 	 * 简介
@@ -257,6 +263,14 @@ public class Ci {
         this.imgType = imgType;
     }
     
+    public Integer getIsBaseImage() {
+        return isBaseImage;
+    }
+
+    public void setIsBaseImage(Integer isBaseImage) {
+        this.isBaseImage = isBaseImage;
+    }
+
     public String getDescription() {
         return description;
     }

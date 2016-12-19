@@ -418,6 +418,10 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         Ci originCi = ciDao.findOne(ci.getId());
         originCi.setProjectName(ci.getProjectName());
+        originCi.setImgNameVersion(ci.getImgNameVersion());
+        originCi.setImgNameLast(ci.getImgNameLast());
+        originCi.setIsBaseImage(ci.getIsBaseImage());
+        originCi.setImgType(ci.getImgType());
         originCi.setDescription(ci.getDescription());
         originCi.setJdkVersion(ci.getJdkVersion());
         originCi.setCodeType(ci.getCodeType());
@@ -1262,8 +1266,13 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
         if (CiConstant.TYPE_CODE.equals(ci.getType())) {
-            ci.setImgNameVersion(DateUtils.getLongStr(startTime));
-            ciRecord.setCiVersion(ci.getImgNameVersion());
+//            ci.setImgNameVersion(DateUtils.getLongStr(startTime));
+            if (StringUtils.isEmpty(ci.getImgNameVersion())) {
+                ciRecord.setCiVersion(DateUtils.getLongStr(startTime));
+            }
+            else {
+                ciRecord.setCiVersion(ci.getImgNameVersion());
+            }
             boolean fetchCodeCiFlag = fetchCodeCi(ci,ciRecord,startTime,sheraClientService,imageDao,ciDao,ciRecordDao,hookAndImagesDao);
             if (!fetchCodeCiFlag) {
                 map.put("status", "500");
@@ -1312,7 +1321,7 @@ public class CiController {
                                final CiDao ciDao,final CiRecordDao ciRecordDao,final HookAndImagesDao hookAndImagesDao) {
         try {
             final SheraAPIClientInterface client = sheraClientService.getClient();
-            JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime);
+            JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime,ciRecord.getCiVersion());
             jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
             ciRecord.setExecutionId(jobExecViewNew.getSeqNo());
             ciRecordDao.save(ciRecord);
@@ -1338,33 +1347,42 @@ public class CiController {
                             if (jobExecView.getFinished() == 1) {
                                 //执行成功
                                 if (jobExecView.getEndStatus() == 0) {
-                                    //添加镜像
-                                    Image image = new Image();
-                                    String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
-                                    String imageVersion = DateUtils.getLongStr(startTime);
-                                    image.setName(imageName);
-                                    image.setVersion(imageVersion);
-                                    image.setResourceName(ci.getCodeName());
-                                    image.setImageType(ImageConstant.privateType);
-                                    image.setRemark(ci.getDescription());
-                                    image.setCreator(ci.getCreateBy());
-                                    image.setCreateTime(DateUtils.getLongToDate(startTime));
-                                    image.setIsBaseImage(ImageConstant.NotBaseImage);
-                                    image.setIsDelete(CommConstant.TYPE_NO_VALUE);
-                                    imageDao.save(image);
+                                    //判断是否添加镜像
+                                    if (!StringUtils.isEmpty(ci.getImgNameLast())) {
+                                        Image image;
+                                        String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
+                                        //根据镜像名称和版本信息查询镜像信息是否存在
+                                        image = imageDao.findByNameAndVersion(imageName, ciRecord.getCiVersion());
+                                        if (!StringUtils.isEmpty(image)){
+                                            hookAndImagesDao.deleteByImageId(image.getId());
+                                        }
+                                        else {
+                                            image = new Image();
+                                        }
+                                        image.setName(imageName);
+                                        image.setVersion(ciRecord.getCiVersion());
+                                        image.setResourceName(ci.getCodeName());
+                                        image.setImageType(ci.getImgType());
+                                        image.setRemark(ci.getDescription());
+                                        image.setCreator(ci.getCreateBy());
+                                        image.setCreateTime(DateUtils.getLongToDate(startTime));
+                                        image.setIsBaseImage(ci.getIsBaseImage());
+                                        image.setIsDelete(CommConstant.TYPE_NO_VALUE);
+                                        imageDao.save(image);
+                                        //判断是否需要添加hookAndImages关联信息
+                                        if (ci.getIsHookCode() == 1) {
+                                            HookAndImages hookAndImg = new HookAndImages();
+                                            hookAndImg.setHookId(ci.getHookCodeId());
+                                            hookAndImg.setImageId(image.getId());
+                                            hookAndImagesDao.save(hookAndImg);
+                                        }
+                                        ci.setImgId(image.getId());
+                                    }
                                     //添加构建和日志的信息
-                                    ci.setImgId(image.getId());
                                     ci.setConstructionTime(jobExecView.getEndTime()-startTime);
                                     ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
                                     ciRecord.setConstructTime(jobExecView.getEndTime()-startTime);
                                     ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
-                                    //判断是否需要添加hookAndImages关联信息
-                                    if (ci.getIsHookCode() == 1) {
-                                        HookAndImages hookAndImg = new HookAndImages();
-                                        hookAndImg.setHookId(ci.getHookCodeId());
-                                        hookAndImg.setImageId(image.getId());
-                                        hookAndImagesDao.save(hookAndImg);
-                                    }
                                 }
                                 //执行失败
                                 if (jobExecView.getEndStatus() == 1) {

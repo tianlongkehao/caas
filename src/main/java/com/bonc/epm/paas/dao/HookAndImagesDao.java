@@ -26,4 +26,5 @@ public interface HookAndImagesDao extends CrudRepository<HookAndImages, Long> {
      * @see
      */
     void deleteByHookId(long hookId);
+    void deleteByImageId(long imageId);
 }
