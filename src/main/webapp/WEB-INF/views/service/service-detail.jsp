@@ -650,9 +650,16 @@
 								<i id="fullScreen" class="fa fa-expand margin cursor" title="满屏"></i>
 							</div>
 						</div>
-						<div id="containerlogList" class="weblog">
-							 
-						</div>
+<!--                         <div id="containerlogList" class="weblog">
+                        
+                        </div> -->
+                        <div class='containerlogList weblog' style='overflow: auto;margin-top:10px;background-color:black;color: #37fc34'>
+                            <pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">
+                                   <span class='printLogSpan' style="overflow: hidden; float: left;"></span>
+                            </pre>
+                        </div>
+                        
+                        
 						<input id="serviceInstances" type="hidden" value="">
 						<input id="creationTime" type="hidden" value="${service.createDate }">
 					</div>
