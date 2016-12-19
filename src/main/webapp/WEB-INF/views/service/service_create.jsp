@@ -254,50 +254,40 @@
 													<span class="mountTips"></span>
 												<input type="hidden" id = "serviceType" name ="serviceType" value = "1"/>
 											</span></li>
-											<li class="hide-set" id="save_roll_dev">
-												<ul id="mountPathList">
-													<li class="mount line-h-3"><span class="ve_top">挂载地址：</span>
-														<table class="pull-left">
-															<tbody>
-																<tr>
-																	<td><input type="text" id="mountPath" class="form-control"
-																		name="mountPath" value="" /></td>
-																	<td style="padding-left: 10px;"><select
-																		class="selectVolume form-control" id="selectVolume" name="volName"
+											
+											<li class="hide-set" id="save_roll_dev"><span class="ve_top">挂载地址：</span>
+												<ol id="mountPathList">
+													<li class="hide-select">
+														<input type="text" id="mountPath" class="form-control"
+																		name="mountPath" value="" />
+														<select class="selectVolume form-control" id="selectVolume" name="volName"
 																		style="height: 34px; width: 230px;">
 																			<option name="volName" value="0">选择一个存储卷</option>
-																	</select></td>
-																	<!-- <td>
-                                                        <ins class="ins">
-                                                            <input type="checkbox" id="readOnlyOp1" name="isVolumeReadOnly"
-                                                                   class="isVolumeReadonly"> <label for="readOnlyOp1" style="margin-bottom:0px;">只读</label>
-                                                        </ins>
-                                                        <a class="refreshVolume" title="刷新"
-                                                           href="javascript:void(0)"> <i
-                                                                class="fa fa-refresh fa-lg" style="font-size: 16px"></i>
-                                                        </a> <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> <a
-                                                            class="delVolume" title="删除" href="javascript:void(0)">
-                                                        <i class="fa fa-trash-o" style="font-size: 16px"></i>
-                                                    	</a>
-                                                    </td> -->
+																	</select>
+														<a id="addVolume"><i class="fa fa-plus"></i>添加</a>
+													</li>
+													<li>
+														<table class="table table-hover enabled" id="volPath">
+															<thead>
+																<tr>
+																	<th style="width: 45%">挂载地址</th>
+																	<th style="width: 45%">存储卷</th>
+																	<th style="width: 10%">操作</th>
 																</tr>
+															</thead>
+															<tbody id="volList">
+																<input type="hidden" id="volarrayKey" value="" />
 															</tbody>
-														</table></li>
-
-													<!-- <li class="line-h-3"><span class="ve_top">镜像设置：</span> <span
-                                                class="update-mi"><input type="checkbox" id="pullPolicy"
-                                                                         name="pullPolicy" checked=""> <label
-                                                for="pullPolicy">更新镜像</label></span>
-                                        </li> -->
-												</ul> <!-- <div style="height: 80px !important;"></div> -->
-											</li>
+														</table>
+													</li>
+												</ol></li>
 											<li class="hide-set"><span class="ve_top">环境变量：</span>
 												<ol>
 													<li class="hide-select"><input type="text" class="form-control"
 														placeholder="name" id="Name"> <input type="text" class="form-control"
 														placeholder="value" id="Value"> <a id="cratePATH"><i
 															class="fa fa-plus"></i>添加</a>
-														<div style="float: right">
+														<div style="float: right;margin-top:10px;">
 															<span id="importBtn" class=" btn-info btn-sm"
 																style="cursor: pointer">导入模板</span> <span id="exportBtn"
 																class=" btn-info btn-sm" style="cursor: pointer">另存为模板</span>

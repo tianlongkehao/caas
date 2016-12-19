@@ -393,6 +393,26 @@ $(document).ready(function(){
     	$(".step-inner").height(imagePage_height+100);	
 	});
 	
+	// 添加环境变量
+	$("#addVolume").click(function(){
+		var mountPath = $("#mountPath").val();
+		var selectVolume = $("#selectVolume").val();
+		var tr = '<tr>'+
+		'<td class="keys"><input type="text" style="width: 98%" value="'+mountPath+'"></td>'+
+		'<td class="vals"><input type="text" style="width: 98%" value="'+selectVolume+'"></td>'+
+		'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
+		'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+mountPath+'">'+
+		'</td>'+
+	'</tr>'
+		
+		
+		$("#volList").append(tr);
+		
+		//调节界面高度
+		var imagePage_height = $(".host_step2").height();
+    	$(".step-inner").height(imagePage_height+100);	
+	});
+	
 	//自动化伸缩范围&伸缩阈值
 	var trueOrfalse = false;
 	$("#dynamic-range").hide();
