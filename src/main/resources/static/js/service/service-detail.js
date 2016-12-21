@@ -24,6 +24,11 @@ $(document).ready(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".bindDomain").removeClass("hide");
     });
+    
+    $(".SERVOL").click(function(){
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".serVolMapping").removeClass("hide");
+    });
 
     $(".ENVS").click(function(){
 
@@ -311,7 +316,8 @@ $(document).ready(function(){
     	   var serType=$('#serType').val();
     	   var serMonPath=$('#serMonPath').val();
     	   var serVolName=$('#serVolName').val();
-    	   var str='<option value="">请选择一个卷组</option>';
+    	   var str='';
+    	   //var str='<option value="">请选择一个卷组</option>';
     	   $.ajax({
     		   url:ctx+"/service/storage/getVols.do",
     				success:function(data){

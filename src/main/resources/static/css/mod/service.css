@@ -1087,3 +1087,22 @@ li.line-h-3 span i{
     line-height: 34px;
     margin-left: 10px;
 }
+
+.table .BORDER-vol td {
+    border: 1px solid #eee;
+}
+
+.serVolMapping {
+    overflow: hidden;
+    width: 98%;
+    margin-left: 1%;
+}
+.serVolMapping table th{
+	background: #e4eaec;
+}
+.serVolMapping table tr th{
+	text-indent: 8px;
+}
+.serVolMapping table tr td{
+	text-indent: 8px;
+}
