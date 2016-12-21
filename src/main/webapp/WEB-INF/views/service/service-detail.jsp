@@ -562,7 +562,9 @@
 								</tbody>
 							</table>
 							<c:if test="${service.status==1 or service.status==4}">
-							<button type="button" value="添加环境变量"  id="addEnvBtn" onclick="addEnvClick()"><i class="fa fa-plus"></i>&nbsp;添加环境变量</button>
+							<div class="createPort" style="background: #fafafa">
+								<span id="addEnvBtn" onclick="addEnvClick()" value="添加环境变量"><i class="fa fa-plus margin"></i>添加环境变量</span>
+							</div>
 							</c:if>
 							<div id="createEnv-templat" hidden="true">
 			                	<div>
@@ -612,7 +614,9 @@
 								</tbody>
 							</table>
 				            <c:if test="${service.status==1 or service.status==4}">
-				              <input type="button" value="添加端口信息"  id="addPortCfgBtn" onclick="addPortCfgClick()">
+				            	<div class="createPort" style="background: #fafafa">
+									<span value="添加端口信息"  id="addPortCfgBtn" onclick="addPortCfgClick()"><i class="fa fa-plus margin"></i>添加端口信息</span>
+								</div>
 				            </c:if>
 				            <div id="createCfg-template" hidden="true">
 					            <div style="width: 345px; margin: 5px 10px 5px 10px">
