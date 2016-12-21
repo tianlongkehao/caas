@@ -68,6 +68,7 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.ContainerState;
 import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
@@ -1316,93 +1317,31 @@ public class ServiceController {
             }
             else {
                 LOG.info("***************版本升级开始****************************");
-                String random = RandomString.getStringRandom(32);
-                String nextControllerName = serviceName+"-"+random;
+                String random = RandomString.getStringRandom(32); //next Controller postfix
+                String nextControllerName = serviceName+"-"+random; // next Controller name
                 String image = dockerClientService.generateRegistryImageName(imgName, imgVersion);
                 
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
                 ReplicationController originalController = client.getReplicationController(serviceName);
                 
-                Map<String, String> annotations = new HashMap<String, String>();
-                annotations.put("kubectl.kubernetes.io/next-controller-id", nextControllerName);
-                originalController.getMetadata().setAnnotations(annotations);
-                ReplicationController updateOriginalController = client.updateReplicationController(serviceName, originalController);
-                LOG.info("update originalController.  put next-controller-id:-"+nextControllerName);
+                // 设置annotations
+                ReplicationController updateOriginalController = firstSetAnnotation(serviceName, nextControllerName, client, originalController);
                 
-                ReplicationController nextController = null;
-                try {
-                    nextController = client.getReplicationController(nextControllerName);
-                } 
-                catch (KubernetesClientException e) {
-                    nextController = null;
-                }
-                if (null == nextController) {
-                    nextController = originalController;
-                    nextController.getMetadata().setName(nextControllerName);
-                    nextController.getMetadata().setResourceVersion("");
-                    Map<String, String> nextAnnotations = new HashMap<String, String>();
-                    nextAnnotations.put("kubectl.kubernetes.io/desired-replicas", String.valueOf(originalController.getSpec().getReplicas()));
-                    nextAnnotations.put("kubectl.kubernetes.io/update-source-id", originalController.getMetadata().getName()+":"+originalController.getMetadata().getUid());
-                    nextController.getMetadata().setAnnotations(nextAnnotations);
-                    
-                    nextController.getSpec().setReplicas(0);
-                    nextController.getSpec().getSelector().put("deployment", random);
-                    
-                    nextController.getSpec().getTemplate().getMetadata().getLabels().put("deployment", random);
-                    
-                    
-                    nextController.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(image);
-                    
-                    nextController = client.createReplicationController(nextController);
-                    
-                }
-                LOG.info("create new replicationController "+nextControllerName +"successed!");
+                // 生成新镜像版本的RC
+                createNextRc(random, nextControllerName, image, client, originalController);
                 
-                updateOriginalController = client.getReplicationController(serviceName);
-                updateOriginalController.getMetadata().getAnnotations().put("kubectl.kubernetes.io/original-replicas", String.valueOf(updateOriginalController.getSpec().getReplicas()));
-                client.updateReplicationController(serviceName, updateOriginalController);
-                LOG.info("update originalController.  put original-replicas:-"+updateOriginalController.getSpec().getReplicas());
+                // 设置annotations
+                updateOriginalController = secondSetAnnotation(serviceName, client);
                 
-                int replicas = updateOriginalController.getSpec().getReplicas();
-                nextController = client.getReplicationController(nextControllerName);
-                for (int i=1, j=replicas-1;i<=replicas && j>=0;i++,j--) {
-                    LOG.info("Scaling up "+nextControllerName+" from "+(i-1)+" to "+i+";scaling down "+serviceName+" from "+(j+1)+" to "+j);
-                    nextController = client.updateReplicationController(nextControllerName, i);
-                    boolean podStatus = true;
-                    PodList podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
-                    while (podStatus && null != podList) {
-                        for (Pod pod : podList.getItems()) {
-                            if (pod.getStatus().getPhase().equals("Running")) {
-                                podStatus = false;
-                            } else {
-                                podStatus = true;
-                            }
-                        }
-                        if (podStatus) {
-                            podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
-                        }
-                    }
-                    
-                    updateOriginalController = client.updateReplicationController(serviceName, j);
-                    while (!(client.getLabelSelectorPods(updateOriginalController.getSpec().getSelector()).size() == j)) {
-                        continue;
-                    }
-                   LOG.info("Scaling "+nextControllerName+" up to "+i+" and scaling "+serviceName+" down to " +j +" Update succeeded."); 
-                }
+                // 滚动升级
+                rollingUpdate(serviceName, nextControllerName, client, updateOriginalController);
                 
+                // 删除旧RC
                 client.deleteReplicationController(serviceName);
                 LOG.info("Deleting old controller:"+serviceName);
                 
-                
-                ReplicationController resultController = client.getReplicationController(nextControllerName);
-                
-                resultController.getMetadata().setName(serviceName);
-                resultController.getMetadata().setResourceVersion("");
-                
-                resultController = client.createReplicationController(resultController);
-                
-                client.deleteReplicationController(nextControllerName);
-                LOG.info("Renaming controller:"+nextControllerName+" to "+serviceName);
+                // 将新RC的名字重命名为旧RC名字
+                renameNewRc(serviceName, nextControllerName, client);
                 
                 service.setImgVersion(imgVersion);
                 serviceDao.save(service);
@@ -1441,8 +1380,163 @@ public class ServiceController {
             map.put("msg", ex.getMessage());
             LOG.error(ex.getMessage());
         }
-
         return JSON.toJSONString(map);
+    }
+
+    /**
+     * Description:
+     * 将新RC的名字重命名为旧RC名字
+     * @param serviceName 
+     * @param nextControllerName 
+     * @param client 
+     */
+    private void renameNewRc(String serviceName, String nextControllerName,KubernetesAPIClientInterface client) {
+        ReplicationController resultController = client.getReplicationController(nextControllerName);
+        resultController.getMetadata().setName(serviceName);
+        resultController.getMetadata().setResourceVersion("");
+        resultController = client.createReplicationController(resultController);
+        
+        client.deleteReplicationController(nextControllerName);
+        LOG.info("Renaming controller:"+nextControllerName+" to "+serviceName);
+    }
+
+    /**
+     * Description:
+     * 以轮询的方式升级服务
+     * 操作过程：
+     * 1.将新RC的副本(replicas)数量增长1个；
+     * 2.迭代查询新RC启动的pod以及container的启动状态，直至启动；
+     * 3.将旧RC的副本(replicas)数量减少1个；
+     * 4.确保旧pod数量减少；
+     * 5.重复步骤1，直到就RC的副本（replicas）数量减为0；
+     * @param serviceName 
+     * @param nextControllerName 
+     * @param client 
+     * @param updateOriginalController  
+     */
+    private void rollingUpdate(String serviceName, String nextControllerName,
+                                       KubernetesAPIClientInterface client,ReplicationController updateOriginalController) {
+        // 最终新服务应该启动的pod副本数量
+        int replicas = updateOriginalController.getSpec().getReplicas();
+        ReplicationController nextController = client.getReplicationController(nextControllerName);
+        for (int i=1, j=replicas-1;i<=replicas && j>=0;i++,j--) {
+            LOG.info("Scaling up "+nextControllerName+" from "+(i-1)+" to "+i+";scaling down "+serviceName+" from "+(j+1)+" to "+j);
+            nextController = client.updateReplicationController(nextControllerName, i);
+            boolean podStatus = true;
+            PodList podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
+            while (podStatus && null != podList) {
+                for (Pod pod : podList.getItems()) {
+                    if (pod.getStatus().getPhase().equals("Running")) {
+                        List<ContainerStatus> containerStatuses = pod.getStatus().getContainerStatuses();
+                        if (CollectionUtils.isNotEmpty(containerStatuses)) {
+                            for(ContainerStatus containerStatus : containerStatuses) {
+                                if (null != containerStatus.getState().getRunning()) {
+                                    podStatus = false;
+                                }
+                                else {
+                                    podStatus = true;
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        podStatus = true;
+                    }
+                }
+                if (podStatus) {
+                    podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
+                }
+            }
+            
+            updateOriginalController = client.updateReplicationController(serviceName, j);
+            while (!(client.getLabelSelectorPods(updateOriginalController.getSpec().getSelector()).size() == j)) {
+                continue;
+            }
+           LOG.info("Scaling "+nextControllerName+" up to "+i+" and scaling "+serviceName+" down to " +j +" Update succeeded."); 
+        }
+    }
+
+    /**
+     * Description:
+     * 给要升级镜像版本的rc设置annotations来记录pod的副本数量
+     * 设置值为：
+     * key:"kubectl.kubernetes.io/original-replicas"
+     * value: 旧RC的副本(replicas)数量
+     * @param serviceName
+     * @param client
+     * @return updateOriginalController 
+     */
+    private ReplicationController secondSetAnnotation(String serviceName,KubernetesAPIClientInterface client) {
+        ReplicationController updateOriginalController = client.getReplicationController(serviceName);
+        updateOriginalController.getMetadata().getAnnotations().put("kubectl.kubernetes.io/original-replicas", String.valueOf(updateOriginalController.getSpec().getReplicas()));
+        client.updateReplicationController(serviceName, updateOriginalController);
+        LOG.info("update originalController.  put original-replicas:-"+updateOriginalController.getSpec().getReplicas());
+        return updateOriginalController;
+    }
+
+    /**
+     * Description:
+     * 根据升级镜像版本的信息，创建并返回新生成的rc
+     * notice：需要将RC的设置参数replicas的副本数为0
+     * @param random
+     * @param nextControllerName
+     * @param image 需要升级至的镜像版本
+     * @param client
+     * @param originalController
+     * @return nextController 
+     */
+    private ReplicationController createNextRc(String random, String nextControllerName, String image,
+                                           KubernetesAPIClientInterface client,ReplicationController originalController) {
+        ReplicationController nextController = null;
+        try {
+            nextController = client.getReplicationController(nextControllerName);
+        } 
+        catch (KubernetesClientException e) {
+            nextController = null;
+        }
+        if (null == nextController) {
+            nextController = originalController;
+            nextController.getMetadata().setName(nextControllerName);
+            nextController.getMetadata().setResourceVersion("");
+            Map<String, String> nextAnnotations = new HashMap<String, String>();
+            nextAnnotations.put("kubectl.kubernetes.io/desired-replicas", String.valueOf(originalController.getSpec().getReplicas()));
+            nextAnnotations.put("kubectl.kubernetes.io/update-source-id", originalController.getMetadata().getName()+":"+originalController.getMetadata().getUid());
+            nextController.getMetadata().setAnnotations(nextAnnotations);
+            
+            nextController.getSpec().setReplicas(0);
+            nextController.getSpec().getSelector().put("deployment", random);
+            
+            nextController.getSpec().getTemplate().getMetadata().setName(nextControllerName);
+            nextController.getSpec().getTemplate().getMetadata().getLabels().put("deployment", random);
+            nextController.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(image);
+            
+            nextController = client.createReplicationController(nextController);
+            
+        }
+        LOG.info("create new replicationController "+nextControllerName +"successed!");
+        return nextController;
+    }
+
+    /**
+     * Description:
+     * 给要升级镜像版本的rc设置annotations来标记
+     * 设置值为：
+     * key:"kubectl.kubernetes.io/next-controller-id"
+     * value: 新rc的名字
+     * @param serviceName
+     * @param nextControllerName 新rc的名字
+     * @param client
+     * @param originalController
+     * @return updateOriginalController 
+     */
+    private ReplicationController firstSetAnnotation(String serviceName, String nextControllerName,
+                                                KubernetesAPIClientInterface client,ReplicationController originalController) {
+        Map<String, String> annotations = new HashMap<String, String>();
+        annotations.put("kubectl.kubernetes.io/next-controller-id", nextControllerName);
+        originalController.getMetadata().setAnnotations(annotations);
+        ReplicationController updateOriginalController = client.updateReplicationController(serviceName, originalController);
+        LOG.info("update originalController.  put next-controller-id:-"+nextControllerName);
+        return updateOriginalController;
     }
 
     /**
