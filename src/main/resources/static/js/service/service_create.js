@@ -1,4 +1,6 @@
 $(document).ready(function(){
+	// 控制环境变量的参数
+	var count=1;
 	loadImageList();
 	getServiceStorageVol();
 	getMountPath();
@@ -380,13 +382,19 @@ $(document).ready(function(){
 		
 		if(addName != "" && addValue != ""){
 			var tr = '<tr>'+
-			'<td class="keys"><input type="text" style="width: 98%" value="'+addName+'"></td>'+
-			'<td class="vals"><input type="text" style="width: 98%" value="'+addValue+'"></td>'+
-			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+addName+'">'+
-			'</td>'+
-		'</tr>'
-		$("#Path-oper1").append(tr);
+						'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'+
+						'<td class="vals"><input id="value_'+count+'" type="text" style="width: 98%"></td>'+
+						'<td class="func">'+
+							'<a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
+								'<i class="fa fa-trash-o fa-lg"></i>'+
+							'</a>'+
+							'<input type="hidden" class="oldValue" value="'+addName+'">'+
+						'</td>'+
+					'</tr>'
+			$("#Path-oper1").append(tr);
+			$("#key_"+count).val(addName);
+			$("#value_"+count).val(addValue);
+			count++;
 		}
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
@@ -474,23 +482,28 @@ $(document).ready(function(){
 	         		data:{"templateName":templateName},
 	         		success : function(data) {
 	         			data = eval("(" + data + ")");
-	         			var html = "";
 	    	            if (data != null) {
 	    	                if (data['data'].length > 0) {
 	    	                	for (var i in data.data) {
+	    	                		var html = "";
 	    	                		var envTemplate = data.data[i];
 	    	                		html += '<tr>'+
-		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envTemplate.envKey+'"></td>'+
-		    	    	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envTemplate.envValue+'"></td>'+
-		    	    	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-		    	    	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
-		    	    	    			'</td>'+
-		    	    	    		'</tr>'
-		    	    	    		arrayKey.push(envTemplate.envKey+",");
+		    	    	    					'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'+
+		    	    	    					'<td class="vals"><input id="value_'+count+'" type="text" style="width: 98%"></td>'+
+		    	    	    					'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
+		    	    	    						'<i class="fa fa-trash-o fa-lg"></i>'+
+		    	    	    						'</a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
+		    	    	    					'</td>'+
+		    	    	    				'</tr>'
+		    	    	    		
+	    	                		$("#Path-oper1").append(html);
+	    	                		$("#key_"+count).val(envTemplate.envKey);
+	    	                		$("#value_"+count).val(envTemplate.envValue);
+	    	                		arrayKey.push(envTemplate.envKey+",");
+	    	                		count++;
 	    	                	}
 	    	                }
 	    	            }
-	    	            $("#Path-oper1").append(html);
 	    	            $("#arrayKey").attr("value",arrayKey);
 	         		}
 	         	});
