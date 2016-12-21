@@ -128,21 +128,21 @@ $(document).ready(function(){
 	
 	//dockerfile路径&&dockerfile模板
     var dockerfilePathHtml = '<div class="row dockerfilePath">'+
-	    '<div class="form-group1 col-md-12">'+
-	    '<label class="c-project-tit">dockerfile路径</label>'+
-	    '<textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5"></textarea>'+
-	'</div></div>';
+							    '<div class="form-group1 col-md-12">'+
+							    '<label class="c-project-tit">dockerfile路径</label>'+
+							    '<textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5"></textarea>'+
+							'</div></div>';
     
     var dockerfileTempHtml = '<div class="row dockerfileTemp">'+
-	    '<div class="form-group1 col-md-12">'+
-		'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
-		'<span id="docImport-btn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
-		'<span id="docExport-btn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
-	'</div>'+
-	'<div class="form-group col-md-12" id="dockerFiles2" style="width:98%;margin-left:10px">'+
-		'<textarea id="dockerFileContentEdit" name="dockerFileContentEdit"></textarea>'+
-	'</div>'+
-	'</div>';
+							    '<div class="form-group1 col-md-12">'+
+									'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
+									'<span id="docImport-btn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
+									'<span id="docExport-btn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
+								'</div>'+
+								'<div class="form-group col-md-12" id="dockerFiles2" style="width:98%;margin-left:10px">'+
+									'<textarea id="dockerFileContentEdit" name="dockerFileContentEdit"></textarea>'+
+								'</div>'+
+							'</div>';
     
     $("#dockerfilePath").click(function(){
     	$("#dockerfileMethod").empty();
@@ -413,9 +413,9 @@ function loadDockerFileTemplate(){
                 	for (var i in data.data) {
                 		var dockerFile = data.data[i];
                 		html += "<tr>"+
-                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
-                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
-                			"</tr>"
+	                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
+	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
+	                			"</tr>"
                 	}
 	            } 
 	            if (html == "") {
@@ -457,8 +457,7 @@ function loadInvokeData() {
 					var order = invoke.jobOrderId;
 					if (invoke.invokeType == 2) {
 						//加载是maven类型的构建数据
-						var maven = loadMavenData(order,invoke);
-				    	$("#sortable").append(maven);
+						loadMavenData(order,invoke);
 				    	//判断checkbox选择框是否选中
 				    	if (invoke.isUserPrivateRegistry == 1 ) {
 				    		var isUPR = "isUserPrivateRegistry-"+order;
@@ -471,13 +470,11 @@ function loadInvokeData() {
 					}
 					if (invoke.invokeType == 1) {
 						//加载ant类型的构建数据
-						var ant = loadAntData(order,invoke);
-						$("#sortable").append(ant);
+						loadAntData(order,invoke);
 					}
 					if (invoke.invokeType == 3) {
 						//加载shell类型的构建数据
-						var shell = loadShellData(order,invoke);
-						$("#sortable").append(shell);
+						loadShellData(order,invoke);
 					}
 					count = order;
 				}
@@ -849,7 +846,7 @@ function loadAntData(count,invoke){
                 '</div>'+
                 '<div class="form-group col-md-12">'+
                    '<label class="c-project-tit">目标</label>'+
-                    '<input id="antTargets-'+count+'" name="antTargets" type="text" class="form-control c-project-con" value="'+invoke.antTargets+'">'+
+                    '<input id="antTargets-'+count+'" name="antTargets" type="text" class="form-control c-project-con">'+
                 '</div>'+
             '</div>'+
             '<div class="row ant-config">'+
@@ -858,17 +855,22 @@ function loadAntData(count,invoke){
             '<div class="row ant-higherCon hide">'+
             	'<div class="form-group col-md-12">'+
                     '<label class="c-project-tit">构建文件</label>'+
-                    '<input id="antBuildFileLocation-'+count+'" name="antBuildFileLocation" type="text" class="form-control c-project-con" value="'+invoke.antBuildFileLocation+'">'+
+                    '<input id="antBuildFileLocation-'+count+'" name="antBuildFileLocation" type="text" class="form-control c-project-con">'+
                 '</div>'+
                 '<div class="form-group col-md-12">'+
                     '<label class="c-project-tit">性能</label>'+
-                    '<input id="antProperties-'+count+'" name="antProperties" type="text" class="form-control c-project-con" value="'+invoke.antProperties+'">'+
+                    '<input id="antProperties-'+count+'" name="antProperties" type="text" class="form-control c-project-con" >'+
                 '</div>'+
                 '<div class="form-group col-md-12">'+
                     '<label class="c-project-tit">java选项</label>'+
-                    '<input id="antJavaOpts-'+count+'" name="antJavaOpts" type="text" class="form-control c-project-con" value="'+invoke.antJavaOpts+'">'+
+                    '<input id="antJavaOpts-'+count+'" name="antJavaOpts" type="text" class="form-control c-project-con">'+
                 '</div></div></div></div></div></div>';
-	return antHtml;
+	
+	$("#sortable").append(antHtml);
+	$("#antTargets-"+count).val(invoke.antTargets);
+	$("#antBuildFileLocation-"+count).val(invoke.antBuildFileLocation);
+	$("#antProperties-"+count).val(invoke.antProperties);
+	$("#antJavaOpts-"+count).val(invoke.antJavaOpts);
 }
 
 //添加maven表单
@@ -1043,7 +1045,11 @@ function loadMavenData(count,invoke){
                     '</select>'+
                 '</div>'+
                 '</div></div></div></div></div></div>';
-	return mavenHtml;
+	$("#sortable").append(mavenHtml);
+	$("#mavenGoals-"+count).val(invoke.mavenGoals);
+	$("#pomLocation-"+count).val(invoke.pomLocation);
+	$("#mavenProperty-"+count).val(invoke.mavenProperty);
+	$("#mavenJVMOptions-"+count).val(invoke.mavenJVMOptions);
 }
 
 //添加shell脚本表单
@@ -1091,9 +1097,11 @@ function loadShellData(count,invoke){
 			'<div class="row">'+
                 '<div class="form-group col-md-12">'+
                     '<label class="c-project-tit">命令</label>'+
-                    '<textarea id="executeShell-'+count+'" name="executeShell" class="form-control c-project-con" type="text" row="5" value = '+invoke.shellCommand+'>'+invoke.shellCommand+'</textarea>'+
+                    '<textarea id="executeShell-'+count+'" name="executeShell" class="form-control c-project-con" type="text" row="5"></textarea>'+
                 '</div></div></div></div></div></div>';
-	return shellHtml;
+
+	$("#sortable").append(shellHtml);
+	$("#executeShell-"+count).val(invoke.shellCommand);
 }
 
 //代码构建数据的判断以及数据的封装

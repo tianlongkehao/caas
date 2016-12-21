@@ -431,35 +431,35 @@ $(document).ready(function(){
 			url : ctx + "/service/generatePortSet.do",
     		type: "GET",
     		success : function(data) {
-    		data = eval("(" + data + ")");
-    		if(!data.mapPort||"error"==(data.ERROR)){
-    				alert("可用映射端口已经用尽，请联系管理员。");
-    		}else{
-    		var portTr =''+ 
-				'<tr class="plus-row">'+
-    					'<td>'+
-    						'<input class="port" type="text">'+
-							'</td>'+
-							'<td>'+
-									'<select class="T-http">'+
-										  '<option>TCP</option>'+
-											'<option>HTTP</option>'+
-									'</select>'+
-							'</td>'+
-							'<td>'+
-									'<i>'+data.mapPort+'</i>'+
-							'</td>'+
-							'<td>'+
-									'<a href="javascript:void(0)" onclick="deletePortRow(this,'+data.mapPort+')" class="gray">'+
-												'<i class="fa fa-trash-o fa-lg"></i>'+
-									'</a>'+
-						  '</td>'+
-				'</tr>';
-    		$("#pushPrptpcol").append(portTr);
-        		}
-    		//调节界面高度
-    		var imagePage_height = $(".host_step2").height();
-        	$(".step-inner").height(imagePage_height+100);
+	    		data = eval("(" + data + ")");
+	    		if(!data.mapPort||"error"==(data.ERROR)){
+	    				alert("可用映射端口已经用尽，请联系管理员。");
+	    		}else{
+		    		var portTr =''+ 
+						'<tr class="plus-row">'+
+		    					'<td>'+
+		    						'<input class="port" type="text">'+
+									'</td>'+
+									'<td>'+
+											'<select class="T-http">'+
+												  '<option>TCP</option>'+
+													'<option>HTTP</option>'+
+											'</select>'+
+									'</td>'+
+									'<td>'+
+											'<i>'+data.mapPort+'</i>'+
+									'</td>'+
+									'<td>'+
+											'<a href="javascript:void(0)" onclick="deletePortRow(this,'+data.mapPort+')" class="gray">'+
+														'<i class="fa fa-trash-o fa-lg"></i>'+
+											'</a>'+
+								  '</td>'+
+						'</tr>';
+		    			$("#pushPrptpcol").append(portTr);
+		        	}
+	    		//调节界面高度
+	    		var imagePage_height = $(".host_step2").height();
+	        	$(".step-inner").height(imagePage_height+100);
     		}
 		});
 		
@@ -499,7 +499,7 @@ $(document).ready(function(){
 	    	                	for (var i in data.data) {
 	    	                		var html = "";
 	    	                		var envTemplate = data.data[i];
-	    	                		html += '<tr>'+
+	    	                		html = '<tr>'+
 		    	    	    					'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'+
 		    	    	    					'<td class="vals"><input id="value_'+count+'" type="text" style="width: 98%"></td>'+
 		    	    	    					'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
@@ -578,7 +578,6 @@ $(document).ready(function(){
 												}
 											}	
 							        	});
-
 									  }
 									});
 							}else if (data.status == "200") {
@@ -699,9 +698,10 @@ function loadEnvironment(){
                 	for (var i in data.data) {
                 		var templateName = data.data[i];
                 		html += '<tr>'+
-                				'<td class="vals vals-env">'+templateName+'<span class="vals-path hide"><i class="fa fa-check"></i></span>'+
-                				'<input type="hidden" class="templateName" value="'+templateName+'" /></td>'+
-                			'</tr>'
+	                				'<td class="vals vals-env">'+templateName+'<span class="vals-path hide"><i class="fa fa-check"></i></span>'+
+	                					'<input type="hidden" class="templateName" value="'+templateName+'" />'+
+	                				'</td>'+
+	                			'</tr>'
                 	}
 	            } 
 	            if (html == "") {

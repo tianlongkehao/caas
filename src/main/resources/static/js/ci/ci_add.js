@@ -79,21 +79,21 @@ $(document).ready(function () {
     });
     //dockerfile路径&&dockerfile模板
     var dockerfilePathHtml = '<div class="row dockerfilePath">'+
-	    '<div class="form-group col-md-12">'+
-	    '<label class="c-project-tit">dockerfile路径</label>'+
-	    '<textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5"></textarea>'+
-	'</div></div>';
+							    '<div class="form-group col-md-12">'+
+							    '<label class="c-project-tit">dockerfile路径</label>'+
+							    '<textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5"></textarea>'+
+							'</div></div>';
     
     var dockerfileTempHtml = '<div class="row dockerfileTemp">'+
-	    '<div class="form-group col-md-12">'+
-		'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
-		'<span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
-		'<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
-	'</div>'+
-	'<div class="form-group col-md-12" id="dockerFiles" style="width:98%;margin-left:10px">'+
-		'<textarea id="dockerFile" name="dockerFileContent"></textarea>'+
-	'</div>'+
-	'</div>';
+							    '<div class="form-group col-md-12">'+
+									'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
+									'<span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
+									'<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
+								'</div>'+
+								'<div class="form-group col-md-12" id="dockerFiles" style="width:98%;margin-left:10px">'+
+									'<textarea id="dockerFile" name="dockerFileContent"></textarea>'+
+								'</div>'+
+							'</div>';
     //生成dockerfile路径输入框
     $("#dockerfilePath").click(function(){
     	$("#dockerfileMethod").empty();
@@ -301,9 +301,9 @@ function loadDockerFileTemplate(){
                 	for (var i in data.data) {
                 		var dockerFile = data.data[i];
                 		html += "<tr>"+
-                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
-                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
-                			"</tr>"
+	                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
+	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
+	                			"</tr>"
                 	}
 	            } 
 	            if (html == "") {
