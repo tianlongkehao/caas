@@ -757,8 +757,7 @@ function addPortCfgClick(obj){
 //端口删除按钮
 function delPortEdit(obj){
 		layer.open({
-			type:1,
-			title:'删除环境变量',
+			title:'删除端口',
 			content:"确定删除？",
 			btn:['确定','取消'],
 			yes: function(index, layero){
@@ -838,7 +837,7 @@ function addEnvClick(obj){
 //删除环境变量
 	function delEnvEdit(obj){
 		layer.open({
-			type:1,
+			
 			title:'删除环境变量',
 			content:"确定删除？",
 			btn:['确定','取消'],

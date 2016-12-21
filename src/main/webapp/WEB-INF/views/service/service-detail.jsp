@@ -616,8 +616,8 @@
 				            </c:if>
 				            <div id="createCfg-template" hidden="true">
 					            <div style="width: 345px; margin: 5px 10px 5px 10px">
-					              	<p>容器端口：<input type="text" name="containerPort" id="containerPort" /></p>
-					                <p>协议：<select class="T-http" name="protocol" id="protocol">
+					              	<p class="portLabel"><span>容器端口：</span><input type="text" name="containerPort" id="containerPort" class="form-control" /></p>
+					                <p class="portLabel"><span>协议：</span><select class="T-http form-control" name="protocol" id="protocol">
 					                          <option>TCP</option>
 					                          <option>HTTP</option>
 					                       </select>
