@@ -15,10 +15,12 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.tools.ant.types.resources.selectors.Compare;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -206,6 +208,25 @@ public class SFTPUtil {
                 fileList.add(fi);
             }
         }
+        fileList.sort(new Comparator<FileInfo>() {
+
+			@Override
+			public int compare(FileInfo o1, FileInfo o2) {
+				if (o1.isDir()) {
+					if (o2.isDir()) {
+						return o1.getFileName().compareTo(o2.getFileName());
+					}else {
+						return -1;
+					}
+				}else {
+					if (o2.isDir()) {
+						return 1;
+					} else {
+						return o1.getFileName().compareTo(o2.getFileName());
+					}
+				}
+			}
+		});
         return fileList;
     }  
     /**

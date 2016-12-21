@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +16,6 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.lucene.util.CollectionUtil;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +43,9 @@ import com.bonc.epm.paas.docker.util.DockerRegistryService;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
-import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateUtils;
+import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.ResultPager;
 
 /**
@@ -96,24 +93,12 @@ public class RegistryController {
      */
     @Autowired
 	private DockerRegistryService dockerRegistryService;
-	
-    /**
-     * 获取docker.image.url的路径信息
-     */
-    @Value("${docker.image.url}")
-    private String url;
 		
     /**
      * 获取paas.image.path中的镜像下载地址
      */
     @Value("${paas.image.path}")
 	private String imagePath = "../downimage";
-    
-    /**
-     * 获取save image 命令前缀
-     */
-    @Value("${docker.image.cmdpath}")
-    private String imageCmdPath;
     
     /**
      * Description: <br>
@@ -395,14 +380,15 @@ public class RegistryController {
      * @param imageVersion 镜像版本
      * @param resourceName 资源
      * @param request  
-     * @param response 
+     * @param response
      * @param model
      * @return map JSONString
+	 * @throws IOException
      */
     @RequestMapping(value = {"registry/downloadImage"}, method = RequestMethod.GET)
     @ResponseBody
     public String downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
-                                                Model model,HttpServletRequest request, HttpServletResponse response){
+                                                Model model,HttpServletRequest request, HttpServletResponse response) throws IOException{
         Map<String, Object> map = new HashMap<String, Object>();
         String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
         File path = new File(imagePath);
@@ -419,15 +405,33 @@ public class RegistryController {
             boolean complete= dockerClientService.pullImage(imageName, imageVersion);
             boolean flag = false;
             if (complete) {
+                InputStream inputStream = null;
                 try {
-                    String cmd = imageCmdPath +" "+ imagePath +"/"
-                        + downName + ".tar  "+ url +"/"+ imageName + ":" + imageVersion;
-                    flag = CmdUtil.exeCmd(cmd);
+                    inputStream = dockerClientService.saveImage(imageName,imageVersion);
+                    FileUtils.storeFile(inputStream,imagePath+"/"+downName+".tar");
+                    flag = true;
                 }
                 catch (IOException e) {
-                   LOG.error("error message:-" + e.getMessage());
-                   map.put("status", "500");
+                    LOG.error("error message:-" + e.getMessage());
+                    flag = false;
+                } 
+                finally {
+                    if (null != inputStream) {
+                        inputStream.close();
+                    }
                 }
+                 // deprecated save image method
+//                String url="192.168.0.76:5000";
+//                String imageCmdPath ="docker save -o";
+//                try {
+//                    String cmd = imageCmdPath +" "+ imagePath +"/"
+//                        + downName + ".tar  "+ url +"/"+ imageName + ":" + imageVersion;
+//                    flag = CmdUtil.exeCmd(cmd);
+//                }
+//                catch (IOException e) {
+//                   LOG.error("error message:-" + e.getMessage());
+//                   map.put("status", "500");
+//                }
             }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null,null);
             if (flag) {
@@ -446,22 +450,23 @@ public class RegistryController {
      * @see
      */
     @RequestMapping(value = {"registry/download"}, method = RequestMethod.GET)
-    public String getDownload(String imageName, String imageVersion,
+    public void getDownload(String imageName, String imageVersion,
                                 HttpServletRequest request, HttpServletResponse response) {            
             String fileName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion + ".tar";
+            response.reset();
             //设置文件MIME类型  
             response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
             //设置Content-Disposition  
             response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
-            try {  
-                InputStream myStream = new FileInputStream(imagePath+"/"+fileName);  
-                IOUtils.copy(myStream, response.getOutputStream());  
-                response.flushBuffer();  
+            try {
+                InputStream myStream = new FileInputStream(imagePath+"/"+fileName);
+                IOUtils.copy(myStream, response.getOutputStream());
+                response.flushBuffer();
             } 
             catch (IOException e) {  
                 LOG.error("downloadImage error:"+e.getMessage());
             }
-            return "redirect:registry/0";
+            //return "redirect:registry/0";
     }
     
 	/**

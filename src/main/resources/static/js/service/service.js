@@ -74,8 +74,12 @@ function loadContainers(obj,serviceId) {
 									+ '">'
 									+ '<td style="width: 5%">&nbsp;</td>'
 									+ '<td style="width: 15%;">'
-									+ '<a style="margin-left: 19px;" href="javascript:debug('+serviceID+','+data.containerList[i].containerStatus+')">'
-									+ containerName
+							if (data.service.status == 6){
+								containersHtml += '<a style="margin-left: 19px;" href="javascript:debug('+serviceID+','+data.containerList[i].containerStatus+')">'
+							} else {
+								containersHtml += '<a style="margin-left: 19px;">'
+							}
+							containersHtml += containerName
 									+ '</a>'
 									+ '</td>'
 									+ '<td colspan="2" style="width: 32%"><i class="'
@@ -1031,20 +1035,23 @@ function debug(id, status){
 		return;
 	}
 	
-	$.ajax({
-		url : "" + ctx+ "/service/debug.do?id="+ id,
-		success : function(data) {
-			data = eval("(" + data + ")");
-			if (data.status == "200") {
-				window.location.href = ctx + "/service/debug/" + id;
-			}
+//	$.ajax({
+//		url : "" + ctx+ "/service/debug.do?id="+ id,
+//		success : function(data) {
+//			data = eval("(" + data + ")");
+//			if (data.status == "200") {
+				var href = ctx + "/service/debug/" + id;
+				window.open(href); 
+//				window.location.href = ctx + "/service/debug/" + id;
+				
+//			}
 //			else if (data.status == "400") {
 //				layer.alert("该服务不支持调试");
 //			} else if(data.status == "401") {
 //				layer.alert("该服务不是调试状态");
 //			}
 			
-		}
-	})
+//		}
+//	})
 }
 
