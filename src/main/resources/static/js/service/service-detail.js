@@ -171,7 +171,6 @@ $(document).ready(function(){
        $("#canclSerBtn").hide();
        $("#saveSerBtn").hide();
        $("#editSerBtn").click(function(){
-    	   beforeEditDo();
     	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
     		   $(".editBaseCon").show();
         	 $(".oldBaseCon").hide();
@@ -312,31 +311,6 @@ $(document).ready(function(){
     		   location.reload();
     		}); 
        }
-       function beforeEditDo(){
-    	   var serType=$('#serType').val();
-    	   var serMonPath=$('#serMonPath').val();
-    	   var serVolName=$('#serVolName').val();
-    	   var str='';
-    	   //var str='<option value="">请选择一个卷组</option>';
-    	   $.ajax({
-    		   url:ctx+"/service/storage/getVols.do",
-    				success:function(data){
-    					var data = eval("(" + data + ")");
-    					for(var i=0; i<data.storages.length; i++){
-    						storage=data.storages[i];
-    					str+='<option value="'+storage.storageName+'">'
-    					+storage.storageName+' '+storage.storageSize
-    					+'M </option>';
-    				}
-    					$('#selSerType').empty();
-    					$('#selSerType').append(str);
-    					$("#selSerType option[value='"+serVolName+"']").attr("selected", true);
-    				}
-    	   			});
-    	   
-    	  
-       }
-       
        
        //可编辑的服务地址
        $(".editCon").hide();

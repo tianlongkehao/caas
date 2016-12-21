@@ -513,14 +513,14 @@
 								
 							</thead>
 							<tbody class="BORDER-vol">
-								<c:forEach items="${selSerTypeList }" var="selSerType"> 
-									<c:if test="${service.serviceType==1 }"> 
-									<tr>
-										<td>挂载地址：${service.mountPath }</td>
-										<td>存储卷：${service.volName }</td>
-									</tr>
-									</c:if>
-								</c:forEach> 
+								<c:if test="${service.serviceType==1 }"> 
+									<c:forEach items="${cepgList }" var="ceph"> 
+										<tr>
+											<td>挂载地址：${ceph.filePath }</td>
+											<td>存储卷：${ceph.storageName }</td>
+										</tr>
+									</c:forEach> 
+								</c:if>
 							</tbody>
 						</table>
 					</div>

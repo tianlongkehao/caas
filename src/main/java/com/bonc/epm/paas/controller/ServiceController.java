@@ -499,6 +499,8 @@ public class ServiceController {
 	            }
 	        }
         }
+        List<CephAddress> cephList = cephAddressDao.findByServiceId(service.getId());
+        model.addAttribute("cepgList", cephList);
         model.addAttribute("namespace",currentUser.getNamespace());
         model.addAttribute("id", id);
         model.addAttribute("podNameList", podNameList);
@@ -1688,9 +1690,6 @@ public class ServiceController {
                 cephAddressDao.delete(cephList);
                 serviceAndCephDao.delete(serviceAndCephDao.findByServiceId(service.getId()));
             }
-//            if (!"0".equals(service.getVolName()) && StringUtils.isNotBlank(service.getVolName())) {
-//                this.updateStorageType(service.getVolName(), service.getServiceName());
-//            }
         } 
         catch (KubernetesClientException e) {
             map.put("status", "400");
@@ -1840,49 +1839,11 @@ public class ServiceController {
         podSpec.setVolumes(volumes);
         List<com.bonc.epm.paas.kubernetes.model.Container> containers = podSpec.getContainers();
         for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
-//            List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
-//            VolumeMount volumeMount = new VolumeMount();
-//            volumeMount.setMountPath(mountPath);
-//            volumeMount.setName("cephfs");
-//            volumeMounts.add(volumeMount);
             container.setVolumeMounts(volumeMounts);
         }
         return controller;
     }
 
-    /**
-     * Description: <br>
-     * 更新挂载卷状态
-     * @param volName 
-     * @param serviceName 
-     * @see
-     */
-    public void updateStorageType(String volName, String serviceName) {
-
-		// userId
-        long userId = CurrentUserUtils.getInstance().getUser().getId();
-
-        Storage storage = storageDao.findByCreateByAndStorageName(userId, volName);
-		// 设置使用状态
-        List<Service> lstService = serviceDao.findByCreateByAndVolName(userId, volName);
-        if (lstService.size() == 0) {
-            storage.setUseType(StorageConstant.NOT_USER);
-        } 
-        else {
-            storage.setUseType(StorageConstant.IS_USER);
-        }
-		// 设置挂载点
-        StringBuilder newMp = new StringBuilder();
-        for (Service service : lstService) {
-            newMp.append(service.getServiceName());
-            newMp.append(":");
-            newMp.append(service.getMountPath());
-            newMp.append(";");
-        }
-        storage.setMountPoint(newMp.toString());
-        storageDao.save(storage);
-    }
-    
     /**
      * Description: <br>
      * 获取挂在地址
@@ -2340,7 +2301,7 @@ public class ServiceController {
             ser=setAttrForEdit(ser, service);
             ser.setServiceName(service.getServiceName());
             ser.setStartCommand(service.getStartCommand());
-            updateStorageType(service.getVolName(), service.getServiceName());
+//            updateStorageType(service.getVolName(), service.getServiceName());
         }else if(4==ser.getStatus()){
             try {
                 controller = client.getReplicationController(ser.getServiceName());
@@ -2378,10 +2339,9 @@ public class ServiceController {
                      k8sService=kubernetesClientService.updateService(k8sService,service);
                      controller = client.updateReplicationController(ser.getServiceName(), controller);
                      k8sService = client.updateService(ser.getServiceName(), k8sService);
-                //
-                     if(StringUtils.isNotBlank(service.getVolName())){
+//                     if(StringUtils.isNotBlank(service.getVolName())){
 //                         controller = setVolumeStorage(controller, service.getVolName(),service.getMountPath());
-                                             }
+//                                             }
                      ser=setAttrForEdit(ser, service);
                      ser.setServiceName(service.getServiceName());
                      ser.setStartCommand(service.getStartCommand());
@@ -2445,15 +2405,6 @@ public class ServiceController {
         ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
         ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
         ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
-        if(StringUtils.isNotBlank(service.getVolName())){
-            ser.setVolName(service.getVolName());
-            ser.setMountPath(service.getMountPath());
-            ser.setServiceType("1");
-        }else{
-            ser.setVolName("");
-            ser.setMountPath("");
-            ser.setServiceType("2");
-                    }
         return ser;
     }
     

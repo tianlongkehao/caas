@@ -642,10 +642,10 @@ public class KubernetesClientService {
             controller.getMetadata().setName(service.getServiceName());
             controller.getMetadata().getLabels().put("app",service.getServiceName());
             controller.getSpec().getTemplate().getSpec().getContainers().get(0).setCommand(command);
-            if(!StringUtils.isNotBlank(service.getVolName())){
-                controller.getSpec().getTemplate().getSpec().getContainers().get(0).setVolumeMounts(null);
-                        }
-                }
+//            if(!StringUtils.isNotBlank(service.getVolName())){
+//                controller.getSpec().getTemplate().getSpec().getContainers().get(0).setVolumeMounts(null);
+//                        }
+        }
         controller.getMetadata().getLabels().remove("dmz");
         controller.getMetadata().getLabels().remove("user");
         if(StringUtils.isNotBlank(service.getProxyZone())){
