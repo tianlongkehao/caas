@@ -22,7 +22,7 @@ public class Storage {
 	 */
 	private String storageName;
 	/**
-	 * 使用状态（0 未使用 ，1 使用）
+	 * 使用状态（1 未使用 ，2 使用）
 	 */
 	private Integer useType;
 	/**

@@ -258,27 +258,29 @@
 											<li class="hide-set" id="save_roll_dev"><span class="ve_top">挂载地址：</span>
 												<ol id="mountPathList">
 													<li class="hide-select">
-														<input type="text" id="mountPath" class="form-control"
-																		name="mountPath" value="" />
-														<select class="selectVolume form-control" id="selectVolume" name="volName"
+														<select class="selectVolume form-control" id="selectVolume" 
 																		style="height: 34px; width: 230px;">
-																			<option name="volName" value="0">选择一个存储卷</option>
-																	</select>
+																<option  value="">选择一个存储卷</option>
+																<c:forEach items="${storageList }" var = "storage">
+																    <option  value="${storage.storageName }">${storage.storageName }  ${storage.storageSize }M</option>
+																</c:forEach>
+													    </select>
+														<input type="text" id="mountPath" class="form-control" value="" />
 														<a id="addVolume"><i class="fa fa-plus"></i>添加</a>
 													</li>
 													<li>
 														<table class="table table-hover enabled" id="volPath">
 															<thead>
 																<tr>
-																	<th style="width: 45%">挂载地址</th>
 																	<th style="width: 45%">存储卷</th>
+																	<th style="width: 45%">挂载地址</th>
 																	<th style="width: 10%">操作</th>
 																</tr>
 															</thead>
 															<tbody id="volList">
-																<input type="hidden" id="volarrayKey" value="" />
 															</tbody>
 														</table>
+														<input type="hidden" id="cephAds" name = "cephAds" value="" />
 													</li>
 												</ol></li>
 											<li class="hide-set"><span class="ve_top">环境变量：</span>
