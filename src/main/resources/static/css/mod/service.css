@@ -1106,3 +1106,14 @@ li.line-h-3 span i{
 .serVolMapping table tr td{
 	text-indent: 8px;
 }
+p.portLabel{
+	margin-top:15px;
+}
+p.portLabel span{
+	width:22%;
+	line-height:34px;
+	float:left;
+}
+p.portLabel input,select{
+	width:75%!important;
+}
