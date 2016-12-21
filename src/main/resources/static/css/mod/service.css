@@ -1114,6 +1114,9 @@ p.portLabel span{
 	line-height:34px;
 	float:left;
 }
-p.portLabel input,select{
-	width:75%!important;
+p.portLabel input{
+	width:75%;
+}
+#protocol{
+	width:75%;
 }
