@@ -302,10 +302,15 @@ public class StorageController {
         Map map = new HashMap();
         String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
         File file = new File(cephController.getMountpoint() + namespace + storageName);
+        String directory =cephController.getMountpoint() + namespace + storageName;
+        long hasUse=0;
+        if(new File(directory).exists()){
+            hasUse = SFTPUtil.getHasUsed(directory);
+        }else{
+            map.put("status","400");
         //mountLocalCeph(file);
-
-        long hasUsed = file.length() / 1024 / 1024;
-        map.put("length", String.valueOf(hasUsed));
+        }
+        map.put("length", String.valueOf(hasUse /1024/1024 ));
         return JSON.toJSONString(map);
     }
 
