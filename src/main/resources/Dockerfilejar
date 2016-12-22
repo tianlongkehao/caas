@@ -1,5 +1,3 @@
 FROM ${baseImage}
 
 COPY ${fileName} /
-
-CMD ["catalina.sh", "run"]

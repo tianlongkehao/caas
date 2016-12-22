@@ -11,8 +11,6 @@
 
 package com.bonc.epm.paas.docker.api;
 
-import java.util.ArrayList;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -26,8 +24,6 @@ import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
 import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.model.Manifest;
 import com.bonc.epm.paas.docker.model.Tags;
-
-import antlr.collections.List;
 
 /**
  * @author ke_wang
