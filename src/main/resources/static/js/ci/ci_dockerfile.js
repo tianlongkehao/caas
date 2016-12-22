@@ -142,9 +142,9 @@ $(document).ready(
 	                	for (var i in data.data) {
 	                		var dockerFile = data.data[i];
 	                		html += "<tr>"+
-	                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
-	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
-	                			"</tr>"
+		                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
+		                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
+		                			"</tr>"
 	                	}
 		            } 
 		            if (html == "") {

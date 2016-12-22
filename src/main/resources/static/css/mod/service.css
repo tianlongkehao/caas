@@ -1079,3 +1079,44 @@ li.line-h-3 span i{
 #serviceList tr td ul.dropdown-menu li a i{
 	padding-right:8px;
 }
+#save_roll_dev{
+	margin-bottom:15px;
+}
+#addVolume{
+	cursor: pointer;
+    line-height: 34px;
+    margin-left: 10px;
+}
+
+.table .BORDER-vol td {
+    border: 1px solid #eee;
+}
+
+.serVolMapping {
+    overflow: hidden;
+    width: 98%;
+    margin-left: 1%;
+}
+.serVolMapping table th{
+	background: #e4eaec;
+}
+.serVolMapping table tr th{
+	text-indent: 8px;
+}
+.serVolMapping table tr td{
+	text-indent: 8px;
+}
+p.portLabel{
+	margin-top:15px;
+}
+p.portLabel span{
+	width:22%;
+	line-height:34px;
+	float:left;
+}
+p.portLabel input{
+	width:75%;
+}
+#protocol{
+	width:75%;
+}

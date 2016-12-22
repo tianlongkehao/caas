@@ -1,3 +1,4 @@
+var count = 1;
 $(function(){
 	//创建shera
 	$("#createSheraBtn").click(function(){
@@ -37,12 +38,13 @@ $(function(){
 	
 	$("#createjdk").click(function(){
 		var addjdkHtml = '<tr class="plus-row">'+
-		'<td><input class="jdkName" type="text" value=""></td>'+
-		'<td><input class="jdkPath" type="text" value=""></td>'+
-		'<td><a onclick="deleteRow(this)" class="gray">'+
-			'<i class="fa fa-trash-o fa-lg"></i>'+
-		'</a></td>'+
-		'</tr>';
+							'<td><input class="jdkName" type="text" value=""></td>'+
+							'<td><input class="jdkPath" type="text" value=""></td>'+
+							'<td><a onclick="deleteRow(this)" class="gray">'+
+									'<i class="fa fa-trash-o fa-lg"></i>'+
+								'</a>'+
+							'</td>'+
+						'</tr>';
 		$(".jdktbody").append(addjdkHtml);
 	})
 	
@@ -102,13 +104,17 @@ function findSheraData(id){
 				for (var i = 0 ; i < jdkList.length; i++) {
 					var jdk = jdkList[i];
 					var addjdkHtml = '<tr class="plus-row">'+
-					'<td><input class="jdkName" type="text" value="'+jdk.version+'"></td>'+
-					'<td><input class="jdkPath" type="text" value="'+jdk.path + '"></td>'+
-					'<td><a onclick="deleteRow(this)" class="gray">'+
-					'<i class="fa fa-trash-o fa-lg"></i>'+
-					'</a></td>'+
-					'</tr>';
+										'<td><input class="jdkName" id = "jdkName-'+count+'" type="text"></td>'+
+										'<td><input class="jdkPath" id = "jdkPath-'+count+'" type="text"></td>'+
+										'<td><a onclick="deleteRow(this)" class="gray">'+
+											'<i class="fa fa-trash-o fa-lg"></i>'+
+											'</a>'+
+										'</td>'+
+									'</tr>';
 					$(".jdktbody").append(addjdkHtml);
+					$("#jdkName-"+count).val(jdk.version);
+					$("#jdkPath-"+count).val(jdk.path);
+					count++;
 				}
 			}
 		}

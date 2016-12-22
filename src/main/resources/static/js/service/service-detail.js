@@ -24,6 +24,11 @@ $(document).ready(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".bindDomain").removeClass("hide");
     });
+    
+    $(".SERVOL").click(function(){
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".serVolMapping").removeClass("hide");
+    });
 
     $(".ENVS").click(function(){
 
@@ -166,7 +171,6 @@ $(document).ready(function(){
        $("#canclSerBtn").hide();
        $("#saveSerBtn").hide();
        $("#editSerBtn").click(function(){
-    	   beforeEditDo();
     	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
     		   $(".editBaseCon").show();
         	 $(".oldBaseCon").hide();
@@ -307,30 +311,6 @@ $(document).ready(function(){
     		   location.reload();
     		}); 
        }
-       function beforeEditDo(){
-    	   var serType=$('#serType').val();
-    	   var serMonPath=$('#serMonPath').val();
-    	   var serVolName=$('#serVolName').val();
-    	   var str='<option value="">请选择一个卷组</option>';
-    	   $.ajax({
-    		   url:ctx+"/service/storage/getVols.do",
-    				success:function(data){
-    					var data = eval("(" + data + ")");
-    					for(var i=0; i<data.storages.length; i++){
-    						storage=data.storages[i];
-    					str+='<option value="'+storage.storageName+'">'
-    					+storage.storageName+' '+storage.storageSize
-    					+'M </option>';
-    				}
-    					$('#selSerType').empty();
-    					$('#selSerType').append(str);
-    					$("#selSerType option[value='"+serVolName+"']").attr("selected", true);
-    				}
-    	   			});
-    	   
-    	  
-       }
-       
        
        //可编辑的服务地址
        $(".editCon").hide();
@@ -751,8 +731,7 @@ function addPortCfgClick(obj){
 //端口删除按钮
 function delPortEdit(obj){
 		layer.open({
-			type:1,
-			title:'删除环境变量',
+			title:'删除端口',
 			content:"确定删除？",
 			btn:['确定','取消'],
 			yes: function(index, layero){
@@ -832,7 +811,7 @@ function addEnvClick(obj){
 //删除环境变量
 	function delEnvEdit(obj){
 		layer.open({
-			type:1,
+			
 			title:'删除环境变量',
 			content:"确定删除？",
 			btn:['确定','取消'],

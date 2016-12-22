@@ -170,21 +170,21 @@
          	for (var i in data.data) {
             		var refservice = data.data[i];
             		tr+='<tr>'+
-	     			'<td style="width: 5%; text-indent: 30px;">'+
-	     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
-			     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'<i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
-			     		'<td style="width: 20%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
-			     		'<td style="width: 20%;">'+refservice.refAddress+'</td>'+
-			     		'<td style="width: 20%;">'+refservice.useProxy+'</td>';
+			     			'<td style="width: 5%; text-indent: 30px;">'+
+			     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
+					     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'<i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
+					     		'<td style="width: 20%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
+					     		'<td style="width: 20%;">'+refservice.refAddress+'</td>'+
+					     		'<td style="width: 20%;">'+refservice.useProxy+'</td>';
 			     		if('1'==refservice.viDomain){
 			     			tr+='<td style="width: 14%;">所有租户可见</td>';
 			     		}else{
 			     			tr+='<td style="width: 14%;">仅本租户可见</td>';
 			     		}
 			     		tr+='<td style="width: 10%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash fa-lg"></i></a>'+
-			     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
-			     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
-			     	'</tr>';
+					     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
+					     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
+					     	'</tr>';
          	}
             $("#importSerList").append(tr);
             showDataTable();

@@ -141,8 +141,8 @@
 				                                <div class=" col-md-12">
 				                                    <label class="c-project-tit">JDK</label>
 				                                    <select id="jdk-version" name="jdkVersion" class="form-control c-project-con">
-				                                        <option value="${ci.jdkVersion }">${ci.jdkVersion }</option>
-				                                        <c:forEach items="${jdkList}" var="jdk">
+                                                        <option value="${ci.jdkVersion }">${empty ci.jdkVersion  ? "system" : ci.jdkVersion}</option>
+    			                                        <c:forEach items="${jdkList}" var="jdk">
 					                                        <c:if test="${ci.jdkVersion != jdk.version }">
                                                                 <option value="${jdk.version }">${jdk.version }</option>
 	                                                        </c:if>
