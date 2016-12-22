@@ -382,7 +382,7 @@ public class SFTPUtil {
         long hasUsed=0;
         for(int i=0;i<tempList.length;i++){
             if(!".".equals(tempList[i].getName())) {
-               hasUsed+= tempList[i].length()/1024;
+               hasUsed+= tempList[i].length();
             }
         }
         return hasUsed;
