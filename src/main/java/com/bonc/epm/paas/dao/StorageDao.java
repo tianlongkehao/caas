@@ -36,6 +36,17 @@ public interface StorageDao extends CrudRepository<Storage, Long> {
 	 * @see
 	 */
     Storage findByCreateByAndStorageName(long createBy, String storageName);
+    
+    /**
+     * 
+     * Description: <br>
+     * 查询当前租户未使用的存储卷
+     * @param createBy
+     * @param useType
+     * @return 
+     * @see
+     */
+    List<Storage> findByCreateByAndUseTypeOrderByCreateDateDesc(long createBy,Integer useType);
 
 	/**
 	 * 

@@ -318,10 +318,19 @@ public class UserController {
             updateUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，创建client
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-            Namespace namespace = client.getNamespace(user.getNamespace());
+            Namespace namespace=null;
+            try {
+                namespace = client.getNamespace(user.getNamespace()); 
+            }
+            catch (Exception e) {
+                LOG.error("no namespace info!");
+                namespace= kubernetesClientService.generateSimpleNamespace(user.getNamespace());
+                namespace = client.createNamespace(namespace);
+            }
+            
             if (namespace != null) {
             	try {
-            		ResourceQuota quota = updateQuotaInfo(client, user.getNamespace(), resource);
+            		ResourceQuota quota = updateQuotaInfo(client, user, resource);
             		client.updateResourceQuota(user.getNamespace(), quota);
             		
             		// LimitRange limit = updateLimitRange(client, user.getNamespace(),
@@ -920,13 +929,21 @@ public class UserController {
 	 * @param resource 
 	 * @return quota ResourceQuota
 	 */
-    private ResourceQuota updateQuotaInfo(KubernetesAPIClientInterface client, String namespace, Resource resource) {
-        ResourceQuota quota = client.getResourceQuota(namespace);
+    private ResourceQuota updateQuotaInfo(KubernetesAPIClientInterface client, User user, Resource resource) {
+        ResourceQuota quota = null;
+        try {
+            quota = client.getResourceQuota(user.getNamespace());
+        }
+        catch (Exception e) {
+            createQuota(user, resource, client);
+        }
+        quota = client.getResourceQuota(user.getNamespace());
         ResourceQuotaSpec spec = quota.getSpec();
         
         Map<String, String> hard = quota.getSpec().getHard();
         hard.put("memory", resource.getRam() + "G"); // 内存
         hard.put("cpu", Double.valueOf(resource.getCpu_account())/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量
+        hard.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
 		// hard.put("pods", resource.getPod_count() + "");//POD数量
 		// hard.put("services", resource.getServer_count() + "");//服务
 		// hard.put("replicationcontrollers", resource.getImage_control() +

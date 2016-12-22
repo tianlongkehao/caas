@@ -2,8 +2,6 @@ $(document).ready(function(){
 	// 控制环境变量的参数
 	var count=1;
 	loadImageList();
-	getServiceStorageVol();
-	getMountPath();
 	
 	document.getElementById("cpu1").checked=true;
 	document.getElementById("ram1").checked=true;
@@ -11,11 +9,9 @@ $(document).ready(function(){
 	$(".createPadding").addClass("hide");
 	
 	$("#createButton").click(function(){
-		
 		if(!saveEnvVariable()) {
 			return;
 		}
-		
 		//判断服务名称
 		var name = $('#serviceName').val();
 		// check the name of container
@@ -193,36 +189,14 @@ $(document).ready(function(){
 	    }
 	    
 	    //挂载路径的判断
-	    var mountPath = $("#mountPath").val();
-	    var selectVolume = $("#selectVolume").val();
 	    if ($("#state_service").prop("checked")==true) {
-		    if (!mountPath || mountPath.length < 1) {
-			      layer.tips('挂载路径不能为空','#mountPath',{tips: [1, '#3595CC']});
-			      $('#mountPath').focus();
-			      return;
-			}		   
-		    if (selectVolume=='0'){
-			      layer.tips('请选择一个挂载卷','#selectVolume',{tips: [1, '#3595CC']});
-			      $('#selectVolume').focus();
-			      return;
-		    }
+	    	if(!saveCephData()) {
+				return;
+			}
 	    } else {
-	    	$("#mountPath").val(null);
-	    	$("#selectVolume").val(null);
 	    	$("#serviceType").val(2);
 	    }
 	    
-/*	    var nginxstr = "{";
-	    $('input[name="nginxserv"]:checked').each(function(){
-    		var servname = $(this).val();
-    		var servid = $(this).attr('id');
-    		nginxstr = nginxstr+"'"+servid+"'"+":"+"'"+servname+"',";
-    	})
-    	nginxstr = nginxstr.substring(0,nginxstr.length-1) +"}";
-    	// var nginxObj = eval('(' + nginxstr + ')');
-    	if(nginxstr == "}"){
-    		nginxstr = "{}";
-    	}*/
 	    var nginxstr = "";
 	    $('input[name="nginxserv"]:checked').each(function(){
     		var servname = $(this).val();
@@ -316,7 +290,6 @@ $(document).ready(function(){
 	// 控制checkbook后输入框是否可填写
 	$("#save_roll_dev").hide();
 	$("#state_service").click(function(){
-//		alert($("#state_service").prop("checked"));
 		$("#save_roll_dev").toggle();
 		$("#mountPath").focus();
 		//调节界面高度
@@ -401,6 +374,45 @@ $(document).ready(function(){
     	$(".step-inner").height(imagePage_height+100);	
 	});
 	
+	// 添加挂载卷
+	var size = 0;
+	$("#addVolume").click(function(){
+		var selectVolume = $("#selectVolume").val();
+		var mountPath = $("#mountPath").val();
+		
+		if (selectVolume == null || selectVolume == "") {
+    		layer.tips('请选择存储卷','#selectVolume',{tips: [1, '#3595CC']});
+			$('#selectVolume').focus();
+			return;
+    	}
+		
+		if (mountPath == null || mountPath == "") {
+    		layer.tips('挂载地址不能为空','#mountPath',{tips: [1, '#3595CC']});
+			$('#mountPath').focus();
+			return;
+    	}
+		if(mountPath.search(/^[0-9a-zA-Z_/]+$/) === -1){
+			layer.tips('挂载地址只能是字母数字下划线斜线','#mountPath',{tips: [1, '#3595CC']});
+			$('#mountPath').focus();
+			return;
+		}
+		
+		var tr = '<tr>'+
+					'<td class="keys"><input type="text" id = "storageName_'+count+'" style="width: 98%"></td>'+
+					'<td class="vals"><input type="text" id = "filePath_'+count+'" style="width: 98%"></td>'+
+					'<td class="func"><a href="javascript:void(0)" onclick="deleteCephRow(this)" class="gray">'+
+						'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+mountPath+'">'+
+					'</td>'+
+				'</tr>'
+		$("#volList").append(tr);
+		$("#storageName_"+count).val(selectVolume);
+		$("#filePath_"+count).val(mountPath);
+		count++;
+		//调节界面高度
+		var imagePage_height = $(".host_step2").height();
+    	$(".step-inner").height(imagePage_height+100);	
+	});
+	
 	//自动化伸缩范围&伸缩阈值
 	var trueOrfalse = false;
 	$("#dynamic-range").hide();
@@ -419,35 +431,35 @@ $(document).ready(function(){
 			url : ctx + "/service/generatePortSet.do",
     		type: "GET",
     		success : function(data) {
-    		data = eval("(" + data + ")");
-    		if(!data.mapPort||"error"==(data.ERROR)){
-    				alert("可用映射端口已经用尽，请联系管理员。");
-    		}else{
-    		var portTr =''+ 
-				'<tr class="plus-row">'+
-    					'<td>'+
-    						'<input class="port" type="text">'+
-							'</td>'+
-							'<td>'+
-									'<select class="T-http">'+
-										  '<option>TCP</option>'+
-											'<option>HTTP</option>'+
-									'</select>'+
-							'</td>'+
-							'<td>'+
-									'<i>'+data.mapPort+'</i>'+
-							'</td>'+
-							'<td>'+
-									'<a href="javascript:void(0)" onclick="deletePortRow(this,'+data.mapPort+')" class="gray">'+
-												'<i class="fa fa-trash-o fa-lg"></i>'+
-									'</a>'+
-						  '</td>'+
-				'</tr>';
-    		$("#pushPrptpcol").append(portTr);
-        		}
-    		//调节界面高度
-    		var imagePage_height = $(".host_step2").height();
-        	$(".step-inner").height(imagePage_height+100);
+	    		data = eval("(" + data + ")");
+	    		if(!data.mapPort||"error"==(data.ERROR)){
+	    				alert("可用映射端口已经用尽，请联系管理员。");
+	    		}else{
+		    		var portTr =''+ 
+						'<tr class="plus-row">'+
+		    					'<td>'+
+		    						'<input class="port" type="text">'+
+									'</td>'+
+									'<td>'+
+											'<select class="T-http">'+
+												  '<option>TCP</option>'+
+													'<option>HTTP</option>'+
+											'</select>'+
+									'</td>'+
+									'<td>'+
+											'<i>'+data.mapPort+'</i>'+
+									'</td>'+
+									'<td>'+
+											'<a href="javascript:void(0)" onclick="deletePortRow(this,'+data.mapPort+')" class="gray">'+
+														'<i class="fa fa-trash-o fa-lg"></i>'+
+											'</a>'+
+								  '</td>'+
+						'</tr>';
+		    			$("#pushPrptpcol").append(portTr);
+		        	}
+	    		//调节界面高度
+	    		var imagePage_height = $(".host_step2").height();
+	        	$(".step-inner").height(imagePage_height+100);
     		}
 		});
 		
@@ -487,7 +499,7 @@ $(document).ready(function(){
 	    	                	for (var i in data.data) {
 	    	                		var html = "";
 	    	                		var envTemplate = data.data[i];
-	    	                		html += '<tr>'+
+	    	                		html = '<tr>'+
 		    	    	    					'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'+
 		    	    	    					'<td class="vals"><input id="value_'+count+'" type="text" style="width: 98%"></td>'+
 		    	    	    					'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
@@ -566,7 +578,6 @@ $(document).ready(function(){
 												}
 											}	
 							        	});
-
 									  }
 									});
 							}else if (data.status == "200") {
@@ -687,9 +698,10 @@ function loadEnvironment(){
                 	for (var i in data.data) {
                 		var templateName = data.data[i];
                 		html += '<tr>'+
-                				'<td class="vals vals-env">'+templateName+'<span class="vals-path hide"><i class="fa fa-check"></i></span>'+
-                				'<input type="hidden" class="templateName" value="'+templateName+'" /></td>'+
-                			'</tr>'
+	                				'<td class="vals vals-env">'+templateName+'<span class="vals-path hide"><i class="fa fa-check"></i></span>'+
+	                					'<input type="hidden" class="templateName" value="'+templateName+'" />'+
+	                				'</td>'+
+	                			'</tr>'
                 	}
 	            } 
 	            if (html == "") {
@@ -744,9 +756,6 @@ function saveEnvVariable() {
     return true;
 }
 
-/**
- * 删除环境变量
- */
 // 删除环境变量
 function deleteRow(obj){
 	var envKey = $(obj).parent().find("input:first").val();
@@ -762,6 +771,50 @@ function deleteRow(obj){
 	//调节界面高度
 	var imagePage_height = $(".host_step2").height();
 	$(".step-inner").height(imagePage_height+100);	
+}
+
+//保存挂载地址数据到json中
+function saveCephData(){
+	var dataJson="";  
+	var arrayKey = new Array(1) ;
+	var flag = 0;
+    $("#volList tr").each(function (index, domEle){
+        var selectVolume = "";  
+        var filePath = "";  
+        $(domEle).find("input").each(function(index,data){  
+            if(index == 0){  
+            	selectVolume = $(data).val();
+            } else if (index == 1){  
+            	filePath = $(data).val();
+            }  
+        });  
+        
+		for (var i = 0; i<arrayKey.length;i++) {
+			if (selectVolume == arrayKey[i]) {
+				layer.tips('存储卷不能重复，请您重新选择',domEle,{tips: [1, '#3595CC']});
+				$(domEle).focus();
+				flag = 1;
+				break;
+			}
+		}
+		arrayKey.push(selectVolume);
+		dataJson += selectVolume+","+filePath+";";
+    });
+    
+    if (flag == 1) {
+    	return false;
+    }
+    if (dataJson != "") {  
+        dataJson = dataJson.substring(0,dataJson.length -1);  
+    }
+    $('#cephAds').val(dataJson);
+    return true;
+}
+
+
+//删除挂载卷
+function deleteCephRow(obj){
+	$(obj).parent().parent().remove();
 }
 
 function decideEnvKey(){
@@ -917,37 +970,6 @@ function containerName(){
 			 });
 }
 
-function getServiceStorageVol(){
-	$.ajax({
-		url : ctx + "/service/storageList?pageable=",
-		type: "POST",
-		success : function(data) {
-			var jsonData = $.parseJSON(data);
-			for(var i = 0; i < jsonData.count; i++){
-				var storageVolOpt = '<option name="volName" value=""></option>';
-				var txt = jsonData.storages[i].storageName +" "+ jsonData.storages[i].storageSize + "M";
-				$("#selectVolume").append(storageVolOpt);
-				$("#selectVolume")[0].children[i+1].innerHTML = txt;
-				$("#selectVolume")[0].children[i+1].value = jsonData.storages[i].storageName;
-			}
-			
-		}
-	})
-}
-//获取挂载地址mountPath
-function getMountPath(){
-	$("#selectVolume").change(function(){
-		var volume = $("#selectVolume").val();
-		$.ajax({
-			url : ctx + "/service/getMountPath.do?volume="+volume,
-			type: "GET",
-			success : function(data) {
-				data = eval("(" + data + ")");
-				$("#mountPath").val(data.mountPath);
-			}
-		})
-    });
-}
 //删除port
 function deletePortRow(obj,int){
 	//alert(int);

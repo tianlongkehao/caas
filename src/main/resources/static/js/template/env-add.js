@@ -168,7 +168,7 @@ function saveEnvVariable() {
     
 
 }
-
+var count = 1;
 //单击导入模板，加载模板数据
 function loadEnvironment(){
 	 $.ajax({
@@ -210,18 +210,21 @@ function loadEnvironment(){
 	    	    	                if (data['data'].length > 0) {
 	    	    	                	for (var i in data.data) {
 	    	    	                		var envTemplate = data.data[i];
-	    	    	                		html += '<tr>'+
-	    		    	    	    			'<td class="keys"><input type="text" style="width: 98%" value="'+envTemplate.envKey+'"></td>'+
-	    		    	    	    			'<td class="vals"><input type="text" style="width: 98%" value="'+envTemplate.envValue+'"></td>'+
-	    		    	    	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-	    		    	    	    			'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
-	    		    	    	    			'</td>'+
-	    		    	    	    		'</tr>'
-	    		    	    	    		arrayKey.push(envTemplate.envKey+",");
+	    	    	                		html = '<tr>'+
+			    		    	    	    			'<td class="keys"><input id = "key_'+count+'" type="text" style="width: 98%"></td>'+
+			    		    	    	    			'<td class="vals"><input id = "value_'+count+'" type="text" style="width: 98%"></td>'+
+			    		    	    	    			'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
+			    		    	    	    				'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
+			    		    	    	    			'</td>'+
+			    		    	    	    		'</tr>'
+	    	    	                		$("#env-oper1").append(html);
+	    	    	                		$("#key_"+count).val(envTemplate.envKey);
+	    	    	                		$("#value_"+count).val(envTemplate.envValue);
+	    	    	                		arrayKey.push(envTemplate.envKey+",");
+	    	    	                		count++;
 	    	    	                	}
 	    	    	                }
 	    	    	            }
-	    	    	            $("#env-oper1").append(html);
 	    	    	            $("#arrayKey").attr("value",arrayKey);
 	    	         		}
 	    	         	});
