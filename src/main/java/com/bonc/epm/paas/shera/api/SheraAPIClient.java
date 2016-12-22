@@ -41,13 +41,14 @@ import com.bonc.epm.paas.shera.model.JobExecViewList;
 
 public class SheraAPIClient implements SheraAPIClientInterface {
     
-    private static final Log LOG = LogFactory.getLog(KubernetesApiClient.class);
+    private static final Log LOG = LogFactory.getLog(SheraAPIClient.class);
     
     private String sRURI;
     private SheraAPI api;
     private String namespace;
     
     public SheraAPIClient(String srUrl, String namespace, String username, String password, RestFactory factory) {
+        LOG.info("开始连接shera......");
         this.namespace = namespace;
         this.sRURI = srUrl +"she-ra";
         api = factory.createSheRaAPI(sRURI,username,password);
@@ -56,6 +57,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public JobExecList getAllJobs() throws SheraClientException {
         try {
+            LOG.info("调用shera获取所有job接口");
             return api.getAllJobs(namespace);
         } catch (NotFoundException e) {
             return new JobExecList();
@@ -67,6 +69,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public Job createJob(Job job) throws SheraClientException {
         try {
+            LOG.info("调用shera创建job接口");
             return api.createJob(namespace, job);
         }
         catch (NotFoundException e) {
@@ -80,6 +83,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public JobExecView execJob(String name,JobExecView jobExecView) throws SheraClientException {
         try {
+            LOG.info("调用shera执行job接口");
             return api.execJob(namespace, name,jobExecView);
         }
         catch (NotFoundException e) {
@@ -93,6 +97,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public Jdk deleteJdk(String jdkVersion) throws SheraClientException {
         try {
+            LOG.info("调用shera删除jdk接口");
             return api.deleteJdk(jdkVersion);
         }
         catch (NotFoundException e) {
@@ -106,6 +111,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public Jdk createJdk(Jdk jdk) throws SheraClientException {
         try {
+            LOG.info("调用shera删除jdk接口");
             return api.createJdk(jdk);
         }
         catch (NotFoundException e) {
@@ -119,6 +125,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public JobExecView deleteExecution(String name, Integer seqno) throws SheraClientException {
         try {
+            LOG.info("调用shera删除一个执行接口");
             return api.deleteExecution(namespace, name, seqno);
         }
         catch (NotFoundException e) {
@@ -132,6 +139,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public JobExecView killExecution(String name, Integer seqno) throws SheraClientException {
         try {
+            LOG.info("调用shera停止一个执行接口");
             return api.killExecution(namespace, name, seqno);
         }
         catch (NotFoundException e) {
@@ -145,6 +153,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public JobExecView getExecution(String name, Integer seqno) throws SheraClientException {
         try {
+            LOG.info("调用shera获取执行结果接口");
             return api.getExecution(namespace, name, seqno);
         }
         catch (NotFoundException e) {
@@ -158,6 +167,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public JobExecViewList getJobAllExecutions(String name) throws SheraClientException {
         try {
+            LOG.info("调用shera获取一个job所有执行接口");
             return api.getJobAllExecutions(namespace, name);
         }
         catch (NotFoundException e) {
@@ -171,6 +181,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public Job deleteJob(String name) throws SheraClientException {
         try {
+            LOG.info("调用shera删除job接口");
             return api.deleteJob(namespace, name);
         }
         catch (NotFoundException e) {
@@ -184,6 +195,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public Job updateJob(Job job) throws SheraClientException {
         try {
+            LOG.info("调用shera更新job接口");
             return api.updateJob(namespace, job);
         }
         catch (NotFoundException e) {
@@ -197,6 +209,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public Job getJob(String name) throws SheraClientException {
         try {
+            LOG.info("调用shera获取job配置信息接口");
             return api.getJob(namespace, name);
         }
         catch (NotFoundException e) {
@@ -211,6 +224,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     public com.bonc.epm.paas.shera.model.Log getExecLog(String name, String seqno,
                                                         Integer seek) throws SheraClientException {
         try {
+            LOG.info("调用shera获取执行日志接口");
             return api.getExecLog(namespace, name, seqno, seek);
         }
         catch (NotFoundException e) {
@@ -224,6 +238,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public ChangeGit getChangeGit(String name) throws SheraClientException {
         try {
+            LOG.info("调用shera获取代码挂钩接口，验证代码仓库中代码是否发生变化");
             return api.getChangeGit(namespace, name);
         }
         catch (NotFoundException e) {
@@ -237,6 +252,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public ChangeGit addGitHooks(String name, ChangeGit changeGit) throws SheraClientException {
         try {
+            LOG.info("调用shera添加代码挂钩接口");
             return api.addGitHooks(namespace, name, changeGit);
         }
         catch (NotFoundException e) {
@@ -250,6 +266,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public ChangeGit deleteGitHooks(String name) throws SheraClientException {
         try {
+            LOG.info("调用shera删除代码挂钩接口");
             return api.deleteGitHooks(namespace, name);
         }
         catch (NotFoundException e) {
@@ -263,6 +280,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public JdkList getAllJdk() throws SheraClientException {
         try {
+            LOG.info("调用shera获取所有的jdk信息接口");
             return api.getAllJdk();
         }
         catch (NotFoundException e) {
@@ -276,6 +294,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public CredentialCheckEntity checkCredential(CredentialCheckEntity credential) throws SheraClientException {
         try {
+            LOG.info("调用shera检查代码认证接口");
             return api.checkCredential(credential);
         }
         catch (NotFoundException e) {
@@ -289,6 +308,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public CredentialKeyList getAllCredentials() throws SheraClientException {
         try {
+            LOG.info("调用shera获取所有代码认证信息接口");
             return api.getAllCredentials();
         }
         catch (NotFoundException e) {
@@ -302,6 +322,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public CredentialKey addCredential(GitCredential gitCredential) throws SheraClientException {
         try {
+            LOG.info("调用shera添加代码认证接口");
             return api.addCredential(gitCredential);
         }
         catch (NotFoundException e) {
@@ -315,6 +336,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     @Override
     public CredentialKey deleteCredential(String uuid) throws SheraClientException {
         try {
+            LOG.info("调用shera删除代码认证接口");
             return api.deleteCredential(uuid);
         }
         catch (NotFoundException e) {
