@@ -116,6 +116,7 @@ function hasUsed(){
 function refreshtable(){
 	var path=$('#downfilepath').val();
 	creatable(null,path,null);
+	hasUsed();
 }
 
 /**
@@ -166,12 +167,12 @@ function  creatable(isDir,path,dirName){
 									'<td style="width: 5%;text-indent: 14px;">'+
 									'</td>'+
 									'<td style="width: 25%; text-indent: 30px;"  onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileNameEnc+'") >'+
-									'<a hrer="">'
+									'<a hrer="">';
 									if(true==fileInfo.dir){
-										tbody+='<img src="'+ctx+'"/images/img-file.png" >'
+										tbody+='<img src="'+ctx+'/images/img-file.png ">';
 									}else{
-										tbody+='<img src="'+ctx+'"/images/file-f.png" >'
-									 }
+										tbody+='<img src="'+ctx+'/images/file-f.png ">';
+;									 }
 									tbody+='<span style="margin-left:5px"  >'+
 									fileInfo.fileName+'</span>'+
 									'</a>'+
@@ -188,10 +189,10 @@ function  creatable(isDir,path,dirName){
 									'<td style="width: 25%;text-indent: 30px;" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileNameEnc+'") >'+
 									'<a hrer="">'
 									if(true==fileInfo.dir){
-										tbody+='<img src="'+ctx+'"/images/img-file.png" >'
+										tbody+='<img src="'+ctx+'/images/img-file.png ">';
 									}else{
-										tbody+='<img src="'+ctx+'"/images/file-f.png" >'
-									 }
+										tbody+='<img src="'+ctx+'/images/file-f.png ">';
+;									 }
 			    				tbody+='<span style="margin-left:5px"  >'+
 									fileInfo.fileName+'</span>'+
 									'</a>'+
@@ -288,9 +289,9 @@ function delfile(obj){
 		                url: ctx + "/storage/delFile.do?path="+path+"&fileNames="+fileName+"&storageName=/"+storageName,
 		        	});
 		        	layer.close(index);
+		       	 hasUsed();
 		        }
 	 })
-	 
 }
 //批量删除
 function delfiles(){
@@ -490,23 +491,29 @@ function expand(obj) {
 
 }
 
-function volList(){
+/*function volList(){
 	for (var i = 0; i < datas.length; i++) {
 		var tableTr = '<tr class="vol_list">'
 				+ '<td style="text-indent: 14px;"><input type="checkbox" class="chkItem" name="vol_chk" value="" ></td>'
-				+ '<td style="width: 40%;"><a id="aaa" onclick="expand(this);"><img class="imgSrc" src="" ><span class="volName" style="margin-left:5px">'
+				+ '<td style="width: 40%;"><a id="aaa" onclick="expand(this);">';
+		if(datas[i].imgtype == "box"){
+			tableTr +='<img class="img" class="imgSrc" src='+ctx+'/images/file-f.png >'
+		}else{
+			tableTr +='<img class="img" class="imgSrc" src='+ctx+'/images/img-file.png >'
+		}
+		tableTr +='<span class="volName" style="margin-left:5px">'
 				+ datas[i].filename + '</span></a></td>'
 				+ '<td style="width: 30%;">' + datas[i].size
 				+ '</td>' + '<td style="width: 26%;">'
 				+ datas[i].modDate + '</td>' + '</tr>';
 		$("#tbody-vol").append(tableTr);
 		if(datas[i].imgtype == "box"){
-			$("#tbody-vol").find("img.imgSrc")[i].src = ctx +"/images/img-file.png";
+			$("#tbody-vol").find("img.imgSrc")[i].attr('src',ctx +'\/images\/img-file.png');
 		}else{
 			$("#tbody-vol").find("img.imgSrc")[i].src = ctx +"/images/file-f.png";
 		}
 	}
-}
+}*/
 
 $(document)
 		.ready(
@@ -515,5 +522,5 @@ $(document)
 					 * $("#storageReloadBtn").click(function(){
 					 * window.location.reload(); });
 					 */
-					volList();
+					//volList();
 				});
