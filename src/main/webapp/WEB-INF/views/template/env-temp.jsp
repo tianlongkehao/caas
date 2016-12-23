@@ -79,7 +79,9 @@
                                                             onmousemove="style.textDecoration='underline'"
                                                             onmouseout="style.textDecoration='none'">${envTemplate.templateName }</a>
 													</td>
-		                                            <td style="width: 20%;">${envTemplate.createDate }</td>
+		                                            <td style="width: 20%;">
+		                                                   <fmt:formatDate value="${envTemplate.createDate }" pattern="yyyy-MM-dd HH:mm:ss"/>
+		                                            </td>
 		                                            <td style="width: 10%;text-indent: 10px;" >
 														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate('${envTemplate.templateName }')" title="删除" style="float:left;line-height:40px">
 														<i class="fa fa-trash"></i></a>

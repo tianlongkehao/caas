@@ -328,8 +328,8 @@ public class ServiceController {
                 try {
                     SheraAPIClientInterface client = sheraClientService.getClient();
                     ChangeGit changeGit = client.getChangeGit(ciCodeHook.getName());
-//                    service.setUpdateImage(changeGit.isFlag());
-                    service.setUpdateImage(true);
+                    service.setUpdateImage(changeGit.isFlag());
+//                    service.setUpdateImage(false);
                 }
                 catch (Exception e) {
                    e.printStackTrace();
