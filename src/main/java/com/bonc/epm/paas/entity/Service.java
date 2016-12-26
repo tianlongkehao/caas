@@ -26,21 +26,9 @@ public class Service {
 	 */
 	private String imgVersion;
 	/**
-	 * 镜像类型
-	 */
-	private String imgType;
-	/**
 	 * 服务名称
 	 */
 	private String serviceName;
-	/**
-	 * 集群设置
-	 */
-	private String groupSet;
-	/**
-	 * 容器设置
-	 */
-	private String containerSet;
 	/**
 	 * 实例数量
 	 */
@@ -49,10 +37,6 @@ public class Service {
 	 * 服务类型(1有状态 2无状态)
 	 */
 	private String serviceType;
-	/**
-	 * 镜像设置
-	 */
-	private String imgSet;
 	/**
 	 * 检查服务状态填写的路径
 	 */
@@ -66,34 +50,14 @@ public class Service {
 	 */
 	private Integer status;
 	/**
-	 * 环境变量
-	 */
-	private String buildPath;
-	/**
-	 * 端口配置
-	 */
-	private String portSet;
-	/**
 	 * 创建时间
 	 */
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
-	private long containerID;
 	private long createBy;
 	private double cpuNum;
 	private String ram;
 	private long imgID;
-	// 挂载卷名称
-	private String volName;
-	// 挂载卷名称
-	private String mountPath;
-	// private List<String> podName;
-	// public List<String> getPodName() {
-	// return podName;
-	// }
-	// public void setPodName(List<String> podName) {
-	// this.podName = podName;
-	// }
 	
 	/**
 	 * 自定义启动命令
@@ -148,6 +112,11 @@ public class Service {
 	 */
 	@Transient
 	private boolean updateImage;
+	
+	private long updateBy;
+	
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
+	private Date updateDate;
 
 	
     public String getServiceChName() {
@@ -190,30 +159,6 @@ public class Service {
 		this.createBy = createBy;
 	}
 
-	public long getContainerID() {
-		return containerID;
-	}
-
-	public void setContainerID(long containerID) {
-		this.containerID = containerID;
-	}
-
-	public String getBuildPath() {
-		return buildPath;
-	}
-
-	public void setBuildPath(String buildPath) {
-		this.buildPath = buildPath;
-	}
-
-	public String getPortSet() {
-		return portSet;
-	}
-
-	public void setPortSet(String portSet) {
-		this.portSet = portSet;
-	}
-
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -246,36 +191,12 @@ public class Service {
 		this.imgVersion = imgVersion;
 	}
 
-	public String getImgType() {
-		return imgType;
-	}
-
-	public void setImgType(String imgType) {
-		this.imgType = imgType;
-	}
-
 	public String getServiceName() {
 		return serviceName;
 	}
 
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
-	}
-
-	public String getGroupSet() {
-		return groupSet;
-	}
-
-	public void setGroupSet(String groupSet) {
-		this.groupSet = groupSet;
-	}
-
-	public String getContainerSet() {
-		return containerSet;
-	}
-
-	public void setContainerSet(String containerSet) {
-		this.containerSet = containerSet;
 	}
 
 	public Integer getInstanceNum() {
@@ -292,14 +213,6 @@ public class Service {
 
 	public void setServiceType(String serviceType) {
 		this.serviceType = serviceType;
-	}
-
-	public String getImgSet() {
-		return imgSet;
-	}
-
-	public void setImgSet(String imgSet) {
-		this.imgSet = imgSet;
 	}
 
 	public String getCheckPath() {
@@ -324,22 +237,6 @@ public class Service {
 
 	public void setStatus(Integer status) {
 		this.status = status;
-	}
-
-	public String getVolName() {
-		return volName;
-	}
-
-	public void setVolName(String volName) {
-		this.volName = volName;
-	}
-
-	public String getMountPath() {
-		return mountPath;
-	}
-
-	public void setMountPath(String mountPath) {
-		this.mountPath = mountPath;
 	}
 
 	public String getStartCommand() {
@@ -420,6 +317,22 @@ public class Service {
 
     public void setUpdateImage(boolean updateImage) {
         this.updateImage = updateImage;
+    }
+
+    public long getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(long updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
     
     

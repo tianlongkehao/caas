@@ -30,8 +30,6 @@
 					<input hidden="true" value="${service.serviceName }" id="serName"/>
 					<input hidden="true" value="${service.status }" id="serStatus"/>
 			        <input hidden="true" value="${service.serviceType }" id="serType"/>	
-			        <input hidden="true" value="${service.volName }" id="serVolName"/>
-			        <input hidden="true" value="${service.mountPath }" id="serMonPath"/>
 				</div>
 				<div class="contentMain">
 					<section class="detail-succeed">

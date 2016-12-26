@@ -399,7 +399,7 @@ $(document).ready(function(){
 		}
 		
 		var tr = '<tr>'+
-					'<td class="keys"><input type="text" id = "storageName_'+count+'" style="width: 98%"></td>'+
+					'<td class="keys"><input type="text" id = "storageName_'+count+'" style="width: 98% " readonly="readonly"></td>'+
 					'<td class="vals"><input type="text" id = "mountPoint_'+count+'" style="width: 98%"></td>'+
 					'<td class="func"><a href="javascript:void(0)" onclick="deleteCephRow(this)" class="gray">'+
 						'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" id = "id_'+count+'">'+
@@ -779,6 +779,7 @@ function deleteRow(obj){
 function saveCephData(){
 	var dataJson="";  
 	var arrayKey = new Array(1) ;
+	var arrayValue = new Array(1);
 	var flag = 0;
     $("#volList tr").each(function (index, domEle){
     	 var id = "";  
@@ -793,7 +794,7 @@ function saveCephData(){
          });  
          
  		for (var i = 0; i<arrayKey.length;i++) {
- 			if (selectVolume == arrayKey[i]) {
+ 			if (id == arrayKey[i]) {
  				layer.tips('存储卷不能重复，请您重新选择',domEle,{tips: [1, '#3595CC']});
  				$(domEle).focus();
  				flag = 1;
@@ -801,6 +802,15 @@ function saveCephData(){
  			}
  		}
  		arrayKey.push(id);
+ 		for (var i = 0; i<arrayValue.length;i++) {
+ 			if (mountPoint == arrayValue[i]) {
+ 				layer.tips('挂载地址不能重复，请您重新填写',domEle,{tips: [1, '#3595CC']});
+ 				$(domEle).focus();
+ 				flag = 1;
+ 				break;
+ 			}
+ 		}
+ 		arrayValue.push(mountPoint);
  		dataJson += id+","+mountPoint+";";
     });
     
