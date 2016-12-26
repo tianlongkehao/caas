@@ -44,19 +44,17 @@ import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.UserConstant;
-import com.bonc.epm.paas.dao.CephAddressDao;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.RefServiceDao;
-import com.bonc.epm.paas.dao.ServiceAndCephDao;
+import com.bonc.epm.paas.dao.ServiceAndStorageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
-import com.bonc.epm.paas.entity.CephAddress;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.Container;
@@ -65,7 +63,7 @@ import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
-import com.bonc.epm.paas.entity.ServiceAndCeph;
+import com.bonc.epm.paas.entity.ServiceAndStorage;
 import com.bonc.epm.paas.entity.ServiceOperationLog;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
@@ -166,16 +164,10 @@ public class ServiceController {
 	private StorageDao storageDao;
 	
     /**
-     * ceph挂载路径数据接口
-     */
-    @Autowired
-    private CephAddressDao cephAddressDao;
-    
-    /**
      * 服务和挂载卷之间的关联数据接口
      */
     @Autowired
-    private ServiceAndCephDao serviceAndCephDao;
+    private ServiceAndStorageDao serviceAndStorageDao;
     
     /**
      * 环境变量模板数据接口
@@ -431,8 +423,8 @@ public class ServiceController {
 	            }
 	        }
         }
-        List<CephAddress> cephList = cephAddressDao.findByServiceId(service.getId());
-        model.addAttribute("cepgList", cephList);
+        List<Storage> storageList = storageDao.findByServiceId(service.getId());
+        model.addAttribute("storageList", storageList);
         model.addAttribute("namespace",currentUser.getNamespace());
         model.addAttribute("id", id);
         model.addAttribute("podNameList", podNameList);
@@ -916,22 +908,19 @@ public class ServiceController {
         if (StringUtils.isNotEmpty(cephAds)){
             String[] cephAddressData = cephAds.split(";");
             for (String cephAddress : cephAddressData) {
-                //保存ceph数据
-                CephAddress ceph = new CephAddress();
-                ceph.setStorageName(cephAddress.substring(0,cephAddress.indexOf(",")));
-                ceph.setFilePath(cephAddress.substring(cephAddress.indexOf(",")+1));
-                cephAddressDao.save(ceph);
-                
+                long storageId =Long.parseLong(cephAddress.substring(0,cephAddress.indexOf(",")));
+                String mouthPath = cephAddress.substring(cephAddress.indexOf(",")+1);
                 //保存服务和ceph关联数据
-                ServiceAndCeph serviceAndCeph = new ServiceAndCeph();
-                serviceAndCeph.setCephId(ceph.getId());
-                serviceAndCeph.setServiceId(service.getId());
-                serviceAndCephDao.save(serviceAndCeph);
-                
+                ServiceAndStorage serviceAndStorage = new ServiceAndStorage();
+                serviceAndStorage.setStorageId(storageId);
+                serviceAndStorage.setServiceId(service.getId());
+                serviceAndStorageDao.save(serviceAndStorage);
                 //更新存储卷信息
-                Storage storage = storageDao.findByCreateByAndStorageName(currentUser.getId(), ceph.getStorageName());
+                Storage storage = storageDao.findOne(storageId);
                 storage.setUseType(StorageConstant.IS_USER);
-                storage.setMountPoint(service.getServiceName() + ":" + ceph.getFilePath());
+                storage.setMountPoint(mouthPath);
+                storage.setUpdateBy(currentUser.getId());
+                storage.setUpdateDate(new Date());
                 storageDao.save(storage);
             }
         }
@@ -1555,16 +1544,17 @@ public class ServiceController {
 			
 			// 更新挂载卷的使用状态
             if (service.getServiceType().equals("1")) {
-                List<CephAddress> cephList = cephAddressDao.findByServiceId(service.getId());
-                for (CephAddress cephAddress : cephList) {
-                  //更新存储卷信息
-                    Storage storage = storageDao.findByCreateByAndStorageName(user.getId(), cephAddress.getStorageName());
+                List<ServiceAndStorage> svcAndStoList = serviceAndStorageDao.findByServiceId(service.getId());
+                for (ServiceAndStorage serviceAndStorage : svcAndStoList) {
+                    //更新存储卷信息
+                    Storage storage = storageDao.findOne(serviceAndStorage.getStorageId());
                     storage.setUseType(StorageConstant.NOT_USER);
                     storage.setMountPoint("");
+                    storage.setUpdateBy(user.getId());
+                    storage.setUpdateDate(new Date());;
                     storageDao.save(storage);
                 }
-                cephAddressDao.delete(cephList);
-                serviceAndCephDao.delete(serviceAndCephDao.findByServiceId(service.getId()));
+                serviceAndStorageDao.delete(svcAndStoList);
             }
         } 
         catch (KubernetesClientException e) {
@@ -1679,15 +1669,15 @@ public class ServiceController {
      * @return ReplicationController
      */
     private ReplicationController setVolumeStorage(ReplicationController controller,long serviceId) {
-        List<CephAddress> cephList = cephAddressDao.findByServiceId(serviceId);
+        List<Storage> storageList = storageDao.findByServiceId(serviceId);
         ReplicationControllerSpec rcSpec = controller.getSpec();
         PodTemplateSpec template = rcSpec.getTemplate();
         PodSpec podSpec = template.getSpec();
         List<Volume> volumes = new ArrayList<Volume>();
         List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
-        for (CephAddress cephAddress : cephList) {
+        for (Storage storage : storageList) {
             Volume volume = new Volume();
-            volume.setName("cephfs-"+cephAddress.getStorageName());
+            volume.setName("cephfs-"+storage.getStorageName());
             CephFSVolumeSource cephfs = new CephFSVolumeSource();
             List<String> monitors = new ArrayList<String>();
             System.out.println("CEPH_MONITOR:" + CEPH_MONITOR);
@@ -1697,7 +1687,7 @@ public class ServiceController {
             }
             cephfs.setMonitors(monitors);
             String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-            cephfs.setPath("/" + namespace + "/" + cephAddress.getStorageName());
+            cephfs.setPath("/" + namespace + "/" + storage.getStorageName());
             cephfs.setUser("admin");
             LocalObjectReference secretRef = new LocalObjectReference();
             secretRef.setName("ceph-secret");
@@ -1707,8 +1697,8 @@ public class ServiceController {
             volumes.add(volume);
             
             VolumeMount volumeMount = new VolumeMount();
-            volumeMount.setMountPath(cephAddress.getFilePath());
-            volumeMount.setName("cephfs-"+cephAddress.getStorageName());
+            volumeMount.setMountPath(storage.getMountPoint());
+            volumeMount.setName("cephfs-"+storage.getStorageName());
             volumeMounts.add(volumeMount);
         }
         

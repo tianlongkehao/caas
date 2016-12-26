@@ -76,5 +76,8 @@ public interface StorageDao extends CrudRepository<Storage, Long> {
 	 */
     @Query("select s.mountPoint from Storage s where 1=1 and s.storageName = ?1 ")
 	String findByVolume(String storageName);
+    
+    @Query("select s from Storage s where s.id in (select sas.storageId from ServiceAndStorage sas where sas.serviceId = ?1 )")
+    List<Storage> findByServiceId(long serviceId);
 
 }

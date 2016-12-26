@@ -39,16 +39,32 @@ public class Storage {
 	 */
 	private long storageSize;
 	
+	/**
+	 * 是否只读
+	 */
 	private boolean isVolReadOnly;
+	
 	/**
 	 * 创建时间
 	 */
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
+	
 	/**
 	 * 创建用户
 	 */
 	private long createBy;
+	
+	/**
+	 * 更新时间
+	 */
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
+	private Date updateDate;
+	
+	/**
+	 * 更新者
+	 */
+	private long updateBy;
 
 	public long getCreateBy() {
 		return createBy;
@@ -121,4 +137,21 @@ public class Storage {
 	public void setVolReadOnly(boolean isVolReadOnly) {
 		this.isVolReadOnly = isVolReadOnly;
 	}
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public long getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(long updateBy) {
+        this.updateBy = updateBy;
+    }
+	
 }
