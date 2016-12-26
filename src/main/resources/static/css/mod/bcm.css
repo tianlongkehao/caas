@@ -1,0 +1,56 @@
+
+
+/* 侧边菜单栏 */
+nav{
+	
+	width:190px;
+	
+}
+.nav > li > a {
+    color: #e14344;
+    font-weight: 600;
+    padding: 14px 20px 14px 25px;
+}
+
+.nav li>a {
+    display: block;
+    
+}
+.nav > li.active {
+    border-left: 4px solid #e14344;
+    background: #ffffff;
+    
+}
+.block {
+    display: block;
+}
+.nav-header div.dropdown{
+	text-align:center;
+}
+.dropdown .dropdown-menu {
+    min-width: 140px;
+    border-radius: 6px !important;
+    margin-left: 30px;
+}
+
+.arrow {
+    float: right;
+    margin-top: 2px;
+}
+
+.fa.arrow:before {
+    content: "\f104";
+}
+
+.active > a > .fa.arrow:before {
+    content: "\f107";
+}
+.tit-image{
+	width: 18px;
+}
+
+
+
+
+
+

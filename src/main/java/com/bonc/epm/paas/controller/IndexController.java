@@ -59,7 +59,17 @@ public class IndexController {
     @Autowired
 	private UserDao userDao;
     @Value("${login.showAuthCode}")
-    private boolean showAuthCode;	
+    private boolean showAuthCode;
+    /**
+     * Description: <br>
+     * 跳转登录页面
+     * @return login.jsp
+     */
+    @RequestMapping(value={"bcm"},method=RequestMethod.GET)
+	public String bcm(Model model){
+        model.addAttribute("showAuthCode", showAuthCode);
+        return "bcm.jsp";
+    }
     /**
      * Description: <br>
      * 跳转登录页面
