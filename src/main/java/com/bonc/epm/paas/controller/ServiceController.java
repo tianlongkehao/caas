@@ -73,7 +73,6 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
-import com.bonc.epm.paas.kubernetes.model.ContainerState;
 import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
@@ -92,6 +91,7 @@ import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.PoiUtils;
+import com.bonc.epm.paas.util.RandomString;
 import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
 import com.bonc.epm.paas.util.TemplateEngine;
@@ -1379,10 +1379,14 @@ public class ServiceController {
                 createNextRc(random, nextControllerName, image, client, originalController);
                 
                 // 设置annotations
-                updateOriginalController = secondSetAnnotation(serviceName, client);
+                boolean isSetDeploy=false;
+                if (StringUtils.isBlank(updateOriginalController.getSpec().getSelector().get("deployment"))) {
+                    isSetDeploy = true;
+                }
+                updateOriginalController = secondSetAnnotation(serviceName, client,isSetDeploy);
                 
                 // 滚动升级
-                rollingUpdate(serviceName, nextControllerName, client, updateOriginalController);
+                rollingUpdate(serviceName, nextControllerName, client, updateOriginalController,isSetDeploy);
                 
                 // 删除旧RC
                 client.deleteReplicationController(serviceName);
@@ -1442,6 +1446,9 @@ public class ServiceController {
         ReplicationController resultController = client.getReplicationController(nextControllerName);
         resultController.getMetadata().setName(serviceName);
         resultController.getMetadata().setResourceVersion("");
+        
+        //resultController.getSpec().getTemplate().getMetadata().setName(serviceName);
+        
         resultController = client.createReplicationController(resultController);
         
         client.deleteReplicationController(nextControllerName);
@@ -1461,41 +1468,57 @@ public class ServiceController {
      * @param nextControllerName 
      * @param client 
      * @param updateOriginalController  
+     * @param isSetDeploy 
      */
     private void rollingUpdate(String serviceName, String nextControllerName,
-                                       KubernetesAPIClientInterface client,ReplicationController updateOriginalController) {
+                                       KubernetesAPIClientInterface client,ReplicationController updateOriginalController, boolean isSetDeploy) {
         // 最终新服务应该启动的pod副本数量
-        int replicas = updateOriginalController.getSpec().getReplicas();
+        int replicas = Integer.valueOf(updateOriginalController.getMetadata().getAnnotations().get("kubectl.kubernetes.io/original-replicas"));
         ReplicationController nextController = client.getReplicationController(nextControllerName);
         for (int i=1, j=replicas-1;i<=replicas && j>=0;i++,j--) {
             LOG.info("Scaling up "+nextControllerName+" from "+(i-1)+" to "+i+";scaling down "+serviceName+" from "+(j+1)+" to "+j);
+            // newRc ++
             nextController = client.updateReplicationController(nextControllerName, i);
             boolean podStatus = true;
             PodList podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
-            while (podStatus && null != podList) {
+            while (podStatus && null != podList && podList.size() ==i) {
                 for (Pod pod : podList.getItems()) {
                     if (pod.getStatus().getPhase().equals("Running")) {
                         List<ContainerStatus> containerStatuses = pod.getStatus().getContainerStatuses();
                         if (CollectionUtils.isNotEmpty(containerStatuses)) {
+                            boolean conStatus = true;
                             for(ContainerStatus containerStatus : containerStatuses) {
                                 if (null != containerStatus.getState().getRunning()) {
-                                    podStatus = false;
+                                    conStatus = false;
                                 }
                                 else {
-                                    podStatus = true;
+                                    conStatus = true;
                                     break;
                                 }
+                            }
+                            if (conStatus) {
+                                podStatus = true;
+                                break;
+                            } else {
+                                podStatus = false;
                             }
                         }
                     } else {
                         podStatus = true;
+                        break;
                     }
                 }
                 if (podStatus) {
                     podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
                 }
             }
-            
+            // oldRc --
+            updateOriginalController = client.getReplicationController(serviceName);
+            if (isSetDeploy) { // 首次执行升级
+                updateOriginalController.getSpec().getSelector().remove("deployment");
+                updateOriginalController.getSpec().getTemplate().getMetadata().getLabels().remove("deployment");
+                updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController);
+            }
             updateOriginalController = client.updateReplicationController(serviceName, j);
             while (!(client.getLabelSelectorPods(updateOriginalController.getSpec().getSelector()).size() == j)) {
                 continue;
@@ -1512,12 +1535,25 @@ public class ServiceController {
      * value: 旧RC的副本(replicas)数量
      * @param serviceName
      * @param client
+     * @param isSetDeploy 
+     * @param oldRandom 
      * @return updateOriginalController 
      */
-    private ReplicationController secondSetAnnotation(String serviceName,KubernetesAPIClientInterface client) {
+    private ReplicationController secondSetAnnotation(String serviceName,KubernetesAPIClientInterface client, boolean isSetDeploy) {
         ReplicationController updateOriginalController = client.getReplicationController(serviceName);
         updateOriginalController.getMetadata().getAnnotations().put("kubectl.kubernetes.io/original-replicas", String.valueOf(updateOriginalController.getSpec().getReplicas()));
-        client.updateReplicationController(serviceName, updateOriginalController);
+        if (isSetDeploy) {
+            String random = RandomString.getStringRandom(32);
+            updateOriginalController.getSpec().getSelector().put("deployment",random);
+            updateOriginalController.getSpec().getTemplate().getMetadata().getLabels().put("deployment", random);
+            updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController);
+            // 从未升级过的rc
+            updateOriginalController = client.updateReplicationController(serviceName, 0);
+        }
+        else {
+            updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController); 
+        }
+        
         LOG.info("update originalController.  put original-replicas:-"+updateOriginalController.getSpec().getReplicas());
         return updateOriginalController;
     }
@@ -1554,7 +1590,7 @@ public class ServiceController {
             nextController.getSpec().setReplicas(0);
             nextController.getSpec().getSelector().put("deployment", random);
             
-            nextController.getSpec().getTemplate().getMetadata().setName(nextControllerName);
+            //nextController.getSpec().getTemplate().getMetadata().setName(nextControllerName);
             nextController.getSpec().getTemplate().getMetadata().getLabels().put("deployment", random);
             nextController.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(image);
             
