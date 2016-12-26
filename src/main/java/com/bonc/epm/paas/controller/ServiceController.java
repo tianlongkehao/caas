@@ -836,7 +836,10 @@ public class ServiceController {
 				// 保存服务操作信息
 				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
 				serviceOperationLog.setUserId(currentUser.getId());
+				serviceOperationLog.setUserName(currentUser.getUserName());
 				serviceOperationLog.setServiceId(id);
+				serviceOperationLog.setServiceName(service.getServiceName());
+				serviceOperationLog.setServiceChName(service.getServiceChName());
                 if (isDebug) {
                 	serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_DEBUG);
 				} else {
@@ -885,7 +888,10 @@ public class ServiceController {
 		// 保存服务操作信息
 		ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
 		serviceOperationLog.setUserId(currentUser.getId());
+		serviceOperationLog.setUserName(currentUser.getUserName());
 		serviceOperationLog.setServiceId(currentService.getId());
+		serviceOperationLog.setServiceName(service.getServiceName());
+		serviceOperationLog.setServiceChName(service.getServiceChName());
 		serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_CREATE);
 		serviceOperationLog.setCreateDate(currentDate);
 		serviceOperationLogDao.save(serviceOperationLog);
@@ -1155,7 +1161,10 @@ public class ServiceController {
 				// 保存服务操作信息
 				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
 				serviceOperationLog.setUserId(currentUser.getId());
+				serviceOperationLog.setUserName(currentUser.getUserName());
 				serviceOperationLog.setServiceId(id);
+				serviceOperationLog.setServiceName(service.getServiceName());
+				serviceOperationLog.setServiceChName(service.getServiceChName());
 				serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_STOP);
 				serviceOperationLog.setCreateDate(currentDate);
 				serviceOperationLogDao.save(serviceOperationLog);
@@ -1211,7 +1220,10 @@ public class ServiceController {
     				// 保存服务操作信息
     				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
     				serviceOperationLog.setUserId(currentUser.getId());
+    				serviceOperationLog.setUserName(currentUser.getUserName());
     				serviceOperationLog.setServiceId(id);
+    				serviceOperationLog.setServiceName(service.getServiceName());
+    				serviceOperationLog.setServiceChName(service.getServiceChName());
     				serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
     				serviceOperationLog.setCreateDate(currentDate);
     				serviceOperationLogDao.save(serviceOperationLog);
@@ -1354,7 +1366,10 @@ public class ServiceController {
 					// 保存服务操作信息
 					ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
 					serviceOperationLog.setUserId(currentUser.getId());
+					serviceOperationLog.setUserName(currentUser.getUserName());
 					serviceOperationLog.setServiceId(id);
+					serviceOperationLog.setServiceName(service.getServiceName());
+					serviceOperationLog.setServiceChName(service.getServiceChName());
 					serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_SCALING);
 					serviceOperationLog.setCreateDate(currentDate);
 					serviceOperationLogDao.save(serviceOperationLog);
@@ -1410,7 +1425,10 @@ public class ServiceController {
     				// 保存服务操作信息
     				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
     				serviceOperationLog.setUserId(currentUser.getId());
+    				serviceOperationLog.setUserName(currentUser.getUserName());
     				serviceOperationLog.setServiceId(id);
+    				serviceOperationLog.setServiceName(service.getServiceName());
+    				serviceOperationLog.setServiceChName(service.getServiceChName());
     				serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_CONFIGURE);
     				serviceOperationLog.setCreateDate(currentDate);
     				serviceOperationLogDao.save(serviceOperationLog);
@@ -1528,7 +1546,10 @@ public class ServiceController {
 			User currentUser = CurrentUserUtils.getInstance().getUser();
 			ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
 			serviceOperationLog.setUserId(currentUser.getId());
+			serviceOperationLog.setUserName(currentUser.getUserName());
 			serviceOperationLog.setServiceId(id);
+			serviceOperationLog.setServiceName(service.getServiceName());
+			serviceOperationLog.setServiceChName(service.getServiceChName());
 			serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_DELETE);
 			serviceOperationLog.setCreateDate(currentDate);
 			serviceOperationLogDao.save(serviceOperationLog);
@@ -1999,7 +2020,10 @@ public class ServiceController {
 			// 保存服务操作信息
 			ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
 			serviceOperationLog.setUserId(currentUser.getId());
+			serviceOperationLog.setUserName(currentUser.getUserName());
 			serviceOperationLog.setServiceId(serId);
+			serviceOperationLog.setServiceName(service.getServiceName());
+			serviceOperationLog.setServiceChName(service.getServiceChName());
 			serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_UPDATE);
 			serviceOperationLog.setCreateDate(currentDate);
 			serviceOperationLogDao.save(serviceOperationLog);
@@ -2127,7 +2151,10 @@ public class ServiceController {
 		// 保存服务操作信息
 		ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
 		serviceOperationLog.setUserId(currentUser.getId());
+		serviceOperationLog.setUserName(currentUser.getUserName());
 		serviceOperationLog.setServiceId(ser.getId());
+		serviceOperationLog.setServiceName(ser.getServiceName());
+		serviceOperationLog.setServiceChName(ser.getServiceChName());
 		serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_UPDATE);
 		serviceOperationLog.setCreateDate(currentDate);
 		serviceOperationLogDao.save(serviceOperationLog);
