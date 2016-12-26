@@ -45,4 +45,17 @@ public class ServiceConstant {
      *检测频率
      */
     public static final Integer PERIOD  = 10;
+    /**
+     * operation_type
+     */
+    public static final Integer OPERATION_TYPE_UPDATE        = 10;  //更新
+    public static final Integer OPERATION_TYPE_CREATE        = 20;  //创建
+    public static final Integer OPERATION_TYPE_START         = 30;  //启动
+    public static final Integer OPERATION_TYPE_STOP          = 40;  //停止
+    public static final Integer OPERATION_TYPE_DEBUG         = 50;  //调试
+    public static final Integer OPERATION_TYPE_ROLLINGUPDATE = 60;  //弹性伸缩
+    public static final Integer OPERATION_TYPE_UPGRADE       = 70;  //版本升级
+    public static final Integer OPERATION_TYPE_CONFIGURE     = 80;  //更改配置
+    public static final Integer OPERATION_TYPE_DELETE        = 90;  //删除
+    
 }
