@@ -144,6 +144,16 @@ public class Service {
 	private String serviceChName;
 	
 	/**
+	 * 更新时间
+	 */
+	private String updateDate;
+	
+	/**
+	 * 更新者id
+	 */
+	private String updateBy;
+	
+	/**
 	 * 根据代码仓库中的代码是否发生变化，来提醒用户是否需要重新构建镜像
 	 */
 	@Transient
@@ -421,6 +431,22 @@ public class Service {
     public void setUpdateImage(boolean updateImage) {
         this.updateImage = updateImage;
     }
+
+	public String getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(String updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public String getUpdateBy() {
+		return updateBy;
+	}
+
+	public void setUpdateBy(String updateBy) {
+		this.updateBy = updateBy;
+	}
     
     
 }
