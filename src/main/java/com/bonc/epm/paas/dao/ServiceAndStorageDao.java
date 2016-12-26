@@ -15,11 +15,11 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.bonc.epm.paas.entity.ServiceAndCeph;
+import com.bonc.epm.paas.entity.ServiceAndStorage;
 
-public interface ServiceAndCephDao extends CrudRepository<ServiceAndCeph,Long>{
+public interface ServiceAndStorageDao extends CrudRepository<ServiceAndStorage,Long>{
     
     void deleteByServiceId(long serviceId);
     
-    List<ServiceAndCeph> findByServiceId(long serviceId);
+    List<ServiceAndStorage> findByServiceId(long serviceId);
 }

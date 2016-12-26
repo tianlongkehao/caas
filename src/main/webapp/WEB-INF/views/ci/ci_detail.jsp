@@ -92,7 +92,7 @@
                                                     <div class='event-sign'><i class='fa fa-angle-right fa_caret' style='transform: rotate(${transformClass});'></i></div>
                                                     <c:if test="${ci.type == 1}">
 	                                                    <c:if test="${ciRecord.constructResult == 1 || ciRecord.constructResult == 2}">
-	                                                        <div class='event-del' title="删除当前执行"><span id = "deleteCodeCi"  ciRecordId = "${ciRecord.id }" projectName = "${ci.projectName }" executionId = "${ciRecord.executionId }"><i class='fa fa-trash'></i></span></div>
+	                                                        <div class='event-del' title="删除当前执行"><span class = "deleteCodeCi"  ciRecordId = "${ciRecord.id }" projectName = "${ci.projectName }" executionId = "${ciRecord.executionId }"><i class='fa fa-trash'></i></span></div>
 	                                                    </c:if>
 	                                                    <c:if test="${ciRecord.constructResult == 3}">
 	                                                        <div class='event-stop' title="停止构建"><span id = "stopCodeCi" projectName = "${ci.projectName }" executionId = "${ciRecord.executionId }" ><i class='fa fa-power-off'></i></span></div>
@@ -107,7 +107,7 @@
                                                         <div class='buildStatus' style='margin:0px 0px 10px 0px'></div>
                                                         <div class='build-logs' style='max-height: 400px; overflow: auto;margin-top:10px;background-color:black;color: #37fc34'>
 															<pre class='logs' style='background-color:black; overflow: hidden;color: #37fc34;border:0; float:left'>
-															       <span class='printLogSpan' status='${ciRecord.constructResult}' ciRecordId='${ciRecord.id}'>${ciRecord.logPrint}</span>
+															       <span class='printLogSpan' status='${ciRecord.constructResult}' ciRecordId='${ciRecord.id}'><br>${ciRecord.logPrint}</span>
 															</pre>
                                                         </div>
                                                     </div>

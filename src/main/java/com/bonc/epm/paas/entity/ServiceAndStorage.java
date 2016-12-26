@@ -1,5 +1,5 @@
 /*
- * 文件名：CephAddress.java
+ * 文件名：ServiceAndCeph.java
  * 版权：Copyright by bonc
  * 描述：
  * 修改人：zhoutao
@@ -18,30 +18,30 @@ import javax.persistence.Id;
 
 /**
  * 
- * 服务添加存储卷文件
+ * 服务和ceph挂载卷之间的关联表
  * @author zhoutao
  * @version 2016年12月20日
- * @see CephAddress
+ * @see ServiceAndStorage
  * @since
  */
 @Entity
-public class CephAddress {
+public class ServiceAndStorage {
     /**
      * id
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private long id ;
     
     /**
-     * 挂载卷名称
+     * 服务id
      */
-    private String storageName;
+    private long serviceId;
     
     /**
-     * 挂载文件相对路径
+     * storageId
      */
-    private String filePath;
+    private long storageId;
 
     public long getId() {
         return id;
@@ -51,21 +51,20 @@ public class CephAddress {
         this.id = id;
     }
 
-    public String getStorageName() {
-        return storageName;
+    public long getServiceId() {
+        return serviceId;
     }
 
-    public void setStorageName(String storageName) {
-        this.storageName = storageName;
+    public void setServiceId(long serviceId) {
+        this.serviceId = serviceId;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public long getStorageId() {
+        return storageId;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setStorageId(long storageId) {
+        this.storageId = storageId;
     }
-    
-   
+
 }

@@ -377,10 +377,11 @@ $(document).ready(function(){
 	// 添加挂载卷
 	var size = 0;
 	$("#addVolume").click(function(){
-		var selectVolume = $("#selectVolume").val();
+		var id = $("#selectVolume").val();
+		var selectVolume = $("#selectVolume option:selected").text();
 		var mountPath = $("#mountPath").val();
 		
-		if (selectVolume == null || selectVolume == "") {
+		if (id == null || id == "") {
     		layer.tips('请选择存储卷','#selectVolume',{tips: [1, '#3595CC']});
 			$('#selectVolume').focus();
 			return;
@@ -399,15 +400,16 @@ $(document).ready(function(){
 		
 		var tr = '<tr>'+
 					'<td class="keys"><input type="text" id = "storageName_'+count+'" style="width: 98%"></td>'+
-					'<td class="vals"><input type="text" id = "filePath_'+count+'" style="width: 98%"></td>'+
+					'<td class="vals"><input type="text" id = "mountPoint_'+count+'" style="width: 98%"></td>'+
 					'<td class="func"><a href="javascript:void(0)" onclick="deleteCephRow(this)" class="gray">'+
-						'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" class="oldValue" value="'+mountPath+'">'+
+						'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" id = "id_'+count+'">'+
 					'</td>'+
 				'</tr>'
 		$("#volList").append(tr);
 		$("#storageName_"+count).val(selectVolume);
-		$("#filePath_"+count).val(mountPath);
-		count++;
+		$("#mountPoint_"+count).val(mountPath);
+		$("#id_"+count).val(id);
+		count++;	
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
     	$(".step-inner").height(imagePage_height+100);	
@@ -779,26 +781,27 @@ function saveCephData(){
 	var arrayKey = new Array(1) ;
 	var flag = 0;
     $("#volList tr").each(function (index, domEle){
-        var selectVolume = "";  
-        var filePath = "";  
-        $(domEle).find("input").each(function(index,data){  
-            if(index == 0){  
-            	selectVolume = $(data).val();
-            } else if (index == 1){  
-            	filePath = $(data).val();
-            }  
-        });  
-        
-		for (var i = 0; i<arrayKey.length;i++) {
-			if (selectVolume == arrayKey[i]) {
-				layer.tips('存储卷不能重复，请您重新选择',domEle,{tips: [1, '#3595CC']});
-				$(domEle).focus();
-				flag = 1;
-				break;
-			}
-		}
-		arrayKey.push(selectVolume);
-		dataJson += selectVolume+","+filePath+";";
+    	 var id = "";  
+         var mountPoint = "";  
+         $(domEle).find("input").each(function(index,data){  
+             if (index == 1){  
+             	mountPoint = $(data).val();
+             }  
+             if(index == 2){  
+             	id = $(data).val();
+             } 
+         });  
+         
+ 		for (var i = 0; i<arrayKey.length;i++) {
+ 			if (selectVolume == arrayKey[i]) {
+ 				layer.tips('存储卷不能重复，请您重新选择',domEle,{tips: [1, '#3595CC']});
+ 				$(domEle).focus();
+ 				flag = 1;
+ 				break;
+ 			}
+ 		}
+ 		arrayKey.push(id);
+ 		dataJson += id+","+mountPoint+";";
     });
     
     if (flag == 1) {

@@ -31,10 +31,9 @@
 	       	 var importSerMode = $("#import-ser-mode").val();
 	       	 var importSerDesc =$("#import-ser-desc").val();
 	       	 var namespace =$("#namespace").val();
-	       	 if(1==$("#useProxy").val()){
+	       	 if(1==$("#useProxyFlag").val()){
 	       		 var useProxy=namespace+"."+importSerName;
 	       	 }
-	       	 var importSerProxy =$("#useProxy").val();
 	       if(true!=	checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort
 	       			,importSerVis,importSerMode,importSerDesc)){return;}
 	       	var flag=0;
@@ -174,8 +173,12 @@
 			     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
 					     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'<i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
 					     		'<td style="width: 20%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
-					     		'<td style="width: 20%;">'+refservice.refAddress+'</td>'+
-					     		'<td style="width: 20%;">'+refservice.useProxy+'</td>';
+					     		'<td style="width: 20%;">'+refservice.refAddress+'</td>';
+					     		if(undefined == refservice.useProxy){
+					     			tr+='<td style="width: 20%;">'+"无"+'</td>';
+					     		}else{
+					     			tr+='<td style="width: 20%;">'+refservice.useProxy+'</td>';
+					     			}
 			     		if('1'==refservice.viDomain){
 			     			tr+='<td style="width: 14%;">所有租户可见</td>';
 			     		}else{
@@ -239,10 +242,10 @@
 	 $("#import-ser-desc").val($(obj).attr("serDesc"));
 	 $("#import-ser-name").attr("disabled","disabled");
 	 var usePxy =$(obj).attr('usePxy');
-	 if("undefined"==usePxy){
-		 $("#useProxy option[value=0]").attr("selected", true); 
+	 if("undefined"==usePxy){ 
+		 $("#useProxyFlag option[value=0]").attr("selected", true); 
 	 }else{
-		 $("#useProxy option[value=1]").attr("selected", true); 
+		 $("#useProxyFlag option[value=1]").attr("selected", true); 
 	 }
 	 
 	 
@@ -260,7 +263,7 @@
 	        	 var importSerMode = $("#import-ser-mode").val();
 	        	 var importSerDesc =$("#import-ser-desc").val();
 	        	 var namespace =$("#namespace").val();
-		       	 if(1==$("#useProxy").val()){
+		       	 if(1==$("#useProxyFlag").val()){
 		       		 var useProxy=namespace+"."+importSerName;
 		       	 }
 	  	       if(true!=	checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort

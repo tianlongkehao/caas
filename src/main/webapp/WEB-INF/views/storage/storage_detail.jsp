@@ -149,6 +149,8 @@
 						</div>
 						<div id="environment-templat" hidden="true">
                 <div style="width: 345px; margin: 5px 10px 5px 10px">
+                <progress id="progressBar" value="0" max="100" style="width: 300px;"></progress>
+                <span id="percentage"></span><span id="time"></span>
                    <form method="POST" enctype="multipart/form-data" action="upload" id="form1" name="form1"> 
                      <p>文件：<input type="file" multiple="multiple" name="file" id="file" /></p>
                      <input type="hidden" name="path" value="sfasf" id="path" />

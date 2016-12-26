@@ -514,10 +514,10 @@
 							</thead>
 							<tbody class="BORDER-vol">
 								<c:if test="${service.serviceType==1 }"> 
-									<c:forEach items="${cepgList }" var="ceph"> 
+									<c:forEach items="${storageList }" var="storage"> 
 										<tr>
-											<td>挂载地址：${ceph.filePath }</td>
-											<td>存储卷：${ceph.storageName }</td>
+											<td>挂载地址：${storage.mountPoint }</td>
+											<td>存储卷：${storage.storageName }</td>
 										</tr>
 									</c:forEach> 
 								</c:if>
