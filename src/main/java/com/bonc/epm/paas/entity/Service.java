@@ -146,12 +146,12 @@ public class Service {
 	/**
 	 * 更新时间
 	 */
-	private String updateDate;
+	private Date updateDate;
 	
 	/**
 	 * 更新者id
 	 */
-	private String updateBy;
+	private long updateBy;
 	
 	/**
 	 * 根据代码仓库中的代码是否发生变化，来提醒用户是否需要重新构建镜像
@@ -432,19 +432,19 @@ public class Service {
         this.updateImage = updateImage;
     }
 
-	public String getUpdateDate() {
+	public Date getUpdateDate() {
 		return updateDate;
 	}
 
-	public void setUpdateDate(String updateDate) {
+	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
 
-	public String getUpdateBy() {
+	public long getUpdateBy() {
 		return updateBy;
 	}
 
-	public void setUpdateBy(String updateBy) {
+	public void setUpdateBy(long updateBy) {
 		this.updateBy = updateBy;
 	}
     

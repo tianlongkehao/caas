@@ -1,5 +1,7 @@
 package com.bonc.epm.paas.entity;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,12 +17,12 @@ public class ServiceOperationLog {
 	/**
 	 * 用户id
 	 */
-	private String userId;
+	private long userId;
 	
 	/**
 	 * 服务id
 	 */
-	private String serviceId;
+	private long serviceId;
 	
 	/**
 	 * 操作类型
@@ -34,12 +36,12 @@ public class ServiceOperationLog {
 	 * 80:更改配置
 	 * 90:删除
 	 */
-	private String operationType;
+	private long operationType;
 	
 	/**
 	 * 创建时间
 	 */
-	private String createDate;
+	private Date createDate;
 
 	public long getId() {
 		return id;
@@ -49,36 +51,36 @@ public class ServiceOperationLog {
 		this.id = id;
 	}
 
-	public String getUserId() {
+	public long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 
-	public String getServiceId() {
+	public long getServiceId() {
 		return serviceId;
 	}
 
-	public void setServiceId(String serviceId) {
+	public void setServiceId(long serviceId) {
 		this.serviceId = serviceId;
 	}
 
-	public String getOperationType() {
+	public long getOperationType() {
 		return operationType;
 	}
 
-	public void setOperationType(String operationType) {
+	public void setOperationType(long operationType) {
 		this.operationType = operationType;
 	}
 
-	public String getCreateDate() {
+	public Date getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(String createDate) {
+	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-	
+
 }
