@@ -1,16 +1,10 @@
 package com.bonc.epm.paas.dao;
 
-import java.util.HashSet;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bonc.epm.paas.entity.CiCodeHook;
-import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.ServiceOperationLog;
 /**
  * 服务操作记录信息DAO类
@@ -20,7 +14,7 @@ import com.bonc.epm.paas.entity.ServiceOperationLog;
  * @since
  */
 @Transactional
-public interface ServiceOperationLogDao extends CrudRepository<Service, Long>{
+public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationLog, Long>{
 	
 	/**
 	 * 

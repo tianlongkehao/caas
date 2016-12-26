@@ -53,6 +53,7 @@ import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.RefServiceDao;
 import com.bonc.epm.paas.dao.ServiceAndCephDao;
 import com.bonc.epm.paas.dao.ServiceDao;
+import com.bonc.epm.paas.dao.ServiceOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.CephAddress;
@@ -65,6 +66,7 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.ServiceAndCeph;
+import com.bonc.epm.paas.entity.ServiceOperationLog;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -119,7 +121,13 @@ public class ServiceController {
      * 服务数据层接口
      */
     @Autowired
-	private ServiceDao serviceDao;
+    private ServiceDao serviceDao;
+    
+    /**
+     * 服务操作记录信息层接口
+     */
+    @Autowired
+	private ServiceOperationLogDao serviceOperationLogDao;
 	
     /**
      * 环境变量数据层接口
@@ -319,54 +327,55 @@ public class ServiceController {
         model.addAttribute("zoneList", serviceZone);
     }
     
-    /**
-     * Description: <br>
-     * 根据服务名称模糊查询服务和容器
-     * @param model 
-     * @param searchNames 服务名称
-     * @return String
-     */
-    @RequestMapping(value = { "service/findservice" }, method = RequestMethod.POST)
-	public String findService(Model model, String searchNames) {
-        User currentUser = CurrentUserUtils.getInstance().getUser();
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        List<Service> serviceList = new ArrayList<Service>();
-        List<Container> containerList = new ArrayList<Container>();
-		// 获取特殊条件的pods
-		try {
-			for (Service service : serviceDao.findByNameOf(currentUser.getId(), "%" + searchNames + "%",null)) {
-				Map<String, String> map = new HashMap<String, String>();
-				map.put("app", service.getServiceName());
-				PodList podList = client.getLabelSelectorPods(map);
-				if (podList != null) {
-					List<Pod> pods = podList.getItems();
-					if (CollectionUtils.isNotEmpty(pods)) {
-						int i = 1;
-						for (Pod pod : pods) {
-							Container container = new Container();
-							container.setContainerName(
-									service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-							container.setServiceid(service.getId());
-							if (pod.getStatus().getPhase().equals("Running")) {
-								container.setContainerStatus(0);
-							} else {
-								container.setContainerStatus(1);
-							}
-							containerList.add(container);
-						}
-					}
-				}
-				serviceList.add(service);
-				LOG.debug("service=========" + service);
-			}
-		} catch (Exception e) {
-			LOG.error("服务查询错误：" + e);
-		}
-		model.addAttribute("serviceList", serviceList);
-		model.addAttribute("containerList", containerList);
-
-		return "service/service.jsp";
-	}
+//注释时间 2016年12月26日 11:50:58 判断为无用方法    
+//    /**
+//     * Description: <br>
+//     * 根据服务名称模糊查询服务和容器
+//     * @param model 
+//     * @param searchNames 服务名称
+//     * @return String
+//     */
+//    @RequestMapping(value = { "service/findservice" }, method = RequestMethod.POST)
+//	public String findService(Model model, String searchNames) {
+//        User currentUser = CurrentUserUtils.getInstance().getUser();
+//        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+//        List<Service> serviceList = new ArrayList<Service>();
+//        List<Container> containerList = new ArrayList<Container>();
+//		// 获取特殊条件的pods
+//		try {
+//			for (Service service : serviceDao.findByNameOf(currentUser.getId(), "%" + searchNames + "%",null)) {
+//				Map<String, String> map = new HashMap<String, String>();
+//				map.put("app", service.getServiceName());
+//				PodList podList = client.getLabelSelectorPods(map);
+//				if (podList != null) {
+//					List<Pod> pods = podList.getItems();
+//					if (CollectionUtils.isNotEmpty(pods)) {
+//						int i = 1;
+//						for (Pod pod : pods) {
+//							Container container = new Container();
+//							container.setContainerName(
+//									service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+//							container.setServiceid(service.getId());
+//							if (pod.getStatus().getPhase().equals("Running")) {
+//								container.setContainerStatus(0);
+//							} else {
+//								container.setContainerStatus(1);
+//							}
+//							containerList.add(container);
+//						}
+//					}
+//				}
+//				serviceList.add(service);
+//				LOG.debug("service=========" + service);
+//			}
+//		} catch (Exception e) {
+//			LOG.error("服务查询错误：" + e);
+//		}
+//		model.addAttribute("serviceList", serviceList);
+//		model.addAttribute("containerList", containerList);
+//
+//		return "service/service.jsp";
+//	}
 	
     /**
      * Description: <br>
@@ -821,12 +830,29 @@ public class ServiceController {
                 map.put("status", "500");
             } else {
                 map.put("status", "200");
+                //保存service的信息
                 if (isDebug) {
                 	service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_DEBUG);
 				} else {
 					service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
 				}
-                serviceDao.save(service);
+				Date currentDate = new Date();
+				User currentUser = CurrentUserUtils.getInstance().getUser();
+				service.setUpdateDate(currentDate);
+				service.setUpdateBy(currentUser.getId());
+				serviceDao.save(service);
+				// 保存服务操作信息
+				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
+				serviceOperationLog.setUserId(currentUser.getId());
+				serviceOperationLog.setServiceId(id);
+                if (isDebug) {
+                	serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_DEBUG);
+				} else {
+					serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_START);
+				}
+				serviceOperationLog.setCreateDate(currentDate);
+				serviceOperationLogDao.save(serviceOperationLog);
+
             }
         }
         catch (KubernetesClientException e) {
@@ -850,15 +876,28 @@ public class ServiceController {
      */
     @RequestMapping("service/constructContainer.do")
 	public String constructContainer(Service service, String resourceName,String envVariable,String portConfig,String cephAds) {
-        User currentUser = CurrentUserUtils.getInstance().getUser();
-        service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
-        service.setCreateDate(new Date());
-        service.setCreateBy(currentUser.getId());
-        if (StringUtils.isEmpty(service.getSessionAffinity())) {
-            service.setSessionAffinity(null);
-        }
-        serviceDao.save(service);
-		
+		Date currentDate = new Date();
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		// 保存服务信息
+		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
+		service.setCreateDate(currentDate);
+		service.setCreateBy(currentUser.getId());
+		service.setUpdateDate(currentDate);
+		service.setUpdateBy(currentUser.getId());
+
+		if (StringUtils.isEmpty(service.getSessionAffinity())) {
+			service.setSessionAffinity(null);
+		}
+		Service currentService = serviceDao.save(service);
+
+		// 保存服务操作信息
+		ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
+		serviceOperationLog.setUserId(currentUser.getId());
+		serviceOperationLog.setServiceId(currentService.getId());
+		serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_CREATE);
+		serviceOperationLog.setCreateDate(currentDate);
+		serviceOperationLogDao.save(serviceOperationLog);
+
 		//将服务中的环境变量循环遍历，保存到相关联的实体类中；
         if (StringUtils.isNotEmpty(envVariable)) {
             String[] envKeyAndValues = envVariable.split(";");
@@ -1117,8 +1156,20 @@ public class ServiceController {
             }
             else {
                 map.put("status", "200");
-                service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_STOPPED);
-                serviceDao.save(service);
+				// 保存服务信息
+				Date currentDate = new Date();
+				User currentUser = CurrentUserUtils.getInstance().getUser();
+				service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_STOPPED);
+				service.setUpdateDate(currentDate);
+				service.setUpdateBy(currentUser.getId());
+				serviceDao.save(service);
+				// 保存服务操作信息
+				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
+				serviceOperationLog.setUserId(currentUser.getId());
+				serviceOperationLog.setServiceId(id);
+				serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_STOP);
+				serviceOperationLog.setCreateDate(currentDate);
+				serviceOperationLogDao.save(serviceOperationLog);
             }
         }
         catch (KubernetesClientException e) {
@@ -1162,8 +1213,24 @@ public class ServiceController {
                     //取得对应的imageid
                     Image image = imageDao.findByNameAndVersion(service.getImgName(), imgVersion);
                     service.setImgID(image.getId());
-                    serviceDao.save(service);
+                    
+    				Date currentDate = new Date();
+    				User currentUser = CurrentUserUtils.getInstance().getUser();
+    				service.setUpdateDate(currentDate);
+    				service.setUpdateBy(currentUser.getId());
+    				serviceDao.save(service);
+    				// 保存服务操作信息
+    				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
+    				serviceOperationLog.setUserId(currentUser.getId());
+    				serviceOperationLog.setServiceId(id);
+    				serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
+    				serviceOperationLog.setCreateDate(currentDate);
+    				serviceOperationLogDao.save(serviceOperationLog);
+
                     map.put("status", "200");
+        
+                    
+                    
                 }
                 else {
                     String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS + " --rollback";
@@ -1266,32 +1333,44 @@ public class ServiceController {
     @RequestMapping("service/modifyServiceNum.do")
 	@ResponseBody
 	public String modifyServiceNum(long id, Integer addservice) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, String> map = new HashMap<String, String>();
         Service service = serviceDao.findOne(id);
 
         if (service.getInstanceNum() == addservice) {
             map.put("status", "300");
         } 
         else {
-            try {
-                if (service.getStatus() == 3) {
-                    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-                    ReplicationController controller = client.updateReplicationController(service.getServiceName(),
-                        addservice);
-                    if (controller != null && controller.getSpec().getReplicas() == addservice) {
-                        map.put("status", "200");
-                        service.setInstanceNum(addservice);
-                        serviceDao.save(service);
-                    } else {
-                        map.put("status", "400");
-                    }
-                } else {
-                    map.put("status", "200");
-                    service.setInstanceNum(addservice);
-                    serviceDao.save(service);
-                }
-               
-            } 
+			try {
+				if (service.getStatus() == ServiceConstant.CONSTRUCTION_STATUS_RUNNING
+						|| service.getStatus() == ServiceConstant.CONSTRUCTION_STATUS_DEBUG) {
+					KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+					ReplicationController controller = client.updateReplicationController(service.getServiceName(),
+							addservice);
+					if (controller != null && controller.getSpec().getReplicas() == addservice) {
+						map.put("status", "200");
+					} else {
+						map.put("status", "400");
+					}
+				} else {
+					map.put("status", "200");
+				}
+				if (map.get("status").equals("200")) {
+					Date currentDate = new Date();
+					User currentUser = CurrentUserUtils.getInstance().getUser();
+					//保存服务信息
+					service.setInstanceNum(addservice);
+					service.setUpdateDate(currentDate);
+					service.setUpdateBy(currentUser.getId());
+					serviceDao.save(service);
+					// 保存服务操作信息
+					ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
+					serviceOperationLog.setUserId(currentUser.getId());
+					serviceOperationLog.setServiceId(id);
+					serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_SCALING);
+					serviceOperationLog.setCreateDate(currentDate);
+					serviceOperationLogDao.save(serviceOperationLog);
+				}
+			} 
             catch (KubernetesClientException e) {
                 map.put("status", "400");
                 map.put("msg", e.getStatus().getMessage());
@@ -1331,20 +1410,23 @@ public class ServiceController {
             		setContainer(container, cpus, rams);
             	}
             	controller = client.updateReplicationController(service.getServiceName(), controller);
-//            for (com.bonc.epm.paas.kubernetes.model.Container container2 :controller.getSpec().getTemplate().getSpec().getContainers()) {
-//                if (container2.getResources().getLimits().get("cpu") != cpus ||
-//					container2.getResources().getLimits().get("memory").equals(rams + "Mi") ||
-//					container2.getResources().getRequests().get("cpu") != cpus ||
-//					container2.getResources().getRequests().get("memory").equals(rams + "Mi")) {
-//		            map.put("status", "400");
-//		            LOG.info("modifyCPU failed:id["+id+"], cpus["+cpus+"], rams["+rams+"]");
-//		            break;
-//				}
-//			}
-            	
             	if (map.get("status") == null) {
             		map.put("status", "200");
+    				Date currentDate = new Date();
+    				User currentUser = CurrentUserUtils.getInstance().getUser();
+    				//保存服务信息
+    				service.setUpdateDate(currentDate);
+    				service.setUpdateBy(currentUser.getId());
+    				serviceDao.save(service);
+    				// 保存服务操作信息
+    				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
+    				serviceOperationLog.setUserId(currentUser.getId());
+    				serviceOperationLog.setServiceId(id);
+    				serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_CONFIGURE);
+    				serviceOperationLog.setCreateDate(currentDate);
+    				serviceOperationLogDao.save(serviceOperationLog);
             		serviceDao.save(service);
+            		
             	}
 			} else {
 	            map.put("status", "400");
@@ -1453,6 +1535,16 @@ public class ServiceController {
             map.put("status", "200");
             serviceDao.delete(id);
             envVariableDao.deleteByServiceId(id);
+            // 保存服务操作信息
+			Date currentDate = new Date();
+			User currentUser = CurrentUserUtils.getInstance().getUser();
+			ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
+			serviceOperationLog.setUserId(currentUser.getId());
+			serviceOperationLog.setServiceId(id);
+			serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_DELETE);
+			serviceOperationLog.setCreateDate(currentDate);
+			serviceOperationLogDao.save(serviceOperationLog);
+
 			
 			// 删除服务 释放绑定的端口
             List<PortConfig> bindPort = portConfigDao.findByServiceId(id);
@@ -1703,132 +1795,6 @@ public class ServiceController {
 
 	}
 
-//	/**
-//	 * Description: <br>
-//	 * 获取当前服务的日志
-//	 * @param id 服务Id
-//	 * @param date 日期
-//	 * @return String
-//	 */
-//    @RequestMapping("service/detail/getLogsByService.do")
-//	@ResponseBody
-//	public String getLogsByService(long id, String date) {
-//        Service service = serviceDao.findOne(id);
-//        User currentUser = CurrentUserUtils.getInstance().getUser();
-//        Map<String, Object> map = new HashMap<String, Object>();
-//        List<String> logList = new ArrayList<String>();
-//        
-//		try {
-//			// 初始化es客户端
-//			ESClient esClient = new ESClient();
-//			esClient.initESClient(esConf.getHost(),esConf.getClusterName()); 
-//			
-//			if (date != "") {
-//				// 设置es查询日期，数据格式，查询的pod名称
-//				Calendar calendar = Calendar.getInstance();
-//				calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
-//				calendar.add(Calendar.HOUR_OF_DAY, -8);
-//				String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
-//				logList = esClient.searchLogsByService("fluentd", service.getServiceName(),currentUser.getNamespace(),dateString,"9999-12-31T00:00:00+00:00");
-//			} 
-//			else {
-//				logList = esClient.searchServiceLastLogs("fluentd", service.getServiceName(),currentUser.getNamespace());
-//			}
-//			
-//			// 关闭es客户端
-//			esClient.closeESClient();
-//			map.put("status", "200");
-//			map.put("logList",logList);
-//			
-//		} catch (Exception e) {
-//			map.put("status", "400");
-//			LOG.error("日志读取错误：" + e.getMessage());
-//		}
-//		
-//        return JSON.toJSONString(map);
-//
-//    }
-    
-    
-//	/**
-//	 * Description: <br>
-//	 * 获取当前Pod的日志
-//	 * @param id 服务Id
-//	 * @param date 日期
-//	 * @return String
-//	 */
-//    @RequestMapping("service/detail/getPodlogs.do")
-//	@ResponseBody
-//	public String getPodLogs(long id, String podName, String date) {
-//        Service service = serviceDao.findOne(id);
-//        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-//        String logStr = "";
-//        Map<String, String> map = new HashMap<String, String>();
-//        Map<String, Object> datamap = new HashMap<String, Object>();
-//
-//        try {
-//            map.put("app", service.getServiceName());
-//            PodList podList = client.getLabelSelectorPods(map);
-//            if (podList != null) {
-//                List<Pod> pods = podList.getItems();
-//                if (CollectionUtils.isNotEmpty(pods)) {
-//                    int i = 1;
-//                    for (Pod pod : pods) {
-//                    	// 获取pod名称
-//                    	String k8sPodName = pod.getMetadata().getName();
-//                    	
-//                    	if (k8sPodName.equals(podName)) {
-//							
-//                    		for(com.bonc.epm.paas.kubernetes.model.Container container : pod.getSpec().getContainers()){
-//                    			
-//                    			//获取container名称
-//                    			String containerName = container.getName();
-//                    			
-//                    			// 初始化es客户端
-//                    			ESClient esClient = new ESClient();
-//                    			esClient.initESClient(esConf.getHost(),esConf.getClusterName());
-//                    			String s = null;
-//                    			if (date != "") {
-//                    				// 设置es查询日期，数据格式，查询的pod名称
-//                    				Calendar calendar = Calendar.getInstance();
-//                    				calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
-//                    				calendar.add(Calendar.HOUR_OF_DAY, -8);
-//                    				String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
-//                    				s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
-//                    			} 
-//                    			else {
-//                    				// 查询该Pod的最近1000条log
-//                    				s = esClient.searchPodLastLogs("fluentd", podName,containerName);
-//                    			}
-//                    			
-//                    			// 关闭es客户端
-//                    			esClient.closeESClient();
-//                    			// 拼接日志格式
-//                    			String add = "[" + podName + "] ["+containerName+"]：";
-//                    			s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-//                    			
-//                    			s = s.substring(0, s.length() - add.length());
-//                    			logStr = logStr.concat(s);
-//                    		}
-//						}
-//                    }
-//                }
-//            }
-//
-//            datamap.put("logStr", logStr);
-//            datamap.put("status", "200");
-//        } 
-//        catch (Exception e) {
-//            datamap.put("status", "400");
-//            LOG.error("日志读取错误：" + e);
-//        }
-//
-//        return JSON.toJSONString(datamap);
-//
-//    }
-    
-    
-    
 	/**
 	 * Description: <br>
 	 * 获取当前Pod的日志
@@ -1933,7 +1899,6 @@ public class ServiceController {
         return JSON.toJSONString(map);
     }
 
-
 	/**
 	 * Description: <br>
 	 * 获取当前Pod的实时日志
@@ -2002,21 +1967,22 @@ public class ServiceController {
         }
     }
     
-    /**
-     * 获取前缀
-     * 
-     * @return prex
-     * @see
-     */
-   @RequestMapping("service/detail/getprex.do")
-   @ResponseBody
-   public String getprex(){
-       Map<String, Object> map = new HashMap<String, Object>();
-       String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-       String prex="http://"+namespace+".";
-       map.put("prex", prex);
-       return JSON.toJSONString(map);
-    }
+	/**
+	 * 获取前缀
+	 * 
+	 * @return prex
+	 * @see
+	 */
+	@RequestMapping("service/detail/getprex.do")
+	@ResponseBody
+	public String getprex() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		String prex = "http://" + namespace + ".";
+		map.put("prex", prex);
+		return JSON.toJSONString(map);
+	}
+   
    /**
     * 修改服务地址
     * 
@@ -2037,8 +2003,18 @@ public class ServiceController {
         service.setServiceAddr(serviceAddr);
         service.setProxyPath(proxyPath);
         try {
-            
-            serviceDao.save(service);
+			Date currentDate = new Date();
+			User currentUser = CurrentUserUtils.getInstance().getUser();
+			service.setUpdateDate(currentDate);
+			service.setUpdateBy(currentUser.getId());
+			serviceDao.save(service);
+			// 保存服务操作信息
+			ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
+			serviceOperationLog.setUserId(currentUser.getId());
+			serviceOperationLog.setServiceId(serId);
+			serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_CONFIGURE);
+			serviceOperationLog.setCreateDate(currentDate);
+			serviceOperationLogDao.save(serviceOperationLog);
             map.put("status", "200");
         } catch (Exception e) {
             map.put("status", "400");
@@ -2057,113 +2033,124 @@ public class ServiceController {
      * @return 
      * @see
      */
-    @RequestMapping(value ="service/detail/editBaseSerForm.do")
-    @ResponseBody
-    public String editBaseSerForm(Model model,Service service){
-        Map<String, Object> map = new HashMap<String, Object>();
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        ReplicationController controller = null;
-        com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
-        int runFlag;
-        Service ser = serviceDao.findOne(service.getId());
-        if(1==ser.getStatus()){
-            ser=setAttrForEdit(ser, service);
-            ser.setServiceName(service.getServiceName());
-            ser.setStartCommand(service.getStartCommand());
-//            updateStorageType(service.getVolName(), service.getServiceName());
-        }else if(4==ser.getStatus()){
-            try {
-                controller = client.getReplicationController(ser.getServiceName());
-            } catch (KubernetesClientException e) {
-                map.put("status", "500");
-                map.put("msg", e.getStatus().getMessage());
-                LOG.error("create service error:" + e.getStatus().getMessage());
-                return JSON.toJSONString(map);
-                           }
-            try {
-                k8sService = client.getService(ser.getServiceName());
-            } catch (KubernetesClientException e) {
-                map.put("status", "500");
-                map.put("msg", e.getStatus().getMessage());
-                LOG.error("create service error:" + e.getStatus().getMessage());
-                return JSON.toJSONString(map);
-                        }
-            runFlag = 0;
-           try {
-                             // 初始化自定义启动命令
-                     String startCommand = service.getStartCommand().trim();
-                     List<String> command = new ArrayList<String>();
-                     List<String> args = new ArrayList<String>();
-                     if (StringUtils.isNotBlank(startCommand)) {
-                         String[] startCommandArray = startCommand.replaceAll("\\s+", " ").split(" ");
-                         for (String item : startCommandArray) {
-                             if (CollectionUtils.isEmpty(command)) {
-                                 command.add(item);
-                                 continue;
-                             }
-                             args.add(item);
-                         }
-                     }
-                     controller=kubernetesClientService.updateSimpleReplicationController(controller,service,command,runFlag);
-                     k8sService=kubernetesClientService.updateService(k8sService,service);
-                     controller = client.updateReplicationController(ser.getServiceName(), controller);
-                     k8sService = client.updateService(ser.getServiceName(), k8sService);
-//                     if(StringUtils.isNotBlank(service.getVolName())){
-//                         controller = setVolumeStorage(controller, service.getVolName(),service.getMountPath());
-//                                             }
-                     ser=setAttrForEdit(ser, service);
-                     ser.setServiceName(service.getServiceName());
-                     ser.setStartCommand(service.getStartCommand());
-                     
-           }catch (KubernetesClientException e) {
-               map.put("status", "500");
-               map.put("msg", e.getStatus().getMessage());
-               LOG.error("create service error:" + e.getStatus().getMessage());
-               return JSON.toJSONString(map);
-                       }
-        }else{
-            try {
-                controller = client.getReplicationController(service.getServiceName());
-            } catch (KubernetesClientException e) {
-                map.put("status", "500");
-                map.put("msg", e.getStatus().getMessage());
-                LOG.error("create service error:" + e.getStatus().getMessage());
-                return JSON.toJSONString(map);
-                        }
-            try {
-                k8sService = client.getService(service.getServiceName());
-            } catch (KubernetesClientException e) {
-                map.put("status", "500");
-                map.put("msg", e.getStatus().getMessage());
-                LOG.error("create service error:" + e.getStatus().getMessage());
-                return JSON.toJSONString(map);
-                        }
-            try {
-                runFlag=1;
-                //修改rc和service
-                controller=kubernetesClientService.updateSimpleReplicationController(controller,service,null,runFlag);
-                k8sService=kubernetesClientService.updateService(k8sService,service);
-                
-                controller = client.updateReplicationController(ser.getServiceName(), controller);
-                k8sService = client.updateService(ser.getServiceName(), k8sService);
+	@RequestMapping(value = "service/detail/editBaseSerForm.do")
+	@ResponseBody
+	public String editBaseSerForm(Model model, Service service) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		ReplicationController controller = null;
+		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+		int runFlag;
+		Service ser = serviceDao.findOne(service.getId());
+		if (1 == ser.getStatus()) {
+			ser = setAttrForEdit(ser, service);
+			ser.setServiceName(service.getServiceName());
+			ser.setStartCommand(service.getStartCommand());
+		} else if (4 == ser.getStatus()) {
+			try {
+				controller = client.getReplicationController(ser.getServiceName());
+			} catch (KubernetesClientException e) {
+				map.put("status", "500");
+				map.put("msg", e.getStatus().getMessage());
+				LOG.error("create service error:" + e.getStatus().getMessage());
+				return JSON.toJSONString(map);
+			}
+			try {
+				k8sService = client.getService(ser.getServiceName());
+			} catch (KubernetesClientException e) {
+				map.put("status", "500");
+				map.put("msg", e.getStatus().getMessage());
+				LOG.error("create service error:" + e.getStatus().getMessage());
+				return JSON.toJSONString(map);
+			}
+			runFlag = 0;
+			try {
+				// 初始化自定义启动命令
+				String startCommand = service.getStartCommand().trim();
+				List<String> command = new ArrayList<String>();
+				List<String> args = new ArrayList<String>();
+				if (StringUtils.isNotBlank(startCommand)) {
+					String[] startCommandArray = startCommand.replaceAll("\\s+", " ").split(" ");
+					for (String item : startCommandArray) {
+						if (CollectionUtils.isEmpty(command)) {
+							command.add(item);
+							continue;
+						}
+						args.add(item);
+					}
+				}
+				controller = kubernetesClientService.updateSimpleReplicationController(controller, service, command,
+						runFlag);
+				k8sService = kubernetesClientService.updateService(k8sService, service);
+				controller = client.updateReplicationController(ser.getServiceName(), controller);
+				k8sService = client.updateService(ser.getServiceName(), k8sService);
+				ser = setAttrForEdit(ser, service);
+				ser.setServiceName(service.getServiceName());
+				ser.setStartCommand(service.getStartCommand());
 
-            }catch (KubernetesClientException e) {
-                map.put("status", "500");
-                map.put("msg", e.getStatus().getMessage());
-                LOG.error("create service error:" + e.getStatus().getMessage());
-                return JSON.toJSONString(map);
-            }
-//            ser.setServiceName(service.getServiceName());
-//            ser.setStartCommand(service.getStartCommand());
-            ser=setAttrForEdit(ser,service);
-            
-                }
-        serviceDao.save(ser);
-        map.put("status", "200");
-        
-        return JSON.toJSONString(map);
+			} catch (KubernetesClientException e) {
+				map.put("status", "500");
+				map.put("msg", e.getStatus().getMessage());
+				LOG.error("create service error:" + e.getStatus().getMessage());
+				return JSON.toJSONString(map);
+			}
+		} else {
+			try {
+				controller = client.getReplicationController(service.getServiceName());
+			} catch (KubernetesClientException e) {
+				map.put("status", "500");
+				map.put("msg", e.getStatus().getMessage());
+				LOG.error("create service error:" + e.getStatus().getMessage());
+				return JSON.toJSONString(map);
+			}
+			try {
+				k8sService = client.getService(service.getServiceName());
+			} catch (KubernetesClientException e) {
+				map.put("status", "500");
+				map.put("msg", e.getStatus().getMessage());
+				LOG.error("create service error:" + e.getStatus().getMessage());
+				return JSON.toJSONString(map);
+			}
+			try {
+				runFlag = 1;
+				// 修改rc和service
+				controller = kubernetesClientService.updateSimpleReplicationController(controller, service, null,
+						runFlag);
+				k8sService = kubernetesClientService.updateService(k8sService, service);
 
-    }
+				controller = client.updateReplicationController(ser.getServiceName(), controller);
+				k8sService = client.updateService(ser.getServiceName(), k8sService);
+
+			} catch (KubernetesClientException e) {
+				map.put("status", "500");
+				map.put("msg", e.getStatus().getMessage());
+				LOG.error("create service error:" + e.getStatus().getMessage());
+				return JSON.toJSONString(map);
+			}
+			ser = setAttrForEdit(ser, service);
+
+		}
+		
+		Date currentDate = new Date();
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		ser.setUpdateDate(currentDate);
+		ser.setUpdateBy(currentUser.getId());
+		serviceDao.save(ser);
+		// 保存服务操作信息
+		ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
+		serviceOperationLog.setUserId(currentUser.getId());
+		serviceOperationLog.setServiceId(ser.getId());
+		serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_CONFIGURE);
+		serviceOperationLog.setCreateDate(currentDate);
+		serviceOperationLogDao.save(serviceOperationLog);
+
+		
+		map.put("status", "200");
+
+		return JSON.toJSONString(map);
+
+	}
+	
     public Service setAttrForEdit(Service ser,Service service){
         ser.setServicePath(service.getServicePath());
         ser.setProxyZone(service.getProxyZone());
