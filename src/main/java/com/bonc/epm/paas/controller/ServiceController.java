@@ -1426,7 +1426,6 @@ public class ServiceController {
     				serviceOperationLog.setCreateDate(currentDate);
     				serviceOperationLogDao.save(serviceOperationLog);
             		serviceDao.save(service);
-            		
             	}
 			} else {
 	            map.put("status", "400");
@@ -1544,7 +1543,6 @@ public class ServiceController {
 			serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_DELETE);
 			serviceOperationLog.setCreateDate(currentDate);
 			serviceOperationLogDao.save(serviceOperationLog);
-
 			
 			// 删除服务 释放绑定的端口
             List<PortConfig> bindPort = portConfigDao.findByServiceId(id);
@@ -2012,7 +2010,7 @@ public class ServiceController {
 			ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
 			serviceOperationLog.setUserId(currentUser.getId());
 			serviceOperationLog.setServiceId(serId);
-			serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_CONFIGURE);
+			serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_UPDATE);
 			serviceOperationLog.setCreateDate(currentDate);
 			serviceOperationLogDao.save(serviceOperationLog);
             map.put("status", "200");
@@ -2140,7 +2138,7 @@ public class ServiceController {
 		ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
 		serviceOperationLog.setUserId(currentUser.getId());
 		serviceOperationLog.setServiceId(ser.getId());
-		serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_CONFIGURE);
+		serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_UPDATE);
 		serviceOperationLog.setCreateDate(currentDate);
 		serviceOperationLogDao.save(serviceOperationLog);
 
