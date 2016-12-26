@@ -40,12 +40,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.bonc.epm.paas.constant.NginxServerConf;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.UserConstant;
-import com.bonc.epm.paas.constant.esConf;
 import com.bonc.epm.paas.dao.CephAddressDao;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
@@ -202,12 +200,6 @@ public class ServiceController {
 	private TemplateConf templateConf;
 
     /**
-     * esConf
-     */
-    @Autowired
-	private esConf esConf;
-    
-    /**
      * 获取ceph.monitor数据
      */
     @Value("${ceph.monitor}")
@@ -225,31 +217,6 @@ public class ServiceController {
     @Value("${nginx.service.zone}")
     private String NGINX_SERVICE_ZONE;
     
-    /**
-     * NginxServerConf
-     */
-    @Autowired
-	private NginxServerConf nginxServerConf;
-    
-//    /**
-//     * Description: <br>
-//     * 查询所有的服务
-//     * @return String
-//     */
-//    @RequestMapping("service/listService.do")
-//	@ResponseBody
-//	public String list() {
-//        List<Service> serviceList = new ArrayList<Service>();
-//        for (Service service : serviceDao.findAll()) {
-//            serviceList.add(service);
-//        }
-//        LOG.debug("services:===========" + serviceList);
-//        Map<String, Object> map = new HashMap<String, Object>();
-//        map.put("status", "200");
-//        map.put("data", serviceList);
-//        return JSON.toJSONString(map);
-//    }
-
 	/**
 	 * Description: <br>
 	 * 展示container和services
@@ -258,11 +225,8 @@ public class ServiceController {
 	 */
     @RequestMapping(value = { "service" }, method = RequestMethod.GET)
 	public String containerLists(Model model) {
-        User currentUser = CurrentUserUtils.getInstance().getUser();
-		// 获取特殊条件的pods
+        // 获取特殊条件的pods
         try {
-//            getServiceSource(model, currentUser.getId());
-//            getNginxServer(model);
             getleftResource(model);
         } 
         catch (KubernetesClientException e) {
@@ -345,8 +309,6 @@ public class ServiceController {
      * @param model  
      */
     public void getNginxServer(Model model) {
-//        model.addAttribute("DMZ", nginxServerConf.getDMZ());
-//        model.addAttribute("USER", nginxServerConf.getUSER());
         List<String> serviceZone = new ArrayList<>();
         if (StringUtils.isNoneBlank(NGINX_SERVICE_ZONE)) {
             String[] zoneArray = NGINX_SERVICE_ZONE.split(",");
@@ -357,44 +319,6 @@ public class ServiceController {
         model.addAttribute("zoneList", serviceZone);
     }
     
-    /**
-     * Description: <br>
-     * 查询当前用户创建的服务和容器
-     * @param model 
-     * @param id 当前用户id
-     */
-    public void getServiceSource(Model model, long id) {
-//        List<Service> serviceList = new ArrayList<Service>();
-//        List<Container> containerList = new ArrayList<Container>();
-//        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-//        for (Service service : serviceDao.findByCreateBy(id)) {
-//            Map<String, String> map = new HashMap<String, String>();
-//            map.put("app", service.getServiceName());
-//            PodList podList = client.getLabelSelectorPods(map);
-//            if (podList != null) {
-//                List<Pod> pods = podList.getItems();
-//                if (CollectionUtils.isNotEmpty(pods)) {
-//                    int i = 1;
-//                    for (Pod pod : pods) {
-//                        String podName = pod.getMetadata().getName();
-//                        Container container = new Container();
-//                        container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-//						container.setServiceid(service.getId());
-//						if (pod.getStatus().getPhase().equals("Running")) {
-//							container.setContainerStatus(0);
-//						} else {
-//							container.setContainerStatus(1);
-//						}
-//						containerList.add(container);
-//					}
-//				}
-//			}
-//			serviceList.add(service);
-//		}
-//		model.addAttribute("containerList", containerList);
-		model.addAttribute("serviceList", serviceDao.findByCreateBy(id));
-	}
-
     /**
      * Description: <br>
      * 根据服务名称模糊查询服务和容器
@@ -419,7 +343,6 @@ public class ServiceController {
 					if (CollectionUtils.isNotEmpty(pods)) {
 						int i = 1;
 						for (Pod pod : pods) {
-							String podName = pod.getMetadata().getName();
 							Container container = new Container();
 							container.setContainerName(
 									service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
@@ -467,12 +390,12 @@ public class ServiceController {
      * @param id 服务Id
      * @return String
      */
-    @RequestMapping(value = { "service/detail/{id}" }, method = RequestMethod.GET)
+    @SuppressWarnings("unused")
+	@RequestMapping(value = { "service/detail/{id}" }, method = RequestMethod.GET)
 	public String detail(Model model, @PathVariable long id) {
 	    System.out.printf("id: " + id);
 	    User currentUser = CurrentUserUtils.getInstance().getUser();
 	    Service service = serviceDao.findOne(id);
-		//service.setProxyZone(substr(service.getProxyZone()));
 	    List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
 	    List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
 	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -524,7 +447,6 @@ public class ServiceController {
         String[] splitstr=str.split("'");
         for (int i = 0;i < splitstr.length;i++) {
             if ((i+1)%4==0) {
-				//System.out.println(splitstr[i]);
                 strs+=splitstr[i]+",";
             }
         }
@@ -532,89 +454,6 @@ public class ServiceController {
         return strs;
     }
 
-//	/**
-//	 * Description: <br>
-//	 * 获取当前服务的日志
-//	 * @param id 服务Id
-//	 * @param date 日期
-//	 * @return String
-//	 */
-//    @RequestMapping("service/detail/getlogs.do")
-//	@ResponseBody
-//	public String getServiceLogs(long id, String date) {
-//        Service service = serviceDao.findOne(id);
-//        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-//        List<String> logList = new ArrayList<String>();
-//        String logStr = "";
-//        Map<String, String> map = new HashMap<String, String>();
-//        Map<String, Object> datamap = new HashMap<String, Object>();
-//
-//        try {
-//            map.put("app", service.getServiceName());
-//            PodList podList = client.getLabelSelectorPods(map);
-//            if (podList != null) {
-//                List<Pod> pods = podList.getItems();
-//                if (CollectionUtils.isNotEmpty(pods)) {
-//                    int i = 1;
-//                    for (Pod pod : pods) {
-//                    	
-//                    	for(com.bonc.epm.paas.kubernetes.model.Container container : pod.getSpec().getContainers()){
-//                    		
-//                    		// 获取pod名称
-//                    		String podName = pod.getMetadata().getName();
-//                    		
-//                    		//获取container名称
-//                    		String containerName = container.getName();
-//                    		
-//                    		// 初始化es客户端
-//                    		ESClient esClient = new ESClient();
-//                    		esClient.initESClient(esConf.getHost(),esConf.getClusterName());
-//                    		String s = null;
-//                    		if (date != "") {
-//                    			// 设置es查询日期，数据格式，查询的pod名称
-////                            s = esClient.search("logstash-" + date.replaceAll("-", "."), "fluentd", podName);
-//                    			Calendar calendar = Calendar.getInstance();
-//                    			calendar.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date));
-//                    			calendar.add(Calendar.HOUR_OF_DAY, -8);
-//                    			String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
-//                    			s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
-//                    		} 
-//                    		else {
-//                    			// 设置es查询日期，数据格式，查询的pod名称
-//                    			Calendar calendar = Calendar.getInstance();
-//                    			calendar.add(Calendar.HOUR_OF_DAY, -8);
-//                    			calendar.add(Calendar.MINUTE, -3);
-//                    			String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00").format(calendar.getTime());
-//                    			s = esClient.search("fluentd", podName,containerName,dateString,"9999-12-31T00:00:00+00:00");
-////                            s = esClient.search("logstash-" + dateToString(new Date()), "fluentd", podName);
-//                    		}
-//                    		
-//                    		// 关闭es客户端
-//                    		esClient.closeESClient();
-//                    		// 拼接日志格式
-//                    		String add = "[" + "App-" + i + "] [" + podName + "] ["+containerName+"]：";
-////                        s = add + s.replaceAll("\n", "\n" + add);
-//                    		s = add + s.replaceAll("\n", "\n" + add).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-//                    		
-//                    		s = s.substring(0, s.length() - add.length());
-//                    		logStr = logStr.concat(s);
-//                    		logList.add(s);
-//                    	}
-//                    }
-//                }
-//            }
-//            datamap.put("logStr", logStr);
-//            datamap.put("logList",logList);
-//            datamap.put("status", "200");
-//        } 
-//        catch (Exception e) {
-//            datamap.put("status", "400");
-//            LOG.error("日志读取错误：" + e);
-//        }
-//
-//        return JSON.toJSONString(datamap);
-//
-//    }
     
     /**
      * Description: <br>
@@ -662,18 +501,14 @@ public class ServiceController {
             }
             model.addAttribute("portConfigs",JSON.toJSONString(list));
         }
-		//TODO 
         boolean flag = getleftResource(model);
         if (!flag) {
             model.addAttribute("msg", "请创建租户！");
             return "service/service.jsp";
         }
-		//TODO
-
 		// 获取配置文件中nginx选择区域
         getNginxServer(model);
         User cUser = CurrentUserUtils.getInstance().getUser();
-        Map<String, Object> map = new HashMap<String, Object>();
         //获取未使用的存储卷
         long createBy = 0l;
         if(UserConstant.AUTORITY_USER.equals(cUser.getUser_autority())){
@@ -821,15 +656,11 @@ public class ServiceController {
                 long hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
                 long used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
 
-                //System.out.println(quota.getStatus().getHard().get("cpu"));
-                //System.out.println(quota.getStatus().getUsed().get("cpu"));
-
                 double leftCpu = kubernetesClientService.transCpu(quota.getStatus().getHard().get("cpu"))
 						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu"));
 
                 long leftmemory = hard - used;
 
-                //System.out.println(hard + "  " + used);
                 model.addAttribute("leftcpu", leftCpu * Integer.valueOf(RATIO_MEMTOCPU));
                 model.addAttribute("leftmemory", leftmemory / 1024);
             } else {
@@ -856,11 +687,6 @@ public class ServiceController {
         long userId = CurrentUserUtils.getInstance().getUser().getId();
         Map<String, Object> map = new HashMap<String, Object>();
         List<Image> images = imageDao.findAll(userId);
-        /*if (CollectionUtils.isNotEmpty(images)) {
-		    for (Image image : images) {
-		        image.setPortConfigs(getBaseImageExposedPorts(String.valueOf(image.getId())));
-		    }
-		}*/
         map.put("data", images);
         System.out.println(JSON.toJSONString(map));
         return JSON.toJSONString(map);
@@ -878,11 +704,6 @@ public class ServiceController {
         long userId = CurrentUserUtils.getInstance().getUser().getId();
         Map<String, Object> map = new HashMap<String, Object>();
         List<Image> images = imageDao.findByNameOf(userId, "%" + imageName + "%");
-/*		if (CollectionUtils.isNotEmpty(images)) {
-		    for (Image image : images) {
-		        image.setPortConfigs(getBaseImageExposedPorts(String.valueOf(image.getId())));
-		    }
-		}*/
         map.put("data", images);
         return JSON.toJSONString(map);
     }
@@ -1036,9 +857,6 @@ public class ServiceController {
         if (StringUtils.isEmpty(service.getSessionAffinity())) {
             service.setSessionAffinity(null);
         }
-/*        if (!StringUtils.isEmpty(resourceName) && !service.getServicePath().trim().equals(resourceName.substring(0, resourceName.indexOf(".")).trim())) {
-            service.setServicePath(resourceName.substring(0, resourceName.indexOf(".")).trim());
-        }*/
         serviceDao.save(service);
 		
 		//将服务中的环境变量循环遍历，保存到相关联的实体类中；
@@ -1087,7 +905,6 @@ public class ServiceController {
                 portCon.setContainerPort(jsonArray.getJSONObject(i).getString("containerPort").trim());
                 portCon.setMapPort(jsonArray.getJSONObject(i).getString("mapPort").trim());
                 portCon.setProtocol(jsonArray.getJSONObject(i).getString("protocol").trim());
-                //portCon.setOptions(Integer.valueOf(jsonArray.getJSONObject(i).getString("option")));
                 portCon.setCreateDate(new Date());
                 portCon.setServiceId(service.getId());
                 portConfigDao.save(portCon);
@@ -1095,37 +912,6 @@ public class ServiceController {
                 smalSet.add(Integer.valueOf(portCon.getContainerPort().trim()));
             }
         }
-		//保存与service关联的ceph挂载卷实体类
-        
-		
-/*		// app为修改nginx配置文件的配置项
-		Map<String, String> app = new HashMap<String, String>();
-		app.put("userName", currentUser.getUserName());
-		app.put("confName", service.getServiceName());
-		app.put("port", String.valueOf(vailPortSet()));
-		// 判断配置文件是否存在并删除
-		if (TemplateEngine.fileIsExist(
-				CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName(),
-				templateConf)) {
-			// 清空配置文件内容
-			TemplateEngine.deleteConfig(service.getServiceName(),
-					CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName(),
-					templateConf);
-			// 删除配置文件
-			TemplateEngine.fileDel(
-					CurrentUserUtils.getInstance().getUser().getUserName() + "-" + service.getServiceName(),
-					templateConf);
-		}
-		// 将ip、端口等信息写入模版并保存到nginx config文件路径
-		// TODO 3  windows注释
-		 TemplateEngine.generateConfig(app,
-		 CurrentUserUtils.getInstance().getUser().getUserName() + "-" +
-		 service.getServiceName(), templateConf);
-		// 重新启动nginx服务器
-		// TODO 2
-		 TemplateEngine.cmdReloadConfig(templateConf);
-		 service.setServiceAddr(TemplateEngine.getConfUrl(templateConf));*/
-		 //service.setPortSet(app.get("port"));
         service.setServiceAddr("http://"+currentUser.getUserName() + "." + templateConf.getServerAddr());
         serviceDao.save(service);
         LOG.debug("container--Name:" + service.getServiceName());
@@ -1871,7 +1657,6 @@ public class ServiceController {
     @ResponseBody
 	public String findService(Long serviceID) {
         Map<String, Object> map = new HashMap<String, Object>();
-        User currentUser = CurrentUserUtils.getInstance().getUser();
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         Service service = serviceDao.findOne(serviceID);
         List<Container> containerList = new ArrayList<Container>();
@@ -1885,7 +1670,6 @@ public class ServiceController {
 				if (CollectionUtils.isNotEmpty(pods)) {
 					int i = 1;
 					for (Pod pod : pods) {
-						String podName = pod.getMetadata().getName();
 						Container container = new Container();
 						container
 								.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
@@ -2159,11 +1943,8 @@ public class ServiceController {
 	 */
     @RequestMapping("service/detail/getCurrentPodlogs.do")
 	@ResponseBody
-	public String getCurrentPodLogs(String podName,/*String container,*/String sinceTime) {
+	public String getCurrentPodLogs(String podName,String sinceTime) {
     	String container = new String();
-        if (container == null) {
-			container = "";
-		}
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         String logStr = "";
         Map<String, Object> datamap = new HashMap<String, Object>();
@@ -2197,11 +1978,8 @@ public class ServiceController {
      * @param response response
      */
     @RequestMapping(value ="/service/detail/getPodlogFile", method = RequestMethod.GET)
-	public void downloadPodlogFile(String podName,/*String container,*/ HttpServletRequest request,HttpServletResponse response) {
+	public void downloadPodlogFile(String podName, HttpServletRequest request,HttpServletResponse response) {
     	String container = new String();
-    	if (container == null) {
-			container = "";
-		}
     	try {
             response.setContentType(request.getServletContext().getMimeType(podName));  
             response.setHeader("Content-Disposition", "attachment;filename="+podName+".log");  
@@ -2210,15 +1988,6 @@ public class ServiceController {
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
             String logStr = "";
             logStr = client.getPodLog(podName, container, false, false);
-//            char[] log = logStr.toCharArray();
-//            for (int i = 0; i*100 < log.length; i++) {
-//            	if ((i+1)*100 > log.length) {
-//                	writer.write(log, i*100, log.length % 100);
-//					
-//				}else {
-//					writer.write(log, i*100, 100);
-//				}
-//			}
             writer.write(logStr);
             writer.flush();
             outputStream.flush();
@@ -2421,7 +2190,7 @@ public class ServiceController {
     @RequestMapping(value ="service/detail/editPortConfig.do")
     @ResponseBody
     public String editPortCfgForm(PortConfig portConfig , String serviceName ,long serviceId){
-        Map map = new HashMap();
+        Map<String, String> map = new HashMap<String, String>();
         PortConfig portCfg = new PortConfig();
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         ReplicationController controller = null;
@@ -2459,11 +2228,10 @@ public class ServiceController {
     @RequestMapping(value ="service/detail/editEnv.do")
     @ResponseBody
     public String editEnvForm(EnvVariable envVariable , String serviceName ,long serviceId){
-        Map map = new HashMap();
-        EnvVariable envVar = new  EnvVariable();
+        Map<String, String> map = new HashMap<String, String>();
+		EnvVariable envVar = new EnvVariable();
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         ReplicationController controller = null;
-        com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
         envVar = envVariableDao.findOne(envVariable.getEnvId());
         envVar.setEnvKey(envVariable.getEnvKey());
         envVar.setEnvValue(envVariable.getEnvValue());
@@ -2471,7 +2239,6 @@ public class ServiceController {
         List<EnvVariable> envVars = envVariableDao.findByServiceId(serviceId);
         try {
             controller = client.getReplicationController(serviceName);
-            k8sService = client.getService(serviceName);
             controller = kubernetesClientService.updateRcEnv(controller,envVars);
             controller = client.updateReplicationController(serviceName, controller);
         } catch (KubernetesClientException e) {
@@ -2496,7 +2263,6 @@ public class ServiceController {
     @RequestMapping(value ="service/detail/addEnv.do")
     @ResponseBody
     public String addEvn(EnvVariable envVariable,long serviceId){
-        Map map = new HashMap();
         long createBy = CurrentUserUtils.getInstance().getUser().getId();
         EnvVariable envVar = new EnvVariable();
         EnvVariable env=new EnvVariable();
@@ -2520,8 +2286,8 @@ public class ServiceController {
     @RequestMapping(value ="service/detail/delEnv.do",method = RequestMethod.POST)
     @ResponseBody
     public String delEvn(long envId){
-        Map map = new HashMap();
-        try{
+        Map<String, String> map = new HashMap<String, String>();
+                try{
             envVariableDao.delete(envId);
             map.put("status", "200");
         }catch(Exception e){
@@ -2539,13 +2305,13 @@ public class ServiceController {
     @RequestMapping(value ="service/detail/delPortCfg.do",method = RequestMethod.POST)
     @ResponseBody
     public String delPortCfg(long portId){
-        Map map = new HashMap();
-        try{
-            portConfigDao.delete(portId);
-            map.put("status", "200");
-        }catch(Exception e){
-            map.put("status", "500");
-                }
+        Map<String, String> map = new HashMap<String, String>();
+		try {
+			portConfigDao.delete(portId);
+			map.put("status", "200");
+		} catch (Exception e) {
+			map.put("status", "500");
+		}
         return JSON.toJSONString(map);
     }
     /**
@@ -2570,7 +2336,7 @@ public class ServiceController {
         portCon.setServiceId(serviceId);
         pCfg=portConfigDao.save(portCon);
         service = serviceDao.findOne(serviceId);
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("pCfg", pCfg);
         map.put("service",service);
             // 向map中添加生成的node端口
