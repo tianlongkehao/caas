@@ -41,7 +41,8 @@ public class TemplateController {
 			}
 		}
 		model.addAttribute("envTemplateList",envTemplates2);
-		model.addAttribute("menu_flag", "template"); 
+		model.addAttribute("menu_flag", "template");
+		model.addAttribute("li_flag", "env");
 		return "template/env-temp.jsp";
 	}
 	

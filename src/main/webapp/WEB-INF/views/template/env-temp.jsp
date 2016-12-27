@@ -14,7 +14,7 @@
 	src="<%=path%>/js/customer/custom.js"></script>
 </head>
 <body>
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="template" value="" />
 	</jsp:include>
 

@@ -8,7 +8,7 @@
     <script type="text/javascript" src="<%=path %>/js/ci/ci_detail.js"></script>
 </head>
 <body>
-<jsp:include page="../frame/menu.jsp" flush="true">
+<jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="ci" value=""/>
 </jsp:include>
 

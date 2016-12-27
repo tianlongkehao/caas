@@ -57,6 +57,7 @@ public class DockerFileTemplateController {
         LOG.debug("dockerFileList:===========" + dockerFileList);
         model.addAttribute("dockerFileList", dockerFileList);
         model.addAttribute("menu_flag", "template"); 
+        model.addAttribute("li_flag", "dockerfile");
         return "template/dockerfile-temp.jsp";
     }
     

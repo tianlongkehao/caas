@@ -19,7 +19,12 @@ ul, ol {
 li {
     list-style: none;
 }
-
+a{
+	color: #676a6c;
+}
+a:hover{
+	color: #e14344;
+}
 a,
 a:hover,
 a:focus{
@@ -406,7 +411,7 @@ i.fa_btn_plus_gray {
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
     background-color: #ffffff;
-    border-color: #e7eaec;
+    border-color: #fff;
     -webkit-border-image: none;
     -o-border-image: none;
     border-image: none;
@@ -421,12 +426,12 @@ i.fa_btn_plus_gray {
     background-color: #ffffff;
     color: inherit;
     padding: 15px 20px 20px 20px;
-    border-color: #e7eaec;
+    border-color: #e14344;
     -webkit-border-image: none;
     -o-border-image: none;
     border-image: none;
     border-style: solid solid none;
-    border-width: 1px 0px;
+    border-width: 2px 0px;
 }
 .ibox-title h5 {
     display: inline-block;
@@ -435,6 +440,7 @@ i.fa_btn_plus_gray {
     padding: 0;
     text-overflow: ellipsis;
     float: left;
+    color:#e14344;
 }
 .ibox-tools {
     display: inline-block;
@@ -446,11 +452,11 @@ i.fa_btn_plus_gray {
 .ibox-tools a {
     cursor: pointer;
     margin-left: 5px;
-    color: #3c7bca;
+    /* color: #3c7bca; */
 }
 .ibox-tools a:hover {
     cursor: pointer;
-    color: #676a6c;
+    color: #e14344;
 }
 .m-b-xs {
     margin-bottom: 5px;
@@ -532,4 +538,7 @@ table.dataTable thead .sorting:after {
 }
 .ibox-tools{
 	font-size: 16px;
+}
+.li-active{
+	background-color:#dadada;
 }

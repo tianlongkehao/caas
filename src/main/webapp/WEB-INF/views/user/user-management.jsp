@@ -10,7 +10,7 @@
 </head>
 <body>
 
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="user" value="" />
 	</jsp:include>
 	<div class="page-container">
@@ -30,9 +30,9 @@
 							<div class="col-sm-12">
 								<div class="ibox float-e-margins">
 									<div class="ibox-title">
-										<h5>
+										<div class="tab-title active"><h5>
 											<i class="fa fa-map-marker" style="margin-right: 6px;"></i>用户管理
-										</h5>
+										</h5></div>
 										<div class="ibox-tools">
 											<a href="<%=path %>/user/manage/add/${cur_user.id }"
 												id="userCreateBtn" title="创建用户"><i class="fa fa-plus"></i></a>

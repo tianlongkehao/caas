@@ -1,5 +1,6 @@
 .header {
-    background: #fff;
+    /* background: #fff; */
+    background: #E14344;
     height: 69px;
     width: 100%;
     z-index: 100;
@@ -14,7 +15,8 @@
 
 .navbar .navbar-header h2 {
     font-weight: 700;
-    color:#e14344;
+    /* color:#e14344; */
+    color: #fff;
 }
 
 .navbar .navbar-info {
@@ -29,7 +31,8 @@
     margin-right: 30px;
     background-color: unset;
     border-color: unset;
-    color: #888888;
+    /* color: #888888; */
+    color:#fff;
     transition: .5s;
 }
 
@@ -136,7 +139,7 @@
 /* 内容部分 */
 .page-container{
     height: 100%;
-    margin-left:75px;
+    margin-left:190px;
     z-index: 1;
 }
 .page-container article {
@@ -210,4 +213,7 @@
     left: 0;
     text-align: center;
     color: #ff0000;
+}
+a i.fa-home{
+	color: #e14344;
 }

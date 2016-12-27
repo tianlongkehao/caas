@@ -1,10 +1,18 @@
 
 
 /* 侧边菜单栏 */
-nav{
-	
+nav.navbar-default{
 	width:190px;
-	
+	position: fixed;
+    top: 70px;
+    left: 0;
+    z-index: 95;
+    min-height: 100%;
+	padding-top: 35px;
+	background-color:#fff;
+}
+.nav ul .nav-header{
+	padding-bottom: 20px;
 }
 .nav > li > a {
     color: #e14344;

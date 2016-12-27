@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	$("#ciReloadBtn").click(function(){
-		window.location.reload();
+		/*window.location.reload();*/
+		window.location.href = ctx + "/registry/1";
 	});
 	$(".ci-code-content").hide();
 	
