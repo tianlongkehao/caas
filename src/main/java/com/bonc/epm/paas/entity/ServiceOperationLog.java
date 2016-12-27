@@ -20,9 +20,24 @@ public class ServiceOperationLog {
 	private long userId;
 	
 	/**
+	 * 用户名
+	 */
+	private String userName;
+	
+	/**
 	 * 服务id
 	 */
 	private long serviceId;
+	
+	/**
+	 * 服务名称
+	 */
+	private String serviceName;
+	
+	/**
+	 * 服务中文名称
+	 */
+	private String serviceChName;
 	
 	/**
 	 * 操作类型
@@ -59,12 +74,36 @@ public class ServiceOperationLog {
 		this.userId = userId;
 	}
 
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
 	public long getServiceId() {
 		return serviceId;
 	}
 
 	public void setServiceId(long serviceId) {
 		this.serviceId = serviceId;
+	}
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	public String getServiceChName() {
+		return serviceChName;
+	}
+
+	public void setServiceChName(String serviceChName) {
+		this.serviceChName = serviceChName;
 	}
 
 	public long getOperationType() {
