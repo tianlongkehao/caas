@@ -243,7 +243,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             Namespace nSpace = kubernetesClientService.generateSimpleNamespace(namespace);
             nSpace = client.createNamespace(nSpace);
             if (nSpace == null) {
-                client.deleteNamespace(namespace);
+                //client.deleteNamespace(namespace);
                 LOG.error("Create a new Namespace:namespace["+nSpace+"]");
                 return false;
             }

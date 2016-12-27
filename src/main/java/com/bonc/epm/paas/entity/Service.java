@@ -108,16 +108,20 @@ public class Service {
 	private String serviceChName;
 	
 	/**
+	 * 更新时间
+	 */
+	private Date updateDate;
+	
+	/**
+	 * 更新者id
+	 */
+	private long updateBy;
+	
+	/**
 	 * 根据代码仓库中的代码是否发生变化，来提醒用户是否需要重新构建镜像
 	 */
 	@Transient
 	private boolean updateImage;
-	
-	private long updateBy;
-	
-	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
-	private Date updateDate;
-
 	
     public String getServiceChName() {
 		return serviceChName;
@@ -319,21 +323,20 @@ public class Service {
         this.updateImage = updateImage;
     }
 
-    public long getUpdateBy() {
-        return updateBy;
-    }
+	public Date getUpdateDate() {
+		return updateDate;
+	}
 
-    public void setUpdateBy(long updateBy) {
-        this.updateBy = updateBy;
-    }
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
 
-    public Date getUpdateDate() {
-        return updateDate;
-    }
+	public long getUpdateBy() {
+		return updateBy;
+	}
 
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-    
+	public void setUpdateBy(long updateBy) {
+		this.updateBy = updateBy;
+	}
     
 }
