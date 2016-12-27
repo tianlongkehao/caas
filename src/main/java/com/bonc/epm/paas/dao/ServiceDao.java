@@ -52,14 +52,6 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
     List<Service> findByCreateByAndProxyPath (long createBy,String proxyPath);
     
     /**
-     * 
-     * @return HashSet<Integer>
-     * @see
-     */
-    @Query("select i.portSet from Service i")
-    HashSet<Integer> findPortSets();
-    
-    /**
      * Description: <br>
      * 分页查询数据
      * @param createBy：创建者
