@@ -262,7 +262,7 @@
 																		style="height: 34px; width: 230px;">
 																<option  value="">选择一个存储卷</option>
 																<c:forEach items="${storageList }" var = "storage">
-																    <option  value="${storage.storageName }">${storage.storageName }  ${storage.storageSize }M</option>
+																    <option  value="${storage.id }">${storage.storageName }  ${storage.storageSize }M</option>
 																</c:forEach>
 													    </select>
 														<input type="text" id="mountPath" class="form-control" value="" />

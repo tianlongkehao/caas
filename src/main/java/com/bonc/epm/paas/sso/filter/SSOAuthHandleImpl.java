@@ -243,7 +243,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             Namespace nSpace = kubernetesClientService.generateSimpleNamespace(namespace);
             nSpace = client.createNamespace(nSpace);
             if (nSpace == null) {
-                client.deleteNamespace(namespace);
+                //client.deleteNamespace(namespace);
                 LOG.error("Create a new Namespace:namespace["+nSpace+"]");
                 return false;
             }
@@ -291,10 +291,10 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                             if (((String)tmp.get("property_code")).trim().equals("CPU")) {
                                 openCpu = (String) tmp.get("prop_value");
                             }
-                            else if (((String)tmp.get("property_code")).trim().equals("memory")) {
+                            else if (((String)tmp.get("property_code")).trim().equals("Memory")) {
                                 openMem = (String) tmp.get("prop_value"); 
                             }
-                            else if (((String)tmp.get("property_code")).trim().equals("Volume")){
+                            else if (((String)tmp.get("property_code")).trim().equals("Storage")){
                                 user.setVol_size(Long.parseLong((String)tmp.get("prop_value")));
                             }
                         }
@@ -305,7 +305,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             }
         }
         catch (Exception e) {
-            LOG.error("获取能力平台租户资源出错！" + e.getMessage());
+            LOG.error("获取能力平台租户资源出错！******************************" + e.getMessage());
             e.printStackTrace();
         }
     }
