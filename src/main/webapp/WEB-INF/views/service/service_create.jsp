@@ -93,7 +93,7 @@
 												name="imgVersion" readOnly="readOnly"></li>
 											<li class="line-h-3"><span class="ve_top">服务名称：<font
 													color="red">*</font></span><input type="text" value=""
-												class="in_style form-control" id="serviceName" name="serviceName">
+												class="in_style form-control" id="serviceName" name="serviceName" oninput="javascript:onEditServiceName()">
 												<input type="hidden" value="" class="in_style"
 												id="resourceName" name="resourceName"></li>
 											<li class="line-h-3"><span class="ve_top">服务中文名称：
@@ -284,6 +284,7 @@
 													</li>
 												</ol></li>
 											<li class="hide-set"><span class="ve_top">环境变量：</span>
+												<input type = "hidden" id = "userName" value="${userName }"/>
 												<ol>
 													<li class="hide-select">
 												       <input type="text" class="form-control" placeholder="name" id="Name"> 
@@ -305,7 +306,15 @@
 																</tr>
 															</thead>
 															<tbody id="Path-oper1">
-																<input type="hidden" id="arrayKey" value="" />
+																<input type="hidden" id="arrayKey" value="id,name" />
+																<tr style="display:none;">
+																	<input type="hidden" value="id"></td>
+																	<input type="hidden" id="value_id" value=""></td>
+																</tr>
+																<tr style="display:none;">
+																	<input type="hidden" value="name"></td>
+																	<input type="hidden" id="value_name" value=""></td>
+																</tr>
 															</tbody>
 														</table>
 													</li>

@@ -574,7 +574,7 @@ $(document).ready(function(){
 											success:function(data){
 												data = eval("(" + data + ")");
 												if (data.status == "200") {
-													layer.msg("环境变量模板导入成功",{icon: 6});
+													layer.msg("环境变量模板保存成功",{icon: 6});
 													layer.close(index2);
 													layer.close(index);
 												}
@@ -583,7 +583,7 @@ $(document).ready(function(){
 									  }
 									});
 							}else if (data.status == "200") {
-								layer.msg("环境变量模板导入成功",{icon: 6});
+								layer.msg("环境变量模板保存成功",{icon: 6});
 								layer.close(index);
 							}
 						}	
@@ -1013,4 +1013,8 @@ function deletePortRow(obj,int){
  *  }, cancel: function(index){ //或者使用btn2 //按钮【按钮二】的回调 } }); } }
  */
 
-
+function onEditServiceName() {
+	var value = $("#serviceName").val() + "-" + $("#userName").val();
+	$("#value_id").val(value)
+	$("#value_name").val(value)
+}

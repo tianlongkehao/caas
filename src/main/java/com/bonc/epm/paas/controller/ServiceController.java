@@ -481,7 +481,8 @@ public class ServiceController {
      * @return  String
      */
     @RequestMapping(value = { "service/add" }, method = RequestMethod.GET)
-	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {		
+	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {
+    	User currentUser = CurrentUserUtils.getInstance().getUser();
         String isDepoly = "";
         if (imageName != null) {
             isDepoly = "deploy";
@@ -518,6 +519,7 @@ public class ServiceController {
             createBy = CurrentUserUtils.getInstance().getUser().getId();
         }
         List<Storage> storageList = storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(createBy, 1);
+        model.addAttribute("userName", currentUser.getUserName());
         model.addAttribute("storageList", storageList);
         model.addAttribute("imgID", imgID);
         model.addAttribute("resourceName", resourceName);
