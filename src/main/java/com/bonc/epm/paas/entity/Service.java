@@ -340,4 +340,15 @@ public class Service {
 		this.updateBy = updateBy;
 	}
     
+	@Override
+	public String toString() {
+		return "id:" + id + ",cpuNum:" + cpuNum + ",imgID:" + imgID + ",imgName:" + imgName + ",imgVersion:"
+				+ imgVersion + ",instanceNum:" + instanceNum + ",ram:" + ram + ",serviceAddr:" + serviceAddr
+				+ ",serviceName:" + serviceName + ",serviceChName:" + serviceChName + ",serviceType:" + serviceType
+				+ ",status:" + status + ",checkPath:" + checkPath + ",sessionAffinity:" + sessionAffinity
+				+ ",initialDelay:" + initialDelay + ",periodDetction:" + periodDetction + ",timeoutDetction:"
+				+ timeoutDetction + ",nodeIpAffinity:" + nodeIpAffinity + ",proxyPath:" + proxyPath + ",proxyZone:"
+				+ proxyZone + ",servicePath:" + servicePath + ",startCommand:" + startCommand + ",createDate:"
+				+ createDate + ",createBy:" + createBy + ",updateDate:" + updateDate + ",updateBy:" + updateBy;
+	}
 }
