@@ -56,8 +56,8 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
      * @return HashSet<Integer>
      * @see
      */
-    @Query("select i.portSet from Service i")
-    HashSet<Integer> findPortSets();
+//    @Query("select i.portSet from Service i")
+//    HashSet<Integer> findPortSets();
     
     /**
      * Description: <br>
