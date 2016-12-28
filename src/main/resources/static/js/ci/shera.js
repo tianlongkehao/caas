@@ -201,7 +201,6 @@ function checkShera(){
 	var sheraUrl = $("#sheraIp").val();
 	var userName = $("#shreaName").val();
 	var password= $("#shreaPassword").val();
-	var remark = $("#sheraRemark").val();
 	if (!sheraUrl || sheraUrl.length < 1){
 	      layer.tips('sheraIp地址不能为空','#sheraIp',{tips: [1, '#3595CC']});
 	      $('#sheraIp').focus();
@@ -215,11 +214,6 @@ function checkShera(){
 	if (!password || password.length < 1){
 	      layer.tips('账号密码不能为空','#shreaPassword',{tips: [1, '#3595CC']});
 	      $('#shreaPassword').focus();
-	      return;
-	}
-	if (!remark || remark.length < 1){
-	      layer.tips('描述不能为空','#sheraRemark',{tips: [1, '#3595CC']});
-	      $('#sheraRemark').focus();
 	      return;
 	}
 	if (!addJdk()) {
