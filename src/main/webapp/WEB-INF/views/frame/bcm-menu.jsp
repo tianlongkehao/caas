@@ -3,8 +3,8 @@
 <%String path=request.getContextPath(); %>
 <html>
 <head>
-	<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm.css">
-    <script type="text/javascript" src="<%=path %>/js/plugins/bcm.js"></script>
+	<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-menu.css">
+    <script type="text/javascript" src="<%=path %>/js/plugins/bcm-menu.js"></script>
 </head>
 <body>
 
@@ -79,7 +79,7 @@
 					</div>
 
 				</li>
-				<li><a href="#"> <i class="fa fa-tachometer fa-nav-icon"></i>
+				<li id="menu_bcm"><a href="<%=path %>/bcm"> <i class="fa fa-tachometer fa-nav-icon"></i>
 						<span class="nav-label">总览</span>
 
 				</a></li>
@@ -88,18 +88,18 @@
 						class="nav-label">服务</span> <span class="fa arrow"></span>
 				</a>
 					<ul class="nav nav-second-level">
-						<li><a class="J_menuItem" href="<%=path %>/service">服务管理</a></li>
-						<li><a class="J_menuItem" href="<%=path %>/service/storage">存储与备份</a></li>
-						<li><a class="J_menuItem" href="<%=path %>/service/import">引入外部服务</a></li>
+						<li id="li_service"><a class="J_menuItem" href="<%=path %>/service">服务管理</a></li>
+						<li id="li_storage"><a class="J_menuItem" href="<%=path %>/service/storage">存储与备份</a></li>
+						<li id="li_import"><a class="J_menuItem" href="<%=path %>/service/import">引入外部服务</a></li>
 					</ul></li>
 				<li id="menu_ci"><a href="#"> <img alt="image" class="tit-image"
 						src="<%=path%>/images/factory_new-red.svg" /> <span
 						class="nav-label">构建</span> <span class="fa arrow"></span>
 				</a>
 					<ul class="nav nav-second-level">
-						<li><a class="J_menuItem" href="<%=path %>/ci">镜像构建</a></li>
+						<li id="li_ci"><a class="J_menuItem" href="<%=path %>/ci">镜像构建</a></li>
 						<c:if test="${cur_user.user_autority == 1}">
-						<li><a class="J_menuItem" href="<%=path %>/user/shera">Shera管理</a></li>
+						<li id="li_shera"><a class="J_menuItem" href="<%=path %>/user/shera">Shera管理</a></li>
 						</c:if>
 					</ul></li>
 				<li id="menu_registry"><a href="#"> <img alt="image" class="tit-image"
@@ -107,9 +107,9 @@
 						class="nav-label">镜像</span> <span class="fa arrow"></span>
 				</a>
 					<ul class="nav nav-second-level">
-						<li><a class="J_menuItem" href="<%=path %>/registry/0">镜像中心</a></li>
-						<li><a class="J_menuItem" href="<%=path %>/registry/1">我的镜像</a></li>
-						<li><a class="J_menuItem" href="<%=path %>/registry/2">我的收藏</a></li>
+						<li id="li_registry0"><a class="J_menuItem" href="<%=path %>/registry/0">镜像中心</a></li>
+						<li id="li_registry1"><a class="J_menuItem" href="<%=path %>/registry/1">我的镜像</a></li>
+						<li id="li_registry2"><a class="J_menuItem" href="<%=path %>/registry/2">我的收藏</a></li>
 					</ul></li>
 				<c:if test="${!cas_enable}">
 					<c:if test="${cur_user.user_autority == 1}">
@@ -118,7 +118,7 @@
 								<span class="fa arrow"></span>
 						</a>
 							<ul class="nav nav-second-level">
-								<li><a class="J_menuItem" href="<%=path %>/user/list">租户管理</a></li>
+								<li id="li_user"><a class="J_menuItem" href="<%=path %>/user/list">租户管理</a></li>
 							</ul></li>
 					</c:if>
 		        	<c:if test="${cur_user.user_autority == 2}">
@@ -127,8 +127,8 @@
 								<span class="fa arrow"></span>
 						</a>
 							<ul class="nav nav-second-level">
-								<li><a class="J_menuItem" href="">用户管理</a></li>
-								<li><a class="J_menuItem" href="">密钥管理</a></li>
+								<li id="li_manage"><a class="J_menuItem" href="<%=path %>/user/manage/list/${cur_user.id }">用户管理</a></li>
+								<li id="li_credential"><a class="J_menuItem" href="<%=path %>/secret/Credential">密钥管理</a></li>
 							</ul></li>
 					</c:if>
 				</c:if>
@@ -138,11 +138,11 @@
 				</a>
 					<ul class="nav nav-second-level">
 						<c:if test="${cur_user.user_autority == 1}">
-						<li><a class="J_menuItem" href="<%=path %>/cluster/resource">集群监控</a></li></c:if>
-						<li><a class="J_menuItem" href="<%=path %>/cluster/containers">容器监控</a></li>
+						<li id="li_cluster"><a class="J_menuItem" href="<%=path %>/cluster/resource">集群监控</a></li></c:if>
+						<li id="li_container"><a class="J_menuItem" href="<%=path %>/cluster/containers">容器监控</a></li>
 						<c:if test="${cur_user.user_autority == 1}">
-						<li><a class="J_menuItem" href="<%=path %>/cluster/management">集群管理</a></li></c:if>
-						<li><a class="J_menuItem" href="<%=path %>/cluster/topo">集群拓扑</a></li>
+						<li id="li_management"><a class="J_menuItem" href="<%=path %>/cluster/management">集群管理</a></li></c:if>
+						<li id="li_topo"><a class="J_menuItem" href="<%=path %>/cluster/topo">集群拓扑</a></li>
 					</ul></li>
 				<li id="menu_template"><a href="#"> <img alt="image" class="tit-image"
 						src="<%=path%>/images/tem-image-red.png" /> <span

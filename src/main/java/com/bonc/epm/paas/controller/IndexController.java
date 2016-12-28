@@ -68,7 +68,8 @@ public class IndexController {
     @RequestMapping(value={"bcm"},method=RequestMethod.GET)
 	public String bcm(Model model){
         model.addAttribute("showAuthCode", showAuthCode);
-        return "bcm.jsp";
+        model.addAttribute("menu_flag", "bcm");
+        return "bcm-pandect.jsp";
     }
     /**
      * Description: <br>

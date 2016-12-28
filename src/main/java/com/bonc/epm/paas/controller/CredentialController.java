@@ -70,6 +70,7 @@ public class CredentialController {
         List<CiCodeCredential> creList = ciCodeCredentialDao.findByCreateBy(user.getId());
         model.addAttribute("creList", creList);
         model.addAttribute("menu_flag", "usermanage");
+        model.addAttribute("li_flag", "credential");
         return "user/secretKey.jsp";
     }
     

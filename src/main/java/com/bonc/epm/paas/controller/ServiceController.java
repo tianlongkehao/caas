@@ -235,6 +235,7 @@ public class ServiceController {
             return "workbench.jsp";
         }
         model.addAttribute("menu_flag", "service");
+        model.addAttribute("li_flag", "service");
         return "service/service.jsp";
     }
     
@@ -433,6 +434,7 @@ public class ServiceController {
         model.addAttribute("envVariableList", envVariableList);
         model.addAttribute("portConfigList", portConfigList);
         model.addAttribute("menu_flag", "service");
+        model.addAttribute("li_flag", "service");
         return "service/service-detail.jsp";
     }
 

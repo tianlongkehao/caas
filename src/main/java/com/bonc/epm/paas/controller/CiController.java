@@ -184,6 +184,7 @@ public class CiController {
     @RequestMapping(value={"ci"},method=RequestMethod.GET)
 	public String index(Model model){
         model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li_flag", "ci");
         return "ci/ci.jsp";
     }
 

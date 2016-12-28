@@ -148,6 +148,7 @@ public class UserController {
         List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
         model.addAttribute("userList", userList);
         model.addAttribute("menu_flag", "user");
+        model.addAttribute("li_flag", "user");
         return "user/user.jsp";
     }
     
@@ -164,6 +165,7 @@ public class UserController {
         List<User> userManageList = userDao.checkUser1manage34(id);
         model.addAttribute("userManageList", userManageList);
         model.addAttribute("menu_flag", "usermanage");
+        model.addAttribute("li_flag", "manage");
         return "user/user-management.jsp";
     }
 
@@ -1247,6 +1249,7 @@ public class UserController {
         Iterable<Shera> sheraList = sheraDao.findAll();
         model.addAttribute("sheraList", sheraList);
         model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li_flag", "shera");
         return "ci/shera.jsp";
     }
     
