@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
+import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -27,6 +30,9 @@ public class TemplateController {
 
 	@Autowired
 	private EnvTemplateDao envTemplateDao;
+	
+    @Autowired
+    private CommonOperationLogDao commonOperationLogDao;
 	
 	@RequestMapping(value = "/env", method = RequestMethod.GET)
 	public String envTemp(Model model) {
@@ -77,7 +83,7 @@ public class TemplateController {
 	 */
 	@RequestMapping("/saveEnvTemplate.do")
 	@ResponseBody
-	public String saveEnvTemplate(String templateName, String envVariable) {
+	public String saveEnvTemplate(String templateName, String envVariable,Boolean flag) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User cUser = CurrentUserUtils.getInstance().getUser();
 
@@ -90,6 +96,9 @@ public class TemplateController {
 
 		if (StringUtils.isNotEmpty(envVariable)) {
 		    String[] envKeyAndValues = envVariable.split(";");
+		    
+		    String extraInfo="新增templateName:"+templateName+"包含的内容： ";
+		    
             for (String envKeyAndValue : envKeyAndValues ) {
                 EnvTemplate envTemplate = new EnvTemplate();
                 envTemplate.setCreateBy(cUser.getId());
@@ -97,11 +106,21 @@ public class TemplateController {
                 envTemplate.setEnvValue(envKeyAndValue.substring(envKeyAndValue.indexOf(",")+1));
                 envTemplate.setCreateDate(new Date());
                 envTemplate.setTemplateName(templateName);
-                envTemplateDao.save(envTemplate);
+                envTemplate=envTemplateDao.save(envTemplate);
+          
+                extraInfo +=envKeyAndValue.substring(0,envKeyAndValue.indexOf(","))+"："
+                			+envKeyAndValue.substring(envKeyAndValue.indexOf(",")+1)+";";
             }
+            
+            //记录用户创建环境变量模板操作
+            if(flag==null||flag==false){
+            	saveOprationLog(templateName, extraInfo, CommConstant.ENV_TEMPLATE, CommConstant.OPERATION_TYPE_CREATED);
+            }
+
             map.put("status", "200");
 		}
-
+		
+		
 		return JSON.toJSONString(map);
 	}
 
@@ -128,9 +147,35 @@ public class TemplateController {
 	@RequestMapping("/modifyEnvTemplate.do")
 	@ResponseBody
 	public String modifyEnvTemplate(String templateName, String envVariable) {
-		delEnvTemplate(templateName);
-		saveEnvTemplate(templateName, envVariable);
+		delEnvTemplate(templateName,true);
+		saveEnvTemplate(templateName, envVariable,true);
 		Map<String, Object> map = new HashMap<String, Object>();
+		
+	    //记录用户修改环境变量模板操作
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		String extraInfo="templateName修改之前的内容： ";
+		List<EnvTemplate> envTemplates = envTemplateDao.findByCreateByAndTemplateName(cUser.getId(), templateName);
+		for (EnvTemplate envTemplate : envTemplates) {
+			extraInfo +=envTemplate.getEnvKey()+":"+envTemplate.getEnvValue()+";";
+		} 
+		extraInfo += "templateName修改之后的内容： ";
+	    String[] envKeyAndValues = envVariable.split(";");
+		for (String envKeyAndValue : envKeyAndValues ) {
+			  EnvTemplate envTemplate = new EnvTemplate();
+			  envTemplate.setCreateBy(cUser.getId());
+			  envTemplate.setEnvKey(envKeyAndValue.substring(0,envKeyAndValue.indexOf(",")));
+			  envTemplate.setEnvValue(envKeyAndValue.substring(envKeyAndValue.indexOf(",")+1));
+			  envTemplate.setCreateDate(new Date());
+			  envTemplate.setTemplateName(templateName);
+			  envTemplate=envTemplateDao.save(envTemplate);
+			
+			  extraInfo +=envKeyAndValue.substring(0,envKeyAndValue.indexOf(","))+"："
+				  +envKeyAndValue.substring(envKeyAndValue.indexOf(",")+1)+";";
+	    }		
+    	saveOprationLog(templateName, extraInfo, CommConstant.ENV_TEMPLATE, CommConstant.OPERATION_TYPE_UPDATE);
+		
+		
+		
 		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
@@ -142,13 +187,20 @@ public class TemplateController {
 	 */
 	@RequestMapping("/delEnvTemplate.do")
 	@ResponseBody
-	public String delEnvTemplate(String templateName) {
+	public String delEnvTemplate(String templateName,Boolean flag) {
 		User cUser = CurrentUserUtils.getInstance().getUser();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<EnvTemplate> envTemplates = envTemplateDao.findByCreateByAndTemplateName(cUser.getId(), templateName);
+		String extraInfo="已删除templateName:"+templateName+"包含的内容: ";
 		for (EnvTemplate envTemplate : envTemplates) {
-			envTemplateDao.delete(envTemplate);
+			envTemplateDao.delete(envTemplate);	
+			extraInfo +=envTemplate.getEnvKey()+":"+envTemplate.getEnvValue()+";";
 		} 
+		
+        //记录用户删除环境变量模板操作
+		if (flag == null || flag == false) {
+	    	saveOprationLog(templateName, extraInfo, CommConstant.ENV_TEMPLATE, CommConstant.OPERATION_TYPE_DELETE);
+		}
 		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
@@ -165,7 +217,7 @@ public class TemplateController {
         String[] str = templateNames.split(",");
         if (str != null && str.length > 0) {
             for (String template : str) {
-            	delEnvTemplate(template);
+            	delEnvTemplate(template,false);
             }
         }
         Map<String, Object> maps = new HashMap<String, Object>();
@@ -189,5 +241,28 @@ public class TemplateController {
 	}
     
 
+	
+	/**
+	 * 
+	 * Description: <br>
+     *    记录用户操作日志
+	 * @param commonName    记录信息
+	 * @param extraInfo     额外信息
+	 * @param catalogType   类型
+	 * @param oprationType  操作类型
+	 */
+	public  void saveOprationLog(String commonName,String extraInfo,Integer catalogType,Integer oprationType){
+		CommonOperationLog commOpLog = new CommonOperationLog();
+		commOpLog.setCommonName(commonName);
+		commOpLog.setExtraInfo(extraInfo);
+		commOpLog.setCatalogType(catalogType);
+		commOpLog.setOperationType(oprationType);
+		User cUser = CurrentUserUtils.getInstance().getUser();
+        commOpLog.setCreateDate(new Date());
+        commOpLog.setCreateBy(cUser.getId());
+        commOpLog.setCreateUsername(cUser.getUserName());
+        commonOperationLogDao.save(commOpLog);
+	}
+	
 	
 }

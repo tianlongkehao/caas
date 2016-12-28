@@ -263,8 +263,8 @@ public class RegistryController {
         //查询有多少租户收藏当前镜像
         int favorUser = imageDao.findAllUserById(id);
         //查询当前镜像的创建者信息
-        User user = userDao.findById(image.getCreator());
-        long imageCreator = image.getCreator();
+        User user = userDao.findById(image.getCreateBy());
+        long imageCreator = image.getCreateBy();
         //判断当前镜像当前用户是否收藏
         int  whetherFavor = imageDao.findByUserIdAndImageId(id, userId);
 		//判断当前镜像是否是当前用户创建的
@@ -550,7 +550,7 @@ public class RegistryController {
      */
     private void addCreatorName(List<Image> images){
         for(Image image:images){
-            User user = userDao.findById(image.getCreator());
+            User user = userDao.findById(image.getCreateBy());
             if (null != user) {
                 image.setCreatorName(user.getUserName());
             }
@@ -660,7 +660,7 @@ public class RegistryController {
 		
 		for (Image image : imageList) {
 			//获取格式化的镜像创建时间yyyyMM
-			String creatTime = DateUtils.getDate2SStr3(image.getCreateTime());
+			String creatTime = DateUtils.getDate2SStr3(image.getCreateDate());
 			//根据月份放入对应的集合
 			if (creatTime.equals(Period)) {
 				images.add(image);

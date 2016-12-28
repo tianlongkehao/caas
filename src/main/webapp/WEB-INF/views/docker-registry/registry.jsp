@@ -80,7 +80,7 @@
 														<td style="width: 15%; text-indent: 10;">${image.creatorName }<c:if
 																test="${image.creatorName == ''||image.creatorName == null}">该创建人已被删除</c:if></td>
 														<td style="width: 20%; text-indent: 10;"
-															id="user.user_autority" name="user.user_autority">${image.createTime }</td>
+															id="user.user_autority" name="user.user_autority">${image.createDate }</td>
 														<td style="width: 10%; text-indent: 10;">
 														
 	                                                        <c:if test="${image.isDelete == 1 }">
