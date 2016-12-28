@@ -378,7 +378,7 @@ function stopCodeCi(){
 
 //删除一个构建执行
 function deleteCodeCi(){
-	$("#deleteCodeCi").click(function(){
+	$(".deleteCodeCi").click(function(){
 		var projectName = $(this).attr("projectName");
 		var executionId = $(this).attr("executionId");
 		var ciRecordId = $(this).attr("ciRecordId");
@@ -683,7 +683,7 @@ function registerCiDelEvent(id){
 	        				 }
                              
 	                     } else {
-	                         layer.alert(data.msg);
+	                         layer.alert("删除构建失败");
 	                     }
 	        		},
                     error: function(e) {
@@ -754,7 +754,7 @@ function printLog(){
 						 clearInterval(timer);
 						 window.location.reload();
 					 }
-					 $this.html(data.data.logPrint);
+					 $this.html("<br>"+data.data.logPrint);
 					$this.parent(".logs").parent(".build-logs").scrollTop($this.parent().parent(".build-logs")[0].scrollHeight);
 
 				}

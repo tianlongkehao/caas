@@ -92,7 +92,7 @@
                                                     <div class='event-sign'><i class='fa fa-angle-right fa_caret' style='transform: rotate(${transformClass});'></i></div>
                                                     <c:if test="${ci.type == 1}">
 	                                                    <c:if test="${ciRecord.constructResult == 1 || ciRecord.constructResult == 2}">
-	                                                        <div class='event-del' title="删除当前执行"><span id = "deleteCodeCi"  ciRecordId = "${ciRecord.id }" projectName = "${ci.projectName }" executionId = "${ciRecord.executionId }"><i class='fa fa-trash'></i></span></div>
+	                                                        <div class='event-del' title="删除当前执行"><span class = "deleteCodeCi"  ciRecordId = "${ciRecord.id }" projectName = "${ci.projectName }" executionId = "${ciRecord.executionId }"><i class='fa fa-trash'></i></span></div>
 	                                                    </c:if>
 	                                                    <c:if test="${ciRecord.constructResult == 3}">
 	                                                        <div class='event-stop' title="停止构建"><span id = "stopCodeCi" projectName = "${ci.projectName }" executionId = "${ciRecord.executionId }" ><i class='fa fa-power-off'></i></span></div>
@@ -107,7 +107,7 @@
                                                         <div class='buildStatus' style='margin:0px 0px 10px 0px'></div>
                                                         <div class='build-logs' style='max-height: 400px; overflow: auto;margin-top:10px;background-color:black;color: #37fc34'>
 															<pre class='logs' style='background-color:black; overflow: hidden;color: #37fc34;border:0; float:left'>
-															       <span class='printLogSpan' status='${ciRecord.constructResult}' ciRecordId='${ciRecord.id}'>${ciRecord.logPrint}</span>
+															       <span class='printLogSpan' status='${ciRecord.constructResult}' ciRecordId='${ciRecord.id}'><br>${ciRecord.logPrint}</span>
 															</pre>
                                                         </div>
                                                     </div>
@@ -141,9 +141,9 @@
 				                                <div class=" col-md-12">
 				                                    <label class="c-project-tit">JDK</label>
 				                                    <select id="jdk-version" name="jdkVersion" class="form-control c-project-con">
-                                                        <option value="${ci.jdkVersion }">${empty ci.jdkVersion  ? "system" : ci.jdkVersion}</option>
-    			                                        <c:forEach items="${jdkList}" var="jdk">
-					                                        <c:if test="${ci.jdkVersion != jdk.version }">
+                                                        <option value="${ciCode.jdkVersion }">${empty ciCode.jdkVersion  ? "system" : ciCode.jdkVersion}</option>
+    			                                        <c:forEach items="${jdkList }" var="jdk">
+					                                        <c:if test="${ciCode.jdkVersion != jdk.version }">
                                                                 <option value="${jdk.version }">${jdk.version }</option>
 	                                                        </c:if>
                                                         </c:forEach>
@@ -159,11 +159,11 @@
 				                            	<div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">代码库类型</label>
 					                                <select id="codeType" name="codeType" class="form-control c-project-con" >
-					                                    <c:if test="${ci.codeType == 0 }">
+					                                    <c:if test="${ciCode.codeType == 0 }">
                                                            <option value="0">-none-</option>
                                                            <option value="1">git</option>
                                                         </c:if>
-					                                	<c:if test="${ci.codeType == 1 }">
+					                                	<c:if test="${ciCode.codeType == 1 }">
                                                            <option value="1">git</option>
                                                            <option value="0">-none-</option>
                                                         </c:if>
@@ -174,28 +174,28 @@
 				                            	<div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">代码仓库地址</label>
 					                                <input id="codeUrl" name="codeUrl" class="form-control c-project-con" type="text"
-			                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git" value = "${ci.codeUrl }">
+			                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git" value = "${ciCode.codeUrl }">
 					                            </div>
 					                            <div class="form-group1 col-md-12">
 					                            	<label class="c-project-tit">认证方式</label>
 					                            	<select id="codeCredentials" name="codeCredentials" class="form-control c-project-con" style="width:50%;float:left;">
-					                            	  <c:forEach items="${ciCodeList}" var="ciCode" >
-					                            	      <c:if test="${ciCode.id == ci.codeCredentials }">
-	                                                          <c:if test="${ciCode.type == 1 }">
-	                                                              <option value="${ciCode.id }">${ciCode.userName }(HTTP)</option>
+					                            	  <c:forEach items="${ciCredentialList }" var="ciCredential" >
+					                            	      <c:if test="${ciCredential.id == ciCode.codeCredentials }">
+	                                                          <c:if test="${ciCredential.type == 1 }">
+	                                                              <option value="${ciCredential.id }">${ciCredential.userName }(HTTP)</option>
 	                                                          </c:if>
-	                                                          <c:if test="${ciCode.type == 2 }">
-	                                                              <option value="${ciCode.id }">${ciCode.userName }(SSH)</option>
+	                                                          <c:if test="${ciCredential.type == 2 }">
+	                                                              <option value="${ciCredential.id }">${ciCredential.userName }(SSH)</option>
 	                                                          </c:if>
 					                            	      </c:if>
                                                       </c:forEach>
-					                            	  <c:forEach items="${ciCodeList}" var="ciCode" >
-					                            	      <c:if test="${ciCode.id != ci.codeCredentials }">
-				                                              <c:if test="${ciCode.type == 1 }">
-				                                                  <option value="${ciCode.id }">${ciCode.userName }(HTTP)</option>
+					                            	  <c:forEach items="${ciCredentialList }" var="ciCredential" >
+					                            	      <c:if test="${ciCredential.id != ciCode.codeCredentials }">
+				                                              <c:if test="${ciCredential.type == 1 }">
+				                                                  <option value="${ciCredential.id }">${ciCredential.userName }(HTTP)</option>
 				                                              </c:if>
-				                                              <c:if test="${ciCode.type == 2 }">
-				                                                  <option value="${ciCode.id }">${ciCode.userName }(SSH)</option>
+				                                              <c:if test="${ciCredential.type == 2 }">
+				                                                  <option value="${ciCredential.id }">${ciCredential.userName }(SSH)</option>
 				                                              </c:if>
 					                            	      </c:if>
 			                                          </c:forEach>
@@ -207,12 +207,12 @@
 					                            <div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">创建分支</label>
 					                                <input id="codeBranch" name="codeBranch" type="text" class="form-control c-project-con"
-			                                                   value="${ci.codeBranch }">
+			                                                   value="${ciCode.codeBranch }">
 					                            </div>
 					                            <div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">HookCode</label>
 					                               <input type="checkbox" id="HookCode" class="c-project-checkbox" >
-                                                   <input type="hidden" id = "isHookCode" name ="isHookCode" value = "${ci.isHookCode }"/>
+                                                   <input type="hidden" id = "isHookCode" name ="isHookCode" value = "${ciCode.isHookCode }"/>
 					                            </div>
 				                            </div>
 				                            <div class="row git-config">
@@ -222,12 +222,12 @@
 				                            	<div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">Name</label>
 					                                <input id="codeUsername" name="codeName" type="text" class="form-control c-project-con reg-input"
-			                                                   value="${ci.codeName }">
+			                                                   value="${ciCode.codeName }">
 					                            </div>
 					                            <div class="form-group1 col-md-12">
 					                                <label class="c-project-tit">Refspec</label>
 					                                <input id="codePassword" name="codeRefspec" type="text"
-			                                                   class="form-control c-project-con reg-input" value="${ci.codeRefspec }">
+			                                                   class="form-control c-project-con reg-input" value="${ciCode.codeRefspec }">
 					                            </div>
 			                                </div>
 			                            </section>
@@ -270,7 +270,7 @@
 			                                        <label class="c-project-tit">是否为基础镜像</label>
 			                                        <input id="baseImage" name="baseImage" type="checkbox"
 			                                                   style="height:26px" value="">
-			                                        <input type = "hidden" id = "isBaseImage" name = "isBaseImage" value = "${ci.isBaseImage }">
+			                                        <input type = "hidden" id = "isBaseImage" name = "isBaseImage" value = "${ciCode.isBaseImage }">
 			                                    </div>
 			                                    <div class="form-group1 col-md-12">
 			                                        <label class="c-project-tit">是否为公有镜像</label>
@@ -401,7 +401,7 @@
                             <%-- 操作 --%>
                             <div class="other-details hide">
                                 <div class="col-9x">
-                                    <c:if test="${ci.isHookCode == 1 }">
+                                    <c:if test="${ciCode.isHookCode == 1 }">
                                     	<a href="javascript:void(0);" id="delHookBtn" class="deletebutton btn btn-primary btn-deleteHook">删除Hook</a>
                                     </c:if>
                                     <a href="javascript:void(0);" id="delCiBtn" class="deletebutton btn btn-danger btn-deleteitem">删除项目</a>

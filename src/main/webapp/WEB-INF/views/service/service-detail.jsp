@@ -30,8 +30,6 @@
 					<input hidden="true" value="${service.serviceName }" id="serName"/>
 					<input hidden="true" value="${service.status }" id="serStatus"/>
 			        <input hidden="true" value="${service.serviceType }" id="serType"/>	
-			        <input hidden="true" value="${service.volName }" id="serVolName"/>
-			        <input hidden="true" value="${service.mountPath }" id="serMonPath"/>
 				</div>
 				<div class="contentMain">
 					<section class="detail-succeed">
@@ -514,10 +512,10 @@
 							</thead>
 							<tbody class="BORDER-vol">
 								<c:if test="${service.serviceType==1 }"> 
-									<c:forEach items="${cepgList }" var="ceph"> 
+									<c:forEach items="${storageList }" var="storage"> 
 										<tr>
-											<td>挂载地址：${ceph.filePath }</td>
-											<td>存储卷：${ceph.storageName }</td>
+											<td>挂载地址：${storage.mountPoint }</td>
+											<td>存储卷：${storage.storageName }</td>
 										</tr>
 									</c:forEach> 
 								</c:if>

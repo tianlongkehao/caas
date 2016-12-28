@@ -20,13 +20,6 @@ import com.bonc.epm.paas.entity.Service;
  */
 @Transactional
 public interface ServiceDao extends CrudRepository<Service, Long>{
-	/**
-	 * 
-	 * @param containerID 
-	 * @return  List<Service>
-	 * @see
-	 */
-    List<Service> findByContainerID(long containerID);
     /**
      * 
      * @param createBy 
@@ -34,14 +27,6 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
      * @see
      */
     List<Service> findByCreateBy(long createBy);
-    /**
-     * 
-     * @param createBy 
-     * @param volName 
-     * @return List<Service>
-     * @see
-     */
-    List<Service> findByCreateByAndVolName (long createBy , String volName);
     /**
      * 
      * @param createBy 
@@ -65,14 +50,6 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
      */
     @Query("select i from Service i where  i.createBy = ?1 and i.proxyPath like ?2")
     List<Service> findByCreateByAndProxyPath (long createBy,String proxyPath);
-    
-    /**
-     * 
-     * @return HashSet<Integer>
-     * @see
-     */
-    @Query("select i.portSet from Service i")
-    HashSet<Integer> findPortSets();
     
     /**
      * Description: <br>

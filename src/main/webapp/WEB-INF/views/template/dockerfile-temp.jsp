@@ -70,7 +70,9 @@
                                                             onmousemove="style.textDecoration='underline'"
                                                             onmouseout="style.textDecoration='none'">${dockerfile.templateName }</a>
 														</td>
-			                                            <td style="width: 30%;">${dockerfile.createDate }</td>
+			                                            <td style="width: 30%;">
+			                                                 <fmt:formatDate value="${dockerfile.createDate }" pattern="yyyy-MM-dd HH:mm:ss"/>
+		                                                </td>
 			                                            <td style="width: 10%;text-indent: 10px;" >
 			                                                 <a title="删除" href="javascript:void(0)" onclick="deletedockerfile(this)" dockerfileId = "${dockerfile.id }">
 			                                                     <i class="fa fa-trash"></i>

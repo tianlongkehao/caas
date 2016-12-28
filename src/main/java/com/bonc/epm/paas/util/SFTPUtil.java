@@ -369,6 +369,25 @@ public class SFTPUtil {
         }
     }
 
+    /**
+     * Description: 统计卷组的使用情况<br>
+     * 
+     * @param directory
+     * @return 
+     * @see 
+     */
+    public static long getHasUsed(String directory) {
+        File file = new File(directory);
+        File [] tempList =file.listFiles();
+        long hasUsed=0;
+        for(int i=0;i<tempList.length;i++){
+            if(!".".equals(tempList[i].getName())) {
+               hasUsed+= tempList[i].length();
+            }
+        }
+        return hasUsed;
+    }
+
     
 //    public static void main(String[] args) {
 //        SFTPUtil sf = new SFTPUtil(); 

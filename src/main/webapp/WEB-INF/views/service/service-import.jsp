@@ -121,7 +121,7 @@
       </tr>
       <tr>
       <th style="width: 35%">是否使用代理：</th>
-          <td><select class="" id="useProxy">
+          <td><select class="" id="useProxyFlag">
                   <option value="0">不使用</option>
                   <option value="1">nginx代理</option>
           </select></td>
