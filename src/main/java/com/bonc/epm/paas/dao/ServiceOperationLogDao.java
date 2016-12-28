@@ -17,7 +17,6 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
  */
 @Transactional
 public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationLog, Long>{
-	
     /**
      * 
      * @param String serviceName
