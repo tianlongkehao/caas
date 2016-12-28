@@ -47,6 +47,7 @@ import com.bonc.epm.paas.dao.CiCodeHookDao;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiInvokeDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.HookAndImagesDao;
 import com.bonc.epm.paas.dao.ImageDao;
@@ -59,6 +60,7 @@ import com.bonc.epm.paas.entity.CiCodeCredential;
 import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.CiRecord;
+import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.HookAndImages;
 import com.bonc.epm.paas.entity.Image;
@@ -181,6 +183,17 @@ public class CiController {
     private SheraClientService sheraClientService;
     
     /**
+     * commonOperationLogDao接口
+     */
+    @Autowired
+    private CommonOperationLogDao commonOperationLogDao;
+    /**
+     * templateController控制器
+     */
+    @Autowired
+    private TemplateController templateController;
+    
+    /**
      * 进入构建主页面
      * 
      * @param model ：model
@@ -285,7 +298,7 @@ public class CiController {
             if (StringUtils.isEmpty(jobExecList.getItems())) {
                 return cis;
             }
-            if (cis.size() != 0 && jobExecList != null) {
+            if (cis.size()!=0 && jobExecList != null) {
                 for (Ci ci :cis) {
                     for (JobExec jobExec :jobExecList) {
                         if (ci.getProjectName().equals(jobExec.getJobId())) {
@@ -611,7 +624,7 @@ public class CiController {
                     ciCodeDao.delete(ciCode);
                 }
                 catch (SheraClientException e) {
-                    LOG.error("调用shera删除接口失败");
+                    e.printStackTrace();
                 }
             }
             ciRecordDao.deleteByCiId(idl);
@@ -644,7 +657,7 @@ public class CiController {
             model.addAttribute("jdkList",jdkList.getItems());
         }
         catch (Exception e) {
-            LOG.error("get All jdk error" + e);
+            e.printStackTrace();
         }
         model.addAttribute("username", cuurentUser.getUserName());
         model.addAttribute("userAutority", cuurentUser.getUser_autority());
@@ -809,10 +822,13 @@ public class CiController {
             ci.setType(CiConstant.TYPE_CODE);
             ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
             ciDao.save(ci);
+
+            //添加代码构建详细信息
             ciCode.setCiId(ci.getId());
             ciCode.setCodeUrl(ciCode.getCodeUrl().trim());
             ciCodeDao.save(ciCode);
-            //添加代码构建详细信息
+            
+			//查询代码构建详细信息
             List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
             if (!StringUtils.isEmpty(ciInvokeList)) {
                 ciInvokeDao.save(ciInvokeList);
@@ -1271,7 +1287,6 @@ public class CiController {
         Ci ci = ciDao.findOne(id);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_ING);
         ciDao.save(ci);
-        //添加日志信息
         CiRecord ciRecord = new CiRecord();
         ciRecord.setCiId(ci.getId());
         ciRecord.setCiVersion(ci.getImgNameVersion());
@@ -1281,7 +1296,6 @@ public class CiController {
         ciRecordDao.save(ciRecord);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
-        //是否为代码构建
         if (CiConstant.TYPE_CODE.equals(ci.getType())) {
             //判断是否需要添加默认版本信息
             CiCode ciCode = ciCodeDao.findByCiId(ci.getId());
@@ -1343,12 +1357,11 @@ public class CiController {
             jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
             ciRecord.setExecutionId(jobExecViewNew.getSeqNo());
             ciRecordDao.save(ciRecord);
-            //线程中获取和打印执行状态和执行日志
+            //获取执行状态和执行日志
             new Thread() {
                 public void run() {
                     try {
                         boolean flag = true;
-                        //上次获取日志的最后行号
                         Integer seek = 0;
                         while(flag){
                             Thread.sleep(5000);
@@ -1428,7 +1441,7 @@ public class CiController {
             return true;
         }
         catch(SheraClientException e){
-            LOG.error("exec job error : "+e.getMessage());
+            e.printStackTrace();
         }
         catch (Exception e) {
             CiRecord newCiRecord = ciRecord;
@@ -1637,7 +1650,12 @@ public class CiController {
         dkFile.setCreateDate(new Date());
         dkFile.setDockerFile(dockerFile);
         dkFile.setTemplateName(templateName);
-        dockerFileTemplateDao.save(dkFile);
+        dkFile =  dockerFileTemplateDao.save(dkFile);
+        
+        
+        //记录用户创建DockerFile操作
+        String extraInfo="新增templateName:"+templateName+"包含的内容: "+dockerFile;
+        templateController.saveOprationLog(templateName, extraInfo,  CommConstant.DOCKFILE_TEMPLATE, CommConstant.OPERATION_TYPE_CREATED);
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
