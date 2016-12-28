@@ -1198,7 +1198,6 @@ public class ServiceController {
                 map.put("status", "500");
             }
             else {
-                
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
                 ReplicationController controller = client.getReplicationController(serviceName);
                 String NS = controller.getMetadata().getNamespace();
