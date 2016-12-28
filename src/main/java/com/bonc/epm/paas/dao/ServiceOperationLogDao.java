@@ -25,7 +25,7 @@ public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationL
 	 * @return  List<ServiceOperationLog>
 	 * @see
 	 */
-    List<ServiceOperationLog> findByUserId(long userId);
+//    List<ServiceOperationLog> findByUserId(long userId);
     
     /**
      * 
@@ -33,7 +33,7 @@ public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationL
      * @return List<ServiceOperationLog>
      * @see
      */
-    List<ServiceOperationLog> findByServiceId(long serviceId);
+//    List<ServiceOperationLog> findByServiceId(long serviceId);
 
     /**
      * 
