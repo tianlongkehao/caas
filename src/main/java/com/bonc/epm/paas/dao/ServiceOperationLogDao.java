@@ -1,7 +1,6 @@
 package com.bonc.epm.paas.dao;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,22 +18,6 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 @Transactional
 public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationLog, Long>{
 	
-	/**
-	 * 
-	 * @param userId 
-	 * @return  List<ServiceOperationLog>
-	 * @see
-	 */
-    List<ServiceOperationLog> findByUserId(long userId);
-    
-    /**
-     * 
-     * @param serviceId 
-     * @return List<ServiceOperationLog>
-     * @see
-     */
-    List<ServiceOperationLog> findByServiceId(long serviceId);
-
     /**
      * 
      * @param String serviceName
