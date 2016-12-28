@@ -119,8 +119,8 @@ public interface CiDao extends CrudRepository<Ci, Long> {
      * @return ci
      * @see
      */
-    @Query("select ci from Ci ci where ci.hookCodeId = "
-        + "(select cck.id from CiCodeHook cck where cck.id = "
-        + "(select hi.hookId from HookAndImages hi where hi.imageId = ?1))")
-    Ci fingByImageIdAndHookId(long imgId);
+//    @Query("select ci from Ci ci where ci.hookCodeId = "
+//        + "(select cck.id from CiCodeHook cck where cck.id = "
+//        + "(select hi.hookId from HookAndImages hi where hi.imageId = ?1))")
+//    Ci fingByImageIdAndHookId(long imgId);
 } 

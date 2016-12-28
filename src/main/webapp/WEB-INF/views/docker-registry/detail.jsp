@@ -162,7 +162,7 @@
                                 <li class="li-row" style="line-height: 35px;">
                                     <p><i class="fa_shuxinger"></i>贡献者:&nbsp;&nbsp;&nbsp;&nbsp; ${creator }</p>
                                     <p><i class="fa fa-star-o"></i><span>收藏数:&nbsp;&nbsp;&nbsp;&nbsp; ${favorUser } 个人收藏了该镜像</span></p>
-                                    <p><i class="fa_datetime"></i><span>创建时间: ${image.createTime }</span></p>
+                                    <p><i class="fa_datetime"></i><span>创建时间: ${image.createDate }</span></p>
                                 </li>
                             </ul>
                             <div class="btn-block" style="height: 50px;" id="deployImage">

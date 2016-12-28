@@ -180,7 +180,7 @@ function findImages(){
 	                    	}
 	                    },
 	                    { 
-	                    	data : 'createTime',
+	                    	data : 'createDate',
 	                    	render : function ( data, type, row ) {
 	                    		var date = calendarFormat(data);
 	                    		return date;
@@ -341,7 +341,7 @@ function delImages(){
 			for(var num=0; num<allImages.length; num++){
 				var images = allImages[num];
 				if(images.length != 0){
-					var image0date = calendarFormat(images[0].createTime);
+					var image0date = calendarFormat(images[0].createDate);
 					var image0year = image0date.substring(0,4);
 					var image0month = image0date.substring(5,7);
 					var timeImages0Html = '<div class="panel-group filter" id="accordion'+count+'">'+
