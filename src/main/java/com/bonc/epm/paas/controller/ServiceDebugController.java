@@ -552,8 +552,8 @@ public class ServiceDebugController {
 		        User currentUser = CurrentUserUtils.getInstance().getUser();
 		        //保存当前debug的镜像到数据库中
 		        Image image = new Image();
-		        image.setCreateTime(new Date());
-		        image.setCreator(currentUser.getId());
+		        image.setCreateDate(new Date());
+		        image.setCreateBy(currentUser.getId());
 		        image.setImageId(imageId);
 		        image.setImageType(ImageConstant.privateType);
 		        image.setIsBaseImage(ImageConstant.NotBaseImage);

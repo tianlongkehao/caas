@@ -57,7 +57,7 @@ public class Service {
 	private long createBy;
 	private double cpuNum;
 	private String ram;
-	private long imgID;
+	private long imgID;         //TODO imageId
 	
 	/**
 	 * 自定义启动命令
@@ -99,8 +99,9 @@ public class Service {
 	 */
 	private Integer periodDetction;
 	/**
+	 * 黏连
 	 */
-	private String nodeIpAffinity;
+	private String nodeIpAffinity;    
 	
 	/**
 	 * 服务中文名称

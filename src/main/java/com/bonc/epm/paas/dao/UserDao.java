@@ -20,10 +20,10 @@ public interface UserDao extends CrudRepository<User, Long> {
 	
 	public User findById(long id);
 	
-	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 order by  i.name,i.createTime")
+	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 order by  i.name,i.createDate")
 	public List<Image> findAllFavor(long creator);
 	
-	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 and i.name like ?2 order by  i.name,i.createTime")
+	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 and i.name like ?2 order by  i.name,i.createDate")
 	public Page<Image> findByNameCondition(long creator,String imageName,Pageable request);
 	
 	@Query("select u from User u "

@@ -77,65 +77,14 @@ public class Ci {
     private Integer imgType;
     
     /**
-     * 是否为基础镜像
-     * 1 是基础镜像，2不是基础镜像；
-     */
-    private Integer isBaseImage;
-	
-    /**
 	 * 简介
 	 */
     private String description;
 	
     /**
-	 * 代码类型：0:none、1:git、2:svn
-	 */
-    private Integer codeType;
-	
-    /**
-	 * 代码url
-	 */
-    private String codeUrl;
-    
-    /**
-     * 是否需要挂钩代码，0：不挂钩、1：挂钩代码
-     */
-    private Integer isHookCode;
-    
-    /**
-     * 代码挂钩Id
-     */
-    private long hookCodeId;
-	
-    /**
-	 * name;
-	 */
-    private String codeName;
-	
-    /**
-	 * Refspec
-	 */
-    private String codeRefspec;
-	
-    /**
-	 * 代码分支
-	 */
-    private String codeBranch;
-    
-    /**
-     * 代码认证方式
-     */
-    private Long codeCredentials;
-	
-    /**
 	 * 代码位置
 	 */
     private String codeLocation;
-	
-    /**
-	 * 代码包位置
-	 */
-    private String codePackageLocation;
 	
     /**
 	 * 程序类型:1java2php3go4node.js5python6other
@@ -169,7 +118,7 @@ public class Ci {
 	private Date constructionDate;
     
     /**
-     * 上次失败构建日期
+     * 上次失败构建日期 
      */
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date constructionFailDate;
@@ -194,11 +143,6 @@ public class Ci {
 	 */
     private Date createDate;
 	
-    /**
-     * 代码构建jdk版本
-     */
-    private String jdkVersion;
-    
     public long getId() {
         return id;
     }
@@ -262,14 +206,6 @@ public class Ci {
     public void setImgType(Integer imgType) {
         this.imgType = imgType;
     }
-    
-    public Integer getIsBaseImage() {
-        return isBaseImage;
-    }
-
-    public void setIsBaseImage(Integer isBaseImage) {
-        this.isBaseImage = isBaseImage;
-    }
 
     public String getDescription() {
         return description;
@@ -279,84 +215,12 @@ public class Ci {
         this.description = description;
     }
     
-    public Integer getCodeType() {
-        return codeType;
-    }
-    
-    public void setCodeType(Integer codeType) {
-        this.codeType = codeType;
-    }
-    
-    public String getCodeUrl() {
-        return codeUrl;
-    }
-    
-    public Integer getIsHookCode() {
-        return isHookCode;
-    }
-
-    public void setIsHookCode(Integer isHookCode) {
-        this.isHookCode = isHookCode;
-    }
-    
-    public long getHookCodeId() {
-        return hookCodeId;
-    }
-
-    public void setHookCodeId(long hookCodeId) {
-        this.hookCodeId = hookCodeId;
-    }
-
-    public void setCodeUrl(String codeUrl) {
-        this.codeUrl = codeUrl;
-    }
-    
-    public String getCodeName() {
-        return codeName;
-    }
-
-    public void setCodeName(String codeName) {
-        this.codeName = codeName;
-    }
-
-    public String getCodeRefspec() {
-        return codeRefspec;
-    }
-
-    public void setCodeRefspec(String codeRefspec) {
-        this.codeRefspec = codeRefspec;
-    }
-
-    public String getCodeBranch() {
-        return codeBranch;
-    }
-    
-    public void setCodeBranch(String codeBranch) {
-        this.codeBranch = codeBranch;
-    }
-    
-    public Long getCodeCredentials() {
-        return codeCredentials;
-    }
-
-    public void setCodeCredentials(Long codeCredentials) {
-        this.codeCredentials = codeCredentials;
-    }
-
     public String getCodeLocation() {
         return codeLocation;
     }
     
     public void setCodeLocation(String codeLocation) {
         this.codeLocation = codeLocation;
-    }
-    
-    public String getCodePackageLocation() {
-        return codePackageLocation;
-    }
-    
-    public void setCodePackageLocation(String codePackageLocation) {
-        this.codePackageLocation = codePackageLocation;
     }
     
     public String getCodeProjectType() {
@@ -470,14 +334,5 @@ public class Ci {
     public void setResourceName(String resourceName) {
         this.resourceName = resourceName;
     }
-
-    public String getJdkVersion() {
-        return jdkVersion;
-    }
-
-    public void setJdkVersion(String jdkVersion) {
-        this.jdkVersion = jdkVersion;
-    }
-
     
 }

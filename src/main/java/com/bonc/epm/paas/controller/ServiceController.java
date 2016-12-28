@@ -269,10 +269,12 @@ public class ServiceController {
         } else {
             services = serviceDao.findByNameOf(userId, "%" + search + "%",pageRequest);
         }
+        //判断代码仓库中的代码是否发生改变
+        List<Service> listService = findIsUpdateCode(services.getContent());
         map.put("draw", draw);
         map.put("recordsTotal", services.getTotalElements());
         map.put("recordsFiltered", services.getTotalElements());
-        map.put("data", findIsUpdateCode(services.getContent()));
+        map.put("data", listService);
         
         return JSON.toJSONString(map);
         
@@ -293,7 +295,6 @@ public class ServiceController {
                     SheraAPIClientInterface client = sheraClientService.getClient();
                     ChangeGit changeGit = client.getChangeGit(ciCodeHook.getName());
                     service.setUpdateImage(changeGit.isFlag());
-//                    service.setUpdateImage(false);
                 }
                 catch (Exception e) {
                    e.printStackTrace();
@@ -939,7 +940,6 @@ public class ServiceController {
                 portCon.setContainerPort(jsonArray.getJSONObject(i).getString("containerPort").trim());
                 portCon.setMapPort(jsonArray.getJSONObject(i).getString("mapPort").trim());
                 portCon.setProtocol(jsonArray.getJSONObject(i).getString("protocol").trim());
-                portCon.setCreateDate(new Date());
                 portCon.setServiceId(service.getId());
                 portConfigDao.save(portCon);
 				// 向map中添加生成的node端口
@@ -1319,7 +1319,7 @@ public class ServiceController {
 	public String findImageVersion(String imageName){
         User cUser = CurrentUserUtils.getInstance().getUser();
         Map<String, Object> map = new HashMap<String, Object>();
-        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName, new Sort(new Order(Direction.DESC,"createTime")));
+        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName, new Sort(new Order(Direction.DESC,"createDate")));
         map.put("data", images);
         return JSON.toJSONString(map);
     }
@@ -2334,7 +2334,6 @@ public class ServiceController {
         portCon.setMapPort(String.valueOf(vailPortSet()));
         portCon.setProtocol(portConfig.getProtocol());
         //portCon.setOptions(Integer.valueOf(jsonArray.getJSONObject(i).getString("option")));
-        portCon.setCreateDate(new Date());
         portCon.setServiceId(serviceId);
         pCfg=portConfigDao.save(portCon);
         service = serviceDao.findOne(serviceId);

@@ -30,12 +30,12 @@ public class Image {
 	private Integer imageType;
 	private String remark;
 	private String summary;
-	private long creator;
+	private long createBy;              //createBy
 	@Transient
 	private String creatorName;
-	private Date createTime;
+	private Date createDate;          //createDate
 	private Integer isDelete;
-   @Transient
+	@Transient
 	private Integer currUserFavor;
 	@Transient 
 	List<PortConfig> portConfigs;
@@ -92,20 +92,20 @@ public class Image {
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
-	public long getCreator() {
-		return creator;
-	}
-	public void setCreator(long creator) {
-		this.creator = creator;
-	}
-	public Date getCreateTime() {
-		return createTime;
-	}
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
 	
-	public Integer getCurrUserFavor() {
+	public long getCreateBy() {
+        return createBy;
+    }
+    public void setCreateBy(long createBy) {
+        this.createBy = createBy;
+    }
+    public Date getCreateDate() {
+        return createDate;
+    }
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+    public Integer getCurrUserFavor() {
 		return currUserFavor;
 	}
 	public void setCurrUserFavor(Integer currUserFavor) {
