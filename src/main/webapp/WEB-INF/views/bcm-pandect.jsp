@@ -1,8 +1,9 @@
+<%@ taglib prefix="c" uri="/WEB-INF/tlds/c.tld" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>用户</title>
+    <title>总览</title>
     <%@include file="frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-pandect.css"/>
 </head>

@@ -24,7 +24,7 @@
 <div class="container">
     <div class="login-container">
         <div class="sign-container">
-            <h3>登录</h3>
+            <div class="sign-title"><h3>登录</h3></div>
             <div class="sign-form">
                 <div class="loginMsg">
                     <span class="">${err_code }</span>

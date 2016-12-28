@@ -62,8 +62,17 @@ public class IndexController {
     private boolean showAuthCode;
     /**
      * Description: <br>
-     * 跳转登录页面
-     * @return login.jsp
+     * 首页
+     * @return home.jsp
+     */
+    @RequestMapping(value={"home"},method=RequestMethod.GET)
+	public String home(Model model){
+        return "home.jsp";
+    }
+    /**
+     * Description: <br>
+     * 总览页面
+     * @return bcm-pandect.jsp
      */
     @RequestMapping(value={"bcm"},method=RequestMethod.GET)
 	public String bcm(Model model){
@@ -188,7 +197,7 @@ public class IndexController {
         CurrentUserUtils.getInstance().setUser(user);
         CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
         redirect.addFlashAttribute("user", user);
-        return "redirect:workbench";
+        return "redirect:bcm";
     }
     
     /**
