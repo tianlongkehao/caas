@@ -13,7 +13,7 @@ public class CommConstant {
 														      //存储与备份
 														      //外部服务
 														      //镜像中心
-														      //用户管理
+	public static final Integer USER_MANAGER         = 60;    //用户管理
 														      //密钥管理
 														      //shera管理
 														      //租户管理
