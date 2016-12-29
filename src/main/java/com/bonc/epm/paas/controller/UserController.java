@@ -251,10 +251,12 @@ public class UserController {
             
 			// DB保存用户信息
             userDao.save(user);
-            UserAndShera userAndShera = new UserAndShera();
-            userAndShera.setSheraId(sheraId);
-            userAndShera.setUserId(user.getId());
-            userAndSheraDao.save(userAndShera);
+            if (sheraId != 0) {
+                UserAndShera userAndShera = new UserAndShera();
+                userAndShera.setSheraId(sheraId);
+                userAndShera.setUserId(user.getId());
+                userAndSheraDao.save(userAndShera);
+            }
             map.put("creatFlag", "200");
         } 
         catch (Exception e) {
@@ -352,7 +354,9 @@ public class UserController {
         catch (KubernetesClientException e) {
             LOG.error("error message:-"+ e.getMessage());
         }
-        userAndSheraUpdate(user.getId(),sheraId);
+        if (sheraId != 0) {
+            userAndSheraUpdate(user.getId(),sheraId);
+        }
         List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
         model.addAttribute("userList", userList);
         model.addAttribute("menu_flag", "user");
@@ -801,6 +805,8 @@ public class UserController {
             for (Storage storage : list) {
                 usedstorage = usedstorage + (double) storage.getStorageSize();
             }
+            Shera shera = sheraDao.findByUserId(id);
+            model.addAttribute("userShera", shera);
             model.addAttribute("usedstorage",  usedstorage / 1024);
         }
         catch (KubernetesClientException e) {

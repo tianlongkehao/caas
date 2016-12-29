@@ -139,17 +139,16 @@ function deleteRow(obj){
 
 //批量删除sheras
 function delSheras(){
-	obj = document.getElementsByName("ids");
-	var sheraIds = [];
-    for (k in obj) {
-        if (obj[k].checked) {
-        	sheraIds.push(obj[k].value);
-        }
-    }
-    if (sheraIds.length <=0) {
-    	layer.msg( "请选择需要删除的镜像", {icon: 2 });
-    	return;
-    }
+    var sheraIds = [];
+    $('input[name="ids"]:checked').each(function(){
+		 var id = $(this).val();
+		 sheraIds.push(id);
+		 
+	 })
+	 if ("" == sheraIds) {
+		layer.alert("请选择至少一个Shera", {icon:0});
+		return;
+	 }
     layer.open({
         title: '删除shera',
         content: '确定删除shera？',
@@ -201,7 +200,6 @@ function checkShera(){
 	var sheraUrl = $("#sheraIp").val();
 	var userName = $("#shreaName").val();
 	var password= $("#shreaPassword").val();
-	var remark = $("#sheraRemark").val();
 	if (!sheraUrl || sheraUrl.length < 1){
 	      layer.tips('sheraIp地址不能为空','#sheraIp',{tips: [1, '#3595CC']});
 	      $('#sheraIp').focus();
@@ -215,11 +213,6 @@ function checkShera(){
 	if (!password || password.length < 1){
 	      layer.tips('账号密码不能为空','#shreaPassword',{tips: [1, '#3595CC']});
 	      $('#shreaPassword').focus();
-	      return;
-	}
-	if (!remark || remark.length < 1){
-	      layer.tips('描述不能为空','#sheraRemark',{tips: [1, '#3595CC']});
-	      $('#sheraRemark').focus();
 	      return;
 	}
 	if (!addJdk()) {

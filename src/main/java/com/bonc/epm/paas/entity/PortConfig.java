@@ -38,15 +38,7 @@ public class PortConfig {
 	 * 映射端口
 	 */
     private String mapPort;
-	/**
-	 * 操作
-	 */
-//	private Integer options;
-	/**
-	 * 创建时间
-    	 */
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-	private Date createDate;
+
 	/**
 	 * 关联服务Id
 	 */
@@ -76,18 +68,6 @@ public class PortConfig {
     }
     public void setMapPort(String mapPort) {
     	this.mapPort = mapPort;
-    }
-//	public Integer getOptions() {
-//		return options;
-//	}
-//	public void setOptions(Integer options) {
-//		this.options = options;
-//	}
-    public Date getCreateDate() {
-    	return createDate;
-    }
-    public void setCreateDate(Date createDate) {
-    	this.createDate = createDate;
     }
     public long getServiceId() {
     	return serviceId;

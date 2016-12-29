@@ -33,12 +33,12 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="javascript:window.location.reload(true);"
-											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
-										<a id="createKeyBtn" title="创建用户"><i
+										<a id="createKeyBtn" title="创建密钥"><i
 											class="fa fa-plus"></i></a> 
 										<a href="javascript:delSecretKey()" title="删除"><i
 											class="fa fa-trash"></i></a>
+										<a href="javascript:window.location.reload(true);"
+											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
 									</div>
                             </div>
                             <div class="ibox-content">

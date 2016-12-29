@@ -74,7 +74,7 @@ public class SheraClientService {
     }
     
     public SheraAPIClientInterface getClient(Shera shera){
-        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        String namespace = CurrentUserUtils.getInstance().getUser().getUserName();
         this.endpoint = shera.getSheraUrl();
         this.username = shera.getUserName();
         this.password = shera.getPassword();
