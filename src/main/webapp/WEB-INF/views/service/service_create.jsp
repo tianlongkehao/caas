@@ -141,6 +141,7 @@
 											<li id="start_monitor"><span class="ve_top">监控设置：</span>
 												<span> <input type="checkbox" id="monitorStatus">
 													<label for="monitorStatus"><font color="blue">Pinpoint监控</font></label>
+													<input type="hidden" id="monitor" name="monitor" value="">
 											</span></li>
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
 													color="red">*</font></span>

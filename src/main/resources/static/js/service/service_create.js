@@ -99,6 +99,12 @@ $(document).ready(function(){
 		    $("#timeoutDetction").val(null);
 		    $("#periodDetction").val(null);
 	    }
+	    //监控设置
+	    if($("#monitorStatus").prop("checked")==true){
+	    	$("#monitor").val("Pinpoint");
+	    } else {
+	    	$("#monitor").val(null);
+	    }
 	    //服务路径的判断
 	    var servicePath = $("#webPath").val();
 	    if(!servicePath || servicePath.length < 1){
