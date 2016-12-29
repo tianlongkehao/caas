@@ -160,14 +160,6 @@ public class TemplateController {
 		extraInfo += "templateName修改之后的内容： ";
 	    String[] envKeyAndValues = envVariable.split(";");
 		for (String envKeyAndValue : envKeyAndValues ) {
-			  EnvTemplate envTemplate = new EnvTemplate();
-			  envTemplate.setCreateBy(cUser.getId());
-			  envTemplate.setEnvKey(envKeyAndValue.substring(0,envKeyAndValue.indexOf(",")));
-			  envTemplate.setEnvValue(envKeyAndValue.substring(envKeyAndValue.indexOf(",")+1));
-			  envTemplate.setCreateDate(new Date());
-			  envTemplate.setTemplateName(templateName);
-			  envTemplate=envTemplateDao.save(envTemplate);
-			
 			  extraInfo +=envKeyAndValue.substring(0,envKeyAndValue.indexOf(","))+"："
 				  +envKeyAndValue.substring(envKeyAndValue.indexOf(",")+1)+";";
 	    }		
