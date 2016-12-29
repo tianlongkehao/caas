@@ -1065,12 +1065,11 @@ public class CiController {
             if (flag) {
                 flag = ZipUtil.extTarFileList(new File(imagePath+"/"+sourceName), imagePath, "repositories");
                 if (flag) {
-                    String originImageInfo =  ZipUtil.readFileByLines(imagePath, "repositories");
+                    String[] originImageInfo =  ZipUtil.readFileByLines(imagePath, "repositories");
                     flag = dockerClientService.loadAndPushImage(originImageInfo,image, uploadStream);
                     if(flag){
                         //删除本地镜像
-                        String[] tmp = originImageInfo.split(":");
-                        flag = dockerClientService.removeImage(tmp[0], tmp[1],null,null,null,image);
+                        flag = dockerClientService.removeImage(originImageInfo[0], originImageInfo[1],null,null,null,image);
                     }                     
                 }
             } else {
