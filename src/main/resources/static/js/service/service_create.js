@@ -687,6 +687,34 @@ $(document).ready(function(){
 		var imagePage_height = $(".host_step2").height();
     	$(".step-inner").height(imagePage_height +100);
 	}
+//	//监控设置checkbox的响应事件
+//	$("#monitorStatus").click(function() {
+//		$("#APM1").remove();
+//		$("#APM2").remove();
+//		$("#APM3").remove();
+//		if ($("#monitorStatus").prop("checked") == true) {
+//			html = '<tr id="APM2" style="display:none;">'
+//				+ '<input type="hidden" value="namespace"></td>'
+//				+ '<input type="hidden" id="value_namespace" value=""></td>'
+//				+ '</tr>'
+//				+ '<tr id="APM3" style="display:none;">'
+//				+ '<input type="hidden" value="service"></td>'
+//				+ '<input type="hidden" id="value_service" value=""></td>'
+//				+ '</tr>'
+//			$("#Path-oper1").append(html);
+//			$("#value_namespace").val($("#userName").val());
+//			$("#value_service").val($("#serviceName").val());
+//		} else {
+//			html = '<tr id="APM1" style="display:none;">'
+//				+ '<input type="hidden" value="APM"></td>'
+//				+ '<input type="hidden" id="value_id" value="true"></td>'
+//				+ '</tr>'
+//			$("#Path-oper1").append(html);
+//			$("#value_namespace").val($("#userName").val());
+//			$("#value_service").val($("#serviceName").val());
+//		}
+//	})
+	$("#monitorStatus").prop("checked","checked");
 });
 
 //单击导入模板，加载模板数据
@@ -1013,8 +1041,9 @@ function deletePortRow(obj,int){
  *  }, cancel: function(index){ //或者使用btn2 //按钮【按钮二】的回调 } }); } }
  */
 
-function onEditServiceName() {
-	var value = $("#serviceName").val() + "-" + $("#userName").val();
-	$("#value_id").val(value)
-	$("#value_name").val(value)
-}
+//function onEditServiceName() {
+//	if ($("#monitorStatus").prop("checked") != true) {
+//		$("#value_namespace").val($("#userName").val());
+//		$("#value_service").val($("#serviceName").val());
+//	}
+//}
