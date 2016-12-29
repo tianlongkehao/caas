@@ -139,17 +139,16 @@ function deleteRow(obj){
 
 //批量删除sheras
 function delSheras(){
-	obj = document.getElementsByName("ids");
-	var sheraIds = [];
-    for (k in obj) {
-        if (obj[k].checked) {
-        	sheraIds.push(obj[k].value);
-        }
-    }
-    if (sheraIds.length <=0) {
-    	layer.msg( "请选择需要删除的镜像", {icon: 2 });
-    	return;
-    }
+    var sheraIds = [];
+    $('input[name="ids"]:checked').each(function(){
+		 var id = $(this).val();
+		 sheraIds.push(id);
+		 
+	 })
+	 if ("" == sheraIds) {
+		layer.alert("请选择至少一个Shera", {icon:0});
+		return;
+	 }
     layer.open({
         title: '删除shera',
         content: '确定删除shera？',

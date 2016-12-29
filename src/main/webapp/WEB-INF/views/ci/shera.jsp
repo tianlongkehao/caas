@@ -33,12 +33,12 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="javascript:window.location.reload(true);"
-											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
 										<a id="createSheraBtn" title="创建用户"><i
 											class="fa fa-plus"></i></a> 
 										<a href="javascript:delSheras()" title="删除"><i
 											class="fa fa-trash"></i></a>
+										<a href="javascript:window.location.reload(true);"
+											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
 									</div>
                             </div>
                             <div class="ibox-content">

@@ -875,7 +875,8 @@ public class ServiceController {
 		service.setCreateBy(currentUser.getId());
 		service.setUpdateDate(currentDate);
 		service.setUpdateBy(currentUser.getId());
-
+		service = serviceDao.save(service);
+		
 		if (StringUtils.isEmpty(service.getSessionAffinity())) {
 			service.setSessionAffinity(null);
 		}

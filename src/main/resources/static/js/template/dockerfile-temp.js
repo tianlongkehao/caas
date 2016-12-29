@@ -30,11 +30,17 @@ function deletedockerfile(obj){
 
 //批量删除
 function delDockerfiles(){
-	var ids = [];
-	$('input[name="chkItem"]:checked').each(function(){
+	 var ids = [];
+	 $('input[name="chkItem"]:checked').each(function(){
 		 var dockerFileId = $(this).val();
 		 ids.push(dockerFileId);
-		 layer.open({
+		 
+	 })
+	 if ("" == ids) {
+		layer.alert("请选择至少一个模板", {icon:0});
+		return;
+	 }
+	 layer.open({
 	        title: '删除dockerfile模板',
 	        content: '确定批量删除dockerfile模板？',
 	        btn: ['确定', '取消'],
@@ -53,7 +59,5 @@ function delDockerfiles(){
 	        		}
 	        	})  
 	        }
-		 })
 	 })
-	 
 }

@@ -759,6 +759,7 @@ public class CiController {
         Map<String,Object> map = new HashMap<>();
         User user = CurrentUserUtils.getInstance().getUser();
         Shera shera = new Shera();
+        //用户使用租户的shera环境
         if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
             shera = sheraDao.findByUserId(user.getParent_id());
         }
