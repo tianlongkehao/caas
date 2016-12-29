@@ -50,7 +50,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
     public SheraAPIClient(String srUrl, String namespace, String username, String password, RestFactory factory) {
         LOG.info("开始连接shera......");
         this.namespace = namespace;
-        this.sRURI = srUrl +"she-ra";
+        this.sRURI = srUrl;
         api = factory.createSheRaAPI(sRURI,username,password);
     }
 
