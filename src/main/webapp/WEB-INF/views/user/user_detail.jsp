@@ -205,6 +205,9 @@
                                                         <c:if test="${userShera != null }">
                                                             <option  value="${userShera.id }">${userShera.sheraUrl }</option>
                                                         </c:if>
+                                                        <c:if test="${userShera == null }">
+                                                            <option  value="0">请选择Shera</option>
+                                                        </c:if>
                                                         <c:forEach items="${sheraList }" var = "shera">
                                                             <c:if test="${shera.id != userShera.id }">
 	                                                            <option value="${shera.id }">${shera.sheraUrl }</option>

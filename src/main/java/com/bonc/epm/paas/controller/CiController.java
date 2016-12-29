@@ -760,6 +760,7 @@ public class CiController {
         Map<String,Object> map = new HashMap<>();
         User user = CurrentUserUtils.getInstance().getUser();
         Shera shera = new Shera();
+        //用户使用租户的shera环境
         if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
             shera = sheraDao.findByUserId(user.getParent_id());
         }
@@ -1065,12 +1066,11 @@ public class CiController {
             if (flag) {
                 flag = ZipUtil.extTarFileList(new File(imagePath+"/"+sourceName), imagePath, "repositories");
                 if (flag) {
-                    String originImageInfo =  ZipUtil.readFileByLines(imagePath, "repositories");
+                    String[] originImageInfo =  ZipUtil.readFileByLines(imagePath, "repositories");
                     flag = dockerClientService.loadAndPushImage(originImageInfo,image, uploadStream);
                     if(flag){
                         //删除本地镜像
-                        String[] tmp = originImageInfo.split(":");
-                        flag = dockerClientService.removeImage(tmp[0], tmp[1],null,null,null,image);
+                        flag = dockerClientService.removeImage(originImageInfo[0], originImageInfo[1],null,null,null,image);
                     }                     
                 }
             } else {

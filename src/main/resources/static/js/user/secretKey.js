@@ -1,6 +1,27 @@
 $(function(){
 	//创建密钥
 	$("#createKeyBtn").click(function(){
+		//判断租户是否添加了shera环境
+		var flag = false;
+		$.ajax({
+			url:ctx + "/ci/judgeShera.do",
+			async : false,
+			success : function(data){
+				data = eval("("+data+")");
+				if (data.status == "400") {
+					layer.open({
+				        title: '提示',
+				        content: '当前租户没有添加shera环境，请您联系管理员',
+				        btn: ['确定', '取消']
+					});
+					flag = true;
+				}
+			}
+		})
+		if (flag) {
+			return;
+		}
+		
 		delData();
 		layer.open({
 			type: 1,
@@ -57,18 +78,16 @@ $(function(){
 
 //批量删除密钥
 function delSecretKey(){
-	obj = document.getElementsByName("ids");
-	var credIds = [];
-    for (k in obj) {
-        if (obj[k].checked) {
-        	credIds.push(obj[k].value);
-        }
-    }
-    if (credIds.length <=0) {
-    	layer.msg( "请选择需要删除的镜像", {icon: 2 });
-    	return;
-    }
-    layer.open({
+    var credIds = [];
+	$('input[name="ids"]:checked').each(function(){
+		var id = $(this).val();
+		credIds.push(id);
+	})
+	if ("" == credIds) {
+		layer.alert("请选择至少一个密钥", {icon:0});
+		return;
+	}
+	layer.open({
         title: '删除密钥',
         content: '确定删除密钥？',
         btn: ['确定', '取消'],
