@@ -650,7 +650,7 @@ function changeBaseImageVersion () {
             		for (var i in data.data) {
             			var image = data.data[i];
             			if (baseVersion == image.version) {
-            				html = "" + html;
+            				html = "<option type='text' value='"+image.id+"'>"+image.version+"</option>" + html;
             			}else {
             				html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>"
             			}

@@ -2,10 +2,13 @@ package com.bonc.epm.paas.entity;
 
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 @Entity
 public class ServiceOperationLog {
@@ -13,21 +16,6 @@ public class ServiceOperationLog {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-
-	/**
-	 * 用户id
-	 */
-	private long userId;
-	
-	/**
-	 * 用户名
-	 */
-	private String userName;
-	
-	/**
-	 * 服务id
-	 */
-	private long serviceId;
 	
 	/**
 	 * 服务名称
@@ -35,9 +23,11 @@ public class ServiceOperationLog {
 	private String serviceName;
 	
 	/**
-	 * 服务中文名称
+	 * 额外信息(以字符串来记录主要信息)
 	 */
-	private String serviceChName;
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	private String serviceExtraInfo;
 	
 	/**
 	 * 操作类型
@@ -52,11 +42,21 @@ public class ServiceOperationLog {
 	 * 90:删除
 	 */
 	private long operationType;
-	
+
 	/**
-	 * 创建时间
+	 * 创建日期
 	 */
 	private Date createDate;
+
+	/**
+	 * 创建人
+	 */
+	private long createBy;
+	
+	/**
+	 * 创建人姓名
+	 */
+	private String createUserName;
 
 	public long getId() {
 		return id;
@@ -64,30 +64,6 @@ public class ServiceOperationLog {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public long getServiceId() {
-		return serviceId;
-	}
-
-	public void setServiceId(long serviceId) {
-		this.serviceId = serviceId;
 	}
 
 	public String getServiceName() {
@@ -98,12 +74,12 @@ public class ServiceOperationLog {
 		this.serviceName = serviceName;
 	}
 
-	public String getServiceChName() {
-		return serviceChName;
+	public String getServiceExtraInfo() {
+		return serviceExtraInfo;
 	}
 
-	public void setServiceChName(String serviceChName) {
-		this.serviceChName = serviceChName;
+	public void setServiceExtraInfo(String serviceExtraInfo) {
+		this.serviceExtraInfo = serviceExtraInfo;
 	}
 
 	public long getOperationType() {
@@ -122,4 +98,20 @@ public class ServiceOperationLog {
 		this.createDate = createDate;
 	}
 
+	public long getCreateBy() {
+		return createBy;
+	}
+
+	public void setCreateBy(long createBy) {
+		this.createBy = createBy;
+	}
+
+	public String getCreateUserName() {
+		return createUserName;
+	}
+
+	public void setCreateUserName(String createUserName) {
+		this.createUserName = createUserName;
+	}
+	
 }

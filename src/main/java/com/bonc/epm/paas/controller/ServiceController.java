@@ -833,21 +833,16 @@ public class ServiceController {
 				User currentUser = CurrentUserUtils.getInstance().getUser();
 				service.setUpdateDate(currentDate);
 				service.setUpdateBy(currentUser.getId());
-				serviceDao.save(service);
+				service = serviceDao.save(service);
 				// 保存服务操作信息
-				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
-				serviceOperationLog.setUserId(currentUser.getId());
-				serviceOperationLog.setUserName(currentUser.getUserName());
-				serviceOperationLog.setServiceId(id);
-				serviceOperationLog.setServiceName(service.getServiceName());
-				serviceOperationLog.setServiceChName(service.getServiceChName());
-                if (isDebug) {
-                	serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_DEBUG);
+				long operationType;
+				if (isDebug) {
+					operationType = ServiceConstant.OPERATION_TYPE_DEBUG;
 				} else {
-					serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_START);
+					operationType = ServiceConstant.OPERATION_TYPE_START;
 				}
-				serviceOperationLog.setCreateDate(currentDate);
-				serviceOperationLogDao.save(serviceOperationLog);
+				serviceOperationLogDao.save(service.getServiceName(),
+						service.toString(), operationType);
 
             }
         }
@@ -884,18 +879,6 @@ public class ServiceController {
 		if (StringUtils.isEmpty(service.getSessionAffinity())) {
 			service.setSessionAffinity(null);
 		}
-		Service currentService = serviceDao.save(service);
-
-		// 保存服务操作信息
-		ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
-		serviceOperationLog.setUserId(currentUser.getId());
-		serviceOperationLog.setUserName(currentUser.getUserName());
-		serviceOperationLog.setServiceId(currentService.getId());
-		serviceOperationLog.setServiceName(service.getServiceName());
-		serviceOperationLog.setServiceChName(service.getServiceChName());
-		serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_CREATE);
-		serviceOperationLog.setCreateDate(currentDate);
-		serviceOperationLogDao.save(serviceOperationLog);
 
 		//将服务中的环境变量循环遍历，保存到相关联的实体类中；
         if (StringUtils.isNotEmpty(envVariable)) {
@@ -947,7 +930,12 @@ public class ServiceController {
             }
         }
         service.setServiceAddr("http://"+currentUser.getUserName() + "." + templateConf.getServerAddr());
-        serviceDao.save(service);
+        service = serviceDao.save(service);
+        
+		// 保存服务操作信息
+		serviceOperationLogDao.save(service.getServiceName(),service.toString(),
+				ServiceConstant.OPERATION_TYPE_CREATE);
+
         LOG.debug("container--Name:" + service.getServiceName());
         return "redirect:/service";
     }
@@ -1157,17 +1145,10 @@ public class ServiceController {
 				service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_STOPPED);
 				service.setUpdateDate(currentDate);
 				service.setUpdateBy(currentUser.getId());
-				serviceDao.save(service);
+				service = serviceDao.save(service);
 				// 保存服务操作信息
-				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
-				serviceOperationLog.setUserId(currentUser.getId());
-				serviceOperationLog.setUserName(currentUser.getUserName());
-				serviceOperationLog.setServiceId(id);
-				serviceOperationLog.setServiceName(service.getServiceName());
-				serviceOperationLog.setServiceChName(service.getServiceChName());
-				serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_STOP);
-				serviceOperationLog.setCreateDate(currentDate);
-				serviceOperationLogDao.save(serviceOperationLog);
+				serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+						ServiceConstant.OPERATION_TYPE_STOP);
             }
         }
         catch (KubernetesClientException e) {
@@ -1215,22 +1196,12 @@ public class ServiceController {
     				User currentUser = CurrentUserUtils.getInstance().getUser();
     				service.setUpdateDate(currentDate);
     				service.setUpdateBy(currentUser.getId());
-    				serviceDao.save(service);
-    				// 保存服务操作信息
-    				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
-    				serviceOperationLog.setUserId(currentUser.getId());
-    				serviceOperationLog.setUserName(currentUser.getUserName());
-    				serviceOperationLog.setServiceId(id);
-    				serviceOperationLog.setServiceName(service.getServiceName());
-    				serviceOperationLog.setServiceChName(service.getServiceChName());
-    				serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
-    				serviceOperationLog.setCreateDate(currentDate);
-    				serviceOperationLogDao.save(serviceOperationLog);
+    				service = serviceDao.save(service);
+					// 保存服务操作信息
+					serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+							ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
 
                     map.put("status", "200");
-        
-                    
-                    
                 }
                 else {
                     String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS + " --rollback";
@@ -1361,17 +1332,10 @@ public class ServiceController {
 					service.setInstanceNum(addservice);
 					service.setUpdateDate(currentDate);
 					service.setUpdateBy(currentUser.getId());
-					serviceDao.save(service);
+					service = serviceDao.save(service);
 					// 保存服务操作信息
-					ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
-					serviceOperationLog.setUserId(currentUser.getId());
-					serviceOperationLog.setUserName(currentUser.getUserName());
-					serviceOperationLog.setServiceId(id);
-					serviceOperationLog.setServiceName(service.getServiceName());
-					serviceOperationLog.setServiceChName(service.getServiceChName());
-					serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_SCALING);
-					serviceOperationLog.setCreateDate(currentDate);
-					serviceOperationLogDao.save(serviceOperationLog);
+					serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+							ServiceConstant.OPERATION_TYPE_SCALING);
 				}
 			} 
             catch (KubernetesClientException e) {
@@ -1420,18 +1384,10 @@ public class ServiceController {
     				//保存服务信息
     				service.setUpdateDate(currentDate);
     				service.setUpdateBy(currentUser.getId());
-    				serviceDao.save(service);
-    				// 保存服务操作信息
-    				ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
-    				serviceOperationLog.setUserId(currentUser.getId());
-    				serviceOperationLog.setUserName(currentUser.getUserName());
-    				serviceOperationLog.setServiceId(id);
-    				serviceOperationLog.setServiceName(service.getServiceName());
-    				serviceOperationLog.setServiceChName(service.getServiceChName());
-    				serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_CONFIGURE);
-    				serviceOperationLog.setCreateDate(currentDate);
-    				serviceOperationLogDao.save(serviceOperationLog);
-            		serviceDao.save(service);
+    				service = serviceDao.save(service);
+					// 保存服务操作信息
+					serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+							ServiceConstant.OPERATION_TYPE_CONFIGURE);
             	}
 			} else {
 	            map.put("status", "400");
@@ -1540,18 +1496,9 @@ public class ServiceController {
             map.put("status", "200");
             serviceDao.delete(id);
             envVariableDao.deleteByServiceId(id);
-            // 保存服务操作信息
-			Date currentDate = new Date();
-			User currentUser = CurrentUserUtils.getInstance().getUser();
-			ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
-			serviceOperationLog.setUserId(currentUser.getId());
-			serviceOperationLog.setUserName(currentUser.getUserName());
-			serviceOperationLog.setServiceId(id);
-			serviceOperationLog.setServiceName(service.getServiceName());
-			serviceOperationLog.setServiceChName(service.getServiceChName());
-			serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_DELETE);
-			serviceOperationLog.setCreateDate(currentDate);
-			serviceOperationLogDao.save(serviceOperationLog);
+			// 保存服务操作信息
+			serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+					ServiceConstant.OPERATION_TYPE_DELETE);
 			
 			// 删除服务 释放绑定的端口
             List<PortConfig> bindPort = portConfigDao.findByServiceId(id);
@@ -2002,38 +1949,30 @@ public class ServiceController {
     */
     @RequestMapping("service/detail/editSerAddr.do")
     @ResponseBody
-    public String editSerAddr(String serviceAddr,String proxyPath,Long serId){
-        Map<String, Object> map = new HashMap<String, Object>();
-        if(serviceDao.findByServiceAddrAndProxyPath(serviceAddr,proxyPath).size()>0){
-            map.put("status", "500");
-        }else{
-        Service service = serviceDao.findOne(serId);
-        service.setServiceAddr(serviceAddr);
-        service.setProxyPath(proxyPath);
-        try {
-			Date currentDate = new Date();
-			User currentUser = CurrentUserUtils.getInstance().getUser();
-			service.setUpdateDate(currentDate);
-			service.setUpdateBy(currentUser.getId());
-			serviceDao.save(service);
-			// 保存服务操作信息
-			ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
-			serviceOperationLog.setUserId(currentUser.getId());
-			serviceOperationLog.setUserName(currentUser.getUserName());
-			serviceOperationLog.setServiceId(serId);
-			serviceOperationLog.setServiceName(service.getServiceName());
-			serviceOperationLog.setServiceChName(service.getServiceChName());
-			serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_UPDATE);
-			serviceOperationLog.setCreateDate(currentDate);
-			serviceOperationLogDao.save(serviceOperationLog);
-            map.put("status", "200");
-        } catch (Exception e) {
-            map.put("status", "400");
-            e.printStackTrace();
-            }
-        }
-        return JSON.toJSONString(map);
-    }
+	public String editSerAddr(String serviceAddr, String proxyPath, Long serId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (serviceDao.findByServiceAddrAndProxyPath(serviceAddr, proxyPath).size() > 0) {
+			map.put("status", "500");
+		} else {
+			Service service = serviceDao.findOne(serId);
+			service.setServiceAddr(serviceAddr);
+			service.setProxyPath(proxyPath);
+			try {
+				Date currentDate = new Date();
+				User currentUser = CurrentUserUtils.getInstance().getUser();
+				service.setUpdateDate(currentDate);
+				service.setUpdateBy(currentUser.getId());
+				service = serviceDao.save(service);
+				// 保存服务操作信息
+				serviceOperationLogDao.save(service.getServiceName(), service.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
+				map.put("status", "200");
+			} catch (Exception e) {
+				map.put("status", "400");
+				e.printStackTrace();
+			}
+		}
+		return JSON.toJSONString(map);
+	}
     
     /**
      * 
@@ -2139,26 +2078,16 @@ public class ServiceController {
 				return JSON.toJSONString(map);
 			}
 			ser = setAttrForEdit(ser, service);
-
 		}
-		
 		Date currentDate = new Date();
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		ser.setUpdateDate(currentDate);
 		ser.setUpdateBy(currentUser.getId());
-		serviceDao.save(ser);
+		ser = serviceDao.save(ser);
 		// 保存服务操作信息
-		ServiceOperationLog serviceOperationLog = new ServiceOperationLog();
-		serviceOperationLog.setUserId(currentUser.getId());
-		serviceOperationLog.setUserName(currentUser.getUserName());
-		serviceOperationLog.setServiceId(ser.getId());
-		serviceOperationLog.setServiceName(ser.getServiceName());
-		serviceOperationLog.setServiceChName(ser.getServiceChName());
-		serviceOperationLog.setOperationType(ServiceConstant.OPERATION_TYPE_UPDATE);
-		serviceOperationLog.setCreateDate(currentDate);
-		serviceOperationLogDao.save(serviceOperationLog);
-
-		
+		serviceOperationLogDao.save(ser.getServiceName(),
+				ser.toString(),
+				ServiceConstant.OPERATION_TYPE_UPDATE);
 		map.put("status", "200");
 
 		return JSON.toJSONString(map);

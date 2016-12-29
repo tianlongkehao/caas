@@ -286,13 +286,13 @@ public class DockerClientService {
 	 * @return 
 	 * @see
 	 */
-	public boolean loadAndPushImage(String originImageInfo, Image image, InputStream inputStream) {
+	public boolean loadAndPushImage(String[] originImageInfo, Image image, InputStream inputStream) {
 	    try {
             DockerClient dockerClient = this.getSpecialDockerClientInstance();
             log.info("==========开始执行load image api");
             dockerClient.loadImageCmd(inputStream).exec();
             log.info("==========结束执行load image api");
-            dockerClient.tagImageCmd(originImageInfo, username +"/"+image.getName(), image.getVersion()).withForce().exec();
+            dockerClient.tagImageCmd(originImageInfo[0]+":"+originImageInfo[1], username +"/"+image.getName(), image.getVersion()).withForce().exec();
             log.info("origin Image Info:-"+originImageInfo);
             
             // push image
@@ -417,12 +417,19 @@ public class DockerClientService {
 		    if (null == dockerClient) {
 		         dockerClient = this.getSpecialDockerClientInstance(); 
 		    }
+		    boolean isRemove=true;
 		    if (null != image) {
 		        dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
-		        imageName = image.getName();
-		        imageVersion = image.getVersion();
+		        if (imageName.equals(image.getName()) && imageVersion.equals(image.getVersion())) {
+		            isRemove=false;
+		        } else {
+	                imageName = image.getName();
+	                imageVersion = image.getVersion();		            
+		        }
 		    }
-		    dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec(); 
+		    if (isRemove) {
+		        dockerClient.removeImageCmd(username+"/"+imageName+":"+imageVersion).withForce(true).exec(); 
+		    }
 			
 			if (null != ciRecord && null != ciRecordDao) {
 	          ciRecord.setLogPrint(ciRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"removeImageCmd:"+username+"/"+imageName+":"+imageVersion);

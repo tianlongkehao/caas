@@ -1,11 +1,13 @@
 package com.bonc.epm.paas.dao;
 
-import java.util.List;
+import java.util.Date;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.ServiceOperationLog;
+import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.util.CurrentUserUtils;
 /**
  * 服务操作记录信息DAO类
  * @author lkx
@@ -15,21 +17,24 @@ import com.bonc.epm.paas.entity.ServiceOperationLog;
  */
 @Transactional
 public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationLog, Long>{
-	
-	/**
-	 * 
-	 * @param userId 
-	 * @return  List<ServiceOperationLog>
-	 * @see
-	 */
-    List<ServiceOperationLog> findByUserId(long userId);
-    
     /**
      * 
-     * @param serviceId 
-     * @return List<ServiceOperationLog>
+     * @param String serviceName
+     * @param String serviceExtraInfo
+     * @param long operationType
+     * @return ServiceOperationLog
      * @see
      */
-    List<ServiceOperationLog> findByServiceId(long serviceId);
-    
+    default ServiceOperationLog save(String serviceName, String serviceExtraInfo, long operationType){
+    	User currentUser = CurrentUserUtils.getInstance().getUser();
+		ServiceOperationLog log = new ServiceOperationLog();
+		log.setServiceName(serviceName);
+		log.setServiceExtraInfo(serviceExtraInfo);
+		log.setOperationType(operationType);
+		log.setCreateDate(new Date());
+		log.setCreateBy(currentUser.getId());
+		log.setCreateUserName(currentUser.getUserName());
+		log = save(log);
+    	return log;
+    }
 }

@@ -132,8 +132,8 @@ public  class ZipUtil {
      * 以行为单位读取文件，常用于读面向行的格式化文件 
      */  
     @SuppressWarnings("rawtypes")
-    public static String readFileByLines(String directory,String fileName) {
-        String result = "";
+    public static String[] readFileByLines(String directory,String fileName) {
+        String[] result = new String[2];
         File file = new File(directory+"/"+fileName);  
         BufferedReader reader = null;  
         try {  
@@ -149,13 +149,13 @@ public  class ZipUtil {
                 Iterator it = jsonObj.keySet().iterator();  
                 while(it.hasNext()){
                     String key = it.next().toString();
-                    result +=key;
+                    result[0]= key;
                     
                     JSONObject jsonObj1 = JSONObject.parseObject(jsonObj.get(key).toString()); 
                     Iterator it1 = jsonObj1.keySet().iterator();  
                     while(it1.hasNext()){
                         String key1 = it1.next().toString();
-                        result += ":"+key1;
+                        result[1] = key1;
                     }
                 }
                 line++;  
