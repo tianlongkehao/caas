@@ -2293,8 +2293,14 @@ public class ServiceController {
         List<String[]> context =new ArrayList<String[]>();
         for(int i=0;i<services.size();i++){
            Service serviceObj = services.get(i);
+           
+           
+           String serviceAddr="";
+           if(StringUtils.isNoneBlank(serviceObj.getServiceAddr())){
+        	    serviceAddr=serviceObj.getServiceAddr();
+           }
             String[] service ={serviceObj.getServiceName(),serviceObj.getServiceChName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
-                    ,new StringBuffer(serviceObj.getServiceAddr()).append("/").append(serviceObj.getProxyPath()).toString() 
+                    ,new StringBuffer(serviceAddr).append("/").append(serviceObj.getProxyPath()).toString() 
                     ,serviceObj.getCreateDate().toString()};
             context.add(service);
         }

@@ -725,7 +725,7 @@ public class CiController {
         Map<String, Object> map = new HashMap<String, Object>();
         User currentUser = CurrentUserUtils.getInstance().getUser();
         //取得当前用户的所有镜像
-        List<Image> imagesOfUser = imageDao.findByCreator(currentUser.getId());
+        List<Image> imagesOfUser = imageDao.findByCreateBy(currentUser.getId());
         long maxSize = 0;
         if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT) || 
                     currentUser.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {

@@ -17,13 +17,13 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	public List<Image> findByName(String name);
 	
     @Query("select i from Image i where i.createBy=?1 and i.isDelete != 1")
-    public List<Image> findByCreator(long createBy);
+    public List<Image> findByCreateBy(long createBy);
     
     @Query("select i from Image i where i.createBy=?1 and i.isDelete != 1 order by i.name, i.createDate desc")
-    public List<Image> findByCreatorOrderByName(long createBy);
+    public List<Image> findByCreateByOrderByName(long createBy);
     
 	@Query("select i from Image i where i.createBy=?1 and i.isDelete != 1 order by i.createDate desc")
-	public List<Image> findByCreatorOrderByCreatTime(long createBy);
+	public List<Image> findByCreateByOrderByCreatTime(long createBy);
 	
 	@Query("select i from Image i where i.id=?1 and i.isDelete != 1")
 	public Image findById(long id);
@@ -32,7 +32,7 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	public Page<Image> findByImageType(long userId,Pageable request);
 	
 	@Query("select i from Image i where  i.createBy = ?1 and i.isDelete != 1 order by  i.name,i.createDate")
-	public Page<Image> findAllByCreator(long createBy,Pageable request);
+	public Page<Image> findAllByCreateBy(long createBy,Pageable request);
 	
 	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 order by  i.name,i.createDate")
     public Page<Image> findAllFavor(long createBy,Pageable request);
