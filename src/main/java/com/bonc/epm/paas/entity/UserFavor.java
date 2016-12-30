@@ -13,8 +13,12 @@ public class UserFavor {
 	private long id;// 索引
 	//用户id
 	private long userId;
-	//监控设置
-	private String monitor;
+	/*
+	 * 监控设置 
+	 * 0:没有监控
+	 * 1:Pinpoint监控
+	 */
+	private Integer monitor;
 	
 	public long getId() {
 		return id;
@@ -28,10 +32,10 @@ public class UserFavor {
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
-	public String getMonitor() {
+	public Integer getMonitor() {
 		return monitor;
 	}
-	public void setMonitor(String monitor) {
+	public void setMonitor(Integer monitor) {
 		this.monitor = monitor;
 	}
 }
