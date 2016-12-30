@@ -54,7 +54,6 @@ import com.bonc.epm.paas.dao.ServiceAndStorageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
-import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeHook;
@@ -65,7 +64,6 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.ServiceAndStorage;
-import com.bonc.epm.paas.entity.ServiceOperationLog;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -115,12 +113,6 @@ public class ServiceController {
      * smalSet
      */
     private static Set<Integer> smalSet = new HashSet<Integer>();
-    
-    /**
-     * 用户层接口
-     */
-    @Autowired
-    private UserDao userDao;
     
     /**
      * 服务数据层接口
@@ -550,22 +542,26 @@ public class ServiceController {
     	try {
     		//获取镜像信息
     		Image image = imageDao.findByNameAndVersion(imgName, imgVersion);
-    		if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+    		if (null != image) {
     			//从仓库中拉取镜像到本地
     			dockerClientService.pullImage(image.getName(), image.getVersion());
     			//获取镜像inspect
     			InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
     			if (null != iir) {
     				//获取Entrypoint信息
-    				for (String entrypoint : iir.getConfig().getEntrypoint()) {
-    					startCommand.append(entrypoint);
+    				if (null != iir.getConfig().getEntrypoint()) {
+    					for (String entrypoint : iir.getConfig().getEntrypoint()) {
+    						startCommand.append(entrypoint);
+    					}
 					}
     				//获取cmd信息
-    				for (String cmd : iir.getContainerConfig().getCmd()) {
-    					if (startCommand.length() > 0) {
-    						startCommand.append(" ");
+    				if (null != iir.getConfig().getCmd()) {
+    					for (String cmd : iir.getConfig().getCmd()) {
+    						if (startCommand.length() > 0) {
+    							startCommand.append(" ");
+    						}
+    						startCommand.append(cmd);
     					}
-    					startCommand.append(cmd);
 					}
     			}
     		}
@@ -592,7 +588,7 @@ public class ServiceController {
                     image = imageDao.findById(ci.getBaseImageId());
                 }
             }
-            if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+            if (null != image) {
                 dockerClientService.pullImage(image.getName(), image.getVersion());
                 InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
                 if (null != iir) {
