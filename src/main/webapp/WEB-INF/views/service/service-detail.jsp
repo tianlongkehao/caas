@@ -548,13 +548,15 @@
 					                        <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value="${envVariable.envValue }"  /></span>
 					                       </td>
 					                       <c:if test="${service.status==1 or service.status==4}">
-					                          <td style="width:10%;" class="editBtn">
-					                              <i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i> 
-					                              <i onclick="saveEnvEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editEnv saveEnv"></i>
-					                              <i onclick="canclEnvEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editEnv"></i>  
-					                              <i onclick="delEnvEdit(this)" type="button" value="删除"  class="fa fa-trash editEnvBtn"></i>  
-					                          </td>
+					                          <c:if test="${envVariable.envKey!='APM' and envVariable.envKey!='namespace' and envVariable.envKey!='service'}"> 
+						                          <td style="width:10%;" class="editBtn">
+						                              <i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i> 
+						                              <i onclick="saveEnvEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editEnv saveEnv"></i>
+						                              <i onclick="canclEnvEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editEnv"></i>  
+						                              <i onclick="delEnvEdit(this)" type="button" value="删除"  class="fa fa-trash editEnvBtn"></i>  
+						                          </td>
 					                          </c:if>
+					                        </c:if>
 					                   </tr>
 					               </c:forEach>
 								</tbody>
