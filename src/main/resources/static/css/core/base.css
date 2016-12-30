@@ -537,3 +537,12 @@ table.dataTable thead .sorting:after {
 .li-active{
 	background-color:#dadada;
 }
+.fa-circle{
+	font-size: 10px;
+    margin-left: 4px;
+    margin-right: 8px;
+}
+.fa-tachometer{
+	padding-right: 2px;
+    padding-left: 2px;
+}

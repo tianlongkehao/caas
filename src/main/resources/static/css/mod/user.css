@@ -968,7 +968,23 @@ i.pushOrg {
     padding-left: 36px;
     padding-right: 0px;
 }
-
+.container-prefer{
+	background-color: #fff;
+	padding-top: 40px;
+	padding-bottom: 70px;
+}
+.preferInfo{
+	margin-left: 40px;
+	padding-top:10px;
+}
+.preferInfo input{
+	margin-right: 10px;
+	margin-left:20px;
+}
+#preferSave{
+	margin-top: 30px;
+	margin-left: 60px;
+}
 
 
 

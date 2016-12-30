@@ -10,14 +10,24 @@
 </head>
 
 <body>
-	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
+	<%-- <jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="cluster" value="" />
-	</jsp:include>
-
-	<div class="page-container">
+	</jsp:include> --%>
+<header class="header">
+    <div class="navbar navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="javascript:void(0);">
+                    <h2>BCM</h2>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+	<div class="book-container">
 		<article>
 			<div class="page-main">
-				<div class="contentTitle">
+				<div class="contentTitle hide">
 					<ol class="breadcrumb">
 						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
@@ -31,8 +41,8 @@
 
 							<ul class="summary" id="book-tab" class="nav nav-tabs">
 
-								<li class="chapter " data-level="0"><a href=""> <i
-										class="fa fa-check" style="display: none;"></i> 帮助文档
+								<li class="chapter " data-level="0" style="height:60px;line-height:68px"><a href="">
+								新手入门  - 帮助文档
 								</a></li>
 
 								<li class="chapter " data-level="1"><a
