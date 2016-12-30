@@ -64,7 +64,6 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.ServiceAndStorage;
-import com.bonc.epm.paas.entity.ServiceOperationLog;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -482,7 +481,8 @@ public class ServiceController {
      * @return  String
      */
     @RequestMapping(value = { "service/add" }, method = RequestMethod.GET)
-	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {		
+	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {
+    	User currentUser = CurrentUserUtils.getInstance().getUser();
         String isDepoly = "";
         if (imageName != null) {
             isDepoly = "deploy";
@@ -519,6 +519,7 @@ public class ServiceController {
             createBy = CurrentUserUtils.getInstance().getUser().getId();
         }
         List<Storage> storageList = storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(createBy, 1);
+        model.addAttribute("userName", currentUser.getUserName());
         model.addAttribute("storageList", storageList);
         model.addAttribute("imgID", imgID);
         model.addAttribute("resourceName", resourceName);
@@ -541,22 +542,26 @@ public class ServiceController {
     	try {
     		//获取镜像信息
     		Image image = imageDao.findByNameAndVersion(imgName, imgVersion);
-    		if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+    		if (null != image) {
     			//从仓库中拉取镜像到本地
     			dockerClientService.pullImage(image.getName(), image.getVersion());
     			//获取镜像inspect
     			InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
     			if (null != iir) {
     				//获取Entrypoint信息
-    				for (String entrypoint : iir.getConfig().getEntrypoint()) {
-    					startCommand.append(entrypoint);
+    				if (null != iir.getConfig().getEntrypoint()) {
+    					for (String entrypoint : iir.getConfig().getEntrypoint()) {
+    						startCommand.append(entrypoint);
+    					}
 					}
     				//获取cmd信息
-    				for (String cmd : iir.getContainerConfig().getCmd()) {
-    					if (startCommand.length() > 0) {
-    						startCommand.append(" ");
+    				if (null != iir.getConfig().getCmd()) {
+    					for (String cmd : iir.getConfig().getCmd()) {
+    						if (startCommand.length() > 0) {
+    							startCommand.append(" ");
+    						}
+    						startCommand.append(cmd);
     					}
-    					startCommand.append(cmd);
 					}
     			}
     		}
@@ -583,7 +588,7 @@ public class ServiceController {
                     image = imageDao.findById(ci.getBaseImageId());
                 }
             }
-            if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+            if (null != image) {
                 dockerClientService.pullImage(image.getName(), image.getVersion());
                 InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
                 if (null != iir) {
@@ -894,7 +899,34 @@ public class ServiceController {
                 envVariableDao.save(envVar);
             }
         }
-        
+        //增加Pinpoint的相关环境变量
+        if (service.getMonitor().equals(ServiceConstant.MONITOR_PINPOINT)) {
+        	//使用Pinpoint监控时，需增加环境变量[namespace=服务的命名空间,service=服务名]
+        	EnvVariable envVar = new EnvVariable();
+        	envVar.setCreateBy(currentUser.getId());
+        	envVar.setEnvKey("namespace");
+        	envVar.setEnvValue(currentUser.getNamespace());
+        	envVar.setCreateDate(new Date());
+        	envVar.setServiceId(service.getId());
+        	envVariableDao.save(envVar);
+        	EnvVariable envVar2 = new EnvVariable();
+        	envVar2.setCreateBy(currentUser.getId());
+        	envVar2.setEnvKey("service");
+        	envVar2.setEnvValue(service.getServiceName());
+        	envVar2.setCreateDate(new Date());
+        	envVar2.setServiceId(service.getId());
+        	envVariableDao.save(envVar2);
+		} else {
+			//其他情况时，增加环境变量[APM=1]
+			EnvVariable envVar = new EnvVariable();
+			envVar.setCreateBy(currentUser.getId());
+			envVar.setEnvKey("APM");
+			envVar.setEnvValue("1");
+			envVar.setCreateDate(new Date());
+			envVar.setServiceId(service.getId());
+			envVariableDao.save(envVar);
+		}
+
         //将服务中的挂载卷数据循环遍历，保存到相关联的实体类中
         if (StringUtils.isNotEmpty(cephAds)){
             String[] cephAddressData = cephAds.split(";");
@@ -2293,8 +2325,14 @@ public class ServiceController {
         List<String[]> context =new ArrayList<String[]>();
         for(int i=0;i<services.size();i++){
            Service serviceObj = services.get(i);
+           
+           
+           String serviceAddr="";
+           if(StringUtils.isNoneBlank(serviceObj.getServiceAddr())){
+        	    serviceAddr=serviceObj.getServiceAddr();
+           }
             String[] service ={serviceObj.getServiceName(),serviceObj.getServiceChName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
-                    ,new StringBuffer(serviceObj.getServiceAddr()).append("/").append(serviceObj.getProxyPath()).toString() 
+                    ,new StringBuffer(serviceAddr).append("/").append(serviceObj.getProxyPath()).toString() 
                     ,serviceObj.getCreateDate().toString()};
             context.add(service);
         }

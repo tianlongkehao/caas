@@ -218,7 +218,7 @@ function findImages(){
                 								'</a>'
 	                    			}
 	                    			
-	                    			if (userId == row.creator) {
+	                    			if (userId == row.createBy) {
 	                    				html +=	'<a class="no-drop a-oper" href="javascript:void(0)" onclick="deleteImage(this)"'+
 													'title="删除" imageversion="'+row.version+'" imagename="'+row.name+'" imageid="'+row.id+'">' +
 													'<i class="fa fa-trash" style="margin-left:10px;"></i>'+
