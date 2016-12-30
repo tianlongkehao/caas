@@ -31,6 +31,11 @@ public class Shera {
     private String sheraUrl;
     
     /**
+     * 访问端口
+     */
+    private String port;
+    
+    /**
      * 用户名
      */
     private String userName;
@@ -59,6 +64,14 @@ public class Shera {
 
     public void setSheraUrl(String sheraUrl) {
         this.sheraUrl = sheraUrl;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
     }
 
     public String getUserName() {

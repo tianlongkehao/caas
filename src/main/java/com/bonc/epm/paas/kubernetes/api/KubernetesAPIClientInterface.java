@@ -95,7 +95,7 @@ public interface KubernetesAPIClientInterface {
      *            resourceQuota id resourceQuota id to be deleted.
      * @throws KubernetesClientException
      */
-    public Status deleteResourceQuota(String name) throws KubernetesClientException;
+    public ResourceQuota deleteResourceQuota(String name) throws KubernetesClientException;
 
     /* limitrange API */
 

@@ -436,8 +436,9 @@ public class UserController {
                 }
                 
                 List<String> namespaceList = new ArrayList<String>();
-                deleteTenAndUser(idList, namespaceList);
+                List<User> users = deleteTenAndUser(idList, namespaceList);
                 delNamespace(namespaceList);
+                userDao.delete(users);
             }
             map.put("status", "200");
         }
@@ -1094,7 +1095,7 @@ public class UserController {
      * @param namespaceList List<String>
      * @see
      */
-    private void deleteTenAndUser(List<Long> idList, List<String> namespaceList) {
+    private List<User> deleteTenAndUser(List<Long> idList, List<String> namespaceList) {
         List<User> users = new ArrayList<User>();
         for (User user : userDao.findAll(idList)) {
             users.add(user);
@@ -1108,7 +1109,7 @@ public class UserController {
                 }
             }
         }
-        userDao.delete(users);
+        return users;
     }
     
     /**
@@ -1122,24 +1123,16 @@ public class UserController {
             for (String namespace : namespaceList) {
                 // 以用户名(登陆帐号)为name，创建client
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient(namespace);
-//                client.getNamespace(namespace);
                 
                 if (null != client.getNamespace(namespace)) {
                     try {
-                        Status status = client.deleteLimitRange(namespace);
-                        if (!status.getStatus().equals("Success")) {
-                        	LOG.error("delete LimitRange failed:namespace["+namespace+"]");
-						}
-                        status =  client.deleteResourceQuota(namespace);
-                        if (!status.getStatus().equals("Success")) {
-							LOG.error("delete ResourceQuota failed:namespace["+namespace+"]");
-						}
+                        client.deleteNamespace(namespace);
+                        //TODO 逻辑删除卷组信息
+                        
                     } 
                     catch (javax.ws.rs.ProcessingException e) {
-                        System.out.println(e.getMessage());
+                        LOG.error("delete namespace error" + e.getMessage());
                     }
-                    client.deleteNamespace(namespace);
-                    //TODO 逻辑删除卷组信息
                 }
             } 
         }
@@ -1354,6 +1347,7 @@ public class UserController {
         try {
             Shera oldShera = sheraDao.findOne(shera.getId());
             oldShera.setSheraUrl(shera.getSheraUrl());
+            oldShera.setPort(shera.getPort());
             oldShera.setUserName(shera.getUserName());
             oldShera.setPassword(shera.getPassword());
             oldShera.setRemark(shera.getRemark());

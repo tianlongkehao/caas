@@ -119,7 +119,7 @@ public interface KubernetesAPI {
     @DELETE
     @Path("/namespaces/{namespace}/resourcequotas/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Status deleteResourceQuota(@PathParam("namespace")String namespace,@PathParam("name") String name)
+    public ResourceQuota deleteResourceQuota(@PathParam("namespace")String namespace,@PathParam("name") String name)
             throws KubernetesClientException;
 	
 	/* limitrange API */

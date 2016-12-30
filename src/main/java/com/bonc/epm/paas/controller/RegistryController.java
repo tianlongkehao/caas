@@ -159,7 +159,7 @@ public class RegistryController {
             if(index == 0){
                 images = imageDao.findByImageType(userId,pageRequest);
             }else if(index == 1){
-                images = imageDao.findAllByCreator(userId,pageRequest);
+                images = imageDao.findAllByCreateBy(userId,pageRequest);
             }else if(index == 2){
                 images = imageDao.findAllFavor(userId,pageRequest);
             }
@@ -602,7 +602,7 @@ public class RegistryController {
 		long creator = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> maps = new HashMap<String, Object>();
 		//获取所有的镜像
-		List<Image> imageList = imageDao.findByCreatorOrderByName(creator);
+		List<Image> imageList = imageDao.findByCreateByOrderByName(creator);
 		//用于存放分组后所有的镜像
 		List<Object> images = new ArrayList<>();
 		String lastImageName= null;
@@ -634,7 +634,7 @@ public class RegistryController {
 		long creator = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> maps = new HashMap<String, Object>();
 		//获取该用户的所有镜像
-		List<Image> imageList = imageDao.findByCreatorOrderByCreatTime(creator);
+		List<Image> imageList = imageDao.findByCreateByOrderByCreatTime(creator);
 		//获取当前的时间
 		Calendar calendar = Calendar.getInstance();
 		

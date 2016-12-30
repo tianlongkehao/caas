@@ -97,7 +97,7 @@ $(document).ready(function(){
                 			window.location.href = ctx + "/user/add";
                 		}
                 		if (data.creatFlag == "200") {
-                			alert("创建成功");
+                			layer.alert("租户创建成功");
                 			window.location.href = ctx + "/user/list";
                 		}
                 	}
