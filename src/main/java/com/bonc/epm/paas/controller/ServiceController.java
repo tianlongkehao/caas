@@ -54,6 +54,7 @@ import com.bonc.epm.paas.dao.ServiceAndStorageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
+import com.bonc.epm.paas.dao.UserFavorDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeHook;
@@ -66,6 +67,7 @@ import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.ServiceAndStorage;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserFavor;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
@@ -113,6 +115,12 @@ public class ServiceController {
      * smalSet
      */
     private static Set<Integer> smalSet = new HashSet<Integer>();
+    
+    /**
+     *  用户偏好层接口
+     */
+    @Autowired
+    private UserFavorDao userFavorDao;
     
     /**
      * 服务数据层接口
@@ -519,6 +527,14 @@ public class ServiceController {
             createBy = CurrentUserUtils.getInstance().getUser().getId();
         }
         List<Storage> storageList = storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(createBy, 1);
+        //获取监控配置
+        UserFavor userFavor = userFavorDao.findByUserId(currentUser.getId());
+        Integer monitor;
+        if (null == userFavor) {
+			monitor = ServiceConstant.MONITOR_PINPOINT;
+		} else {
+			monitor = userFavor.getMonitor();
+		}
         model.addAttribute("userName", currentUser.getUserName());
         model.addAttribute("storageList", storageList);
         model.addAttribute("imgID", imgID);
@@ -527,6 +543,7 @@ public class ServiceController {
         model.addAttribute("imageVersion", imageVersion);
         model.addAttribute("isDepoly", isDepoly);
         model.addAttribute("menu_flag", "service");
+        model.addAttribute("monitor",monitor);
         return "service/service_create.jsp";
     }
 	
@@ -900,7 +917,7 @@ public class ServiceController {
             }
         }
         //增加Pinpoint的相关环境变量
-        if (service.getMonitor().equals(ServiceConstant.MONITOR_PINPOINT)) {
+        if (service.getMonitor()==ServiceConstant.MONITOR_PINPOINT) {
         	//使用Pinpoint监控时，需增加环境变量[namespace=服务的命名空间,service=服务名]
         	EnvVariable envVar = new EnvVariable();
         	envVar.setCreateBy(currentUser.getId());

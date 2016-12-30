@@ -60,6 +60,7 @@ public class ServiceConstant {
     /**
      * 监控设置
      */
-    public static final String MONITOR_PINPOINT             = "Pinpoint";  //Pinpoint监控
+    public static final Integer MONITOR_NONE                 = 0;  //没有监控
+    public static final Integer MONITOR_PINPOINT             = 1;  //Pinpoint监控
 
 }
