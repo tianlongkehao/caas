@@ -23,7 +23,7 @@ a{
 	color: #676a6c;
 }
 a:hover{
-	color: #e14344;
+	color: #e8504f;
 }
 a,
 a:hover,
@@ -201,11 +201,6 @@ li.line-h-3 {
     background: #ed4d64;
     color: #fff;
     vertical-align: top;
-}
-
-.btn-prim {
-    background: #3C7BCA !important;
-    color: #fff !important;
 }
 
 .table tr {
@@ -426,7 +421,7 @@ i.fa_btn_plus_gray {
     background-color: #ffffff;
     color: inherit;
     padding: 15px 20px 20px 20px;
-    border-color: #e14344;
+    border-color: #e8504f;
     -webkit-border-image: none;
     -o-border-image: none;
     border-image: none;
@@ -440,7 +435,7 @@ i.fa_btn_plus_gray {
     padding: 0;
     text-overflow: ellipsis;
     float: left;
-    color:#e14344;
+    color:#e8504f;
 }
 .ibox-tools {
     display: inline-block;
@@ -456,7 +451,7 @@ i.fa_btn_plus_gray {
 }
 .ibox-tools a:hover {
     cursor: pointer;
-    color: #e14344;
+    color: #e8504f;
 }
 .m-b-xs {
     margin-bottom: 5px;

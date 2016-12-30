@@ -5,6 +5,9 @@ $(document).ready(function(){
 	
 	document.getElementById("cpu1").checked=true;
 	document.getElementById("ram1").checked=true;
+	//调节高度
+	var imagePage_height = $(".host_step1").height();
+	$(".step-inner").height(imagePage_height +100);
 	
 	$(".createPadding").addClass("hide");
 	
@@ -607,9 +610,9 @@ $(document).ready(function(){
 	                        var portConfigs = JSON.stringify(image.portConfigs);
 	                        if (image.isBaseImage == 2) {		//判断是否为基础镜像，是基础镜像不显示
 	                        	
-		                        html += "<li class='image-item'><span class='img_icon span2'>"+
+		                        html += "<li class='image-item'><span class='img_icon span16'>"+
 								"<img src='"+ctx+"/images/image-1.png'>"+
-						"</span> <span class='span5 type span5add' type='database'>"+
+						"</span> <span class='span4 type span5add' type='database'>"+
 								"<div class='list-item-description'>"+
 									"<div class='name h4'>"+
 										""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"../registry/detail/"+image.id+"'>"+
@@ -617,7 +620,7 @@ $(document).ready(function(){
 										"</a>"+
 									"</div>"+
 								"</div>"+
-						"</span> <span class='span3'>"+
+						"</span> <span class='span4'>"+
 								"<div class='list-item-description'>"+
 									"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
 										""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
@@ -631,7 +634,8 @@ $(document).ready(function(){
 	                    	}
 	                    	$("#imageList").html(html);
 	                    	$(".pull-deploy").click(function(){
-
+	                    		var containerRes_height = $(".host_step2").height();
+	                    		$(".step-inner").height(containerRes_height+100);
 	                        	var imageName = $(this).attr("imageName");
 	                        	var imageVersion = $(this).attr("imageVersion");
 	                        	var imgID = $(this).attr("imgID");
@@ -878,9 +882,9 @@ function loadImageList() {
                         var portConfigs = JSON.stringify(image.portConfigs);
                         if (image.isBaseImage == 2) {   //判断是否为基础镜像，是基础镜像不显示
                         	
-	                        html += "<li class='image-item'><span class='img_icon span2'>"+
+	                        html += "<li class='image-item'><span class='img_icon span16'>"+
 							"<img src='"+ctx+"/images/image-1.png'>"+
-					"</span> <span class='span5 type span5add' type='database'>"+
+					"</span> <span class='span4 type span5add' type='database'>"+
 							"<div class='list-item-description'>"+
 								"<div class='name h4'>"+
 									""+ image.name +" <a title='点击查看镜像详情' target='_blank' href='"+ctx+"/registry/detail/"+image.id+"'>"+
@@ -888,7 +892,7 @@ function loadImageList() {
 									"</a>"+
 								"</div>"+
 							"</div>"+
-					"</span> <span class='span3'>"+
+					"</span> <span class='span4'>"+
 							"<div class='list-item-description'>"+
 								"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+ 
 									""+ image.version +"</span> <span imgID='"+image.id+"'resourceName='"+image.resourceName+"'  imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+

@@ -1,0 +1,9 @@
+/* 蓝色 #3C7BCA 红色 #e8504f */
+.modalCrealApp .steps-main .progre .radius_step.action {
+    border-bottom: 2px solid #e8504f;
+    color: #e8504f;
+}
+.btn-prim {
+    background: #e8504f !important;
+    color: #fff !important;
+}

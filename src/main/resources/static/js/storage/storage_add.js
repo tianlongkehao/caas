@@ -24,6 +24,9 @@ $(document).ready(function () {
 	$("#defVolNum").click(function(){
 		$("#defVol").focus();
 	});
+	$("#defVol").blur(function(){
+		$("#defVolNum").val($("#defVol").val());
+	});
 	
 	/*aaa();
 	function aaa(){
@@ -39,6 +42,7 @@ $(document).ready(function () {
 
 		$("#defVol").click(function(){
 			$("#defVolNum").attr("checked","checked");
+			
 		 });
 		
     $("#storageName").blur(function(){

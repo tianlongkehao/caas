@@ -1,6 +1,6 @@
 .header {
     /* background: #fff; */
-    background: #E14344;
+    background: #e8504f;
     height: 69px;
     width: 100%;
     z-index: 100;
@@ -117,7 +117,7 @@
 }
 
 .page-sidebar .nav-menu > .item-click {
-    background-color: #e14344;
+    background-color: #e8504f;
 }
 
 .page-sidebar .nav-menu > li > .nav-item-hover > li > a {
@@ -216,7 +216,7 @@
     color: #ff0000;
 }
 a i.fa-home{
-	color: #e14344;
+	color: #e8504f;
 }
 /*new */
 .sign-title{
@@ -229,5 +229,5 @@ a i.fa-home{
 	line-height: 54px;
 }
 #nav1{
-	color:#e14344;
+	color:#e8504f;
 }

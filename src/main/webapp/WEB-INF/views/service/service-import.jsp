@@ -20,7 +20,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" id="nav2" style="width: 102px">引入外部服务</li>
@@ -83,10 +83,10 @@
 	<div id="import-service" style="display: none;">
 		<form>
 			<table class="table enabled"
-				style="width: 345px; padding: 5px; margin: 10px">
-				<tbody class="BORDER">
+				style="width: 580px; padding: 5px; margin: 10px">
+				<tbody class="importSerTable">
 					<tr>
-						<th style="width: 35%">服务名称：</th>
+						<th style="width: 25%">服务名称：</th>
 						<td><input class="" type="text" id="import-ser-name" value=""></td>
 					</tr>
  					<!-- <tr>
@@ -94,33 +94,33 @@
 						<td><input class="" type="text" id="import-ser-in" value=""></td>
 					</tr> -->
 					<tr>
-						<th style="width: 35%">外部服务地址：</th>
+						<th style="width: 25%">外部服务地址：</th>
 						<td><input class="" type="text" id="import-ser-out" value=""></td>
 					</tr>
 					<tr>
-          <th style="width: 35%">外部服务端口：</th>
+          <th style="width: 25%">外部服务端口：</th>
           <td><input class="" type="text" id="import-ser-out-port" value=""></td>
       </tr>
       <tr>
-      <th style="width: 35%">服务描述：</th>
+      <th style="width: 25%">服务描述：</th>
           <td><input class="" type="text" id="import-ser-desc" value=""></td>
       </tr>
 			<tr>
-				<th style="width: 35%">可见域：</th>
+				<th style="width: 25%">可见域：</th>
 				<td><select class="" id="import-ser-visibility">
 						<option value="0">仅本租户可见</option>
 						<option value="1">所有租户可见</option>
 				</select></td>
 			</tr>
       <tr>
-          <th style="width: 35%">引入服务方式：</th>
+          <th style="width: 25%">引入服务方式：</th>
           <td><select class="" id="import-ser-mode">
                   <option value="0">service</option>
                   <option value="1">etcd</option>
           </select></td>
       </tr>
       <tr>
-      <th style="width: 35%">是否使用代理：</th>
+      <th style="width: 25%">是否使用代理：</th>
           <td><select class="" id="useProxyFlag">
                   <option value="0">不使用</option>
                   <option value="1">nginx代理</option>

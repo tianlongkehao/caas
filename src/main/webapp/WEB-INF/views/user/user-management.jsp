@@ -18,7 +18,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">用户管理</li>
 					</ol>
@@ -49,11 +49,11 @@
 												<tr>
 													<th style="width: 5%; text-indent: 30px;"><input
 														type="checkbox" class="chkAll" id="checkallbox" /></th>
-													<th style="width: 15%; padding-left: 5px;">登录账号</th>
+													<th style="width: 15%;">登录账号</th>
 													<th style="width: 15%;">姓名</th>
 													<th style="width: 15%;">公司</th>
 													<th style="width: 15%;">部门</th>
-													<th style="width: 15%; text-indent: 8px;">工号</th>
+													<th style="width: 15%;">工号</th>
 													<th style="width: 10%;">角色权限</th>
 													<th style="width: 8%;" class="del-operation">操作</th>
 												</tr>

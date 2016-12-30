@@ -15,7 +15,7 @@ nav.navbar-default{
 	padding-bottom: 20px;
 }
 .nav > li > a {
-    color: #e14344;
+    color: #e8504f;
     font-weight: 600;
     padding: 14px 20px 14px 25px;
 }
@@ -25,7 +25,7 @@ nav.navbar-default{
     
 }
 .nav > li.active {
-    border-left: 4px solid #e14344;
+    border-left: 4px solid #e8504f;
     background: #ffffff;
     
 }
@@ -56,6 +56,7 @@ nav.navbar-default{
 .tit-image{
 	width: 18px;
 }
+
 
 
 

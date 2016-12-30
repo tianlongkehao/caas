@@ -35,6 +35,7 @@
 }
 .container-count .server-list li .server-info-icon {
     float: left;
+    line-height: 50px;
 }
 .server_icon_1, .server-info-icon .server_icon_1 {
     background-position: 0 2px;
@@ -49,6 +50,7 @@
     color: #fff;
     text-align: center;
     min-width: 70px;
+    margin-top: 8px;
 }
 .container-count .server-list .blue {
     background: #5F93D3;
@@ -119,5 +121,15 @@
     padding-left: 25px;
     background: #FAFAFA;
 }
-
+i.pandect-icon{
+	color: #8b8b8b;
+	font-size: 20px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+img.pandect-icon{
+	width:20px;
+	margin-left: 2px;
+    margin-right: 4px;
+}
 

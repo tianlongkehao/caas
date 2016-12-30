@@ -266,7 +266,7 @@
         $(".nav-menu>li").on("mouseenter",function(){
             $(".nav-menu>li").css("background-color","transparent");
             $(".nav-menu>li").children(".nav-item-hover").css("display","none");
-            $(this).css("background-color","#e14344");
+            $(this).css("background-color","#e8504f");
             $(this).css("font-size","110%");
             $(this).children(".nav-item-hover").css("display","block");
         });
@@ -274,7 +274,7 @@
         $(".nav-menu>li").on("mouseleave",function(){
             $(this).css("background-color","transparent");
             $(this).children(".nav-item-hover").css("display","none");
-            $(".item-click").css("background-color","#e14344");
+            $(".item-click").css("background-color","#e8504f");
             
         });
 

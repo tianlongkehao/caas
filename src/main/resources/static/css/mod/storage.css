@@ -649,10 +649,6 @@ span.i {
     border-bottom: 2px solid #e2e2e4;
 }
 
-.modalCrealApp .steps-main .progre .radius_step.action {
-    border-bottom: 2px solid #418ac7;
-}
-
 .radius_step {
     color: #999;
     padding: 0 20px;
@@ -751,4 +747,10 @@ span.i {
 	margin-right:15px;
 	position: relative;
     left: -30px;
+}
+.param-set{
+	padding-top: 20px;
+}
+.volNumber{
+	padding-top: 14px;
 }

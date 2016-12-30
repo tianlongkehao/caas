@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -25,8 +27,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.dao.SheraDao;
+import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.entity.Shera;
+import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.PodList;
+import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
@@ -61,6 +75,28 @@ public class IndexController {
     @Value("${login.showAuthCode}")
     private boolean showAuthCode;
     /**
+     * KubernetesClientService
+     */
+    @Autowired
+	private KubernetesClientService kubernetesClientService;
+    /**
+     * StorageDao
+     */
+    @Autowired
+	private StorageDao storageDao;
+    
+    /**
+     * sheraDao
+     */
+    @Autowired
+    private SheraDao sheraDao;
+    /**
+     * 内存和cpu的比例大小
+     */
+    @Value("${ratio.memtocpu}")
+    private String RATIO_MEMTOCPU = "4";
+    
+    /**
      * Description: <br>
      * 首页
      * @return home.jsp
@@ -74,12 +110,113 @@ public class IndexController {
      * 总览页面
      * @return bcm-pandect.jsp
      */
-    @RequestMapping(value={"bcm"},method=RequestMethod.GET)
-	public String bcm(Model model){
+    @RequestMapping(value={"bcm/{id}"},method=RequestMethod.GET)
+	public String bcm(Model model, @PathVariable long id){
+    	
+    	try {
+            User user = userDao.findOne(id);
+			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+            Namespace ns = client.getNamespace(user.getNamespace());
+            if (null != ns) {
+                getUserResourceInfo(model, user, client);
+            }
+            else {
+                LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
+            }
+            
+            double usedstorage = 0;
+            List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+            for (Storage storage : list) {
+                usedstorage = usedstorage + (double) storage.getStorageSize();
+            }
+            Shera shera = sheraDao.findByUserId(id);
+            model.addAttribute("userShera", shera);
+            model.addAttribute("usedstorage",  usedstorage / 1024);
+        }
+        catch (KubernetesClientException e) {
+            LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            LOG.error("error message:-" + e.getMessage());
+            e.printStackTrace();
+        }
         model.addAttribute("showAuthCode", showAuthCode);
+        
         model.addAttribute("menu_flag", "bcm");
         return "bcm-pandect.jsp";
     }
+    /**
+     * 
+     * Description:
+     * 获取用户的资源使用信息
+     * @param model 
+     * @param user 
+     * @param client  
+     * @see
+     */
+    private void getUserResourceInfo(Model model, User user, KubernetesAPIClientInterface client) {
+        ResourceQuota quota = client.getResourceQuota(user.getNamespace());
+        if (null != quota) {
+            model.addAttribute("user", user);
+            
+            Map<String, String> hard = quota.getStatus().getHard();
+            model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
+            model.addAttribute("servMemoryNum", hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
+            model.addAttribute("servPodNum", hard.get("pods"));// pod个数
+            model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
+            model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数
+            
+            Map<String, String> used = quota.getStatus().getUsed();
+            ReplicationControllerList rcList = client.getAllReplicationControllers();
+            PodList podList = client.getAllPods();                   
+            model.addAttribute("usedCpuNum", Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
+            model.addAttribute("usedMemoryNum", Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
+            model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
+            model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
+            // model.addAttribute("usedControllerNum", usedControllerNum);
+        } else {
+            LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
+        }
+    }
+    /**
+     * 
+     * Description:
+     * computeCpuOut
+     * @param val Map<String, String> val
+     * @return cpuVal String
+     * @see
+     */
+    private String computeCpuOut(Map<String, String> val) {
+        String cpuVal = val.get("cpu");
+        if (cpuVal.contains("m")) {
+            Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
+            return a1.toString();
+        } 
+        else {
+            return cpuVal;
+        }
+    }
+    /**
+     * 
+     * Description:
+     * computeMemoryOut
+     * @param val Map<String, String>
+     * @return memVal String
+     * @see
+     */
+    private String computeMemoryOut(Map<String, String> val) {
+        String memVal = val.get("memory");
+        if (memVal.contains("Mi")) {
+            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
+            return a1.toString();
+        } 
+        else {
+            return memVal.replace("Gi", "");
+        }
+    }
+    
     /**
      * Description: <br>
      * 跳转登录页面
@@ -197,7 +334,7 @@ public class IndexController {
         CurrentUserUtils.getInstance().setUser(user);
         CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
         redirect.addFlashAttribute("user", user);
-        return "redirect:bcm";
+        return "redirect:home";
     }
     
     /**

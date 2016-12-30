@@ -79,7 +79,7 @@
 					</div>
 
 				</li>
-				<li id="menu_bcm"><a href="<%=path %>/bcm"> <i class="fa fa-tachometer fa-nav-icon"></i>
+				<li id="menu_bcm"><a href="<%=path %>/bcm/${cur_user.id }"> <i class="fa fa-tachometer fa-nav-icon"></i>
 						<span class="nav-label">总览</span>
 
 				</a></li>
@@ -176,7 +176,7 @@
         /* $(".nav-menu>li").on("mouseenter",function(){
             $(".nav-menu>li").css("background-color","transparent");
             $(".nav-menu>li").children(".nav-item-hover").css("display","none");
-            $(this).css("background-color","#e14344");
+            $(this).css("background-color","#e86a6a");
             $(this).css("font-size","110%");
             $(this).children(".nav-item-hover").css("display","block");
         });
@@ -184,7 +184,7 @@
         $(".nav-menu>li").on("mouseleave",function(){
             $(this).css("background-color","transparent");
             $(this).children(".nav-item-hover").css("display","none");
-            $(".item-click").css("background-color","#e14344");
+            $(".item-click").css("background-color","#e86a6a");
             
         }); */
 

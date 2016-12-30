@@ -19,7 +19,7 @@
                     <h2>BCM</h2>
                 </a>
             </div>
-            <div class="navbar-login">
+            <div class="navbar-login hide">
                 <a href="<%=path %>/login" type="button" class="btn btn-default">登录</a>
             </div>
         </div>
@@ -30,7 +30,75 @@
 	<div class="head-title"><span><h2>容器云平台</h2></span></div>
 	<div class="head-title cloud-tit"><span>C-cloud</span></div>
 	<div class="head-fun ">
-		<div class="funCon service">
+		<div class="funs-list">
+            <ul class="app-list">
+                <li>
+                   <a class="icon-view" href="<%=path %>/service">
+                       	<div class="icon-wrapper">
+                           <div class="icon-img">
+                                <span><img src="<%=path %>/images/service-red.svg" alt=""/></span>
+                           </div>
+                       	   <div class="icon-name">服务集成</div>
+                       </div>
+                    </a>
+                 </li>
+                 <li>
+                   <a class="icon-view" href="<%=path %>/ci;">
+                       	<div class="icon-wrapper">
+                           <div class="icon-img">
+                                <span><img src="<%=path %>/images/factory_new-red.svg" alt=""/></span>
+                           </div>
+                       	   <div class="icon-name">镜像构建</div>
+                       </div>
+                    </a>
+                 </li>
+                 <li>
+                   <a class="icon-view" href="<%=path %>/registry/0">
+                       	<div class="icon-wrapper">
+                           <div class="icon-img">
+                                <span><img src="<%=path %>/images/applist3-red.svg" alt=""/></span>
+                           </div>
+                       	   <div class="icon-name">镜像中心</div>
+                       </div>
+                    </a>
+                 </li>
+                 <c:if test="${cur_user.user_autority == 1}">
+                 <li>
+                   <a class="icon-view" href="<%=path %>/cluster/resource">
+                       	<div class="icon-wrapper">
+                           <div class="icon-img">
+                                <span><img src="<%=path %>/images/server-red.svg" alt=""/></span>
+                           </div>
+                       	   <div class="icon-name">集群管理</div>
+                       </div>
+                    </a>
+                 </li>
+                 </c:if>
+                 <c:if test="${cur_user.user_autority == 2}">
+                 <li>
+                   <a class="icon-view" href="<%=path %>/cluster/containers">
+                       	<div class="icon-wrapper">
+                           <div class="icon-img">
+                                <span><img src="<%=path %>/images/server-red.svg" alt=""/></span>
+                           </div>
+                       	   <div class="icon-name">集群资源</div>
+                       </div>
+                    </a>
+                 </li>
+                 </c:if>
+                 <li>
+                   <a class="icon-view" href="<%=path %>/template/dockerfile">
+                       	<div class="icon-wrapper">
+                           <div class="icon-img">
+                                <span><img src="<%=path %>/images/tem-image-red.png" alt=""/></span>
+                           </div>
+                       	   <div class="icon-name">模板管理</div>
+                       </div>
+                    </a>
+                 </li>
+             </ul>
+        </div>
+		<%-- <div class="funCon service">
 			<img src="<%=path%>/images/service-red.svg">
 			<span class="service-tit"><h4>服务集成</h4></span>
 		</div>
@@ -49,7 +117,7 @@
 		<div class="funCon template">
 			<img src="<%=path%>/images/tem-image-red.png">
 			<span class="service-tit"><h4>模板管理</h4></span>
-		</div>
+		</div> --%>
 	</div>
 	
 	<div class="head-title left"><span><h2>解决方案</h2></span></div>

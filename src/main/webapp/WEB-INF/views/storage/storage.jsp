@@ -17,7 +17,7 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+                    <li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active" id="nav2">服务</li>
@@ -89,12 +89,12 @@
         <li class="line-h-3">
             <div class="param-set">
                 <span class="edit-name-c">存储大小：</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480">20<span>G</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200">50<span>G</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400">100<span>G</span>
+                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20"><label for="size20">20<span>G</span></label>
+                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="size50"><label for="size50">50<span>G</span></label>
+                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="size100"><label for="size100">100<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" id="updatedefVolNum">
-                	<input id="updatedefVol" style="width:50px; font-size:8px" placeholder="自定义大小"><span>G</span>
-                <div>
+                	<label for="updatedefVolNum"><input type="number" id="updatedefVol" style="width:80px; font-size:8px" placeholder="自定义大小"><span>G</span></label>
+                <div class="volNumber">
                 <span style="color:#1E90FF; padding-left:84px">总量:<span id="totalVol">${cur_user.vol_size}</span>G</span>
                 <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">${leftstorage }</span>G 可用</span></div>
                 <!-- <input id="storageSizeUpdateSlider" data-slider-id='storageSizeUpdateSliderData' type="text" data-slider-min="0" data-slider-max="1024" data-slider-step="1" />

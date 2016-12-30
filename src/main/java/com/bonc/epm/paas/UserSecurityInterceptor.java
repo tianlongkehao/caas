@@ -28,7 +28,7 @@ public class UserSecurityInterceptor implements HandlerInterceptor {
 		 //验证用户是否登陆
         Object obj = request.getSession().getAttribute("cur_user");
         if (obj == null || !(obj instanceof User)) {
-            response.sendRedirect(request.getContextPath() + "/home");
+            response.sendRedirect(request.getContextPath() + "/login");
             
 /*          ServiceController.smalSet.clear();
             if (portConfigDao == null) {//解决service为null无法注入问题 

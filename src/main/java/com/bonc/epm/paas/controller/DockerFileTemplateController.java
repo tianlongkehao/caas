@@ -89,7 +89,8 @@ public class DockerFileTemplateController {
         List<DockerFileTemplate> dockerFileList= dockerFileTemplateDao.findByCreateBy(user.getId());
         LOG.debug("dockerFileList:===========" + dockerFileList);
         model.addAttribute("dockerFileList", dockerFileList);
-        model.addAttribute("menu_flag", "template"); 
+        model.addAttribute("menu_flag", "template");
+        model.addAttribute("li_flag", "dockerfile");
         return "template/dockerfile-add.jsp";
     }
     
@@ -105,6 +106,7 @@ public class DockerFileTemplateController {
         DockerFileTemplate dockerFileTemp = dockerFileTemplateDao.findOne(index);
         model.addAttribute("dockerFileTemp", dockerFileTemp);
         model.addAttribute("menu_flag", "template"); 
+        model.addAttribute("li_flag", "dockerfile");
         return "template/dockerfile-edit.jsp";
     }
     

@@ -6,6 +6,7 @@
     <title>总览</title>
     <%@include file="frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-pandect.css"/>
+    
 </head>
 <body>
 
@@ -17,7 +18,7 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                    <li><a href="<%=path %>/home"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active">总览</li>
                 </ol>
@@ -32,11 +33,14 @@
                             <div class="row-title">服务详情</div>
                             <ul class="server-list">
                                 <li>
-                                    <a href="<%=path %>/containers?0" data-permalink onclick="_permalink(this)">
-                                      <span class="server-info-icon"><i class="fa_icon server_icon_1"></i>
+                                    <a href="<%=path %>/service" data-permalink onclick="_permalink(this)">
+                                      <span class="server-info-icon">
+                                        <img src="<%=path %>/images/service-gray.svg" class="pandect-icon" alt=""/>
                                         <span>服务个数：</span>
                                       </span>
-                                      <span class="pull-right big yellow"><span>${usedServiceNum}</span>/<span>未限制${servServiceNum}</span>&nbsp;个</span>
+                                      <span class="pull-right big yellow"><span>${usedServiceNum}</span>
+                                      <%-- /<span>上限未限制${servServiceNum}</span> --%>
+                                      &nbsp;个</span>
                                       	<%--<c:choose>
                                       		<c:when test="${servServiceNum==''}">
 	                                      		<span class="pull-right big green"><span id="clusterNum"></span>&nbsp;个</span>
@@ -48,11 +52,13 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="<%=path %>/ci?0" data-permalink onclick="permalink(this)">
-                                          <span class="server-info-icon"><i class="fa_icon server_icon_2"></i>
+                                    <a href="#" data-permalink onclick="permalink(this)">
+                                          <span class="server-info-icon"><i class="fa fa-puzzle-piece pandect-icon"></i>
                                             <span>实例个数：</span>
                                           </span>
-                                        <span class="pull-right big blue"><span>${usedPodNum}</span>/<span>未限制${servPodNum}</span>&nbsp;个</span>
+                                        <span class="pull-right big blue"><span>${usedPodNum}</span>
+                                        <%-- /<span>上限未限制${servPodNum}</span> --%>
+                                        &nbsp;个</span>
                                     </a>
                                 </li>
                                 <%--<li>
@@ -156,6 +162,15 @@
         </div>
     </article>
 </div>
-
+<script type="text/javascript">
+$(function(){
+	var userCpuPer = $("#detailCpu")[0].textContent/$("#totalCpu")[0].textContent*100+"%";
+    $("#usedCpu")[0].style.width = userCpuPer;
+    var userMemPer = $("#detailMemory")[0].textContent/$("#totalMemory")[0].textContent*100+"%";
+    $("#usedMemory")[0].style.width = userMemPer;
+    var userVolPer = $("#detailVolume")[0].textContent/$("#totalVolume")[0].textContent*100+"%";
+    $("#usedVolume")[0].style.width = userVolPer;
+})
+</script>>
 </body>
 </html>

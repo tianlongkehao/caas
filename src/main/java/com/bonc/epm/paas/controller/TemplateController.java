@@ -54,7 +54,8 @@ public class TemplateController {
 	
 	@RequestMapping(value = "/env/add", method = RequestMethod.GET)
 	public String envAdd(Model model) {
-		model.addAttribute("menu_flag", "template"); 
+		model.addAttribute("menu_flag", "template");
+		model.addAttribute("li_flag", "env");
 		return "template/env-add.jsp";
 	}
 	
@@ -237,6 +238,7 @@ public class TemplateController {
 		List<EnvTemplate> envTemplates = envTemplateDao.findByCreateByAndTemplateName(cUser.getId(), templateName);
 		model.addAttribute("envTemplateList",envTemplates);
 		model.addAttribute("menu_flag", "template"); 
+		model.addAttribute("li_flag", "env");
 		return "template/env-edit.jsp";
 	}
     

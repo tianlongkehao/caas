@@ -592,6 +592,8 @@ textarea.c-project-con{
 #dropdown-btn{
 	width:200px;
 	background-color:#dadada;
+	color: #676a6a;
+    line-height: 7px;
 }
 .registryinfo ul.nav-bar{
 	margin-bottom:20px;
@@ -609,7 +611,7 @@ textarea.c-project-con{
     border-top: 4px solid #dadada;
 }
 .tab-title.active{
-	border-top: 4px solid #e14344;
+	border-top: 4px solid #e8504f;
 }
 .tab-title h5{
     font-size: 15px;
