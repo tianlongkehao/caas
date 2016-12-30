@@ -111,7 +111,7 @@ public class MethodInvoker {
     	    if (!response.getHeaders().isEmpty() && response.getHeaders().containsKey("Etag")) {
     	        return response.getHeaders();
     	    } else {
-    	    	if (StringUtils.isBlank(response.readEntity(String.class))) {
+    	    	if (StringUtils.isBlank(response.readEntity(String.class))) { // 调用接口无返回信息，如：删除镜像清单成功后
     	    		return null;
     	    	} else {
     	    		return response.readEntity(method.getReturnType());
