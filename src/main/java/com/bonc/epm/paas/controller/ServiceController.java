@@ -54,7 +54,6 @@ import com.bonc.epm.paas.dao.ServiceAndStorageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
-import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeHook;
@@ -589,7 +588,7 @@ public class ServiceController {
                     image = imageDao.findById(ci.getBaseImageId());
                 }
             }
-            if (null != image && StringUtils.isNotBlank(image.getImageId())) {
+            if (null != image) {
                 dockerClientService.pullImage(image.getName(), image.getVersion());
                 InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
                 if (null != iir) {
