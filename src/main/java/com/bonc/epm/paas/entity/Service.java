@@ -65,6 +65,11 @@ public class Service {
 	private String startCommand;
 	
 	/**
+	 * 监控设置
+	 */
+	private String monitor;
+	
+	/**
 	 * 服务访问路径
 	 */
 	private String servicePath;
@@ -350,5 +355,13 @@ public class Service {
 				+ timeoutDetction + ",nodeIpAffinity:" + nodeIpAffinity + ",proxyPath:" + proxyPath + ",proxyZone:"
 				+ proxyZone + ",servicePath:" + servicePath + ",startCommand:" + startCommand + ",createDate:"
 				+ createDate + ",createBy:" + createBy + ",updateDate:" + updateDate + ",updateBy:" + updateBy;
+	}
+
+	public String getMonitor() {
+		return monitor;
+	}
+
+	public void setMonitor(String monitor) {
+		this.monitor = monitor;
 	}
 }

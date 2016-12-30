@@ -54,6 +54,7 @@ import com.bonc.epm.paas.dao.ServiceAndStorageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
+import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeHook;
@@ -114,6 +115,12 @@ public class ServiceController {
      * smalSet
      */
     private static Set<Integer> smalSet = new HashSet<Integer>();
+    
+    /**
+     * 用户层接口
+     */
+    @Autowired
+    private UserDao userDao;
     
     /**
      * 服务数据层接口
@@ -482,7 +489,8 @@ public class ServiceController {
      * @return  String
      */
     @RequestMapping(value = { "service/add" }, method = RequestMethod.GET)
-	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {		
+	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {
+    	User currentUser = CurrentUserUtils.getInstance().getUser();
         String isDepoly = "";
         if (imageName != null) {
             isDepoly = "deploy";
@@ -519,6 +527,7 @@ public class ServiceController {
             createBy = CurrentUserUtils.getInstance().getUser().getId();
         }
         List<Storage> storageList = storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(createBy, 1);
+        model.addAttribute("userName", currentUser.getUserName());
         model.addAttribute("storageList", storageList);
         model.addAttribute("imgID", imgID);
         model.addAttribute("resourceName", resourceName);
@@ -894,7 +903,34 @@ public class ServiceController {
                 envVariableDao.save(envVar);
             }
         }
-        
+        //增加Pinpoint的相关环境变量
+        if (service.getMonitor().equals(ServiceConstant.MONITOR_PINPOINT)) {
+        	//使用Pinpoint监控时，需增加环境变量[namespace=服务的命名空间,service=服务名]
+        	EnvVariable envVar = new EnvVariable();
+        	envVar.setCreateBy(currentUser.getId());
+        	envVar.setEnvKey("namespace");
+        	envVar.setEnvValue(currentUser.getNamespace());
+        	envVar.setCreateDate(new Date());
+        	envVar.setServiceId(service.getId());
+        	envVariableDao.save(envVar);
+        	EnvVariable envVar2 = new EnvVariable();
+        	envVar2.setCreateBy(currentUser.getId());
+        	envVar2.setEnvKey("service");
+        	envVar2.setEnvValue(service.getServiceName());
+        	envVar2.setCreateDate(new Date());
+        	envVar2.setServiceId(service.getId());
+        	envVariableDao.save(envVar2);
+		} else {
+			//其他情况时，增加环境变量[APM=1]
+			EnvVariable envVar = new EnvVariable();
+			envVar.setCreateBy(currentUser.getId());
+			envVar.setEnvKey("APM");
+			envVar.setEnvValue("1");
+			envVar.setCreateDate(new Date());
+			envVar.setServiceId(service.getId());
+			envVariableDao.save(envVar);
+		}
+
         //将服务中的挂载卷数据循环遍历，保存到相关联的实体类中
         if (StringUtils.isNotEmpty(cephAds)){
             String[] cephAddressData = cephAds.split(";");
