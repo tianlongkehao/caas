@@ -138,10 +138,6 @@
     color: #fff;
 }
 
-.radius_step.action span {
-    background: #418ac7;
-}
-
 .step-inner {
     position: relative;
     left: 0;
@@ -965,7 +961,7 @@ i.pushOrg {
 #pwd_wrap form div.form-group label{
 	line-height: 34px;
     font-size: 15px;
-    padding-left: 36px;
+    padding-left: 22px;
     padding-right: 0px;
 }
 .container-prefer{

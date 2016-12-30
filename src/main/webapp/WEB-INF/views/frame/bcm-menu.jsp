@@ -12,7 +12,7 @@
     <div class="navbar navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a href="javascript:void(0);">
+                <a href="<%=path %>/home">
                     <h2>BCM</h2>
                 </a>
             </div>
