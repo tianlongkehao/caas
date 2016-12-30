@@ -315,6 +315,30 @@ public class UserController {
     /**
      * 
      * Description:
+     * 更新用户偏好设置
+     * @param Integer monitor
+     * @return .jsp String
+     * @see
+     */
+    @RequestMapping(value = { "/userFavorUpdate.do" }, method = RequestMethod.POST)
+    @ResponseBody
+    public String userFavorUpdate(Integer monitor) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        User user = CurrentUserUtils.getInstance().getUser();
+    	UserFavor userFavor = userFavorDao.findByUserId(user.getId());
+    	if (null == userFavor) {
+			userFavor = new UserFavor();
+			userFavor.setUserId(user.getId());
+    	}
+    	userFavor.setMonitor(monitor);
+    	userFavorDao.save(userFavor);
+    	map.put("status", "200");
+    	return JSON.toJSONString(map);
+    }
+    
+    /**
+     * 
+     * Description:
      * 更新租户信息 
      * @param user User
      * @param resource Resource

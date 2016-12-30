@@ -175,13 +175,11 @@
 										<input type="checkbox" id="PinpointChk" checked="1">
 									</c:otherwise>
 								</c:choose>
-								
-								
 								Pinpoint监控</label>
 							</div>
 							<div class="form-group">
 	                            <div class="col-md-offset-10 col-md-2">
-	                                <button type="button" class="btn btn-primary" id="preferSave">保存</button>
+	                                <button type="button" class="btn btn-primary" id="preferSave" onclick="javascript:userFavorUpdate()">保存</button>
 	                            </div>
 	                        </div>
 						</div>
