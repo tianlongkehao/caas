@@ -4,7 +4,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -25,12 +33,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserVisitingLogDao;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserVisitingLog;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
 import com.bonc.epm.paas.util.ServiceException;
+import com.bonc.epm.paas.util.WebClientUtil;
 
 /**
  * 登录
@@ -46,7 +58,7 @@ public class IndexController {
      * IndexController 日志实例
      */
     private static final Logger LOG = LoggerFactory.getLogger(IndexController.class);
-    
+
     /**
      *  configProps 接口
      */
@@ -58,6 +70,13 @@ public class IndexController {
      */
     @Autowired
 	private UserDao userDao;
+    
+    /**
+     * 记录访问日志dao接口
+     */
+    @Autowired
+    private UserVisitingLogDao userVisitingLogDao;
+    
     @Value("${login.showAuthCode}")
     private boolean showAuthCode;	
     /**
@@ -159,6 +178,8 @@ public class IndexController {
      */
     @RequestMapping(value="signin",method=RequestMethod.POST)
 	public String login(User user, RedirectAttributes redirect,String authCode,HttpServletRequest request){
+        String hostIp = request.getRemoteAddr();
+        String datas = request.getHeader("User-agent");
         try {
             if (showAuthCode) {
                 String judgeCode = (String)request.getSession().getAttribute("strCode");
@@ -172,13 +193,63 @@ public class IndexController {
             LOG.debug(e.getMessage());
             redirect.addFlashAttribute("err_code", e.getMessage());
             redirect.addFlashAttribute("user", user);
+            addUserVisitingLog(user, hostIp, datas, false);
             return "redirect:login";
         }
         CurrentUserUtils.getInstance().setUser(user);
         CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
         redirect.addFlashAttribute("user", user);
+        addUserVisitingLog(user, hostIp, datas, true);
         return "redirect:workbench";
     }
+    
+    /**
+     * Description: <br>
+     * 添加访问记录日志
+     * @param user user
+     * @param hostIp ip
+     * @param browser 浏览器
+     * @param isLegal 是否合法
+     * @see
+     */
+    public void addUserVisitingLog (User user,String hostIp,String headerData,boolean isLegal) {
+        UserVisitingLog userVisitingLog = new UserVisitingLog();
+        userVisitingLog.setUserId(user.getId());
+        userVisitingLog.setUserName(user.getUserName());
+        userVisitingLog.setHostIp(hostIp);
+        userVisitingLog.setBrowser(headerData);
+        userVisitingLog.setVisitingTime(new Date());
+        userVisitingLog.setLegal(isLegal);
+        userVisitingLog.setArea(findArea(hostIp));
+        userVisitingLogDao.save(userVisitingLog);
+    }
+    
+    /**
+     * Description: <br>
+     * 查询当前ip的所在区域
+     * @param ip ip地址
+     * @return String
+     * @see
+     */
+    public String findArea(String ip) {  
+        // 测试ip 219.136.134.157 中国=华南=广东省=广州市=越秀区=电信  
+        String result = "";
+        try {
+            Map<String,Object> params = new HashMap<String,Object>();
+            params.put("ip", ip);
+            String urlStr = "http://ip.taobao.com/service/getIpInfo.php";
+            String data = WebClientUtil.doPost(urlStr, params);
+            JSONObject jsonObj = JSONObject.parseObject(data);
+            String country = jsonObj.getJSONObject("data").getString("country");
+            String area = jsonObj.getJSONObject("data").getString("area");
+            String city = jsonObj.getJSONObject("data").getString("city");
+            result = country + " " + area + " " + city;
+        }
+        catch (Exception e) {
+            LOG.error("find ip area error" + e.getMessage());
+        }
+        return result;
+    }   
     
     /**
      * Description: <br>
