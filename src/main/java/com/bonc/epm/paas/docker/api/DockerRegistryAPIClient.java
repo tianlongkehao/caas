@@ -16,6 +16,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 
 import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
+import com.bonc.epm.paas.docker.exception.ErrorList;
 import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.model.Manifest;
 import com.bonc.epm.paas.docker.model.Tags;
@@ -72,9 +73,9 @@ public class DockerRegistryAPIClient implements DockerRegistryAPIClientInterface
     }
 
     @Override
-    public void deleteManifestofImage(String name, String reference) throws DokcerRegistryClientException{
+    public ErrorList deleteManifestofImage(String name, String reference) throws DokcerRegistryClientException{
         try {
-            api.deleteManifestofImage(name, reference);
+            return api.deleteManifestofImage(name, reference);
         } catch (NotFoundException e) {
             throw new NotFoundException();
         } catch (WebApplicationException e) {

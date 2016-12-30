@@ -104,14 +104,14 @@ public class MethodInvoker {
     		response = invocationBuilder.put(entity);
     	}
     	response.bufferEntity();
-    	if (response.readEntity(String.class).length() < 200) {
+    	if (response.readEntity(String.class).length() < 400) {
     	    log.info(url+pathValue+" -X"+get+":"+post+":"+delete+":"+put+"========response:"+response.readEntity(String.class));
     	}
     	try{
     	    if (!response.getHeaders().isEmpty() && response.getHeaders().containsKey("Etag")) {
     	        return response.getHeaders();
     	    } else {
-    	    	if ("void".equals(method.getReturnType().toString())) {
+    	    	if (StringUtils.isBlank(response.readEntity(String.class))) {
     	    		return null;
     	    	} else {
     	    		return response.readEntity(method.getReturnType());
