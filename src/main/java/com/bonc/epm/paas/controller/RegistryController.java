@@ -471,11 +471,21 @@ public class RegistryController {
             //return "redirect:registry/0";
     }
     
-	/**
-	 * 删除当前镜像
-	 * @param imageId 镜像Id
-	 * @return String
-	 */
+    /**
+     * 
+     * Description:
+     * 删除本地数据库镜像，以及远程仓库镜像信息
+     * 1.正常删除流程：删除本地镜像信息和远程镜像清单信息manifests
+     * 2.非正常处理流程：
+     *      其一：无法获取本地数据库镜像信息的清单信息manifests 不删除
+     *      其二：获取镜像信息的清单信息manifests后，调用删除清单API 返回errorList信息  不删除
+     *  TODO
+     *   对于无法通过正常渠道删除的镜像信息，
+     *   需要通过镜像同步、GC回收、手动清除垃圾镜像等手段处理
+     * @param imageId 镜像Id
+     * @return String 
+     * @see
+     */
     @RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteImage(@RequestParam long imageId){
