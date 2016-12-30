@@ -123,6 +123,7 @@ public class RegistryController {
         }
         
         model.addAttribute("menu_flag", "registry");
+        model.addAttribute("li_flag", "registry"+index);
         model.addAttribute("index", index);
         model.addAttribute("active",active);
         model.addAttribute("userId",userId);

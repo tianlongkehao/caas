@@ -15,6 +15,7 @@ var ctx = "<%=path%>";
 <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/editor/editor.css">
 <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/base.css">
 <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/layout.css"/>
+<link rel="stylesheet" type="text/css" href="<%=path %>/css/core/color.css"/>
 <%-- <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/jq-pagination/jquery.list.css"/> --%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/core/dataTables.bootstrap.css">
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/core/ambiance.css"/>

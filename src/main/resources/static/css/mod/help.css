@@ -2,7 +2,11 @@
  	font-family: "Microsoft YaHei",Arial,"Hiragino Sans GB",STHeiti,"WenQuanYi Micro Hei",SimSun,sans-serif;
  	line-height: 1.6;
 }
- }
+.book-container {
+    height: 100%;
+    z-index: 1;
+    margin-top: 70px;
+}
  .container{
  	magrin-right: 0px;
  }
@@ -17,13 +21,13 @@
 	padding-right: 0px;
 	background-color: #EBEFF1;
 	border-radius: 5px;
-	height: 600px;
+	height: 700px;
 } 
 .book .book-summary ul.summary li a:hover{
   background: #fff;
 }
 .book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
-    color: #008cff;
+    color: #e8504f;
     background: #fff;
     text-decoration: none;
 }
@@ -48,7 +52,7 @@
 }
 .book .book-body{
 	overflow-y:scroll;
-	height: 600px;
+	height: 700px;
 	padding-bottom: 50px;
 }
 .book .book-body .body-inner{

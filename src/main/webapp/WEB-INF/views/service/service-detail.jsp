@@ -12,7 +12,7 @@
 </head>
 <body>
 
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="ci" value="" />
 	</jsp:include>
 	<div class="page-container">
@@ -20,7 +20,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">服务</li>
 						<li><i class="fa fa-angle-right"></i></li>

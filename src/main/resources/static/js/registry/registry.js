@@ -197,7 +197,7 @@ function findImages(){
 	                    					'</a>'
 	                    			} else {
 	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
-                									'<i class="fa fa-star star-style" style="color: #337ab7;margin-left:35px;"></i>'+
+                									'<i class="fa fa-star star-style" style="color: #e8504f;margin-left:35px;"></i>'+
                 								'</a>'
 	                    			}
 	                    		} else {
@@ -214,7 +214,7 @@ function findImages(){
 	                    					'</a>'
 	                    			} else {
 	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
-                									'<i class="fa fa-star star-style" style="color: #337ab7;margin-left:10px;"></i>'+
+                									'<i class="fa fa-star star-style" style="color: #e8504f;margin-left:10px;"></i>'+
                 								'</a>'
 	                    			}
 	                    			

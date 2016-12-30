@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<jsp:include page="../frame/menu.jsp" flush="true">
+<jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="user" value=""/>
 </jsp:include>
 <div class="page-container">
@@ -18,7 +18,7 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                    <li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active">用户信息</li>
                 </ol>
@@ -27,7 +27,8 @@
 
                 <div class="setTab">
                     <a id="baseinfo" class="Record active">基本信息</a>
-                    <a id="resourceinfo" class="Record">资源信息</a>
+                    <!-- <a id="resourceinfo" class="Record">资源信息</a> -->
+                    <a id="preferenceinfo" class="Record">偏好设置</a>
                     <a id="pwd" class="Record hide">修改密码</a>
                 </div>
 
@@ -155,7 +156,23 @@
                             </c:if>
                         </form>
                     </div>
-
+					<div id="preferenceinfo_wrap" class="tab_wrap hide">
+						<div class="container-prefer">
+							<div class="preferInfo">
+								<span>默认值设置：</span>
+							</div>
+							<div class="preferInfo">
+								<span>监控设置：</span>
+								<label for="preferenceChk"><input type="checkbox" id="preferenceChk">Pinpoint监控</label>
+							</div>
+							<div class="form-group">
+	                            <div class="col-md-offset-10 col-md-2">
+	                                <button type="button" class="btn btn-primary" id="preferSave">保存</button>
+	                            </div>
+	                        </div>
+						</div>
+						
+					</div>
                     <div id="resourceinfo_wrap" class="tab_wrap hide">
                         <section class="container-count">
                         <div class="padding">

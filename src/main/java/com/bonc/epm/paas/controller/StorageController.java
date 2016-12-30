@@ -92,7 +92,7 @@ public class StorageController {
         // List<Storage> storages = storageDao.findByCreateBy(createBy);
         // model.addAttribute("storages",storages);
         model.addAttribute("menu_flag", "service");
-
+        model.addAttribute("li_flag", "storage");
         return "storage/storage.jsp";
     }
 

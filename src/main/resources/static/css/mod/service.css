@@ -53,7 +53,6 @@
 .modalCrealApp .steps-main {
     margin: 0 auto;
     overflow: hidden;
-    padding-bottom: 30px;
 }
 
 .progre {
@@ -77,10 +76,6 @@
     border-bottom: 2px solid #e2e2e4;
 }
 
-.modalCrealApp .steps-main .progre .radius_step.action {
-    border-bottom: 2px solid #418ac7;
-}
-
 .radius_step {
     color: #999;
     padding: 0 20px;
@@ -98,7 +93,8 @@
 }
 
 .radius_step.action span {
-    background: #418ac7;
+    /* background: #418ac7; */
+    background: #e8504f;
 }
 
 .step-inner {
@@ -268,7 +264,7 @@
 }
 
 .image-item .id {
-    width: 150px;
+    width: 300px;
     display: inline-block;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -468,9 +464,9 @@
 
 .createPadding {
     padding: 20px 60px;
-    position: fixed;
+    position: absolute;
     bottom: 0; 
-    width: 90% !important;
+    width: 100% !important;
     background: #fff;
     height: 80px !important;
     margin: 0 !important;
@@ -1119,4 +1115,14 @@ p.portLabel input{
 }
 #protocol{
 	width:75%;
+}
+.span16{
+	width: 16%;
+}
+.span4{
+	width:40%;
+	float:left;
+}
+.importSerTable tr th{
+	color: #676a6a;
 }

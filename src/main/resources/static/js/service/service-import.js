@@ -19,6 +19,7 @@
 		 	type:1,
 	        title: '引入外部服务',
 	        content: $("#import-service"),
+	        area: ['600px'],
 	        btn: ['保存', '取消'],
 	        yes: function(index, layero){
 	        	$('#import-ser-name').focus();
@@ -172,12 +173,12 @@
 			     			'<td style="width: 5%; text-indent: 30px;">'+
 			     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
 					     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'<i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
-					     		'<td style="width: 20%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
-					     		'<td style="width: 20%;">'+refservice.refAddress+'</td>';
+					     		'<td style="width: 17%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
+					     		'<td style="width: 17%;">'+refservice.refAddress+'</td>';
 					     		if(undefined == refservice.useProxy){
-					     			tr+='<td style="width: 20%;">'+"无"+'</td>';
+					     			tr+='<td style="width: 17%;">'+"无"+'</td>';
 					     		}else{
-					     			tr+='<td style="width: 20%;">'+refservice.useProxy+'</td>';
+					     			tr+='<td style="width: 17%;">'+refservice.useProxy+'</td>';
 					     			}
 			     		if('1'==refservice.viDomain){
 			     			tr+='<td style="width: 14%;">所有租户可见</td>';
@@ -198,7 +199,7 @@
  }
  function showDataTable(){
 	 $('.dataTables-example').dataTable({
-	     "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
+	     "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
 		});
 	 $("#checkallbox").parent().removeClass("sorting_asc");
 	 
@@ -253,6 +254,7 @@
 		 	type: 1,
 	        title: '修改外部引入服务',
 	        content: $("#import-service"),
+	        area: ['600px'],
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){
 	        	 var importSerName = $("#import-ser-name").val();
