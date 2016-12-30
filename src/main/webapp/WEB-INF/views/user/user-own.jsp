@@ -163,7 +163,21 @@
 							</div>
 							<div class="preferInfo">
 								<span>监控设置：</span>
-								<label for="preferenceChk"><input type="checkbox" id="preferenceChk">Pinpoint监控</label>
+								<label for="preferenceChk">
+								<c:choose>
+									<c:when test="${userFavor.monitor == 0 }">
+										<input type="checkbox" id="PinpointChk">
+									</c:when>
+									<c:when test="${userFavor.monitor == 1 }">
+										<input type="checkbox" id="PinpointChk" checked="1">
+									</c:when>
+									<c:otherwise>
+										<input type="checkbox" id="PinpointChk" checked="1">
+									</c:otherwise>
+								</c:choose>
+								
+								
+								Pinpoint监控</label>
 							</div>
 							<div class="form-group">
 	                            <div class="col-md-offset-10 col-md-2">

@@ -4,18 +4,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-<<<<<<< HEAD
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
-=======
 import java.util.List;
->>>>>>> refs/remotes/develop/jiang-newUI
 import java.util.Map;
 import java.util.Random;
 
@@ -37,24 +29,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-<<<<<<< HEAD
-import com.alibaba.fastjson.JSONObject;
-=======
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.dao.StorageDao;
->>>>>>> refs/remotes/develop/jiang-newUI
 import com.bonc.epm.paas.dao.UserDao;
-<<<<<<< HEAD
 import com.bonc.epm.paas.dao.UserVisitingLogDao;
-=======
 import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.Storage;
->>>>>>> refs/remotes/develop/jiang-newUI
 import com.bonc.epm.paas.entity.User;
-<<<<<<< HEAD
 import com.bonc.epm.paas.entity.UserVisitingLog;
-=======
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
@@ -62,7 +46,6 @@ import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
->>>>>>> refs/remotes/develop/jiang-newUI
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;

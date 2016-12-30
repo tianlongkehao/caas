@@ -25,6 +25,7 @@ import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserAndSheraDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserFavorDao;
 import com.bonc.epm.paas.entity.Resource;
 import com.bonc.epm.paas.entity.Restriction;
 import com.bonc.epm.paas.entity.Service;
@@ -32,9 +33,9 @@ import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserAndShera;
+import com.bonc.epm.paas.entity.UserFavor;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
-import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
@@ -74,6 +75,12 @@ public class UserController {
      */
     @Autowired
     private UserDao userDao;
+    
+    /**
+     * UserFavorDao
+     */
+    @Autowired
+    private UserFavorDao userFavorDao;
     
     /**
      * StorageDao
@@ -520,6 +527,7 @@ public class UserController {
     @RequestMapping(value = { "detail/{id}" }, method = RequestMethod.GET)
     public String detailById(Model model, @PathVariable long id) {
         User user = userDao.findOne(id);
+        UserFavor userFavor = userFavorDao.findByUserId(id);
         Resource resource = new Resource();
         Restriction restriction = new Restriction();
         try {
@@ -581,6 +589,7 @@ public class UserController {
         model.addAttribute("restriction", restriction);
         model.addAttribute("resource", resource);
         model.addAttribute("user", user);
+        model.addAttribute("userFavor", userFavor);
         model.addAttribute("menu_flag", "user");
         return "user/user_detail.jsp";
     }
@@ -793,6 +802,7 @@ public class UserController {
 	public String detail(Model model, @PathVariable long id) {
         try {
             User user = userDao.findOne(id);
+            UserFavor userFavor = userFavorDao.findByUserId(user.getId());
 			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
             Namespace ns = client.getNamespace(user.getNamespace());
@@ -809,6 +819,7 @@ public class UserController {
                 usedstorage = usedstorage + (double) storage.getStorageSize();
             }
             Shera shera = sheraDao.findByUserId(id);
+            model.addAttribute("userFavor", userFavor);
             model.addAttribute("userShera", shera);
             model.addAttribute("usedstorage",  usedstorage / 1024);
         }
@@ -891,19 +902,19 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-
-    /**
-     * 
-     * Description:
-     * userOwn
-     * @param model  
-     * @return .jsp String
-     */
-    @RequestMapping(value = { "/own" }, method = RequestMethod.GET)
-	public String userOwn(Model model) {
-        model.addAttribute("menu_flag", "userOwn");
-        return "user/user-own.jsp";
-    }
+//2016年12月30日 17:42:02 判定为无效方法
+//    /**
+//     * 
+//     * Description:
+//     * userOwn
+//     * @param model  
+//     * @return .jsp String
+//     */
+//    @RequestMapping(value = { "/own" }, method = RequestMethod.GET)
+//	public String userOwn(Model model) {
+//        model.addAttribute("menu_flag", "userOwn");
+//        return "user/user-own.jsp";
+//    }
 
     /**
      * 
@@ -1129,8 +1140,7 @@ public class UserController {
                 if (null != client.getNamespace(namespace)) {
                     try {
                         client.deleteNamespace(namespace);
-                        //TODO 逻辑删除卷组信息
-                        
+						// 逻辑删除卷组信息
                     } 
                     catch (javax.ws.rs.ProcessingException e) {
                         LOG.error("delete namespace error" + e.getMessage());
@@ -1265,7 +1275,6 @@ public class UserController {
         Map<String,Object> map = new HashMap<>();
         try {
             SheraAPIClientInterface client = sheraClientService.getClient(shera);
-            JdkList jdkList = client.getAllJdk();
             if (StringUtils.isNotEmpty(jdkJson)) {
                 String[] jdkData = jdkJson.split(";");
                 for (String jdkRow : jdkData ) {
