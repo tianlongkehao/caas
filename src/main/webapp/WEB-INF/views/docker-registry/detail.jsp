@@ -44,8 +44,8 @@
                             <span class="list-content">${image.summary }</span>
 
                             <span class="list-content hide" id="contentArea">
-                                <textarea id="desTextarea" name="description" style="padding:5px;">${image.summary }</textarea>
-                                <span class="pull-right" id="desEditSpan">
+                                <textarea id="desTextarea" name="description" style="padding:5px;height: 50px">${image.summary }</textarea>
+                                <span class="pull-right" id="desEditSpan" style="height: 30px">
                                     <a id="desEditCancel" class="btn btn-link"><i class="fa fa-close"></i> 取消</a>
                                     <a id="desEditSave" class="btn btn-link"><i class="fa fa-save"></i> 保存</a>
                                 </span>
