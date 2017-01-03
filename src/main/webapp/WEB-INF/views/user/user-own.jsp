@@ -5,7 +5,6 @@
     <title>用户</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
-    <link rel="icon" type="image/x-icon" href="<%=path %>/images/favicon.ico">
     <script type="text/javascript" src="<%=path %>/js/user/user-own.js"></script>
 </head>
 <body>
@@ -179,7 +178,7 @@
 							</div>
 							<div class="form-group">
 	                            <div class="col-md-offset-10 col-md-2">
-	                                <button type="button" class="btn btn-primary" id="preferSave" onclick="javascript:userFavorUpdate()">保存</button>
+	                                <button type="button" class="btn btn-primary" id="preferSave">保存</button>
 	                            </div>
 	                        </div>
 						</div>
