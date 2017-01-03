@@ -93,7 +93,7 @@
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200">50<span>G</span>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400">100<span>G</span>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" id="updatedefVolNum">
-                	<input id="updatedefVol" style="width:50px; font-size:8px" placeholder="自定义大小"><span>G</span>
+                	<input id="updatedefVol" style="width:55px; font-size:13px; height: 27px" placeholder="自定义大小"><span>G</span>
                 <div>
                 <span style="color:#1E90FF; padding-left:84px">总量:<span id="totalVol">${cur_user.vol_size}</span>G</span>
                 <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">${leftstorage }</span>G 可用</span></div>

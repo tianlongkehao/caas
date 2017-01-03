@@ -11,9 +11,9 @@ public class CommConstant {
 	public static final Integer DOCKFILE_TEMPLATE    = 10;    //dockerfile模板
 	public static final Integer ENV_TEMPLATE         = 20;    //环境变量模板
 														      //存储与备份
-														      //外部服务
+	public static final Integer REF_SERVICE          = 40;	  //外部服务
 														      //镜像中心
-														      //用户管理
+	public static final Integer USER_MANAGER         = 60;    //用户管理
 														      //密钥管理
 														      //shera管理
 														      //租户管理

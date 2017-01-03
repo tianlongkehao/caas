@@ -62,6 +62,7 @@ import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
+import com.bonc.epm.paas.entity.PodTopo;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.ServiceAndStorage;
@@ -742,6 +743,7 @@ public class ServiceController {
 	@ResponseBody
 	public String CreateContainer(long id,boolean isDebug) {
         Service service = serviceDao.findOne(id);
+        delPods(service.getServiceName());
         List<EnvVariable> envVariables = envVariableDao.findByServiceId(id);
         List<PortConfig> portConfigs = portConfigDao.findByServiceId(service.getId()); // 获取服务对应的端口映射
         Map<String, Object> map = new HashMap<String, Object>();
@@ -2409,5 +2411,26 @@ public class ServiceController {
 		}
 		map.put("status", "200");
 		return JSON.toJSONString(map);
+	}
+	
+	
+	/*
+	 * 删除对应服务下的所有pod
+	 */
+	public void delPods(String serviceName) {
+		KubernetesAPIClientInterface client =kubernetesClientService.getClient();
+		Map<String, String> labelSelector = new HashMap<String, String>();
+		labelSelector.put("app", serviceName);
+		PodList podList = client.getLabelSelectorPods(labelSelector);
+		if (podList != null) {
+			for (Pod pod : podList.getItems()) {
+				try {
+					client.deletePod(pod.getMetadata().getName());
+				} catch (KubernetesClientException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+        System.out.println("origin pods deleted");
 	}
 }

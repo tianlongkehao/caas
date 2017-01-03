@@ -319,6 +319,24 @@ public class KubernetesClientService {
 		return Double.valueOf(cpu);
 	}
 	
+	
+    /**
+     * Description:
+     * computeMemoryOut
+     * @param val Map<String, String>
+     * @return memVal String
+     * @see
+     */
+    public String computeMemoryOut(String mem) {
+        if (mem.contains("Mi")) {
+            Float a1 = Float.valueOf(mem.replace("Mi", "")) / 1024;
+            return a1.toString();
+        } 
+        else {
+            return mem.replace("G", "").replace("i", "");
+        }
+    }
+	
 	public ReplicationController updateResource(String name,Double cpu,String ram){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta =  replicationController.getMetadata();
