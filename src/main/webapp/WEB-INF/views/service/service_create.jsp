@@ -139,8 +139,11 @@
 											</li>
 											<!-- 监控设置 -->
 											<li id="start_monitor"><span class="ve_top">监控设置：</span>
-												<span> <input type="checkbox" id="monitorStatus">
-													<label for="monitorStatus"><font color="blue">Pinpoint监控</font></label>
+												<span> <c:if test="${monitor==0 }">
+														<input type="checkbox" id="monitorStatus">
+													</c:if> <c:if test="${monitor==1 }">
+														<input type="checkbox" id="monitorStatus" checked="1">
+													</c:if> <label for="monitorStatus"><font color="blue">Pinpoint监控</font></label>
 													<input type="hidden" id="monitor" name="monitor" value="">
 											</span></li>
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font

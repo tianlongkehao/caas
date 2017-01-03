@@ -101,9 +101,9 @@ $(document).ready(function(){
 	    }
 	    //监控设置
 	    if($("#monitorStatus").prop("checked")==true){
-	    	$("#monitor").val("Pinpoint");
+	    	$("#monitor").val("1");
 	    } else {
-	    	$("#monitor").val(null);
+	    	$("#monitor").val("0");
 	    }
 	    //服务路径的判断
 	    var servicePath = $("#webPath").val();
@@ -720,7 +720,7 @@ $(document).ready(function(){
 //			$("#value_service").val($("#serviceName").val());
 //		}
 //	})
-	$("#monitorStatus").prop("checked","checked");
+//	$("#monitorStatus").prop("checked","checked");
 });
 
 //单击导入模板，加载模板数据

@@ -60,7 +60,6 @@ import com.bonc.epm.paas.entity.CiCodeCredential;
 import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.CiRecord;
-import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.HookAndImages;
 import com.bonc.epm.paas.entity.Image;
@@ -181,12 +180,7 @@ public class CiController {
      */
     @Autowired
     private SheraClientService sheraClientService;
-    
-    /**
-     * commonOperationLogDao接口
-     */
-    @Autowired
-    private CommonOperationLogDao commonOperationLogDao;
+
     /**
      * templateController控制器
      */

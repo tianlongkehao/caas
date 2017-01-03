@@ -420,6 +420,7 @@ public class DockerClientService {
 		    boolean isRemove=true;
 		    if (null != image) {
 		        dockerClient.removeImageCmd(imageName+":"+imageVersion).withForce(true).exec();
+		        // 如果 上传的镜像和重新打tag后的一样，则不用再移除
 		        if (imageName.equals(image.getName()) && imageVersion.equals(image.getVersion())) {
 		            isRemove=false;
 		        } else {

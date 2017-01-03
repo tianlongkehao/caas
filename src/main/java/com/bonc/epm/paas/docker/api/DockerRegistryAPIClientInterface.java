@@ -14,8 +14,8 @@ package com.bonc.epm.paas.docker.api;
 import javax.ws.rs.core.MultivaluedMap;
 
 import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
+import com.bonc.epm.paas.docker.exception.ErrorList;
 import com.bonc.epm.paas.docker.model.Images;
-import com.bonc.epm.paas.docker.model.Manifest;
 import com.bonc.epm.paas.docker.model.Tags;
 
 /**
@@ -34,5 +34,17 @@ public interface DockerRegistryAPIClientInterface {
     
     public MultivaluedMap<String, Object> getManifestofImage(String name,String reference) throws DokcerRegistryClientException;
     
-    public void deleteManifestofImage(String name,String reference) throws DokcerRegistryClientException;
+    /**
+     * 
+     * Description:
+     * 删除远程仓库中镜像的清单信息
+     * 成功：无返回信息
+     * 失败：ErrorList类型
+     * @param name 
+     * @param reference 
+     * @return ErrorList errorList
+     * @throws DokcerRegistryClientException 
+     * @see
+     */
+    public ErrorList deleteManifestofImage(String name,String reference) throws DokcerRegistryClientException;
 }

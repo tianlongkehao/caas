@@ -22,7 +22,9 @@ import com.bonc.epm.paas.SpringApplicationContext;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.controller.CephController;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserVisitingLogDao;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserVisitingLog;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
@@ -73,6 +75,12 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      */
     @Autowired
     private UserDao userDao;
+    
+    /**
+     * userVisitingLogDao
+     */
+    @Autowired
+    private UserVisitingLogDao userVisitingLogDao;
     /**
      * resManUrl
      */
@@ -86,6 +94,12 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
     
     @Override   
     public boolean onSuccess(HttpServletRequest request, HttpServletResponse response, String loginId) {
+        //添加访问日志
+        String hostIp = request.getRemoteAddr();
+        String headerData = request.getHeader("User-agent");
+        UserVisitingLog userVisitingLog = new UserVisitingLog();
+        boolean isLegal = false;
+        
         SpringApplicationContext.CONTEXT.getAutowireCapableBeanFactory().autowireBean(this);
         if (configProps.getEnable()) {
             if ((null != request) && (null != loginId) && (loginId.trim().length() > 0)) {
@@ -118,10 +132,10 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                 if (attributes.get("tenantAdmin") != null) {
                     tenantAdmin = attributes.get("tenantAdmin").toString();
                 }
-                
+                User user = new User();
                 try {
                     // 同步统一平台租户用户到本地
-                    User user = fillUserInfo(assertion, namespace);
+                    user = fillUserInfo(assertion, namespace);
                     user.setVol_size(200); // 目前先使用默认值
                     // 统一平台的userId
                     if (null != attributes.get("userId")) {
@@ -137,6 +151,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                     userDao.save(user);
                     CurrentUserUtils.getInstance().setUser(user);
                     CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
+                    isLegal = true;
                     //request.getSession().setAttribute("cur_user", user);
                     //request.getSession().setAttribute("cas_enable", configProps.getEnable()); 
                     //request.getSession().setAttribute("ssoConfig", configProps);
@@ -145,6 +160,8 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                     LOG.error(e.getMessage());
                     throw new ServiceException();
                 }
+                userVisitingLog = userVisitingLog.addUserVisitingLog(user, hostIp, headerData, isLegal);
+                userVisitingLogDao.save(userVisitingLog);
                 return true;
             }
             return false;

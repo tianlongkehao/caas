@@ -26,7 +26,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserVisitingLogDao;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserVisitingLog;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
@@ -46,7 +48,7 @@ public class IndexController {
      * IndexController 日志实例
      */
     private static final Logger LOG = LoggerFactory.getLogger(IndexController.class);
-    
+
     /**
      *  configProps 接口
      */
@@ -58,6 +60,13 @@ public class IndexController {
      */
     @Autowired
 	private UserDao userDao;
+    
+    /**
+     * 记录访问日志dao接口
+     */
+    @Autowired
+    private UserVisitingLogDao userVisitingLogDao;
+    
     @Value("${login.showAuthCode}")
     private boolean showAuthCode;	
     /**
@@ -159,6 +168,8 @@ public class IndexController {
      */
     @RequestMapping(value="signin",method=RequestMethod.POST)
 	public String login(User user, RedirectAttributes redirect,String authCode,HttpServletRequest request){
+        String hostIp = request.getRemoteAddr();
+        String headerData = request.getHeader("User-agent");
         try {
             if (showAuthCode) {
                 String judgeCode = (String)request.getSession().getAttribute("strCode");
@@ -172,12 +183,29 @@ public class IndexController {
             LOG.debug(e.getMessage());
             redirect.addFlashAttribute("err_code", e.getMessage());
             redirect.addFlashAttribute("user", user);
+            addUserVisitingLog(user, hostIp, headerData, false);
             return "redirect:login";
         }
         CurrentUserUtils.getInstance().setUser(user);
         CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
         redirect.addFlashAttribute("user", user);
+        addUserVisitingLog(user, hostIp, headerData, true);
         return "redirect:workbench";
+    }
+    
+    /**
+     * Description: <br>
+     * 添加访问记录日志
+     * @param user user
+     * @param hostIp ip
+     * @param browser 浏览器
+     * @param isLegal 是否合法
+     * @see
+     */
+    public void addUserVisitingLog (User user,String hostIp,String headerData,boolean isLegal) {
+        UserVisitingLog userVisitingLog = new UserVisitingLog();
+        userVisitingLog = userVisitingLog.addUserVisitingLog(user, hostIp, headerData, isLegal);
+        userVisitingLogDao.save(userVisitingLog);
     }
     
     /**
