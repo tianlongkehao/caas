@@ -90,7 +90,7 @@ $(document).ready(function () {
     }
     
     function checkCiAdd(){
-    	//var imgNameFirst = $("#imgNameFirst").val().trim();
+    	var imgNameFirst = $("#imgNameFirst").val().trim();
         var imgNameLast = $("#imgNameLast").val().trim();
         var imgNameVersion = $("#imgNameVersion").val().trim();
         var projectName = $('#projectName').val().trim();
@@ -149,7 +149,7 @@ $(document).ready(function () {
     		async:false,
     		type: "POST",
     		data:{
-    				/*"imgNameFirst":imgNameFirst,*/
+    				"imgNameFirst":imgNameFirst,
     				"imgNameLast":imgNameLast,
     				"imgNameVersion":imgNameVersion
     		},

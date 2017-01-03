@@ -19,7 +19,20 @@ package com.bonc.epm.paas.shera.model;
  */
 
 public class CodeManager {
+    
+    private Integer choice;
+    
     private GitConfig gitConfig;
+    
+    private SvnConfig svnConfig;
+
+    public Integer getChoice() {
+        return choice;
+    }
+
+    public void setChoice(Integer choice) {
+        this.choice = choice;
+    }
 
     public GitConfig getGitConfig() {
         return gitConfig;
@@ -28,4 +41,13 @@ public class CodeManager {
     public void setGitConfig(GitConfig gitConfig) {
         this.gitConfig = gitConfig;
     }
+
+    public SvnConfig getSvnConfig() {
+        return svnConfig;
+    }
+
+    public void setSvnConfig(SvnConfig svnConfig) {
+        this.svnConfig = svnConfig;
+    }
+    
 }
