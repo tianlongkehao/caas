@@ -19,12 +19,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserAndSheraDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.Resource;
 import com.bonc.epm.paas.entity.Restriction;
 import com.bonc.epm.paas.entity.Service;
@@ -117,6 +121,13 @@ public class UserController {
     @Autowired
     private SheraClientService sheraClientService;
 
+    /**
+     * commonOperationLogDao接口
+     */
+    @Autowired
+    private CommonOperationLogDao commonOperationLogDao;
+
+    
     /**
      * CEPH_KEY ${ceph.key} 
      */
@@ -287,6 +298,12 @@ public class UserController {
                 user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
                 user.setNamespace(CurrentUserUtils.getInstance().getUser().getNamespace());
                 userDao.save(user);
+                
+                //记录用户添加用户操作
+                String extraInfo="新增的用户名是："+user.getUserName()+"主要信息有：用户id:"+user.getId()+"用户姓名："+user.getUser_realname()+"用户工号："+user.getUser_employee_id();
+                CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
+                commonOperationLogDao.save(log);
+                
             }
             model.addAttribute("creatFlag", "200");
         } 
@@ -403,7 +420,18 @@ public class UserController {
             }
             user.setNamespace(userManage.getNamespace());
             user.setParent_id(userManage.getId());
+            
+            //获取修改前的user
+            User user1=userDao.findById(user.getId());
+            
             userDao.save(user);
+            
+            
+            //记录修改用户信息操作
+            String extraInfo="修改userName:"+user.getUserName()+"之前的信息有：：用户id:"+user1.getId()+"用户姓名："+user1.getUser_realname()+"用户工号："+user1.getUser_employee_id()+
+            		"  修改后的信息是：：用户id:"+user.getId()+"用户姓名："+user.getUser_realname()+"用户工号："+user.getUser_employee_id();
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
+            commonOperationLogDao.save(log);
         } 
         catch (KubernetesClientException e) {
             LOG.error("error message :-"+ e.getMessage());
@@ -472,7 +500,16 @@ public class UserController {
                 String[] idArr = ids.split(",");
                 for (int i = 0; i < idArr.length; i++) {
                     delUserService(Long.parseLong(idArr[i]));
+                    //获取删除前的user
+                    User user=userDao.findById(Long.parseLong(idArr[i]));
+                    
                     userDao.delete(Long.parseLong(idArr[i]));
+                    
+                    //记录用户删除用户操作
+                    String extraInfo="删除用户userName"+user.getUserName()+"的主要信息有：用户id:"+user.getId()+"用户姓名："+user.getUser_realname()+"用户工号："+user.getUser_employee_id();
+                    CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_DELETE);
+                    commonOperationLogDao.save(log);    
+                    
                 }
             }
             map.put("status", "200");
@@ -774,6 +811,9 @@ public class UserController {
     @RequestMapping(value = { "user/del/{id}" }, method = RequestMethod.GET)
 	public String userDel(Model model, @PathVariable long id) {
         userDao.delete(id);
+        
+       
+        
         LOG.debug("del userid======:" + id);
         return "redirect:/user";
     }
@@ -867,6 +907,7 @@ public class UserController {
         Map<String, Object> map = new HashMap<String, Object>();
         User user = updateUserInfo(id, email, company, user_cellphone, user_department,user_employee_id, user_phone);
         if (null != user) {
+        	
             map.put("status", "200");
         } 
         else {
@@ -1141,44 +1182,6 @@ public class UserController {
     /**
      * 
      * Description:
-     * computeMemoryOut
-     * @param val Map<String, String>
-     * @return memVal String
-     * @see
-     */
-    private String computeMemoryOut(Map<String, String> val) {
-        String memVal = val.get("memory");
-        if (memVal.contains("Mi")) {
-            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
-            return a1.toString();
-        } 
-        else {
-            return memVal.replace("Gi", "");
-        }
-    }
-    
-    /**
-     * 
-     * Description:
-     * computeCpuOut
-     * @param val Map<String, String> val
-     * @return cpuVal String
-     * @see
-     */
-    private String computeCpuOut(Map<String, String> val) {
-        String cpuVal = val.get("cpu");
-        if (cpuVal.contains("m")) {
-            Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
-            return a1.toString();
-        } 
-        else {
-            return cpuVal;
-        }
-    }
-    
-    /**
-     * 
-     * Description:
      * 获取用户的资源使用信息
      * @param model 
      * @param user 
@@ -1192,16 +1195,16 @@ public class UserController {
             
             Map<String, String> hard = quota.getStatus().getHard();
             model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
-            model.addAttribute("servMemoryNum", hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
+            model.addAttribute("servMemoryNum", kubernetesClientService.computeMemoryOut(hard.get("memory")));// 内存个数
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
             model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数
             
             Map<String, String> used = quota.getStatus().getUsed();
             ReplicationControllerList rcList = client.getAllReplicationControllers();
-            PodList podList = client.getAllPods();                   
-            model.addAttribute("usedCpuNum", Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
-            model.addAttribute("usedMemoryNum", Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
+            PodList podList = client.getAllPods();         
+            model.addAttribute("usedCpuNum", kubernetesClientService.transCpu(used.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
+            model.addAttribute("usedMemoryNum", kubernetesClientService.computeMemoryOut(used.get("memory")));// 已使用内存
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
             model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
             // model.addAttribute("usedControllerNum", usedControllerNum);

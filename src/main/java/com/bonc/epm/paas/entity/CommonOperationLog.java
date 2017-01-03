@@ -13,10 +13,13 @@ package com.bonc.epm.paas.entity;
 
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 /**
  * @author ke_wang
@@ -37,6 +40,8 @@ public class CommonOperationLog {
     /**
      * 额外信息
      */
+    @Lob
+	@Basic(fetch = FetchType.LAZY)
     private String extraInfo;
     /**
      * 类别
