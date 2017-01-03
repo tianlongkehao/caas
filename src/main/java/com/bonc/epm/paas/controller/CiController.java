@@ -60,6 +60,10 @@ import com.bonc.epm.paas.entity.CiCodeCredential;
 import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.CiRecord;
+
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.HookAndImages;
 import com.bonc.epm.paas.entity.Image;
@@ -186,6 +190,12 @@ public class CiController {
      */
     @Autowired
     private TemplateController templateController;
+    /**
+     * commonOperationLogDao接口
+     */
+    @Autowired
+    private CommonOperationLogDao commonOperationLogDao;
+
     
     /**
      * 进入构建主页面
@@ -1649,7 +1659,8 @@ public class CiController {
         
         //记录用户创建DockerFile操作
         String extraInfo="新增templateName:"+templateName+"包含的内容: "+dockerFile;
-        templateController.saveOprationLog(templateName, extraInfo,  CommConstant.DOCKFILE_TEMPLATE, CommConstant.OPERATION_TYPE_CREATED);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(templateName, extraInfo, CommConstant.DOCKFILE_TEMPLATE, CommConstant.OPERATION_TYPE_CREATED);
+        commonOperationLogDao.save(log);
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
