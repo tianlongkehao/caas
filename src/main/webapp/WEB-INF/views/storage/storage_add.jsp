@@ -62,7 +62,7 @@
 											<input type="radio" name="storageSize" class="storageSize"
 												value="102400">100<span class="s-unit">G</span> <input type="radio"
 												name="storageSize" class="storageSize" id="defVolNum">
-											<input id="defVol" type="number"
+											<input id="defVol" type="number" 
 												placeholder="自定义大小"><span class="is-unit">G</span> <span
 												style="color: #1E90FF; padding-left: 15px">总量:<span
 												id="totalVol">${cur_user.vol_size}</span>G
