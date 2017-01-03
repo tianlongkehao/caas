@@ -1141,44 +1141,6 @@ public class UserController {
     /**
      * 
      * Description:
-     * computeMemoryOut
-     * @param val Map<String, String>
-     * @return memVal String
-     * @see
-     */
-    private String computeMemoryOut(Map<String, String> val) {
-        String memVal = val.get("memory");
-        if (memVal.contains("Mi")) {
-            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
-            return a1.toString();
-        } 
-        else {
-            return memVal.replace("Gi", "");
-        }
-    }
-    
-    /**
-     * 
-     * Description:
-     * computeCpuOut
-     * @param val Map<String, String> val
-     * @return cpuVal String
-     * @see
-     */
-    private String computeCpuOut(Map<String, String> val) {
-        String cpuVal = val.get("cpu");
-        if (cpuVal.contains("m")) {
-            Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
-            return a1.toString();
-        } 
-        else {
-            return cpuVal;
-        }
-    }
-    
-    /**
-     * 
-     * Description:
      * 获取用户的资源使用信息
      * @param model 
      * @param user 
@@ -1192,16 +1154,16 @@ public class UserController {
             
             Map<String, String> hard = quota.getStatus().getHard();
             model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
-            model.addAttribute("servMemoryNum", hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
+            model.addAttribute("servMemoryNum", kubernetesClientService.computeMemoryOut(hard.get("memory")));// 内存个数
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
             model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数
             
             Map<String, String> used = quota.getStatus().getUsed();
             ReplicationControllerList rcList = client.getAllReplicationControllers();
-            PodList podList = client.getAllPods();                   
-            model.addAttribute("usedCpuNum", Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
-            model.addAttribute("usedMemoryNum", Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
+            PodList podList = client.getAllPods();         
+            model.addAttribute("usedCpuNum", kubernetesClientService.transCpu(used.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
+            model.addAttribute("usedMemoryNum", kubernetesClientService.computeMemoryOut(used.get("memory")));// 已使用内存
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
             model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
             // model.addAttribute("usedControllerNum", usedControllerNum);

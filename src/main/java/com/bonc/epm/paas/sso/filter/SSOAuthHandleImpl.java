@@ -136,7 +136,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                 try {
                     // 同步统一平台租户用户到本地
                     user = fillUserInfo(assertion, namespace);
-                    user.setVol_size(200); // 目前先使用默认值
+                    user.setImage_count(200);; // 目前先使用默认值
                     // 统一平台的userId
                     if (null != attributes.get("userId")) {
                          //是租户而且不是管理员
@@ -367,21 +367,16 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             if (isCreate) { // 是否新建quota
                 openQuota = client.createResourceQuota(openQuota); // 创建quota
                 if (openQuota != null) {
-                    LOG.info("create quota:" + JSON.toJSONString(openQuota));
+                    LOG.info("for namespace:-"+namespace+" create quota:" + JSON.toJSONString(openQuota));
                 } 
                 else {
-                    LOG.info("create quota failed: namespace=" + namespace + "hard=" + openMap.toString());
+                    LOG.info("for namespace:-"+namespace+" create quota failed: namespace=" + namespace + "hard=" + openMap.toString());
                 }
             } 
-            else {
-                Map<String, String> map = currentQuota.getSpec().getHard();
-                Integer intCurCpu = Integer.parseInt(map.get("cpu"));
-                Integer intCurMem = Integer.parseInt(map.get("memory").replace("Gi", "").replace("G", ""));
-                Integer intOpenCpu = Integer.parseInt(openCpu);
-                Integer intOpenMem = Integer.parseInt(openMem);
-                // 判断资源是否变化
-                if ((intOpenCpu != intCurCpu) || (intOpenMem != intCurMem)) {
-                    client.updateResourceQuota(namespace, openQuota);
+            else { // 直接更新租户的quota 不用判断资源是否更新过
+                currentQuota = client.updateResourceQuota(namespace, openQuota);
+                if (null != currentQuota) {
+                    LOG.info("for namespace:-"+namespace+" update quota:"+JSON.toJSONString(currentQuota));
                 }
             }
         }
