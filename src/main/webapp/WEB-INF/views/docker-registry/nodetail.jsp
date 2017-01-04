@@ -23,8 +23,9 @@
                     </ol>
                 </div>
                 <div class="contentMain">
-                		<label>镜像不存在，可能已经被创建者删除！</label>
-
+                    <label>镜像不存在，可能已经被创建者删除！</label>
+                    <img src="<%=path%>/images/noimage.png">
+                	
                 </div>
             </div>
         </article>
