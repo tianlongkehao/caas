@@ -1,6 +1,7 @@
 
 package com.bonc.epm.paas.sso.filter;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,8 +23,10 @@ import com.bonc.epm.paas.SpringApplicationContext;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.controller.CephController;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.dao.UserVisitingLogDao;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.entity.UserVisitingLog;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
@@ -75,6 +78,12 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      */
     @Autowired
     private UserDao userDao;
+    
+    /**
+     * userDao
+     */
+    @Autowired
+    private UserResourceDao userResourceDao;
     
     /**
      * userVisitingLogDao
@@ -133,22 +142,26 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                     tenantAdmin = attributes.get("tenantAdmin").toString();
                 }
                 User user = new User();
+                UserResource userResource = new UserResource();
                 try {
                     // 同步统一平台租户用户到本地
                     user = fillUserInfo(assertion, namespace);
-                    user.setImage_count(200);; // 目前先使用默认值
+                    //user.setImage_count(200);; // 目前先使用默认值
                     // 统一平台的userId
                     if (null != attributes.get("userId")) {
                          //是租户而且不是管理员
                         if ("1".equals(tenantAdmin) && 
                                 ((!"1".equals(attributes.get("userId").toString().trim())) || (!"admin".equals(attributes.get("loginId").toString().trim())))) {
                             if (createNamespace(namespace)) { // 创建命名空间
-                                createQuota(user,tenantId, namespace); // 创建资源
+                                createQuota(user,userResource,tenantId, namespace); // 创建资源
                                 createCeph(namespace); // 创建ceph
                             }
                         }
                     }
                     userDao.save(user);
+                    userResource.setImage_count(200);
+                    userResource.setUserId(user.getId());
+                    userResourceDao.save(userResource);
                     CurrentUserUtils.getInstance().setUser(user);
                     CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
                     isLegal = true;
@@ -283,7 +296,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      * @param namespace  
      * @exception Exception 
      */
-    private void createQuota(User user,String tenantId, String namespace) throws Exception{
+    private void createQuota(User user,UserResource userResource,String tenantId, String namespace) throws Exception{
         String openCpu = "0";
         String openMem = "0";
         try {
@@ -312,12 +325,12 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                                 openMem = (String) tmp.get("prop_value"); 
                             }
                             else if (((String)tmp.get("property_code")).trim().equals("Storage")){
-                                user.setVol_size(Long.parseLong((String)tmp.get("prop_value")));
+                                userResource.setVol_size(Long.parseLong((String)tmp.get("prop_value")));
                             }
                         }
                     }
-                    LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem +",volume:"+user.getVol_size()+"}");
-                    createResourceQuota(namespace, openCpu, openMem, user.getVol_size());
+                    LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem +",volume:"+userResource.getVol_size()+"}");
+                    createResourceQuota(namespace, openCpu, openMem,userResource);
                 }
             }
         }
@@ -334,7 +347,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      * @param openCpu 
      * @param openMem  
      */
-    private void createResourceQuota(String namespace, String openCpu, String openMem, Long volSize) {
+    private void createResourceQuota(String namespace, String openCpu, String openMem,UserResource userResource) {
         // 是否创建resourceQuota
         boolean isCreate = false;
         // KUBERNETES是否可以连接
@@ -361,11 +374,14 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             Map<String, String> openMap = new HashMap<String, String>();
             openMap.put("memory", openMem + "G");// 内存（G）
             openMap.put("cpu", Double.valueOf(openCpu)/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量(个)
-            openMap.put("persistentvolumeclaims", volSize + "");// 卷组数量
+            openMap.put("persistentvolumeclaims", userResource.getVol_size() + "");// 卷组数量
             
+            userResource.setCpu(Double.valueOf(openCpu)/Double.valueOf(RATIO_MEMTOCPU));
+            userResource.setMemory(Long.parseLong(openMem));
             ResourceQuota openQuota = kubernetesClientService.generateSimpleResourceQuota(namespace, openMap);
             if (isCreate) { // 是否新建quota
                 openQuota = client.createResourceQuota(openQuota); // 创建quota
+                userResource.setCreateDate(new Date());
                 if (openQuota != null) {
                     LOG.info("for namespace:-"+namespace+" create quota:" + JSON.toJSONString(openQuota));
                 } 
@@ -375,6 +391,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             } 
             else { // 直接更新租户的quota 不用判断资源是否更新过
                 currentQuota = client.updateResourceQuota(namespace, openQuota);
+                userResource.setUpdateDate(new Date());
                 if (null != currentQuota) {
                     LOG.info("for namespace:-"+namespace+" update quota:"+JSON.toJSONString(currentQuota));
                 }
