@@ -418,13 +418,13 @@ $(function(){
 
 	// 镜像备注编辑
 	$("#desEdit").on('click', function(){
-		$(".list-content").addClass("hide");
+		$("#showContent").addClass("hide");
 		$("#contentArea").removeClass("hide");
-		$(this).addClass("hide");
 	});
 
+	//取消保存
 	$("#desEditCancel").on("click", function () {
-		$(".list-content").removeClass("hide");
+		$("#showContent").removeClass("hide");
 		$("#contentArea").addClass("hide");
 		$("#desEdit").removeClass("hide");
 	});
@@ -436,13 +436,13 @@ $(function(){
 		var url = ""+ctx+"/registry/detail/summary";
 		$.post(url, {'summary':summary,'imageId':imageId}, function(data){
 			if(data == 'success') {
+				$("#showContent").text(summary);
+				$("#showContent").removeClass("hide");
+				$("#contentArea").addClass("hide");
+				$("#desEdit").removeClass("hide");
 				layer.msg( "保存成功。", {
 					icon: 1
 				});
-				$(".list-content").text(summary);
-				$(".list-content").removeClass("hide");
-				$("#contentArea").addClass("hide");
-				$("#desEdit").removeClass("hide");
 			}
 		});
 	});
