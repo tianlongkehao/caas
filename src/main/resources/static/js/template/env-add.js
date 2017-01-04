@@ -32,26 +32,20 @@ $(document).ready(function(){
 	
 	//保存模板
 	$("#exportBtn").click(function(){
+		var templateName = $("#envTemplateName").val();
+		if (templateName == null || templateName == "") {
+			layer.tips('模板名称不能为空','#envTemplateName',{tips: [1, '#3595CC']});
+			$('#envTemplateName').focus();
+			return;
+		}else if (templateName.length > 20) {
+			layer.tips('模板名称字符长度不能超过20','#envTemplateName',{tips: [1, '#3595CC']});
+			$('#envTemplateName').focus();
+			return;
+		}
 		if (!saveEnvVariable()) {
 			return;
 		} else {
-			layer.open({
-			 	type:1,
-		        title: '保存为模板',
-		        content: $("#environment-template"),
-		        btn: ['保存', '取消'],
-		        scrollbar: false,
-		        yes: function(index, layero){ 
-		        	var templateName = $("#envTemplateName").val();
-		        	if (templateName == null || templateName == "") {
-		        		layer.tips('模板名称不能为空','#envTemplateName',{tips: [1, '#3595CC']});
-						$('#envTemplateName').focus();
-						return;
-		        	}else if (templateName.length > 20) {
-		        		layer.tips('模板名称字符长度不能超过20','#envTemplateName',{tips: [1, '#3595CC']});
-						$('#envTemplateName').focus();
-						return;
-		        	}
+
 		        	var envVariable = $('#envVariable').val();
 		        	$.ajax({
 						url:ctx+"/template/saveEnvTemplate.do",
@@ -60,7 +54,7 @@ $(document).ready(function(){
 						success:function(data){
 							data = eval("(" + data + ")");
 							if(data.status=="400"){
-								layer.msg("环境变量模板名称重复",{
+								layer.alert("环境变量模板名称重复",{
 									  time: 0 //不自动关闭
 									  ,btn: ['覆盖', '重命名']
 									  ,yes: function(index2){
@@ -72,8 +66,6 @@ $(document).ready(function(){
 												data = eval("(" + data + ")");
 												if (data.status == "200") {
 													layer.msg("环境变量模板保存成功",{icon: 6});
-													layer.close(index2);
-													layer.close(index);
 													setTimeout('window.location.href = ""+ctx+"/template/env"',1500);
 												}
 											}	
@@ -83,13 +75,11 @@ $(document).ready(function(){
 									});
 							}else if (data.status == "200") {
 								layer.msg("环境变量模板保存成功",{icon: 6});
-								layer.close(index);
 								setTimeout('window.location.href = ""+ctx+"/template/env"',1500);
 							}
 						}	
 		        	});
-		        }
-			})
+		   
 		}
 	});
 
