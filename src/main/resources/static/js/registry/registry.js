@@ -381,7 +381,7 @@ function delImages(){
     	type: 1,
         title: '批量删除条件',
         content: $("#delItemcfg"),
-        area: ['880px','690px'],
+        area: ['880px','600px'],
         btn: ['确定删除', '取消'],
         yes: function(index, layero){ 
         	obj = document.getElementsByName("ids");
