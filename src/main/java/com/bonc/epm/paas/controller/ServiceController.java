@@ -62,7 +62,6 @@ import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
-import com.bonc.epm.paas.entity.PodTopo;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.ServiceAndStorage;
@@ -733,82 +732,75 @@ public class ServiceController {
         return JSON.toJSONString(map);
     }
 	
-    /**
-     * Description: <br>
-     * create container and services from dockerfile
-     * @param id 
-     * @return String
-     */
-    @RequestMapping("service/createContainer.do")
+	/**
+	 * Description: <br>
+	 * 响应服务的开始和debug按钮
+	 * 
+	 * @param id
+	 * @return String
+	 */
+	@RequestMapping("service/createContainer.do")
 	@ResponseBody
-	public String CreateContainer(long id,boolean isDebug) {
-        Service service = serviceDao.findOne(id);
-        delPods(service.getServiceName());
-        List<EnvVariable> envVariables = envVariableDao.findByServiceId(id);
-        List<PortConfig> portConfigs = portConfigDao.findByServiceId(service.getId()); // 获取服务对应的端口映射
-        Map<String, Object> map = new HashMap<String, Object>();
+	public String CreateContainer(long id, boolean isDebug) {
+		Service service = serviceDao.findOne(id);
+		delPods(service.getServiceName());
+		List<EnvVariable> envVariables = envVariableDao.findByServiceId(id);
+		List<PortConfig> portConfigs = portConfigDao.findByServiceId(service.getId()); // 获取服务对应的端口映射
+		Map<String, Object> map = new HashMap<String, Object>();
 		// 使用k8s管理服务
-        String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(),
+		String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(),
 				service.getImgVersion());
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        ReplicationController controller = null;
-        com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
-        try {
-            controller = client.getReplicationController(service.getServiceName());
-        } 
-        catch (KubernetesClientException e) {
-            controller = null;
-        }
-        try {
-            k8sService = client.getService(service.getServiceName());
-        } 
-        catch (KubernetesClientException e) {
-            k8sService = null;
-        }
-        try {
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		ReplicationController controller = null;
+		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+
+		/***************************************
+		 * 先查询svc是否已经创建，如果没有找到则创建一个新的svc
+		 ***************************************/
+		try {
+			// 先查询svc是否已经创建
+			k8sService = client.getService(service.getServiceName());
+		} catch (KubernetesClientException e) {
+			k8sService = null;
+		}
+		// 取不到svc时候创建svc
+		if (k8sService == null) {
+			try {
+				k8sService = kubernetesClientService.generateService(service.getServiceName(), portConfigs,
+						service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
+						service.getSessionAffinity(), service.getNodeIpAffinity());
+				k8sService = client.createService(k8sService);
+			} catch (KubernetesClientException e) {
+				e.printStackTrace();
+				map.put("status", "500");
+				map.put("msg", e.getStatus().getMessage());
+				LOG.error("create service error:" + e.getStatus().getMessage());
+				return JSON.toJSONString(map);
+			}
+		}
+		// svc依然为null的时候返回500
+		if (k8sService == null) {
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		/*************************************
+		 * 先查询rc是否已经创建，如果没有找到则创建一个新的rc
+		 *************************************/
+		try {
+			// 先查询rc是否已经创建
+			controller = client.getReplicationController(service.getServiceName());
+		} catch (KubernetesClientException e) {
+			controller = null;
+		}
+		try {
 			// 如果没有则新增
-            if (controller == null) {
-            	List<String> command = new ArrayList<String>();
-            	List<String> args = new ArrayList<String>();
-            	// 初始化自定义启动命令
-            	String startCommand = service.getStartCommand().trim();
-            	//debug模式下
-            	if (isDebug) {
-            		command.add("/debug.sh");
-            		if (StringUtils.isBlank(startCommand)) {
-						startCommand = getBaseImageStartCommand(service.getImgName(), service.getImgVersion());
-					}
-            	}
-            	if (StringUtils.isNotBlank(startCommand)) {
-            		String[] startCommandArray = startCommand.replaceAll("\\s+", " ").replaceAll("/debug.sh", "").trim().split(" ");
-            		for (String item : startCommandArray) {
-            			if (CollectionUtils.isEmpty(command)) {
-            				command.add(item);
-            				continue;
-            			}
-            			args.add(item);
-            		}
-            	} else {
-            		
-				}
-            	controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
-            			service.getInstanceNum(),service.getInitialDelay(),service.getTimeoutDetction(),service.getPeriodDetction(),
-            			registryImgName, portConfigs, service.getCpuNum(), service.getRam(),service.getProxyZone(),
-            			service.getServicePath(),service.getProxyPath(),service.getCheckPath(),envVariables,command,args);
-				// 给controller设置卷组挂载的信息
-            	LOG.debug("给rc添加存储卷信息");
-            	if (service.getServiceType().equals("1")) {
-                    controller = this.setVolumeStorage(controller, service.getId());
-            	}
-                controller = client.createReplicationController(controller);
-            } else {
-            	List<com.bonc.epm.paas.kubernetes.model.Container> containers =  controller.getSpec().getTemplate().getSpec().getContainers();
-            	//设置启动命令
-            	List<String> command = new ArrayList<String>();
-            	List<String> args = new ArrayList<String>();
+			if (controller == null) {
+				List<String> command = new ArrayList<String>();
+				List<String> args = new ArrayList<String>();
 				// 初始化自定义启动命令
 				String startCommand = service.getStartCommand().trim();
-				//debug模式下
+				// debug模式下
 				if (isDebug) {
 					command.add("/debug.sh");
 					if (StringUtils.isBlank(startCommand)) {
@@ -816,7 +808,47 @@ public class ServiceController {
 					}
 				}
 				if (StringUtils.isNotBlank(startCommand)) {
-					String[] startCommandArray = startCommand.replaceAll("\\s+", " ").replaceAll("/debug.sh", "").trim().split(" ");
+					String[] startCommandArray = startCommand.replaceAll("\\s+", " ").replaceAll("/debug.sh", "").trim()
+							.split(" ");
+					for (String item : startCommandArray) {
+						if (CollectionUtils.isEmpty(command)) {
+							command.add(item);
+							continue;
+						}
+						args.add(item);
+					}
+				} else {
+
+				}
+				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
+						service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
+						service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
+						service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
+						service.getCheckPath(), envVariables, command, args);
+				// 给controller设置卷组挂载的信息
+				LOG.debug("给rc添加存储卷信息");
+				if (service.getServiceType().equals("1")) {
+					controller = this.setVolumeStorage(controller, service.getId());
+				}
+				controller = client.createReplicationController(controller);
+			} else {
+				List<com.bonc.epm.paas.kubernetes.model.Container> containers = controller.getSpec().getTemplate()
+						.getSpec().getContainers();
+				// 设置启动命令
+				List<String> command = new ArrayList<String>();
+				List<String> args = new ArrayList<String>();
+				// 初始化自定义启动命令
+				String startCommand = service.getStartCommand().trim();
+				// debug模式下
+				if (isDebug) {
+					command.add("/debug.sh");
+					if (StringUtils.isBlank(startCommand)) {
+						startCommand = getBaseImageStartCommand(service.getImgName(), service.getImgVersion());
+					}
+				}
+				if (StringUtils.isNotBlank(startCommand)) {
+					String[] startCommandArray = startCommand.replaceAll("\\s+", " ").replaceAll("/debug.sh", "").trim()
+							.split(" ");
 					for (String item : startCommandArray) {
 						if (CollectionUtils.isEmpty(command)) {
 							command.add(item);
@@ -825,60 +857,53 @@ public class ServiceController {
 						args.add(item);
 					}
 				}
-            	for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
-						container.setCommand(command);
-						container.setArgs(args);
+				for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
+					container.setCommand(command);
+					container.setArgs(args);
 				}
-            	//设置实例数量
-            	if (isDebug) {
-            		controller.getSpec().setReplicas(1);
+				// 设置实例数量
+				if (isDebug) {
+					controller.getSpec().setReplicas(1);
 				} else {
 					controller.getSpec().setReplicas(service.getInstanceNum());
 				}
-            	controller = client.updateReplicationController(service.getServiceName(), controller);
-            }
-            if (k8sService == null) {
-                k8sService = kubernetesClientService.generateService(service.getServiceName(),portConfigs
-                        ,service.getProxyZone(),service.getServicePath(),service.getProxyPath()
-                        ,service.getSessionAffinity(),service.getNodeIpAffinity());
-                k8sService = client.createService(k8sService);
-            }
-            if (controller == null || k8sService == null) {
-                map.put("status", "500");
-            } else {
-                map.put("status", "200");
-                //保存service的信息
-                if (isDebug) {
-                	service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_DEBUG);
-				} else {
-					service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
-				}
-				Date currentDate = new Date();
-				User currentUser = CurrentUserUtils.getInstance().getUser();
-				service.setUpdateDate(currentDate);
-				service.setUpdateBy(currentUser.getId());
-				service = serviceDao.save(service);
-				// 保存服务操作信息
-				long operationType;
-				if (isDebug) {
-					operationType = ServiceConstant.OPERATION_TYPE_DEBUG;
-				} else {
-					operationType = ServiceConstant.OPERATION_TYPE_START;
-				}
-				serviceOperationLogDao.save(service.getServiceName(),
-						service.toString(), operationType);
+				controller = client.updateReplicationController(service.getServiceName(), controller);
+			}
+		} catch (KubernetesClientException e) {
+			e.printStackTrace();
+			map.put("status", "500");
+			map.put("msg", e.getStatus().getMessage());
+			LOG.error("create service error:" + e.getStatus().getMessage());
+			return JSON.toJSONString(map);
+		}
+		if (controller == null) {
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
 
-            }
-        }
-        catch (KubernetesClientException e) {
-            map.put("status", "500");
-            map.put("msg", e.getStatus().getMessage());
-            LOG.error("create service error:" + e.getStatus().getMessage());
-        }
+		// 保存service的信息
+		if (isDebug) {
+			service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_DEBUG);
+		} else {
+			service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
+		}
+		Date currentDate = new Date();
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		service.setUpdateDate(currentDate);
+		service.setUpdateBy(currentUser.getId());
+		service = serviceDao.save(service);
+		// 保存服务操作信息
+		long operationType;
+		if (isDebug) {
+			operationType = ServiceConstant.OPERATION_TYPE_DEBUG;
+		} else {
+			operationType = ServiceConstant.OPERATION_TYPE_START;
+		}
+		serviceOperationLogDao.save(service.getServiceName(), service.toString(), operationType);
 
-        return JSON.toJSONString(map);
-
-    }
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
     
     /**
      * Description: <br>
