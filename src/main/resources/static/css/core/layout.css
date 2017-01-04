@@ -1,6 +1,5 @@
 .header {
-    /* background: #fff; */
-    background: #e8504f;
+   /*  background: #e8504f; */
     height: 69px;
     width: 100%;
     z-index: 100;
@@ -16,7 +15,7 @@
 .navbar .navbar-header h2 {
     font-weight: 700;
     /* color:#e14344; */
-    color: #fff;
+    /* color: #fff; */
 }
 
 .navbar .navbar-info {
@@ -31,8 +30,8 @@
     margin-right: 30px;
     background-color: unset;
     border-color: unset;
-    /* color: #888888; */
-    color:#fff;
+    color: #888888;
+    /* color:#fff; */
     transition: .5s;
 }
 
@@ -116,9 +115,9 @@
     display: none;
 }
 
-.page-sidebar .nav-menu > .item-click {
+/* .page-sidebar .nav-menu > .item-click {
     background-color: #e8504f;
-}
+} */
 
 .page-sidebar .nav-menu > li > .nav-item-hover > li > a {
     display: block;
@@ -215,9 +214,9 @@
     text-align: center;
     color: #ff0000;
 }
-a i.fa-home{
+/* a i.fa-home{
 	color: #e8504f;
-}
+} */
 /*new */
 .sign-title{
 	background-color: #fff;
@@ -228,6 +227,6 @@ a i.fa-home{
 .sign-title h3{
 	line-height: 54px;
 }
-#nav1{
+/* #nav1{
 	color:#e8504f;
-}
+} */

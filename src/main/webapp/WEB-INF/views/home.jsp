@@ -5,8 +5,7 @@
 <html lang="zh-cn">
 <head>
     <title>BCM</title>
-   <%@include file="frame/dashboard-header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/layout.css">
+    <%@include file="frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/home.css">
 </head>
 <body>

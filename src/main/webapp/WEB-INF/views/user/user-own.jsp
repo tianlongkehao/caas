@@ -181,6 +181,12 @@
 	                                <button type="button" class="btn btn-primary" id="preferSave">保存</button>
 	                            </div>
 	                        </div>
+	                        <div class="setColor">
+	                        	<div>皮肤颜色：
+	                        		<i id="redColor" class="fa fa-circle" style="color:#e8504f;font-size:20px;cursor:pointer"></i>
+	                        		<i id="blueColor" class="fa fa-circle" style="color:#418ac7;font-size:20px;cursor:pointer"></i>
+	                        	</div>
+	                        </div>
 						</div>
 						
 					</div>

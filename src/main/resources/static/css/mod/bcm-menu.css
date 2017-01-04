@@ -9,13 +9,13 @@ nav.navbar-default{
     z-index: 95;
     min-height: 100%;
 	padding-top: 35px;
-	background-color:#fff;
+	/* background-color:#fff; */
 }
 .nav ul .nav-header{
 	padding-bottom: 20px;
 }
 .nav > li > a {
-    color: #e8504f;
+    /* color: #e8504f; */
     font-weight: 600;
     padding: 14px 20px 14px 25px;
 }
@@ -25,8 +25,8 @@ nav.navbar-default{
     
 }
 .nav > li.active {
-    border-left: 4px solid #e8504f;
-    background: #ffffff;
+    /* border-left: 4px solid #e8504f; */
+    /* background: #ffffff; */
     
 }
 .block {
@@ -67,16 +67,16 @@ nav.navbar-default{
 }
 .helpDoc input{
 	background-color: #fff;
-    color: #e8504f;
+    /* color: #e8504f; */
     font-weight: bolder;
     outline:none;
 }
 .helpDoc input:hover{
-	border-color: #e8504f;
+	/* border-color: #e8504f; */
 	outline:none;
 }
 .helpDoc input:visited{
-	border-color: #e8504f;
+	/* border-color: #e8504f; */
 	outline:none;
 }
 	

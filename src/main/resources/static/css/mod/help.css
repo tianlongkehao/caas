@@ -27,7 +27,7 @@
   background: #fff;
 }
 .book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
-    color: #e8504f;
+    /* color: #e8504f; */
     background: #fff;
     text-decoration: none;
 }

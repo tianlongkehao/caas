@@ -610,9 +610,9 @@ textarea.c-project-con{
     margin-top: -18px;
     border-top: 4px solid #dadada;
 }
-.tab-title.active{
+/* .tab-title.active{
 	border-top: 4px solid #e8504f;
-}
+} */
 .tab-title h5{
     font-size: 15px;
     line-height: 44px;

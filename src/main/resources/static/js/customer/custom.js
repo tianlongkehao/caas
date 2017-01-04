@@ -15,6 +15,30 @@ $(function(){
             $(".chkAll").prop('checked', $(this).is(":checked"));
         }
     });
+    //主色调设置
+    var skinColor = $("#skinColor").attr("href");
+    if(skinColor==""){
+    	var redHref = ctx +'/css/core/color-red.css';
+    	$("#skinColor").attr("href",redHref);
+    	
+    }
+    	//主色调为红色
+    	$("#redColor").click(function(){
+    		
+    			var redHref = ctx +'/css/core/color-red.css';
+            	$("#skinColor").attr("href",redHref);
+    		
+        	
+        });
+    	//主色调为蓝色
+        $("#blueColor").click(function(){
+        	
+        		var blueHref = ctx +'/css/core/color-blue.css';
+            	$("#skinColor").attr("href",blueHref);
+    		
+        	
+        });
+    
     
 });
 

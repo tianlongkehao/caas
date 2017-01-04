@@ -33,6 +33,7 @@ $(function(){
 
             $("#baseinfo").addClass("hide");
             $("#resourceinfo").addClass("hide");
+            $("#preferenceinfo").addClass("hide");
             $("#baseinfo").removeClass("active");
             $("#baseinfo_wrap").addClass("hide");
         }

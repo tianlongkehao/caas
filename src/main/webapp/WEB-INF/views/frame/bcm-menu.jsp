@@ -12,7 +12,7 @@
     <div class="navbar navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a href="javascript:void(0);">
+                <a href="<%=path %>/home">
                     <h2>BCM</h2>
                 </a>
             </div>
@@ -79,12 +79,12 @@
 					</div>
 
 				</li>
-				<li id="menu_bcm"><a href="<%=path %>/bcm/${cur_user.id }"> <i class="fa fa-tachometer fa-nav-icon"></i>
+				<li id="menu_bcm"><a href="<%=path %>/bcm/${cur_user.id }" class="first-a"> <i class="fa fa-tachometer fa-nav-icon"></i>
 						<span class="nav-label">总览</span>
 
 				</a></li>
-				<li id="menu_service"><a href="#"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/service-red.svg" /> <span
+				<li id="menu_service"><a href="#" class="first-a"> <img alt="image" class="tit-image"
+						src="<%=path%>/images/service.svg" /> <span
 						class="nav-label">服务</span> <span class="fa arrow"></span>
 				</a>
 					<ul class="nav nav-second-level">
@@ -92,8 +92,8 @@
 						<li id="li_storage"><a class="J_menuItem" href="<%=path %>/service/storage"><i class="fa fa-circle"></i>存储与备份</a></li>
 						<li id="li_import"><a class="J_menuItem" href="<%=path %>/service/import"><i class="fa fa-circle"></i>引入外部服务</a></li>
 					</ul></li>
-				<li id="menu_ci"><a href="#"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/factory_new-red.svg" /> <span
+				<li id="menu_ci"><a href="#" class="first-a"> <img alt="image" class="tit-image"
+						src="<%=path%>/images/factory_new.svg" /> <span
 						class="nav-label">构建</span> <span class="fa arrow"></span>
 				</a>
 					<ul class="nav nav-second-level">
@@ -102,8 +102,8 @@
 						<li id="li_shera"><a class="J_menuItem" href="<%=path %>/user/shera"><i class="fa fa-circle"></i>Shera管理</a></li>
 						</c:if>
 					</ul></li>
-				<li id="menu_registry"><a href="#"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/applist3-red.svg" /> <span
+				<li id="menu_registry"><a href="#" class="first-a"> <img alt="image" class="tit-image"
+						src="<%=path%>/images/applist3.svg" /> <span
 						class="nav-label">镜像</span> <span class="fa arrow"></span>
 				</a>
 					<ul class="nav nav-second-level">
@@ -113,8 +113,8 @@
 					</ul></li>
 				<c:if test="${!cas_enable}">
 					<c:if test="${cur_user.user_autority == 1}">
-						<li id="menu_user"><a href="#"> <img alt="image" class="tit-image"
-								src="<%=path%>/images/user-red.svg" /> <span class="nav-label">租户</span>
+						<li id="menu_user"><a href="#" class="first-a"> <img alt="image" class="tit-image"
+								src="<%=path%>/images/user.svg" /> <span class="nav-label">租户</span>
 								<span class="fa arrow"></span>
 						</a>
 							<ul class="nav nav-second-level">
@@ -123,7 +123,7 @@
 					</c:if>
 		        	<c:if test="${cur_user.user_autority == 2}">
 						<li id="menu_usermanage"><a href="#"> <img alt="image" class="tit-image"
-								src="<%=path%>/images/user-red.svg" /> <span class="nav-label">用户</span>
+								src="<%=path%>/images/user.svg" /> <span class="nav-label">用户</span>
 								<span class="fa arrow"></span>
 						</a>
 							<ul class="nav nav-second-level">
@@ -132,8 +132,8 @@
 							</ul></li>
 					</c:if>
 				</c:if>
-				<li id="menu_cluster"><a href="#"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/server-red.svg" /> <span class="nav-label">监控</span>
+				<li id="menu_cluster"><a href="#" class="first-a"> <img alt="image" class="tit-image"
+						src="<%=path%>/images/server.svg" /> <span class="nav-label">监控</span>
 						<span class="fa arrow"></span>
 				</a>
 					<ul class="nav nav-second-level">
@@ -144,8 +144,8 @@
 						<li id="li_management"><a class="J_menuItem" href="<%=path %>/cluster/management"><i class="fa fa-circle"></i>集群管理</a></li></c:if>
 						<li id="li_topo"><a class="J_menuItem" href="<%=path %>/cluster/topo"><i class="fa fa-circle"></i>集群拓扑</a></li>
 					</ul></li>
-				<li id="menu_template"><a href="#"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/tem-image-red.png" /> <span
+				<li id="menu_template"><a href="#" class="first-a"> <img alt="image" class="tit-image"
+						src="<%=path%>/images/tem-image.png" /> <span
 						class="nav-label">模板管理</span> <span class="fa arrow"></span>
 				</a>
 					<ul class="nav nav-second-level">
@@ -158,7 +158,7 @@
 				</a></li> --%>
 				
 			</ul>
-			<div class="helpDoc"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn btn-danger" value="新手入门"></a></div>
+			<div class="helpDoc"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn" value="新手入门"></a></div>
 		</div>
 	</nav>
 	

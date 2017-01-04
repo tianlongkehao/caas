@@ -22,9 +22,9 @@ li {
 a{
 	color: #676a6c;
 }
-a:hover{
+/* a:hover{
 	color: #e8504f;
-}
+} */
 a,
 a:hover,
 a:focus{
@@ -421,7 +421,7 @@ i.fa_btn_plus_gray {
     background-color: #ffffff;
     color: inherit;
     padding: 15px 20px 20px 20px;
-    border-color: #e8504f;
+    /* border-color: #e8504f; */
     -webkit-border-image: none;
     -o-border-image: none;
     border-image: none;
@@ -435,7 +435,7 @@ i.fa_btn_plus_gray {
     padding: 0;
     text-overflow: ellipsis;
     float: left;
-    color:#e8504f;
+    /* color:#e8504f; */
 }
 .ibox-tools {
     display: inline-block;
@@ -451,7 +451,7 @@ i.fa_btn_plus_gray {
 }
 .ibox-tools a:hover {
     cursor: pointer;
-    color: #e8504f;
+    /* color: #e8504f; */
 }
 .m-b-xs {
     margin-bottom: 5px;
@@ -534,9 +534,7 @@ table.dataTable thead .sorting:after {
 .ibox-tools{
 	font-size: 16px;
 }
-.li-active{
-	background-color:#dadada;
-}
+
 .fa-circle{
 	font-size: 10px;
     margin-left: 4px;

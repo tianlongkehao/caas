@@ -37,7 +37,7 @@
 				</div>
 				<div class="container" style="margin: 0px; width: 100%">
 					<div class="book row book-row">
-						<div class="book-summary col-md-3">
+						<div class="book-summary col-md-2">
 
 							<ul class="summary" id="book-tab" class="nav nav-tabs">
 
@@ -211,7 +211,7 @@
 
 
 
-						<div class="book-body col-md-9">
+						<div class="book-body col-md-10">
 							<div class="body-inner tab-content">
 
 								<div class="page-wrapper tab-pane fade in active"

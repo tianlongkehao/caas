@@ -30,7 +30,7 @@
 							<div class="col-sm-12">
 								<div class="ibox float-e-margins">
 									<div class="ibox-title">
-										<div class="tab-title active"><h5>
+										<div class=""><h5>
 											<i class="fa fa-map-marker" style="margin-right: 6px;"></i>用户管理
 										</h5></div>
 										<div class="ibox-tools">
