@@ -467,8 +467,8 @@ public class CiController {
             SheraAPIClientInterface client = sheraClientService.getClient();
             Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
                                                             ciCode.getCodeName(),ciCode.getCodeRefspec(),
-                                                                dockerFileContentEdit,ci.getDockerFileLocation(),ci.getImgNameLast(),
-                                                                    ciInvokeList,ciCodeCredential.getUserName(),ciCodeCredential.getType());
+                                                                dockerFileContentEdit,ci.getDockerFileLocation(),originCi.getImgNameFirst(),ci.getImgNameLast(),
+                                                                    ciInvokeList,ciCodeCredential.getUserName(),ciCodeCredential.getType(),ciCode.getCodeType());
             client.updateJob(job);
             //添加代码挂钩
             if (ciCode.getIsHookCode() == 1) {
@@ -679,7 +679,13 @@ public class CiController {
     @RequestMapping(value={"ci/uploadImage"},method=RequestMethod.GET)
 	public String addSource(Model model){
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        model.addAttribute("username", cuurentUser.getUserName());
+        String imageNameFirst = "";
+        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            imageNameFirst = cuurentUser.getNamespace() + "_" + cuurentUser.getUserName();
+        } else {
+            imageNameFirst = cuurentUser.getUserName();
+        }
+        model.addAttribute("username", imageNameFirst);
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_uploadImage.jsp";
     }
@@ -694,7 +700,13 @@ public class CiController {
     @RequestMapping(value={"ci/dockerfile"},method=RequestMethod.GET)
 	public String dockerfile(Model model){
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        model.addAttribute("username", cuurentUser.getUserName());
+        String imageNameFirst = "";
+        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            imageNameFirst = cuurentUser.getNamespace() + "_" + cuurentUser.getUserName();
+        } else {
+            imageNameFirst = cuurentUser.getUserName();
+        }
+        model.addAttribute("username", imageNameFirst);
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_dockerfile.jsp";
     }
@@ -710,7 +722,13 @@ public class CiController {
 	public String oo(Model model){
         User cuurentUser = CurrentUserUtils.getInstance().getUser();
         List<Image> images = this.findByBaseImages();
-        model.addAttribute("username", cuurentUser.getUserName());
+        String imageNameFirst = "";
+        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            imageNameFirst = cuurentUser.getNamespace() + "_" + cuurentUser.getUserName();
+        } else {
+            imageNameFirst = cuurentUser.getUserName();
+        }
+        model.addAttribute("username", imageNameFirst);
         model.addAttribute("menu_flag", "ci");
         model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
         model.addAttribute("baseImage", images);
@@ -822,7 +840,13 @@ public class CiController {
     public String addCodeCi(Ci ci,CiCode ciCode,String jsonData,String dockerFileContent){
             User cuurentUser = CurrentUserUtils.getInstance().getUser();
             ci.setCreateBy(cuurentUser.getId());
-            ci.setImgNameFirst(cuurentUser.getUserName());
+            String imageNameFirst = "";
+            if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+                imageNameFirst = cuurentUser.getNamespace() + "_" + cuurentUser.getUserName();
+            } else {
+                imageNameFirst = cuurentUser.getUserName();
+            }
+            ci.setImgNameFirst(imageNameFirst);
             ci.setCreateDate(new Date());
             ci.setType(CiConstant.TYPE_CODE);
             ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
@@ -848,8 +872,8 @@ public class CiController {
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
                     ciCode.getCodeName(),ciCode.getCodeRefspec(),
-                    dockerFileContent,ci.getDockerFileLocation(),ci.getImgNameLast(),
-                    ciInvokeList,ciCodeCredential.getUserName(),ciCodeCredential.getType());
+                    dockerFileContent,ci.getDockerFileLocation(),ci.getImgNameFirst(),ci.getImgNameLast(),
+                    ciInvokeList,ciCodeCredential.getUserName(),ciCodeCredential.getType(),ciCode.getCodeType());
                 client.createJob(job);
                 //添加代码挂钩
                 if (ciCode.getIsHookCode() == 1) {
@@ -998,22 +1022,16 @@ public class CiController {
 	 * @see MultipartFile
 	 */
     @RequestMapping("ci/addResourceImage.do")
-	public String addResourceImage(Image image , @RequestParam("sourceCode") MultipartFile sourceCode) {
+	public String addResourceImage(Image image , String imgNameFirst, @RequestParam("sourceCode") MultipartFile sourceCode) {
         User currentUser = CurrentUserUtils.getInstance().getUser();
-        image.setName(currentUser.getUserName() +"/" + image.getName());
+        image.setName(imgNameFirst +"/" + image.getName());
         image.setResourceName(sourceCode.getOriginalFilename());
         image.setCreateDate(new Date());
         image.setCreateBy(currentUser.getId());
         image.setIsDelete(CommConstant.TYPE_NO_VALUE);
         
         try {
-            String imagePath = "";
-            if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-                imagePath = CODE_TEMP_PATH +"/"+ image.getName()+currentUser.getNamespace() + "/" + image.getVersion();
-            } else {
-                imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
-            }
-            
+            String imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
             File file = new File(imagePath);
             if(!file.exists()) {
                 file.mkdirs();
@@ -1138,11 +1156,7 @@ public class CiController {
         ci.setType(CiConstant.TYPE_DOCKERFILE);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
         ci.setConstructionDate(new Date());
-        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+cuurentUser.getNamespace()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
-        } else {
-            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
-        }
+        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
         ci.setDockerFileLocation("/");
         try {
             File file = new File(ci.getCodeLocation());
@@ -1220,12 +1234,7 @@ public class CiController {
         ci.setType(CiConstant.TYPE_QUICK);
         ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
         ci.setConstructionDate(new Date());
-        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+cuurentUser.getNamespace()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
-        } else {
-            ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
-        }
-        
+        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
         ci.setDockerFileLocation("/");
         try {
             File file = new File(ci.getCodeLocation());
@@ -1676,12 +1685,10 @@ public class CiController {
      */
     @RequestMapping(value = {"ci/validciinfo.do"} , method = RequestMethod.POST)
     @ResponseBody
-    public String validCiInfo(Model model, String imgNameLast, String imgNameVersion) {
+    public String validCiInfo(Model model, String imgNameFirst,String imgNameLast, String imgNameVersion) {
         Map<String,Object> result = new HashMap<String, Object>();
-        String imgNameFirst = CurrentUserUtils.getInstance().getUser().getUserName();
         if (!StringUtils.isEmpty(imgNameFirst) && !StringUtils.isEmpty(imgNameLast) && !StringUtils.isEmpty(imgNameVersion)) {
             Image image = imageDao.findByNameAndVersion(imgNameFirst+"/"+imgNameLast, imgNameVersion);
-//            List<Ci> ciList = ciDao.findByImgNameFirstAndImgNameLastAndImgNameVersion(imgNameFirst,imgNameLast,imgNameVersion);
             if (!StringUtils.isEmpty(image)) {
                 result.put("status", "400");
             }
@@ -1700,9 +1707,9 @@ public class CiController {
      */
     @RequestMapping(value = {"ci/validimageinfo.do"} , method = RequestMethod.POST)
     @ResponseBody
-    public String validImageInfo(Model model, String name, String version) {
+    public String validImageInfo(Model model,String imgNameFirst, String name, String version) {
         Map<String,Object> result = new HashMap<String, Object>();
-        name = CurrentUserUtils.getInstance().getUser().getUserName()+"/"+name;
+        name =imgNameFirst + "/" + name;
         if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(version)) {
             Image image = imageDao.findByNameAndVersion(name, version);
             if (null != image) {
