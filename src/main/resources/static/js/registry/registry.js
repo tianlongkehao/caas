@@ -193,11 +193,11 @@ function findImages(){
 	                    		if (row.isDelete == 1 ) {
 	                    			if (row.currUserFavor == 0) {
 	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
-	                    						'<i class="fa fa-star-o star-style" style="color: #4280CB;margin-left:35px;"></i>'+
+	                    						'<i class="fa fa-star-o star-style" style="color: #4280CB;margin-left:55px;"></i>'+
 	                    					'</a>'
 	                    			} else {
 	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
-                									'<i class="fa fa-star star-style" style="color: #337ab7;margin-left:35px;"></i>'+
+                									'<i class="fa fa-star star-style" style="color: #337ab7;margin-left:55px;"></i>'+
                 								'</a>'
 	                    			}
 	                    		} else {
