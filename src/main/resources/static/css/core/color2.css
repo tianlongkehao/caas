@@ -1,0 +1,72 @@
+/* 蓝色 #3C7BCA 红色 #e8504f 背景circle蓝 #418ac7*/
+.modalCrealApp .steps-main .progre .radius_step.action {
+    border-bottom: 2px solid  #3C7BCA;
+    color:  #3C7BCA;
+}
+.btn-prim {
+    background:  #3C7BCA !important;
+    color: #fff !important;
+}
+.radius_step.action span {
+    background:  #3C7BCA;
+}
+.header {
+    /* background:  #3C7BCA; */
+    background: #fff;
+}
+.page-sidebar .nav-menu > .item-click {
+    background-color:  #3C7BCAf;
+}
+a i.fa-home{
+	color: #3C7BCA;
+}
+#nav1{
+	color: #3C7BCA;
+}
+
+
+a:hover{
+	color: #3C7BCA;
+}
+.ibox-content {
+    border-color: #3C7BCA;
+}
+.ibox-title h5 {
+    color: #3C7BCA;
+}
+.ibox-tools a:hover {
+    cursor: pointer;
+    color:  #3C7BCA;
+}
+
+.nav > li > a {
+    color:  #3C7BCA;
+}
+.nav > li.active {
+    border-left: 4px solid  #3C7BCA;
+}
+.helpDoc input{
+    color:  #3C7BCA;
+}
+.helpDoc input:hover{
+	border-color:  #3C7BCA;
+}
+.helpDoc input:visited{
+	border-color:  #3C7BCA;
+}
+/* ci */
+.tab-title.active{
+	border-top: 4px solid  #3C7BCA;
+}
+/* help */
+.book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
+    color:  #3C7BCA;
+}
+/* home */
+.span-active{
+	background-color:  #3C7BCA;
+}
+
+
+
+

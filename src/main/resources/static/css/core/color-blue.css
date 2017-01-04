@@ -1,45 +1,45 @@
-/* 蓝色 #3C7BCA 红色 #e8504f 背景circle蓝 #418ac7*/
+/* 蓝色 #3C7BCA 红色 #e8504f 背景circle蓝 #418ac7 #2e384a */
 .modalCrealApp .steps-main .progre .radius_step.action {
-    border-bottom: 2px solid #e8504f;
-    color: #e8504f;
+    border-bottom: 2px solid #2e384a;
+    color: #2e384a;
 }
 .btn-prim {
-    background: #e8504f !important;
+    background: #2e384a !important;
     color: #fff !important;
 }
 .radius_step.action span {
-    background: #e8504f;
+    background: #3C7BCA;
 }
 .header {
     /* background: #e8504f; */
     background: #fff;
 }
 .navbar .navbar-header h2 {
-    color:#e14344;
+    color:#3C7BCA;
 }
 .page-sidebar .nav-menu > .item-click {
-    background-color: #e8504f;
+    background-color: #2e384a;
 }
 a i.fa-home{
-	color: #e8504f;
+	color: #3C7BCA;
 }
 #nav1{
-	color:#e8504f;
+	color:#3C7BCA;
 }
 
 
 a:hover{
-	color: #e8504f;
+	color: #3C7BCA;
 }
 .ibox-content {
-    border-color: #e8504f;
+    border-color: #3C7BCA;
 }
 .ibox-title h5 {
-    color:#e8504f;
+    color:#3C7BCA;
 }
 .ibox-tools a:hover {
     cursor: pointer;
-    color: #e8504f;
+    color: #3C7BCA;
 }
 
 .nav > li > a {
@@ -47,43 +47,43 @@ a:hover{
 }
 .nav>li>a:focus, 
 .nav>li>a:hover {
-    background-color: #e88;
+    background-color: #425069;
 }
 .nav > li.active {
-    background-color: #e66;
+    background-color: #425069;
 }
 #side-menu li a:hover{
-	background-color: #e88;
+	background-color: #425069;
 }
 .li-active{
-	background-color:#e88;
+	background-color:#3C7BCA;
 }
 .helpDoc input{
-    color: #e8504f;
+    color: #3C7BCA;
 }
 .helpDoc input:hover{
-	border-color: #e8504f;
+	border-color: #3C7BCA;
 }
 .helpDoc input:visited{
-	border-color: #e8504f;
+	border-color: #3C7BCA;
 }
 /* ci */
 .tab-title.active{
-	border-top: 4px solid #e8504f;
+	border-top: 4px solid #2e384a;
 }
 /* help */
 .book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
-    color: #e8504f;
+    color: #2e384a;
 }
 /* home */
 .span-active{
-	background-color: #e8504f;
+	background-color: #2e384a;
 }
 nav.navbar-default{
-	background-color:#e8504f;
+	background-color:#2e384a;
 }
 .help-btn:hover{
-	background-color: #e66;
+	background-color: #3C7BCA;
 	color: #fff;
 }
 

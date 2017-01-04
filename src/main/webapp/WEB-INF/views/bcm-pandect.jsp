@@ -6,7 +6,6 @@
     <title>总览</title>
     <%@include file="frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-pandect.css"/>
-    
 </head>
 <body>
 
