@@ -225,7 +225,8 @@ function loadCi() {
 							var html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
 											'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
 											'<i class="fa fa-arrow-circle-right bj-no-drop"></i>'+
-										'</span>';
+										'</span>'+
+											'&nbsp;&nbsp;&nbsp;<span><i class="fa fa-power-off ci-powerOff"></i></span>';
 							return html;
 						}
 					}
@@ -320,7 +321,8 @@ function loadCiCode() {
 								var html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
 								'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
 								'<i class="fa fa-arrow-circle-right bj-no-drop"></i>'+
-							'</span>';
+							'</span>'+
+							'&nbsp;&nbsp;&nbsp;<span><i class="fa fa-power-off ci-powerOff"></i></span>';
 							}
 							return html;
 						}
