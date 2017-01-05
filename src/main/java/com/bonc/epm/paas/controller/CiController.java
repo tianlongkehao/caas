@@ -1473,6 +1473,42 @@ public class CiController {
     
     /**
      * Description: <br>
+     * 停止构建
+     * @param id 项目id
+     * @return String
+     */
+    @RequestMapping("ci/stopCi.do")
+    @ResponseBody
+    public String stopCi(long id){
+        Map<String,Object> map = new HashMap<String,Object>();
+        try {
+            Ci ci = ciDao.findOne(id);
+            CiRecord ciRecord = new CiRecord();
+            List<CiRecord> listRecord = ciRecordDao.findByCiId(id, new Sort(new Order(Direction.DESC,"constructDate")));
+            for (CiRecord record : listRecord) {
+                if (record.getConstructResult().equals(CiConstant.CONSTRUCTION_RESULT_ING)) {
+                    ciRecord = record;
+                }
+            }
+            if (ci.getType().equals(CiConstant.TYPE_CODE)) {
+                stopCodeCi(ci.getProjectName(),ciRecord.getExecutionId());
+            }
+            ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+            ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+            ciDao.save(ci);
+            ciRecordDao.save(ciRecord);
+            map.put("status", "200");
+            map.put("ci", ci);
+        }
+        catch (Exception e) {
+            map.put("status", "400");
+            LOG.error("stop ci error" + e.getMessage());
+        }
+        return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
      * 停止正在执行的代码构建
      * @param projectName 项目名称
      * @param executionId 项目版本号
