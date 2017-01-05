@@ -236,7 +236,7 @@ public class UserController {
         try {
             //添加租户资源信息
             UserResource userResource = new UserResource();
-            userResource.setCpu(Double.valueOf(resource.getCpu_account())/Double.valueOf(RATIO_MEMTOCPU));
+            userResource.setCpu(Double.valueOf(resource.getCpu_account()));
             userResource.setMemory(Long.parseLong(resource.getRam()));
             userResource.setVol_size(resource.getVol());
             userResource.setImage_count(resource.getImage_count());
@@ -359,7 +359,7 @@ public class UserController {
                 userResource.setUserId(user.getId());
                 userResource.setCreateDate(new Date());
             }
-            userResource.setCpu(Double.valueOf(resource.getCpu_account())/Double.valueOf(RATIO_MEMTOCPU));
+            userResource.setCpu(Double.valueOf(resource.getCpu_account()));
             userResource.setMemory(Long.parseLong(resource.getRam()));
             userResource.setVol_size(resource.getVol());
             userResource.setImage_count(resource.getImage_count());

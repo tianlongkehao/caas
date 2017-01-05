@@ -376,7 +376,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             openMap.put("cpu", Double.valueOf(openCpu)/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量(个)
             openMap.put("persistentvolumeclaims", userResource.getVol_size() + "");// 卷组数量
             
-            userResource.setCpu(Double.valueOf(openCpu)/Double.valueOf(RATIO_MEMTOCPU));
+            userResource.setCpu(Double.parseDouble(openCpu));
             userResource.setMemory(Long.parseLong(openMem));
             ResourceQuota openQuota = kubernetesClientService.generateSimpleResourceQuota(namespace, openMap);
             if (isCreate) { // 是否新建quota
