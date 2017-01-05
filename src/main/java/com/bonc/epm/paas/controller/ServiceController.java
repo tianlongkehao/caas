@@ -1541,15 +1541,25 @@ public class ServiceController {
                     if (controller !=null && controller.getSpec().getReplicas() == 0) {
                     	Status status = client.deleteReplicationController(service.getServiceName());
                     	if (status.getStatus().equals("Success")) {
-                    		status = client.deleteService(service.getServiceName());
-                    		if (status.getStatus().equals("Success")) {
-                    			TemplateEngine.deleteConfig(confName, configName, templateConf);
-                    		} else {
-    	                    	map.put("status", "400");
-    	                    	map.put("msg", "Delete a Service failed:ServiceName["+service.getServiceName()+"]");
-    	                    	LOG.error("Delete a Service failed:ServiceName["+service.getServiceName()+"]");
-    	                    	return JSON.toJSONString(map);
+                    		//svc存在的时候需要删除
+                    		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+                    		try {
+                    			// 查询svc是否已经创建
+                    			k8sService = client.getService(service.getServiceName());
+                    		} catch (KubernetesClientException e) {
+                    			k8sService = null;
                     		}
+                			if (null != k8sService) {
+                				status = client.deleteService(service.getServiceName());
+                				if (status.getStatus().equals("Success")) {
+                					TemplateEngine.deleteConfig(confName, configName, templateConf);
+                				} else {
+                					map.put("status", "400");
+                					map.put("msg", "Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+                					LOG.error("Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+                					return JSON.toJSONString(map);
+                				}
+							}
 						} else {
 	                    	map.put("status", "400");
 	                    	map.put("msg", "Delete a Replication Controller failed:ServiceName["+service.getServiceName()+"]");
