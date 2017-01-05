@@ -1290,7 +1290,8 @@ public class ServiceController {
                 serviceDao.save(service);
                 map.put("status", "200");
                 LOG.info("replicationController:"+serviceName+" rolling updated.");
-                
+
+                // 服务版本升级 使用 kubectl rolling-update 命令行
 /*                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
                 ReplicationController controller = client.getReplicationController(serviceName);
                 String NS = controller.getMetadata().getNamespace();
