@@ -15,31 +15,26 @@ $(function(){
             $(".chkAll").prop('checked', $(this).is(":checked"));
         }
     });
-    //主色调设置
-    var skinColor = $("#skinColor").attr("href");
-    if(skinColor==""){
-    	var redHref = ctx +'/css/core/color-red.css';
-    	$("#skinColor").attr("href",redHref);
-    	
-    }
-    	//主色调为红色
-    	$("#redColor").click(function(){
-    		
-    			var redHref = ctx +'/css/core/color-red.css';
-            	$("#skinColor").attr("href",redHref);
-    		
-        	
-        });
-    	//主色调为蓝色
-        $("#blueColor").click(function(){
-        	
-        		var blueHref = ctx +'/css/core/color-blue.css';
-            	$("#skinColor").attr("href",blueHref);
-    		
-        	
-        });
+//	// 主色调设置
+//	var skinColor = $("#skinColor").attr("href");
+//	if (skinColor == "") {
+//		var redHref = ctx + '/css/core/color-red.css';
+//		$("#skinColor").attr("href", redHref);
+//	}
+	// 主色调为红色
+	$("#redColor").click(function() {
+		setCookie('skinColor', 0);
+		var redHref = ctx + '/css/core/color-red.css';
+		$("#skinColor").attr("href", redHref);
+	});
+	// 主色调为蓝色
+	$("#blueColor").click(function() {
+		setCookie('skinColor', 1);
+		var blueHref = ctx + '/css/core/color-blue.css';
+		$("#skinColor").attr("href", blueHref);
+	});
     
-    
+	checkCookie();
 });
 
 function sliderFn(sliderId, max, min, value){
@@ -71,4 +66,42 @@ function sliderFn(sliderId, max, min, value){
     });
 
     return sliderObj;
+}
+
+function getCookie(c_name) {
+	if (document.cookie.length > 0) {
+		c_start = document.cookie.indexOf(c_name + "=")
+		if (c_start != -1) {
+			c_start = c_start + c_name.length + 1
+			c_end = document.cookie.indexOf(";", c_start)
+			if (c_end == -1)
+				c_end = document.cookie.length
+			return unescape(document.cookie.substring(c_start, c_end))
+		}
+	}
+	return ""
+}
+
+function setCookie(c_name, value) {
+	document.cookie = c_name + "=" + escape(value) + ";maxage=-1;path=/"
+}
+
+function checkCookie() {
+	skinColor = getCookie('skinColor')
+	if (skinColor == null || skinColor == "") {
+		
+	}
+	switch (skinColor) {
+	case "0":
+		var redHref = ctx + '/css/core/color-red.css';
+		$("#skinColor").attr("href", redHref);
+		break;
+	case "1":
+		var blueHref = ctx + '/css/core/color-blue.css';
+		$("#skinColor").attr("href", blueHref);
+		break;
+	default:
+		var redHref = ctx + '/css/core/color-red.css';
+		$("#skinColor").attr("href", redHref);
+	}
 }
