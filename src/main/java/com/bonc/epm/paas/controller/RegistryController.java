@@ -37,6 +37,8 @@ import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.api.DockerRegistryAPIClientInterface;
+import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
+import com.bonc.epm.paas.docker.exception.ErrorList;
 import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.docker.util.DockerRegistryService;
@@ -159,7 +161,7 @@ public class RegistryController {
             if(index == 0){
                 images = imageDao.findByImageType(userId,pageRequest);
             }else if(index == 1){
-                images = imageDao.findAllByCreator(userId,pageRequest);
+                images = imageDao.findAllByCreateBy(userId,pageRequest);
             }else if(index == 2){
                 images = imageDao.findAllFavor(userId,pageRequest);
             }
@@ -469,30 +471,55 @@ public class RegistryController {
             //return "redirect:registry/0";
     }
     
-	/**
-	 * 删除当前镜像
-	 * @param imageId 镜像Id
-	 * @return String
-	 */
+    /**
+     * 
+     * Description:
+     * 删除本地数据库镜像，以及远程仓库镜像信息
+     * 1.正常删除流程：删除本地镜像信息和远程镜像清单信息manifests
+     * 2.非正常处理流程：
+     *      其一：无法获取本地数据库镜像信息的清单信息manifests 不删除
+     *      其二：获取镜像信息的清单信息manifests后，调用删除清单API 返回errorList信息  不删除
+     *  TODO
+     *   对于无法通过正常渠道删除的镜像信息，
+     *   需要通过镜像同步、GC回收、手动清除垃圾镜像等手段处理
+     * @param imageId 镜像Id
+     * @return String 
+     * @see
+     */
     @RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteImage(@RequestParam long imageId){
+        boolean isDeleteFlag = false;
         Image image = imageDao.findOne(imageId);
         if (null != image) {
-            DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
-            MultivaluedMap<String, Object> mult = client.getManifestofImage(image.getName(), image.getVersion());
-            if (null != mult.get("Etag") && mult.get("Etag").size() > 0) {
-                for (Object oneRow : mult.get("Etag")) {
-                    client.deleteManifestofImage(image.getName(), String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
+            try {
+                DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
+                MultivaluedMap<String, Object> mult = client.getManifestofImage(image.getName(), image.getVersion());
+                if (null != mult.get("Etag") && mult.get("Etag").size() > 0) {
+                    for (Object oneRow : mult.get("Etag")) {
+                        ErrorList errors = client.deleteManifestofImage(image.getName(), String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
+                        if (null == errors) {
+                            isDeleteFlag = true;
+                        }
+                        LOG.info("delete image, docker regsitry API return msg: -"+JSON.toJSONString(errors));
+                    }
+                }
+                if (isDeleteFlag) {
+                    image.setIsDelete(CommConstant.TYPE_YES_VALUE);
+                    imageDao.save(image);
+                    return "ok";
                 }
             }
-            image.setIsDelete(CommConstant.TYPE_YES_VALUE);
-            imageDao.save(image);
-            return "ok";
+            catch (DokcerRegistryClientException dockerEx) {
+                LOG.error("delete image error. error message:-"+JSON.toJSONString(dockerEx.getErrorList()));
+                return "error";               
+            }
+            catch (Exception e) {
+                LOG.error("delete image error. error message:-"+e.getMessage());
+                return "error";
+            }
         } 
-        else {
-            return "error";
-        }
+        return "error";
     }
     
     
@@ -517,6 +544,7 @@ public class RegistryController {
         try {
             for (long id : ids) {
                 deleteImage(id);
+                // TODO 返回批量删除中失败的镜像信息
             }
             maps.put("status", "200");
         } 
@@ -602,7 +630,7 @@ public class RegistryController {
 		long creator = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> maps = new HashMap<String, Object>();
 		//获取所有的镜像
-		List<Image> imageList = imageDao.findByCreatorOrderByName(creator);
+		List<Image> imageList = imageDao.findByCreateByOrderByName(creator);
 		//用于存放分组后所有的镜像
 		List<Object> images = new ArrayList<>();
 		String lastImageName= null;
@@ -634,7 +662,7 @@ public class RegistryController {
 		long creator = CurrentUserUtils.getInstance().getUser().getId();
 		Map<String, Object> maps = new HashMap<String, Object>();
 		//获取该用户的所有镜像
-		List<Image> imageList = imageDao.findByCreatorOrderByCreatTime(creator);
+		List<Image> imageList = imageDao.findByCreateByOrderByCreatTime(creator);
 		//获取当前的时间
 		Calendar calendar = Calendar.getInstance();
 		

@@ -159,4 +159,13 @@ public class RefService {
         this.refSerDesc = refSerDesc;
     }
     
+    
+	@Override
+	public String toString() {
+		return "RefService [id=" + id + ", serName=" + serName + ", createBy=" + createBy + ", serAddress=" + serAddress
+				+ ", refAddress=" + refAddress + ", refPort=" + refPort + ", viDomain=" + viDomain + ", improtSerMode="
+				+ improtSerMode + ", createDate=" + createDate + ", nodePort=" + nodePort + ", refSerDesc=" + refSerDesc
+				+ ", useProxy=" + useProxy + "]";
+	}
+    
 }

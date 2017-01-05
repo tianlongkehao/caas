@@ -30,23 +30,22 @@ function deletedockerfile(obj){
 
 //批量删除
 function delDockerfiles(){
-		obj = document.getElementsByName("chkItem");
-		var ids = [];
-	    for (k in obj) {
-	        if (obj[k].checked) {
-	        	ids.push(obj[k].value);
-	        }
-	    }
+	 var ids = [];
+	 $('input[name="chkItem"]:checked').each(function(){
+		 var dockerFileId = $(this).val();
+		 ids.push(dockerFileId);
+		 
+	 })
+	 if ("" == ids) {
+		layer.alert("请选择至少一个模板", {icon:0});
+		return;
+	 }
 	 layer.open({
 	        title: '删除dockerfile模板',
 	        content: '确定批量删除dockerfile模板？',
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ 
 	        	layer.close(index);
-	        	if(""==ids){
-	        		alert("你总要选一个呀");
-	        		return;
-	        	}
 	        	$.ajax({
 					url:""+ctx+"/template/dockerfiles/delete.do?dockerfileIds="+ids,
 	        		success: function (data) {
@@ -61,5 +60,4 @@ function delDockerfiles(){
 	        	})  
 	        }
 	 })
-	 
 }

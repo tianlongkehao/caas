@@ -182,7 +182,7 @@
 											<div class="col-md-4" align="left">
 												<label style="width: 21%; float: left; line-height: 35px">卷组容量:</label>
 												<label style="width: 2%; float: left;"><font
-													color="red">*</font></label> <input type="number" value="${user.vol_size }"
+													color="red">*</font></label> <input type="number" value="${userResource.vol_size }"
 													class="number form-control" min="1" autocomplete="off"
 													placeholder="1" id="vol" name="vol"
 													style="width: 75%; display: inline; float: right;">
@@ -193,7 +193,7 @@
 										<div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
                                                     <label style="width: 21%; float: left; line-height: 35px" title="卷组挂载量">镜像个数:</label>
-                                                    <input type="number" value="${user.image_count }" class="number form-control"
+                                                    <input type="number" value="${userResource.image_count }" class="number form-control"
                                                         min="1" autocomplete="off" placeholder="1" id="image_count"
                                                         name="image_count"
                                                         style="width: 75%; display: inline; float: right;"
@@ -204,6 +204,9 @@
                                                     <select class="form-control" name = "sheraId" style="width: 75%; display: inline; float: right;">
                                                         <c:if test="${userShera != null }">
                                                             <option  value="${userShera.id }">${userShera.sheraUrl }</option>
+                                                        </c:if>
+                                                        <c:if test="${userShera == null }">
+                                                            <option  value="0">请选择Shera</option>
                                                         </c:if>
                                                         <c:forEach items="${sheraList }" var = "shera">
                                                             <c:if test="${shera.id != userShera.id }">

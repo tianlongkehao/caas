@@ -20,6 +20,7 @@ package com.bonc.epm.paas.shera.model;
 public class CredentialKey {
     private String uuid;
     private String username;
+    private String desc;
     private Integer type;
     
     public String getUuid() {
@@ -33,6 +34,12 @@ public class CredentialKey {
     }
     public void setUsername(String username) {
         this.username = username;
+    }
+    public String getDesc() {
+        return desc;
+    }
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
     public Integer getType() {
         return type;

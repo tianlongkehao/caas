@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -44,6 +49,13 @@ public class DockerFileTemplateController {
     @Autowired
     private DockerFileTemplateDao dockerFileTemplateDao;
 	
+    /**
+     * commonOperationLogDao接口
+     */
+    @Autowired
+    private CommonOperationLogDao commonOperationLogDao;
+
+    
 	/**
 	 * dockerFile模板管理
 	 * 
@@ -119,8 +131,15 @@ public class DockerFileTemplateController {
         Map<String, Object> map = new HashMap<String, Object>();
         try {
             DockerFileTemplate dockerFileTemp = dockerFileTemplateDao.findOne(dockerFileId);
+            String dockerFile1=dockerFileTemp.getDockerFile();
             dockerFileTemp.setDockerFile(dockerFile);
-            dockerFileTemplateDao.save(dockerFileTemp);
+            dockerFileTemp=dockerFileTemplateDao.save(dockerFileTemp);
+            
+            //记录用户修改DockerFile模板的操作
+            String extraInfo="修改templateName："+dockerFileTemp.getTemplateName()+"之前包含的内容: "+dockerFile1
+            		+" 修改templateName："+dockerFileTemp.getTemplateName()+"之后包含的内容: "+dockerFile;
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(dockerFileTemp.getTemplateName(), extraInfo, CommConstant.DOCKFILE_TEMPLATE, CommConstant.OPERATION_TYPE_UPDATE);
+            commonOperationLogDao.save(log);
             map.put("status", "200");
         }
         catch (Exception e) {
@@ -142,7 +161,15 @@ public class DockerFileTemplateController {
     public String deletedockerfile(long dockerfileId){
         Map<String, Object> map = new HashMap<String, Object>();
         try {
+        	//获取要删除的dockerFileTemplate对象
+        	DockerFileTemplate dockerFileTemplate=dockerFileTemplateDao.findOne(dockerfileId);
             dockerFileTemplateDao.delete(dockerfileId);
+            
+            //记录用户删除dockerFile模板操作
+            User cUser = CurrentUserUtils.getInstance().getUser();
+            String extraInfo="已删除templateName:"+dockerFileTemplate.getTemplateName()+"包含的内容: "+dockerFileTemplate.getDockerFile();
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(dockerFileTemplate.getTemplateName(), extraInfo, CommConstant.DOCKFILE_TEMPLATE, CommConstant.OPERATION_TYPE_DELETE);
+            commonOperationLogDao.save(log);
             map.put("status", "200");
         }
         catch (Exception e) {
@@ -171,7 +198,14 @@ public class DockerFileTemplateController {
         }
         Map<String, Object> maps = new HashMap<String, Object>();
         for (long id : ids) {
+        	//获取要删除的dockerFileTemplate对象
+        	DockerFileTemplate dockerFileTemplate=dockerFileTemplateDao.findOne(id);
         	dockerFileTemplateDao.delete(id);
+        	
+        	//记录用户删除dockerFile模板操作
+            String extraInfo="已删除templateName:"+dockerFileTemplate.getTemplateName()+"包含的内容: "+dockerFileTemplate.getDockerFile();
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(dockerFileTemplate.getTemplateName(), extraInfo, CommConstant.DOCKFILE_TEMPLATE, CommConstant.OPERATION_TYPE_DELETE);
+            commonOperationLogDao.save(log);
         }
         maps.put("status", "200");
         return JSON.toJSONString(maps); 

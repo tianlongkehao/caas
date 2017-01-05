@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +22,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserAndSheraDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserResourceDao;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.Resource;
 import com.bonc.epm.paas.entity.Restriction;
 import com.bonc.epm.paas.entity.Service;
@@ -32,9 +40,9 @@ import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserAndShera;
+import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
-import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
@@ -74,6 +82,12 @@ public class UserController {
      */
     @Autowired
     private UserDao userDao;
+    
+    /**
+     * userResourceDao
+     */
+    @Autowired
+    private UserResourceDao userResourceDao;
     
     /**
      * StorageDao
@@ -117,6 +131,13 @@ public class UserController {
     @Autowired
     private SheraClientService sheraClientService;
 
+    /**
+     * commonOperationLogDao接口
+     */
+    @Autowired
+    private CommonOperationLogDao commonOperationLogDao;
+
+    
     /**
      * CEPH_KEY ${ceph.key} 
      */
@@ -212,15 +233,24 @@ public class UserController {
      */
     @RequestMapping(value = { "/save.do" }, method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
 	public String userSave(User user, Resource resource, Restriction restriction,long sheraId, Model model) {
         Map<String, Object> map = new HashMap<String, Object>();
+        UserResource userResource = new UserResource();
+        // 以用户名(登陆帐号)为name，创建client
+        KubernetesAPIClientInterface client = null;
         try {
+            //添加租户资源信息
+            userResource.setCpu(Double.valueOf(resource.getCpu_account()));
+            userResource.setMemory(Long.parseLong(resource.getRam()));
+            userResource.setVol_size(resource.getVol());
+            userResource.setImage_count(resource.getImage_count());
+            userResource.setCreateDate(new Date());
+            
             fillPartUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，为client创建Namespace
             Namespace namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
-	        // 以用户名(登陆帐号)为name，创建client
-            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-            
+            client = kubernetesClientService.getClient(user.getNamespace());
             if (!createNsAndSec(user, namespace, client)) {
                 client.deleteNamespace(user.getNamespace());
                 map.put("message", "创建namespace或者secret失败！");
@@ -251,13 +281,19 @@ public class UserController {
             
 			// DB保存用户信息
             userDao.save(user);
-            UserAndShera userAndShera = new UserAndShera();
-            userAndShera.setSheraId(sheraId);
-            userAndShera.setUserId(user.getId());
-            userAndSheraDao.save(userAndShera);
+            userResource.setUserId(user.getId());
+            userResourceDao.save(userResource);
+            if (sheraId != 0) {
+                UserAndShera userAndShera = new UserAndShera();
+                userAndShera.setSheraId(sheraId);
+                userAndShera.setUserId(user.getId());
+                userAndSheraDao.save(userAndShera);
+            }
             map.put("creatFlag", "200");
         } 
         catch (Exception e) {
+            client.deleteNamespace(user.getNamespace());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             e.printStackTrace();
             map.put("message", "创建失败");
             map.put("creatFlag", "400");
@@ -285,6 +321,12 @@ public class UserController {
                 user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
                 user.setNamespace(CurrentUserUtils.getInstance().getUser().getNamespace());
                 userDao.save(user);
+                
+                //记录用户添加用户操作
+                String extraInfo="新增的用户名是："+user.getUserName()+"主要信息有：用户id:"+user.getId()+"用户姓名："+user.getUser_realname()+"用户工号："+user.getUser_employee_id();
+                CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
+                commonOperationLogDao.save(log);
+                
             }
             model.addAttribute("creatFlag", "200");
         } 
@@ -313,8 +355,21 @@ public class UserController {
      * @see
      */
     @RequestMapping(value = { "/update.do" }, method = RequestMethod.POST)
+    @Transactional
 	public String userUpdate(User user, Resource resource, Restriction restriction,long sheraId, Model model) {
         try {
+            UserResource userResource = userResourceDao.findByUserId(user.getId());
+            if (userResource == null) {
+                userResource = new UserResource();
+                userResource.setUserId(user.getId());
+                userResource.setCreateDate(new Date());
+            }
+            userResource.setCpu(Double.valueOf(resource.getCpu_account()));
+            userResource.setMemory(Long.parseLong(resource.getRam()));
+            userResource.setVol_size(resource.getVol());
+            userResource.setImage_count(resource.getImage_count());
+            userResource.setUpdateDate(new Date());
+            
             updateUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，创建client
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
@@ -339,6 +394,7 @@ public class UserController {
             		// client.updateLimitRange(user.getNamespace(), limit);
             		
             		userDao.save(user);
+            		userResourceDao.save(userResource);
             		model.addAttribute("updateFlag", "200");
             	}
             	catch (Exception e) {
@@ -348,11 +404,16 @@ public class UserController {
 			} else {
 				LOG.error("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
 			}
+            
+            if (sheraId != 0) {
+                userAndSheraUpdate(user.getId(),sheraId);
+            }
         } 
-        catch (KubernetesClientException e) {
+        catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             LOG.error("error message:-"+ e.getMessage());
         }
-        userAndSheraUpdate(user.getId(),sheraId);
+
         List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
         model.addAttribute("userList", userList);
         model.addAttribute("menu_flag", "user");
@@ -399,7 +460,18 @@ public class UserController {
             }
             user.setNamespace(userManage.getNamespace());
             user.setParent_id(userManage.getId());
+            
+            //获取修改前的user
+            User user1=userDao.findById(user.getId());
+            
             userDao.save(user);
+            
+            
+            //记录修改用户信息操作
+            String extraInfo="修改userName:"+user.getUserName()+"之前的信息有：：用户id:"+user1.getId()+"用户姓名："+user1.getUser_realname()+"用户工号："+user1.getUser_employee_id()+
+            		"  修改后的信息是：：用户id:"+user.getId()+"用户姓名："+user.getUser_realname()+"用户工号："+user.getUser_employee_id();
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
+            commonOperationLogDao.save(log);
         } 
         catch (KubernetesClientException e) {
             LOG.error("error message :-"+ e.getMessage());
@@ -432,8 +504,9 @@ public class UserController {
                 }
                 
                 List<String> namespaceList = new ArrayList<String>();
-                deleteTenAndUser(idList, namespaceList);
+                List<User> users = deleteTenAndUser(idList, namespaceList);
                 delNamespace(namespaceList);
+                userDao.delete(users);
             }
             map.put("status", "200");
         }
@@ -467,7 +540,16 @@ public class UserController {
                 String[] idArr = ids.split(",");
                 for (int i = 0; i < idArr.length; i++) {
                     delUserService(Long.parseLong(idArr[i]));
+                    //获取删除前的user
+                    User user=userDao.findById(Long.parseLong(idArr[i]));
+                    
                     userDao.delete(Long.parseLong(idArr[i]));
+                    
+                    //记录用户删除用户操作
+                    String extraInfo="删除用户userName"+user.getUserName()+"的主要信息有：用户id:"+user.getId()+"用户姓名："+user.getUser_realname()+"用户工号："+user.getUser_employee_id();
+                    CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_DELETE);
+                    commonOperationLogDao.save(log);    
+                    
                 }
             }
             map.put("status", "200");
@@ -513,6 +595,7 @@ public class UserController {
     @RequestMapping(value = { "detail/{id}" }, method = RequestMethod.GET)
     public String detailById(Model model, @PathVariable long id) {
         User user = userDao.findOne(id);
+        UserResource userResource = userResourceDao.findByUserId(id);
         Resource resource = new Resource();
         Restriction restriction = new Restriction();
         try {
@@ -573,6 +656,7 @@ public class UserController {
         model.addAttribute("sheraList", sheraList);
         model.addAttribute("restriction", restriction);
         model.addAttribute("resource", resource);
+        model.addAttribute("userResource", userResource);
         model.addAttribute("user", user);
         model.addAttribute("menu_flag", "user");
         return "user/user_detail.jsp";
@@ -801,6 +885,8 @@ public class UserController {
             for (Storage storage : list) {
                 usedstorage = usedstorage + (double) storage.getStorageSize();
             }
+            Shera shera = sheraDao.findByUserId(id);
+            model.addAttribute("userShera", shera);
             model.addAttribute("usedstorage",  usedstorage / 1024);
         }
         catch (KubernetesClientException e) {
@@ -860,6 +946,7 @@ public class UserController {
         Map<String, Object> map = new HashMap<String, Object>();
         User user = updateUserInfo(id, email, company, user_cellphone, user_department,user_employee_id, user_phone);
         if (null != user) {
+        	
             map.put("status", "200");
         } 
         else {
@@ -964,8 +1051,8 @@ public class UserController {
      */
     private void fillPartUserInfo(User user, Resource resource) {
         user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
-        user.setVol_size(resource.getVol());
-        user.setImage_count(resource.getImage_count());
+//        user.setVol_size(resource.getVol());
+//        user.setImage_count(resource.getImage_count());
         user.setNamespace(user.getUserName());
         user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
     }
@@ -1074,8 +1161,8 @@ public class UserController {
             user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
         }
         //卷组更新功能
-        user.setVol_size(resource.getVol());
-        user.setImage_count(resource.getImage_count());
+//        user.setVol_size(resource.getVol());
+//        user.setImage_count(resource.getImage_count());
         user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
         user.setNamespace(user.getUserName());
     }
@@ -1088,7 +1175,7 @@ public class UserController {
      * @param namespaceList List<String>
      * @see
      */
-    private void deleteTenAndUser(List<Long> idList, List<String> namespaceList) {
+    private List<User> deleteTenAndUser(List<Long> idList, List<String> namespaceList) {
         List<User> users = new ArrayList<User>();
         for (User user : userDao.findAll(idList)) {
             users.add(user);
@@ -1102,7 +1189,7 @@ public class UserController {
                 }
             }
         }
-        userDao.delete(users);
+        return users;
     }
     
     /**
@@ -1116,64 +1203,18 @@ public class UserController {
             for (String namespace : namespaceList) {
                 // 以用户名(登陆帐号)为name，创建client
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient(namespace);
-//                client.getNamespace(namespace);
                 
                 if (null != client.getNamespace(namespace)) {
                     try {
-                        Status status = client.deleteLimitRange(namespace);
-                        if (!status.getStatus().equals("Success")) {
-                        	LOG.error("delete LimitRange failed:namespace["+namespace+"]");
-						}
-                        status =  client.deleteResourceQuota(namespace);
-                        if (!status.getStatus().equals("Success")) {
-							LOG.error("delete ResourceQuota failed:namespace["+namespace+"]");
-						}
+                        client.deleteNamespace(namespace);
+                        //TODO 逻辑删除卷组信息
+                        
                     } 
                     catch (javax.ws.rs.ProcessingException e) {
-                        System.out.println(e.getMessage());
+                        LOG.error("delete namespace error" + e.getMessage());
                     }
-                    client.deleteNamespace(namespace);
-                    //TODO 逻辑删除卷组信息
                 }
             } 
-        }
-    }
-    
-    /**
-     * 
-     * Description:
-     * computeMemoryOut
-     * @param val Map<String, String>
-     * @return memVal String
-     * @see
-     */
-    private String computeMemoryOut(Map<String, String> val) {
-        String memVal = val.get("memory");
-        if (memVal.contains("Mi")) {
-            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
-            return a1.toString();
-        } 
-        else {
-            return memVal.replace("Gi", "");
-        }
-    }
-    
-    /**
-     * 
-     * Description:
-     * computeCpuOut
-     * @param val Map<String, String> val
-     * @return cpuVal String
-     * @see
-     */
-    private String computeCpuOut(Map<String, String> val) {
-        String cpuVal = val.get("cpu");
-        if (cpuVal.contains("m")) {
-            Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
-            return a1.toString();
-        } 
-        else {
-            return cpuVal;
         }
     }
     
@@ -1189,20 +1230,27 @@ public class UserController {
     private void getUserResourceInfo(Model model, User user, KubernetesAPIClientInterface client) {
         ResourceQuota quota = client.getResourceQuota(user.getNamespace());
         if (null != quota) {
+            UserResource userResource = new UserResource();
+            if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+                userResource = userResourceDao.findByUserId(user.getParent_id());
+            }
+            else {
+                userResource = userResourceDao.findByUserId(user.getId());
+            }
+            model.addAttribute("userResource", userResource);
             model.addAttribute("user", user);
-            
             Map<String, String> hard = quota.getStatus().getHard();
             model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
-            model.addAttribute("servMemoryNum", hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
+            model.addAttribute("servMemoryNum", kubernetesClientService.computeMemoryOut(hard.get("memory")));// 内存个数
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
             model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数
             
             Map<String, String> used = quota.getStatus().getUsed();
             ReplicationControllerList rcList = client.getAllReplicationControllers();
-            PodList podList = client.getAllPods();                   
-            model.addAttribute("usedCpuNum", Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
-            model.addAttribute("usedMemoryNum", Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
+            PodList podList = client.getAllPods();         
+            model.addAttribute("usedCpuNum", kubernetesClientService.transCpu(used.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
+            model.addAttribute("usedMemoryNum", kubernetesClientService.computeMemoryOut(used.get("memory")));// 已使用内存
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
             model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
             // model.addAttribute("usedControllerNum", usedControllerNum);
@@ -1348,6 +1396,7 @@ public class UserController {
         try {
             Shera oldShera = sheraDao.findOne(shera.getId());
             oldShera.setSheraUrl(shera.getSheraUrl());
+            oldShera.setPort(shera.getPort());
             oldShera.setUserName(shera.getUserName());
             oldShera.setPassword(shera.getPassword());
             oldShera.setRemark(shera.getRemark());

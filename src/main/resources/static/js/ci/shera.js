@@ -15,6 +15,7 @@ $(function(){
 	        		return;
 	        	}
 	        	var sheraUrl = $("#sheraIp").val();
+	        	var port = $("#port").val();
 	        	var userName = $("#shreaName").val();
 	        	var password= $("#shreaPassword").val();
 	        	var remark = $("#sheraRemark").val();
@@ -22,7 +23,7 @@ $(function(){
 	        	$.ajax({
 	        		url :""+ ctx + "/user/shera/creatShera.do",
 	        		type : "POST",
-	        		data:{"sheraUrl":sheraUrl,"userName":userName,"password":password,"remark":remark,"jdkJson":jdkJson},
+	        		data:{"sheraUrl":sheraUrl,"port":port,"userName":userName,"password":password,"remark":remark,"jdkJson":jdkJson},
 	        		success : function(data){
 	        			data = eval("(" + data + ")");
 	        			if (data.status=="200") {
@@ -66,6 +67,7 @@ function sheraDetail(id){
         		return;
         	}
         	var sheraUrl = $("#sheraIp").val();
+        	var port = $("#port").val();
         	var userName = $("#shreaName").val();
         	var password= $("#shreaPassword").val();
         	var remark = $("#sheraRemark").val();
@@ -73,7 +75,7 @@ function sheraDetail(id){
         	$.ajax({
         		url :""+ ctx + "/user/shera/updateShera.do",
         		type : "POST",
-        		data:{"id":id,"sheraUrl":sheraUrl,"userName":userName,"password":password,"remark":remark,"jdkJson":jdkJson},
+        		data:{"id":id,"sheraUrl":sheraUrl,"port":port,"userName":userName,"password":password,"remark":remark,"jdkJson":jdkJson},
         		success : function(data){
         			data = eval("(" + data + ")");
         			if (data.status=="200") {
@@ -98,6 +100,7 @@ function findSheraData(id){
 			var jdkList = data.jdkList;
 			$("#sheraIp").val(shera.sheraUrl);
 			$("#shreaName").val(shera.userName);
+			$("#port").val(shera.port);
 			$("#shreaPassword").val(shera.password);
 			$("#sheraRemark").val(shera.remark);
 			if (jdkList != null && jdkList.length > 0) {
@@ -126,6 +129,7 @@ function findSheraData(id){
 function delData(){
 	$("#sheraIp").val("");
 	$("#shreaName").val("");
+	$("#port").val("");
 	$("#shreaPassword").val("");
 	$("#sheraRemark").val("");
 	$("#arrayJdk").val("");
@@ -139,17 +143,16 @@ function deleteRow(obj){
 
 //批量删除sheras
 function delSheras(){
-	obj = document.getElementsByName("ids");
-	var sheraIds = [];
-    for (k in obj) {
-        if (obj[k].checked) {
-        	sheraIds.push(obj[k].value);
-        }
-    }
-    if (sheraIds.length <=0) {
-    	layer.msg( "请选择需要删除的镜像", {icon: 2 });
-    	return;
-    }
+    var sheraIds = [];
+    $('input[name="ids"]:checked').each(function(){
+		 var id = $(this).val();
+		 sheraIds.push(id);
+		 
+	 })
+	 if ("" == sheraIds) {
+		layer.alert("请选择至少一个Shera", {icon:0});
+		return;
+	 }
     layer.open({
         title: '删除shera',
         content: '确定删除shera？',
@@ -199,12 +202,17 @@ function delOneTenement(id){
 //验证shera信息
 function checkShera(){
 	var sheraUrl = $("#sheraIp").val();
+	var port = $("#port").val();
 	var userName = $("#shreaName").val();
 	var password= $("#shreaPassword").val();
-	var remark = $("#sheraRemark").val();
 	if (!sheraUrl || sheraUrl.length < 1){
 	      layer.tips('sheraIp地址不能为空','#sheraIp',{tips: [1, '#3595CC']});
 	      $('#sheraIp').focus();
+	      return;
+	}
+	if (!port || port.length < 1){
+	      layer.tips('端口不能为空','#port',{tips: [1, '#3595CC']});
+	      $('#port').focus();
 	      return;
 	}
 	if (!userName || userName.length < 1){
@@ -215,11 +223,6 @@ function checkShera(){
 	if (!password || password.length < 1){
 	      layer.tips('账号密码不能为空','#shreaPassword',{tips: [1, '#3595CC']});
 	      $('#shreaPassword').focus();
-	      return;
-	}
-	if (!remark || remark.length < 1){
-	      layer.tips('描述不能为空','#sheraRemark',{tips: [1, '#3595CC']});
-	      $('#sheraRemark').focus();
 	      return;
 	}
 	if (!addJdk()) {

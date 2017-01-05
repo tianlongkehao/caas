@@ -57,12 +57,17 @@ public class Service {
 	private long createBy;
 	private double cpuNum;
 	private String ram;
-	private long imgID;         //TODO imageId
+	private long imgID;         //imageId
 	
 	/**
 	 * 自定义启动命令
 	 */
 	private String startCommand;
+	
+	/**
+	 * 监控设置
+	 */
+	private Integer monitor;
 	
 	/**
 	 * 服务访问路径
@@ -340,4 +345,23 @@ public class Service {
 		this.updateBy = updateBy;
 	}
     
+	@Override
+	public String toString() {
+		return "id:" + id + ",cpuNum:" + cpuNum + ",imgID:" + imgID + ",imgName:" + imgName + ",imgVersion:"
+				+ imgVersion + ",instanceNum:" + instanceNum + ",ram:" + ram + ",serviceAddr:" + serviceAddr
+				+ ",serviceName:" + serviceName + ",serviceChName:" + serviceChName + ",serviceType:" + serviceType
+				+ ",status:" + status + ",checkPath:" + checkPath + ",sessionAffinity:" + sessionAffinity
+				+ ",initialDelay:" + initialDelay + ",periodDetction:" + periodDetction + ",timeoutDetction:"
+				+ timeoutDetction + ",nodeIpAffinity:" + nodeIpAffinity + ",proxyPath:" + proxyPath + ",proxyZone:"
+				+ proxyZone + ",servicePath:" + servicePath + ",startCommand:" + startCommand + ",createDate:"
+				+ createDate + ",createBy:" + createBy + ",updateDate:" + updateDate + ",updateBy:" + updateBy;
+	}
+
+	public Integer getMonitor() {
+		return monitor;
+	}
+
+	public void setMonitor(Integer monitor) {
+		this.monitor = monitor;
+	}
 }

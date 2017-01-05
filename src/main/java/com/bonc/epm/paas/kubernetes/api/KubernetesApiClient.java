@@ -346,7 +346,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
     }
 
-    public Status deleteResourceQuota(String name) throws KubernetesClientException {
+    public ResourceQuota deleteResourceQuota(String name) throws KubernetesClientException {
         try {
             return api.deleteResourceQuota(namespace,name);
         } catch (WebApplicationException e) {

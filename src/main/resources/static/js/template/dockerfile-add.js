@@ -51,42 +51,37 @@ $(document).ready(function(){
 	});
 	
 	$("#buildStorage").click(function() {
-		if(checkDockerfile()){
-			layer.open({
-				type : 1,
-				title : '另存为模板',
-				content : $("#dockerfile-export"),
-				btn : [ '保存', '取消' ],
-				yes : function(index, layero) {
-					var templateName = $("#dockerFileTemplateName").val();
-					if (templateName == null || templateName == "") {
-						layer.tips('模板名称不能为空', '#dockerFileTemplateName', {
-							tips : [ 1, '#3595CC' ]
-						});
-						$('#dockerFileTemplateName').focus();
-						return;
-					}
-					var dockerFile = editor_one.getValue();
-					$.ajax({
-						url : ctx + "/ci/saveDockerFileTemplate.do",
-						type : "POST",
-						data : {
-							"templateName" : templateName,
-							"dockerFile" : dockerFile
-						},
-						success : function(data) {
-							data = eval("(" + data + ")");
-							if (data.status == "200") {
-								layer.alert("DockerFile模板导入成功");
-								setTimeout('window.location.href=""+ctx+"/template/dockerfile"',1500);
-							} else {
-								layer.alert("DockerFile模板名称重复");
-							}
-						}
-					});
-				}
-			})
+		var templateName = $("#dockerFileTemplateName").val();
+		if (templateName == null || templateName == "") {
+			layer.tips('模板名称不能为空', '#dockerFileTemplateName', {
+				tips : [ 1, '#3595CC' ]
+			});
+			$('#dockerFileTemplateName').focus();
+			return;
 		}
+		if(checkDockerfile()){
+				var dockerFile = editor_one.getValue();
+				$.ajax({
+					url : ctx + "/ci/saveDockerFileTemplate.do",
+					type : "POST",
+					data : {
+						"templateName" : templateName,
+						"dockerFile" : dockerFile
+					},
+					success : function(data) {
+						data = eval("(" + data + ")");
+						if (data.status == "200") {
+							layer.alert("DockerFile模板保存成功");
+							setTimeout('window.location.href=""+ctx+"/template/dockerfile"',1000);
+						} else {
+							layer.tips('模板名称重复，请您重新填写', '#dockerFileTemplateName', {
+								tips : [ 1, '#3595CC' ]
+							});
+							$('#dockerFileTemplateName').focus();
+						}
+					}
+				});
+		 }
 		
 	})
 	

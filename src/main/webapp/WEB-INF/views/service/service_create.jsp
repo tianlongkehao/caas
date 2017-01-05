@@ -93,11 +93,10 @@
 												name="imgVersion" readOnly="readOnly"></li>
 											<li class="line-h-3"><span class="ve_top">服务名称：<font
 													color="red">*</font></span><input type="text" value=""
-												class="in_style form-control" id="serviceName" name="serviceName">
+												class="in_style form-control" id="serviceName" name="serviceName" oninput="javascript:onEditServiceName()">
 												<input type="hidden" value="" class="in_style"
 												id="resourceName" name="resourceName"></li>
 											<li class="line-h-3"><span class="ve_top">服务中文名称：
-<!-- 											<font color="red">*</font> -->
 											</span><input type="text" value=""
 												class="in_style form-control" id="serviceChName" name="serviceChName"></li>
 											<li id="service_type"><span class="ve_top">启动命令：</span>
@@ -110,32 +109,43 @@
 												id="startCommand_input" name="startCommand"
 												style="margin-left: 150px"></li>
 											<!-- 检查服务状态 -->
-                    <li id="service_stat_check"><span class="ve_top">检查状态：</span>
-                      <span class="update-mi"> <input type="checkbox"
-                        id="checkSerStatus"> <label for="checkSerStatus"><font
-                          color="blue">检查服务状态</font></label>
-                    </span></li>
-                    <li class="line-h-3" id="checkSerStatus_li"><input
-                      type="text" value="" class="in_style form-control"
-                      id="checkSerStatus_input" name="checkPath"
-                      style="margin-left: 150px"></li>
-                      <li class="line-h-3" id="checkItems">
-	                      <ul class="checkitems">
-	                      	<li><span class="check-lable">检测延迟：</span>
-								<input type="number" value="600" class="number form-control" id="initialDelay" 
-								onkeyup="this.value=this.value.replace(/\D/g,'')" min="0"
-								name="initialDelay"> <span class="c-unit">s</span></li>
-							<li><span class="check-lable">检测超时：</span>
-								<input type="number" value="5" class="number form-control" id="timeoutDetction"
-								onkeyup="this.value=this.value.replace(/\D/g,'')" min="0"
-								name="timeoutDetction"> <span class="c-unit">s</span></li>
-							<li><span class="check-lable">检测频率：</span>
-								<input type="number" value="10" class="number form-control" placeholder="1" id="periodDetction"
-								onkeyup="this.value=this.value.replace(/\D/g,'')" min="1"
-								name="periodDetction"> <span class="c-unit">s</span></li>
-	                      </ul>
-                      </li>		
-                      										
+											<li id="service_stat_check"><span class="ve_top">检查状态：</span>
+												<span class="update-mi"> <input type="checkbox"
+													id="checkSerStatus"> <label for="checkSerStatus"><font
+														color="blue">检查服务状态</font></label>
+											<li class="line-h-3" id="checkSerStatus_li"><input
+												type="text" value="" class="in_style form-control"
+												id="checkSerStatus_input" name="checkPath"
+												style="margin-left: 150px"></li>
+											</span></li>
+											<li class="line-h-3" id="checkItems">
+												<ul class="checkitems">
+													<li><span class="check-lable">检测延迟：</span> <input
+														type="number" value="600" class="number form-control"
+														id="initialDelay"
+														onkeyup="this.value=this.value.replace(/\D/g,'')" min="0"
+														name="initialDelay"> <span class="c-unit">s</span></li>
+													<li><span class="check-lable">检测超时：</span> <input
+														type="number" value="5" class="number form-control"
+														id="timeoutDetction"
+														onkeyup="this.value=this.value.replace(/\D/g,'')" min="0"
+														name="timeoutDetction"> <span class="c-unit">s</span></li>
+													<li><span class="check-lable">检测频率：</span> <input
+														type="number" value="10" class="number form-control"
+														placeholder="1" id="periodDetction"
+														onkeyup="this.value=this.value.replace(/\D/g,'')" min="1"
+														name="periodDetction"> <span class="c-unit">s</span></li>
+												</ul>
+											</li>
+											<!-- 监控设置 -->
+											<li id="start_monitor"><span class="ve_top">监控设置：</span>
+												<span> <c:if test="${monitor==0 }">
+														<input type="checkbox" id="monitorStatus">
+													</c:if> <c:if test="${monitor==1 }">
+														<input type="checkbox" id="monitorStatus" checked="1">
+													</c:if> <label for="monitorStatus"><font color="blue">Pinpoint监控</font></label>
+													<input type="hidden" id="monitor" name="monitor" value="">
+											</span></li>
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
 													color="red">*</font></span>
 												<input type="text" value="" class="in_style form-control" id="webPath" name="servicePath">
@@ -284,6 +294,7 @@
 													</li>
 												</ol></li>
 											<li class="hide-set"><span class="ve_top">环境变量：</span>
+												<input type = "hidden" id = "userName" value="${userName }"/>
 												<ol>
 													<li class="hide-select">
 												       <input type="text" class="form-control" placeholder="name" id="Name"> 
@@ -305,7 +316,7 @@
 																</tr>
 															</thead>
 															<tbody id="Path-oper1">
-																<input type="hidden" id="arrayKey" value="" />
+																<input type="hidden" id="arrayKey" value="APM,id,name" />
 															</tbody>
 														</table>
 													</li>

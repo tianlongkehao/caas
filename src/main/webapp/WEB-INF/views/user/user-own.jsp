@@ -134,6 +134,19 @@
                                     <input type="text" class="form-control userOwnCon" id="email" name="email"
                                            value="${user.email}" style="width: 78%;display: inline">
                                 </div>
+                                <c:if test="${user.user_autority != 3 }">
+	                                <div class="col-md-4" align="left">
+	                                    <label style="width: 21%; float: left; line-height: 35px">Shera环境:</label>
+	                                    <select class="form-control" name = "sheraId" style="width: 78%; display: inline; float: right; " disabled>
+	                                        <c:if test="${userShera != null }">
+	                                            <option  value="${userShera.id }">${userShera.sheraUrl }</option>
+	                                        </c:if>
+	                                        <c:if test="${userShera == null }">
+	                                            <option  value="0">没有添加Shera</option>
+	                                        </c:if>
+	                                    </select>
+	                                </div>
+                                </c:if>
                             </div>
                             <c:if test="${!cas_enable}">
                             <div class="basicInfoSaveBtn">
@@ -239,7 +252,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span id="detailVolume">${usedstorage}</span>/<span id="totalVolume">${cur_user.vol_size}</span>（G）
+                                            <span id="detailVolume">${usedstorage}</span>/<span id="totalVolume">${userResource.vol_size}</span>（G）
                                         </td>
                                     </tr>
                                     <%--<tr>

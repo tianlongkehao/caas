@@ -33,12 +33,12 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="javascript:window.location.reload(true);"
-											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
 										<a id="createSheraBtn" title="创建用户"><i
 											class="fa fa-plus"></i></a> 
 										<a href="javascript:delSheras()" title="删除"><i
 											class="fa fa-trash"></i></a>
+										<a href="javascript:window.location.reload(true);"
+											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
 									</div>
                             </div>
                             <div class="ibox-content">
@@ -48,8 +48,9 @@
 												<th style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" class="chkAll" id="checkallbox" /></th>
 												<th style="width: 20%;">IP</th>
-												<th style="width: 20%;">账号</th>
-												<th style="width: 20%;">密码</th>
+												<th style="width: 13%;">端口</th>
+												<th style="width: 13%;">账号</th>
+												<th style="width: 14%;">密码</th>
 												<th style="width: 200px;">描述</th>
 												<th style="width: 8%;" class="del-operation">操作</th>
 											</tr>
@@ -63,8 +64,9 @@
 													<td style="width: 20%;cursor:pointer"><a title="查看详细信息" onclick="sheraDetail(${shera.id})" keyName="name"
 														onmousemove="style.textDecoration='underline'"
 														onmouseout="style.textDecoration='none'">${shera.sheraUrl }</a></td>
-													<td style="width: 20%;">${shera.userName }</td>
-													<td style="width: 20%;">${shera.password }</td>
+													<td style="width: 13%;">${shera.port }</td>
+													<td style="width: 13%;">${shera.userName }</td>
+													<td style="width: 14%;">${shera.password }</td>
 													<td class="autocut" title="${shera.remark }">${shera.remark }</td>
 													<td style="width: 8%;"><a id="deleteKeyBtn"
 														class="no-drop"
@@ -99,9 +101,14 @@
 		<div style="margin: 15px 20px">
 			<div class="infoCred">
 				<span class="labelCred">IP：</span> <input type="text"
-					class="form-control conCred" id="sheraIp" name="sheraIp" placeholder="http://192.168.0.76:8282/"
+					class="form-control conCred" id="sheraIp" name="sheraIp" placeholder="http://192.168.0.76"
 					value="">
 			</div>
+		    <div class="infoCred">
+                <span class="labelCred">端口：</span> <input type="text"
+                    class="form-control conCred" id="port" name="port" placeholder=""
+                    value="">
+            </div>
 			<div class="infoCred">
 				<span class="labelCred">账号：</span> <input type="text"
 					class="form-control conCred" id="shreaName" name="shreaName"

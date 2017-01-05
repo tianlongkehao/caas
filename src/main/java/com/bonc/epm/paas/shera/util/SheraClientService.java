@@ -74,8 +74,8 @@ public class SheraClientService {
     }
     
     public SheraAPIClientInterface getClient(Shera shera){
-        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-        this.endpoint = shera.getSheraUrl();
+        String namespace = CurrentUserUtils.getInstance().getUser().getUserName();
+        this.endpoint = "http://" + shera.getSheraUrl() + ":" + shera.getPort() + "/she-ra";
         this.username = shera.getUserName();
         this.password = shera.getPassword();
         return getclient(namespace);
@@ -104,14 +104,15 @@ public class SheraClientService {
      */
     public Job generateJob(String id ,String jdkVersion,String branch,String url,
                            String codeName,String refspec,
-                           String dockerFileContent,String dockerFile,String imgName ,
-                           List<CiInvoke> ciInvokeList,String userName,Integer type) {
+                           String dockerFileContent,String dockerFile,String imgNamePre,String imgName,
+                           List<CiInvoke> ciInvokeList,String userName,Integer type,Integer codeType) {
         Job job = new Job();
         job.setId(id);
         job.setJdkVersion(jdkVersion);
         job.setMaxExecutionRecords(2);
         job.setMaxKeepDays(2);
         CodeManager codeManager = new CodeManager();
+        codeManager.setChoice(codeType);
         GitConfig gitConfig = new GitConfig();
         gitConfig.setBranch(branch);
         Repository repo = new Repository();
@@ -180,6 +181,7 @@ public class SheraClientService {
             imgManager.setDockerFileContent("");
             imgManager.setDockerFile(dockerFile);
         }
+        imgManager.setImgNamePre(imgNamePre);
         imgManager.setImgName(imgName);
         job.setImgManager(imgManager);
         return job;
@@ -207,12 +209,13 @@ public class SheraClientService {
      * @param type 
      * @return 
      */
-    public GitCredential generateGitCredential(String secretInfo,String username,Integer type){
+    public GitCredential generateGitCredential(String secretInfo,String username,Integer type,String desc){
         GitCredential gitCredential = new GitCredential();
         gitCredential.setSecretInfo(secretInfo);
         CredentialKey credentialKey = new CredentialKey();
         credentialKey.setType(type);
         credentialKey.setUsername(username);
+        credentialKey.setDesc(desc);
         gitCredential.setKey(credentialKey);
         return gitCredential;
     }

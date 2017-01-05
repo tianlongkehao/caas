@@ -29,7 +29,12 @@
 	 $('input[name="chkItem"]:checked').each(function(){
 		 var envTemplate = $(this).val();
 		 templateNames.push(envTemplate);
-		 layer.open({
+	 })
+	 if ("" == templateNames) {
+		layer.alert("请选择至少一个模板", {icon:0});
+		return;
+	 }
+	 layer.open({
 			 title: '删除环境变量',
 			 content: '确定删除环境变量？',
 			 btn: ['确定', '取消'],
@@ -47,9 +52,7 @@
 						 }
 			
 					 }
-				 })
-			 }
-		 })
-	 })
-	 
+				})
+			}
+	})
  }

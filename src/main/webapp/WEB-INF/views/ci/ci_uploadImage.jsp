@@ -37,12 +37,12 @@
 
                                     <div class="">
                                         <span class="name-note">${username } /&nbsp;</span>
-                                        <input name="imgNameFirst" type="hidden" value="${username }">
+                                        <input name="imgNameFirst" id = "imgNameFirst" type="hidden" value="${username }">
                                         <input id="name" name="name" type="text" class="name-input"
                                                value=""> :
                                         <input id="version" name="version" type="text" value="latest"
                                                class="name-input">
-                                        <span style="color:#FF0000" id="image_name_version"><i class="fa fa-info-circle"></i></span>
+                                        <!-- <span style="color:#FF0000" id="image_name_version"><i class="fa fa-info-circle"></i></span> -->
                                     </div>
                                 </div>
                                 <div class="form-group col-md-5">

@@ -34,9 +34,11 @@ import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.StorageDao;
+import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.entity.FileInfo;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.util.CmdUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.FileUtils;
@@ -65,6 +67,13 @@ public class StorageController {
      */
     @Autowired
     private StorageDao storageDao;
+    
+    /**
+     * userResourceDao
+     */
+    @Autowired
+    private UserResourceDao userResourceDao;
+    
     /**
      * 
      */
@@ -82,12 +91,19 @@ public class StorageController {
     @RequestMapping(value = { "service/storage" }, method = RequestMethod.GET)
     public String findStorages(Model model) {
         User cUser = CurrentUserUtils.getInstance().getUser();
+        UserResource userResource = new UserResource();
+        if (cUser.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+            userResource = userResourceDao.findByUserId(cUser.getParent_id());
+        }
+        else {
+            userResource = userResourceDao.findByUserId(cUser.getId());
+        }
         int leftstorage = 0;
         List<Storage> list = storageDao.findByCreateBy(cUser.getId());
         for (Storage storage : list) {
             leftstorage = leftstorage + (int) storage.getStorageSize();
         }
-        model.addAttribute("leftstorage", (int) cUser.getVol_size() - leftstorage / 1024);
+        model.addAttribute("leftstorage", (int) userResource.getVol_size() - leftstorage / 1024);
         // long createBy = CurrentUserUtils.getInstance().getUser().getId();
         // List<Storage> storages = storageDao.findByCreateBy(createBy);
         // model.addAttribute("storages",storages);
@@ -150,12 +166,19 @@ public class StorageController {
     @RequestMapping(value = { "service/storage/add" }, method = RequestMethod.GET)
     public String storageAdd(Model model) {
         User cUser = CurrentUserUtils.getInstance().getUser();
+        UserResource userResource = new UserResource();
+        if (cUser.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+            userResource = userResourceDao.findByUserId(cUser.getParent_id());
+        }
+        else {
+            userResource = userResourceDao.findByUserId(cUser.getId());
+        }
         float leftstorage = 0;
         List<Storage> list = storageDao.findByCreateBy(cUser.getId());
         for (Storage storage : list) {
             leftstorage = leftstorage + (float) storage.getStorageSize();
         }
-        model.addAttribute("leftstorage", (float) cUser.getVol_size() - leftstorage / 1024);
+        model.addAttribute("leftstorage", (float) userResource.getVol_size() - leftstorage / 1024);
         model.addAttribute("menu_flag", "service");
         return "storage/storage_add.jsp";
     }
@@ -231,13 +254,20 @@ public class StorageController {
     public String dilatationStorage(long storageId, Integer storageUpdateSize) {
         Map<String, Object> map = new HashMap<String, Object>();
         User cUser = CurrentUserUtils.getInstance().getUser();
+        UserResource userResource = new UserResource();
+        if (cUser.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+            userResource = userResourceDao.findByUserId(cUser.getParent_id());
+        }
+        else {
+            userResource = userResourceDao.findByUserId(cUser.getId());
+        }
         Storage storage = storageDao.findOne(storageId);
         int usedStorage=0;
         List<Storage> list = storageDao.findByCreateBy(cUser.getId());
         for (Storage stor : list) {
             usedStorage = usedStorage + (int) stor.getStorageSize();
         }
-        if (storageUpdateSize/1024 - storage.getStorageSize()/1024>((int) cUser.getVol_size() - usedStorage / 1024)){
+        if (storageUpdateSize/1024 - storage.getStorageSize()/1024>((int) userResource.getVol_size() - usedStorage / 1024)){
             map.put("status", "500");
             return JSON.toJSONString(map);
         }

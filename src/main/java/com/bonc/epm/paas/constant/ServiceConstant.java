@@ -57,5 +57,10 @@ public class ServiceConstant {
     public static final Integer OPERATION_TYPE_ROLLINGUPDATE = 70;  //版本升级
     public static final Integer OPERATION_TYPE_CONFIGURE     = 80;  //更改配置
     public static final Integer OPERATION_TYPE_DELETE        = 90;  //删除
-    
+    /**
+     * 监控设置
+     */
+    public static final Integer MONITOR_NONE                 = 0;  //没有监控
+    public static final Integer MONITOR_PINPOINT             = 1;  //Pinpoint监控
+
 }

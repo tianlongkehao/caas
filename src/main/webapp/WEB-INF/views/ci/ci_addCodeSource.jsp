@@ -53,7 +53,7 @@
 
                                     <div class="">
                                         <span class="name-note">${username } /&nbsp;</span>
-                                        <input name="imgNameFirst" type="hidden" value="${username }">
+                                        <input name="imgNameFirst" id = "imgNameFirst" type="hidden" value="${username }">
                                         <input id="imgNameLast" name="imgNameLast" type="text" class="name-input"
                                                value=""> :
                                         <input id="imgNameVersion" name="imgNameVersion" type="text" value="latest"
