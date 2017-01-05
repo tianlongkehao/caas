@@ -53,6 +53,7 @@ import com.bonc.epm.paas.dao.HookAndImagesDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCode;
@@ -60,15 +61,14 @@ import com.bonc.epm.paas.entity.CiCodeCredential;
 import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.CiRecord;
-
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
-
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.HookAndImages;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.ChangeGit;
@@ -106,6 +106,12 @@ public class CiController {
      */
     @Autowired
     private UserDao userDao;
+    
+    /**
+     * userResourceDao
+     */
+    @Autowired
+    private UserResourceDao userResourceDao;
     
     /**
      * CiDao接口
@@ -752,10 +758,10 @@ public class CiController {
         if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT) || 
                     currentUser.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
         	//当前是租户的场合，maxSize为租户的ImageCount字段
-        	maxSize = currentUser.getImage_count();
+        	maxSize = userResourceDao.findByUserId(currentUser.getId()).getImage_count();
 		} else if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
 			//当前是用户的场合，maxSize为该用户所在租户的ImageCount字段
-			maxSize = userDao.findById(currentUser.getParent_id()).getImage_count();
+			maxSize = userResourceDao.findByUserId(currentUser.getParent_id()).getImage_count();
 		} else {
 			map.put("overwhelm", false);
 			return JSON.toJSONString(map);

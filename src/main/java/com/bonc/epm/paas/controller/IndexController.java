@@ -294,7 +294,7 @@ public class IndexController {
         user.setUserName("admin");
         user.setPassword(EncryptUtils.encryptMD5("admin"));
         user.setUser_autority("1");
-        user.setVol_size(0);
+//        user.setVol_size(0);
         if (userDao.findByUserName(user.getUserName()) == null) {
             userDao.save(user);
         }

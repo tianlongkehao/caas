@@ -41,7 +41,7 @@
                                  	<a id="desEdit" class="btn btn-link" style="font-size: 14px; display: block;"><i class="fa fa-edit"></i> 编辑</a>
                            		 </c:if>
                             </span>
-                            <span class="list-content">${image.summary }</span>
+                            <span class="list-content" id="showContent">${image.summary }</span>
 
                             <span class="list-content hide" id="contentArea">
                                 <textarea id="desTextarea" name="description" style="padding:5px;height: 50px">${image.summary }</textarea>

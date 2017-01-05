@@ -209,12 +209,13 @@ public class SheraClientService {
      * @param type 
      * @return 
      */
-    public GitCredential generateGitCredential(String secretInfo,String username,Integer type){
+    public GitCredential generateGitCredential(String secretInfo,String username,Integer type,String desc){
         GitCredential gitCredential = new GitCredential();
         gitCredential.setSecretInfo(secretInfo);
         CredentialKey credentialKey = new CredentialKey();
         credentialKey.setType(type);
         credentialKey.setUsername(username);
+        credentialKey.setDesc(desc);
         gitCredential.setKey(credentialKey);
         return gitCredential;
     }

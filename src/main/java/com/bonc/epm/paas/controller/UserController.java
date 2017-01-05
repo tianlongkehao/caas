@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserAndSheraDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.Resource;
@@ -36,9 +38,9 @@ import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserAndShera;
+import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
-import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
@@ -78,6 +80,12 @@ public class UserController {
      */
     @Autowired
     private UserDao userDao;
+    
+    /**
+     * userResourceDao
+     */
+    @Autowired
+    private UserResourceDao userResourceDao;
     
     /**
      * StorageDao
@@ -226,6 +234,14 @@ public class UserController {
 	public String userSave(User user, Resource resource, Restriction restriction,long sheraId, Model model) {
         Map<String, Object> map = new HashMap<String, Object>();
         try {
+            //添加租户资源信息
+            UserResource userResource = new UserResource();
+            userResource.setCpu(Double.valueOf(resource.getCpu_account()));
+            userResource.setMemory(Long.parseLong(resource.getRam()));
+            userResource.setVol_size(resource.getVol());
+            userResource.setImage_count(resource.getImage_count());
+            userResource.setCreateDate(new Date());
+            
             fillPartUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，为client创建Namespace
             Namespace namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
@@ -262,6 +278,8 @@ public class UserController {
             
 			// DB保存用户信息
             userDao.save(user);
+            userResource.setUserId(user.getId());
+            userResourceDao.save(userResource);
             if (sheraId != 0) {
                 UserAndShera userAndShera = new UserAndShera();
                 userAndShera.setSheraId(sheraId);
@@ -334,6 +352,19 @@ public class UserController {
     @RequestMapping(value = { "/update.do" }, method = RequestMethod.POST)
 	public String userUpdate(User user, Resource resource, Restriction restriction,long sheraId, Model model) {
         try {
+            
+            UserResource userResource = userResourceDao.findByUserId(user.getId());
+            if (userResource == null) {
+                userResource = new UserResource();
+                userResource.setUserId(user.getId());
+                userResource.setCreateDate(new Date());
+            }
+            userResource.setCpu(Double.valueOf(resource.getCpu_account()));
+            userResource.setMemory(Long.parseLong(resource.getRam()));
+            userResource.setVol_size(resource.getVol());
+            userResource.setImage_count(resource.getImage_count());
+            userResource.setUpdateDate(new Date());
+            
             updateUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，创建client
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
@@ -358,6 +389,7 @@ public class UserController {
             		// client.updateLimitRange(user.getNamespace(), limit);
             		
             		userDao.save(user);
+            		userResourceDao.save(userResource);
             		model.addAttribute("updateFlag", "200");
             	}
             	catch (Exception e) {
@@ -555,6 +587,7 @@ public class UserController {
     @RequestMapping(value = { "detail/{id}" }, method = RequestMethod.GET)
     public String detailById(Model model, @PathVariable long id) {
         User user = userDao.findOne(id);
+        UserResource userResource = userResourceDao.findByUserId(id);
         Resource resource = new Resource();
         Restriction restriction = new Restriction();
         try {
@@ -615,6 +648,7 @@ public class UserController {
         model.addAttribute("sheraList", sheraList);
         model.addAttribute("restriction", restriction);
         model.addAttribute("resource", resource);
+        model.addAttribute("userResource", userResource);
         model.addAttribute("user", user);
         model.addAttribute("menu_flag", "user");
         return "user/user_detail.jsp";
@@ -811,9 +845,6 @@ public class UserController {
     @RequestMapping(value = { "user/del/{id}" }, method = RequestMethod.GET)
 	public String userDel(Model model, @PathVariable long id) {
         userDao.delete(id);
-        
-       
-        
         LOG.debug("del userid======:" + id);
         return "redirect:/user";
     }
@@ -1012,8 +1043,8 @@ public class UserController {
      */
     private void fillPartUserInfo(User user, Resource resource) {
         user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
-        user.setVol_size(resource.getVol());
-        user.setImage_count(resource.getImage_count());
+//        user.setVol_size(resource.getVol());
+//        user.setImage_count(resource.getImage_count());
         user.setNamespace(user.getUserName());
         user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
     }
@@ -1122,8 +1153,8 @@ public class UserController {
             user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
         }
         //卷组更新功能
-        user.setVol_size(resource.getVol());
-        user.setImage_count(resource.getImage_count());
+//        user.setVol_size(resource.getVol());
+//        user.setImage_count(resource.getImage_count());
         user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
         user.setNamespace(user.getUserName());
     }
@@ -1191,8 +1222,15 @@ public class UserController {
     private void getUserResourceInfo(Model model, User user, KubernetesAPIClientInterface client) {
         ResourceQuota quota = client.getResourceQuota(user.getNamespace());
         if (null != quota) {
+            UserResource userResource = new UserResource();
+            if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+                userResource = userResourceDao.findByUserId(user.getParent_id());
+            }
+            else {
+                userResource = userResourceDao.findByUserId(user.getId());
+            }
+            model.addAttribute("userResource", userResource);
             model.addAttribute("user", user);
-            
             Map<String, String> hard = quota.getStatus().getHard();
             model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
             model.addAttribute("servMemoryNum", kubernetesClientService.computeMemoryOut(hard.get("memory")));// 内存个数
