@@ -98,12 +98,17 @@ public class StorageController {
         else {
             userResource = userResourceDao.findByUserId(cUser.getId());
         }
-        int leftstorage = 0;
+     /*   int leftstorage = 0;
         List<Storage> list = storageDao.findByCreateBy(cUser.getId());
         for (Storage storage : list) {
             leftstorage = leftstorage + (int) storage.getStorageSize();
         }
-        model.addAttribute("leftstorage", (int) userResource.getVol_size() - leftstorage / 1024);
+        model.addAttribute("leftstorage", (int) userResource.getVol_size() - leftstorage / 1024);*/
+        
+        //获取存储卷剩余容量
+        model.addAttribute("leftstorage", (int) userResource.getVol_surplus_size());
+        
+        
         // long createBy = CurrentUserUtils.getInstance().getUser().getId();
         // List<Storage> storages = storageDao.findByCreateBy(createBy);
         // model.addAttribute("storages",storages);
@@ -173,12 +178,16 @@ public class StorageController {
         else {
             userResource = userResourceDao.findByUserId(cUser.getId());
         }
-        float leftstorage = 0;
+/*        float leftstorage = 0;
         List<Storage> list = storageDao.findByCreateBy(cUser.getId());
         for (Storage storage : list) {
             leftstorage = leftstorage + (float) storage.getStorageSize();
         }
-        model.addAttribute("leftstorage", (float) userResource.getVol_size() - leftstorage / 1024);
+        model.addAttribute("leftstorage", (float) userResource.getVol_size() - leftstorage / 1024);*/
+      
+        //获取存储卷剩余容量
+        model.addAttribute("leftstorage", (float) userResource.getVol_surplus_size());
+        
         model.addAttribute("menu_flag", "service");
         return "storage/storage_add.jsp";
     }
@@ -212,6 +221,12 @@ public class StorageController {
             ceph.createStorageCephFS(storage.getStorageName(), storage.isVolReadOnly());
 
             storageDao.save(storage);
+            
+            //修改租户的卷组剩余容量
+            UserResource resource=userResourceDao.findByUserId(createBy);
+            resource.setVol_surplus_size(resource.getVol_surplus_size()-storage.getStorageSize()/1024);
+            userResourceDao.save(resource);
+            
             map.put("status", "200");
         } 
         else {
@@ -264,16 +279,28 @@ public class StorageController {
         Storage storage = storageDao.findOne(storageId);
         int usedStorage=0;
         List<Storage> list = storageDao.findByCreateBy(cUser.getId());
-        for (Storage stor : list) {
+        /*    for (Storage stor : list) {
             usedStorage = usedStorage + (int) stor.getStorageSize();
         }
         if (storageUpdateSize/1024 - storage.getStorageSize()/1024>((int) userResource.getVol_size() - usedStorage / 1024)){
             map.put("status", "500");
             return JSON.toJSONString(map);
+        }*/
+        
+        //判断卷组剩余容量是否大于扩充容量
+        if (storageUpdateSize/1024 - storage.getStorageSize()/1024>((int) userResource.getVol_surplus_size())){
+            map.put("status", "500");
+            return JSON.toJSONString(map);
         }
+        
+        //修改租户的卷组剩余容量
+        userResource.setVol_surplus_size(userResource.getVol_surplus_size()+storage.getStorageSize()/1024-storageUpdateSize/1024);
+        userResourceDao.save(userResource);
         
         storage.setStorageSize(storageUpdateSize);
         storageDao.save(storage);
+        
+        
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
@@ -305,8 +332,25 @@ public class StorageController {
                 } 
         }
         for(int i=0 ;i<id.length;i++){
-        
+        	
             storageDao.delete(Long.parseLong(id[i]));
+           
+            
+            //判断登录者为用户还是租户，并获取其对应的userResorce
+            User cUser = CurrentUserUtils.getInstance().getUser();
+            UserResource userResource = new UserResource();
+            if (cUser.getUser_autority().equals(UserConstant.AUTORITY_USER)){//其身份是用户
+                userResource = userResourceDao.findByUserId(cUser.getParent_id());
+            }
+            else {//其身份是租户
+                userResource = userResourceDao.findByUserId(cUser.getId());
+            }   
+            //修改租户的卷组剩余容量
+            userResource.setVol_surplus_size(userResource.getVol_surplus_size()+storage.getStorageSize()/1024);
+            userResourceDao.save(userResource);
+            
+            
+            
             CephController cephCon = new CephController();
             try {
                 cephCon.connectCephFS();

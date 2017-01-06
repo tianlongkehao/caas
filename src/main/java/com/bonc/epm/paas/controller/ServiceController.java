@@ -527,6 +527,7 @@ public class ServiceController {
             createBy = CurrentUserUtils.getInstance().getUser().getId();
         }
         List<Storage> storageList = storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(createBy, 1);
+
         //获取监控配置
         UserFavor userFavor = userFavorDao.findByUserId(currentUser.getId());
         Integer monitor;
