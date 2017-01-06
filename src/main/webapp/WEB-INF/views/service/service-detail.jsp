@@ -35,7 +35,7 @@
 					<section class="detail-succeed">
 						<div class="icon-img">
 							<div class="type-icon">
-								<img src="<%=path%>/images/image-1.png" height="100%">
+								<img src="<%=path%>/images/podSimple.png" height="100%">
 							</div>
 						</div>
 						<ul class="succeed-content pull-left">
@@ -79,7 +79,7 @@
 							<li><a class="ENVS serDetail">环境变量</a></li>
 							<li><a class="PORTS serDetail">端口</a></li>
 							<li class="dropdown">
-								<a class="dropdown-toggle" id="dropdown-log"
+								<a class="dropdown-toggle serDetail" id="dropdown-log"
 									data-toggle="dropdown"> 日志 <b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">

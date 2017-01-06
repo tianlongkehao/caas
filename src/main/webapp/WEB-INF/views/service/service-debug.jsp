@@ -28,9 +28,9 @@
 				<div class="contentMain">
 					<div class="baseInfo center-style">
 						<ul class="nav navbar-nav">
-							<li><a class="DOC btn-prim">文件</a></li>
-							<li><a class="CMD">命令行</a></li>
-							<li><a class="EXPORT">导出</a></li>
+							<li><a class="DOC btn-prim serDetail">文件</a></li>
+							<li><a class="CMD serDetail">命令行</a></li>
+							<li><a class="EXPORT serDetail">导出</a></li>
 						</ul>
 					</div>
 					
@@ -76,7 +76,7 @@
 						</div>
 					</div>
 					
-					<div class="cmdInfo container hide">
+					<div class="cmdInfo hide">
 						<div class="contentMain" id="ftp">
 							<iframe id="shellinabox" src="" value="" width="100%" height="500px"></iframe>
 						</div>

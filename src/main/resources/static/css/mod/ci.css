@@ -203,11 +203,11 @@ td .dockerfileinput {
 }
 
 .ci-body .ci-content-tabmain .active {
-    color: #4E8FDE;
+    /* color: #4E8FDE; */
     border-left: 1px solid #DADADA;
     border-right: 1px solid #DADADA;
     border-bottom: 0;
-    border-top: 2px solid #4E8FDE;
+    /* border-top: 2px solid #4E8FDE; */
     background: #fff;
 }
 
