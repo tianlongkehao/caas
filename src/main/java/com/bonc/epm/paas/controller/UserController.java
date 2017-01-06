@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -231,11 +233,14 @@ public class UserController {
      */
     @RequestMapping(value = { "/save.do" }, method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
 	public String userSave(User user, Resource resource, Restriction restriction,long sheraId, Model model) {
         Map<String, Object> map = new HashMap<String, Object>();
+        UserResource userResource = new UserResource();
+        // 以用户名(登陆帐号)为name，创建client
+        KubernetesAPIClientInterface client = null;
         try {
             //添加租户资源信息
-            UserResource userResource = new UserResource();
             userResource.setCpu(Double.valueOf(resource.getCpu_account()));
             userResource.setMemory(Long.parseLong(resource.getRam()));
             userResource.setVol_size(resource.getVol());
@@ -248,9 +253,7 @@ public class UserController {
             fillPartUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，为client创建Namespace
             Namespace namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
-	        // 以用户名(登陆帐号)为name，创建client
-            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-            
+            client = kubernetesClientService.getClient(user.getNamespace());
             if (!createNsAndSec(user, namespace, client)) {
                 client.deleteNamespace(user.getNamespace());
                 map.put("message", "创建namespace或者secret失败！");
@@ -292,6 +295,8 @@ public class UserController {
             map.put("creatFlag", "200");
         } 
         catch (Exception e) {
+            client.deleteNamespace(user.getNamespace());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             e.printStackTrace();
             map.put("message", "创建失败");
             map.put("creatFlag", "400");
@@ -353,9 +358,9 @@ public class UserController {
      * @see
      */
     @RequestMapping(value = { "/update.do" }, method = RequestMethod.POST)
+    @Transactional
 	public String userUpdate(User user, Resource resource, Restriction restriction,long sheraId, Model model) {
         try {
-            
             UserResource userResource = userResourceDao.findByUserId(user.getId());
             if (userResource == null) {
                 userResource = new UserResource();
@@ -411,13 +416,16 @@ public class UserController {
 			} else {
 				LOG.error("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
 			}
+            
+            if (sheraId != 0) {
+                userAndSheraUpdate(user.getId(),sheraId);
+            }
         } 
-        catch (KubernetesClientException e) {
+        catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             LOG.error("error message:-"+ e.getMessage());
         }
-        if (sheraId != 0) {
-            userAndSheraUpdate(user.getId(),sheraId);
-        }
+
         List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
         model.addAttribute("userList", userList);
         model.addAttribute("menu_flag", "user");

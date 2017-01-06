@@ -94,13 +94,33 @@ function addCiInfo(type) {
 }
 
 function registerConstructCiEvent(){
+	//停止构建
+	$(document).on('click','.stop-ci',function(){
+		var $this = $(this);
+		var id = $this.attr("ciId");
+		$.ajax({
+			url:ctx+"/ci/stopCi.do?id="+id,
+			async:true,
+			success:function(data){
+				data = eval("(" + data + ")");
+				if(data.status=="200"){
+					if(data.ci.type == "1"){
+   					 	window.location.href = ctx+"/ci?code";
+	   				 }else{
+	   					 window.location.href = ctx+"/ci";
+	   				 }
+				}else{
+					layer.alert("停止构建失败");
+				}
+			}
+		});
+	})
 	
 	$(document).on('click','.bj-green',function(){
 //	$(".bj-green").unbind("click").click(function(){
 		if($(this).attr("constructionStatus")=="2"){
 			return;
 		}
-		debugger;
 		var $this = $(this);
 		var id = $this.attr("ciId");
 		var cStatusHtml = "<i class='fa_success'></i>"+
@@ -109,8 +129,9 @@ function registerConstructCiEvent(){
 		$this.parent().parent().find(".cStatusColumn").html(cStatusHtml);
 		$this.css("cursor","no-drop");
 		$this.find("i").removeClass("bj-no-drop");
+		$this.next().removeClass("hide");
 		$(this).unbind("click");
-		$.ajax({
+		$.ajax({	
 			url:ctx+"/ci/constructCi.do?id="+id,
 			async:true,
 			success:function(data){
@@ -123,7 +144,7 @@ function registerConstructCiEvent(){
 	   				 }
 //					window.location.reload();
 				}else{
-					layer.alert(data.msg);
+					layer.alert("构建失败");
 				}
 				setTimeout('window.location.reload()',2000);
 			}
@@ -219,14 +240,20 @@ function loadCi() {
 						data : null,
 						render : function (data,type,row) {
 							var btnCursorClass = '';
+							var html = '';
 							if (row.constructionStatus == 2 ) {
 								btnCursorClass = 'cursor-no-drop';
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
+												'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
+												'<i class="fa fa-arrow-circle-right bj-no-drop"></i>'+
+											'</span>';
 							}
-							var html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
+							else {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
 											'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
 											'<i class="fa fa-arrow-circle-right bj-no-drop"></i>'+
-										'</span>'+
-											'&nbsp;&nbsp;&nbsp;<span><i class="fa fa-power-off ci-powerOff"></i></span>';
+										'</span>';
+							}
 							return html;
 						}
 					}
@@ -311,18 +338,20 @@ function loadCiCode() {
 						data : null,
 						render : function (data,type,row) {
 							var btnCursorClass = '';
+							var html = '';
 							if (row.constructionStatus == 2 ) {
 								btnCursorClass = 'cursor-no-drop';
-								var html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
-								'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
-								'<i class="fa fa-arrow-circle-right "></i>'+
-							'</span>';
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
+												'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
+												'<i class="fa fa-arrow-circle-right "></i>'+
+											'</span>'+
+											'&nbsp;&nbsp;&nbsp;<span class="stop-ci" style="cursor:pointer" title="停止构建" ciId="'+row.id+'" ><i class="fa fa-power-off ci-powerOff"></i></span>';
 							}else{
-								var html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
-								'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
-								'<i class="fa fa-arrow-circle-right bj-no-drop"></i>'+
-							'</span>'+
-							'&nbsp;&nbsp;&nbsp;<span><i class="fa fa-power-off ci-powerOff"></i></span>';
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
+													'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
+													'<i class="fa fa-arrow-circle-right bj-no-drop"></i>'+
+											'</span>'+
+											'&nbsp;&nbsp;&nbsp;<span class="stop-ci hide" style="cursor:pointer" title="停止构建" ciId="'+row.id+'"><i class="fa fa-power-off ci-powerOff"></i></span>';
 							}
 							return html;
 						}

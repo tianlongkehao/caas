@@ -42,7 +42,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
-import com.bonc.epm.paas.constant.TemplateConf;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
@@ -92,7 +91,6 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.PoiUtils;
 import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
-import com.bonc.epm.paas.util.TemplateEngine;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 
@@ -203,8 +201,8 @@ public class ServiceController {
     /**
      * TemplateConf
      */
-    @Autowired
-	private TemplateConf templateConf;
+    @Value("${nginxConf.io.serverAddr}")
+	private String serverAddr;
 
     /**
      * 获取ceph.monitor数据
@@ -1007,7 +1005,7 @@ public class ServiceController {
                 smalSet.add(Integer.valueOf(portCon.getContainerPort().trim()));
             }
         }
-        service.setServiceAddr("http://"+currentUser.getUserName() + "." + templateConf.getServerAddr());
+        service.setServiceAddr("http://"+currentUser.getUserName() + "." + serverAddr);
         service = serviceDao.save(service);
         
 		// 保存服务操作信息
@@ -1530,8 +1528,6 @@ public class ServiceController {
         User user = CurrentUserUtils.getInstance().getUser();
         Service service = serviceDao.findOne(id);
         Map<String, Object> map = new HashMap<String, Object>();
-        String confName = service.getServiceName();
-        String configName = user.getUserName() + "-" + service.getServiceName();
         try {
         	ReplicationController controller = new ReplicationController();
             if (service.getStatus() != 1) {
@@ -1542,15 +1538,23 @@ public class ServiceController {
                     if (controller !=null && controller.getSpec().getReplicas() == 0) {
                     	Status status = client.deleteReplicationController(service.getServiceName());
                     	if (status.getStatus().equals("Success")) {
-                    		status = client.deleteService(service.getServiceName());
-                    		if (status.getStatus().equals("Success")) {
-                    			TemplateEngine.deleteConfig(confName, configName, templateConf);
-                    		} else {
-    	                    	map.put("status", "400");
-    	                    	map.put("msg", "Delete a Service failed:ServiceName["+service.getServiceName()+"]");
-    	                    	LOG.error("Delete a Service failed:ServiceName["+service.getServiceName()+"]");
-    	                    	return JSON.toJSONString(map);
+                    		//svc存在的时候需要删除
+                    		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+                    		try {
+                    			// 查询svc是否已经创建
+                    			k8sService = client.getService(service.getServiceName());
+                    		} catch (KubernetesClientException e) {
+                    			k8sService = null;
                     		}
+                			if (null != k8sService) {
+                				status = client.deleteService(service.getServiceName());
+                				if (!status.getStatus().equals("Success")) {
+                					map.put("status", "400");
+                					map.put("msg", "Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+                					LOG.error("Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+                					return JSON.toJSONString(map);
+                				}
+							}
 						} else {
 	                    	map.put("status", "400");
 	                    	map.put("msg", "Delete a Replication Controller failed:ServiceName["+service.getServiceName()+"]");
