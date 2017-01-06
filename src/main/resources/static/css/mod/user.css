@@ -968,6 +968,8 @@ i.pushOrg {
 	background-color: #fff;
 	padding-top: 40px;
 	padding-bottom: 70px;
+	width: 96%;
+	margin: 0 auto;
 }
 .preferInfo{
 	margin-left: 40px;

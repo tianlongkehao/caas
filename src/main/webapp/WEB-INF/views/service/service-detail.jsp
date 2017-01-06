@@ -20,9 +20,9 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+						<li><a href="<%=path %>/home"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">服务</li>
+						<li><a href="<%=path %>/service"><span id="nav2">服务管理</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" style="width:200px">${service.serviceName }</li>
 					</ol>
@@ -73,11 +73,11 @@
 					
 					<div class="baseInfo center-style">
 						<ul class="nav navbar-nav">
-							<li><a class="BASE btn-prim">基本信息</a></li>
-							<li><a class="INSTANCES">容器实例</a></li>
-							<li><a class="SERVOL">挂载地址</a></li>
-							<li><a class="ENVS">环境变量</a></li>
-							<li><a class="PORTS">端口</a></li>
+							<li><a class="BASE btn-prim serDetail">基本信息</a></li>
+							<li><a class="INSTANCES serDetail">容器实例</a></li>
+							<li><a class="SERVOL serDetail">挂载地址</a></li>
+							<li><a class="ENVS serDetail">环境变量</a></li>
+							<li><a class="PORTS serDetail">端口</a></li>
 							<li class="dropdown">
 								<a class="dropdown-toggle" id="dropdown-log"
 									data-toggle="dropdown"> 日志 <b class="caret"></b>

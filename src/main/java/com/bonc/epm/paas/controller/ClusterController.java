@@ -377,6 +377,7 @@ public class ClusterController {
         }
         model.addAttribute("lstClustersUse", lstClustersUse);
         model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "management");
         return "cluster/cluster-detail.jsp";
     }
     
@@ -487,7 +488,9 @@ public class ClusterController {
      * @return String
      */
     @RequestMapping(value = { "/add" }, method = RequestMethod.GET)
-	public String clusterAdd() {
+	public String clusterAdd(Model model) {
+    	model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "management");
         return "cluster/cluster-create.jsp";
     }
 
@@ -505,6 +508,7 @@ public class ClusterController {
         List<Cluster> lstClusters = clusterDao.findByHostLike(searchIP);
         model.addAttribute("lstClusters", lstClusters);
         model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "management");
         return "cluster/cluster-management.jsp";
     }
 

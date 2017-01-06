@@ -196,5 +196,7 @@ $(function(){
     	});
     })
 });
+$(function () { $('#collapseTwo').collapse('show')});
+$(function () { $('#collapseOne').collapse('show')});
 
 

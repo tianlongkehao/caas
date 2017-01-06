@@ -23,9 +23,7 @@
 						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">服务</li>
-						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">存储和备份</li>
+						<li class="active"><a href="<%=path %>/service/storage"><span id="nav2">存储和备份</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" id="storageName">${storage.storageName }</li>
 					</ol>

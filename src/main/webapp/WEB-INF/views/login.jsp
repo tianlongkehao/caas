@@ -10,11 +10,11 @@
 </head>
 <body>
 
-<header class="header">
+<header class="header" style="background-color: #e8504f;">
     <div class="navbar navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a href="javascript:void(0);">
+                <a href="javascript:void(0);" style="color:#fff">
                     <h2>BCM</h2>
                 </a>
             </div>

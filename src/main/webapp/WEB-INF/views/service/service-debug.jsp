@@ -17,9 +17,9 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+						<li><a href="<%=path %>/home"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">服务</li>
+						<li><a href="<%=path %>/service"><span id="nav2">服务管理</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" style="width: inherit;">${service.serviceName }(${podip})</li>
 					</ol>
@@ -56,11 +56,11 @@
 											<table style="border-collapse: collapse; margin: 0 auto;" class="table">
 												<thead style="display: block;">
 													<tr>
-														<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
-														<th style="width: 25%; text-indent: 25px;">文件名</th>
-														<th style="width: 15%; text-indent: 61px;">大小</th>
-														<th style="width: 30%; text-indent: 151px;">修改日期</th>
-														<th style="width: 15%; text-indent: 131px;">操作</th>
+														<th style="width: 61px;"><input type="checkbox" class="chkAll"></th>
+														<th style="width: 307px;">文件名</th>
+														<th style="width: 183px;">大小</th>
+														<th style="width: 369px;">修改日期</th>
+														<th style="width: 184px;">操作</th>
 													</tr>
 												</thead>
 												<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%" class="sortable-list connectList agile-list">

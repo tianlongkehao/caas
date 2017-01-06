@@ -27,8 +27,8 @@
 						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">模板</li>
-						<li style="margin-left: -44px;"><i class="fa fa-angle-right"></i></li>
+						<li class="active" style="width:110px"><a href="<%=path %>/template/dockerfile"><span id="nav2">dockerfile模板</span></a></li>
+						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" style="width:108px;">编辑dockerfile</li>
 					</ol>
 				</div>

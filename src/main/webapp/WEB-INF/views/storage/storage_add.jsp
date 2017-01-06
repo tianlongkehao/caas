@@ -23,9 +23,9 @@
 						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">服务</li>
-						<li style="margin-left: -44px;"><i class="fa fa-angle-right"></i></li>
-						<li class="active">创建备份</li>
+						<li class="active"><a href="<%=path %>/service"><span id="nav2">服务管理</span></a></li>
+						<li><i class="fa fa-angle-right"></i></li>
+						<li class="active">创建存储卷</li>
 					</ol>
 				</div>
 				<div class="contentMain">

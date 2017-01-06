@@ -23,7 +23,7 @@
 a i.fa-home{
 	color: #3C7BCA;
 }
-#nav1{
+#nav1,#nav2,#nav3{
 	color:#3C7BCA;
 }
 
@@ -69,7 +69,7 @@ a:hover{
 }
 /* ci */
 .tab-title.active{
-	border-top: 4px solid #2e384a;
+	border-top: 4px solid #3C7BCA;
 }
 /* help */
 .book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
@@ -85,6 +85,12 @@ nav.navbar-default{
 .help-btn:hover{
 	background-color: #3C7BCA;
 	color: #fff;
+}
+.nav-bcm{
+	background-color: #1e426f;
+}
+.img-circle{
+	border: 4px solid #245086;
 }
 
 

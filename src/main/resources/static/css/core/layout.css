@@ -142,7 +142,7 @@
     z-index: 1;
 }
 .page-container article {
-    margin-top: 70px;
+    /* margin-top: 70px; */
     width: 100%;
     display: inline-block;
     padding: 0 30px;
@@ -230,3 +230,6 @@
 /* #nav1{
 	color:#e8504f;
 } */
+.angleRight2{
+	margin-left:-44px;
+}

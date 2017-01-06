@@ -23,7 +23,7 @@
 a i.fa-home{
 	color: #e8504f;
 }
-#nav1{
+#nav1,#nav2,#nav3{
 	color:#e8504f;
 }
 
@@ -85,6 +85,18 @@ nav.navbar-default{
 .help-btn:hover{
 	background-color: #e66;
 	color: #fff;
+}
+.nav-bcm{
+	background-color: #e14344;
+}
+.img-circle{
+	border: 4px solid #e66;
+}
+.serDetail{
+	color:#e8504f;
+}
+.serDetail:hover{
+	color:#fff;
 }
 
 

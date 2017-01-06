@@ -20,8 +20,10 @@
 					<ol class="breadcrumb">
 						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
+					    <li><i class="fa fa-angle-right"></i></li>
+                    	<li class="active"><a href="<%=path %>/ci"><span id="nav2">镜像构建</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2" style="width: 110px">Dockerfile构建</li>
+						<li class="active" style="width: 110px">Dockerfile构建</li>
 					</ol>
 				</div>
 				<div class="contentMain">

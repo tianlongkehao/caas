@@ -23,7 +23,7 @@
                     <li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">集群资源</li>
+                    <li class="active">集群监控</li>
                 </ol>
             </div>
             <div class="contentMain">

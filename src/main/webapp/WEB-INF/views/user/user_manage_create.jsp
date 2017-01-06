@@ -20,7 +20,9 @@
                 <ol class="breadcrumb">
                     <li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">创建用户</li>
+                    <li class="active"><a href="<%=path %>/user/manage/list/${cur_user.id }"><span id="nav2">用户管理</span></a></li>
+                    <li><i class="fa fa-angle-right"></i></li>
+                    <li class="active">创建用户</li>
                 </ol>
             </div>
             <div class="contentMain">

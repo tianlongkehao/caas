@@ -2,14 +2,15 @@
 
 /* 侧边菜单栏 */
 nav.navbar-default{
-	width:190px;
+	width:200px;
 	position: fixed;
-    top: 70px;
+    /* top: 70px; */
     left: 0;
     z-index: 95;
     min-height: 100%;
-	padding-top: 35px;
 	/* background-color:#fff; */
+	/* box-shadow: 1px 1px 10px #33414E; */
+	box-shadow: 1px 1px 15px rgba(0,0,0,0.45);
 }
 .nav ul .nav-header{
 	padding-bottom: 20px;
@@ -59,7 +60,7 @@ nav.navbar-default{
 .helpDoc{
 	position: absolute;
 	width: 100%;
-	bottom: 110px;
+	bottom: 60px;
 	font-size: 12px;
 	z-index: 222;
 	text-align: center;
@@ -78,6 +79,44 @@ nav.navbar-default{
 .helpDoc input:visited{
 	/* border-color: #e8504f; */
 	outline:none;
+}
+.nav-bcm{
+	text-align: center;
+	/* background-color: #e14344; */
+	margin-top:-20px;
+	height: 80px;
+}
+.nav-bcm h2{
+	color: #fff;
+	font-weight: 700;
+	line-height:80px;
+}
+.img-circle{
+	width:60px;
+	margin-left:15px;
+	/* border: 4px solid #e66; */
+}
+.nav-header{
+	padding-top: 15px;
+	padding-bottom: 25px;
+}
+.userNameTit{
+	padding-top:10px;
+}
+.userNameTit span.t-username{
+	color:#fff;
+}
+.userNameTit span i{
+	color:#d6d7d9;
+}
+.fa_circle{
+	width: 5px;
+    height: 5px;
+    background-color: #fff;
+    border-radius: 50%;
+    margin-bottom: 2px;
+    margin-right: 10px;
+    margin-left: 7px;
 }
 	
 

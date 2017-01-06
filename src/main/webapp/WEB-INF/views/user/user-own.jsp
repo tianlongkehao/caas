@@ -17,7 +17,7 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                    <li><a href="<%=path %>/home"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active">用户信息</li>
                 </ol>
@@ -157,36 +157,66 @@
                     </div>
 					<div id="preferenceinfo_wrap" class="tab_wrap hide">
 						<div class="container-prefer">
-							<div class="preferInfo">
-								<span>默认值设置：</span>
+	                        <div class="panel-group" id="accordion">
+								<div class="panel panel-info">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#accordion" 
+											   href="#collapseOne">
+												监控设置
+											</a>
+										</h4>
+									</div>
+									<div id="collapseOne" class="panel-collapse collapse in">
+										<div class="panel-body">
+											<div class="preferInfo">
+												<span>默认值设置：</span>
+											</div>
+											<div class="preferInfo">
+												<span>监控设置：</span>
+												<label for="preferenceChk">
+												<c:choose>
+													<c:when test="${userFavor.monitor == 0 }">
+														<input type="checkbox" id="PinpointChk">
+													</c:when>
+													<c:when test="${userFavor.monitor == 1 }">
+														<input type="checkbox" id="PinpointChk" checked="1">
+													</c:when>
+													<c:otherwise>
+														<input type="checkbox" id="PinpointChk" checked="1">
+													</c:otherwise>
+												</c:choose>
+												Pinpoint监控</label>
+											</div>
+											<div class="form-group">
+					                            <div class="col-md-offset-10 col-md-2">
+					                                <button type="button" class="btn btn-primary" id="preferSave">保存</button>
+					                            </div>
+					                        </div>
+										</div>
+									</div>
+								</div>
 							</div>
-							<div class="preferInfo">
-								<span>监控设置：</span>
-								<label for="preferenceChk">
-								<c:choose>
-									<c:when test="${userFavor.monitor == 0 }">
-										<input type="checkbox" id="PinpointChk">
-									</c:when>
-									<c:when test="${userFavor.monitor == 1 }">
-										<input type="checkbox" id="PinpointChk" checked="1">
-									</c:when>
-									<c:otherwise>
-										<input type="checkbox" id="PinpointChk" checked="1">
-									</c:otherwise>
-								</c:choose>
-								Pinpoint监控</label>
+							<div class="panel panel-success">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<a data-toggle="collapse" data-parent="#accordion" 
+										   href="#collapseTwo">
+											主题颜色设置
+										</a>
+									</h4>
+								</div>
+								<div id="collapseTwo" class="panel-collapse collapse">
+									<div class="panel-body">
+										<div class="setColor preferInfo">
+				                        	<div>皮肤颜色：
+				                        		<i id="redColor" class="fa fa-circle" style="color:#e8504f;font-size:20px;cursor:pointer"></i>
+				                        		<i id="blueColor" class="fa fa-circle" style="color:#418ac7;font-size:20px;cursor:pointer"></i>
+				                        	</div>
+				                        </div>
+									</div>
+								</div>
 							</div>
-							<div class="form-group">
-	                            <div class="col-md-offset-10 col-md-2">
-	                                <button type="button" class="btn btn-primary" id="preferSave">保存</button>
-	                            </div>
-	                        </div>
-	                        <div class="setColor">
-	                        	<div>皮肤颜色：
-	                        		<i id="redColor" class="fa fa-circle" style="color:#e8504f;font-size:20px;cursor:pointer"></i>
-	                        		<i id="blueColor" class="fa fa-circle" style="color:#418ac7;font-size:20px;cursor:pointer"></i>
-	                        	</div>
-	                        </div>
 						</div>
 						
 					</div>
