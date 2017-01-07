@@ -60,20 +60,20 @@
 										<tbody id="storageList">
 											  <c:forEach items = "${dockerFileList }" var = "dockerfile">
 													<tr>
-														<td style="width: 5%; text-indent: 30px;">
+														<td style="width: 5%; text-indent: 30px;height:40px;">
 															<input type="checkbox" class="chkItem" name="chkItem"
 																autocomplete="off" id="checkboxID" value="${dockerfile.id }" />
 														</td>
-														<td class="textOverflow" style="width: 670px;text-indent:30px;cursor: pointer;">
-														<a href="<%=path %>/template/dockerfile/detail/${dockerfile.id }"
+														<td class="textOverflow" style="width: 670px;text-indent:30px;cursor: pointer;height:40px;">
+														<a href="<%=path %>/template/dockerfile/detail/${dockerfile.id }" style="float:left;line-height:40px"
                                                             title="查看${dockerfile.templateName }详细信息" 
                                                             onmousemove="style.textDecoration='underline'"
                                                             onmouseout="style.textDecoration='none'">${dockerfile.templateName }</a>
 														</td>
-			                                            <td style="width: 30%;">
+			                                            <td style="width: 30%;height:40px;">
 			                                                 <fmt:formatDate value="${dockerfile.createDate }" pattern="yyyy-MM-dd HH:mm:ss"/>
 		                                                </td>
-			                                            <td style="width: 10%;text-indent: 10px;" >
+			                                            <td style="width: 10%;text-indent: 10px;height:40px;" >
 			                                                 <a title="删除" href="javascript:void(0)" onclick="deletedockerfile(this)" dockerfileId = "${dockerfile.id }">
 			                                                     <i class="fa fa-trash"></i>
 			                                                 </a>

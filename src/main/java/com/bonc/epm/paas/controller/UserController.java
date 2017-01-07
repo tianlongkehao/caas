@@ -244,6 +244,9 @@ public class UserController {
             userResource.setCpu(Double.valueOf(resource.getCpu_account()));
             userResource.setMemory(Long.parseLong(resource.getRam()));
             userResource.setVol_size(resource.getVol());
+            //创建租户时卷组剩余容量默认和卷组容量相等
+            userResource.setVol_surplus_size(resource.getVol());
+            
             userResource.setImage_count(resource.getImage_count());
             userResource.setCreateDate(new Date());
             
@@ -364,9 +367,18 @@ public class UserController {
                 userResource.setUserId(user.getId());
                 userResource.setCreateDate(new Date());
             }
+            
+        	//设置存储卷余量
+        	userResource.setVol_surplus_size(userResource.getVol_surplus_size()+resource.getVol()-userResource.getVol_size());
+        	
             userResource.setCpu(Double.valueOf(resource.getCpu_account()));
             userResource.setMemory(Long.parseLong(resource.getRam()));
             userResource.setVol_size(resource.getVol());
+            
+            
+            
+            
+            
             userResource.setImage_count(resource.getImage_count());
             userResource.setUpdateDate(new Date());
             

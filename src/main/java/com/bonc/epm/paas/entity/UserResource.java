@@ -55,7 +55,10 @@ public class UserResource {
      * 卷组容量
      */
     private long vol_size = 0;
-    
+    /**
+     * 卷组剩余容量
+     */
+    private long vol_surplus_size = 0;
     /**
      * 镜像数量
      */
@@ -72,7 +75,10 @@ public class UserResource {
      */
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date updateDate;
-
+    
+    
+    
+    
     public long getId() {
         return id;
     }
@@ -136,6 +142,14 @@ public class UserResource {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
+	public long getVol_surplus_size() {
+		return vol_surplus_size;
+	}
+
+	public void setVol_surplus_size(long vol_surplus_size) {
+		this.vol_surplus_size = vol_surplus_size;
+	}
      
 
 }
