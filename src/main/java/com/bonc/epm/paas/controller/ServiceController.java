@@ -518,14 +518,15 @@ public class ServiceController {
 		// 获取配置文件中nginx选择区域
         getNginxServer(model);
         User cUser = CurrentUserUtils.getInstance().getUser();
-        //获取未使用的存储卷
-        long createBy = 0l;
-        if(UserConstant.AUTORITY_USER.equals(cUser.getUser_autority())){
-            createBy = CurrentUserUtils.getInstance().getUser().getParent_id();
-        }else{
-            createBy = CurrentUserUtils.getInstance().getUser().getId();
-        }
+        //获取未使用的存储卷,租户获取租户创建的，用户获取租户和用户创建的
+        long createBy = cUser.getId();
+        long parentId = cUser.getParent_id();
         List<Storage> storageList = storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(createBy, 1);
+        if (parentId != 1) {
+            for (Storage storage : storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(parentId,1) ) {
+                storageList.add(storage);
+            }
+        }
 
         //获取监控配置
         UserFavor userFavor = userFavorDao.findByUserId(currentUser.getId());

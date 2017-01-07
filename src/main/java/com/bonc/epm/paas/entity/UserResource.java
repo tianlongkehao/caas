@@ -55,10 +55,12 @@ public class UserResource {
      * 卷组容量
      */
     private long vol_size = 0;
+    
     /**
      * 卷组剩余容量
      */
     private long vol_surplus_size = 0;
+    
     /**
      * 镜像数量
      */

@@ -130,14 +130,15 @@ public class StorageController {
     @ResponseBody
     public String findStorageList(Pageable pageable, Model model) {
         Map<String, Object> map = new HashMap<String, Object>();
-        String userType =CurrentUserUtils.getInstance().getUser().getUser_autority();
-        long createBy=0;
-        if(UserConstant.AUTORITY_USER.equals(userType)){
-            createBy = CurrentUserUtils.getInstance().getUser().getParent_id();
-        }else{
-            createBy = CurrentUserUtils.getInstance().getUser().getId();
-                }
+        User user = CurrentUserUtils.getInstance().getUser();
+        long createBy= user.getId();
+        long parentId = user.getParent_id();
         List<Storage> storages = storageDao.findAllByCreateByOrderByCreateDateDesc(createBy, pageable);
+        if (parentId != 1) {
+            for (Storage storage : storageDao.findByCreateBy(parentId) ) {
+                storages.add(storage);
+            }
+        }
         map.put("storages", storages);
         map.put("status", "200");
         map.put("count", storageDao.countByCreateBy(createBy));
@@ -186,7 +187,7 @@ public class StorageController {
         model.addAttribute("leftstorage", (float) userResource.getVol_size() - leftstorage / 1024);*/
       
         //获取存储卷剩余容量
-        model.addAttribute("leftstorage", (float) userResource.getVol_surplus_size());
+        model.addAttribute("userResource", userResource);
         
         model.addAttribute("menu_flag", "service");
         return "storage/storage_add.jsp";
@@ -203,7 +204,8 @@ public class StorageController {
     @ResponseBody
     public String buildStorage(Storage storage, Model model) {
         Map<String, Object> map = new HashMap<String, Object>();
-        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        User user = CurrentUserUtils.getInstance().getUser();
+        long createBy = user.getId();
         storage.setCreateDate(new Date());
         storage.setUseType(StorageConstant.NOT_USER);
         storage.setCreateBy(createBy);
@@ -223,10 +225,15 @@ public class StorageController {
             storageDao.save(storage);
             
             //修改租户的卷组剩余容量
-            UserResource resource=userResourceDao.findByUserId(createBy);
-            resource.setVol_surplus_size(resource.getVol_surplus_size()-storage.getStorageSize()/1024);
-            userResourceDao.save(resource);
-            
+            UserResource userResource = new UserResource();
+            if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+                userResource = userResourceDao.findByUserId(user.getParent_id());
+            }
+            else {
+                userResource = userResourceDao.findByUserId(user.getId());
+            }
+            userResource.setVol_surplus_size(userResource.getVol_surplus_size()-storage.getStorageSize()/1024);
+            userResourceDao.save(userResource);
             map.put("status", "200");
         } 
         else {
