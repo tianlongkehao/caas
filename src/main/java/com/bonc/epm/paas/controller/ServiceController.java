@@ -1432,11 +1432,10 @@ public class ServiceController {
             if (isSetDeploy) { // 首次执行升级
                 updateOriginalController.getSpec().getSelector().remove("deployment");
                 updateOriginalController.getSpec().getTemplate().getMetadata().getLabels().remove("deployment");
-                updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController);
-                //updateOriginalController = client.updateReplicationController(serviceName, replicas);
             }
             
-            updateOriginalController = client.updateReplicationController(serviceName, j);
+            updateOriginalController.getSpec().setReplicas(j);
+            updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController);
             while (!(client.getLabelSelectorPods(updateOriginalController.getSpec().getSelector()).size() == j)) {
                 continue;
             }
@@ -1473,7 +1472,7 @@ public class ServiceController {
             //client.updateReplicationController(serviceName, 0);
         }
         
-        LOG.info("update originalController.  put original-replicas:-"+updateOriginalController.getSpec().getReplicas());
+        LOG.info("update originalController.  put original-replicas:-"+updateOriginalController.getMetadata().getAnnotations().get("kubectl.kubernetes.io/original-replicas"));
         return updateOriginalController;
     }
 
