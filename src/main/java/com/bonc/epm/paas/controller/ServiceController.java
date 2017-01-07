@@ -1274,6 +1274,7 @@ public class ServiceController {
                 if (StringUtils.isBlank(updateOriginalController.getSpec().getSelector().get("deployment"))) {
                     isSetDeploy = true;
                 }
+                
                 updateOriginalController = secondSetAnnotation(serviceName, client,isSetDeploy);
                 
                 // 滚动升级
@@ -1285,6 +1286,13 @@ public class ServiceController {
                 
                 // 将新RC的名字重命名为旧RC名字
                 renameNewRc(serviceName, nextControllerName, client);
+                
+                // 更新SVC的lable Selector
+                com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
+                Map<String,String> lableMap = new HashMap<String, String>();
+                lableMap.put("app", nextControllerName);
+                k8sService.getSpec().setSelector(lableMap);
+                client.updateService(serviceName, k8sService);
                 
                 service.setImgVersion(imgVersion);
                 serviceDao.save(service);
@@ -1347,6 +1355,8 @@ public class ServiceController {
         ReplicationController resultController = client.getReplicationController(nextControllerName);
         resultController.getMetadata().setName(serviceName);
         resultController.getMetadata().setResourceVersion("");
+        //resultController.getSpec().getSelector().put("app", nextControllerName);
+        //resultController.getSpec().getTemplate().getMetadata().getLabels().put("app", nextControllerName);
         
         //resultController.getSpec().getTemplate().getMetadata().setName(serviceName);
         
@@ -1382,33 +1392,36 @@ public class ServiceController {
             nextController = client.updateReplicationController(nextControllerName, i);
             boolean podStatus = true;
             PodList podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
-            while (podStatus && null != podList && podList.size() ==i) {
-                for (Pod pod : podList.getItems()) {
-                    if (pod.getStatus().getPhase().equals("Running")) {
-                        List<ContainerStatus> containerStatuses = pod.getStatus().getContainerStatuses();
-                        if (CollectionUtils.isNotEmpty(containerStatuses)) {
-                            boolean conStatus = true;
-                            for(ContainerStatus containerStatus : containerStatuses) {
-                                if (null != containerStatus.getState().getRunning()) {
-                                    conStatus = false;
+            while (podStatus) {
+                if (null != podList && null !=podList.getItems() && podList.getItems().size() ==i) {
+                    for (Pod pod : podList.getItems()) {
+                        if (pod.getStatus().getPhase().equals("Running")) {
+                            List<ContainerStatus> containerStatuses = pod.getStatus().getContainerStatuses();
+                            if (CollectionUtils.isNotEmpty(containerStatuses)) {
+                                boolean conStatus = true;
+                                for(ContainerStatus containerStatus : containerStatuses) {
+                                    if (null != containerStatus.getState().getRunning()) {
+                                        conStatus = false;
+                                    }
+                                    else {
+                                        conStatus = true;
+                                        break;
+                                    }
                                 }
-                                else {
-                                    conStatus = true;
+                                if (conStatus) {
+                                    podStatus = true;
                                     break;
+                                } else {
+                                    podStatus = false;
                                 }
                             }
-                            if (conStatus) {
-                                podStatus = true;
-                                break;
-                            } else {
-                                podStatus = false;
-                            }
+                        } else {
+                            podStatus = true;
+                            break;
                         }
-                    } else {
-                        podStatus = true;
-                        break;
                     }
                 }
+
                 if (podStatus) {
                     podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
                 }
@@ -1419,7 +1432,9 @@ public class ServiceController {
                 updateOriginalController.getSpec().getSelector().remove("deployment");
                 updateOriginalController.getSpec().getTemplate().getMetadata().getLabels().remove("deployment");
                 updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController);
+                //updateOriginalController = client.updateReplicationController(serviceName, replicas);
             }
+            
             updateOriginalController = client.updateReplicationController(serviceName, j);
             while (!(client.getLabelSelectorPods(updateOriginalController.getSpec().getSelector()).size() == j)) {
                 continue;
@@ -1443,16 +1458,18 @@ public class ServiceController {
     private ReplicationController secondSetAnnotation(String serviceName,KubernetesAPIClientInterface client, boolean isSetDeploy) {
         ReplicationController updateOriginalController = client.getReplicationController(serviceName);
         updateOriginalController.getMetadata().getAnnotations().put("kubectl.kubernetes.io/original-replicas", String.valueOf(updateOriginalController.getSpec().getReplicas()));
+        updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController);
         if (isSetDeploy) {
+            updateOriginalController = client.getReplicationController(serviceName);
             String random = RandomString.getStringRandom(32);
+            updateOriginalController.getSpec().setReplicas(0);
             updateOriginalController.getSpec().getSelector().put("deployment",random);
             updateOriginalController.getSpec().getTemplate().getMetadata().getLabels().put("deployment", random);
             updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController);
+            client.getReplicationController(serviceName);
+            
             // 从未升级过的rc
-            updateOriginalController = client.updateReplicationController(serviceName, 0);
-        }
-        else {
-            updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController); 
+            //client.updateReplicationController(serviceName, 0);
         }
         
         LOG.info("update originalController.  put original-replicas:-"+updateOriginalController.getSpec().getReplicas());
@@ -1490,9 +1507,12 @@ public class ServiceController {
             
             nextController.getSpec().setReplicas(0);
             nextController.getSpec().getSelector().put("deployment", random);
+            nextController.getSpec().getSelector().put("app", nextControllerName);
             
             //nextController.getSpec().getTemplate().getMetadata().setName(nextControllerName);
             nextController.getSpec().getTemplate().getMetadata().getLabels().put("deployment", random);
+            nextController.getSpec().getTemplate().getMetadata().getLabels().put("app", nextControllerName);
+            
             nextController.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(image);
             
             nextController = client.createReplicationController(nextController);
@@ -2015,17 +2035,15 @@ public class ServiceController {
         List<Container> containerList = new ArrayList<Container>();
 		// 获取特殊条件的pods
 		try {
-			Map<String, String> mapapp = new HashMap<String, String>();
-			mapapp.put("app", service.getServiceName());
-			PodList podList = client.getLabelSelectorPods(mapapp);
+		    com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
+			PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
 			if (podList != null) {
 				List<Pod> pods = podList.getItems();
 				if (CollectionUtils.isNotEmpty(pods)) {
 					int i = 1;
 					for (Pod pod : pods) {
 						Container container = new Container();
-						container
-								.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+						container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
 						container.setServiceid(service.getId());
 						//默认状态为0
 						container.setContainerStatus(0);
