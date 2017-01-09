@@ -285,6 +285,7 @@ $(document).ready(function(){
 				var username = $("#userNameCred").val();
 				var password = $("#passwordCred").val();
 				var privateKey = $("#SSHpasswordCred").val();
+				var remark = $("#keyRemark").val();
 				if (!username || username.length < 1) {
 			    	layer.tips('用户名不能为空','#userNameCred',{tips:[1,'#3595CC']});
 			    	$("#userNameCred").focus();
@@ -307,19 +308,24 @@ $(document).ready(function(){
 						return;
 					}
 				}
+				if (!remark || remark.length < 1) {
+			    	layer.tips('描述信息不能为空','#keyRemark',{tips:[1,'#3595CC']});
+			    	$("#keyRemark").focus();
+			    	return;
+				}
 				$.ajax({
-					url : ctx + "/ci/addCredential.do",
-					type : "POST",
+					url : ctx + "/secret/addCredential.do",
 					data : {
 						"type" : type,
 						"userName" : username,
 						"password" : password,
-						"privateKey" : privateKey
+						"privateKey" : privateKey,
+						"remark" : remark
 					},
 					success : function(data) {
 						data = eval("(" + data + ")");
 						if (data.status == "200") {
-							var html = "<option value='"+data.id+"'>"+username+"("+code+")"+"</option>"
+							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>"
 							$("#codeCredentials").append(html);
 							layer.alert("代码认证导入成功");
 							layer.close(index);

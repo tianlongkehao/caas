@@ -95,8 +95,10 @@ function creatable(isDir, dirName) {
 								+ '</a>'
 								+ '</td>'
 								+ '<td style="width: 15%; text-indent: 61px;">'
-								+ fileInfo.size
-								+ '</td>'
+						if (!fileInfo.dir && !fileInfo.link) {
+							tbody += fileInfo.size + 'KB'
+						}
+						tbody += '</td>'
 								+ '<td style="width: 30%; text-indent: 152px;"></td>'
 								+ '<td style="width: 15%;text-indent: 131px;"></td>'
 								+ '</tr>';
@@ -108,7 +110,7 @@ function creatable(isDir, dirName) {
 								+ '" >'
 								+ '</td>'
 								+ '<td style="width: 25%;text-indent: 22px;" onclick=creatable('
-								+ (fileInfo.dir || fileInfo.link)
+								+ (fileInfo.dir)
 								+ ',"'
 								+ fileInfo.fileName
 								+ '") >'
@@ -126,8 +128,11 @@ function creatable(isDir, dirName) {
 								+ '</a>'
 								+ '</td>'
 								+ '<td style="width: 15%; text-indent: 56px;">'
-								+ fileInfo.size
-								+ 'KB</td>'
+						if (!fileInfo.dir) {
+							tbody += fileInfo.size + 'KB'
+							
+						}
+						tbody += '</td>'
 								+ '<td style="width: 30%; text-indent: 148px;">'
 								+ fileInfo.modifiedTime
 								+ '</td>'
