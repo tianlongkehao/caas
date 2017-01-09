@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -384,7 +385,10 @@ public class StorageController {
             map.put("status","400");
         //mountLocalCeph(file);
         }
-        map.put("length", String.valueOf(hasUse /1024/1024 ));
+        float hasUse1 = (float)hasUse/(1024*1024);
+        DecimalFormat df = new DecimalFormat("0.00");//格式化小数，不足的补0
+		String filesize = df.format(hasUse1);//返回的是String类型的
+        map.put("length", String.valueOf(filesize));
         return JSON.toJSONString(map);
     }
 
