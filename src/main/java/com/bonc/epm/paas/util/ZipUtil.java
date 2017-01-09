@@ -33,7 +33,8 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * java处理压缩包公共类
- * 目前支持：1.浏览tar中的文件列表
+ * 目前支持：1.浏览tar类型中的文件列表
+ * 镜像和容器快照的tar包
  * @author ke_wang
  * @version 2016年11月14日
  * @see ZipUtil
@@ -127,10 +128,21 @@ public  class ZipUtil {
         return flag;  
     }
     
-    
-    /** 
-     * 以行为单位读取文件，常用于读面向行的格式化文件 
-     */  
+    /**
+     *  
+     * Description:
+     * 以行为单位读取文件，常用于读面向行的格式化文件
+     * 目前特殊的处理镜像包文件中的说明文件，形如：
+     * {
+            "192.168.0.76:5000/testbonc/demo": {
+                "2016-12-28-15-46-44": "7a3b9a636658b0c3b55d415a8b58262e150680a48191c00eb8d359271e21ab4b"
+            }
+        }
+       , 中获得当前镜像的名称和tag信息
+     * @param directory 
+     * @param fileName 
+     * @return result String[]
+     */
     @SuppressWarnings("rawtypes")
     public static String[] readFileByLines(String directory,String fileName) {
         String[] result = new String[2];
@@ -149,13 +161,13 @@ public  class ZipUtil {
                 Iterator it = jsonObj.keySet().iterator();  
                 while(it.hasNext()){
                     String key = it.next().toString();
-                    result[0]= key;
+                    result[0]= key; // 获取镜像的名称信息
                     
                     JSONObject jsonObj1 = JSONObject.parseObject(jsonObj.get(key).toString()); 
                     Iterator it1 = jsonObj1.keySet().iterator();  
                     while(it1.hasNext()){
                         String key1 = it1.next().toString();
-                        result[1] = key1;
+                        result[1] = key1;  // 获取镜像的版本信息
                     }
                 }
                 line++;  
@@ -173,9 +185,4 @@ public  class ZipUtil {
         }
         return result;
     }
-    
-/*    public static void main(String[] args) throws IOException {
-        //visitTAR(new File("D:/flume-sync.tar"),"repositories");
-        System.out.println(readFileByLines("D:/ok","repositories"));
-    }*/
 }

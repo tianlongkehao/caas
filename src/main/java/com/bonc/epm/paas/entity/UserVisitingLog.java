@@ -19,6 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.bonc.epm.paas.util.IpAreaUtil;
 @Entity
 public class UserVisitingLog {
     /**
@@ -141,5 +142,16 @@ public class UserVisitingLog {
         this.area = area;
     }
     
+    public UserVisitingLog addUserVisitingLog (User user,String hostIp,String headerData,boolean isLegal) {
+        UserVisitingLog userVisitingLog = new UserVisitingLog();
+        userVisitingLog.setUserId(user.getId());
+        userVisitingLog.setUserName(user.getUserName());
+        userVisitingLog.setHostIp(hostIp);
+        userVisitingLog.setBrowser(headerData);
+        userVisitingLog.setVisitingTime(new Date());
+        userVisitingLog.setLegal(isLegal);
+        userVisitingLog.setArea(IpAreaUtil.findArea(hostIp));
+        return userVisitingLog;
+    }
     
 }

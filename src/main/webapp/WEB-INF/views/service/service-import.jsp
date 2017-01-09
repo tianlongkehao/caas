@@ -116,7 +116,7 @@
           <th style="width: 25%">引入服务方式：</th>
           <td><select class="" id="import-ser-mode">
                   <option value="0">service</option>
-                  <option value="1">etcd</option>
+                 <!--  <option value="1">etcd</option> -->
           </select></td>
       </tr>
       <tr>

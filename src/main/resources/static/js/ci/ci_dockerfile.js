@@ -157,6 +157,7 @@ $(document).ready(
 	}
 	
 	function checkCiAdd(editor_one){
+		var imgNameFirst = $("#imgNameFirst").val();
         var imgNameLast = $("#imgNameLast").val().trim();
         var imgNameVersion = $("#imgNameVersion").val().trim();
         var projectName = $('#projectName').val().trim();
@@ -220,7 +221,7 @@ $(document).ready(
     		async:false,
     		type: "POST",
     		data:{
-    				/*"imgNameFirst":imgNameFirst,*/
+    				"imgNameFirst":imgNameFirst,
     				"imgNameLast":imgNameLast,
     				"imgNameVersion":imgNameVersion
     		},

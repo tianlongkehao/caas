@@ -26,10 +26,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.RefServiceConstant;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.RefServiceDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.RefService;
 import com.bonc.epm.paas.etcd.util.EtcdClientService;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -83,6 +87,14 @@ public class RefServiceController {
      */
     @Autowired
     private EtcdClientService etcdClientService;
+    
+    /**
+     * commonOperationLogDao接口
+     */
+    @Autowired
+    private CommonOperationLogDao commonOperationLogDao;
+
+    
     
     /**
      * Description: <br>
@@ -149,6 +161,12 @@ public class RefServiceController {
                 if (EtcdKeyAction.create.name().equals("create"))
                 map.put("status", "200");
                 refServiceDao.save(refService); 
+                
+                
+                //记录用户添加用户操作
+                String extraInfo="新增外部服务："+refService.getSerName()+"的主要内容有"+refService.toString();
+                CommonOperationLog log=CommonOprationLogUtils.getOprationLog(refService.getSerName(), extraInfo, CommConstant.REF_SERVICE, CommConstant.OPERATION_TYPE_CREATED);
+                commonOperationLogDao.save(log);
             }
         } 
         else {

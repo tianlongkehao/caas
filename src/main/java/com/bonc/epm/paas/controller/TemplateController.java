@@ -20,6 +20,7 @@ import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -115,7 +116,8 @@ public class TemplateController {
             
             //记录用户创建环境变量模板操作
             if(flag==null||flag==false){
-            	saveOprationLog(templateName, extraInfo, CommConstant.ENV_TEMPLATE, CommConstant.OPERATION_TYPE_CREATED);
+            	CommonOperationLog log=CommonOprationLogUtils.getOprationLog(templateName, extraInfo, CommConstant.ENV_TEMPLATE, CommConstant.OPERATION_TYPE_CREATED);
+            	commonOperationLogDao.save(log);
             }
 
             map.put("status", "200");
@@ -165,8 +167,8 @@ public class TemplateController {
 			  extraInfo +=envKeyAndValue.substring(0,envKeyAndValue.indexOf(","))+"："
 				  +envKeyAndValue.substring(envKeyAndValue.indexOf(",")+1)+";";
 	    }		
-    	saveOprationLog(templateName, extraInfo, CommConstant.ENV_TEMPLATE, CommConstant.OPERATION_TYPE_UPDATE);
-		
+		CommonOperationLog log=CommonOprationLogUtils.getOprationLog(templateName, extraInfo, CommConstant.ENV_TEMPLATE, CommConstant.OPERATION_TYPE_UPDATE);
+		commonOperationLogDao.save(log);
 		
 		
 		map.put("status", "200");
@@ -192,7 +194,8 @@ public class TemplateController {
 		
         //记录用户删除环境变量模板操作
 		if (flag == null || flag == false) {
-	    	saveOprationLog(templateName, extraInfo, CommConstant.ENV_TEMPLATE, CommConstant.OPERATION_TYPE_DELETE);
+			CommonOperationLog log=CommonOprationLogUtils.getOprationLog(templateName, extraInfo, CommConstant.ENV_TEMPLATE, CommConstant.OPERATION_TYPE_DELETE);
+			commonOperationLogDao.save(log);
 		}
 		map.put("status", "200");
 		return JSON.toJSONString(map);
@@ -235,28 +238,7 @@ public class TemplateController {
 	}
     
 
-	
-	/**
-	 * 
-	 * Description: <br>
-     *    记录用户操作日志
-	 * @param commonName    记录信息
-	 * @param extraInfo     额外信息
-	 * @param catalogType   类型
-	 * @param oprationType  操作类型
-	 */
-	public  void saveOprationLog(String commonName,String extraInfo,Integer catalogType,Integer oprationType){
-		CommonOperationLog commOpLog = new CommonOperationLog();
-		commOpLog.setCommonName(commonName);
-		commOpLog.setExtraInfo(extraInfo);
-		commOpLog.setCatalogType(catalogType);
-		commOpLog.setOperationType(oprationType);
-		User cUser = CurrentUserUtils.getInstance().getUser();
-        commOpLog.setCreateDate(new Date());
-        commOpLog.setCreateBy(cUser.getId());
-        commOpLog.setCreateUsername(cUser.getUserName());
-        commonOperationLogDao.save(commOpLog);
-	}
+
 	
 	
 }

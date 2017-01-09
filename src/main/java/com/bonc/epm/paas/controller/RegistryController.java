@@ -545,6 +545,7 @@ public class RegistryController {
         try {
             for (long id : ids) {
                 deleteImage(id);
+                // TODO 返回批量删除中失败的镜像信息
             }
             maps.put("status", "200");
         } 

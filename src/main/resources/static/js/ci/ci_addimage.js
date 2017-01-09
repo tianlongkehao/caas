@@ -65,6 +65,7 @@ $(document).ready(function () {
   
     
     function checkCiAdd(){
+    	var imgNameFirst = $("#imgNameFirst").val();
         var name = $("#name").val().trim();
         var version = $("#version").val().trim();
         var remark = $('#remark').val().trim();
@@ -125,7 +126,7 @@ $(document).ready(function () {
     		async:false,
     		type: "POST",
     		data:{
-    				/*"imgNameFirst":imgNameFirst,*/
+    				"imgNameFirst":imgNameFirst,
     				"name":name,
     				"version":version
     		},

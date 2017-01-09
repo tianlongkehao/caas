@@ -145,7 +145,7 @@
 			
 		</article>
 	</div>
-	<div id="delItemcfg" style="display:none;min-height:200px;max-height:690px;">
+	<div id="delItemcfg" style="display:none;min-height:200px;max-height:600px;">
 	
 		<div class="panel-group" id="namefilter">
 			<div class="panel panel-success">

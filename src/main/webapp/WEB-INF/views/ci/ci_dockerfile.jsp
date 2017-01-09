@@ -39,7 +39,7 @@
 									<div class="form-group col-md-7">
 										<div class="" style="margin-top: 25px">
 											<span class="name-note">${username } /&nbsp;</span> <input
-												name="imgNameFirst" type="hidden" value="${username }">
+												name="imgNameFirst" id = "imgNameFirst" type="hidden" value="${username }">
 											<input id="imgNameLast" name="imgNameLast" type="text"
 												class="name-input" value=""> : <input
 												id="imgNameVersion" name="imgNameVersion" type="text"

@@ -95,10 +95,12 @@ function creatable(isDir, dirName) {
 								+ '</a>'
 								+ '</td>'
 								+ '<td style="width: 183px;">&nbsp;'
-								+ fileInfo.size
-								+ '</td>'
-								+ '<td style="width: 369px;">&nbsp;</td>'
-								+ '<td style="width: 184px;">&nbsp;</td>'
+						if (!fileInfo.dir && !fileInfo.link) {
+							tbody += fileInfo.size + 'KB'
+						}
+						tbody += '</td>'
+							+ '<td style="width: 369px;">&nbsp;</td>'
+							+ '<td style="width: 184px;">&nbsp;</td>'
 								+ '</tr>';
 					} else {
 						tbody += '<tr class="vol_list" style="cursor:pointer">'
@@ -125,9 +127,13 @@ function creatable(isDir, dirName) {
 								+ '</span>'
 								+ '</a>'
 								+ '</td>'
+								+ '<td style="width: 369px;">&nbsp;'
 								+ '<td style="width: 183px;">&nbsp;'
-								+ fileInfo.size
-								+ 'KB</td>'
+						if (!fileInfo.dir) {
+							tbody += fileInfo.size + 'KB'
+							
+						}
+						tbody += '</td>'
 								+ '<td style="width: 369px;">&nbsp;'
 								+ fileInfo.modifiedTime
 								+ '</td>'

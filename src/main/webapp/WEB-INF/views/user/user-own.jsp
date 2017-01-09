@@ -316,7 +316,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span id="detailVolume">${usedstorage}</span>/<span id="totalVolume">${cur_user.vol_size}</span>（G）
+                                            <span id="detailVolume">${usedstorage}</span>/<span id="totalVolume">${userResource.vol_size}</span>（G）
                                         </td>
                                     </tr>
                                     <%--<tr>

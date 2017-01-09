@@ -23,10 +23,11 @@ $(document).ready(function(){
 	      $('#serviceName').focus();
 	      return;
 	    }
-	    if(name.search(/[a-z]([-a-z0-9]*[a-z0-9])?/) === -1){
-	      layer.tips('服务名称只能由小写字母、数字及横线组成，且首字母不能为数字及横线。','#serviceName',{tips: [1, '#3595CC'],time: 3000});
-	      $('#serviceName').focus();
-	      return;
+	    reg=/^[a-z]([-a-z0-9]*[a-z0-9])?$/;
+	    if(!reg.test(name)){    
+		      layer.tips('服务名称只能由小写字母、数字及横线组成，且首字母不能为数字及横线。','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+		      $('#serviceName').focus();
+		      return;
 	    }
 	    if(name.length > 24 || name.length < 1){
 	      layer.tips('服务名称为1~24个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});

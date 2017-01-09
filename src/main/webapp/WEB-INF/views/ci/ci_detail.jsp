@@ -182,20 +182,20 @@
 					                            	  <c:forEach items="${ciCredentialList }" var="ciCredential" >
 					                            	      <c:if test="${ciCredential.id == ciCode.codeCredentials }">
 	                                                          <c:if test="${ciCredential.type == 1 }">
-	                                                              <option value="${ciCredential.id }">${ciCredential.userName }(HTTP)</option>
+	                                                              <option value="${ciCredential.id }">${ciCredential.userName } (HTTP) (${ciCredential.remark })</option>
 	                                                          </c:if>
 	                                                          <c:if test="${ciCredential.type == 2 }">
-	                                                              <option value="${ciCredential.id }">${ciCredential.userName }(SSH)</option>
+	                                                              <option value="${ciCredential.id }">${ciCredential.userName } (SSH) (${ciCredential.remark })</option>
 	                                                          </c:if>
 					                            	      </c:if>
                                                       </c:forEach>
 					                            	  <c:forEach items="${ciCredentialList }" var="ciCredential" >
 					                            	      <c:if test="${ciCredential.id != ciCode.codeCredentials }">
 				                                              <c:if test="${ciCredential.type == 1 }">
-				                                                  <option value="${ciCredential.id }">${ciCredential.userName }(HTTP)</option>
+				                                                  <option value="${ciCredential.id }">${ciCredential.userName } (HTTP) (${ciCredential.remark })</option>
 				                                              </c:if>
 				                                              <c:if test="${ciCredential.type == 2 }">
-				                                                  <option value="${ciCredential.id }">${ciCredential.userName }(SSH)</option>
+				                                                  <option value="${ciCredential.id }">${ciCredential.userName } (SSH) (${ciCredential.remark })</option>
 				                                              </c:if>
 					                            	      </c:if>
 			                                          </c:forEach>
@@ -473,6 +473,11 @@
                         <div class="infoCred ssh">
 	                        <span class="labelCred">密钥：</span>
 	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="5" value="" ></textarea></div>
+	                    <div class="infoCred">
+                            <span class="labelCred">描述：</span>
+                            <textarea type="text" class="form-control conCred" style="height:100px"
+                                id="keyRemark" name="keyRemark" row="8" value=""></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
