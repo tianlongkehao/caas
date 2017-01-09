@@ -215,7 +215,7 @@ $(document).ready(
         
         
         // 验证填写的镜像名称是否重复
-        var imageFlag = false;
+        var flagName = false;
         $.ajax({
     		url : ctx + "/ci/validciinfo.do",
     		async:false,
@@ -232,12 +232,12 @@ $(document).ready(
     	                tips: [1, '#0FA6D8'] //还可配置颜色
     	            });
     	            $('#imgNameVersion').focus();
-    				imageFlag = true;
+    	            flagName = true;
     			} 
     		}
     	});
-        if (imageFlag) {
-        	imageFlag = false;
+        if (flagName) {
+        	flagName = false;
         	return false;
         }
         
@@ -282,6 +282,28 @@ $(document).ready(
             });
             $('#projectName').focus();
             return false;
+        }
+        else {
+        	$.ajax({
+        		url : ctx + "/ci/judgeCodeCiName.do",
+        		async:false,
+        		type: "POST",
+        		data:{"projectName":projectName},
+        		success : function(data) {
+        			data = eval("(" + data + ")");
+        			if (data.status=="400") {
+        	            layer.tips('项目名称重复', '#projectName', {
+        	                tips: [1, '#0FA6D8'] 
+        	            });
+        	            $('#projectName').focus();
+        	            flagName = true;
+        			} 
+        		}
+        	});
+        }
+        if (flagName) {
+        	flagName = false;
+        	return false;
         }
 
         if (dockerFile.length > 0) {

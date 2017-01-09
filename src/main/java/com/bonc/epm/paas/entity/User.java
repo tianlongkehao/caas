@@ -32,8 +32,6 @@ public class User {
 	private String user_province;//省份
 	private String open_user_id;
 	private String namespace;
-	private long vol_size = 0;//卷组容量
-	private long image_count = 0; // 最大镜像数量
 
     @ManyToMany
 	@JoinTable(name="user_favor_images", 
@@ -179,18 +177,4 @@ public class User {
 	public void setNamespace(String namespace) {
 		this.namespace = namespace;
 	}
-	public long getVol_size() {
-		return vol_size;
-	}
-
-	public void setVol_size(long vol_size) {
-		this.vol_size = vol_size;
-	}
-	
-    public long getImage_count() {
-        return image_count;
-    }
-    public void setImage_count(long image_count) {
-        this.image_count = image_count;
-    }
 }
