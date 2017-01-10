@@ -66,7 +66,7 @@
                                           	<img src="<%=path %>/images/applist3-gray.svg" class="pandect-icon" alt=""/>
                                             <span>镜像个数：</span>
                                           </span>
-                                        <span class="pull-right big green"><span>${usedImageNum}</span>&nbsp;个</span>
+                                        <span class="pull-right big green"><span>${userResource.image_count}</span>&nbsp;个</span>
                                     </a>
                                 </li>
                             </ul>
@@ -149,7 +149,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span id="detailVolume">${usedstorage}</span>/<span id="totalVolume">${cur_user.vol_size}</span>（G）
+                                            <span id="detailVolume">${usedstorage}</span>/<span id="totalVolume">${userResource.vol_size}</span>（G）
                                         </td>
                                     </tr>
                                     <%--<tr>
