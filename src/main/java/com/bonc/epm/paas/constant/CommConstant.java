@@ -1,5 +1,10 @@
 package com.bonc.epm.paas.constant;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter.Indenter;
+
 public class CommConstant {
 	
 	public static final Integer TYPE_YES_VALUE = 1;
@@ -32,6 +37,6 @@ public class CommConstant {
 	public static final Integer OPERATION_TYPE_DEPLOY     = 60;    //部署
 	public static final Integer OPERATION_TYPE_EXPORT     = 70;    //导出
 	
-	
+
 	
 }
