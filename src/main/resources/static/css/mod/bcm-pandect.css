@@ -43,6 +43,9 @@
 .container-count .server-list .green {
     background: #2FBA66;
 }
+.container-count .server-list .litblue {
+    background: #50b3d3;
+}
 .container-count .server-list .big {
     padding: 5px 12px;
     display: inline-block;

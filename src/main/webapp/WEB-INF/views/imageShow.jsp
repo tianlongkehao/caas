@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>镜像中心</title>
+    <title>镜像广场</title>
     <%@include file="frame/header.jsp"%>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/docker-registry.css"/>
     <script type="text/javascript" src="<%=path %>/js/registry/registry.js"></script>
@@ -12,14 +12,12 @@
     <div class="navbar navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a href="javascript:void(0);">
-                    <h1>BCM</h1>
-                </a>
+                <span><a href="<%=path %>/home"><h1>BCM</h1></a></span>
             </div>
             <div class="navbar-tab">
                 <ul>
                 	<li><a class="navTab first" href="<%=path %>/home">主页</a></li>
-                	<li><a class="navTab" href="<%=path %>/imageShow">镜像广场</a></li>
+                	<li class="active"><a class="navTab" href="<%=path %>/imageShow">镜像广场</a></li>
                 	<li><a class="navTab" href="<%=path %>/bcm/${cur_user.id }">控制台</a></li>
                 </ul>
             </div>
@@ -27,20 +25,14 @@
     </div>
 </header>  
 
-    <div class="page-container" style="margin-left:10px;margin-top:70px">
+    <div class="page-container" style="margin-left:10px;margin-top:30px">
         <article>
             <div class="page-main">
-                <div class="contentTitle">
-                    <ol class="breadcrumb">
-                        <li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
-								id="nav1">控制台</span></a></li>
-                        <li><i class="fa fa-angle-right"></i></li>
-                        <li class="active">镜像广场</li>
-                    </ol>
-                </div>
                 <div class="contentMain">
-
                     <div class="content">
+                    	<div class="imageText">
+                            <span>分享镜像，交流协作</span>
+                        </div>
                         <div class="search">
                             <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="<%=path %>/registry/${index }" method = "post">
                                 <input name="imageName" class="search-img" placeholder="搜索镜像" type="text"><button type="submit" class="btn btn-danger btn-send">搜索</button>

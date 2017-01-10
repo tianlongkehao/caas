@@ -8,53 +8,22 @@
 </head>
 <body>
 
-<header class="header hide">
+<header class="header">
     <div class="navbar navbar-fixed-top">
         <div class="container">
-            <div class="navbar-header">
-                <a href="<%=path %>/home">
-                    <h2>BCM</h2>
-                </a>
+        	<div class="navbar-header">
+                <span><a href="<%=path %>/home"><h2>BCM</h2></a></span>
             </div>
-            <ul class="nav navbar-nav navbar-right navbar-info">
-                <li class="dropdown">
-                	<c:if test="${cas_enable}">
-		                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
-		                   aria-haspopup="true" aria-expanded="false" style="margin-right:57px">
-		                   <i class="fa fa-user"></i>
-		                   </span>
-		                </a>
-                    </c:if>
-                    <c:if test="${!cas_enable}">
-	                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
-	                       aria-haspopup="true" aria-expanded="false">
-	                       ${cur_user.userName }
-	                        <span class="caret"></span>
-	                    </a>
-                    </c:if>
-                    <ul class="dropdown-menu">
-                    	
-                        <li><a href="<%=path %>/user/detail/${cur_user.id }/a"><i class="fa fa-user"></i>&nbsp;&nbsp;基本信息</a></li>
-                     
-                        <c:if test="${!cas_enable}">
-                        	<li><a href="<%=path %>/user/detail/${cur_user.id }/b"><i class="fa fa-unlock-alt"></i>&nbsp;&nbsp修改密码</a></li>
-                        
-	                        <li class="logout">
-		                        <c:choose>
-			                       	<c:when test="${ssoConfig.enable}">
-			                       		<a href="${ssoConfig.serverLogoutUrl}"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
-			                       	</c:when>
-			                       	<c:otherwise>
-			                       		<a href="<%=path %>/loginout/${cur_user.id }"><i class="fa fa-power-off"></i>&nbsp;&nbsp退出登录</a>
-			                       	</c:otherwise>
-			                  	</c:choose>
-	                        </li>
-                        </c:if>
-                    </ul>
-                </li>
-            </ul>
+            <div class="navbar-tab">
+                <ul>
+                	<li><a class="navTab first" href="<%=path %>/home">主页</a></li>
+                	<li><a class="navTab" href="<%=path %>/imageShow">镜像广场</a></li>
+                	<li class="active"><a class="navTab" href="<%=path %>/bcm/${cur_user.id }">控制台</a></li>
+                </ul>
+            </div>
         </div>
     </div>
+    
 </header>
 	<nav class="navbar-default navbar-static-side" role="navigation">
 		<div class="sidebar-collapse">

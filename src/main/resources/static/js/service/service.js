@@ -545,7 +545,7 @@ function oneVersionUpgrade(id,serviceName,imgName,obj) {
 			 yes: function(index, layero){
 		        var cStatusHtml = "<i class='fa_success'></i>"+
 	                				"升级中"+
-	                				"<img src='"+ctx+"/images/loading4.gif' alt=''/>";
+	                				"<img src='"+ctx+"/images/loading4.gif' alt=''/><a href='javascript:oneStopContainerUpdate()'><i class='fa fa-times fa-stopUpdate'></i></a>";
 		        $("#"+id+"_upgradeCluster").parent().parent().parent().parent().parent().parent().find(".cStatusColumn").html(cStatusHtml);
 		        $("#"+id+"_moreFun").removeClass('a-live').addClass('no-drop');
 		        $("#"+id+"_moreFun").find('.fa-gears').addClass('self_a');
