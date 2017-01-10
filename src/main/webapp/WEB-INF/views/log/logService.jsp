@@ -4,6 +4,7 @@
 <head lang="en">
     <title>日志</title>
     <%@include file="../frame/header.jsp"%>
+   	<script type="text/javascript" src="<%=path%>/js/log/log.js"></script>
 </head>
 <body>
 <jsp:include page="../frame/bcm-menu.jsp" flush="true">
@@ -46,17 +47,16 @@
 											</tr>
 										</thead>
 										<tbody id="logServiceList">
-											  
+									<%-- 		  <c:forEach items = "${logServiceList }" var = "logService">
 													<tr>
-														<td style="width: 13%;text-indent:10px;">11</td>
-														<td style="width: 50%">22</td>
-														<td style="width: 20%">33</td>
-			                                            <td style="width: 15%;height:40px;">44
-			                                                 <fmt:formatDate value="${dockerfile.createDate }" pattern="yyyy-MM-dd HH:mm:ss"/>
+														<td style="width: 13%;text-indent:10px;">${logService.createUserName }</td>
+														<td style="width: 50%">${logService.serviceName }</td>
+														<td style="width: 20%">${logServiceOprationMaps[logService.operationType]}</td>
+			                                            <td style="width: 15%;height:40px;">
+			                                                 <fmt:formatDate value="${logService.createDate }" pattern="yyyy-MM-dd HH:mm:ss"/>
 		                                                </td>
-			                                            
 													</tr>
-											  
+											  </c:forEach> --%>
 										</tbody>
 										<tfoot class="hide">
 											<tr>
@@ -80,9 +80,9 @@
 
 
 <script type="text/javascript">
-	$('.dataTables-example').dataTable({
+	/* $('.dataTables-example').dataTable({
         "aaSorting": [[ 3, "desc" ]]
-	});
+	}); */
 	
 </script>
 
