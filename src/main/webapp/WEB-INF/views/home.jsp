@@ -15,11 +15,15 @@
         <div class="container">
             <div class="navbar-header">
                 <a href="javascript:void(0);">
-                    <h2>BCM</h2>
+                    <h1>BCM</h1>
                 </a>
             </div>
-            <div class="navbar-login hide">
-                <a href="<%=path %>/login" type="button" class="btn btn-default">登录</a>
+            <div class="navbar-tab">
+                <ul>
+                	<li><a class="navTab first" href="<%=path %>/home">主页</a></li>
+                	<li><a class="navTab" href="<%=path %>/imageShow">镜像广场</a></li>
+                	<li><a class="navTab" href="<%=path %>/bcm/${cur_user.id }">控制台</a></li>
+                </ul>
             </div>
         </div>
     </div>

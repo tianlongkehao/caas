@@ -372,3 +372,37 @@
 .timeVersion{
 	margin-left:18px!important;
 }
+.imageInfo{
+	
+    margin-left: 20px;
+    margin-bottom: 10px;
+    border-left: 3px solid #e14344;
+    line-height: 32px;
+    padding-left: 10px;
+    font-size: 16px;
+    color: #a2a2a2;
+}
+/* 导航栏中的三个标签 */
+.navbar-tab{
+	position: absolute;
+    line-height:70px;
+    left: 50%;
+    margin-left: -195px;
+    font-size:20px;
+    
+}
+.navbar-tab ul {
+	
+	height:70px;
+}
+.navbar-tab ul li{
+	float:left;
+	margin-right:70px;
+	color:#e14344;
+	text-algin:center;
+}
+.navbar-tab ul li a.navTab{
+	color:#e8504f;
+	font-weight: bold;
+}
+
