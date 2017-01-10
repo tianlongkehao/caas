@@ -28,13 +28,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.dao.UserVisitingLogDao;
 import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.entity.UserVisitingLog;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
@@ -74,6 +78,18 @@ public class IndexController {
      */
     @Autowired
 	private UserDao userDao;
+    
+    /**
+     * userResourceDao
+     */
+    @Autowired
+    private UserResourceDao userResourceDao;
+    
+    /**
+     * imageDao
+     */
+    @Autowired
+    private ImageDao ImageDao;
     
     /**
      * 记录访问日志dao接口
@@ -168,7 +184,19 @@ public class IndexController {
     private void getUserResourceInfo(Model model, User user, KubernetesAPIClientInterface client) {
         ResourceQuota quota = client.getResourceQuota(user.getNamespace());
         if (null != quota) {
+        	UserResource userResource = new UserResource();
+        	if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+                userResource = userResourceDao.findByUserId(user.getParent_id());
+            }
+            else {
+                userResource = userResourceDao.findByUserId(user.getId());
+            }
+            model.addAttribute("userResource", userResource);
             model.addAttribute("user", user);
+            
+            Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
+            
+            model.addAttribute("imageCount", imageCount);
             
             Map<String, String> hard = quota.getStatus().getHard();
             model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数

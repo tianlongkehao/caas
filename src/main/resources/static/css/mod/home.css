@@ -50,7 +50,7 @@
 }
 .funTabRight{
 	width:300px;
-	height:200px;
+	height:248px;
 	border-right:1px solid #dadada;
 	margin-left: 100px;
     margin-top: 50px;
@@ -102,7 +102,7 @@
     box-shadow: 0 5px 20px rgba(0,0,0,.1);
 }
 .app-list .icon-view .icon-wrapper .icon-img {
-    height: 100px;
+    height: 116px;
     width: 100%;
     display: table;
 }
@@ -133,6 +133,57 @@
 .funs-list{
 	width: 88%;
 	margin: 0 auto;
+}
+.icon-img span.text{
+	color: #333;
+	padding:20px;
+}
+.pandectBtn{
+	border: 3px solid #fff;
+    width: 120px;
+    height: 50px;
+    line-height: 44px;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 366px;
+    margin-left: -65px;
+    color: #fff;
+    font-size: 20px;
+    cursor:pointer;
+}
+@media screen and (min-width: 320px) {
+.pandectBtn{top: 266px;}
+}
+@media screen and (min-width: 360px) {
+    .pandectBtn{top: 366px;}
+}
+@media screen and (min-width: 375px) {
+    .pandectBtn{top: 366px;}
+}
+@media screen and (min-width: 386px) {
+    .pandectBtn{top: 366px;}
+}
+@media screen and (min-width: 414px) {
+    .pandectBtn{top: 366px;}
+}
+@media screen and (min-width: 520px) {
+    .pandectBtn{top: 366px;}
+}
+@media screen and (min-width: 720px) {
+    .pandectBtn{top: 366px;}
+}
+@media screen and (min-width: 820px) {
+    .pandectBtn{top: 366px;}
+}
+@media screen and (min-width: 920px) {
+    .pandectBtn{top: 352px;}
+}
+.pandectBtn:hover{
+    color: #fff;
+}
+.icon-home{
+	color:#fff!important;
 }
 
 
