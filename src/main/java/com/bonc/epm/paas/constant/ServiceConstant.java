@@ -32,6 +32,10 @@ public class ServiceConstant {
      * 容器状态 调试中
      */
     public static final Integer CONSTRUCTION_STATUS_DEBUG = 6;
+    /**
+     * 容器状态升级中
+     */
+    public static final Integer CONSTRUCTION_STATUS_UPDATE = 7;
 	
     /**
      * 默认检测延迟
@@ -57,6 +61,7 @@ public class ServiceConstant {
     public static final Integer OPERATION_TYPE_ROLLINGUPDATE = 70;  //版本升级
     public static final Integer OPERATION_TYPE_CONFIGURE     = 80;  //更改配置
     public static final Integer OPERATION_TYPE_DELETE        = 90;  //删除
+    public static final Integer OPERATION_TYPE_CANCELUPDATE  = 100; //取消升级
     /**
      * 监控设置
      */

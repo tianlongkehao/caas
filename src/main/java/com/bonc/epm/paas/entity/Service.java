@@ -107,6 +107,10 @@ public class Service {
 	 * 黏连
 	 */
 	private String nodeIpAffinity;    
+	/**
+	 * 升级用的临时名称
+	 */
+	private String tempName;
 	
 	/**
 	 * 服务中文名称
@@ -363,5 +367,13 @@ public class Service {
 
 	public void setMonitor(Integer monitor) {
 		this.monitor = monitor;
+	}
+
+	public String getTempName() {
+		return tempName;
+	}
+
+	public void setTempName(String tempName) {
+		this.tempName = tempName;
 	}
 }
