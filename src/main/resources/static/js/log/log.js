@@ -48,6 +48,8 @@ $(document).ready(function () {
                     			return "更改配置";
                     		}else if(data==90){
                     			return "删除";
+                    		}else if(data==100){
+                    			return "正在升级中";
                     		}
                     	}	
                     },
