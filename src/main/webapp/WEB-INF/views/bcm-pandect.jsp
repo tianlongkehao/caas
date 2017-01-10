@@ -66,7 +66,7 @@
                                           	<img src="<%=path %>/images/applist3-gray.svg" class="pandect-icon" alt=""/>
                                             <span>镜像个数：</span>
                                           </span>
-                                        <span class="pull-right big green"><span>${userResource.image_count}</span>&nbsp;个</span>
+                                        <span class="pull-right big green"><span>${imageCount}</span>&nbsp;个</span>
                                     </a>
                                 </li>
                             </ul>
