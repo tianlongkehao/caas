@@ -20,18 +20,28 @@ package com.bonc.epm.paas.shera.model;
 
 public class CodeManager {
     
-    private Integer choice;  //swagger中没有显示！！
+    private Integer codeChoice;  //swagger中没有显示！！
+    
+    private String uuid;
     
     private GitConfig gitConfig;
     
     private SvnConfig svnConfig;
 
-    public Integer getChoice() {
-        return choice;
+    public Integer getCodeChoice() {
+        return codeChoice;
     }
 
-    public void setChoice(Integer choice) {
-        this.choice = choice;
+    public void setCodeChoice(Integer codeChoice) {
+        this.codeChoice = codeChoice;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public GitConfig getGitConfig() {

@@ -114,14 +114,14 @@ public class SheraClientService {
         job.setMaxExecutionRecords(2);
         job.setMaxKeepDays(2);
         CodeManager codeManager = new CodeManager();
-        codeManager.setChoice(codeType);
+        codeManager.setUuid(uuid);
+        codeManager.setCodeChoice(codeType);
         if (codeType == CiConstant.CODE_TYPE_GIT) {
             GitConfig gitConfig = new GitConfig();
             gitConfig.setBranch(branch);
             Repository repo = new Repository();
             repo.setUrl(url);
             Key key = new Key();
-            key.setUuid(uuid);
             key.setUsername(userName);
             key.setType(type);
             repo.setKey(key);
@@ -138,7 +138,6 @@ public class SheraClientService {
             Repository repo = new Repository();
             repo.setUrl(url);
             Key key = new Key();
-            key.setUuid(uuid);
             key.setUsername(userName);
             key.setType(type);
             repo.setKey(key);
@@ -245,10 +244,12 @@ public class SheraClientService {
      * @param type ： 类型
      * @return 
      */
-    public CredentialCheckEntity generateCredentialCheckEntity(String url,String username,Integer type){
+    public CredentialCheckEntity generateCredentialCheckEntity(String url,String username,Integer type,String desc,String uuid){
         CredentialCheckEntity credentialCheckEntity = new CredentialCheckEntity();
         credentialCheckEntity.setUrl(url);
         CredentialKey credentialKey = new CredentialKey();
+        credentialKey.setDesc(desc);
+        credentialKey.setUuid(uuid);
         credentialKey.setType(type);
         credentialKey.setUsername(username);
         credentialCheckEntity.setKey(credentialKey);

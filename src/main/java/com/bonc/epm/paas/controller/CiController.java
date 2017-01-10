@@ -836,7 +836,7 @@ public class CiController {
             else {
                 Credential = ciCodeCredential.getType() + 2;  // 3 ：svn http类型，4：svn ssh类型
             }
-            CredentialCheckEntity credentialCheckEntity = sheraClientService.generateCredentialCheckEntity(codeUrl, ciCodeCredential.getUserName(), Credential);
+            CredentialCheckEntity credentialCheckEntity = sheraClientService.generateCredentialCheckEntity(codeUrl, ciCodeCredential.getUserName(), Credential,ciCodeCredential.getRemark(),ciCodeCredential.getUniqueKey());
             try {
                 credentialCheckEntity = client.checkCredential(credentialCheckEntity);
                 if (StringUtils.isEmpty(credentialCheckEntity)) {   //判断返回结果是否为空
