@@ -868,8 +868,13 @@ function loadServices() {
 							}
 							if (row.status == 6) {
 								html = '<i class="fa_run"></i>' +
-									'调试中<img src="'+ctx+'/images/loading4.gif"'+
-									'alt="" class="hide" />';
+								'调试中<img src="'+ctx+'/images/loading4.gif"'+
+								'alt="" class="hide" />';
+							}
+							if (row.status == 7) {
+								html = '<i class="fa_success"></i>' +
+									'升级中<img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" />';
 							}
 							return html;
 						}

@@ -32,6 +32,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +44,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
-import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
@@ -1248,103 +1249,202 @@ public class ServiceController {
      * @return String
      */
     @RequestMapping("service/modifyimgVersion.do")
+    @ResponseBody
+    public String modifyimgVersion(long id, String serviceName, String imgVersion, String imgName) {
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	Service service = serviceDao.findOne(id);
+    	
+    	try {
+    		if (service.getImgVersion().equals(imgVersion)) {
+    			map.put("status", "500");
+    		} else {
+    			LOG.info("***************版本升级开始****************************");
+    			// next Controller postfix
+    			String random = RandomString.getStringRandom(32); 
+    			// next Controller name
+    			String nextControllerName = serviceName + "-" + random; 
+    			// 保存服务信息
+    			service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_UPDATE);
+    			service.setTempName(nextControllerName);
+    			Date currentDate = new Date();
+    			User currentUser = CurrentUserUtils.getInstance().getUser();
+    			service.setUpdateDate(currentDate);
+    			service.setUpdateBy(currentUser.getId());
+    			serviceDao.save(service);
+    			// 保存服务操作信息
+    			serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+    					ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
+    			
+    			String image = dockerClientService.generateRegistryImageName(imgName, imgVersion);
+    			
+    			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+    			ReplicationController originalController = client.getReplicationController(serviceName);
+    			
+    			// 设置annotations
+    			ReplicationController updateOriginalController = firstSetAnnotation(serviceName, nextControllerName,
+    					client, originalController);
+    			
+    			// 生成新镜像版本的RC
+    			createNextRc(random, nextControllerName, image, client, originalController);
+    			
+    			// 设置annotations
+    			boolean isSetDeploy = false;
+    			if (StringUtils.isBlank(updateOriginalController.getSpec().getSelector().get("deployment"))) {
+    				isSetDeploy = true;
+    			}
+    			
+    			updateOriginalController = secondSetAnnotation(serviceName, client, isSetDeploy);
+    			
+    			// 滚动升级
+    			boolean result = rollingUpdate(id, serviceName, nextControllerName, client, updateOriginalController, isSetDeploy);
+    			if (result != true) {
+					return null;
+				}
+    			// 删除旧RC
+    			client.deleteReplicationController(serviceName);
+    			LOG.info("Deleting old controller:" + serviceName);
+    			
+    			// 将新RC的名字重命名为旧RC名字
+    			renameNewRc(serviceName, nextControllerName, client);
+    			
+    			// 更新SVC的lable Selector
+    			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
+    			Map<String, String> lableMap = new HashMap<String, String>();
+    			lableMap.put("app", nextControllerName);
+    			k8sService.getSpec().setSelector(lableMap);
+    			client.updateService(serviceName, k8sService);
+    			
+    			// 保存服务信息
+    			service.setImgVersion(imgVersion);
+    			Image image2 = imageDao.findByNameAndVersion(service.getImgName(), imgVersion);
+    			service.setImgID(image2.getId());
+    			service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
+    			service.setTempName("");
+    			currentDate = new Date();
+    			service.setUpdateDate(currentDate);
+    			service.setUpdateBy(currentUser.getId());
+    			serviceDao.save(service);
+    			
+    			map.put("status", "200");
+    			LOG.info("replicationController:" + serviceName + " rolling updated.");
+    			
+    			// 服务版本升级 使用 kubectl rolling-update 命令行
+    			/*
+    			 * KubernetesAPIClientInterface client =
+    			 * kubernetesClientService.getClient(); ReplicationController
+    			 * controller = client.getReplicationController(serviceName);
+    			 * String NS = controller.getMetadata().getNamespace(); String
+    			 * cmd = "kubectl rolling-update " + serviceName +
+    			 * " --namespace=" + NS + " --update-period=10s --image=" +
+    			 * dockerClientService.generateRegistryImageName(imgName,
+    			 * imgVersion); boolean flag = cmdexec(cmd); if (flag) {
+    			 * service.setImgVersion(imgVersion); //取得对应的imageid Image image
+    			 * = imageDao.findByNameAndVersion(service.getImgName(),
+    			 * imgVersion); service.setImgID(image.getId());
+    			 * 
+    			 * Date currentDate = new Date(); User currentUser =
+    			 * CurrentUserUtils.getInstance().getUser();
+    			 * service.setUpdateDate(currentDate);
+    			 * service.setUpdateBy(currentUser.getId()); service =
+    			 * serviceDao.save(service); // 保存服务操作信息
+    			 * serviceOperationLogDao.save(service.getServiceName(),
+    			 * service.toString(),
+    			 * ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
+    			 * 
+    			 * map.put("status", "200"); } else { String rollBackCmd =
+    			 * "kubectl rolling-update " + serviceName + " --namespace="+ NS
+    			 * + " --rollback"; cmdexec(rollBackCmd); map.put("status",
+    			 * "400"); }
+    			 */
+    		}
+    	} catch (KubernetesClientException e) {
+    		map.put("status", "400");
+    		map.put("msg", e.getStatus().getMessage());
+    		LOG.error("modify imageVersion error:" + e.getStatus().getMessage());
+    	} catch (Exception ex) {
+    		map.put("status", 400);
+    		map.put("msg", ex.getMessage());
+    		LOG.error(ex.getMessage());
+    	}
+    	return JSON.toJSONString(map);
+    }
+    
+    /**
+     * Description: <br>
+     * 服务版本升级取消
+     * @param id 服务Id
+     * @param serviceName 服务名称
+     * @param imgVersion 镜像版本信息
+     * @param imgName 镜像名称
+     * @return String
+     */
+    @RequestMapping("service/cancelUpdate.do")
 	@ResponseBody
-	public String modifyimgVersion(long id, String serviceName, String imgVersion, String imgName) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        Service service = serviceDao.findOne(id);
+	public String cancelUpdate(long id, String serviceName) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Service service = serviceDao.findOne(id);
         try {
-            if (service.getImgVersion().equals(imgVersion)) {
-                map.put("status", "500");
-            }
-            else {
-                LOG.info("***************版本升级开始****************************");
-                String random = RandomString.getStringRandom(32); //next Controller postfix
-                String nextControllerName = serviceName+"-"+random; // next Controller name
-                String image = dockerClientService.generateRegistryImageName(imgName, imgVersion);
+        	KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        	
+	        ReplicationController originalController = client.getReplicationController(serviceName);
+			// 设置annotations
+	        if (StringUtils.isNotBlank(originalController.getSpec().getSelector().get("deployment"))) {
+	        	originalController.getSpec().setReplicas(service.getInstanceNum());
+	        	originalController.getSpec().getSelector().remove("deployment");
+	        	originalController.getSpec().getTemplate().getMetadata().getLabels().remove("deployment");
+//	        	originalController = client.updateReplicationController(serviceName, originalController);
+	        }
+//	        originalController = client.getReplicationController(serviceName);
+	        originalController.getMetadata().getAnnotations().remove("kubectl.kubernetes.io/original-replicas");
+	        originalController = client.updateReplicationController(serviceName, originalController);
+	        LOG.info("update originalController.  remove original-replicas.");
 
-                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-                ReplicationController originalController = client.getReplicationController(serviceName);
-                
-                // 设置annotations
-                ReplicationController updateOriginalController = firstSetAnnotation(serviceName, nextControllerName, client, originalController);
-                
-                // 生成新镜像版本的RC
-                createNextRc(random, nextControllerName, image, client, originalController);
-                
-                // 设置annotations
-                boolean isSetDeploy=false;
-                if (StringUtils.isBlank(updateOriginalController.getSpec().getSelector().get("deployment"))) {
-                    isSetDeploy = true;
-                }
-                
-                updateOriginalController = secondSetAnnotation(serviceName, client,isSetDeploy);
-                
-                // 滚动升级
-                rollingUpdate(serviceName, nextControllerName, client, updateOriginalController,isSetDeploy);
-                
-                // 删除旧RC
-                client.deleteReplicationController(serviceName);
-                LOG.info("Deleting old controller:"+serviceName);
-                
-                // 将新RC的名字重命名为旧RC名字
-                renameNewRc(serviceName, nextControllerName, client);
-                
-                // 更新SVC的lable Selector
-                com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
-                Map<String,String> lableMap = new HashMap<String, String>();
-                lableMap.put("app", nextControllerName);
-                k8sService.getSpec().setSelector(lableMap);
-                client.updateService(serviceName, k8sService);
-                
-                service.setImgVersion(imgVersion);
-                serviceDao.save(service);
-                map.put("status", "200");
-                LOG.info("replicationController:"+serviceName+" rolling updated.");
+	        //删除新的rc
+	        String nextControllerName = service.getTempName();
+	        if (StringUtils.isNotBlank(nextControllerName)) {
+	        	ReplicationController nextController;
+	        	try {
+					nextController = client.getReplicationController(nextControllerName);
+				} catch (Exception e) {
+					LOG.info(e.getMessage());
+					nextController = null;
+				}
+	        	if (nextController != null) {
+	        		nextController = client.updateReplicationController(nextControllerName, 0);
+					client.deleteReplicationController(nextControllerName);
+				}
+			}
 
-                // 服务版本升级 使用 kubectl rolling-update 命令行
-/*                KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-                ReplicationController controller = client.getReplicationController(serviceName);
-                String NS = controller.getMetadata().getNamespace();
-                String cmd = "kubectl rolling-update " + serviceName + " --namespace=" + NS
-						                               + " --update-period=10s --image="
-						                               + dockerClientService.generateRegistryImageName(imgName, imgVersion);
-                boolean flag = cmdexec(cmd);
-                if (flag) {
-                    service.setImgVersion(imgVersion);
-                    //取得对应的imageid
-                    Image image = imageDao.findByNameAndVersion(service.getImgName(), imgVersion);
-                    service.setImgID(image.getId());
-                    
-    				Date currentDate = new Date();
-    				User currentUser = CurrentUserUtils.getInstance().getUser();
-    				service.setUpdateDate(currentDate);
-    				service.setUpdateBy(currentUser.getId());
-    				service = serviceDao.save(service);
-					// 保存服务操作信息
-					serviceOperationLogDao.save(service.getServiceName(), service.toString(),
-							ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
+	        //删除annotations
+	        originalController = client.getReplicationController(serviceName);
+	        originalController.getMetadata().getAnnotations().remove("kubectl.kubernetes.io/next-controller-id");
+	        client.updateReplicationController(serviceName, originalController);
+	        LOG.info("update originalController.  remove next-controller-id:-"+nextControllerName);
 
-                    map.put("status", "200");
-                }
-                else {
-                    String rollBackCmd = "kubectl rolling-update " + serviceName + " --namespace="+ NS + " --rollback";
-                    cmdexec(rollBackCmd);
-                    map.put("status", "400");
-                }*/
-            }
-        }
-        catch (KubernetesClientException e) {
+        } catch (KubernetesClientException e) {
             map.put("status", "400");
             map.put("msg", e.getStatus().getMessage());
-            LOG.error("modify imageVersion error:" + e.getStatus().getMessage());
-        }               
-        catch (Exception ex) {
-            map.put("status", 400);
-            map.put("msg", ex.getMessage());
-            LOG.error(ex.getMessage());
+            LOG.error("del service error:" + e.getStatus().getMessage());
+    		return JSON.toJSONString(map);
         }
-        return JSON.toJSONString(map);
-    }
+        
+		// 保存服务信息
+		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
+		Date currentDate = new Date();
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		service.setTempName("");
+		service.setUpdateDate(currentDate);
+		service.setUpdateBy(currentUser.getId());
+		serviceDao.save(service);
+		// 保存服务操作信息
+		serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+				ServiceConstant.OPERATION_TYPE_CANCELUPDATE);
+		
+		map.put("status", "200");
+		LOG.info("replicationController:" + serviceName + " rolling update canceled.");
+
+		return JSON.toJSONString(map);
+	}
 
     /**
      * Description:
@@ -1383,7 +1483,7 @@ public class ServiceController {
      * @param updateOriginalController  
      * @param isSetDeploy 
      */
-    private void rollingUpdate(String serviceName, String nextControllerName,
+    private boolean rollingUpdate(long id, String serviceName, String nextControllerName,
                                        KubernetesAPIClientInterface client,ReplicationController updateOriginalController, boolean isSetDeploy) {
         // 最终新服务应该启动的pod副本数量
         int replicas = Integer.valueOf(updateOriginalController.getMetadata().getAnnotations().get("kubectl.kubernetes.io/original-replicas"));
@@ -1395,6 +1495,11 @@ public class ServiceController {
             boolean podStatus = true;
             PodList podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
             while (podStatus) {
+            	try {
+            		client.getReplicationController(nextControllerName);
+				} catch (Exception e) {
+					return false;
+				}
                 if (null != podList && null !=podList.getItems() && podList.getItems().size() ==i) {
                     for (Pod pod : podList.getItems()) {
                         if (pod.getStatus().getPhase().equals("Running")) {
@@ -1442,6 +1547,7 @@ public class ServiceController {
             }
            LOG.info("Scaling "+nextControllerName+" up to "+i+" and scaling "+serviceName+" down to " +j +" Update succeeded."); 
         }
+        return true;
     }
 
     /**
@@ -1467,8 +1573,7 @@ public class ServiceController {
             updateOriginalController.getSpec().getSelector().put("deployment",random);
             updateOriginalController.getSpec().getTemplate().getMetadata().getLabels().put("deployment", random);
             updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController);
-            client.getReplicationController(serviceName);
-            
+
             // 从未升级过的rc
             //client.updateReplicationController(serviceName, 0);
         }
@@ -1774,33 +1879,20 @@ public class ServiceController {
         Service service = serviceDao.findOne(id);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
-        	ReplicationController controller = new ReplicationController();
             if (service.getStatus() != 1) {
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-                controller = client.getReplicationController(service.getServiceName());
+                //删除rc
+                ReplicationController controller = null;
+				try {
+					controller = client.getReplicationController(service.getServiceName());
+				} catch (Exception e1) {
+					controller = null;
+				}
                 if (controller != null) {
                 	controller =  client.updateReplicationController(service.getServiceName(), 0);
                     if (controller !=null && controller.getSpec().getReplicas() == 0) {
                     	Status status = client.deleteReplicationController(service.getServiceName());
-                    	if (status.getStatus().equals("Success")) {
-                    		//svc存在的时候需要删除
-                    		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
-                    		try {
-                    			// 查询svc是否已经创建
-                    			k8sService = client.getService(service.getServiceName());
-                    		} catch (KubernetesClientException e) {
-                    			k8sService = null;
-                    		}
-                			if (null != k8sService) {
-                				status = client.deleteService(service.getServiceName());
-                				if (!status.getStatus().equals("Success")) {
-                					map.put("status", "400");
-                					map.put("msg", "Delete a Service failed:ServiceName["+service.getServiceName()+"]");
-                					LOG.error("Delete a Service failed:ServiceName["+service.getServiceName()+"]");
-                					return JSON.toJSONString(map);
-                				}
-							}
-						} else {
+                    	if (!status.getStatus().equals("Success")){
 	                    	map.put("status", "400");
 	                    	map.put("msg", "Delete a Replication Controller failed:ServiceName["+service.getServiceName()+"]");
 	                    	LOG.error("Delete a Replication Controller failed:ServiceName["+service.getServiceName()+"]");
@@ -1812,12 +1904,24 @@ public class ServiceController {
                     	LOG.error("Update a Replication Controller (update the number of replicas) failed:ServiceName["+service.getServiceName()+"]");
                     	return JSON.toJSONString(map);
         			}
-
-                }else {
-                	map.put("status", "400");
-                	map.put("msg", "ReplicationController取得失败:ServiceName["+service.getServiceName()+"]");
-                	LOG.error("ReplicationController取得失败:ServiceName["+service.getServiceName()+"]");
-                	return JSON.toJSONString(map);
+                }
+                
+        		//删除svc
+        		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+        		try {
+        			// 查询svc是否已经创建
+        			k8sService = client.getService(service.getServiceName());
+        		} catch (KubernetesClientException e) {
+        			k8sService = null;
+        		}
+    			if (null != k8sService) {
+    				Status status = client.deleteService(service.getServiceName());
+    				if (!status.getStatus().equals("Success")) {
+    					map.put("status", "400");
+    					map.put("msg", "Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+    					LOG.error("Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+    					return JSON.toJSONString(map);
+    				}
 				}
             }
             map.put("status", "200");
@@ -1850,8 +1954,7 @@ public class ServiceController {
                 }
                 serviceAndStorageDao.delete(svcAndStoList);
             }
-        } 
-        catch (KubernetesClientException e) {
+        } catch (KubernetesClientException e) {
             map.put("status", "400");
             map.put("msg", e.getStatus().getMessage());
             LOG.error("del service error:" + e.getStatus().getMessage());
@@ -1878,16 +1981,15 @@ public class ServiceController {
             }
         }
         Map<String, Object> maps = new HashMap<String, Object>();
-        try {
-            for (long id : ids) {
-                delContainer(id);
-            }
-            maps.put("status", "200");
-        } 
-        catch (Exception e) {
-            maps.put("status", "400");
-            LOG.error("服务删除错误！");
+        for (long id : ids) {
+            String result = delContainer(id);
+            if (!result.contains("200")) {
+            	maps.put("status", "400");
+            	LOG.error("服务删除错误！");
+                return JSON.toJSONString(maps); 
+			}
         }
+        maps.put("status", "200");
         return JSON.toJSONString(maps); 
     }
     
@@ -2618,7 +2720,6 @@ public class ServiceController {
         for(int i=0;i<services.size();i++){
            Service serviceObj = services.get(i);
            
-           
            String serviceAddr="";
            if(StringUtils.isNoneBlank(serviceObj.getServiceAddr())){
         	    serviceAddr=serviceObj.getServiceAddr();
@@ -2706,4 +2807,7 @@ public class ServiceController {
 		}
         System.out.println("origin pods deleted");
 	}
+	
+	
+	
 }
