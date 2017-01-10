@@ -92,9 +92,9 @@
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="size100"><label for="size100">100<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" id="updatedefVolNum">
                 	<label for="updatedefVolNum"><input type="number" id="updatedefVol" style="width:80px; font-size:8px" placeholder="自定义大小"><span>G</span></label>
-                <div class="volNumber">
-                <span style="color:#1E90FF; padding-left:84px">总量:<span id="totalVol">${cur_user.vol_size}</span>G</span>
-                <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">${leftstorage }</span>G 可用</span></div>
+                <div>
+                <span style="color:#1E90FF; padding-left:84px">总量:<span id="totalVol">${userResource.vol_size}</span>G</span>
+                <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">${userResource.vol_surplus_size }</span>G 可用</span></div>
                 <!-- <input id="storageSizeUpdateSlider" data-slider-id='storageSizeUpdateSliderData' type="text" data-slider-min="0" data-slider-max="1024" data-slider-step="1" />
                 <input type="text" left="" value="250" id="storageSizeUpdateSlider_input" name="storageSize">
                 <span>M</span> -->

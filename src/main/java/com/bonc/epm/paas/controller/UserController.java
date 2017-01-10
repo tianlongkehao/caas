@@ -965,9 +965,13 @@ public class UserController {
 	public String userModifyPsw(long id, String password, String newpwd) {
         Map<String, Object> map = new HashMap<String, Object>();
         User user = userDao.findOne(id);
+        User user1 = userDao.findOne(id);
         if (user.getPassword().trim().equals(EncryptUtils.encryptMD5(password.trim()))) {
             user.setPassword(EncryptUtils.encryptMD5(newpwd));
             userDao.save(user);
+            //退出当前用户
+            CurrentUserUtils.getInstance().loginoutUser(user1);
+            
             map.put("status", "200");
         }
         else {

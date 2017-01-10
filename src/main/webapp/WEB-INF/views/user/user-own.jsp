@@ -349,20 +349,20 @@
                         <form class="edit_pwd_form form-horizontal" action="" id="pswSave"
                               name="pswSave" method="post">
                             <div class="form-group">
-                                <label for="originalPwd" class="col-md-2">原密码：</label>
+                                <label for="originalPwd" class="col-md-2" style="width: 128px">原密码：</label>
                                 <div class="col-md-7">
                                     <input type="password" class="form-control" id="originalPwd" name="originalPwd"
                                            value="">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="newPwd" class="col-md-2">新密码：</label>
+                                <label for="newPwd" class="col-md-2" style="width: 128px">新密码：</label>
                                 <div class="col-md-7">
                                     <input type="password" class="form-control" id="newPwd" name="newPwd">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="confirmNewPwd" class="col-md-2">确认新密码：</label>
+                                <label for="confirmNewPwd" class="col-md-2" style="width: 128px">确认新密码：</label>
                                 <div class="col-md-7">
                                     <input type="password" class="form-control" id="confirmNewPwd" name="confirmNewPwd">
                                 </div>

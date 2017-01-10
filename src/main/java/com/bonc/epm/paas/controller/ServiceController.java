@@ -1776,33 +1776,20 @@ public class ServiceController {
         Service service = serviceDao.findOne(id);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
-        	ReplicationController controller = new ReplicationController();
             if (service.getStatus() != 1) {
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-                controller = client.getReplicationController(service.getServiceName());
+                //删除rc
+                ReplicationController controller = null;
+				try {
+					controller = client.getReplicationController(service.getServiceName());
+				} catch (Exception e1) {
+					controller = null;
+				}
                 if (controller != null) {
                 	controller =  client.updateReplicationController(service.getServiceName(), 0);
                     if (controller !=null && controller.getSpec().getReplicas() == 0) {
                     	Status status = client.deleteReplicationController(service.getServiceName());
-                    	if (status.getStatus().equals("Success")) {
-                    		//svc存在的时候需要删除
-                    		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
-                    		try {
-                    			// 查询svc是否已经创建
-                    			k8sService = client.getService(service.getServiceName());
-                    		} catch (KubernetesClientException e) {
-                    			k8sService = null;
-                    		}
-                			if (null != k8sService) {
-                				status = client.deleteService(service.getServiceName());
-                				if (!status.getStatus().equals("Success")) {
-                					map.put("status", "400");
-                					map.put("msg", "Delete a Service failed:ServiceName["+service.getServiceName()+"]");
-                					LOG.error("Delete a Service failed:ServiceName["+service.getServiceName()+"]");
-                					return JSON.toJSONString(map);
-                				}
-							}
-						} else {
+                    	if (!status.getStatus().equals("Success")){
 	                    	map.put("status", "400");
 	                    	map.put("msg", "Delete a Replication Controller failed:ServiceName["+service.getServiceName()+"]");
 	                    	LOG.error("Delete a Replication Controller failed:ServiceName["+service.getServiceName()+"]");
@@ -1814,12 +1801,24 @@ public class ServiceController {
                     	LOG.error("Update a Replication Controller (update the number of replicas) failed:ServiceName["+service.getServiceName()+"]");
                     	return JSON.toJSONString(map);
         			}
-
-                }else {
-                	map.put("status", "400");
-                	map.put("msg", "ReplicationController取得失败:ServiceName["+service.getServiceName()+"]");
-                	LOG.error("ReplicationController取得失败:ServiceName["+service.getServiceName()+"]");
-                	return JSON.toJSONString(map);
+                }
+                
+        		//删除svc
+        		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+        		try {
+        			// 查询svc是否已经创建
+        			k8sService = client.getService(service.getServiceName());
+        		} catch (KubernetesClientException e) {
+        			k8sService = null;
+        		}
+    			if (null != k8sService) {
+    				Status status = client.deleteService(service.getServiceName());
+    				if (!status.getStatus().equals("Success")) {
+    					map.put("status", "400");
+    					map.put("msg", "Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+    					LOG.error("Delete a Service failed:ServiceName["+service.getServiceName()+"]");
+    					return JSON.toJSONString(map);
+    				}
 				}
             }
             map.put("status", "200");
@@ -1852,8 +1851,7 @@ public class ServiceController {
                 }
                 serviceAndStorageDao.delete(svcAndStoList);
             }
-        } 
-        catch (KubernetesClientException e) {
+        } catch (KubernetesClientException e) {
             map.put("status", "400");
             map.put("msg", e.getStatus().getMessage());
             LOG.error("del service error:" + e.getStatus().getMessage());
@@ -1880,16 +1878,15 @@ public class ServiceController {
             }
         }
         Map<String, Object> maps = new HashMap<String, Object>();
-        try {
-            for (long id : ids) {
-                delContainer(id);
-            }
-            maps.put("status", "200");
-        } 
-        catch (Exception e) {
-            maps.put("status", "400");
-            LOG.error("服务删除错误！");
+        for (long id : ids) {
+            String result = delContainer(id);
+            if (!result.contains("200")) {
+            	maps.put("status", "400");
+            	LOG.error("服务删除错误！");
+                return JSON.toJSONString(maps); 
+			}
         }
+        maps.put("status", "200");
         return JSON.toJSONString(maps); 
     }
     
