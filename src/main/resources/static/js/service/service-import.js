@@ -300,16 +300,16 @@
 	        	ids.push(obj[k].value);
 	        }
 	    }
+	    if(""==ids){
+	    	layer.alert("请至少选中一个外部服务！");
+	    	return;
+	    }
 	 layer.open({
 	        title: '删除外部引入服务',
 	        content: '确定批量删除外部引入服务？',
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ 
 	        	layer.close(index);
-	        	if(""==ids){
-	        		layer.alert("未选中需要删除的外部服务！");
-	        		return;
-	        	}
 				$.ajax({
 					url:""+ctx+"/refservice/delete.do?ids="+ids,
 					success:function(data){

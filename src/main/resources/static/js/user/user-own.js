@@ -121,7 +121,9 @@ $(function(){
                     success:function(data){
                         data = eval("(" + data + ")");
                         if(data.status === '200'){
-                            layer.alert("密码修改成功");
+                            layer.msg("密码修改成功",{icon: 6});
+                            setTimeout('window.location.href = ctx + "/login"',2000);
+                            
                         }else{
                             layer.alert("密码修改失败");
                         }
