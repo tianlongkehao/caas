@@ -159,13 +159,13 @@
 						<li id="li_dockerfile"><a class="J_menuItem" href="<%=path %>/template/dockerfile"><i class="fa fa_circle"></i>dockerfile</a></li>
 						<li id="li_env"><a class="J_menuItem" href="<%=path %>/template/env"><i class="fa fa_circle"></i>环境变量</a></li>
 					</ul></li>
-				<li id="menu_template"><a href="#" class="first-a"> <img alt="image" class="tit-image"
+				<li id="menu_log"><a href="#" class="first-a"> <img alt="log" class="tit-image"
 						src="<%=path%>/images/logs.png" /> <span
 						class="nav-label">日志</span> <span class="fa arrow"></span>
 				</a>
 					<ul class="nav nav-second-level">
-						<li id="li_dockerfile"><a class="J_menuItem" href="<%=path %>/logs/services"><i class="fa fa_circle"></i>服务操作日志</a></li>
-						<li id="li_env"><a class="J_menuItem" href="<%=path %>/logs/common"><i class="fa fa_circle"></i>通用操作日志</a></li>
+						<li id="li_logService"><a class="J_menuItem" href="<%=path %>/logServices"><i class="fa fa_circle"></i>服务操作日志</a></li>
+						<li id="li_logCommon"><a class="J_menuItem" href="<%=path %>/logCommon"><i class="fa fa_circle"></i>通用操作日志</a></li>
 					</ul></li>
 				<%-- <li id="menu_product"><a href="<%=path %>/product/help" target="_blank"> <img alt="image" class="tit-image"
 						src="<%=path%>/images/help-red.png"

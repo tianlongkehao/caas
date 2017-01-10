@@ -6,7 +6,7 @@
     margin-bottom: 20px;
     min-width: 180px;
     overflow: hidden;
-    height: 200px;
+    height: 230px;
     border-radius: 2px;
     float: left;
     width: 40%;
@@ -132,4 +132,13 @@ img.pandect-icon{
 	margin-left: 2px;
     margin-right: 4px;
 }
+/* log */
 
+.logInfo{
+	margin-left:10px;
+	width: 59%;
+}
+.right{
+	float: right;
+	color: #b7b7b7;
+}

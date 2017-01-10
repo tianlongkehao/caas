@@ -51,7 +51,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" data-permalink onclick="permalink(this)">
+                                    <a href="<%=path %>/service" data-permalink onclick="permalink(this)">
                                           <span class="server-info-icon"><i class="fa fa-puzzle-piece pandect-icon"></i>
                                             <span>实例个数：</span>
                                           </span>
@@ -60,14 +60,35 @@
                                         &nbsp;个</span>
                                     </a>
                                 </li>
-                                <%--<li>
-                                    <a href="<%=path %>/docker-registry?0" data-permalink onclick="_permalink(this)">
-                                          <span class="server-info-icon"><i class="fa_icon server_icon_3"></i>
-                                            <span>副本控制器：</span>
+                                <li>
+                                    <a href="<%=path %>/registry/0" data-permalink onclick="_permalink(this)">
+                                          <span class="server-info-icon">
+                                          	<img src="<%=path %>/images/applist3-gray.svg" class="pandect-icon" alt=""/>
+                                            <span>镜像个数：</span>
                                           </span>
-                                        <span class="pull-right big yellow"><span>${usedControllerNum}</span>/<span>未限制${servControllerNum}</span>&nbsp;个</span>
+                                        <span class="pull-right big green"><span>${usedImageNum}</span>&nbsp;个</span>
                                     </a>
-                                </li>--%>
+                                </li>
+                            </ul>
+                        </div>
+                        </section>
+                        
+                        <section class="container-count logInfo">
+                        <div class="padding">
+                            <div class="row-title">最近操作</div>
+                            <ul class="server-list">
+                                <li>
+                                    <span>创建了容器</span>
+                                    <span class="right">10小时前</span>
+                                </li>
+                                <li>
+                                    <span>删除了镜像</span>
+                                    <span class="right">1天前</span>
+                                </li>
+                                <li>
+                                    <span>更新了%%%</span>
+                                    <span class="right">2017-01-06</span>
+                                </li>
                             </ul>
                         </div>
                         </section>
