@@ -1126,3 +1126,8 @@ p.portLabel input{
 .importSerTable tr th{
 	color: #676a6a;
 }
+.fa-stopUpdate{
+	margin-left:6px;
+	color:#e14344;
+	font-size:15px;
+}
