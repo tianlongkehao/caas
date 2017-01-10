@@ -20,7 +20,7 @@ package com.bonc.epm.paas.shera.model;
 
 public class CodeManager {
     
-    private Integer choice;
+    private Integer choice;  //swagger中没有显示！！
     
     private GitConfig gitConfig;
     

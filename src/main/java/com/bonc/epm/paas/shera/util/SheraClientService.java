@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.entity.CiInvoke;
@@ -43,6 +44,7 @@ import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.Key;
 import com.bonc.epm.paas.shera.model.MvnConfig;
 import com.bonc.epm.paas.shera.model.Repository;
+import com.bonc.epm.paas.shera.model.SvnConfig;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
 /**
@@ -103,9 +105,9 @@ public class SheraClientService {
      * @see
      */
     public Job generateJob(String id ,String jdkVersion,String branch,String url,
-                           String codeName,String refspec,
-                           String dockerFileContent,String dockerFile,String imgNamePre,String imgName,
-                           List<CiInvoke> ciInvokeList,String userName,Integer type,Integer codeType) {
+                           String codeName,String refspec,String dockerFileContent,String dockerFile,
+                           String imgNamePre,String imgName,List<CiInvoke> ciInvokeList,String userName,
+                           Integer type,Integer codeType,String uuid) {
         Job job = new Job();
         job.setId(id);
         job.setJdkVersion(jdkVersion);
@@ -113,21 +115,36 @@ public class SheraClientService {
         job.setMaxKeepDays(2);
         CodeManager codeManager = new CodeManager();
         codeManager.setChoice(codeType);
-        GitConfig gitConfig = new GitConfig();
-        gitConfig.setBranch(branch);
-        Repository repo = new Repository();
-        repo.setUrl(url);
-//        repo.setCredentials(credentials);
-        Key key = new Key();
-        key.setUsername(userName);
-        key.setType(type);
-        repo.setKey(key);
-        GitAdvancedConfig advanced = new GitAdvancedConfig();
-        advanced.setName(codeName);
-        advanced.setRefspec(refspec);
-        repo.setAdvanced(advanced);
-        gitConfig.setRepo(repo);
-        codeManager.setGitConfig(gitConfig);
+        if (codeType == CiConstant.CODE_TYPE_GIT) {
+            GitConfig gitConfig = new GitConfig();
+            gitConfig.setBranch(branch);
+            Repository repo = new Repository();
+            repo.setUrl(url);
+            Key key = new Key();
+            key.setUuid(uuid);
+            key.setUsername(userName);
+            key.setType(type);
+            repo.setKey(key);
+            GitAdvancedConfig advanced = new GitAdvancedConfig();
+            advanced.setName(codeName);
+            advanced.setRefspec(refspec);
+            repo.setAdvanced(advanced);
+            gitConfig.setRepo(repo);
+            codeManager.setGitConfig(gitConfig);
+        }
+        else {
+            SvnConfig svnConfig = new SvnConfig();
+            svnConfig.setBranch(branch);
+            Repository repo = new Repository();
+            repo.setUrl(url);
+            Key key = new Key();
+            key.setUuid(uuid);
+            key.setUsername(userName);
+            key.setType(type);
+            repo.setKey(key);
+            svnConfig.setRepo(repo);
+            codeManager.setSvnConfig(svnConfig);
+        }
         job.setCodeManager(codeManager);
         
         BuildManager buildManager = new BuildManager();

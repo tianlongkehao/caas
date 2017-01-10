@@ -12,11 +12,21 @@
 package com.bonc.epm.paas.shera.model;
 
 public class Key {
+    private String uuid;
     private String username;
     private Integer type;
     public String getUsername() {
         return username;
     }
+    
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
