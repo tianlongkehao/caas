@@ -217,41 +217,51 @@ $(document).ready(function(){
     	$('#proxyZone').val(nginxstr);
     	
     	//将端口配置 数据变为json放入到
+	    var flag = false;
 	    var portJson ="";
         $("#pushPrptpcol tr").each(function (index, domEle){
-    				var protocol = "";
-    				var mapPort = "";
-    				var containerPort = "";
-    				$(domEle).find("input").each(function(index,data){  
-    					if(index == 0){  containerPort = $(data).val();  }
-    					});  
-    				$(domEle).find("select").each(function(index,data){  
-    					if(index == 0){  protocol = $(data).val();  }
-    					}); 
-    				$(domEle).find("i").each(function(index,data){  
-    					if(index == 0){  mapPort = $(data).html();  }
-    					}); 
-    				portJson += "{"+"\"containerPort\":\""+containerPort+"\","+"\"protocol\":\""+protocol+"\","
-    				+"\"mapPort\":\""+mapPort+"\"},";                 
+			var protocol = "";
+			var mapPort = "";
+			var containerPort = "";
+			$(domEle).find("input").each(function(index,data){  
+				if(index == 0){  
+					containerPort = $(data).val(); 
+					if(!containerPort || containerPort.length < 1){
+					      layer.tips('容器端口不能为空',data,{tips: [1, '#3595CC']});
+					      $(data).focus();
+					      flag = true;
+					      return;
+					}
+					if(containerPort.search(/^[0-9]*$/) === -1){
+					      layer.tips('容器端口只能是数字组成',data,{tips: [1, '#3595CC'],time: 3000});
+					      $(data).focus();
+					      flag = true;
+					      return;
+					}
+				}
+			});  
+			$(domEle).find("select").each(function(index,data){  
+				if(index == 0){
+					protocol = $(data).val();  
+				}
+			}); 
+			$(domEle).find("i").each(function(index,data){  
+				if(index == 0){
+					mapPort = $(data).html();  
+				}
+			}); 
+			portJson += "{"+"\"containerPort\":\""+containerPort+"\","+"\"protocol\":\""+protocol+"\","
+			+"\"mapPort\":\""+mapPort+"\"},";                 
         });
+        if (flag) {
+        	return;
+        }
         if (portJson != "") {  
         		portJson = portJson.substring(0,portJson.length -1);  
         		portJson ="[" +portJson+ "]";  
         }
         $('#portConfig').val(portJson);
-	    //var cpuNum = $('#cpuNum').val();
-	    /*if(!cpuNum || cpuNum.length < 1){
-		      layer.tips('cpu数量不能为空','#cpuNum',{tips: [1, '#3595CC']});
-		      $('#cpuNum').focus();
-		      return;
-		    }*/
-
-	    //var ram = $('#ram').val();
-	    /*if(!ram || ram < 1){
-		      layer.tips('内存不能为零','#ram',{tips: [1, '#3595CC']});
-		      $('#ram').focus();
-		      return;
-		    }*/
+        
         var serviceName = $("#serviceName").val();
         $.ajax({
     		url : ctx + "/service/matchPath.do",
@@ -272,13 +282,13 @@ $(document).ready(function(){
 	
 	$("#service-path").click(function(){
     	layer.tips('内容必须和上传的项目名一致！', '#service-path', {
-            tips: [2, '#0FA6D8'] //还可配置颜色
+            tips: [2, '#0FA6D8'] 
         });
     });
 	
 	$("#proxy-path").click(function(){
     	layer.tips('内容建议为“用户名+项目名”！', '#proxy-path', {
-            tips: [2, '#0FA6D8'] //还可配置颜色
+            tips: [2, '#0FA6D8'] 
         });
     });
 	
@@ -972,7 +982,7 @@ function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
         	$.each(portConfigs,function(i,n){
         		var portTr = '<tr class="plus-row">'+
 				  									'<td>'+
-        												'<input class="port" type="text" value=" '+n.containerPort+'">'+
+        												'<input class="port" type="text" value="'+n.containerPort+'">'+
 				  									'</td>'+
 				  									'<td>' +
 				  											'<select class="T-http">'+
@@ -981,7 +991,7 @@ function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
 				  											'</select>'+
 				  									'</td>'+
 				  									'<td>'+
-				  										'<i>'+ n.mapPort +'</i>'+
+				  										'<i>'+n.mapPort +'</i>'+
 				  									'</td>'+
 				  									'<td>'+
 				  											'<a href="javascript:void(0)" onclick="deletePortRow(this,'+n.mapPort+')" class="gray">'+

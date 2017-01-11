@@ -1005,7 +1005,7 @@ public class ServiceController {
                 portCon.setServiceId(service.getId());
                 portConfigDao.save(portCon);
 				// 向map中添加生成的node端口
-                smalSet.add(Integer.valueOf(portCon.getContainerPort().trim()));
+                smalSet.add(Integer.valueOf(portCon.getMapPort().trim()));
             }
         }
         service.setServiceAddr("http://"+currentUser.getUserName() + "." + serverAddr);
@@ -1935,7 +1935,7 @@ public class ServiceController {
             List<PortConfig> bindPort = portConfigDao.findByServiceId(id);
             if (CollectionUtils.isNotEmpty(bindPort)) {
                 for (PortConfig oneRow : bindPort) {
-                    smalSet.remove(Integer.valueOf(oneRow.getContainerPort().trim()));
+                    smalSet.remove(Integer.valueOf(oneRow.getMapPort().trim()));
                 }
                 portConfigDao.deleteByServiceId(id);
             }
