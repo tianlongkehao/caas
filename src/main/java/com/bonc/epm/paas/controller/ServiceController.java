@@ -1210,31 +1210,31 @@ public class ServiceController {
         LOG.debug("service:=========" + service);
         try {
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-            ReplicationController controller = client.updateReplicationController(service.getServiceName(), 0);
-
-            if (controller == null || controller.getSpec().getReplicas() != 0) {
-                map.put("status", "500");
+            ReplicationController controller = null;
+            try {
+                controller = client.getReplicationController(service.getServiceName());
+            } catch (Exception e1) {
+                controller = null;
             }
-            else {
-                map.put("status", "200");
-				// 保存服务信息
-				Date currentDate = new Date();
-				User currentUser = CurrentUserUtils.getInstance().getUser();
-				service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_STOPPED);
-				service.setUpdateDate(currentDate);
-				service.setUpdateBy(currentUser.getId());
-				service = serviceDao.save(service);
-				// 保存服务操作信息
-				serviceOperationLogDao.save(service.getServiceName(), service.toString(),
-						ServiceConstant.OPERATION_TYPE_STOP);
+            if (controller != null) {
+                controller = client.updateReplicationController(service.getServiceName(), 0);
             }
+            map.put("status", "200");
+			// 保存服务信息
+			Date currentDate = new Date();
+			User currentUser = CurrentUserUtils.getInstance().getUser();
+			service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_STOPPED);
+			service.setUpdateDate(currentDate);
+			service.setUpdateBy(currentUser.getId());
+			service = serviceDao.save(service);
+			// 保存服务操作信息
+			serviceOperationLogDao.save(service.getServiceName(), service.toString(),ServiceConstant.OPERATION_TYPE_STOP);
         }
         catch (KubernetesClientException e) {
             map.put("status", "500");
             map.put("msg", e.getStatus().getMessage());
             LOG.error("stop service error:" + e.getStatus().getMessage());
         }
-
         return JSON.toJSONString(map);
     }
     
