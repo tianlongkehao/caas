@@ -19,7 +19,6 @@ package com.bonc.epm.paas.shera.model;
  */
 public class Repository {
     private String url;
-//    private String credentials;
     private Key key;
     private GitAdvancedConfig advanced;
     
