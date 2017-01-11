@@ -27,8 +27,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
+import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.Image;
@@ -45,8 +47,11 @@ public class LogController{
      */
     @Autowired
     private ServiceOperationLogDao serviceOperationLogDao;
-
-	
+    /**
+     * 通用操作日志dao接口
+     */
+    @Autowired
+	private CommonOperationLogDao commonOperationLogDao;
 	
 	
 	
@@ -74,7 +79,7 @@ public class LogController{
      * Description: <br>
      * 使用datatable对服务操作记录进行服务端分页操作；
      * @param draw ：画板；
-     * @param start ：开始页数；
+     * @param start ：开始记录数；
      * @param length : 每页的长度；
      * @param request ：接受搜索参数；
      * @return String
@@ -107,8 +112,44 @@ public class LogController{
         
         return JSON.toJSONString(map);
     }
-    
-    
+     
+    /**
+     * Description: <br>
+     * 使用datatable对操作记录通用功能操作记录进行服务端分页操作；
+     * @param draw ：画板；
+     * @param start ：开始记录数；
+     * @param length : 每页的长度；
+     * @param request ：接受搜索参数；
+     * @return String
+     */
+    @RequestMapping(value = {"logCommon/pager.do"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String findByPagerCommonLog(String draw, int start,int length,
+                                   HttpServletRequest request ){
+        //获取搜索框内容
+        String search = request.getParameter("search[value]");
+        Map<String,Object> map = new HashMap<String, Object>();
+        PageRequest pageRequest = null;
+        Page<CommonOperationLog> commonList = null;
+        //判断是第几页
+        if (start == 0) {
+            pageRequest = ResultPager.buildPageRequest(null, length);
+        }else {
+            pageRequest = ResultPager.buildPageRequest(start/length + 1, length);
+        }
+        //判断是否需要搜索服务日志
+       if (StringUtils.isEmpty(search)) {
+    	   commonList=commonOperationLogDao.findAlls(pageRequest);
+        } else {
+        	commonList = commonOperationLogDao.findAllByCreateUsername("%"+search+"%", pageRequest);
+        }
+        map.put("draw", draw);
+        map.put("recordsTotal", commonList.getTotalElements());
+        map.put("recordsFiltered", commonList.getTotalElements());
+        map.put("data", commonList.getContent());
+        
+        return JSON.toJSONString(map);
+    }
     
     
     

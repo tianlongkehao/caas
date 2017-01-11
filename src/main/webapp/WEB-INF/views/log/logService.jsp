@@ -4,7 +4,7 @@
 <head lang="en">
     <title>日志</title>
     <%@include file="../frame/header.jsp"%>
-   	<script type="text/javascript" src="<%=path%>/js/log/log.js"></script>
+   	<script type="text/javascript" src="<%=path%>/js/log/logService.js"></script>
 </head>
 <body>
 <jsp:include page="../frame/bcm-menu.jsp" flush="true">
@@ -37,10 +37,10 @@
 								</div>
 								<div class="ibox-content">
 									<table class="table table-striped table-hover dataTables-example" data-page-size="8"
-										data-filter=#filter>
+										data-filter=#filter style="margin-left: 30px">
 										<thead>
 											<tr>
-												<th style="width: 13%;text-indent:10px;">操作人</th>
+												<th style="width: 13%;">操作人</th>
 												<th style="width: 50%;">操作内容</th>
 	                                            <th style="width: 20%;">操作类型</th>
 	                                            <th style="width: 15%;">操作时间</th>

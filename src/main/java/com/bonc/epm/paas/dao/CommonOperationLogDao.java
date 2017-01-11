@@ -11,6 +11,11 @@
 
 package com.bonc.epm.paas.dao;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,4 +30,12 @@ import com.bonc.epm.paas.entity.CommonOperationLog;
 @Transactional
 public interface CommonOperationLogDao extends CrudRepository<CommonOperationLog, Long>{
 
+	//查询当前页数据
+    @Query("select i from CommonOperationLog i  order by i.createDate desc")
+	public Page<CommonOperationLog> findAlls(Pageable request);
+    
+	//条件查询当前页数据
+    @Query("select i from CommonOperationLog i where  i.createUsername like ?1  order by i.createDate desc")
+    public Page<CommonOperationLog> findAllByCreateUsername(String createUsername,Pageable request);
+	
 }

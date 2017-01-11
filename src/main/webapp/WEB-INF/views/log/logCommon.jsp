@@ -4,6 +4,7 @@
 <head lang="en">
 	<title>模板</title>
 	<%@include file="../frame/header.jsp"%>
+	<script type="text/javascript" src="<%=path%>/js/log/logCommon.js"></script>
 </head>
 <body>
 	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
@@ -38,10 +39,10 @@
 								<div class="ibox-content">
 									<table
 										class="table table-striped table-hover dataTables-example"
-										data-filter=#filter>
+										data-filter=#filter style="margin-left: 30px">
 										<thead>
 											<tr>
-												<th style="width: 13%;text-indent:10px;">操作人</th>
+												<th style="width: 13%;">操作人</th>
 												<th style="width: 50%;">操作内容</th>
 	                                            <th style="width: 20%;">操作类型</th>
 	                                            <th style="width: 15%;">操作时间</th>
@@ -49,14 +50,14 @@
 										</thead>
 										<tbody id="logCommonList">
 											
-												<tr>
+											<%-- 	<tr>
 													<td style="width: 13%;text-indent:10px;">11</td>
 														<td style="width: 50%">22</td>
 														<td style="width: 20%">33</td>
 			                                            <td style="width: 15%;height:40px;">44
 			                                                 <fmt:formatDate value="${dockerfile.createDate }" pattern="yyyy-MM-dd HH:mm:ss"/>
 		                                            </td>
-												</tr>
+												</tr> --%>
 											
 										</tbody>
 										<tfoot class="hide">
@@ -77,9 +78,9 @@
 	</div>
 
 	<script type="text/javascript">
-		$('.dataTables-example').dataTable({
+/* 		$('.dataTables-example').dataTable({
 	        "aaSorting": [[ 3, "desc" ]]
-		});
+		}); */
 	</script>
 
 </body>
