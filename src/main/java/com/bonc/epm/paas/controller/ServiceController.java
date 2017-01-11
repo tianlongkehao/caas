@@ -410,10 +410,9 @@ public class ServiceController {
 	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
 	    List<Container> containerList = new ArrayList<Container>();
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("app", service.getServiceName());
   		// 通过服务名获取pod列表
-        PodList podList = client.getLabelSelectorPods(map);
+	    com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
+		PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
         if (podList != null) {
             List<Pod> pods = podList.getItems();
 	        if (CollectionUtils.isNotEmpty(pods)) {
@@ -2131,7 +2130,7 @@ public class ServiceController {
      */
     @RequestMapping(value = { "service/findservice.do" }, method = RequestMethod.GET)
     @ResponseBody
-	public String findService(Long serviceID) {
+	public String findPodsOfService(Long serviceID) {
         Map<String, Object> map = new HashMap<String, Object>();
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         Service service = serviceDao.findOne(serviceID);
@@ -2787,27 +2786,32 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 	}
 	
-	
-	/*
-	 * 删除对应服务下的所有pod
+	/**
+	 * 
+	 * Description:
+	 * 删除对应服务下的所有pod 
+	 * @param serviceName 
 	 */
 	public void delPods(String serviceName) {
-		KubernetesAPIClientInterface client =kubernetesClientService.getClient();
-		Map<String, String> labelSelector = new HashMap<String, String>();
-		labelSelector.put("app", serviceName);
-		PodList podList = client.getLabelSelectorPods(labelSelector);
-		if (podList != null) {
-			for (Pod pod : podList.getItems()) {
-				try {
-					client.deletePod(pod.getMetadata().getName());
-				} catch (KubernetesClientException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-        System.out.println("origin pods deleted");
+	    LOG.info("************************before starting Service, delete garbage pod first*********************"); 
+	    try {
+	        KubernetesAPIClientInterface client =kubernetesClientService.getClient();
+	        com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
+	        Map<String, String> labelSelector = new HashMap<String, String>();
+	        labelSelector.put("app", k8sService.getSpec().getSelector().get("app"));
+	        PodList podList = client.getLabelSelectorPods(labelSelector);
+	        if (podList != null) {
+	            for (Pod pod : podList.getItems()) {
+	                try {
+	                    client.deletePod(pod.getMetadata().getName());
+	                } catch (KubernetesClientException e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        }
+        }
+        catch (Exception e) {
+            LOG.error("garbage pod delete failed. error message:-"+e.getMessage());
+        }
 	}
-	
-	
-	
 }
