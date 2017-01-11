@@ -16,7 +16,7 @@
             </div>
             <div class="navbar-tab">
                 <ul>
-                	<li><a class="navTab first" href="<%=path %>/home">主页</a></li>
+                	<li><a class="navTab first" href="<%=path %>/home">首页</a></li>
                 	<li class="active"><a class="navTab" href="<%=path %>/imageShow">镜像广场</a></li>
                 	<li><a class="navTab" href="<%=path %>/bcm/${cur_user.id }">控制台</a></li>
                 </ul>
@@ -34,8 +34,8 @@
                             <span>分享镜像，交流协作</span>
                         </div>
                         <div class="search">
-                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="<%=path %>/registry/${index }" method = "post">
-                                <input name="imageName" class="search-img" placeholder="搜索镜像" type="text"><button type="submit" class="btn btn-danger btn-send">搜索</button>
+                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="<%=path %>/" method = "post">
+                                <input name="imageName" class="search-img" placeholder="搜索镜像" type="text"><button type="submit" class="btn btn-default btn-color btn-send">搜索</button>
                             </form>
                         </div>
                         <div class="images-layout">
@@ -58,7 +58,7 @@
                                             <div>
                                             	<i class="fa fa-tag"></i> image.version${image.version }
                                                 <div class="pull-right">
-                                                	<i class="fa fa-star-o star-style" style="color:#e8504f"></i>
+                                                	<i class="fa fa-star-o star-style star-favor"></i>
                                                 	<span>63${image.favorTimes }</span>
                                                 </div>
                                             </div>

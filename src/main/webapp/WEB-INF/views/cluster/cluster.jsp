@@ -20,24 +20,32 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active">集群监控</li>
                 </ol>
             </div>
             <div class="contentMain">
-                <aside class="aside-btn">
-                    <div class="btns-group">
-                        <a id="clusterResource" class="Record action">
-                            <span class="btn btn-defaults btn-white">
-                                <span class="ic_left">集群监控</span>
-                            </span>
-                        </a>
-                    </div>
-                </aside>
+            	<div class="row">
+					<div class="col-md-12">
+						<div class="ibox float-e-margins">
+							<div class="ibox-title">
+								<h5>
+									<i class="fa fa-map-marker" style="margin-right: 6px;"></i>集群监控
+								</h5>
+								<div class="ibox-tools">
+									<a href="javascript:window.location.reload(true);"
+										title="刷新"><i class="fa fa-repeat"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="ibox-content" style="padding:0px"></div>
+                
                 <div class="caption clearfix" style="padding-bottom: 0px">
-                    <ul class="toolbox clearfix">
+                    <ul class="toolbox clearfix hide">
                         <li>
                             <a id="updateCluster" style="cursor:pointer">
                                 <i class="fa fa-repeat"></i>

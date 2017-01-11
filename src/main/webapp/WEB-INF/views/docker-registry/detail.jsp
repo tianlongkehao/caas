@@ -17,9 +17,9 @@
             <div class="page-main">
                 <div class="contentTitle">
                     <ol class="breadcrumb">
-                        <li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                        <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
                         <li><i class="fa fa-angle-right"></i></li>
-                        <li class="active">镜像服务</li>
+                        <li class="active">镜像</li>
                         <li><i class="fa fa-angle-right"></i></li>
                         <li class="active">${image.name} </li>
                     </ol>
@@ -92,8 +92,8 @@
                                 <div class="hide" id="contentEditor" style="text-indent: 0px;padding:0px 10px;">
                                     <textarea id="editor" style="display: none;">${image.remark }</textarea>
                                     <div align="right" style="margin-right:5px">
-                                        <span class="btn btn-primary" id="cancelEdit"><i class="fa fa-times"></i> 取消</span>
-                                        <span class="btn btn-primary" id="saveContent"><i class="fa fa-save"></i> 保存</span>
+                                        <span class="btn btn-primary btn-color" id="cancelEdit"><i class="fa fa-times"></i> 取消</span>
+                                        <span class="btn btn-primary btn-color" id="saveContent"><i class="fa fa-save"></i> 保存</span>
                                     </div>
                                     <br>
                                 </div>

@@ -17,7 +17,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="<%=path %>/home"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li><a href="<%=path %>/service"><span id="nav2">服务管理</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>

@@ -116,13 +116,15 @@ nav.navbar-default{
 	color:#fff!important;
 }
 /* 按钮 */
-.btn-primary {
-    background: #e8504f;
-    border-color: #e8504f;
+.btn-color {
+    background: #e8504f!important;
+    border-color: #e8504f!important;
+    color:#fff;
+    outline:none!important;
 }
 
-.btn-primary:hover,
-.btn-primary.focus {
+.btn-color:hover,
+.btn-color.focus {
     background: #e66;
     border-color: #e66;
 }
@@ -142,10 +144,27 @@ nav.navbar-default{
 .btn-pull-deploy:hover {
     background: #e8504f;
 }
-/* 镜像中心 */
+/* 镜像 */
 .images-panel .select-img .star-style {
 	color: #e8504f!important;
 }
+.star-favor{
+	color: #e8504f;
+}
+.imageInfo{
+    border-left: 3px solid #e14344;
+}
+/* 导航栏中的三个标签 */
+.navbar-tab ul li{
+	color:#e14344;
+}
+.navbar-tab ul li a.navTab{
+	color:#e8504f;
+}
+.navbar-tab li.active a{
+    border-bottom: 3px solid #e14344;
+}
+
 
 
 

@@ -17,7 +17,7 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="<%=path %>/home"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active">用户信息</li>
                 </ol>
@@ -150,7 +150,7 @@
                             </div>
                             <c:if test="${!cas_enable}">
                             <div class="basicInfoSaveBtn">
-                                <span class="pull-right btn btn-primary" id="basicInfo">保存</span>
+                                <span class="pull-right btn btn-primary btn-color" id="basicInfo">保存</span>
                             </div>
                             </c:if>
                         </form>
@@ -190,7 +190,7 @@
 											</div>
 											<div class="form-group">
 					                            <div class="col-md-offset-10 col-md-2">
-					                                <button type="button" class="btn btn-primary" id="preferSave">保存</button>
+					                                <button type="button" class="btn btn-primary btn-color" id="preferSave">保存</button>
 					                            </div>
 					                        </div>
 										</div>
@@ -370,7 +370,7 @@
                             <div class="form-group">
                                 <div class="col-md-offset-6 col-md-3">
 <!--                                     <button type="button" class="pull-right btn btn-primary" id="modifyPwd">提交修改</button> -->
-                                    <span class="pull-right btn btn-primary" id="modifyPwd">提交修改</span>
+                                    <span class="pull-right btn btn-primary btn-color" id="modifyPwd">提交修改</span>
                                 </div>
                             </div>
 

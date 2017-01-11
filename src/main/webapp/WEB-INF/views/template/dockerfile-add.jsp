@@ -24,7 +24,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
                     	<li class="active" style="width:110px"><a href="<%=path %>/template/dockerfile"><span id="nav2">dockerfile模板</span></a></li>
@@ -60,7 +60,7 @@
 									<div class="list-item-description" style="padding-top: 100px;">
 										<a href="<%=path%>/template/dockerfile"><span
 											class="btn btn-default" style="margin-right: 30px;">返回</span></a>
-										<span id="buildStorage" class="btn btn-primary pull-right">保存</span>
+										<span id="buildStorage" class="btn btn-primary btn-color pull-right">保存</span>
 									</div>
 								</div>
 							</form>

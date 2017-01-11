@@ -18,7 +18,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" id="nav2">创建租户</li>
@@ -176,7 +176,7 @@
 										<div class="list-item-description" style="padding-top: 100px;">
 											<a href="<%=path%>/user/list"><span
 												class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
-											<span class="next2 pull-right btn btn-primary pull_confirm"
+											<span class="next2 pull-right btn btn-primary btn-color pull_confirm"
 												data-attr="tenxcloud/mysql" id="user_create_next2">下一步</span>
 										</div>
 									</div>
@@ -276,7 +276,7 @@
 											<span class="btn btn-default last_step"
 												style="margin-right: 30px;">上一步</span> <span
 												id="user_save_finishBtn"
-												class="next3 pull-right btn btn-primary pull_confirm">完成</span>
+												class="next3 pull-right btn btn-primary btn-color pull_confirm">完成</span>
 										</div>
 
 									</div>

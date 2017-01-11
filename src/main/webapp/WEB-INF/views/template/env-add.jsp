@@ -19,7 +19,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" style="width: 110px"><a href="<%=path %>/template/env"><span id="nav2">环境变量模板</span></a></li>
@@ -83,7 +83,7 @@
 									<div class="list-item-description" >
 										<a href="<%=path%>/template/env"><span
 											class="btn btn-default" style="margin-right: 30px;">返回</span></a>
-										<span id="exportBtn" class="btn btn-primary pull-right" style="cursor: pointer">保存</span>
+										<span id="exportBtn" class="btn btn-primary btn-color pull-right" style="cursor: pointer">保存</span>
 									</div>
 								</div>
 								<!-- 环境变量导入模板 -->

@@ -17,7 +17,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="<%=path %>/home"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li><a href="<%=path %>/service"><span id="nav2">服务管理</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
@@ -90,7 +90,7 @@
 								<input id="version" name="version" style="width:20%;"
 									type="text" value="debug" class="name-input form-control">
 							</div>
-							<a href="javascript:saveAsImage('${containerId}','${nodeIP }')" type="button" class="btn btn-primary" style="margin-top:10px;color:white;">保存容器为镜像</a>
+							<a href="javascript:saveAsImage('${containerId}','${nodeIP }')" type="button" class="btn btn-primary btn-color" style="margin-top:10px;color:white;">保存容器为镜像</a>
 						</div>
 					</div>
 				</div>

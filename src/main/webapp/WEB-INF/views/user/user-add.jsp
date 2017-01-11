@@ -17,7 +17,7 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active">增加用户</li>
                 </ol>
@@ -58,7 +58,7 @@
                         </div>
                         <div class="form-group">
                             <div class="col-md-offset-4 col-md-2">
-                                <button type="button" class="btn btn-primary" id="userSave">保存</button>
+                                <button type="button" class="btn btn-primary btn-color" id="userSave">保存</button>
                             </div>
                         </div>
                     </form>
