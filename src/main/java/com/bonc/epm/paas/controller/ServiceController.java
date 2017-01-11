@@ -410,10 +410,9 @@ public class ServiceController {
 	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
 	    List<Container> containerList = new ArrayList<Container>();
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("app", service.getServiceName());
   		// 通过服务名获取pod列表
-        PodList podList = client.getLabelSelectorPods(map);
+	    com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
+		PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
         if (podList != null) {
             List<Pod> pods = podList.getItems();
 	        if (CollectionUtils.isNotEmpty(pods)) {
@@ -2131,7 +2130,7 @@ public class ServiceController {
      */
     @RequestMapping(value = { "service/findservice.do" }, method = RequestMethod.GET)
     @ResponseBody
-	public String findService(Long serviceID) {
+	public String findPodsOfService(Long serviceID) {
         Map<String, Object> map = new HashMap<String, Object>();
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         Service service = serviceDao.findOne(serviceID);
@@ -2807,7 +2806,5 @@ public class ServiceController {
 		}
         System.out.println("origin pods deleted");
 	}
-	
-	
 	
 }
