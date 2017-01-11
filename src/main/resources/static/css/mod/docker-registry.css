@@ -21,7 +21,7 @@
 }
 
 .images-panel {
-    height: 220px;
+    height: 240px;
     width: 20%;
     border: 1px solid #E5E5E5;
     border-radius: 2px;
@@ -33,8 +33,9 @@
 .images-panel .select-img {
     display: table;
     width: 100%;
-    height: 150px;
+    height: 170px;
     position: relative;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .images-panel .select-img .star-style {
@@ -50,7 +51,7 @@
     height: 75px;
     text-align: center;
     position: absolute;
-    top: 37px;
+    top: 6px;
 }
 
 .images-panel .select-img .mir-img img {
@@ -387,5 +388,10 @@
 	font-size: 20px;
 	color: #a2a2a2;
 	margin-bottom:20px;
+}
+.imageInfoText{
+	margin-top:18px;
+	padding-left: 20px;
+	padding-right: 20px;
 }
 
