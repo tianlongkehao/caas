@@ -46,39 +46,31 @@
 									
                                     <li class="images-panel">
                                         <div class="select-img">
-	                                        <%-- <c:if test="${image.currUserFavor==0 }"> --%>
-	                                            <i class="fa fa-star-o star-style" style="color:#4280CB"></i>
-	                                        <%-- </c:if> --%>
-	                                        <c:if test="${image.currUserFavor==1 }">
-	                                            <i class="fa fa-star star-style" style="color:#efa421"></i>
-	                                        </c:if>
                                             <div class="mir-img ">
                                                 <img src="<%=path %>/images/image-1.png">
+                                                <div class="imageInfoText">说明镜像说明镜像说明镜像说明镜像说明镜像说明</div>
                                             </div>
                                         </div>
                                         <div class="select-info">
-                                            <div class="pull-right-text">${image.name}
-                                             	<%-- <c:if test="${image.imageType==2 }"> --%>
-	                                            	<span class="btn btn-link lock">
-	                                            		<i class="fa fa-lock"></i>
-	                               					</span>
-                               					<%-- </c:if> --%>
+                                            <div class="pull-right-text">image.name${image.name}
+                                             	
                                             </div>
                                             <div>
-                                            	<i class="fa fa-tag"></i> test${image.version }
+                                            	<i class="fa fa-tag"></i> image.version${image.version }
                                                 <div class="pull-right">
-                                                    <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
+                                                	<i class="fa fa-star-o star-style" style="color:#e8504f"></i>
+                                                	<span>63${image.favorTimes }</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="create-item">
+                                        <div class="create-item hide">
                                             <a href="<%=path %>/registry/detail/${image.id }">
                                                 <span class="note-text" > ${image.summary } </span>
                                             </a>
                                         </div>
                                     </li>
                                     
-                                    <li class="images-panel">
+                                    <li class="images-panel hide">
                                         <div class="select-img">
 	                                        <c:if test="${image.currUserFavor==0 }">
 	                                            <i class="fa fa-star-o star-style" style="color:#4280CB"></i>
