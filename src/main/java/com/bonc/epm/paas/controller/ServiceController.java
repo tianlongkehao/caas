@@ -411,25 +411,27 @@ public class ServiceController {
         List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
 	    List<Container> containerList = new ArrayList<Container>();
   		// 通过服务名获取pod列表
-	    com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
-		PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
-        if (podList != null) {
-            List<Pod> pods = podList.getItems();
-	        if (CollectionUtils.isNotEmpty(pods)) {
-	            int i = 1;
-	            for (Pod pod : pods) {
-	            	for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
-	            		Container container = new Container();
-	            		container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-	            		container.setServiceid(service.getId());
-	            		containerList.add(container);
-	            	}
-	            	com.bonc.epm.paas.entity.Pod current_pod = new com.bonc.epm.paas.entity.Pod();
-	            	current_pod.setPodName(pod.getMetadata().getName());
-	            	podNameList.add(current_pod);
-	            }
-	        }
-        }
+	    if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
+	    	com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
+	    	PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+	    	if (podList != null) {
+	    		List<Pod> pods = podList.getItems();
+	    		if (CollectionUtils.isNotEmpty(pods)) {
+	    			int i = 1;
+	    			for (Pod pod : pods) {
+	    				for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
+	    					Container container = new Container();
+	    					container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+	    					container.setServiceid(service.getId());
+	    					containerList.add(container);
+	    				}
+	    				com.bonc.epm.paas.entity.Pod current_pod = new com.bonc.epm.paas.entity.Pod();
+	    				current_pod.setPodName(pod.getMetadata().getName());
+	    				podNameList.add(current_pod);
+	    			}
+	    		}
+	    	}
+		}
         List<Storage> storageList = storageDao.findByServiceId(service.getId());
         model.addAttribute("storageList", storageList);
         model.addAttribute("namespace",currentUser.getNamespace());
