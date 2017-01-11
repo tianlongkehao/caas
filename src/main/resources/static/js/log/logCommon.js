@@ -7,6 +7,13 @@ $(document).ready(function () {
 //        "bStateSave":true,
         "ajax": ctx+"/logCommon/pager.do",
         "columns": [
+					{   
+						data : null,
+						render : function ( data, type, row ) {
+							var html = '<td>&nbsp;&nbsp;&nbsp;</td>';
+							return html;
+						}
+					},
                     {   
                     	data : "createUsername",
                 		render : function ( data, type, row ) {

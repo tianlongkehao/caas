@@ -37,9 +37,10 @@
 								</div>
 								<div class="ibox-content">
 									<table class="table table-striped table-hover dataTables-example" data-page-size="8"
-										data-filter=#filter style="margin-left: 30px">
+										data-filter=#filter>
 										<thead>
 											<tr>
+												<th>&nbsp;</th>
 												<th style="width: 13%;">操作人</th>
 												<th style="width: 45%;">操作内容</th>
 	                                            <th style="width: 20%;">操作类型</th>
