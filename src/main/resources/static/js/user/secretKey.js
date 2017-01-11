@@ -34,6 +34,7 @@ $(function(){
 	        		return;
 	        	}
 	        	var type = $("#CredentialsType").val();
+	        	var codeType = $("#codeType").val();
 				var username = $("#userNameCred").val();
 				var password = $("#passwordCred").val();
 				var privateKey = $("#SSHpasswordCred").val();
@@ -42,6 +43,7 @@ $(function(){
 					url : ctx + "/secret/addCredential.do",
 					data : {
 						"type" : type,
+						"codeType":codeType,
 						"userName" : username,
 						"password" : password,
 						"privateKey" : privateKey,
@@ -159,6 +161,7 @@ function keyDetail(obj){
         		return;
         	}
         	var type = $("#CredentialsType").val();
+        	var codeType = $("#codeType").val();
 			var username = $("#userNameCred").val();
 			var password = $("#passwordCred").val();
 			var privateKey = $("#SSHpasswordCred").val();
@@ -168,6 +171,7 @@ function keyDetail(obj){
 				data : {
 					"id" : id,
 					"type" : type,
+					"codeType" : codeType,
 					"userName" : username,
 					"password" : password,
 					"privateKey" : privateKey,
@@ -197,6 +201,7 @@ function findCredData(id){
 			$("#userNameCred").val(cred.userName);
 			$("#keyRemark").val(cred.remark);
 			$("#CredentialsType").val(cred.type);
+			$("#codeType").val(cred.codeType);
 			if(cred.type == 1){
 				$(".normal").show();
 				$(".ssh").hide();

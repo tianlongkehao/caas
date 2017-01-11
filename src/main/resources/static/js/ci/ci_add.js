@@ -3,14 +3,17 @@ $(document).ready(function () {
 	$(".git-config").hide();
     $("#codeType").change(function(){
     	var codeType = $("#codeType").val();
-    	if(codeType == 1){
-    		$(".git-config").show();
-    		$("#git-higher").show();
-    		$(".git-higher").hide();
-    	}else{
+    	if (codeType == 0 ) {
     		$(".git-config").hide();
     		$(".git-higher").hide();
     	}
+    	else {
+    		loadCredentialData(codeType);
+    		$(".git-config").show();
+    		$("#git-higher").show();
+    		$(".git-higher").hide();
+    	}
+    	
     });
     //git-higher
     $("#git-higher").click(function(){
@@ -225,6 +228,7 @@ $(document).ready(function () {
 	        		return;
 	        	}
 	        	var type = $("#CredentialsType").val();
+	        	var codeType = $("#codeType").val();
 				var username = $("#userNameCred").val();
 				var password = $("#passwordCred").val();
 				var privateKey = $("#SSHpasswordCred").val();
@@ -234,6 +238,7 @@ $(document).ready(function () {
 					url : ctx + "/secret/addCredential.do",
 					data : {
 						"type" : type,
+						"codeType" : codeType,
 						"userName" : username,
 						"password" : password,
 						"privateKey" : privateKey,
@@ -289,7 +294,37 @@ $(document).ready(function () {
     
 });/*ready*/
 		
-			
+//选择不同的代码仓库，显示相对应的认证密钥
+function loadCredentialData (codeType) {
+	if (codeType == 2 ) {
+		$("#addHook").addClass("hide");
+	}
+	else {
+		$("#addHook").removeClass("hide");
+	}
+	$.ajax({
+		url : ctx + "/secret/loadCredentialData.do?codeType="+codeType,
+		success : function(data){
+			data = eval("("+data+")");
+			var html = "";
+			if (data != null) {
+				for (var i in data.data) {
+					var credential = data.data[i];
+					if (credential.type == 1) {
+						html += '<option value="'+credential.id +'">'+ credential.userName +' (HTTP) (' + credential.remark +')</option>';
+					}
+					else {
+						html += '<option value="'+credential.id +'">'+ credential.userName +' (SSH) (' + credential.remark +')</option>';
+					}
+				}
+				$("#codeCredentials").html(html);
+			}
+		}
+	})
+	
+}
+
+
 //单击导入模板，加载模板数据
 function loadDockerFileTemplate(){
 	 $.ajax({
@@ -511,7 +546,7 @@ function checkCodeCiAdd(editor_one){
     
     //判断代码库类型
     var codeType = $("#codeType").val();
-    if (codeType == 1) {
+    if (codeType != 0) {
     	//判断代码仓库地址
     	var codeUrl = $("#codeUrl").val();
     	if(!codeUrl || codeUrl.length < 1){
@@ -674,11 +709,19 @@ function checkCodeCiAdd(editor_one){
 			$('#imageName').focus();
 			return;
 	    }
+		if(imageName.search(/^[a-z][a-z0-9-_]*$/) === -1){
+			layer.tips('镜像名称只能由字母、数字、横线和下划线组成,且首字母只能为字母', '#imageName', {
+				tips: [1, '#0FA6D8'] //还可配置颜色
+			});
+			$('#imageName').focus();
+			return false;
+		}
+		
 		var imgNameVersion = $("#imgNameVersion").val();
 		if (imgNameVersion || imageName.length > 0) {
-			if(imgNameVersion.search(/^[A-Za-z0-9-_]*$/) === -1){
-				layer.tips('镜像版本只能由字母、数字、横线和下划线组成', '#imgNameVersion', {
-					tips: [1, '#0FA6D8'] //还可配置颜色
+			if(imgNameVersion.search(/^[a-z0-9-_]*$/) === -1){
+				layer.tips('镜像版本只能由小写字母、数字、横线和下划线组成', '#imgNameVersion', {
+					tips: [1, '#0FA6D8']
 				});
 				$('#imgNameVersion').focus();
 				return false;

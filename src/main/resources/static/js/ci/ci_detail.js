@@ -271,6 +271,7 @@ $(document).ready(function(){
 			}
 		})
 	});
+	
 	//添加认证按钮
 	$("#addCredentialsCon").hide();
 	$(document).on('click','#addCredentialsBtn',function(){
@@ -282,6 +283,7 @@ $(document).ready(function(){
 			scrollbar:false,
 			yes:function(index, layero){
 				var type = $("#CredentialsType").val();
+				var codeType = $("#codeType").val();
 				var username = $("#userNameCred").val();
 				var password = $("#passwordCred").val();
 				var privateKey = $("#SSHpasswordCred").val();
@@ -317,6 +319,7 @@ $(document).ready(function(){
 					url : ctx + "/secret/addCredential.do",
 					data : {
 						"type" : type,
+						"codeType" : codeType,
 						"userName" : username,
 						"password" : password,
 						"privateKey" : privateKey,
@@ -436,14 +439,59 @@ function loadDockerFileTemplate(){
 //代码管理信息的展示
 function changeCodeType() {
 	var codeType = $("#codeType").val();
-	if(codeType == 1){
-		$(".git-config").show();
-		$("#git-higher").show();
-		$(".git-higher").hide();
-	}else{
+	if (codeType == 0 ) {
 		$(".git-config").hide();
 		$(".git-higher").hide();
 	}
+	else {
+		loadCredentialData(codeType);
+		$(".git-config").show();
+		$("#git-higher").show();
+		$(".git-higher").hide();
+	}
+}
+
+//加载credential数据
+var credentialId = 0;
+function loadCredentialData (codeType) {
+	if (codeType == 2 ) {
+		$("#addHook").addClass("hide");
+	}
+	else {
+		$("#addHook").removeClass("hide");
+	}
+	credentialId = $("#credentialId").val();
+	$.ajax({
+		url : ctx + "/secret/loadCredentialData.do?codeType="+codeType,
+		success : function(data){
+			data = eval("("+data+")");
+			var html = "";
+			if (data != null) {
+				for (var i in data.data) {
+					var credential = data.data[i];
+					if (credential.id == credentialId ) {
+						if (credential.type == 1) {
+							html = '<option value="'+credential.id +'">'+ credential.userName +' (HTTP) (' + credential.remark +')</option>' + html;
+						}
+						else {
+							html = '<option value="'+credential.id +'">'+ credential.userName +' (SSH) (' + credential.remark +')</option>' + html;
+						}
+					} 
+					else {
+						if (credential.type == 1) {
+							html += '<option value="'+credential.id +'">'+ credential.userName +' (HTTP) (' + credential.remark +')</option>';
+						}
+						else {
+							html += '<option value="'+credential.id +'">'+ credential.userName +' (SSH) (' + credential.remark +')</option>';
+						}
+					}
+					
+				}
+				$("#codeCredentials").html(html);
+			}
+		}
+	})
+	
 }
 
 //加载构建invoke的原始数据
@@ -1159,7 +1207,7 @@ function checkCodeCiAdd(){
     
     //判断代码库类型
     var codeType = $("#codeType").val();
-    if (codeType == 1) {
+    if (codeType != 0 ) {
     	//判断代码仓库地址
     	var codeUrl = $("#codeUrl").val();
     	if(!codeUrl || codeUrl.length < 1){
@@ -1326,11 +1374,18 @@ function checkCodeCiAdd(){
 			$('#imageName').focus();
 			return;
 	    }
+		if(imageName.search(/^[a-z0-9-_]*$/) === -1){
+			layer.tips('镜像名称只能由小写字母、数字、横线和下划线组成', '#imageName', {
+				tips: [1, '#0FA6D8']
+			});
+			$('#imageName').focus();
+			return false;
+		}
 		var imgNameVersion = $("#imgNameVersion").val();
 		if (imgNameVersion || imageName.length > 0) {
-			if(imgNameVersion.search(/^[A-Za-z0-9-_]*$/) === -1){
-				layer.tips('镜像版本只能由字母、数字、横线和下划线组成', '#imgNameVersion', {
-					tips: [1, '#0FA6D8'] //还可配置颜色
+			if(imgNameVersion.search(/^[a-z0-9-_]*$/) === -1){
+				layer.tips('镜像版本只能由小写字母、数字、横线和下划线组成', '#imgNameVersion', {
+					tips: [1, '#0FA6D8']
 				});
 				$('#imgNameVersion').focus();
 				return false;

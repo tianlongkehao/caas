@@ -48,7 +48,8 @@
 												<th style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" class="chkAll" id="checkallbox" /></th>
 												<th style="width: 15%;">名称</th>
-												<th style="width: 10%;">类型</th>
+												<th style="width: 15%;">仓库类型</th>
+												<th style="width: 10%;">认证方式</th>
 												<th style="width: 10%;" class="del-operation">操作</th>
 											</tr>
 										</thead>
@@ -61,6 +62,16 @@
 													<td style="width: 15%;cursor:pointer"><a title="查看详细信息" onclick="keyDetail(this)" id = "${cre.id }" keyType="${cre.type }"
 														onmousemove="style.textDecoration='underline'"
 														onmouseout="style.textDecoration='none'">${cre.userName }  (${cre.remark })</a></td>
+	                                                <c:if test="${cre.codeType == 1}">
+                                                        <td style="width: 10%; text-indent: 0;"
+                                                            id="key-codeType" name="key-codeType">Git
+                                                        </td>
+                                                    </c:if>
+                                                    <c:if test="${cre.codeType == 2}">
+                                                        <td style="width: 10%; text-indent: 0;"
+                                                            id="key-codeType" name="key-codeType">SVN
+                                                        </td>
+                                                    </c:if>
 	                                                <c:if test="${cre.type == 1}">
 														<td style="width: 10%; text-indent: 0;"
 															id="key-type" name="key-type">HTTP
@@ -103,9 +114,16 @@
 	</div>
 	<div id="createKeyCon" style="display: none">
 		<div style="width:345px;margin: 15px 15px">
-			<div class="infoCred">
-				<span class="labelCred">类型：</span> <select
-					class="form-control conCred" id="CredentialsType" name="type">
+		    <div class="infoCred">
+                <span class="labelCred">仓库：</span> 
+                <select class="form-control conCred" id="codeType" name="codeType">
+                    <option value="1">Git</option>
+                    <option value="2">SVN</option>
+                </select>
+            </div>
+			<div class="infoCred">   
+				<span class="labelCred">认证：</span> 
+				<select class="form-control conCred" id="CredentialsType" name="type">
 					<option value="1">用户名和密码</option>
 					<option value="2">SSH用户名和密钥</option>
 				</select>

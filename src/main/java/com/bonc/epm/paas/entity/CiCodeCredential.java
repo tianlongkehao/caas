@@ -52,6 +52,11 @@ public class CiCodeCredential {
     private Integer Type;
     
     /**
+     * 代码类型：1:git、2:svn
+     */
+    private Integer codeType;
+    
+    /**
      * 用户名
      */
     private String userName;
@@ -110,6 +115,14 @@ public class CiCodeCredential {
 
     public void setType(Integer type) {
         Type = type;
+    }
+
+    public Integer getCodeType() {
+        return codeType;
+    }
+
+    public void setCodeType(Integer codeType) {
+        this.codeType = codeType;
     }
 
     public String getUserName() {

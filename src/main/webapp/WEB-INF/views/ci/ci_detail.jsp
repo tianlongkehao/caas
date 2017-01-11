@@ -162,8 +162,15 @@
 					                                    <c:if test="${ciCode.codeType == 0 }">
                                                            <option value="0">-none-</option>
                                                            <option value="1">git</option>
+                                                           <option value="2">svn</option>
                                                         </c:if>
 					                                	<c:if test="${ciCode.codeType == 1 }">
+                                                           <option value="1">git</option>
+                                                           <option value="2">svn</option>
+                                                           <option value="0">-none-</option>
+                                                        </c:if>
+                                                        <c:if test="${ciCode.codeType == 2 }">
+                                                           <option value="2">svn</option>
                                                            <option value="1">git</option>
                                                            <option value="0">-none-</option>
                                                         </c:if>
@@ -177,9 +184,10 @@
 			                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git" value = "${ciCode.codeUrl }">
 					                            </div>
 					                            <div class="form-group1 col-md-12">
+					                                <input type="hidden" id = "credentialId" value = "${ciCode.codeCredentials }">
 					                            	<label class="c-project-tit">认证方式</label>
 					                            	<select id="codeCredentials" name="codeCredentials" class="form-control c-project-con" style="width:50%;float:left;">
-					                            	  <c:forEach items="${ciCredentialList }" var="ciCredential" >
+					                            	  <%-- <c:forEach items="${ciCredentialList }" var="ciCredential" >
 					                            	      <c:if test="${ciCredential.id == ciCode.codeCredentials }">
 	                                                          <c:if test="${ciCredential.type == 1 }">
 	                                                              <option value="${ciCredential.id }">${ciCredential.userName } (HTTP) (${ciCredential.remark })</option>
@@ -198,7 +206,7 @@
 				                                                  <option value="${ciCredential.id }">${ciCredential.userName } (SSH) (${ciCredential.remark })</option>
 				                                              </c:if>
 					                            	      </c:if>
-			                                          </c:forEach>
+			                                          </c:forEach> --%>
 					                                </select>
 					                                <c:if test="${userAutority ==1 || userAutority ==2 }">
 						                                <button type="button" id="addCredentialsBtn" class="addCredentialsBtn" value="添加证书"><i class="fa fa-key"></i>&nbsp添加证书</button>
@@ -209,7 +217,7 @@
 					                                <input id="codeBranch" name="codeBranch" type="text" class="form-control c-project-con"
 			                                                   value="${ciCode.codeBranch }">
 					                            </div>
-					                            <div class="form-group1 col-md-12">
+					                            <div class="form-group1 col-md-12" id = "addHook">
 					                                <label class="c-project-tit">HookCode</label>
 					                               <input type="checkbox" id="HookCode" class="c-project-checkbox" >
                                                    <input type="hidden" id = "isHookCode" name ="isHookCode" value = "${ciCode.isHookCode }"/>
@@ -459,7 +467,14 @@
                 <div id="addCredentialsCon">
                     <div style="width: 345px; margin: 5px 10px 5px 10px">
                         <div class="infoCred">
-                        	<span class="labelCred">类型：</span>
+                            <span class="labelCred">仓库：</span> 
+                            <select class="form-control conCred" id="codeType" name="codeType">
+                                <option value="1">Git</option>
+                                <option value="2">SVN</option>
+                            </select>
+                        </div>
+                        <div class="infoCred">
+                        	<span class="labelCred">认证：</span>
 	                        <select class="form-control conCred" id="CredentialsType" name = "type">
 	                        	<option value="1">用户名和密码</option>
 	                        	<option value="2">SSH用户名和密钥</option>

@@ -461,9 +461,9 @@ public class CiController {
         try {
             SheraAPIClientInterface client = sheraClientService.getClient();
             Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
-                                                            ciCode.getCodeName(),ciCode.getCodeRefspec(),
-                                                                dockerFileContentEdit,ci.getDockerFileLocation(),originCi.getImgNameFirst(),ci.getImgNameLast(),
-                                                                    ciInvokeList,ciCodeCredential.getUserName(),ciCodeCredential.getType(),ciCode.getCodeType());
+                                                            ciCode.getCodeName(),ciCode.getCodeRefspec(),dockerFileContentEdit,ci.getDockerFileLocation(),
+                                                            originCi.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
+                                                            ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey());
             client.updateJob(job);
             //添加代码挂钩
             if (ciCode.getIsHookCode() == 1) {
@@ -829,9 +829,19 @@ public class CiController {
         try {
             CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(codeCredentialId);
             SheraAPIClientInterface client = sheraClientService.getClient();
-            CredentialCheckEntity credentialCheckEntity = sheraClientService.generateCredentialCheckEntity(codeUrl, ciCodeCredential.getUserName(), ciCodeCredential.getType());
+            Integer Credential = 0;
+            if (ciCodeCredential.getCodeType() == 1) {
+                Credential = ciCodeCredential.getType();  // 1 : git http 类型，2：git ssh类型
+            }
+            else {
+                Credential = ciCodeCredential.getType() + 2;  // 3 ：svn http类型，4：svn ssh类型
+            }
+            CredentialCheckEntity credentialCheckEntity = sheraClientService.generateCredentialCheckEntity(codeUrl, ciCodeCredential.getUserName(), Credential,ciCodeCredential.getRemark(),ciCodeCredential.getUniqueKey());
             try {
                 credentialCheckEntity = client.checkCredential(credentialCheckEntity);
+                if (StringUtils.isEmpty(credentialCheckEntity)) {   //判断返回结果是否为空
+                    map.put("status", "400");
+                }
             }
             catch (SheraClientException e) {
                 LOG.error("judge codeUrl by credential error : "+e.getMessage());
@@ -893,9 +903,9 @@ public class CiController {
             try {
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
-                    ciCode.getCodeName(),ciCode.getCodeRefspec(),
-                    dockerFileContent,ci.getDockerFileLocation(),ci.getImgNameFirst(),ci.getImgNameLast(),
-                    ciInvokeList,ciCodeCredential.getUserName(),ciCodeCredential.getType(),ciCode.getCodeType());
+                    ciCode.getCodeName(),ciCode.getCodeRefspec(), dockerFileContent,ci.getDockerFileLocation(),
+                    ci.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
+                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey());
                 client.createJob(job);
                 //添加代码挂钩
                 if (ciCode.getIsHookCode() == 1) {
