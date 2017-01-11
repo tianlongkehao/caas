@@ -264,6 +264,16 @@ public class IndexController {
         model.addAttribute("showAuthCode", showAuthCode);
         return "login.jsp";
     }
+    /**
+     * Description: <br>
+     * 跳转镜像广场
+     * @return imageShow.jsp
+     */
+    @RequestMapping(value={"imageShow"},method=RequestMethod.GET)
+	public String imageShow(Model model){
+        //model.addAttribute("showAuthCode", showAuthCode);
+        return "imageShow.jsp";
+    }
 	
     /**
      * Description: <br>

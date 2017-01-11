@@ -17,7 +17,8 @@ nav.navbar-default{
 }
 .nav > li > a {
     /* color: #e8504f; */
-    font-weight: 600;
+    font-weight: normal;
+    font-size:15px;
     padding: 14px 20px 14px 25px;
 }
 
@@ -84,12 +85,12 @@ nav.navbar-default{
 	text-align: center;
 	/* background-color: #e14344; */
 	margin-top:-20px;
-	height: 80px;
+	height: 70px;
 }
 .nav-bcm h2{
 	color: #fff;
 	font-weight: 700;
-	line-height:80px;
+	line-height:70px;
 }
 .img-circle{
 	width:60px;

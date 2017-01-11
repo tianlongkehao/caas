@@ -35,6 +35,10 @@ public class ServiceConstant {
      * 容器状态 调试中
      */
     public static final Integer CONSTRUCTION_STATUS_DEBUG = 6;
+    /**
+     * 容器状态升级中
+     */
+    public static final Integer CONSTRUCTION_STATUS_UPDATE = 7;
 	
     /**
      * 默认检测延迟
@@ -51,19 +55,16 @@ public class ServiceConstant {
     /**
      * operation_type
      */
-    public static final Long OPERATION_TYPE_UPDATE        = 10L;  //更新
-    public static final Long OPERATION_TYPE_CREATE        = 20L;  //创建
-    public static final Long OPERATION_TYPE_START         = 30L;  //启动
-    public static final Long OPERATION_TYPE_STOP          = 40L;  //停止
-    public static final Long OPERATION_TYPE_DEBUG         = 50L;  //调试
-    public static final Long OPERATION_TYPE_SCALING       = 60L;  //弹性伸缩
-    public static final Long OPERATION_TYPE_ROLLINGUPDATE = 70L;  //版本升级
-    public static final Long OPERATION_TYPE_CONFIGURE     = 80L;  //更改配置
-    public static final Long OPERATION_TYPE_DELETE        = 90L;  //删除
-    
-    
-
-    
+    public static final Integer OPERATION_TYPE_UPDATE        = 10;  //更新
+    public static final Integer OPERATION_TYPE_CREATE        = 20;  //创建
+    public static final Integer OPERATION_TYPE_START         = 30;  //启动
+    public static final Integer OPERATION_TYPE_STOP          = 40;  //停止
+    public static final Integer OPERATION_TYPE_DEBUG         = 50;  //调试
+    public static final Integer OPERATION_TYPE_SCALING       = 60;  //弹性伸缩
+    public static final Integer OPERATION_TYPE_ROLLINGUPDATE = 70;  //版本升级
+    public static final Integer OPERATION_TYPE_CONFIGURE     = 80;  //更改配置
+    public static final Integer OPERATION_TYPE_DELETE        = 90;  //删除
+    public static final Integer OPERATION_TYPE_CANCELUPDATE  = 100; //取消升级
     /**
      * 监控设置
      */

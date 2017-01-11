@@ -372,3 +372,20 @@
 .timeVersion{
 	margin-left:18px!important;
 }
+.imageInfo{
+	
+    margin-left: 20px;
+    margin-bottom: 10px;
+    border-left: 3px solid #e14344;
+    line-height: 32px;
+    padding-left: 10px;
+    font-size: 16px;
+    color: #a2a2a2;
+}
+.imageText{
+	text-align: center;
+	font-size: 20px;
+	color: #a2a2a2;
+	margin-bottom:20px;
+}
+

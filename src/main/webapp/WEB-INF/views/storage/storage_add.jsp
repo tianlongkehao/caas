@@ -66,9 +66,9 @@
 											<label for="defVolNum"><input id="defVol" type="number"
 												placeholder="自定义大小"><span class="is-unit">G</span></label> 
 											<span style="color: #1E90FF; padding-left: 15px">总量：<span
-												id="totalVol">${cur_user.vol_size}</span>G
+												id="totalVol">${userResource.vol_size}</span>G
 											</span> <span style="color: #1E90FF; padding-left: 15px">剩余：<span
-												id="restVol">${leftstorage }</span>G 可用
+												id="restVol">${userResource.vol_surplus_size }</span>G 可用
 											</span>
 										</div>
 									</div>

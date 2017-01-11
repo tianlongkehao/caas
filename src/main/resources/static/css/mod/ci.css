@@ -42,7 +42,7 @@
     font-size:21px;
 }
 .bj-no-drop{
-	color:#3c7bca;
+	/* color:#3c7bca; */
 	cursor: pointer;
 }
 
@@ -107,7 +107,7 @@
 
 .item-obj .depot-name .btn-groups {
     border-radius: 2px;
-    border: 1px solid #4280CB;
+    /* border: 1px solid #4280CB; */
     display: inline-block;
 }
 
@@ -120,10 +120,10 @@
     cursor: pointer;
 }
 
-.item-obj .depot-name .btn-groups .active {
+/* .item-obj .depot-name .btn-groups .active {
     background: #4280CB;
     color: #fff;
-}
+} */
 
 
 .item-obj .registryinfo {
@@ -144,7 +144,8 @@
 
 .item-obj .registryinfo .registry tr td .reg-text,
 .item-obj .registryinfo .registry tr td .code-branch {
-    color: #4E8FDE;
+    /* color: #4E8FDE; */
+    color: #6a96e6;
     text-align: center;
     display: inline-block;
 }

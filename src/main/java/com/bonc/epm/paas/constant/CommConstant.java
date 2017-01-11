@@ -13,21 +13,19 @@ public class CommConstant {
 	
 	/*Common Operation*/
 	// catalog Type
-	public static final Integer DOCKFILE_TEMPLATE    = 10;    //dockerfile模板
-	public static final Integer ENV_TEMPLATE         = 20;    //环境变量模板
-	public static final Integer CI                   = 30;    //构建													      //存储与备份
-	public static final Integer REF_SERVICE          = 40;	  //外部服务
-														      //镜像中心
-	public static final Integer USER_MANAGER         = 60;    //用户管理
-														      //密钥管理
-														      //shera管理
-														      //租户管理
-	                                                          //存储与备份
-	
-	
-	
-	
-	
+	public static final Integer DOCKFILE_TEMPLATE=10;                //dockerfile模板
+	public static final Integer ENV_TEMPLATE=20;                      //环境变量模板
+	public static final Integer CODE_CI=30;                           //代码构建
+	public static final Integer QUICK_CI=40;                          //快速构建 
+	public static final Integer DOCKER_FILE_CI=50;                   //dockerfile构建
+	public static final Integer UPLOAD_IMAGE=60;                     //上传镜像
+    public static final Integer IMAGE=70;                             //镜像中心
+	public static final Integer USER_MANAGER=80;                     //用户管理
+    public static final Integer USER_SCRETKEY=90;                    //秘钥管理
+    public static final Integer TENANT_MANAGER=100;                  //租户管理
+    public static final Integer SHERA_MANAGER=110;                   //shera管理 
+    public static final Integer STORAGE=120;                          //存储与备份
+    public static final Integer REF_SERVICE=130;                     //外部服务    	
 	
 	// operation Type
 	public static final Integer OPERATION_TYPE_CREATED    = 10;    //创建

@@ -78,11 +78,7 @@
     color: #676a6a;
     margin-top: 12px;
 }
-.navbar-login{
-	position: absolute;
-    top: 20px;
-    right: 26px;
-}
+
 .app-list > li {
     float: left;
     width: 20%;
@@ -152,33 +148,7 @@
     font-size: 20px;
     cursor:pointer;
 }
-@media screen and (min-width: 320px) {
-.pandectBtn{top: 266px;}
-}
-@media screen and (min-width: 360px) {
-    .pandectBtn{top: 366px;}
-}
-@media screen and (min-width: 375px) {
-    .pandectBtn{top: 366px;}
-}
-@media screen and (min-width: 386px) {
-    .pandectBtn{top: 366px;}
-}
-@media screen and (min-width: 414px) {
-    .pandectBtn{top: 366px;}
-}
-@media screen and (min-width: 520px) {
-    .pandectBtn{top: 366px;}
-}
-@media screen and (min-width: 720px) {
-    .pandectBtn{top: 366px;}
-}
-@media screen and (min-width: 820px) {
-    .pandectBtn{top: 366px;}
-}
-@media screen and (min-width: 920px) {
-    .pandectBtn{top: 352px;}
-}
+
 .pandectBtn:hover{
     color: #fff;
 }

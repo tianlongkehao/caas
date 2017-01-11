@@ -14,7 +14,7 @@
     /* background: #e8504f; */
     background: #fff;
 }
-.navbar .navbar-header h2 {
+.navbar .navbar-header h1 {
     color:#e14344;
 }
 .page-sidebar .nav-menu > .item-click {
@@ -75,6 +75,16 @@ a:hover{
     color: #e8504f;
     border-top: 2px solid #e8504f;
 }
+.item-obj .depot-name .btn-groups .active {
+    background: #e8504f;
+    color: #fff;
+}
+.item-obj .depot-name .btn-groups {
+    border: 1px solid #e8504f;
+}
+.bj-no-drop{
+	color:#e66;
+}
 /* help */
 .book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
     color: #e8504f;
@@ -104,6 +114,32 @@ nav.navbar-default{
 }
 .serDetail:hover{
 	color:#fff!important;
+}
+/* 按钮 */
+.btn-primary {
+    background: #e8504f;
+    border-color: #e8504f;
+}
+
+.btn-primary:hover,
+.btn-primary.focus {
+    background: #e66;
+    border-color: #e66;
+}
+
+.btn-defaults {
+    background: #F5F6F6;
+    color: #666;
+    width: 120px;
+    vertical-align: top;
+}
+
+.btn-pull-deploy {
+    border: 1px solid #e8504f;
+}
+
+.btn-pull-deploy:hover {
+    background: #e8504f;
 }
 
 

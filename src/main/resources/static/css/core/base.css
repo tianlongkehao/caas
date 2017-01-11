@@ -150,7 +150,7 @@ li.line-h-3 {
     padding: 7px 12px;
 }
 
-.btn-primary {
+/* .btn-primary {
     background: #4E8FDE;
     border-color: #4E8FDE;
 }
@@ -159,7 +159,7 @@ li.line-h-3 {
 .btn-primary.focus {
     background: #3981da;
     border-color: #3981da;
-}
+} */
 
 .btn-defaults {
     background: #F5F6F6;
@@ -175,12 +175,12 @@ li.line-h-3 {
     text-indent: 0;
     min-width: 40px;
     height: auto;
-    border: 1px solid #4e8fde;
+    /* border: 1px solid #4e8fde; */
     transition: all .25s;
 }
 
 .btn-pull-deploy:hover {
-    background: #4e8fde;
+    /* background: #4e8fde; */
     color: #fff;
 }
 

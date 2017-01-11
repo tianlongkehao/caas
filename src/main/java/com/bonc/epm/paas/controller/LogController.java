@@ -47,20 +47,17 @@ public class LogController{
      */
     @Autowired
     private ServiceOperationLogDao serviceOperationLogDao;
+    
     /**
      * 通用操作日志dao接口
      */
     @Autowired
 	private CommonOperationLogDao commonOperationLogDao;
-	
-	
-	
-	
+
     /**
      * FileController日志实例
      */
     private static final Logger LOG = LoggerFactory.getLogger(LogController.class);
-
     
     /**
      * 跳转到服务操作日志列表页面

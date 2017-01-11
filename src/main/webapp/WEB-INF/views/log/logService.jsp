@@ -40,8 +40,9 @@
 										data-filter=#filter style="margin-left: 30px">
 										<thead>
 											<tr>
+												<th style="width: 5%;">&nbsp;</th>
 												<th style="width: 13%;">操作人</th>
-												<th style="width: 50%;">操作内容</th>
+												<th style="width: 45%;">操作内容</th>
 	                                            <th style="width: 20%;">操作类型</th>
 	                                            <th style="width: 15%;">操作时间</th>
 											</tr>
@@ -77,14 +78,5 @@
         </div>
     </article>
 </div>
-
-
-<script type="text/javascript">
-	/* $('.dataTables-example').dataTable({
-        "aaSorting": [[ 3, "desc" ]]
-	}); */
-	
-</script>
-
 </body>
 </html>

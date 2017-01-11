@@ -149,6 +149,7 @@ public class StorageController {
         model.addAttribute("id", id);
         model.addAttribute("storage", storage);
         model.addAttribute("menu_flag", "service");
+        model.addAttribute("li_flag", "storage");
         return "storage/storage_detail.jsp";
     }
 
@@ -171,6 +172,7 @@ public class StorageController {
         //获取存储卷剩余容量
         model.addAttribute("userResource", userResource);
         model.addAttribute("menu_flag", "service");
+        model.addAttribute("li_flag", "storage");
         return "storage/storage_add.jsp";
     }
 
