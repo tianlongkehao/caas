@@ -331,13 +331,14 @@ $(document).ready(function(){
 		var addName = $("#Name").val();
 		var addValue = $("#Value").val();
 		//环境变量Key只能是字母数字下划线；
-		if(addName.search(/^[0-9a-zA-Z_]+$/) === -1){
-			layer.tips('环境变量key只能是字母数字下划线','#Name',{tips: [1, '#3595CC']});
+		reg=/^[A-Za-z_][A-Za-z0-9_]*$/;
+		if(!reg.test(addName)){ 
+			layer.tips('环境变量key只能是字母数字下划线，不能以数字开头','#Name',{tips: [1, '#3595CC']});
 			$('#Name').focus();
 			return;
 		}
-		//判断value长度
-		if(addValue.length >= 4096){
+		//判断addName长度
+		if(addName.length >= 4096){
 	    	layer.tips('value字符长度不能超过4096','#Value',{tips: [1, '#3595CC']});
 		      $('#Value').focus();
 		      return;
@@ -770,12 +771,32 @@ function saveEnvVariable() {
         
 		for (var i = 0; i<arrayKey.length;i++) {
 			if (envKey == arrayKey[i]) {
-				layer.tips('环境变量Key不能重复','#Path',{tips: [1, '#3595CC']});
+				layer.tips('环境变量Key不能重复',$(domEle).find("input")[0],{tips: [1, '#3595CC']});
 				$('#Path').focus();
 				flag = 1;
 				break;
 			}
 		}
+		//环境变量Key只能是字母数字下划线；
+		reg=/^[A-Za-z_][A-Za-z0-9_]*$/;
+		if(!reg.test(envKey)){ 
+			layer.tips('环境变量key只能是字母数字下划线，不能以数字开头',$(domEle).find("input")[0],{tips: [1, '#3595CC']});
+			$('#Name').focus();
+				flag = 1;
+		}
+		//判断envKey长度
+		if(envKey.length >= 4096){
+	    	layer.tips('key字符长度不能超过4096',$(domEle).find("input")[0],{tips: [1, '#3595CC']});
+		      $('#Value').focus();
+				flag = 1;
+	    }
+		//判断envValue长度
+		if(envValue.length >= 4096){
+	    	layer.tips('value字符长度不能超过4096',$(domEle).find("input")[1],{tips: [1, '#3595CC']});
+		      $('#Value').focus();
+				flag = 1;
+	    }
+
 		arrayKey.push(envKey);
         
 //        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},"; 
