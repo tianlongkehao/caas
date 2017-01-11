@@ -493,7 +493,7 @@ public class CiController {
             
             //保存日志信息
             extraInfo += "修改之后的数据：" + JSON.toJSONString(originCi) +  JSON.toJSONString(originCiCode);
-            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_UPDATE);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CODE_CI, CommConstant.OPERATION_TYPE_UPDATE);
             commonOperationLogDao.save(log);
         }
         catch (Exception e) {
@@ -546,7 +546,7 @@ public class CiController {
         
         //保存日志信息
         extraInfo += "修改之后的数据：" + JSON.toJSONString(originCi);
-        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_UPDATE);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.DOCKER_FILE_CI, CommConstant.OPERATION_TYPE_UPDATE);
         commonOperationLogDao.save(log);
         map.put("status", "200");
         map.put("data", ci);
@@ -603,7 +603,7 @@ public class CiController {
         
         //保存日志信息
         extraInfo += "修改之后的数据：" + JSON.toJSONString(originCi);
-        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_UPDATE);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.QUICK_CI, CommConstant.OPERATION_TYPE_UPDATE);
         commonOperationLogDao.save(log);
         map.put("status", "200");
         map.put("data", ci);
@@ -621,11 +621,19 @@ public class CiController {
 	@ResponseBody
 	public String delCi(@RequestParam String id) {
         Map<String, Object> map = new HashMap<String, Object>();
+        Integer catalogType = CommConstant.CODE_CI;
+        
         try {
             Long idl = Long.parseLong(id);
             Ci ci = ciDao.findOne(idl);
+            if (ci.getType() == CiConstant.TYPE_DOCKERFILE) {
+                catalogType = CommConstant.DOCKER_FILE_CI;
+            } else if (ci.getType() == CiConstant.TYPE_QUICK) {
+                catalogType = CommConstant.QUICK_CI;
+            }
             //判断是否为代码构建
             if (ci.getType() == CiConstant.TYPE_CODE) {
+                
                 try {
                     CiCode ciCode = ciCodeDao.findByCiId(idl);
                     SheraAPIClientInterface client = sheraClientService.getClient();
@@ -647,7 +655,7 @@ public class CiController {
             ciDao.delete(idl);
             //添加删除日志
             String extraInfo = "删除构建：" + JSON.toJSONString(ci); 
-            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_DELETE);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, catalogType, CommConstant.OPERATION_TYPE_DELETE);
             commonOperationLogDao.save(log);
             map.put("status", "200");
             map.put("type", ci.getType());
@@ -892,7 +900,7 @@ public class CiController {
             
             //添加日志
             String extraInfo = "代码构建的创建：" + JSON.toJSONString(ci) + JSON.toJSONString(ciCode) + JSON.toJSONString(ciInvokeList);
-            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_CREATED);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CODE_CI, CommConstant.OPERATION_TYPE_CREATED);
             commonOperationLogDao.save(log);
             
             //查询代码认证
@@ -1000,7 +1008,7 @@ public class CiController {
         
         //添加日志
         String extraInfo = "快速构建的创建：" + JSON.toJSONString(ci);
-        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_CREATED);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.QUICK_CI, CommConstant.OPERATION_TYPE_CREATED);
         commonOperationLogDao.save(log);
         
         LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
@@ -1048,7 +1056,7 @@ public class CiController {
         LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
         
         String extraInfo = "DockerFile构建的创建：" + JSON.toJSONString(ci);
-        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_CREATED);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.DOCKER_FILE_CI, CommConstant.OPERATION_TYPE_CREATED);
         commonOperationLogDao.save(log);
     
         return "redirect:/ci";
@@ -1224,7 +1232,7 @@ public class CiController {
         ciDao.save(ci);
         LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
         String extraInfo = "DockerFile构建的创建：" + JSON.toJSONString(ci);
-        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_CREATED);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.DOCKER_FILE_CI, CommConstant.OPERATION_TYPE_CREATED);
         commonOperationLogDao.save(log);
         
         return "redirect:/ci";
@@ -1312,7 +1320,7 @@ public class CiController {
         ciDao.save(ci);
         LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
         String extraInfo = "快速构建的创建：" + JSON.toJSONString(ci);
-        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_CREATED);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.QUICK_CI, CommConstant.OPERATION_TYPE_CREATED);
         commonOperationLogDao.save(log);
         return "redirect:/ci";
     }
@@ -1357,6 +1365,13 @@ public class CiController {
         ciRecordDao.save(ciRecord);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
+        
+        Integer catalogType = CommConstant.CODE_CI;
+        if (CiConstant.TYPE_QUICK == ci.getType()) {
+            catalogType = CommConstant.QUICK_CI;
+        } else if (CiConstant.TYPE_DOCKERFILE == ci.getType()) {
+            catalogType = CommConstant.DOCKER_FILE_CI;
+        }
         if (CiConstant.TYPE_CODE.equals(ci.getType())) {
             //判断是否需要添加默认版本信息
             CiCode ciCode = ciCodeDao.findByCiId(ci.getId());
@@ -1398,7 +1413,7 @@ public class CiController {
         ciDao.save(ci);
         ciRecordDao.save(ciRecord);
         String extraInfo = "对当前项目开始构建镜像：" + JSON.toJSONString(ci);
-        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_START_CI);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, catalogType, CommConstant.OPERATION_TYPE_START_CI);
         commonOperationLogDao.save(log);
         map.put("data", ci);
         return JSON.toJSONString(map);
@@ -1568,7 +1583,7 @@ public class CiController {
             client.killExecution(projectName, executionId);
             //添加日志
             String extraInfo = "停止构建项目：" + projectName;
-            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(projectName, extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_STOP_CI);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(projectName, extraInfo, CommConstant.CODE_CI, CommConstant.OPERATION_TYPE_STOP_CI);
             commonOperationLogDao.save(log);
             map.put("status", "200");
         }
@@ -1598,7 +1613,7 @@ public class CiController {
             
             //添加日志
             String extraInfo = "删除代码构建执行：" + projectName;
-            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(projectName, extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_DEL_CI);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(projectName, extraInfo, CommConstant.CODE_CI, CommConstant.OPERATION_TYPE_DEL_CI);
             commonOperationLogDao.save(log);
             
             map.put("status", "200");
@@ -1837,7 +1852,7 @@ public class CiController {
             //添加日志
             String projectName = ciDao.findOne(ciId).getProjectName();
             String extraInfo = "删除代码构建中的代码挂钩 ： " + projectName;
-            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(projectName, extraInfo, CommConstant.CI, CommConstant.OPERATION_TYPE_DELETE);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(projectName, extraInfo, CommConstant.CODE_CI, CommConstant.OPERATION_TYPE_DELETE);
             commonOperationLogDao.save(log);
             map.put("status", "200");
         }

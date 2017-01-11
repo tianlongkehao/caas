@@ -35,6 +35,7 @@ import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.RefService;
+import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.etcd.util.EtcdClientService;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
@@ -43,9 +44,6 @@ import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-
-import mousio.etcd4j.responses.EtcdKeyAction;
-import mousio.etcd4j.responses.EtcdKeysResponse;
 
 /**
  * 引用外部服务 控制类
@@ -57,25 +55,30 @@ import mousio.etcd4j.responses.EtcdKeysResponse;
 
 @Controller
 public class RefServiceController {
+    
     /**
      * 日志
      */
     private static final Logger LOG = LoggerFactory.getLogger(RefServiceController.class);
+    
     /**
      * serviceDao
      */
     @Autowired
-  private  ServiceDao serviceDao;
+    private  ServiceDao serviceDao;
+    
     /**
      * refSreviceDao
      */
     @Autowired
     private RefServiceDao refServiceDao;
+    
     /**
      * UserDao
      */
     @Autowired
     private UserDao userDao;
+    
     /**
      * KubernetesClientService接口
      */
@@ -94,8 +97,6 @@ public class RefServiceController {
     @Autowired
     private CommonOperationLogDao commonOperationLogDao;
 
-    
-    
     /**
      * Description: <br>
      * 跳转进入service-import.jsp页面
@@ -136,41 +137,48 @@ public class RefServiceController {
     * @return string json
     * @see
     */
-    @SuppressWarnings("static-access")
     @RequestMapping(value="refservice/add.do", method = RequestMethod.POST)
     @ResponseBody
-    private String add(String serName,String serAddress,String refAddress, int refPort, int viDomain,int importSerMode,String refSerDesc,String useProxy){
+    private String add(RefService refService,int useNginx){
         Map<String, Object> map = new HashMap<String, Object>();
-        
-        RefService refService = fillRefServiceInfo(null, serName, serAddress, refAddress, refPort, viDomain, importSerMode,refSerDesc,useProxy);
+        refService.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+        refService.setCreateDate(new Date());
         String nameSpace = "";
+        //判断是否为所有租户可见
         if (RefServiceConstant.ALL_TENANT == refService.getViDomain()) {
             nameSpace = "default";
+            //判断是否使用nginx代理
+            if (useNginx == 1) {           
+                refService.setUseProxy(refService.getSerName());
+            }
         } else {
             nameSpace = CurrentUserUtils.getInstance().getUser().getNamespace();
-                }
+            if (useNginx == 1) {
+                refService.setUseProxy(nameSpace + "." + refService.getSerName());
+            }
+        }
         // etcd 和 service
-        if (RefServiceConstant.ETCD_MODE == refService.getimprotSerMode()) {
-            EtcdKeysResponse response = etcdClientService.putRecord(nameSpace, refService.getSerAddress(), refService.getRefAddress());
-            if (null == response) {
-                map.put("status", "500");
-            }
-            else {
-                response.getAction();
-                if (EtcdKeyAction.create.name().equals("create"))
-                map.put("status", "200");
-                refServiceDao.save(refService); 
-                
-                
-                //记录用户添加用户操作
-                String extraInfo="新增外部服务："+refService.getSerName()+"的主要内容有"+refService.toString();
-                CommonOperationLog log=CommonOprationLogUtils.getOprationLog(refService.getSerName(), extraInfo, CommConstant.REF_SERVICE, CommConstant.OPERATION_TYPE_CREATED);
-                commonOperationLogDao.save(log);
-            }
-        } 
-        else {
-            createServiceMode(map, refService, nameSpace);
-        }        
+//        if (RefServiceConstant.ETCD_MODE == refService.getimprotSerMode()) {
+//            EtcdKeysResponse response = etcdClientService.putRecord(nameSpace, refService.getSerAddress(), refService.getRefAddress());
+//            if (null == response) {
+//                map.put("status", "500");
+//            }
+//            else {
+//                response.getAction();
+//                if (EtcdKeyAction.create.name().equals("create"))
+//                map.put("status", "200");
+//                refServiceDao.save(refService); 
+//            }
+//        } 
+//        else {
+//            createServiceMode(map, refService, nameSpace);
+//        }      
+        
+        createServiceMode(map, refService, nameSpace);
+        //记录用户添加用户操作
+        String extraInfo="新增外部服务："+refService.getSerName()+"的主要内容有"+refService.toString();
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(refService.getSerName(), extraInfo, CommConstant.REF_SERVICE, CommConstant.OPERATION_TYPE_CREATED);
+        commonOperationLogDao.save(log);
         return JSON.toJSONString(map);
     }
     
@@ -185,47 +193,59 @@ public class RefServiceController {
      * @return json
      * @see
      */
-    @SuppressWarnings("static-access")
     @RequestMapping(value = "refservice/edit.do", method = RequestMethod.POST)
     @ResponseBody
-    private String editRefService(Long id, String serName,String serAddress,String refAddress ,int refPort, int viDomain,int importSerMode,String refSerDesc,String useProxy){
+    private String editRefService(RefService refService,int useNginx){
         Map<String, Object> map = new HashMap<String,Object>();
-
-        RefService refService = fillRefServiceInfo(id, serName, serAddress, refAddress, refPort, viDomain, importSerMode, refSerDesc, useProxy);
+        User user = CurrentUserUtils.getInstance().getUser();
+        RefService oldRefService = refServiceDao.findOne(refService.getId());
         String nameSpace = "";
-        if (RefServiceConstant.ALL_TENANT == refService.getViDomain()) {
+        if (RefServiceConstant.ALL_TENANT == oldRefService.getViDomain()) {
             nameSpace = "default";
-        } else {
-            nameSpace = CurrentUserUtils.getInstance().getUser().getNamespace();
+        }
+        else {
+            nameSpace = user.getNamespace();
+        }
+        //删除原始服务
+        try {
+            KubernetesAPIClientInterface client = kubernetesClientService.getClient(nameSpace);
+            client.deleteService(oldRefService.getSerName());
+        }
+        catch (KubernetesClientException e) {
+            LOG.error("delete k8s Service error; namespace:-"+nameSpace+";serviceName:-"+ oldRefService.getSerName());
         }
         
-        // 首先判断服务名是否发生变化
-        RefService localRefService = refServiceDao.findOne(id);
-        if (null != localRefService && !localRefService.getSerAddress().trim().equals(serAddress)) {
-            try {
-                KubernetesAPIClientInterface client = kubernetesClientService.getClient(nameSpace);
-                client.deleteService(localRefService.getSerAddress());
+        //添加修改的数据
+        oldRefService.setSerName(refService.getSerName());
+        oldRefService.setRefAddress(refService.getRefAddress());
+        oldRefService.setSerAddress(refService.getSerAddress());
+        oldRefService.setRefPort(refService.getRefPort());
+        oldRefService.setRefSerDesc(refService.getRefSerDesc());
+        oldRefService.setViDomain(refService.getViDomain());
+        oldRefService.setimprotSerMode(refService.getimprotSerMode());
+        if (RefServiceConstant.ALL_TENANT == oldRefService.getViDomain()) {
+            nameSpace = "default";
+            //判断是否使用nginx代理
+            if (useNginx == 1) {           
+                oldRefService.setUseProxy(refService.getSerName());
+            } else {
+                oldRefService.setUseProxy(null);
             }
-            catch (KubernetesClientException e) {
-                LOG.error("delete k8s Service error; namespace:-"+nameSpace+";serviceName:-"+ localRefService.getSerAddress());
+        } else {
+            nameSpace = CurrentUserUtils.getInstance().getUser().getNamespace();
+            if (useNginx == 1) {
+                oldRefService.setUseProxy(nameSpace + "." + refService.getSerName());
+            } else {
+                oldRefService.setUseProxy(null);
             }
         }
-        // etcd 和 service
-        if (RefServiceConstant.ETCD_MODE == refService.getimprotSerMode()) {
-            EtcdKeysResponse response = etcdClientService.putRecord(nameSpace, refService.getSerAddress(), refService.getRefAddress());
-            if (null == response) {
-                map.put("status", "500");
-            }
-            else {
-                response.getAction();
-                if (EtcdKeyAction.create.name().equals("create"))
-                map.put("status", "200");
-                refServiceDao.save(refService); 
-            }
-        } 
-        else {
-            createServiceMode(map, refService, nameSpace);
-        }        
+        
+        createServiceMode(map, oldRefService, nameSpace);
+        //记录用户添加用户操作
+        String extraInfo="修改外部服务："+refService.getSerName()+"的主要内容有"+JSON.toJSONString(oldRefService);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(oldRefService.getSerName(), extraInfo, CommConstant.REF_SERVICE, CommConstant.OPERATION_TYPE_UPDATE);
+        commonOperationLogDao.save(log);
+        
         return JSON.toJSONString(map);
     }
     

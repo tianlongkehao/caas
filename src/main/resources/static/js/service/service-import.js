@@ -15,7 +15,7 @@
 		 $("#import-ser-out").val("");
 		 $("#import-ser-out-port").val("");
 		 $("#import-ser-desc").val("");
-		layer.open({
+		 layer.open({
 		 	type:1,
 	        title: '引入外部服务',
 	        content: $("#import-service"),
@@ -30,12 +30,10 @@
 	       	 var importSerVis = $("#import-ser-visibility").val();
 	       	 var importSerMode = $("#import-ser-mode").val();
 	       	 var importSerDesc =$("#import-ser-desc").val();
-	       	 var namespace =$("#namespace").val();
-	       	 if(1==$("#useProxyFlag").val()){
-	       		 var useProxy=namespace+"."+importSerName;
+	       	 var useNginx =$("#useProxyFlag").val();
+	       	 if(!checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort,importSerVis,importSerMode,importSerDesc)){
+	       		 return;
 	       	 }
-	       if(true!=	checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort
-	       			,importSerVis,importSerMode,importSerDesc)){return;}
 	       	var flag=0;
 	        var un = importSerName.toLowerCase();
 	        console.info(un);
@@ -45,24 +43,23 @@
 	                console.info("Data: " + data + "\nStatus: " + status);
 	                var data = eval("(" + data + ")");
 	                if (data.status == "400") {
-	                    //layer.alert("登陆帐号已经被使用，请输入新的帐号！");
 	                    layer.tips('服务名已经被使用，请输入新的服务名！', '#import-ser-name', {
 	                        tips: [1, '#0FA6D8']
 	                    });
 	                    $('#import-ser-name').focus();
 	                    return ;
 	                }else {
-	                	layer.close(layer.index);
-	               	 $.ajax({
+		                layer.close(layer.index);
+		               	$.ajax({
 	   		         		url : ctx + "/refservice/add.do",
 	   		         		type: "POST",
 	   		         		data: {"serName":importSerName,"serAddress":importSerIn,
 	   		         			   "refAddress":importSerOut,"refPort":importSerOutPort,
 	   		         			   "viDomain":importSerVis,"importSerMode":importSerMode,
-	   		         			   "refSerDesc":importSerDesc,"useProxy":useProxy
+	   		         			   "refSerDesc":importSerDesc,"useNginx":useNginx
 	   		         		},
 	   		         		success: function(data) {
-	   		         		creatable();
+	   		         			creatable();
 	   		         		}
 	   		         	});
 	                }
@@ -119,11 +116,6 @@
          $('#import-ser-out').focus();
          return ;
      }
-/*	             if(importSerOut.search(/^[a-zA-Z0-9-:.\/]*$/) === -1){
-	      	layer.tips('外部服务地址中有非法字符，请您检查之后重新填写','#import-ser-out',{tips: [1, '#3595CC'],time: 3000});
-	      	$('#import-ser-out').focus();
-	      	return;
-	     }*/
      
      if (importSerOutPort.length === 0) {
     	 layer.tips('外部服务端口不能为空', '#import-ser-out-port', {
@@ -232,6 +224,7 @@
 	 })
 	 
  }
+ 
  //修改
  function editImportSer(obj,id){
 	 $("#import-ser-name").val($(obj).attr("serName"));
@@ -248,7 +241,6 @@
 		 $("#useProxyFlag option[value=1]").attr("selected", true); 
 	 }
 	 
-	 
 	 layer.open({
 		 	type: 1,
 	        title: '修改外部引入服务',
@@ -262,19 +254,17 @@
 	        	 var importSerVis = $("#import-ser-visibility").val();
 	        	 var importSerMode = $("#import-ser-mode").val();
 	        	 var importSerDesc =$("#import-ser-desc").val();
-	        	 var namespace =$("#namespace").val();
-		       	 if(1==$("#useProxyFlag").val()){
-		       		 var useProxy=namespace+"."+importSerName;
+	        	 var useNginx =$("#useProxyFlag").val();
+		       	 if(!checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort,importSerVis,importSerMode,importSerDesc)){
+		       		 return;
 		       	 }
-	  	       if(true!=	checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort
-		       			,importSerVis,importSerMode,importSerDesc)){return;}
 	             layer.close(index);
 	             $.ajax({
 		         		url : ctx + "/refservice/edit.do",
 		         		type: "POST",
 		         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
 		         			,"refAddress":importSerOut,"viDomain":importSerVis
-		         			,"refPort":importSerOutPort,"importSerMode":importSerMode,"refSerDesc":importSerDesc,"useProxy":useProxy},
+		         			,"refPort":importSerOutPort,"importSerMode":importSerMode,"refSerDesc":importSerDesc,"useNginx":useNginx},
 		         		success: function(data) {
 		         			var data = eval("("+data+")");
 		                 	if (data.status == 200) {

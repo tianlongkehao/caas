@@ -2786,25 +2786,32 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 	}
 	
-	
-	/*
-	 * 删除对应服务下的所有pod
+	/**
+	 * 
+	 * Description:
+	 * 删除对应服务下的所有pod 
+	 * @param serviceName 
 	 */
 	public void delPods(String serviceName) {
-		KubernetesAPIClientInterface client =kubernetesClientService.getClient();
-		Map<String, String> labelSelector = new HashMap<String, String>();
-		labelSelector.put("app", serviceName);
-		PodList podList = client.getLabelSelectorPods(labelSelector);
-		if (podList != null) {
-			for (Pod pod : podList.getItems()) {
-				try {
-					client.deletePod(pod.getMetadata().getName());
-				} catch (KubernetesClientException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-        System.out.println("origin pods deleted");
+	    LOG.info("************************before starting Service, delete garbage pod first*********************"); 
+	    try {
+	        KubernetesAPIClientInterface client =kubernetesClientService.getClient();
+	        com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
+	        Map<String, String> labelSelector = new HashMap<String, String>();
+	        labelSelector.put("app", k8sService.getSpec().getSelector().get("app"));
+	        PodList podList = client.getLabelSelectorPods(labelSelector);
+	        if (podList != null) {
+	            for (Pod pod : podList.getItems()) {
+	                try {
+	                    client.deletePod(pod.getMetadata().getName());
+	                } catch (KubernetesClientException e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        }
+        }
+        catch (Exception e) {
+            LOG.error("garbage pod delete failed. error message:-"+e.getMessage());
+        }
 	}
-	
 }
