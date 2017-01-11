@@ -545,7 +545,7 @@ function oneVersionUpgrade(id,serviceName,imgName,obj) {
 			 yes: function(index, layero){
 		        var cStatusHtml = "<i class='fa_success'></i>"+
 	                				"升级中"+
-	                				"<img src='"+ctx+"/images/loading4.gif' alt=''/>";
+	                				"<img src='"+ctx+"/images/loading4.gif' alt=''/><a href=\"javascript:oneStopContainerUpdate("+id+",&apos;"+ serviceName +"&apos;)\"><i class='fa fa-times fa-stopUpdate'></i></a>";
 		        $("#"+id+"_upgradeCluster").parent().parent().parent().parent().parent().parent().find(".cStatusColumn").html(cStatusHtml);
 		        $("#"+id+"_moreFun").removeClass('a-live').addClass('no-drop');
 		        $("#"+id+"_moreFun").find('.fa-gears').addClass('self_a');
@@ -874,7 +874,7 @@ function loadServices() {
 							if (row.status == 7) {
 								html = '<i class="fa_success"></i>' +
 									'升级中<img src="'+ctx+'/images/loading4.gif"'+
-									'alt="" />';
+									'alt="" /><a href="javascript:oneStopContainerUpdate('+row.id+',&apos;'+row.serviceName+'&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
 							}
 							return html;
 						}
@@ -1060,3 +1060,36 @@ function debug(id, status){
 //	})
 }
 
+function oneStopContainerUpdate(id,serviceName){
+	layer.open({
+		title : '取消升级',
+		content : '确定取消升级？',
+		btn : [ '确定', '取消' ],
+		yes : function(index, layero) {
+			layer.close(index);
+			$.ajax({
+				url : "" + ctx
+						+ "/service/cancelUpdate.do?id="
+						+ id
+						+ "&serviceName="
+						+ serviceName,
+				success : function(data) {
+					data = eval("(" + data + ")");
+					if (data.status == "200") {
+						layer.msg("服务升级已取消",{
+							icon: 6,
+							time:0,
+							btn: ['确定'],
+							yes:function(index, layero){
+								layer.close(index);
+								window.location.reload(true);
+							}
+						});
+					} else {
+						layer.alert("服务取消失败");
+					}
+				}
+			})
+		}
+	})
+}
