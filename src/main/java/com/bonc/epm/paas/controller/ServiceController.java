@@ -752,19 +752,49 @@ public class ServiceController {
 		String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(),
 				service.getImgVersion());
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-		ReplicationController controller = null;
 		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+		ReplicationController controller = null;
+		
+		/*************************************
+		 * 服务不是未启动状态时,获取svc和rc
+		 *************************************/
+		if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
+			try {
+				// 获取svc
+				k8sService = client.getService(service.getServiceName());
+			} catch (KubernetesClientException e) {
+				k8sService = null;
+			}
+			try {
+				// 获取rc
+				controller = client.getReplicationController(service.getServiceName());
+			} catch (KubernetesClientException e) {
+				controller = null;
+			}
+		}
+		/*************************************
+		 * 判断服务信息是否有改动，有改动则删除rc和svc
+		 *************************************/
+		if (service.getIsModify() == ServiceConstant.MODIFY_TRUE) {
+			try {
+				//删除svc
+				if (k8sService != null) {
+					client.deleteService(service.getServiceName());
+				}
+				//删除rc
+				if (controller != null) {
+					client.deleteReplicationController(service.getServiceName());
+				}
+			} catch (KubernetesClientException e) {
+				e.printStackTrace();
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			}
+		}
 
 		/***************************************
-		 * 先查询svc是否已经创建，如果没有找到则创建一个新的svc
+		 * 如果没有找到svc则创建一个新的svc
 		 ***************************************/
-		try {
-			// 先查询svc是否已经创建
-			k8sService = client.getService(service.getServiceName());
-		} catch (KubernetesClientException e) {
-			k8sService = null;
-		}
-		// 取不到svc时候创建svc
 		if (k8sService == null) {
 			try {
 				k8sService = kubernetesClientService.generateService(service.getServiceName(), portConfigs,
@@ -788,12 +818,6 @@ public class ServiceController {
 		/*************************************
 		 * 先查询rc是否已经创建，如果没有找到则创建一个新的rc
 		 *************************************/
-		try {
-			// 先查询rc是否已经创建
-			controller = client.getReplicationController(service.getServiceName());
-		} catch (KubernetesClientException e) {
-			controller = null;
-		}
 		try {
 			// 如果没有则新增
 			if (controller == null) {
@@ -881,7 +905,10 @@ public class ServiceController {
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
-
+		
+		/*************************************
+		 * 持久化相关信息
+		 *************************************/
 		// 保存service的信息
 		if (isDebug) {
 			service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_DEBUG);

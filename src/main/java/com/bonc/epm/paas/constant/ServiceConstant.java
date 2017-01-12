@@ -67,5 +67,10 @@ public class ServiceConstant {
      */
     public static final Integer MONITOR_NONE                 = 0;  //没有监控
     public static final Integer MONITOR_PINPOINT             = 1;  //Pinpoint监控
+    /**
+     * 修改服务信息
+     */
+    public static final Integer MODIFY_TRUE                  = 0;  //已修改
+    public static final Integer MODIFY_FALSE                 = 1;  //没有修改
 
 }
