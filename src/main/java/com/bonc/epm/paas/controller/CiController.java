@@ -1111,6 +1111,11 @@ public class CiController {
                     img.setIsBaseImage(ImageConstant.NotBaseImage);
                 }
                 imageDao.save(img);
+                
+                //添加上传镜像记录记录
+                String extraInfo="上传镜像："+img.getName()+"的信息"+JSON.toJSONString(img);
+                CommonOperationLog log=CommonOprationLogUtils.getOprationLog(img.getName(), extraInfo, CommConstant.UPLOAD_IMAGE, CommConstant.OPERATION_TYPE_CREATED);
+                commonOperationLogDao.save(log);
             }
         } 
         catch (Exception e) {
@@ -1679,6 +1684,11 @@ public class CiController {
             img.setIsDelete(CommConstant.TYPE_NO_VALUE);
             imageDao.save(img);
             ci.setImgId(img.getId());
+            
+            //构建成功之后添加镜像记录
+            String extraInfo="添加构建镜像："+img.getName()+"的信息"+JSON.toJSONString(img);
+            CommonOperationLog comlog=CommonOprationLogUtils.getOprationLog(img.getName(), extraInfo, CommConstant.IMAGE, CommConstant.OPERATION_TYPE_CREATED);
+            commonOperationLogDao.save(comlog);
         }
         return flag;
     }

@@ -32,8 +32,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,9 +40,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.dao.CiDao;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
@@ -58,6 +58,8 @@ import com.bonc.epm.paas.dao.UserFavorDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeHook;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
@@ -133,6 +135,12 @@ public class ServiceController {
      */
     @Autowired
 	private ServiceOperationLogDao serviceOperationLogDao;
+    
+    /**
+     * 通用操作记录信息层接口
+     */
+    @Autowired
+    private CommonOperationLogDao commonOperationLogDao;
 	
     /**
      * 环境变量数据层接口
@@ -992,6 +1000,11 @@ public class ServiceController {
                 storage.setUpdateBy(currentUser.getId());
                 storage.setUpdateDate(new Date());
                 storageDao.save(storage);
+                
+                //记录更新storage存储卷
+                String extraInfo = "更新storage存储卷 " + JSON.toJSONString(storage);
+                CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_CREATED);
+                commonOperationLogDao.save(log);
             }
         }
         
@@ -1952,6 +1965,11 @@ public class ServiceController {
                     storage.setUpdateBy(user.getId());
                     storage.setUpdateDate(new Date());;
                     storageDao.save(storage);
+                    
+                    //记录更新storage存储卷
+                    String extraInfo = "新增storage存储卷 " + JSON.toJSONString(storage);
+                    CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_CREATED);
+                    commonOperationLogDao.save(log);
                 }
                 serviceAndStorageDao.delete(svcAndStoList);
             }

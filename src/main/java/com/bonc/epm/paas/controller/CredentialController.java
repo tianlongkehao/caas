@@ -29,9 +29,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
-import com.bonc.epm.paas.constant.CredentialConstant;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.CiCodeCredentialDao;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.entity.CiCodeCredential;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.CredentialKey;
@@ -58,6 +61,12 @@ public class CredentialController {
      */
     @Autowired
     private CiCodeCredentialDao ciCodeCredentialDao;
+    
+    /**
+     * commonOperationLogDao 操作记录接口
+     */
+    @Autowired
+    CommonOperationLogDao commonOperationLogDao;
     
     /**
      * Description: <br>
@@ -124,6 +133,12 @@ public class CredentialController {
             ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
             ciCodeCredential.setCreateDate(new Date());
             ciCodeCredentialDao.save(ciCodeCredential);
+            
+            //记录添加密钥操作
+            String extraInfo = "添加密钥信息：" + JSON.toJSONString(ciCodeCredential);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ciCodeCredential.getUserName() , extraInfo, CommConstant.USER_SCRETKEY, CommConstant.OPERATION_TYPE_CREATED);
+            commonOperationLogDao.save(log);
+            
             result.put("status", "200");
             result.put("id",ciCodeCredential.getId());
         }
@@ -149,6 +164,12 @@ public class CredentialController {
             SheraAPIClientInterface client = sheraClientService.getClient();
             client.deleteCredential(ciCodeCredential.getUniqueKey());
             ciCodeCredentialDao.delete(ciCodeCredential);
+            
+            //记录删除密钥操作
+            String extraInfo = "删除密钥信息：" + JSON.toJSONString(ciCodeCredential);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ciCodeCredential.getUserName() , extraInfo, CommConstant.USER_SCRETKEY, CommConstant.OPERATION_TYPE_DELETE);
+            commonOperationLogDao.save(log);
+            
             map.put("status", "200");
         }
         catch (Exception e) {
@@ -220,6 +241,12 @@ public class CredentialController {
             ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
             ciCodeCredential.setCreateDate(new Date());
             ciCodeCredentialDao.save(ciCodeCredential);
+            
+            //记录添加密钥操作
+            String extraInfo = "更新密钥信息：" + JSON.toJSONString(ciCodeCredential);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ciCodeCredential.getUserName() , extraInfo, CommConstant.USER_SCRETKEY, CommConstant.OPERATION_TYPE_UPDATE);
+            commonOperationLogDao.save(log);
+            
             map.put("status", "200");
         }
         catch (Exception e) {

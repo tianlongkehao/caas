@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.UserDao;
@@ -42,6 +43,8 @@ import com.bonc.epm.paas.docker.exception.ErrorList;
 import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.docker.util.DockerRegistryService;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
@@ -84,6 +87,12 @@ public class RegistryController {
     @Autowired
 	private FavorDao favorDao;
 	
+    /**
+     * 日志记录dao层接口
+     */
+    @Autowired
+    private CommonOperationLogDao commonOperationLogDao;
+    
     /**
      * DockerClientService 接口
      */
@@ -184,68 +193,6 @@ public class RegistryController {
         return JSON.toJSONString(map);
     }
     
-//    @RequestMapping(value = {"registry/{index}"}, method = RequestMethod.GET)
-//	public String index(@PathVariable int index, Model model) {
-//        List<Image> images = null;
-//        String active = null;
-//        long userId = CurrentUserUtils.getInstance().getUser().getId();
-//        if (index == 0) {
-//            images = imageDao.findByImageType(1);
-//            active = "镜像中心";
-//        } 
-//        else if (index == 1) {
-//            images = imageDao.findAllByCreator(userId);
-//            active = "我的镜像";
-//        }
-//        else if(index == 2){
-//            images = userDao.findAllFavor(userId);
-//            active = "我的收藏";
-//        }
-//        addCurrUserFavor(images);
-//        addCreatorName(images);
-//        model.addAttribute("images", images);
-//        model.addAttribute("index", index);
-//        model.addAttribute("active",active);
-//        model.addAttribute("editImage",userId);
-//        model.addAttribute("menu_flag", "registry");
-//        return "docker-registry/registry.jsp";
-//    }
-	
-	/**
-	 * 镜像搜索
-	 * @param index 需要搜索哪一层的镜像
-	 * @param imageName 搜索镜像的名称
-	 * @param model 添加返回页面的数据
-	 * @return String 
-	 */
-//    @RequestMapping(value = {"registry/{index}"},method = RequestMethod.POST)
-//	public String findByName(@PathVariable int index,@RequestParam String imageName,Model model) {
-//        List<Image> images = null;
-//        String active = null;
-//        long userId = CurrentUserUtils.getInstance().getUser().getId();
-//        if (index == 0) {
-//            images = imageDao.findByNameCondition("%"+imageName+"%");
-//            addCurrUserFavor(images);
-//            active = "镜像中心";
-//        } 
-//        else if (index == 1) {
-//            images = imageDao.findByNameOfUser(userId,"%"+imageName+"%");
-//            addCurrUserFavor(images);
-//            active = "我的镜像";
-//        }
-//        else if (index == 2) {
-//            images = userDao.findByNameCondition(userId, "%"+imageName+"%");
-//            addCurrUserFavor(images);
-//            active = "我的收藏";
-//        }
-//		
-//        model.addAttribute("type", index);
-//        model.addAttribute("images", images);
-//        model.addAttribute("active",active);
-//		
-//        return "docker-registry/registry.jsp";
-//    }
-	
 	/**
 	 * 显示当前镜像详细信息
 	 * @param id 镜像Id
@@ -284,9 +231,7 @@ public class RegistryController {
         model.addAttribute("whetherFavor", whetherFavor);
         model.addAttribute("image", image);
         model.addAttribute("favorUser",favorUser);
-//        model.addAttribute("creator", user.getUserName());
         model.addAttribute("menu_flag", "registry");
-		
         return "docker-registry/detail.jsp";
     }
 	
@@ -437,6 +382,11 @@ public class RegistryController {
             }
             dockerClientService.removeImage(imageName, imageVersion, null, null,null,null);
             if (flag) {
+                //添加下载镜像操作记录
+                String extraInfo="下载镜像："+imageName + "版本信息" + imageVersion;
+                CommonOperationLog comlog=CommonOprationLogUtils.getOprationLog(imageName, extraInfo, CommConstant.IMAGE, CommConstant.OPERATION_TYPE_EXPORT);
+                commonOperationLogDao.save(comlog);
+                
                 map.put("status", "200");
             }
         }
@@ -507,6 +457,12 @@ public class RegistryController {
                 if (isDeleteFlag) {
                     image.setIsDelete(CommConstant.TYPE_YES_VALUE);
                     imageDao.save(image);
+                    
+                    //添加删除镜像操作记录
+                    String extraInfo = "删除镜像" + image.getName() + "的信息" + JSON.toJSONString(image);
+                    CommonOperationLog comlog=CommonOprationLogUtils.getOprationLog(image.getName(), extraInfo, CommConstant.IMAGE, CommConstant.OPERATION_TYPE_DELETE);
+                    commonOperationLogDao.save(comlog);
+                    
                     return "ok";
                 }
             }
