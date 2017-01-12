@@ -32,8 +32,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -273,7 +271,7 @@ public class ServiceController {
         //判断是否需要搜索服务
         if (StringUtils.isEmpty(search)) {
             services = serviceDao.findByCreateBy(userId,pageRequest);
-        } else {
+        } else {	
             services = serviceDao.findByNameOf(userId, "%" + search + "%",pageRequest);
         }
         //判断代码仓库中的代码是否发生改变
