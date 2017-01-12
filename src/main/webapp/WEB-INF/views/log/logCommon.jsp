@@ -16,7 +16,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" style="width: 110px">通用操作日志</li>
@@ -43,10 +43,11 @@
 										<thead>
 											<tr>
 												<th>&nbsp;</th>
-												<th style="width: 13%;">操作人</th>
-												<th style="width: 50%;">操作内容</th>
-	                                            <th style="width: 20%;">操作类型</th>
-	                                            <th style="width: 15%;">操作时间</th>
+												<th>操作人</th>
+												<th>操作模块</th>
+												<th>操作内容</th>
+	                                            <th>操作类型</th>
+	                                            <th>操作时间</th>
 											</tr>
 										</thead>
 										<tbody id="logCommonList">

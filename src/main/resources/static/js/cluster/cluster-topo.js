@@ -495,12 +495,12 @@ function showTopo(nodeDataTopo,linksDataTopo,legend) {
 	            	        trigger: 'item',
 	            	        formatter: '{a} : {b}'
 	            	    },
-	            	    toolbox: {
+	            	    /*toolbox: {
 	            	        show : true,
 	            	        feature : {
 	            	            restore : {show: true},
 	            	        }
-	            	    },
+	            	    },*/
 	            	    legend: legend,
 	            	    series : [
 	            	        {

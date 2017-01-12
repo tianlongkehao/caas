@@ -18,7 +18,7 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active"><a href="<%=path %>/ci"><span id="nav2">镜像构建</span></a></li>
@@ -103,7 +103,7 @@
                             <br>
 
                             <div class="pull-right">
-                                <span id="buildBtn" class="btn btn-primary">创建</span>
+                                <span id="buildBtn" class="btn btn-primary btn-color">创建</span>
                             </div>
                         </form>
                     </div>

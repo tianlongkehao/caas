@@ -34,7 +34,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="<%=path %>/home"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li><a href="<%=path %>/service"><span id="nav2">服务管理</span></a></li>
@@ -64,7 +64,7 @@
 
 											<input id="imageName" name="imageName" class="search-img"
 												placeholder="搜索镜像" type="text">
-											<button id="searchimage" class="btn btn-primary btn-send">搜索</button>
+											<button id="searchimage" class="btn btn-primary btn-color btn-send">搜索</button>
 
 										</div>
 									</div>
@@ -376,7 +376,7 @@
 							<button class=" btn btn-default go_backs">上一步</button>
 							<!-- <button class="btn btn-success two_step hide">高级设置</button> -->
 							<button id="createButton"
-								class="pull-right btn btn-primary pull_confirm">创建</button>
+								class="pull-right btn btn-primary btn-color pull_confirm">创建</button>
 						</div>
 
 					</div>

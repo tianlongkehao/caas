@@ -6,7 +6,7 @@
     position: fixed;
     top: 0px;
     /* box-shadow: 0 1px 10px #33414E; */
-    box-shadow: 1px 1px 10px rgba(0,0,0,0.25);
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.15);
 }
 
 .navbar .container {
@@ -236,7 +236,7 @@
 }
 .navbar-tab li.active a{
 	padding-bottom:10px;
-    border-bottom: 3px solid #e14344;
+    /* border-bottom: 3px solid #e14344; */
 }
 /* 导航栏中的三个标签 */
 .navbar-tab{
@@ -254,10 +254,10 @@
 .navbar-tab ul li{
 	float:left;
 	margin-right:70px;
-	color:#e14344;
+	/* color:#e14344; */
 	text-algin:center;
 }
 .navbar-tab ul li a.navTab{
-	color:#e8504f;
+	/* color:#e8504f; */
 	font-weight: bold;
 }

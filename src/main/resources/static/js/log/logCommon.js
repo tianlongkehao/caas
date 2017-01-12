@@ -14,11 +14,49 @@ $(document).ready(function () {
 							return html;
 						}
 					},
-                    {   
+					{   
                     	data : "createUsername",
                 		render : function ( data, type, row ) {
                     		if (data == null || data == "") {
                     			return "";
+                    		}
+                    		return data;
+                    	}	
+                    },
+                    {   
+                    	data : "catalogType",
+                		render : function ( data, type, row ) {
+                    		if (data == null || data == "") {
+                    			return "";
+                    		}else if(data==10) {
+                    			return "dockerfile模板";
+                    		}else if(data==20){
+                    			return "环境变量模板";
+                    		}else if(data==30){
+                    			return "代码构建";
+                    		}else if(data==40){
+                    			return "快速构建";
+                    		}else if(data==50){
+                    			return "dockerfile构建";
+                    		}else if(data==60){
+                    			return "上传镜像";
+                    		}else if(data==70){
+                    			return "镜像中心";
+                    		}else if(data==80){
+                    			return "用户管理";
+                    		}else if(data==90){
+                    			return "秘钥管理";
+                    		}else if(data==100){
+                    			return "租户管理";
+                    		}
+                    		else if(data==110){
+                    			return "shera管理 ";
+                    		}
+                    		else if(data==120){
+                    			return "存储与备份 ";
+                    		}
+                    		else if(data==130){
+                    			return "外部服务 ";
                     		}
                     		return data;
                     	}	

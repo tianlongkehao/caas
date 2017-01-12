@@ -57,7 +57,7 @@
                      </c:choose>
 					    
                     <div class="form-group">
-                        <button id="btn-signin" class="btn btn-primary btn-block" type="button" disabled="disabled">登录</button>
+                        <button id="btn-signin" class="btn btn-danger btn-block" type="button">登录</button>
                     </div>
 
                 </form>
