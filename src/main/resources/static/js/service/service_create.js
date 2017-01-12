@@ -7,7 +7,7 @@ $(document).ready(function(){
 	document.getElementById("ram1").checked=true;
 	//调节高度
 	var imagePage_height = $(".host_step1").height();
-	$(".step-inner").height(imagePage_height +100);
+	//$(".step-inner").height(imagePage_height +100);
 	
 	$(".createPadding").addClass("hide");
 	
@@ -630,7 +630,7 @@ $(document).ready(function(){
 						"</span> <span class='span4'>"+
 								"<div class='list-item-description'>"+
 									"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
-										""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
+										""+ image.version +"</span> <span imgID='"+image.id+"' resourceName='"+image.resourceName+"' imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary btn-color'"+
 										"data-attr='tenxcloud/mysql'> 部署 <i"+
 										"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
 									"</span>"+
@@ -930,7 +930,7 @@ function loadImageList() {
 					"</span> <span class='span4'>"+
 							"<div class='list-item-description'>"+
 								"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+ 
-									""+ image.version +"</span> <span imgID='"+image.id+"'resourceName='"+image.resourceName+"'  imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary'"+
+									""+ image.version +"</span> <span imgID='"+image.id+"'resourceName='"+image.resourceName+"'  imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary btn-color'"+
 									"data-attr='tenxcloud/mysql'> 部署 <i"+
 									"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
 								"</span>"+

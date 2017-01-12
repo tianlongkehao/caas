@@ -14,6 +14,7 @@
     /* background: #e8504f; */
     background: #fff;
 }
+
 .navbar .navbar-header h1 {
     color:#3C7BCA;
 }
@@ -127,6 +128,7 @@ nav.navbar-default{
 .btn-color.focus {
     background: #3981da;
     border-color: #3981da;
+    color:#fff;
 }
 
 .btn-pull-deploy {
@@ -157,6 +159,9 @@ nav.navbar-default{
 }
 .navbar-tab li.active a{
     border-bottom: 3px solid #4e8fde;
+}
+#login-header{
+	background: #1e426f;
 }
 
 

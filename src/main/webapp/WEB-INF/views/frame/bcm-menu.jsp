@@ -4,7 +4,7 @@
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-menu.css">
-    <script type="text/javascript" src="<%=path %>/js/plugins/bcm-menu.js"></script>
+    <script type="text/javascript" src="<%=path %>/js/customer/bcm-menu.js"></script>
 </head>
 <body>
 
@@ -12,7 +12,7 @@
     <div class="navbar navbar-fixed-top">
         <div class="container">
         	<div class="navbar-header">
-                <span><a href="<%=path %>/home"><h2>BCM</h2></a></span>
+                <span><a href="<%=path %>/home"><h1>BCM</h1></a></span>
             </div>
             <div class="navbar-tab">
                 <ul>
@@ -25,10 +25,43 @@
     </div>
     
 </header>
-	<nav class="navbar-default navbar-static-side" role="navigation">
-		<div class="sidebar-collapse">
-			<ul class="nav" id="side-menu">
+<div class="navAll">
+	<div class="nav-title" >
+		<ul class="nav" >
 				<li class="nav-bcm">
+					<span><a href="<%=path %>/home"><h2>BCM</h2></a></span>
+				</li>
+				<li class="nav-header ">
+					<div class="dropdown profile-element">
+						<div style="float:left">
+							<img alt="image" class="img-circle" src="<%=path%>/images/dockerui.png" />
+						</div> 
+						<div class="userNameTit">
+							<c:if test="${!cas_enable}"><span class="t-username"><strong>${cur_user.userName }</strong></span></c:if>
+							<br>
+						<span>
+							<a href="<%=path %>/user/detail/${cur_user.id }/a" title="基本信息">&nbsp;<i class="fa fa-user"></i>&nbsp;</a>
+							<c:if test="${!cas_enable}">
+								<a href="<%=path %>/user/detail/${cur_user.id }/b" title="修改密码">&nbsp;<i class="fa fa-unlock-alt"></i>&nbsp;</a>
+								<c:choose>
+							        <c:when test="${ssoConfig.enable}">
+							        	<a href="${ssoConfig.serverLogoutUrl}" title="退出登录">&nbsp;<i class="fa fa-power-off"></i>&nbsp;</a>
+							        </c:when>
+							        <c:otherwise>
+							        	<a href="<%=path %>/loginout/${cur_user.id }" title="退出登录">&nbsp;<i class="fa fa-power-off"></i>&nbsp;</a>
+							        </c:otherwise>
+						        </c:choose>
+							</c:if>
+						</span>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<nav class="navbar-default navbar-static-side" role="navigation" id="nav-side">
+		<div class="sidebar-collapse">
+			<ul class="nav" id="side-menu" style="margin-top:160px">
+				<%-- <li class="nav-bcm">
 					<span><a href="<%=path %>/home"><h2>BCM</h2></a></span>
 				</li>
 				<li class="nav-header ">
@@ -54,7 +87,7 @@
 							</c:if>
 						</span></div>
 					</div>
-				</li>
+				</li> --%>
 				<li id="menu_bcm"><a href="<%=path %>/bcm/${cur_user.id }" class="first-a"> <i class="fa fa-tachometer fa-nav-icon"></i>
 						<span class="nav-label">总览</span>
 
@@ -144,10 +177,17 @@
 				</a></li> --%>
 				
 			</ul>
-			<div class="helpDoc"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn" value="新手入门"></a></div>
 		</div>
 	</nav>
+	<div class="helpDoc"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn" value="新手入门"></a></div>
+	<div class="sideBoxBtn" onclick="navHide()"><i class="fa fa-step-backward"></i><div class="btn-background"></div></div>
+</div><!-- navAll -->
+<div class="navbar-downSide-show hide">
+	<nav class="navbar-downSide" ></nav>
+	<div class="sideBoxBtn sideBoxBtnShow" onclick="navShow()"><i class="fa fa-step-forward"></i><div class="btn-background"></div></div>
+</div>
 	
+
 </body>
 
 <script type="text/javascript">

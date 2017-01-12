@@ -5,12 +5,12 @@
 <html lang="zh-cn">
 <head>
     <title>用户登录</title>
-   <%@include file="frame/dashboard-header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/layout.css">
+   <%@include file="frame/header.jsp" %>
+    
 </head>
 <body>
 
-<header class="header" style="background-color: #e8504f;">
+<header class="header" id="login-header">
     <div class="navbar navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -57,7 +57,7 @@
                      </c:choose>
 					    
                     <div class="form-group">
-                        <button id="btn-signin" class="btn btn-danger btn-block" type="button">登录</button>
+                        <button id="btn-signin" class="btn btn-color btn-block" type="button">登录</button>
                     </div>
 
                 </form>

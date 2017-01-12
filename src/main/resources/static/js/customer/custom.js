@@ -87,6 +87,7 @@ function setCookie(c_name, value) {
 }
 
 function checkCookie() {
+	//判断主题
 	skinColor = getCookie('skinColor')
 	if (skinColor == null || skinColor == "") {
 		
@@ -104,4 +105,41 @@ function checkCookie() {
 		var redHref = ctx + '/css/core/color-red.css';
 		$("#skinColor").attr("href", redHref);
 	}
+	//侧边栏
+	label = getCookie('label')
+	switch (label) {
+	case "0":
+		$(".navAll").addClass("hide");
+		$(".page-container").css("margin-left","5px");
+		$(".navbar-downSide-show").removeClass("hide");
+		$(".sideBoxBtn").css("left","0px");
+		break;
+	case "1":
+		$(".navAll").removeClass("hide");
+		$(".page-container").css("margin-left","190px");
+		$(".navbar-downSide-show").addClass("hide");
+		$(".sideBoxBtn").css("left","185px")
+		break;
+	default:
+		$(".navAll").removeClass("hide");
+		$(".page-container").css("margin-left","190px");
+		$(".navbar-downSide-show").addClass("hide");
+		$(".sideBoxBtn").css("left","185px")
+	}
+
+}
+
+function navHide(){
+	$(".navAll").addClass("hide");
+	$(".page-container").css("margin-left","5px");
+	$(".navbar-downSide-show").removeClass("hide");
+	$(".sideBoxBtn").css("left","0px");
+	setCookie("label",0);
+}
+function navShow(){
+	$(".navAll").removeClass("hide");
+	$(".page-container").css("margin-left","190px");
+	$(".navbar-downSide-show").addClass("hide");
+	$(".sideBoxBtn").css("left","185px")
+	setCookie("label",1);
 }
