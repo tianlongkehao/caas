@@ -930,14 +930,14 @@ public class UserController {
         if (user.getPassword().trim().equals(EncryptUtils.encryptMD5(password.trim()))) {
             user.setPassword(EncryptUtils.encryptMD5(newpwd));
             userDao.save(user);
-            //退出当前用户
-            CurrentUserUtils.getInstance().loginoutUser(user1);
-            map.put("status", "200");
-            
             //记录用户修改密码操作
             String extraInfo = "修改用户 ： " + user.getUserName() + "密码：" + JSON.toJSONString(user);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.TENANT_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
             commonOperationLogDao.save(log);
+            
+            //退出当前用户
+            CurrentUserUtils.getInstance().loginoutUser(user1);
+            map.put("status", "200");
         }
         else {
             map.put("status", "400");
