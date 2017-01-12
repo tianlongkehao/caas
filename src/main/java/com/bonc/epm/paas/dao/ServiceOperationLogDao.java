@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.ServiceOperationLog;
 import com.bonc.epm.paas.entity.User;
@@ -49,5 +51,6 @@ public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationL
     @Query("select i from ServiceOperationLog i where  i.createUserName like ?1  order by i.createDate desc")
     public Page<ServiceOperationLog> findAllByCreateUserName(String createUserName,Pageable request);
     
-    
+    //根据创建人ID获取服务操作日志
+    public List<ServiceOperationLog> findByCreateBy(long createBy);
 }

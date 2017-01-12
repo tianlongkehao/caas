@@ -12,6 +12,8 @@
 package com.bonc.epm.paas.dao;
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.CommonOperationLog;
+
+
 
 /**
  * @author ke_wang
@@ -38,4 +42,7 @@ public interface CommonOperationLogDao extends CrudRepository<CommonOperationLog
     @Query("select i from CommonOperationLog i where  i.createUsername like ?1  order by i.createDate desc")
     public Page<CommonOperationLog> findAllByCreateUsername(String createUsername,Pageable request);
 	
+    //根据创建人ID获取通用操作日志
+    public List<CommonOperationLog> findByCreateBy(long createBy);
+    
 }
