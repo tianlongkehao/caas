@@ -120,13 +120,13 @@
 })(jQuery, window, document);
 
 $(document).ready(function () {
-//MetsiMenu
-$('#side-menu').metisMenu();
-
-// 打开右侧边栏
-$('.right-sidebar-toggle').click(function () {
-    $('#right-sidebar').toggleClass('sidebar-open');
-});
+	//MetsiMenu
+	$('#side-menu').metisMenu();
+	
+	// 打开右侧边栏
+	$('.right-sidebar-toggle').click(function () {
+	    $('#right-sidebar').toggleClass('sidebar-open');
+	});
 
 // 右侧边栏使用slimscroll
 //$('.sidebar-container').slimScroll({
@@ -136,3 +136,16 @@ $('.right-sidebar-toggle').click(function () {
 //});
 
 })/* ready */
+//function navHide(){
+//	$(".navAll").addClass("hide");
+//	$(".page-container").css("margin-left","5px");
+//	$(".navbar-downSide-show").removeClass("hide");
+//	$(".sideBoxBtn").css("left","0px");
+//}
+//function navShow(){
+//	$(".navAll").removeClass("hide");
+//	$(".page-container").css("margin-left","190px");
+//	$(".navbar-downSide-show").addClass("hide");
+//	$(".sideBoxBtn").css("left","185px")
+//}
+

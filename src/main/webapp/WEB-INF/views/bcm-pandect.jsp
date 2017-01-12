@@ -61,7 +61,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="<%=path %>/registry/0" data-permalink onclick="_permalink(this)">
+                                    <a href="<%=path %>/registry/1" data-permalink onclick="_permalink(this)">
                                           <span class="server-info-icon">
                                           	<img src="<%=path %>/images/applist3-gray.svg" class="pandect-icon" alt=""/>
                                             <span>镜像个数：</span>
@@ -193,6 +193,6 @@ $(function(){
     var userVolPer = $("#detailVolume")[0].textContent/$("#totalVolume")[0].textContent*100+"%";
     $("#usedVolume")[0].style.width = userVolPer;
 })
-</script>>
+</script>
 </body>
 </html>

@@ -127,7 +127,7 @@ function filters(obj){
 }
 
 function findImages(){
-	var index = $("#nav2").val();
+	var index = $("#index").val();
 	var userId = $("#userId").val();
 	$('.dataTables-example').dataTable({
 		 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
