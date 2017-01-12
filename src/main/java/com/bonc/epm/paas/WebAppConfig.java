@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.bonc.epm.paas.constant.NginxServerConf;
 import com.bonc.epm.paas.constant.esConf;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.sso.casclient.EnableCasClient;
@@ -19,7 +18,7 @@ import com.bonc.epm.paas.sso.casclient.EnableCasClient;
  * @see WebAppConfig
  * @since
  */
-@EnableConfigurationProperties({esConf.class,CasClientConfigurationProperties.class,NginxServerConf.class})
+@EnableConfigurationProperties({esConf.class,CasClientConfigurationProperties.class})
 @SpringBootApplication
 @EnableCasClient
 public class WebAppConfig extends WebMvcConfigurerAdapter{

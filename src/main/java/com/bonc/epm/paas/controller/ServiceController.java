@@ -281,7 +281,7 @@ public class ServiceController {
         //判断是否需要搜索服务
         if (StringUtils.isEmpty(search)) {
             services = serviceDao.findByCreateBy(userId,pageRequest);
-        } else {
+        } else {	
             services = serviceDao.findByNameOf(userId, "%" + search + "%",pageRequest);
         }
         //判断代码仓库中的代码是否发生改变
