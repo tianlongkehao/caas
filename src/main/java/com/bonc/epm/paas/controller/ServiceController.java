@@ -410,27 +410,28 @@ public class ServiceController {
 	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
 	    List<Container> containerList = new ArrayList<Container>();
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("app", service.getServiceName());
   		// 通过服务名获取pod列表
-        PodList podList = client.getLabelSelectorPods(map);
-        if (podList != null) {
-            List<Pod> pods = podList.getItems();
-	        if (CollectionUtils.isNotEmpty(pods)) {
-	            int i = 1;
-	            for (Pod pod : pods) {
-	            	for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
-	            		Container container = new Container();
-	            		container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-	            		container.setServiceid(service.getId());
-	            		containerList.add(container);
-	            	}
-	            	com.bonc.epm.paas.entity.Pod current_pod = new com.bonc.epm.paas.entity.Pod();
-	            	current_pod.setPodName(pod.getMetadata().getName());
-	            	podNameList.add(current_pod);
-	            }
-	        }
-        }
+	    if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
+	    	com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
+	    	PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+	    	if (podList != null) {
+	    		List<Pod> pods = podList.getItems();
+	    		if (CollectionUtils.isNotEmpty(pods)) {
+	    			int i = 1;
+	    			for (Pod pod : pods) {
+	    				for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
+	    					Container container = new Container();
+	    					container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+	    					container.setServiceid(service.getId());
+	    					containerList.add(container);
+	    				}
+	    				com.bonc.epm.paas.entity.Pod current_pod = new com.bonc.epm.paas.entity.Pod();
+	    				current_pod.setPodName(pod.getMetadata().getName());
+	    				podNameList.add(current_pod);
+	    			}
+	    		}
+	    	}
+		}
         List<Storage> storageList = storageDao.findByServiceId(service.getId());
         model.addAttribute("storageList", storageList);
         model.addAttribute("namespace",currentUser.getNamespace());
@@ -1005,7 +1006,7 @@ public class ServiceController {
                 portCon.setServiceId(service.getId());
                 portConfigDao.save(portCon);
 				// 向map中添加生成的node端口
-                smalSet.add(Integer.valueOf(portCon.getContainerPort().trim()));
+                smalSet.add(Integer.valueOf(portCon.getMapPort().trim()));
             }
         }
         service.setServiceAddr("http://"+currentUser.getUserName() + "." + serverAddr);
@@ -1211,31 +1212,31 @@ public class ServiceController {
         LOG.debug("service:=========" + service);
         try {
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-            ReplicationController controller = client.updateReplicationController(service.getServiceName(), 0);
-
-            if (controller == null || controller.getSpec().getReplicas() != 0) {
-                map.put("status", "500");
+            ReplicationController controller = null;
+            try {
+                controller = client.getReplicationController(service.getServiceName());
+            } catch (Exception e1) {
+                controller = null;
             }
-            else {
-                map.put("status", "200");
-				// 保存服务信息
-				Date currentDate = new Date();
-				User currentUser = CurrentUserUtils.getInstance().getUser();
-				service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_STOPPED);
-				service.setUpdateDate(currentDate);
-				service.setUpdateBy(currentUser.getId());
-				service = serviceDao.save(service);
-				// 保存服务操作信息
-				serviceOperationLogDao.save(service.getServiceName(), service.toString(),
-						ServiceConstant.OPERATION_TYPE_STOP);
+            if (controller != null) {
+                controller = client.updateReplicationController(service.getServiceName(), 0);
             }
+            map.put("status", "200");
+			// 保存服务信息
+			Date currentDate = new Date();
+			User currentUser = CurrentUserUtils.getInstance().getUser();
+			service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_STOPPED);
+			service.setUpdateDate(currentDate);
+			service.setUpdateBy(currentUser.getId());
+			service = serviceDao.save(service);
+			// 保存服务操作信息
+			serviceOperationLogDao.save(service.getServiceName(), service.toString(),ServiceConstant.OPERATION_TYPE_STOP);
         }
         catch (KubernetesClientException e) {
             map.put("status", "500");
             map.put("msg", e.getStatus().getMessage());
             LOG.error("stop service error:" + e.getStatus().getMessage());
         }
-
         return JSON.toJSONString(map);
     }
     
@@ -1935,7 +1936,7 @@ public class ServiceController {
             List<PortConfig> bindPort = portConfigDao.findByServiceId(id);
             if (CollectionUtils.isNotEmpty(bindPort)) {
                 for (PortConfig oneRow : bindPort) {
-                    smalSet.remove(Integer.valueOf(oneRow.getContainerPort().trim()));
+                    smalSet.remove(Integer.valueOf(oneRow.getMapPort().trim()));
                 }
                 portConfigDao.deleteByServiceId(id);
             }
@@ -2131,7 +2132,7 @@ public class ServiceController {
      */
     @RequestMapping(value = { "service/findservice.do" }, method = RequestMethod.GET)
     @ResponseBody
-	public String findService(Long serviceID) {
+	public String findPodsOfService(Long serviceID) {
         Map<String, Object> map = new HashMap<String, Object>();
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         Service service = serviceDao.findOne(serviceID);
