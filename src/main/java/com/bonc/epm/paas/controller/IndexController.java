@@ -5,8 +5,15 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +37,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.ImageDao;
@@ -126,6 +137,19 @@ public class IndexController {
     private String RATIO_MEMTOCPU = "4";
 
     /**
+     * service操作日志dao接口
+     */
+    @Autowired
+    private ServiceOperationLogDao serviceOperationLogDao;
+    
+    /**
+     * 通用操作日志dao接口
+     */
+    @Autowired
+	private CommonOperationLogDao commonOperationLogDao;
+
+    
+    /**
      * Description: <br>
      * 首页
      * @return home.jsp
@@ -163,6 +187,58 @@ public class IndexController {
             model.addAttribute("userShera", shera);
             model.addAttribute("usedstorage",  usedstorage / 1024);
             
+            
+            
+//---------最近操作---------------            
+            
+            
+            List<ServiceOperationLog> svcLogs = serviceOperationLogDao.findFourByCreateBy(id,new PageRequest(0, 4, Direction.DESC, "createDate"));
+            List<CommonOperationLog> commonLogs = commonOperationLogDao.findFourByCreateBy(id,new PageRequest(0, 4, Direction.DESC, "createDate"));
+            Map<Date,String> map = new HashMap<Date,String>();
+            for (ServiceOperationLog serviceOperationLog : svcLogs) {
+            	String oprationRecord = "对服务: "+serviceOperationLog.getServiceName()
+            						+ " 进行了"
+            						+ ServiceConstant.OPERATION_TYPE_MAP.get(serviceOperationLog.getOperationType())
+            						+ "操作";
+            	map.put(serviceOperationLog.getCreateDate(), oprationRecord);
+			}
+            for (CommonOperationLog commonOperationLog : commonLogs) {
+            	String oprationRecord = "在"
+            						+ CommConstant.CatalogType_MAP.get(commonOperationLog.getCatalogType())
+			            			+ "模块进行了"
+			            			+ CommConstant.OPERATION_TYPE_MAP.get(commonOperationLog.getOperationType())
+			            			+ "操作"; 
+            	map.put(commonOperationLog.getCreateDate(), oprationRecord);
+			}
+            
+            //根据时间进行排序
+            //将Map转化为List集合，List采用ArrayList  
+            List<Map.Entry<Date, String>> list_Data = new ArrayList<Map.Entry<Date,String>>(map.entrySet());
+            
+          //通过Collections.sort(List I,Comparator c)方法进行排序  
+            Collections.sort(list_Data,new Comparator<Map.Entry<Date, String>>() {
+
+				@Override
+				public int compare(Entry<Date, String> o1, Entry<Date, String> o2) {
+					if(o1.getKey().before(o2.getKey())){//o1比o2早
+						return 1;
+					}
+					return -1;
+				}  
+	
+            });
+
+            Iterator<Map.Entry<Date, String>> it = list_Data.iterator();
+            while(it.hasNext()){
+            	Entry<Date, String> a = it.next();
+                if(a.getKey().before(list_Data.get(3).getKey())){
+                    it.remove();
+                }
+            }
+            System.out.println(list_Data);
+            model.addAttribute("list_Data", list_Data);
+//------------------------            
+            
 
         }
         catch (KubernetesClientException e) {
@@ -173,6 +249,7 @@ public class IndexController {
             LOG.error("error message:-" + e.getMessage());
             e.printStackTrace();
         }
+    	
         model.addAttribute("showAuthCode", showAuthCode);
         
         model.addAttribute("menu_flag", "bcm");

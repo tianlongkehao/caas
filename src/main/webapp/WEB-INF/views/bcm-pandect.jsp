@@ -77,18 +77,20 @@
                         <div class="padding">
                             <div class="row-title">最近操作</div>
                             <ul class="server-list">
-                                <li>
-                                    <span>创建了容器</span>
-                                    <span class="right">10小时前</span>
-                                </li>
-                                <li>
-                                    <span>删除了镜像</span>
-                                    <span class="right">1天前</span>
-                                </li>
-                                <li>
-                                    <span>更新了%%%</span>
-                                    <span class="right">2017-01-06</span>
-                                </li>
+	                  		  	<c:forEach items = "${list_Data}" var = "oprationRecord">
+<%-- 									<tr>
+										
+		                                         <td style="width: 15%;height:40px;">
+		                                              <fmt:formatDate value="${logService.createDate }" pattern="yyyy-MM-dd HH:mm:ss"/>
+		                                            </td>
+									</tr> --%>
+									<li style="height: 45px">
+                                    	<span>${oprationRecord.value}</span>
+                                    	<span class="right">
+                                    		 <fmt:formatDate value="${oprationRecord.key}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                                    	</span>
+                               		</li>
+						  		</c:forEach>
                             </ul>
                         </div>
                         </section>

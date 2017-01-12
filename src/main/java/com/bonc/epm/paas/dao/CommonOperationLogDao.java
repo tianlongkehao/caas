@@ -42,7 +42,6 @@ public interface CommonOperationLogDao extends CrudRepository<CommonOperationLog
     @Query("select i from CommonOperationLog i where  i.createUsername like ?1  order by i.createDate desc")
     public Page<CommonOperationLog> findAllByCreateUsername(String createUsername,Pageable request);
 	
-    //根据创建人ID获取通用操作日志
-    public List<CommonOperationLog> findByCreateBy(long createBy);
+    public List<CommonOperationLog> findFourByCreateBy(long createBy,Pageable request);
     
 }

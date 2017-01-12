@@ -31,7 +31,7 @@ public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationL
      * @return ServiceOperationLog
      * @see
      */
-    default ServiceOperationLog save(String serviceName, String serviceExtraInfo, long operationType){
+    default ServiceOperationLog save(String serviceName, String serviceExtraInfo, Integer operationType){
     	User currentUser = CurrentUserUtils.getInstance().getUser();
 		ServiceOperationLog log = new ServiceOperationLog();
 		log.setServiceName(serviceName);
@@ -51,6 +51,7 @@ public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationL
     @Query("select i from ServiceOperationLog i where  i.createUserName like ?1  order by i.createDate desc")
     public Page<ServiceOperationLog> findAllByCreateUserName(String createUserName,Pageable request);
     
-    //根据创建人ID获取服务操作日志
-    public List<ServiceOperationLog> findByCreateBy(long createBy);
+ 
+
+    public List<ServiceOperationLog> findFourByCreateBy(long createBy,Pageable request);
 }

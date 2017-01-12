@@ -65,6 +65,26 @@ public class ServiceConstant {
     public static final Integer OPERATION_TYPE_CONFIGURE     = 80;  //更改配置
     public static final Integer OPERATION_TYPE_DELETE        = 90;  //删除
     public static final Integer OPERATION_TYPE_CANCELUPDATE  = 100; //取消升级
+    
+    
+	public static Map<Integer, String> OPERATION_TYPE_MAP;
+	static {
+		OPERATION_TYPE_MAP = new HashMap<Integer, String>();
+		OPERATION_TYPE_MAP.put(OPERATION_TYPE_UPDATE, "更新");
+		OPERATION_TYPE_MAP.put(OPERATION_TYPE_CREATE, "创建");
+		OPERATION_TYPE_MAP.put(OPERATION_TYPE_START, "启动");
+		OPERATION_TYPE_MAP.put(OPERATION_TYPE_STOP, "停止");
+		OPERATION_TYPE_MAP.put(OPERATION_TYPE_DEBUG, "调试");
+		OPERATION_TYPE_MAP.put(OPERATION_TYPE_SCALING, "弹性伸缩");
+		OPERATION_TYPE_MAP.put(OPERATION_TYPE_ROLLINGUPDATE, "版本升级");
+		OPERATION_TYPE_MAP.put(OPERATION_TYPE_CONFIGURE, "更改配置");
+		OPERATION_TYPE_MAP.put(OPERATION_TYPE_DELETE, "删除");
+		OPERATION_TYPE_MAP.put(OPERATION_TYPE_CANCELUPDATE, "取消升级");
+	}
+
+    
+    
+    
     /**
      * 监控设置
      */

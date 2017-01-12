@@ -897,7 +897,7 @@ public class ServiceController {
 		service.setUpdateBy(currentUser.getId());
 		service = serviceDao.save(service);
 		// 保存服务操作信息
-		long operationType;
+		Integer operationType;
 		if (isDebug) {
 			operationType = ServiceConstant.OPERATION_TYPE_DEBUG;
 		} else {
