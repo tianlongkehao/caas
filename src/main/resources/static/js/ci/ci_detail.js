@@ -1359,6 +1359,7 @@ function checkCodeCiAdd(){
     });
     
     if (flag) {
+    	flag = false;
     	return false;
     }
     
@@ -1368,6 +1369,7 @@ function checkCodeCiAdd(){
     
     
     if ($("#imageInfo").prop("checked")) {
+    	var imgNameFirst = $("#imgNameFirst").val();
     	var imageName = $("#imageName").val();
 		if(!imageName || imageName.length < 1){
 			layer.tips('镜像名称不能为空','#imageName',{tips: [1, '#3595CC']});
@@ -1382,7 +1384,7 @@ function checkCodeCiAdd(){
 			return false;
 		}
 		var imgNameVersion = $("#imgNameVersion").val();
-		if (imgNameVersion || imageName.length > 0) {
+		if (imgNameVersion != "" || imgNameVersion.length > 0) {
 			if(imgNameVersion.search(/^[a-z0-9-_]*$/) === -1){
 				layer.tips('镜像版本只能由小写字母、数字、横线和下划线组成', '#imgNameVersion', {
 					tips: [1, '#0FA6D8']
@@ -1390,6 +1392,32 @@ function checkCodeCiAdd(){
 				$('#imgNameVersion').focus();
 				return false;
 			}
+			
+			$.ajax({
+	    		url : ctx + "/ci/validCiDetailVersion.do",
+	    		async:false,
+	    		type: "POST",
+	    		data:{	
+	    				"id" : id,
+	    				"imgNameFirst":imgNameFirst,
+	    				"imgNameLast":imageName,
+	    				"imgNameVersion":imgNameVersion
+	    		},
+	    		success : function(data) {
+	    			data = eval("(" + data + ")");
+	    			if (data.status=="400") {
+	    	            layer.tips('镜像版本重复', '#imgNameVersion', {
+	    	                tips: [1, '#0FA6D8'] //还可配置颜色
+	    	            });
+	    	            $('#imgNameVersion').focus();
+	    	            flag = true;
+	    			} 
+	    		}
+	    	});
+	        if (flag) {
+	        	flag = false;
+	         	return false;
+	        }
 		}
 		
 		//判断是否为基础镜像

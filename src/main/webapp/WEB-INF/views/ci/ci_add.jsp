@@ -141,6 +141,7 @@
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">镜像名称</label>
+	                                    <input name="imgNameFirst" id = "imgNameFirst" type="hidden" value="${username }">
 	                                    <input id="imageName" name="imgNameLast" type="text"
                                                    class="form-control c-project-con reg-input imgInput" value="">
 		                            </div>

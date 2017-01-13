@@ -704,6 +704,7 @@ function checkCodeCiAdd(editor_one){
     
     if ($("#imageInfo").prop("checked")) {
     	var imageName = $("#imageName").val();
+    	var imgNameFirst = $("#imgNameFirst").val();
 		if(!imageName || imageName.length < 1){
 			layer.tips('镜像名称不能为空','#imageName',{tips: [1, '#3595CC']});
 			$('#imageName').focus();
@@ -726,6 +727,31 @@ function checkCodeCiAdd(editor_one){
 				$('#imgNameVersion').focus();
 				return false;
 			}
+			
+			$.ajax({
+	    		url : ctx + "/ci/validciinfo.do",
+	    		async:false,
+	    		type: "POST",
+	    		data:{
+	    				"imgNameFirst":imgNameFirst,
+	    				"imgNameLast":imageName,
+	    				"imgNameVersion":imgNameVersion
+	    		},
+	    		success : function(data) {
+	    			data = eval("(" + data + ")");
+	    			if (data.status=="400") {
+	    	            layer.tips('镜像版本重复', '#imgNameVersion', {
+	    	                tips: [1, '#0FA6D8'] //还可配置颜色
+	    	            });
+	    	            $('#imgNameVersion').focus();
+	    	            flagName = true;
+	    			} 
+	    		}
+	    	});
+	        if (flagName) {
+	        	flagName = false;
+	         	return false;
+	        }
 		}
 		
 		//判断是否为基础镜像
