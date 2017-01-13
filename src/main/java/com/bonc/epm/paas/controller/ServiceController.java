@@ -842,8 +842,6 @@ public class ServiceController {
 						}
 						args.add(item);
 					}
-				} else {
-
 				}
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 						service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
@@ -919,6 +917,7 @@ public class ServiceController {
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		service.setUpdateDate(currentDate);
 		service.setUpdateBy(currentUser.getId());
+		service.setIsModify(ServiceConstant.MODIFY_FALSE);
 		service = serviceDao.save(service);
 		// 保存服务操作信息
 		long operationType;
@@ -950,6 +949,7 @@ public class ServiceController {
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(currentDate);
 		service.setCreateBy(currentUser.getId());
+		service.setIsModify(ServiceConstant.MODIFY_FALSE);
 		service.setUpdateDate(currentDate);
 		service.setUpdateBy(currentUser.getId());
 		service = serviceDao.save(service);
@@ -2554,9 +2554,11 @@ public class ServiceController {
         ser.setSessionAffinity(service.getSessionAffinity());
         ser.setNodeIpAffinity(service.getNodeIpAffinity());
         ser.setCheckPath(service.getCheckPath());
-        ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
-        ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
-        ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
+        if (service.getCheckPath() != null) {
+        	ser.setTimeoutDetction(service.getTimeoutDetction()!=null?service.getTimeoutDetction():ServiceConstant.TIMEOUT);
+        	ser.setPeriodDetction(service.getPeriodDetction()!=null?service.getPeriodDetction():ServiceConstant.PERIOD);
+        	ser.setInitialDelay(service.getInitialDelay()!=null?service.getInitialDelay():ServiceConstant.INNIALDELAY);
+		}
         return ser;
     }
     

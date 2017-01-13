@@ -185,10 +185,8 @@ $(document).ready(function(){
        			//保存
        $("#saveSerBtn").click(function(){
            //提交之前验证
-//           $("#BaseSerForm").click(function(){
        		//判断服务名称
        		var name = $('#serviceName').val();
-       		// check the name of container
        	    if(!name || name.length < 1){
        	      layer.tips('服务名称不能为空','#serviceName',{tips: [1, '#3595CC']});
        	      $('#serviceName').focus();
@@ -199,11 +197,11 @@ $(document).ready(function(){
        	      $('#serviceName').focus();
        	      return;
        	    }
-       	    if(name.length > 64 || name.length < 3){
-       	      layer.tips('服务名称为3~64个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});
-       	      $('#serviceName').focus();
-       	      return;
-       	    }
+    	    if(name.length > 24 || name.length < 1){
+    		      layer.tips('服务名称为1~24个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+    		      $('#serviceName').focus();
+    		      return;
+    	    }
        	    
        	    //自定义启动命令的判断
        	    var startCommand_input = $("#startCommand_input").val();
