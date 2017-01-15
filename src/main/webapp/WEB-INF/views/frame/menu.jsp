@@ -169,7 +169,7 @@
 		<c:if test="${cas_enable}">
             <c:if test="${cur_user.user_autority == 2}">
             <li id="menu_usermanage" class="user-admin">
-                <a href="<%=path %>/user/manage/list/${cur_user.id }">
+                <a href="<%=path %>/secret/Credential">
                     <img class="nav-icon" src="<%=path %>/images/user.svg" alt=""/>
                     <span class="nav-title">密钥</span>
                 </a>
