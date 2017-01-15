@@ -687,7 +687,14 @@ public class CiController {
         catch (Exception e) {
             e.printStackTrace();
         }
-        model.addAttribute("username", cuurentUser.getUserName());
+        
+        String imageNameFirst = "";
+        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+            imageNameFirst = cuurentUser.getNamespace() + "_" + cuurentUser.getUserName();
+        } else {
+            imageNameFirst = cuurentUser.getUserName();
+        }
+        model.addAttribute("username", imageNameFirst);
         model.addAttribute("userAutority", cuurentUser.getUser_autority());
         model.addAttribute("menu_flag", "ci");
         return "ci/ci_add.jsp";
@@ -1813,6 +1820,36 @@ public class CiController {
             Image image = imageDao.findByNameAndVersion(imgNameFirst+"/"+imgNameLast, imgNameVersion);
             if (!StringUtils.isEmpty(image)) {
                 result.put("status", "400");
+            }
+        }
+        return JSON.toJSONString(result);
+    }
+    
+    /**
+     * Description: <br>
+     * 代码构建详细页面中镜像版本判断重复
+     * @param id 当前构建Id
+     * @param imgNameFirst 
+     * @param imgNameLast
+     * @param imgNameVersion
+     * @return String
+     */
+    @RequestMapping(value = {"ci/validCiDetailVersion.do"} , method = RequestMethod.POST)
+    @ResponseBody
+    public String validCiDetailVersion(long id,String imgNameFirst,String imgNameLast, String imgNameVersion){
+        Map<String,Object> result = new HashMap<String, Object>();
+        result.put("status", 200);
+        if (!StringUtils.isEmpty(imgNameFirst) && !StringUtils.isEmpty(imgNameLast) && !StringUtils.isEmpty(imgNameVersion)) {
+            Ci ci = ciDao.findOne(id);
+            if(null!= ci) {
+                if (!ci.getImgNameFirst().equals(imgNameFirst) || 
+                            !ci.getImgNameLast().equals(imgNameLast) ||
+                            !ci.getImgNameVersion().equals(imgNameVersion)) {
+                    Image image = imageDao.findByNameAndVersion(imgNameFirst+"/"+imgNameLast, imgNameVersion);
+                    if (!StringUtils.isEmpty(image)) {
+                        result.put("status", 400);
+                    }
+                }
             }
         }
         return JSON.toJSONString(result);
