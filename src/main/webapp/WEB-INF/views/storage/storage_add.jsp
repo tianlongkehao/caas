@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-<title>快速构建</title>
+<title>服务</title>
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/storage.css" />
