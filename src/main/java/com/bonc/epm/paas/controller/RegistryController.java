@@ -683,8 +683,8 @@ public class RegistryController {
 	    long userId = CurrentUserUtils.getInstance().getUser().getId();
 	    List<Image> imageList = imageDao.findAllUserFavor();
 	    Page<Image> imagePage =  imageDao.findByImageType(userId, null);
-	    if (imageList.size() < 10) {
-	       while (imageList.size() < 10) {
+	    if (imageList.size() < 8) {
+	       while (imageList.size() < 8) {
 	           imageList.add(imagePage.getContent().get(10-imageList.size()));
 	       }
 	    }

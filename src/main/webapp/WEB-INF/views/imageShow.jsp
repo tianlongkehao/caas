@@ -115,7 +115,7 @@
                             <div class="imageInfo">最新镜像</div>
                             <ul id="newimageList" style="height:460px">
                                 <c:forEach items="${newImage }" var = "image" varStatus="status">
-                                    <c:if test="${status.index < 10 }">
+                                    <c:if test="${status.index < 8 }">
                                     
 	                                    <li class="images-panel">
 	                                        <div class="select-img">
