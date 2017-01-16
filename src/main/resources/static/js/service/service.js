@@ -49,7 +49,7 @@
  
 function loadContainers(obj,serviceId) {
 	var serviceID = serviceId;
-	var aaa = 'tr[serviceidcon = "' + serviceID + '"]'
+	var aaa = 'tr[serviceidcon = "' + serviceID + '"]';
 	if ($(obj).children().eq(1).children("b").attr("rotate") == "show") {
 		$(aaa).remove();
 		$(obj).children().eq(1).children("b")
@@ -73,11 +73,11 @@ function loadContainers(obj,serviceId) {
 									+ serviceID
 									+ '">'
 									+ '<td style="width: 5%">&nbsp;</td>'
-									+ '<td style="width: 15%;">'
+									+ '<td style="width: 15%;">';
 							if (data.service.status == 6){
-								containersHtml += '<a style="margin-left: 19px;" href="javascript:debug('+serviceID+','+data.containerList[i].containerStatus+')">'
+								containersHtml += '<a style="margin-left: 19px;" href="javascript:debug('+serviceID+','+data.containerList[i].containerStatus+')">';
 							} else {
-								containersHtml += '<a style="margin-left: 19px;">'
+								containersHtml += '<a style="margin-left: 19px;">';
 							}
 							containersHtml += containerName
 									+ '</a>'
@@ -136,10 +136,10 @@ function createContainer() {
 									layer.alert("服务启动失败");
 								}
 							}
-						})
+						});
 					}
-				})
-			})
+				});
+			});
 }
 
 function stopContainer() {
@@ -166,10 +166,10 @@ function stopContainer() {
 								}
 
 							}
-						})
+						});
 					}
-				})
-			})
+				});
+			});
 }
 
 function delContainer() {
@@ -195,11 +195,11 @@ function delContainer() {
 									layer.alert("服务删除失败，请检查服务器连接");
 								}
 							}
-						})
+						});
 					}
-				})
+				});
 
-			})
+			});
 }
 
 function upGradeContainer() {
@@ -241,13 +241,13 @@ function upGradeContainer() {
 								}
 
 							}
-						})
+						});
 					},
 					cancel : function(index) { // 或者使用btn2
 						// 按钮【按钮二】的回调
 					}
 				});
-			})
+			});
 }
 
 function changeContainerConf() {
@@ -295,7 +295,7 @@ function changeContainerConf() {
 						if (parseFloat(rams) > parseFloat(leftmemory)) {
 							layer.tips('内存剩余不足', "#confRamSlider_input", {
 								tips : [ 1, "#3595CC" ]
-							})
+							});
 							$("#confRamSlider_input").focus();
 							return;
 						}
@@ -312,13 +312,13 @@ function changeContainerConf() {
 								}
 
 							}
-						})
+						});
 					},
 					cancel : function(index) { // 或者使用btn2
 						// 按钮【按钮二】的回调
 					}
 				});
-			})
+			});
 }
 
 function versionUpgrade() {
@@ -362,14 +362,14 @@ function versionUpgrade() {
 								}
 
 							}
-						})
+						});
 					},
 					cancel : function(index) { // 或者使用btn2
 						// 按钮【按钮二】的回调
 					}
 				});
 
-			})
+			});
 }
 //导出excel
 	function exportExcel(){
@@ -410,7 +410,7 @@ function oneStartContainer(id, status) {
 				layer.alert("服务启动失败");
 			}
 		}
-	})
+	});
 	
 }
 
@@ -439,10 +439,10 @@ function oneStopContainer(id, status) {
 					}
 
 				}
-			})
+			});
 
 		}
-	})
+	});
 }
 
 // 响应每一行上的删除按钮
@@ -467,9 +467,9 @@ function oneDeleteContainer(id) {
 					}
 
 				}
-			})
+			});
 		}
-	})
+	});
 }
 
 // 响应每一行上的弹性伸缩
@@ -523,7 +523,7 @@ function oneUpGradeContainer(id,containerName,nums,cpu,ram) {
 						}
 	
 					}
-				})
+				});
 	 	 },
 		 cancel: function(index){ //或者使用btn2
 		 	//按钮【按钮二】的回调
@@ -549,6 +549,7 @@ function oneVersionUpgrade(id,serviceName,imgName,obj) {
 		        $("#"+id+"_upgradeCluster").parent().parent().parent().parent().parent().parent().find(".cStatusColumn").html(cStatusHtml);
 		        $("#"+id+"_moreFun").removeClass('a-live').addClass('no-drop');
 		        $("#"+id+"_moreFun").find('.fa-gears').addClass('self_a');
+		        $("#"+id+"_dropdown").remove();
 				 layer.close(index);
 				 var imgVersion1 = $('#imgVersionName').val();
 				 $.ajax({
@@ -566,7 +567,7 @@ function oneVersionUpgrade(id,serviceName,imgName,obj) {
 	 						}
 	 						window.location.reload();
 	 					}
-				 })
+				 });
 			 },
 			 cancel: function(index){ //或者使用btn2
 				 //按钮【按钮二】的回调
@@ -608,7 +609,7 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 				 }
 			 
 				 if ((parseFloat(rams)*parseFloat(instanceNum)) > (parseFloat(leftmemory) + parseFloat(ram)*parseFloat(instanceNum) )) {
-					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
+					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]});
 					 $("#confRamSlider_input").focus();
 					 return;
 				 }
@@ -620,7 +621,7 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 				 }
 				 
 				 if ((parseFloat(rams)*parseFloat(instanceNum)) > parseFloat(leftmemory)) {
-					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]})
+					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]});
 					 $("#confRamSlider_input").focus();
 					 return;
 				 }
@@ -640,7 +641,7 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 						}
 	
 					}
-				})
+				});
 		 },
 		 cancel: function(index){ //或者使用btn2
 			 //按钮【按钮二】的回调
@@ -740,7 +741,7 @@ function checkbox() {
 						$('#deleteButtonFa').addClass('self_a');
 					}
 				}
-			})
+			});
 }
 
 // Refresh create time
@@ -784,13 +785,13 @@ function findImageVersion(imageName) {
 				if (data['data'].length > 0) {
 					for ( var i in data.data) {
 						var image = data.data[i];
-						html += "<option type='text' value='" + image.version+ "'>" + image.version + "</option>"
+						html += "<option type='text' value='" + image.version+ "'>" + image.version + "</option>";
 					}
 				}
 			}
 			$("#imgVersionName").html(html);
 		}
-	})
+	});
 }
 
 
@@ -897,7 +898,7 @@ function loadServices() {
 							var html = '<span class="url">';
 							if (row.serviceAddr!=null && row.serviceAddr!='') {
 								html += '<a href="'+row.serviceAddr +'/'+ row.proxyPath +'"'+
-									'target="_blank" title="'+row.serviceAddr +'/'+ row.proxyPath+'">'
+									'target="_blank" title="'+row.serviceAddr +'/'+ row.proxyPath+'">';
 								if(row.serviceChName!=null && row.serviceChName!=''){
 									html += row.serviceChName;
 								} else {
@@ -905,7 +906,7 @@ function loadServices() {
 								}
 								html += '</a>';
 							}
-							html += '</span>'
+							html += '</span>';
 							return html;
 						}
 					},
@@ -950,57 +951,66 @@ function loadServices() {
 										'href="javascript:startdebug('+ row.id +','+ row.status +')" title="调试"'+
 										'style="margin-left: 5px">'+
 											'<i class="fa fa-bug"></i>'
-										+'</a> '
+										+'</a> ';
 							} else {
 								html += '<a id="'+row.id+'_change" class="a-live change " '+
 								'href="javascript:void(0)" title="调试"'+
 								'style="margin-left: 5px">'+
 									'<i class="fa fa-bug  self_a"></i>'
-								+'</a> '
+								+'</a> ';
 							}
 							
-							html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="'+row.id+'" serviceName="'+row.serviceName+'" imgName="'+row.imgName+'">'+
-							'<li class="dropdown">'+
-								'<a id="'+row.id+'_moreFun" class="dropdown-toggle a-live" data-toggle="dropdown" style="margin-left: 5px" title="更多配置">'+
-								'<i class="fa fa-gears"></i></a>'+
-								'<ul class="dropdown-menu">'+
-									'<li>';
-							if ( row.status == 6){
-								html += '<a id="'+row.id+'_scaleCluster" class="no-drop scaleCluster_a "'+ 
-								'href="javascript:void(0)" title="弹性伸缩"'+
-								'> <i class="fa fa-arrows self_a"></i>弹性伸缩</a>';
+							if ( row.status == 7){
+								html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="'+row.id+'" serviceName="'+row.serviceName+'" imgName="'+row.imgName+'">'+
+								'<li class="dropdown">'+
+									'<a id="'+row.id+'_moreFun" class="dropdown-toggle no-drop" data-toggle="dropdown" style="margin-left: 5px" title="更多配置">'+
+									'<i class="fa fa-gears self_a"></i></a>';
 							} else {
-								html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
-								'href="javascript:oneUpGradeContainer('+row.id+',&apos;'+row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram + ')" title="弹性伸缩"'+
-								'> <i class="fa fa-arrows"></i>弹性伸缩</a>';
+								html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="'+row.id+'" serviceName="'+row.serviceName+'" imgName="'+row.imgName+'">'+
+								'<li class="dropdown">'+
+									'<a id="'+row.id+'_moreFun" class="dropdown-toggle a-live" data-toggle="dropdown" style="margin-left: 5px" title="更多配置">'+
+									'<i class="fa fa-gears"></i></a>';
 							}
-							html +='</li>'+
-									'<li>';
-							if (row.status == 3) {
-								html += '<a id="'+row.id+'_upgradeCluster" class="a-live upgradeCluster_a " '+
-										'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+ row.serviceName +'&apos;,&apos;'+row.imgName+'&apos;)" title="版本升级"'+
-										'><i class="fa fa-arrow-up"></i>版本升级</a> ';
-							} else {
-								html += ' <a id="'+row.id+'_upgradeCluster" class="no-drop upgradeCluster_a " '+
-                                    	'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+row.serviceName+'&apos;,&apos;'+row.imgName+'&apos;,this)" title="版本升级"'+
-                                        '><i class="fa fa-arrow-up self_a"></i>版本升级</a>';
+							if ( row.status != 7){
+								html +=	'<ul id="'+row.id+'_dropdown" class="dropdown-menu">'+
+										'<li>';
+								if ( row.status == 6){
+									html += '<a id="'+row.id+'_scaleCluster" class="no-drop scaleCluster_a "'+ 
+									'href="javascript:void(0)" title="弹性伸缩"'+
+									'> <i class="fa fa-arrows self_a"></i>弹性伸缩</a>';
+								} else {
+									html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
+									'href="javascript:oneUpGradeContainer('+row.id+',&apos;'+row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram + ')" title="弹性伸缩"'+
+									'> <i class="fa fa-arrows"></i>弹性伸缩</a>';
+								}
+								html +='</li>'+
+										'<li>';
+								if (row.status == 3) {
+									html += '<a id="'+row.id+'_upgradeCluster" class="a-live upgradeCluster_a " '+
+											'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+ row.serviceName +'&apos;,&apos;'+row.imgName+'&apos;)" title="版本升级"'+
+											'><i class="fa fa-arrow-up"></i>版本升级</a> ';
+								} else {
+									html += ' <a id="'+row.id+'_upgradeCluster" class="no-drop upgradeCluster_a " '+
+	                                    	'href="javascript:oneVersionUpgrade('+row.id+',&apos;'+row.serviceName+'&apos;,&apos;'+row.imgName+'&apos;,this)" title="版本升级"'+
+	                                        '><i class="fa fa-arrow-up self_a"></i>版本升级</a>';
+								}
+								html +=	'</li>'+
+										'<li>';
+									
+								if ( row.status == 6){
+									html += '<a id="'+row.id+'_changeConfiguration" class="no-drop changeConfiguration_a " '+
+									'href="javascript:void(0);" title="更改配置"'+
+									'><i class="fa fa-cog self_a"></i>更改配置</a> ';	
+								} else {
+									html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
+									'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
+									'><i class="fa fa-cog"></i>更改配置</a> '	;
+								}
+								html +=	'</li>'+
+									'</ul>'+
+								'</li>'+
+								'</ul>';
 							}
-							html +=	'</li>'+
-									'<li>';
-							if ( row.status == 6){
-								html += '<a id="'+row.id+'_changeConfiguration" class="no-drop changeConfiguration_a " '+
-								'href="javascript:void(0);" title="更改配置"'+
-								'><i class="fa fa-cog self_a"></i>更改配置</a> '	
-							} else {
-								html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
-								'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
-								'><i class="fa fa-cog"></i>更改配置</a> '	
-							}
-							html +=	'</li>'+
-								'</ul>'+
-							'</li>'+
-							'</ul>';
-							
 							html += '<a id="'+row.id+'_del" class="a-live deleteButton_a "'+
 									'href="javascript:oneDeleteContainer('+row.id+')"'+
 									'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
@@ -1016,7 +1026,7 @@ function loadServices() {
 	          $(row).data(row.id);
 		}
         
-	})
+	});
 }
 function startdebug(id, status){
 	if (3 == status) {
@@ -1033,7 +1043,7 @@ function startdebug(id, status){
 				layer.alert("服务启动失败");
 			}
 		}
-	})
+	});
 }
 function debug(id, status){
 	if (1 == status) {
@@ -1076,20 +1086,13 @@ function oneStopContainerUpdate(id,serviceName){
 				success : function(data) {
 					data = eval("(" + data + ")");
 					if (data.status == "200") {
-						layer.msg("服务升级已取消",{
-							icon: 6,
-							time:0,
-							btn: ['确定'],
-							yes:function(index, layero){
-								layer.close(index);
-								window.location.reload(true);
-							}
-						});
+						layer.msg("服务升级取消",{icon: 6});
+						setTimeout('window.location.reload()',1500);
 					} else {
-						layer.alert("服务取消失败");
+						layer.alert("服务升级取消失败");
 					}
 				}
-			})
+			});
 		}
-	})
+	});
 }

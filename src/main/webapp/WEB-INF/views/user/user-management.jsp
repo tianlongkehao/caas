@@ -143,7 +143,6 @@
 	                        }else{
 	                            layer.alert("用户信息删除失败，请检查服务器连接");
 	                        }
-	                        location.reload(true);
 	                    }
 	                })
 

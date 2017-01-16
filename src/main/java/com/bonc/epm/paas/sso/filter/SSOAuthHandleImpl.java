@@ -142,11 +142,14 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                     tenantAdmin = attributes.get("tenantAdmin").toString();
                 }
                 User user = new User();
-                UserResource userResource = new UserResource();
+                UserResource userResource = null;
                 try {
                     // 同步统一平台租户用户到本地
                     user = fillUserInfo(assertion, namespace);
-                    //user.setImage_count(200);; // 目前先使用默认值
+                    userResource = userResourceDao.findByUserId(user.getId());
+                    if (null == userResource) {
+                        userResource = new UserResource();
+                    }
                     // 统一平台的userId
                     if (null != attributes.get("userId")) {
                          //是租户而且不是管理员
@@ -159,7 +162,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                         }
                     }
                     userDao.save(user);
-                    userResource.setImage_count(200);
+                    userResource.setImage_count(2000);
                     userResource.setUserId(user.getId());
                     userResourceDao.save(userResource);
                     CurrentUserUtils.getInstance().setUser(user);

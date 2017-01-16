@@ -101,7 +101,7 @@
 		<div style="margin: 15px 20px">
 			<div class="infoCred">
 				<span class="labelCred">IP：</span> <input type="text"
-					class="form-control conCred" id="sheraIp" name="sheraIp" placeholder="http://192.168.0.76"
+					class="form-control conCred" id="sheraIp" name="sheraIp" placeholder="192.168.0.76"
 					value="">
 			</div>
 		    <div class="infoCred">

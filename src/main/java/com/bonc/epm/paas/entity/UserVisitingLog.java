@@ -150,7 +150,7 @@ public class UserVisitingLog {
         userVisitingLog.setBrowser(headerData);
         userVisitingLog.setVisitingTime(new Date());
         userVisitingLog.setLegal(isLegal);
-        userVisitingLog.setArea(IpAreaUtil.findArea(hostIp));
+        //userVisitingLog.setArea(IpAreaUtil.findArea(hostIp));
         return userVisitingLog;
     }
     
