@@ -58,9 +58,9 @@
 			</li>
 		</ul>
 	</div>
-	<nav class="navbar-default navbar-static-side" role="navigation" id="nav-side">
+	<div ><nav class="navbar-default navbar-static-side" role="navigation" id="nav-side">
 		<div class="sidebar-collapse">
-			<ul class="nav" id="side-menu" style="margin-top:160px">
+			<ul class="nav" id="side-menu">
 				<%-- <li class="nav-bcm">
 					<span><a href="<%=path %>/home"><h2>BCM</h2></a></span>
 				</li>
@@ -178,10 +178,18 @@
 				
 			</ul>
 		</div>
-	</nav>
-	<div class="helpDoc"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn" value="新手入门"></a></div>
+	</nav></div>
+	<div class="helpDoc">
+		<ul class="nav" >
+			<li class="nav-footer">
+				<span><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn" value="新手入门"></a></span>
+			</li>
+		</ul>
+	</div>
+	<div class="helpDoc hide"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn" value="新手入门"></a></div>
 	<div class="sideBoxBtn" onclick="navHide()"><i class="fa fa-step-backward"></i><div class="btn-background"></div></div>
 </div><!-- navAll -->
+
 <div class="navbar-downSide-show hide">
 	<nav class="navbar-downSide" ></nav>
 	<div class="sideBoxBtn sideBoxBtnShow" onclick="navShow()"><i class="fa fa-step-forward"></i><div class="btn-background"></div></div>

@@ -131,9 +131,11 @@ function findImages(){
 	var userId = $("#userId").val();
 	$('.dataTables-example').dataTable({
 		 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
+		 	"autoWidth": false,
 	        "processing": true,
 	        "serverSide": true,
 	        "ordering":false,
+	        "stateSave":true,
 //	        "bStateSave":true,
 	        "ajax": ctx+"/registry/pager/"+index,
 	        "columns": [
@@ -206,22 +208,22 @@ function findImages(){
 										 		'<i class="fa fa-wrench"></i>'+
 										 	'</a>'+
 										 	'<a class="no-drop a-oper downloadImage" imageversion="'+row.version+'" imagename="'+row.name+'" imgID="'+row.id+'" resourcename= "'+row.resourceName+'" title="导出">'+ 
-										 		'<i class="fa fa-share-square-o" style="margin-left:10px;"></i>'+
+										 		'<i class="fa fa-share-square-o"></i>'+
 										 	'</a>' 
 							 		if (row.currUserFavor == 0) {
 	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
-	                    						'<i class="fa fa-star-o star-style" style="color: #e8504f;margin-left:10px;"></i>'+
+	                    						'<i class="fa fa-star-o star-style" style="color: #e8504f;"></i>'+
 	                    					'</a>'
 	                    			} else {
 	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
-                									'<i class="fa fa-star star-style" style="color: #e8504f;margin-left:10px;"></i>'+
+                									'<i class="fa fa-star star-style" style="color: #e8504f;"></i>'+
                 								'</a>'
 	                    			}
 	                    			
 	                    			if (userId == row.createBy) {
 	                    				html +=	'<a class="no-drop a-oper" href="javascript:void(0)" onclick="deleteImage(this)"'+
 													'title="删除" imageversion="'+row.version+'" imagename="'+row.name+'" imageid="'+row.id+'">' +
-													'<i class="fa fa-trash" style="margin-left:10px;"></i>'+
+													'<i class="fa fa-trash"></i>'+
 												'</a>'
 	                    			}
 	                    		}

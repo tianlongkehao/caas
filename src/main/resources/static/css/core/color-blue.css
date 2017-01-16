@@ -14,7 +14,9 @@
     /* background: #e8504f; */
     background: #fff;
 }
-
+.nav-header{
+	background-color: #2e384a;
+}
 .navbar .navbar-header h1 {
     color:#3C7BCA;
 }
@@ -104,6 +106,9 @@ nav.navbar-default{
 .nav-bcm{
 	background-color: #1e426f;
 }
+.nav-footer{
+	background-color: #1e426f; 
+}
 .img-circle{
 	border: 4px solid #245086;
 }
@@ -163,6 +168,15 @@ nav.navbar-default{
 #login-header{
 	background: #1e426f;
 }
-
+/* 收起左侧导航栏的按钮 */
+.sideBoxBtn i.fa{
+    color:#4e8fde;
+}
+.sideBoxBtn .btn-background{
+    border-right: 15px solid #bed7f3;
+}
+nav.navbar-downSide{
+    background-color: #1e426f;
+}
 
 
