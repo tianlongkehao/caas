@@ -47,7 +47,7 @@ public class PoiUtils {
      */
     public HSSFWorkbook exportTest(List<Service> list,String[] header,List<String[]> context){
             HSSFWorkbook wb = new HSSFWorkbook();                       // 声明一个工作薄
-            HSSFSheet sheet = wb.createSheet("服务信息导出表");           //声明一个单子并命名
+            HSSFSheet sheet = wb.createSheet("信息导出表");           //声明一个单子并命名
             sheet.setDefaultColumnWidth(15);                        //给单子名称一个长度
             HSSFCellStyle style = wb.createCellStyle();            // 生成一个样式  
             //设置这些样式  

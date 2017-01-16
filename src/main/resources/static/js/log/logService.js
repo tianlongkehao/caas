@@ -56,7 +56,7 @@ $(document).ready(function () {
                     		}else if(data==90){
                     			return "删除";
                     		}else if(data==100){
-                    			return "正在升级中";
+                    			return "取消升级";
                     		}
                     	}	
                     },

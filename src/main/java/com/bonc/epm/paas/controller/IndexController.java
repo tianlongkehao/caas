@@ -168,25 +168,26 @@ public class IndexController {
     	
     	try {
             User user = userDao.findOne(id);
-			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
-            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-            Namespace ns = client.getNamespace(user.getNamespace());
-            if (null != ns) {
-                getUserResourceInfo(model, user, client);
+            if(!("1".equals(user.getUser_autority()))){
+				// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
+	            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+	            Namespace ns = client.getNamespace(user.getNamespace());
+	            if (null != ns) {
+	                getUserResourceInfo(model, user, client);
+	            }
+	            else {
+	                LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
+	            }
+	            
+	            double usedstorage = 0;
+	            List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+	            for (Storage storage : list) {
+	                usedstorage = usedstorage + (double) storage.getStorageSize();
+	            }
+	            Shera shera = sheraDao.findByUserId(id);
+	            model.addAttribute("userShera", shera);
+	            model.addAttribute("usedstorage",  usedstorage / 1024);
             }
-            else {
-                LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
-            }
-            
-            double usedstorage = 0;
-            List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
-            for (Storage storage : list) {
-                usedstorage = usedstorage + (double) storage.getStorageSize();
-            }
-            Shera shera = sheraDao.findByUserId(id);
-            model.addAttribute("userShera", shera);
-            model.addAttribute("usedstorage",  usedstorage / 1024);
-            
             
             
 //---------最近操作---------------            

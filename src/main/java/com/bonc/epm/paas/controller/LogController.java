@@ -1,9 +1,12 @@
 package com.bonc.epm.paas.controller;
 
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +15,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +24,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
@@ -34,9 +39,11 @@ import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.Image;
+import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.ServiceOperationLog;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.PoiUtils;
 import com.bonc.epm.paas.util.ResultPager;
 
 
@@ -149,7 +156,64 @@ public class LogController{
     }
     
     
-    
+/*   
+    /**
+     * 
+     * Description: 日志列表导出excel
+     * @param request
+     * @param response
+     * @throws IOException 
+     * @see
+     */
+    @RequestMapping("log/exportExcel/{logType}")
+    @ResponseBody
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response,@PathVariable String logType) throws IOException{
+    	//得到当前用户ID
+        long createBy = CurrentUserUtils.getInstance().getUser().getId();
+        PoiUtils poiUtil = new PoiUtils();
+        List<String[]> context =new ArrayList<String[]>();
+        HSSFWorkbook wb = null;
+        //创建excel名字
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        String newdownfile = df.format(new Date()) +"--"+createBy+".xls";
+        if (StringUtils.isNotBlank(logType)) {
+	        if("logCommon".equals(logType)){//导出通用日志列表
+	            String[] header ={"操作人","操作模块","操作内容","操作类型","操作时间"};
+	            //获取通用日志列表
+	            List<CommonOperationLog> logs = (List<CommonOperationLog>) commonOperationLogDao.findAll();
+	            for(int i=0;i<logs.size();i++){
+	            	CommonOperationLog log = logs.get(i);
+	                String[] logCommon ={log.getCreateUsername(),CommConstant.CatalogType_MAP.get(log.getCatalogType()),
+	                					log.getCommonName(),CommConstant.OPERATION_TYPE_MAP.get(log.getOperationType()),
+	                					log.getCreateDate().toString()};
+	                context.add(logCommon);
+	            }
+	            wb = poiUtil.exportTest(null,header,context);
+	        }
+	        
+	        if("logService".equals(logType)){//导出服务日志列表
+	            String[] header ={"操作人","操作内容","操作类型","操作时间"};
+	            //获取服务日志列表
+	            List<ServiceOperationLog> logs = (List<ServiceOperationLog>) serviceOperationLogDao.findAll();
+	            for(int i=0;i<logs.size();i++){
+	            	ServiceOperationLog log = logs.get(i);
+	                String[] logService ={log.getCreateUserName(),log.getServiceName(),
+	                					ServiceConstant.OPERATION_TYPE_MAP.get(log.getOperationType()),log.getCreateDate().toString()};
+	                context.add(logService);
+	            }
+	            wb = poiUtil.exportTest(null,header,context);
+	        }
+        }
+                
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment;filename="+newdownfile);
+        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+        wb.write(out);
+        out.flush();
+        out.close();
+}
+       
+   
     
     
     @RequestMapping(value = "/logCommon", method = RequestMethod.GET)

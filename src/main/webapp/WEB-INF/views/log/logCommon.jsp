@@ -31,6 +31,9 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>通用操作日志
 									</h5>
 									<div class="ibox-tools">
+										<a id="ExportBtn" title="导出EXCEL">
+					                        <i id = "ExportButtonFa" class="fa fa-share-square-o"></i>
+					                    </a>
 										<a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i>
 										</a>
@@ -84,6 +87,11 @@
 	        "aaSorting": [[ 3, "desc" ]]
 		}); */
 	</script>
-
+	<script type="text/javascript">
+		/*导出文件列表*/
+         document.getElementById('ExportBtn').onclick = function(){
+        location.href = ctx + "/log/exportExcel/logCommon";
+        } 
+    </script>
 </body>
 </html>
