@@ -720,3 +720,7 @@ td.autocut{
 	font-size:19px;
 	color:#3c7bca;
 }
+.cursor-no-drop i.fa-arrow-circle-right{
+    cursor:no-drop;
+    color:#333;
+}

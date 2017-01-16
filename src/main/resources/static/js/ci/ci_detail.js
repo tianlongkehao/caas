@@ -560,6 +560,7 @@ function registerDeployEvent(){
 	    }
 	});
 }
+
 function replayciEvent(ciId){
 	$.ajax({
 		url:ctx+"/ci/constructCi.do?id="+ciId,
@@ -574,7 +575,9 @@ function replayciEvent(ciId){
 			setTimeout('window.location.reload()',2000);
 		}
 	});
+	setTimeout('window.location.reload()',2000);
 }
+
 function registerConstructCiEvent(){
 	$("#buildBtn").unbind("click").click(function(){
 		if($(this).attr("constructionStatus")=="2"){
