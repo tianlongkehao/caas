@@ -150,7 +150,6 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                     if (null == userResource) {
                         userResource = new UserResource();
                     }
-                    //user.setImage_count(200);; // 目前先使用默认值
                     // 统一平台的userId
                     if (null != attributes.get("userId")) {
                          //是租户而且不是管理员
