@@ -72,7 +72,6 @@ $(document).ready(function(){
 			 yes: function(index, layero){ //或者使用btn1
 				 layer.close(index);
 				 $("#update_tenement").attr("action", ctx+'/user/update.do');
-				 debugger
 				 $("#update_tenement").submit();
 		 	 },
 			 cancel: function(index){ //或者使用btn2
