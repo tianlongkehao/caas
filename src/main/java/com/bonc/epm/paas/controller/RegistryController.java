@@ -427,8 +427,11 @@ public class RegistryController {
      * 删除本地数据库镜像，以及远程仓库镜像信息
      * 1.正常删除流程：删除本地镜像信息和远程镜像清单信息manifests
      * 2.非正常处理流程：
-     *      其一：无法获取本地数据库镜像信息的清单信息manifests 不删除
-     *      其二：获取镜像信息的清单信息manifests后，调用删除清单API 返回errorList信息  不删除
+     *      其一：无法获取本地数据库镜像信息的清单信息manifests  
+     *      其二：获取镜像信息的清单信息manifests后，调用删除清单API 返回errorList信息 
+     *   处理方式：
+     *          无法删除仓库镜像，将本地数据库镜像信息isdelete字段设置为删除状态
+     *          
      *  TODO
      *   对于无法通过正常渠道删除的镜像信息，
      *   需要通过镜像同步、GC回收、手动清除垃圾镜像等手段处理
@@ -439,7 +442,7 @@ public class RegistryController {
     @RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteImage(@RequestParam long imageId){
-        boolean isDeleteFlag = false;
+        boolean isDeleteFlag = true;
         Image image = imageDao.findOne(imageId);
         if (null != image) {
             try {
@@ -448,9 +451,9 @@ public class RegistryController {
                 if (null != mult.get("Etag") && mult.get("Etag").size() > 0) {
                     for (Object oneRow : mult.get("Etag")) {
                         ErrorList errors = client.deleteManifestofImage(image.getName(), String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
-                        if (null == errors) {
+/*                        if (null == errors) {
                             isDeleteFlag = true;
-                        }
+                        }*/
                         LOG.info("delete image, docker regsitry API return msg: -"+JSON.toJSONString(errors));
                     }
                 }
@@ -462,7 +465,6 @@ public class RegistryController {
                     String extraInfo = "删除镜像" + image.getName() + "的信息" + JSON.toJSONString(image);
                     CommonOperationLog comlog=CommonOprationLogUtils.getOprationLog(image.getName(), extraInfo, CommConstant.IMAGE, CommConstant.OPERATION_TYPE_DELETE);
                     commonOperationLogDao.save(comlog);
-                    
                     return "ok";
                 }
             }
@@ -500,7 +502,6 @@ public class RegistryController {
         try {
             for (long id : ids) {
                 deleteImage(id);
-                // TODO 返回批量删除中失败的镜像信息
             }
             maps.put("status", "200");
         } 
@@ -546,7 +547,6 @@ public class RegistryController {
      * 管理员添加，同步本地数据库和私有仓库的镜像信息
      * @see
      */
-	@SuppressWarnings("unchecked")
 	@RequestMapping("registry/refresh.do")
     @ResponseBody
 	public String refresh() {
