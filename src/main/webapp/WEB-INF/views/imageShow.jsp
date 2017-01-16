@@ -25,7 +25,7 @@
     </div>
 </header>  
 
-    <div class="page-container" style="margin-left:10px;margin-top:30px">
+    <div class="page-imageContainer" style="margin-left:10px;margin-top:30px">
         <article>
             <div class="page-main">
                 <div class="contentMain">
