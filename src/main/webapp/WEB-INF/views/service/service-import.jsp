@@ -36,13 +36,13 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="javascript:window.location.reload(true);"
-											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 										<a href="javascript:void(0)" id="importServiceBtn" title="新建"><i
 											class="fa fa-plus"></i></a>  
-											<a  id="delImportSers"
+									    <a  id="delImportSers"
 											onclick="delImportSers()" title="删除"><i
 											class="fa fa-trash"></i></a>
+										<a href="javascript:window.location.reload(true);"
+											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 									</div>
 								</div>
 								<div class="ibox-content">

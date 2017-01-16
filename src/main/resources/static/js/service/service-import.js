@@ -291,7 +291,7 @@
 	        }
 	    }
 	    if(""==ids){
-	    	layer.alert("请至少选中一个外部服务！");
+	    	layer.alert("请至少选中一个外部服务！",{icon:0});
 	    	return;
 	    }
 	 layer.open({
