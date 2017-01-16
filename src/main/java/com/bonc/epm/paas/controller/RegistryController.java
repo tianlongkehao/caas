@@ -714,5 +714,32 @@ public class RegistryController {
 		maps.put("status", "200");
 		return JSON.toJSONString(maps);
 	}
+	
+	/**
+	 * Description: <br>
+	 * 镜像广场中的镜像展示
+	 * @param model
+	 * @return 
+	 * @see
+	 */
+	@RequestMapping("registry/imageShow")
+	public String findUserFavorImage(Model model){
+	    long userId = CurrentUserUtils.getInstance().getUser().getId();
+	    List<Image> imageList = imageDao.findAllUserFavor();
+	    Page<Image> imagePage =  imageDao.findByImageType(userId, null);
+	    if (imageList.size() < 10) {
+	       while (imageList.size() < 10) {
+	           imageList.add(imagePage.getContent().get(10-imageList.size()));
+	       }
+	    }
+	    
+	    for (Image image : imageList) {
+	        image.setCurrUserFavorCount(image.getFavorUsers().size());
+	    }
+	    addCurrUserFavor(imageList);
+	    model.addAttribute("imageList", imageList);
+	    model.addAttribute("newImage",imagePage.getContent());
+	    return "imageShow.jsp";
+	}
 
 }

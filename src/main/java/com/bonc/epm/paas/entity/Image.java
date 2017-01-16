@@ -36,7 +36,9 @@ public class Image {
 	private Date createDate;          //createDate
 	private Integer isDelete;
 	@Transient
-	private Integer currUserFavor;
+	private Integer currUserFavor;    //当前用户是否收藏当前镜像
+	@Transient
+    private Integer currUserFavorCount;    //收藏当前镜像的用户个数
 	@Transient 
 	List<PortConfig> portConfigs;
 	
@@ -111,7 +113,13 @@ public class Image {
 	public void setCurrUserFavor(Integer currUserFavor) {
 		this.currUserFavor = currUserFavor;
 	}
-	public List<User> getFavorUsers() {
+	public Integer getCurrUserFavorCount() {
+        return currUserFavorCount;
+    }
+    public void setCurrUserFavorCount(Integer currUserFavorCount) {
+        this.currUserFavorCount = currUserFavorCount;
+    }
+    public List<User> getFavorUsers() {
 		return favorUsers;
 	}
 	public void setFavorUsers(List<User> favorUsers) {

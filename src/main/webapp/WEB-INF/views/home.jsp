@@ -19,7 +19,7 @@
             <div class="navbar-tab">
                 <ul>
                 	<li class="active"><a class="navTab first" href="<%=path %>/home">首页</a></li>
-                	<li><a class="navTab" href="<%=path %>/imageShow">镜像广场</a></li>
+                	<li><a class="navTab" href="<%=path %>/registry/imageShow">镜像广场</a></li>
                 	<li><a class="navTab" href="<%=path %>/bcm/${cur_user.id }">控制台</a></li>
                 </ul>
             </div>
