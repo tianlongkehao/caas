@@ -152,7 +152,7 @@
                                         </div>
                                         <div class="list-item-description" style="padding-top: 100px">
                                             <a href="<%=path %>/user/list"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
-                                            <span class="next2 pull-right btn btn-primary pull_confirm" data-attr="tenxcloud/mysql" id="user_create_next2">下一步</span>
+                                            <span class="next2 pull-right btn btn-primary pull_confirm btn-color" data-attr="tenxcloud/mysql" id="user_create_next2">下一步</span>
                                         </div>
                                     </div>
                                
@@ -256,7 +256,7 @@
                                 	</div>
                                     <div class="" style="padding-top: 160px">
                                         <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>
-                                        <span id="user_update_finishBtn" class="pull-right btn btn-primary pull_confirm">修改</span>
+                                        <span id="user_update_finishBtn" class="pull-right btn btn-primary pull_confirm btn-color">修改</span>
                                     </div>
                                     <%--<div class="" style="padding-top: 100px">
                                         <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>

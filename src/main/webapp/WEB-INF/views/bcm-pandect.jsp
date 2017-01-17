@@ -25,9 +25,39 @@
             <div class="contentMain">
                 
                 <div class="account_table" userID="${user.id }">
-
+					<div class="serviceDetailInfo">
+	                    <ul>
+		                    <li class="serviceNumInfo blue">
+		                      <a href="<%=path %>/service" data-permalink onclick="_permalink(this)">
+		                    	<span class="server-info-icon">
+                                     <img src="<%=path %>/images/service.svg" class="pandect-icon1" alt=""/>
+                                     <span class="pandect-icon1Text">服务个数</span>
+                                 </span><br>
+                                 <span class="pull-right numberInfos"><span class="numberInfo">${usedServiceNum}</span>&nbsp;个</span>  
+                               </a>  			
+		                    </li>
+		                    <li class="serviceNumInfo yellow">
+		                      <a href="<%=path %>/service" data-permalink onclick="permalink(this)">
+		                    	<span class="server-info-icon">
+                                     <img src="<%=path %>/images/example.png" class="pandect-icon1" alt=""/>
+                                     <span class="pandect-icon1Text">实例个数</span>
+                                 </span><br>
+                                 <span class="pull-right numberInfos"><span class="numberInfo">${usedPodNum}</span>&nbsp;个</span>  
+                               </a>  			
+		                    </li>
+		                    <li class="serviceNumInfo litblue">
+		                      <a href="<%=path %>/registry/1" data-permalink onclick="_permalink(this)">
+		                    	<span class="server-info-icon">
+                                     <img src="<%=path %>/images/applist3.svg" class="pandect-icon1" alt=""/>
+                                     <span class="pandect-icon1Text">镜像个数</span>
+                                 </span><br>
+                                 <span class="pull-right numberInfos"><span class="numberInfo">${imageCount}</span>&nbsp;个</span>  
+                               </a>  			
+		                    </li>
+	                    </ul>
+                    </div>
                     <div id="resourceinfo_wrap" class="tab_wrap">
-                        <section class="container-count">
+                        <section class="container-count hide">
                         <div class="padding">
                             <div class="row-title">服务详情</div>
                             <ul class="server-list">
@@ -99,7 +129,7 @@
                             <div class="info-list">
                                 <table class="table" id="table-listing">
                                     <thead>
-                                    <tr>
+                                    <tr class="table-title">
                                         <th colspan="6" class="detail-rows">资源使用情况</th>
                                     </tr>
                                     </thead>
