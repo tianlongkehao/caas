@@ -179,22 +179,17 @@
 									<td>内存：${service.ram }MB</td>
 								</tr>
 								<tr>
-									<c:if test="${service.startCommand == '' }">
 									<td>启动命令：
-										<span id="oldStartComm" class="oldBaseCon">默认</span>
-						                 <span id="editStartComm" hidden="true" class="editBaseCon">
-						                 	<input id="startCommand_input" name="startCommand" type="text" value="${service.startCommand }" />
-						                </span>
-									</td>
-									</c:if>
-									<c:if test="${service.startCommand != '' }">
-									<td>启动命令：
-										<span id="oldStartComm" class="oldBaseCon">${service.startCommand }</span>
+										<c:if test="${service.startCommand == '' }">
+											<span id="oldStartComm" class="oldBaseCon">默认</span>
+										</c:if>
+										<c:if test="${service.startCommand != '' }">
+											<span id="oldStartComm" class="oldBaseCon">${service.startCommand }</span>
+										</c:if>
 						                <span id="editStartComm" hidden="true" class="editBaseCon">
 						                     <input id="startCommand_input" name="startCommand" type="text" value="${service.startCommand }" />
 						                </span>
 									</td>
-									</c:if>
 									<td >服务访问路径：
 										<span class="oldBaseCon_Run oldBaseCon">${service.servicePath }</span>
 										<span id="editSerPath" hidden="true" class="editBaseCon editBaseCon_Run">
@@ -342,13 +337,14 @@
 									<td>检查状态：
                                        <span class="oldBaseCon_Run oldBaseCon">${service.checkPath }</span>
 					                   <span id="editCheckPath" hidden="true" class="editBaseCon_Run editBaseCon">
-					                   <input id="newCheckPath" name="checkPath" type="text" value="${service.checkPath }" />
+					                   <input id="checkSerStatus_input" name="checkPath" type="text" value="${service.checkPath }" />
 					                </span>
                                     </td>
                                     <td>检测延迟：
                                        <span class="oldBaseCon_Run oldBaseCon">${service.initialDelay }</span>
 					                   <span id="editInitDelay" hidden="true" class="editBaseCon_Run editBaseCon">
-					                   <input id="newInitDelay" name="initialDelay" type="text" value="${service.initialDelay }" />
+												<input type="number" value="" id="initialDelay"
+														onkeyup="this.value=this.value.replace(/\D/g,'')" min="0" name="initialDelay">
 					                   </span>s
 					                </td>
 		          				</tr>
@@ -356,46 +352,52 @@
 					                <td>检测超时：
 	                                    <span class="oldBaseCon_Run oldBaseCon">${service.timeoutDetction }</span>
 					                    <span id="editTiOut" hidden="true" class="editBaseCon_Run editBaseCon">
-					                       <input id="newTiOut" name="timeoutDetction" type="text" value="${service.timeoutDetction }" />
+												<input type="number" value="" id="timeoutDetction"
+													onkeyup="this.value=this.value.replace(/\D/g,'')" min="0" name="timeoutDetction">
 					                    </span>s
 				                    </td>
                                     <td>检测频率：
 	                                    <span class="oldBaseCon_Run oldBaseCon">${service.periodDetction }</span>
-						                   <span id="editPeriod" hidden="true" class="editBaseCon_Run editBaseCon">
-						                   <input id="newPeriod" name="periodDetction" type="text" value="${service.periodDetction }" />
-						                </span>s
-					                </td>
+						                   <span id="editPeriod" hidden="true"
+												class="editBaseCon_Run editBaseCon">
+												<input type="number" value="" id="periodDetction"
+													onkeyup="this.value=this.value.replace(/\D/g,'')" min="1" name="periodDetction">
+											</span>s
+											</td>
              					</tr>
 								</c:if>
 								<c:if test="${service.checkPath!='' }">
-								<tr>
-									<td>检查状态：
-										<span class="oldBaseCon_Run oldBaseCon">${service.checkPath }</span>
-					                    <span id="editCheckPath" hidden="true" class="editBaseCon_Run editBaseCon">
-					                    <input id="newCheckPath" name="checkPath" type="text" value="${service.checkPath }" />
-					                    </span>
-									</td>
-									<td>检测延迟：
-										<span class="oldBaseCon_Run oldBaseCon">${service.initialDelay }</span>
-					                    <span id="editInitDelay" hidden="true" class="editBaseCon_Run editBaseCon">
-					                    <input id="newInitDelay" name="initialDelay" type="text" value="${service.initialDelay }" />
-					                    </span>s
-					                </td>
-								</tr>
-								<tr>
-									<td>检测超时：
-										<span class="oldBaseCon_Run oldBaseCon">${service.timeoutDetction }</span>
-					                   	<span id="editTiOut" hidden="true" class="editBaseCon_Run editBaseCon">
-					                   	<input id="newTiOut" name="timeoutDetction" type="text" value="${service.timeoutDetction }" />
-					                    </span>s
-				                    </td>
-									<td>检测频率：
-										<span class="oldBaseCon_Run oldBaseCon">${service.periodDetction }</span>
-						                   <span id="editPeriod" hidden="true" class="editBaseCon_Run editBaseCon">
-						                   <input id="newPeriod" name="periodDetction" type="text" value="${service.periodDetction }" />
-						                </span>s
-					                </td>
-								</tr>
+									<tr>
+										<td>检查状态：
+											<span class="oldBaseCon_Run oldBaseCon">${service.checkPath }</span>
+						                    <span id="editCheckPath" hidden="true" class="editBaseCon_Run editBaseCon">
+						                    <input id="checkSerStatus_input" name="checkPath" type="text" value="${service.checkPath }" />
+						                    </span>
+										</td>
+										<td>检测延迟：
+											<span class="oldBaseCon_Run oldBaseCon">${service.initialDelay }</span>
+						                    <span id="editInitDelay" hidden="true" class="editBaseCon_Run editBaseCon">
+												<input type="number" value="" id="initialDelay" placeholder="${service.initialDelay }"
+														onkeyup=" this.value=this.value.replace(/\D/g,'')" min="0" name="initialDelay">
+											</span>s
+						                </td>
+									</tr>
+									<tr>
+										<td>检测超时：
+											<span class="oldBaseCon_Run oldBaseCon">${service.timeoutDetction }</span>
+						                   	<span id="editTiOut" hidden="true" class="editBaseCon_Run editBaseCon">
+												<input type="number" value="" id="timeoutDetction" placeholder="${service.timeoutDetction }"
+													onkeyup="this.value=this.value.replace(/\D/g,'')" min="0" name="timeoutDetction">
+											</span>s
+					                    </td>
+										<td>检测频率：
+											<span class="oldBaseCon_Run oldBaseCon">${service.periodDetction }</span>
+							                   <span id="editPeriod" hidden="true" class="editBaseCon_Run editBaseCon">
+												<input type="number" value="" id="periodDetction" placeholder="${service.periodDetction }"
+													onkeyup="this.value=this.value.replace(/\D/g,'')" min="1" name="periodDetction">
+							                </span>s
+						                </td>
+									</tr>
 								</c:if>
 							</tbody>
 						</table>
