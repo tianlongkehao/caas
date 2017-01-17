@@ -376,8 +376,8 @@ function searchService(){
               		name: serviceName,
               		value: 10,
               		label: serviceName,
-              		symbol : 'image://../images/node.png',
-          			symbolSize : [18, 28],
+              		symbol : 'image://../images/service.png',
+          			symbolSize : [26, 18],
           			draggable : true,
           	        itemStyle : {
                      normal: {
@@ -414,8 +414,8 @@ function searchService(){
                  objNode3.category = 1;
               	 objNode3.name = podTopoList[i].nodeName;
               	 objNode3.value = 10;
-              	objNode3.symbol = 'image://../images/service.png';
-             	objNode3.symbolSize = [26, 18];
+              	objNode3.symbol = 'image://../images/node.png';
+             	objNode3.symbolSize = [18, 28];
              	objNode3.draggable = true;
              	objNode3.itemStyle = {
                         normal: {

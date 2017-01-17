@@ -29,7 +29,9 @@ $(document).ready(function () {
                     		if (data == null || data == "") {
                     			return "";
                     		}
-                    		return data;
+                    		var html = '<td><a onmouseover="serviceExtraInfo(this)" onmouseout="ExtraInfo(this)" serviceExtraInfo="'+row.serviceExtraInfo+'">'+data+'</a></td>';
+							return html;
+                    		
                     	}	
                     },
                     { 
@@ -70,3 +72,28 @@ $(document).ready(function () {
                    ]
 	});
 })
+
+function serviceExtraInfo(obj){
+	var serviceExtraInfo = $(obj).attr("serviceExtraInfo");
+	/*layer.open({
+		  type: 1,
+		  title: false,
+		  closeBtn: 0, //不显示关闭按钮
+		  shade: [0],
+		  area: ['340px', '215px'],
+		  offset: $(obj), //右下角弹出
+		  time: 4000, //2秒后自动关闭
+		  anim: 2,
+		  content: serviceExtraInfo, //iframe的url，no代表不显示滚动条
+		  end: function(){ //此处用于演示
+		    
+		  }
+		});*/
+	layer.tips(serviceExtraInfo, $(obj) ,{
+		  tips: [2, 'rgba(237,114,114,0.75)'],area: ['640px', '135px'],time:60000}
+	);
+}
+function ExtraInfo(obj){
+	
+	layer.closeAll('tips'); 
+}
