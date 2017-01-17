@@ -173,7 +173,7 @@
                             </div>
                             <c:if test="${editImage==1 }">
 	                            <div class="btn-block " style="height: 50px; " id="deleteImage">
-	                                <a href="javascript:void(0);"  class="btn btn-dangered btn-long-deploy" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
+	                                <a href="javascript:void(0)" onclick="deleteImage(this)"  class="btn btn-dangered btn-long-deploy" imageid = "${image.id }" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
 	                            </div>
                             </c:if>
                         </div>

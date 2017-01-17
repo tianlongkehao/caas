@@ -254,7 +254,7 @@ function deleteImage(obj){
 	   		     			layer.msg( "删除成功！", {
 		   						icon: 1
 		   					},function(){
-		   						window.location.reload(true);
+		   						window.location.href="" + ctx + "/registry/1";
 		   					});
    		     			} else {
    		   		     		layer.msg( "删除失败", {

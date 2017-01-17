@@ -28,7 +28,7 @@ public interface ImageDao extends CrudRepository<Image, Long>{
 	@Query("select i from Image i where i.id=?1 and i.isDelete != 1")
 	public Image findById(long id);
 	
-	@Query("select i from Image i where (i.imageType = 1 or i.createBy = ?1) and i.isDelete != 1 order by i.createDate ")
+	@Query("select i from Image i where (i.imageType = 1 or i.createBy = ?1) and i.isDelete != 1 order by i.createDate DESC ")
 	public Page<Image> findByImageType(long userId,Pageable request);
 	
 	@Query("select i from Image i where  i.createBy = ?1 and i.isDelete != 1 order by  i.name,i.createDate")

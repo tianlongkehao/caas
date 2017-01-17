@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -692,6 +694,11 @@ public class RegistryController {
 	    for (Image image : imageList) {
 	        image.setCurrUserFavorCount(image.getFavorUsers().size());
 	    }
+	    Collections.sort(imageList,new Comparator<Image>(){
+            public int compare(Image arg0, Image arg1) {
+                return arg1.getCurrUserFavorCount().compareTo(arg0.getCurrUserFavorCount());
+            }
+        });
 	    addCurrUserFavor(imageList);
 	    model.addAttribute("imageList", imageList);
 	    model.addAttribute("newImage",imagePage.getContent());
