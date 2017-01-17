@@ -3,6 +3,11 @@
 <html>
 <head lang="en">
     <title>日志</title>
+    <style type="text/css">
+        .layui-layer-content{
+		   	  word-break: break-all;
+		 }
+    </style>
     <%@include file="../frame/header.jsp"%>
    	<script type="text/javascript" src="<%=path%>/js/log/logService.js"></script>
 </head>
@@ -44,10 +49,11 @@
 										<thead>
 											<tr>
 												<th>&nbsp;</th>
-												<th style="width: 13%;">操作人</th>
-												<th style="width: 45%;">操作内容</th>
-	                                            <th style="width: 20%;">操作类型</th>
-	                                            <th style="width: 15%;">操作时间</th>
+												<th>操作人</th>
+												<th>服务名</th>
+	                                            <th>操作类型</th>
+	                                            <th>操作时间</th>
+	                                            
 											</tr>
 										</thead>
 										<tbody id="logServiceList">
