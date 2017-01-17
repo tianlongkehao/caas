@@ -541,12 +541,12 @@
 					               <c:forEach items="${envVariableList }" var="envVariable">
 					                   <tr>
 					                       <td style="width:40%;text-indent: 15px;">
-					                       <span class="oldEnv">${envVariable.envKey }</span>
+					                       <span id="key${envVariable.envId}" class="oldEnv">${envVariable.envKey }</span>
 					                       <span class="editEnv" hidden="true"><input class="envKey" type="text" name="envKey" value="${envVariable.envKey }"  /></span>
-					                       <input class="envId" hidden="true" value="${envVariable.envId} " />
+					                       <input class="envId" hidden="true" value="${envVariable.envId}" />
 					                       </td>
 					                       <td>
-					                       <span class="oldEnv">${envVariable.envValue }</span>
+					                       <span id="value${envVariable.envId}" class="oldEnv">${envVariable.envValue }</span>
 					                        <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value="${envVariable.envValue }"  /></span>
 					                       </td>
 					                       <c:if test="${service.status==1 or service.status==4}">

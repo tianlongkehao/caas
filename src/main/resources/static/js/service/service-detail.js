@@ -576,28 +576,29 @@ function saveEnvEdit(obj){
 		$('#newValue').focus();
 		return;
     }
-
-   
-	$(obj).parent().find("i.editEnvBtn").show();
-	$(obj).next().hide();
-	$(obj).parent().parent().find("span.oldEnv").show();
-	$(obj).parent().parent().find("span.editEnv").hide();
-	$(obj).hide(); 
-
-   
-   
-   $.ajax({
-		url:ctx+"/service/detail/editEnv.do?envKey="+envKey+"&envValue="+envValue+"&envId="+id+"&serviceId="+serId+"&serviceName="+serName,
-		success:function(data){
-		var data = eval("(" + data + ")");
-		if("200"==data.status){
-			layer.msg( "修改成功，重启服务后生效", {
-				icon: 1
-            });
+    
+	$.ajax({
+		url : ctx + "/service/detail/editEnv.do?envKey=" + envKey + "&envValue=" + envValue + "&envId=" + id + "&serviceId=" + serId + "&serviceName=" + serName,
+		success : function(data) {
+			var data = eval("(" + data + ")");
+			if ("200" == data.status) {
+				layer.msg("修改成功，重启服务后生效", {
+					icon : 1,
+					time : 2000
+				},function(){
+					$(obj).parent().find("i.editEnvBtn").show();
+					$(obj).next().hide();
+					$(obj).parent().parent().find("span.oldEnv").show();
+					var id =$(obj).parent().parent().find("input.envId").val();
+					document.getElementById("key"+id).innerHTML=envKey;
+					document.getElementById("value"+id).innerHTML=envValue;
+					$(obj).parent().parent().find("span.editEnv").hide();
+					$(obj).hide(); 
+				});
+			}
 		}
-	}
-	});
-
+	}); 
+	
 }
 //环境变量取消按钮
 function canclEnvEdit(obj){
@@ -621,30 +622,31 @@ function editPortAddrBtn(obj){
 }
 //端口保存按钮
 function savePortEdit(obj){
-		 var thiz= $(obj);
-	   var port=$(obj).parent().parent().find("input.containerPort").val();
-	   var id =$(obj).parent().parent().find("input.portId").val();
-	   var serId =$("#serId").val();
-	   var serName =$("#serviceName").val();
-	   if(1== checkRepPortCfg(obj,id,port)){return;}
-	   $(obj).parent().find("i.editPortAddrBtn").show();
-	   $(obj).next().hide();
-	   $(obj).parent().parent().find("span.oldPortConfig").show();
-	   $(obj).parent().parent().find("span.editPortConfig").hide();
-	   $(obj).hide();
-	   
-	   $.ajax({
-			url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id+"&serviceId="+serId,
-			success:function(data){
-				var data = eval("(" + data + ")");
-				if("200"==data.status){
-					layer.msg( "修改成功，重启服务后生效", {
-						icon: 1
-	                });
-				}
+	 var thiz= $(obj);
+   var port=$(obj).parent().parent().find("input.containerPort").val();
+   var id =$(obj).parent().parent().find("input.portId").val();
+   var serId =$("#serId").val();
+   var serName =$("#serviceName").val();
+   if(1== checkRepPortCfg(obj,id,port)){return;}
+   $(obj).parent().find("i.editPortAddrBtn").show();
+   $(obj).next().hide();
+   $(obj).parent().parent().find("span.oldPortConfig").show();
+   $(obj).parent().parent().find("span.editPortConfig").hide();
+   $(obj).hide();
+   
+	$.ajax({
+		url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id+"&serviceId="+serId,
+		success:function(data){
+			var data = eval("(" + data + ")");
+			if("200"==data.status){
+				layer.msg( "修改成功，重启服务后生效", {
+					icon: 1,
+					time: 2000
+                });
 			}
-	   		});
-};
+		}
+	});
+}
 //端口新建按钮
 function addPortCfgClick(obj){
 	layer.open({
@@ -741,8 +743,6 @@ function addEnvClick(obj){
 			var envValue= $("#newValue").val();
 			var serId =$("#serId").val();
 			if(1==checkRepEnv($("#newKey"),null,envKey)){
-				// layer.tips('环境变量Key不能重复',"#newKey",{tips: [1, '#3595CC']});
-				// ("#newKey").focus();
 				return;
 			};
 			//环境变量Key只能是字母数字下划线；
@@ -771,11 +771,11 @@ function addEnvClick(obj){
 				success : function(data) {
 					envVariable = eval("(" + data + ")");
 					var	newEnv='<tr><td style="width:40%;text-indent: 15px;">'
-		            +'<span class="oldEnv">'+envVariable.envKey+'</span>'
+		            +'<span id="key'+envVariable.envId+'" class="oldEnv">'+envVariable.envKey+'</span>'
 		            +'<span class="editEnv" hidden="true"><input class="envKey" type="text" name="envKey" value="'+envVariable.envKey+'"  /></span>'
 		            +'<input class="envId" hidden="true" value="'+envVariable.envId+'" /></td>'
 		            +'<td>'
-		            +'<span class="oldEnv">'+envVariable.envValue+'</span>'
+		            +'<span id="value'+envVariable.envId+'" class="oldEnv">'+envVariable.envValue+'</span>'
 		            +' <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value="'+envVariable.envValue+'"  /></span></td>'
 		               +'<td style="width:10%;" class="editBtn">'
 		                   +'<i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i>' 
@@ -787,8 +787,11 @@ function addEnvClick(obj){
 					$("#editEnvBody").append(newEnv);
 					$(".editEnv").hide();
 					$(".editEnvBtn").show();
-					
 					layer.close(index);
+					layer.msg("修改成功，重启服务后生效", {
+						icon : 1,
+						time : 2000
+					});
 				}
 				});
 		}
@@ -825,6 +828,12 @@ function addEnvClick(obj){
 	//环境变量验重
 	function checkRepEnv(obj,id,envKey){
 		var flag =0;
+		if(envKey=="APM" || envKey == "namespace" || envKey == "service"){
+			layer.tips('环境变量Key不能重复',$(obj),{tips: [1, '#3595CC']});
+			$(obj).focus();
+			flag=1;
+			return flag;
+		}
 		$('#editEnvBody tr').each(function(index,domEle){
 			var ek= $(domEle).find("input.envKey").val();
 			var ei=$(domEle).find("input.envId").val();
