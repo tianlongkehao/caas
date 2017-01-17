@@ -149,7 +149,7 @@
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$('.dataTables-example').dataTable({
-	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
 		

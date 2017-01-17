@@ -18,11 +18,16 @@
 }
 .row-title, .container-count .row-title {
     line-height: 40px;
-    background: #FAFAFA;
+    background: rgba(238,102,102,0.75);
+    color:#fff;
     border-bottom: 1px solid #EFF2F7;
     padding-left: 30px;
     font-size: 16px;
 }
+/* .table-title{
+	background: rgba(238,102,102,0.75);
+    color:#fff;
+} */
 .container-count .server-list {
     padding: 0 30px;
     margin-top: 20px;
@@ -122,7 +127,8 @@
     font-size: 16px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
-    background: #FAFAFA;
+    background: rgba(47,186,102,0.75);
+    color:#fff; 
 }
 i.pandect-icon{
 	color: #8b8b8b;
@@ -138,10 +144,49 @@ img.pandect-icon{
 /* log */
 
 .logInfo{
-	margin-left:10px;
-	width: 59%;
+	margin-top:30px;
+	width: 100%;
 }
 .right{
 	float: right;
 	color: #b7b7b7;
+}
+.serviceNumInfo{
+	width:20%;
+	height:178px;
+	border-radius: 25px;
+	float:left;
+	margin-right: 20px;
+	box-shadow: 1px 1px 15px rgba(0,0,0,0.45);
+}
+.pandect-icon1{
+	width: 88px;
+}
+.pandect-icon1Text{
+	color:#efefef;
+	font-size: 16px;
+}
+.numberInfos{
+	margin-right:56px;
+	color:#fff;
+}
+.numberInfo{
+	font-size: 56px;
+}
+.blue {
+    background: #5F93D3;
+}
+.yellow {
+    background: #FCB322;
+}
+.litblue{
+	background: #50b3d3;
+}
+.purple {
+    background: #8075C4;
+}
+.fa-puzzle-piece{
+	font-size: 86px;
+    color: #fff;
+    padding: 10px;
 }
