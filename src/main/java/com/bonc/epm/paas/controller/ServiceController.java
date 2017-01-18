@@ -1060,6 +1060,47 @@ public class ServiceController {
     }
 	
 	/**
+	 * 当前用户修改服务时服务名称不重复
+	 * 
+	 * @param serviceName
+	 * @return String
+	 */
+	@RequestMapping("service/matchServiceName.do")
+	@ResponseBody
+	public String matchServicePath(String serviceName) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		long createBy = CurrentUserUtils.getInstance().getUser().getId();
+		int refsize = refServiceDao.findByCreateByAndSerName(createBy, serviceName).size();
+		int serSize = serviceDao.findByNameOf(createBy, serviceName).size();
+		if (0 < refsize | 0 < serSize) {
+			map.put("status", "500");
+		} else {
+			map.put("status", "200");
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 当前用户创建服务时nginx路径不重复
+	 * 
+	 * @param proxyPath
+	 * @return String
+	 */
+	@RequestMapping("service/matchProxyPath.do")
+	@ResponseBody
+	public String matchProxyPath(String proxyPath) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		long createBy = CurrentUserUtils.getInstance().getUser().getId();
+		int proxySize = serviceDao.findByCreateByAndProxyPath(createBy, proxyPath).size();
+		if (0 < proxySize) {
+			map.put("status", "400");
+		} else {
+			map.put("status", "200");
+		}
+		return JSON.toJSONString(map);
+	}
+	
+	/**
 	 * 当前用户创建服务时匹配服务路径和nginx路径 和服务名称不重复
 	 * @param proxyPath  
 	 * @param serviceName  

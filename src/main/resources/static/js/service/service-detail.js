@@ -71,9 +71,6 @@ $(document).ready(function(){
         $(".containerEvent").removeClass("hide");
     });
     
-    //setInterval("getServiceLogs()",10000);
-    //getServiceLogs();
-    
     $('#datePicker').click(function(event) {
         /* Act on the event */
         laydate({
@@ -82,11 +79,8 @@ $(document).ready(function(){
           issure: true, // 是否显示确认
           istime: true,
           format: 'YYYY-MM-DDThh:mm:ss',
-//          min: $('#creationTime').val(),
-//          max: laydate.now(+0),
           zIndex: 99999999, //css z-index
           choose: function(dates){ //选择好日期的回调
-//            logPage = 1;
             getServiceLogs();
           }
         });
@@ -164,91 +158,165 @@ $(document).ready(function(){
 
        
  
-       //可编辑的基本信息
-       			//编辑
-       $(".editBaseCon").hide();
-       $("#restSerBtn").hide();
-       $("#canclSerBtn").hide();
-       $("#saveSerBtn").hide();
-       $("#editSerBtn").click(function(){
-    	   if($("#serStatus").val()==1 | $("#serStatus").val()==4){
-    		   $(".editBaseCon").show();
-        	 $(".oldBaseCon").hide();
-    	   }else{
-    		   $(".editBaseCon_Run").show();
-          $(".oldBaseCon_Run").hide();
-    	   			}
-      	 $("#saveSerBtn").show();
-      	 $("#restSerBtn").show();
-      	$("#canclSerBtn").show();
-       });
-       			//保存
-       $("#saveSerBtn").click(function(){
-           //提交之前验证
-       		//判断服务名称
-       		var name = $('#serviceName').val();
-       	    if(!name || name.length < 1){
-       	      layer.tips('服务名称不能为空','#serviceName',{tips: [1, '#3595CC']});
-       	      $('#serviceName').focus();
-       	      return;
-       	    }
-       	    if(name.search(/^[a-z][a-z0-9-]*$/) === -1){
-       	      layer.tips('服务名称只能由小写字母、数字及横线组成，且首字母不能为数字及横线。','#serviceName',{tips: [1, '#3595CC'],time: 3000});
-       	      $('#serviceName').focus();
-       	      return;
-       	    }
-    	    if(name.length > 24 || name.length < 1){
-    		      layer.tips('服务名称为1~24个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});
-    		      $('#serviceName').focus();
-    		      return;
-    	    }
-       	    
-       	  //检查服务状态的判断
-       	    var checkPath = $("#checkSerStatus_input").val();
-       	    var initialDelay = $("#initialDelay").val();
-       	    var timeoutDetction = $("#timeoutDetction").val();
-       	    var periodDetction = $("#periodDetction").val();
-       	    
-   		    if(!checkPath || checkPath.length < 1){
-   			} else if (checkPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
-   			      layer.tips('测试路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
-   			      $('#checkSerStatus_input').focus();
-   			      return;
-   		    } else if (checkPath.length > 64 || checkPath.length < 3){
-   			      layer.tips('测试路径为3~64个字符','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
-   			      $('#checkSerStatus_input').focus();
-   			      return;
-   		    }
-   		    
-       	    //服务路径的判断
-       	    var servicePath = $("#webPath").val();
-       	    if(!servicePath || servicePath.length < 1){
-       		      layer.tips('服务路径不能为空','#webPath',{tips: [1, '#3595CC']});
-       		      $('#webPath').focus();
-       		      return;
-       		}
-       	    if(servicePath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
-       	      layer.tips('服务路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#webPath',{tips: [1, '#3595CC'],time: 3000});
-       	      $('#webPath').focus();
-       	      return;
-       	    }
-       	    //nginx代理路径的判断
-       	    var proxyPath = $("#nginxPath").val();
-       	    if(!proxyPath || proxyPath.length < 1){
-       		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
-       		      $('#nginxPath').focus();
-       		      return;
-       		}
-       	    if(proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
-       		      layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
-       		      $('#nginxPath').focus();
-       		      return;
-       	    }
-           //})
-    	   commBaseSerForm();
-    	   $(".editBaseCon").hide();
-    	   $(".oldBaseCon").show();
-       });
+
+	//可编辑的基本信息
+	//编辑
+	$(".editBaseCon").hide();
+	$("#restSerBtn").hide();
+	$("#canclSerBtn").hide();
+	$("#saveSerBtn").hide();
+	$("#editSerBtn").click(function() {
+		if ($("#serStatus").val() == 1 | $("#serStatus").val() == 4) {
+			$(".editBaseCon").show();
+			$(".oldBaseCon").hide();
+		} else {
+			$(".editBaseCon_Run").show();
+			$(".oldBaseCon_Run").hide();
+		}
+		$("#saveSerBtn").show();
+		$("#restSerBtn").show();
+		$("#canclSerBtn").show();
+	});
+	//保存
+	$("#saveSerBtn").click(function() {
+		//提交之前验证
+		//判断服务名称
+		var name = $('#serviceName').val();
+		if (!name || name.length < 1) {
+			layer.tips('服务名称不能为空', '#serviceName', {
+				tips : [1, '#3595CC']
+			});
+			$('#serviceName').focus();
+			return;
+		}
+		if (name.search(/^[a-z][a-z0-9-]*$/) === -1) {
+			layer.tips('服务名称只能由小写字母、数字及横线组成，且首字母不能为数字及横线。', '#serviceName', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#serviceName').focus();
+			return;
+		}
+		if (name.length > 24 || name.length < 1) {
+			layer.tips('服务名称为1~24个字符', '#serviceName', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#serviceName').focus();
+			return;
+		}
+
+		//检查服务状态的判断
+		var checkPath = $("#checkSerStatus_input").val();
+		var initialDelay = $("#initialDelay").val();
+		var timeoutDetction = $("#timeoutDetction").val();
+		var periodDetction = $("#periodDetction").val();
+
+		if (!checkPath || checkPath.length < 1) {
+		} else if (checkPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1) {
+			layer.tips('测试路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。', '#checkSerStatus_input', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#checkSerStatus_input').focus();
+			return;
+		} else if (checkPath.length > 64 || checkPath.length < 3) {
+			layer.tips('测试路径为3~64个字符', '#checkSerStatus_input', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#checkSerStatus_input').focus();
+			return;
+		}
+
+		//服务路径的判断
+		var servicePath = $("#webPath").val();
+		if (!servicePath || servicePath.length < 1) {
+			layer.tips('服务路径不能为空', '#webPath', {
+				tips : [1, '#3595CC']
+			});
+			$('#webPath').focus();
+			return;
+		}
+		if (servicePath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1) {
+			layer.tips('服务路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。', '#webPath', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#webPath').focus();
+			return;
+		}
+		//nginx代理路径的判断
+		var proxyPath = $("#nginxPath").val();
+		if (!proxyPath || proxyPath.length < 1) {
+			layer.tips('nginx代理路径不能为空', '#nginxPath', {
+				tips : [1, '#3595CC']
+			});
+			$('#nginxPath').focus();
+			return;
+		}
+		if (proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1) {
+			layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。', '#nginxPath', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#nginxPath').focus();
+			return;
+		}
+		var commitFlag = true;
+		//判断是否已存在该服务名
+		if ($("#oldSerName").text() != name) {
+			$.ajax({
+				url : ctx + "/service/matchServiceName.do",
+				type : "POST",
+				async:false,
+				data : {
+					"serviceName" : name,
+				},
+				success : function(data) {
+					data = eval("(" + data + ")");
+					if (data.status != "200") {
+						layer.tips('服务名称重复，请重新输入！', '#serviceName', {
+							tips : [1, '#3595CC'],
+							time : 3000
+						});
+						$('#oldSerName').focus();
+						commitFlag=false;
+						return;
+					}
+				}
+			});
+		}
+		//判断是否已存在该代理路径
+		if ($("#oldProxyPath").text() != proxyPath) {
+			$.ajax({
+				url : ctx + "/service/matchProxyPath.do",
+				type : "POST",
+				async:false,
+				data : {
+					"proxyPath" : proxyPath,
+				},
+				success : function(data) {
+					data = eval("(" + data + ")");
+					if (data.status != "200") {
+						layer.tips('nginx路径名称重复，请重新输入！', '#nginxPath', {
+							tips : [1, '#3595CC'],
+							time : 3000
+						});
+						$('#nginxPath').focus();
+						commitFlag=false;
+						return;
+					}
+				}
+			});
+		}
+		if(commitFlag){
+			commBaseSerForm();
+			$(".editBaseCon").hide();
+			$(".oldBaseCon").show();
+		}
+	}); 
+
        			//取消
        $("#canclSerBtn").click(function(){
     	   $(".editBaseCon").hide();
@@ -328,7 +396,6 @@ var sinceTime;
 var interval;
 function clearLog() {
 	sinceTime = new Date().Format("yyyy-MM-ddThh:mm:ss.000000000Z");
-	//$("#containerlogList").html("");
 	getCurrentPodlogs();
 	clearInterval(interval);
 	interval = setInterval("getCurrentPodlogs()",5000);
@@ -339,7 +406,6 @@ function dropdownLog(obj){
 		$(".dropdown-pod").removeClass("bgcolor");
 	});
 	$(obj).addClass("bgcolor");
-	//$("#containerlogList").html("");
 	clearInterval(interval);
 	if(obj != null){
 		$('#podName').val($(obj).attr("podName"));
@@ -347,7 +413,6 @@ function dropdownLog(obj){
 		$('#getPodlogFile').attr("href",a);
 	}
 	var podName = $('#podName').val();
-//	var date = $('#date_log1').val();
 	$.ajax({
 		url:ctx+"/service/detail/getPodlogs.do?&podName="+podName,
 		success:function(data){
@@ -355,18 +420,8 @@ function dropdownLog(obj){
 			if(data.status == '200' && data.logStr != ""){
 				
 				var containerlog = data.logStr;
-/*				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
-					+ containerlog
-				+ '</pre>'
-				
-				$("#containerlogList").html("");
-				$("#containerlogList").html(html);*/
 				$(".printLogSpan").html(containerlog);
-				
 			}else{
-/*				var html = '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;"> 该实例没有产生日志。</pre>'
-				$("#containerlogList").html("");
-				$("#containerlogList").html(html);*/
 				$(".printLogSpan").html("该实例没有产生日志。");
 			}
 			   $(".printLogSpan").parent().parent().scrollTop($(".printLogSpan").parent().parent()[0].scrollHeight);
@@ -384,41 +439,12 @@ function getCurrentPodlogs(){
 			if(data.status == '200' && data.logStr != ""){
 				
 				var containerlog = data.logStr;
-/*				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
-					+ containerlog
-				+ '</pre>'
-				
-				$("#containerlogList").html("");
-				$("#containerlogList").html(html);*/
 				$(".printLogSpan").html(containerlog);
 				
 			}else{
-/*				var html = '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;"> 该实例没有产生日志。</pre>'
-				$("#containerlogList").html("");
-				$("#containerlogList").html(html);*/
 				$(".printLogSpan").html("该实例没有产生日志。");
 			}
 			   $(".printLogSpan").parent().parent().scrollTop($(".printLogSpan").parent().parent()[0].scrollHeight);
-			
-			
-			
-			
-/*			data = $.parseJSON(data);
-			if(data.status == '200' && data.logStr != ""){
-				
-				var containerlog = data.logStr;
-				var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
-					+ containerlog
-				+ '</pre>'
-				
-				$("#containerlogList").html("");
-				$("#containerlogList").html(html);
-			}else{
-				var html = '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">实时刷新中，当前无新日志产生。</pre>'
-				$("#containerlogList").html("");
-				$("#containerlogList").html(html);
-			}*/
-			
 			}
 	});
 }

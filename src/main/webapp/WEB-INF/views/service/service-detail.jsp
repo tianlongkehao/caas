@@ -281,7 +281,7 @@
 									</td>
 									</c:if>
 									<td>nginx代理路径：
-										<span class="oldBaseCon_Run oldBaseCon">${service.proxyPath }</span>
+										<span id="oldProxyPath" class="oldBaseCon_Run oldBaseCon">${service.proxyPath }</span>
 					                   <span id="editProxyPath" hidden="true" class="editBaseCon_Run editBaseCon">
 						                   <input id="nginxPath" name="proxyPath" type="text" value="${service.proxyPath }" />
 						                </span>
