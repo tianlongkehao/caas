@@ -75,4 +75,9 @@ public class PortConfig {
     public void setServiceId(long serviceId) {
     	this.serviceId = serviceId;
     }
+    @Override
+	public String toString() {
+		return "portId:" + portId + ",containerPort:" + containerPort + ",protocol:" + protocol + ",mapPort:" + mapPort
+				+ ",serviceId:" + serviceId;
+	}
 }
