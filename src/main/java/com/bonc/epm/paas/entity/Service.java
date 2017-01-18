@@ -118,6 +118,11 @@ public class Service {
 	private String serviceChName;
 	
 	/**
+	 * 服务信息是否有修改
+	 */
+	private Integer isModify;
+	
+	/**
 	 * 更新时间
 	 */
 	private Date updateDate;
@@ -375,5 +380,13 @@ public class Service {
 
 	public void setTempName(String tempName) {
 		this.tempName = tempName;
+	}
+
+	public Integer getIsModify() {
+		return isModify;
+	}
+
+	public void setIsModify(Integer isModify) {
+		this.isModify = isModify;
 	}
 }

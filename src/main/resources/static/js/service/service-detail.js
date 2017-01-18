@@ -146,20 +146,20 @@ $(document).ready(function(){
     				   	containerlog = containerlog.replace(/>/g,"&gt");
     					var html = '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
     						+ containerlog
-    					+ '</pre>'
+    					+ '</pre>';
     					$("#containerlogList2").removeClass("hide");
     					$("#containerlogList2").html("");
     					$("#containerlogList2").html(html);
     					layer.close(load);
     			   }
     			   if (data.status == "400") {
-    				    html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">执行失败！！！</pre>'
+    				    html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">执行失败！！！</pre>';
     				    $("#containerlogList").html("");
     				    $("#containerlogList").html(html);	
     				    layer.close(load);
     			   }
     		   }
-    	   })
+    	   });
        });
 
        
@@ -185,10 +185,8 @@ $(document).ready(function(){
        			//保存
        $("#saveSerBtn").click(function(){
            //提交之前验证
-//           $("#BaseSerForm").click(function(){
        		//判断服务名称
        		var name = $('#serviceName').val();
-       		// check the name of container
        	    if(!name || name.length < 1){
        	      layer.tips('服务名称不能为空','#serviceName',{tips: [1, '#3595CC']});
        	      $('#serviceName').focus();
@@ -199,71 +197,29 @@ $(document).ready(function(){
        	      $('#serviceName').focus();
        	      return;
        	    }
-       	    if(name.length > 64 || name.length < 3){
-       	      layer.tips('服务名称为3~64个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});
-       	      $('#serviceName').focus();
-       	      return;
-       	    }
-       	    
-       	    //自定义启动命令的判断
-       	    var startCommand_input = $("#startCommand_input").val();
-       	    if($("#startCommand").prop("checked")==true){
-       		    if(!startCommand_input || startCommand_input.length < 1){
-       			      layer.tips('自定义启动命令不能为空','#startCommand_input',{tips: [1, '#3595CC']});
-       			      $('#startCommand_input').focus();
-       			      return;
-       		    }		   
-
-       	    } else {
-       	    	$("#startCommand_input").val(null);
-       	    }
+    	    if(name.length > 24 || name.length < 1){
+    		      layer.tips('服务名称为1~24个字符','#serviceName',{tips: [1, '#3595CC'],time: 3000});
+    		      $('#serviceName').focus();
+    		      return;
+    	    }
        	    
        	  //检查服务状态的判断
        	    var checkPath = $("#checkSerStatus_input").val();
        	    var initialDelay = $("#initialDelay").val();
        	    var timeoutDetction = $("#timeoutDetction").val();
        	    var periodDetction = $("#periodDetction").val();
-       	    if($("#checkSerStatus").prop("checked")==true){
-       		    if(!checkPath || checkPath.length < 1){
-       			      layer.tips('测试路径不能为空','#checkSerStatus_input',{tips: [1, '#3595CC']});
-       			      $('#checkSerStatus_input').focus();
-       			      return;
-       			}
-       		    if(checkPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
-       			      layer.tips('测试路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
-       			      $('#checkSerStatus_input').focus();
-       			      return;
-       		    }
-       		    if(checkPath.length > 64 || checkPath.length < 3){
-       			      layer.tips('测试路径为3~64个字符','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
-       			      $('#checkSerStatus_input').focus();
-       			      return;
-       		    }
-       		    
-       		    if (!initialDelay || initialDelay.length < 1) {
-       		    	  layer.tips('检测延迟时间不能为空','#initialDelay',{tips: [1, '#3595CC'],time: 3000});
-       			      $('#initialDelay').focus();
-       			      return;
-       		    }
-       		    
-       		    if (!timeoutDetction || timeoutDetction.length < 1) {
-       		    	  layer.tips('检测超时时间不能为空','#timeoutDetction',{tips: [1, '#3595CC'],time: 3000});
-       			      $('#timeoutDetction').focus();
-       			      return;
-       		    }
-       		    
-       		    if (!periodDetction || periodDetction.length < 1) {
-       		    	  layer.tips('检测频率时间不能为空','#periodDetction',{tips: [1, '#3595CC'],time: 3000});
-       			      $('#periodDetction').focus();
-       			      return;
-       		    }
-       		    
-       	    } else {
-       	    	$("#checkSerStatus_input").val(null);
-       		    $("#initialDelay").val(null);
-       		    $("#timeoutDetction").val(null);
-       		    $("#periodDetction").val(null);
-       	    }
+       	    
+   		    if(!checkPath || checkPath.length < 1){
+   			} else if (checkPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+   			      layer.tips('测试路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+   			      $('#checkSerStatus_input').focus();
+   			      return;
+   		    } else if (checkPath.length > 64 || checkPath.length < 3){
+   			      layer.tips('测试路径为3~64个字符','#checkSerStatus_input',{tips: [1, '#3595CC'],time: 3000});
+   			      $('#checkSerStatus_input').focus();
+   			      return;
+   		    }
+   		    
        	    //服务路径的判断
        	    var servicePath = $("#webPath").val();
        	    if(!servicePath || servicePath.length < 1){
@@ -289,8 +245,8 @@ $(document).ready(function(){
        		      return;
        	    }
            //})
-    	   $(".editBaseCon").hide();
     	   commBaseSerForm();
+    	   $(".editBaseCon").hide();
     	   $(".oldBaseCon").show();
        });
        			//取消
@@ -355,7 +311,7 @@ Date.prototype.Format = function(fmt){
 		if(new RegExp("("+k+")").test(fmt))
 			fmt =fmt.replace(RegExp.$1,(RegExp.$1.length==1)?(o[k]):(("00"+o[k]).substr((""+o[k]).length)));
 	return fmt;
-}
+};
 
 function execCommand(){
 	var podName = $(this).attr("podName");
@@ -371,7 +327,7 @@ $(function(){
 var sinceTime;
 var interval;
 function clearLog() {
-	sinceTime = new Date().Format("yyyy-MM-ddThh:mm:ss.000000000Z")
+	sinceTime = new Date().Format("yyyy-MM-ddThh:mm:ss.000000000Z");
 	//$("#containerlogList").html("");
 	getCurrentPodlogs();
 	clearInterval(interval);
@@ -415,7 +371,7 @@ function dropdownLog(obj){
 			}
 			   $(".printLogSpan").parent().parent().scrollTop($(".printLogSpan").parent().parent()[0].scrollHeight);
 			}
-	})
+	});
 }
 
 //获取当前Pod的实时日志
@@ -464,62 +420,10 @@ function getCurrentPodlogs(){
 			}*/
 			
 			}
-	})
+	});
 }
 
 
-//function getServiceLogs(){
-//	var id = $('#datePicker').attr('serviceid');
-//	var serviceName = $('#datePicker').attr('serviceName');
-//	var date = $('#date_log').val();
-//	$.ajax({
-//		url:ctx+"/service/detail/getLogsByService.do?id="+id+"&date="+date,
-//		success:function(data){
-//			data = $.parseJSON(data);
-//			var html = "";
-//			if(data.status == '200' && data.logList != ""){
-//				var logs = data.logList;
-//				console.log(logs)
-//				for(var i = 0; i < logs.length; i++){
-//					var num = i+1;
-//					html += '<div class="ci-body container" style="padding-top: 10px; padding-bottom: 30px; width:96%">'
-//						+ '<div class="">'
-//						+ '<div class="code-tabmain">'
-//						+ '<div class="log-details" id="">'
-//						+ '<div class="event-line " repotype="" status="success">'
-//						+ '<div class="event-status success">'
-//						+ '<i class="fa fa-check notes"></i>'
-//						+ '</div>'
-//						+ '<div class="time-line-content">'
-//						+ '<div class="time-line-reason event-title">'
-//						+ '<div class="title-name success">'
-//						+ '<span class="event-names">'+serviceName+num+' </span>'
-//						+'</div>'
-//						+ '<div class="time-line-time">'
-//						+ '<div class="event-sign " onclick="ServiceEvent(this)">'
-//						+ '<i class="fa fa-angle-right fa_caret" style="transform: rotate(0deg);"></i>'
-//						+ '</div>'
-//						+ '</div>'
-//						+ '<div class="containerLog time-line-message" style="min-height: 500px; margin-top: 50px">'
-//						+ '<div class="weblog logList">'
-//						+ '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
-//						+ logs[i]
-//						+ '</pre>'
-//						+ '</div></div></div></div></div></div></div></div></div><br>';
-//				}	
-//				$("#hisLogList").html("");
-//				$("#hisLogList").html(html);
-//				$(".event-sign").addClass("lives");
-//				$(".event-sign").parent().parent().children(".time-line-message").css("display","block");
-//				$(".event-sign").children(".fa_caret").css("transform", "rotate(90deg)");
-//			}else{
-//				html += '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
-//				$("#hisLogList").html("");
-//				$("#hisLogList").html(html);
-//			}
-//		}	
-//	})
-//}
 
 
 function ServiceEvent(obj) {
@@ -547,31 +451,31 @@ function getprex(){
 }
 //修改服务地址
 function editSerAddr(){
-		var editServiceAddr=$('#editServiceAddr').val();
-		var editProxyPath=$('#editProxyPath').val();
-		var serId=$('#serId').val();
-//		var prex=	$('#addrPrex').html();
-    editServiceAddr=editServiceAddr;
-			$.ajax({
-        		type: "GET",
-           url: ctx + "/service/detail/editSerAddr.do?serviceAddr="+editServiceAddr+"&proxyPath="+editProxyPath+"&serId="+serId,
-           success : function(data) {
-        	  data = eval("(" + data + ")");
-        	  if(data.status=="200"){
-        		  $('#oldServiceAddr').html(editServiceAddr);
-        		  $('#oldProxyPath').html(editProxyPath)
-	     			layer.msg( "修改成功，重启服务后生效", {
-   						icon: 1
-	   					});
-	         }else if(data.status=="500"){
-	        	 layer.alert("服务名称重复，请重新输入！");
-	         }else{
-	        	 layer.msg( "修改失败，请检查连接", {
-							icon: 1
-	   					});
-	        			}
-           	}
-        	});
+
+	var editServiceAddr = $('#editServiceAddr').val();
+	var editProxyPath = $('#editProxyPath').val();
+	var serId = $('#serId').val();
+	editServiceAddr = editServiceAddr;
+	$.ajax({
+		type : "GET",
+		url : ctx + "/service/detail/editSerAddr.do?serviceAddr=" + editServiceAddr + "&proxyPath=" + editProxyPath + "&serId=" + serId,
+		success : function(data) {
+			data = eval("(" + data + ")");
+			if (data.status == "200") {
+				$('#oldServiceAddr').html(editServiceAddr);
+				$('#oldProxyPath').html(editProxyPath);
+				layer.msg("修改成功，重启服务后生效", {
+					icon : 1
+				});
+			} else if (data.status == "500") {
+				layer.alert("服务名称重复，请重新输入！");
+			} else {
+				layer.msg("修改失败，请检查连接", {
+					icon : 1
+				});
+			}
+		}
+	}); 
 }
 function checkSerAddr(){
     if ($('#editServiceAddr').val() === '') {
@@ -595,44 +499,54 @@ function editEnvBtn(obj){
 }
 //环境变量保存按钮
 function saveEnvEdit(obj){
-//	 var flag=0;
-	 var thiz= $(obj);
    var envKey=$(obj).parent().parent().find("input.envKey").val();
    var envValue=$(obj).parent().parent().find("input.envValue").val();
    var id =$(obj).parent().parent().find("input.envId").val();
    var serId =$("#serId").val();
    var serName =$("#serviceName").val();
-   /*$('#editEnvBody tr').each(function(index,domEle){
-   var ek= $(domEle).find("input.envKey").val();
-   var ei=$(domEle).find("input.envId").val();
-   if(ei==id){return true;}
-   if(ek== envKey){
-	   layer.tips('环境变量Key不能重复',$(obj).parent().parent().find("input.envKey"),{tips: [1, '#3595CC']});
-	   $(obj).parent().parent().find("input.envKey").focus();
-	   flag=1;
-	return false;
+   if(1==checkRepEnv($(obj).parent().parent().find("input.envKey"),id,envKey)){return;};
+	//环境变量Key只能是字母数字下划线；
+	reg=/^[A-Za-z_][A-Za-z0-9_]*$/;
+	if(!reg.test(envKey)){ 
+		layer.tips('环境变量key只能是字母数字下划线，不能以数字开头',$(obj).parent().parent().find("input.envKey"),{tips: [1, '#3595CC']});
+		$('#newKey').focus();
+		return;
 	}
-   });*/
-   if(1==checkRepEnv(obj,id,envKey)){return};
-	$(obj).parent().find("i.editEnvBtn").show();
-   $(obj).next().hide();
-   $(obj).parent().parent().find("span.oldEnv").show();
-   $(obj).parent().parent().find("span.editEnv").hide();
-   $(obj).hide();
-   
-   
-   $.ajax({
-		url:ctx+"/service/detail/editEnv.do?envKey="+envKey+"&envValue="+envValue+"&envId="+id+"&serviceId="+serId+"&serviceName="+serName,
-		success:function(data){
-		var data = eval("(" + data + ")");
-		if("200"==data.status){
-			layer.msg( "修改成功，重启服务后生效", {
-				icon: 1
-            });
+	//判断envKey长度
+	if(envKey.length >= 4096){
+    	layer.tips('key字符长度不能超过4096',$(obj).parent().parent().find("input.envKey"),{tips: [1, '#3595CC']});
+		$('#newKey').focus();
+		return;
+    }
+	//判断envValue长度
+	if(envValue.length >= 4096){
+    	layer.tips('value字符长度不能超过4096',$(obj).parent().parent().find("input.envValue"),{tips: [1, '#3595CC']});
+		$('#newValue').focus();
+		return;
+    }
+    
+	$.ajax({
+		url : ctx + "/service/detail/editEnv.do?envKey=" + envKey + "&envValue=" + envValue + "&envId=" + id + "&serviceId=" + serId + "&serviceName=" + serName,
+		success : function(data) {
+			var data = eval("(" + data + ")");
+			if ("200" == data.status) {
+				layer.msg("修改成功，重启服务后生效", {
+					icon : 1,
+					time : 2000
+				},function(){
+					$(obj).parent().find("i.editEnvBtn").show();
+					$(obj).next().hide();
+					$(obj).parent().parent().find("span.oldEnv").show();
+					var id =$(obj).parent().parent().find("input.envId").val();
+					document.getElementById("key"+id).innerHTML=envKey;
+					document.getElementById("value"+id).innerHTML=envValue;
+					$(obj).parent().parent().find("span.editEnv").hide();
+					$(obj).hide(); 
+				});
+			}
 		}
-	}
-	});
-
+	}); 
+	
 }
 //环境变量取消按钮
 function canclEnvEdit(obj){
@@ -656,30 +570,53 @@ function editPortAddrBtn(obj){
 }
 //端口保存按钮
 function savePortEdit(obj){
-		 var thiz= $(obj);
-	   var port=$(obj).parent().parent().find("input.containerPort").val();
-	   var id =$(obj).parent().parent().find("input.portId").val();
-	   var serId =$("#serId").val();
-	   var serName =$("#serviceName").val();
-	   if(1== checkRepPortCfg(obj,id,port)){return;}
-	   $(obj).parent().find("i.editPortAddrBtn").show();
-	   $(obj).next().hide();
-	   $(obj).parent().parent().find("span.oldPortConfig").show();
-	   $(obj).parent().parent().find("span.editPortConfig").hide();
-	   $(obj).hide();
-	   
-	   $.ajax({
-			url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id+"&serviceId="+serId,
-			success:function(data){
-				var data = eval("(" + data + ")");
-				if("200"==data.status){
-					layer.msg( "修改成功，重启服务后生效", {
-						icon: 1
-	                });
-				}
+	 var thiz= $(obj);
+   var port=$(obj).parent().parent().find("input.containerPort").val();
+   var id =$(obj).parent().parent().find("input.portId").val();
+   var serId =$("#serId").val();
+   var serName =$("#serviceName").val();
+
+	if (1 == checkRepPortCfg(obj, id, port)) {
+		return;
+	}
+	if (!port || port.length < 1) {
+		layer.tips('容器端口不能为空', $(obj).parent().parent().find("input.containerPort"), {
+			tips : [1, '#3595CC']
+		});
+		$(obj).parent().parent().find("input.containerPort").focus();
+		flag = true;
+		return;
+	}
+	if (port.search(/^[0-9]*$/) === -1) {
+		layer.tips('容器端口只能是数字组成', $(obj).parent().parent().find("input.containerPort"), {
+			tips : [1, '#3595CC'],
+			time : 3000
+		});
+		$(obj).parent().parent().find("input.containerPort").focus();
+		flag = true;
+		return;
+	}
+
+
+   $(obj).parent().find("i.editPortAddrBtn").show();
+   $(obj).next().hide();
+   $(obj).parent().parent().find("span.oldPortConfig").show();
+   $(obj).parent().parent().find("span.editPortConfig").hide();
+   $(obj).hide();
+   
+	$.ajax({
+		url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id+"&serviceId="+serId,
+		success:function(data){
+			var data = eval("(" + data + ")");
+			if("200"==data.status){
+				layer.msg( "修改成功，重启服务后生效", {
+					icon: 1,
+					time: 2000
+                });
 			}
-	   		});
-};
+		}
+	});
+}
 //端口新建按钮
 function addPortCfgClick(obj){
 	layer.open({
@@ -692,10 +629,30 @@ function addPortCfgClick(obj){
 			var protocol= $("#protocol").val();
 			var mapPort =$("#mapPort").val();
 			var serId =$("#serId").val();
-			if(1== checkRepPortCfg(obj,null,containerPort)){
-			layer.tips('容器端口不能重复',"#containerPort",{tips: [1, '#3595CC']});
-			   ("#containerPort").focus();
-			   return;}
+			if (1 == checkRepPortCfg(obj, null, containerPort)) {
+				layer.tips('容器端口不能重复', "#containerPort", {
+					tips : [1, '#3595CC']
+				});
+				$("#containerPort").focus();
+				return;
+			}
+			if (!containerPort || containerPort.length < 1) {
+				layer.tips('容器端口不能为空', $("#containerPort"), {
+					tips : [1, '#3595CC']
+				});
+				$("#containerPort").focus();
+				flag = true;
+				return;
+			}
+			if (containerPort.search(/^[0-9]*$/) === -1) {
+				layer.tips('容器端口只能是数字组成', $("#containerPort"), {
+					tips : [1, '#3595CC'],
+					time : 3000
+				});
+				$("#containerPort").focus();
+				flag = true;
+				return;
+			}
 			$.ajax({
 				url : ctx + "/service/detail/addPortCfg.do?containerPort="+containerPort+"&protocol="+protocol+"&mapPort="+mapPort+"&serviceId="+serId,
 				type: "GET",
@@ -753,7 +710,7 @@ function delPortEdit(obj){
 					}
 				});
 			}
-		})
+		});
 }
 //端口取消按钮
 function canclPortEdit(obj){
@@ -775,21 +732,40 @@ function addEnvClick(obj){
 			var envKey	= $("#newKey").val();
 			var envValue= $("#newValue").val();
 			var serId =$("#serId").val();
-			if(1==checkRepEnv(obj,null,envKey)){
-				layer.tips('环境变量Key不能重复',"#newKey",{tips: [1, '#3595CC']});
-				   ("#newKey").focus();
-				return};
+			if(1==checkRepEnv($("#newKey"),null,envKey)){
+				return;
+			};
+			//环境变量Key只能是字母数字下划线；
+			reg=/^[A-Za-z_][A-Za-z0-9_]*$/;
+			if(!reg.test(envKey)){ 
+				layer.tips('环境变量key只能是字母数字下划线，不能以数字开头',$("#newKey"),{tips: [1, '#3595CC']});
+				$('#newKey').focus();
+				return;
+			}
+			//判断envKey长度
+			if(envKey.length >= 4096){
+		    	layer.tips('key字符长度不能超过4096',$("#newKey"),{tips: [1, '#3595CC']});
+				$('#newKey').focus();
+				return;
+		    }
+			//判断envValue长度
+			if(envValue.length >= 4096){
+		    	layer.tips('value字符长度不能超过4096',$$("#newValue"),{tips: [1, '#3595CC']});
+				$('#newValue').focus();
+				return;
+		    }
+
 			$.ajax({
 				url : ctx + "/service/detail/addEnv.do?envKey="+envKey+"&envValue="+envValue+"&serviceId="+serId,
 				type: "GET",
 				success : function(data) {
 					envVariable = eval("(" + data + ")");
 					var	newEnv='<tr><td style="width:40%;text-indent: 15px;">'
-		            +'<span class="oldEnv">'+envVariable.envKey+'</span>'
+		            +'<span id="key'+envVariable.envId+'" class="oldEnv">'+envVariable.envKey+'</span>'
 		            +'<span class="editEnv" hidden="true"><input class="envKey" type="text" name="envKey" value="'+envVariable.envKey+'"  /></span>'
 		            +'<input class="envId" hidden="true" value="'+envVariable.envId+'" /></td>'
 		            +'<td>'
-		            +'<span class="oldEnv">'+envVariable.envValue+'</span>'
+		            +'<span id="value'+envVariable.envId+'" class="oldEnv">'+envVariable.envValue+'</span>'
 		            +' <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value="'+envVariable.envValue+'"  /></span></td>'
 		               +'<td style="width:10%;" class="editBtn">'
 		                   +'<i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i>' 
@@ -801,8 +777,11 @@ function addEnvClick(obj){
 					$("#editEnvBody").append(newEnv);
 					$(".editEnv").hide();
 					$(".editEnvBtn").show();
-					
 					layer.close(index);
+					layer.msg("修改成功，重启服务后生效", {
+						icon : 1,
+						time : 2000
+					});
 				}
 				});
 		}
@@ -834,24 +813,28 @@ function addEnvClick(obj){
 					}
 				});
 			}
-		})
+		});
 	}
 	//环境变量验重
 	function checkRepEnv(obj,id,envKey){
-			 var flag =0;
-		   $('#editEnvBody tr').each(function(index,domEle){
-			   var ek= $(domEle).find("input.envKey").val();
-			   var ei=$(domEle).find("input.envId").val();
-			   if(null==id & ek== envKey){flag=1; return false;}
-			   if(ei==id){return true;}
-			   if(ek== envKey){
-				   layer.tips('环境变量Key不能重复',$(obj).parent().parent().find("input.envKey"),{tips: [1, '#3595CC']});
-				   $(obj).parent().parent().find("input.envKey").focus();
-				   flag=1;
-				return false;
-				}
-			   });
-		   return flag;
+		var flag =0;
+		if(envKey=="APM" || envKey == "namespace" || envKey == "service"){
+			layer.tips('环境变量Key不能重复',$(obj),{tips: [1, '#3595CC']});
+			$(obj).focus();
+			flag=1;
+			return flag;
+		}
+		$('#editEnvBody tr').each(function(index,domEle){
+			var ek= $(domEle).find("input.envKey").val();
+			var ei=$(domEle).find("input.envId").val();
+			if(ei!=id && ek== envKey){
+				layer.tips('环境变量Key不能重复',$(obj),{tips: [1, '#3595CC']});
+				$(obj).focus();
+				flag=1;
+				return;
+			}
+		});
+		return flag;
 	}
 	//端口信息验重
 	function checkRepPortCfg(obj,id,port){
@@ -871,35 +854,3 @@ function addEnvClick(obj){
 			   });
 			 return flag;
 	}
-// 添加端口
-/*function addPortCfg(){
-	$.ajax({
-		url : ctx + "/service/generatePortSet.do",
-		type: "GET",
-		success : function(data) {
-			data = eval("(" + data + ")");
-			if(!data.mapPort||"error"==(data.ERROR)){
-				alert("可用映射端口已经用尽，请联系管理员。");
-		}else{
-			var portTr='';
-			 portTr +='<tr>'
-					+'<td style="width:10%;text-indent: 15px;"></td>'
-				  +'<td style="width:10%;" class="portConfig"><input type="text" name="containerPort" />'
-				  +'</td>'
-				  +'<td style="width:10%;"><select class="T-http">'
-					+'<option>TCP</option><option>HTTP</option></select></td>'
-					+'<td style="width:10%;">'+data.mapPort+'</td>'
-					+'<td style="width:50%;"></td>'
-					+'<td style="width:10%;" class="editBtn">'
-					+'<i onclick="editPortAddrBtn(this)"  type="button" value="修改"  class="fa fa-edit oldPortConfig editPortAddrBtn"></i>'
-					+'<i onclick="savePortEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig savePortEdit"></i>'
-					+'<i onclick="canclPortEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>'
-				+'</td></tr>';
-		};
-			$("#editPortCfgBody").append(portTr);
-			//调节界面高度
-			var imagePage_height = $(".host_step2").height();
-	    	$(".step-inner").height(imagePage_height+100);
-		}
-	});
-};*/
