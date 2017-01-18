@@ -32,10 +32,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserResourceDao;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.FileInfo;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
@@ -63,8 +67,9 @@ public class StorageController {
      * 
      */
     private static final Logger LOG = LoggerFactory.getLogger(StorageController.class);
+    
     /**
-     * 
+     * storageDao
      */
     @Autowired
     private StorageDao storageDao;
@@ -74,6 +79,12 @@ public class StorageController {
      */
     @Autowired
     private UserResourceDao userResourceDao;
+    
+    /**
+     * commonOperationLogDao
+     */
+    @Autowired
+    private CommonOperationLogDao commonOperationLogDao;
     
     /**
      * 
@@ -214,6 +225,12 @@ public class StorageController {
             }
             userResource.setVol_surplus_size(userResource.getVol_surplus_size()-storage.getStorageSize()/1024);
             userResourceDao.save(userResource);
+            
+            //记录新增storage存储卷
+            String extraInfo = "新增storage存储卷 " + JSON.toJSONString(storage);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_CREATED);
+            commonOperationLogDao.save(log);
+            
             map.put("status", "200");
         } 
         else {
@@ -266,13 +283,6 @@ public class StorageController {
         Storage storage = storageDao.findOne(storageId);
         int usedStorage=0;
         List<Storage> list = storageDao.findByCreateBy(cUser.getId());
-        /*    for (Storage stor : list) {
-            usedStorage = usedStorage + (int) stor.getStorageSize();
-        }
-        if (storageUpdateSize/1024 - storage.getStorageSize()/1024>((int) userResource.getVol_size() - usedStorage / 1024)){
-            map.put("status", "500");
-            return JSON.toJSONString(map);
-        }*/
         
         //判断卷组剩余容量是否大于扩充容量
         if (storageUpdateSize/1024 - storage.getStorageSize()/1024>((int) userResource.getVol_surplus_size())){
@@ -286,6 +296,11 @@ public class StorageController {
         
         storage.setStorageSize(storageUpdateSize);
         storageDao.save(storage);
+        
+        //记录更新storage存储卷
+        String extraInfo = "更新storage存储卷 " + JSON.toJSONString(storage);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_UPDATE);
+        commonOperationLogDao.save(log);
         
         map.put("status", "200");
         return JSON.toJSONString(map);
@@ -311,13 +326,20 @@ public class StorageController {
         String[] id = ids.split(",");
         Storage storage= new Storage();
         for(int i=0 ;i<id.length;i++){
-        storage = storageDao.findOne(Long.parseLong(id[i]));
-        if (StorageConstant.IS_USER == storage.getUseType()) {
-            map.put("status", "500");
-            return JSON.toJSONString(map);
-                } 
+            storage = storageDao.findOne(Long.parseLong(id[i]));
+            if (StorageConstant.IS_USER == storage.getUseType()) {
+                map.put("status", "500");
+                return JSON.toJSONString(map);
+            } 
         }
         for(int i=0 ;i<id.length;i++){
+            Storage storage1 = storageDao.findOne(Long.parseLong(id[i]));
+            
+            //记录删除storage存储卷
+            String extraInfo = "删除storage存储卷 " + JSON.toJSONString(storage1);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage1.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_DELETE);
+            commonOperationLogDao.save(log);
+            
             storageDao.delete(Long.parseLong(id[i]));
             //判断登录者为用户还是租户，并获取其对应的userResorce
             User cUser = CurrentUserUtils.getInstance().getUser();
@@ -382,7 +404,6 @@ public class StorageController {
      * @return JSON
      * @see
      */
-
     @RequestMapping(value = { "listFile" }, method = RequestMethod.GET)
     @ResponseBody
     public String fileList(String path, String dirName, String storageName) {
@@ -460,7 +481,6 @@ public class StorageController {
      * @return JSON
      * @see
      */
-
     @RequestMapping(value = { "upload" }, method = RequestMethod.POST)
     @ResponseBody
     public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path, String storageName, long id) {
@@ -510,7 +530,6 @@ public class StorageController {
      * @throws InterruptedException 
      * @see
      */
-
     @RequestMapping(value = { "media" }, method = RequestMethod.GET)
     public void downloadFile(String downfiles, String directory, HttpServletRequest request,
             HttpServletResponse response) throws IOException, JSchException, InterruptedException {
@@ -554,7 +573,6 @@ public class StorageController {
         }finally{
             return JSON.toJSONString(map);
         }
-
     } 
     /**
      * 手动创建文件夹
@@ -606,8 +624,6 @@ public class StorageController {
                   }
         map.put("status", "200");
         return JSON.toJSONString(map);
-
-
     } 
     /**
      * 
@@ -646,13 +662,4 @@ public class StorageController {
         map.put("storages", storages);
         return JSON.toJSONString(map);
     }
-//    public static void main(String[] args) {
-//        try {
-//            CephController ccl = new CephController();
-//            CmdUtil.exeCmd(ccl.getMountexec(), ccl.getMountpoint());
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
 }

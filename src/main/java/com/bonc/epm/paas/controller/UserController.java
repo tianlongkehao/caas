@@ -293,6 +293,11 @@ public class UserController {
                 userAndSheraDao.save(userAndShera);
             }
             map.put("creatFlag", "200");
+            
+            //记录新增租户信息
+            String extraInfo = "新增租户 ： " + user.getUserName() +"信息" + JSON.toJSONString(user) + "租户资源信息：" + JSON.toJSONString(userResource);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.TENANT_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
+            commonOperationLogDao.save(log);
         } 
         catch (Exception e) {
             client.deleteNamespace(user.getNamespace());
@@ -326,10 +331,9 @@ public class UserController {
                 userDao.save(user);
                 
                 //记录用户添加用户操作
-                String extraInfo="新增的用户名是："+user.getUserName()+"主要信息有：用户id:"+user.getId()+"用户姓名："+user.getUser_realname()+"用户工号："+user.getUser_employee_id();
+                String extraInfo = "新增用户 ： " + user.getUserName() + "信息" + JSON.toJSONString(user);
                 CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
                 commonOperationLogDao.save(log);
-                
             }
             model.addAttribute("creatFlag", "200");
         } 
@@ -370,15 +374,9 @@ public class UserController {
             
         	//设置存储卷余量
         	userResource.setVol_surplus_size(userResource.getVol_surplus_size()+resource.getVol()-userResource.getVol_size());
-        	
             userResource.setCpu(Double.valueOf(resource.getCpu_account()));
             userResource.setMemory(Long.parseLong(resource.getRam()));
             userResource.setVol_size(resource.getVol());
-            
-            
-            
-            
-            
             userResource.setImage_count(resource.getImage_count());
             userResource.setUpdateDate(new Date());
             
@@ -408,6 +406,11 @@ public class UserController {
             		userDao.save(user);
             		userResourceDao.save(userResource);
             		model.addAttribute("updateFlag", "200");
+            		
+            		 //记录更新租户信息
+                    String extraInfo = "更新租户 " + user.getUserName() + "的信息" + JSON.toJSONString(user) + "租户资源信息：" + JSON.toJSONString(userResource);
+                    CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.TENANT_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
+                    commonOperationLogDao.save(log);
             	}
             	catch (Exception e) {
             		e.printStackTrace();
@@ -475,13 +478,10 @@ public class UserController {
             
             //获取修改前的user
             User user1=userDao.findById(user.getId());
-            
             userDao.save(user);
             
-            
             //记录修改用户信息操作
-            String extraInfo="修改userName:"+user.getUserName()+"之前的信息有：：用户id:"+user1.getId()+"用户姓名："+user1.getUser_realname()+"用户工号："+user1.getUser_employee_id()+
-            		"  修改后的信息是：：用户id:"+user.getId()+"用户姓名："+user.getUser_realname()+"用户工号："+user.getUser_employee_id();
+            String extraInfo = "更新用户" + user.getUserName() + "的信息，" + JSON.toJSONString(user);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
             commonOperationLogDao.save(log);
         } 
@@ -555,13 +555,12 @@ public class UserController {
                     //获取删除前的user
                     User user=userDao.findById(Long.parseLong(idArr[i]));
                     
-                    userDao.delete(Long.parseLong(idArr[i]));
-                    
                     //记录用户删除用户操作
-                    String extraInfo="删除用户userName"+user.getUserName()+"的主要信息有：用户id:"+user.getId()+"用户姓名："+user.getUser_realname()+"用户工号："+user.getUser_employee_id();
+                    String extraInfo = "删除用户"+user.getUserName()+"的信息" + JSON.toJSONString(user);
                     CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_DELETE);
                     commonOperationLogDao.save(log);    
                     
+                    userDao.delete(user);
                 }
             }
             map.put("status", "200");
@@ -931,9 +930,13 @@ public class UserController {
         if (user.getPassword().trim().equals(EncryptUtils.encryptMD5(password.trim()))) {
             user.setPassword(EncryptUtils.encryptMD5(newpwd));
             userDao.save(user);
+            //记录用户修改密码操作
+            String extraInfo = "修改用户 ： " + user.getUserName() + "密码：" + JSON.toJSONString(user);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.TENANT_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
+            commonOperationLogDao.save(log);
+            
             //退出当前用户
             CurrentUserUtils.getInstance().loginoutUser(user1);
-            
             map.put("status", "200");
         }
         else {
@@ -962,7 +965,6 @@ public class UserController {
         Map<String, Object> map = new HashMap<String, Object>();
         User user = updateUserInfo(id, email, company, user_cellphone, user_department,user_employee_id, user_phone);
         if (null != user) {
-        	
             map.put("status", "200");
         } 
         else {
@@ -1203,6 +1205,10 @@ public class UserController {
                 for (User sonUser : userDao.getByParentId(userId)) {
                     users.add(sonUser);
                 }
+                //记录删除租户信息
+                String extraInfo = "删除租户 ： " + user.getUserName()+ "信息：" + JSON.toJSONString(user);
+                CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.TENANT_MANAGER, CommConstant.OPERATION_TYPE_DELETE);
+                commonOperationLogDao.save(log);
             }
         }
         return users;
@@ -1298,6 +1304,12 @@ public class UserController {
         user.setUser_cellphone(user_cellphone);
         user.setUser_phone(user_phone);
         user = userDao.save(user);
+        
+        //记录更新用户信息操作
+        String extraInfo = "更新用户 ： " + user.getUserName() + "信息" + JSON.toJSONString(user);
+        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.TENANT_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
+        commonOperationLogDao.save(log);
+        
         return user;
     }
     
@@ -1338,6 +1350,12 @@ public class UserController {
                 }
             }
             sheraDao.save(shera);
+            
+            //记录新增shera操作
+            String extraInfo = "新增shera ： " + shera.getSheraUrl() + "信息：" + JSON.toJSONString(shera);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(shera.getSheraUrl() , extraInfo, CommConstant.SHERA_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
+            commonOperationLogDao.save(log);
+            
             map.put("status", "200");
         }
         catch (Exception e) {
@@ -1358,8 +1376,15 @@ public class UserController {
     public String deleteShera(long sheraId){
         Map<String,Object> map  = new HashMap<String,Object>();
         try {
+            Shera shera = sheraDao.findOne(sheraId);
             sheraDao.delete(sheraId);
             userAndSheraDao.deleteBySheraId(sheraId);
+            
+            //记录删除shera操作
+            String extraInfo = "删除shera ： " + shera.getSheraUrl() + "信息：" + JSON.toJSONString(shera);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(shera.getSheraUrl() , extraInfo, CommConstant.SHERA_MANAGER, CommConstant.OPERATION_TYPE_DELETE);
+            commonOperationLogDao.save(log);
+            
             map.put("status", "200");
         }
         catch (Exception e) {
@@ -1417,6 +1442,12 @@ public class UserController {
             oldShera.setPassword(shera.getPassword());
             oldShera.setRemark(shera.getRemark());
             sheraDao.save(oldShera);
+            
+            //记录更新shera操作
+            String extraInfo = "更新shera ： " + shera.getSheraUrl() + "信息：" + JSON.toJSONString(shera);
+            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(shera.getSheraUrl() , extraInfo, CommConstant.SHERA_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
+            commonOperationLogDao.save(log);
+            
             if (updateJdk(oldShera, jdkJson)) {
                 map.put("status", "200");
             }

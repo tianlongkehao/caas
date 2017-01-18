@@ -33,12 +33,14 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="<%=path%>/user/add" id="userCreateBtn" title="创建用户"><i
-											class="fa fa-plus"></i></a> 
-										<a href="javascript:delTenement()" title="删除"><i
-											class="fa fa-trash"></i></a>
-										<a href="javascript:window.location.reload(true);"
-											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
+									   <c:if test="${!cas_enable}">
+											<a href="<%=path%>/user/add" id="userCreateBtn" title="创建用户"><i
+												class="fa fa-plus"></i></a> 
+											<a href="javascript:delTenement()" title="删除"><i
+												class="fa fa-trash"></i></a>
+											<a href="javascript:window.location.reload(true);"
+												id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
+										</c:if>
 									</div>
                             </div>
                             <div class="ibox-content">
@@ -54,7 +56,9 @@
 												<th style="width: 15%;">部门</th>
 												<th style="width: 10%; text-indent: 8px;">工号</th>
 												<th style="width: 10%;">角色权限</th>
+												<c:if test="${!cas_enable}">
 												<th style="width: 10%;" class="del-operation">操作</th>
+												</c:if>
 											</tr>
                                     </thead>
                                     <tbody id="userList">
@@ -121,10 +125,12 @@
 																<option name="user_autority" value="2">租户</option>
 																<option name="user_autority" value="1">管理员</option>
 														</select></td>
+														<c:if test="${!cas_enable}">
 														<td style="width: 10%;"><a id="deleteButton"
 															class="no-drop" href="javascript:delOneTenement(${user.id })"
 															style="margin-left: 10px"> <i class="fa fa-trash"></i>
 														</a></td>
+														</c:if>
 													</tr>
 												</c:if>
 											</c:forEach> 

@@ -1086,10 +1086,10 @@ function oneStopContainerUpdate(id,serviceName){
 				success : function(data) {
 					data = eval("(" + data + ")");
 					if (data.status == "200") {
-						layer.msg("服务启动成功",{icon: 6});
+						layer.msg("服务升级取消",{icon: 6});
 						setTimeout('window.location.reload()',1500);
 					} else {
-						layer.alert("服务取消失败");
+						layer.alert("服务升级取消失败");
 					}
 				}
 			});

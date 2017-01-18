@@ -175,7 +175,7 @@ public class RefServiceController {
 //        }      
         
         createServiceMode(map, refService, nameSpace);
-        //记录用户添加用户操作
+        //记录用户添加外部服务操作
         String extraInfo="新增外部服务："+refService.getSerName()+"的主要内容有"+refService.toString();
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(refService.getSerName(), extraInfo, CommConstant.REF_SERVICE, CommConstant.OPERATION_TYPE_CREATED);
         commonOperationLogDao.save(log);
@@ -241,7 +241,7 @@ public class RefServiceController {
         }
         
         createServiceMode(map, oldRefService, nameSpace);
-        //记录用户添加用户操作
+        //记录用户修改外部服务操作
         String extraInfo="修改外部服务："+refService.getSerName()+"的主要内容有"+JSON.toJSONString(oldRefService);
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(oldRefService.getSerName(), extraInfo, CommConstant.REF_SERVICE, CommConstant.OPERATION_TYPE_UPDATE);
         commonOperationLogDao.save(log);
@@ -291,6 +291,12 @@ public class RefServiceController {
                 try {
                     Status status = client.deleteService(localRefService.getSerName());
                     if (200 == status.getCode() || 404 == status.getCode()) {
+                        
+                        //添加删除外部服务记录
+                        String extraInfo="删除外部服务："+localRefService.getSerName()+"的信息"+JSON.toJSONString(localRefService);
+                        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(localRefService.getSerName(), extraInfo, CommConstant.REF_SERVICE, CommConstant.OPERATION_TYPE_DELETE);
+                        commonOperationLogDao.save(log);
+                        
                         refServiceDao.delete(id);
                     }
                 }
@@ -377,39 +383,5 @@ public class RefServiceController {
             map.put("msg", e.getStatus().getMessage());
             LOG.error("create service error:" + e.getStatus().getMessage());
         }
-    }
-
-    /**
-     * 
-     * Description:
-     * new RefService
-     * @param serName  String
-     * @param serAddress String
-     * @param refAddress String
-     * @param viDomain int
-     * @param importSerMode int
-     * @param importSerMode2 
-     * @return refService RefService
-     * @see
-     */
-    private RefService fillRefServiceInfo(Long id, String serName, String serAddress, String refAddress,
-                                                              int refPort,int viDomain, int importSerMode,String refSerDesc,String useProxy) {
-        RefService refService = null;
-        if (null == id || id < 0) {
-            refService = new RefService(); 
-        } else {
-            refService = refServiceDao.findOne(id);
-        }
-        refService.setSerName(serName);
-        refService.setRefAddress(refAddress);
-        refService.setSerAddress(serAddress);
-        refService.setRefPort(refPort);
-        refService.setRefSerDesc(refSerDesc);
-        refService.setViDomain(viDomain == RefServiceConstant.ALL_TENANT ? RefServiceConstant.ALL_TENANT : RefServiceConstant.SELF_TENANT);
-        refService.setimprotSerMode(importSerMode == RefServiceConstant.SERVICE_MODE ? RefServiceConstant.SERVICE_MODE : RefServiceConstant.ETCD_MODE);
-        refService.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
-        refService.setCreateDate(new Date());
-        refService.setUseProxy(useProxy);
-        return refService;
     }
 }

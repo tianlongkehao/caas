@@ -166,6 +166,39 @@
             </li>
             </c:if>
 		</c:if>
+		<c:if test="${cas_enable}">
+            <c:if test="${cur_user.user_autority == 2}">
+            <li id="menu_usermanage" class="user-admin">
+                <a href="<%=path %>/secret/Credential">
+                    <img class="nav-icon" src="<%=path %>/images/user.svg" alt=""/>
+                    <span class="nav-title">密钥</span>
+                </a>
+                <ul class="nav-item-hover">
+                    <li id="menuSecretKey" action="">
+                        <a href="<%=path %>/secret/Credential">
+                           密钥管理
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            </c:if>
+            <c:if test="${cur_user.user_autority == 1}">
+            <li id="menu_user" class="user-admin">
+                <a href="<%=path %>/user/list">
+                    <img class="nav-icon" src="<%=path %>/images/user.svg" alt=""/>
+                    <span class="nav-title">租户</span>
+                </a>
+                <ul class="nav-item-hover">
+                    <li id="menuUser" action="">
+                        <a href="<%=path %>/user/list">
+                            租户管理
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            </c:if>
+            
+        </c:if>
         <c:if test="${cur_user.user_autority == 1}">
             <li id="menu_cluster">
                 <a href="<%=path %>/cluster/resource">

@@ -153,30 +153,29 @@ function delStorage() {
 		   		     		data:{"ids":ids},
 		   		     		success:function(data){
 		   		     		data = eval("(" + data + ")");
-							if(data.status=="200"){
-			   		     			layer.msg( "删除成功！", {
+								if(data.status=="200"){
+			   		     			layer.alert( "删除成功！", {
 				   						icon: 1
 				   					},function(){
 				   						window.location.href = ""+ctx+"/service/storage";
 				   					});
-
-		   		   }
-		   		   if(data.status=="500"){
-  		     			layer.msg( "删除失败，卷组正在使用！", {
-	   						icon: 1
-		   					});
-			   			   }
-		   		     		},
-		   		     		error:function(){
-			   		     		layer.msg( "删除失败", {
-			   						icon: 0.5
-			   					});
-		   		     		}
-		   		     	});
-   		        	refresh();
-   		        }
-   		 });
-    });
+								}
+								if(data.status=="500"){
+									layer.alert( "删除失败，卷组正在使用！", {
+										icon: 1
+									});
+								}
+		   		     			},
+		   		     			error:function(){
+		   		     				layer.alert( "删除失败", {
+		   		     					icon: 0.5
+		   		     				});
+		   		     			}
+		   		     		});
+   		        		refresh();
+   		        	}
+   		 	});
+    	});
     
 };
 /**
@@ -190,31 +189,28 @@ function delStorages(){
         	ids.push(obj[k].value);
         }
     }
- layer.open({
+    if ("" == ids) {
+		layer.alert("请选择至少一个卷组", {icon:0});
+		return;
+	}
+    layer.open({
         title: '删除卷组',
         content: '确定批量删除卷组？',
         btn: ['确定', '取消'],
         yes: function(index, layero){ 
         	layer.close(index);
-        	if(""==ids){
-        		alert("你总要选一个呀");
-        		return;
-        	}
 			$.ajax({
 				url:""+ctx+"/service/storage/delete?ids="+ids,
 				success:function(data){
 					data = eval("(" + data + ")");
-   		   if(data.status=="500"){
-	     			layer.msg( "删除失败，有卷组正在使用，你不考虑一下？", {
-						icon: 1
-	     				});
-   		   	}else if(data.status=="200"){
-						layer.alert("服务已删除");
+		   		   if(data.status=="500"){
+		     			layer.alert( "删除失败，有卷组正在使用!!", {icon: 1});
+		   		   	}else if(data.status=="200"){
+						layer.alert("卷组已删除");
 						window.location.reload();   		   				 
-   		   	}else{
-   		   	layer.alert("服务删除失败，请检查服务器连接");
-   		   	}
-
+		   		   	}else{
+		   		   		layer.alert("卷组删除失败，请检查服务器连接");
+		   		   	}
 				}
 			})
         }
@@ -255,7 +251,7 @@ function dilatationStorage(){
 					success:function(data){
 						data = eval("(" + data + ")");
 						if(data.status=="200"){
-							layer.msg( "修改成功！", {
+							layer.alert( "修改成功！", {
 		   						icon: 1
 		   					},function(){
 		   						window.location.reload();
