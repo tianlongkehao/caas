@@ -255,7 +255,8 @@ li.line-h-3 {
 }
 
 .number-node {
-    background: #6190BE;
+    /* background: #6190BE; */
+    background: #81a6ea;
     color: #fff;
     border: 2px solid #D9E2EB;
     border-radius: 50%;

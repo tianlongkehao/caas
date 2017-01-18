@@ -154,7 +154,7 @@
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$('.dataTables-example').dataTable({
-	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,3] }]
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,4] }]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
 		

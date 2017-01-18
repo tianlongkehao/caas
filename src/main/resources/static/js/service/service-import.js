@@ -177,9 +177,10 @@
 			     		}else{
 			     			tr+='<td style="width: 10%;">仅本租户可见</td>';
 			     		}
-			     		tr+='<td style="width: 14%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash fa-lg"></i></a>'+
+			     		tr+='<td style="width: 14%;">'+
 					     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
-					     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
+					     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'"><i class="fa fa-edit"></i></a>'
+					     		+'<a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash"></i></a></td>'+
 					     	'</tr>';
          	}
             $("#importSerList").append(tr);

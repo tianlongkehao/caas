@@ -1,4 +1,8 @@
 /* 蓝色 #3C7BCA 红色 #e8504f 背景circle蓝 #418ac7*/
+.layui-layer-btn .layui-layer-btn0{
+	background: #e8504f !important;
+	border-color: #e8504f!important;
+}
 .modalCrealApp .steps-main .progre .radius_step.action {
     border-bottom: 2px solid #e8504f;
     color: #e8504f;
@@ -88,6 +92,9 @@ a:hover{
 .bj-no-drop{
 	color:#e66;
 }
+.ci-powerOff{
+	color:#e8504f;
+}
 /* help */
 .book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
     color: #e8504f;
@@ -161,6 +168,10 @@ nav.navbar-default{
 .imageInfo{
     border-left: 3px solid #e14344;
 }
+.table_list .list_info.active {
+    background: #e8504f;
+    color: #fff;
+}
 /* 导航栏中的三个标签 */
 .navbar-tab ul li{
 	color:#e14344;
@@ -184,5 +195,10 @@ nav.navbar-default{
 nav.navbar-downSide{
     background-color: #e8504f;
 }
+/* service */
+#serviceList tr td a.a-live{
+	color:#e8504f;
+}
+
 
 
