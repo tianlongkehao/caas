@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.cluster.entity.CatalogResource;
 import com.bonc.epm.paas.cluster.entity.Collectivity;
 import com.bonc.epm.paas.cluster.entity.DetailInfo;
@@ -444,6 +445,15 @@ public class InfluxdbSearchService {
                     
                     List<DetailResource> containersOfPod= new ArrayList<DetailResource>();
                     List<String> containerNameLst = monCon.getAllContainerName(influxDB, dbName, nameSpaceParam, indexPodName);
+                    // 如果集群还未收集到container的监控信息，则使用k8s集群中的容器名字
+                    if (CollectionUtils.isEmpty(containerNameLst)) { 
+                        List<Container> containers = pod.getSpec().getContainers();
+                        if (CollectionUtils.isNotEmpty(containers)) {
+                            for (Container container : containers) {
+                                containerNameLst.add(container.getName());
+                            }
+                        }
+                    }
                     if (CollectionUtils.isNotEmpty(containerNameLst)) {
                         for (String containerName : containerNameLst) {
                             DetailResource detailResource = generateContainerMonitorInfo(influxDB, timePeriod, nameSpaceParam, indexPodName,containerName);
@@ -455,10 +465,21 @@ public class InfluxdbSearchService {
                 }
             }
         } else if (StringUtils.isNotBlank(nameSpaceParam) && StringUtils.isNotBlank(podNameParam)) {  //以namespace和podName过滤
+            KubernetesAPIClientInterface clientNamespace = kubernetesClientService.getClient(nameSpaceParam);
             CatalogResource podCatalogResource = new CatalogResource();
             podCatalogResource.setName(podNameParam);
             List<DetailResource> containersOfPod= new ArrayList<DetailResource>();
             List<String> containerNameLst = monCon.getAllContainerName(influxDB, dbName, nameSpaceParam, podNameParam);
+            // 如果集群还未收集到container的监控信息，则使用k8s集群中的容器名字
+            if (CollectionUtils.isEmpty(containerNameLst)) {
+                Pod pod = clientNamespace.getPod(podNameParam);
+                List<Container> containers = pod.getSpec().getContainers();
+                if (CollectionUtils.isNotEmpty(containers)) {
+                    for (Container container : containers) {
+                        containerNameLst.add(container.getName());
+                    }
+                }
+            }
             if (CollectionUtils.isNotEmpty(containerNameLst)) {
                 for (String containerName : containerNameLst) {
                     DetailResource detailResource = generateContainerMonitorInfo(influxDB, timePeriod, nameSpaceParam, podNameParam,containerName);

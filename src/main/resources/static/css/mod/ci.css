@@ -514,7 +514,7 @@ tr.focus{
 	width:25px;
 }
 .c-project-tit{
-	width:11%;
+	width:12%;
 	line-height:34px;
 	margin-left:10px;
 	float:left;
@@ -552,6 +552,7 @@ textarea.c-project-con{
 .addCiStepRow{
 	width: 98%;
     margin: 0 auto;
+    margin-top:15px;
 }
 .addCiStepRow .col-sm-12 .ibox-title{
 	border-top: 1px solid #dadada;
@@ -720,9 +721,12 @@ td.autocut{
 }
 .ci-powerOff{
 	font-size:19px;
-	color:#3c7bca;
+	/* color:#3c7bca; */
 }
 .cursor-no-drop i.fa-arrow-circle-right{
     cursor:no-drop;
     color:#333;
+}
+#editCiBtn{
+	margin-right:10px;
 }
