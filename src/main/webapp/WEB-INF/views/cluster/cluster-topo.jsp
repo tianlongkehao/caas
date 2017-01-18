@@ -4,8 +4,6 @@
 <head lang="en">
     <title>集群</title>
     <%@include file="../frame/header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
-    <script type="text/javascript" src="<%=path %>/js/cluster/cluster.js"></script>
     <script type="text/javascript" src="<%=path %>/js/cluster/cluster-topo.js"></script>
     <script type="text/javascript" src="<%=path %>/plugins/echarts-2.2.7/build/dist/echarts.js"></script>
 </head>
@@ -45,7 +43,7 @@
 				</div>
 				<div class="ibox-content" style="padding:0px"></div>
                     <c:if test="${user == 'user' }">
-	                    <div class="searchFun" style="text-align: center; float: right; position:absolute;right:35px;top:66px"
+	                    <div class="searchFun" style="text-align: center; float: right; position:absolute;right:35px;top:66px;z-index:1100"
 	                                 align="right">
 	                            <label style="line-height: 35px">服务:</label>
 	                            <select name="search_service" id="search_service" onchange="searchService(this)"
