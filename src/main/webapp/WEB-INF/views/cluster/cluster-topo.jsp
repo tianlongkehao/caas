@@ -4,6 +4,7 @@
 <head lang="en">
     <title>集群</title>
     <%@include file="../frame/header.jsp" %>
+    <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
     <script type="text/javascript" src="<%=path %>/js/cluster/cluster-topo.js"></script>
     <script type="text/javascript" src="<%=path %>/plugins/echarts-2.2.7/build/dist/echarts.js"></script>
 </head>
