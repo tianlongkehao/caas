@@ -410,25 +410,32 @@ public class ServiceController {
 	    List<Container> containerList = new ArrayList<Container>();
   		// 通过服务名获取pod列表
 	    if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
-	    	com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
-	    	PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
-	    	if (podList != null) {
-	    		List<Pod> pods = podList.getItems();
-	    		if (CollectionUtils.isNotEmpty(pods)) {
-	    			int i = 1;
-	    			for (Pod pod : pods) {
-	    				for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
-	    					Container container = new Container();
-	    					container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-	    					container.setServiceid(service.getId());
-	    					containerList.add(container);
+	    	com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+	    	try {
+	    		k8sService = client.getService(service.getServiceName());
+			} catch (Exception e) {
+				k8sService = null;
+			}
+	    	if (k8sService != null) {
+	    		PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+	    		if (podList != null) {
+	    			List<Pod> pods = podList.getItems();
+	    			if (CollectionUtils.isNotEmpty(pods)) {
+	    				int i = 1;
+	    				for (Pod pod : pods) {
+	    					for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
+	    						Container container = new Container();
+	    						container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+	    						container.setServiceid(service.getId());
+	    						containerList.add(container);
+	    					}
+	    					com.bonc.epm.paas.entity.Pod current_pod = new com.bonc.epm.paas.entity.Pod();
+	    					current_pod.setPodName(pod.getMetadata().getName());
+	    					podNameList.add(current_pod);
 	    				}
-	    				com.bonc.epm.paas.entity.Pod current_pod = new com.bonc.epm.paas.entity.Pod();
-	    				current_pod.setPodName(pod.getMetadata().getName());
-	    				podNameList.add(current_pod);
 	    			}
 	    		}
-	    	}
+			}
 		}
         List<Storage> storageList = storageDao.findByServiceId(service.getId());
         model.addAttribute("storageList", storageList);
@@ -776,20 +783,12 @@ public class ServiceController {
 		 * 判断服务信息是否有改动，有改动则删除rc和svc
 		 *************************************/
 		if (service.getIsModify() == ServiceConstant.MODIFY_TRUE) {
-			try {
-				//删除svc
-				if (k8sService != null) {
-					client.deleteService(service.getServiceName());
-				}
-				//删除rc
-				if (controller != null) {
-					client.deleteReplicationController(service.getServiceName());
-				}
-			} catch (KubernetesClientException e) {
-				e.printStackTrace();
+			if (delSvcAndRc(service) == false) {
 				map.put("status", "500");
 				return JSON.toJSONString(map);
 			}
+			k8sService = null;
+			controller = null;
 		}
 
 		/***************************************
@@ -2441,6 +2440,10 @@ public class ServiceController {
 	public String editBaseSerForm(Model model, Service service) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Service ser = serviceDao.findOne(service.getId());
+		if (delSvcAndRc(ser) == false) {
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
 		//服务名
 		ser.setServiceName(service.getServiceName());
 		//启动命令
@@ -2793,5 +2796,46 @@ public class ServiceController {
         catch (Exception e) {
             LOG.error("garbage pod delete failed. error message:-"+e.getMessage());
         }
+	}
+	public boolean delSvcAndRc(Service service) {
+		// 使用k8s管理服务
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+		ReplicationController controller = null;
+		
+		/*************************************
+		 * 服务不是未启动状态时,获取svc和rc
+		 *************************************/
+		if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
+			try {
+				// 获取svc
+				k8sService = client.getService(service.getServiceName());
+			} catch (KubernetesClientException e) {
+				k8sService = null;
+			}
+			try {
+				// 获取rc
+				controller = client.getReplicationController(service.getServiceName());
+			} catch (KubernetesClientException e) {
+				controller = null;
+			}
+		}
+		/*************************************
+		 * 判断服务信息是否有改动，有改动则删除rc和svc
+		 *************************************/
+		try {
+			// 删除svc
+			if (k8sService != null) {
+				client.deleteService(service.getServiceName());
+			}
+			// 删除rc
+			if (controller != null) {
+				client.deleteReplicationController(service.getServiceName());
+			}
+		} catch (KubernetesClientException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

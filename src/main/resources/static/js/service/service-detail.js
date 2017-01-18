@@ -424,58 +424,6 @@ function getCurrentPodlogs(){
 }
 
 
-//function getServiceLogs(){
-//	var id = $('#datePicker').attr('serviceid');
-//	var serviceName = $('#datePicker').attr('serviceName');
-//	var date = $('#date_log').val();
-//	$.ajax({
-//		url:ctx+"/service/detail/getLogsByService.do?id="+id+"&date="+date,
-//		success:function(data){
-//			data = $.parseJSON(data);
-//			var html = "";
-//			if(data.status == '200' && data.logList != ""){
-//				var logs = data.logList;
-//				console.log(logs)
-//				for(var i = 0; i < logs.length; i++){
-//					var num = i+1;
-//					html += '<div class="ci-body container" style="padding-top: 10px; padding-bottom: 30px; width:96%">'
-//						+ '<div class="">'
-//						+ '<div class="code-tabmain">'
-//						+ '<div class="log-details" id="">'
-//						+ '<div class="event-line " repotype="" status="success">'
-//						+ '<div class="event-status success">'
-//						+ '<i class="fa fa-check notes"></i>'
-//						+ '</div>'
-//						+ '<div class="time-line-content">'
-//						+ '<div class="time-line-reason event-title">'
-//						+ '<div class="title-name success">'
-//						+ '<span class="event-names">'+serviceName+num+' </span>'
-//						+'</div>'
-//						+ '<div class="time-line-time">'
-//						+ '<div class="event-sign " onclick="ServiceEvent(this)">'
-//						+ '<i class="fa fa-angle-right fa_caret" style="transform: rotate(0deg);"></i>'
-//						+ '</div>'
-//						+ '</div>'
-//						+ '<div class="containerLog time-line-message" style="min-height: 500px; margin-top: 50px">'
-//						+ '<div class="weblog logList">'
-//						+ '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">'
-//						+ logs[i]
-//						+ '</pre>'
-//						+ '</div></div></div></div></div></div></div></div></div><br>';
-//				}	
-//				$("#hisLogList").html("");
-//				$("#hisLogList").html(html);
-//				$(".event-sign").addClass("lives");
-//				$(".event-sign").parent().parent().children(".time-line-message").css("display","block");
-//				$(".event-sign").children(".fa_caret").css("transform", "rotate(90deg)");
-//			}else{
-//				html += '<pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">今天没有产生日志。</pre>'
-//				$("#hisLogList").html("");
-//				$("#hisLogList").html(html);
-//			}
-//		}	
-//	})
-//}
 
 
 function ServiceEvent(obj) {

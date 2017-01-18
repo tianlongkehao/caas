@@ -54,14 +54,16 @@
 							<li class="oldCon">服务地址：<a href="${service.serviceAddr}/${service.proxyPath}"target="_blank">
 								<span id="oldServiceAddr">${service.serviceAddr}</span>/
 								<span id="oldProxyPath">${service.proxyPath}</span>
-								</a><i id="editServiceAddrBtn" style="margin-left:20px" class="fa fa-edit"></i></li>
-							<li class="editCon">服务地址：
-							 <!--  <prex id=addrPrex ></prex> -->
-								<input id="editServiceAddr" type="text" value="${service.serviceAddr}">/
-								<input id="editProxyPath" type="text" value="${service.proxyPath}">
-								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i>
-								<i id="canclEdit" style="margin-left:6px" class="fa fa-times"></i>
-								</li>
+								</a>
+							</li>
+<!-- 								<i id="editServiceAddrBtn" style="margin-left:20px" class="fa fa-edit"></i> -->
+<!-- 							<li class="editCon">服务地址： -->
+<!-- 							  <prex id=addrPrex ></prex> -->
+<%-- 								<input id="editServiceAddr" type="text" value="${service.serviceAddr}">/ --%>
+<%-- 								<input id="editProxyPath" type="text" value="${service.proxyPath}"> --%>
+<!-- 								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i> -->
+<!-- 								<i id="canclEdit" style="margin-left:6px" class="fa fa-times"></i> -->
+<!-- 								</li> -->
 							<li>创建时间：${service.createDate }</li>
 							<li>更新时间：${service.createDate }</li>
 						</ul>
@@ -90,19 +92,6 @@
 									
 								</ul>
 							</li>
-							
-<%-- 							<li><a class="historyLOG">历史日志</a></li>
-							<li class="dropdown">
-                                <a class="execCommand dropdown-toggle" id="dropdown-log"
-                                    data-toggle="dropdown"> 命令操作 <b class="caret"></b>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <c:forEach items="${podNameList}" var="pod" >
-                                        <li><a class="podName" podName="${pod.podName }" serviceid="${service.id }" namespace = "${namespace }" value="2" >${pod.podName }</a></li>
-                                    </c:forEach>
-                                </ul>
-                            </li>
---%>
 						</ul>
 					</div>
 
@@ -123,7 +112,9 @@
 									<th>基本信息</th>
 									<th>
 										<div style="float:right; margin-right:30px; color:#337ab7; font-size:19px">
-											<i class="fa fa-edit" id="editSerBtn" name="editSerBtn" title="修改"></i>
+											<c:if test="${service.status==1 or service.status==4}">
+												<i class="fa fa-edit" id="editSerBtn" name="editSerBtn" title="修改"></i>
+											</c:if>
 											<i class="fa fa-reply" id="restSerBtn" name="restSerBtn" title="还原"></i>
 											<i class="fa fa-save" id="saveSerBtn" name="saveSerBtn" title="保存"></i>
 											<i class="fa fa-times" id="canclSerBtn" name="canclSerBtn" title="取消"></i>
