@@ -2502,7 +2502,7 @@ public class ServiceController {
         Map<String, String> map = new HashMap<String, String>();
         PortConfig portCfg = portConfigDao.findOne(portConfig.getPortId());
         portCfg.setContainerPort(portConfig.getContainerPort());
-        portConfigDao.save(portCfg);
+        portCfg = portConfigDao.save(portCfg);
         // 保存服务信息
         Service service = serviceDao.findOne(serviceId);
         service.setIsModify(ServiceConstant.MODIFY_TRUE);
@@ -2512,7 +2512,7 @@ public class ServiceController {
 		service.setUpdateBy(currentUser.getId());
 		serviceDao.save(service);
 		// 保存服务操作信息
-		serviceOperationLogDao.save(service.getServiceName(), service.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
+		serviceOperationLogDao.save(service.getServiceName(), portCfg.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
         map.put("status", "200");
         
         
@@ -2535,7 +2535,7 @@ public class ServiceController {
         envVar = envVariableDao.findOne(envVariable.getEnvId());
         envVar.setEnvKey(envVariable.getEnvKey());
         envVar.setEnvValue(envVariable.getEnvValue());
-        envVariableDao.save(envVar);
+        envVar = envVariableDao.save(envVar);
         // 保存服务信息
         Service service = serviceDao.findOne(serviceId);
         service.setIsModify(ServiceConstant.MODIFY_TRUE);
@@ -2545,7 +2545,7 @@ public class ServiceController {
 		service.setUpdateBy(currentUser.getId());
 		serviceDao.save(service);
 		// 保存服务操作信息
-		serviceOperationLogDao.save(service.getServiceName(), service.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
+		serviceOperationLogDao.save(service.getServiceName(), envVar.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
         map.put("status", "200");
         //返回状态
         map.put("status", "200");
@@ -2580,7 +2580,7 @@ public class ServiceController {
 		service.setUpdateBy(currentUser.getId());
 		serviceDao.save(service);
 		// 保存服务操作信息
-		serviceOperationLogDao.save(service.getServiceName(), service.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
+		serviceOperationLogDao.save(service.getServiceName(), env.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
         return JSON.toJSONString(env);
     }
     /**
@@ -2604,7 +2604,7 @@ public class ServiceController {
 		service.setUpdateBy(currentUser.getId());
 		serviceDao.save(service);
 		// 保存服务操作信息
-		serviceOperationLogDao.save(service.getServiceName(), service.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
+		serviceOperationLogDao.save(service.getServiceName(), env.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
 		try {
 			envVariableDao.delete(envId);
 			map.put("status", "200");
@@ -2634,7 +2634,7 @@ public class ServiceController {
 		service.setUpdateBy(currentUser.getId());
 		serviceDao.save(service);
 		// 保存服务操作信息
-		serviceOperationLogDao.save(service.getServiceName(), service.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
+		serviceOperationLogDao.save(service.getServiceName(), portConfig.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
 		try {
 			portConfigDao.delete(portId);
 			map.put("status", "200");
@@ -2670,7 +2670,7 @@ public class ServiceController {
 		service.setUpdateBy(currentUser.getId());
 		serviceDao.save(service);
 		// 保存服务操作信息
-		serviceOperationLogDao.save(service.getServiceName(), service.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
+		serviceOperationLogDao.save(service.getServiceName(), pCfg.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("pCfg", pCfg);
         map.put("service",service);

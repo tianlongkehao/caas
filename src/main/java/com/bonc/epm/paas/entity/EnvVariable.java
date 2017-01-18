@@ -106,5 +106,9 @@ public class EnvVariable {
 	public void setTemplateName(String templateName) {
 		this.templateName = templateName;
 	}
-	
+	@Override
+	public String toString() {
+		return "envId:" + envId + "createBy:" + createBy + "envKey:" + envKey + "envValue:" + envValue + "serviceId:"
+				+ serviceId + "templateName:" + templateName + "createDate:" + createDate;
+	}
 }

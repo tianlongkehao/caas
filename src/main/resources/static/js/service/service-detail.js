@@ -627,7 +627,29 @@ function savePortEdit(obj){
    var id =$(obj).parent().parent().find("input.portId").val();
    var serId =$("#serId").val();
    var serName =$("#serviceName").val();
-   if(1== checkRepPortCfg(obj,id,port)){return;}
+
+	if (1 == checkRepPortCfg(obj, id, port)) {
+		return;
+	}
+	if (!port || port.length < 1) {
+		layer.tips('容器端口不能为空', $(obj).parent().parent().find("input.containerPort"), {
+			tips : [1, '#3595CC']
+		});
+		$(obj).parent().parent().find("input.containerPort").focus();
+		flag = true;
+		return;
+	}
+	if (port.search(/^[0-9]*$/) === -1) {
+		layer.tips('容器端口只能是数字组成', $(obj).parent().parent().find("input.containerPort"), {
+			tips : [1, '#3595CC'],
+			time : 3000
+		});
+		$(obj).parent().parent().find("input.containerPort").focus();
+		flag = true;
+		return;
+	}
+
+
    $(obj).parent().find("i.editPortAddrBtn").show();
    $(obj).next().hide();
    $(obj).parent().parent().find("span.oldPortConfig").show();
@@ -659,10 +681,30 @@ function addPortCfgClick(obj){
 			var protocol= $("#protocol").val();
 			var mapPort =$("#mapPort").val();
 			var serId =$("#serId").val();
-			if(1== checkRepPortCfg(obj,null,containerPort)){
-			layer.tips('容器端口不能重复',"#containerPort",{tips: [1, '#3595CC']});
-			   ("#containerPort").focus();
-			   return;}
+			if (1 == checkRepPortCfg(obj, null, containerPort)) {
+				layer.tips('容器端口不能重复', "#containerPort", {
+					tips : [1, '#3595CC']
+				});
+				$("#containerPort").focus();
+				return;
+			}
+			if (!containerPort || containerPort.length < 1) {
+				layer.tips('容器端口不能为空', $("#containerPort"), {
+					tips : [1, '#3595CC']
+				});
+				$("#containerPort").focus();
+				flag = true;
+				return;
+			}
+			if (containerPort.search(/^[0-9]*$/) === -1) {
+				layer.tips('容器端口只能是数字组成', $("#containerPort"), {
+					tips : [1, '#3595CC'],
+					time : 3000
+				});
+				$("#containerPort").focus();
+				flag = true;
+				return;
+			}
 			$.ajax({
 				url : ctx + "/service/detail/addPortCfg.do?containerPort="+containerPort+"&protocol="+protocol+"&mapPort="+mapPort+"&serviceId="+serId,
 				type: "GET",
@@ -864,35 +906,3 @@ function addEnvClick(obj){
 			   });
 			 return flag;
 	}
-// 添加端口
-/*function addPortCfg(){
-	$.ajax({
-		url : ctx + "/service/generatePortSet.do",
-		type: "GET",
-		success : function(data) {
-			data = eval("(" + data + ")");
-			if(!data.mapPort||"error"==(data.ERROR)){
-				alert("可用映射端口已经用尽，请联系管理员。");
-		}else{
-			var portTr='';
-			 portTr +='<tr>'
-					+'<td style="width:10%;text-indent: 15px;"></td>'
-				  +'<td style="width:10%;" class="portConfig"><input type="text" name="containerPort" />'
-				  +'</td>'
-				  +'<td style="width:10%;"><select class="T-http">'
-					+'<option>TCP</option><option>HTTP</option></select></td>'
-					+'<td style="width:10%;">'+data.mapPort+'</td>'
-					+'<td style="width:50%;"></td>'
-					+'<td style="width:10%;" class="editBtn">'
-					+'<i onclick="editPortAddrBtn(this)"  type="button" value="修改"  class="fa fa-edit oldPortConfig editPortAddrBtn"></i>'
-					+'<i onclick="savePortEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig savePortEdit"></i>'
-					+'<i onclick="canclPortEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>'
-				+'</td></tr>';
-		};
-			$("#editPortCfgBody").append(portTr);
-			//调节界面高度
-			var imagePage_height = $(".host_step2").height();
-	    	$(".step-inner").height(imagePage_height+100);
-		}
-	});
-};*/
