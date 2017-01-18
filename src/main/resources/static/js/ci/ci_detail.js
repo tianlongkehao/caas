@@ -30,8 +30,6 @@ $(document).ready(function(){
         $(".btn-version").css("width",btnVersionWidth);
     }
     
-    
-    
     //是否选中hook
     if ($("#isHookCode").val() == 1) {
     	document.getElementById("HookCode").checked=true
@@ -118,7 +116,7 @@ $(document).ready(function(){
     //关闭ibox
     $(document).on('click','.close-link',function(){
         var content = $(this).closest('div.ibox');
-        content.remove();
+        content.parent().parent().remove();
     });
     
 	//拖拽
