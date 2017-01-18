@@ -57,8 +57,8 @@ $(document).ready(function () {
     
     //是否为基础镜像提示信息
     $("#is-baseImage").click(function(){
-    	layer.tips('默认为非基础镜像', '#is-baseImage', {
-            tips: [2, '#0FA6D8'] //还可配置颜色
+	    	layer.tips('sshd : 调试模式;</br> ths : 固化线程池模式 ;</br> nio : 无尽线程模式; </br> scp : 文件拷贝模式 ; </br> redis : session共享高可用模式 ;</br> apm : pinpoint监控模式  ', '#is-baseImage', {
+            tips: [1, '#0FA6D8'] 
         });
     });
     
@@ -80,7 +80,7 @@ $(document).ready(function () {
 	            	if (data['data'].length > 0) {
 	            		for (var i in data.data) {
 	            			var image = data.data[i];
-	            			html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>"
+	            			html += "<option type='text' value='"+image.id+"'>" + image.version +"</option>"
 	            		}
 	            	}
 	            }

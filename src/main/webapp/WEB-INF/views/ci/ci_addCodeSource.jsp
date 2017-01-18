@@ -45,6 +45,7 @@
 										<select id="baseImageId" name="baseImageId">
 										
 										</select>
+										<span style="color:#1dd2af" id="is-baseImage"><i class="fa fa-info-circle"></i></span>
 										<%-- <input id="baseImageName" name="baseImageName" type="text" 
                                                value="${docker_regisgtry_address }/bonc/tomcat" style="width:218px"> :
                                         <input id="baseImageVersion" name="baseImageVersion" type="text" value="8-jre7"> --%> 
