@@ -88,6 +88,9 @@ a:hover{
 .bj-no-drop{
 	color:#3c7bca;
 }
+.ci-powerOff{
+	color:#3c7bca;
+}
 /* help */
 .book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
     color: #2e384a;
@@ -154,7 +157,10 @@ nav.navbar-default{
 .imageInfo{
     border-left: 3px solid #4e8fde;
 }
-
+.table_list .list_info.active {
+    background: #4280CB;
+    color: #fff;
+}
 /* 导航栏中的三个标签 */
 .navbar-tab ul li{
 	color:#4e8fde;
@@ -178,5 +184,8 @@ nav.navbar-default{
 nav.navbar-downSide{
     background-color: #1e426f;
 }
-
+/* service */
+#serviceList tr td a.a-live{
+	color:#3c7bca;
+}
 

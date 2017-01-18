@@ -305,8 +305,8 @@
 			                        	</section>
 			                            <div class="form-group">
                                             <label class="col-2x control-label"></label>
-                                            <div class="col-sm-10">
-                                                <br><input type="button" id="editCiBtn" class="btn btn-primary btn-color pull-right" value="确认修改">
+                                            <div class="col-sm-12">
+                                                <input type="button" id="editCiBtn" class="btn btn-primary btn-color pull-right" value="确认修改">
                                             </div>
                                         </div>
                                         <input type="hidden" id="id" name="id" value="${ci.id}">

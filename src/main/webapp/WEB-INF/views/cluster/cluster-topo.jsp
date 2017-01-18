@@ -45,7 +45,7 @@
 				</div>
 				<div class="ibox-content" style="padding:0px"></div>
                     <c:if test="${user == 'user' }">
-	                    <div class="searchFun" style="text-align: center; float: right; position:absolute;right:35px;top:66px"
+	                    <div class="searchFun" style="text-align: center; float: right; position:absolute;right:35px;top:66px;z-index:1100"
 	                                 align="right">
 	                            <label style="line-height: 35px">服务:</label>
 	                            <select name="search_service" id="search_service" onchange="searchService(this)"

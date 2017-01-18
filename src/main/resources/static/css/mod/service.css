@@ -873,9 +873,10 @@ tr.focus{
 #importServiceBtn{
     cursor: pointer;
 }
-.editButton{
-    margin-left: 7px;
+.deleteButton{
+    margin-left: 8px;
 }
+
 #import-service form table tbody tr td input{
     width: 95%;
 }
@@ -1061,7 +1062,7 @@ li.line-h-3 span i{
 #serviceList tr td a.a-live{
 	line-height:40px;
 	float:left;
-	color:#3c7bca;
+	/* color:#3c7bca; */
 }
 #serviceList tr td ul.dropdown-menu{
 	margin-top:36px!important;
