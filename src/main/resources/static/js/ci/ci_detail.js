@@ -118,7 +118,7 @@ $(document).ready(function(){
     //关闭ibox
     $(document).on('click','.close-link',function(){
         var content = $(this).closest('div.ibox');
-        content.remove();
+        content.parent().parent().remove();
     });
     
 	//拖拽
