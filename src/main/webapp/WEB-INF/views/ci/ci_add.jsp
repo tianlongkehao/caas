@@ -213,7 +213,7 @@
                 </div>
                 <!-- 添加证书 -->
 			     <div id="addCredentialsCon">           
-			        <div style="width:345px;margin: 15px 15px">
+			        <div style="margin: 15px 15px">
 			            <div class="infoCred">
 			                <span class="labelCred">仓库：</span> 
 			                <select class="form-control conCred" id="codeType" name="codeType">

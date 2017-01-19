@@ -55,7 +55,7 @@
 								<div class="row">
 									<div class="form-group col-md-12">
 										<label class="col-md-2 s-title">存储大小：</label>
-										<div class="col-md-8 storageSizes" style="line-height:34px">
+										<div class="col-md-10 storageSizes" style="line-height:34px">
 											<input type="radio" name="storageSize" class="storageSize" id="size20"
 												value="20480"><label for="size20">20<span class="s-unit">G</span></label> 
 											<input type="radio" name="storageSize" class="storageSize" id="size50" 

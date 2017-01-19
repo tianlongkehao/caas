@@ -42,11 +42,11 @@
                                         <span style="float:left;line-height:34px">模板名称：</span>
                                          <input type="hidden" id="envId" value = "" />
                                         <input type="text" class="form-control" id="envTemplateName" style="width: 72%;float:left" disabled value = "${templateName }" />
+                                    	<div class="form-group" style="float:right;margin-top:7px;">
+											<span id="crateEnvVariate" class=" btn-info btn-sm">添加环境变量</span>
+											<span id="importBtn" class=" btn-info btn-sm">导入模板</span>
+										</div>
                                     </div>
-									<div class="form-group" style="float:right">
-										<span id="crateEnvVariate" class=" btn-info btn-sm">添加环境变量</span>
-										<span id="importBtn" class=" btn-info btn-sm">导入模板</span>
-									</div>
 									<li class="hide-set">
 										<ol>
 											<li>
