@@ -55,13 +55,6 @@ $(document).ready(function () {
         }
     });
     
-    //是否为基础镜像提示信息
-    $("#is-baseImage").click(function(){
-	    	layer.tips('sshd : 调试模式;</br> ths : 固化线程池模式 ;</br> nio : 无尽线程模式; </br> scp : 文件拷贝模式 ; </br> redis : session共享高可用模式 ;</br> apm : pinpoint监控模式  ', '#is-baseImage', {
-            tips: [1, '#0FA6D8'] 
-        });
-    });
-    
     //添加基础镜像的版本信息
     $("#baseImageName").change(function(){
     	changeBaseImageVersion ();
@@ -247,3 +240,13 @@ $(document).ready(function () {
  
 });
 
+
+function serviceExtraInfo(obj){
+	layer.tips('sshd : 调试模式;</br> ths : 固化线程池模式 ;</br> nio : 无尽线程模式; </br> scp : 文件拷贝模式 ; </br> redis : session共享高可用模式 ;</br> apm : pinpoint监控模式  ', $(obj), {
+		tips: [2, 'rgba(237,114,114,0.75)'],area: ['240px', '135px'],time:60000
+	});
+}
+function ExtraInfo(obj){
+	
+	layer.closeAll('tips'); 
+}
