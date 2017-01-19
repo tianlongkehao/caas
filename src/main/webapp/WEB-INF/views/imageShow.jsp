@@ -25,7 +25,7 @@
     </div>
 </header>  
 
-    <div class="page-imageContainer" style="margin-left:10px;margin-top:30px">
+    <div class="page-imageContainer container" style="margin-top:40px">
         <article>
             <div class="page-main">
                 <div class="contentMain">
@@ -38,6 +38,7 @@
                                 <input  class="search-img" placeholder="搜索镜像" type="text"><button type="submit" class="btn btn-default btn-color btn-send">搜索</button>
                             </form>
                         </div>
+                        
                         <div class="images-layout">
                         	<div class="imageInfo">推荐镜像</div>
                             <ul id="imageList" style="height:460px">
@@ -75,44 +76,9 @@
                                         
                                     </li>
                                </c:forEach>     
-                                    <li class="images-panel hide">
-                                        <div class="select-img">
-	                                        <c:if test="${image.currUserFavor==0 }">
-	                                            <i class="fa fa-star-o star-style" style="color:#4280CB"></i>
-	                                        </c:if>
-	                                        <c:if test="${image.currUserFavor==1 }">
-	                                            <i class="fa fa-star star-style" style="color:#efa421"></i>
-	                                        </c:if>
-                                            <div class="mir-img ">
-                                                <img src="<%=path %>/images/image-1.png">
-                                            </div>
-                                        </div>
-                                        <div class="select-info">
-                                            <div class="pull-right-text">${image.name}
-                                             	
-	                                            	<span class="btn btn-link lock">
-	                                            		<i class="fa "></i>
-	                               					</span>
-                               					
-                                            </div>
-                                            <div>
-                                            	<i class="fa fa-tag"></i> ${image.version }
-                                                <div class="pull-right">
-                                                    <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}" class="btn-pull-deploy btn" imageversion="${image.version}" imagename="${image.name}" >部署</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="create-item">
-                                            <a href="<%=path %>/registry/detail/${image.id }">
-                                                <span class="note-text" > ${image.summary } </span>
-                                            </a>
-                                        </div>
-                                    </li>
-
-                                
-
+                                   
                             </ul><br>
-                            <div class="imageInfo">最新镜像</div>
+                            <div class="imageInfo" style="position:absolute;top:685px"><span>最新镜像</span></div><br>
                             <ul id="newimageList" style="height:460px">
                                 <c:forEach items="${newImage }" var = "image" varStatus="status">
                                     <c:if test="${status.index < 8 }">
