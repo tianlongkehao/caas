@@ -2,7 +2,12 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-	<title>模板</title>
+	<title>通用日志</title>
+	<style type="text/css">
+        .layui-layer-content{
+		   	  word-break: break-all;
+		 }
+    </style>
 	<%@include file="../frame/header.jsp"%>
 	<script type="text/javascript" src="<%=path%>/js/log/logCommon.js"></script>
 </head>

@@ -67,7 +67,8 @@ $(document).ready(function () {
                     		if (data == null || data == "") {
                     			return "";
                     		}
-                    		return data;
+                    		var html = "<td><a onmouseover='comExtraInfo(this)' onmouseout='ExtraInfo(this)' comExtraInfo='"+row.extraInfo+"'>"+data+"</a></td>";
+							return html;
                     	}	
                     },
                     { 
@@ -108,3 +109,12 @@ $(document).ready(function () {
                    ]
 	});
 })
+function comExtraInfo(obj){
+	var comExtraInfo = $(obj).attr('comExtraInfo');
+	layer.tips(comExtraInfo, $(obj) ,{
+		  tips: [2, 'rgba(237,114,114,0.75)'],area: ['640px', '135px'],time:60000}
+	);
+}
+/*function ExtraInfo(){
+	layer.closeAll('tips'); 
+}*/
