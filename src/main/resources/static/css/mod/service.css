@@ -264,7 +264,7 @@
 }
 
 .image-item .id {
-    width: 300px;
+    width: 260px;
     display: inline-block;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -303,7 +303,7 @@
 
 .modalCrealApp .in_style,
 .modalCrealApp .select-versions {
-    width: 83%;
+    width: 82%;
 }
 .in_style_mid{
     width: 81.5%;
@@ -914,7 +914,7 @@ tr.focus{
 .checkitems li input{
 	border: 1px solid #ccc;
 	text-indent: 8px;
-	width:208px;
+	width:170px;
 	line-height:24px;
 	float:left;
 }
@@ -1082,7 +1082,6 @@ li.line-h-3 span i{
 #addVolume{
 	cursor: pointer;
     line-height: 34px;
-    margin-left: 10px;
 }
 
 .table .BORDER-vol td {
@@ -1131,4 +1130,7 @@ p.portLabel input{
 	margin-left:6px;
 	color:#e14344;
 	font-size:15px;
+}
+#mountPath{
+	margin-left:10px;
 }

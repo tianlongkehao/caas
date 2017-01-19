@@ -124,7 +124,7 @@
 														<th style="width: 25%; text-indent: 30px;">文件名</th>
 														<th style="width: 20%; text-indent: 15px;">大小</th>
 														<th style="width: 25%; text-indent: 8px;">修改日期</th>
-														<th style="width: 10%; text-indent: 100px;"
+														<th style="width: 10%; text-indent: 50px;"
 															class="del-operation">操作</th>
 													</tr>
 												</thead>
