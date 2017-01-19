@@ -42,21 +42,21 @@
                                         
                                             <div class="row">
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left ;" >登录账号:</label>
+                                                    <label style="width: 20%; float: left ;" title="登录账号">登录账号:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="userName" name="userName" value="${user.userName }" readonly="readonly">
 													<input type="hidden" id="user_id" name="id" value="${user.id}">                                                   
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left ;" >姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
+                                                    <label style="width: 20%; float: left ;" title="姓名">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_realname" name="user_realname" value="${user.user_realname }" readonly="readonly">
 													                                                    
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left ;" >权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
+                                                    <label style="width: 20%; float: left ;" title="权限">权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="hidden" id="user_autority_hidden"  name="user_autority" value="${user.user_autority}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
@@ -72,7 +72,7 @@
 
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left ;" >省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
+                                                    <label style="width: 20%; float: left ;" title="省份">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="hidden" id="user_province_hidden" value="${user.user_province}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
@@ -111,42 +111,42 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left ;" >公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
+                                                    <label style="width: 20%; float: left ;" title="公司">公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="company" name="company" value="${user.company }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >所属部门:</label>
+                                                    <label style="width: 20%; float: left;" title="所属部门">所属部门:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_department" name="user_department" value="${user.user_department }">
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
+                                                    <label style="width: 20%; float: left;" title="工号">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
                                                            id="user_employee_id" name="user_employee_id" value="${user.user_employee_id }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >手机号码:</label>
+                                                    <label style="width: 20%; float: left;" title="手机号码">手机号码:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_cellphone" name="user_cellphone" value="${user.user_cellphone }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >固定电话:</label>
+                                                    <label style="width: 20%; float: left;" title="固定电话">固定电话:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_phone" name="user_phone" value="${user.user_phone }">
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >电子邮箱:</label>
+                                                    <label style="width: 20%; float: left;" title="电子邮箱">电子邮箱:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
                                                            id="email" name="email" value="${user.email }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label style="width: 20%; float: left;" >密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
+                                                    <label style="width: 20%; float: left;" title="密码">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="pwd" name="password"  value="" >

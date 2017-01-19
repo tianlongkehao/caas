@@ -44,8 +44,8 @@
 									<div class="host_step1">
 										<div class="blankapp" style="text-align: center">
 											<div class="row">
-												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">登录账号:</label>
+												<div class="col-md-4" align="left" >
+													<label style="width: 20%; float: left; line-height: 35px" title="登录账号">登录账号:</label>
 													<label style="width: 2%; float: left;"><font
 														color="red">*</font></label> <input type="text" 
 														class="form-control"
@@ -53,7 +53,7 @@
 														id="userName" name="userName">
 												</div>
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="姓名">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
 													<label style="width: 2%; float: left;"><font
 														color="red">*</font></label> <input type="text" 
 														class="form-control"
@@ -61,7 +61,7 @@
 														id="user_realname" name="user_realname">
 												</div>
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">权限选择:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="权限选择">权限选择:</label>
 													<label style="width: 2%; float: left;"><font
 														color="red">*</font></label> <select class="form-control"
 														style="width: 75%; display: inline; float: right;"
@@ -74,7 +74,7 @@
 
 											<div class="row" style="margin-top: 15px">
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="省份">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
 													<label style="width: 2%; float: left;"><font
 														color="red">*</font></label> <select class="form-control"
 														style="width: 75%; display: inline; float: right;"
@@ -113,13 +113,13 @@
 													</select>
 												</div>
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="公司">公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
 													<input type="text" class="form-control"
 														style="width: 75%; display: inline; float: right;"
 														id="company" name="company">
 												</div>
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">所属部门:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="所属部门">所属部门:</label>
 													<input type="text" class="form-control"
 														style="width: 75%; display: inline; float: right;"
 														id="user_department" name="user_department">
@@ -127,19 +127,19 @@
 											</div>
 											<div class="row" style="margin-top: 15px">
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="工号">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
 													<input type="text" class="form-control"
 														style="width: 75%; display: inline; float: right;"
 														id="user_employee_id" name="user_employee_id">
 												</div>
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">手机号码:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="手机号码">手机号码:</label>
 													<input type="text" class="form-control"
 														style="width: 75%; display: inline; float: right;"
 														id="user_cellphone" name="user_cellphone">
 												</div>
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">固定电话:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="固定电话">固定电话:</label>
 													<input type="text" class="form-control"
 														style="width: 75%; display: inline; float: right;"
 														id="user_phone" name="user_phone">
@@ -148,7 +148,7 @@
 
 											<div class="row" style="margin-top: 15px">
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">电子邮箱:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="电子邮箱">电子邮箱:</label>
 													<label style="width: 2%; float: left;"><font
 														color="red">*</font></label> <input type="text" 
 														class="form-control"
@@ -156,7 +156,7 @@
 														id="email" name="email">
 												</div>
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">登陆密码:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="登录密码">登录密码:</label>
 													<label style="width: 2%; float: left;"><font
 														color="red">*</font></label> <input type="password" 
 														class="form-control"
@@ -164,7 +164,7 @@
 														id="pwd" name="password">
 												</div>
 												<div class="col-md-4" align="left">
-													<label style="width: 20%; float: left; line-height: 35px">确认密码:</label>
+													<label style="width: 20%; float: left; line-height: 35px" title="确认密码">确认密码:</label>
 													<label style="width: 2%; float: left;"><font
 														color="red">*</font></label> <input type="password" 
 														class="form-control"
