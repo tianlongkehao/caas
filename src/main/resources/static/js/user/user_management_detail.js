@@ -20,18 +20,22 @@ $(document).ready(function(){
 		}
 	}
 
-    $(".next2").click(function(){
+//    $(".next2").click(function(){
+//    	var flag = checkBasicInfo();
+//    	if(flag === false){
+//    		return;
+//    	}
+//    	$(".radius_step").removeClass("action").eq(1).addClass("action");
+//        $(".step-inner").css("left","-100%");
+//
+//    });
+
+
+    $("#user_create_next2").click(function(){
     	var flag = checkBasicInfo();
     	if(flag === false){
     		return;
     	}
-    	$(".radius_step").removeClass("action").eq(1).addClass("action");
-        $(".step-inner").css("left","-100%");
-
-    });
-
-
-    $("#user_create_next2").click(function(){
     	layer.open({
 			 title: '用户信息',
 			 content:'确定修改用户信息？',
@@ -83,6 +87,8 @@ function checkBasicInfo(){
 	var user_phone = $.trim($("#user_phone").val());
     var email = $.trim($('#email').val());
 
+    var password = $.trim($('#pwd').val());
+    
     if (email.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) !== -1) {
         if (email.length > 50) {
          layer.tips('邮箱长度不能大于50', $('#email'),{tips: [1, '#EF6578']});
@@ -100,6 +106,17 @@ function checkBasicInfo(){
           return false;
         }
       }
+    
+    if (password.length > 0) {
+    	if (password.length < 6) {
+    		layer.tips('密码过于简单，密码必须是数字、字母、特殊字符两种及以上的组合', '#pwd', {
+    			tips: [1, '#0FA6D8'] //还可配置颜色
+    		});
+    		$('#pwd').focus();
+    		return false;
+    	}
+    } 
+    
     
     $("#company").attr("value", company);
 	$("#user_department").attr("value", user_department);
