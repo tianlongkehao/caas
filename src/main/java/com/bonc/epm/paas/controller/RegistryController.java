@@ -115,6 +115,20 @@ public class RegistryController {
     
     /**
      * Description: <br>
+     * 镜像广场查询镜像重定向到镜像中心页面
+     * @param search
+     * @param request
+     * @return 
+     * @see
+     */
+    @RequestMapping(value = {"registry/search"}, method = RequestMethod.GET)
+    public String redirectImage(String search,HttpServletRequest request){
+        request.getSession().setAttribute("search", search);
+        return "redirect:/registry/0";
+    }
+    
+    /**
+     * Description: <br>
      * 进入镜像显示页面，镜像显示分三层分隔显示
      * @param index 显示哪一层的镜像
      * @param model 添加返回数据
@@ -159,6 +173,11 @@ public class RegistryController {
                                    HttpServletRequest request ){
         long userId = CurrentUserUtils.getInstance().getUser().getId();
         String search = request.getParameter("search[value]");
+        String searchShowqw = (String)request.getSession().getAttribute("search");
+        if (null != searchShowqw && "" != searchShowqw && search == "") {
+            search = searchShowqw;
+            request.getSession().setAttribute("search", "");
+        }
         Map<String,Object> map = new HashMap<String, Object>();
         PageRequest pageRequest = null;
         Page<Image> images = null;
@@ -684,6 +703,7 @@ public class RegistryController {
 	public String findUserFavorImage(Model model){
 	    long userId = CurrentUserUtils.getInstance().getUser().getId();
 	    List<Image> imageList = imageDao.findAllUserFavor();
+	    List<Image> newImage = new ArrayList<>();
 	    Page<Image> imagePage =  imageDao.findByImageType(userId, null);
 	    if (imageList.size() < 8) {
 	       while (imageList.size() < 8) {
@@ -694,14 +714,21 @@ public class RegistryController {
 	    for (Image image : imageList) {
 	        image.setCurrUserFavorCount(image.getFavorUsers().size());
 	    }
+	    
 	    Collections.sort(imageList,new Comparator<Image>(){
             public int compare(Image arg0, Image arg1) {
                 return arg1.getCurrUserFavorCount().compareTo(arg0.getCurrUserFavorCount());
             }
         });
+	    
+	    for (int i= 0 ; i < 8 ; i++) {
+	        newImage.add(imagePage.getContent().get(i));
+	    }
+	    
 	    addCurrUserFavor(imageList);
+	    addCurrUserFavor(newImage);
 	    model.addAttribute("imageList", imageList);
-	    model.addAttribute("newImage",imagePage.getContent());
+	    model.addAttribute("newImage",newImage);
 	    return "imageShow.jsp";
 	}
 

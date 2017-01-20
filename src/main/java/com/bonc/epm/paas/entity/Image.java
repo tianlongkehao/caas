@@ -36,7 +36,7 @@ public class Image {
 	private Date createDate;          //createDate
 	private Integer isDelete;
 	@Transient
-	private Integer currUserFavor;    //当前用户是否收藏当前镜像
+	private Integer currUserFavor;    //当前用户是否收藏当前镜像 0:没有收藏，1：收藏
 	@Transient
     private Integer currUserFavorCount;    //收藏当前镜像的用户个数
 	@Transient 

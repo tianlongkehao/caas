@@ -34,8 +34,8 @@
                             <span>分享镜像，交流协作</span>
                         </div>
                         <div class="search">
-                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="<%=path %>/registry/0" method = "get">
-                                <input  class="search-img" placeholder="搜索镜像" type="text"><button type="submit" class="btn btn-default btn-color btn-send">搜索</button>
+                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" action="<%=path %>/registry/search" method = "get">
+                                <input name = "search" class="search-img" placeholder="搜索镜像" type="text"><button type="submit" class="btn btn-default btn-color btn-send">搜索</button>
                             </form>
                         </div>
                         
