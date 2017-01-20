@@ -61,7 +61,7 @@
 	margin: 0px auto;
 }
 .book .book-body .body-inner section.normal ul.info li{
-	color: #3c81e0;
+	color: #333;
 }
 .book .book-body .page-wrapper .page-inner section.normal blockquote, .book .book-body .page-wrapper .page-inner section.normal dl, .book .book-body .page-wrapper .page-inner section.normal ol, .book .book-body .page-wrapper .page-inner section.normal p, .book .book-body .page-wrapper .page-inner section.normal table, .book .book-body .page-wrapper .page-inner section.normal ul {
     margin-top: 0;

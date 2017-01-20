@@ -935,6 +935,11 @@ i.pushOrg {
 /* user-own */
 .userOwnTitle{
 	width: 20%;
+    line-height: 34px;
+    float: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .userOwnCon{
 	width: 75%;

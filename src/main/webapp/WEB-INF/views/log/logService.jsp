@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>日志</title>
+    <title>服务日志</title>
     <style type="text/css">
         .layui-layer-content{
 		   	  word-break: break-all;
