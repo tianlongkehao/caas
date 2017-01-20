@@ -164,7 +164,8 @@
             		tr+='<tr>'+
 			     			'<td style="width: 5%; text-indent: 30px;">'+
 			     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
-					     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+'<i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
+					     		'<td style="width: 18%; padding-left: 5px;"><a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
+					     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'">'+refservice.serName+'</a><i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
 					     		'<td style="width: 17%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
 					     		'<td style="width: 17%;">'+refservice.refAddress+'</td>';
 					     		if(undefined == refservice.useProxy){
@@ -178,9 +179,7 @@
 			     			tr+='<td style="width: 10%;">仅本租户可见</td>';
 			     		}
 			     		tr+='<td style="width: 14%;">'+
-					     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
-					     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'"><i class="fa fa-edit"></i></a>'
-					     		+'<a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash"></i></a></td>'+
+					     		'<a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash"></i></a></td>'+
 					     	'</tr>';
          	}
             $("#importSerList").append(tr);
@@ -203,7 +202,7 @@
 		layer.open({
 		        title: '删除外部引入服务',
 		        content: '确定删除外部引入服务？',
-		        btn: ['确定', '取消'],
+		        btn: ['删除', '取消'],
 		        yes: function(index, layero){ 
 		        	$(obj).parent().parent().remove();
 		        	//refservice/delete.do
@@ -248,7 +247,7 @@
 	        title: '修改外部引入服务',
 	        content: $("#import-service"),
 	        area: ['600px'],
-	        btn: ['确定', '取消'],
+	        btn: ['修改', '取消'],
 	        yes: function(index, layero){
 	        	 var importSerName = $("#import-ser-name").val();
 	        	 var importSerIn = "default";

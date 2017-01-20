@@ -59,10 +59,10 @@
                                             	<i class="fa fa-tag"></i>${image.version }
                                                 <div class="pull-right">
 		                                            <c:if test="${image.currUserFavor==0 }">
-                                                        <i class="fa fa-star-o star-style" style="color:#4280CB"></i>
+                                                        <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
                                                     </c:if>
                                                     <c:if test="${image.currUserFavor==1 }">
-                                                        <i class="fa fa-star star-style" style="color:#efa421"></i>
+                                                        <i class="fa fa-star star-style" style="color:#e8504f"></i>
                                                     </c:if>
 	                                              <span>${image.currUserFavorCount }</span>
                                                 </div>
@@ -98,10 +98,10 @@
 	                                                <i class="fa fa-tag"></i>${image.version }
 	                                                <div class="pull-right">
 	                                                    <c:if test="${image.currUserFavor==0 }">
-	                                                        <i class="fa fa-star-o star-style" style="color:#4280CB"></i>
+	                                                        <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
 	                                                    </c:if>
 	                                                    <c:if test="${image.currUserFavor==1 }">
-	                                                        <i class="fa fa-star star-style" style="color:#efa421"></i>
+	                                                        <i class="fa fa-star star-style" style="color:#e8504f"></i>
 	                                                    </c:if>
 	                                                </div>
 	                                            </div>
