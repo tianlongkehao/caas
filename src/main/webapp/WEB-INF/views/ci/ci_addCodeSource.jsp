@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<jsp:include page="../frame/menu.jsp" flush="true">
+<jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="ci" value=""/>
 </jsp:include>
 
@@ -18,10 +18,12 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">快速构建</li>
+                    <li class="active"><a href="<%=path %>/ci"><span id="nav2">镜像构建</span></a></li>
+                    <li><i class="fa fa-angle-right"></i></li>
+                    <li class="active">快速构建</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -43,6 +45,7 @@
 										<select id="baseImageId" name="baseImageId">
 										
 										</select>
+										<span style="color:#1dd2af" id="is-baseImage" onmouseover="serviceExtraInfo(this)" onmouseout="ExtraInfo(this)"><i class="fa fa-info-circle"></i></span>
 										<%-- <input id="baseImageName" name="baseImageName" type="text" 
                                                value="${docker_regisgtry_address }/bonc/tomcat" style="width:218px"> :
                                         <input id="baseImageVersion" name="baseImageVersion" type="text" value="8-jre7"> --%> 
@@ -108,7 +111,7 @@
                             <br>
 
                             <div class="pull-right">
-                                <span id="buildBtn" class="btn btn-primary">创建</span>
+                                <span id="buildBtn" class="btn btn-primary btn-color">创建</span>
                             </div>
                         </form>
                     </div>

@@ -1,7 +1,5 @@
 $(function(){
 	loadStorageList();
-	
-	
 }) 
 
 function loadStorageList(){
@@ -70,6 +68,9 @@ $(document).ready(function () {
 	$("#updatedefVol").click(function(){
 		$("#updatedefVolNum").attr("checked","checked");
 	 });
+	$("#updatedefVol").blur(function(){
+		$("#updatedefVolNum").val($("#updatedefVol").val());
+	});
 });
 
 $(function(){

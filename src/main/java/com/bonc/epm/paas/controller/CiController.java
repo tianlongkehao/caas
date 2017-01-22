@@ -200,6 +200,7 @@ public class CiController {
     @RequestMapping(value={"ci"},method=RequestMethod.GET)
 	public String index(Model model){
         model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li_flag", "ci");
         return "ci/ci.jsp";
     }
 
@@ -373,6 +374,7 @@ public class CiController {
         model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
         model.addAttribute("userAutority", cuurentUser.getUser_autority());
         model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li_flag", "ci");
         return "ci/ci_detail.jsp";
     }
 	
@@ -697,6 +699,7 @@ public class CiController {
         model.addAttribute("username", imageNameFirst);
         model.addAttribute("userAutority", cuurentUser.getUser_autority());
         model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li_flag", "ci");
         return "ci/ci_add.jsp";
     }
 
@@ -718,6 +721,7 @@ public class CiController {
         }
         model.addAttribute("username", imageNameFirst);
         model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li_flag", "ci");
         return "ci/ci_uploadImage.jsp";
     }
 	
@@ -739,6 +743,7 @@ public class CiController {
         }
         model.addAttribute("username", imageNameFirst);
         model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li", "ci");
         return "ci/ci_dockerfile.jsp";
     }
 	
@@ -761,6 +766,7 @@ public class CiController {
         }
         model.addAttribute("username", imageNameFirst);
         model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li", "ci");
         model.addAttribute("docker_regisgtry_address", dockerClientService.getDockerRegistryAddress());
         model.addAttribute("baseImage", images);
         return "ci/ci_addCodeSource.jsp";

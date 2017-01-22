@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<jsp:include page="../frame/menu.jsp" flush="true">
+<jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="ci" value=""/>
 </jsp:include>
 
@@ -20,10 +20,12 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">代码构建</li>
+                    <li class="active"><a href="<%=path %>/ci"><span id="nav2">镜像构建</span></a></li>
+                    <li><i class="fa fa-angle-right"></i></li>
+                    <li class="active">代码构建</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -183,7 +185,7 @@
                         	<input type = "hidden" id = "jsonData" name = "jsonData" value = "">
                             <br>
                             <div class="pull-right">
-                                <span id="buildBtn" class="btn btn-primary">创建</span>
+                                <span id="buildBtn" class="btn btn-primary btn-color">创建</span>
                             </div>
                         </form>
                     </div>
@@ -211,7 +213,7 @@
                 </div>
                 <!-- 添加证书 -->
 			     <div id="addCredentialsCon">           
-			        <div style="width:345px;margin: 15px 15px">
+			        <div style="margin: 15px 15px">
 			            <div class="infoCred">
 			                <span class="labelCred">仓库：</span> 
 			                <select class="form-control conCred" id="codeType" name="codeType">

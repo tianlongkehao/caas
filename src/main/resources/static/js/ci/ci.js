@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	$("#ciReloadBtn").click(function(){
-		window.location.reload();
+		/*window.location.reload();*/
+		window.location.href = ctx + "/registry/1";
 	});
 	$(".ci-code-content").hide();
 	
@@ -358,5 +359,13 @@ function loadCiCode() {
 					}
 		]
 	})					
+}
+function overImg(obj){
+	var redImage = ctx +"/images/dockerfile-red.png";
+	$(obj).attr("src",redImage);
+}
+function outImg(obj){
+	var grayImage = ctx +"/images/dockerfile-gray.png";
+	$(obj).attr("src",grayImage);
 }
 

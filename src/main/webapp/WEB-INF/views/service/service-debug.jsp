@@ -9,7 +9,7 @@
 <script type="text/javascript" src="<%=path%>/js/service/service-debug.js"></script>
 </head>
 <body>
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="ci" value="" />
 	</jsp:include>
 	<div class="page-container">
@@ -17,9 +17,9 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">服务</li>
+						<li><a href="<%=path %>/service"><span id="nav2">服务管理</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" style="width: inherit;">${service.serviceName }(${podip})</li>
 					</ol>
@@ -28,9 +28,9 @@
 				<div class="contentMain">
 					<div class="baseInfo center-style">
 						<ul class="nav navbar-nav">
-							<li><a class="DOC btn-prim">文件</a></li>
-							<li><a class="CMD">命令行</a></li>
-							<li><a class="EXPORT">导出</a></li>
+							<li><a class="DOC btn-prim serDetail">文件</a></li>
+							<li><a class="CMD serDetail">命令行</a></li>
+							<li><a class="EXPORT serDetail">导出</a></li>
 						</ul>
 					</div>
 					
@@ -56,11 +56,11 @@
 											<table style="border-collapse: collapse; margin: 0 auto;" class="table">
 												<thead style="display: block;">
 													<tr>
-														<th style="width: 5%; text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
-														<th style="width: 25%; text-indent: 25px;">文件名</th>
-														<th style="width: 15%; text-indent: 61px;">大小</th>
-														<th style="width: 30%; text-indent: 151px;">修改日期</th>
-														<th style="width: 15%; text-indent: 131px;">操作</th>
+														<th style="width: 61px;"><input type="checkbox" class="chkAll"></th>
+														<th style="width: 307px;">文件名</th>
+														<th style="width: 183px;">大小</th>
+														<th style="width: 369px;">修改日期</th>
+														<th style="width: 184px;">操作</th>
 													</tr>
 												</thead>
 												<tbody id="mybody" style="overflow-y: auto; height: 400px; display: block; width: 100%" class="sortable-list connectList agile-list">
@@ -76,7 +76,7 @@
 						</div>
 					</div>
 					
-					<div class="cmdInfo container hide">
+					<div class="cmdInfo hide">
 						<div class="contentMain" id="ftp">
 							<iframe id="shellinabox" src="" value="" width="100%" height="500px"></iframe>
 						</div>
@@ -90,7 +90,7 @@
 								<input id="version" name="version" style="width:20%;"
 									type="text" value="debug" class="name-input form-control">
 							</div>
-							<a href="javascript:saveAsImage('${containerId}','${nodeIP }')" type="button" class="btn btn-primary" style="margin-top:10px;color:white;">保存容器为镜像</a>
+							<a href="javascript:saveAsImage('${containerId}','${nodeIP }')" type="button" class="btn btn-primary btn-color" style="margin-top:10px;color:white;">保存容器为镜像</a>
 						</div>
 					</div>
 				</div>

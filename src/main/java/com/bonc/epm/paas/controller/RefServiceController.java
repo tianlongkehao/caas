@@ -107,6 +107,7 @@ public class RefServiceController {
     public String serviceImport(Model model) {
         String  namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
         model.addAttribute("menu_flag", "service");
+        model.addAttribute("li_flag", "import");
         model.addAttribute("namespace", namespace);
         return "service/service-import.jsp";
     }

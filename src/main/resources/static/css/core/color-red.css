@@ -1,0 +1,204 @@
+/* 蓝色 #3C7BCA 红色 #e8504f 黄#efa421 背景circle蓝 #418ac7*/
+.layui-layer-btn .layui-layer-btn0{
+	background: #e8504f !important;
+	border-color: #e8504f!important;
+}
+.modalCrealApp .steps-main .progre .radius_step.action {
+    border-bottom: 2px solid #e8504f;
+    color: #e8504f;
+}
+.btn-prim {
+    background: #e8504f !important;
+    color: #fff !important;
+}
+.radius_step.action span {
+    background: #e8504f;
+}
+.header {
+    /* background: #e8504f; */
+    background: #fff;
+}
+.nav-header{
+	background-color: #e8504f;
+}
+.navbar .navbar-header h1 {
+    color:#e14344;
+}
+.page-sidebar .nav-menu > .item-click {
+    background-color: #e8504f;
+}
+a i.fa-home{
+	color: #e8504f;
+}
+#nav1,#nav2,#nav3{
+	color:#e8504f;
+}
+
+
+a:hover{
+	color: #e8504f;
+}
+.ibox-content {
+    border-color: #e8504f;
+}
+.ibox-title h5 {
+    color:#e8504f;
+}
+.ibox-tools a:hover {
+    cursor: pointer;
+    color: #e8504f;
+}
+
+.nav > li > a {
+    color: #fff;
+}
+.nav>li>a:focus, 
+.nav>li>a:hover {
+    background-color: #e88;
+}
+.nav > li.active {
+    background-color: #e66;
+}
+#side-menu li a:hover{
+	background-color: #e88;
+}
+.li-active{
+	background-color:#e88;
+}
+.helpDoc input{
+    color: #e8504f;
+}
+.helpDoc input:hover{
+	border-color: #e8504f;
+}
+.helpDoc input:visited{
+	border-color: #e8504f;
+}
+/* ci */
+.tab-title.active{
+	border-top: 4px solid #e8504f;
+}
+.ci-body .ci-content-tabmain .active {
+    color: #e8504f;
+    border-top: 2px solid #e8504f;
+}
+.item-obj .depot-name .btn-groups .active {
+    background: #e8504f;
+    color: #fff;
+}
+.item-obj .depot-name .btn-groups {
+    border: 1px solid #e8504f;
+}
+.bj-no-drop{
+	color:#e66;
+}
+.ci-powerOff{
+	color:#e8504f;
+}
+/* help */
+.book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
+    color: #e8504f;
+}
+/* home */
+.span-active{
+	background-color: #e8504f;
+}
+nav.navbar-default{
+	background-color:#e8504f;
+}
+.help-btn:hover{
+	background-color: #e66;
+	color: #fff;
+}
+.nav-bcm{
+	background-color: #e14344;
+}
+.nav-footer{
+	background-color: #e8504f; 
+}
+.img-circle{
+	border: 4px solid #e66;
+}
+.serDetail{
+	color:#e8504f!important;
+}
+.serDetail.btn-prim{
+	color:#fff!important;
+}
+.serDetail:hover{
+	color:#fff!important;
+}
+/* 按钮 */
+.btn-color {
+    background: #e8504f!important;
+    border-color: #e8504f!important;
+    color:#fff;
+    outline:none!important;
+}
+
+.btn-color:hover,
+.btn-color.focus {
+    background: #e66;
+    border-color: #e66;
+    color: #fff;
+}
+
+.btn-defaults {
+    background: #F5F6F6;
+    color: #666;
+    width: 120px;
+    vertical-align: top;
+}
+
+.btn-pull-deploy {
+    border: 1px solid #e8504f;
+    color: #e8504f;
+}
+
+.btn-pull-deploy:hover {
+    background: #e8504f;
+}
+/* 镜像 */
+.images-panel .select-img .star-style {
+	color: #e8504f!important;
+}
+.star-favor{
+	color: #e8504f;
+}
+.imageInfo{
+    border-left: 3px solid #e14344;
+}
+.table_list .list_info.active {
+    background: #e8504f;
+    color: #fff;
+}
+/* 导航栏中的三个标签 */
+.navbar-tab ul li{
+	color:#e14344;
+}
+.navbar-tab ul li a.navTab{
+	color:#e8504f;
+}
+.navbar-tab li.active a{
+    border-bottom: 3px solid #e14344;
+}
+#login-header{
+	background: #e8504f;
+}
+/* 收起左侧导航栏的按钮 */
+.sideBoxBtn i.fa{
+    color:#e8504f;
+}
+.sideBoxBtn .btn-background{
+    border-right: 15px solid #f7c1c1;
+}
+nav.navbar-downSide{
+    background-color: #e8504f;
+}
+/* service */
+#serviceList tr td a.a-live{
+	color:#e8504f;
+}
+
+
+

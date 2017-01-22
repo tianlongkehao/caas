@@ -14,7 +14,7 @@
 	src="<%=path%>/js/customer/custom.js"></script>
 </head>
 <body>
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="template" value="" />
 	</jsp:include>
 
@@ -23,11 +23,9 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">模板</li>
-						<li style="margin-left: -44px;"><i class="fa fa-angle-right"></i></li>
 						<li class="active" style="width: 110px">环境变量模板</li>
 					</ol>
 				</div>

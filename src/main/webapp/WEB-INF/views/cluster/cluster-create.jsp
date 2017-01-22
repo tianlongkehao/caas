@@ -1,7 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
-< lang="en">
 <title>集群</title>
 <%@include file="../frame/header.jsp" %>
 <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
@@ -9,7 +8,7 @@
 </head>
 <body>
 
-<jsp:include page="../frame/menu.jsp" flush="true">
+<jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="user" value=""/>
 </jsp:include>
 <input type="hidden" id="checkedClusters">
@@ -19,10 +18,12 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">创建节点</li>
+                    <li class="active"><a href="<%=path %>/cluster/management"><span id="nav2">集群管理</span></a></li>
+                    <li><i class="fa fa-angle-right"></i></li>
+                    <li class="active">创建节点</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -51,7 +52,7 @@
                                                 <input type="text" name="ipRange" class="form-control"
                                                        placeholder="请输入要查找的IP"
                                                        style="width: 78%;display: inline" value="172.16.71.[171-175]">
-                                                <button type="submit" class="btn btn-primary btn-send">查找</button>
+                                                <button type="submit" class="btn btn-primary btn-color btn-send">查找</button>
                                             </form>
                                         </div>
                                         <div>
@@ -83,7 +84,7 @@
                                 <div class="list-item-description" style="padding-top: 100px">
                                     <a href="<%=path %>/cluster/management"><button class="btn btn-default go_user"
                                                                   style="margin-right: 30px;">返回</button></a>
-                                        <button class="nextTwo pull-right btn btn-primary pull_confirm"
+                                        <button class="nextTwo pull-right btn btn-primary btn-color pull_confirm"
                                               data-attr="tenxcloud/mysql">下一步</button>
                                 </div>
                             </div>
@@ -127,7 +128,7 @@
                                 <div class="" style="padding-top: 100px">
                                     <button class="btn btn-default last_step" style="margin-right: 30px;">上一步</button>
                                         <button id="checkBtn"
-                                              class="checkBtn pull-right btn btn-primary pull_confirm">下一步</button>
+                                              class="checkBtn pull-right btn btn-primary btn-color pull_confirm">下一步</button>
                                 </div>
                             </div>
 
@@ -151,7 +152,7 @@
                                 <div class="" style="padding-top: 100px">
                                     <button class="btn btn-default last_step" style="margin-right: 30px;">上一步</button>
                                         <button id="installBtn"
-                                              class="installBtn pull-right btn btn-primary pull_confirm">安装</button>
+                                              class="installBtn pull-right btn btn-primary btn-color pull_confirm">安装</button>
                                 </div>
                             </div>
                             <%--4.配置集群节点--%>
@@ -172,7 +173,7 @@
                                 </div>
                                 <div class="" style="padding-top: 100px">
                                     <button class="btn btn-default last_step" style="margin-right: 30px;">上一步</button>
-                                    <a href="<%=path %>/cluster/management"><button id="finishBtn" class="pull-right btn btn-primary pull_confirm">完成</button></a>
+                                    <a href="<%=path %>/cluster/management"><button id="finishBtn" class="pull-right btn btn-primary btn-color pull_confirm">完成</button></a>
                                 </div>
                             </div>
                         </div>

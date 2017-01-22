@@ -25,7 +25,7 @@
 </head>
 <body>
 
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="" value="" />
 	</jsp:include>
 
@@ -34,10 +34,12 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">创建服务</li>
+						<li><a href="<%=path %>/service"><span id="nav2">服务管理</span></a></li>
+						<li><i class="fa fa-angle-right"></i></li>
+						<li class="active">创建服务</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -62,7 +64,7 @@
 
 											<input id="imageName" name="imageName" class="search-img"
 												placeholder="搜索镜像" type="text">
-											<button id="searchimage" class="btn btn-primary btn-send">搜索</button>
+											<button id="searchimage" class="btn btn-primary btn-color btn-send">搜索</button>
 
 										</div>
 									</div>
@@ -138,7 +140,7 @@
 												</ul>
 											</li>
 											<!-- 监控设置 -->
-											<li id="start_monitor"><span class="ve_top">监控设置：</span>
+											<li class="line-h-3" id="start_monitor"><span class="ve_top">监控设置：</span>
 												<span> <c:if test="${monitor==0 }">
 														<input type="checkbox" id="monitorStatus">
 													</c:if> <c:if test="${monitor==1 }">
@@ -236,12 +238,12 @@
 											<li class="line-h-3">
 												<div class="param-set">
 													<span class="ve_top" id= "ve_cpu">CPU数量：<font color="red">*</font></span>
-													<input type="radio" id = "cpu1" class="cpuNum" name="cpuNum" value="1"
-														placeholder="当前可用cpu数量：${leftcpu }个"checked>1<span>个</span>
-													<input type="radio" class="cpuNum" name="cpuNum" value="2"
-														placeholder="当前可用cpu数量：${leftcpu }个">2<span>个</span>
-													<input type="radio" class="cpuNum" name="cpuNum" value="4"
-                                                       placeholder="当前可用cpu数量：${leftcpu }个">4<span>个</span>
+													<label><input type="radio" id = "cpu1" class="cpuNum" name="cpuNum" value="1"
+														placeholder="当前可用cpu数量：${leftcpu }个"checked>1<span>个</span></label>
+													<label><input type="radio" class="cpuNum" name="cpuNum" value="2"
+														placeholder="当前可用cpu数量：${leftcpu }个">2<span>个</span></label>
+													<label><input type="radio" class="cpuNum" name="cpuNum" value="4"
+                                                       placeholder="当前可用cpu数量：${leftcpu }个">4<span>个</span></label>
 													<span style="color: #1E90FF; margin-left: 50px;">当前可用cpu数量：${leftcpu }个</span>
 													<input type = "hidden" id = "leftcpu" value = "${leftcpu }"/>
 												</div>
@@ -250,9 +252,9 @@
 											<li class="line-h-3">
 												<div class="param-set">
 													<span class="ve_top" id = "ve_ram" >内存：<font color="red">*</font></span> 
-													<input type="radio" class="ram" name="ram" id = "ram1" value="4096"checked>4<span>G</span>
-													<input type="radio" class="ram" name="ram" id = "ram2" value="8192">8<span>G</span>
-													<input type="radio" class="ram" name="ram" id = "ram4" value="16384">16<span>G</span>
+													<label><input type="radio" class="ram" name="ram" id = "ram1" value="4096"checked>4<span>G</span></label>
+													<label><input type="radio" class="ram" name="ram" id = "ram2" value="8192">8<span>G</span></label>
+													<label><input type="radio" class="ram" name="ram" id = "ram4" value="16384">16<span>G</span></label>
 													<span style="color: #1E90FF; margin-left: 60px;">当前可用内存：${leftmemory }G</span>
 													<input type="hidden" id = "leftmemory" value = "${leftmemory * 1024 }"/>
 												</div>
@@ -300,7 +302,7 @@
 												       <input type="text" class="form-control" placeholder="name" id="Name"> 
 												       <input type="text" class="form-control" placeholder="value" id="Value"> 
 												       <a id="cratePATH"><i class="fa fa-plus"></i>添加</a>
-														<div style="float: right">
+														<div style="float: right;margin-top:7px;">
 															<span id="importBtn" class=" btn-info btn-sm"
 																style="cursor: pointer">导入模板</span> <span id="exportBtn"
 																class=" btn-info btn-sm" style="cursor: pointer">另存为模板</span>
@@ -374,7 +376,7 @@
 							<button class=" btn btn-default go_backs">上一步</button>
 							<!-- <button class="btn btn-success two_step hide">高级设置</button> -->
 							<button id="createButton"
-								class="pull-right btn btn-primary pull_confirm">创建</button>
+								class="pull-right btn btn-primary btn-color pull_confirm">创建</button>
 						</div>
 
 					</div>

@@ -41,7 +41,9 @@ public class ServiceOperationLog {
 	 * 80:更改配置
 	 * 90:删除
 	 */
-	private long operationType;
+	private Integer operationType;
+
+	
 
 	/**
 	 * 创建日期
@@ -82,11 +84,11 @@ public class ServiceOperationLog {
 		this.serviceExtraInfo = serviceExtraInfo;
 	}
 
-	public long getOperationType() {
+	public Integer getOperationType() {
 		return operationType;
 	}
 
-	public void setOperationType(long operationType) {
+	public void setOperationType(Integer operationType) {
 		this.operationType = operationType;
 	}
 

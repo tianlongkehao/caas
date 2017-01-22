@@ -53,7 +53,6 @@
 .modalCrealApp .steps-main {
     margin: 0 auto;
     overflow: hidden;
-    padding-bottom: 30px;
 }
 
 .progre {
@@ -77,10 +76,6 @@
     border-bottom: 2px solid #e2e2e4;
 }
 
-.modalCrealApp .steps-main .progre .radius_step.action {
-    border-bottom: 2px solid #418ac7;
-}
-
 .radius_step {
     color: #999;
     padding: 0 20px;
@@ -98,14 +93,15 @@
 }
 
 .radius_step.action span {
-    background: #418ac7;
+    /* background: #418ac7; */
+    /* background: #e8504f; */
 }
 
 .step-inner {
     position: relative;
     left: 0;
     width: 1400px;
-    height: 280px;
+    height: 100%;
     overflow: hidden;
 }
 
@@ -268,7 +264,7 @@
 }
 
 .image-item .id {
-    width: 150px;
+    width: 260px;
     display: inline-block;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -307,7 +303,7 @@
 
 .modalCrealApp .in_style,
 .modalCrealApp .select-versions {
-    width: 83%;
+    width: 82%;
 }
 .in_style_mid{
     width: 81.5%;
@@ -468,9 +464,9 @@
 
 .createPadding {
     padding: 20px 60px;
-    position: fixed;
+    position: absolute;
     bottom: 0; 
-    width: 90% !important;
+    width: 100% !important;
     background: #fff;
     height: 80px !important;
     margin: 0 !important;
@@ -877,9 +873,13 @@ tr.focus{
 #importServiceBtn{
     cursor: pointer;
 }
-.editButton{
-    margin-left: 7px;
+.deleteButton{
+    margin-left: 8px;
 }
+.editButton{
+	cursor: pointer;
+}
+
 #import-service form table tbody tr td input{
     width: 95%;
 }
@@ -917,7 +917,7 @@ tr.focus{
 .checkitems li input{
 	border: 1px solid #ccc;
 	text-indent: 8px;
-	width:208px;
+	width:170px;
 	line-height:24px;
 	float:left;
 }
@@ -1065,7 +1065,7 @@ li.line-h-3 span i{
 #serviceList tr td a.a-live{
 	line-height:40px;
 	float:left;
-	color:#3c7bca;
+	/* color:#3c7bca; */
 }
 #serviceList tr td ul.dropdown-menu{
 	margin-top:36px!important;
@@ -1085,7 +1085,6 @@ li.line-h-3 span i{
 #addVolume{
 	cursor: pointer;
     line-height: 34px;
-    margin-left: 10px;
 }
 
 .table .BORDER-vol td {
@@ -1119,4 +1118,22 @@ p.portLabel input{
 }
 #protocol{
 	width:75%;
+}
+.span16{
+	width: 16%;
+}
+.span4{
+	width:40%;
+	float:left;
+}
+.importSerTable tr th{
+	color: #676a6a;
+}
+.fa-stopUpdate{
+	margin-left:6px;
+	color:#e14344;
+	font-size:15px;
+}
+#mountPath{
+	margin-left:10px;
 }

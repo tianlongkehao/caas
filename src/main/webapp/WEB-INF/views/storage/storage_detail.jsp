@@ -11,7 +11,7 @@
 </head>
 <body>
 
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="service" value="" />
 	</jsp:include>
 
@@ -20,12 +20,10 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">服务</li>
-						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">存储和备份</li>
+						<li class="active"><a href="<%=path %>/service/storage"><span id="nav2">存储和备份</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" id="storageName">${storage.storageName }</li>
 					</ol>
@@ -126,7 +124,7 @@
 														<th style="width: 25%; text-indent: 30px;">文件名</th>
 														<th style="width: 20%; text-indent: 15px;">大小</th>
 														<th style="width: 25%; text-indent: 8px;">修改日期</th>
-														<th style="width: 10%; text-indent: 100px;"
+														<th style="width: 10%; text-indent: 50px;"
 															class="del-operation">操作</th>
 													</tr>
 												</thead>

@@ -5,6 +5,15 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +36,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.constant.ServiceConstant;
+import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
+import com.bonc.epm.paas.dao.ImageDao;
+import com.bonc.epm.paas.dao.ServiceOperationLogDao;
+import com.bonc.epm.paas.dao.SheraDao;
+import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.dao.UserVisitingLogDao;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.ServiceOperationLog;
+import com.bonc.epm.paas.entity.Shera;
+import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.entity.UserVisitingLog;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.PodList;
+import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
@@ -62,13 +95,249 @@ public class IndexController {
 	private UserDao userDao;
     
     /**
+     * userResourceDao
+     */
+    @Autowired
+    private UserResourceDao userResourceDao;
+    
+    /**
+     * imageDao
+     */
+    @Autowired
+    private ImageDao ImageDao;
+    
+    /**
      * 记录访问日志dao接口
      */
     @Autowired
     private UserVisitingLogDao userVisitingLogDao;
     
     @Value("${login.showAuthCode}")
-    private boolean showAuthCode;	
+    private boolean showAuthCode;
+    /**
+     * KubernetesClientService
+     */
+    @Autowired
+	private KubernetesClientService kubernetesClientService;
+    /**
+     * StorageDao
+     */
+    @Autowired
+	private StorageDao storageDao;
+    
+    /**
+     * sheraDao
+     */
+    @Autowired
+    private SheraDao sheraDao;
+    /**
+     * 内存和cpu的比例大小
+     */
+    @Value("${ratio.memtocpu}")
+    private String RATIO_MEMTOCPU = "4";
+
+    /**
+     * service操作日志dao接口
+     */
+    @Autowired
+    private ServiceOperationLogDao serviceOperationLogDao;
+    
+    /**
+     * 通用操作日志dao接口
+     */
+    @Autowired
+	private CommonOperationLogDao commonOperationLogDao;
+
+    
+    /**
+     * Description: <br>
+     * 首页
+     * @return home.jsp
+     */
+    @RequestMapping(value={"home"},method=RequestMethod.GET)
+	public String home(Model model){
+        return "home.jsp";
+    }
+    /**
+     * Description: <br>
+     * 总览页面
+     * @return bcm-pandect.jsp
+     */
+    @RequestMapping(value={"bcm/{id}"},method=RequestMethod.GET)
+	public String bcm(Model model, @PathVariable long id){
+    	
+    	try {
+            User user = userDao.findOne(id);
+            if(!("1".equals(user.getUser_autority()))){
+				// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
+	            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+	            Namespace ns = client.getNamespace(user.getNamespace());
+	            if (null != ns) {
+	                getUserResourceInfo(model, user, client);
+	            }
+	            else {
+	                LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
+	            }
+	            
+	            double usedstorage = 0;
+	            List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+	            for (Storage storage : list) {
+	                usedstorage = usedstorage + (double) storage.getStorageSize();
+	            }
+	            Shera shera = sheraDao.findByUserId(id);
+	            model.addAttribute("userShera", shera);
+	            model.addAttribute("usedstorage",  usedstorage / 1024);
+            }
+            
+            
+//---------最近操作---------------            
+            
+            
+            List<ServiceOperationLog> svcLogs = serviceOperationLogDao.findFourByCreateBy(id,new PageRequest(0, 4, Direction.DESC, "createDate"));
+            List<CommonOperationLog> commonLogs = commonOperationLogDao.findFourByCreateBy(id,new PageRequest(0, 4, Direction.DESC, "createDate"));
+            Map<Date,String> map = new HashMap<Date,String>();
+            for (ServiceOperationLog serviceOperationLog : svcLogs) {
+            	String oprationRecord = "对服务: "+serviceOperationLog.getServiceName()
+            						+ " 进行了"
+            						+ ServiceConstant.OPERATION_TYPE_MAP.get(serviceOperationLog.getOperationType())
+            						+ "操作";
+            	map.put(serviceOperationLog.getCreateDate(), oprationRecord);
+			}
+            for (CommonOperationLog commonOperationLog : commonLogs) {
+            	String oprationRecord = "在"
+            						+ CommConstant.CatalogType_MAP.get(commonOperationLog.getCatalogType())
+			            			+ "模块进行了"
+			            			+ CommConstant.OPERATION_TYPE_MAP.get(commonOperationLog.getOperationType())
+			            			+ "操作"; 
+            	map.put(commonOperationLog.getCreateDate(), oprationRecord);
+			}
+            
+            //根据时间进行排序
+            //将Map转化为List集合，List采用ArrayList  
+            List<Map.Entry<Date, String>> list_Data = new ArrayList<Map.Entry<Date,String>>(map.entrySet());
+            
+          //通过Collections.sort(List I,Comparator c)方法进行排序  
+            Collections.sort(list_Data,new Comparator<Map.Entry<Date, String>>() {
+
+				@Override
+				public int compare(Entry<Date, String> o1, Entry<Date, String> o2) {
+					if(o1.getKey().before(o2.getKey())){//o1比o2早
+						return 1;
+					}
+					return -1;
+				}  
+	
+            });
+
+            Iterator<Map.Entry<Date, String>> it = list_Data.iterator();
+            while(it.hasNext()){
+            	Entry<Date, String> a = it.next();
+                if(a.getKey().before(list_Data.get(3).getKey())){
+                    it.remove();
+                }
+            }
+            System.out.println(list_Data);
+            model.addAttribute("list_Data", list_Data);
+//------------------------            
+            
+
+        }
+        catch (KubernetesClientException e) {
+            LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            LOG.error("error message:-" + e.getMessage());
+            e.printStackTrace();
+        }
+    	
+        model.addAttribute("showAuthCode", showAuthCode);
+        
+        model.addAttribute("menu_flag", "bcm");
+        return "bcm-pandect.jsp";
+    }
+    /**
+     * 
+     * Description:
+     * 获取用户的资源使用信息
+     * @param model 
+     * @param user 
+     * @param client  
+     * @see
+     */
+    private void getUserResourceInfo(Model model, User user, KubernetesAPIClientInterface client) {
+        ResourceQuota quota = client.getResourceQuota(user.getNamespace());
+        if (null != quota) {
+        	UserResource userResource = new UserResource();
+        	if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+                userResource = userResourceDao.findByUserId(user.getParent_id());
+            }
+            else {
+                userResource = userResourceDao.findByUserId(user.getId());
+            }
+            model.addAttribute("userResource", userResource);
+            model.addAttribute("user", user);
+            
+            Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
+            
+            model.addAttribute("imageCount", imageCount);
+            
+            Map<String, String> hard = quota.getStatus().getHard();
+            model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
+            model.addAttribute("servMemoryNum", hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
+            model.addAttribute("servPodNum", hard.get("pods"));// pod个数
+            model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
+            model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数
+            
+            Map<String, String> used = quota.getStatus().getUsed();
+            ReplicationControllerList rcList = client.getAllReplicationControllers();
+            PodList podList = client.getAllPods();                   
+            model.addAttribute("usedCpuNum", Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
+            model.addAttribute("usedMemoryNum", Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
+            model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
+            model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
+            // model.addAttribute("usedControllerNum", usedControllerNum);
+        } else {
+            LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
+        }
+    }
+    /**
+     * 
+     * Description:
+     * computeCpuOut
+     * @param val Map<String, String> val
+     * @return cpuVal String
+     * @see
+     */
+    private String computeCpuOut(Map<String, String> val) {
+        String cpuVal = val.get("cpu");
+        if (cpuVal.contains("m")) {
+            Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
+            return a1.toString();
+        } 
+        else {
+            return cpuVal;
+        }
+    }
+    /**
+     * 
+     * Description:
+     * computeMemoryOut
+     * @param val Map<String, String>
+     * @return memVal String
+     * @see
+     */
+    private String computeMemoryOut(Map<String, String> val) {
+        String memVal = val.get("memory");
+        if (memVal.contains("Mi")) {
+            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
+            return a1.toString();
+        } 
+        else {
+            return memVal.replace("Gi", "");
+        }
+    }
+    
     /**
      * Description: <br>
      * 跳转登录页面
@@ -78,6 +347,16 @@ public class IndexController {
 	public String login(Model model){
         model.addAttribute("showAuthCode", showAuthCode);
         return "login.jsp";
+    }
+    /**
+     * Description: <br>
+     * 跳转镜像广场
+     * @return imageShow.jsp
+     */
+    @RequestMapping(value={"imageShow"},method=RequestMethod.GET)
+	public String imageShow(Model model){
+        //model.addAttribute("showAuthCode", showAuthCode);
+        return "imageShow.jsp";
     }
 	
     /**
@@ -189,8 +468,9 @@ public class IndexController {
         CurrentUserUtils.getInstance().setUser(user);
         CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
         redirect.addFlashAttribute("user", user);
+
         addUserVisitingLog(user, hostIp, headerData, true);
-        return "redirect:workbench";
+        return "redirect:home";
     }
     
     /**

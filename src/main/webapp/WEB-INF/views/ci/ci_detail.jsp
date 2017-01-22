@@ -8,7 +8,7 @@
     <script type="text/javascript" src="<%=path %>/js/ci/ci_detail.js"></script>
 </head>
 <body>
-<jsp:include page="../frame/menu.jsp" flush="true">
+<jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="ci" value=""/>
 </jsp:include>
 
@@ -17,10 +17,10 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">构建信息</li>
+                    <li class="active">构建信息</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -305,8 +305,8 @@
 			                        	</section>
 			                            <div class="form-group">
                                             <label class="col-2x control-label"></label>
-                                            <div class="col-sm-10">
-                                                <br><input type="button" id="editCiBtn" class="btn btn-primary pull-right" value="确认修改">
+                                            <div class="col-sm-12">
+                                                <input type="button" id="editCiBtn" class="btn btn-primary btn-color pull-right" value="确认修改">
                                             </div>
                                         </div>
                                         <input type="hidden" id="id" name="id" value="${ci.id}">
@@ -347,7 +347,7 @@
                                             <label class="col-2x control-label"></label>
                                             <div class="col-sm-9">
                                                 <!-- <textarea class="form-control" id="ciDetail" name="ciDetail">...</textarea> -->
-                                                <br><input type="button" id="editCiUploadBtn" class="btn btn-primary pull-right" value="确认修改">
+                                                <br><input type="button" id="editCiUploadBtn" class="btn btn-primary btn-color pull-right" value="确认修改">
                                             </div>
                                         </div>
                                         <input type="hidden" id="id" name="id" value="${ci.id}">
@@ -399,7 +399,7 @@
                                             <label class="col-2x control-label"></label>
                                             <div class="col-sm-9">
                                                 <!-- <textarea class="form-control" id="ciDetail" name="ciDetail">...</textarea> -->
-                                                <br><input type="button" id="editCiUploadCodeBtn" class="btn btn-primary pull-right" value="确认修改">
+                                                <br><input type="button" id="editCiUploadCodeBtn" class="btn btn-primary btn-color pull-right" value="确认修改">
                                             </div>
                                         </div>
                                         <input type="hidden" id="id" name="id" value="${ci.id}">
@@ -411,7 +411,7 @@
                             <div class="other-details hide">
                                 <div class="col-9x">
                                     <c:if test="${ciCode.isHookCode == 1 }">
-                                    	<a href="javascript:void(0);" id="delHookBtn" class="deletebutton btn btn-primary btn-deleteHook">删除Hook</a>
+                                    	<a href="javascript:void(0);" id="delHookBtn" class="deletebutton btn btn-primary btn-color btn-deleteHook">删除Hook</a>
                                     </c:if>
                                     <a href="javascript:void(0);" id="delCiBtn" class="deletebutton btn btn-danger btn-deleteitem">删除项目</a>
                                     <p class="other-hint">

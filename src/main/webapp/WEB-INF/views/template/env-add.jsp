@@ -10,7 +10,7 @@
 </head>
 <body>
 
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="ci" value="" />
 	</jsp:include>
 
@@ -19,12 +19,12 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">模板</li>
-						<li style="margin-left: -44px;"><i class="fa fa-angle-right"></i></li>
-						<li class="active">环境变量</li>
+						<li class="active" style="width: 110px"><a href="<%=path %>/template/env"><span id="nav2">环境变量模板</span></a></li>
+						<li><i class="fa fa-angle-right"></i></li>
+						<li class="active" style="width: 110px">创建环境变量</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -38,18 +38,15 @@
 							<form id="buildForm" name="buildForm"
 								action="<%=path%>/template/env/build" method="post">
 								<div class="container" style="width: 90%">
-								
 									<div class="form-group ">
                                         <span style="float:left;line-height:34px">模板名称：</span>
-                                         <input type="hidden" id="envId" value = "" />
+                                        <input type="hidden" id="envId" value = "" />
                                         <input type="text" class="form-control" id="envTemplateName" style="width: 72%;float:left"  value = "" />
+                                        <div class="form-group" style="float:right;margin-top:7px;">
+	                                        <span id="crateEnvVariate" class=" btn-info btn-sm">添加环境变量</span>
+											<span id="importBtn" class=" btn-info btn-sm">导入模板</span>
+										</div>
                                     </div>
-									<div class="form-group" style="float:right">
-<!--                                         <span>模板名称：</span> -->
-<!--                                         <input type="hidden" id="envName" value = "" /> -->
-<!--                                         <input type="text" id="envTemplateName" style="width: 60%; margin-left:5px" value = "" /> -->
-										<span id="crateEnvVariate" class=" btn-info btn-sm">添加环境变量</span>
-										<span id="importBtn" class=" btn-info btn-sm">导入模板</span>                                	</div>
 									<li class="hide-set">
 <!-- 										<span class="ve_top">环境变量：</span> -->
 										<ol>
@@ -83,7 +80,7 @@
 									<div class="list-item-description" >
 										<a href="<%=path%>/template/env"><span
 											class="btn btn-default" style="margin-right: 30px;">返回</span></a>
-										<span id="exportBtn" class="btn btn-primary pull-right" style="cursor: pointer">保存</span>
+										<span id="exportBtn" class="btn btn-primary btn-color pull-right" style="cursor: pointer">保存</span>
 									</div>
 								</div>
 								<!-- 环境变量导入模板 -->

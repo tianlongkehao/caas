@@ -5,12 +5,11 @@
     <title>用户</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/user.css"/>
-    <link rel="icon" type="image/x-icon" href="<%=path %>/images/favicon.ico">
     <script type="text/javascript" src="<%=path %>/js/user/user-own.js"></script>
 </head>
 <body>
 
-<jsp:include page="../frame/menu.jsp" flush="true">
+<jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="user" value=""/>
 </jsp:include>
 <div class="page-container">
@@ -18,7 +17,7 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active">用户信息</li>
                 </ol>
@@ -27,7 +26,8 @@
 
                 <div class="setTab">
                     <a id="baseinfo" class="Record active">基本信息</a>
-                    <a id="resourceinfo" class="Record">资源信息</a>
+                    <!-- <a id="resourceinfo" class="Record">资源信息</a> -->
+                    <a id="preferenceinfo" class="Record">偏好设置</a>
                     <a id="pwd" class="Record hide">修改密码</a>
                 </div>
 
@@ -38,19 +38,19 @@
                               action="" method="post">
                             <div class="row" style="margin-top: 10px">
                                 <div class="col-md-4">
-                                    <label class="userOwnTitle">登录账号:</label>
+                                    <label class="userOwnTitle" title="登录账号">登录账号:</label>
                                     <input type="text" class="form-control userOwnCon" id="userName" name="userName"
                                            value="${user.userName }"  style="width: 78%;display: inline" readonly="readonly">
                                     <input type="hidden" name="id" id="user_id" value="${user.id }">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="userOwnTitle">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
+                                    <label class="userOwnTitle" title="姓名">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
                                     <input type="text" class="form-control userOwnCon" id="user_realname" name="user_realname"
                                            value="${user.user_realname }" style="width: 78%;display: inline" readonly="readonly">
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="userOwnTitle" style="line-height: 34px;margin-bottom: 0px">权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
+                                    <label class="userOwnTitle" style="line-height: 34px;margin-bottom: 0px" title="权限">权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
                                     <input type="hidden" id="user_autority_hidden" value="${user.user_autority}">
                                     <select class="form-control" style="width:78%; display: inline;"
                                             name="user_autority" id="user_autority" disabled>
@@ -62,7 +62,7 @@
                             </div>
                             <div class="row" style="margin-top: 20px">
                                 <div class="col-md-4">
-                                    <label class="userOwnTitle" style="line-height: 34px;margin-bottom: 0px">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
+                                    <label class="userOwnTitle" style="line-height: 34px;margin-bottom: 0px" title="省份">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
                                     <input type="hidden" id="user_province_hidden" value="${user.user_province}">
                                     <select class="form-control" style="width:78%; display: inline;"
                                             name="province" id="user_province" disabled>
@@ -100,43 +100,43 @@
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="userOwnTitle">公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
+                                    <label class="userOwnTitle" title="公司">公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
                                     <input type="text" class="form-control userOwnCon" id="company" name="company"
                                            value="${user.company}" style="width: 78%;display: inline">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="userOwnTitle">所属部门:</label>
+                                    <label class="userOwnTitle" title="所属部门">所属部门:</label>
                                     <input type="text" class="form-control userOwnCon" id="user_department" name="user_department"
                                            value="${user.user_department }" style="width: 78%;display: inline">
                                 </div>
                             </div>
                             <div class="row" style="margin-top: 20px">
                                 <div class="col-md-4">
-                                    <label class="userOwnTitle">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :</label>
+                                    <label class="userOwnTitle" title="工号">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :</label>
                                     <input type="text" class="form-control userOwnCon" id="user_employee_id"
                                            name="user_employee_id" value="${user.user_employee_id }"
                                            style="width: 78%;display: inline" >
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="userOwnTitle">手机号码:</label>
+                                    <label class="userOwnTitle" title="手机号码">手机号码:</label>
                                     <input type="text" class="form-control userOwnCon" id="user_cellphone" name="user_cellphone"
                                            value="${user.user_cellphone }" style="width: 78%;display: inline">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="userOwnTitle">固定电话:</label>
+                                    <label class="userOwnTitle" title="固定电话">固定电话:</label>
                                     <input type="text" class="form-control userOwnCon" id="user_phone" name="user_phone"
                                            value="${user.user_phone }" style="width: 78%;display: inline">
                                 </div>
                             </div>
                             <div class="row" style="margin-top: 20px">
                                 <div class="col-md-4">
-                                    <label class="userOwnTitle">邮箱地址:</label>
+                                    <label class="userOwnTitle" title="邮箱地址">邮箱地址:</label>
                                     <input type="text" class="form-control userOwnCon" id="email" name="email"
                                            value="${user.email}" style="width: 78%;display: inline">
                                 </div>
                                 <c:if test="${user.user_autority != 3 }">
 	                                <div class="col-md-4" align="left">
-	                                    <label style="width: 21%; float: left; line-height: 35px">Shera环境:</label>
+	                                    <label class="userOwnTitle" style="width: 21%; float: left; line-height: 35px" title="Shera环境">Shera环境:</label>
 	                                    <select class="form-control" name = "sheraId" style="width: 78%; display: inline; float: right; " disabled>
 	                                        <c:if test="${userShera != null }">
 	                                            <option  value="${userShera.id }">${userShera.sheraUrl }</option>
@@ -150,12 +150,76 @@
                             </div>
                             <c:if test="${!cas_enable}">
                             <div class="basicInfoSaveBtn">
-                                <span class="pull-right btn btn-primary" id="basicInfo">保存</span>
+                                <span class="pull-right btn btn-primary btn-color" id="basicInfo">保存</span>
                             </div>
                             </c:if>
                         </form>
                     </div>
-
+					<div id="preferenceinfo_wrap" class="tab_wrap hide">
+						<div class="container-prefer">
+	                        <div class="panel-group" id="accordion">
+								<div class="panel panel-info">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#accordion" 
+											   href="#collapseOne">
+												监控设置
+											</a>
+										</h4>
+									</div>
+									<div id="collapseOne" class="panel-collapse collapse in">
+										<div class="panel-body">
+											<div class="preferInfo">
+												<span>默认值设置：</span>
+											</div>
+											<div class="preferInfo">
+												<span>监控设置：</span>
+												<label for="preferenceChk">
+												<c:choose>
+													<c:when test="${userFavor.monitor == 0 }">
+														<input type="checkbox" id="PinpointChk">
+													</c:when>
+													<c:when test="${userFavor.monitor == 1 }">
+														<input type="checkbox" id="PinpointChk" checked="1">
+													</c:when>
+													<c:otherwise>
+														<input type="checkbox" id="PinpointChk" checked="1">
+													</c:otherwise>
+												</c:choose>
+												Pinpoint监控</label>
+											</div>
+											<div class="form-group">
+					                            <div class="col-md-offset-10 col-md-2">
+					                                <button type="button" class="btn btn-primary btn-color" id="preferSave">保存</button>
+					                            </div>
+					                        </div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="panel panel-success">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<a data-toggle="collapse" data-parent="#accordion" 
+										   href="#collapseTwo">
+											主题颜色设置
+										</a>
+									</h4>
+								</div>
+								<div id="collapseTwo" class="panel-collapse collapse">
+									<div class="panel-body">
+										<div class="setColor preferInfo">
+				                        	<div>皮肤颜色：
+				                        		<i id="redColor" class="fa fa-circle" style="color:#e8504f;font-size:20px;cursor:pointer"></i>
+				                        		<i id="blueColor" class="fa fa-circle" style="color:#418ac7;font-size:20px;cursor:pointer"></i>
+				                        	</div>
+				                        </div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+					</div>
                     <div id="resourceinfo_wrap" class="tab_wrap hide">
                         <section class="container-count">
                         <div class="padding">
@@ -306,7 +370,7 @@
                             <div class="form-group">
                                 <div class="col-md-offset-6 col-md-3">
 <!--                                     <button type="button" class="pull-right btn btn-primary" id="modifyPwd">提交修改</button> -->
-                                    <span class="pull-right btn btn-primary" id="modifyPwd">提交修改</span>
+                                    <span class="pull-right btn btn-primary btn-color" id="modifyPwd">提交修改</span>
                                 </div>
                             </div>
 

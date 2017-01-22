@@ -5,17 +5,17 @@
 <html lang="zh-cn">
 <head>
     <title>用户登录</title>
-   <%@include file="frame/dashboard-header.jsp" %>
-    <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/layout.css">
+   <%@include file="frame/header.jsp" %>
+    
 </head>
 <body>
 
-<header class="header">
+<header class="header" id="login-header">
     <div class="navbar navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a href="javascript:void(0);">
-                    <h2>BONC-PaaS</h2>
+                <a href="javascript:void(0);" style="color:#fff">
+                    <h2>BCM</h2>
                 </a>
             </div>
         </div>
@@ -24,7 +24,7 @@
 <div class="container">
     <div class="login-container">
         <div class="sign-container">
-            <h3>登录</h3>
+            <div class="sign-title"><h3>登录</h3></div>
             <div class="sign-form">
                 <div class="loginMsg">
                     <span class="">${err_code }</span>
@@ -57,7 +57,7 @@
                      </c:choose>
 					    
                     <div class="form-group">
-                        <button id="btn-signin" class="btn btn-primary btn-block" type="button" disabled="disabled">登录</button>
+                        <button id="btn-signin" class="btn btn-color btn-block" type="button">登录</button>
                     </div>
 
                 </form>

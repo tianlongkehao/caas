@@ -76,9 +76,9 @@ function creatable(isDir, dirName) {
 					fileInfo = eval("(" + fileInfo + ")");
 					if (fileInfo.fileName == '..') {
 						tbody += '<tr class="vol_list" style="cursor:pointer">'
-								+ '<td style="width: 5%;text-indent: 14px;">'
+								+ '<td style="width: 61px;">&nbsp;'
 								+ '</td>'
-								+ '<td style="width: 25%; text-indent: 22px;"  onclick=creatable('
+								+ '<td style="width: 307px;"  onclick=creatable('
 								+ fileInfo.dir
 								+ ',"'
 								+ fileInfo.fileName
@@ -94,23 +94,23 @@ function creatable(isDir, dirName) {
 								+ '</span>'
 								+ '</a>'
 								+ '</td>'
-								+ '<td style="width: 15%; text-indent: 61px;">'
+								+ '<td style="width: 183px;">&nbsp;'
 						if (!fileInfo.dir && !fileInfo.link) {
 							tbody += fileInfo.size + 'KB'
 						}
 						tbody += '</td>'
-								+ '<td style="width: 30%; text-indent: 152px;"></td>'
-								+ '<td style="width: 15%;text-indent: 131px;"></td>'
+							+ '<td style="width: 369px;">&nbsp;</td>'
+							+ '<td style="width: 184px;">&nbsp;</td>'
 								+ '</tr>';
 					} else {
 						tbody += '<tr class="vol_list" style="cursor:pointer">'
-								+ '<td style="width: 5%;text-indent: 14px;">'
+								+ '<td style="width: 61px;">&nbsp;'
 								+ '<input type="checkbox" class="chkItem" name="downfiles" value="'
 								+ fileInfo.fileName
 								+ '" >'
 								+ '</td>'
-								+ '<td style="width: 25%;text-indent: 22px;" onclick=creatable('
-								+ (fileInfo.dir)
+								+ '<td style="width: 307px;" onclick=creatable('
+								+ (fileInfo.dir || fileInfo.link)
 								+ ',"'
 								+ fileInfo.fileName
 								+ '") >'
@@ -127,17 +127,18 @@ function creatable(isDir, dirName) {
 								+ '</span>'
 								+ '</a>'
 								+ '</td>'
-								+ '<td style="width: 15%; text-indent: 56px;">'
+								+ '<td style="width: 369px;">&nbsp;'
+								+ '<td style="width: 183px;">&nbsp;'
 						if (!fileInfo.dir) {
 							tbody += fileInfo.size + 'KB'
 							
 						}
 						tbody += '</td>'
-								+ '<td style="width: 30%; text-indent: 148px;">'
+								+ '<td style="width: 369px;">&nbsp;'
 								+ fileInfo.modifiedTime
 								+ '</td>'
-								+ '<td style="width: 15%;text-indent: 123px;">'
-								+ '<a class="deleteButton" style="text-indent: 0px;" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
+								+ '<td style="width: 184px;">&nbsp;'
+								+ '<a class="deleteButton" href="javascript:void(0)" onclick="delfile(this)"  fileName="'
 								+ fileInfo.fileName
 								+ '"> <i class="fa fa-trash fa-lg fa-i"></i></a>'
 						if (true == fileInfo.dir) {

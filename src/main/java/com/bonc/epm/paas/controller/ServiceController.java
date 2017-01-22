@@ -250,6 +250,7 @@ public class ServiceController {
             return "workbench.jsp";
         }
         model.addAttribute("menu_flag", "service");
+        model.addAttribute("li_flag", "service");
         return "service/service.jsp";
     }
     
@@ -457,6 +458,7 @@ public class ServiceController {
         model.addAttribute("envVariableList", envVariableList);
         model.addAttribute("portConfigList", portConfigList);
         model.addAttribute("menu_flag", "service");
+        model.addAttribute("li_flag", "service");
         return "service/service-detail.jsp";
     }
 
@@ -929,7 +931,7 @@ public class ServiceController {
 		service.setIsModify(ServiceConstant.MODIFY_FALSE);
 		service = serviceDao.save(service);
 		// 保存服务操作信息
-		long operationType;
+		Integer operationType;
 		if (isDebug) {
 			operationType = ServiceConstant.OPERATION_TYPE_DEBUG;
 		} else {

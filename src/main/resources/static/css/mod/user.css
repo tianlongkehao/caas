@@ -122,10 +122,6 @@
     border-bottom: 2px solid #e2e2e4;
 }
 
-.modalCrealApp .steps-main .progre .radius_step.action {
-    border-bottom: 2px solid #418ac7;
-}
-
 .radius_step {
     color: #999;
     padding: 0 20px;
@@ -140,10 +136,6 @@
     border-radius: 30px;
     background: #cbcbcb;
     color: #fff;
-}
-
-.radius_step.action span {
-    background: #418ac7;
 }
 
 .step-inner {
@@ -943,6 +935,11 @@ i.pushOrg {
 /* user-own */
 .userOwnTitle{
 	width: 20%;
+    line-height: 34px;
+    float: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .userOwnCon{
 	width: 75%;
@@ -969,8 +966,27 @@ i.pushOrg {
 #pwd_wrap form div.form-group label{
 	line-height: 34px;
     font-size: 15px;
-    padding-left: 36px;
+    padding-left: 22px;
     padding-right: 0px;
+}
+.container-prefer{
+	background-color: #fff;
+	padding-top: 40px;
+	padding-bottom: 70px;
+	width: 96%;
+	margin: 0 auto;
+}
+.preferInfo{
+	margin-left: 40px;
+	padding-top:10px;
+}
+.preferInfo input{
+	margin-right: 10px;
+	margin-left:20px;
+}
+#preferSave{
+	margin-top: 30px;
+	margin-left: 60px;
 }
 
 

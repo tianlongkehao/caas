@@ -221,6 +221,7 @@ $(document).ready(function () {
 			type : 1,
 			title : '添加认证',
 			content : $("#addCredentialsCon"),
+			area: ['500px'],
 			btn : [ '添加', '取消' ],
 			scrollbar:false,
 			yes:function(index, layero){

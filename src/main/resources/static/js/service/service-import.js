@@ -19,6 +19,7 @@
 		 	type:1,
 	        title: '引入外部服务',
 	        content: $("#import-service"),
+	        area: ['600px'],
 	        btn: ['保存', '取消'],
 	        yes: function(index, layero){
 	        	$('#import-ser-name').focus();
@@ -163,22 +164,22 @@
             		tr+='<tr>'+
 			     			'<td style="width: 5%; text-indent: 30px;">'+
 			     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
-					     		'<td style="width: 18%; padding-left: 5px;">'+refservice.serName+ '</td>'+
-					     		'<td style="width: 20%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
-					     		'<td style="width: 20%;">'+refservice.refAddress+'</td>';
+					     		'<td style="width: 18%; padding-left: 5px;"><a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
+					     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'">'+refservice.serName+'</a><i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
+					     		'<td style="width: 17%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
+					     		'<td style="width: 17%;">'+refservice.refAddress+'</td>';
 					     		if(undefined == refservice.useProxy){
-					     			tr+='<td style="width: 20%;">'+"无"+'</td>';
+					     			tr+='<td style="width: 17%;">'+"无"+'</td>';
 					     		}else{
-					     			tr+='<td style="width: 20%;">'+refservice.useProxy+'</td>';
+					     			tr+='<td style="width: 17%;">'+refservice.useProxy+'</td>';
 					     			}
 			     		if('1'==refservice.viDomain){
 			     			tr+='<td style="width: 10%;">所有租户可见</td>';
 			     		}else{
 			     			tr+='<td style="width: 10%;">仅本租户可见</td>';
 			     		}
-			     		tr+='<td style="width: 14%;"><a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash fa-lg"></i></a>'+
-					     		'<a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
-					     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'"><i class="fa fa-edit fa-lg"></i></a></td>'+
+			     		tr+='<td style="width: 14%;">'+
+					     		'<a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash"></i></a></td>'+
 					     	'</tr>';
          	}
             $("#importSerList").append(tr);
@@ -190,7 +191,7 @@
  }
  function showDataTable(){
 	 $('.dataTables-example').dataTable({
-	     "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }]
+	     "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
 		});
 	 $("#checkallbox").parent().removeClass("sorting_asc");
 	 
@@ -201,7 +202,7 @@
 		layer.open({
 		        title: '删除外部引入服务',
 		        content: '确定删除外部引入服务？',
-		        btn: ['确定', '取消'],
+		        btn: ['删除', '取消'],
 		        yes: function(index, layero){ 
 		        	$(obj).parent().parent().remove();
 		        	//refservice/delete.do
@@ -245,7 +246,8 @@
 		 	type: 1,
 	        title: '修改外部引入服务',
 	        content: $("#import-service"),
-	        btn: ['确定', '取消'],
+	        area: ['600px'],
+	        btn: ['修改', '取消'],
 	        yes: function(index, layero){
 	        	 var importSerName = $("#import-ser-name").val();
 	        	 var importSerIn = "default";

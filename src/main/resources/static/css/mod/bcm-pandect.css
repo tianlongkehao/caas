@@ -1,0 +1,192 @@
+.account_table {
+    min-height: calc(100% - 130px);
+}
+/*服务详情*/
+.container-count {
+    margin-bottom: 20px;
+    min-width: 180px;
+    overflow: hidden;
+    height: 230px;
+    border-radius: 2px;
+    float: left;
+    width: 40%;
+}
+.container-count .padding {
+    background: #fff;
+    height: 100%;
+    width: 100%;
+}
+.row-title, .container-count .row-title {
+    line-height: 40px;
+    background: rgba(238,102,102,0.75);
+    color:#fff;
+    border-bottom: 1px solid #EFF2F7;
+    padding-left: 30px;
+    font-size: 16px;
+}
+/* .table-title{
+	background: rgba(238,102,102,0.75);
+    color:#fff;
+} */
+.container-count .server-list {
+    padding: 0 30px;
+    margin-top: 20px;
+}
+.container-count .server-list li {
+    height: 50px;
+}
+.container-count .server-list li a {
+    color: #333;
+}
+.container-count .server-list li .server-info-icon {
+    float: left;
+    line-height: 50px;
+}
+.server_icon_1, .server-info-icon .server_icon_1 {
+    background-position: 0 2px;
+}
+.container-count .server-list .green {
+    background: #2FBA66;
+}
+.container-count .server-list .litblue {
+    background: #50b3d3;
+}
+.container-count .server-list .big {
+    padding: 5px 12px;
+    display: inline-block;
+    border-radius: 10px;
+    color: #fff;
+    text-align: center;
+    min-width: 70px;
+    margin-top: 8px;
+}
+.container-count .server-list .blue {
+    background: #5F93D3;
+}
+.container-count .server-list .yellow {
+    background: #FCB322
+}
+.container-count .server-list .purple {
+    background: #8075C4;
+}
+
+
+/*租户资源查看*/
+.detail-info {
+    clear: both;
+    height: calc(100% - 242px);
+    margin-bottom: 15px;
+}
+.detail-info .info-list {
+    background: #fff;
+    height: calc(100% - 20px);
+    width: 100%;
+    margin-top: 10px;
+    overflow: hidden;
+    border-radius: 2px;
+    
+}
+.detail-info .info-list #table-listing {
+    text-align: center;
+}
+.detail-info .info-list #table-listing thead tr {
+    height: 40px;
+}
+.detail-info .info-list #table-listing thead .detail-rows {
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+}
+.detail-info .info-list #table-listing tbody tr {
+    height: 40px;
+}
+.table>tbody>tr>td {
+    vertical-align: middle;
+}
+.table>tbody>tr>td {
+    vertical-align: middle;
+}
+.detail-info .info-list #table-listing tbody td .slider_bj {
+    position: relative;
+    background: #DADBDE;
+    border-radius: 7px;
+    height: 15px;
+    width: 95%;
+}
+.detail-info .info-list #table-listing tbody td .slider_bj .slider_block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 15px;
+    background: #2FBA66;
+    border-radius: 7px;
+    transition: all 1s ease-out;
+}
+.detail-info .info-list #table-listing thead .detail-rows {
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-left: 25px;
+    background: rgba(47,186,102,0.75);
+    color:#fff; 
+}
+i.pandect-icon{
+	color: #8b8b8b;
+	font-size: 20px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+img.pandect-icon{
+	width:20px;
+	margin-left: 2px;
+    margin-right: 4px;
+}
+/* log */
+
+.logInfo{
+	margin-top:30px;
+	width: 100%;
+}
+.right{
+	float: right;
+	color: #b7b7b7;
+}
+.serviceNumInfo{
+	width:20%;
+	height:178px;
+	border-radius: 25px;
+	float:left;
+	margin-right: 20px;
+	box-shadow: 1px 1px 8px rgba(0,0,0,0.45);
+}
+.pandect-icon1{
+	width: 88px;
+}
+.pandect-icon1Text{
+	color:#efefef;
+	font-size: 16px;
+}
+.numberInfos{
+	margin-right:56px;
+	color:#fff;
+}
+.numberInfo{
+	font-size: 56px;
+}
+.blue {
+    background: #5F93D3;
+}
+.yellow {
+    background: #FCB322;
+}
+.litblue{
+	background: #50b3d3;
+}
+.purple {
+    background: #8075C4;
+}
+.fa-puzzle-piece{
+	font-size: 86px;
+    color: #fff;
+    padding: 10px;
+}

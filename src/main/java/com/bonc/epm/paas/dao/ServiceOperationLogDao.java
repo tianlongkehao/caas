@@ -1,10 +1,16 @@
 package com.bonc.epm.paas.dao;
 
 import java.util.Date;
+import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.ServiceOperationLog;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -25,7 +31,7 @@ public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationL
      * @return ServiceOperationLog
      * @see
      */
-    default ServiceOperationLog save(String serviceName, String serviceExtraInfo, long operationType){
+    default ServiceOperationLog save(String serviceName, String serviceExtraInfo, Integer operationType){
     	User currentUser = CurrentUserUtils.getInstance().getUser();
 		ServiceOperationLog log = new ServiceOperationLog();
 		log.setServiceName(serviceName);
@@ -37,4 +43,15 @@ public interface ServiceOperationLogDao extends CrudRepository<ServiceOperationL
 		log = save(log);
     	return log;
     }
+    
+    
+    @Query("select i from ServiceOperationLog i  order by i.createDate desc")
+	public Page<ServiceOperationLog> findAlls(Pageable request);
+    
+    @Query("select i from ServiceOperationLog i where  i.createUserName like ?1  order by i.createDate desc")
+    public Page<ServiceOperationLog> findAllByCreateUserName(String createUserName,Pageable request);
+    
+ 
+
+    public List<ServiceOperationLog> findFourByCreateBy(long createBy,Pageable request);
 }

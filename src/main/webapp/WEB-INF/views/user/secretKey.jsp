@@ -8,7 +8,7 @@
 <script type="text/javascript" src="<%=path%>/js/user/secretKey.js"></script>
 </head>
 <body>
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="user" value="" />
 	</jsp:include>
 
@@ -17,10 +17,10 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">密钥管理</li>
+						<li class="active">密钥管理</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -154,7 +154,7 @@
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$('.dataTables-example').dataTable({
-	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,3] }]
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,4] }]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
 		

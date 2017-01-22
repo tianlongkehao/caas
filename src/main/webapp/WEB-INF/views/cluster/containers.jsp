@@ -12,7 +12,7 @@
 </head>
 
 <body>
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="cluster" value="" />
 	</jsp:include>
 	<input type="hidden" id="checkedHosts">
@@ -22,60 +22,39 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">集群资源</li>
+						<li class="active">容器监控</li>
 					</ol>
 				</div>
 				<div class="contentMain">
-
-					<aside class="aside-btn">
-						<div class="btns-group">
-							<a id="clusterResource" class="Record action"><span
-								class="btn btn-defaults btn-white"><span class="ic_left">容器监控</span></span></a>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="ibox float-e-margins">
+								<div class="ibox-title">
+									<h5>
+										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>容器监控
+									</h5>
+									<div class="ibox-tools">
+										 <a href="javascript:window.location.reload(true);"
+											 title="刷新"><i class="fa fa-repeat"></i></a>
+									</div>
+								</div>
+							</div>
 						</div>
-					</aside>
+					</div>
+					<div class="ibox-content" style="padding:0px"></div>
 
 					<div class="caption clearfix" style="padding-bottom: 0px">
-						<ul class="toolbox clearfix">
+						<ul class="toolbox clearfix hide">
 							<li><a style="cursor:pointer"
 								id="containerUpdate"><i class="fa fa-repeat"></i></a></li>
 						</ul>
 						<form id="search_form" class="form-inline"
 							action="<%=path%>/user/searchByCondition" method="post">
-							<c:if test="${cur_user.user_autority == 1}">
-								<div class="searchFun"
-									style="float: left; text-align: center; margin: 0px 10px"
-									align="right">
-									<label style="line-height: 35px">租户:</label> <select                                                 
-										name="search_namespace" id="search_namespace"
-										onchange="searchNamespace()"
-										style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
-										<option name="search_namespace" value="0">-----请选择-----</option>
-									</select>
-								</div>
-							</c:if>
 							<div class="searchFun"
-								style="float: left; text-align: center; margin: 0px 10px"
-								align="right">
-								<label style="line-height: 35px">实例:</label> <select
-									name="search_pod" id="search_pod" onchange="searchPod()"
-									disabled
-									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
-									<option name="search_pod" value="0">-----请选择-----</option>
-								</select>
-							</div>
-
-							<%--<div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">--%>
-							<%--<label style="line-height: 35px">容器:</label>--%>
-							<%--<select name="search_container" id="search_container" onchange="searchContainer()" disabled--%>
-							<%--style="height: 30px;display: inline; width: 140px; border-radius: 5px;">--%>
-							<%--<option name="search_container" selected="" value="0"></option>--%>
-							<%--</select>--%>
-							<%--</div>--%>
-							<div class="searchFun"
-								style="float: left; text-align: center; margin: 0px 10px; float: right"
+								style="text-align: center; margin: 0px 10px; float: right"
 								align="right">
 								<label style="line-height: 35px">时间:</label> <select
 									name="search_time" id="search_time" onchange="searchTime()"
@@ -90,23 +69,49 @@
 									<option name="search_time" value="30d">最近30天</option>
 								</select>
 							</div>
+							
+							<div class="searchFun"
+								style="float: right; text-align: center; margin: 0px 10px"
+								align="right">
+								<label style="line-height: 35px">实例:</label> <select
+									name="search_pod" id="search_pod" onchange="searchPod()"
+									disabled
+									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+									<option name="search_pod" value="0">-----请选择-----</option>
+								</select>
+							</div>
+							
+							<c:if test="${cur_user.user_autority == 1}">
+								<div class="searchFun"
+									style="float: right; text-align: center; margin: 0px 10px"
+									align="right">
+									<label style="line-height: 35px">租户:</label> <select                                                 
+										name="search_namespace" id="search_namespace"
+										onchange="searchNamespace()"
+										style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+										<option name="search_namespace" value="0">-----请选择-----</option>
+									</select>
+								</div>
+							</c:if>
+	
+							<%--<div class="searchFun" style="float: left; text-align: center; margin: 0px 10px" align="right">--%>
+							<%--<label style="line-height: 35px">容器:</label>--%>
+							<%--<select name="search_container" id="search_container" onchange="searchContainer()" disabled--%>
+							<%--style="height: 30px;display: inline; width: 140px; border-radius: 5px;">--%>
+							<%--<option name="search_container" selected="" value="0"></option>--%>
+							<%--</select>--%>
+							<%--</div>--%>
+							
 
 						</form>
 					</div>
-
-
 					<div>
-
 						<div id="clusterResource_wrap" class="tab_wrap">
 							<div class="detail-info">
 								<div class="info-list" id="resourceContainer"></div>
-
 							</div>
-
 						</div>
 					</div>
-
-
 				</div>
 			</div>
 		</article>
@@ -171,7 +176,7 @@
 						grid : {
 							left : '3%',
 							right : '4%',
-							bottom : '10%',
+							bottom : '20%',
 							containLabel : true
 						},
 						xAxis : [],

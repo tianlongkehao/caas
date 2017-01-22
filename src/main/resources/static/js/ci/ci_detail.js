@@ -30,8 +30,6 @@ $(document).ready(function(){
         $(".btn-version").css("width",btnVersionWidth);
     }
     
-    
-    
     //是否选中hook
     if ($("#isHookCode").val() == 1) {
     	document.getElementById("HookCode").checked=true

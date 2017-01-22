@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +115,20 @@ public class RegistryController {
     
     /**
      * Description: <br>
+     * 镜像广场查询镜像重定向到镜像中心页面
+     * @param search
+     * @param request
+     * @return 
+     * @see
+     */
+    @RequestMapping(value = {"registry/search"}, method = RequestMethod.GET)
+    public String redirectImage(String search,HttpServletRequest request){
+        request.getSession().setAttribute("search", search);
+        return "redirect:/registry/0";
+    }
+    
+    /**
+     * Description: <br>
      * 进入镜像显示页面，镜像显示分三层分隔显示
      * @param index 显示哪一层的镜像
      * @param model 添加返回数据
@@ -132,6 +148,7 @@ public class RegistryController {
         }
         
         model.addAttribute("menu_flag", "registry");
+        model.addAttribute("li_flag", "registry"+index);
         model.addAttribute("index", index);
         model.addAttribute("active",active);
         model.addAttribute("userId",userId);
@@ -156,6 +173,11 @@ public class RegistryController {
                                    HttpServletRequest request ){
         long userId = CurrentUserUtils.getInstance().getUser().getId();
         String search = request.getParameter("search[value]");
+        String searchShowqw = (String)request.getSession().getAttribute("search");
+        if (null != searchShowqw && "" != searchShowqw && search == "") {
+            search = searchShowqw;
+            request.getSession().setAttribute("search", "");
+        }
         Map<String,Object> map = new HashMap<String, Object>();
         PageRequest pageRequest = null;
         Page<Image> images = null;
@@ -668,6 +690,46 @@ public class RegistryController {
 //		maps.put("images3", images3);
 		maps.put("status", "200");
 		return JSON.toJSONString(maps);
+	}
+	
+	/**
+	 * Description: <br>
+	 * 镜像广场中的镜像展示
+	 * @param model
+	 * @return 
+	 * @see
+	 */
+	@RequestMapping("registry/imageShow")
+	public String findUserFavorImage(Model model){
+	    long userId = CurrentUserUtils.getInstance().getUser().getId();
+	    List<Image> imageList = imageDao.findAllUserFavor();
+	    List<Image> newImage = new ArrayList<>();
+	    Page<Image> imagePage =  imageDao.findByImageType(userId, null);
+	    if (imageList.size() < 8) {
+	       while (imageList.size() < 8) {
+	           imageList.add(imagePage.getContent().get(10-imageList.size()));
+	       }
+	    }
+	    
+	    for (Image image : imageList) {
+	        image.setCurrUserFavorCount(image.getFavorUsers().size());
+	    }
+	    
+	    Collections.sort(imageList,new Comparator<Image>(){
+            public int compare(Image arg0, Image arg1) {
+                return arg1.getCurrUserFavorCount().compareTo(arg0.getCurrUserFavorCount());
+            }
+        });
+	    
+	    for (int i= 0 ; i < 8 ; i++) {
+	        newImage.add(imagePage.getContent().get(i));
+	    }
+	    
+	    addCurrUserFavor(imageList);
+	    addCurrUserFavor(newImage);
+	    model.addAttribute("imageList", imageList);
+	    model.addAttribute("newImage",newImage);
+	    return "imageShow.jsp";
 	}
 
 }

@@ -10,7 +10,7 @@
 </head>
 <body>
 
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="user" value="" />
 	</jsp:include>
 	<div class="page-container">
@@ -18,7 +18,7 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active">用户管理</li>
 					</ol>
@@ -30,9 +30,9 @@
 							<div class="col-sm-12">
 								<div class="ibox float-e-margins">
 									<div class="ibox-title">
-										<h5>
+										<div class=""><h5>
 											<i class="fa fa-map-marker" style="margin-right: 6px;"></i>用户管理
-										</h5>
+										</h5></div>
 										<div class="ibox-tools">
 											<a href="<%=path %>/user/manage/add/${cur_user.id }"
 												id="userCreateBtn" title="创建用户"><i class="fa fa-plus"></i></a>
@@ -49,11 +49,11 @@
 												<tr>
 													<th style="width: 5%; text-indent: 30px;"><input
 														type="checkbox" class="chkAll" id="checkallbox" /></th>
-													<th style="width: 15%; padding-left: 5px;">登录账号</th>
+													<th style="width: 15%;">登录账号</th>
 													<th style="width: 15%;">姓名</th>
 													<th style="width: 15%;">公司</th>
 													<th style="width: 15%;">部门</th>
-													<th style="width: 15%; text-indent: 8px;">工号</th>
+													<th style="width: 15%;">工号</th>
 													<th style="width: 10%;">角色权限</th>
 													<th style="width: 8%;" class="del-operation">操作</th>
 												</tr>

@@ -30,6 +30,7 @@ import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserAndSheraDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.UserFavorDao;
 import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
@@ -40,6 +41,7 @@ import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserAndShera;
+import com.bonc.epm.paas.entity.UserFavor;
 import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
@@ -82,6 +84,12 @@ public class UserController {
      */
     @Autowired
     private UserDao userDao;
+    
+    /**
+     * UserFavorDao
+     */
+    @Autowired
+    private UserFavorDao userFavorDao;
     
     /**
      * userResourceDao
@@ -169,6 +177,7 @@ public class UserController {
         List<User> userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
         model.addAttribute("userList", userList);
         model.addAttribute("menu_flag", "user");
+        model.addAttribute("li_flag", "user");
         return "user/user.jsp";
     }
     
@@ -185,6 +194,7 @@ public class UserController {
         List<User> userManageList = userDao.checkUser1manage34(id);
         model.addAttribute("userManageList", userManageList);
         model.addAttribute("menu_flag", "usermanage");
+        model.addAttribute("li_flag", "manage");
         return "user/user-management.jsp";
     }
 
@@ -350,6 +360,30 @@ public class UserController {
         return "user/user-management.jsp";
     }
 
+    /**
+     * 
+     * Description:
+     * 更新用户偏好设置
+     * @param Integer monitor
+     * @return .jsp String
+     * @see
+     */
+    @RequestMapping(value = { "/userFavorUpdate.do" }, method = RequestMethod.POST)
+    @ResponseBody
+    public String userFavorUpdate(Integer monitor) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        User user = CurrentUserUtils.getInstance().getUser();
+    	UserFavor userFavor = userFavorDao.findByUserId(user.getId());
+    	if (null == userFavor) {
+			userFavor = new UserFavor();
+			userFavor.setUserId(user.getId());
+    	}
+    	userFavor.setMonitor(monitor);
+    	userFavorDao.save(userFavor);
+    	map.put("status", "200");
+    	return JSON.toJSONString(map);
+    }
+    
     /**
      * 
      * Description:
@@ -606,6 +640,7 @@ public class UserController {
     @RequestMapping(value = { "detail/{id}" }, method = RequestMethod.GET)
     public String detailById(Model model, @PathVariable long id) {
         User user = userDao.findOne(id);
+        UserFavor userFavor = userFavorDao.findByUserId(id);
         UserResource userResource = userResourceDao.findByUserId(id);
         Resource resource = new Resource();
         Restriction restriction = new Restriction();
@@ -669,6 +704,7 @@ public class UserController {
         model.addAttribute("resource", resource);
         model.addAttribute("userResource", userResource);
         model.addAttribute("user", user);
+        model.addAttribute("userFavor", userFavor);
         model.addAttribute("menu_flag", "user");
         return "user/user_detail.jsp";
     }
@@ -881,6 +917,7 @@ public class UserController {
 	public String detail(Model model, @PathVariable long id) {
         try {
             User user = userDao.findOne(id);
+            UserFavor userFavor = userFavorDao.findByUserId(user.getId());
 			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
             Namespace ns = client.getNamespace(user.getNamespace());
@@ -897,6 +934,7 @@ public class UserController {
                 usedstorage = usedstorage + (double) storage.getStorageSize();
             }
             Shera shera = sheraDao.findByUserId(id);
+            model.addAttribute("userFavor", userFavor);
             model.addAttribute("userShera", shera);
             model.addAttribute("usedstorage",  usedstorage / 1024);
         }
@@ -987,19 +1025,19 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-
-    /**
-     * 
-     * Description:
-     * userOwn
-     * @param model  
-     * @return .jsp String
-     */
-    @RequestMapping(value = { "/own" }, method = RequestMethod.GET)
-	public String userOwn(Model model) {
-        model.addAttribute("menu_flag", "userOwn");
-        return "user/user-own.jsp";
-    }
+//2016年12月30日 17:42:02 判定为无效方法
+//    /**
+//     * 
+//     * Description:
+//     * userOwn
+//     * @param model  
+//     * @return .jsp String
+//     */
+//    @RequestMapping(value = { "/own" }, method = RequestMethod.GET)
+//	public String userOwn(Model model) {
+//        model.addAttribute("menu_flag", "userOwn");
+//        return "user/user-own.jsp";
+//    }
 
     /**
      * 
@@ -1229,8 +1267,7 @@ public class UserController {
                 if (null != client.getNamespace(namespace)) {
                     try {
                         client.deleteNamespace(namespace);
-                        //TODO 逻辑删除卷组信息
-                        
+						// 逻辑删除卷组信息
                     } 
                     catch (javax.ws.rs.ProcessingException e) {
                         LOG.error("delete namespace error" + e.getMessage());
@@ -1323,6 +1360,7 @@ public class UserController {
         Iterable<Shera> sheraList = sheraDao.findAll();
         model.addAttribute("sheraList", sheraList);
         model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li_flag", "shera");
         return "ci/shera.jsp";
     }
     
@@ -1339,7 +1377,6 @@ public class UserController {
         Map<String,Object> map = new HashMap<>();
         try {
             SheraAPIClientInterface client = sheraClientService.getClient(shera);
-            JdkList jdkList = client.getAllJdk();
             if (StringUtils.isNotEmpty(jdkJson)) {
                 String[] jdkData = jdkJson.split(";");
                 for (String jdkRow : jdkData ) {

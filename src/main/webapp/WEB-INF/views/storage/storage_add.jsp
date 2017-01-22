@@ -11,7 +11,7 @@
 </head>
 <body>
 
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="ci" value="" />
 	</jsp:include>
 
@@ -20,12 +20,12 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">服务</li>
-						<li style="margin-left: -44px;"><i class="fa fa-angle-right"></i></li>
-						<li class="active">创建备份</li>
+						<li class="active"><a href="<%=path %>/service"><span id="nav2">服务管理</span></a></li>
+						<li><i class="fa fa-angle-right"></i></li>
+						<li class="active">创建存储卷</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -55,18 +55,19 @@
 								<div class="row">
 									<div class="form-group col-md-12">
 										<label class="col-md-2 s-title">存储大小：</label>
-										<div class="col-md-8 storageSize" style="line-height:34px">
-											<input type="radio" name="storageSize" class="storageSize"
-												value="20480">20<span class="s-unit">G</span> <input type="radio"
-												name="storageSize" class="storageSize" value="51200">50<span class="s-unit">G</span>
-											<input type="radio" name="storageSize" class="storageSize"
-												value="102400">100<span class="s-unit">G</span> <input type="radio"
-												name="storageSize" class="storageSize" id="defVolNum">
-											<input id="defVol" type="number" 
-												placeholder="自定义大小"><span class="is-unit">G</span> <span
-												style="color: #1E90FF; padding-left: 15px">总量:<span
+										<div class="col-md-10 storageSizes" style="line-height:34px">
+											<input type="radio" name="storageSize" class="storageSize" id="size20"
+												value="20480"><label for="size20">20<span class="s-unit">G</span></label> 
+											<input type="radio" name="storageSize" class="storageSize" id="size50" 
+												value="51200"><label for="size50">50<span class="s-unit">G</span></label>
+											<input type="radio" name="storageSize" class="storageSize" id="size100"
+												value="102400"><label for="size100">100<span class="s-unit">G</span></label> 
+											<input type="radio" name="storageSize" class="storageSize" id="defVolNum">
+											<label for="defVolNum"><input id="defVol" type="number"
+												placeholder="自定义大小"><span class="is-unit">G</span></label> 
+											<span style="color: #1E90FF; padding-left: 15px">总量：<span
 												id="totalVol">${userResource.vol_size}</span>G
-											</span> <span style="color: #1E90FF; padding-left: 15px">剩余:<span
+											</span> <span style="color: #1E90FF; padding-left: 15px">剩余：<span
 												id="restVol">${userResource.vol_surplus_size }</span>G 可用
 											</span>
 										</div>
@@ -98,7 +99,7 @@
 								<div class="container" style="width:90%">
 								<div class="list-item-description" style="padding-top: 100px;">
                                             <a href="<%=path %>/service/storage"><span class="btn btn-default" style="margin-right: 30px;">返回</span></a>
-                                            <span id="buildStorage" class="btn btn-primary pull-right">保存</span>
+                                            <span id="buildStorage" class="btn btn-primary btn-color pull-right">保存</span>
                                         </div>
 								</div>
 							</form>

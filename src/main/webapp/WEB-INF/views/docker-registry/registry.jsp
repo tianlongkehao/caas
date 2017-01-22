@@ -9,7 +9,7 @@
 <script type="text/javascript" src="<%=path%>/js/registry/registry.js"></script>
 </head>
 <body>
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="registry" value="0" />
 	</jsp:include>
 	<div class="page-container">
@@ -17,10 +17,10 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2" value = "${index}">${active }</li>
+						<li id="index" class="active" value = "${index}">${active }</li>
 					</ol>
 				</div>
 				<div class="contentMain">

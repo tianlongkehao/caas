@@ -12,7 +12,7 @@
 </head>
 <body>
 
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="ci" value="" />
 	</jsp:include>
 	<div class="page-container">
@@ -20,22 +20,22 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i><span id="nav1">&nbsp;&nbsp;控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active">服务</li>
+						<li><a href="<%=path %>/service"><span id="nav2">服务管理</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
 						<li class="active" style="width:200px">${service.serviceName }</li>
 					</ol>
 					<input hidden="true" value="${service.id }" id="serId"/>
 					<input hidden="true" value="${service.serviceName }" id="serName"/>
 					<input hidden="true" value="${service.status }" id="serStatus"/>
-			        <input hidden="true" value="${service.serviceType }" id="serType"/>	
+			        <input hidden="true" value="${service.serviceType }" id="serType"/>
 				</div>
 				<div class="contentMain">
 					<section class="detail-succeed">
 						<div class="icon-img">
 							<div class="type-icon">
-								<img src="<%=path%>/images/image-1.png" height="100%">
+								<img src="<%=path%>/images/podSimple.png" height="100%">
 							</div>
 						</div>
 						<ul class="succeed-content pull-left">
@@ -52,8 +52,7 @@
 								href="${service.serviceAddr}/${service.proxyPath}"
 								target="_blank">${service.serviceAddr}/${service.proxyPath}</a></li> --%>
 							<li class="oldCon">服务地址：<a href="${service.serviceAddr}/${service.proxyPath}"target="_blank">
-								<span id="oldServiceAddr">${service.serviceAddr}</span>/
-								<span id="oldProxyPath">${service.proxyPath}</span>
+								<span id="oldServiceAddr">${service.serviceAddr}</span>/<span id="oldProxyPath">${service.proxyPath}</span>
 								</a>
 							</li>
 <!-- 								<i id="editServiceAddrBtn" style="margin-left:20px" class="fa fa-edit"></i> -->
@@ -72,24 +71,24 @@
 								target="_blank" class="open">打开应用</a>
 						</div>
 					</section>
-					
+
 					<div class="baseInfo center-style">
 						<ul class="nav navbar-nav">
-							<li><a class="BASE btn-prim">基本信息</a></li>
-							<li><a class="INSTANCES">容器实例</a></li>
-							<li><a class="SERVOL">挂载地址</a></li>
-							<li><a class="ENVS">环境变量</a></li>
-							<li><a class="PORTS">端口</a></li>
+							<li><a class="BASE btn-prim serDetail">基本信息</a></li>
+							<li><a class="INSTANCES serDetail">容器实例</a></li>
+							<li><a class="SERVOL serDetail">挂载地址</a></li>
+							<li><a class="ENVS serDetail">环境变量</a></li>
+							<li><a class="PORTS serDetail">端口</a></li>
 							<li class="dropdown">
-								<a class="dropdown-toggle" id="dropdown-log"
+								<a class="dropdown-toggle serDetail" id="dropdown-log"
 									data-toggle="dropdown"> 日志 <b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podNameList}" var="pod" >
-								 		<li class="LOG"><a class="dropdown-pod" podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)" 
+								 		<li class="LOG"><a class="dropdown-pod" podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)"
 								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
 								 	</c:forEach>
-									
+
 								</ul>
 							</li>
 						</ul>
@@ -101,10 +100,10 @@
 		                </div>
          			</div>
          			<!-- Dlag -->
-         
+
 					<div class="containerInfo">
-					<form id="BaseSerForm" name="BaseSerForm" 
-					 action="<%=path%>/service/detail/editBaseSerForm.do" >  
+					<form id="BaseSerForm" name="BaseSerForm"
+					 action="<%=path%>/service/detail/editBaseSerForm.do" >
 					  <input hidden="true" value="${service.id }"  name="id"/>
 						<table class="table w50">
 							<thead>
@@ -197,41 +196,41 @@
 						                   <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="dmz" checked="checked"> DMZ区
-						                   </label> 
-						                  </c:if> 
+						                   </label>
+						                  </c:if>
 						                  <c:if test="${fn:contains(service.proxyZone,'dmz')==false}">
 						                   <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="dmz"> DMZ区
-						                   </label> 
+						                   </label>
 						                  </c:if>
-						                  
+
 						                  <c:if test="${fn:contains(service.proxyZone,'dmz1')==true}">
 						                   <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="dmz1" checked="checked"> DMZ1区
-						                   </label> 
-						                  </c:if> 
+						                   </label>
+						                  </c:if>
 						                  <c:if test="${fn:contains(service.proxyZone,'dmz1')==false}">
 						                   <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="dmz1"> DMZ1区
-						                   </label> 
-						                  </c:if>  
-						                 
+						                   </label>
+						                  </c:if>
+
 						                  <c:if test="${fn:contains(service.proxyZone,'user')==true}">
 						                  <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="user" checked="checked"> USER区
 						                	</label>
-						                  </c:if> 
+						                  </c:if>
 						                  <c:if test="${fn:contains(service.proxyZone,'user')==false}">
 						                  <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="user"> USER区
 						                	</label>
-						                  </c:if> 
-						                  
+						                  </c:if>
+
 						                </span>
 									</td>
 									</c:if>
@@ -243,40 +242,40 @@
 						                   <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="dmz" checked="checked"> DMZ区
-						                   </label> 
-						                  </c:if> 
+						                   </label>
+						                  </c:if>
 						                  <c:if test="${fn:contains(service.proxyZone,'dmz')==false}">
 						                   <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="dmz"> DMZ区
-						                   </label> 
+						                   </label>
 						                  </c:if>
-						                  
+
 						                  <c:if test="${fn:contains(service.proxyZone,'dmz1')==true}">
 						                   <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="dmz1" checked="checked"> DMZ1区
-						                   </label> 
-						                  </c:if> 
+						                   </label>
+						                  </c:if>
 						                  <c:if test="${fn:contains(service.proxyZone,'dmz1')==false}">
 						                   <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="dmz1"> DMZ1区
-						                   </label> 
-						                  </c:if> 
-						                 
+						                   </label>
+						                  </c:if>
+
 						                  <c:if test="${fn:contains(service.proxyZone,'user')==true}">
 						                  <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="user" checked="checked"> USER区
 						                </label>
-						                  </c:if> 
+						                  </c:if>
 						                  <c:if test="${fn:contains(service.proxyZone,'user')==false}">
 						                  <label class="checkbox-inline"> <input
 						                      type="checkbox"  name="proxyZone"
 						                      value="user"> USER区
 						                </label>
-						                  </c:if> 
+						                  </c:if>
 						                </span>
 									</td>
 									</c:if>
@@ -299,10 +298,10 @@
 					                    <span id="editSeAffy" hidden="true" class="editBaseCon_Run editBaseCon">
 					                  <%--  <input id="newSeAffy" name="sessionAffinity" type="text" value=${service.sessionAffinity } /> --%>
 					                    <select id="newSeAffy" name="sessionAffinity">
-					                   
+
 						                    <option name="sessionAffinity" value="" >NONE</option>
 						                    <option name="sessionAffinity" value="ClientIP" <c:if test="${service.sessionAffinity == 'ClientIP'}">selected</c:if>>ClientIP</option>
-						                   
+
 					                    </select>
 					                	</span>
 									</td>
@@ -394,7 +393,7 @@
 						</table>
 						</form>
 					</div>
-					
+
 					<div class="containerInstances hide" style="min-height: 300px;">
 						<table class="table">
 							<thead>
@@ -499,18 +498,18 @@
 									<th>服务类型  ( 无状态服务 ) </th>
 									<th>&nbsp;</th>
 									</c:if>
-									
+
 								</tr>
-								
+
 							</thead>
 							<tbody class="BORDER-vol">
-								<c:if test="${service.serviceType==1 }"> 
-									<c:forEach items="${storageList }" var="storage"> 
+								<c:if test="${service.serviceType==1 }">
+									<c:forEach items="${storageList }" var="storage">
 										<tr>
 											<td>挂载地址：${storage.mountPoint }</td>
 											<td>存储卷：${storage.storageName }</td>
 										</tr>
-									</c:forEach> 
+									</c:forEach>
 								</c:if>
 							</tbody>
 						</table>
@@ -541,12 +540,12 @@
 					                        <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value="${envVariable.envValue }"  /></span>
 					                       </td>
 					                       <c:if test="${service.status==1 or service.status==4}">
-					                          <c:if test="${envVariable.envKey!='APM' and envVariable.envKey!='namespace' and envVariable.envKey!='service'}"> 
+					                          <c:if test="${envVariable.envKey!='APM' and envVariable.envKey!='namespace' and envVariable.envKey!='service'}">
 						                          <td style="width:10%;" class="editBtn">
-						                              <i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i> 
+						                              <i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i>
 						                              <i onclick="saveEnvEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editEnv saveEnv"></i>
-						                              <i onclick="canclEnvEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editEnv"></i>  
-						                              <i onclick="delEnvEdit(this)" type="button" value="删除"  class="fa fa-trash editEnvBtn"></i>  
+						                              <i onclick="canclEnvEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editEnv"></i>
+						                              <i onclick="delEnvEdit(this)" type="button" value="删除"  class="fa fa-trash editEnvBtn"></i>
 						                          </td>
 					                          </c:if>
 					                        </c:if>
@@ -596,10 +595,10 @@
 													${service.serviceAddr}/${service.proxyPath} </a></td>
 											<c:if test="${service.status==1 or service.status==4}">
 											<td style="width:10%;" class="editBtn">
-												<i onclick="editPortAddrBtn(this)"  type="button" value="修改"  class="fa fa-edit oldPortConfig editPortAddrBtn"></i>	
+												<i onclick="editPortAddrBtn(this)"  type="button" value="修改"  class="fa fa-edit oldPortConfig editPortAddrBtn"></i>
 												<i onclick="savePortEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig savePortEdit"></i>
-           										<i onclick="canclPortEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>	
-                    							<i onclick="delPortEdit(this)" type="button" value="删除"  class="fa fa-trash editPortBtn"></i>  
+           										<i onclick="canclPortEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>
+                    							<i onclick="delPortEdit(this)" type="button" value="删除"  class="fa fa-trash editPortBtn"></i>
                     						</td>
                     						</c:if>
 										</tr>
@@ -649,15 +648,15 @@
 							</div>
 						</div>
 <!--                         <div id="containerlogList" class="weblog">
-                        
+
                         </div> -->
                         <div class='containerlogList weblog' style='overflow: auto;margin-top:10px;background-color:black;color: #37fc34'>
                             <pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">
                                    <span class='printLogSpan' style="overflow: hidden; float: left;"></span>
                             </pre>
                         </div>
-                        
-                        
+
+
 						<input id="serviceInstances" type="hidden" value="">
 						<input id="creationTime" type="hidden" value="${service.createDate }">
 					</div>
@@ -670,7 +669,7 @@
 									serviceid="${service.id }" serviceName = "${service.serviceName }"></i>
 								<i id="refreshLog" class="fa fa-refresh margin cursor"
 									data-toggle="tooltip" data-placement="top" title=""
-									data-original-title="刷新日志"></i> 
+									data-original-title="刷新日志"></i>
 							</div>
 						</div>
 						<div id="hisLogList"><div>
@@ -705,7 +704,7 @@
 					</div>
 				</div>
 			</div>
-			
+
 <%-- 			         <!-- 命令操作 -->
                     <div class="containerLog hide" id = "containerexec" style="min-height: 500px;">
                         <div class="weblogtitle">
@@ -717,12 +716,12 @@
                             </div>
                         </div>
                         <div id="containerlogList2" class="weblog">
-                             
+
                         </div>
                         <input id="serviceInstances2" type="hidden" value="">
                         <input id="creationTime2" type="hidden" value="${service.createDate }">
                     </div>
- --%>			
+ --%>
 		</article>
 	</div>
 </body>

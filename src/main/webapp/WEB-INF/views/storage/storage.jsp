@@ -8,7 +8,7 @@
   	<script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script> 
 </head>
 <body>
-<jsp:include page="../frame/menu.jsp" flush="true">
+<jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="service" value=""/>
 </jsp:include>
 
@@ -17,11 +17,9 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active" id="nav2">服务</li>
-                     <li style="margin-left: -44px;"><i class="fa fa-angle-right"></i></li>
                     <li class="active">存储和备份</li>
                 </ol>
             </div>
@@ -89,11 +87,11 @@
         <li class="line-h-3">
             <div class="param-set">
                 <span class="edit-name-c">存储大小：</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480">20<span>G</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200">50<span>G</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400">100<span>G</span>
+                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20"><label for="size20">20<span>G</span></label>
+                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="size50"><label for="size50">50<span>G</span></label>
+                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="size100"><label for="size100">100<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" id="updatedefVolNum">
-                	<input id="updatedefVol" style="width:55px; font-size:13px; height: 27px" placeholder="自定义大小"><span>G</span>
+                	<label for="updatedefVolNum"><input type="number" id="updatedefVol" style="width:80px; font-size:8px" placeholder="自定义大小"><span>G</span></label>
                 <div>
                 <span style="color:#1E90FF; padding-left:84px">总量:<span id="totalVol">${userResource.vol_size}</span>G</span>
                 <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">${userResource.vol_surplus_size }</span>G 可用</span></div>

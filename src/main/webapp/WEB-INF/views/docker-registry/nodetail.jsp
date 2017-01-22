@@ -8,7 +8,7 @@
     <script type="text/javascript" src="<%=path %>/js/registry/registry.js"></script>
 </head>
 <body>
-	<jsp:include page="../frame/menu.jsp" flush="true" >
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true" >
         <jsp:param name="registry" value="0" />
     </jsp:include>
     
@@ -17,7 +17,7 @@
             <div class="page-main">
                 <div class="contentTitle">
                     <ol class="breadcrumb">
-                        <li><a href="#"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
+                        <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;控制台</a></li>
                         <li><i class="fa fa-angle-right"></i></li>
                         <li class="active">镜像服务</li>
                     </ol>

@@ -52,15 +52,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      * CONST_CAS_ASSERTION
      */
     private static final String CONST_CAS_ASSERTION = "_const_cas_assertion_";
-    /**
-     * AUTH_FAILURE_MSG_NO_PRIVILEGE
-     */
-    private static final String AUTH_FAILURE_NO_PRIVILEGE = "您没有权限登录本系统！";
-    /**
-     * AUTH_FAILURE_MSG_NO_RESOURCE
-     */
-    //private static final String AUTH_FAILURE_NO_RESOURCE = "您尚未分配部署资源，请联系管理员！";
-    
+
     /**
      * configProps
      */

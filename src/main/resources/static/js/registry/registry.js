@@ -127,13 +127,15 @@ function filters(obj){
 }
 
 function findImages(){
-	var index = $("#nav2").val();
+	var index = $("#index").val();
 	var userId = $("#userId").val();
 	$('.dataTables-example').dataTable({
 		 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
+		 	"autoWidth": false,
 	        "processing": true,
 	        "serverSide": true,
 	        "ordering":false,
+	        "stateSave":true,
 //	        "bStateSave":true,
 	        "ajax": ctx+"/registry/pager/"+index,
 	        "columns": [
@@ -193,11 +195,11 @@ function findImages(){
 	                    		if (row.isDelete == 1 ) {
 	                    			if (row.currUserFavor == 0) {
 	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
-	                    						'<i class="fa fa-star-o star-style" style="color: #4280CB;margin-left:55px;"></i>'+
+	                    						'<i class="fa fa-star-o star-style" style="color: #e8504f;margin-left:55px;"></i>'+
 	                    					'</a>'
 	                    			} else {
 	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
-                									'<i class="fa fa-star star-style" style="color: #337ab7;margin-left:55px;"></i>'+
+                									'<i class="fa fa-star star-style" style="color: #e8504f;margin-left:35px;"></i>'+
                 								'</a>'
 	                    			}
 	                    		} else {
@@ -206,22 +208,22 @@ function findImages(){
 										 		'<i class="fa fa-wrench"></i>'+
 										 	'</a>'+
 										 	'<a class="no-drop a-oper downloadImage" imageversion="'+row.version+'" imagename="'+row.name+'" imgID="'+row.id+'" resourcename= "'+row.resourceName+'" title="导出">'+ 
-										 		'<i class="fa fa-share-square-o" style="margin-left:10px;"></i>'+
+										 		'<i class="fa fa-share-square-o"></i>'+
 										 	'</a>' 
 							 		if (row.currUserFavor == 0) {
 	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
-	                    						'<i class="fa fa-star-o star-style" style="color: #4280CB;margin-left:10px;"></i>'+
+	                    						'<i class="fa fa-star-o star-style" style="color: #e8504f;"></i>'+
 	                    					'</a>'
 	                    			} else {
 	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
-                									'<i class="fa fa-star star-style" style="color: #337ab7;margin-left:10px;"></i>'+
+                									'<i class="fa fa-star star-style" style="color: #e8504f;"></i>'+
                 								'</a>'
 	                    			}
 	                    			
 	                    			if (userId == row.createBy) {
 	                    				html +=	'<a class="no-drop a-oper" href="javascript:void(0)" onclick="deleteImage(this)"'+
 													'title="删除" imageversion="'+row.version+'" imagename="'+row.name+'" imageid="'+row.id+'">' +
-													'<i class="fa fa-trash" style="margin-left:10px;"></i>'+
+													'<i class="fa fa-trash"></i>'+
 												'</a>'
 	                    			}
 	                    		}
@@ -252,7 +254,7 @@ function deleteImage(obj){
 	   		     			layer.msg( "删除成功！", {
 		   						icon: 1
 		   					},function(){
-		   						window.location.reload(true);
+		   						window.location.href="" + ctx + "/registry/1";
 		   					});
    		     			} else {
    		   		     		layer.msg( "删除失败", {

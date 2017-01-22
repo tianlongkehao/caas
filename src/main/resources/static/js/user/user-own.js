@@ -33,6 +33,7 @@ $(function(){
 
             $("#baseinfo").addClass("hide");
             $("#resourceinfo").addClass("hide");
+            $("#preferenceinfo").addClass("hide");
             $("#baseinfo").removeClass("active");
             $("#baseinfo_wrap").addClass("hide");
         }
@@ -175,7 +176,29 @@ $(function(){
             }
         }
     }
-
+    
+    //保存用户偏好设置
+    $("#preferSave").click(function(){
+    	var monitor = 1;
+    	if ($("#PinpointChk").prop("checked")==true){
+    		monitor = 1;
+    	} else {
+    		monitor = 0;
+    	}
+    	$.ajax({
+    		type : "POST",
+    		url : ctx + "/user/userFavorUpdate.do?monitor="+monitor,
+    		success : function(data) {
+    			var data = eval("(" + data + ")");
+    			if (data.status == "200") {
+                    layer.alert("修改成功");
+    				return;
+    			}
+    		}
+    	});
+    })
 });
+$(function () { $('#collapseTwo').collapse('show')});
+$(function () { $('#collapseOne').collapse('show')});
 
 

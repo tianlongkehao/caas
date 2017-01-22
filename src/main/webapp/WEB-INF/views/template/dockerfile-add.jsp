@@ -15,7 +15,7 @@
 </head>
 <body>
 
-	<jsp:include page="../frame/menu.jsp" flush="true">
+	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="ci" value="" />
 	</jsp:include>
 
@@ -24,12 +24,12 @@
 			<div class="page-main">
 				<div class="contentTitle">
 					<ol class="breadcrumb">
-						<li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
+						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">模板</li>
-						<li style="margin-left: -44px;"><i class="fa fa-angle-right"></i></li>
-						<li class="active">dockerfile</li>
+                    	<li class="active" style="width:110px"><a href="<%=path %>/template/dockerfile"><span id="nav2">dockerfile模板</span></a></li>
+						<li><i class="fa fa-angle-right"></i></li>
+						<li class="active" style="width:110px">创建dockerfile</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -60,7 +60,7 @@
 									<div class="list-item-description" style="padding-top: 100px;">
 										<a href="<%=path%>/template/dockerfile"><span
 											class="btn btn-default" style="margin-right: 30px;">返回</span></a>
-										<span id="buildStorage" class="btn btn-primary pull-right">保存</span>
+										<span id="buildStorage" class="btn btn-primary btn-color pull-right">保存</span>
 									</div>
 								</div>
 							</form>

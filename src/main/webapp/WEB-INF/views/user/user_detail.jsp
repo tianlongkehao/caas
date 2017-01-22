@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<jsp:include page="../frame/menu.jsp" flush="true">
+<jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="user" value=""/>
 </jsp:include>
 
@@ -18,7 +18,7 @@
         <div class="page-main">
             <div class="contentTitle">
                 <ol class="breadcrumb">
-                    <li><a href="javascript:void(0)"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
+                    <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
                     <li class="active" id="nav2">租户详情</li>
                 </ol>
@@ -42,20 +42,20 @@
                                         
                                             <div class="row">
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">登录账号:</label>
+                                                    <label class="stepLabel" title="登录账号">登录账号:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="userName" name="userName" value="${user.userName }" readonly="readonly">
 													<input type="hidden" id="user_id" name="id" value="${user.id}">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
+                                                    <label class="stepLabel" title="姓名">姓名:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_realname" name="user_realname" value="${user.user_realname }" readonly="readonly">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
+                                                    <label class="stepLabel" title="权限">权&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="hidden" id="user_autority_hidden" name="user_autority" value="${user.user_autority}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
@@ -69,7 +69,7 @@
 
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
+                                                    <label class="stepLabel" title="省份">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="hidden" id="user_province_hidden" name="user_province" value="${user.user_province}">
                                                     <select class="form-control" style="width: 75%;display: inline; float: right;"
@@ -108,42 +108,42 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
+                                                    <label class="stepLabel" title="公司">公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="company" name="company" value="${user.company }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">所属部门:</label>
+                                                    <label class="stepLabel" title="所属部门">所属部门:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_department" name="user_department" value="${user.user_department }">
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
+                                                    <label class="stepLabel" title="工号">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
                                                            id="user_employee_id" name="user_employee_id" value="${user.user_employee_id }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">手机号码:</label>
+                                                    <label class="stepLabel" title="手机号码">手机号码:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_cellphone" name="user_cellphone" value="${user.user_cellphone }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">固定电话:</label>
+                                                    <label class="stepLabel" title="固定电话">固定电话:</label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="user_phone" name="user_phone" value="${user.user_phone }">
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-top: 15px">
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">电子邮箱:</label>
+                                                    <label class="stepLabel" title="电子邮箱">电子邮箱:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;"
                                                            id="email" name="email" value="${user.email }">
                                                 </div>
                                                 <div class="col-md-4" align="left">
-                                                    <label class="stepLabel">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
+                                                    <label class="stepLabel" title="密码">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
                                                     <label style="width: 2%; float: left ;"><font color="red">*</font></label>
                                                     <input type="text" class="form-control" style="width: 75%;display: inline; float: right;" 
                                                     		id="pwd" name="password"  value="" >
@@ -152,7 +152,7 @@
                                         </div>
                                         <div class="list-item-description" style="padding-top: 100px">
                                             <a href="<%=path %>/user/list"><span class="btn btn-default go_user" style="margin-right: 30px;">返回</span></a>
-                                            <span class="next2 pull-right btn btn-primary pull_confirm" data-attr="tenxcloud/mysql" id="user_create_next2">下一步</span>
+                                            <span class="next2 pull-right btn btn-primary pull_confirm btn-color" data-attr="tenxcloud/mysql" id="user_create_next2">下一步</span>
                                         </div>
                                     </div>
                                
@@ -256,7 +256,7 @@
                                 	</div>
                                     <div class="" style="padding-top: 160px">
                                         <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>
-                                        <span id="user_update_finishBtn" class="pull-right btn btn-primary pull_confirm">修改</span>
+                                        <span id="user_update_finishBtn" class="pull-right btn btn-primary pull_confirm btn-color">修改</span>
                                     </div>
                                     <%--<div class="" style="padding-top: 100px">
                                         <span class="btn btn-default last_step" style="margin-right: 30px;">上一步</span>

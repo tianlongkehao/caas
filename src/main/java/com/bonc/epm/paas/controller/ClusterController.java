@@ -115,6 +115,7 @@ public class ClusterController {
     @RequestMapping(value = { "/resource" }, method = RequestMethod.GET)
 	public String resourceCluster(Model model) {
         model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "cluster");
         return "cluster/cluster.jsp";
     }
 
@@ -128,6 +129,7 @@ public class ClusterController {
     @RequestMapping(value = { "/containers" }, method = RequestMethod.GET)
 	public String resourceContainers(Model model) {
         model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "container");
         return "cluster/containers.jsp";
     }
 
@@ -146,6 +148,7 @@ public class ClusterController {
         }
         model.addAttribute("lstClusters", lstClusters);
         model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "management");
         return "cluster/cluster-management.jsp";
     }
 	
@@ -171,6 +174,7 @@ public class ClusterController {
             model.addAttribute("user", "root");
         }
         model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "topo");
         return "cluster/cluster-topo.jsp";
     }
     
@@ -373,6 +377,7 @@ public class ClusterController {
         }
         model.addAttribute("lstClustersUse", lstClustersUse);
         model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "management");
         return "cluster/cluster-detail.jsp";
     }
     
@@ -483,7 +488,9 @@ public class ClusterController {
      * @return String
      */
     @RequestMapping(value = { "/add" }, method = RequestMethod.GET)
-	public String clusterAdd() {
+	public String clusterAdd(Model model) {
+    	model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "management");
         return "cluster/cluster-create.jsp";
     }
 
@@ -501,6 +508,7 @@ public class ClusterController {
         List<Cluster> lstClusters = clusterDao.findByHostLike(searchIP);
         model.addAttribute("lstClusters", lstClusters);
         model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "management");
         return "cluster/cluster-management.jsp";
     }
 
