@@ -876,6 +876,9 @@ tr.focus{
 .deleteButton{
     margin-left: 8px;
 }
+.editButton{
+	cursor: pointer;
+}
 
 #import-service form table tbody tr td input{
     width: 95%;
