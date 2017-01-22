@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.bonc.epm.paas.dao.VisitThirdInterfaceLogDao;
 import com.bonc.epm.paas.entity.User;
@@ -28,17 +29,19 @@ import com.bonc.epm.paas.entity.VisitThirdInterfaceLog;
  * @author ke_wang
  * @since WebClientUtil1.0 Date:2016-05-19
  */
+@Component
 public class WebClientUtil {
-	/**
-	 * VisitThirdInterfaceLogDao接口
-	 */
-	@Autowired
-	private static VisitThirdInterfaceLogDao visitThirdInterfaceLogDao;
 	/**
 	 * 说明：日志实例 功能：打印日志
 	 */
 	private static Logger LOGGER = Logger.getLogger(WebClientUtil.class);
 
+	private static VisitThirdInterfaceLogDao visitThirdInterfaceLogDao;
+
+	@Autowired
+	public WebClientUtil(VisitThirdInterfaceLogDao visitThirdInterfaceLogDao){
+		WebClientUtil.visitThirdInterfaceLogDao = visitThirdInterfaceLogDao;
+	}
 	/**
 	 * 通过post获取网络资源
 	 *
@@ -58,7 +61,7 @@ public class WebClientUtil {
 		BufferedReader reader = null;
 		StringBuffer resultBuffer = new StringBuffer();
 		String tempLine = null;
-		VisitThirdInterfaceLog logs = new VisitThirdInterfaceLog();
+		VisitThirdInterfaceLog log = new VisitThirdInterfaceLog();
 		try {
 			if (params != null) {
 				parameterData = "";
@@ -69,11 +72,11 @@ public class WebClientUtil {
 			}
 			// 将请求信息存在数据库中
 			User currentUser = CurrentUserUtils.getInstance().getUser();
-			logs.setCreateBy(currentUser.getId());
-			logs.setCreateDate(new Date());
-			logs.setParam(parameterData);
-			logs.setUrl(url);
-			logs = visitThirdInterfaceLogDao.save(logs);
+			log.setCreateBy(currentUser.getId());
+			log.setCreateDate(new Date());
+			log.setParam(parameterData);
+			log.setUrl(url);
+			log = visitThirdInterfaceLogDao.save(log);
 			Date startTime = new Date();
 			// 获得一个http连接
 			HttpURLConnection httpURLConnection = getHttpURLConn(url, parameterData, "POST");
@@ -92,8 +95,8 @@ public class WebClientUtil {
 
 			// 保存返回的信息到数据库中
 			Date endTime = new Date();
-			logs.setReturnCode(httpURLConnection.getResponseCode());
-			logs.setResponseTime(endTime.getTime()-startTime.getTime());
+			log.setReturnCode(httpURLConnection.getResponseCode());
+			log.setResponseTime(endTime.getTime()-startTime.getTime());
 
 			if (httpURLConnection.getResponseCode() == 200) {
 				inputStream = httpURLConnection.getInputStream();
@@ -102,16 +105,16 @@ public class WebClientUtil {
 				while ((tempLine = reader.readLine()) != null) {
 					resultBuffer.append(tempLine);
 				}
-				logs.setReturnContent(resultBuffer.toString());
+				log.setReturnContent(resultBuffer.toString());
 			} else {
 				throw new Exception(
 						"HTTP Request is not success, Response code is " + httpURLConnection.getResponseCode());
 			}
 		} catch (Exception e) {
-			logs.setErrorMsg(e.getMessage());
+			log.setErrorMsg(e.getMessage());
 			e.printStackTrace();
 		} finally {
-			visitThirdInterfaceLogDao.save(logs);
+			visitThirdInterfaceLogDao.save(log);
 			// 关闭输入输出流
 			closeStream(outputStream, outputStreamWriter, inputStream, inputStreamReader, reader);
 		}
