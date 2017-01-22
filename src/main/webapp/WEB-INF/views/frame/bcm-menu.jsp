@@ -61,33 +61,6 @@
 	<div ><nav class="navbar-default navbar-static-side" role="navigation" id="nav-side">
 		<div class="sidebar-collapse">
 			<ul class="nav" id="side-menu">
-				<%-- <li class="nav-bcm">
-					<span><a href="<%=path %>/home"><h2>BCM</h2></a></span>
-				</li>
-				<li class="nav-header ">
-					<div class="dropdown profile-element">
-						<div style="float:left">
-							<img alt="image" class="img-circle" src="<%=path%>/images/dockerui.png" />
-						</div> 
-						<div class="userNameTit">
-							<c:if test="${!cas_enable}"><span class="t-username"><strong>${cur_user.userName }</strong></span></c:if>
-							<br>
-						<span>
-							<a href="<%=path %>/user/detail/${cur_user.id }/a" title="基本信息">&nbsp;<i class="fa fa-user"></i>&nbsp;</a>
-							<c:if test="${!cas_enable}">
-								<a href="<%=path %>/user/detail/${cur_user.id }/b" title="修改密码">&nbsp;<i class="fa fa-unlock-alt"></i>&nbsp;</a>
-								<c:choose>
-							        <c:when test="${ssoConfig.enable}">
-							        	<a href="${ssoConfig.serverLogoutUrl}" title="退出登录">&nbsp;<i class="fa fa-power-off"></i>&nbsp;</a>
-							        </c:when>
-							        <c:otherwise>
-							        	<a href="<%=path %>/loginout/${cur_user.id }" title="退出登录">&nbsp;<i class="fa fa-power-off"></i>&nbsp;</a>
-							        </c:otherwise>
-						        </c:choose>
-							</c:if>
-						</span></div>
-					</div>
-				</li> --%>
 				<li id="menu_bcm"><a href="<%=path %>/bcm/${cur_user.id }" class="first-a"> <i class="fa fa-tachometer fa-nav-icon"></i>
 						<span class="nav-label">总览</span>
 
@@ -141,6 +114,29 @@
 							</ul></li>
 					</c:if>
 				</c:if>
+
+                <c:if test="${cas_enable}">
+                    <c:if test="${cur_user.user_autority == 1}">
+                        <li id="menu_user"><a href="#" class="first-a"> <img alt="image" class="tit-image"
+                                src="<%=path%>/images/user.svg" /> <span class="nav-label">租户</span>
+                                <span class="fa arrow"></span>
+                        </a>
+                            <ul class="nav nav-second-level">
+                                <li id="li_user"><a class="J_menuItem" href="<%=path %>/user/list"><i class="fa fa_circle"></i>租户管理</a></li>
+                            </ul></li>
+                    </c:if>
+                    <c:if test="${cur_user.user_autority == 2}">
+                        <li id="menu_usermanage"><a href="#"> <img alt="image" class="tit-image"
+                                src="<%=path%>/images/user.svg" /> <span class="nav-label">密钥</span>
+                                <span class="fa arrow"></span>
+                        </a>
+                            <ul class="nav nav-second-level">
+                                <li id="li_credential"><a class="J_menuItem" href="<%=path %>/secret/Credential"><i class="fa fa_circle"></i>密钥管理</a></li>
+                            </ul></li>
+                    </c:if>
+                </c:if>
+
+
 				<li id="menu_cluster"><a href="#" class="first-a"> <img alt="image" class="tit-image"
 						src="<%=path%>/images/server.svg" /> <span class="nav-label">监控</span>
 						<span class="fa arrow"></span>
