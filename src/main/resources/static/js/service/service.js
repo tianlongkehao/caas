@@ -3,11 +3,11 @@
 	$("#serviceReloadBtn").click(function(){
 		window.location.reload();
 	});
-	
+
 	$(document).on('click','.no-drop',function(){
 		  return false;
-	});	
-	
+	});
+
 	_refreshCreateTime(60000);
 	 $(".dataTables-example tbody").on("click","tr",function(){
 		 var table = $('.dataTables-example').DataTable();
@@ -31,10 +31,10 @@
 		     $('#deleteButtonFa').addClass('self_a');
 		 }
 	});
-	
+
 	checkbox();
  });
- 
+
  //代码仓库代码发生变化，跳转进入构建详细页面
  function redirectCiCode(serviceId){
 	 alert(serviceId);
@@ -46,7 +46,7 @@
 		 }
 	 });
  }
- 
+
 function loadContainers(obj,serviceId) {
 	var serviceID = serviceId;
 	var aaa = 'tr[serviceidcon = "' + serviceID + '"]';
@@ -346,7 +346,7 @@ function versionUpgrade() {
 						$.ajax({
 							url : ctx + "/service/modifyimgVersion.do?id=" + id+ "&serviceName=" + serviceName
 																			+ "&imgVersion=" + imgVersion1 + "&imgName=" + imgName,
-							async:true,		
+							async:true,
 							success : function(data) {
 								data = eval("(" + data + ")");
 								if (data.status == "200") {
@@ -376,7 +376,7 @@ function versionUpgrade() {
 		$.ajax({
 			url : ctx + "/service/exportExcel.do?",
 			success : function(data) {
-				
+
 			}
 		});
 	}
@@ -398,7 +398,7 @@ function oneStartContainer(id, status) {
 	serviceIDs.push(id);
 	var cStatusHtml = "<i class='fa_success'></i>" + "启动中" + "<img src='"+ctx+"/images/loading4.gif' alt=''/>";
 	$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
-	
+
 	$.ajax({
 		url : "" + ctx + "/service/stratServices.do?serviceIDs=" + serviceIDs,
 		success : function(data) {
@@ -411,7 +411,7 @@ function oneStartContainer(id, status) {
 			}
 		}
 	});
-	
+
 }
 
 // 响应每一行上的停止按钮
@@ -476,20 +476,20 @@ function oneDeleteContainer(id) {
 function oneUpGradeContainer(id,containerName,nums,cpu,ram) {
 	 $('#upgradeServiceName').val(containerName);
 	 $('#numberChange').val(nums);
-	 
+
 	 var leftcpu = $("#leftcpu").html();
 	 var leftram = $("#leftram").html();
-	 
+
 	 var maxcpu = parseInt(leftcpu)/parseInt(cpu);
 	 var maxram = parseInt(leftram)/parseInt(ram);
-	 
+
 	 var total = 0;
 	 if (parseInt(maxcpu) > parseInt(maxram)) {
 		 total = maxram;
 	 } else {
 		 total = maxcpu;
 	 }
-	 
+
 	 total += parseInt(nums);
 	 $('#numberChange').attr("max",parseInt(total));
 	 $('#leftpod').text(total);
@@ -507,7 +507,7 @@ function oneUpGradeContainer(id,containerName,nums,cpu,ram) {
 			     $("#numberChange").focus();
 				 return;
 			 }
-			 
+
 			 layer.close(index);
 			 $.ajax({
 					url:""+ctx+"/service/modifyServiceNum.do?id="+id+"&addservice="+num,
@@ -521,14 +521,14 @@ function oneUpGradeContainer(id,containerName,nums,cpu,ram) {
 						}else if(data.status=="300"){
 							layer.alert("请填写弹性伸缩的数量！");
 						}
-	
+
 					}
 				});
 	 	 },
 		 cancel: function(index){ //或者使用btn2
 		 	//按钮【按钮二】的回调
 	 	 }
-	 });	 
+	 });
 }
 
 // 响应每一行上的版本升级
@@ -601,13 +601,13 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 			 var leftmemory = $("#leftram").html();
 			 //服务在运行中
 			 if (status == 3) {
-				 
+
 				 if ((parseFloat(cpus)*parseFloat(instanceNum)) > ( parseFloat(leftcpu) + parseFloat(cpu)*parseFloat(instanceNum))) {
 					 layer.tips('cpu剩余不足,pod数量为'+instanceNum,"#confCpu",{tips: [1, '#3595CC']});
 					 $("#confCpu").focus();
 					 return;
 				 }
-			 
+
 				 if ((parseFloat(rams)*parseFloat(instanceNum)) > (parseFloat(leftmemory) + parseFloat(ram)*parseFloat(instanceNum) )) {
 					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]});
 					 $("#confRamSlider_input").focus();
@@ -619,15 +619,15 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 					 $("#confCpu").focus();
 					 return;
 				 }
-				 
+
 				 if ((parseFloat(rams)*parseFloat(instanceNum)) > parseFloat(leftmemory)) {
 					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]});
 					 $("#confRamSlider_input").focus();
 					 return;
 				 }
 			 }
-			 
-			 
+
+
 			 layer.close(index);
 			 $.ajax({
 					url:""+ctx+"/service/modifyCPU.do?id="+id+"&cpus="+cpus+"&rams="+rams,
@@ -639,14 +639,14 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 						}else{
 							layer.alert("更改失败，请检查服务器连接");
 						}
-	
+
 					}
 				});
 		 },
 		 cancel: function(index){ //或者使用btn2
 			 //按钮【按钮二】的回调
 		 }
-	 });	 
+	 });
 }
 
 function refresh() {
@@ -700,7 +700,7 @@ function checkbox() {
 					$('#stopContainerFa').removeClass('self_a');
 					$('#deleteButton').removeClass('a-live').addClass('no-drop');
 					$('#deleteButtonFa').removeClass('self_a');
-					
+
 					var status = [];
 					$('.clusterId').find("input[name='chkItem']").each(
 							function(el) {
@@ -805,7 +805,7 @@ function loadServices() {
         "ordering":false,
         "ajax": ctx+"/service/page.do",
         "columns": [
-					{   
+					{
 						data : null,
 						render : function ( data, type, row ) {
 							var html = '<input type= "checkbox" class="chkItem" style="margin-left:30px;" name="chkItem"'+
@@ -819,7 +819,7 @@ function loadServices() {
 							return html;
 						}
 					},
-					
+
 					{
 						data : null,
 						render : function (data,type,row) {
@@ -836,7 +836,7 @@ function loadServices() {
 							return html;
 						}
 					},
-                    
+
 					{
 						data : null,
 						className:"cStatusColumn",
@@ -880,7 +880,7 @@ function loadServices() {
 							return html;
 						}
 					},
-					
+
 					{
 						data:null,
 						render : function (data,type,row) {
@@ -891,7 +891,7 @@ function loadServices() {
 							return html;
 						}
 					},
-					
+
 					{
 						data : null,
 						render : function (data,type,row) {
@@ -910,7 +910,7 @@ function loadServices() {
 							return html;
 						}
 					},
-					
+
 					{
 						data : null,
 						render : function (data,type,row) {
@@ -919,28 +919,28 @@ function loadServices() {
 							return html;
 						}
 					},
-					
+
 					{
 						data : null,
 						render : function (data,type,row) {
 							var html = '';
-							
+
 							if (row.status == 3 || row.status == 6) {
-								
+
 								html += '<a id="'+row.id+'_start" class="no-drop startContainer_a "'+
 										'href="javascript:oneStartContainer('+ row.id +','+ row.status +')"'+
 										'style="margin-left: 5px" title="启动"><i class="fa fa-play self_a"></i></a>';
-								
+
 								html += '<a id="'+row.id+'_stop" class="a-live stopContainer_a "'+
 										'href="javascript:oneStopContainer('+ row.id +','+ row.status +')"'+
 										'style="margin-left: 5px" title="停止"> '+
 	                                    '<i class="fa fa-power-off"></i></a>';
-															
+
 							} else {
 								html += '<a id="'+row.id+'_start" class="a-live startContainer_a "'+
                                         'href="javascript:oneStartContainer('+ row.id +','+ row.status +')"'+
                                         'style="margin-left: 5px" title="启动"><i class="fa fa-play"></i></a>';
-								
+
 								html += '<a id="'+row.id+'_stop" class="no-drop stopContainer_a "'+
 										'href="javascript:oneStopContainer('+ row.id +','+ row.status +')"'+
 										'style="margin-left: 5px" title="停止"> '+
@@ -959,7 +959,7 @@ function loadServices() {
 									'<i class="fa fa-bug  self_a"></i>'
 								+'</a> ';
 							}
-							
+
 							if ( row.status == 7){
 								html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="'+row.id+'" serviceName="'+row.serviceName+'" imgName="'+row.imgName+'">'+
 								'<li class="dropdown">'+
@@ -975,11 +975,11 @@ function loadServices() {
 								html +=	'<ul id="'+row.id+'_dropdown" class="dropdown-menu">'+
 										'<li>';
 								if ( row.status == 6){
-									html += '<a id="'+row.id+'_scaleCluster" class="no-drop scaleCluster_a "'+ 
+									html += '<a id="'+row.id+'_scaleCluster" class="no-drop scaleCluster_a "'+
 									'href="javascript:void(0)" title="弹性伸缩"'+
 									'> <i class="fa fa-arrows self_a"></i>弹性伸缩</a>';
 								} else {
-									html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+ 
+									html += '<a id="'+row.id+'_scaleCluster" class="a-live scaleCluster_a "'+
 									'href="javascript:oneUpGradeContainer('+row.id+',&apos;'+row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram + ')" title="弹性伸缩"'+
 									'> <i class="fa fa-arrows"></i>弹性伸缩</a>';
 								}
@@ -996,11 +996,11 @@ function loadServices() {
 								}
 								html +=	'</li>'+
 										'<li>';
-									
+
 								if ( row.status == 6){
 									html += '<a id="'+row.id+'_changeConfiguration" class="no-drop changeConfiguration_a " '+
 									'href="javascript:void(0);" title="更改配置"'+
-									'><i class="fa fa-cog self_a"></i>更改配置</a> ';	
+									'><i class="fa fa-cog self_a"></i>更改配置</a> ';
 								} else {
 									html += '<a id="'+row.id+'_changeConfiguration" class="a-live changeConfiguration_a " '+
 									'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
@@ -1014,58 +1014,74 @@ function loadServices() {
 							html += '<a id="'+row.id+'_del" class="a-live deleteButton_a "'+
 									'href="javascript:oneDeleteContainer('+row.id+')"'+
 									'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
-							
+
 							return html;
 						}
 					}
-					
+
                    ],
-                   
+
 		"createdRow": function( row, data, dataIndex ) {
 	          $(row).addClass( 'clusterId' );
 	          $(row).data(row.id);
 		}
-        
+
 	});
 }
 function startdebug(id, status){
 	if (3 == status) {
 		return;
 	}
+
 	$.ajax({
-		url : "" + ctx + "/service/createContainer.do?id=" + id + "&isDebug=" + true,
+		url : "" + ctx + "/service/isDebugService.do?id=" + id,
 		success : function(data) {
 			data = eval("(" + data + ")");
-			if (data.status == "200") {
-				layer.msg("服务启动成功",{icon: 6});
-				setTimeout('window.location.reload()',1500);
+			if (data.status != "200") {
+				layer.alert("该服务不支持调试");
 			} else {
-				layer.alert("服务启动失败");
+				$.ajax({
+					url : "" + ctx + "/service/createContainer.do?id=" + id + "&isDebug=" + true,
+					success : function(data) {
+						data = eval("(" + data + ")");
+						if (data.status == "200") {
+							layer.msg("服务启动成功", {
+								icon : 6
+							});
+							setTimeout('window.location.reload()', 1500);
+						} else {
+							layer.alert("服务启动失败");
+						}
+					}
+				});
+
 			}
 		}
 	});
+
+
 }
 function debug(id, status){
 	if (1 == status) {
 		return;
 	}
-	
+
 //	$.ajax({
 //		url : "" + ctx+ "/service/debug.do?id="+ id,
 //		success : function(data) {
 //			data = eval("(" + data + ")");
 //			if (data.status == "200") {
 				var href = ctx + "/service/debug/" + id;
-				window.open(href); 
+				window.open(href);
 //				window.location.href = ctx + "/service/debug/" + id;
-				
+
 //			}
 //			else if (data.status == "400") {
 //				layer.alert("该服务不支持调试");
 //			} else if(data.status == "401") {
 //				layer.alert("该服务不是调试状态");
 //			}
-			
+
 //		}
 //	})
 }
