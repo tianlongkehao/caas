@@ -107,83 +107,83 @@ import com.github.dockerjava.api.model.ExposedPort;
  */
 @Controller
 public class ServiceController {
-    
+
     /**
      * ServiceController日志实例
      */
     private static final Logger LOG = LoggerFactory.getLogger(ServiceController.class);
-    
+
     /**
      * smalSet
      */
     private static Set<Integer> smalSet = new HashSet<Integer>();
-    
+
     /**
      *  用户偏好层接口
      */
     @Autowired
     private UserFavorDao userFavorDao;
-    
+
     /**
      * 服务数据层接口
      */
     @Autowired
     private ServiceDao serviceDao;
-    
+
     /**
      * 服务操作记录信息层接口
      */
     @Autowired
 	private ServiceOperationLogDao serviceOperationLogDao;
-    
+
     /**
      * 通用操作记录信息层接口
      */
     @Autowired
     private CommonOperationLogDao commonOperationLogDao;
-	
+
     /**
      * 环境变量数据层接口
      */
     @Autowired
 	private EnvVariableDao envVariableDao;
-	
+
     /**
      * portConfig数据层接口
      */
     @Autowired
 	private PortConfigDao portConfigDao;
-    
+
     /**
      * refService数据层接口
      */
     @Autowired
     private RefServiceDao refServiceDao;
-    
+
     /**
      * 镜像数据接口
      */
     @Autowired
 	private ImageDao imageDao;
-	
+
     /**
      * 构建数据接口
      */
     @Autowired
 	private CiDao ciDao;
-    
+
     /**
      * stroge数据接口
      */
     @Autowired
 	private StorageDao storageDao;
-	
+
     /**
      * 服务和挂载卷之间的关联数据接口
      */
     @Autowired
     private ServiceAndStorageDao serviceAndStorageDao;
-    
+
     /**
      * 环境变量模板数据接口
      */
@@ -195,19 +195,19 @@ public class ServiceController {
      */
     @Autowired
 	private DockerClientService dockerClientService;
-    
+
     /**
      * KubernetesClientService接口
      */
     @Autowired
 	private KubernetesClientService kubernetesClientService;
-    
+
     /**
      * sheraClientService接口
      */
     @Autowired
     private SheraClientService sheraClientService;
-    
+
     /**
      * TemplateConf
      */
@@ -219,23 +219,23 @@ public class ServiceController {
      */
     @Value("${ceph.monitor}")
 	private String CEPH_MONITOR;
-	
+
 	/**
      * 内存和cpu的比例大小
      */
     @Value("${ratio.memtocpu}")
     private String RATIO_MEMTOCPU = "4";
-    
+
     /**
      * 获取nginx中的服务分区
      */
     @Value("${nginx.service.zone}")
     private String NGINX_SERVICE_ZONE;
-    
+
 	/**
 	 * Description: <br>
 	 * 展示container和services
-	 * @param model 
+	 * @param model
 	 * @return String
 	 */
     @RequestMapping(value = { "service" }, method = RequestMethod.GET)
@@ -243,7 +243,7 @@ public class ServiceController {
         // 获取特殊条件的pods
         try {
             getleftResource(model);
-        } 
+        }
         catch (KubernetesClientException e) {
             model.addAttribute("msg", e.getStatus().getMessage());
             LOG.debug("service show:" + e.getStatus().getMessage());
@@ -253,7 +253,7 @@ public class ServiceController {
         model.addAttribute("li_flag", "service");
         return "service/service.jsp";
     }
-    
+
     /**
      * Description: <br>
      * 服务在服务端分页查询
@@ -261,7 +261,7 @@ public class ServiceController {
      * @param start 开始页数
      * @param length 每页的条数
      * @param request 获取模糊查询的数据
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping(value = {"service/page.do"}, method = RequestMethod.GET)
@@ -282,7 +282,7 @@ public class ServiceController {
         //判断是否需要搜索服务
         if (StringUtils.isEmpty(search)) {
             services = serviceDao.findByCreateBy(userId,pageRequest);
-        } else {	
+        } else {
             services = serviceDao.findByNameOf(userId, "%" + search + "%",pageRequest);
         }
         //判断代码仓库中的代码是否发生改变
@@ -291,16 +291,16 @@ public class ServiceController {
         map.put("recordsTotal", services.getTotalElements());
         map.put("recordsFiltered", services.getTotalElements());
         map.put("data", listService);
-        
+
         return JSON.toJSONString(map);
-        
+
     }
-    
+
     /**
      * Description: <br>
      * 查询代码构建中的代码是否更新，服务中添加提醒代码更新
      * @param listService 需要查询的服务
-     * @return 
+     * @return
      * @see
      */
     public List<Service> findIsUpdateCode(List<Service> listService){
@@ -319,11 +319,11 @@ public class ServiceController {
         }
         return listService;
     }
-    
+
     /**
      * Description: <br>
      * 获取nginxService参数
-     * @param model  
+     * @param model
      */
     public void getNginxServer(Model model) {
         List<String> serviceZone = new ArrayList<>();
@@ -335,12 +335,12 @@ public class ServiceController {
         }
         model.addAttribute("zoneList", serviceZone);
     }
-    
-//注释时间 2016年12月26日 11:50:58 判断为无用方法    
+
+//注释时间 2016年12月26日 11:50:58 判断为无用方法
 //    /**
 //     * Description: <br>
 //     * 根据服务名称模糊查询服务和容器
-//     * @param model 
+//     * @param model
 //     * @param searchNames 服务名称
 //     * @return String
 //     */
@@ -385,12 +385,12 @@ public class ServiceController {
 //
 //		return "service/service.jsp";
 //	}
-	
+
     /**
      * Description: <br>
      * 根据服务Id查询当前服务和容器
-     * @param model 
-     * @param id 
+     * @param model
+     * @param id
      * @return  String
      */
     @RequestMapping(value = { "service/{id}" }, method = RequestMethod.GET)
@@ -400,11 +400,11 @@ public class ServiceController {
         model.addAttribute("menu_flag", "service");
         return "service/service.jsp";
     }
-	
+
     /**
      * Description: <br>
      *  根据Id查找container和servies，跳转进入服务详细页面
-     * @param model 
+     * @param model
      * @param id 服务Id
      * @return String
      */
@@ -466,7 +466,7 @@ public class ServiceController {
 	 * Description: <br>
 	 * 将字符串重新组装
 	 * 主要用于proxyZone的重新组装
-	 * @param str 
+	 * @param str
 	 * @return String
 	 */
     public String substr(String str){
@@ -481,11 +481,11 @@ public class ServiceController {
         return strs;
     }
 
-    
+
     /**
      * Description: <br>
      * 日期格式的转换
-     * @param time 
+     * @param time
      * @return String
      */
     public static String dateToString(Date time) {
@@ -495,15 +495,15 @@ public class ServiceController {
 
         return ctime;
     }
-    
+
     /**
      * Description: <br>
      * 响应“部署”按钮
-     * @param imgID 
-     * @param imageName 
-     * @param imageVersion 
-     * @param resourceName 
-     * @param model 
+     * @param imgID
+     * @param imageName
+     * @param imageVersion
+     * @param resourceName
+     * @param model
      * @return  String
      */
     @RequestMapping(value = { "service/add" }, method = RequestMethod.GET)
@@ -520,7 +520,7 @@ public class ServiceController {
                 portConfig.setContainerPort("8080");
                 int randomPort = vailPortSet();
                 if (-1 != randomPort) {
-                    portConfig.setMapPort(String.valueOf(randomPort));                       
+                    portConfig.setMapPort(String.valueOf(randomPort));
                 }
                 else {
                     portConfig.setMapPort("-1");
@@ -566,7 +566,7 @@ public class ServiceController {
         model.addAttribute("monitor",monitor);
         return "service/service_create.jsp";
     }
-	
+
     /**
      * Description: <br>
      * 获取镜像的启动命令
@@ -609,7 +609,7 @@ public class ServiceController {
     	}
     	return startCommand.toString();
     }
-    
+
 	/**
 	 * Description: <br>
 	 * 获取基础镜像的端口
@@ -638,8 +638,8 @@ public class ServiceController {
                             portConfig.setContainerPort(String.valueOf(exposedPorts[i].getPort()));
                             int randomPort = vailPortSet();
                             if (-1 != randomPort) {
-                                portConfig.setMapPort(String.valueOf(randomPort));                       
-                            } 
+                                portConfig.setMapPort(String.valueOf(randomPort));
+                            }
                             else {
                                 portConfig.setMapPort("-1");
                             }
@@ -656,7 +656,7 @@ public class ServiceController {
         }
         return null;
     }
-    
+
     /**
      * Description: <br>
      * getPortConfig 获取port端口
@@ -674,8 +674,8 @@ public class ServiceController {
             portConfig.setContainerPort("8080");
             int randomPort = vailPortSet();
             if (-1 != randomPort) {
-                portConfig.setMapPort(String.valueOf(randomPort));                       
-            } 
+                portConfig.setMapPort(String.valueOf(randomPort));
+            }
             else {
                 portConfig.setMapPort("-1");
             }
@@ -688,7 +688,7 @@ public class ServiceController {
     /**
      * Description: <br>
      * 获取当前租户的剩余资源
-     * @param model 
+     * @param model
      * @return boolean
      */
     public boolean getleftResource(Model model) {
@@ -711,7 +711,7 @@ public class ServiceController {
                 LOG.info("用户 " + currentUser.getUserName() + " 没有定义名称为 " + currentUser.getNamespace() + " 的Namespace ");
             }
 
-        } 
+        }
         catch (Exception e) {
             LOG.error("getleftResource error:" + e);
             return false;
@@ -735,7 +735,7 @@ public class ServiceController {
         System.out.println(JSON.toJSONString(map));
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 根据镜像名称模糊查询镜像
@@ -751,11 +751,11 @@ public class ServiceController {
         map.put("data", images);
         return JSON.toJSONString(map);
     }
-	
+
 	/**
 	 * Description: <br>
 	 * 响应服务的开始和debug按钮
-	 * 
+	 *
 	 * @param id
 	 * @return String
 	 */
@@ -773,7 +773,7 @@ public class ServiceController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
 		ReplicationController controller = null;
-		
+
 		/*************************************
 		 * 服务不是未启动状态时,获取svc和rc
 		 *************************************/
@@ -914,7 +914,7 @@ public class ServiceController {
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
-		
+
 		/*************************************
 		 * 持久化相关信息
 		 *************************************/
@@ -942,14 +942,14 @@ public class ServiceController {
 		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
-    
+
     /**
      * Description: <br>
      * 服务创建
-     * @param service 
-     * @param resourceName 
-     * @param envVariable 
-     * @param portConfig 
+     * @param service
+     * @param resourceName
+     * @param envVariable
+     * @param portConfig
      * @return String
      */
     @RequestMapping("service/constructContainer.do")
@@ -964,7 +964,7 @@ public class ServiceController {
 		service.setUpdateDate(currentDate);
 		service.setUpdateBy(currentUser.getId());
 		service = serviceDao.save(service);
-		
+
 		if (StringUtils.isEmpty(service.getSessionAffinity())) {
 			service.setSessionAffinity(null);
 		}
@@ -1028,17 +1028,17 @@ public class ServiceController {
                 storage.setUpdateBy(currentUser.getId());
                 storage.setUpdateDate(new Date());
                 storageDao.save(storage);
-                
+
                 //记录更新storage存储卷
                 String extraInfo = "更新storage存储卷 " + JSON.toJSONString(storage);
                 CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_CREATED);
                 commonOperationLogDao.save(log);
             }
         }
-        
+
 		//保存到与service关联的portConfig实体类
         if (StringUtils.isNotEmpty(portConfig)) {
-            JSONArray jsonArray = JSONArray.parseArray(portConfig);  
+            JSONArray jsonArray = JSONArray.parseArray(portConfig);
             for (int i = 0 ; i < jsonArray.size(); i ++ ) {
                 PortConfig portCon = new PortConfig();
                 portCon.setContainerPort(jsonArray.getJSONObject(i).getString("containerPort").trim());
@@ -1052,7 +1052,7 @@ public class ServiceController {
         }
         service.setServiceAddr("http://"+currentUser.getUserName() + "." + serverAddr);
         service = serviceDao.save(service);
-        
+
 		// 保存服务操作信息
 		serviceOperationLogDao.save(service.getServiceName(),service.toString(),
 				ServiceConstant.OPERATION_TYPE_CREATE);
@@ -1060,10 +1060,10 @@ public class ServiceController {
         LOG.debug("container--Name:" + service.getServiceName());
         return "redirect:/service";
     }
-	
+
 	/**
 	 * 当前用户修改服务时服务名称不重复
-	 * 
+	 *
 	 * @param serviceName
 	 * @return String
 	 */
@@ -1084,7 +1084,7 @@ public class ServiceController {
 
 	/**
 	 * 当前用户创建服务时nginx路径不重复
-	 * 
+	 *
 	 * @param proxyPath
 	 * @return String
 	 */
@@ -1101,11 +1101,11 @@ public class ServiceController {
 		}
 		return JSON.toJSONString(map);
 	}
-	
+
 	/**
 	 * 当前用户创建服务时匹配服务路径和nginx路径 和服务名称不重复
-	 * @param proxyPath  
-	 * @param serviceName  
+	 * @param proxyPath
+	 * @param serviceName
 	 * @return String
 	 */
     @RequestMapping("service/matchPath.do")
@@ -1127,7 +1127,7 @@ public class ServiceController {
         }
         return JSON.toJSONString(map);
     }
-	
+
 	/**
 	 * 加载环境变量模板数据
 	 * @return String
@@ -1141,7 +1141,7 @@ public class ServiceController {
         map.put("data", templateNames);
         return JSON.toJSONString(map);
     }
-	
+
     /**
      * Description: <br>
      * 保存环境变量模板
@@ -1173,10 +1173,10 @@ public class ServiceController {
             }
             map.put("status", "200");
         }
-		
+
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 查询用户的环境变量模板，导入到环境变量模板中
@@ -1193,7 +1193,7 @@ public class ServiceController {
         map.put("data", envTemplates);
         return JSON.toJSONString(map);
     }
-	
+
     /**
      * Description: <br>
      * 生成有效的PORTSET,回收端口
@@ -1245,7 +1245,7 @@ public class ServiceController {
         map.put("mapPort", String.valueOf(mapPort));
         return JSON.toJSONString(map);
     }
-	
+
     /**
      * Description: <br>
      * 移除端口集合中的端口
@@ -1256,7 +1256,7 @@ public class ServiceController {
         LOG.info("移除的端口："+set);
         smalSet.remove(set);
     }
-	
+
     /**
      * Description: <br>
      * serviceName 判重
@@ -1272,7 +1272,7 @@ public class ServiceController {
             if (service.getServiceName().equals(serviceName)) {
                 map.put("status", "400");
                 break;
-            } 
+            }
             else {
                 map.put("status", "200");
             }
@@ -1321,7 +1321,7 @@ public class ServiceController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 服务版本升级
@@ -1336,16 +1336,16 @@ public class ServiceController {
     public String modifyimgVersion(long id, String serviceName, String imgVersion, String imgName) {
     	Map<String, Object> map = new HashMap<String, Object>();
     	Service service = serviceDao.findOne(id);
-    	
+
     	try {
     		if (service.getImgVersion().equals(imgVersion)) {
     			map.put("status", "500");
     		} else {
     			LOG.info("***************版本升级开始****************************");
     			// next Controller postfix
-    			String random = RandomString.getStringRandom(32); 
+    			String random = RandomString.getStringRandom(32);
     			// next Controller name
-    			String nextControllerName = serviceName + "-" + random; 
+    			String nextControllerName = serviceName + "-" + random;
     			// 保存服务信息
     			service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_UPDATE);
     			service.setTempName(nextControllerName);
@@ -1357,27 +1357,27 @@ public class ServiceController {
     			// 保存服务操作信息
     			serviceOperationLogDao.save(service.getServiceName(), service.toString(),
     					ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
-    			
+
     			String image = dockerClientService.generateRegistryImageName(imgName, imgVersion);
-    			
+
     			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
     			ReplicationController originalController = client.getReplicationController(serviceName);
-    			
+
     			// 设置annotations
     			ReplicationController updateOriginalController = firstSetAnnotation(serviceName, nextControllerName,
     					client, originalController);
-    			
+
     			// 生成新镜像版本的RC
     			createNextRc(random, nextControllerName, image, client, originalController);
-    			
+
     			// 设置annotations
     			boolean isSetDeploy = false;
     			if (StringUtils.isBlank(updateOriginalController.getSpec().getSelector().get("deployment"))) {
     				isSetDeploy = true;
     			}
-    			
+
     			updateOriginalController = secondSetAnnotation(serviceName, client, isSetDeploy);
-    			
+
     			// 滚动升级
     			boolean result = rollingUpdate(id, serviceName, nextControllerName, client, updateOriginalController, isSetDeploy);
     			if (result != true) {
@@ -1386,17 +1386,17 @@ public class ServiceController {
     			// 删除旧RC
     			client.deleteReplicationController(serviceName);
     			LOG.info("Deleting old controller:" + serviceName);
-    			
+
     			// 将新RC的名字重命名为旧RC名字
     			renameNewRc(serviceName, nextControllerName, client);
-    			
+
     			// 更新SVC的lable Selector
     			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
     			Map<String, String> lableMap = new HashMap<String, String>();
     			lableMap.put("app", nextControllerName);
     			k8sService.getSpec().setSelector(lableMap);
     			client.updateService(serviceName, k8sService);
-    			
+
     			// 保存服务信息
     			service.setImgVersion(imgVersion);
     			Image image2 = imageDao.findByNameAndVersion(service.getImgName(), imgVersion);
@@ -1407,10 +1407,10 @@ public class ServiceController {
     			service.setUpdateDate(currentDate);
     			service.setUpdateBy(currentUser.getId());
     			serviceDao.save(service);
-    			
+
     			map.put("status", "200");
     			LOG.info("replicationController:" + serviceName + " rolling updated.");
-    			
+
     			// 服务版本升级 使用 kubectl rolling-update 命令行
     			/*
     			 * KubernetesAPIClientInterface client =
@@ -1424,7 +1424,7 @@ public class ServiceController {
     			 * service.setImgVersion(imgVersion); //取得对应的imageid Image image
     			 * = imageDao.findByNameAndVersion(service.getImgName(),
     			 * imgVersion); service.setImgID(image.getId());
-    			 * 
+    			 *
     			 * Date currentDate = new Date(); User currentUser =
     			 * CurrentUserUtils.getInstance().getUser();
     			 * service.setUpdateDate(currentDate);
@@ -1433,7 +1433,7 @@ public class ServiceController {
     			 * serviceOperationLogDao.save(service.getServiceName(),
     			 * service.toString(),
     			 * ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
-    			 * 
+    			 *
     			 * map.put("status", "200"); } else { String rollBackCmd =
     			 * "kubectl rolling-update " + serviceName + " --namespace="+ NS
     			 * + " --rollback"; cmdexec(rollBackCmd); map.put("status",
@@ -1451,7 +1451,7 @@ public class ServiceController {
     	}
     	return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 服务版本升级取消
@@ -1468,7 +1468,7 @@ public class ServiceController {
 		Service service = serviceDao.findOne(id);
         try {
         	KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        	
+
 	        ReplicationController originalController = client.getReplicationController(serviceName);
 			// 设置annotations
 	        if (StringUtils.isNotBlank(originalController.getSpec().getSelector().get("deployment"))) {
@@ -1510,7 +1510,7 @@ public class ServiceController {
             LOG.error("del service error:" + e.getStatus().getMessage());
     		return JSON.toJSONString(map);
         }
-        
+
 		// 保存服务信息
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
 		Date currentDate = new Date();
@@ -1522,7 +1522,7 @@ public class ServiceController {
 		// 保存服务操作信息
 		serviceOperationLogDao.save(service.getServiceName(), service.toString(),
 				ServiceConstant.OPERATION_TYPE_CANCELUPDATE);
-		
+
 		map.put("status", "200");
 		LOG.info("replicationController:" + serviceName + " rolling update canceled.");
 
@@ -1532,9 +1532,9 @@ public class ServiceController {
     /**
      * Description:
      * 将新RC的名字重命名为旧RC名字
-     * @param serviceName 
-     * @param nextControllerName 
-     * @param client 
+     * @param serviceName
+     * @param nextControllerName
+     * @param client
      */
     private void renameNewRc(String serviceName, String nextControllerName,KubernetesAPIClientInterface client) {
         ReplicationController resultController = client.getReplicationController(nextControllerName);
@@ -1542,11 +1542,11 @@ public class ServiceController {
         resultController.getMetadata().setResourceVersion("");
         //resultController.getSpec().getSelector().put("app", nextControllerName);
         //resultController.getSpec().getTemplate().getMetadata().getLabels().put("app", nextControllerName);
-        
+
         //resultController.getSpec().getTemplate().getMetadata().setName(serviceName);
-        
+
         resultController = client.createReplicationController(resultController);
-        
+
         client.deleteReplicationController(nextControllerName);
         LOG.info("Renaming controller:"+nextControllerName+" to "+serviceName);
     }
@@ -1560,11 +1560,11 @@ public class ServiceController {
      * 3.将旧RC的副本(replicas)数量减少1个；
      * 4.确保旧pod数量减少；
      * 5.重复步骤1，直到就RC的副本（replicas）数量减为0；
-     * @param serviceName 
-     * @param nextControllerName 
-     * @param client 
-     * @param updateOriginalController  
-     * @param isSetDeploy 
+     * @param serviceName
+     * @param nextControllerName
+     * @param client
+     * @param updateOriginalController
+     * @param isSetDeploy
      */
     private boolean rollingUpdate(long id, String serviceName, String nextControllerName,
                                        KubernetesAPIClientInterface client,ReplicationController updateOriginalController, boolean isSetDeploy) {
@@ -1622,13 +1622,13 @@ public class ServiceController {
                 updateOriginalController.getSpec().getSelector().remove("deployment");
                 updateOriginalController.getSpec().getTemplate().getMetadata().getLabels().remove("deployment");
             }
-            
+
             updateOriginalController.getSpec().setReplicas(j);
             updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController);
             while (!(client.getLabelSelectorPods(updateOriginalController.getSpec().getSelector()).size() == j)) {
                 continue;
             }
-           LOG.info("Scaling "+nextControllerName+" up to "+i+" and scaling "+serviceName+" down to " +j +" Update succeeded."); 
+           LOG.info("Scaling "+nextControllerName+" up to "+i+" and scaling "+serviceName+" down to " +j +" Update succeeded.");
         }
         return true;
     }
@@ -1641,9 +1641,9 @@ public class ServiceController {
      * value: 旧RC的副本(replicas)数量
      * @param serviceName
      * @param client
-     * @param isSetDeploy 
-     * @param oldRandom 
-     * @return updateOriginalController 
+     * @param isSetDeploy
+     * @param oldRandom
+     * @return updateOriginalController
      */
     private ReplicationController secondSetAnnotation(String serviceName,KubernetesAPIClientInterface client, boolean isSetDeploy) {
         ReplicationController updateOriginalController = client.getReplicationController(serviceName);
@@ -1660,7 +1660,7 @@ public class ServiceController {
             // 从未升级过的rc
             //client.updateReplicationController(serviceName, 0);
         }
-        
+
         LOG.info("update originalController.  put original-replicas:-"+updateOriginalController.getMetadata().getAnnotations().get("kubectl.kubernetes.io/original-replicas"));
         return updateOriginalController;
     }
@@ -1674,14 +1674,14 @@ public class ServiceController {
      * @param image 需要升级至的镜像版本
      * @param client
      * @param originalController
-     * @return nextController 
+     * @return nextController
      */
     private ReplicationController createNextRc(String random, String nextControllerName, String image,
                                            KubernetesAPIClientInterface client,ReplicationController originalController) {
         ReplicationController nextController = null;
         try {
             nextController = client.getReplicationController(nextControllerName);
-        } 
+        }
         catch (KubernetesClientException e) {
             nextController = null;
         }
@@ -1693,19 +1693,19 @@ public class ServiceController {
             nextAnnotations.put("kubectl.kubernetes.io/desired-replicas", String.valueOf(originalController.getSpec().getReplicas()));
             nextAnnotations.put("kubectl.kubernetes.io/update-source-id", originalController.getMetadata().getName()+":"+originalController.getMetadata().getUid());
             nextController.getMetadata().setAnnotations(nextAnnotations);
-            
+
             nextController.getSpec().setReplicas(0);
             nextController.getSpec().getSelector().put("deployment", random);
             nextController.getSpec().getSelector().put("app", nextControllerName);
-            
+
             //nextController.getSpec().getTemplate().getMetadata().setName(nextControllerName);
             nextController.getSpec().getTemplate().getMetadata().getLabels().put("deployment", random);
             nextController.getSpec().getTemplate().getMetadata().getLabels().put("app", nextControllerName);
-            
+
             nextController.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(image);
-            
+
             nextController = client.createReplicationController(nextController);
-            
+
         }
         LOG.info("create new replicationController "+nextControllerName +"successed!");
         return nextController;
@@ -1721,7 +1721,7 @@ public class ServiceController {
      * @param nextControllerName 新rc的名字
      * @param client
      * @param originalController
-     * @return updateOriginalController 
+     * @return updateOriginalController
      */
     private ReplicationController firstSetAnnotation(String serviceName, String nextControllerName,
                                                 KubernetesAPIClientInterface client,ReplicationController originalController) {
@@ -1770,12 +1770,12 @@ public class ServiceController {
             else {
                 new InterruptedException();
             }
-        } 
+        }
         catch (InterruptedException e) {
             LOG.error(e.getMessage());
             LOG.error("error:执行command失败");
             return false;
-        } 
+        }
         catch (Exception e) {
             LOG.error(e.getMessage());
             LOG.error("error:ssh连接失败");
@@ -1786,7 +1786,7 @@ public class ServiceController {
         }
         return true;
     }
-    
+
     /**
      * Description: <br>
      * 根据镜像名称查询镜像
@@ -1806,7 +1806,7 @@ public class ServiceController {
     /**
      * Description: <br>
      * 修改服务数量
-     * @param id 服务Id 
+     * @param id 服务Id
      * @param addservice 服务数量
      * @return String
      */
@@ -1818,7 +1818,7 @@ public class ServiceController {
 
         if (service.getInstanceNum() == addservice) {
             map.put("status", "300");
-        } 
+        }
         else {
 			try {
 				if (service.getStatus() == ServiceConstant.CONSTRUCTION_STATUS_RUNNING
@@ -1846,12 +1846,12 @@ public class ServiceController {
 					serviceOperationLogDao.save(service.getServiceName(), service.toString(),
 							ServiceConstant.OPERATION_TYPE_SCALING);
 				}
-			} 
+			}
             catch (KubernetesClientException e) {
                 map.put("status", "400");
                 map.put("msg", e.getStatus().getMessage());
                 LOG.error("modify servicenum error:" + e.getStatus().getMessage());
-            } 
+            }
             catch (Exception e) {
                 map.put("status", "400");
                 LOG.error("modify service error :" + e);
@@ -1859,13 +1859,13 @@ public class ServiceController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * modify cpu and ram
-     * @param id 
-     * @param cpus 
-     * @param rams 
+     * @param id
+     * @param cpus
+     * @param rams
      * @return String
      */
     @RequestMapping("service/modifyCPU.do")
@@ -1879,7 +1879,7 @@ public class ServiceController {
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
             ReplicationController controller = client.getReplicationController(service.getServiceName());
             if (controller != null ) {
-				
+
             	List<com.bonc.epm.paas.kubernetes.model.Container> containers = controller.getSpec().getTemplate().getSpec()
             			.getContainers();
             	for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
@@ -1915,13 +1915,13 @@ public class ServiceController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * setContainer
-     * @param container 
-     * @param cpus 
-     * @param rams 
+     * @param container
+     * @param cpus
+     * @param rams
      * @return Container
      */
     public com.bonc.epm.paas.kubernetes.model.Container setContainer(
@@ -1944,11 +1944,11 @@ public class ServiceController {
 
 	/**
 	 * delete container and services from dockerfile
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
-    
+
     /**
      * Description: <br>
      * delete container and services from dockerfile
@@ -1988,7 +1988,7 @@ public class ServiceController {
                     	return JSON.toJSONString(map);
         			}
                 }
-                
+
         		//删除svc
         		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
         		try {
@@ -2013,7 +2013,7 @@ public class ServiceController {
 			// 保存服务操作信息
 			serviceOperationLogDao.save(service.getServiceName(), service.toString(),
 					ServiceConstant.OPERATION_TYPE_DELETE);
-			
+
 			// 删除服务 释放绑定的端口
             List<PortConfig> bindPort = portConfigDao.findByServiceId(id);
             if (CollectionUtils.isNotEmpty(bindPort)) {
@@ -2022,7 +2022,7 @@ public class ServiceController {
                 }
                 portConfigDao.deleteByServiceId(id);
             }
-			
+
 			// 更新挂载卷的使用状态
             if (service.getServiceType().equals("1")) {
                 List<ServiceAndStorage> svcAndStoList = serviceAndStorageDao.findByServiceId(service.getId());
@@ -2034,7 +2034,7 @@ public class ServiceController {
                     storage.setUpdateBy(user.getId());
                     storage.setUpdateDate(new Date());;
                     storageDao.save(storage);
-                    
+
                     //记录更新storage存储卷
                     String extraInfo = "新增storage存储卷 " + JSON.toJSONString(storage);
                     CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_CREATED);
@@ -2050,7 +2050,7 @@ public class ServiceController {
 
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 删除多个服务
@@ -2074,13 +2074,13 @@ public class ServiceController {
             if (!result.contains("200")) {
             	maps.put("status", "400");
             	LOG.error("服务删除错误！");
-                return JSON.toJSONString(maps); 
+                return JSON.toJSONString(maps);
 			}
         }
         maps.put("status", "200");
-        return JSON.toJSONString(maps); 
+        return JSON.toJSONString(maps);
     }
-    
+
     /**
      * Description: <br>
      * 停止多个服务
@@ -2110,11 +2110,11 @@ public class ServiceController {
         }
         return JSON.toJSONString(maps);
     }
-    
+
     /**
      * Description: <br>
      * 启动多个服务
-     * @param serviceIDs 服务id 
+     * @param serviceIDs 服务id
      * @return String
      */
     @RequestMapping("service/stratServices.do")
@@ -2147,9 +2147,9 @@ public class ServiceController {
     /**
      * Description: <br>
      * 给controller设置卷组挂载的信息
-     * @param controller 
-     * @param storageName 
-     * @param mountPath 
+     * @param controller
+     * @param storageName
+     * @param mountPath
      * @return ReplicationController
      */
     private ReplicationController setVolumeStorage(ReplicationController controller,long serviceId) {
@@ -2179,13 +2179,13 @@ public class ServiceController {
             cephfs.setReadOnly(false);
             volume.setCephfs(cephfs);
             volumes.add(volume);
-            
+
             VolumeMount volumeMount = new VolumeMount();
             volumeMount.setMountPath(storage.getMountPoint());
             volumeMount.setName("cephfs-"+storage.getStorageName());
             volumeMounts.add(volumeMount);
         }
-        
+
         podSpec.setVolumes(volumes);
         List<com.bonc.epm.paas.kubernetes.model.Container> containers = podSpec.getContainers();
         for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
@@ -2197,7 +2197,7 @@ public class ServiceController {
     /**
      * Description: <br>
      * 获取挂在地址
-     * @param volume 
+     * @param volume
      * @return String
      */
     @RequestMapping(value = { "service/getMountPath.do" }, method = RequestMethod.GET)
@@ -2288,7 +2288,7 @@ public class ServiceController {
 
             datamap.put("logStr", logStr);
             datamap.put("status", "200");
-        } 
+        }
         catch (Exception e) {
             datamap.put("status", "400");
             LOG.error("日志读取错误：" + e);
@@ -2297,7 +2297,7 @@ public class ServiceController {
         return JSON.toJSONString(datamap);
 
     }
-    
+
     /**
      * Description: <br>
      * 输入命令，获取返回结果
@@ -2332,14 +2332,14 @@ public class ServiceController {
                     return JSON.toJSONString(map);
                 }
             }
-            
+
             if (rollingLog.contains("error")) {
                 map.put("status", "400");
                 return JSON.toJSONString(map);
             }else {
                 map.put("result", rollingLog);
             }
-            
+
             String result = SshConnect.exec("echo $?", 1000);
             if (StringUtils.isNotBlank(result)) {
                 if (!('0' == (result.trim().charAt(result.indexOf("\n")+1)))) {
@@ -2349,13 +2349,13 @@ public class ServiceController {
             else {
                 new InterruptedException();
             }
-        } 
+        }
         catch (InterruptedException e) {
             LOG.error(e.getMessage());
             LOG.error("error:执行command失败");
             map.put("status", "400");
             return JSON.toJSONString(map);
-        } 
+        }
         catch (Exception e) {
             LOG.error(e.getMessage());
             LOG.error("error:ssh连接失败");
@@ -2395,7 +2395,7 @@ public class ServiceController {
 
             datamap.put("logStr", logStr);
             datamap.put("status", "200");
-        } 
+        }
         catch (Exception e) {
             datamap.put("status", "400");
             LOG.error("日志读取错误：" + e);
@@ -2404,7 +2404,7 @@ public class ServiceController {
         return JSON.toJSONString(datamap);
 
     }
-    
+
     /**
      * Description: <br>
      * 下载日志文件
@@ -2416,8 +2416,8 @@ public class ServiceController {
 	public void downloadPodlogFile(String podName, HttpServletRequest request,HttpServletResponse response) {
     	String container = new String();
     	try {
-            response.setContentType(request.getServletContext().getMimeType(podName));  
-            response.setHeader("Content-Disposition", "attachment;filename="+podName+".log");  
+            response.setContentType(request.getServletContext().getMimeType(podName));
+            response.setHeader("Content-Disposition", "attachment;filename="+podName+".log");
             ServletOutputStream outputStream= response.getOutputStream();
             OutputStreamWriter writer = new OutputStreamWriter(outputStream);
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -2428,7 +2428,7 @@ public class ServiceController {
             outputStream.flush();
             writer.close();
             outputStream.close();
-        } 
+        }
         catch (IOException e) {
         	LOG.error("FileController  downloadTemplate:"+e.getMessage());
         }
@@ -2436,10 +2436,10 @@ public class ServiceController {
         	LOG.error("日志读取错误：" + e);
         }
     }
-    
+
 	/**
 	 * 获取前缀
-	 * 
+	 *
 	 * @return prex
 	 * @see
 	 */
@@ -2452,14 +2452,14 @@ public class ServiceController {
 		map.put("prex", prex);
 		return JSON.toJSONString(map);
 	}
-   
+
    /**
     * 修改服务地址
-    * 
+    *
     * @param serviceAddr
     * @param proxyPath
     * @param serId
-    * @return status 
+    * @return status
     * @see
     */
     @RequestMapping("service/detail/editSerAddr.do")
@@ -2488,14 +2488,14 @@ public class ServiceController {
 		}
 		return JSON.toJSONString(map);
 	}
-    
+
     /**
-     * 
+     *
      * Description: 修改服务详情的基础信息表
-     * 
+     *
      * @param service
-     * @return 
-     * @return 
+     * @return
+     * @return
      * @see
      */
 	@RequestMapping(value = "service/detail/editBaseSerForm.do")
@@ -2552,9 +2552,9 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 
 	}
-	
+
     /**
-     * 
+     *
      * Description: 编辑端口配置信息
      * @param portConfig
      * @param serviceName
@@ -2580,12 +2580,12 @@ public class ServiceController {
 		// 保存服务操作信息
 		serviceOperationLogDao.save(service.getServiceName(), portCfg.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
         map.put("status", "200");
-        
-        
+
+
         return JSON.toJSONString(map);
     }
     /**
-     * 
+     *
      * Description: 编辑环境变量配置信息<br>
      * @param envVariable
      * @param serviceName
@@ -2618,7 +2618,7 @@ public class ServiceController {
         return JSON.toJSONString(map);
     }
     /**
-     * 
+     *
      * Description: 新增一个环境变量<br>
      * @param envVariable
      * @param serviceId
@@ -2650,10 +2650,10 @@ public class ServiceController {
         return JSON.toJSONString(env);
     }
     /**
-     * 
+     *
      * Description: 删除一个环境变量 <br>
      * @param envId
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping(value ="service/detail/delEnv.do",method = RequestMethod.POST)
@@ -2680,10 +2680,10 @@ public class ServiceController {
         return JSON.toJSONString(map);
     }
     /**
-     * 
+     *
      * Description: 删除一个端口信息 <br>
      * @param portId
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping(value ="service/detail/delPortCfg.do",method = RequestMethod.POST)
@@ -2710,11 +2710,11 @@ public class ServiceController {
         return JSON.toJSONString(map);
     }
     /**
-     * 
+     *
      * Description: 添加一个端口信息 <br>
      * @param portConfig
      * @param serviceId
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping(value ="service/detail/addPortCfg.do",method = RequestMethod.GET)
@@ -2742,14 +2742,14 @@ public class ServiceController {
         map.put("service",service);
             // 向map中添加生成的node端口
         return JSON.toJSONString(map);
-        
+
     }
     /**
-     * 
+     *
      * Description: 服务列表导出excel
      * @param request
      * @param response
-     * @throws IOException 
+     * @throws IOException
      * @see
      */
     @RequestMapping("service/exportExcel.do")
@@ -2764,13 +2764,13 @@ public class ServiceController {
         List<String[]> context =new ArrayList<String[]>();
         for(int i=0;i<services.size();i++){
            Service serviceObj = services.get(i);
-           
+
            String serviceAddr="";
            if(StringUtils.isNoneBlank(serviceObj.getServiceAddr())){
         	    serviceAddr=serviceObj.getServiceAddr();
            }
             String[] service ={serviceObj.getServiceName(),serviceObj.getServiceChName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
-                    ,new StringBuffer(serviceAddr).append("/").append(serviceObj.getProxyPath()).toString() 
+                    ,new StringBuffer(serviceAddr).append("/").append(serviceObj.getProxyPath()).toString()
                     ,serviceObj.getCreateDate().toString()};
             context.add(service);
         }
@@ -2784,10 +2784,10 @@ public class ServiceController {
 }
 
     /**
-     * 
+     *
      * Description: 服务状态号映射为中文
      * @param status
-     * @return 
+     * @return
      * @see
      */
     public static String mapStatus(Integer status){
@@ -2797,16 +2797,50 @@ public class ServiceController {
         if(4==status){ return "已停止";}
         else{ return "启动失败";}
     }
-    
+
+    /**
+     * 判断服务有没有22端口，并判断服务是不是debug状态
+     *
+     * @param serviceId
+     * @see
+     */
+    @RequestMapping(value = "service/debug.do",method = RequestMethod.GET)
+    @ResponseBody
+    public String debug(long id) {
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	Service service = serviceDao.findOne(id);
+    	// 获取端口信息
+    	List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+    	int port = 0;
+    	for (PortConfig portConfig : portConfigList) {
+    		if (portConfig.getContainerPort().equals("22")) {
+    			port = Integer.parseInt(portConfig.getMapPort());
+    			break;
+    		}
+    	}
+    	//如果没有查到22端口，返回400
+    	if (port == 0) {
+    		map.put("status", "400");
+    		return JSON.toJSONString(map);
+    	}
+    	//如果服务不是debug状态，返回401
+    	if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_DEBUG) {
+    		map.put("status", "401");
+    		return JSON.toJSONString(map);
+    	}
+    	map.put("status", "200");
+    	return JSON.toJSONString(map);
+    }
+
 	/**
-	 * 判断服务有没有22端口，并判断服务是不是debug状态
-	 * 
+	 * 判断服务有没有22端口
+	 *
 	 * @param serviceId
 	 * @see
 	 */
-	@RequestMapping(value = "service/debug.do",method = RequestMethod.GET)
+	@RequestMapping(value = "service/isDebugService.do",method = RequestMethod.GET)
 	@ResponseBody
-	public String debug(long id) {
+	public String isDebugService(long id) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Service service = serviceDao.findOne(id);
 		// 获取端口信息
@@ -2823,23 +2857,18 @@ public class ServiceController {
 			map.put("status", "400");
 			return JSON.toJSONString(map);
 		}
-		//如果服务不是debug状态，返回401
-		if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_DEBUG) {
-			map.put("status", "401");
-			return JSON.toJSONString(map);
-		}
 		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * Description:
-	 * 删除对应服务下的所有pod 
-	 * @param serviceName 
+	 * 删除对应服务下的所有pod
+	 * @param serviceName
 	 */
 	public void delPods(String serviceName) {
-	    LOG.info("************************before starting Service, delete garbage pod first*********************"); 
+	    LOG.info("************************before starting Service, delete garbage pod first*********************");
 	    try {
 	        KubernetesAPIClientInterface client =kubernetesClientService.getClient();
 	        com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
@@ -2865,7 +2894,7 @@ public class ServiceController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
 		ReplicationController controller = null;
-		
+
 		/*************************************
 		 * 服务不是未启动状态时,获取svc和rc
 		 *************************************/

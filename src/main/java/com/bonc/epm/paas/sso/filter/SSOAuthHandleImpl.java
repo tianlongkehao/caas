@@ -325,6 +325,9 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                 				}
                 				else if (((String)tmp.get("property_code")).trim().equals("Storage")){
                 					userResource.setVol_size(Long.parseLong((String)tmp.get("prop_value")));
+                					if (userResource.getUserId() <= 0) {
+                						userResource.setVol_surplus_size(Long.parseLong((String)tmp.get("prop_value")));
+									}
                 				}
                 			}
                 		}

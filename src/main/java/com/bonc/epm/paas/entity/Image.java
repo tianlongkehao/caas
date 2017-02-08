@@ -39,18 +39,23 @@ public class Image {
 	private Integer currUserFavor;    //当前用户是否收藏当前镜像 0:没有收藏，1：收藏
 	@Transient
     private Integer currUserFavorCount;    //收藏当前镜像的用户个数
-	@Transient 
+	@Transient
 	List<PortConfig> portConfigs;
-	
+
 	@ManyToMany(mappedBy = "favorImages")
 	private List<User> favorUsers;
-	
+
     /**
 	 * 是否为基础镜像
 	 * 1 是基础镜像，2不是基础镜像；
 	 */
 	private Integer isBaseImage;
-	
+
+    /**
+	 * 镜像导出的次数
+	 */
+	private Integer exportCount;
+
 	public long getId() {
 		return id;
 	}
@@ -87,14 +92,14 @@ public class Image {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	
+
 	public String getSummary() {
 		return summary;
 	}
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
-	
+
 	public long getCreateBy() {
         return createBy;
     }
@@ -149,12 +154,18 @@ public class Image {
 	public void setCreatorName(String creatorName) {
 		this.creatorName = creatorName;
 	}
-	
+
    public Integer getIsDelete() {
         return isDelete;
     }
     public void setIsDelete(Integer isDelete) {
         this.isDelete = isDelete;
-    }	
+    }
+	public Integer getExportCount() {
+		return exportCount;
+	}
+	public void setExportCount(Integer exportCount) {
+		this.exportCount = exportCount;
+	}
 
 }

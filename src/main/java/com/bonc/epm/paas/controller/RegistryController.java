@@ -56,7 +56,7 @@ import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.ResultPager;
 
 /**
- * 
+ *
  * 展示和操作镜像
  * @author zhoutao
  * @version 2016年9月6日
@@ -65,60 +65,60 @@ import com.bonc.epm.paas.util.ResultPager;
  */
 @Controller
 public class RegistryController {
-    
+
     /**
      * RegistryController 日志实例
      */
     private static final Logger LOG = LoggerFactory.getLogger(RegistryController.class);
-	
+
 	/**
 	 * ImageDao接口
 	 */
     @Autowired
 	private ImageDao imageDao;
-    
+
     /**
      * UserDao接口
      */
     @Autowired
 	private UserDao userDao;
-	
+
 	/**
 	 * 用户收藏镜像操作接口
 	 */
     @Autowired
 	private FavorDao favorDao;
-	
+
     /**
      * 日志记录dao层接口
      */
     @Autowired
     private CommonOperationLogDao commonOperationLogDao;
-    
+
     /**
      * DockerClientService 接口
      */
     @Autowired
 	private DockerClientService dockerClientService;
-	
+
     /**
      * DockerClientService 接口
      */
     @Autowired
 	private DockerRegistryService dockerRegistryService;
-		
+
     /**
      * 获取paas.image.path中的镜像下载地址
      */
     @Value("${paas.image.path}")
 	private String imagePath = "../downimage";
-    
+
     /**
      * Description: <br>
      * 镜像广场查询镜像重定向到镜像中心页面
      * @param search
      * @param request
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping(value = {"registry/search"}, method = RequestMethod.GET)
@@ -126,7 +126,7 @@ public class RegistryController {
         request.getSession().setAttribute("search", search);
         return "redirect:/registry/0";
     }
-    
+
     /**
      * Description: <br>
      * 进入镜像显示页面，镜像显示分三层分隔显示
@@ -146,7 +146,7 @@ public class RegistryController {
         }else if(index == 2){
             active = "我的收藏";
         }
-        
+
         model.addAttribute("menu_flag", "registry");
         model.addAttribute("li_flag", "registry"+index);
         model.addAttribute("index", index);
@@ -156,7 +156,7 @@ public class RegistryController {
 
         return "docker-registry/registry.jsp";
     }
-    
+
     /**
      * Description: <br>
      * 使用datatable对镜像进行服务端分页操作；
@@ -211,10 +211,10 @@ public class RegistryController {
         map.put("recordsTotal", images.getTotalElements());
         map.put("recordsFiltered", images.getTotalElements());
         map.put("data", images.getContent());
-        
+
         return JSON.toJSONString(map);
     }
-    
+
 	/**
 	 * 显示当前镜像详细信息
 	 * @param id 镜像Id
@@ -244,7 +244,7 @@ public class RegistryController {
         else {
             model.addAttribute("editImage", 2);
         }
-		
+
         if (StringUtils.isEmpty(user)) {
             model.addAttribute("creator", "租户已注销");
         } else {
@@ -256,7 +256,7 @@ public class RegistryController {
         model.addAttribute("menu_flag", "registry");
         return "docker-registry/detail.jsp";
     }
-	
+
 	/**
 	 * 编辑当前镜像的简介
 	 * @param imageId 镜像Id
@@ -271,7 +271,7 @@ public class RegistryController {
         imageDao.save(image);
         return "success";
     }
-	
+
 	/**
 	 * 编辑当前镜像的详细信息
 	 * @param imageId 镜像Id
@@ -286,7 +286,7 @@ public class RegistryController {
         imageDao.save(image);
         return "success";
     }
-	
+
 	/**
 	 * 响应镜像的收藏按钮
 	 * @param imageId 镜像Id
@@ -309,7 +309,7 @@ public class RegistryController {
             return "success";
         }
     }
-	
+
 	/**
 	 * 判断中有没有用户下载过当前镜像
 	 * @param imageName ： 镜像名称
@@ -320,7 +320,7 @@ public class RegistryController {
 	@ResponseBody
 	public String judgeFileExist(String imageName, String imageVersion){
         Map<String, Object> map = new HashMap<String, Object>();
-        try {           
+        try {
             String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
             File file = new File(imagePath+"/"+downName+".tar");
             if (file.exists()) {
@@ -329,7 +329,7 @@ public class RegistryController {
                     file.delete();
                     map.put("status", "500");
                 } else {
-                    map.put("status", "200"); 
+                    map.put("status", "200");
                 }
             } else {
                 map.put("status", "500");
@@ -341,80 +341,83 @@ public class RegistryController {
         }
         return JSON.toJSONString(map);
     }
-	
+
 	/**
      * 响应镜像“下载”按钮的实现
      * @param imgID ： 镜像Id
      * @param imageName ： 镜像名称
      * @param imageVersion 镜像版本
      * @param resourceName 资源
-     * @param request  
+     * @param request
      * @param response
      * @param model
      * @return map JSONString
 	 * @throws IOException
      */
-    @RequestMapping(value = {"registry/downloadImage"}, method = RequestMethod.GET)
-    @ResponseBody
-    public String downloadImage(String imgID, String imageName, String imageVersion, String resourceName,
-                                                Model model,HttpServletRequest request, HttpServletResponse response) throws IOException{
-        Map<String, Object> map = new HashMap<String, Object>();
-        String downName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion;
-        File path = new File(imagePath);
-        if (!path.exists() && !path.isDirectory()) {
-            path.mkdirs();
-        }
+	@RequestMapping(value = { "registry/downloadImage" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String downloadImage(String imgID, String imageName, String imageVersion, String resourceName, Model model,
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Map<String, Object> map = new HashMap<String, Object>();
+		String downName = imageName.substring(imageName.lastIndexOf("/") + 1) + "-" + imageVersion;
+		File path = new File(imagePath);
+		if (!path.exists() && !path.isDirectory()) {
+			path.mkdirs();
+		}
 
-        File file = new File(imagePath+"/"+downName+".tar");
-        boolean exist = file.exists();
-        if (exist) {
-            map.put("status", "200");
-        }
-        else {
-            boolean complete= dockerClientService.pullImage(imageName, imageVersion);
-            boolean flag = false;
-            if (complete) {
-                InputStream inputStream = null;
-                try {
-                    inputStream = dockerClientService.saveImage(imageName,imageVersion);
-                    FileUtils.storeFile(inputStream,imagePath+"/"+downName+".tar");
-                    flag = true;
-                }
-                catch (IOException e) {
-                    LOG.error("error message:-" + e.getMessage());
-                    flag = false;
-                } 
-                finally {
-                    if (null != inputStream) {
-                        inputStream.close();
-                    }
-                }
-                 // deprecated save image method
-//                String url="192.168.0.76:5000";
-//                String imageCmdPath ="docker save -o";
-//                try {
-//                    String cmd = imageCmdPath +" "+ imagePath +"/"
-//                        + downName + ".tar  "+ url +"/"+ imageName + ":" + imageVersion;
-//                    flag = CmdUtil.exeCmd(cmd);
-//                }
-//                catch (IOException e) {
-//                   LOG.error("error message:-" + e.getMessage());
-//                   map.put("status", "500");
-//                }
-            }
-            dockerClientService.removeImage(imageName, imageVersion, null, null,null,null);
-            if (flag) {
-                //添加下载镜像操作记录
-                String extraInfo="下载镜像："+imageName + "版本信息" + imageVersion;
-                CommonOperationLog comlog=CommonOprationLogUtils.getOprationLog(imageName, extraInfo, CommConstant.IMAGE, CommConstant.OPERATION_TYPE_EXPORT);
-                commonOperationLogDao.save(comlog);
-                
-                map.put("status", "200");
-            }
-        }
-        return JSON.toJSONString(map);
-    }
-    
+		File file = new File(imagePath + "/" + downName + ".tar");
+		boolean exist = file.exists();
+		if (exist) {
+			map.put("status", "200");
+		} else {
+			boolean complete = dockerClientService.pullImage(imageName, imageVersion);
+			boolean flag = false;
+			if (complete) {
+				InputStream inputStream = null;
+				try {
+					inputStream = dockerClientService.saveImage(imageName, imageVersion);
+					FileUtils.storeFile(inputStream, imagePath + "/" + downName + ".tar");
+					flag = true;
+				} catch (IOException e) {
+					LOG.error("error message:-" + e.getMessage());
+					flag = false;
+				} finally {
+					if (null != inputStream) {
+						inputStream.close();
+					}
+				}
+				// deprecated save image method
+				// String url="192.168.0.76:5000";
+				// String imageCmdPath ="docker save -o";
+				// try {
+				// String cmd = imageCmdPath +" "+ imagePath +"/"
+				// + downName + ".tar "+ url +"/"+ imageName + ":" +
+				// imageVersion;
+				// flag = CmdUtil.exeCmd(cmd);
+				// }
+				// catch (IOException e) {
+				// LOG.error("error message:-" + e.getMessage());
+				// map.put("status", "500");
+				// }
+			}
+			dockerClientService.removeImage(imageName, imageVersion, null, null, null, null);
+			if (flag) {
+				// 修改镜像导出次数
+				Image image = imageDao.findByNameAndVersion(imageName.substring(imageName.lastIndexOf("/") + 1), imageVersion);
+				image.setExportCount(image.getExportCount() + 1);
+				imageDao.save(image);
+				// 添加下载镜像操作记录
+				String extraInfo = "下载镜像：" + imageName + "版本信息" + imageVersion;
+				CommonOperationLog comlog = CommonOprationLogUtils.getOprationLog(imageName, extraInfo,
+						CommConstant.IMAGE, CommConstant.OPERATION_TYPE_EXPORT);
+				commonOperationLogDao.save(comlog);
+
+				map.put("status", "200");
+			}
+		}
+		return JSON.toJSONString(map);
+	}
+
     /**
      * 下载镜像文件
      * @param imageName String
@@ -425,40 +428,39 @@ public class RegistryController {
      */
     @RequestMapping(value = {"registry/download"}, method = RequestMethod.GET)
     public void getDownload(String imageName, String imageVersion,
-                                HttpServletRequest request, HttpServletResponse response) {            
+                                HttpServletRequest request, HttpServletResponse response) {
             String fileName = imageName.substring(imageName.lastIndexOf("/")+1) + "-" + imageVersion + ".tar";
             response.reset();
-            //设置文件MIME类型  
-            response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));  
-            //设置Content-Disposition  
-            response.setHeader("Content-Disposition", "attachment;filename="+fileName);  
+            //设置文件MIME类型
+            response.setContentType(request.getServletContext().getMimeType(imagePath+"/"+fileName));
+            //设置Content-Disposition
+            response.setHeader("Content-Disposition", "attachment;filename="+fileName);
             try {
                 InputStream myStream = new FileInputStream(imagePath+"/"+fileName);
                 IOUtils.copy(myStream, response.getOutputStream());
                 response.flushBuffer();
-            } 
-            catch (IOException e) {  
+            }
+            catch (IOException e) {
                 LOG.error("downloadImage error:"+e.getMessage());
             }
             //return "redirect:registry/0";
     }
-    
+
     /**
-     * 
+     *
      * Description:
      * 删除本地数据库镜像，以及远程仓库镜像信息
      * 1.正常删除流程：删除本地镜像信息和远程镜像清单信息manifests
      * 2.非正常处理流程：
-     *      其一：无法获取本地数据库镜像信息的清单信息manifests  
-     *      其二：获取镜像信息的清单信息manifests后，调用删除清单API 返回errorList信息 
+     *      其一：无法获取本地数据库镜像信息的清单信息manifests
+     *      其二：获取镜像信息的清单信息manifests后，调用删除清单API 返回errorList信息
      *   处理方式：
      *          无法删除仓库镜像，将本地数据库镜像信息isdelete字段设置为删除状态
-     *          
-     *  TODO
+     *
      *   对于无法通过正常渠道删除的镜像信息，
      *   需要通过镜像同步、GC回收、手动清除垃圾镜像等手段处理
      * @param imageId 镜像Id
-     * @return String 
+     * @return String
      * @see
      */
     @RequestMapping(value = {"registry/detail/deleteimage"}, method = RequestMethod.POST)
@@ -482,7 +484,7 @@ public class RegistryController {
                 if (isDeleteFlag) {
                     image.setIsDelete(CommConstant.TYPE_YES_VALUE);
                     imageDao.save(image);
-                    
+
                     //添加删除镜像操作记录
                     String extraInfo = "删除镜像" + image.getName() + "的信息" + JSON.toJSONString(image);
                     CommonOperationLog comlog=CommonOprationLogUtils.getOprationLog(image.getName(), extraInfo, CommConstant.IMAGE, CommConstant.OPERATION_TYPE_DELETE);
@@ -492,21 +494,21 @@ public class RegistryController {
             }
             catch (DokcerRegistryClientException dockerEx) {
                 LOG.error("delete image error. error message:-"+JSON.toJSONString(dockerEx.getErrorList()));
-                return "error";               
+                return "error";
             }
             catch (Exception e) {
                 LOG.error("delete image error. error message:-"+e.getMessage());
                 return "error";
             }
-        } 
+        }
         return "error";
     }
-    
-    
+
+
    /**
     * Description: <br>
     * 批量删除镜像
-    * @param imageIds 
+    * @param imageIds
     * @return String
     */
     @RequestMapping("registry/delImages.do")
@@ -526,14 +528,14 @@ public class RegistryController {
                 deleteImage(id);
             }
             maps.put("status", "200");
-        } 
+        }
         catch (Exception e) {
             maps.put("status", "400");
             LOG.error("镜像删除错误！");
         }
-        return JSON.toJSONString(maps); 
+        return JSON.toJSONString(maps);
     }
-       
+
     /**
      * Description: <br>
      * 循环遍历镜像集合，查询当前用户是否收藏该镜像
@@ -546,12 +548,12 @@ public class RegistryController {
             image.setFavorUsers(null);
         }
     }
-    
+
     /**
-     * 
+     *
      * Description:
      * addCreatorName
-     * @param images 
+     * @param images
      * @see
      */
     private void addCreatorName(List<Image> images){
@@ -562,9 +564,9 @@ public class RegistryController {
             }
         }
     }
-    
+
     /**
-     * 
+     *
      * Description:
      * 管理员添加，同步本地数据库和私有仓库的镜像信息
      * @see
@@ -573,7 +575,7 @@ public class RegistryController {
     @ResponseBody
 	public String refresh() {
 		Map<String, Object> maps = new HashMap<String, Object>();
-		
+
         DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
         //获取数据库中所有的镜像
         ArrayList<Image> imageList = (ArrayList<Image>) imageDao.findAll();
@@ -595,11 +597,11 @@ public class RegistryController {
 		maps.put("status", "200");
 		return JSON.toJSONString(maps);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * Description:
-	 * 获取创建者按镜像名称分组的镜像 
+	 * 获取创建者按镜像名称分组的镜像
 	 * @see
 	 */
 	@RequestMapping("registry/getImagesGroupByName.do")
@@ -627,11 +629,11 @@ public class RegistryController {
 		maps.put("status", "200");
 		return JSON.toJSONString(maps);
 	}
-	
+
     /**
-     * 
+     *
      * Description:
-     * 获取创建者按创建月份分组的镜像 
+     * 获取创建者按创建月份分组的镜像
      * @see
      */
 	@RequestMapping("registry/getImagesGroupByMonth.do")
@@ -643,7 +645,7 @@ public class RegistryController {
 		List<Image> imageList = imageDao.findByCreateByOrderByCreatTime(creator);
 		//获取当前的时间
 		Calendar calendar = Calendar.getInstance();
-		
+
 		//当月月份yyyyMM
 		String Period = DateUtils.getDate2SStr3(calendar.getTime());
 		//上一个月月份yyyyMM
@@ -662,7 +664,7 @@ public class RegistryController {
 		List<Image> images2 = new ArrayList<Image>();
 		//用于存放更早的的镜像
 		List<Image> images3 = new ArrayList<Image>();
-		
+
 		for (Image image : imageList) {
 			//获取格式化的镜像创建时间yyyyMM
 			String creatTime = DateUtils.getDate2SStr3(image.getCreateDate());
@@ -691,12 +693,12 @@ public class RegistryController {
 		maps.put("status", "200");
 		return JSON.toJSONString(maps);
 	}
-	
+
 	/**
 	 * Description: <br>
 	 * 镜像广场中的镜像展示
 	 * @param model
-	 * @return 
+	 * @return
 	 * @see
 	 */
 	@RequestMapping("registry/imageShow")
@@ -710,21 +712,21 @@ public class RegistryController {
 	           imageList.add(imagePage.getContent().get(10-imageList.size()));
 	       }
 	    }
-	    
+
 	    for (Image image : imageList) {
 	        image.setCurrUserFavorCount(image.getFavorUsers().size());
 	    }
-	    
+
 	    Collections.sort(imageList,new Comparator<Image>(){
             public int compare(Image arg0, Image arg1) {
                 return arg1.getCurrUserFavorCount().compareTo(arg0.getCurrUserFavorCount());
             }
         });
-	    
+
 	    for (int i= 0 ; i < 8 ; i++) {
 	        newImage.add(imagePage.getContent().get(i));
 	    }
-	    
+
 	    addCurrUserFavor(imageList);
 	    addCurrUserFavor(newImage);
 	    model.addAttribute("imageList", imageList);
