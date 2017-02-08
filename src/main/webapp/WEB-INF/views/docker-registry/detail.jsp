@@ -181,7 +181,7 @@
                                 	</c:if>
                                     <p><i class="fa_attr_size"></i><span>大小:&nbsp;&nbsp;&nbsp;&nbsp; 112M</span></p>
                                     <p><i class="fa fa-star-o"></i><span>收藏数:&nbsp;&nbsp;&nbsp;&nbsp; ${favorUser } 个人收藏了该镜像</span></p>
-                                    <p><i class="fa_attr_download"></i><span>导出数:&nbsp;&nbsp;&nbsp;&nbsp; ${favorUser } 次导出了该镜像</span></p>
+                                    <p><i class="fa_attr_download"></i><span>导出数:&nbsp;&nbsp;&nbsp;&nbsp; ${image.exportCount } 次导出了该镜像</span></p>
                                     <p><i class="fa_datetime"></i><span>创建时间: ${image.createDate }</span></p>
                                 </li>
                             </ul>
