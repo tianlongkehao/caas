@@ -18,8 +18,9 @@
 }
 .row-title, .container-count .row-title {
     line-height: 40px;
-    background: rgba(238,102,102,0.75);
-    color:#fff;
+    background: #EFF2F7;
+    /* background: rgba(238,102,102,0.75); */
+    
     border-bottom: 1px solid #EFF2F7;
     padding-left: 30px;
     font-size: 16px;
@@ -127,8 +128,7 @@
     font-size: 16px;
     border-bottom: 1px solid #ddd;
     padding-left: 25px;
-    background: rgba(47,186,102,0.75);
-    color:#fff; 
+    background: #EFF2F7;
 }
 i.pandect-icon{
 	color: #8b8b8b;
@@ -144,8 +144,8 @@ img.pandect-icon{
 /* log */
 
 .logInfo{
-	margin-top:30px;
-	width: 100%;
+	width: 59%;
+	margin-left:10px;
 }
 .right{
 	float: right;

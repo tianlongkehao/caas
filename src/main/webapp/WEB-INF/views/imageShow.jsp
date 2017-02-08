@@ -56,7 +56,13 @@
                                                 ${image.name}
                                             </div>
                                             <div>
-                                            	<i class="fa fa-tag"></i>${image.version }
+                                            	<%-- <i class="fa fa-tag"></i>${image.version } --%>
+                                            	<div class="pull-left">
+                                                	<i class="fa fa-cloud-download" style="color:#e8504f"></i>
+                                                	<span>22
+                                                	<%-- ${image.downloadCount } --%>
+                                                	</span> 
+                                                </div>
                                                 <div class="pull-right">
 		                                            <c:if test="${image.currUserFavor==0 }">
                                                         <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
@@ -95,7 +101,13 @@
 	                                                ${image.name}
 	                                            </div>
 	                                            <div>
-	                                                <i class="fa fa-tag"></i>${image.version }
+	                                                <%-- <i class="fa fa-tag"></i>${image.version } --%>
+	                                                <div class="pull-left">
+	                                                	<i class="fa fa-cloud-download" style="color:#e8504f"></i>
+	                                                	<span>22
+	                                                	<%-- ${image.downloadCount } --%>
+	                                                	</span> 
+	                                                </div>
 	                                                <div class="pull-right">
 	                                                    <c:if test="${image.currUserFavor==0 }">
 	                                                        <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
