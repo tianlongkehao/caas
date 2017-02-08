@@ -173,13 +173,43 @@
 		                           <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">dockerfile构建方式<span class="caret"></span></a>
 		                              <ul class="dropdown-menu">
 			                             <li><a id="dockerfilePath">dockerfile路径</a></li>
-			                             <li><a id="dockerfileTemp">编写dockerfiel</a></li>
+			                             <li><a id="dockerfileTemp">编写dockerfile</a></li>
 			                          </ul>
 		                            </li>
 		                        </ul>
 		                        <div id="dockerfileMethod">
-		                              
-	                            </div>
+		                        	<div class="row dockerfileTemp dockerfileTools">
+		                        		<div class="panel-group" id="accordion">
+											<div class="panel panel-default">
+												<div class="panel-heading">
+													<h4 class="panel-title">
+														<a data-toggle="collapse" data-parent="#accordion" 
+														   href="#collapseOne">工具集
+														</a>
+													</h4>
+												</div>
+												<div id="collapseOne" class="panel-collapse collapse in">
+													<div class="panel-body">
+														<ul class="dftools">
+															<li><label><input type="checkbox">jdk7</label></li>
+															<li><label><input type="checkbox">jdk8</label></li>
+															<li><label><input type="checkbox">tomcat7</label></li>
+															<li><label><input type="checkbox">tomcat8</label></li>
+															<li><label><input type="checkbox">mysqlClient</label></li>
+															<li><label><input type="checkbox">busybox</label></li>
+															<li><label><input type="checkbox">apm</label></li>
+															<li><label><input type="checkbox">telnet</label></li>
+															<li><label><input type="checkbox">traceRoute</label></li>
+															<li><label><input type="checkbox">oracle客户端</label></li>
+														</ul>
+														<!-- <span class="dftools"><label><input type="checkbox">jdk7</label></span>
+														<span class="dftools"><label><input type="checkbox">jdk8</label></span> -->
+													</div>
+												</div>
+											</div>
+		                        		</div>
+		                        	</div>
+		                        </div>
                         	</section>
                             
                         	<input type = "hidden" id = "jsonData" name = "jsonData" value = "">

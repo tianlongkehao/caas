@@ -730,3 +730,20 @@ td.autocut{
 #editCiBtn{
 	margin-right:10px;
 }
+/* ci-add */
+.dockerfileTools{
+	width:98%;
+	margin: 0 auto;
+}
+.dftools li{
+	float:left;
+	width:16%;
+}
+.dftools li label input{
+	margin-right:4px;
+}
+
+
+
+
+
