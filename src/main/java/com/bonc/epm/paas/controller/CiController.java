@@ -52,7 +52,7 @@ import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.HookAndImagesDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.SheraDao;
-import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.dao.CodeCiToolDao;
 import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
@@ -67,6 +67,7 @@ import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.HookAndImages;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Shera;
+import com.bonc.epm.paas.entity.CodeCiTool;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
@@ -87,7 +88,7 @@ import com.bonc.epm.paas.util.ZipUtil;
 import com.github.dockerjava.api.DockerClient;
 /**
  * 构建容器
- * 
+ *
  * @author update
  * @version 2016年8月31日
  * @see CiController
@@ -105,79 +106,79 @@ public class CiController {
      */
     @Autowired
     private UserResourceDao userResourceDao;
-    
+
     /**
      * CiDao接口
      */
     @Autowired
 	private CiDao ciDao;
-    
+
     /**
      * CiCode接口
      */
     @Autowired
     private CiCodeDao ciCodeDao;
-    
+
     /**
      * CiRecoredDao接口
      */
     @Autowired
 	private CiRecordDao ciRecordDao;
-    
+
     /**
      * ciInvokeDao接口
      */
     @Autowired
     private CiInvokeDao ciInvokeDao;
-    
+
     /**
      * ciCodeCredentialDao接口
      */
     @Autowired
     private CiCodeCredentialDao ciCodeCredentialDao;
-    
+
     /**
      * 代码挂钩接口
      */
     @Autowired
     private CiCodeHookDao ciCodeHookDao;
-    
+
     /**
      * sheraDao数据接口
      */
     @Autowired
     private SheraDao sheraDao;
-    
+
     /**
      * hookAndImages中间表接口
      */
     @Autowired
     private HookAndImagesDao hookAndImagesDao;
-    
+
     /**
      * ImageDao接口
      */
     @Autowired
 	private ImageDao imageDao;
-    
+
     /**
      * DockerFile模板接口
      */
     @Autowired
 	private DockerFileTemplateDao dockerFileTemplateDao;
-	
+
     /**
      * DockerClientService 接口
      */
     @Autowired
 	private DockerClientService dockerClientService;
-	
+
     /**
      * 获取配置文件中的codetemp路径
      */
     @Value("${paas.codetemp.path}")
 	private String CODE_TEMP_PATH = "./codetemp";
-	
+
     /**
      * SheraClientService 接口
      */
@@ -191,8 +192,14 @@ public class CiController {
     private CommonOperationLogDao commonOperationLogDao;
 
     /**
+     * commonOperationLogDao接口
+     */
+    @Autowired
+    private CodeCiToolDao codeCiToolDao;
+
+    /**
      * 进入构建主页面
-     * 
+     *
      * @param model ：model
      * @return ci.jsp
      * @see
@@ -239,7 +246,7 @@ public class CiController {
         map.put("data", cis.getContent());
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * codeCi构建数据的查询
@@ -274,7 +281,7 @@ public class CiController {
         if (cis.getContent().size() > 0) {
             List<Ci> ciList = findSheraData(cis.getContent());
             map.put("data", ciList);
-        } else { 
+        } else {
             map.put("data", cis.getContent());
         }
         map.put("draw", draw);
@@ -282,12 +289,12 @@ public class CiController {
         map.put("recordsFiltered", cis.getTotalElements());
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 代码构建shera中job的构建信息查询和展示；
      * @param cis cis
-     * @return 
+     * @return
      */
     public List<Ci> findSheraData(List<Ci> cis){
         try {
@@ -317,15 +324,15 @@ public class CiController {
         }
         return cis;
     }
-    
+
     /**
-     * 
+     *
      * Description: <br>
      * 根据构建Id加载构建的详细信息
-     * @param model Model 
+     * @param model Model
      * @param id ： 构建Id
      * @return ci_detail.jsp
-     * @throws IOException 
+     * @throws IOException
      * @see
      */
     @RequestMapping(value={"ci/detail/{id}"},method=RequestMethod.GET)
@@ -377,12 +384,12 @@ public class CiController {
         model.addAttribute("li_flag", "ci");
         return "ci/ci_detail.jsp";
     }
-	
+
     /**
      * Description: <br>
      * 根据构建id查询相关联的代码构建详细数据
      * @param id
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping("ci/invokeData.do")
@@ -393,13 +400,13 @@ public class CiController {
         map.put("data", ciInvokeList);
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 修改构建信息判断项目名称是否重复
      * @param projectName ： 项目名称
      * @param id 构建Id
-     * @return 
+     * @return
      */
     @RequestMapping("ci/judgeProjectName.do")
     @ResponseBody
@@ -422,7 +429,7 @@ public class CiController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 修改代码构建信息
@@ -492,7 +499,7 @@ public class CiController {
                 ciInvokeDao.save(ciInvokeList);
             }
             map.put("status", "200");
-            
+
             //保存日志信息
             extraInfo += "修改之后的数据：" + JSON.toJSONString(originCi) +  JSON.toJSONString(originCiCode);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CODE_CI, CommConstant.OPERATION_TYPE_UPDATE);
@@ -505,10 +512,10 @@ public class CiController {
         map.put("data", originCi);
         return JSON.toJSONString(map);
     }
-	
+
     /**
      * DoclerFile构建修改构建信息
-     * 
+     *
      * @param ci ： ci
      * @param sourceCode ： 代码
      * @param dockerFile ： dockerFile文件
@@ -532,20 +539,20 @@ public class CiController {
                 FileUtils.storeFile(sourceCode.getInputStream(), originCi.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
             }
             if (!dockerFile.isEmpty()) {
-                ByteArrayInputStream in = new ByteArrayInputStream(dockerFile.getBytes());  
+                ByteArrayInputStream in = new ByteArrayInputStream(dockerFile.getBytes());
                 FileUtils.storeFile(in, originCi.getCodeLocation()+"/"+"Dockerfile");
             }
-        } 
+        }
         catch (Exception e) {
             e.printStackTrace();
             LOG.error("modifyResourceCi error : "+e.getMessage());
             map.put("status", "500");
             map.put("msg","上传文件出错");
-          
+
             return JSON.toJSONString(map);
         }
         ciDao.save(originCi);
-        
+
         //保存日志信息
         extraInfo += "修改之后的数据：" + JSON.toJSONString(originCi);
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.DOCKER_FILE_CI, CommConstant.OPERATION_TYPE_UPDATE);
@@ -554,10 +561,10 @@ public class CiController {
         map.put("data", ci);
         return JSON.toJSONString(map);
     }
-	
+
     /**
      * 修改快速构建构建信息
-     * 
+     *
      * @param ci ： ci
      * @param sourceCode ： 上传代码
      * @return String
@@ -585,24 +592,24 @@ public class CiController {
                 originCi.setResourceName(sourceCode.getOriginalFilename());
                 FileUtils.storeFile(sourceCode.getInputStream(), originCi.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
             }
-        	
+
             String fileTemplate = FileUtils.class.getClassLoader().getResource("Dockerfile").getPath();
             String toFile = originCi.getCodeLocation()+"/"+"Dockerfile";
             Map<String,String> data = new HashMap<String, String>();
             data.put("${baseImage}", originCi.getBaseImageName()+":"+originCi.getBaseImageVersion());
             data.put("${fileName}", originCi.getResourceName());
             FileUtils.writeFileByLines(fileTemplate, data, toFile);
-        } 
+        }
         catch (Exception e) {
             e.printStackTrace();
             LOG.error("modifyResourceCi error : "+e.getMessage());
             map.put("status", "500");
             map.put("msg","上传文件出错");
-            
+
             return JSON.toJSONString(map);
         }
         ciDao.save(originCi);
-        
+
         //保存日志信息
         extraInfo += "修改之后的数据：" + JSON.toJSONString(originCi);
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.QUICK_CI, CommConstant.OPERATION_TYPE_UPDATE);
@@ -611,10 +618,10 @@ public class CiController {
         map.put("data", ci);
         return JSON.toJSONString(map);
     }
-	
+
 	/**
 	 * 删除构建
-	 * 
+	 *
 	 * @param id ：id
 	 * @return String
 	 * @see
@@ -624,7 +631,7 @@ public class CiController {
 	public String delCi(@RequestParam String id) {
         Map<String, Object> map = new HashMap<String, Object>();
         Integer catalogType = CommConstant.CODE_CI;
-        
+
         try {
             Long idl = Long.parseLong(id);
             Ci ci = ciDao.findOne(idl);
@@ -635,7 +642,7 @@ public class CiController {
             }
             //判断是否为代码构建
             if (ci.getType() == CiConstant.TYPE_CODE) {
-                
+
                 try {
                     CiCode ciCode = ciCodeDao.findByCiId(idl);
                     SheraAPIClientInterface client = sheraClientService.getClient();
@@ -656,7 +663,7 @@ public class CiController {
             ciRecordDao.deleteByCiId(idl);
             ciDao.delete(idl);
             //添加删除日志
-            String extraInfo = "删除构建：" + JSON.toJSONString(ci); 
+            String extraInfo = "删除构建：" + JSON.toJSONString(ci);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, catalogType, CommConstant.OPERATION_TYPE_DELETE);
             commonOperationLogDao.save(log);
             map.put("status", "200");
@@ -668,10 +675,10 @@ public class CiController {
         }
         return JSON.toJSONString(map);
     }
-	
+
     /**
      * 进入代码构建页面
-     * 
+     *
      * @param model ： model
      * @return ci_add.jsp
      * @see
@@ -689,14 +696,18 @@ public class CiController {
         catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         String imageNameFirst = "";
         if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
             imageNameFirst = cuurentUser.getNamespace() + "_" + cuurentUser.getUserName();
         } else {
             imageNameFirst = cuurentUser.getUserName();
         }
+
+        List<CodeCiTool> tools = (List<CodeCiTool>) codeCiToolDao.findAll();
+
         model.addAttribute("username", imageNameFirst);
+        model.addAttribute("tools", tools);
         model.addAttribute("userAutority", cuurentUser.getUser_autority());
         model.addAttribute("menu_flag", "ci");
         model.addAttribute("li_flag", "ci");
@@ -705,8 +716,8 @@ public class CiController {
 
     /**
      * 进入上传镜像页面
-     * 
-     * @param model ： 
+     *
+     * @param model ：
      * @return ci_uploadImage.jsp
      * @see
      */
@@ -724,10 +735,10 @@ public class CiController {
         model.addAttribute("li_flag", "ci");
         return "ci/ci_uploadImage.jsp";
     }
-	
+
     /**
      * 进入dockerFile构建页面
-     * 
+     *
      * @param model ： model
      * @return ci_dockerfile.jsp
      * @see
@@ -746,10 +757,10 @@ public class CiController {
         model.addAttribute("li", "ci");
         return "ci/ci_dockerfile.jsp";
     }
-	
+
     /**
      * 进入快速构建页面
-     * 
+     *
      * @param model ： model
      * @return ci_addCodeSource.jsp
      * @see
@@ -771,11 +782,11 @@ public class CiController {
         model.addAttribute("baseImage", images);
         return "ci/ci_addCodeSource.jsp";
     }
-    
+
     /**
      * Description: <br>
      * 判断用户镜像数量
-     * @param model 
+     * @param model
      * @return String
      */
     @RequestMapping(value={"ci/judgeUserImages.do"},method=RequestMethod.GET)
@@ -786,7 +797,7 @@ public class CiController {
         //取得当前用户的所有镜像
         List<Image> imagesOfUser = imageDao.findByCreateBy(currentUser.getId());
         long maxSize = 0;
-        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT) || 
+        if (currentUser.getUser_autority().equals(UserConstant.AUTORITY_TENANT) ||
                     currentUser.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
         	//当前是租户的场合，maxSize为租户的ImageCount字段
         	maxSize = userResourceDao.findByUserId(currentUser.getId()).getImage_count();
@@ -805,7 +816,7 @@ public class CiController {
         }
         return JSON.toJSONString(map);
     }
-	
+
     /**
      * Description: <br>
      * 进行代码构建时判断当前租户是否添加了shera环境
@@ -832,15 +843,15 @@ public class CiController {
             map.put("status", "200");
         }
         return JSON.toJSONString(map);
-        
+
     }
-    
+
     /**
      * Description: <br>
      * 代码构建验证代码地址是否正确
      * @param codeUrl
      * @param codeCredentialId
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping(value={"ci/judgeCodeUrl.do"},method=RequestMethod.POST)
@@ -875,10 +886,10 @@ public class CiController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * 代码构建的创建
-     * 
+     *
      * @param ci ： ci
      * @return String
      * @see
@@ -903,19 +914,19 @@ public class CiController {
             ciCode.setCiId(ci.getId());
             ciCode.setCodeUrl(ciCode.getCodeUrl().trim());
             ciCodeDao.save(ciCode);
-            
+
 			//查询代码构建详细信息
             List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
             if (!StringUtils.isEmpty(ciInvokeList)) {
                 ciInvokeDao.save(ciInvokeList);
                 LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
             }
-            
+
             //添加日志
             String extraInfo = "代码构建的创建：" + JSON.toJSONString(ci) + JSON.toJSONString(ciCode) + JSON.toJSONString(ciInvokeList);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.CODE_CI, CommConstant.OPERATION_TYPE_CREATED);
             commonOperationLogDao.save(log);
-            
+
             //查询代码认证
             CiCodeCredential ciCodeCredential = new CiCodeCredential();
             if (!StringUtils.isEmpty(ciCode.getCodeCredentials())) {
@@ -949,9 +960,9 @@ public class CiController {
                 ciInvokeDao.deleteByCiId(ci.getId());
                 ciDao.delete(ci);
             }
-        return "redirect:/ci?code"; 
+        return "redirect:/ci?code";
     }
-    
+
     /**
      * Description: <br>
      * 将json数据封装成ciInvoke对象；
@@ -979,7 +990,7 @@ public class CiController {
         }
         return ciInvokeList;
     }
-    
+
     /**
      * Description: <br>
      * 根据项目名称和创建者判断项目名称的重复
@@ -1000,10 +1011,10 @@ public class CiController {
         }
         return JSON.toJSONString(result);
     }
-    
+
     /**
      * 快速构建的创建
-     * 
+     *
      * @param ci ： ci
      * @return String
      * @see
@@ -1018,24 +1029,24 @@ public class CiController {
         ci.setConstructionDate(new Date());
         ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
         ciDao.save(ci);
-        
+
         //添加日志
         String extraInfo = "快速构建的创建：" + JSON.toJSONString(ci);
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.QUICK_CI, CommConstant.OPERATION_TYPE_CREATED);
         commonOperationLogDao.save(log);
-        
+
         LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
         return "redirect:/ci";
-		
+
     }
-    
+
 	/**
 	 * 最开始的dockerfile构建
-	 * 
+	 *
 	 * @param ci ：ci
 	 * @param sourceCode : 上传代码
 	 * @param dockerFile MultipartFile
-	 * @return  String 
+	 * @return  String
 	 * @see MultipartFile
 	 */
     @RequestMapping(value={"ci/addResourceCi.do"},method=RequestMethod.POST)
@@ -1059,24 +1070,24 @@ public class CiController {
             if (!dockerFile.isEmpty()) {
                 FileUtils.storeFile(dockerFile.getInputStream(), ci.getCodeLocation()+"/"+dockerFile.getOriginalFilename());
             }
-        } 
+        }
         catch (Exception e) {
             LOG.error("modifyResourceCi error:"+e.getMessage());
-        	
-            return "redirect:/error"; 
+
+            return "redirect:/error";
         }
         ciDao.save(ci);
         LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
-        
+
         String extraInfo = "DockerFile构建的创建：" + JSON.toJSONString(ci);
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.DOCKER_FILE_CI, CommConstant.OPERATION_TYPE_CREATED);
         commonOperationLogDao.save(log);
-    
+
         return "redirect:/ci";
     }
-	
+
 	/**
-	 * 
+	 *
 	 * Description: <br>
      *  上传镜像
 	 * @param image ：
@@ -1092,7 +1103,7 @@ public class CiController {
         image.setCreateDate(new Date());
         image.setCreateBy(currentUser.getId());
         image.setIsDelete(CommConstant.TYPE_NO_VALUE);
-        
+
         try {
             String imagePath = CODE_TEMP_PATH +"/"+ image.getName() + "/" + image.getVersion();
             File file = new File(imagePath);
@@ -1119,27 +1130,27 @@ public class CiController {
                 }
                 if (ImageConstant.BaseImage == img.getIsBaseImage()) {
                     img.setIsBaseImage(ImageConstant.BaseImage);
-                } 
+                }
                 else {
                     img.setIsBaseImage(ImageConstant.NotBaseImage);
                 }
                 imageDao.save(img);
-                
+
                 //添加上传镜像记录记录
                 String extraInfo="上传镜像："+img.getName()+"的信息"+JSON.toJSONString(img);
                 CommonOperationLog log=CommonOprationLogUtils.getOprationLog(img.getName(), extraInfo, CommConstant.UPLOAD_IMAGE, CommConstant.OPERATION_TYPE_CREATED);
                 commonOperationLogDao.save(log);
             }
-        } 
+        }
         catch (Exception e) {
             LOG.error("uploadImage error : "+e.getMessage());
-            return "redirect:/error"; 
+            return "redirect:/error";
         }
         return "redirect:/registry/1";
     }
-	
+
     /**
-     * 
+     *
      * Description:
      * 导入和上传镜像
      * @param image Image
@@ -1160,25 +1171,25 @@ public class CiController {
                     if(flag){
                         //删除本地镜像
                         flag = dockerClientService.removeImage(originImageInfo[0], originImageInfo[1],null,null,null,image);
-                    }                     
+                    }
                 }
             } else {
                 flag = dockerClientService.importAndPushImage(image, uploadStream);
                 if (flag) {
                     flag = dockerClientService.removeImage(image.getName(), image.getVersion(), null, null, null,null);
-                }  
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return flag;
     }
-    
+
     /**
      * 使用dockerFile构建之前判读DockerFile文件中是否包含基础镜像
-     * 
+     *
      * @param dockerFile ：dockerFile文件
-     * @return String 
+     * @return String
      * @see
      */
     @RequestMapping(value={"ci/judgeBaseImage.do"},method=RequestMethod.GET)
@@ -1192,7 +1203,7 @@ public class CiController {
             map.put("status", "400");
             return JSON.toJSONString(map);
         }
-        
+
         Image image = imageDao.findByNameAndVersion(baseImage[0].substring(baseImage[0].indexOf("/") +1),baseImage[1]);
         if (null == image) {
             map.put("status", "500");
@@ -1201,10 +1212,10 @@ public class CiController {
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
-    
+
 	/**
 	 * 使用DockerFile构建
-	 * 
+	 *
 	 * @param ci ： 构建数据
 	 * @param sourceCodes ： 代码文件
 	 * @param dockerFile ：dockerFile文本
@@ -1238,28 +1249,28 @@ public class CiController {
                 }
             }
             if (!dockerFile.isEmpty()) {
-                ByteArrayInputStream in=new ByteArrayInputStream(dockerFile.getBytes());  
+                ByteArrayInputStream in=new ByteArrayInputStream(dockerFile.getBytes());
                 FileUtils.storeFile(in, ci.getCodeLocation()+"/"+"Dockerfile");
             }
-        } 
+        }
         catch (Exception e) {
             LOG.error("add dockerfileCi error:"+e.getMessage());
-            return "redirect:/error"; 
+            return "redirect:/error";
         }
-        
+
         ciDao.save(ci);
         LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
         String extraInfo = "DockerFile构建的创建：" + JSON.toJSONString(ci);
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.DOCKER_FILE_CI, CommConstant.OPERATION_TYPE_CREATED);
         commonOperationLogDao.save(log);
-        
+
         return "redirect:/ci";
 
     }
-    
+
 	/**
 	 * 从dockerFile文件中获取dockerFile构建的基础镜像
-	 * 
+	 *
 	 * @param dockerFile ： dockerFile文件
 	 * @return String
 	 * @see
@@ -1286,11 +1297,11 @@ public class CiController {
         }
         return baseImage;
     }
-	
+
     /**
      * 快速构建构建项目
-     * 
-     * @param ci ：ci 
+     *
+     * @param ci ：ci
      * @param sourceCode ： 上传代码
      * @return  String
      * @see
@@ -1316,24 +1327,24 @@ public class CiController {
                 ci.setResourceName(sourceCode.getOriginalFilename());
                 FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
             }
-        	
+
             String fileTemplate = null;
             if (ci.getResourceName().endsWith("war")) {
                 fileTemplate = FileUtils.class.getClassLoader().getResource("Dockerfile").getPath();
-            } 
+            }
             else {
                 fileTemplate = FileUtils.class.getClassLoader().getResource("Dockerfilejar").getPath();
             }
-        	
+
             String toFile = ci.getCodeLocation()+"/"+"Dockerfile";
             Map<String,String> data = new HashMap<String, String>();
             data.put("${baseImage}", ci.getBaseImageName()+":"+ci.getBaseImageVersion());
             data.put("${fileName}", ci.getResourceName());
             FileUtils.writeFileByLines(fileTemplate, data, toFile);
-        } 
+        }
         catch (Exception e) {
             LOG.error("modifyResourceCi error:"+e.getMessage());
-            return "redirect:/error"; 
+            return "redirect:/error";
         }
         ciDao.save(ci);
         LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
@@ -1342,10 +1353,10 @@ public class CiController {
         commonOperationLogDao.save(log);
         return "redirect:/ci";
     }
-		
+
 	/**
 	 * 输出构建记录的详细信息
-	 * 
+	 *
 	 * @param id : 构建Id
 	 * @return String
 	 * @see
@@ -1359,10 +1370,10 @@ public class CiController {
         map.put("data",ciRecord);
         return JSON.toJSONString(map);
     }
-	
+
 	 /**
      * 创建完成之后，开始构建镜像；
-     * 
+     *
      * @param id ： 构建Id
      * @return String
      * @see
@@ -1383,7 +1394,7 @@ public class CiController {
         ciRecordDao.save(ciRecord);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
-        
+
         Integer catalogType = CommConstant.CODE_CI;
         if (CiConstant.TYPE_QUICK == ci.getType()) {
             catalogType = CommConstant.QUICK_CI;
@@ -1436,7 +1447,7 @@ public class CiController {
         map.put("data", ci);
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 代码构建，添加镜像信息
@@ -1519,7 +1530,7 @@ public class CiController {
                                 }
                                 ciDao.save(ci);
                                 flag = false;
-                            } 
+                            }
                             //获取和保存日志
                             ciRecord.setLogPrint(ciRecord.getLogPrint()+log.getContent());
                             ciRecordDao.save(ciRecord);
@@ -1531,9 +1542,9 @@ public class CiController {
                         ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
                         ciDao.save(ci);
                         ciRecordDao.save(ciRecord);
-                    }  
+                    }
                 }
-               
+
             }.start();
             return true;
         }
@@ -1548,7 +1559,7 @@ public class CiController {
         }
         return false;
     }
-    
+
     /**
      * Description: <br>
      * 停止构建
@@ -1584,7 +1595,7 @@ public class CiController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 停止正在执行的代码构建
@@ -1611,7 +1622,7 @@ public class CiController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 删除一个代码构建执行
@@ -1628,12 +1639,12 @@ public class CiController {
             SheraAPIClientInterface client = sheraClientService.getClient();
             client.deleteExecution(projectName, executionId);
             ciRecordDao.delete(ciRecordId);
-            
+
             //添加日志
             String extraInfo = "删除代码构建执行：" + projectName;
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(projectName, extraInfo, CommConstant.CODE_CI, CommConstant.OPERATION_TYPE_DEL_CI);
             commonOperationLogDao.save(log);
-            
+
             map.put("status", "200");
         }
         catch (Exception e) {
@@ -1642,10 +1653,10 @@ public class CiController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * 构建镜像
-     * 
+     *
      * @param ci ：ci
      * @param ciRecord : cirecord
      * @param ciRecordDao :ciRecordDao
@@ -1658,7 +1669,7 @@ public class CiController {
         String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
         String imageVersion = ci.getImgNameVersion();
         Image imageId = new Image();
-		
+
         DockerClient dockerClient = dockerClientService.getNormalDockerClientInstance();
         boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao,imageId, dockerClient);
         if(flag){
@@ -1697,7 +1708,7 @@ public class CiController {
             img.setIsDelete(CommConstant.TYPE_NO_VALUE);
             imageDao.save(img);
             ci.setImgId(img.getId());
-            
+
             //构建成功之后添加镜像记录
             String extraInfo="添加构建镜像："+img.getName()+"的信息"+JSON.toJSONString(img);
             CommonOperationLog comlog=CommonOprationLogUtils.getOprationLog(img.getName(), extraInfo, CommConstant.IMAGE, CommConstant.OPERATION_TYPE_CREATED);
@@ -1705,10 +1716,10 @@ public class CiController {
         }
         return flag;
     }
-	
+
     /**
      * 查找基础镜像的版本
-     * 
+     *
      * @param baseImageName ： 基础镜像的名称
      * @return String
      * @see
@@ -1722,10 +1733,10 @@ public class CiController {
         map.put("data", images);
         return JSON.toJSONString(map);
     }
-	
+
 	/**
 	 * 查询基础镜像，去掉重复名称的基础镜像
-	 * 
+	 *
 	 * @return  list
 	 * @see
 	 */
@@ -1754,10 +1765,10 @@ public class CiController {
         }
         return result;
     }
-	
+
 	/**
      * 加载DockerFile模板数据
-     * 
+     *
      * @return String
      * @see
      */
@@ -1770,10 +1781,10 @@ public class CiController {
         map.put("data", dockerFiles);
         return JSON.toJSONString(map);
     }
-	
+
 	/**
 	 * dockerFile模板保存，匹配模板名称是否重复
-	 * 
+	 *
 	 * @param templateName ： 模板名称
 	 * @param dockerFile ： dockerFile文件
 	 * @return String
@@ -1799,8 +1810,8 @@ public class CiController {
         dkFile.setDockerFile(dockerFile);
         dkFile.setTemplateName(templateName);
         dkFile =  dockerFileTemplateDao.save(dkFile);
-        
-        
+
+
         //记录用户创建DockerFile操作
         String extraInfo="新增templateName:"+templateName+"包含的内容: "+dockerFile;
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(templateName, extraInfo, CommConstant.DOCKFILE_TEMPLATE, CommConstant.OPERATION_TYPE_CREATED);
@@ -1808,14 +1819,14 @@ public class CiController {
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 镜像版本查重
      * @param model
      * @param imgNameLast
      * @param imgNameVersion
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping(value = {"ci/validciinfo.do"} , method = RequestMethod.POST)
@@ -1830,12 +1841,12 @@ public class CiController {
         }
         return JSON.toJSONString(result);
     }
-    
+
     /**
      * Description: <br>
      * 代码构建详细页面中镜像版本判断重复
      * @param id 当前构建Id
-     * @param imgNameFirst 
+     * @param imgNameFirst
      * @param imgNameLast
      * @param imgNameVersion
      * @return String
@@ -1848,7 +1859,7 @@ public class CiController {
         if (!StringUtils.isEmpty(imgNameFirst) && !StringUtils.isEmpty(imgNameLast) && !StringUtils.isEmpty(imgNameVersion)) {
             Ci ci = ciDao.findOne(id);
             if(null!= ci) {
-                if (!ci.getImgNameFirst().equals(imgNameFirst) || 
+                if (!ci.getImgNameFirst().equals(imgNameFirst) ||
                             !ci.getImgNameLast().equals(imgNameLast) ||
                             !ci.getImgNameVersion().equals(imgNameVersion)) {
                     Image image = imageDao.findByNameAndVersion(imgNameFirst+"/"+imgNameLast, imgNameVersion);
@@ -1860,14 +1871,14 @@ public class CiController {
         }
         return JSON.toJSONString(result);
     }
-    
+
     /**
      * Description: <br>
      * 镜像名称查重
      * @param model
      * @param name
      * @param version
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping(value = {"ci/validimageinfo.do"} , method = RequestMethod.POST)
@@ -1883,7 +1894,7 @@ public class CiController {
         }
         return JSON.toJSONString(result);
     }
-    
+
     /**
      * Description: <br>
      * 删除代码挂钩
@@ -1901,7 +1912,7 @@ public class CiController {
             client.deleteGitHooks(ciCodeHook.getName());
             ciCode.setIsHookCode(0);
             ciCodeDao.save(ciCode);
-            
+
             //添加日志
             String projectName = ciDao.findOne(ciId).getProjectName();
             String extraInfo = "删除代码构建中的代码挂钩 ： " + projectName;
@@ -1915,7 +1926,7 @@ public class CiController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 根据镜像id，查询相关联的构建数据，跳转进入构建详细页面
@@ -1928,6 +1939,6 @@ public class CiController {
         if (!StringUtils.isEmpty(ciCode)) {
             return "redirect:/ci/detail/"+ciCode.getCiId();
         }
-        return "redirect:/error"; 
+        return "redirect:/error";
     }
 }
