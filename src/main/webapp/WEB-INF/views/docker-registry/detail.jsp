@@ -66,6 +66,19 @@
 	                            </span>
 	                        </c:if>
                         </section>
+                        <section class="buttons-info">
+                             <div class="" style="height: 50px;float:left;margin-left:10px" id="deployImage">
+                                <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}" class="btn-primary btn btn-color" imageversion="${image.version}" imagename="${image.name}" >部署镜像</a>
+                            </div>
+                            <div class="" style="height: 50px;float:left;margin-left:10px">
+                               <a class="btn-primary btn btn-color downloadImage" imageversion="${image.version}" imagename="${image.name}" imgID="${image.id }" resourcename= "${image.resourceName}" id="doloadImage" >导出镜像</a>
+                            </div>
+                            <c:if test="${editImage==1 }">
+	                            <div class="" style="height: 50px; float:left;margin-left:10px" id="deleteImage">
+	                                <a href="javascript:void(0)" onclick="deleteImage(this)"  class="btn btn-dangered btn-color" imageid = "${image.id }" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
+	                            </div>
+                            </c:if>
+                        </section>
                     </div>
                     <div class="row" style="padding-bottom: 50px;">
                         <div class="col-md-8">
@@ -158,14 +171,21 @@
                         </div>
                         <div class="col-md-4">
                             <ul class="registry-attr">
-                                <li class="li-row"><i class="fa_attr_s"></i>属性</li>
+                                <li class="li-row"><i class="fa_shuxinger"></i>贡献者:&nbsp;&nbsp;&nbsp;&nbsp; ${creator }</li>
                                 <li class="li-row" style="line-height: 35px;">
-                                    <p><i class="fa_shuxinger"></i>贡献者:&nbsp;&nbsp;&nbsp;&nbsp; ${creator }</p>
+                                	<c:if test="${image.imageType==1 }">
+                                		<p><i class="fa_attr_s"></i><span>属性:&nbsp;&nbsp;&nbsp;&nbsp; 公有</span></p>
+                                	</c:if>
+                                	<c:if test="${image.imageType==2 }">
+                                		<p><i class="fa_attr_s"></i><span>属性:&nbsp;&nbsp;&nbsp;&nbsp; 私有</span></p>
+                                	</c:if>
+                                    <p><i class="fa_attr_size"></i><span>大小:&nbsp;&nbsp;&nbsp;&nbsp; 112M</span></p>
                                     <p><i class="fa fa-star-o"></i><span>收藏数:&nbsp;&nbsp;&nbsp;&nbsp; ${favorUser } 个人收藏了该镜像</span></p>
+                                    <p><i class="fa_attr_download"></i><span>导出数:&nbsp;&nbsp;&nbsp;&nbsp; ${image.exportCount } 次导出了该镜像</span></p>
                                     <p><i class="fa_datetime"></i><span>创建时间: ${image.createDate }</span></p>
                                 </li>
                             </ul>
-                            <div class="btn-block" style="height: 50px;" id="deployImage">
+                            <%-- <div class="btn-block" style="height: 50px;" id="deployImage">
                                 <a href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}" class="btn-primary btn btn-long-deploy" imageversion="${image.version}" imagename="${image.name}" >部署镜像</a>
                             </div>
                             <div class="btn-block" style="height: 50px;">
@@ -175,7 +195,7 @@
 	                            <div class="btn-block " style="height: 50px; " id="deleteImage">
 	                                <a href="javascript:void(0)" onclick="deleteImage(this)"  class="btn btn-dangered btn-long-deploy" imageid = "${image.id }" imageversion="${image.version}" imagename="${image.name}">删除镜像</a>
 	                            </div>
-                            </c:if>
+                            </c:if> --%>
                         </div>
                     </div>
                 </div>

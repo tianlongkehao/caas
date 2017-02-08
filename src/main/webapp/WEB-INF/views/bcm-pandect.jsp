@@ -25,7 +25,7 @@
             <div class="contentMain">
                 
                 <div class="account_table" userID="${user.id }">
-					<div class="serviceDetailInfo">
+					<div class="serviceDetailInfo hide">
 	                    <ul>
 		                    <li class="serviceNumInfo blue">
 		                      <a href="<%=path %>/service" data-permalink onclick="_permalink(this)">
@@ -57,7 +57,7 @@
 	                    </ul>
                     </div>
                     <div id="resourceinfo_wrap" class="tab_wrap">
-                        <section class="container-count hide">
+                        <section class="container-count ">
                         <div class="padding">
                             <div class="row-title">服务详情</div>
                             <ul class="server-list">

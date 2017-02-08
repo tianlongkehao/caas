@@ -275,7 +275,7 @@
 .infoDockerfile {
     background: #fff;
     border: 1px solid #DCDCDC;
-    min-height: 180px;
+    min-height: 196px;
     position: relative;
 }
 
@@ -395,5 +395,13 @@
 }
 #newimageList{
 	margin-top:50px;
+}
+
+.mirror-head .buttons-info {
+    float: left;
+    /* height: 100%; */
+    width: 30%;
+    position: relative;
+    margin-top:10%;
 }
 

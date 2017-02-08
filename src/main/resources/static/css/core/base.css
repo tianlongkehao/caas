@@ -336,6 +336,18 @@ i.fa_attr_s {
     height: 18px;
 }
 
+i.fa_attr_size {
+    background: url(../../images/bj_registry_list.png) no-repeat;
+    background-position: 0 -175px;
+    height: 18px;
+}
+
+i.fa_attr_download {
+    background: url(../../images/bj_registry_list.png) no-repeat;
+    background-position: 0 -136px;
+    height: 18px;
+}
+
 i.fa_shuxinger {
     background: url(../../images/bj_registry_list.png) no-repeat;
     background-position: 0 -72px;
