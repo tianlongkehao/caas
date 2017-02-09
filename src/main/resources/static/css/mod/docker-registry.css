@@ -270,6 +270,7 @@
 
 
 .infoLog,
+.infoHistory,
 .infoTags,
 .infoInterface,
 .infoDockerfile {
@@ -280,6 +281,7 @@
 }
 
 .infoLog .detail-contents,
+.infoHistory .detail-contents,
 .infoTags .detail-contents,
 .infoInterface .detail-contents,
 .infoDockerfile .detail-contents {
@@ -289,6 +291,7 @@
 }
 
 .infoLog .detail-contents .envobj-tr,
+.infoHistory .detail-contents .envobj-tr,
 .infoTags .detail-contents .envobj-tr,
 .infoInterface .detail-contents .envobj-tr,
 .infoDockerfile .detail-contents .envobj-tr {

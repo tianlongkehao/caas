@@ -1,5 +1,5 @@
 $(function () {
-
+	loadRoute();
     $(".Record").click(function () {
 
         $(".Record").removeClass("active");
@@ -68,6 +68,20 @@ function delCluster() {
             }
         });
     }
+}
+
+/**
+ * 加载路由监控数据
+ */
+function loadRoute() {
+	$.ajax({
+//		 url : "http://192.168.0.55:8282/flash/jobs/check/routetable" ,
+		url : ctx + "/cluster/getAllNamespace" ,
+		 type : "get",
+		 success : function(data){
+			 var data = eval("(" + data + ")");
+		 }
+	 });
 }
 
 

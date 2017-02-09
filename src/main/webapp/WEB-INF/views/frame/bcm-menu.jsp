@@ -148,6 +148,7 @@
 						<c:if test="${cur_user.user_autority == 1}">
 						<li id="li_management"><a class="J_menuItem" href="<%=path %>/cluster/management"><i class="fa fa_circle"></i>集群管理</a></li></c:if>
 						<li id="li_topo"><a class="J_menuItem" href="<%=path %>/cluster/topo"><i class="fa fa_circle"></i>集群拓扑</a></li>
+						<li id="li_route"><a class="J_menuItem" href="<%=path %>/cluster/route"><i class="fa fa_circle"></i>route</a></li>
 					</ul></li>
 				<li id="menu_template"><a href="#" class="first-a"> <img alt="image" class="tit-image"
 						src="<%=path%>/images/tem-image.png" /> <span

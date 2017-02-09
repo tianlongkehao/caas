@@ -84,6 +84,9 @@
                         <div class="col-md-8">
                             <div class="table_list">
                                 <div class="list_info INFO active">信息</div>
+                                <div class="list_info ISERVICE">服务接口</div>
+                                <div class="list_info IDOCKERFILE">Dockerfile</div>
+                                <div class="list_info IHISTORY">构建历史</div>
                                 <div class="list_info TAGS">版本</div>
                                <!--  <div id="serviceInfo" class="list_info INTERFACE">服务接口</div>
                                 <div class="list_info Dockerfile">Dockerfile</div> -->
@@ -111,12 +114,8 @@
                                     <br>
                                 </div>
                             </section>
-                            <section class="infoTags hide">
-                                <div class="detail-contents">
-                                    <p><i class="fa fa-tag"></i> ${image.version }</p>
-                                </div>
-                            </section>
-                            <!-- <section class="infoInterface hide">
+                            
+                            <section class="infoInterface hide">
                                 <div class="detail-contents">
                                     <p><b>容器端口：<span>3306/tcp</span></b></p>
                                     <p><b>数据存储卷：<span>/var/lib/mysql</span></b></p>
@@ -165,8 +164,19 @@
                             </section>
                             <section class="infoDockerfile hide">
                                 <div class="detail-contents">
+                                这个镜像不提供Dockerfile。
                                 </div>
-                            </section> -->
+                            </section> 
+                            <section class="infoHistory hide">
+                                <div class="detail-contents">
+                                此镜像无构建历史。
+                                </div>
+                            </section>
+                            <section class="infoTags hide">
+                                <div class="detail-contents">
+                                    <p><i class="fa fa-tag"></i> ${image.version }</p>
+                                </div>
+                            </section>
                            
                         </div>
                         <div class="col-md-4">
@@ -181,7 +191,12 @@
                                 	</c:if>
                                     <p><i class="fa_attr_size"></i><span>大小:&nbsp;&nbsp;&nbsp;&nbsp; 112M</span></p>
                                     <p><i class="fa fa-star-o"></i><span>收藏数:&nbsp;&nbsp;&nbsp;&nbsp; ${favorUser } 个人收藏了该镜像</span></p>
-                                    <p><i class="fa_attr_download"></i><span>导出数:&nbsp;&nbsp;&nbsp;&nbsp; ${image.exportCount } 次导出了该镜像</span></p>
+                                    <c:if test="${image.exportCount == null || image.exportCount == ''}">
+                                    	<p><i class="fa_attr_download"></i><span>导出数:&nbsp;&nbsp;&nbsp;&nbsp; 0 次导出了该镜像</span></p>
+                                    </c:if>
+                                    <c:if test="${image.exportCount != null && image.exportCount != ''}">
+                                    	<p><i class="fa_attr_download"></i><span>导出数:&nbsp;&nbsp;&nbsp;&nbsp; ${image.exportCount } 次导出了该镜像</span></p>
+                                    </c:if>
                                     <p><i class="fa_datetime"></i><span>创建时间: ${image.createDate }</span></p>
                                 </li>
                             </ul>
