@@ -54,11 +54,11 @@ public class CodeCiTool {
 		this.id = id;
 	}
 
-	public String getGroup() {
+	public String gettoolGroup() {
 		return toolGroup;
 	}
 
-	public void setGroup(String group) {
+	public void settoolGroup(String group) {
 		this.toolGroup = group;
 	}
 
@@ -70,11 +70,11 @@ public class CodeCiTool {
 		this.name = name;
 	}
 
-	public String getCode() {
+	public String gettoolCode() {
 		return toolCode;
 	}
 
-	public void setCode(String code) {
+	public void settoolCode(String code) {
 		this.toolCode = code;
 	}
 

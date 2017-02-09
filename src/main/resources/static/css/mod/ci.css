@@ -735,9 +735,18 @@ td.autocut{
 	width:98%;
 	margin: 0 auto;
 }
+.toolItems{
+	width:100%;
+	float:left;
+}
 .dftools li{
 	float:left;
+}
+.dftools li.dftools-li{
 	width:16%;
+}
+.dftools li.dftools-firstli{
+	width:8%;
 }
 .dftools li label input{
 	margin-right:4px;

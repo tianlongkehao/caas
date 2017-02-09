@@ -138,7 +138,7 @@
 	                            <div id="sortable">
 	                            </div>
                             </section>
-                            <h4 class="c-title">镜像信息<input type="checkbox" id="imageInfo"></h4>
+                            <h4 class="c-title"><label><strong>镜像信息</strong><input type="checkbox" id="imageInfo"></label></h4>
                             <section class="registryinfo imageInfoCon">
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
@@ -177,8 +177,8 @@
 			                          </ul>
 		                            </li>
 		                        </ul>
-		                        <div id="dockerfileMethod">
-		                        	<div class="row dockerfileTemp dockerfileTools">
+		                        <div id="dockerfileMethods">
+		                        	<div class="row dockerfileTemp dockerfileTools hide">
 		                        		<div class="panel-group" id="accordion">
 											<div class="panel panel-default">
 												<div class="panel-heading">
@@ -190,26 +190,28 @@
 												</div>
 												<div id="collapseOne" class="panel-collapse collapse in">
 													<div class="panel-body">
-														<ul class="dftools">
-															<li><label><input type="checkbox">jdk7</label></li>
-															<li><label><input type="checkbox">jdk8</label></li>
-															<li><label><input type="checkbox">tomcat7</label></li>
-															<li><label><input type="checkbox">tomcat8</label></li>
-															<li><label><input type="checkbox">mysqlClient</label></li>
-															<li><label><input type="checkbox">busybox</label></li>
-															<li><label><input type="checkbox">apm</label></li>
-															<li><label><input type="checkbox">telnet</label></li>
-															<li><label><input type="checkbox">traceRoute</label></li>
-															<li><label><input type="checkbox">oracle客户端</label></li>
-														</ul>
-														<!-- <span class="dftools"><label><input type="checkbox">jdk7</label></span>
-														<span class="dftools"><label><input type="checkbox">jdk8</label></span> -->
+														<%-- <ul class="dftools">
+															<c:forEach items="${tools}" var="tool" >
+																<li><label><input type="checkbox" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
+															</c:forEach>
+														</ul> --%>
+														<div class="toolItems"><ul class="dftools">
+															<li class="dftools-firstli"><label>jdk :</label></li>
+															<li class="dftools-li"><label><input type="radio" name="" class="toolChk">tool.name</label></li>
+															<li class="dftools-li"><label><input type="radio" name="" class="toolChk">tool.name</label></li>
+														</ul></div>
+														<div class="toolItems"><ul class="dftools">
+															<li class="dftools-firstli"><label>tomcat :</label></li>
+															<li class="dftools-li"><label><input type="radio" name="" class="toolChk">tool.name</label></li>
+															<li class="dftools-li"><label><input type="radio" name="" class="toolChk">tool.name</label></li>
+														</ul></div>
 													</div>
 												</div>
 											</div>
 		                        		</div>
 		                        	</div>
 		                        </div>
+		                        <div id="dockerfileMethod"></div>
                         	</section>
                             
                         	<input type = "hidden" id = "jsonData" name = "jsonData" value = "">

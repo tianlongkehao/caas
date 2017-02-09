@@ -92,7 +92,6 @@ $(document).ready(function () {
 									'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
 									'<span id="docImportBtn" class=" btn-info btn-sm" style="cursor: pointer">导入模板</span>'+
 									'<span id="docExportBtn" class=" btn-info btn-sm" style="cursor: pointer;margin-left:5px;">另存为模板</span>'+
-								'</div>'+
 								'<div class="form-group col-md-12" id="dockerFiles" style="width:98%;margin-left:10px">'+
 									'<textarea id="dockerFile" name="dockerFileContent"></textarea>'+
 								'</div>'+
@@ -100,6 +99,7 @@ $(document).ready(function () {
     //生成dockerfile路径输入框
     $("#dockerfilePath").click(function(){
     	$("#dockerfileMethod").empty();
+    	$(".dockerfileTools").addClass("hide");
     	$("#dockerfileMethod").append(dockerfilePathHtml);
     });
     //生成dockerfile模板输入框
@@ -107,6 +107,8 @@ $(document).ready(function () {
     $(document).on('click','#dockerfileTemp',function(){
     	$("#dockerfileMethod").empty();
     	$("#dockerfileMethod").append(dockerfileTempHtml);
+    	
+    	$(".dockerfileTools").removeClass("hide");
     	
     	editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
             lineNumbers: true,
@@ -291,7 +293,53 @@ $(document).ready(function () {
 		$(".imageInfoCon").toggle();
 	})
 		
-	
+	//工具集同组单选
+	$(".toolChk").click(function(){
+		var checkedName = $(this).attr("name");
+		var checkedName = "'"+checkedName+"'";
+		var ccc = '.toolChk[name= '+checkedName+']';
+		var sameNameCount = $(ccc).length;
+		
+		if($(this).is(":checked")){
+			//勾选
+			for(var i=0; i< sameNameCount; i++){
+				  $(ccc).prop("checked",false);
+			}
+			$(this).prop('checked', true);
+			//勾选工具的执行语句添加到dockerfile中
+			var editorVal = editor_one.getValue();
+			var toolCode = $(this).attr("toolCode");
+			var allToolCode = "";
+			if(editorVal == "" || editorVal == null){
+				allToolCode = toolCode;
+			}else{
+				allToolCode = editorVal+'\r'+toolCode;
+			}
+			
+			editor_one.setValue(allToolCode);
+			
+		}else{
+			var editorVal = editor_one.getValue();
+			//alert(editorVal)
+			var toolCode = $(this).attr("toolCode");
+			//alert(toolCode)
+			var removeCode = editorVal.replace(toolCode,'');
+			//alert(removeCode)
+			editor_one.setValue(removeCode);
+		}
+		//else{
+			
+//			for(var i=0; i< sameNameCount; i++){
+//				  $(ccc).prop("checked",false);
+//			} 
+//			$(this).prop('checked', false);
+//			var toolCode = $(this).attr("toolCode");
+//			var editorVal = editor_one.getValue();
+//			removeToolCode(editorVal, toolCode)
+		//}
+		
+		
+	});
     
 });/*ready*/
 		
@@ -847,6 +895,15 @@ function delData(){
 	$("#keyRemark").val("");
 	$("#passwordCred").val("");
 	$("#SSHpasswordCred").val("");
+}
+
+function removeToolCode(arr, val) {
+	for (var i = 0; i < arr.length; i++) {
+		if (arr[i] == val) {
+			arr.splice(i, 1);
+			break;
+		}
+	}
 }
 
 
