@@ -683,36 +683,52 @@ public class CiController {
      * @return ci_add.jsp
      * @see
      */
-    @RequestMapping(value={"ci/add"},method=RequestMethod.GET)
-	public String addProject(Model model){
-        User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        try {
-            SheraAPIClientInterface client = sheraClientService.getClient();
-            JdkList jdkList = client.getAllJdk();
-            Iterable<CiCodeCredential> ciCodeList = ciCodeCredentialDao.findAll();
-            model.addAttribute("ciCodeList", ciCodeList);
-            model.addAttribute("jdkList",jdkList.getItems());
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+	@RequestMapping(value = { "ci/add" }, method = RequestMethod.GET)
+	public String addProject(Model model) {
+		User cuurentUser = CurrentUserUtils.getInstance().getUser();
+		try {
+			SheraAPIClientInterface client = sheraClientService.getClient();
+			JdkList jdkList = client.getAllJdk();
+			Iterable<CiCodeCredential> ciCodeList = ciCodeCredentialDao.findAll();
+			model.addAttribute("ciCodeList", ciCodeList);
+			model.addAttribute("jdkList", jdkList.getItems());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        String imageNameFirst = "";
-        if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-            imageNameFirst = cuurentUser.getNamespace() + "_" + cuurentUser.getUserName();
-        } else {
-            imageNameFirst = cuurentUser.getUserName();
-        }
+		String imageNameFirst = "";
+		if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+			imageNameFirst = cuurentUser.getNamespace() + "_" + cuurentUser.getUserName();
+		} else {
+			imageNameFirst = cuurentUser.getUserName();
+		}
 
-        List<CodeCiTool> tools = (List<CodeCiTool>) codeCiToolDao.findAll();
+		List<CodeCiTool> allTools = codeCiToolDao.findAll();
+		List<Object> toolGroups = new ArrayList<>();
 
-        model.addAttribute("username", imageNameFirst);
-        model.addAttribute("tools", tools);
-        model.addAttribute("userAutority", cuurentUser.getUser_autority());
-        model.addAttribute("menu_flag", "ci");
-        model.addAttribute("li_flag", "ci");
-        return "ci/ci_add.jsp";
-    }
+		List<CodeCiTool> tools = new ArrayList<>();
+		toolGroups.add(tools);
+		for (int i = 0; i < allTools.size(); i++) {
+			if (i == 0) {
+				tools.add(allTools.get(i));
+			} else {
+				if (allTools.get(i).getGroup().equals(allTools.get(i - 1).getGroup())) {
+					tools.add(allTools.get(i));
+				} else {
+					tools = new ArrayList<>();
+					toolGroups.add(tools);
+					tools.add(allTools.get(i));
+				}
+			}
+		}
+
+		model.addAttribute("username", imageNameFirst);
+		model.addAttribute("toolGroups", toolGroups);
+		model.addAttribute("userAutority", cuurentUser.getUser_autority());
+		model.addAttribute("menu_flag", "ci");
+		model.addAttribute("li_flag", "ci");
+		return "ci/ci_add.jsp";
+	}
 
     /**
      * 进入上传镜像页面
