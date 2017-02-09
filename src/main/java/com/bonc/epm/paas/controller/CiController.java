@@ -705,18 +705,23 @@ public class CiController {
 
 		List<CodeCiTool> allTools = codeCiToolDao.findAll();
 		List<Object> toolGroups = new ArrayList<>();
-
 		List<CodeCiTool> tools = new ArrayList<>();
-		toolGroups.add(tools);
+		Map<String, Object> map = new HashMap<>();
+		map.put("tools", tools);
+		toolGroups.add(map);
 		for (int i = 0; i < allTools.size(); i++) {
 			if (i == 0) {
+				map.put("groupName", allTools.get(i).gettoolGroup());
 				tools.add(allTools.get(i));
 			} else {
-				if (allTools.get(i).getGroup().equals(allTools.get(i - 1).getGroup())) {
+				if (allTools.get(i).gettoolGroup().equals(allTools.get(i - 1).gettoolGroup())) {
 					tools.add(allTools.get(i));
 				} else {
 					tools = new ArrayList<>();
-					toolGroups.add(tools);
+					map = new HashMap<>();
+					map.put("tools", tools);
+					toolGroups.add(map);
+					map.put("groupName", allTools.get(i).gettoolGroup());
 					tools.add(allTools.get(i));
 				}
 			}

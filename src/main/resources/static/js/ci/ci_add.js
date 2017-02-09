@@ -301,44 +301,24 @@ $(document).ready(function () {
 		var sameNameCount = $(ccc).length;
 		
 		if($(this).is(":checked")){
+			var allToolCode = "";
+			var editorVal = editor_one.getValue();
+			var toolCode = $(this).attr("toolCode");
 			//勾选
 			for(var i=0; i< sameNameCount; i++){
 				  $(ccc).prop("checked",false);
 			}
 			$(this).prop('checked', true);
-			//勾选工具的执行语句添加到dockerfile中
-			var editorVal = editor_one.getValue();
-			var toolCode = $(this).attr("toolCode");
-			var allToolCode = "";
-			if(editorVal == "" || editorVal == null){
-				allToolCode = toolCode;
-			}else{
-				allToolCode = editorVal+'\r'+toolCode;
-			}
-			
-			editor_one.setValue(allToolCode);
-			
-		}else{
-			var editorVal = editor_one.getValue();
-			//alert(editorVal)
-			var toolCode = $(this).attr("toolCode");
-			//alert(toolCode)
-			var removeCode = editorVal.replace(toolCode,'');
-			//alert(removeCode)
-			editor_one.setValue(removeCode);
 		}
-		//else{
-			
-//			for(var i=0; i< sameNameCount; i++){
-//				  $(ccc).prop("checked",false);
-//			} 
-//			$(this).prop('checked', false);
-//			var toolCode = $(this).attr("toolCode");
-//			var editorVal = editor_one.getValue();
-//			removeToolCode(editorVal, toolCode)
-		//}
-		
-		
+		//勾选工具的执行语句添加到dockerfile中
+		editor_one.setValue('');
+		var checkedTool = $(".toolChk:checked");
+		var allToolCode = "";
+		for(var j=0; j < checkedTool.length; j++){
+			var checkedToolCode = checkedTool[j].attributes.toolcode.value;
+			allToolCode += checkedToolCode + "\n";
+		}
+		editor_one.setValue(allToolCode);
 	});
     
 });/*ready*/

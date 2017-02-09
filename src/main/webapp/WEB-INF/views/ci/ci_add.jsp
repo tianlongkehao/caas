@@ -190,21 +190,16 @@
 												</div>
 												<div id="collapseOne" class="panel-collapse collapse in">
 													<div class="panel-body">
-														<%-- <ul class="dftools">
-															<c:forEach items="${tools}" var="tool" >
-																<li><label><input type="checkbox" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
+															<c:forEach items="${toolGroups}" var="tools" >
+																 <div class="toolItems">
+																 	<ul class="dftools">
+																		<li class="dftools-firstli">${tools.groupName } :</li>
+																		<c:forEach items="${tools.tools}" var="tool" >
+																			<li class="dftools-li"><label><input type="checkbox" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
+																		</c:forEach>
+																	</ul>
+																</div> 
 															</c:forEach>
-														</ul> --%>
-														<div class="toolItems"><ul class="dftools">
-															<li class="dftools-firstli"><label>jdk :</label></li>
-															<li class="dftools-li"><label><input type="radio" name="" class="toolChk">tool.name</label></li>
-															<li class="dftools-li"><label><input type="radio" name="" class="toolChk">tool.name</label></li>
-														</ul></div>
-														<div class="toolItems"><ul class="dftools">
-															<li class="dftools-firstli"><label>tomcat :</label></li>
-															<li class="dftools-li"><label><input type="radio" name="" class="toolChk">tool.name</label></li>
-															<li class="dftools-li"><label><input type="radio" name="" class="toolChk">tool.name</label></li>
-														</ul></div>
 													</div>
 												</div>
 											</div>
