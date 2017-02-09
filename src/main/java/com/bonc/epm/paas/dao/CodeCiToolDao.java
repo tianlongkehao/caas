@@ -1,9 +1,13 @@
 package com.bonc.epm.paas.dao;
 
+import java.util.List;
+
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.CodeCiTool;
+import com.bonc.epm.paas.entity.Service;
 
 /**
  *
@@ -15,4 +19,7 @@ import com.bonc.epm.paas.entity.CodeCiTool;
  */
 @Transactional
 public interface CodeCiToolDao extends CrudRepository<CodeCiTool, Long> {
+
+    @Query("select i from CodeCiTool i order by i.toolGroup asc")
+    List<CodeCiTool> findAll();
 }
