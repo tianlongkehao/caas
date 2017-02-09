@@ -14,10 +14,7 @@
 .radius_step.action span {
     background: #e8504f;
 }
-.header {
-    /* background: #e8504f; */
-    background: #fff;
-}
+
 .nav-header{
 	background-color: #e8504f;
 }
@@ -49,21 +46,33 @@ a:hover{
     color: #e8504f;
 }
 
-.nav > li > a {
-    color: #fff;
-}
+/* .nav > li > a {
+    color: #333;
+} */
 .nav>li>a:focus, 
 .nav>li>a:hover {
-    background-color: #e88;
+    background-color: #e8504f;
+    color: #fff;
 }
-.nav > li.active {
-    background-color: #e66;
+
+.nav > li.active >a{
+	background-color: #e8504f;
+    color: #fff;
 }
-#side-menu li a:hover{
-	background-color: #e88;
+ul.nav-second-level >li >a:hover{
+	background-color: #fff;
+    color: #e8504f;
 }
-.li-active{
-	background-color:#e88;
+/* #side-menu li a:hover{
+	background-color: #e8504f;
+	color: #fff;
+} */
+.li-active a{
+	/* background-color:#e8504f; */
+	color: #e8504f;
+}
+.li-active a i.fa_circle{
+	background-color: #e8504f!important;
 }
 .helpDoc input{
     color: #e8504f;
@@ -72,7 +81,7 @@ a:hover{
 	border-color: #e8504f;
 }
 .helpDoc input:visited{
-	border-color: #e8504f;
+	border-color: ;
 }
 /* ci */
 .tab-title.active{
@@ -104,14 +113,19 @@ a:hover{
 	background-color: #e8504f;
 }
 nav.navbar-default{
-	background-color:#e8504f;
+	/* background-color:#e8504f; */
 }
 .help-btn:hover{
-	background-color: #e66;
+	background-color: #e8504f;;
 	color: #fff;
 }
 .nav-bcm{
-	background-color: #e14344;
+	background-color: #f5f6f6;
+}
+.nav-bcm a h1{
+	color: #e8504f;
+	font-weight: 700;
+	line-height:37px;
 }
 .nav-footer{
 	background-color: #e8504f; 

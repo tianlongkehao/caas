@@ -3,21 +3,24 @@
     z-index: 95;
     width: 200px;
     min-height: 100%;
-    box-shadow: 1px 1px 15px rgba(0,0,0,0.45);
+    box-shadow: 1px 1px 15px rgba(0,0,0,0.45); 
 }
 
 /* 侧边菜单栏 */
 nav.navbar-default{
 	width:200px;
 	position: fixed;
-    top: 160px;
+    top: 86px;
     left: 0;
     /* bottom: 60px; */
     z-index: 95;
     /* min-height: 100%; */
-	/* background-color:#fff; */
+	/* background-color:#fff; */ 
 	/* box-shadow: 1px 1px 10px #33414E; */
 	
+}
+#side-menu{
+	background-color:#fff;
 }
 .nav ul .nav-header{
 	padding-bottom: 20px;
@@ -126,7 +129,7 @@ nav.navbar-default{
 .fa_circle{
 	width: 5px;
     height: 5px;
-    background-color: #fff;
+    background-color: #bbbbbb;
     border-radius: 50%;
     margin-bottom: 2px;
     margin-right: 10px;
@@ -141,10 +144,11 @@ nav.navbar-default{
 #nav-side{
 	/* height:100%; */ 
 	overflow-y: auto;
-	height: calc(100% - 230px);
-   
+	height: calc(100% - 100px);
     overflow-x: hidden;
 }
+
+
 /*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
 #nav-side::-webkit-scrollbar{
     width: 6px;

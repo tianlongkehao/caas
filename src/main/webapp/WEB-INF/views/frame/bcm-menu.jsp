@@ -5,9 +5,9 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-menu.css">
     <script type="text/javascript" src="<%=path %>/js/customer/bcm-menu.js"></script>
+    <title>BCM</title>
 </head>
 <body>
-
 <header class="header">
     <div class="navbar navbar-fixed-top">
         <div class="container">
@@ -25,11 +25,11 @@
     </div>
     
 </header>
-<div class="navAll">
+<div class="">
 	<div class="nav-title" >
 		<ul class="nav" >
-				<li class="nav-bcm">
-					<span><a href="<%=path %>/home"><h2>BCM</h2></a></span>
+				<li class="nav-bcm hide">
+					<span><a href="<%=path %>/home"><h1></h1></a></span>
 				</li>
 				<li class="nav-header ">
 					<div class="dropdown profile-element">
@@ -61,13 +61,14 @@
 	<div ><nav class="navbar-default navbar-static-side" role="navigation" id="nav-side">
 		<div class="sidebar-collapse">
 			<ul class="nav" id="side-menu">
-				<li id="menu_bcm"><a href="<%=path %>/bcm/${cur_user.id }" class="first-a"> <i class="fa fa-tachometer fa-nav-icon"></i>
+				<li id="menu_bcm"><a href="<%=path %>/bcm/${cur_user.id }" class="first-a"> 
+						<img alt="image" class="tit-image" src="<%=path%>/images/u54.png" />
 						<span class="nav-label">总览</span>
 
 				</a></li>
 				<li id="menu_service"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/service.svg" /> <span
-						class="nav-label">服务</span> <span class="fa arrow"></span>
+						src="<%=path%>/images/u35.png" /> <span
+						class="nav-label">服务</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_service"><a class="J_menuItem" href="<%=path %>/service"><i class="fa fa_circle"></i>服务管理</a></li>
@@ -75,8 +76,8 @@
 						<li id="li_import"><a class="J_menuItem" href="<%=path %>/service/import"><i class="fa fa_circle"></i>引入外部服务</a></li>
 					</ul></li>
 				<li id="menu_ci"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/factory_new.svg" /> <span
-						class="nav-label">构建</span> <span class="fa arrow"></span>
+						src="<%=path%>/images/u21.png" /> <span
+						class="nav-label">构建</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_ci"><a class="J_menuItem" href="<%=path %>/ci"><i class="fa fa_circle"></i>镜像构建</a></li>
@@ -85,8 +86,8 @@
 						</c:if>
 					</ul></li>
 				<li id="menu_registry"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/applist3.svg" /> <span
-						class="nav-label">镜像</span> <span class="fa arrow"></span>
+						src="<%=path%>/images/u28.png" /> <span
+						class="nav-label">镜像</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_registry0"><a class="J_menuItem" href="<%=path %>/registry/0"><i class="fa fa_circle"></i>镜像中心</a></li>
@@ -97,7 +98,7 @@
 					<c:if test="${cur_user.user_autority == 1}">
 						<li id="menu_user"><a href="#" class="first-a"> <img alt="image" class="tit-image"
 								src="<%=path%>/images/user.svg" /> <span class="nav-label">租户</span>
-								<span class="fa arrow"></span>
+								
 						</a>
 							<ul class="nav nav-second-level">
 								<li id="li_user"><a class="J_menuItem" href="<%=path %>/user/list"><i class="fa fa_circle"></i>租户管理</a></li>
@@ -106,7 +107,7 @@
 		        	<c:if test="${cur_user.user_autority == 2}">
 						<li id="menu_usermanage"><a href="#"> <img alt="image" class="tit-image"
 								src="<%=path%>/images/user.svg" /> <span class="nav-label">用户</span>
-								<span class="fa arrow"></span>
+								
 						</a>
 							<ul class="nav nav-second-level">
 								<li id="li_manage"><a class="J_menuItem" href="<%=path %>/user/manage/list/${cur_user.id }"><i class="fa fa_circle"></i>用户管理</a></li>
@@ -119,7 +120,7 @@
                     <c:if test="${cur_user.user_autority == 1}">
                         <li id="menu_user"><a href="#" class="first-a"> <img alt="image" class="tit-image"
                                 src="<%=path%>/images/user.svg" /> <span class="nav-label">租户</span>
-                                <span class="fa arrow"></span>
+                                
                         </a>
                             <ul class="nav nav-second-level">
                                 <li id="li_user"><a class="J_menuItem" href="<%=path %>/user/list"><i class="fa fa_circle"></i>租户管理</a></li>
@@ -128,7 +129,7 @@
                     <c:if test="${cur_user.user_autority == 2}">
                         <li id="menu_usermanage"><a href="#"> <img alt="image" class="tit-image"
                                 src="<%=path%>/images/user.svg" /> <span class="nav-label">密钥</span>
-                                <span class="fa arrow"></span>
+                                
                         </a>
                             <ul class="nav nav-second-level">
                                 <li id="li_credential"><a class="J_menuItem" href="<%=path %>/secret/Credential"><i class="fa fa_circle"></i>密钥管理</a></li>
@@ -138,8 +139,8 @@
 
 
 				<li id="menu_cluster"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/server.svg" /> <span class="nav-label">监控</span>
-						<span class="fa arrow"></span>
+						src="<%=path%>/images/u40.png" /> <span class="nav-label">监控</span>
+						
 				</a>
 					<ul class="nav nav-second-level">
 						<c:if test="${cur_user.user_autority == 1}">
@@ -151,8 +152,8 @@
 						<li id="li_route"><a class="J_menuItem" href="<%=path %>/cluster/route"><i class="fa fa_circle"></i>route</a></li>
 					</ul></li>
 				<li id="menu_template"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/tem-image.png" /> <span
-						class="nav-label">模板</span> <span class="fa arrow"></span>
+						src="<%=path%>/images/u47.png" /> <span
+						class="nav-label">模板</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_dockerfile"><a class="J_menuItem" href="<%=path %>/template/dockerfile"><i class="fa fa_circle"></i>dockerfile</a></li>
@@ -161,7 +162,7 @@
 				<c:if test="${cur_user.user_autority == 1}">
 				<li id="menu_log"><a href="#" class="first-a"> <img alt="log" class="tit-image"
 						src="<%=path%>/images/logs.png" /> <span
-						class="nav-label">日志</span> <span class="fa arrow"></span>
+						class="nav-label">日志</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_logService"><a class="J_menuItem" href="<%=path %>/logServices"><i class="fa fa_circle"></i>服务操作日志</a></li>
@@ -176,7 +177,7 @@
 			</ul>
 		</div>
 	</nav></div>
-	<div class="helpDoc">
+	<div class="helpDoc hide">
 		<ul class="nav" >
 			<li class="nav-footer">
 				<span><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn" value="新手入门"></a></span>
@@ -184,7 +185,7 @@
 		</ul>
 	</div>
 	<div class="helpDoc hide"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn" value="新手入门"></a></div>
-	<div class="sideBoxBtn" onclick="navHide()"><i class="fa fa-step-backward"></i><div class="btn-background"></div></div>
+	<div class="sideBoxBtn hide" onclick="navHide()"><i class="fa fa-step-backward"></i><div class="btn-background"></div></div>
 </div><!-- navAll -->
 
 <div class="navbar-downSide-show hide">
@@ -205,6 +206,8 @@
         $("#li_"+li_flag).addClass("li-active");
         $("#menu_"+menu_flag).find('ul').addClass("in");
         $("#menu_"+menu_flag).find('ul').attr("aria-expanded","ture");
+        
+        //$("#menu_service.active").find("a:first").find("img").attr("src","/images/u37.png")
 		
         // 菜单效果
         /* $(".nav-menu>li").on("mouseenter",function(){
