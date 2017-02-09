@@ -702,36 +702,69 @@ public class RegistryController {
 	 * @see
 	 */
 	@RequestMapping("registry/imageShow")
-	public String findUserFavorImage(Model model){
-	    long userId = CurrentUserUtils.getInstance().getUser().getId();
-	    List<Image> imageList = imageDao.findAllUserFavor();
-	    List<Image> newImage = new ArrayList<>();
-	    Page<Image> imagePage =  imageDao.findByImageType(userId, null);
-	    if (imageList.size() < 8) {
-	       while (imageList.size() < 8) {
-	           imageList.add(imagePage.getContent().get(10-imageList.size()));
-	       }
-	    }
+	public String showAllImages(Model model) {
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		List<Image> imageList = imageDao.findAllUserFavor();
+		List<Image> newImage = new ArrayList<>();
+		Page<Image> imagePage = imageDao.findByImageType(userId, null);
+		if (imageList.size() < 8) {
+			while (imageList.size() < 8) {
+				imageList.add(imagePage.getContent().get(10 - imageList.size()));
+			}
+		}
 
-	    for (Image image : imageList) {
-	        image.setCurrUserFavorCount(image.getFavorUsers().size());
-	    }
+		for (Image image : imageList) {
+			image.setCurrUserFavorCount(image.getFavorUsers().size());
+		}
 
-	    Collections.sort(imageList,new Comparator<Image>(){
-            public int compare(Image arg0, Image arg1) {
-                return arg1.getCurrUserFavorCount().compareTo(arg0.getCurrUserFavorCount());
-            }
-        });
+		Collections.sort(imageList, new Comparator<Image>() {
+			public int compare(Image arg0, Image arg1) {
+				return arg1.getCurrUserFavorCount().compareTo(arg0.getCurrUserFavorCount());
+			}
+		});
 
-	    for (int i= 0 ; i < 8 ; i++) {
-	        newImage.add(imagePage.getContent().get(i));
-	    }
+		for (int i = 0; i < 8; i++) {
+			newImage.add(imagePage.getContent().get(i));
+		}
 
-	    addCurrUserFavor(imageList);
-	    addCurrUserFavor(newImage);
-	    model.addAttribute("imageList", imageList);
-	    model.addAttribute("newImage",newImage);
-	    return "imageShow.jsp";
+		addCurrUserFavor(imageList);
+		addCurrUserFavor(newImage);
+		model.addAttribute("imageList", imageList);
+		model.addAttribute("newImage", newImage);
+		return "imageShow.jsp";
+	}
+
+	/**
+	 * Description: <br>
+	 * 镜像广场中的镜像搜索
+	 *
+	 * @param model
+	 * @return
+	 * @see
+	 */
+	@RequestMapping("registry/searchImages")
+    @ResponseBody
+	public String searchImages(Model model, String match, Integer type) {
+		Map<String, Object> map = new HashMap<>();
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		List<Image> imageList = new ArrayList<>();
+		switch (type) {
+		case 0:
+			imageList = imageDao.findByNameCondition("%"+match+"%",userId);
+			break;
+		case 1:
+			imageList = imageDao.findByNameConditionOrderbyexportCount("%"+match+"%",userId);
+			break;
+		case 2:
+			imageList = imageDao.findByNameConditionOrderbycreateDate("%"+match+"%",userId);
+			break;
+		default:
+			imageList = imageDao.findByNameCondition("%"+match+"%",userId);
+			break;
+		}
+		map.put("imageList", imageList);
+		map.put("status", "200");
+		return JSON.toJSONString(map);
 	}
 
 }
