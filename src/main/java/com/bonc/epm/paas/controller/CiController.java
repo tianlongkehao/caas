@@ -453,6 +453,7 @@ public class CiController {
         originCi.setImgType(ci.getImgType());
         originCi.setDescription(ci.getDescription());
         originCi.setDockerFileLocation(ci.getDockerFileLocation());
+        originCi.setDockerFileContent(dockerFileContentEdit);
         originCiCode.setIsBaseImage(ciCode.getIsBaseImage());
         originCiCode.setJdkVersion(ciCode.getJdkVersion());
         originCiCode.setCodeType(ciCode.getCodeType());
@@ -529,6 +530,7 @@ public class CiController {
         String extraInfo= "修改DockerFile构建 " + ci.getProjectName() + "的详细信息,原始数据：" + JSON.toJSONString(originCi);    //日志信息
         originCi.setProjectName(ci.getProjectName());
         originCi.setDescription(ci.getDescription());
+        originCi.setDockerFileContent(dockerFile);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
             File file = new File(originCi.getCodeLocation());
@@ -929,6 +931,7 @@ public class CiController {
             ci.setCreateDate(new Date());
             ci.setType(CiConstant.TYPE_CODE);
             ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
+            ci.setDockerFileContent(dockerFileContent);
             ciDao.save(ci);
 
             //添加代码构建详细信息
@@ -1033,79 +1036,79 @@ public class CiController {
         return JSON.toJSONString(result);
     }
 
-    /**
-     * 快速构建的创建
-     *
-     * @param ci ： ci
-     * @return String
-     * @see
-     */
-    @RequestMapping("ci/addCi.do")
-	public String addCi(Ci ci) {
-        User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        ci.setCreateBy(cuurentUser.getId());
-        ci.setCreateDate(new Date());
-        ci.setType(CiConstant.TYPE_QUICK);
-        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
-        ci.setConstructionDate(new Date());
-        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
-        ciDao.save(ci);
+//    /**
+//     * 快速构建的创建
+//     *
+//     * @param ci ： ci
+//     * @return String
+//     * @see
+//     */
+//    @RequestMapping("ci/addCi.do")
+//	public String addCi(Ci ci) {
+//        User cuurentUser = CurrentUserUtils.getInstance().getUser();
+//        ci.setCreateBy(cuurentUser.getId());
+//        ci.setCreateDate(new Date());
+//        ci.setType(CiConstant.TYPE_QUICK);
+//        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
+//        ci.setConstructionDate(new Date());
+//        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+//        ciDao.save(ci);
+//
+//        //添加日志
+//        String extraInfo = "快速构建的创建：" + JSON.toJSONString(ci);
+//        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.QUICK_CI, CommConstant.OPERATION_TYPE_CREATED);
+//        commonOperationLogDao.save(log);
+//
+//        LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+//        return "redirect:/ci";
+//
+//    }
 
-        //添加日志
-        String extraInfo = "快速构建的创建：" + JSON.toJSONString(ci);
-        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.QUICK_CI, CommConstant.OPERATION_TYPE_CREATED);
-        commonOperationLogDao.save(log);
-
-        LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
-        return "redirect:/ci";
-
-    }
-
-	/**
-	 * 最开始的dockerfile构建
-	 *
-	 * @param ci ：ci
-	 * @param sourceCode : 上传代码
-	 * @param dockerFile MultipartFile
-	 * @return  String
-	 * @see MultipartFile
-	 */
-    @RequestMapping(value={"ci/addResourceCi.do"},method=RequestMethod.POST)
-	public String addResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,@RequestParam("dockerFile") MultipartFile dockerFile) {
-        User cuurentUser = CurrentUserUtils.getInstance().getUser();
-        ci.setCreateBy(cuurentUser.getId());
-        ci.setCreateDate(new Date());
-        ci.setType(CiConstant.TYPE_DOCKERFILE);
-        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
-        ci.setConstructionDate(new Date());
-        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
-        ci.setDockerFileLocation("/");
-        try {
-            File file = new File(ci.getCodeLocation());
-            if(!file.exists()){
-                file.mkdirs();
-            }
-            if (!sourceCode.isEmpty()) {
-                FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
-            }
-            if (!dockerFile.isEmpty()) {
-                FileUtils.storeFile(dockerFile.getInputStream(), ci.getCodeLocation()+"/"+dockerFile.getOriginalFilename());
-            }
-        }
-        catch (Exception e) {
-            LOG.error("modifyResourceCi error:"+e.getMessage());
-
-            return "redirect:/error";
-        }
-        ciDao.save(ci);
-        LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
-
-        String extraInfo = "DockerFile构建的创建：" + JSON.toJSONString(ci);
-        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.DOCKER_FILE_CI, CommConstant.OPERATION_TYPE_CREATED);
-        commonOperationLogDao.save(log);
-
-        return "redirect:/ci";
-    }
+//	/**
+//	 * 最开始的dockerfile构建
+//	 *
+//	 * @param ci ：ci
+//	 * @param sourceCode : 上传代码
+//	 * @param dockerFile MultipartFile
+//	 * @return  String
+//	 * @see MultipartFile
+//	 */
+//    @RequestMapping(value={"ci/addResourceCi.do"},method=RequestMethod.POST)
+//	public String addResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,@RequestParam("dockerFile") MultipartFile dockerFile) {
+//        User cuurentUser = CurrentUserUtils.getInstance().getUser();
+//        ci.setCreateBy(cuurentUser.getId());
+//        ci.setCreateDate(new Date());
+//        ci.setType(CiConstant.TYPE_DOCKERFILE);
+//        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
+//        ci.setConstructionDate(new Date());
+//        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
+//        ci.setDockerFileLocation("/");
+//        try {
+//            File file = new File(ci.getCodeLocation());
+//            if(!file.exists()){
+//                file.mkdirs();
+//            }
+//            if (!sourceCode.isEmpty()) {
+//                FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
+//            }
+//            if (!dockerFile.isEmpty()) {
+//                FileUtils.storeFile(dockerFile.getInputStream(), ci.getCodeLocation()+"/"+dockerFile.getOriginalFilename());
+//            }
+//        }
+//        catch (Exception e) {
+//            LOG.error("modifyResourceCi error:"+e.getMessage());
+//
+//            return "redirect:/error";
+//        }
+//        ciDao.save(ci);
+//        LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
+//
+//        String extraInfo = "DockerFile构建的创建：" + JSON.toJSONString(ci);
+//        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.DOCKER_FILE_CI, CommConstant.OPERATION_TYPE_CREATED);
+//        commonOperationLogDao.save(log);
+//
+//        return "redirect:/ci";
+//    }
 
 	/**
 	 *
@@ -1258,6 +1261,7 @@ public class CiController {
         ci.setConstructionDate(new Date());
         ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
         ci.setDockerFileLocation("/");
+        ci.setDockerFileContent(dockerFile);
         try {
             File file = new File(ci.getCodeLocation());
             if(!file.exists()){
@@ -1408,10 +1412,12 @@ public class CiController {
         ciDao.save(ci);
         CiRecord ciRecord = new CiRecord();
         ciRecord.setCiId(ci.getId());
+        ciRecord.setCiName(ci.getImgNameFirst() + "/" + ci.getImgNameLast());
         ciRecord.setCiVersion(ci.getImgNameVersion());
         ciRecord.setConstructDate(new Date());
         ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_ING);
         ciRecord.setLogPrint("["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");
+        ciRecord.setDockerFileContent(ci.getDockerFileContent());
         ciRecordDao.save(ciRecord);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");
@@ -1456,6 +1462,7 @@ public class CiController {
             ciRecord.setConstructTime(endTime-startTime);
             if(CiConstant.CONSTRUCTION_RESULT_FAIL!=ciRecord.getConstructResult()){
                 ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
+                ciRecord.setImageId(ci.getImgId());
                 ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
                 ci.setConstructionDate(new Date());
             }
@@ -1543,6 +1550,7 @@ public class CiController {
                                     ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
                                     ciRecord.setConstructTime(jobExecView.getEndTime()-startTime);
                                     ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
+                                    ciRecord.setImageId(ci.getImgId());
                                 }
                                 //执行失败
                                 if (jobExecView.getEndStatus() == 1) {
