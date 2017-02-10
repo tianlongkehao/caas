@@ -1417,6 +1417,7 @@ public class CiController {
         ciRecord.setConstructDate(new Date());
         ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_ING);
         ciRecord.setLogPrint("["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");
+        ciRecord.setDockerFileContent(ci.getDockerFileContent());
         ciRecordDao.save(ciRecord);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", "200");

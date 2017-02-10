@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.CiRecord;
 
 /**
  * 构建记录信息收集接口
- * 
+ *
  * @author update
  * @version 2016年8月31日
  * @see CiRecordDao
@@ -18,17 +19,17 @@ import com.bonc.epm.paas.entity.CiRecord;
  */
 @Transactional
 public interface CiRecordDao extends JpaRepository<CiRecord, Long> {
-    
+
     /**
      * 根据构建Id和sort排序规则进行查询
-     * 
+     *
      * @param ciId ： 构建Id
      * @param sort ： 查询数据的排序规则
      * @return list
      * @see
      */
     List<CiRecord> findByCiId(long ciId,Sort sort);
-    
+
     /**
      * Description: <br>
      * 根据构建id删除日志数据
@@ -36,4 +37,16 @@ public interface CiRecordDao extends JpaRepository<CiRecord, Long> {
      * @see
      */
     void deleteByCiId(long ciId);
-} 
+
+    /**
+     * 根据镜像Id进行查询
+     *
+     * @param ciId ： 构建Id
+     * @param sort ： 查询数据的排序规则
+     * @return list
+     * @see
+     */
+	@Query("select i from CiRecord i where i.imageId=?1 order by i.constructDate desc")
+    List<CiRecord> findByImageId(long imageId);
+
+}

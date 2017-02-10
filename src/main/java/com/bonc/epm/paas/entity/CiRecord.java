@@ -79,6 +79,12 @@ public class CiRecord {
 	@Basic(fetch = FetchType.LAZY)
 	private String logPrint;
 
+	/**
+	 * 构建dockerFileContent
+	 */
+	private String dockerFileContent;
+
+
 	public long getId() {
 		return id;
 	}
@@ -157,6 +163,14 @@ public class CiRecord {
 
 	public void setImageId(long imageId) {
 		this.imageId = imageId;
+	}
+
+	public String getDockerFileContent() {
+		return dockerFileContent;
+	}
+
+	public void setDockerFileContent(String dockerFileContent) {
+		this.dockerFileContent = dockerFileContent;
 	}
 
 }

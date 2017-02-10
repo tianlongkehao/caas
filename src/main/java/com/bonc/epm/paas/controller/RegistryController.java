@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
@@ -45,6 +46,7 @@ import com.bonc.epm.paas.docker.exception.ErrorList;
 import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.docker.util.DockerRegistryService;
+import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.Image;
@@ -54,6 +56,7 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.ResultPager;
+import com.github.dockerjava.api.command.InspectImageResponse;
 
 /**
  *
@@ -106,6 +109,12 @@ public class RegistryController {
      */
     @Autowired
 	private DockerRegistryService dockerRegistryService;
+
+    /**
+     * CiRecordDao接口
+     */
+    @Autowired
+	private CiRecordDao ciRecordDao;
 
     /**
      * 获取paas.image.path中的镜像下载地址
@@ -230,6 +239,12 @@ public class RegistryController {
             model.addAttribute("menu_flag", "registry");
             return "docker-registry/nodetail.jsp";
         }
+        //获取镜像inspect信息
+        InspectImageResponse iir = null;
+        if (dockerClientService.pullImage(image.getName(), image.getVersion())) {
+        	iir = dockerClientService.inspectImage(image.getImageId(), image.getName(), image.getVersion());
+        }
+        List<CiRecord> ciHistory = ciRecordDao.findByImageId(image.getId());
         //查询有多少租户收藏当前镜像
         int favorUser = imageDao.findAllUserById(id);
         //查询当前镜像的创建者信息
@@ -251,6 +266,8 @@ public class RegistryController {
             model.addAttribute("creator", user.getUserName());
         }
         model.addAttribute("whetherFavor", whetherFavor);
+        model.addAttribute("inspectImageResponse",iir);
+        model.addAttribute("ciHistory",ciHistory);
         model.addAttribute("image", image);
         model.addAttribute("favorUser",favorUser);
         model.addAttribute("menu_flag", "registry");
