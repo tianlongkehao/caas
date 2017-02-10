@@ -765,6 +765,8 @@ public class RegistryController {
 		map.put("imageList", imageList);
 		map.put("status", "200");
 		return JSON.toJSONString(map);
+		
 	}
+	
 
 }
