@@ -578,7 +578,13 @@ function searchImagesResult(){
 				 var imageName = imageList[i].name;
 				 var imageVersion = imageList[i].version;
 				 var imageId = imageList[i].id;
-				 var imageExportCount = imageList[i].exportCount;
+				 var imageExportCount = "";
+				 if(imageList[i].exportCount == "" || imageList[i].exportCount == null){
+					 imageExportCount = 0;
+				 }else{
+					 imageExportCount = imageList[i].exportCount;
+				 }
+				 
 				 var imageResourceName = imageList[i].resourceName;
 				 var imageRemark = imageList[i].remark;
 				 var imageSummary = imageList[i].summary;
@@ -592,7 +598,7 @@ function searchImagesResult(){
 									'</div>'+
 								'</div>'+
 								'<div class="select-info">'+
-									'<div class="pull-right-text">'+imageName+''+
+									'<div class="pull-right-text"><span class="imageCenter-name">'+imageName+'</span>'+
 									'<div class="pull-right">'+
 										'<i class="fa fa-cloud-download" style="color: #e8504f"></i>'+
 										'<span class="cloudNum">'+imageExportCount+'</span>'+

@@ -169,7 +169,29 @@
                             </section> 
                             <section class="infoHistory hide">
                                 <div class="detail-contents">
+                                
                                 此镜像无构建历史。
+                                	<table class="table table-hover" id="editTable" style="border:1px solid #eee;">
+                                        <tbody>
+                                        <tr style="background:#F5F6F6">
+                                            <th>镜像名称</th>
+                                            <th>镜像版本</th>
+                                            <th>状态</th>
+                                            <th>构建时长</th>
+                                            <th>创建者</th>
+                                            <th>创建时间</th>
+                                        </tr>
+                                        <tr class="envobj-tr">
+                                            <td>PATH</td>
+                                            <td>bin</td>
+                                            <td>PATH</td>
+                                            <td>bin</td>
+                                            <td>PATH</td>
+                                            <td>bin</td>
+                                        </tr>
+                                        
+                                        </tbody>
+                                    </table>
                                 </div>
                             </section>
                             <section class="infoTags hide">
