@@ -64,7 +64,7 @@
                                     <li class="images-panel">
                                         <div class="select-img">
                                             <div class="mir-img ">
-                                                <img src="<%=path %>/images/image-1.png">
+                                                <img class="imageTypeSrc" imageType="${image.imageType }" src="<%=path %>/images/image-1.png">
                                                 <div class="imageInfoText">${image.remark }</div>
                                             </div>
                                         </div>
@@ -113,7 +113,7 @@
 	                                    <li class="images-panel">
 	                                        <div class="select-img">
 	                                            <div class="mir-img ">
-	                                                <img src="<%=path %>/images/image-1.png">
+	                                                <img class="imageTypeSrc" imageType="${image.imageType }" src="<%=path %>/images/image-1.png">
 	                                                <div class="imageInfoText">${image.remark }</div>
 	                                                
 	                                            </div>

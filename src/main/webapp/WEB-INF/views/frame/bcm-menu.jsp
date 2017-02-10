@@ -108,7 +108,7 @@
 					</c:if>
 		        	<c:if test="${cur_user.user_autority == 2}">
 						<li id="menu_usermanage"><a href="#"> <img alt="image" class="tit-image"
-								src="<%=path%>/images/user.svg" /> <span class="nav-label">用户</span>
+								src="<%=path%>/images/user-gray.svg" /> <span class="nav-label">用户</span>
 								
 						</a>
 							<ul class="nav nav-second-level">

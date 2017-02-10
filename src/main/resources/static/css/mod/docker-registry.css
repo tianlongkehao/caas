@@ -28,6 +28,7 @@
     position: relative;
     float: left;
     margin: 0 20px 20px;
+    background: #fcfcfc;
 }
 
 .images-panel .select-img {
