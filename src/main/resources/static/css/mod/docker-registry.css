@@ -435,6 +435,9 @@
     text-overflow:ellipsis;
 	float:left;
 }
+span.cloudNum{
+	padding-left:4px;
+}
 .fa-cloud-download span{
 	padding-left:4px;
 }

@@ -125,69 +125,9 @@ $(document).ready(function () {
         });
     $(".imagesCenter").removeClass("hide");
     $("#searchImages").click(function(){
-    	$("#searchImagesList").empty();
-    	$(".imagesCenter").addClass("hide");
-    	$(".imagesSearchResult").removeClass("hide");
-    	var searchCon = $("#searchCon").val();
-    	var searchCondition = $("#searchCondition").val();
-    	$.ajax({
-   		 url : ""+ctx+"/registry/searchImages",
-   		 type : "get",
-   		 data : {
-   			 "match":searchCon,
-   			 "type" : searchCondition
-   		 },
-   		 success : function(data){
-   			 console.log(data);
-   			 var data = eval("(" + data + ")");
-   			 var imageList = data.imageList;
-   			 $("#imageSearchCount").html(imageList.length);
-   			 var searchImagesHtml ="";
-   			 for(var i=0; i< imageList.length; i++){
-   				 var imageName = imageList[i].name;
-   				 var imageVersion = imageList[i].version;
-   				 var imageId = imageList[i].id;
-   				 var imageExportCount = imageList[i].exportCount;
-   				 var imageResourceName = imageList[i].resourceName;
-   				 var imageRemark = imageList[i].remark;
-   				 var imageSummary = imageList[i].summary;
-   				 //搜索结果html
-   				 searchImagesHtml += '<li class="images-panel">'+
-										'<div class="select-img">'+
-										'<div class="mir-img ">'+
-											'<img src="'+ctx+'/images/image-1.png">'+
-											'<div class="imageInfoText">'+imageRemark+'</div>'+
-										'</div>'+
-									'</div>'+
-									'<div class="select-info">'+
-										'<div class="pull-right-text">'+imageName+''+
-										'<div class="pull-right">'+
-											'<i class="fa fa-cloud-download" style="color: #e8504f"></i>'+
-											'<span>'+imageExportCount+'</span>'+
-										'</div>'+
-										'</div>'+
-										
-										'<div>'+
-											'<span class="searchImageVersion" title="'+imageVersion +'"><i class="fa fa-tag"></i> '+imageVersion +'</span>'+
-											'<div class="pull-right">'+
-												'<a href="<%=path %>/service/add?imageName='+imageName+'&imageVersion='+imageVersion+'&imgID='+imageId+'&resourceName='+imageResourceName+'"'+
-													'class="btn-pull-deploy btn" imageversion="'+imageVersion+'"'+
-													'imagename="'+imageName+'">部署</a>'+
-											'</div>'+
-										'</div>'+
-									'</div>'+
-									'<div class="create-item ">'+
-	                                    '<a href="'+ctx+'/registry/detail/'+imageId+'">'+
-	                                        '<span class="note-text" > '+imageSummary+' </span>'+
-	                                    '</a>'+
-	                                '</div>'+
-								'</li>';
-   			 }
-   			 $("#searchImagesList").append(searchImagesHtml);
-   		 }
-   	 });
+    	searchImagesResult();
     });
-  
+    
    
 });/*ready*/
 
@@ -611,4 +551,69 @@ function syncImages(){
 
 		}
 	})
+}
+
+//
+function searchImagesResult(){
+	$("#searchImagesList").empty();
+	$(".imagesCenter").addClass("hide");
+	$(".imagesSearchResult").removeClass("hide");
+	var searchCon = $("#searchCon").val();
+	var searchCondition = $("#searchCondition").val();
+	$.ajax({
+		 url : ""+ctx+"/registry/searchImages",
+		 type : "get",
+		 data : {
+			 "match":searchCon,
+			 "type" : searchCondition
+		 },
+		 success : function(data){
+			 console.log(data);
+			 var data = eval("(" + data + ")");
+			 var imageList = data.imageList;
+			 $("#imageSearchCount").html(imageList.length);
+			 var searchImagesHtml ="";
+			 for(var i=0; i< imageList.length; i++){
+				 var imageName = imageList[i].name;
+				 var imageVersion = imageList[i].version;
+				 var imageId = imageList[i].id;
+				 var imageExportCount = imageList[i].exportCount;
+				 var imageResourceName = imageList[i].resourceName;
+				 var imageRemark = imageList[i].remark;
+				 var imageSummary = imageList[i].summary;
+				 //搜索结果html
+				 searchImagesHtml += '<li class="images-panel">'+
+									'<div class="select-img">'+
+									'<div class="mir-img ">'+
+										'<img src="'+ctx+'/images/image-1.png">'+
+										'<div class="imageInfoText">'+imageRemark+'</div>'+
+									'</div>'+
+								'</div>'+
+								'<div class="select-info">'+
+									'<div class="pull-right-text">'+imageName+''+
+									'<div class="pull-right">'+
+										'<i class="fa fa-cloud-download" style="color: #e8504f"></i>'+
+										'<span class="cloudNum">'+imageExportCount+'</span>'+
+									'</div>'+
+									'</div>'+
+									
+									'<div>'+
+										'<span class="searchImageVersion" title="'+imageVersion +'"><i class="fa fa-tag"></i> '+imageVersion +'</span>'+
+										'<div class="pull-right">'+
+											'<a href="<%=path %>/service/add?imageName='+imageName+'&imageVersion='+imageVersion+'&imgID='+imageId+'&resourceName='+imageResourceName+'"'+
+												'class="btn-pull-deploy btn" imageversion="'+imageVersion+'"'+
+												'imagename="'+imageName+'">部署</a>'+
+										'</div>'+
+									'</div>'+
+								'</div>'+
+								'<div class="create-item ">'+
+                                    '<a href="'+ctx+'/registry/detail/'+imageId+'">'+
+                                        '<span class="note-text" > '+imageSummary+' </span>'+
+                                    '</a>'+
+                                '</div>'+
+							'</li>';
+			 }
+			 $("#searchImagesList").append(searchImagesHtml);
+		 }
+	 });
 }

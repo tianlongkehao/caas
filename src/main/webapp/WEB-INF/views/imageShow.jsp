@@ -48,7 +48,7 @@
                             <div class="col-md-1 searchLabel"><label>排序 ：</label></div>
                             <div class="col-md-3">
                         		
-                        		<select class="form-control searchCondition" id="searchCondition">
+                        		<select class="form-control searchCondition" id="searchCondition" onchange="searchImagesResult()">
                         			<option value="0">默认</option>
                         			<option value="1">按导出次数</option>
                         			<option value="2">按创建时间</option>

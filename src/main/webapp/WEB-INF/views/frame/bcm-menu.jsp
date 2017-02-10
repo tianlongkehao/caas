@@ -26,6 +26,7 @@
     
 </header>
 <div class="">
+	<c:if test="${!cas_enable}">
 	<div class="nav-title" >
 		<ul class="nav" >
 				<li class="nav-bcm hide">
@@ -58,6 +59,7 @@
 			</li>
 		</ul>
 	</div>
+	</c:if>
 	<div ><nav class="navbar-default navbar-static-side" role="navigation" id="nav-side">
 		<div class="sidebar-collapse">
 			<ul class="nav" id="side-menu">
@@ -97,7 +99,7 @@
 				<c:if test="${!cas_enable}">
 					<c:if test="${cur_user.user_autority == 1}">
 						<li id="menu_user"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-								src="<%=path%>/images/user.svg" /> <span class="nav-label">租户</span>
+								src="<%=path%>/images/user-gray.svg" /> <span class="nav-label">租户</span>
 								
 						</a>
 							<ul class="nav nav-second-level">
@@ -161,7 +163,7 @@
 					</ul></li>
 				<c:if test="${cur_user.user_autority == 1}">
 				<li id="menu_log"><a href="#" class="first-a"> <img alt="log" class="tit-image"
-						src="<%=path%>/images/logs.png" /> <span
+						src="<%=path%>/images/logs-gray.png" /> <span
 						class="nav-label">日志</span> 
 				</a>
 					<ul class="nav nav-second-level">

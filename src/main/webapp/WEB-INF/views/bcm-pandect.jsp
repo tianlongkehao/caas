@@ -25,6 +25,7 @@
             <div class="contentMain">
                 
                 <div class="account_table" userID="${user.id }">
+                	<c:if test="${cur_user.user_autority != 1}">
 					<div class="serviceDetailInfo hide">
 	                    <ul>
 		                    <li class="serviceNumInfo blue">
@@ -204,11 +205,126 @@
                                 </table>
                             </div>
                         </div>
-
                     </div>
-
+                    </c:if>
+                    
+                    <c:if test="${cur_user.user_autority == 1}">
+                    	
+                        	<div class="detail-info">
+	                            <div class="info-list">
+	                                <table class="table" id="table-listing">
+	                                    <thead>
+	                                    <tr class="table-title">
+	                                        <th colspan="6" class="detail-rows">集群资源使用情况</th>
+	                                    </tr>
+	                                    </thead>
+	                                    <tbody>
+	                                    <tr style="height:20px"></tr>
+	                                    <tr>
+	                                        <td style="width:15%">CPU（个）</td>
+	                                        <td style="width:25%">
+	                                            <div class="slider_bj">
+	                                                <div class="slider_block detailCpu" id="usedCpu"></div>
+	                                            </div>
+	                                        </td>
+	                                        <td style="width:10%">
+	                                            <span id="detailCpu">${usedCpuNum}</span>/<span id="totalCpu">${servCpuNum}</span>（个）
+	                                        </td>
+	                                    </tr>
+	                                    <tr>
+	                                        <td>内存（G）</td>
+	                                        <td>
+	                                            <div class="slider_bj">
+	                                                <div class="slider_block detailMemory" id="usedMemory"></div>
+	                                            </div>
+	                                        </td>
+	                                        <td>
+	                                            <span id="detailMemory">${usedMemoryNum}</span>/<span id="totalMemory">${servMemoryNum}</span>（G）
+	                                        </td>
+	                                    </tr>
+	                                    <tr>
+	                                        <td>卷组容量（G）</td>
+	                                        <td>
+	                                            <div class="slider_bj">
+	                                                <div class="slider_block detailVolume" id="usedVolume"></div>
+	                                            </div>
+	                                        </td>
+	                                        <td>
+	                                            <span id="detailVolume">${usedstorage}</span>/<span id="totalVolume">${userResource.vol_size}</span>（G）
+	                                        </td>
+	                                    </tr>
+	                                    </tbody>
+	                                </table>
+	                            </div>
+	                        </div>
+	                        
+	                        <section class="container-count usersResourceInfo">
+		                        <div class="padding">
+		                            <div class="row-title">租户信息</div>
+		                            <table class="table table-hover">
+	                                    <thead>
+	                                    	<tr class="usersInfoTit u-line">
+	                                    		<th>租户名称</th>
+	                                    		<th>实例个数</th>
+	                                    		<th>服务个数</th>
+	                                    		<th>使用情况</th>
+	                                    		<th>CPU(个)</th>
+	                                    		<th>内存(GB)</th>
+	                                    		<th>存储(GB)</th>
+	                                    	</tr>
+	                                    </thead>
+	                                    <tbody>
+	                                    	<tr>
+	                                    		<td rowspan="3">租户1</td>
+	                                    		<td rowspan="3">22</td>
+	                                    		<td rowspan="3">33</td>
+	                                    		<td>总量</td>
+	                                    		<td>33</td>
+	                                    		<td>55</td>
+	                                    		<td>77</td>
+	                                    	</tr>
+	                                    	<tr>
+	                                    		<td>未使用</td>
+	                                    		<td>44</td>
+	                                    		<td>33</td>
+	                                    		<td>55</td>
+	                                    	</tr>
+	                                    	<tr class="u-line">
+	                                    		<td>已使用</td>
+	                                    		<td>44</td>
+	                                    		<td>33</td>
+	                                    		<td>55</td>
+	                                    	</tr>
+	                                    	
+	                                    	<tr>
+	                                    		<td rowspan="3">租户1</td>
+	                                    		<td rowspan="3">22</td>
+	                                    		<td rowspan="3">33</td>
+	                                    		<td>总量</td>
+	                                    		<td>33</td>
+	                                    		<td>55</td>
+	                                    		<td>77</td>
+	                                    	</tr>
+	                                    	<tr>
+	                                    		<td>未使用</td>
+	                                    		<td>44</td>
+	                                    		<td>33</td>
+	                                    		<td>55</td>
+	                                    	</tr>
+	                                    	<tr class="u-line">
+	                                    		<td>已使用</td>
+	                                    		<td>44</td>
+	                                    		<td>33</td>
+	                                    		<td>55</td>
+	                                    	</tr>
+	                                    
+	                                    </tbody>
+	                                </table>
+		                        </div>
+		                    </section>
+	                        
+                        </c:if>
                 </div>
-
 
             </div>
         </div>

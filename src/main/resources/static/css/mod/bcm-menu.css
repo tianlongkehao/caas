@@ -139,12 +139,14 @@ nav.navbar-default{
 	width:200px; 
 	position:fixed;
 	background-color: #e8504f;
-	z-index:95;
+	z-index: 100;
+    bottom: -70px;
+    margin-bottom: 70px;
 }
 #nav-side{
 	/* height:100%; */ 
 	overflow-y: auto;
-	height: calc(100% - 100px);
+	height: calc(100% - 176px);
     overflow-x: hidden;
 }
 
