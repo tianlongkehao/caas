@@ -49,7 +49,9 @@ import com.bonc.epm.paas.docker.util.DockerRegistryService;
 import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
+import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -57,6 +59,8 @@ import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.ResultPager;
 import com.github.dockerjava.api.command.InspectImageResponse;
+import com.github.dockerjava.api.model.ContainerConfig;
+import com.github.dockerjava.api.model.ExposedPort;
 
 /**
  *
@@ -241,10 +245,41 @@ public class RegistryController {
         }
         //获取镜像inspect信息
         InspectImageResponse iir = null;
+        List<PortConfig> portList = new ArrayList<>();
+        List<EnvVariable> envList = new ArrayList<>();
         if (dockerClientService.pullImage(image.getName(), image.getVersion())) {
         	iir = dockerClientService.inspectImage(image.getImageId(), image.getName(), image.getVersion());
+        	ContainerConfig config = iir.getConfig();
+        	if (config != null) {
+        		//取得端口信息
+        		ExposedPort[] exposedPort = config.getExposedPorts();
+        		if (exposedPort != null) {
+        			for (ExposedPort exposedPort2 : exposedPort) {
+        				PortConfig port = new PortConfig();
+        				port.setContainerPort(exposedPort2.getPort() + "");
+        				port.setProtocol(exposedPort2.getProtocol().toString());
+        				portList.add(port);
+					}
+				}
+
+        		String[] envs = config.getEnv();
+        		if (envs != null) {
+					for (int i = 0; i < envs.length; i++) {
+						String[] envString = envs[i].split("=");
+						EnvVariable env = new EnvVariable();
+						env.setEnvKey(envString[0]);
+						env.setEnvValue(envString[1]);
+						envList.add(env);
+					}
+				}
+
+			}
         }
         List<CiRecord> ciHistory = ciRecordDao.findByImageId(image.getId());
+        String dockerFileContent =new String();
+        if (ciHistory != null) {
+        	dockerFileContent = ciHistory.get(0).getDockerFileContent();
+		}
         //查询有多少租户收藏当前镜像
         int favorUser = imageDao.findAllUserById(id);
         //查询当前镜像的创建者信息
@@ -266,7 +301,10 @@ public class RegistryController {
             model.addAttribute("creator", user.getUserName());
         }
         model.addAttribute("whetherFavor", whetherFavor);
-        model.addAttribute("inspectImageResponse",iir);
+//        model.addAttribute("inspectImageResponse",iir);
+        model.addAttribute("portList",portList);
+        model.addAttribute("envList",envList);
+        model.addAttribute("dockerFileContent",dockerFileContent);
         model.addAttribute("ciHistory",ciHistory);
         model.addAttribute("image", image);
         model.addAttribute("favorUser",favorUser);
@@ -782,8 +820,8 @@ public class RegistryController {
 		map.put("imageList", imageList);
 		map.put("status", "200");
 		return JSON.toJSONString(map);
-		
+
 	}
-	
+
 
 }
