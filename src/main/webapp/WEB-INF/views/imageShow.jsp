@@ -85,12 +85,7 @@
                                             	<i class="fa fa-tag"></i>${image.version }
                                             	
                                                 <div class="pull-right">
-		                                            <c:if test="${image.currUserFavor==0 }">
-                                                        <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
-                                                    </c:if>
-                                                    <c:if test="${image.currUserFavor==1 }">
-                                                        <i class="fa fa-star star-style" style="color:#e8504f"></i>
-                                                    </c:if>
+                                                    <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
 	                                                <span>${image.currUserFavorCount }</span>
                                                 </div>
                                             </div>
@@ -135,12 +130,7 @@
 	                                            <div>
 	                                                <i class="fa fa-tag"></i>${image.version }
 	                                                <div class="pull-right">
-	                                                    <c:if test="${image.currUserFavor==0 }">
-	                                                        <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
-	                                                    </c:if>
-	                                                    <c:if test="${image.currUserFavor==1 }">
-	                                                        <i class="fa fa-star star-style" style="color:#e8504f"></i>
-	                                                    </c:if>
+	                                                    <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
 	                                                    <c:if test="${image.currUserFavor==0 ||image.currUserFavor==null||image.currUserFavor==''}">
 	                                                        <span>0</span>
 	                                                    </c:if>

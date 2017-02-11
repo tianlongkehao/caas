@@ -36,18 +36,20 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="<%=path%>/service/add" id="serviceCreateBtn" title="创建服务">
-											<i class="fa fa-plus"></i>
-										</a>
-										<a id="startContainer" class="no-drop" href="javascript:createContainer()" title="启动">
-											<i id = "startContainerFa" class="fa fa-play self_a"></i>
-										</a> 
-										<a id="stopContainer" class="no-drop" href="javascript:stopContainer()" title="停止"> 
-											<i id = "stopContainerFa" class="fa fa-power-off self_a"></i>
-										</a>
-										<a id="deleteButton" class="no-drop" href="javascript:delContainer()" title="删除">
-											<i id = "deleteButtonFa" class="fa fa-trash self_a"></i>
-										</a>
+										<c:if test="${cur_user.user_autority != 1}">
+											<a href="<%=path%>/service/add" id="serviceCreateBtn" title="创建服务">
+												<i class="fa fa-plus"></i>
+											</a>
+											<a id="startContainer" class="no-drop" href="javascript:createContainer()" title="启动">
+												<i id = "startContainerFa" class="fa fa-play self_a"></i>
+											</a> 
+											<a id="stopContainer" class="no-drop" href="javascript:stopContainer()" title="停止"> 
+												<i id = "stopContainerFa" class="fa fa-power-off self_a"></i>
+											</a>
+											<a id="deleteButton" class="no-drop" href="javascript:delContainer()" title="删除">
+												<i id = "deleteButtonFa" class="fa fa-trash self_a"></i>
+											</a>
+										</c:if>
 										<a id="ExportBtn" title="导出EXCEL">
 					                        <i id = "ExportButtonFa" class="fa fa-share-square-o"></i>
 					                    </a>
@@ -69,7 +71,12 @@
 												<th style="width: 20%;">镜像</th>
 												<th style="width: 12%;">服务地址</th>
 												<th style="width: 12%;">创建于</th>
-												<th style="width: 12%;">操作</th>
+												<c:if test="${cur_user.user_autority != 1}">
+													<th style="width: 12%;">操作</th>
+												</c:if>
+												<c:if test="${cur_user.user_autority == 1}">
+													<th style="width: 12%;">创建人</th>
+												</c:if>
 											</tr>
 										</thead>
 

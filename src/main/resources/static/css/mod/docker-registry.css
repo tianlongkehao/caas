@@ -442,3 +442,13 @@ span.cloudNum{
 .fa-cloud-download span{
 	padding-left:4px;
 }
+.envTableValue{
+	word-break: break-word;
+}
+#dockerFileContent{
+	width: 100%;
+    height: 200px;
+    background-color: #ddd;
+    border: 1px solid #ccc;
+}
+
