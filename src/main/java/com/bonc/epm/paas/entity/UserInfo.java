@@ -40,9 +40,33 @@ public class UserInfo {
 	 * 已经使用的服务个数
 	 */
 	int usedServiceNum;
+	/*
+	 * shera
+	 */
+	Shera userShera;
+	/*
+	 * 存储卷
+	 */
+	double usedStorage;
 
 	public UserResource getUserResource() {
 		return userResource;
+	}
+
+	public Shera getUserShera() {
+		return userShera;
+	}
+
+	public void setUserShera(Shera userShera) {
+		this.userShera = userShera;
+	}
+
+	public double getUsedStorage() {
+		return usedStorage;
+	}
+
+	public void setUsedStorage(double usedStorage) {
+		this.usedStorage = usedStorage;
 	}
 
 	public void setUserResource(UserResource userResource) {
@@ -136,4 +160,15 @@ public class UserInfo {
 	public void setUsedServiceNum(int usedServiceNum) {
 		this.usedServiceNum = usedServiceNum;
 	}
+	public float getRestCpuNum() {
+		return (float)(Math.round(servCpuNum - usedCpuNum)*100)/100;
+	}
+	public double getRestMemoryNum() {
+		return Double.parseDouble(servMemoryNum) - usedMemoryNum;
+	}
+	public double getRestStorage() {
+		return userResource.getVol_size()-usedStorage;
+	}
+
+	
 }

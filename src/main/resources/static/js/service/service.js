@@ -798,6 +798,7 @@ function findImageVersion(imageName) {
 function loadServices() {
 	$('.dataTables-example').dataTable({
 	 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
+	 	"searching" : false,
 	 	"autoWidth": false,
         "processing": true,
         "serverSide": true,
