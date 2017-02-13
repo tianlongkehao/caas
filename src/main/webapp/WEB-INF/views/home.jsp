@@ -41,7 +41,7 @@
                    <a class="icon-view" href="<%=path %>/service">
                        	<div class="icon-wrapper">
                            <div class="icon-img" id="icon-service">
-                                <span class="img "><img src="<%=path %>/images/service-red.svg" alt=""/></span>
+                                <span class="img "><img src="<%=path %>/images/new-service.png" alt=""/></span>
                                 <span class="text hide">毫秒级启动容器，高度可扩展的高性能容器服务</span>
                            </div>
                        	   <div class="icon-name">服务集成</div>
@@ -52,7 +52,7 @@
                    <a class="icon-view" href="<%=path %>/ci;">
                        	<div class="icon-wrapper">
                            <div class="icon-img" id="icon-ci">
-                                <span class="img"><img src="<%=path %>/images/factory_new-red.svg" alt=""/></span>
+                                <span class="img"><img src="<%=path %>/images/new-ci.png" alt=""/></span>
                                 <span class="text hide">实现应用的编译、测试、打包、发布流程的自动化</span>
                            </div>
                        	   <div class="icon-name">镜像构建</div>
@@ -63,7 +63,7 @@
                    <a class="icon-view" href="<%=path %>/registry/0">
                        	<div class="icon-wrapper">
                            <div class="icon-img" id="icon-image">
-                                <span class="img"><img src="<%=path %>/images/applist3-red.svg" alt=""/></span>
+                                <span class="img"><img src="<%=path %>/images/new-image.png" alt=""/></span>
                                 <span class="text hide">完全托管的docker容器注册表，轻松存储、管理和部署docker容器镜像</span>
                            </div>
                        	   <div class="icon-name">镜像中心</div>
@@ -75,7 +75,7 @@
                    <a class="icon-view" href="<%=path %>/cluster/resource">
                        	<div class="icon-wrapper">
                            <div class="icon-img" id="icon-cluster">
-                                <span class="img"><img src="<%=path %>/images/server-red.svg" alt=""/></span>
+                                <span class="img"><img src="<%=path %>/images/new-cluster.png" alt=""/></span>
                                 <span class="text hide">提供集群的部署、管理和监控的一整套解决方案</span>
                            </div>
                        	   <div class="icon-name">集群管理</div>
@@ -88,7 +88,7 @@
                    <a class="icon-view" href="<%=path %>/cluster/containers">
                        	<div class="icon-wrapper">
                            <div class="icon-img" id="icon-container">
-                                <span class="img"><img src="<%=path %>/images/server-red.svg" alt=""/></span>
+                                <span class="img"><img src="<%=path %>/images/new-cluster.png" alt=""/></span>
                                 <span class="text hide">提供该租户下的所有容器的监控和集群拓扑</span>
                            </div>
                        	   <div class="icon-name">集群资源</div>
@@ -100,7 +100,7 @@
                    <a class="icon-view" href="<%=path %>/template/dockerfile">
                        	<div class="icon-wrapper">
                            <div class="icon-img" id="icon-template">
-                                <span class="img"><img src="<%=path %>/images/tem-image-red.png" alt=""/></span>
+                                <span class="img"><img src="<%=path %>/images/new-template.png" alt=""/></span>
                                 <span class="text hide">统一管理模板，便于快速镜像构建</span>
                            </div>
                        	   <div class="icon-name">模板管理</div>
