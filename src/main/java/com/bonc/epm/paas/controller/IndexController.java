@@ -642,7 +642,7 @@ public class IndexController {
 			userInfo.setUsedPodNum((null != podList) ? podList.size() : 0); // 已经使用的POD个数
 			userInfo.setUsedServiceNum((null != rcList) ? rcList.size() : 0);// 已经使用的服务个数
 			double usedstorage = 0;
-			List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+			List<Storage> list = storageDao.findByCreateBy(user.getId());
 			for (Storage storage : list) {
 				usedstorage = usedstorage + (double) storage.getStorageSize();
 			}
