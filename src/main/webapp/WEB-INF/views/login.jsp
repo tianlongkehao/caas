@@ -15,7 +15,7 @@
         <div class="container">
             <div class="navbar-header">
                 <a href="javascript:void(0);" style="color:#fff">
-                    <h2>BCM</h2>
+                    <h1 style="color:#fff">BCM</h1>
                 </a>
             </div>
         </div>

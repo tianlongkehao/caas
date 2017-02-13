@@ -117,7 +117,7 @@
 .modalCrealApp .steps-main .progre .radius_step {
     color: #999;
     height: 45px;
-    width: 50%;
+    width: 33%;
     float: left;
     border-bottom: 2px solid #e2e2e4;
 }
@@ -989,7 +989,17 @@ i.pushOrg {
 	margin-left: 60px;
 }
 
-
+.sonarInfo .sonarCheckbox{
+	width: 75%;
+    float: right;
+    display: inline-flex;
+    height: 35px;
+    line-height: 35px;
+}
+.sonarInfo .sonarCheckbox input{
+	margin-top: 12px;
+    margin-right: 6px;
+}
 
 
 
