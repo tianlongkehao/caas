@@ -40,9 +40,33 @@ public class UserInfo {
 	 * 已经使用的服务个数
 	 */
 	int usedServiceNum;
+	/*
+	 * shera
+	 */
+	Shera userShera;
+	/*
+	 * 存储卷
+	 */
+	double usedstorage;
 
 	public UserResource getUserResource() {
 		return userResource;
+	}
+
+	public Shera getUserShera() {
+		return userShera;
+	}
+
+	public void setUserShera(Shera userShera) {
+		this.userShera = userShera;
+	}
+
+	public double getUsedstorage() {
+		return usedstorage;
+	}
+
+	public void setUsedstorage(double usedstorage) {
+		this.usedstorage = usedstorage;
 	}
 
 	public void setUserResource(UserResource userResource) {

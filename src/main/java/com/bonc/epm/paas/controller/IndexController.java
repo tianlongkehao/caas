@@ -159,111 +159,104 @@ public class IndexController {
 	public String home(Model model){
         return "home.jsp";
     }
-    /**
-     * Description: <br>
-     * 总览页面
-     * @return bcm-pandect.jsp
-     */
-    @RequestMapping(value={"bcm/{id}"},method=RequestMethod.GET)
-	public String bcm(Model model, @PathVariable long id){
 
-    	try {
-            User user = userDao.findOne(id);
-            if(!("1".equals(user.getUser_autority()))){
+	/**
+	 * Description: <br>
+	 * 总览页面
+	 *
+	 * @return bcm-pandect.jsp
+	 */
+	@RequestMapping(value = { "bcm/{id}" }, method = RequestMethod.GET)
+	public String bcm(Model model, @PathVariable long id) {
+
+		try {
+			User user = userDao.findOne(id);
+			if (!("1".equals(user.getUser_autority()))) {
 				// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
-	            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-	            Namespace ns = client.getNamespace(user.getNamespace());
-	            if (null != ns) {
-	                getUserResourceInfo(model, user, client);
-	            }
-	            else {
-	                LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
-	            }
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+				Namespace ns = client.getNamespace(user.getNamespace());
+				if (null != ns) {
+					getUserResourceInfo(model, user, client);
+				} else {
+					LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
+				}
 
-	            double usedstorage = 0;
-	            List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
-	            for (Storage storage : list) {
-	                usedstorage = usedstorage + (double) storage.getStorageSize();
-	            }
-	            Shera shera = sheraDao.findByUserId(id);
-	            model.addAttribute("userShera", shera);
-	            model.addAttribute("usedstorage",  usedstorage / 1024);
-            } else {
-            	List<User> userList = userDao.findAllTenant();
-            	List<UserInfo> userInfos = new ArrayList<>();
-            	for (User user2 : userList) {
+				double usedstorage = 0;
+				List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+				for (Storage storage : list) {
+					usedstorage = usedstorage + (double) storage.getStorageSize();
+				}
+				Shera shera = sheraDao.findByUserId(id);
+				model.addAttribute("userShera", shera);
+				model.addAttribute("usedstorage", usedstorage / 1024);
+			} else {
+				List<User> userList = userDao.findAllTenant();
+				List<UserInfo> userInfos = new ArrayList<>();
+				for (User user2 : userList) {
 					userInfos.add(getUserInfo(user2));
 				}
-            	model.addAttribute("userInfos", userInfos);
-            }
-
-
-//---------最近操作---------------
-
-
-            List<ServiceOperationLog> svcLogs = serviceOperationLogDao.findFourByCreateBy(id,new PageRequest(0, 4, Direction.DESC, "createDate"));
-            List<CommonOperationLog> commonLogs = commonOperationLogDao.findFourByCreateBy(id,new PageRequest(0, 4, Direction.DESC, "createDate"));
-            Map<Date,String> map = new HashMap<Date,String>();
-            for (ServiceOperationLog serviceOperationLog : svcLogs) {
-            	String oprationRecord = "对服务: "+serviceOperationLog.getServiceName()
-            						+ " 进行了"
-            						+ ServiceConstant.OPERATION_TYPE_MAP.get(serviceOperationLog.getOperationType())
-            						+ "操作";
-            	map.put(serviceOperationLog.getCreateDate(), oprationRecord);
-			}
-            for (CommonOperationLog commonOperationLog : commonLogs) {
-            	String oprationRecord = "在"
-            						+ CommConstant.CatalogType_MAP.get(commonOperationLog.getCatalogType())
-			            			+ "模块进行了"
-			            			+ CommConstant.OPERATION_TYPE_MAP.get(commonOperationLog.getOperationType())
-			            			+ "操作";
-            	map.put(commonOperationLog.getCreateDate(), oprationRecord);
+				model.addAttribute("userInfos", userInfos);
 			}
 
-            //根据时间进行排序
-            //将Map转化为List集合，List采用ArrayList
-            List<Map.Entry<Date, String>> list_Data = new ArrayList<Map.Entry<Date,String>>(map.entrySet());
+			// ---------最近操作---------------
 
-          //通过Collections.sort(List I,Comparator c)方法进行排序
-            Collections.sort(list_Data,new Comparator<Map.Entry<Date, String>>() {
+			List<ServiceOperationLog> svcLogs = serviceOperationLogDao.findFourByCreateBy(id,
+					new PageRequest(0, 4, Direction.DESC, "createDate"));
+			List<CommonOperationLog> commonLogs = commonOperationLogDao.findFourByCreateBy(id,
+					new PageRequest(0, 4, Direction.DESC, "createDate"));
+			Map<Date, String> map = new HashMap<Date, String>();
+			for (ServiceOperationLog serviceOperationLog : svcLogs) {
+				String oprationRecord = "对服务: " + serviceOperationLog.getServiceName() + " 进行了"
+						+ ServiceConstant.OPERATION_TYPE_MAP.get(serviceOperationLog.getOperationType()) + "操作";
+				map.put(serviceOperationLog.getCreateDate(), oprationRecord);
+			}
+			for (CommonOperationLog commonOperationLog : commonLogs) {
+				String oprationRecord = "在" + CommConstant.CatalogType_MAP.get(commonOperationLog.getCatalogType())
+						+ "模块进行了" + CommConstant.OPERATION_TYPE_MAP.get(commonOperationLog.getOperationType()) + "操作";
+				map.put(commonOperationLog.getCreateDate(), oprationRecord);
+			}
+
+			// 根据时间进行排序
+			// 将Map转化为List集合，List采用ArrayList
+			List<Map.Entry<Date, String>> list_Data = new ArrayList<Map.Entry<Date, String>>(map.entrySet());
+
+			// 通过Collections.sort(List I,Comparator c)方法进行排序
+			Collections.sort(list_Data, new Comparator<Map.Entry<Date, String>>() {
 
 				@Override
 				public int compare(Entry<Date, String> o1, Entry<Date, String> o2) {
-					if(o1.getKey().before(o2.getKey())){//o1比o2早
+					if (o1.getKey().before(o2.getKey())) {// o1比o2早
 						return 1;
 					}
 					return -1;
 				}
 
-            });
+			});
 
-            Iterator<Map.Entry<Date, String>> it = list_Data.iterator();
-            while(it.hasNext()){
-            	Entry<Date, String> a = it.next();
-                if(a.getKey().before(list_Data.get(3).getKey())){
-                    it.remove();
-                }
-            }
-            System.out.println(list_Data);
-            model.addAttribute("list_Data", list_Data);
-//------------------------
+			Iterator<Map.Entry<Date, String>> it = list_Data.iterator();
+			while (it.hasNext()) {
+				Entry<Date, String> a = it.next();
+				if (a.getKey().before(list_Data.get(3).getKey())) {
+					it.remove();
+				}
+			}
+			System.out.println(list_Data);
+			model.addAttribute("list_Data", list_Data);
+			// ------------------------
 
+		} catch (KubernetesClientException e) {
+			LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+			e.printStackTrace();
+		} catch (Exception e) {
+			LOG.error("error message:-" + e.getMessage());
+			e.printStackTrace();
+		}
 
-        }
-        catch (KubernetesClientException e) {
-            LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            LOG.error("error message:-" + e.getMessage());
-            e.printStackTrace();
-        }
+		model.addAttribute("showAuthCode", showAuthCode);
 
-        model.addAttribute("showAuthCode", showAuthCode);
-
-        model.addAttribute("menu_flag", "bcm");
-        return "bcm-pandect.jsp";
-    }
+		model.addAttribute("menu_flag", "bcm");
+		return "bcm-pandect.jsp";
+	}
     /**
      *
      * Description:
@@ -648,6 +641,15 @@ public class IndexController {
 			userInfo.setUsedMemoryNum(Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
 			userInfo.setUsedPodNum((null != podList) ? podList.size() : 0); // 已经使用的POD个数
 			userInfo.setUsedServiceNum((null != rcList) ? rcList.size() : 0);// 已经使用的服务个数
+			double usedstorage = 0;
+			List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+			for (Storage storage : list) {
+				usedstorage = usedstorage + (double) storage.getStorageSize();
+			}
+			Shera shera = sheraDao.findByUserId(user.getId());
+			userInfo.setUserShera(shera);
+			userInfo.setUsedstorage(usedstorage / 1024);
+
 		} else {
 			LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
 		}
