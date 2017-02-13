@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	$("#delItemcfg").hide();
 	findImages();
+	imageTypeSrc();
     /*$(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
     });*/
@@ -553,7 +554,7 @@ function syncImages(){
 	})
 }
 
-//
+//镜像搜索结果
 function searchImagesResult(){
 	$("#searchImagesList").empty();
 	$(".imagesCenter").addClass("hide");
@@ -577,20 +578,27 @@ function searchImagesResult(){
 				 var imageName = imageList[i].name;
 				 var imageVersion = imageList[i].version;
 				 var imageId = imageList[i].id;
-				 var imageExportCount = imageList[i].exportCount;
+				 var imageExportCount = "";
+				 if(imageList[i].exportCount == "" || imageList[i].exportCount == null){
+					 imageExportCount = 0;
+				 }else{
+					 imageExportCount = imageList[i].exportCount;
+				 }
+				 
 				 var imageResourceName = imageList[i].resourceName;
 				 var imageRemark = imageList[i].remark;
 				 var imageSummary = imageList[i].summary;
+				 var imageType = imageList[i].imageType;
 				 //搜索结果html
 				 searchImagesHtml += '<li class="images-panel">'+
 									'<div class="select-img">'+
 									'<div class="mir-img ">'+
-										'<img src="'+ctx+'/images/image-1.png">'+
+										'<img class="imageTypeSrc" imageType="'+imageType+'" src="'+ctx+'/images/image-1.png">'+
 										'<div class="imageInfoText">'+imageRemark+'</div>'+
 									'</div>'+
 								'</div>'+
 								'<div class="select-info">'+
-									'<div class="pull-right-text">'+imageName+''+
+									'<div class="pull-right-text"><span class="imageCenter-name">'+imageName+'</span>'+
 									'<div class="pull-right">'+
 										'<i class="fa fa-cloud-download" style="color: #e8504f"></i>'+
 										'<span class="cloudNum">'+imageExportCount+'</span>'+
@@ -614,6 +622,25 @@ function searchImagesResult(){
 							'</li>';
 			 }
 			 $("#searchImagesList").append(searchImagesHtml);
+			 imageTypeSrc();
 		 }
 	 });
 }
+
+//镜像图标imageType=1公有2私有
+function imageTypeSrc(){
+	var images = $(".imageTypeSrc");
+	var imageType1 = ctx+"/images/imageType1.png";
+	var imageType2 = ctx+"/images/imageType2.png";
+	for(var i=0; i< images.length; i++){
+		var imageType = images[i].attributes.imagetype.value;
+		if(imageType==1){
+			images[i].src=imageType1;
+		}else{
+			images[i].src=imageType2;
+		}
+	}
+}
+
+
+

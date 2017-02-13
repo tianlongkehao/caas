@@ -28,6 +28,7 @@
     position: relative;
     float: left;
     margin: 0 20px 20px;
+    background: #fcfcfc;
 }
 
 .images-panel .select-img {
@@ -427,7 +428,7 @@
     text-align: right;
     padding-right:0px;
 }
-.searchImageVersion{
+.searchImageVersion ,.imageCenter-name{
 	width:70%;
 	display:block;
     white-space:nowrap;
@@ -441,3 +442,13 @@ span.cloudNum{
 .fa-cloud-download span{
 	padding-left:4px;
 }
+.envTableValue{
+	word-break: break-word;
+}
+#dockerFileContent{
+	width: 100%;
+    height: 200px;
+    background-color: #ddd;
+    border: 1px solid #ccc;
+}
+

@@ -117,59 +117,78 @@
                             
                             <section class="infoInterface hide">
                                 <div class="detail-contents">
-                                    <p><b>容器端口：<span>3306/tcp</span></b></p>
-                                    <p><b>数据存储卷：<span>/var/lib/mysql</span></b></p>
+                                    <p><b>容器端口：</b></p>
+                                    <table class="table table-hover" id="portTable" style="border:1px solid #eee;">
+                                        <tbody>
+                                        <tr style="background:#F5F6F6">
+                                            <th>端口</th>
+                                            <th>协议</th>
+                                        </tr>
+                                        <c:forEach items="${portList }" var = "port">
+                                        <tr class="envobj-tr">
+                                            <td>${port.containerPort }</td>
+                                            <td>${port.protocol }</td>
+                                        </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
+                                    <!-- <p><b>数据存储卷：<span>/var/lib/mysql</span></b></p> -->
                                     <p><b><b>所需环境变量：</b></b></p>
-                                    <table class="table table-hover" id="editTable" style="border:1px solid #eee;">
+                                    <table class="table table-hover" id="envTable" style="border:1px solid #eee;">
                                         <tbody>
                                         <tr style="background:#F5F6F6">
                                             <th>变量名</th>
                                             <th>默认值</th>
                                         </tr>
+                                        <c:forEach items="${envList}" var="env">
                                         <tr class="envobj-tr">
-                                            <td>PATH</td>
-                                            <td>/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</td>
+                                            <td>${env.envKey }</td>
+                                            <td class="envTableValue">${env.envValue }</td>
                                         </tr>
-                                        <tr class="envobj-tr">
-                                            <td>DEBIAN_FRONTEND</td>
-                                            <td>noninteractive</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>MYSQL_USER</td>
-                                            <td>admin</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>MYSQL_PASS</td>
-                                            <td>**Random**</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>REPLICATION_MASTER</td>
-                                            <td>**False**</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>REPLICATION_SLAVE</td>
-                                            <td>**False**</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>REPLICATION_USER</td>
-                                            <td>replica</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>REPLICATION_PASS</td>
-                                            <td>replica</td>
-                                        </tr>
+                                        </c:forEach>
                                         </tbody>
                                     </table>
                                 </div>
                             </section>
                             <section class="infoDockerfile hide">
                                 <div class="detail-contents">
-                                这个镜像不提供Dockerfile。
+                                	<c:if test="${dockerFileContent == null || dockerFileContent == ''}">
+                                		 这个镜像不提供Dockerfile。
+                                	</c:if>
+                               		<c:if test="${dockerFileContent != null && dockerFileContent != ''}">
+                                		 <textarea id="dockerFileContent">${dockerFileContent}</textarea>
+                                	</c:if>
                                 </div>
                             </section> 
                             <section class="infoHistory hide">
                                 <div class="detail-contents">
-                                此镜像无构建历史。
+                                	<c:if test="${ciHistory == null || ciHistory == ''}">
+                                		 此镜像无构建历史。
+                                	</c:if>
+                               		<c:if test="${ciHistory != null && ciHistory != ''}">
+                                	<table class="table table-hover" id="historyTable" style="border:1px solid #eee;">
+                                        <tbody>
+                                        <tr style="background:#F5F6F6">
+                                            <th>构建名称</th>
+                                            <th>构建版本</th>
+                                            <th>构建结果</th>
+                                            <th>构建时长</th>
+                                            <th>创建者</th>
+                                            <th>构建时间</th>
+                                        </tr>
+                                        <c:forEach items="${ciHistory}" var="ciHistory">
+                                        <tr class="envobj-tr">
+                                            <td>${ciHistory.ciName }</td>
+                                            <td>${ciHistory.ciVersion }</td>
+                                            <td>${ciHistory.constructResult }</td>
+                                            <td>${ciHistory.constructTime }</td>
+                                            <td>${ciHistory.imageId }</td>
+                                            <td>${ciHistory.constructDate }</td>
+                                        </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
+                                    </c:if>
                                 </div>
                             </section>
                             <section class="infoTags hide">

@@ -64,13 +64,13 @@
                                     <li class="images-panel">
                                         <div class="select-img">
                                             <div class="mir-img ">
-                                                <img src="<%=path %>/images/image-1.png">
+                                                <img class="imageTypeSrc" imageType="${image.imageType }" src="<%=path %>/images/image-1.png">
                                                 <div class="imageInfoText">${image.remark }</div>
                                             </div>
                                         </div>
                                         <div class="select-info">
                                             <div class="pull-right-text">
-                                                ${image.name}
+                                                <span class="imageCenter-name">${image.name}</span>
                                                 <div class="pull-right">
                                                 	<i class="fa fa-cloud-download" style="color:#e8504f"></i>
                                                 	<c:if test="${image.exportCount == null || image.exportCount == '' || image.exportCount == 0}">
@@ -85,13 +85,8 @@
                                             	<i class="fa fa-tag"></i>${image.version }
                                             	
                                                 <div class="pull-right">
-		                                            <c:if test="${image.currUserFavor==0 }">
-                                                        <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
-                                                    </c:if>
-                                                    <c:if test="${image.currUserFavor==1 }">
-                                                        <i class="fa fa-star star-style" style="color:#e8504f"></i>
-                                                    </c:if>
-	                                              <span>${image.currUserFavorCount }</span>
+                                                    <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
+	                                                <span>${image.currUserFavorCount }</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -113,14 +108,14 @@
 	                                    <li class="images-panel">
 	                                        <div class="select-img">
 	                                            <div class="mir-img ">
-	                                                <img src="<%=path %>/images/image-1.png">
+	                                                <img class="imageTypeSrc" imageType="${image.imageType }" src="<%=path %>/images/image-1.png">
 	                                                <div class="imageInfoText">${image.remark }</div>
 	                                                
 	                                            </div>
 	                                        </div>
 	                                        <div class="select-info">
 	                                            <div class="pull-right-text">
-	                                                ${image.name}
+	                                                <span class="imageCenter-name">${image.name}</span>
 	                                                <div class="pull-right">
 	                                                	<i class="fa fa-cloud-download" style="color:#e8504f"></i>
 	                                                	<c:if test="${image.exportCount == null || image.exportCount == ''|| image.exportCount == 0}">
@@ -135,11 +130,12 @@
 	                                            <div>
 	                                                <i class="fa fa-tag"></i>${image.version }
 	                                                <div class="pull-right">
-	                                                    <c:if test="${image.currUserFavor==0 }">
-	                                                        <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
+	                                                    <i class="fa fa-star-o star-style" style="color:#e8504f"></i>
+	                                                    <c:if test="${image.currUserFavor==0 ||image.currUserFavor==null||image.currUserFavor==''}">
+	                                                        <span>0</span>
 	                                                    </c:if>
-	                                                    <c:if test="${image.currUserFavor==1 }">
-	                                                        <i class="fa fa-star star-style" style="color:#e8504f"></i>
+	                                                    <c:if test="${image.currUserFavor!=0 &&image.currUserFavor!=null&&image.currUserFavor!=''}">
+	                                                    	<span>${image.currUserFavorCount }</span>
 	                                                    </c:if>
 	                                                </div>
 	                                            </div>

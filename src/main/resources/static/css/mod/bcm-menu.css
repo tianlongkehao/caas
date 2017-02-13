@@ -11,7 +11,7 @@ nav.navbar-default{
 	width:200px;
 	position: fixed;
     top: 86px;
-    left: 0;
+    left: 14px;
     /* bottom: 60px; */
     z-index: 95;
     /* min-height: 100%; */
@@ -141,6 +141,7 @@ nav.navbar-default{
 	background-color: #e8504f;
 	z-index: 100;
     bottom: -70px;
+    left:14px;
     margin-bottom: 70px;
 }
 #nav-side{

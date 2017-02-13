@@ -116,13 +116,13 @@ function checkCookie() {
 		break;
 	case "1":
 		$(".navAll").removeClass("hide");
-		$(".page-container").css("margin-left","190px");
+		$(".page-container").css("margin-left","210px");
 		$(".navbar-downSide-show").addClass("hide");
 		$(".sideBoxBtn").css("left","185px")
 		break;
 	default:
 		$(".navAll").removeClass("hide");
-		$(".page-container").css("margin-left","190px");
+		$(".page-container").css("margin-left","210px");
 		$(".navbar-downSide-show").addClass("hide");
 		$(".sideBoxBtn").css("left","185px")
 	}
@@ -138,7 +138,7 @@ function navHide(){
 }
 function navShow(){
 	$(".navAll").removeClass("hide");
-	$(".page-container").css("margin-left","190px");
+	$(".page-container").css("margin-left","210px");
 	$(".navbar-downSide-show").addClass("hide");
 	$(".sideBoxBtn").css("left","185px")
 	setCookie("label",1);

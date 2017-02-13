@@ -1220,3 +1220,13 @@ i.pushOrg {
     margin-left: 50px;
 }
 
+/* iptables */
+.differentTable{
+	margin-top:14px;
+}
+.u-line,.sameTable,.differentTable{
+	border-bottom:1px solid #ddd;
+}
+
+
+
