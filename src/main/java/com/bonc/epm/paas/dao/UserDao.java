@@ -20,6 +20,10 @@ public interface UserDao extends CrudRepository<User, Long> {
 
 	public User findById(long id);
 
+//	@Query("select u from User u where  i.userName like ?1")
+//	public User searchByUserName(String userName);
+
+
 	@Query("select u from User u where u.user_autority=2")
 	public List<User> findAllTenant();
 
