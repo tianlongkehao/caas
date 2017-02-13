@@ -302,6 +302,12 @@
                                                     </select>
 												</div>
 											</div>
+											<div class="row">
+												<div class="col-md-10" align="left" style="line-height:40px">
+													<i class="fa fa-warning" style="color:#efa421"></i>
+													<span>代码质量检查阈值，若代码质量不能达到设定的阈值级别则代码不能继续编译！</span>
+												</div>
+											</div>
 										</div>
 
 										<div class="" style="padding-top: 235px">

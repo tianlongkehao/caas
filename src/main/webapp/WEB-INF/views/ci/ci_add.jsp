@@ -124,8 +124,8 @@
                                 </div>
                             </section>
                             <!--   质量管理 -->
-                            <h4 class="c-title hide">质量管理</h4>
-                            <section class="registryinfo hide">
+                            <h4 class="c-title">质量管理</h4>
+                            <section class="registryinfo">
                         		<div class="row depot-name">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">项目主键</label>
@@ -143,8 +143,8 @@
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">项目描述</label>
-	                                    <input id="sonarProjectDescription" autocomplete = 'off' name="sonarProjectDescription" class="form-control c-project-con" type="text"
-	                                           required="">
+	                                    <textarea id="sonarProjectDescription" autocomplete = 'off' name="sonarProjectDescription" class="form-control c-project-con" type="text"
+	                                           required="" row="5"></textarea>
 	                                </div>
 	                            </div>
 	                            <div class="row">
