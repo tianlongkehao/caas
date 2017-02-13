@@ -123,6 +123,66 @@
 		                            </div>
                                 </div>
                             </section>
+                            <!--   质量管理 -->
+                            <h4 class="c-title hide">质量管理</h4>
+                            <section class="registryinfo hide">
+                        		<div class="row depot-name">
+	                                <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">项目主键</label>
+	                                    <input id="sonarProjectKey" autocomplete = 'off' name="sonarProjectKey" class="form-control c-project-con" type="text"
+	                                           required="">
+	                                </div>
+	                            </div>
+	                            <div class="row">
+	                                <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">项目名称</label>
+	                                    <input id="sonarProjectName" autocomplete = 'off' name="sonarProjectName" class="form-control c-project-con" type="text"
+	                                           required="">
+	                                </div>
+	                            </div>
+	                            <div class="row">
+	                                <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">项目描述</label>
+	                                    <input id="sonarProjectDescription" autocomplete = 'off' name="sonarProjectDescription" class="form-control c-project-con" type="text"
+	                                           required="">
+	                                </div>
+	                            </div>
+	                            <div class="row">
+	                                <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">项目版本号</label>
+	                                    <input id="sonarProjectVersion" autocomplete = 'off' name="sonarProjectVersion" class="form-control c-project-con" type="text"
+	                                           required="">
+	                                </div>
+	                            </div>
+	                            <div class="row">
+	                                <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">源码所在目录</label>
+	                                    <input id="sonarProjectSources" autocomplete = 'off' name="sonarProjectSources" class="form-control c-project-con" type="text"
+	                                           required="">
+	                                </div>
+	                            </div>
+	                            <div class="row">
+	                                <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">源码编码类型</label>
+	                                    <input id="sonarProjectSourceEncoding" autocomplete = 'off' name="sonarProjectSourceEncoding" class="form-control c-project-con" type="text"
+	                                           required="">
+	                                </div>
+	                            </div>
+	                            <div class="row">
+	                                <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">源码分支</label>
+	                                    <input id="sonarProjectBranch" autocomplete = 'off' name="sonarProjectBranch" class="form-control c-project-con" type="text"
+	                                           required="">
+	                                </div>
+	                            </div>
+	                            <div class="row">
+	                                <div class="form-group col-md-12">
+	                                    <label class="c-project-tit">项目源码链接</label>
+	                                    <input id="sonarProjectLinkScm" autocomplete = 'off' name="sonarProjectLinkScm" class="form-control c-project-con" type="text"
+	                                           required="">
+	                                </div>
+	                            </div>
+                        	</section>
                             <h4 class="c-title">构建</h4>
                             <section class="registryinfo">
 		                                <ul class="nav nav-bar">
