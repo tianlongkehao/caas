@@ -1137,3 +1137,15 @@ p.portLabel input{
 #mountPath{
 	margin-left:10px;
 }
+.service-searchFun{
+	text-align: center; 
+	margin: 0px 10px; 
+	float: right;
+	padding-top:12px;
+}
+.service-searchBtn{
+	padding-top: 0px;
+    padding-bottom: 0px;
+    height: 30px;
+    margin-top: 3px;
+}
