@@ -59,6 +59,33 @@
 										
 									</div>
 								</div>
+								<form id="search_form" class="form-inline" action="" method="post">
+									<div class="service-searchFun"
+										align="right">
+										<button type="button" class="btn btn-danger btn-sm service-searchBtn" value="查找">查找</button>
+									</div>
+									<c:if test="${cur_user.user_autority == 1}">
+									<div class="service-searchFun"
+										align="right">
+										<label style="line-height: 35px">创建人:</label><select
+											name="search_users" id="search_users" onchange="searchUsers()"
+											style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+											<option value="">testjiang</option>
+											</select>
+										
+									</div></c:if>
+									<div class="service-searchFun"
+										align="right">
+										<label style="line-height: 35px">镜像:</label> 
+										<input type="text" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+									</div>
+									<div class="service-searchFun"
+										align="right">
+										<label style="line-height: 35px">名称:</label> 
+										<input type="text" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+									</div>
+									
+								</form>
 								<div class="ibox-content">
 									<table class="table table-stripped table-hover dataTables-example">
 										<thead>
