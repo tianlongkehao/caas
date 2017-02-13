@@ -648,7 +648,7 @@ public class IndexController {
 			}
 			Shera shera = sheraDao.findByUserId(user.getId());
 			userInfo.setUserShera(shera);
-			userInfo.setUsedstorage(usedstorage / 1024);
+			userInfo.setUsedStorage(usedstorage / 1024);
 
 		} else {
 			LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");

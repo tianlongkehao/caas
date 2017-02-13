@@ -202,9 +202,10 @@ img.pandect-icon{
 	width:98%;
 	margin:0 auto;
 }
-.u-line{
+.u-line,.usersResourceTable{
 	border-bottom:1px solid #ddd;
 }
+
 
 
 

@@ -23,7 +23,7 @@
                 </ol>
             </div>
             <div class="contentMain">
-                
+                <input type="hidden" id="curUserAutority" value="${cur_user.user_autority}">
                 <div class="account_table" userID="${user.id }">
                 	<c:if test="${cur_user.user_autority != 1}">
 					<div class="serviceDetailInfo hide">
@@ -207,9 +207,9 @@
                         </div>
                     </div>
                     </c:if>
-                    
+                    <!-- admin总览信息 -->
                     <c:if test="${cur_user.user_autority == 1}">
-                    	
+                    		
                         	<div class="detail-info">
 	                            <div class="info-list">
 	                                <table class="table" id="table-listing">
@@ -219,40 +219,42 @@
 	                                    </tr>
 	                                    </thead>
 	                                    <tbody>
+	                                    <c:if test="${userInfos != null && userInfos != ''}">
 	                                    <tr style="height:20px"></tr>
 	                                    <tr>
 	                                        <td style="width:15%">CPU（个）</td>
 	                                        <td style="width:25%">
 	                                            <div class="slider_bj">
-	                                                <div class="slider_block detailCpu" id="usedCpu"></div>
+	                                                <div class="slider_block detailCpu" id="adminUsedCpu"></div>
 	                                            </div>
 	                                        </td>
 	                                        <td style="width:10%">
-	                                            <span id="detailCpu">${usedCpuNum}</span>/<span id="totalCpu">${servCpuNum}</span>（个）
+	                                            <span id="adminDetailCpu"></span>/<span id="adminTotalCpu">100</span>（个）
 	                                        </td>
 	                                    </tr>
 	                                    <tr>
 	                                        <td>内存（G）</td>
 	                                        <td>
 	                                            <div class="slider_bj">
-	                                                <div class="slider_block detailMemory" id="usedMemory"></div>
+	                                                <div class="slider_block detailMemory" id="adminUsedMemory"></div>
 	                                            </div>
 	                                        </td>
 	                                        <td>
-	                                            <span id="detailMemory">${usedMemoryNum}</span>/<span id="totalMemory">${servMemoryNum}</span>（G）
+	                                            <span id="adminDetailMemory"></span>/<span id="adminTotalMemory">1000</span>（G）
 	                                        </td>
 	                                    </tr>
 	                                    <tr>
 	                                        <td>卷组容量（G）</td>
 	                                        <td>
 	                                            <div class="slider_bj">
-	                                                <div class="slider_block detailVolume" id="usedVolume"></div>
+	                                                <div class="slider_block detailVolume" id="adminUsedVolume"></div>
 	                                            </div>
 	                                        </td>
 	                                        <td>
-	                                            <span id="detailVolume">${usedstorage}</span>/<span id="totalVolume">${userResource.vol_size}</span>（G）
+	                                            <span id="adminDetailVolume"></span>/<span id="adminTotalVolume">100</span>（G）
 	                                        </td>
 	                                    </tr>
+	                                    </c:if>
 	                                    </tbody>
 	                                </table>
 	                            </div>
@@ -261,7 +263,7 @@
 	                        <section class="container-count usersResourceInfo">
 		                        <div class="padding">
 		                            <div class="row-title">租户信息</div>
-		                            <table class="table table-hover">
+		                            <table class="table table-hover usersResourceTable">
 	                                    <thead>
 	                                    	<tr class="usersInfoTit u-line">
 	                                    		<th>租户名称</th>
@@ -274,50 +276,29 @@
 	                                    	</tr>
 	                                    </thead>
 	                                    <tbody>
+	                                    	<c:forEach items="${userInfos }" var="userInfos">
 	                                    	<tr>
-	                                    		<td rowspan="3">租户1</td>
-	                                    		<td rowspan="3">22</td>
-	                                    		<td rowspan="3">33</td>
+	                                    		<td rowspan="3">${userInfos.user.userName }</td>
+	                                    		<td rowspan="3">${userInfos.usedPodNum }</td>
+	                                    		<td rowspan="3">${userInfos.usedServiceNum }</td>
 	                                    		<td>总量</td>
-	                                    		<td>33</td>
-	                                    		<td>55</td>
-	                                    		<td>77</td>
+	                                    		<td class="servCpuNum" value="${userInfos.servCpuNum }">${userInfos.servCpuNum }</td>
+	                                    		<td class="servMemoryNum" value="${userInfos.servMemoryNum }">${userInfos.servMemoryNum }</td>
+	                                    		<td class="servVolNum" value="${userInfos.userResource.vol_size }">${userInfos.userResource.vol_size }</td>
 	                                    	</tr>
 	                                    	<tr>
-	                                    		<td>未使用</td>
-	                                    		<td>44</td>
-	                                    		<td>33</td>
-	                                    		<td>55</td>
+	                                    		<td>已使用</td>
+	                                    		<td class="usedCpuNum" value="${userInfos.usedCpuNum }">${userInfos.usedCpuNum }</td>
+	                                    		<td class="usedMemoryNum" value="${userInfos.usedMemoryNum }">${userInfos.usedMemoryNum }</td>
+	                                    		<td class="usedStorage" value="${userInfos.usedStorage }">${userInfos.usedStorage }</td>
 	                                    	</tr>
 	                                    	<tr class="u-line">
-	                                    		<td>已使用</td>
-	                                    		<td>44</td>
-	                                    		<td>33</td>
-	                                    		<td>55</td>
-	                                    	</tr>
-	                                    	
-	                                    	<tr>
-	                                    		<td rowspan="3">租户1</td>
-	                                    		<td rowspan="3">22</td>
-	                                    		<td rowspan="3">33</td>
-	                                    		<td>总量</td>
-	                                    		<td>33</td>
-	                                    		<td>55</td>
-	                                    		<td>77</td>
-	                                    	</tr>
-	                                    	<tr>
 	                                    		<td>未使用</td>
-	                                    		<td>44</td>
-	                                    		<td>33</td>
-	                                    		<td>55</td>
+	                                    		<td>${userInfos.restCpuNum }</td>
+	                                    		<td>${userInfos.restMemoryNum }</td>
+	                                    		<td>${userInfos.restStorage }</td>
 	                                    	</tr>
-	                                    	<tr class="u-line">
-	                                    		<td>已使用</td>
-	                                    		<td>44</td>
-	                                    		<td>33</td>
-	                                    		<td>55</td>
-	                                    	</tr>
-	                                    
+	                                    	</c:forEach>
 	                                    </tbody>
 	                                </table>
 		                        </div>
@@ -331,14 +312,68 @@
     </article>
 </div>
 <script type="text/javascript">
-$(function(){
-	var userCpuPer = $("#detailCpu")[0].textContent/$("#totalCpu")[0].textContent*100+"%";
-    $("#usedCpu")[0].style.width = userCpuPer;
-    var userMemPer = $("#detailMemory")[0].textContent/$("#totalMemory")[0].textContent*100+"%";
-    $("#usedMemory")[0].style.width = userMemPer;
-    var userVolPer = $("#detailVolume")[0].textContent/$("#totalVolume")[0].textContent*100+"%";
-    $("#usedVolume")[0].style.width = userVolPer;
-})
+ $(function(){
+	var curUserAutority = $("#curUserAutority").val();
+	if(curUserAutority != 1){
+		var userCpuPer = $("#detailCpu")[0].textContent/$("#totalCpu")[0].textContent*100+"%";
+	    $("#usedCpu")[0].style.width = userCpuPer;
+	    var userMemPer = $("#detailMemory")[0].textContent/$("#totalMemory")[0].textContent*100+"%";
+	    $("#usedMemory")[0].style.width = userMemPer;
+	    var userVolPer = $("#detailVolume")[0].textContent/$("#totalVolume")[0].textContent*100+"%";
+	    $("#usedVolume")[0].style.width = userVolPer;
+	}else{
+		//分配出去的
+		var servCpuNum = $(".servCpuNum");
+		var servMemoryNum = $(".servMemoryNum");
+		var servVolNum = $(".servVolNum");
+		var allUsedCpuNum = 0;
+		var allUsedMemoryNum = 0;
+		var allUsedStorageNum = 0;
+		for(var m=0; m<servCpuNum.length;m++){
+			allUsedCpuNum += parseFloat(servCpuNum[m].attributes.value.value);
+		}
+		$("#adminDetailCpu").html(allUsedCpuNum);
+		for(var n=0; n<servMemoryNum.length;n++){
+			allUsedMemoryNum += parseFloat(servMemoryNum[n].attributes.value.value);
+		}
+		$("#adminDetailMemory").html(allUsedMemoryNum);
+		for(var x=0; x<servVolNum.length;x++){
+			allUsedStorageNum += parseFloat(servVolNum[x].attributes.value.value);
+		}
+		$("#adminDetailVolume").html(allUsedStorageNum);
+		
+		//已经使用的
+		/* var cpuNum = $(".usedCpuNum");
+		var memoryNum = $(".usedMemoryNum");
+		var storageNum = $(".usedStorage");
+		var usedCpuNum = 0;
+		var usedMemoryNum = 0;
+		var usedStorageNum = 0;
+		for(var i=0; i<cpuNum.length;i++){
+			usedCpuNum += parseFloat(cpuNum[i].attributes.value.value);
+		}
+		$("#adminDetailCpu").html(usedCpuNum);
+		
+		for(var j=0; j<memoryNum.length;j++){
+			usedMemoryNum += parseFloat(memoryNum[j].attributes.value.value);
+		}
+		$("#adminDetailMemory").html(usedMemoryNum);
+		
+		for(var k=0; k<storageNum.length;k++){
+			usedStorageNum += parseFloat(storageNum[k].attributes.value.value);
+		}
+		$("#adminDetailVolume").html(usedStorageNum); */
+		
+		var userCpuPer = $("#adminDetailCpu")[0].textContent/$("#adminTotalCpu")[0].textContent*100+"%";
+	    $("#adminUsedCpu")[0].style.width = userCpuPer;
+	    var userMemPer = $("#adminDetailMemory")[0].textContent/$("#adminTotalMemory")[0].textContent*100+"%";
+	    $("#adminUsedMemory")[0].style.width = userMemPer;
+	    var userVolPer = $("#adminDetailVolume")[0].textContent/$("#adminTotalVolume")[0].textContent*100+"%";
+	    $("#adminUsedVolume")[0].style.width = userVolPer;
+		
+	}
+	
+}) 
 </script>
 </body>
 </html>
