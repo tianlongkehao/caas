@@ -191,9 +191,10 @@ nav.navbar-default{
 	color:#e14344;
 }
 .navbar-tab ul li a.navTab{
-	color:#e8504f;
+	color:#7d8284;
 }
 .navbar-tab li.active a{
+	color:#e8504f!important;
     border-bottom: 3px solid #e14344;
 }
 #login-header{
