@@ -229,7 +229,7 @@
 	                                            </div>
 	                                        </td>
 	                                        <td style="width:10%">
-	                                            <span id="adminDetailCpu">1</span>/
+	                                            <span id="adminDetailCpu"></span>/
 	                                            
 	                                            <span id="adminTotalCpu">${cpuCount}</span>（个）
 	                                        </td>
@@ -334,7 +334,7 @@
 		for(var m=0; m<servCpuNum.length;m++){
 			allUsedCpuNum += parseFloat(servCpuNum[m].attributes.value.value);
 		}
-		//$("#adminDetailCpu").html(allUsedCpuNum);
+		$("#adminDetailCpu").html(allUsedCpuNum);
 		for(var n=0; n<servMemoryNum.length;n++){
 			allUsedMemoryNum += parseFloat(servMemoryNum[n].attributes.value.value);
 		}
