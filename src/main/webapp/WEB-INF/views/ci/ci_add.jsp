@@ -237,7 +237,7 @@
 			                          </ul>
 		                            </li>
 		                        </ul>
-		                        <div id="dockerfileMethods">
+		                        <%-- <div id="dockerfileMethods">
 		                        	<div class="row dockerfileTemp dockerfileTools hide">
 		                        		<div class="panel-group" id="accordion">
 											<div class="panel panel-default">
@@ -265,7 +265,7 @@
 											</div>
 		                        		</div>
 		                        	</div>
-		                        </div>
+		                        </div> --%>
 		                        <div id="dockerfileMethod"></div>
                         	</section>
                             

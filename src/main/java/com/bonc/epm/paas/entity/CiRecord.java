@@ -118,7 +118,7 @@ public class CiRecord {
 	}
 
 	public long getConstructTime() {
-		return constructTime;
+		return constructTime/1000;
 	}
 
 	public void setConstructTime(long constructTime) {

@@ -180,8 +180,10 @@
                                         <tr class="envobj-tr">
                                             <td>${ciHistory.ciName }</td>
                                             <td>${ciHistory.ciVersion }</td>
-                                            <td>${ciHistory.constructResult }</td>
-                                            <td>${ciHistory.constructTime }</td>
+                                            <c:if test="${ciHistory.constructResult ==1 }"><td>成功</td></c:if>
+                                            <c:if test="${ciHistory.constructResult ==2 }"><td>失败</td></c:if>
+                                            <c:if test="${ciHistory.constructResult ==3 }"><td>构建中</td></c:if>
+                                            <td>${ciHistory.constructTime }s</td>
                                             <td>${ciHistory.imageId }</td>
                                             <td>${ciHistory.constructDate }</td>
                                         </tr>

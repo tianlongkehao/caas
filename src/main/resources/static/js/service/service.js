@@ -35,7 +35,9 @@
 	checkbox();
 	
 	//服务查找
-	$("#serviceSearchBtn").click(function(){
+	
+	//$("#serviceSearchBtn").click(function()
+	$("#serviceSearchBtn").unbind('click').bind('click',function(){
 		$('.dataTables-example').dataTable().fnClearTable() 
 		$('.dataTables-example').dataTable().fnDestroy();
 		
