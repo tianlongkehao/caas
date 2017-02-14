@@ -54,6 +54,7 @@ import com.bonc.epm.paas.dao.ServiceAndStorageDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
+import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.dao.UserFavorDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
@@ -117,6 +118,12 @@ public class ServiceController {
      * smalSet
      */
     private static Set<Integer> smalSet = new HashSet<Integer>();
+
+    /**
+     *  用户层接口
+     */
+    @Autowired
+    private UserDao userDao;
 
     /**
      *  用户偏好层接口
@@ -235,66 +242,80 @@ public class ServiceController {
 	/**
 	 * Description: <br>
 	 * 展示container和services
+	 *
 	 * @param model
 	 * @return String
 	 */
-    @RequestMapping(value = { "service" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "service" }, method = RequestMethod.GET)
 	public String containerLists(Model model) {
-        // 获取特殊条件的pods
-        try {
-            getleftResource(model);
-        }
-        catch (KubernetesClientException e) {
-            model.addAttribute("msg", e.getStatus().getMessage());
-            LOG.debug("service show:" + e.getStatus().getMessage());
-            return "workbench.jsp";
-        }
-        model.addAttribute("menu_flag", "service");
-        model.addAttribute("li_flag", "service");
-        return "service/service.jsp";
-    }
+		// 获取特殊条件的pods
+		try {
+			if (CurrentUserUtils.getInstance().getUser().getId() != 1) {
+				getleftResource(model);
+			}
+		} catch (KubernetesClientException e) {
+			model.addAttribute("msg", e.getStatus().getMessage());
+			LOG.debug("service show:" + e.getStatus().getMessage());
+			return "workbench.jsp";
+		}
+		model.addAttribute("menu_flag", "service");
+		model.addAttribute("li_flag", "service");
+		return "service/service.jsp";
+	}
 
-    /**
-     * Description: <br>
-     * 服务在服务端分页查询
-     * @param draw ：画板
-     * @param start 开始页数
-     * @param length 每页的条数
-     * @param request 获取模糊查询的数据
-     * @return
-     * @see
-     */
-    @RequestMapping(value = {"service/page.do"}, method = RequestMethod.GET)
-    @ResponseBody
-    public String findServiceByPage(String draw, int start,int length,
-                                    HttpServletRequest request){
-        long userId = CurrentUserUtils.getInstance().getUser().getId();
-        String search = request.getParameter("search[value]");
-        Map<String,Object> map = new HashMap<String, Object>();
-        Page<Service> services = null;
-        PageRequest pageRequest = null;
-        //判断是第几页
-        if (start == 0) {
-            pageRequest = ResultPager.buildPageRequest(null, length);
-        }else {
-            pageRequest = ResultPager.buildPageRequest(start/length + 1, length);
-        }
-        //判断是否需要搜索服务
-        if (StringUtils.isEmpty(search)) {
-            services = serviceDao.findByCreateBy(userId,pageRequest);
-        } else {
-            services = serviceDao.findByNameOf(userId, "%" + search + "%",pageRequest);
-        }
-        //判断代码仓库中的代码是否发生改变
-        List<Service> listService = findIsUpdateCode(services.getContent());
-        map.put("draw", draw);
-        map.put("recordsTotal", services.getTotalElements());
-        map.put("recordsFiltered", services.getTotalElements());
-        map.put("data", listService);
+	/**
+	 * Description: <br>
+	 * 服务在服务端分页查询
+	 *
+	 * @param draw 画板
+	 * @param start 开始页数
+	 * @param length 每页的条数
+	 * @param request 获取模糊查询的数据
+	 * @return
+	 * @see
+	 */
+	@RequestMapping(value = { "service/page.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String findServiceByPage(String draw, int start, int length, HttpServletRequest request,
+			String searchService, String searchImage, String searchCreatorName) {
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		String search = request.getParameter("search[value]");
+		Map<String, Object> map = new HashMap<String, Object>();
+		Page<Service> services = null;
+		PageRequest pageRequest = null;
+		// 判断是第几页
+		if (start == 0) {
+			pageRequest = ResultPager.buildPageRequest(null, length);
+		} else {
+			pageRequest = ResultPager.buildPageRequest(start / length + 1, length);
+		}
+		//判断是否是admin
+		if (userId != 1) {
+			// 判断是否需要搜索服务
+			if (StringUtils.isEmpty(search)) {
+				services = serviceDao.findByCreateBy(userId, pageRequest);
+			} else {
+				services = serviceDao.findByNameOf(userId, "%" + search + "%", pageRequest);
+			}
+		} else {
+			//admin用户显示一览界面
+			services = serviceDao.search("%"+(searchService!=null?searchService:"")+"%",
+					"%"+(searchImage!=null?searchImage:"")+"%",
+					"%"+(searchCreatorName!=null?searchCreatorName:"")+"%", pageRequest);
+			for (Service service : services.getContent()) {
+				service.setCreatorName(userDao.findById(service.getCreateBy()).getUserName());
+			}
+		}
+		// 判断代码仓库中的代码是否发生改变
+		List<Service> listService = findIsUpdateCode(services.getContent());
+		map.put("draw", draw);
+		map.put("recordsTotal", services.getTotalElements());
+		map.put("recordsFiltered", services.getTotalElements());
+		map.put("data", listService);
 
-        return JSON.toJSONString(map);
+		return JSON.toJSONString(map);
 
-    }
+	}
 
     /**
      * Description: <br>

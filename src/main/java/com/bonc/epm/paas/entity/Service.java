@@ -54,51 +54,61 @@ public class Service {
 	 */
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
+	public String getCreatorName() {
+		return creatorName;
+	}
+
+	public void setCreatorName(String creatorName) {
+		this.creatorName = creatorName;
+	}
+
 	private long createBy;
+	@Transient
+	private String creatorName;
 	private double cpuNum;
 	private String ram;
 	private long imgID;         //imageId
-	
+
 	/**
 	 * 自定义启动命令
 	 */
 	private String startCommand;
-	
+
 	/**
 	 * 监控设置
 	 */
 	private Integer monitor;
-	
+
 	/**
 	 * 服务访问路径
 	 */
 	private String servicePath;
-	
+
 	/**
 	 * nginx代理区域
 	 */
 	private String proxyZone;
-	
+
 	/**
 	 * nginx代理路径
 	 */
 	private String proxyPath;
-	
+
 	/**
 	 * 服务会话黏连方式
 	 */
 	private String sessionAffinity;
-	
+
 	/**
 	 * 服务检测延迟
 	 */
 	private Integer initialDelay;
-	
+
 	/**
 	 * 服务检测超时
 	 */
 	private Integer timeoutDetction;
-	
+
 	/**
 	 * 服务检测频率
 	 */
@@ -106,38 +116,38 @@ public class Service {
 	/**
 	 * 黏连
 	 */
-	private String nodeIpAffinity;    
+	private String nodeIpAffinity;
 	/**
 	 * 升级用的临时名称
 	 */
 	private String tempName;
-	
+
 	/**
 	 * 服务中文名称
 	 */
 	private String serviceChName;
-	
+
 	/**
 	 * 服务信息是否有修改
 	 */
 	private Integer isModify;
-	
+
 	/**
 	 * 更新时间
 	 */
 	private Date updateDate;
-	
+
 	/**
 	 * 更新者id
 	 */
 	private long updateBy;
-	
+
 	/**
 	 * 根据代码仓库中的代码是否发生变化，来提醒用户是否需要重新构建镜像
 	 */
 	@Transient
 	private boolean updateImage;
-	
+
     public String getServiceChName() {
 		return serviceChName;
 	}
@@ -289,7 +299,7 @@ public class Service {
 	public void setProxyPath(String proxyPath) {
 		this.proxyPath = proxyPath;
 	}
-	
+
     public String getSessionAffinity() {
         return sessionAffinity;
     }
@@ -353,7 +363,7 @@ public class Service {
 	public void setUpdateBy(long updateBy) {
 		this.updateBy = updateBy;
 	}
-    
+
 	@Override
 	public String toString() {
 		return "id:" + id + ",cpuNum:" + cpuNum + ",imgID:" + imgID + ",imgName:" + imgName + ",imgVersion:"
