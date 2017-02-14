@@ -214,16 +214,17 @@ public class IndexController {
 				//获取所有quota
 				double usedCpuCount = 0;
 				double usedMemoryCount = 0;
+				java.text.DecimalFormat   df=new   java.text.DecimalFormat("#.##");
 				ResourceQuotaList allResourceQuotas = client.getAllResourceQuotas();
 				for (ResourceQuota resourceQuota : allResourceQuotas.getItems()) {
 					Map<String, String> used = resourceQuota.getStatus().getUsed();
 					usedCpuCount += Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU);
 					usedMemoryCount += Float.valueOf(this.computeMemoryOut(used));
 				}
-				model.addAttribute("cpuCount", cpuCount);
-				model.addAttribute("memoryCount", memoryCount);
-				model.addAttribute("usedCpuCount", usedCpuCount);
-				model.addAttribute("usedMemoryCount", usedMemoryCount);
+				model.addAttribute("cpuCount", df.format(cpuCount));
+				model.addAttribute("memoryCount", df.format(memoryCount));
+				model.addAttribute("usedCpuCount", df.format(usedCpuCount));
+				model.addAttribute("usedMemoryCount", df.format(usedMemoryCount));
 			}
 
 			// ---------最近操作---------------

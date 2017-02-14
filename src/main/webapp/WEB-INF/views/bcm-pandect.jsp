@@ -229,7 +229,7 @@
 	                                            </div>
 	                                        </td>
 	                                        <td style="width:10%">
-	                                            <span id="adminDetailCpu"></span>/
+	                                            <span id="adminDetailCpu">${usedCpuCount }</span>/
 	                                            
 	                                            <span id="adminTotalCpu">${cpuCount}</span>（个）
 	                                        </td>
@@ -242,10 +242,10 @@
 	                                            </div>
 	                                        </td>
 	                                        <td>
-	                                            <span id="adminDetailMemory"></span>/<span id="adminTotalMemory">1000</span>（G）
+	                                            <span id="adminDetailMemory">${usedMemoryCount }</span>/<span id="adminTotalMemory">${memoryCount }</span>（G）
 	                                        </td>
 	                                    </tr>
-	                                    <tr>
+	                                    <!-- <tr>
 	                                        <td>卷组容量（G）</td>
 	                                        <td>
 	                                            <div class="slider_bj">
@@ -255,7 +255,7 @@
 	                                        <td>
 	                                            <span id="adminDetailVolume"></span>/<span id="adminTotalVolume">100</span>（G）
 	                                        </td>
-	                                    </tr>
+	                                    </tr> -->
 	                                    </c:if>
 	                                    </tbody>
 	                                </table>
@@ -325,7 +325,7 @@
 	    $("#usedVolume")[0].style.width = userVolPer;
 	}else{
 		//分配出去的
-		var servCpuNum = $(".servCpuNum");
+		/* var servCpuNum = $(".servCpuNum");
 		var servMemoryNum = $(".servMemoryNum");
 		var servVolNum = $(".servVolNum");
 		var allUsedCpuNum = 0;
@@ -342,7 +342,7 @@
 		for(var x=0; x<servVolNum.length;x++){
 			allUsedStorageNum += parseFloat(servVolNum[x].attributes.value.value);
 		}
-		$("#adminDetailVolume").html(allUsedStorageNum);
+		$("#adminDetailVolume").html(allUsedStorageNum); */
 		
 		//已经使用的
 		/* var cpuNum = $(".usedCpuNum");
