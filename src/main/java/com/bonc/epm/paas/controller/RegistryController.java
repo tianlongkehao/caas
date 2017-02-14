@@ -276,8 +276,13 @@ public class RegistryController {
 			}
         }
         List<CiRecord> ciHistory = ciRecordDao.findByImageId(image.getId());
+        for (CiRecord ciRecord : ciHistory) {
+        	if (ciRecord.getCreatBy() != 0) {
+        		ciRecord.setCreatorName(userDao.findById(ciRecord.getCreatBy()).getUserName());
+			}
+		}
         String dockerFileContent =new String();
-        if (ciHistory != null) {
+        if (ciHistory != null && ciHistory.size() != 0) {
         	dockerFileContent = ciHistory.get(0).getDockerFileContent();
 		}
         //查询有多少租户收藏当前镜像

@@ -11,7 +11,7 @@
 	<jsp:include page="../frame/bcm-menu.jsp" flush="true" >
         <jsp:param name="registry" value="0" />
     </jsp:include>
-    
+
 	 <div class="page-container">
         <article>
             <div class="page-main">
@@ -27,7 +27,7 @@
                     <input type="hidden" id = "editImage" value = "${editImage }" name = "editImage">
                 </div>
                 <div class="contentMain">
-                	
+
                     <div class="mirror-head">
                         <section class="images">
                             <div class="img-icon">
@@ -114,7 +114,7 @@
                                     <br>
                                 </div>
                             </section>
-                            
+
                             <section class="infoInterface hide">
                                 <div class="detail-contents">
                                     <p><b>容器端口：</b></p>
@@ -159,13 +159,13 @@
                                 		 <textarea id="dockerFileContent">${dockerFileContent}</textarea>
                                 	</c:if>
                                 </div>
-                            </section> 
+                            </section>
                             <section class="infoHistory hide">
                                 <div class="detail-contents">
-                                	<c:if test="${ciHistory == null || ciHistory == ''}">
+                                	<c:if test="${fn:length(ciHistory) == 0}">
                                 		 此镜像无构建历史。
                                 	</c:if>
-                               		<c:if test="${ciHistory != null && ciHistory != ''}">
+                               		<c:if test="${fn:length(ciHistory) != 0}">
                                 	<table class="table table-hover" id="historyTable" style="border:1px solid #eee;">
                                         <tbody>
                                         <tr style="background:#F5F6F6">
@@ -184,7 +184,7 @@
                                             <c:if test="${ciHistory.constructResult ==2 }"><td>失败</td></c:if>
                                             <c:if test="${ciHistory.constructResult ==3 }"><td>构建中</td></c:if>
                                             <td>${ciHistory.constructTime }s</td>
-                                            <td>${ciHistory.imageId }</td>
+                                            <td>${ciHistory.creatorName }</td>
                                             <td>${ciHistory.constructDate }</td>
                                         </tr>
                                         </c:forEach>
@@ -198,7 +198,7 @@
                                     <p><i class="fa fa-tag"></i> ${image.version }</p>
                                 </div>
                             </section>
-                           
+
                         </div>
                         <div class="col-md-4">
                             <ul class="registry-attr">
