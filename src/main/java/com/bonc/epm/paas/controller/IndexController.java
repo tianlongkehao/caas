@@ -208,8 +208,8 @@ public class IndexController {
 				double memoryCount = 0;
 				for (Node node : allNodes.getItems()) {
 					Map<String, String> capacity = node.getStatus().getCapacity();
-					cpuCount += Double.parseDouble(capacity.get("cpu"));
-					memoryCount += (Double.parseDouble(capacity.get("memory").replace("Ki", ""))/1000000);
+					cpuCount += Float.valueOf(this.computeCpuOut(capacity)) * Integer.valueOf(RATIO_MEMTOCPU);
+					memoryCount += Float.valueOf(this.computeMemoryOut(capacity));
 				}
 				//获取所有quota
 				double usedCpuCount = 0;
@@ -217,17 +217,8 @@ public class IndexController {
 				ResourceQuotaList allResourceQuotas = client.getAllResourceQuotas();
 				for (ResourceQuota resourceQuota : allResourceQuotas.getItems()) {
 					Map<String, String> used = resourceQuota.getStatus().getUsed();
-					String usedCpuString = used.get("cpu");
-					if (usedCpuString.contains("m")) {
-						usedCpuCount += (Double.parseDouble(usedCpuString.replace("m", ""))/1000);
-					}
-					String usedMemoryString = used.get("memory");
-					if (usedMemoryString.contains("Gi")) {
-						usedMemoryCount += Double.parseDouble(usedMemoryString.replace("Gi", ""));
-					} else if (usedMemoryString.contains("Mi")) {
-						usedMemoryCount += (Double.parseDouble(usedMemoryString.replace("Mi", ""))/1000);
-					}
-
+					usedCpuCount += Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU);
+					usedMemoryCount += Float.valueOf(this.computeMemoryOut(used));
 				}
 				model.addAttribute("cpuCount", cpuCount);
 				model.addAttribute("memoryCount", memoryCount);
@@ -365,16 +356,18 @@ public class IndexController {
      * @return memVal String
      * @see
      */
-    private String computeMemoryOut(Map<String, String> val) {
-        String memVal = val.get("memory");
-        if (memVal.contains("Mi")) {
-            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
-            return a1.toString();
-        }
-        else {
-            return memVal.replace("Gi", "");
-        }
-    }
+	private String computeMemoryOut(Map<String, String> val) {
+		String memVal = val.get("memory");
+		if (memVal.contains("Ki")) {
+			Float a1 = Float.valueOf(memVal.replace("Ki", "")) / 1024 / 1024;
+			return a1.toString();
+		} else if (memVal.contains("Mi")) {
+			Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
+			return a1.toString();
+		} else {
+			return memVal.replace("Gi", "");
+		}
+	}
 
     /**
      * Description: <br>
