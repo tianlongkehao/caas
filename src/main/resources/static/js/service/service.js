@@ -33,13 +33,13 @@
 	});
 
 	checkbox();
-	
+
 	//服务查找
-	$("#serviceSearchBtn").click(function(){
-		$('.dataTables-example').dataTable().fnClearTable() 
+
+	//$("#serviceSearchBtn").click(function()
+	$("#serviceSearchBtn").unbind('click').bind('click',function(){
+		$('.dataTables-example').dataTable().fnClearTable(false);
 		$('.dataTables-example').dataTable().fnDestroy();
-		
-//		$('.dataTables-example').DataTable().ajax.reload();
 		loadServices();
 	});
  });
@@ -810,10 +810,16 @@ function loadServices() {
 	var serviceSearchImage = $("#serviceSearchImage").val();
 	var serviceSearchName = $("#serviceSearchName").val();
 	var curUserAutority = $("#curUserAutority").val();
+	var searchingFlag = "";
+	if(curUserAutority == 1){
+		searchingFlag = false;
+	}else{
+		searchingFlag = true;
+	}
 
 	$('.dataTables-example').dataTable({
 	 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
-	 	"searching" : false,
+	 	"searching" : searchingFlag,
 	 	"autoWidth": false,
         "processing": true,
         "serverSide": true,
@@ -841,8 +847,7 @@ function loadServices() {
 						render : function (data,type,row) {
 							var html = "";
 							if(curUserAutority == 1){
-								html = '<b '+
-								'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>'+
+								html =
 								'<span serviceId="'+row.id +'"'+
 								'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">'+ row.serviceName +'</span>'+
 								'<span class="number-node">' + row.instanceNum + '</span>';
@@ -858,7 +863,7 @@ function loadServices() {
 											'href="'+ctx+'ci/findCodeCiId.do?imgId='+row.imgID+'"'+
 										'style="margin-left: 5px" ><img src="'+ctx+'/images/sd.gif" title="代码更新"></a>';
 							}
-							
+
 							return html;
 						}
 					},
@@ -919,7 +924,7 @@ function loadServices() {
 								'href="'+ctx+'/registry/detail/'+row.imgID +'">'+row.imgName +'</a>'+
 								'</span>';
 							}
-							
+
 							return html;
 						}
 					},
@@ -969,7 +974,7 @@ function loadServices() {
 						data : null,
 						render : function (data,type,row) {
 							var html = '';
-							
+
 							if(curUserAutority == 1){
 								var html = '<span class="cluster_creator">'+row.creatorName+'</span>';
 							}else{

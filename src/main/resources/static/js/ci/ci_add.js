@@ -294,7 +294,7 @@ $(document).ready(function () {
 	})
 		
 	//工具集同组单选
-	$(".toolChk").click(function(){
+	/*$(".toolChk").click(function(){
 		var checkedName = $(this).attr("name");
 		var checkedName = "'"+checkedName+"'";
 		var ccc = '.toolChk[name= '+checkedName+']';
@@ -319,7 +319,7 @@ $(document).ready(function () {
 			allToolCode += checkedToolCode + "\n";
 		}
 		editor_one.setValue(allToolCode);
-	});
+	});*/
     
 });/*ready*/
 		

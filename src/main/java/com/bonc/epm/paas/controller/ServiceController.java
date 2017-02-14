@@ -2777,7 +2777,12 @@ public class ServiceController {
     @ResponseBody
     public void exportExcel(HttpServletRequest request, HttpServletResponse response) throws IOException{
         long createBy = CurrentUserUtils.getInstance().getUser().getId();
-        List<Service> services = serviceDao.findByCreateBy(createBy);
+        List<Service> services = new ArrayList<>();
+        if (createBy == 1) {
+        	services = serviceDao.getAllService();
+		} else {
+			services = serviceDao.findByCreateBy(createBy);
+		}
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
         String newdownfile = df.format(new Date()) +"--"+createBy+".xls";
         PoiUtils poiUtil = new PoiUtils();

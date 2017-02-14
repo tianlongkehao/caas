@@ -59,9 +59,12 @@ import com.bonc.epm.paas.entity.UserVisitingLog;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.Node;
+import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -190,12 +193,38 @@ public class IndexController {
 				model.addAttribute("userShera", shera);
 				model.addAttribute("usedstorage", usedstorage / 1024);
 			} else {
+				//获取所有租户的信息
 				List<User> userList = userDao.findAllTenant();
 				List<UserInfo> userInfos = new ArrayList<>();
 				for (User user2 : userList) {
 					userInfos.add(getUserInfo(user2));
 				}
 				model.addAttribute("userInfos", userInfos);
+
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
+				//获取所有node
+				NodeList allNodes = client.getAllNodes();
+				double cpuCount = 0;
+				double memoryCount = 0;
+				for (Node node : allNodes.getItems()) {
+					Map<String, String> capacity = node.getStatus().getCapacity();
+					cpuCount += Float.valueOf(this.computeCpuOut(capacity)) * Integer.valueOf(RATIO_MEMTOCPU);
+					memoryCount += Float.valueOf(this.computeMemoryOut(capacity));
+				}
+				//获取所有quota
+				double usedCpuCount = 0;
+				double usedMemoryCount = 0;
+				java.text.DecimalFormat   df=new   java.text.DecimalFormat("#.##");
+				ResourceQuotaList allResourceQuotas = client.getAllResourceQuotas();
+				for (ResourceQuota resourceQuota : allResourceQuotas.getItems()) {
+					Map<String, String> used = resourceQuota.getStatus().getUsed();
+					usedCpuCount += Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU);
+					usedMemoryCount += Float.valueOf(this.computeMemoryOut(used));
+				}
+				model.addAttribute("cpuCount", df.format(cpuCount));
+				model.addAttribute("memoryCount", df.format(memoryCount));
+				model.addAttribute("usedCpuCount", df.format(usedCpuCount));
+				model.addAttribute("usedMemoryCount", df.format(usedMemoryCount));
 			}
 
 			// ---------最近操作---------------
@@ -328,16 +357,18 @@ public class IndexController {
      * @return memVal String
      * @see
      */
-    private String computeMemoryOut(Map<String, String> val) {
-        String memVal = val.get("memory");
-        if (memVal.contains("Mi")) {
-            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
-            return a1.toString();
-        }
-        else {
-            return memVal.replace("Gi", "");
-        }
-    }
+	private String computeMemoryOut(Map<String, String> val) {
+		String memVal = val.get("memory");
+		if (memVal.contains("Ki")) {
+			Float a1 = Float.valueOf(memVal.replace("Ki", "")) / 1024 / 1024;
+			return a1.toString();
+		} else if (memVal.contains("Mi")) {
+			Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
+			return a1.toString();
+		} else {
+			return memVal.replace("Gi", "");
+		}
+	}
 
     /**
      * Description: <br>
