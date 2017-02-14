@@ -59,9 +59,12 @@ import com.bonc.epm.paas.entity.UserVisitingLog;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.Node;
+import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -190,12 +193,46 @@ public class IndexController {
 				model.addAttribute("userShera", shera);
 				model.addAttribute("usedstorage", usedstorage / 1024);
 			} else {
+				//获取所有租户的信息
 				List<User> userList = userDao.findAllTenant();
 				List<UserInfo> userInfos = new ArrayList<>();
 				for (User user2 : userList) {
 					userInfos.add(getUserInfo(user2));
 				}
 				model.addAttribute("userInfos", userInfos);
+
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
+				//获取所有node
+				NodeList allNodes = client.getAllNodes();
+				double cpuCount = 0;
+				double memoryCount = 0;
+				for (Node node : allNodes.getItems()) {
+					Map<String, String> capacity = node.getStatus().getCapacity();
+					cpuCount += Double.parseDouble(capacity.get("cpu"));
+					memoryCount += (Double.parseDouble(capacity.get("memory").replace("Ki", ""))/1000000);
+				}
+				//获取所有quota
+				double usedCpuCount = 0;
+				double usedMemoryCount = 0;
+				ResourceQuotaList allResourceQuotas = client.getAllResourceQuotas();
+				for (ResourceQuota resourceQuota : allResourceQuotas.getItems()) {
+					Map<String, String> used = resourceQuota.getStatus().getUsed();
+					String usedCpuString = used.get("cpu");
+					if (usedCpuString.contains("m")) {
+						usedCpuCount += (Double.parseDouble(usedCpuString.replace("m", ""))/1000);
+					}
+					String usedMemoryString = used.get("memory");
+					if (usedMemoryString.contains("Gi")) {
+						usedMemoryCount += Double.parseDouble(usedMemoryString.replace("Gi", ""));
+					} else if (usedMemoryString.contains("Mi")) {
+						usedMemoryCount += (Double.parseDouble(usedMemoryString.replace("Mi", ""))/1000);
+					}
+
+				}
+				model.addAttribute("cpuCount", cpuCount);
+				model.addAttribute("memoryCount", memoryCount);
+				model.addAttribute("usedCpuCount", usedCpuCount);
+				model.addAttribute("usedMemoryCount", usedMemoryCount);
 			}
 
 			// ---------最近操作---------------
