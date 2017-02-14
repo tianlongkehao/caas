@@ -34,7 +34,7 @@
 									<h5>
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>服务
 									</h5>
-
+									<input type="hidden" value="${cur_user.user_autority}" id="curUserAutority">
 									<div class="ibox-tools">
 										<c:if test="${cur_user.user_autority != 1}">
 											<a href="<%=path%>/service/add" id="serviceCreateBtn" title="创建服务">
@@ -62,27 +62,23 @@
 								<form id="search_form" class="form-inline" action="" method="post">
 									<div class="service-searchFun"
 										align="right">
-										<button type="button" class="btn btn-danger btn-sm service-searchBtn" value="查找">查找</button>
+										<button type="button" class="btn btn-danger btn-sm service-searchBtn" value="查找" id="serviceSearchBtn">查找</button>
 									</div>
 									<c:if test="${cur_user.user_autority == 1}">
 									<div class="service-searchFun"
 										align="right">
-										<label style="line-height: 35px">创建人:</label><select
-											name="search_users" id="search_users" onchange="searchUsers()"
-											style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
-											<option value="">testjiang</option>
-											</select>
-										
+										<label style="line-height: 35px">创建人:</label>
+										<input type="text" id="serviceSearchCreator" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
 									</div></c:if>
 									<div class="service-searchFun"
 										align="right">
 										<label style="line-height: 35px">镜像:</label> 
-										<input type="text" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+										<input type="text" id="serviceSearchImage" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
 									</div>
 									<div class="service-searchFun"
 										align="right">
 										<label style="line-height: 35px">名称:</label> 
-										<input type="text" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+										<input type="text" id="serviceSearchName" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
 									</div>
 									
 								</form>

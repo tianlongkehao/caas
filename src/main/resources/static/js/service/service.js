@@ -33,6 +33,15 @@
 	});
 
 	checkbox();
+	
+	//服务查找
+	$("#serviceSearchBtn").click(function(){
+		$('.dataTables-example').dataTable().fnClearTable() 
+		$('.dataTables-example').dataTable().fnDestroy();
+		
+//		$('.dataTables-example').DataTable().ajax.reload();
+		loadServices();
+	});
  });
 
  //代码仓库代码发生变化，跳转进入构建详细页面
@@ -796,6 +805,12 @@ function findImageVersion(imageName) {
 
 
 function loadServices() {
+	$("#serviceList").empty();
+	var serviceSearchCreator = $("#serviceSearchCreator").val();
+	var serviceSearchImage = $("#serviceSearchImage").val();
+	var serviceSearchName = $("#serviceSearchName").val();
+	var curUserAutority = $("#curUserAutority").val();
+
 	$('.dataTables-example').dataTable({
 	 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
 	 	"searching" : false,
@@ -804,7 +819,7 @@ function loadServices() {
         "serverSide": true,
         "stateSave":true,
         "ordering":false,
-        "ajax": ctx+"/service/page.do",
+        "ajax": ctx+"/service/page.do?searchService="+serviceSearchName+"&searchImage="+serviceSearchImage+"&searchCreatorName="+serviceSearchCreator,
         "columns": [
 					{
 						data : null,
@@ -824,16 +839,26 @@ function loadServices() {
 					{
 						data : null,
 						render : function (data,type,row) {
-							var html = '<b '+
+							var html = "";
+							if(curUserAutority == 1){
+								html = '<b '+
+								'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>'+
+								'<span serviceId="'+row.id +'"'+
+								'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">'+ row.serviceName +'</span>'+
+								'<span class="number-node">' + row.instanceNum + '</span>';
+							}else{
+								html = '<b '+
 								'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>'+
 								'<a href="'+ctx+'/service/detail/'+row.id +'" serviceId="'+row.id +'"'+
 								'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">'+ row.serviceName +'</a>'+
 								'<span class="number-node">' + row.instanceNum + '</span>';
+							}
 							if (row.updateImage == true) {
 								html += '<a id="'+row.id+'_code" class="margin cursor console-code-modal"'+
 											'href="'+ctx+'ci/findCodeCiId.do?imgId='+row.imgID+'"'+
 										'style="margin-left: 5px" ><img src="'+ctx+'/images/sd.gif" title="代码更新"></a>';
 							}
+							
 							return html;
 						}
 					},
@@ -885,10 +910,16 @@ function loadServices() {
 					{
 						data:null,
 						render : function (data,type,row) {
-							var html = '<span class="cluster_mirrer">'+
-									'<a title="点击查看镜像" target="_blank"'+
-									'href="'+ctx+'/registry/detail/'+row.imgID +'">'+row.imgName +'</a>'+
-									'</span>';
+							var html = "";
+							if(curUserAutority == 1){
+								html = '<span class="cluster_mirrer">'+row.imgName+'</span>';
+							}else{
+								html = '<span class="cluster_mirrer">'+
+								'<a title="点击查看镜像" target="_blank"'+
+								'href="'+ctx+'/registry/detail/'+row.imgID +'">'+row.imgName +'</a>'+
+								'</span>';
+							}
+							
 							return html;
 						}
 					},
@@ -897,15 +928,28 @@ function loadServices() {
 						data : null,
 						render : function (data,type,row) {
 							var html = '<span class="url">';
-							if (row.serviceAddr!=null && row.serviceAddr!='') {
-								html += '<a href="'+row.serviceAddr +'/'+ row.proxyPath +'"'+
-									'target="_blank" title="'+row.serviceAddr +'/'+ row.proxyPath+'">';
-								if(row.serviceChName!=null && row.serviceChName!=''){
-									html += row.serviceChName;
-								} else {
-									html += row.serviceAddr +'/'+ row.proxyPath;
+							if(curUserAutority == 1){
+								if (row.serviceAddr!=null && row.serviceAddr!='') {
+									html += '<span href="'+row.serviceAddr +'/'+ row.proxyPath +'"'+
+										'target="_blank" title="'+row.serviceAddr +'/'+ row.proxyPath+'">';
+									if(row.serviceChName!=null && row.serviceChName!=''){
+										html += row.serviceChName;
+									} else {
+										html += row.serviceAddr +'/'+ row.proxyPath;
+									}
+									html += '</span>';
 								}
-								html += '</a>';
+							}else{
+								if (row.serviceAddr!=null && row.serviceAddr!='') {
+									html += '<a href="'+row.serviceAddr +'/'+ row.proxyPath +'"'+
+										'target="_blank" title="'+row.serviceAddr +'/'+ row.proxyPath+'">';
+									if(row.serviceChName!=null && row.serviceChName!=''){
+										html += row.serviceChName;
+									} else {
+										html += row.serviceAddr +'/'+ row.proxyPath;
+									}
+									html += '</a>';
+								}
 							}
 							html += '</span>';
 							return html;
@@ -925,6 +969,10 @@ function loadServices() {
 						data : null,
 						render : function (data,type,row) {
 							var html = '';
+							
+							if(curUserAutority == 1){
+								var html = '<span class="cluster_creator">'+row.creatorName+'</span>';
+							}else{
 
 							if (row.status == 3 || row.status == 6) {
 
@@ -1015,7 +1063,7 @@ function loadServices() {
 							html += '<a id="'+row.id+'_del" class="a-live deleteButton_a "'+
 									'href="javascript:oneDeleteContainer('+row.id+')"'+
 									'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
-
+						}
 							return html;
 						}
 					}
@@ -1113,3 +1161,4 @@ function oneStopContainerUpdate(id,serviceName){
 		}
 	});
 }
+
