@@ -812,10 +812,16 @@ function loadServices() {
 	var serviceSearchImage = $("#serviceSearchImage").val();
 	var serviceSearchName = $("#serviceSearchName").val();
 	var curUserAutority = $("#curUserAutority").val();
+	var searchingFlag = "";
+	if(curUserAutority == 1){
+		searchingFlag = false;
+	}else{
+		searchingFlag = true;
+	}
 
 	$('.dataTables-example').dataTable({
 	 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }],
-	 	"searching" : false,
+	 	"searching" : searchingFlag,
 	 	"autoWidth": false,
         "processing": true,
         "serverSide": true,
@@ -843,8 +849,7 @@ function loadServices() {
 						render : function (data,type,row) {
 							var html = "";
 							if(curUserAutority == 1){
-								html = '<b '+
-								'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>'+
+								html = 
 								'<span serviceId="'+row.id +'"'+
 								'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">'+ row.serviceName +'</span>'+
 								'<span class="number-node">' + row.instanceNum + '</span>';

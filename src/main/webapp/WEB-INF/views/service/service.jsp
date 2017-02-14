@@ -59,6 +59,7 @@
 										
 									</div>
 								</div>
+								<c:if test="${cur_user.user_autority == 1}">
 								<form id="search_form" class="form-inline" action="" method="post">
 									<div class="service-searchFun"
 										align="right">
@@ -80,8 +81,7 @@
 										<label style="line-height: 35px">名称:</label> 
 										<input type="text" id="serviceSearchName" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
 									</div>
-									
-								</form>
+								</form></c:if>
 								<div class="ibox-content">
 									<table class="table table-stripped table-hover dataTables-example">
 										<thead>
