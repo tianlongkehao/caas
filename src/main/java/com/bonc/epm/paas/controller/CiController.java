@@ -1414,6 +1414,7 @@ public class CiController {
         ciRecord.setCiId(ci.getId());
         ciRecord.setCiName(ci.getImgNameFirst() + "/" + ci.getImgNameLast());
         ciRecord.setCiVersion(ci.getImgNameVersion());
+        ciRecord.setCreatBy(CurrentUserUtils.getInstance().getUser().getId());
         ciRecord.setConstructDate(new Date());
         ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_ING);
         ciRecord.setLogPrint("["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"start");

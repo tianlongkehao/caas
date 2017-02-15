@@ -18,6 +18,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.aspectj.weaver.ast.Var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -245,10 +246,14 @@ public class RegistryController {
         }
         //获取镜像inspect信息
         InspectImageResponse iir = null;
+        //计算镜像大小
+        double imageSize = 0;
+        java.text.DecimalFormat   df=new   java.text.DecimalFormat("#.##");
         List<PortConfig> portList = new ArrayList<>();
         List<EnvVariable> envList = new ArrayList<>();
         if (dockerClientService.pullImage(image.getName(), image.getVersion())) {
         	iir = dockerClientService.inspectImage(image.getImageId(), image.getName(), image.getVersion());
+        	imageSize = iir.getSize() / 1000000.0;
         	ContainerConfig config = iir.getConfig();
         	if (config != null) {
         		//取得端口信息
@@ -276,8 +281,13 @@ public class RegistryController {
 			}
         }
         List<CiRecord> ciHistory = ciRecordDao.findByImageId(image.getId());
+        for (CiRecord ciRecord : ciHistory) {
+        	if (ciRecord.getCreatBy() != 0) {
+        		ciRecord.setCreatorName(userDao.findById(ciRecord.getCreatBy()).getUserName());
+			}
+		}
         String dockerFileContent =new String();
-        if (ciHistory != null) {
+        if (ciHistory != null && ciHistory.size() != 0) {
         	dockerFileContent = ciHistory.get(0).getDockerFileContent();
 		}
         //查询有多少租户收藏当前镜像
@@ -301,7 +311,7 @@ public class RegistryController {
             model.addAttribute("creator", user.getUserName());
         }
         model.addAttribute("whetherFavor", whetherFavor);
-//        model.addAttribute("inspectImageResponse",iir);
+        model.addAttribute("imageSize",df.format(imageSize));
         model.addAttribute("portList",portList);
         model.addAttribute("envList",envList);
         model.addAttribute("dockerFileContent",dockerFileContent);
@@ -529,10 +539,13 @@ public class RegistryController {
                 MultivaluedMap<String, Object> mult = client.getManifestofImage(image.getName(), image.getVersion());
                 if (null != mult.get("Etag") && mult.get("Etag").size() > 0) {
                     for (Object oneRow : mult.get("Etag")) {
-                        ErrorList errors = client.deleteManifestofImage(image.getName(), String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
-/*                        if (null == errors) {
-                            isDeleteFlag = true;
-                        }*/
+
+                        ErrorList errors = null;
+						try {
+							errors = client.deleteManifestofImage(image.getName(), String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
+						} catch (Exception e) {
+                        	LOG.info("delete Manifest of Image error:" + e.getMessage());
+						}
                         LOG.info("delete image, docker regsitry API return msg: -"+JSON.toJSONString(errors));
                     }
                 }

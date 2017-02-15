@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.Transient;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -50,6 +51,17 @@ public class CiRecord {
 	 * 构建镜像id
 	 */
 	private long imageId;
+
+	/**
+	 * 构建者
+	 */
+	private long creatBy;
+
+	/**
+	 * 构建者名称
+	 */
+	@Transient
+	private String creatorName;
 
 	/**
 	 * 构建时间
@@ -173,4 +185,19 @@ public class CiRecord {
 		this.dockerFileContent = dockerFileContent;
 	}
 
+	public long getCreatBy() {
+		return creatBy;
+	}
+
+	public void setCreatBy(long creatBy) {
+		this.creatBy = creatBy;
+	}
+
+	public String getCreatorName() {
+		return creatorName;
+	}
+
+	public void setCreatorName(String creatorName) {
+		this.creatorName = creatorName;
+	}
 }
