@@ -223,6 +223,107 @@ public class WebClientUtil {
 		return httpURLConnection;
 	}
 
+
+	/**
+	 * 通过get获取网络资源
+	 *
+	 * @param url String
+	 * @param params Map<String,Object>
+	 * @return resultBuffer
+	 * @exception Exception
+	 */
+	public static String doGetForJson(String url, Map<String, Object> params) {
+		LOGGER.info("调用：-" + url + "接口，参数列表：-" + params);
+		String parameterData = null;
+		OutputStream outputStream = null;
+		OutputStreamWriter outputStreamWriter = null;
+		InputStream inputStream = null;
+		InputStreamReader inputStreamReader = null;
+		BufferedReader reader = null;
+		StringBuffer resultBuffer = new StringBuffer();
+		String tempLine = null;
+		VisitThirdInterfaceLog logs = new VisitThirdInterfaceLog();
+		try {
+			if (params != null) {
+				parameterData = "";
+				for (String key : params.keySet()) {
+					parameterData += (parameterData.equals("") ? "" : "&") + key + "="
+							+ URLEncoder.encode(String.valueOf(params.get(key)).replace(" ", ""), "UTF8");
+				}
+			}
+			// 将请求信息存在数据库中
+			User currentUser = CurrentUserUtils.getInstance().getUser();
+			logs.setCreateBy(currentUser.getId());
+			logs.setCreateDate(new Date());
+			logs.setParam(parameterData);
+			logs.setUrl(url);
+			logs = visitThirdInterfaceLogDao.save(logs);
+			Date startTime = new Date();
+
+			// 获得一个http连接
+			HttpURLConnection httpURLConnection = getHttpURLConnForJson(url, parameterData, "GET");
+
+			if (parameterData != null) {
+				outputStream = httpURLConnection.getOutputStream();
+				outputStreamWriter = new OutputStreamWriter(outputStream);
+				outputStreamWriter.write(parameterData.toString());
+				outputStreamWriter.flush();
+			}
+
+			// 保存返回的信息到数据库中
+			Date endTime = new Date();
+			logs.setReturnCode(httpURLConnection.getResponseCode());
+			logs.setResponseTime(endTime.getTime()-startTime.getTime());
+
+			if (httpURLConnection.getResponseCode() == 200) {
+				inputStream = httpURLConnection.getInputStream();
+				inputStreamReader = new InputStreamReader(inputStream);
+				reader = new BufferedReader(inputStreamReader);
+				while ((tempLine = reader.readLine()) != null) {
+					resultBuffer.append(tempLine);
+				}
+				logs.setReturnContent(resultBuffer.toString());
+			} else {
+				throw new Exception(
+						"HTTP Request is not success, Response code is " + httpURLConnection.getResponseCode());
+			}
+		} catch (Exception e) {
+			logs.setErrorMsg(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			visitThirdInterfaceLogDao.save(logs);
+			// 关闭输入输出流
+			closeStream(outputStream, outputStreamWriter, inputStream, inputStreamReader, reader);
+		}
+		return resultBuffer.toString();
+	}
+	/**
+	 * 获取一个http连接
+	 *
+	 * @param url String
+	 * @param parameterData String
+	 * @param mode String
+	 * @return httpURLConnection
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ProtocolException
+	 * @see
+	 */
+	private static HttpURLConnection getHttpURLConnForJson(String url, String parameterData, String mode)
+			throws MalformedURLException, IOException, ProtocolException {
+		URL localURL = new URL(url);
+		URLConnection connection = localURL.openConnection();
+		HttpURLConnection httpURLConnection = (HttpURLConnection) connection;
+		httpURLConnection.setDoOutput(true);
+		httpURLConnection.setConnectTimeout(60000); // 设置连接超时为10s
+		httpURLConnection.setReadTimeout(60000); // 读取数据超时也是10s
+		httpURLConnection.setRequestMethod(mode);
+		httpURLConnection.setRequestProperty("Content-Type", "application/json");
+		httpURLConnection.setRequestProperty("Content-Length",
+				String.valueOf(parameterData == null ? 0 : parameterData.length()));
+		return httpURLConnection;
+	}
+
 	/**
 	 * 关闭输入输出流
 	 *

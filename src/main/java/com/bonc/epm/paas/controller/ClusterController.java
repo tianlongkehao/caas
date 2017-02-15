@@ -48,6 +48,7 @@ import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.RouteTableUtils;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -67,7 +68,7 @@ import com.jcraft.jsch.SftpException;
 @Controller
 @RequestMapping(value = "/cluster")
 public class ClusterController {
-    
+
     /**
      * ClusterController日志实例
      */
@@ -78,19 +79,19 @@ public class ClusterController {
      */
     @Autowired
 	private KubernetesClientService kubernetesClientService;
-    
+
     /**
      * ClusterDao 数据库操作Dao接口
      */
     @Autowired
 	private ClusterDao clusterDao;
-    
+
     /**
      * userDao 数据库操作接口
      */
     @Autowired
     private UserDao userDao;
-    
+
     /**
      * 获取配置文件中的 yumConf.io.address 的数据信息；
      */
@@ -101,14 +102,14 @@ public class ClusterController {
      */
     @Value("${kubernetes.api.address}")
     private String masterAddress;
-    
+
     @Autowired
     InfluxdbSearchService influxdbSearchService;
 
     /**
-     * 
+     *
      * Description: <br>
-     * 跳转进入cluster.jsp页面 
+     * 跳转进入cluster.jsp页面
      * @param model  添加返回页面数据
      * @return String
      */
@@ -120,7 +121,7 @@ public class ClusterController {
     }
 
     /**
-     * 
+     *
      * Description: <br>
      *  跳转进入containers.jsp页面；
      * @param model  添加返回页面数据；
@@ -134,7 +135,7 @@ public class ClusterController {
     }
 
 	/**
-     * 
+     *
      * Description: <br>
      *  跳转进入集群管理页面 cluster-management.jsp
      * @param model 添加返回页面的数据；
@@ -151,7 +152,7 @@ public class ClusterController {
         model.addAttribute("li_flag", "management");
         return "cluster/cluster-management.jsp";
     }
-	
+
     /**
      * Description: <br>
      * 进入cluster-topo.jsp
@@ -167,7 +168,7 @@ public class ClusterController {
             addServiceTopo(currentUser.getNamespace(),serviceTopoList);
             model.addAttribute("serviceTopo",serviceTopoList);
             model.addAttribute("user", "user");
-        } 
+        }
         else {
             List<User> userList = userDao.checkUser(currentUser.getId());
             model.addAttribute("userList", userList);
@@ -177,7 +178,7 @@ public class ClusterController {
         model.addAttribute("li_flag", "topo");
         return "cluster/cluster-topo.jsp";
     }
-    
+
     /**
      * Description: <br>
      * 进入cluster-route.jsp
@@ -186,7 +187,18 @@ public class ClusterController {
      */
     @RequestMapping(value = { "/route" }, method = RequestMethod.GET)
 	public String clusterRoute(Model model) {
-       
+    	KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+    	NodeList allNodes = client.getAllNodes();
+    	List<Object> nodeList = new ArrayList<>();
+    	if (allNodes != null) {
+			for (Node node : allNodes.getItems()) {
+				Map<String, String> nodeMap = new HashMap<>();
+				nodeList.add(nodeMap);
+				nodeMap.put("nodeName", node.getMetadata().getName());
+				nodeMap.put("nodeIp", node.getStatus().getAddresses().get(0).getAddress());
+			}
+		}
+    	model.addAttribute("nodeList", nodeList);
         model.addAttribute("menu_flag", "cluster");
         model.addAttribute("li_flag", "route");
         return "cluster/cluster-route.jsp";
@@ -199,12 +211,12 @@ public class ClusterController {
      */
     @RequestMapping(value = { "/iptables" }, method = RequestMethod.GET)
 	public String clusterIptables(Model model) {
-       
+
         model.addAttribute("menu_flag", "cluster");
         model.addAttribute("li_flag", "iptables");
         return "cluster/cluster-iptables.jsp";
     }
-    
+
     @RequestMapping(value = { "/topo/data.do" }, method = RequestMethod.GET)
     @ResponseBody
     public String clusterTopoData(String nameSpace){
@@ -214,7 +226,7 @@ public class ClusterController {
         Map<String,Object> jsonData = new HashMap<String,Object>();
         Map<String, List> nodeMap = new HashMap<String, List>();
         List<ServiceTopo> serviceTopoList = new ArrayList<>();
-        
+
         // 取得所有node
         NodeList nodeList = client.getAllNodes();
         for (Node node : nodeList.getItems()) {
@@ -249,7 +261,7 @@ public class ClusterController {
                 addServiceTopo(currentUser.getNamespace(),serviceTopoList);
             }
         }
-        
+
         System.out.println(nodeMap.toString());
         System.out.println(serviceTopoList.toString());
         jsonData.put("master", "master/"+masterAddress);
@@ -257,7 +269,7 @@ public class ClusterController {
         jsonData.put("services", serviceTopoList);
         return JSON.toJSONString(jsonData);
     }
-    
+
     /**
      * Description: <br>
      * 通过服务名称查询当前服务的pod，展示当前的pod拓扑图；
@@ -295,7 +307,7 @@ public class ClusterController {
         map.put("podTopoList", podTopoList);
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 查询当前namespace中的pod数据，添加到相关联的Node集合中
@@ -347,12 +359,12 @@ public class ClusterController {
             LOG.debug(e.getMessage());
         }
     }
-    
+
     /**
      * Description: <br>
      *  将当前命名空间中的所有服务名称添加到集合中；
      * @param namespace
-     * @param serviceTopoList 
+     * @param serviceTopoList
      * @see
      */
     public void addServiceTopo(String namespace, List<ServiceTopo> serviceTopoList){
@@ -385,7 +397,7 @@ public class ClusterController {
             LOG.debug(e.getMessage());
         }
     }
-    
+
     /**
      * Description: <br>
      *  跳转进入cluster-deltail.jsp页面
@@ -407,12 +419,12 @@ public class ClusterController {
         model.addAttribute("li_flag", "management");
         return "cluster/cluster-detail.jsp";
     }
-    
+
     /**
      * Description: <br>
      *  取得单一主机资源使用情况
      * @param timePeriod String
-     * @deprecated 
+     * @deprecated
      * @return ClusterUse
      */
     private ClusterUse getClustersUse(String timePeriod) {
@@ -423,9 +435,9 @@ public class ClusterController {
         }
         return null;
     }
-    
+
     /**
-     * Description: 
+     * Description:
      * 取得集群监控数据 包含master节点和node节点
      * 包含的信息内容有cpu、mem、disk、network等
      * @param timePeriod String
@@ -434,17 +446,17 @@ public class ClusterController {
     @RequestMapping(value={ "/getClusterMonitor" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getClusterMonitor(String timePeriod) {
-        ClusterResources clusterResources =  new ClusterResources(); 
+        ClusterResources clusterResources =  new ClusterResources();
         try {
             InfluxDB influxDB = influxdbSearchService.getInfluxdbClient();
             List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
             clusterResources.setxValue(xValue);
-            
+
             List<CatalogResource> yValue = new ArrayList<CatalogResource>();
             yValue.add(influxdbSearchService.generateYValueOfCluster(influxDB, timePeriod));
             yValue.add(influxdbSearchService.generateYValueOfMinmon(influxDB, timePeriod));
             clusterResources.setyValue(yValue);
-        } 
+        }
         catch (Exception e) {
             LOG.error("get cluster monitor data failed. error message:-" + e.getMessage());
             e.printStackTrace();
@@ -453,7 +465,7 @@ public class ClusterController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 取得所有的namespace
      * @return rtnValue String
@@ -475,9 +487,9 @@ public class ClusterController {
 		}
         return JSON.toJSONString(namespaceArray);
     }
-    
+
     /**
-     * 
+     *
      * Description: <br>
      * 获取Pod资源的使用情况
      * @param nameSpace String
@@ -488,7 +500,7 @@ public class ClusterController {
     @RequestMapping(value = { "/getContainerMonitor" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getContainerMonitor(String nameSpace, String podName, String timePeriod) {
-        ClusterResources clusterResources =  new ClusterResources(); 
+        ClusterResources clusterResources =  new ClusterResources();
 		// 当前登陆用户是租户
         User curUser = CurrentUserUtils.getInstance().getUser();
         if (UserConstant.AUTORITY_TENANT.equals(curUser.getUser_autority())) {
@@ -508,7 +520,7 @@ public class ClusterController {
         return JSON.toJSONString(clusterResources);
     }
 
-    
+
     /**
      * Description: <br>
      * 跳转进入cluster-create.jsp页面；
@@ -522,7 +534,7 @@ public class ClusterController {
     }
 
     /**
-     * 
+     *
      * Description: <br>
      * 跳转进入cluster-management.jsp页面
      * @param searchIP  serarchIP
@@ -540,7 +552,7 @@ public class ClusterController {
     }
 
     /**
-     * 
+     *
      * Description: <br>
      * 跳转进入cluster-create.jsp
      * @param ipRange ipRange
@@ -591,13 +603,13 @@ public class ClusterController {
                         lstClusters.add(conCluster);
                         socket.close();
                     }
-                } 
+                }
                 catch (NoRouteToHostException e) {
                     LOG.error("无法SSH到目标主机:" + ipSon);
                 }
                 catch (UnknownHostException e) {
                     LOG.error("未知主机:" + ipSon);
-                } 
+                }
                 catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -609,14 +621,14 @@ public class ClusterController {
     }
 
     /**
-     * 
+     *
      * Description: <br>
      * installCluster
-     * @param user 
-     * @param pass 
-     * @param ip 
-     * @param port 
-     * @param type 
+     * @param user
+     * @param pass
+     * @param ip
+     * @param port
+     * @param type
      * @return  String
      * @see
      */
@@ -690,12 +702,12 @@ public class ClusterController {
     }
 
     /**
-     * 
+     *
      * Description: <br>
      * copyFile
      * @param user user
      * @param pass pass
-     * @param ip ip 
+     * @param ip ip
      * @param port port
      * @throws IOException IOException
      * @throws JSchException JSchException
@@ -721,5 +733,12 @@ public class ClusterController {
         catch (SftpException e) {
             e.printStackTrace();
         }
+    }
+
+    @RequestMapping(value = { "/getRouteTable.do" }, method = RequestMethod.GET)
+    @ResponseBody
+    public String getRouteTable(String ip){
+    	String jsonData = RouteTableUtils.getRouteTable(ip);
+        return jsonData;
     }
 }
