@@ -245,10 +245,13 @@ public class RegistryController {
         }
         //获取镜像inspect信息
         InspectImageResponse iir = null;
+        //计算镜像大小
+        double imageSize = 0;
         List<PortConfig> portList = new ArrayList<>();
         List<EnvVariable> envList = new ArrayList<>();
         if (dockerClientService.pullImage(image.getName(), image.getVersion())) {
         	iir = dockerClientService.inspectImage(image.getImageId(), image.getName(), image.getVersion());
+        	imageSize = iir.getSize() / 1000000.0;
         	ContainerConfig config = iir.getConfig();
         	if (config != null) {
         		//取得端口信息
@@ -306,7 +309,7 @@ public class RegistryController {
             model.addAttribute("creator", user.getUserName());
         }
         model.addAttribute("whetherFavor", whetherFavor);
-//        model.addAttribute("inspectImageResponse",iir);
+        model.addAttribute("imageSize",imageSize);
         model.addAttribute("portList",portList);
         model.addAttribute("envList",envList);
         model.addAttribute("dockerFileContent",dockerFileContent);
