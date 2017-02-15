@@ -180,9 +180,11 @@
                                         <tr class="envobj-tr">
                                             <td>${ciHistory.ciName }</td>
                                             <td>${ciHistory.ciVersion }</td>
-                                            <c:if test="${ciHistory.constructResult ==1 }"><td>成功</td></c:if>
-                                            <c:if test="${ciHistory.constructResult ==2 }"><td>失败</td></c:if>
-                                            <c:if test="${ciHistory.constructResult ==3 }"><td>构建中</td></c:if>
+                                            <td>
+                                            <c:if test="${ciHistory.constructResult ==1 }">成功</c:if>
+                                            <c:if test="${ciHistory.constructResult ==2 }">失败</c:if>
+                                            <c:if test="${ciHistory.constructResult ==3 }">构建中</c:if>
+                                            </td>
                                             <td>${ciHistory.constructTime }s</td>
                                             <td>${ciHistory.creatorName }</td>
                                             <td>${ciHistory.constructDate }</td>
