@@ -180,9 +180,11 @@
                                         <tr class="envobj-tr">
                                             <td>${ciHistory.ciName }</td>
                                             <td>${ciHistory.ciVersion }</td>
-                                            <c:if test="${ciHistory.constructResult ==1 }"><td>成功</td></c:if>
-                                            <c:if test="${ciHistory.constructResult ==2 }"><td>失败</td></c:if>
-                                            <c:if test="${ciHistory.constructResult ==3 }"><td>构建中</td></c:if>
+                                            <td>
+                                            <c:if test="${ciHistory.constructResult ==1 }">成功</c:if>
+                                            <c:if test="${ciHistory.constructResult ==2 }">失败</c:if>
+                                            <c:if test="${ciHistory.constructResult ==3 }">构建中</c:if>
+                                            </td>
                                             <td>${ciHistory.constructTime }s</td>
                                             <td>${ciHistory.creatorName }</td>
                                             <td>${ciHistory.constructDate }</td>
@@ -210,7 +212,7 @@
                                 	<c:if test="${image.imageType==2 }">
                                 		<p><i class="fa_attr_s"></i><span>属性:&nbsp;&nbsp;&nbsp;&nbsp; 私有</span></p>
                                 	</c:if>
-                                    <p><i class="fa_attr_size"></i><span>大小:&nbsp;&nbsp;&nbsp;&nbsp; 112M</span></p>
+                                    <p><i class="fa_attr_size"></i><span>大小:&nbsp;&nbsp;&nbsp;&nbsp; ${imageSize }M</span></p>
                                     <p><i class="fa fa-star-o"></i><span>收藏数:&nbsp;&nbsp;&nbsp;&nbsp; ${favorUser } 个人收藏了该镜像</span></p>
                                     <c:if test="${image.exportCount == null || image.exportCount == ''}">
                                     	<p><i class="fa_attr_download"></i><span>导出数:&nbsp;&nbsp;&nbsp;&nbsp; 0 次导出了该镜像</span></p>

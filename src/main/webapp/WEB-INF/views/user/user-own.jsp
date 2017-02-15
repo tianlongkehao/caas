@@ -197,7 +197,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="panel panel-success">
+							<div class="panel panel-success hide">
 								<div class="panel-heading">
 									<h4 class="panel-title">
 										<a data-toggle="collapse" data-parent="#accordion" 
