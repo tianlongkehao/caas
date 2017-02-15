@@ -537,10 +537,13 @@ public class RegistryController {
                 MultivaluedMap<String, Object> mult = client.getManifestofImage(image.getName(), image.getVersion());
                 if (null != mult.get("Etag") && mult.get("Etag").size() > 0) {
                     for (Object oneRow : mult.get("Etag")) {
-                        ErrorList errors = client.deleteManifestofImage(image.getName(), String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
-/*                        if (null == errors) {
-                            isDeleteFlag = true;
-                        }*/
+
+                        ErrorList errors = null;
+						try {
+							errors = client.deleteManifestofImage(image.getName(), String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
+						} catch (Exception e) {
+                        	LOG.info("delete Manifest of Image error:" + e.getMessage());
+						}
                         LOG.info("delete image, docker regsitry API return msg: -"+JSON.toJSONString(errors));
                     }
                 }
