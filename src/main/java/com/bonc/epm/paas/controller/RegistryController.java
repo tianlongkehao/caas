@@ -18,6 +18,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.aspectj.weaver.ast.Var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -247,6 +248,7 @@ public class RegistryController {
         InspectImageResponse iir = null;
         //计算镜像大小
         double imageSize = 0;
+        java.text.DecimalFormat   df=new   java.text.DecimalFormat("#.##");
         List<PortConfig> portList = new ArrayList<>();
         List<EnvVariable> envList = new ArrayList<>();
         if (dockerClientService.pullImage(image.getName(), image.getVersion())) {
@@ -309,7 +311,7 @@ public class RegistryController {
             model.addAttribute("creator", user.getUserName());
         }
         model.addAttribute("whetherFavor", whetherFavor);
-        model.addAttribute("imageSize",imageSize);
+        model.addAttribute("imageSize",df.format(imageSize));
         model.addAttribute("portList",portList);
         model.addAttribute("envList",envList);
         model.addAttribute("dockerFileContent",dockerFileContent);
