@@ -190,10 +190,91 @@
 											</div>
 											<div class="form-group">
 					                            <div class="col-md-offset-10 col-md-2">
-					                                <button type="button" class="btn btn-primary btn-color" id="preferSave">保存</button>
+					                                <button type="button" class="btn btn-primary btn-color preferSave" id="preferSave">保存</button>
 					                            </div>
 					                        </div>
 										</div>
+									</div>
+								</div>
+							</div>
+							<div class="panel panel-success ">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<a data-toggle="collapse" data-parent="#accordion" 
+										   href="#collapseTwo">
+											质量检查设置
+										</a>
+									</h4>
+								</div>
+								<div id="collapseTwo" class="panel-collapse collapse">
+									<div class="panel-body">
+										<div class="setColor preferInfo">
+											<div>是否检查：
+				                        		<label id="sonarYesOrNo"><input type="checkbox" value="" id="sonarYesOrNoChecked">检查</label>
+				                        	</div>
+				                        	<div class="sonarTwoStep hide"><div>是否显示：
+				                        		<label id=""><input type="checkbox" value="" id="">显示检查结果</label>
+				                        	</div>
+											<div>质量检查：
+				                        		<label id=""><input type="radio" name="sonarCheck" value="">必选</label>
+				                        		<label id=""><input type="radio" name="sonarCheck" checked value="">可选</label>
+				                        	</div>
+				                        	<div class="sonarCheckInfo ">检查进程：
+				                        		<label id="sonarSyn"><input type="radio" name="sonarProgress" value="" id="sonarSynChecked">同步</label>
+				                        		<label id="sonarAsyn"><input type="radio" name="sonarProgress" checked value="">异步</label>
+				                        	</div>
+				                        	<div class="sonarInfo hide left sonardiv"><span class="labelInfo left">sonar阈值：</span>
+				                        		<select class="form-control" name="sheraId">
+                                                        <option value="a">A</option>
+                                                        <option value="b">B</option>
+                                                        <option value="c">C</option>
+                                                        <option value="d">D</option>
+                                                        <option value="e">E</option>
+                                                        <option value="f">F</option>
+                                                </select>
+                                                <div class="alertInfo col-md-10" >
+													<i class="fa fa-warning" style="color:#efa421"></i>
+													<span>代码质量检查阈值，若代码质量不能达到设定的阈值级别则代码不能继续编译！</span>
+												</div>
+				                        	</div>
+				                        	<div class="left sonardiv"><span class="labelInfo left">token：</span>
+				                        		<input type="text" class="form-control tokenValue">
+				                        	</div>
+				                        	</div>
+				                        </div>
+				                        <div class="form-group">
+					                        <div class="col-md-offset-10 col-md-2">
+					                            <button type="button" class="btn btn-primary btn-color preferSave" id="sonarSave">保存</button>
+					                        </div>
+					                    </div>
+									</div>
+								</div>
+							</div>
+							<div class="panel panel-warning">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<a data-toggle="collapse" data-parent="#accordion" 
+										   href="#collapseThree">
+											白名单设置
+										</a>
+									</h4>
+								</div>
+								<div id="collapseThree" class="panel-collapse collapse">
+									<div class="panel-body">
+										<div class="setColor preferInfo">
+											<button type="button" class="btn btn-default" id="addOneWhiteList" value="添加白名单服务项"><i class="fa fa-plus"></i>&nbsp;添加白名单服务项</button>
+				                        	<div class="whiteLists">
+				                        	</div>
+				                        </div>
+				                        <div class="alertInfo col-md-10" style="margin-left:28px;">
+											<i class="fa fa-warning" style="color:#efa421"></i>
+											<span>设置在白名单的服务项不需要质量检查！</span>
+										</div>
+										<div class="form-group">
+					                        <div class="col-md-offset-10 col-md-2">
+					                            <button type="button" class="btn btn-primary btn-color preferSave" id="whiteListSave">保存</button>
+					                        </div>
+					                    </div>
 									</div>
 								</div>
 							</div>
@@ -218,7 +299,6 @@
 								</div>
 							</div>
 						</div>
-						
 					</div>
                     <div id="resourceinfo_wrap" class="tab_wrap hide">
                         <section class="container-count">

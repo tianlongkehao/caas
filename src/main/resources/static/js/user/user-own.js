@@ -197,8 +197,41 @@ $(function(){
     		}
     	});
     })
+    //是否进行sonar质量检查
+    $("#sonarYesOrNo").click(function(){
+    	if($("#sonarYesOrNoChecked").is(":checked")){
+    		$(".sonarTwoStep").removeClass("hide");
+    	}else{
+    		$(".sonarTwoStep").addClass("hide");
+    	}
+    });
+    //sonar同步,设置阈值
+    $("#sonarSyn").click(function(){
+    	sonarPrograssCheck();
+    });
+    //sonar异步
+    $("#sonarAsyn").click(function(){
+    	sonarPrograssCheck();
+    });
+    //增加一条白名单
+    $("#addOneWhiteList").click(function(){
+    	var whiteListHtml = '<div><input type="text" class="whiteList form-control"><i class="fa fa-trash" onclick="delOneWhiteList(this)"></i></div>';
+    	$(".whiteLists").append(whiteListHtml);
+    });
 });
 $(function () { $('#collapseTwo').collapse('show')});
 $(function () { $('#collapseOne').collapse('show')});
+$(function () { $('#collapseThree').collapse('show')});
+
+function delOneWhiteList(obj){
+	$(obj).parent().remove();
+}
+function sonarPrograssCheck(){
+	if($("#sonarSynChecked").is(":checked")){
+		$(".sonarInfo").removeClass("hide");
+	}else{
+		$(".sonarInfo").addClass("hide");
+	}
+}
 
 

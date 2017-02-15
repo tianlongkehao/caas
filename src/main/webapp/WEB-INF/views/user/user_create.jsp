@@ -33,7 +33,7 @@
 								<ul style="padding: 0 4rem;">
 									<li class="radius_step action"><span>1</span> 基本信息</li>
 									<li class="radius_step"><span>2</span> 资源配额</li>
-									<%--<li class="radius_step"><span>3</span> 资源限制</li>--%>
+									<!-- <li class="radius_step"><span>3</span> 质量检查</li> -->
 								</ul>
 							</div>
 							<form id="add_tenement" name="add_tenement" action=""
@@ -272,15 +272,53 @@
 											</div> -->
 										</div>
 
-										<div class="" style="padding-top: 180px">
+										<div class="" style="padding-top: 235px">
+											<span class="btn btn-default last_step"
+												style="margin-right: 30px;">上一步</span> 
+											<span id="user_save_finishBtn"
+												class="next2 pull-right btn btn-primary btn-color pull_confirm">完成</span>	
+										</div>
+
+									</div>
+									<!-- host_step3 -->
+									<!-- <div class="host_step3">
+										<div class="blankapp" style="text-align: center">
+											<div class="row">
+												<div class="col-md-5 sonarInfo" align="left">
+													<label style="width: 21%; float: left; line-height: 35px">代码质量检查:</label>
+													<label class="sonarCheckbox"><input type="checkbox" id="sonarCheck">检查</label>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-md-5" align="left">
+													<label style="width: 21%; float: left; line-height: 35px">sonar阈值:</label>
+													<select class="form-control" name = "sheraId" style="width: 75%; display: inline; float: right;">
+                                                        <option value="a">A</option>
+                                                        <option value="b">B</option>
+                                                        <option value="c">C</option>
+                                                        <option value="d">D</option>
+                                                        <option value="e">E</option>
+                                                        <option value="f">F</option>
+                                                    </select>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-md-10" align="left" style="line-height:40px">
+													<i class="fa fa-warning" style="color:#efa421"></i>
+													<span>代码质量检查阈值，若代码质量不能达到设定的阈值级别则代码不能继续编译！</span>
+												</div>
+											</div>
+										</div>
+
+										<div class="" style="padding-top: 235px">
 											<span class="btn btn-default last_step"
 												style="margin-right: 30px;">上一步</span> <span
 												id="user_save_finishBtn"
 												class="next3 pull-right btn btn-primary btn-color pull_confirm">完成</span>
 										</div>
 
-									</div>
-									<!-- host_step2 -->
+									</div> -->
+									<!-- host_step3 -->
 
 									<%--3.资源限制--%>
 									<%--<div class="host_step3" style="height: auto;" >

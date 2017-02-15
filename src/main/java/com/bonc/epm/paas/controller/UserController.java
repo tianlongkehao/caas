@@ -1555,4 +1555,16 @@ public class UserController {
         }
         return JSON.toJSONString(map);
     }
+    
+    /**
+     * Description: <br>
+     * 查询所有的sonar
+     * @return jsp
+     */
+    @RequestMapping("/sonar")
+    public String findSonar(Model model){
+        model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li_flag", "sonar");
+        return "ci/sonar.jsp";
+    }
 }
