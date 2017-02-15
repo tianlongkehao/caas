@@ -123,65 +123,18 @@
 		                            </div>
                                 </div>
                             </section>
-                            <!--   质量管理 -->
-                            <h4 class="c-title">质量管理</h4>
+                            <!--   质量管理：如果配置的是必选 则checkbox自动勾选且不可更改，若选择可选则CheckBox可选 -->
+                            <h4 class="c-title"><label><strong>质量管理</strong><input type="checkbox" id="ci-sonarInfo"></label></h4>
                             <section class="registryinfo">
-                        		<div class="row depot-name">
-	                                <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">项目主键</label>
-	                                    <input id="sonarProjectKey" autocomplete = 'off' name="sonarProjectKey" class="form-control c-project-con" type="text"
-	                                           required="">
-	                                </div>
-	                            </div>
-	                            <div class="row">
-	                                <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">项目名称</label>
-	                                    <input id="sonarProjectName" autocomplete = 'off' name="sonarProjectName" class="form-control c-project-con" type="text"
-	                                           required="">
-	                                </div>
-	                            </div>
-	                            <div class="row">
-	                                <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">项目描述</label>
-	                                    <textarea id="sonarProjectDescription" autocomplete = 'off' name="sonarProjectDescription" class="form-control c-project-con" type="text"
-	                                           required="" row="5"></textarea>
-	                                </div>
-	                            </div>
-	                            <div class="row">
-	                                <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">项目版本号</label>
-	                                    <input id="sonarProjectVersion" autocomplete = 'off' name="sonarProjectVersion" class="form-control c-project-con" type="text"
-	                                           required="">
-	                                </div>
-	                            </div>
+                        		
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">源码所在目录</label>
-	                                    <input id="sonarProjectSources" autocomplete = 'off' name="sonarProjectSources" class="form-control c-project-con" type="text"
-	                                           required="">
+	                                    <textarea id="sonarProjectSources" autocomplete = 'off' name="sonarProjectSources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔"
+	                                           required="" row="5"></textarea>
 	                                </div>
 	                            </div>
-	                            <div class="row">
-	                                <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">源码编码类型</label>
-	                                    <input id="sonarProjectSourceEncoding" autocomplete = 'off' name="sonarProjectSourceEncoding" class="form-control c-project-con" type="text"
-	                                           required="">
-	                                </div>
-	                            </div>
-	                            <div class="row">
-	                                <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">源码分支</label>
-	                                    <input id="sonarProjectBranch" autocomplete = 'off' name="sonarProjectBranch" class="form-control c-project-con" type="text"
-	                                           required="">
-	                                </div>
-	                            </div>
-	                            <div class="row">
-	                                <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">项目源码链接</label>
-	                                    <input id="sonarProjectLinkScm" autocomplete = 'off' name="sonarProjectLinkScm" class="form-control c-project-con" type="text"
-	                                           required="">
-	                                </div>
-	                            </div>
+	                            
                         	</section>
                             <h4 class="c-title">构建</h4>
                             <section class="registryinfo">

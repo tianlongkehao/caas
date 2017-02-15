@@ -20,7 +20,7 @@
 						<li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
 								id="nav1">控制台</span></a></li>
 						<li><i class="fa fa-angle-right"></i></li>
-						<li class="active" id="nav2">shera管理</li>
+						<li class="active" id="nav2">sonar管理</li>
 					</ol>
 				</div>
 				<div class="contentMain">
@@ -29,11 +29,11 @@
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
                                 <h5>
-										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>shera管理
+										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>sonar管理
 									</h5>
 
 									<div class="ibox-tools">
-										<a id="createSheraBtn" title="创建shear"><i
+										<a id="createSheraBtn" title="创建sonar"><i
 											class="fa fa-plus"></i></a> 
 										<a href="javascript:delSheras()" title="删除"><i
 											class="fa fa-trash"></i></a>
@@ -47,10 +47,7 @@
 											<tr>
 												<th style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" class="chkAll" id="checkallbox" /></th>
-												<th style="width: 20%;">IP</th>
-												<th style="width: 13%;">端口</th>
-												<th style="width: 13%;">账号</th>
-												<th style="width: 14%;">密码</th>
+												<th style="width: 50%;">网址</th>
 												<th style="width: 200px;">描述</th>
 												<th style="width: 8%;" class="del-operation">操作</th>
 											</tr>
@@ -100,23 +97,8 @@
 	<div id="createSheraCon" style="display: none">
 		<div style="margin: 15px 20px">
 			<div class="infoCred">
-				<span class="labelCred">IP：</span> <input type="text"
+				<span class="labelCred">网址：</span> <input type="text"
 					class="form-control conCred" id="sheraIp" name="sheraIp" placeholder="192.168.0.76"
-					value="">
-			</div>
-		    <div class="infoCred">
-                <span class="labelCred">端口：</span> <input type="text"
-                    class="form-control conCred" id="port" name="port" placeholder=""
-                    value="">
-            </div>
-			<div class="infoCred">
-				<span class="labelCred">账号：</span> <input type="text"
-					class="form-control conCred" id="shreaName" name="shreaName"
-					value="">
-			</div>
-			<div class="infoCred">
-				<span class="labelCred">密码：</span> <input type="text"
-					class="form-control conCred" id="shreaPassword" name="shreaPassword"
 					value="">
 			</div>
 			<div class="infoCred">
@@ -124,25 +106,6 @@
                 <textarea class="form-control conCred" style="height:100px"
                     id="sheraRemark" name="sheraRemark" row="8" value=""></textarea>
             </div>
-			<div class="infoCred">
-				<span class="labelCred">JDK：</span>
-				<table class="table enabled conCred jdkCon">
-					<thead>
-						<tr>
-							<th style="width: 35%">name</th>
-							<th style="width: 35%">path</th>
-							<th style="vertical-align: middle; width: 10%">操作</th>
-						</tr>
-					</thead>
-					<tbody class="jdktbody">
-					
-					</tbody>
-				</table>
-				<div class="createjdk" style="background: #fafafa">
-					<span id="createjdk"><i class="fa fa-plus margin"></i>添加JDK</span>
-				</div>
-				<input type="hidden" id="arrayJdk" value="" />
-			</div>
 		</div>
 	</div>
 

@@ -33,7 +33,7 @@
 								<ul style="padding: 0 4rem;">
 									<li class="radius_step action"><span>1</span> 基本信息</li>
 									<li class="radius_step"><span>2</span> 资源配额</li>
-									<li class="radius_step"><span>3</span> 质量检查</li>
+									<!-- <li class="radius_step"><span>3</span> 质量检查</li> -->
 								</ul>
 							</div>
 							<form id="add_tenement" name="add_tenement" action=""
@@ -275,13 +275,13 @@
 										<div class="" style="padding-top: 235px">
 											<span class="btn btn-default last_step"
 												style="margin-right: 30px;">上一步</span> 
-											<span class="next3 pull-right btn btn-primary btn-color pull_confirm"
-												data-attr="tenxcloud/mysql" id="user_create_next2">下一步</span>	
+											<span id="user_save_finishBtn"
+												class="next2 pull-right btn btn-primary btn-color pull_confirm">完成</span>	
 										</div>
 
 									</div>
 									<!-- host_step3 -->
-									<div class="host_step3">
+									<!-- <div class="host_step3">
 										<div class="blankapp" style="text-align: center">
 											<div class="row">
 												<div class="col-md-5 sonarInfo" align="left">
@@ -317,7 +317,7 @@
 												class="next3 pull-right btn btn-primary btn-color pull_confirm">完成</span>
 										</div>
 
-									</div>
+									</div> -->
 									<!-- host_step3 -->
 
 									<%--3.资源限制--%>
