@@ -215,7 +215,11 @@ $(function(){
     });
     //增加一条白名单
     $("#addOneWhiteList").click(function(){
-    	var whiteListHtml = '<div><input type="text" class="whiteList form-control"><i class="fa fa-trash" onclick="delOneWhiteList(this)"></i></div>';
+    	var whiteListHtml = '<div>'+
+				    		'<input type="text" class="whiteList form-control" placeholder="git地址">'+
+					    	'<input type="text" class="branchList form-control" placeholder="分支">'+
+					    	'<i class="fa fa-trash" onclick="delOneWhiteList(this)"></i>'+
+					    	'</div>';
     	$(".whiteLists").append(whiteListHtml);
     });
 });
