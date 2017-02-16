@@ -124,9 +124,24 @@ $(document).ready(function () {
          		}
          	});
         });
-    $(".imagesCenter").removeClass("hide");
+    
+    //镜像中心的搜索功能
+    var searchCon = $("#searchCon").val();
+	var searchCondition = 0;
+    $("#centerSearchImages").click(function(){
+    	$(".searchCenter").addClass("hide");
+    	$(".searchResult").removeClass("hide");
+    	$(".imagesCenter").addClass("hide");
+    	$(".imagesSearchResult").removeClass("hide");
+    	searchCon = $("#centerSearchInput").val();
+    	$("#searchCon").val(searchCon);
+    	searchImagesResult(searchCon,searchCondition);
+    });
+    //镜像搜索结果里的搜索功能
     $("#searchImages").click(function(){
-    	searchImagesResult();
+    	searchCon = $("#searchCon").val();
+    	searchCondition = $("#searchCondition").val();
+    	searchImagesResult(searchCon,searchCondition);
     });
     
    
@@ -555,7 +570,7 @@ function syncImages(){
 }
 
 //镜像搜索结果
-function searchImagesResult(){
+function searchImagesResult(searchCon,searchCondition){
 	$("#searchImagesList").empty();
 	$(".imagesCenter").addClass("hide");
 	$(".imagesSearchResult").removeClass("hide");
@@ -626,6 +641,8 @@ function searchImagesResult(){
 		 }
 	 });
 }
+
+
 
 //镜像图标imageType=1公有2私有
 function imageTypeSrc(){
