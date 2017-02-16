@@ -147,7 +147,7 @@ nav.navbar-default{
 #nav-side{
 	/* height:100%; */ 
 	overflow-y: auto;
-	height: calc(100% - 176px);
+	height: calc(100% - 90px);
     overflow-x: hidden;
 }
 
