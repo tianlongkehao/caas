@@ -69,7 +69,7 @@
 									<div class="service-searchFun"
 										align="right">
 										<label style="line-height: 35px">创建人:</label>
-										<input type="text" id="serviceSearchCreator" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+										<input type="text" id="serviceSearchCreator" value="${userName}" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
 									</div></c:if>
 									<div class="service-searchFun"
 										align="right">

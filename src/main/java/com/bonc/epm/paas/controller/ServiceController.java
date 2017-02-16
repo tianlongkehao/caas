@@ -247,7 +247,7 @@ public class ServiceController {
 	 * @return String
 	 */
 	@RequestMapping(value = { "service" }, method = RequestMethod.GET)
-	public String containerLists(Model model) {
+	public String containerLists(Model model,String userName) {
 		// 获取特殊条件的pods
 		try {
 			if (CurrentUserUtils.getInstance().getUser().getId() != 1) {
@@ -258,6 +258,7 @@ public class ServiceController {
 			LOG.debug("service show:" + e.getStatus().getMessage());
 			return "workbench.jsp";
 		}
+		model.addAttribute("userName", userName);
 		model.addAttribute("menu_flag", "service");
 		model.addAttribute("li_flag", "service");
 		return "service/service.jsp";

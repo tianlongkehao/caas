@@ -83,7 +83,7 @@
                     </a>
                  </li>
                  </c:if>
-                 <c:if test="${cur_user.user_autority == 2}">
+                 <c:if test="${cur_user.user_autority != 1}">
                  <li>
                    <a class="icon-view" href="<%=path %>/cluster/containers">
                        	<div class="icon-wrapper">
@@ -91,7 +91,7 @@
                                 <span class="img"><img src="<%=path %>/images/new-cluster.png" alt=""/></span>
                                 <span class="text hide">提供该租户下的所有容器的监控和集群拓扑</span>
                            </div>
-                       	   <div class="icon-name">集群资源</div>
+                       	   <div class="icon-name">监控信息</div>
                        </div>
                     </a>
                  </li>

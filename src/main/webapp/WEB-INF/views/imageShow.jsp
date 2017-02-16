@@ -102,7 +102,7 @@
                                     </li>
                                </c:forEach>     
                                    
-                            </ul><br>
+                            </ul>
                             <div class="imageInfo" style="position:absolute;top:633px"><span>最新镜像</span></div><br>
                             <ul id="newimageList" style="height:460px">
                                 <c:forEach items="${newImage }" var = "image" varStatus="status">
