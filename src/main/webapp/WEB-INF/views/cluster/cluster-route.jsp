@@ -5,7 +5,7 @@
     <title>集群</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
-    <script type="text/javascript" src="<%=path %>/js/cluster/cluster.js"></script>
+    <script type="text/javascript" src="<%=path %>/js/cluster/cluster-route.js"></script>
 </head>
 
 <body>
@@ -55,14 +55,16 @@
 								style="float: left; text-align: center; margin: 0px 10px; float: right"
 								align="right">
 								<label style="line-height: 35px">node:</label> <select
-									name="search_time" id="search_time" onchange="searchTime()"
+									name="search_routeNode" id="search_routeNode" onchange="searchRouteNode()"
 									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
-									<option value="">192.168.0.12</option>
+									<c:forEach items="${nodeList }" var="nodeList">
+										<option value="${nodeList.nodeIp }">${nodeList.nodeName }</option>
+									</c:forEach>
 								</select>
 							</div>
 						</form>
 						<div class="" style="margin-bottom:15px">
-							<table class="table table-striped table-hover">
+							<table class="table table-striped table-hover dataTables-example">
 								<thead>
 									<tr>
 										<th>&nbsp;</th>
@@ -71,17 +73,15 @@
 									</tr>
 								</thead>
 								<tbody id="routeList">
-									<tr>
-										<td>&nbsp;</td>
-										<td>targetIP</td>
-										<td>是否成功</td>
-									</tr>
-									<tr>
-										<td>&nbsp;</td>
-										<td>targetIP</td>
-										<td>是否成功</td>
-									</tr>
+									
 								</tbody>
+								<!-- <tfoot class="hide">
+									<tr>
+										<td colspan="3">
+											<ul class="pagination pull-right"></ul>
+										</td>
+									</tr>
+								</tfoot> -->
 							</table>
 						</div>
 						
@@ -92,7 +92,14 @@
 			</div>
     </article>
 </div>
-
+<script type="text/javascript">
+	/* $('.dataTables-example').dataTable({
+	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0] }],
+	    "searching":false
+	    //"aaSorting": [[ 2, "desc" ]]
+	}); */
+	//$("#checkallbox").parent().removeClass("sorting_asc");
+</script>
 
 </body>
 </html>

@@ -557,3 +557,51 @@ table.dataTable thead .sorting:after {
 	padding-right: 2px;
     padding-left: 2px;
 }
+/* 代码质量等级图标 */
+a > .fa_level {
+    margin-bottom: -1px;
+    border-bottom: 1px solid;
+    transition: all .2s ease;
+}
+.fa_level {
+    display: inline-block;
+    width: 1.3em;
+    height: 1.3em;
+    line-height: 1.3;
+    color: #fff;
+    font-weight: 300;
+    text-align: center;
+    margin-left:19px;
+}
+.fa_level_a {
+    background-color: #0a0;
+}
+a .fa_level_a {
+    border-bottom-color: #0a0;
+}
+.fa_level_b {
+    background-color: #80cc00;
+}
+a .fa_level_b {
+    border-bottom-color: #80cc00;
+}
+.fa_level_c {
+    background-color: #fe0;
+}
+a .fa_level_c {
+    border-bottom-color: #fe0;
+}
+.fa_level_d {
+    background-color: #f77700;
+}
+a .fa_level_d {
+    border-bottom-color: #f77700;
+}
+.fa_level_e {
+    background-color: #e00;
+}
+a .fa_level_e {
+    border-bottom-color: #e00;
+}
+
+

@@ -1015,8 +1015,14 @@ i.pushOrg {
 	margin-left:15px;
 }
 .whiteList{
-	width:92%;
+	width:74%;
 	margin-left:0px!important;
+	margin-top:6px;
+	float:left;
+}
+.branchList{
+	width:14%;
+	margin-left:2px!important;
 	margin-top:6px;
 	float:left;
 }

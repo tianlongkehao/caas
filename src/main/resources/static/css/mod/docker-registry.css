@@ -414,6 +414,12 @@
     font-size: 20px;
     color: #ccc;
 }
+#centerSearchImages{
+	margin-left: -5px;
+    font-size: 20px;
+    color: #ccc;
+    
+}
 .searchCondition{
     line-height: 40px;
     height: 40px;
@@ -450,5 +456,12 @@ span.cloudNum{
     height: 200px;
     background-color: #ddd;
     border: 1px solid #ccc;
+}
+i.searchImage-img{
+	position: absolute;
+    font-size: 20px;
+    color: #cdcdcd;
+    line-height: 45px;
+    padding-left: 10px;
 }
 
