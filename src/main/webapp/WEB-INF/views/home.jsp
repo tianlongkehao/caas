@@ -28,7 +28,7 @@
 </header>
 <div class="funs">
 	<div class="head-img">
-		<img src="<%=path %>/images/head-img1.png">
+		<img id="backgroundImg" src="<%=path %>/images/head-img1.png">
 		<a href="<%=path %>/bcm/${cur_user.id }" class="pandectBtn"><i class="fa fa-home icon-home"></i><span>&nbsp;控制台</span></a>
 	</div>
 	
@@ -245,8 +245,17 @@ $(document).ready(function(){
 		$(this).find(".img").removeClass("hide");
 		$(this).find(".text").addClass("hide");
 	});
+	
+	adjustBtn();
 })
-
+window.onresize=function(){  
+	adjustBtn();
+} 
+function adjustBtn(){
+	var backgroundImgHeight = $("#backgroundImg").height(); 
+    var pandectBtnPostion = backgroundImgHeight*0.87;
+    $(".pandectBtn").css("top",pandectBtnPostion);
+}
 </script>
 </body>
 </html>

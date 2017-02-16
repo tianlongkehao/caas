@@ -31,7 +31,12 @@
                     <div class="mirror-head">
                         <section class="images">
                             <div class="img-icon">
-                                <img class="imgIcon" src="<%=path %>/images/image-1.png" style="max-width:80%;">
+                            	<c:if test="${image.imageType == 1 }">
+                            		<img class="imgIcon" src="<%=path %>/images/imageType1.png" width="80px">
+                            	</c:if>
+                                <c:if test="${image.imageType == 2 }">
+                            		<img class="imgIcon" src="<%=path %>/images/imageType2.png" width="80px">
+                            	</c:if>
                             </div>
                         </section>
                         <section class="type-info">
