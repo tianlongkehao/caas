@@ -76,7 +76,7 @@
 								<thead>
 									<tr><th colspan="3"><h4>iptables对比结构相同的节点：<h4></th></tr>
 									<tr class="u-line">
-										<th colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;节点IP:&nbsp;&nbsp;<span>192.168.0.10/192.168.0.11</span></th>
+										<th colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;节点IP:&nbsp;&nbsp;<span>nodeName1/nodeName2</span></th>
 									</tr>
 								</thead>
 								<tbody id="sameTableList">
@@ -118,8 +118,8 @@
 									<tr><th colspan="3"><h4>iptables对比结构不同之处：<h4></th></tr>
 									<tr class="u-line">
 										<th>&nbsp;</th>
-										<th>192.168.0.10</th>
-										<th>192.168.0.11</th>
+										<th>nodeName(192.168.0.10)</th>
+										<th>nodeName(192.168.0.11)</th>
 									</tr>
 								</thead>
 								<tbody id="routeList">

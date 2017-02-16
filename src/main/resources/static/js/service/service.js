@@ -841,6 +841,20 @@ function loadServices() {
 							return html;
 						}
 					},
+					{
+						data : null,
+						render : function ( data, type, row ) {
+							var html = '<a style="margin-left:2px;" href="#"'+
+								'value="'+row.id+'"'+
+								'serviceName="'+row.serviceName+'"'+
+								'serviceNum="'+row.instanceNum +'"'+
+								'confRam="'+row.ram +'" status="'+row.status +'"'+
+								'imagename="'+row.imgName +'"'+
+								'imageversion="'+row.imgVersion +'"'+
+								'confCpu="'+row.cpuNum + '"><span class="fa_level fa_level_d">D</span></a>';
+							return html;
+						}
+					},
 
 					{
 						data : null,

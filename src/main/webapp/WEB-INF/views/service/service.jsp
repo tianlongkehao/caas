@@ -86,19 +86,20 @@
 									<table class="table table-stripped table-hover dataTables-example">
 										<thead>
 											<tr>
-												<th style="width: 5%; text-indent: 30px;"><input
+												<th style="text-indent: 30px;"><input
 													type="checkbox" autocomplete="off" class="chkAll"
 													id="checkallbox" /></th>
-												<th style="width: 15%; padding-left: 5px;">名称</th>
-												<th style="width: 12%; text-indent: 8px;">运行状态</th>
-												<th style="width: 20%;">镜像</th>
-												<th style="width: 12%;">服务地址</th>
-												<th style="width: 12%;">创建于</th>
+												<th style="padding-left: 5px;">代码等级</th>
+												<th style="padding-left: 5px;">名称</th>
+												<th style="text-indent: 8px;">运行状态</th>
+												<th >镜像</th>
+												<th >服务地址</th>
+												<th >创建于</th>
 												<c:if test="${cur_user.user_autority != 1}">
-													<th style="width: 12%;">操作</th>
+													<th >操作</th>
 												</c:if>
 												<c:if test="${cur_user.user_autority == 1}">
-													<th style="width: 12%;">创建人</th>
+													<th >创建人</th>
 												</c:if>
 											</tr>
 										</thead>
