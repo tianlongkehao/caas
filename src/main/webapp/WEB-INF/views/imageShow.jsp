@@ -61,7 +61,7 @@
                         
                         <div class="images-layout imagesCenter">
                         	<div class="imageInfo">推荐镜像</div>
-                            <ul id="imageList" style="height:460px">
+                            <ul id="imageList" >
 								<c:forEach items="${imageList }" var = "image">
 								
                                     <li class="images-panel">
@@ -100,11 +100,11 @@
                                         </div>
                                         
                                     </li>
-                               </c:forEach>     
-                                   
+                                 </c:forEach>     
+                                 <div style="clear:both"></div> 
                             </ul>
-                            <div class="imageInfo" style="position:absolute;top:633px"><span>最新镜像</span></div><br>
-                            <ul id="newimageList" style="height:460px">
+                            <div class="imageInfo"><span>最新镜像</span></div>
+                            <ul id="newimageList">
                                 <c:forEach items="${newImage }" var = "image" varStatus="status">
                                     <c:if test="${status.index < 8 }">
                                     
@@ -152,6 +152,7 @@
 	                                    </li>
 	                                </c:if>
                                </c:forEach>  
+                               <div style="clear:both"></div>
                              </ul>
                         </div>
                         

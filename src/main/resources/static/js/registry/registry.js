@@ -602,7 +602,13 @@ function searchImagesResult(searchCon,searchCondition){
 				 
 				 var imageResourceName = imageList[i].resourceName;
 				 var imageRemark = imageList[i].remark;
-				 var imageSummary = imageList[i].summary;
+				 var imageSummary = "";
+				 if(imageList[i].summary == null || imageList[i].summary == ""){
+					 imageSummary = "";
+				 }else{
+					 imageSummary = imageList[i].summary;
+				 }
+				 var imageSummary
 				 var imageType = imageList[i].imageType;
 				 //搜索结果html
 				 searchImagesHtml += '<li class="images-panel">'+
@@ -623,7 +629,7 @@ function searchImagesResult(searchCon,searchCondition){
 									'<div>'+
 										'<span class="searchImageVersion" title="'+imageVersion +'"><i class="fa fa-tag"></i> '+imageVersion +'</span>'+
 										'<div class="pull-right">'+
-											'<a href="<%=path %>/service/add?imageName='+imageName+'&imageVersion='+imageVersion+'&imgID='+imageId+'&resourceName='+imageResourceName+'"'+
+											'<a href="'+ctx+'/service/add?imageName='+imageName+'&imageVersion='+imageVersion+'&imgID='+imageId+'&resourceName='+imageResourceName+'"'+
 												'class="btn-pull-deploy btn" imageversion="'+imageVersion+'"'+
 												'imagename="'+imageName+'">部署</a>'+
 										'</div>'+
