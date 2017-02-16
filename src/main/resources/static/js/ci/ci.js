@@ -274,7 +274,14 @@ function loadCiCode() {
 					{   
 						data : null,
 						render : function ( data, type, row ) {
-							var html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息">'+row.projectName+'</a>';
+							var html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#"><span class="fa_level fa_level_e">E</span></a>';
+							return html;
+						}
+					},
+					{   
+						data : null,
+						render : function ( data, type, row ) {
+							var html = '<a href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息">'+row.projectName+'</a>';
 							return html;
 						}
 					},
