@@ -158,16 +158,17 @@
 									<table class="table table-stripped table-hover dataTables-example">
 											<thead>
 												<tr style="height: 40px;">
-													<th style="width: 15%; text-indent: 30px;">项目名称</th>
-													<th style="width: 12%; ">上次构建状态</th>
-													<th style="width: 22%; ">上次成功时间</th>
-													<th style="width: 22%;">上次失败时间</th>
-													<th style="width: 10%; ">上次持续时间</th>
-													<th style="width: 12%; text-indent: 10px;">功能</th>
+													<th style="text-indent: 30px;">代码质量</th>
+													<th>项目名称</th>
+													<th>上次构建状态</th>
+													<th>上次成功时间</th>
+													<th>上次失败时间</th>
+													<th>上次持续时间</th>
+													<th style="text-indent: 10px;">功能</th>
 												</tr>
 											</thead>
 
-											<tbody id="ciList">
+											<tbody id="ciCodeList">
 												
 										    </tbody>
 										<tfoot class="hide">

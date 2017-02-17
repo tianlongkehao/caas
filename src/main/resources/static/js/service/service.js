@@ -59,11 +59,11 @@
 function loadContainers(obj,serviceId) {
 	var serviceID = serviceId;
 	var aaa = 'tr[serviceidcon = "' + serviceID + '"]';
-	if ($(obj).children().eq(1).children("b").attr("rotate") == "show") {
+	if ($(obj).children().eq(2).children("b").attr("rotate") == "show") {
 		$(aaa).remove();
-		$(obj).children().eq(1).children("b")
+		$(obj).children().eq(2).children("b")
 				.css("transform", "rotate(-90deg)");
-		$(obj).children().eq(1).children("b").attr("rotate", "hide");
+		$(obj).children().eq(2).children("b").attr("rotate", "hide");
 	} else {
 		$.ajax({
 					url : "" + ctx +"/service/findservice.do?serviceID="+serviceID,
@@ -81,8 +81,8 @@ function loadContainers(obj,serviceId) {
 							containersHtml += '<tr class="tr-row" serviceidcon="'
 									+ serviceID
 									+ '">'
-									+ '<td style="width: 5%">&nbsp;</td>'
-									+ '<td style="width: 15%;">';
+									+ '<td colspan="2">&nbsp;</td>'
+									+ '<td>';
 							if (data.service.status == 6){
 								containersHtml += '<a style="margin-left: 19px;" href="javascript:debug('+serviceID+','+data.containerList[i].containerStatus+')">';
 							} else {
@@ -91,22 +91,22 @@ function loadContainers(obj,serviceId) {
 							containersHtml += containerName
 									+ '</a>'
 									+ '</td>'
-									+ '<td colspan="2" style="width: 32%"><i class="'
+									+ '<td colspan="2"><i class="'
 									+ statusClassName
 									+ '"></i>'
 									+ containerStatus
 									+ '<img src=" '+ctx+'/images/loading4.gif" alt="" class="'
 									+ loadingImgShowClass
 									+ '"/></td>'
-									+ '<td style="width: 12%"></td>'
+									+ '<td></td>'
 									+ '<td colspan="2" style="width: 32%"></td>'
 									+ '</tr>';
 						}
 						$(obj).after(containersHtml);
 
-						$(obj).children().eq(1).children("b").css("transform",
+						$(obj).children().eq(2).children("b").css("transform",
 								"rotate(0deg)");
-						$(obj).children().eq(1).children("b").attr("rotate",
+						$(obj).children().eq(2).children("b").attr("rotate",
 								"show");
 
 					}
