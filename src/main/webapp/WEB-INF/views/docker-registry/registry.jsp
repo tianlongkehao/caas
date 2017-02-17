@@ -49,14 +49,15 @@
 									<table class="table table-striped table-hover dataTables-example">
 										<thead>
 											<tr>
-												<th style="width: 5%; text-indent: 30px;"><input
+												<th style="text-indent: 30px;"><input
 													type="checkbox" class="chkAll" id="checkallbox" /></th>
-												<th style="width: 15%; text-indent: 10px;">名称</th>
-												<th style="width: 15%; text-indent: 8px;">版本</th>
-												<th style="width: 15%; text-indent: 8px;">镜像信息</th>
-												<th style="width: 15%; text-indent: 5px;">创建人</th>
-												<th style="width: 20%; text-indent: 10px;">创建时间</th>
-												<th style="width: 10%; text-indent: 10px;"
+												<th style="text-indent: 10px;">代码质量</th>
+												<th style="text-indent: 10px;">名称</th>
+												<th style="text-indent: 8px;">版本</th>
+												<th style="text-indent: 8px;">镜像信息</th>
+												<th style="text-indent: 5px;">创建人</th>
+												<th style="text-indent: 8px;">创建时间</th>
+												<th style="text-indent: 10px;"
 													class="del-operation">操作</th>
 											</tr>
 										</thead>

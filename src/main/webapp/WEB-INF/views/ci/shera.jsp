@@ -120,6 +120,15 @@
 					value="">
 			</div>
 			<div class="infoCred">
+				<span class="labelCred">sonar：</span> 
+				<!-- <input type="text"
+					class="form-control conCred" id="shreaPassword" name="shreaPassword"
+					value=""> -->
+				<select class="form-control conCred" id="sonarInfoList" name="sonarInfoList">
+					<option>sonar111111111</option>
+				</select>
+			</div>
+			<div class="infoCred">
                 <span class="labelCred">描述：</span> 
                 <textarea class="form-control conCred" style="height:100px"
                     id="sheraRemark" name="sheraRemark" row="8" value=""></textarea>

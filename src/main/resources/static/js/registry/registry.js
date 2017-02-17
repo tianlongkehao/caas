@@ -157,6 +157,13 @@ function findImages(){
 	                    		return html;
 	                    	}
 	                    },
+	                    {   
+	                    	data : null,
+	                    	render : function ( data, type, row ) {
+	                    		var html = '<a href="#"><span class="fa_level fa_level_a">A</span></a>'
+	                    		return html;
+	                    	}
+	                    },
 	                    { 	
 	                    	data : null ,
 	                    	render : function ( data, type, row ) {
