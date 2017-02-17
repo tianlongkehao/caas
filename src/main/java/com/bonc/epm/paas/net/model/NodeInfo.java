@@ -9,11 +9,10 @@ public class NodeInfo {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getMountPath() {
+	public String getIp() {
 		return ip;
 	}
-	public void setMountPath(String mountPath) {
-		this.ip = mountPath;
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
-
 }

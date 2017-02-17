@@ -27,21 +27,29 @@ import javax.ws.rs.core.MediaType;
 
 import com.bonc.epm.paas.net.exceptions.NetClientException;
 import com.bonc.epm.paas.net.model.Nodes;
+import com.bonc.epm.paas.net.model.RouteTable;
 
 public interface NetAPI {
 
-	/* resourcequota API */
 	/**
-     * Get a resourcequota Info
-     *
-     * @param controllerId
-     *            id of the resourcequota
-     * @return {@link Nodes}
-     * @throws NetClientException
-     */
-    @GET
-    @Path("/namespaces/{namespace}/resourcequotas/{name}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Nodes getNodes()
-            throws NetClientException;
+	 * Get all nodes
+	 *
+	 * @return {@link Nodes}
+	 * @throws NetClientException
+	 */
+	@GET
+	@Path("/get/nodes")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Nodes getNodes() throws NetClientException;
+
+	/**
+	 * check Routetable
+	 *
+	 * @return {@link RouteTable}
+	 * @throws NetClientException
+	 */
+	@GET
+	@Path("/check/routetable")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public RouteTable checkRoutetable() throws NetClientException;
 }

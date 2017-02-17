@@ -47,6 +47,10 @@ import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
+import com.bonc.epm.paas.net.api.NetAPIClientInterface;
+import com.bonc.epm.paas.net.model.Nodes;
+import com.bonc.epm.paas.net.model.RouteTable;
+import com.bonc.epm.paas.net.util.NetClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.RouteTableUtils;
 import com.bonc.epm.paas.util.SshConnect;
@@ -105,6 +109,9 @@ public class ClusterController {
 
     @Autowired
     InfluxdbSearchService influxdbSearchService;
+
+    @Autowired
+    NetClientService netClientService;
 
     /**
      *
@@ -738,7 +745,8 @@ public class ClusterController {
     @RequestMapping(value = { "/getRouteTable.do" }, method = RequestMethod.GET)
     @ResponseBody
     public String getRouteTable(String ip){
-    	String jsonData = RouteTableUtils.getRouteTable(ip);
-        return jsonData;
+    	NetAPIClientInterface client = netClientService.getSpecifiedClient(ip);
+    	RouteTable checkRoutetable = client.checkRoutetable();
+        return JSON.toJSONString(checkRoutetable);
     }
 }

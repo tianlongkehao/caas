@@ -22,19 +22,25 @@ package com.bonc.epm.paas.net.api;
 
 import com.bonc.epm.paas.net.exceptions.NetClientException;
 import com.bonc.epm.paas.net.model.Nodes;
+import com.bonc.epm.paas.net.model.RouteTable;
 
 public interface NetAPIClientInterface {
 
-    public static final String VERSION = "v1";
 
 	/**
 	 * Get a Nodes Info
 	 *
-	 * @param name
-	 *            id of the resourcequota
 	 * @return {@link Nodes}
 	 * @throws NetClientException
 	 */
 	public Nodes getNodes() throws NetClientException;
+
+	/**
+	 * Get RouteTable
+	 *
+	 * @return {@link RouteTable}
+	 * @throws NetClientException
+	 */
+	public RouteTable checkRoutetable() throws NetClientException;
 
 }

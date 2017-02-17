@@ -26,7 +26,7 @@ public class RestFactory {
     }
 
     public NetAPI createNetAPI(String url, String userName, String password){
-    	Class<KubernetesAPI> clazz = KubernetesAPI.class;
+    	Class<NetAPI> clazz = NetAPI.class;
     	Class<?>[] intfs =
 		{
 			clazz
