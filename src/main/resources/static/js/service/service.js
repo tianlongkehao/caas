@@ -4,6 +4,16 @@
 		window.location.reload();
 	});
 
+
+	document.getElementById('ExportBtn').onclick = function() {
+		var serviceSearchCreator = $("#serviceSearchCreator").val();
+		var serviceSearchImage = $("#serviceSearchImage").val();
+		var serviceSearchName = $("#serviceSearchName").val();
+		location.href = ctx + "/service/exportExcel.do?searchService=" + serviceSearchName + "&searchImage=" + serviceSearchImage + "&searchCreatorName=" + serviceSearchCreator;
+	};
+
+
+
 	$(document).on('click','.no-drop',function(){
 		  return false;
 	});
@@ -382,8 +392,11 @@ function versionUpgrade() {
 }
 //导出excel
 	function exportExcel(){
+		var serviceSearchCreator = $("#serviceSearchCreator").val();
+		var serviceSearchImage = $("#serviceSearchImage").val();
+		var serviceSearchName = $("#serviceSearchName").val();
 		$.ajax({
-			url : ctx + "/service/exportExcel.do?",
+			url : ctx + "/service/exportExcel.do?"+serviceSearchName+"&searchImage="+serviceSearchImage+"&searchCreatorName="+serviceSearchCreator,
 			success : function(data) {
 
 			}

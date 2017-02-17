@@ -42,8 +42,8 @@
 											</a>
 											<a id="startContainer" class="no-drop" href="javascript:createContainer()" title="启动">
 												<i id = "startContainerFa" class="fa fa-play self_a"></i>
-											</a> 
-											<a id="stopContainer" class="no-drop" href="javascript:stopContainer()" title="停止"> 
+											</a>
+											<a id="stopContainer" class="no-drop" href="javascript:stopContainer()" title="停止">
 												<i id = "stopContainerFa" class="fa fa-power-off self_a"></i>
 											</a>
 											<a id="deleteButton" class="no-drop" href="javascript:delContainer()" title="删除">
@@ -56,7 +56,7 @@
 										<a href="" id="serviceReloadBtn" title="刷新">
 											<i class="fa fa-repeat"></i>
 										</a>
-										
+
 									</div>
 								</div>
 								<c:if test="${cur_user.user_autority == 1}">
@@ -73,12 +73,12 @@
 									</div></c:if>
 									<div class="service-searchFun"
 										align="right">
-										<label style="line-height: 35px">镜像:</label> 
+										<label style="line-height: 35px">镜像:</label>
 										<input type="text" id="serviceSearchImage" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
 									</div>
 									<div class="service-searchFun"
 										align="right">
-										<label style="line-height: 35px">名称:</label> 
+										<label style="line-height: 35px">名称:</label>
 										<input type="text" id="serviceSearchName" style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
 									</div>
 								</form></c:if>
@@ -177,7 +177,7 @@
 													</span></td>
 
 													<td style="width: 12%" class="tdTimeStrap">
-														<input type="hidden" class="timeStrap" value=""> 
+														<input type="hidden" class="timeStrap" value="">
 														<i class="fa_time"></i><span>${service.createDate }</span>
 													</td>
 													<td style="width: 23%" class="optBtn">
@@ -202,7 +202,7 @@
                                                         <c:when test="${service.status == 3}">
 															<a id="${service.id}_stop" class="a-live stopContainer_a "
 																href="javascript:oneStopContainer(${service.id},${service.status})"
-																style="margin-left: 5px" title="停止"> 
+																style="margin-left: 5px" title="停止">
 	                                                            <i class="fa fa-power-off"></i>
 															</a>
                                                         </c:when>
@@ -214,46 +214,46 @@
 	                                                        </a>
                                                         </c:otherwise>
                                                     </c:choose>
-														<a id="${service.id}_scaleCluster" class="a-live scaleCluster_a " 
+														<a id="${service.id}_scaleCluster" class="a-live scaleCluster_a "
 															href="javascript:oneUpGradeContainer(${service.id },'${service.serviceName }',${service.instanceNum },${service.cpuNum },${service.ram })" title="弹性伸缩"
 															style="margin-left: 5px">
 																<i class="fa fa-arrows"></i>
-														</a> 
+														</a>
 									                   <c:choose>
                                                           <c:when test="${service.status == 3}">
-															<a id="${service.id}_upgradeCluster" class="a-live upgradeCluster_a " 
+															<a id="${service.id}_upgradeCluster" class="a-live upgradeCluster_a "
 																href="javascript:oneVersionUpgrade(${service.id },'${service.serviceName }','${service.imgName }')" title="版本升级"
 																style="margin-left: 10px">
 	                                                            <i class="fa fa-arrow-up"></i>
-															</a> 
+															</a>
                                                           </c:when>
                                                           <c:otherwise>
-                                                             <a id="${service.id}_upgradeCluster" class="no-drop upgradeCluster_a " 
+                                                             <a id="${service.id}_upgradeCluster" class="no-drop upgradeCluster_a "
                                                                 href="javascript:oneVersionUpgrade(${service.id },'${service.serviceName }','${service.imgName }',this)" title="版本升级"
                                                                 style="margin-left: 5px;margin-right:5px">
                                                                 <i class="fa fa-arrow-up self_a"></i>
-                                                            </a>    
+                                                            </a>
                                                           </c:otherwise>
                                                        </c:choose>
-														<a id="${service.id}_changeConfiguration" class="a-live changeConfiguration_a " 
+														<a id="${service.id}_changeConfiguration" class="a-live changeConfiguration_a "
 															href="javascript:oneChangeContainerConf(${service.id },'${service.serviceName }',${service.instanceNum },${service.cpuNum },${service.ram },${service.status });" title="更改配置"
 															style="margin-left: 5px">
 																<i class="fa fa-cog"></i>
-														</a> 														
-														<a id="${service.id}_change" class="a-live change " 
+														</a>
+														<a id="${service.id}_change" class="a-live change "
 															href="<%=path %>/service/debug/${service.id}" title="更改配置"
 															style="margin-left: 5px">
 																<i class="fa fa-bug"></i>
-														</a> 														
+														</a>
 														<a id="${service.id}_del" class="a-live deleteButton_a "
 															href="javascript:oneDeleteContainer(${service.id})"
-															style="margin-left: 5px" title="删除"> 
+															style="margin-left: 5px" title="删除">
 																<i class="fa fa-trash"></i>
 														</a>
 													</td>
 												</tr>
 											</c:forEach>
-												
+
 										</tbody>
 										<tfoot class="hide">
 											<tr>
@@ -371,12 +371,7 @@
 			} ],
 			"aaSorting": [[ 5, "desc" ]]
 		}); */
-		$("#checkallbox").parent().removeClass("sorting_asc"); 
+		$("#checkallbox").parent().removeClass("sorting_asc");
 	</script>
-	<script type="text/javascript">
-         document.getElementById('ExportBtn').onclick = function(){
-        location.href = ctx + "/service/exportExcel.do";
-        } 
-    </script>
 </body>
-</html> 
+</html>
