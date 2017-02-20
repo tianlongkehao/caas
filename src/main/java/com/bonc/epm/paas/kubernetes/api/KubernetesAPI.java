@@ -338,7 +338,8 @@ public interface KubernetesAPI {
     		@QueryParam("container")String container,
     		@QueryParam("previous")Boolean previous, 			//Return previous terminated container logs. Defaults to false.
     		@QueryParam("timestamps")Boolean timestamps,
-    		@QueryParam("tailLines")Integer tailLines
+    		@QueryParam("tailLines")Integer tailLines,
+    		@QueryParam("limitBytes")Integer limitBytes
     		)
     		throws KubernetesClientException;
 
@@ -358,7 +359,8 @@ public interface KubernetesAPI {
     public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name,
     		@QueryParam("container")String container,
     		@QueryParam("previous")Boolean previous, 			//Return previous terminated container logs. Defaults to false.
-    		@QueryParam("timestamps")Boolean timestamps
+    		@QueryParam("timestamps")Boolean timestamps,
+    		@QueryParam("limitBytes")Integer limitBytes
     		)
     		throws KubernetesClientException;
 
@@ -380,7 +382,8 @@ public interface KubernetesAPI {
     		@QueryParam("container")String container,
     		@QueryParam("previous")Boolean previous, 			//Return previous terminated container logs. Defaults to false.
     		@QueryParam("sinceTime")String sinceTime,
-    		@QueryParam("timestamps")Boolean timestamps
+    		@QueryParam("timestamps")Boolean timestamps,
+    		@QueryParam("limitBytes")Integer limitBytes
     		)
     		throws KubernetesClientException;
 
@@ -394,7 +397,8 @@ public interface KubernetesAPI {
     @GET
     @Path("/namespaces/{namespace}/pods/{name}/log")
     @Consumes(MediaType.APPLICATION_JSON)
-    public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name)
+    public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name,
+    		@QueryParam("limitBytes")Integer limitBytes)
     		throws KubernetesClientException;
     /* Replication Controller API */
 
