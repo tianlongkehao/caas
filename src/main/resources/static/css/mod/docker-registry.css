@@ -451,8 +451,6 @@ span.cloudNum{
 
 #centerSearchImages{
  	margin-left: -5px;
-    
-     
 }
 i.searchImage-img{
  	position: absolute;
@@ -466,3 +464,9 @@ i.searchImage-img{
 	line-height:45px!important;
 	text-indent: 34px;
 } 
+.searchCenter{
+	background-color: rgb(242,242,242);
+    padding-top: 30px;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+}
