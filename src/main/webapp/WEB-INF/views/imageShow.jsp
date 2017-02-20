@@ -23,25 +23,28 @@
             </div>
         </div>
     </div>
-</header>  
-
-    <div class="page-imageContainer container" style="margin-top:100px">
+</header>
+	<div class="searchCenter">
+		<div class="imageText">
+			<span>分享镜像，交流协作</span>
+		</div>
+		<div class="search">
+			<form class="search-group-inner"
+				style="width: 60%; margin: 0 auto; position: relative;">
+				<i class="fa fa-search searchImage-img"></i> <input name="search"
+					class="search-img centerSearchInput" id="centerSearchInput"
+					placeholder="搜索镜像" type="text">
+				<button type="button" id="centerSearchImages"
+					class="btn btn-default btn-color btn-send">搜索</button>
+			</form>
+		</div>
+	</div>
+	<div class="page-imageContainer container">
         <article>
             <div class="page-main">
                 <div class="contentMain">
                     <div class="content">
-                    	<div class="searchCenter">
-	                    	<div class="imageText">
-	                            <span>分享镜像，交流协作</span>
-	                        </div>
-	                        <div class="search">
-	                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" >
-	                                <i class="fa fa-search searchImage-img"></i>
-	                                <input name = "search" class="search-img centerSearchInput" id="centerSearchInput" placeholder="搜索镜像" type="text">
-	                                <button type="button" id="centerSearchImages" class="btn btn-default btn-color btn-send">搜索</button>
-	                            </form>
-	                        </div>
-                        </div>
+                    	
                         <div class="search row searchResult hide">
                         	
                         	<div class="col-md-4 ">
