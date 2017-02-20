@@ -21,8 +21,10 @@
 package com.bonc.epm.paas.net.api;
 
 import com.bonc.epm.paas.net.exceptions.NetClientException;
+import com.bonc.epm.paas.net.model.Diff;
 import com.bonc.epm.paas.net.model.Nodes;
 import com.bonc.epm.paas.net.model.RouteTable;
+import com.bonc.epm.paas.net.model.Service;
 
 public interface NetAPIClientInterface {
 
@@ -42,5 +44,13 @@ public interface NetAPIClientInterface {
 	 * @throws NetClientException
 	 */
 	public RouteTable checkRoutetable() throws NetClientException;
+
+	/**
+	 * Get Diff
+	 *
+	 * @return {@link Diff}
+	 * @throws NetClientException
+	 */
+	public Diff getDiff(Service service) throws NetClientException;
 
 }

@@ -48,11 +48,10 @@ import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.net.api.NetAPIClientInterface;
-import com.bonc.epm.paas.net.model.Nodes;
+import com.bonc.epm.paas.net.model.Diff;
 import com.bonc.epm.paas.net.model.RouteTable;
 import com.bonc.epm.paas.net.util.NetClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.RouteTableUtils;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -210,19 +209,30 @@ public class ClusterController {
         model.addAttribute("li_flag", "route");
         return "cluster/cluster-route.jsp";
     }
-    /**
-     * Description: <br>
-     * 进入cluster-iptables.jsp
-     * @param model 添加返回页面的数据
-     * @return String
-     */
-    @RequestMapping(value = { "/iptables" }, method = RequestMethod.GET)
-	public String clusterIptables(Model model) {
 
-        model.addAttribute("menu_flag", "cluster");
-        model.addAttribute("li_flag", "iptables");
-        return "cluster/cluster-iptables.jsp";
-    }
+	/**
+	 * Description: <br>
+	 * 进入cluster-iptables.jsp
+	 *
+	 * @param model
+	 *            添加返回页面的数据
+	 * @return String
+	 */
+	@RequestMapping(value = { "/iptables" }, method = RequestMethod.GET)
+	public String clusterIptables(Model model) {
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		if (1 == CurrentUserUtils.getInstance().getUser().getId()) {
+			List<User> users = userDao.findAllTenant();
+			model.addAttribute("users", users);
+		} else {
+			ServiceList allServices = client.getAllServices();
+			List<Service> services = allServices.getItems();
+			model.addAttribute("services", services);
+		}
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "iptables");
+		return "cluster/cluster-iptables.jsp";
+	}
 
     @RequestMapping(value = { "/topo/data.do" }, method = RequestMethod.GET)
     @ResponseBody
@@ -742,11 +752,30 @@ public class ClusterController {
         }
     }
 
-    @RequestMapping(value = { "/getRouteTable.do" }, method = RequestMethod.GET)
-    @ResponseBody
-    public String getRouteTable(String ip){
-    	NetAPIClientInterface client = netClientService.getSpecifiedClient(ip);
-    	RouteTable checkRoutetable = client.checkRoutetable();
-        return JSON.toJSONString(checkRoutetable);
-    }
+	/**
+	 * @param ip
+	 * @return
+	 */
+	@RequestMapping(value = { "/getRouteTable.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getRouteTable(String ip) {
+		NetAPIClientInterface client = netClientService.getSpecifiedClient(ip);
+		RouteTable checkRoutetable = client.checkRoutetable();
+		return JSON.toJSONString(checkRoutetable);
+	}
+
+	/**
+	 * @param ip
+	 * @return
+	 */
+	@RequestMapping(value = { "/getDiff.do" }, method = RequestMethod.PUT)
+	@ResponseBody
+	public String getRouteTable(String namespace, String serviceName) {
+		NetAPIClientInterface client = netClientService.getClient();
+		com.bonc.epm.paas.net.model.Service service = new com.bonc.epm.paas.net.model.Service();
+		service.setNamespace(namespace);
+		service.setService(serviceName);
+		Diff diff = client.getDiff(service);
+		return JSON.toJSONString(diff);
+	}
 }

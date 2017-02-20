@@ -7,8 +7,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.bonc.epm.paas.net.exceptions.NetClientException;
+import com.bonc.epm.paas.net.model.Diff;
 import com.bonc.epm.paas.net.model.Nodes;
 import com.bonc.epm.paas.net.model.RouteTable;
+import com.bonc.epm.paas.net.model.Service;
 import com.bonc.epm.paas.rest.util.RestFactory;
 
 public class NetApiClient implements NetAPIClientInterface {
@@ -50,4 +52,15 @@ public class NetApiClient implements NetAPIClientInterface {
 
 	}
 
+	@Override
+	public Diff getDiff(Service service) throws NetClientException {
+		try {
+			LOG.info("调用net获取Diff接口");
+			return api.getDiff(service);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new NetClientException(e.getMessage());
+		}
+	}
 }

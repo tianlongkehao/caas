@@ -70,7 +70,5 @@ public interface NetAPI {
     @PUT
     @Path("/get/Diff")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Diff updateLimitRange(Service service) throws NetClientException;
-
-
+    public Diff getDiff(Service service) throws NetClientException;
 }
