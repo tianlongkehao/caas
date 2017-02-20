@@ -1015,16 +1015,23 @@ i.pushOrg {
 	margin-left:15px;
 }
 .whiteList{
-	width:74%;
+	width:64%;
 	margin-left:0px!important;
 	margin-top:6px;
 	float:left;
 }
 .branchList{
 	width:14%;
-	margin-left:2px!important;
+	margin-left:1px!important;
 	margin-top:6px;
 	float:left;
+}
+.sonarValue{
+	width:10%;
+	margin-left:1px!important;
+	margin-top:6px;
+	float:left;
+	z-index:111;
 }
 .alertInfo{
 	line-height:40px;
@@ -1033,6 +1040,7 @@ i.pushOrg {
 	line-height:35px;
 	margin-top:6px;
 	width:6%;
+	padding-left:8px;
 }
 .tokenValue{
 	width:60%;

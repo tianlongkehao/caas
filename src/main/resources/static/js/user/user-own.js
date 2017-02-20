@@ -218,6 +218,13 @@ $(function(){
     	var whiteListHtml = '<div>'+
 				    		'<input type="text" class="whiteList form-control" placeholder="git地址">'+
 					    	'<input type="text" class="branchList form-control" placeholder="分支">'+
+					    	'<select class="sonarValue form-control" name="sonarValue">'+
+    						'<option value="a">A</option>'+
+    						'<option value="b">B</option>'+
+    						'<option value="c">C</option>'+
+    						'<option value="d">D</option>'+
+    						'<option value="e">E</option>'+
+    						'</select>'+
 					    	'<i class="fa fa-trash" onclick="delOneWhiteList(this)"></i>'+
 					    	'</div>';
     	$(".whiteLists").append(whiteListHtml);
