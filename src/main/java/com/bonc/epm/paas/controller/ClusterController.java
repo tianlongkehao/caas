@@ -770,7 +770,7 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/getDiff.do" }, method = RequestMethod.PUT)
 	@ResponseBody
-	public String getRouteTable(String namespace, String serviceName) {
+	public String getDiff(String namespace, String serviceName) {
 		NetAPIClientInterface client = netClientService.getClient();
 		com.bonc.epm.paas.net.model.Service service = new com.bonc.epm.paas.net.model.Service();
 		service.setNamespace(namespace);
