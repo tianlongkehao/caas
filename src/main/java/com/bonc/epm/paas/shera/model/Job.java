@@ -24,9 +24,10 @@ public class Job {
     private Integer maxExecutionRecords;
     private Integer maxKeepDays;
     private CodeManager codeManager;
+    private SonarManager sonarManager;
     private BuildManager buildManager;
     private ImgManager imgManager;
-    
+
     public ImgManager getImgManager() {
         return imgManager;
     }
@@ -69,4 +70,10 @@ public class Job {
     public void setBuildManager(BuildManager buildManager) {
         this.buildManager = buildManager;
     }
+	public SonarManager getSonarManager() {
+		return sonarManager;
+	}
+	public void setSonarManager(SonarManager sonarManager) {
+		this.sonarManager = sonarManager;
+	}
 }

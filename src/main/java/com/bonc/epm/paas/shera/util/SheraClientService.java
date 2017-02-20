@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.bonc.epm.paas.constant.CiConstant;
@@ -44,6 +43,8 @@ import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.Key;
 import com.bonc.epm.paas.shera.model.MvnConfig;
 import com.bonc.epm.paas.shera.model.Repository;
+import com.bonc.epm.paas.shera.model.SonarConfig;
+import com.bonc.epm.paas.shera.model.SonarManager;
 import com.bonc.epm.paas.shera.model.SvnConfig;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
@@ -55,14 +56,14 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
  */
 @Service
 public class SheraClientService {
-    
+
     private String endpoint="";
     private String username="";
     private String password="";
-    
+
     @Autowired
     private SheraDao sheraDao;
-    
+
     public SheraAPIClientInterface getClient() {
         User user = CurrentUserUtils.getInstance().getUser();
         Shera shera = new Shera();
@@ -74,7 +75,7 @@ public class SheraClientService {
         }
         return getClient(shera);
     }
-    
+
     public SheraAPIClientInterface getClient(Shera shera){
         String namespace = CurrentUserUtils.getInstance().getUser().getUserName();
         this.endpoint = "http://" + shera.getSheraUrl() + ":" + shera.getPort() + "/she-ra";
@@ -82,11 +83,11 @@ public class SheraClientService {
         this.password = shera.getPassword();
         return getclient(namespace);
     }
-    
+
     public SheraAPIClientInterface getclient(String namespace) {
         return new SheraAPIClient(endpoint, namespace, username, password,new RestFactory());
     }
-    
+
     /**
      * Description: <br>
      * 创建Job
@@ -101,13 +102,15 @@ public class SheraClientService {
      * @param dockerFile ： dockerFile地址
      * @param imgName ： 镜像名称
      * @param ciInvokeList ：构建信息
-     * @return 
+     * @param check
+     * @param sources
+     * @return
      * @see
      */
     public Job generateJob(String id ,String jdkVersion,String branch,String url,
                            String codeName,String refspec,String dockerFileContent,String dockerFile,
                            String imgNamePre,String imgName,List<CiInvoke> ciInvokeList,String userName,
-                           Integer type,Integer codeType,String uuid) {
+                           Integer type,Integer codeType,String uuid, boolean check, String sources) {
         Job job = new Job();
         job.setId(id);
         job.setJdkVersion(jdkVersion);
@@ -145,7 +148,12 @@ public class SheraClientService {
             codeManager.setSvnConfig(svnConfig);
         }
         job.setCodeManager(codeManager);
-        
+
+        SonarManager sonarManager = new SonarManager();
+        sonarManager.setCheck(check);
+        sonarManager.setSources(sources);
+        job.setSonarManager(sonarManager);
+
         BuildManager buildManager = new BuildManager();
         List<Integer> seqNo = new ArrayList<Integer>();
         List<String> cmds = new ArrayList<String>();
@@ -187,7 +195,7 @@ public class SheraClientService {
         buildManager.setMvnConfigs(mvnConfigs);
         buildManager.setSeqNo(seqNo);
         job.setBuildManager(buildManager);
-        
+
         ImgManager imgManager = new ImgManager();
         if (StringUtils.isNotEmpty(dockerFileContent)) {
             imgManager.setDockerFileContent(dockerFileContent);
@@ -207,7 +215,7 @@ public class SheraClientService {
      * Description: <br>
      * 封装jobExec数据
      * @param startTime
-     * @return 
+     * @return
      * @see
      */
     public JobExecView generateJobExecView(long startTime,String imgVersion){
@@ -216,14 +224,14 @@ public class SheraClientService {
         jobExecView.setImgVersion(imgVersion);
         return jobExecView;
     }
-    
+
     /**
      * Description: <br>
      * 封装GitCredent数据
-     * @param secretInfo 
-     * @param username 
-     * @param type 
-     * @return 
+     * @param secretInfo
+     * @param username
+     * @param type
+     * @return
      */
     public GitCredential generateGitCredential(String secretInfo,String username,Integer type,String desc){
         GitCredential gitCredential = new GitCredential();
@@ -235,14 +243,14 @@ public class SheraClientService {
         gitCredential.setKey(credentialKey);
         return gitCredential;
     }
-    
+
     /**
      * Description: <br>
      * 验证代码地址是否正确
      * @param url ： 代码地址
      * @param username ： 用户名；
      * @param type ： 类型
-     * @return 
+     * @return
      */
     public CredentialCheckEntity generateCredentialCheckEntity(String url,String username,Integer type,String desc,String uuid){
         CredentialCheckEntity credentialCheckEntity = new CredentialCheckEntity();
@@ -255,7 +263,7 @@ public class SheraClientService {
         credentialCheckEntity.setKey(credentialKey);
         return credentialCheckEntity;
     }
-    
+
     /**
      * Description: <br>
      * 封装hookgit数据参数
@@ -274,7 +282,7 @@ public class SheraClientService {
         changeGit.setFlag(false);
         return changeGit;
     }
-    
+
     /**
      * Description: <br>
      * 封装jdk数据
@@ -288,7 +296,7 @@ public class SheraClientService {
         jdk.setVersion(version);
         return jdk;
     }
-    
+
 //    public static void main(String[] args) {
 //        SheraClientService sheraClientService = new SheraClientService();
 //        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
@@ -296,7 +304,7 @@ public class SheraClientService {
 //        chengeGit = client.deleteGitHooks("test-wxwl1", chengeGit);
 //        System.err.println(chengeGit);
 //    }
-    
+
 //    public static void main(String[] args) {
 //        SheraClientService sheraClientService = new SheraClientService();
 //        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
@@ -305,13 +313,13 @@ public class SheraClientService {
 //            for (Jdk jdk : jdkList) {
 //                System.out.println(jdk.toString());
 //            }
-//            
+//
 ////            JobExecView jobExecView = client.getExecution("testdemo1",1);
 ////            System.out.println(jobExecView);
-//           
+//
 ////            JobExecView jobExecView2 = client.killExecution("testdemo1",2);
 ////            System.out.println(jobExecView2);
-//            
+//
 //        }
 //        catch (SheraClientException e) {
 //           e.printStackTrace();

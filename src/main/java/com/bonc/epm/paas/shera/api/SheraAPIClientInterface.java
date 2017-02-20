@@ -25,6 +25,7 @@ import com.bonc.epm.paas.shera.model.JobExecList;
 import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.JobExecViewList;
 import com.bonc.epm.paas.shera.model.Log;
+import com.bonc.epm.paas.shera.model.SonarConfig;
 
 /**
  * @author ke_wang
@@ -34,74 +35,77 @@ import com.bonc.epm.paas.shera.model.Log;
  */
 
 public interface SheraAPIClientInterface {
-    public static final String VERSION  = "v1";
+	public static final String VERSION = "v1";
 
-    /* Job API*/
-    public Job getJob(String jobId) throws SheraClientException;
-    /**
-     * Get JobExecList Info
-     *
-     * @return {@link JobExecList}
-     * @throws SheraClientException
-     */
-    public JobExecList getAllJobs() throws SheraClientException;
-    
-    /**
-     * Create a new Job
-     * 
-     * @param job
-     *            job to be created
-     * @return {@link Job}
-     * @throws SheraClientException
-     */
-    public Job createJob(Job job) throws SheraClientException;
-    
-    /**
-     * exec a Job
-     * 
-     * @param namespace 
-     * @param job-id 
-     *              job to be exec
-     * @return {@link JobExec}
-     * @throws SheraClientException
-     */
-    public JobExecView execJob(String jobId,JobExecView jobExecView) throws SheraClientException;
-    
-    public Job updateJob(Job job) throws SheraClientException;
+	/* Job API */
+	public Job getJob(String jobId) throws SheraClientException;
 
-    public Log getExecLog(String name, String seqno, Integer seek) throws SheraClientException;
+	/**
+	 * Get JobExecList Info
+	 *
+	 * @return {@link JobExecList}
+	 * @throws SheraClientException
+	 */
+	public JobExecList getAllJobs() throws SheraClientException;
 
-    public ChangeGit getChangeGit(String name) throws SheraClientException;
+	/**
+	 * Create a new Job
+	 *
+	 * @param job
+	 *            job to be created
+	 * @return {@link Job}
+	 * @throws SheraClientException
+	 */
+	public Job createJob(Job job) throws SheraClientException;
 
-    public ChangeGit addGitHooks(String name, ChangeGit changeGit) throws SheraClientException;
-    
-    public ChangeGit deleteGitHooks(String name) throws SheraClientException;
+	/**
+	 * exec a Job
+	 *
+	 * @param namespace
+	 * @param job-id
+	 *            job to be exec
+	 * @return {@link JobExec}
+	 * @throws SheraClientException
+	 */
+	public JobExecView execJob(String jobId, JobExecView jobExecView) throws SheraClientException;
 
-    public Job deleteJob(String jobId) throws SheraClientException;
-    
-    public JobExecViewList getJobAllExecutions(String jobId) throws SheraClientException;
+	public Job updateJob(Job job) throws SheraClientException;
 
-    public JobExecView getExecution(String jobId, Integer executionId) throws SheraClientException;
-    
-    public JobExecView deleteExecution(String jobId, Integer executionId) throws SheraClientException;
-    
-    public JobExecView killExecution(String jobId, Integer executionId) throws SheraClientException;
-    
-    /* Credential API*/
-    public CredentialCheckEntity checkCredential(CredentialCheckEntity credential) throws SheraClientException;
-    
-    public CredentialKeyList getAllCredentials() throws SheraClientException;
-    
-    public CredentialKey addCredential(GitCredential gitCredential) throws SheraClientException;
-    
-    public CredentialKey deleteCredential(String uuid) throws SheraClientException;
-    
-    /* Jdk API*/
-    public JdkList getAllJdk() throws SheraClientException;
-    
-    public Jdk deleteJdk(String jdkVersion) throws SheraClientException;
-    
-    public Jdk createJdk(Jdk jdk) throws SheraClientException;
-    
-    
+	public Log getExecLog(String name, String seqno, Integer seek) throws SheraClientException;
+
+	public ChangeGit getChangeGit(String name) throws SheraClientException;
+
+	public ChangeGit addGitHooks(String name, ChangeGit changeGit) throws SheraClientException;
+
+	public ChangeGit deleteGitHooks(String name) throws SheraClientException;
+
+	public Job deleteJob(String jobId) throws SheraClientException;
+
+	public JobExecViewList getJobAllExecutions(String jobId) throws SheraClientException;
+
+	public JobExecView getExecution(String jobId, Integer executionId) throws SheraClientException;
+
+	public JobExecView deleteExecution(String jobId, Integer executionId) throws SheraClientException;
+
+	public JobExecView killExecution(String jobId, Integer executionId) throws SheraClientException;
+
+	/* Credential API */
+	public CredentialCheckEntity checkCredential(CredentialCheckEntity credential) throws SheraClientException;
+
+	public CredentialKeyList getAllCredentials() throws SheraClientException;
+
+	public CredentialKey addCredential(GitCredential gitCredential) throws SheraClientException;
+
+	public CredentialKey deleteCredential(String uuid) throws SheraClientException;
+
+	/* Jdk API */
+	public JdkList getAllJdk() throws SheraClientException;
+
+	public Jdk deleteJdk(String jdkVersion) throws SheraClientException;
+
+	public Jdk createJdk(Jdk jdk) throws SheraClientException;
+
+	public SonarConfig createSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
+
+	public SonarConfig updateSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
 }

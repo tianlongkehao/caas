@@ -17,7 +17,6 @@ import javax.ws.rs.WebApplicationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.ChangeGit;
@@ -31,6 +30,7 @@ import com.bonc.epm.paas.shera.model.Job;
 import com.bonc.epm.paas.shera.model.JobExecList;
 import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.JobExecViewList;
+import com.bonc.epm.paas.shera.model.SonarConfig;
 
 /**
  * @author ke_wang
@@ -40,13 +40,13 @@ import com.bonc.epm.paas.shera.model.JobExecViewList;
  */
 
 public class SheraAPIClient implements SheraAPIClientInterface {
-    
+
     private static final Log LOG = LogFactory.getLog(SheraAPIClient.class);
-    
+
     private String sRURI;
     private SheraAPI api;
     private String namespace;
-    
+
     public SheraAPIClient(String srUrl, String namespace, String username, String password, RestFactory factory) {
         LOG.info("开始连接shera......");
         this.namespace = namespace;
@@ -346,4 +346,32 @@ public class SheraAPIClient implements SheraAPIClientInterface {
             throw new SheraClientException(e.getMessage());
         }
     }
+
+	@Override
+	public SonarConfig createSonarConfig(SonarConfig sonarConfig) throws SheraClientException {
+        try {
+            LOG.info("调用shera创建SonarConfig");
+            return api.createSonarConfig(sonarConfig);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+	}
+
+	@Override
+	public SonarConfig updateSonarConfig(SonarConfig sonarConfig) throws SheraClientException {
+        try {
+            LOG.info("调用shera更新SonarConfig");
+            return api.updateSonarConfig(sonarConfig);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+	}
 }
