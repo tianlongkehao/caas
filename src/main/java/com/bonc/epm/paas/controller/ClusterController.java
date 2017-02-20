@@ -778,4 +778,17 @@ public class ClusterController {
 		Diff diff = client.getDiff(service);
 		return JSON.toJSONString(diff);
 	}
+
+	/**
+	 * @param namespace
+	 * @return
+	 */
+	@RequestMapping(value = { "/getServices.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getServicesByNamespace(String namespace) {
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient(namespace);
+		ServiceList allServices = client.getAllServices();
+		return JSON.toJSONString(allServices.getItems());
+	}
+
 }
