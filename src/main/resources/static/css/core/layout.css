@@ -254,7 +254,7 @@
 }
 .navbar-tab ul li{
 	float:left;
-	margin-right:70px;
+	padding: 0px 35px;
 	/* color:#e14344; */
 	text-algin:center;
 }

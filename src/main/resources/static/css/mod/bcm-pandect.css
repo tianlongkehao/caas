@@ -205,7 +205,10 @@ img.pandect-icon{
 .u-line,.usersResourceTable{
 	border-bottom:1px solid #ddd;
 }
-
+td a{
+	color:#e8504f;
+}
+td a:hover {text-decoration:underline;} 
 
 
 

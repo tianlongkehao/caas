@@ -234,10 +234,122 @@ nav.navbar-downSide{
     box-shadow: 1px 1px 15px rgba(0,0,0,0.45);
     /* background-color: #e8504f; */
 }
-
-	
-
-
+i.fa-nav{
+	background-position: 0 2px;
+	width:18px;
+	height:18px;
+	display:inline-block;
+    position: relative;
+    top: 3px;
+}
+#menu_bcm a i.fa-nav-bcm{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 2px;
+}
+#menu_bcm a:hover i.fa-nav-bcm{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 2px;
+}
+#menu_bcm.active a i.fa-nav-bcm{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 2px;
+}
+#menu_service a i.fa-nav-service{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -21px;
+}
+#menu_service a:hover i.fa-nav-service{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -21px;
+}
+#menu_service.active a i.fa-nav-service{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -21px;
+}
+#menu_ci a i.fa-nav-ci{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -45px;
+}
+#menu_ci a:hover i.fa-nav-ci{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -45px;
+}
+#menu_ci.active a i.fa-nav-ci{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -45px;
+}		
+#menu_registry a i.fa-nav-registry{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -68px;
+}
+#menu_registry a:hover i.fa-nav-registry{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -68px;
+}
+#menu_registry.active a i.fa-nav-registry{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -68px;
+}
+#menu_user a i.fa-nav-user{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_user a:hover i.fa-nav-user{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_user.active a i.fa-nav-user{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_usermanage a i.fa-nav-usermanage{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_usermanage a:hover i.fa-nav-usermanage{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_usermanage.active a i.fa-nav-usermanage{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_cluster a i.fa-nav-cluster{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -113px;
+}
+#menu_cluster a:hover i.fa-nav-cluster{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -113px;
+}
+#menu_cluster.active a i.fa-nav-cluster{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -113px;
+}
+#menu_template a i.fa-nav-template{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -138px;
+}
+#menu_template a:hover i.fa-nav-template{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -138px;
+}
+#menu_template.active a i.fa-nav-template{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -138px;
+}
+#menu_log a i.fa-nav-log{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -163px;
+}
+#menu_log a:hover i.fa-nav-log{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -163px;
+}
+#menu_log.active a i.fa-nav-log{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -163px;
+}
 
 
 

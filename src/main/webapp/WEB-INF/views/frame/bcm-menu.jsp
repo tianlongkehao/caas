@@ -101,13 +101,12 @@
 	<div ><nav class="navbar-default navbar-static-side" role="navigation" id="nav-side">
 		<div class="sidebar-collapse">
 			<ul class="nav" id="side-menu">
-				<li id="menu_bcm" onclick="changeIconAll()"><a href="<%=path %>/bcm/${cur_user.id }" class="first-a"> 
-						<img alt="image" class="tit-image" src="<%=path%>/images/u54.png" />
+				<li id="menu_bcm"><a href="<%=path %>/bcm/${cur_user.id }" class="first-a"> 
+						<i class="fa-nav fa-nav-bcm"></i>
 						<span class="nav-label">总览</span>
-
 				</a></li>
-				<li id="menu_service" onclick="changeIconService()"><a href="#" class="first-a"> 
-					<img alt="image" class="tit-image" src="<%=path%>/images/u35.png" /> 
+				<li id="menu_service"><a href="#" class="first-a"> 
+					<i class="fa-nav fa-nav-service"></i> 
 					<span class="nav-label">服务</span> 
 				</a>
 					<ul class="nav nav-second-level">
@@ -115,9 +114,9 @@
 						<li id="li_storage"><a class="J_menuItem" href="<%=path %>/service/storage"><i class="fa fa_circle"></i>存储与备份</a></li>
 						<li id="li_import"><a class="J_menuItem" href="<%=path %>/service/import"><i class="fa fa_circle"></i>引入外部服务</a></li>
 					</ul></li>
-				<li id="menu_ci" onclick="changeIconCi()"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/u21.png" /> <span
-						class="nav-label">构建</span> 
+				<li id="menu_ci"><a href="#" class="first-a"> 
+					<i class="fa-nav fa-nav-ci"></i>
+				 	<span class="nav-label">构建</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_ci"><a class="J_menuItem" href="<%=path %>/ci"><i class="fa fa_circle"></i>镜像构建</a></li>
@@ -125,9 +124,9 @@
 						<li id="li_shera"><a class="J_menuItem" href="<%=path %>/user/shera"><i class="fa fa_circle"></i>Shera管理</a></li>
 						</c:if>
 					</ul></li>
-				<li id="menu_registry" onclick="changeIconImage()"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/u28.png" /> <span
-						class="nav-label">镜像</span> 
+				<li id="menu_registry"><a href="#" class="first-a"> 
+					<i class="fa-nav fa-nav-registry"></i>
+					<span class="nav-label">镜像</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_registry0"><a class="J_menuItem" href="<%=path %>/registry/0"><i class="fa fa_circle"></i>镜像中心</a></li>
@@ -136,18 +135,18 @@
 					</ul></li>
 				<c:if test="${!cas_enable}">
 					<c:if test="${cur_user.user_autority == 1}">
-						<li id="menu_user" onclick="changeIconUser()"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-								src="<%=path%>/images/u60.svg" /> <span class="nav-label">租户</span>
-								
+						<li id="menu_user"><a href="#" class="first-a"> 
+							<i class="fa-nav fa-nav-user"></i>
+							<span class="nav-label">租户</span>
 						</a>
 							<ul class="nav nav-second-level">
 								<li id="li_user"><a class="J_menuItem" href="<%=path %>/user/list"><i class="fa fa_circle"></i>租户管理</a></li>
 							</ul></li>
 					</c:if>
 		        	<c:if test="${cur_user.user_autority == 2}">
-						<li id="menu_usermanage" onclick="changeIconUser()"><a href="#"> <img alt="image" class="tit-image"
-								src="<%=path%>/images/u60.svg" /> <span class="nav-label">用户</span>
-								
+						<li id="menu_usermanage"><a href="#"> 
+							<i class="fa-nav fa-nav-usermanage"></i>
+							<span class="nav-label">用户</span>
 						</a>
 							<ul class="nav nav-second-level">
 								<li id="li_manage"><a class="J_menuItem" href="<%=path %>/user/manage/list/${cur_user.id }"><i class="fa fa_circle"></i>用户管理</a></li>
@@ -158,18 +157,18 @@
 
                 <c:if test="${cas_enable}">
                     <c:if test="${cur_user.user_autority == 1}">
-                        <li id="menu_user" onclick="changeIconUser()"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-                                src="<%=path%>/images/u60.svg" /> <span class="nav-label">租户</span>
-                                
+                        <li id="menu_user"><a href="#" class="first-a"> 
+                        	<i class="fa-nav fa-nav-user"></i>
+                        	<span class="nav-label">租户</span>
                         </a>
                             <ul class="nav nav-second-level">
                                 <li id="li_user"><a class="J_menuItem" href="<%=path %>/user/list"><i class="fa fa_circle"></i>租户管理</a></li>
                             </ul></li>
                     </c:if>
                     <c:if test="${cur_user.user_autority == 2}">
-                        <li id="menu_usermanage"><a href="#"> <img alt="image" class="tit-image"
-                                src="<%=path%>/images/user.svg" /> <span class="nav-label">密钥</span>
-                                
+                        <li id="menu_usermanage"><a href="#"> 
+                        	<i class="fa-nav fa-nav-usermanage"></i>
+                        	<span class="nav-label">密钥</span>
                         </a>
                             <ul class="nav nav-second-level">
                                 <li id="li_credential"><a class="J_menuItem" href="<%=path %>/secret/Credential"><i class="fa fa_circle"></i>密钥管理</a></li>
@@ -178,9 +177,9 @@
                 </c:if>
 
 
-				<li id="menu_cluster" onclick="changeIconCluster()"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/u40.png" /> <span class="nav-label">监控</span>
-						
+				<li id="menu_cluster"><a href="#" class="first-a"> 
+					<i class="fa-nav fa-nav-cluster"></i>
+					<span class="nav-label">监控</span>
 				</a>
 					<ul class="nav nav-second-level">
 						<c:if test="${cur_user.user_autority == 1}">
@@ -194,18 +193,18 @@
 						<li id="li_iptables"><a class="J_menuItem" href="<%=path %>/cluster/iptables"><i class="fa fa_circle"></i>iptables</a></li>
 						</c:if> --%>
 					</ul></li>
-				<li id="menu_template" onclick="changeIconTemplate()"><a href="#" class="first-a"> <img alt="image" class="tit-image"
-						src="<%=path%>/images/u47.png" /> <span
-						class="nav-label">模板</span> 
+				<li id="menu_template"><a href="#" class="first-a">
+					<i class="fa-nav fa-nav-template"></i>
+					<span class="nav-label">模板</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_dockerfile"><a class="J_menuItem" href="<%=path %>/template/dockerfile"><i class="fa fa_circle"></i>dockerfile</a></li>
 						<li id="li_env"><a class="J_menuItem" href="<%=path %>/template/env"><i class="fa fa_circle"></i>环境变量</a></li>
 					</ul></li>
 				<c:if test="${cur_user.user_autority == 1}">
-				<li id="menu_log" onclick="changeIconLog()"><a href="#" class="first-a"> <img alt="log" class="tit-image"
-						src="<%=path%>/images/u48.png" /> <span
-						class="nav-label">日志</span> 
+				<li id="menu_log"><a href="#" class="first-a"> 
+					<i class="fa-nav fa-nav-log"></i>
+					<span class="nav-label">日志</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_logService"><a class="J_menuItem" href="<%=path %>/logServices"><i class="fa fa_circle"></i>服务操作日志</a></li>
@@ -250,10 +249,9 @@
         $("#menu_"+menu_flag).find('ul').addClass("in");
         $("#menu_"+menu_flag).find('ul').attr("aria-expanded","ture");
         
-        var oldSrc = $("#menu_"+menu_flag+".active").find("img").attr("src");
+        /* var oldSrc = $("#menu_"+menu_flag+".active").find("img").attr("src");
         var newSrc = oldSrc.substring(0,11)+"w"+oldSrc.substring(11,15);
-        $("#menu_"+menu_flag+".active").find("img").attr("src",newSrc);
-        //$("#menu_"+menu_flag).find("img").attr("src",oldSrc);
+        $("#menu_"+menu_flag+".active").find("img").attr("src",newSrc); */
 		
         // 菜单效果
         /* $(".nav-menu>li").on("mouseenter",function(){
@@ -272,96 +270,6 @@
         }); */
 
     });
-    
-	function changeIconAll(){
-		$("#menu_bcm").find("img").attr("src","<%=path%>/images/u54w.png");
-    	$("#menu_service").find("img").attr("src","<%=path%>/images/u35.png");
-    	$("#menu_ci").find("img").attr("src","<%=path%>/images/u21.png");
-    	$("#menu_registry").find("img").attr("src","<%=path%>/images/u28.png");
-    	$("#menu_user").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_usermanage").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_cluster").find("img").attr("src","<%=path%>/images/u40.png");
-    	$("#menu_template").find("img").attr("src","<%=path%>/images/u47.png");
-    	$("#menu_log").find("img").attr("src","<%=path%>/images/u48.png");
-    }
-    function changeIconService(){
-    	$("#menu_bcm").find("img").attr("src","<%=path%>/images/u54.png");
-    	$("#menu_service").find("img").attr("src","<%=path%>/images/u35w.png");
-    	$("#menu_ci").find("img").attr("src","<%=path%>/images/u21.png");
-    	$("#menu_registry").find("img").attr("src","<%=path%>/images/u28.png");
-    	$("#menu_user").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_usermanage").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_cluster").find("img").attr("src","<%=path%>/images/u40.png");
-    	$("#menu_template").find("img").attr("src","<%=path%>/images/u47.png");
-    	$("#menu_log").find("img").attr("src","<%=path%>/images/u48.png");
-    }
-    function changeIconCi(){
-    	$("#menu_bcm").find("img").attr("src","<%=path%>/images/u54.png");
-    	$("#menu_service").find("img").attr("src","<%=path%>/images/u35.png");
-    	$("#menu_ci").find("img").attr("src","<%=path%>/images/u21w.png");
-    	$("#menu_registry").find("img").attr("src","<%=path%>/images/u28.png");
-    	$("#menu_user").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_usermanage").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_cluster").find("img").attr("src","<%=path%>/images/u40.png");
-    	$("#menu_template").find("img").attr("src","<%=path%>/images/u47.png");
-    	$("#menu_log").find("img").attr("src","<%=path%>/images/u48.png");
-    }
-    function changeIconImage(){
-    	$("#menu_bcm").find("img").attr("src","<%=path%>/images/u54.png");
-    	$("#menu_service").find("img").attr("src","<%=path%>/images/u35.png");
-    	$("#menu_ci").find("img").attr("src","<%=path%>/images/u21.png");
-    	$("#menu_registry").find("img").attr("src","<%=path%>/images/u28w.png");
-    	$("#menu_user").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_usermanage").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_cluster").find("img").attr("src","<%=path%>/images/u40.png");
-    	$("#menu_template").find("img").attr("src","<%=path%>/images/u47.png");
-    	$("#menu_log").find("img").attr("src","<%=path%>/images/u48.png");
-    }
-    function changeIconUser(){
-    	$("#menu_bcm").find("img").attr("src","<%=path%>/images/u54.png");
-    	$("#menu_service").find("img").attr("src","<%=path%>/images/u35.png");
-    	$("#menu_ci").find("img").attr("src","<%=path%>/images/u21.png");
-    	$("#menu_registry").find("img").attr("src","<%=path%>/images/u28.png");
-    	$("#menu_user").find("img").attr("src","<%=path%>/images/u60w.svg");
-    	$("#menu_usermanage").find("img").attr("src","<%=path%>/images/u60w.svg");
-    	$("#menu_cluster").find("img").attr("src","<%=path%>/images/u40.png");
-    	$("#menu_template").find("img").attr("src","<%=path%>/images/u47.png");
-    	$("#menu_log").find("img").attr("src","<%=path%>/images/u48.png");
-    }
-    
-    function changeIconCluster(){
-    	$("#menu_bcm").find("img").attr("src","<%=path%>/images/u54.png");
-    	$("#menu_service").find("img").attr("src","<%=path%>/images/u35.png");
-    	$("#menu_ci").find("img").attr("src","<%=path%>/images/u21.png");
-    	$("#menu_registry").find("img").attr("src","<%=path%>/images/u28.png");
-    	$("#menu_user").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_usermanage").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_cluster").find("img").attr("src","<%=path%>/images/u40w.png");
-    	$("#menu_template").find("img").attr("src","<%=path%>/images/u47.png");
-    	$("#menu_log").find("img").attr("src","<%=path%>/images/u48.png");
-    }
-    function changeIconTemplate(){
-    	$("#menu_bcm").find("img").attr("src","<%=path%>/images/u54.png");
-    	$("#menu_service").find("img").attr("src","<%=path%>/images/u35.png");
-    	$("#menu_ci").find("img").attr("src","<%=path%>/images/u21.png");
-    	$("#menu_registry").find("img").attr("src","<%=path%>/images/u28.png");
-    	$("#menu_user").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_usermanage").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_cluster").find("img").attr("src","<%=path%>/images/u40.png");
-    	$("#menu_template").find("img").attr("src","<%=path%>/images/u47w.png");
-    	$("#menu_log").find("img").attr("src","<%=path%>/images/u48.png");
-    }
-    function changeIconLog(){
-    	$("#menu_bcm").find("img").attr("src","<%=path%>/images/u54.png");
-    	$("#menu_service").find("img").attr("src","<%=path%>/images/u35.png");
-    	$("#menu_ci").find("img").attr("src","<%=path%>/images/u21.png");
-    	$("#menu_registry").find("img").attr("src","<%=path%>/images/u28.png");
-    	$("#menu_user").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_usermanage").find("img").attr("src","<%=path%>/images/u60.svg");
-    	$("#menu_cluster").find("img").attr("src","<%=path%>/images/u40.png");
-    	$("#menu_template").find("img").attr("src","<%=path%>/images/u47.png");
-    	$("#menu_log").find("img").attr("src","<%=path%>/images/u48w.png");
-    }
     
     //分页插件中的时间格式的转换;
     function calendarFormat(data){
