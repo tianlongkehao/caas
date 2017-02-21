@@ -370,8 +370,8 @@
 	    $("#adminUsedCpu")[0].style.width = userCpuPer;
 	    var userMemPer = $("#adminDetailMemory")[0].textContent/$("#adminTotalMemory")[0].textContent*100+"%";
 	    $("#adminUsedMemory")[0].style.width = userMemPer;
-	    var userVolPer = $("#adminDetailVolume")[0].textContent/$("#adminTotalVolume")[0].textContent*100+"%";
-	    $("#adminUsedVolume")[0].style.width = userVolPer;
+	    /* var userVolPer = $("#adminDetailVolume")[0].textContent/$("#adminTotalVolume")[0].textContent*100+"%";
+	    $("#adminUsedVolume")[0].style.width = userVolPer; */
 		
 	}
 	

@@ -768,7 +768,7 @@ public class ClusterController {
 	 * @param ip
 	 * @return
 	 */
-	@RequestMapping(value = { "/getDiff.do" }, method = RequestMethod.PUT)
+	@RequestMapping(value = { "/getDiff.do" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getRouteTable(String namespace, String serviceName) {
 		NetAPIClientInterface client = netClientService.getClient();
