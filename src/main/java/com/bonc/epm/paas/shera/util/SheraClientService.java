@@ -297,6 +297,31 @@ public class SheraClientService {
         return jdk;
     }
 
+    /**
+     * Description: <br>
+     * 封装SonarConfig数据
+	 * @param enabled
+	 * @param hidden
+	 * @param mandatory
+	 * @param threshold
+	 * @param breakable
+	 * @param token
+	 * @param string
+	 * @return SonarConfig
+	 */
+	public SonarConfig generateSonarConfig(boolean enabled, boolean hidden, boolean mandatory, Integer threshold,
+			boolean breakable, String token, String url) {
+		SonarConfig sonarConfig = new SonarConfig();
+		sonarConfig.setEnabled(enabled);
+		sonarConfig.setHidden(hidden);
+		sonarConfig.setMandatory(mandatory);
+		sonarConfig.setThreshold(threshold);
+		sonarConfig.setBreak(breakable);
+		sonarConfig.setToken(token);
+		sonarConfig.setUrl(url);
+		return sonarConfig;
+	}
+
 //    public static void main(String[] args) {
 //        SheraClientService sheraClientService = new SheraClientService();
 //        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");

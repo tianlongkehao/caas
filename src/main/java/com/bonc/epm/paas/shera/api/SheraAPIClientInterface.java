@@ -108,4 +108,6 @@ public interface SheraAPIClientInterface {
 	public SonarConfig createSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
 
 	public SonarConfig updateSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
+
+	public SonarConfig getSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
 }

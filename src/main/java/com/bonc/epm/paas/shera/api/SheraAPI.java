@@ -374,10 +374,10 @@ public interface SheraAPI {
 	 * @see
 	 */
 	@POST
-	@Path("/config/{namespace}")
+	@Path("/sonar/config/{namespace}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public SonarConfig createSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
+	public SonarConfig createSonarConfig(@PathParam("namespace") String namespace, SonarConfig sonarConfig) throws SheraClientException;
 
 	/**
 	 *
@@ -392,6 +392,21 @@ public interface SheraAPI {
 	@Path("/config/{namespace}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public SonarConfig updateSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
+	public SonarConfig updateSonarConfig(@PathParam("namespace") String namespace, SonarConfig sonarConfig) throws SheraClientException;
+
+	/**
+	 *
+	 * Description: get sonar config for one namespace
+	 *
+	 * @param namespace
+	 * @param sonarConfig
+	 * @return SonarConfig
+	 * @throws SheraClientException
+	 */
+	@GET
+	@Path("/config/{namespace}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public SonarConfig getSonarConfig(@PathParam("namespace") String namespace, SonarConfig sonarConfig) throws SheraClientException;
 
 }

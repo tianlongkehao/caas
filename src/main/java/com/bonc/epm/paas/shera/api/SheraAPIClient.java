@@ -351,7 +351,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 	public SonarConfig createSonarConfig(SonarConfig sonarConfig) throws SheraClientException {
         try {
             LOG.info("调用shera创建SonarConfig");
-            return api.createSonarConfig(sonarConfig);
+            return api.createSonarConfig(namespace, sonarConfig);
         }
         catch (NotFoundException e) {
             return null;
@@ -365,7 +365,21 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 	public SonarConfig updateSonarConfig(SonarConfig sonarConfig) throws SheraClientException {
         try {
             LOG.info("调用shera更新SonarConfig");
-            return api.updateSonarConfig(sonarConfig);
+            return api.updateSonarConfig(namespace, sonarConfig);
+        }
+        catch (NotFoundException e) {
+            return null;
+        }
+        catch (WebApplicationException e) {
+            throw new SheraClientException(e.getMessage());
+        }
+	}
+
+	@Override
+	public SonarConfig getSonarConfig(SonarConfig sonarConfig) throws SheraClientException {
+        try {
+            LOG.info("调用shera获取SonarConfig");
+            return api.getSonarConfig(namespace, sonarConfig);
         }
         catch (NotFoundException e) {
             return null;

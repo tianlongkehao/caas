@@ -15,7 +15,7 @@ public class SonarConfig {
 	Integer threshold;
 	boolean breakable;
 	String token;
-	String string;
+	String url;
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -52,11 +52,11 @@ public class SonarConfig {
 	public void setToken(String token) {
 		this.token = token;
 	}
-	public String getString() {
-		return string;
+	public String getUrl() {
+		return url;
 	}
-	public void setString(String string) {
-		this.string = string;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 }
