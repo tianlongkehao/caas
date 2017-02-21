@@ -5,7 +5,7 @@
     <title>集群</title>
     <%@include file="../frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/cluster.css"/>
-    <script type="text/javascript" src="<%=path %>/js/cluster/cluster.js"></script>
+    <script type="text/javascript" src="<%=path %>/js/cluster/cluster-iptable.js"></script>
 </head>
 
 <body>
@@ -50,33 +50,61 @@
 									class="fa fa-repeat"></i>
 							</a></li>
 						</ul>
-						<form id="search_form" class="form-inline" action="" method="post">
+						<input type="hidden" id="userAutority" value="${cur_user.user_autority}">
+						<input type="hidden" id="userName" value="${cur_user.userName }">
+						<form >
+							<c:if test="${cur_user.user_autority == 1}">
 							<div class="searchFun"
 								style="float: left; text-align: center; margin: 0px 10px; float: right"
 								align="right">
 								<label style="line-height: 35px">服务:</label> <select
-									name="search_service" id="search_service" onchange="searchService()"
+									name="search_service" id="search_service" onchange="searchServiceDiff()"
 									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
-									<option value="">test11</option>
+									<option value="">-----请选择-----</option>
+                                    
 								</select>
 							</div>
+							
 							<div class="searchFun"
 								style="float: left; text-align: center; margin: 0px 10px; float: right"
 								align="right">
 								<label style="line-height: 35px">租户:</label> <select
-									name="search_users" id="search_users" onchange="searchUsers()"
+									name="search_users" id="search_users" onchange="changeNamespace()"
 									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
-									<option value="">testjiang</option>
+                                    <option value="noNamespace">-----请选择-----</option>
+                                    <c:forEach items="${users}" var="user">
+                                    	<option value="${user.namespace }">${user.namespace }</option>
+                                	</c:forEach>
+                                    <%-- <c:forEach items=${users } var="user">
+                                    	<option value="${user.namespace }">${user.namespace }</option>
+                                    </c:forEach> --%> 
 								</select>
 							</div>
+							</c:if>
 							
+							<c:if test="${cur_user.user_autority != 1}">
+							<div class="searchFun"
+								style="float: left; text-align: center; margin: 0px 10px; float: right"
+								align="right">
+								<label style="line-height: 35px">服务:</label> <select
+									name="search_service" id="search_service" onchange="searchServiceDiff()"
+									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
+									<option value="">-----请选择-----</option>
+									<%-- <option value="">${user }</option> --%>
+									
+                                    <c:forEach items="${services }" var="service">
+                                    	<option value="${service.metadata.name }">${service.metadata.name }</option>
+                                    </c:forEach>
+								</select>
+							</div>
+							</c:if>
 						</form>
 						<div class="" style="margin-bottom:15px">
 							<table class="table table-striped table-hover sameTable">
 								<thead>
 									<tr><th colspan="3"><h4>iptables对比结构相同的节点：<h4></th></tr>
 									<tr class="u-line">
-										<th colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;节点IP:&nbsp;&nbsp;<span>nodeName1/nodeName2</span></th>
+										<th colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;节点IP:&nbsp;&nbsp;<span id="sameNodes"></span></th>
 									</tr>
 								</thead>
 								<tbody id="sameTableList">

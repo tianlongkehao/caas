@@ -4,8 +4,8 @@ public class DiffInfo {
 	String left;
 	String right;
 	boolean flag;
-	Nat nat;
-	Filter filter;
+	DiffNat nat;
+	DiffFilter filter;
 	public String getLeft() {
 		return left;
 	}
@@ -24,16 +24,16 @@ public class DiffInfo {
 	public void setFlag(boolean flag) {
 		this.flag = flag;
 	}
-	public Nat getNat() {
+	public DiffNat getNat() {
 		return nat;
 	}
-	public void setNat(Nat nat) {
+	public void setNat(DiffNat nat) {
 		this.nat = nat;
 	}
-	public Filter getFilter() {
+	public DiffFilter getFilter() {
 		return filter;
 	}
-	public void setFilter(Filter filter) {
+	public void setFilter(DiffFilter filter) {
 		this.filter = filter;
 	}
 }
