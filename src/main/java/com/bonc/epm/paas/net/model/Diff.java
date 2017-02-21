@@ -3,9 +3,9 @@ package com.bonc.epm.paas.net.model;
 import java.util.List;
 
 public class Diff {
-	Service serv;
-	List<DiffInfo> diff;
-	List<SameInfo> same;
+	private Service serv;
+	private List<DiffInfo> diff;
+	private List<SameInfo> same;
 	public Service getServ() {
 		return serv;
 	}

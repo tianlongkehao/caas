@@ -3,10 +3,10 @@ package com.bonc.epm.paas.net.model;
 import java.util.List;
 
 public class KubeSep {
-	boolean flag;
-	List<String> same;
-	List<String> diffLeft;
-	List<String> diffRight;
+	private boolean flag;
+	private List<String> same;
+	private List<String> diffLeft;
+	private List<String> diffRight;
 	public boolean isFlag() {
 		return flag;
 	}

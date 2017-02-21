@@ -3,11 +3,11 @@ package com.bonc.epm.paas.net.model;
 import java.util.List;
 
 public class SameFilter {
-	List<String> kubeSep;
-	List<String> kubeServices;
-	List<String> kubeNodePorts;
-	List<String> kubeSvc;
-	List<String> others;
+	private List<String> kubeSep;
+	private List<String> kubeServices;
+	private List<String> kubeNodePorts;
+	private List<String> kubeSvc;
+	private List<String> others;
 	public List<String> getKubeSep() {
 		return kubeSep;
 	}
@@ -38,5 +38,5 @@ public class SameFilter {
 	public void setOthers(List<String> others) {
 		this.others = others;
 	}
-	
+
 }

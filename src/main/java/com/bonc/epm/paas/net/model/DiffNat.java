@@ -1,12 +1,12 @@
 package com.bonc.epm.paas.net.model;
 
 public class DiffNat {
-	boolean flag;
-	KubeSep kubeSep;
-	KubeServices kubeServices;
-	KubeNodePorts kubeNodePorts;
-	KubeSvc kubeSvc;
-	Others others;
+	private boolean flag;
+	private KubeSep kubeSep;
+	private KubeServices kubeServices;
+	private KubeNodePorts kubeNodePorts;
+	private KubeSvc kubeSvc;
+	private Others others;
 	public boolean isFlag() {
 		return flag;
 	}

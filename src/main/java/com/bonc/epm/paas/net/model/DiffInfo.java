@@ -1,11 +1,11 @@
 package com.bonc.epm.paas.net.model;
 
 public class DiffInfo {
-	String left;
-	String right;
-	boolean flag;
-	DiffNat nat;
-	DiffFilter filter;
+	private String left;
+	private String right;
+	private boolean flag;
+	private DiffNat nat;
+	private DiffFilter filter;
 	public String getLeft() {
 		return left;
 	}

@@ -5,8 +5,8 @@ import java.util.List;
 import com.bonc.epm.paas.kubernetes.model.Item;
 
 public class SameInfo {
-	List<String> hosts;
-	Item item;
+	private List<String> hosts;
+	private Item item;
 	public List<String> getHosts() {
 		return hosts;
 	}

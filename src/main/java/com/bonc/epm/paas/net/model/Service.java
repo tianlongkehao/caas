@@ -1,8 +1,8 @@
 package com.bonc.epm.paas.net.model;
 
 public class Service {
-	String namespace;
-	String service;
+	private String namespace;
+	private String service;
 	public String getNamespace() {
 		return namespace;
 	}
