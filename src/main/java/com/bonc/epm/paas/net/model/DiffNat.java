@@ -1,6 +1,6 @@
 package com.bonc.epm.paas.net.model;
 
-public class Nat {
+public class DiffNat {
 	boolean flag;
 	KubeSep kubeSep;
 	KubeServices kubeServices;

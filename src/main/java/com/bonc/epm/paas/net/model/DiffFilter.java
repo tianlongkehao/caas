@@ -1,6 +1,6 @@
 package com.bonc.epm.paas.net.model;
 
-public class Filter {
+public class DiffFilter {
 	boolean flag;
 	KubeSep kubeSep;
 	KubeServices kubeServices;
