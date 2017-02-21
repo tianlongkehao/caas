@@ -58,7 +58,7 @@
 								style="float: left; text-align: center; margin: 0px 10px; float: right"
 								align="right">
 								<label style="line-height: 35px">服务:</label> <select
-									name="search_service" id="search_service" onchange="searchServiceDiff()"
+									name="search_service" id="search_service" onchange="searchServiceShowIptables()"
 									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
 									<option value="">-----请选择-----</option>
                                     
@@ -102,15 +102,15 @@
 						<div class="" style="margin-bottom:15px">
 							<table class="table table-striped table-hover sameTable">
 								<thead>
-									<tr><th colspan="3"><h4>iptables对比结构相同的节点：<h4></th></tr>
+									<tr><th colspan="3"><h4>iptables对比结果相同的节点：<h4></th></tr>
 									<tr class="u-line">
-										<th colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;节点IP:&nbsp;&nbsp;<span id="sameNodes"></span></th>
+										<th colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;节点IP:&nbsp;&nbsp;<span id="sameNodes">请选择需要对比的服务</span></th>
 									</tr>
 								</thead>
 								<tbody id="sameTableList">
-									<tr>
+									<!-- <tr>
 										<td rowspan="6">&nbsp;&nbsp;&nbsp;&nbsp;nat</td>
-										<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										<td>wwwwwwwwww</td>
 									</tr>
 									<tr>
 										<td>:PREROUTING ACCEPT [291303:18397761]</td>
@@ -126,9 +126,9 @@
 									</tr>
 									<tr class="u-line">
 										<td>:PREROUTING ACCEPT [291303:18397761]</td>
-									</tr>
+									</tr> -->
 									
-									<tr>
+									<!-- <tr>
 										<td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;filter</td>
 										<td>:PREROUTING ACCEPT [291303:18397761]222222</td>
 									</tr>
@@ -137,46 +137,91 @@
 									</tr>
 									<tr>
 										<td>:PREROUTING ACCEPT [291303:18397761]222222</td>
-									</tr>
+									</tr> -->
 									
 								</tbody>
 							</table>
-							<table class="table table-striped table-hover differentTable">
-								<thead>
-									<tr><th colspan="3"><h4>iptables对比结构不同之处：<h4></th></tr>
-									<tr class="u-line">
-										<th>&nbsp;</th>
-										<th>nodeName(192.168.0.10)</th>
-										<th>nodeName(192.168.0.11)</th>
-									</tr>
-								</thead>
-								<tbody id="routeList">
-									<tr>
-										<td rowspan="2">&nbsp;&nbsp;&nbsp;&nbsp;nat</td>
-										<td>:PREROUTING ACCEPT [291303:18397761]</td>
-										<td>:PREROUTING ACCEPT [291303:18397761]</td>
+							<div class="diffTitle"><span><h4>iptables对比结果不同之处：<h4></span></div>
+							<div id="diffTable">
+								<!-- <table class="table table-striped table-hover differentTable">
+									<thead class="">
+										<tr class="u-line">
+											<th colspan="2">相对比的两个节点</th>
+											<th>nodeName(192.168.0.10)</th>
+											<th>nodeName(192.168.0.11)</th>
+										</tr>
+									</thead>
+									<tbody id="routeList">
+										<tr class="u-line">
+											<td rowspan="5">&nbsp;&nbsp;&nbsp;&nbsp;nat</td>
+											<td rowspan="3">kubesep</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										</tr>
+										<tr class="u-line">
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										</tr>
+										<tr class="u-line">
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										</tr>
 										
-									</tr>
-									<tr class="u-line">
-										<td>:PREROUTING ACCEPT [291303:18397761]</td>
-										<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										<tr class="u-line">
+											<td rowspan="2">kubeServices</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										</tr>
+										<tr class="u-line">
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										</tr>
 										
-									</tr>
-									<tr>
-										<td rowspan="2">&nbsp;&nbsp;&nbsp;&nbsp;filter</td>
-										<td>:PREROUTING ACCEPT [291303:18397761]222222</td>
-										<td>:PREROUTING ACCEPT [291303:18397761]2222</td>
-									</tr>
-									<tr>
-										<td>:PREROUTING ACCEPT [291303:18397761]222222</td>
-										<td>:PREROUTING ACCEPT [291303:18397761]2222</td>
-									</tr>
-								</tbody>
-							</table>
+										
+									</tbody>
+								</table> -->
+								
+								<!-- <table class="table table-striped table-hover differentTable">
+									<thead>
+										<tr class="u-line">
+											<th colspan="2">相对比的两个节点</th>
+											<th>nodeName(192.168.0.10)</th>
+											<th>nodeName(192.168.0.11)</th>
+										</tr>
+									</thead>
+									<tbody id="routeList">
+										<tr class="u-line">
+											<td rowspan="5">&nbsp;&nbsp;&nbsp;&nbsp;nat</td>
+											<td rowspan="3">sep</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											
+										</tr>
+										<tr class="u-line">
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										</tr>
+										<tr class="u-line">
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										</tr>
+										
+										<tr class="u-line">
+											<td rowspan="2">services</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										</tr>
+										<tr class="u-line">
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+											<td>:PREROUTING ACCEPT [291303:18397761]</td>
+										</tr>
+										
+										
+									</tbody>
+								</table> -->
+							</div>
 						</div>
-						
 					</div>
-					
 
 				</div>
 			</div>

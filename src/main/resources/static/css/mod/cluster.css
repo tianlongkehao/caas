@@ -1227,6 +1227,11 @@ i.pushOrg {
 .u-line,.sameTable,.differentTable{
 	border-bottom:1px solid #ddd;
 }
-
-
+.td-line{
+	border-left:1px solid #ddd!important;
+	text-indent: 8px;
+}
+.diffTitle{
+	margin-top:20px;
+}
 
