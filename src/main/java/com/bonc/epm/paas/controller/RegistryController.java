@@ -74,6 +74,9 @@ import com.github.dockerjava.api.model.ExposedPort;
 @Controller
 public class RegistryController {
 
+	//镜像广场显示数量
+	private static final int IMAGE_FAVOR = 8;
+	private static final int IMAGE_NEW = 8;
     /**
      * RegistryController 日志实例
      */
@@ -772,15 +775,16 @@ public class RegistryController {
 	@RequestMapping("registry/imageShow")
 	public String showAllImages(Model model) {
 		long userId = CurrentUserUtils.getInstance().getUser().getId();
-		List<Image> imageList = imageDao.findAllUserFavor();
-		List<Image> newImage = new ArrayList<>();
-		Page<Image> imagePage = imageDao.findByImageType(userId, null);
-		if (imageList.size() < 8) {
-			while (imageList.size() < 8) {
-				imageList.add(imagePage.getContent().get(10 - imageList.size()));
-			}
+		//获取收藏镜像列表
+		List<Image> images = imageDao.findAllUserFavor();
+		List<Image> imageList = new ArrayList<>();
+		int sizefavor = IMAGE_FAVOR;
+		if (IMAGE_FAVOR > images.size()) {
+			sizefavor = images.size();
 		}
-
+		for (int i = 0; i < sizefavor; i++) {
+			imageList.add(images.get(i));
+		}
 		for (Image image : imageList) {
 			image.setCurrUserFavorCount(image.getFavorUsers().size());
 		}
@@ -791,8 +795,18 @@ public class RegistryController {
 			}
 		});
 
-		for (int i = 0; i < 8; i++) {
+		//获取最新镜像列表
+		List<Image> newImage = new ArrayList<>();
+		Page<Image> imagePage = imageDao.findByImageType(userId, null);
+		int sizenew = IMAGE_NEW;
+		if (IMAGE_NEW > imagePage.getContent().size()) {
+			sizenew = imagePage.getContent().size();
+		}
+		for (int i = 0; i < sizenew; i++) {
 			newImage.add(imagePage.getContent().get(i));
+		}
+		for (Image image : newImage) {
+			image.setCurrUserFavorCount(image.getFavorUsers().size());
 		}
 
 		addCurrUserFavor(imageList);

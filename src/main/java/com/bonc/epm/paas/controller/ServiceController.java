@@ -247,7 +247,7 @@ public class ServiceController {
 	 * @return String
 	 */
 	@RequestMapping(value = { "service" }, method = RequestMethod.GET)
-	public String containerLists(Model model) {
+	public String containerLists(Model model,String userName) {
 		// 获取特殊条件的pods
 		try {
 			if (CurrentUserUtils.getInstance().getUser().getId() != 1) {
@@ -258,6 +258,7 @@ public class ServiceController {
 			LOG.debug("service show:" + e.getStatus().getMessage());
 			return "workbench.jsp";
 		}
+		model.addAttribute("userName", userName);
 		model.addAttribute("menu_flag", "service");
 		model.addAttribute("li_flag", "service");
 		return "service/service.jsp";
@@ -2773,41 +2774,49 @@ public class ServiceController {
      * @throws IOException
      * @see
      */
-    @RequestMapping("service/exportExcel.do")
-    @ResponseBody
-    public void exportExcel(HttpServletRequest request, HttpServletResponse response) throws IOException{
-        long createBy = CurrentUserUtils.getInstance().getUser().getId();
-        List<Service> services = new ArrayList<>();
-        if (createBy == 1) {
-        	services = serviceDao.getAllService();
+	@RequestMapping("service/exportExcel.do")
+	@ResponseBody
+	public void exportExcel(HttpServletRequest request, HttpServletResponse response, String searchService,
+			String searchImage, String searchCreatorName) throws IOException {
+		long createBy = CurrentUserUtils.getInstance().getUser().getId();
+		List<Service> serviceList = new ArrayList<>();
+		if (createBy == 1) {
+			// admin用户显示一览界面
+			serviceList = serviceDao.search("%" + (searchService != null ? searchService : "") + "%",
+					"%" + (searchImage != null ? searchImage : "") + "%",
+					"%" + (searchCreatorName != null ? searchCreatorName : "") + "%", null).getContent();
 		} else {
-			services = serviceDao.findByCreateBy(createBy);
+			serviceList = serviceDao.findByCreateBy(createBy);
 		}
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-        String newdownfile = df.format(new Date()) +"--"+createBy+".xls";
-        PoiUtils poiUtil = new PoiUtils();
-        String[] header ={"名称","中文名","状态","镜像","服务地址","创建时间"};
-        List<String[]> context =new ArrayList<String[]>();
-        for(int i=0;i<services.size();i++){
-           Service serviceObj = services.get(i);
+		for (Service service : serviceList) {
+			service.setCreatorName(userDao.findById(service.getCreateBy()).getUserName());
+		}
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+		String newdownfile = df.format(new Date()) + "--" + createBy + ".xls";
+		PoiUtils poiUtil = new PoiUtils();
+		String[] header = { "名称", "中文名", "状态", "镜像", "服务地址", "创建时间", "创建人" };
+		List<String[]> context = new ArrayList<String[]>();
+		for (int i = 0; i < serviceList.size(); i++) {
+			Service serviceObj = serviceList.get(i);
 
-           String serviceAddr="";
-           if(StringUtils.isNoneBlank(serviceObj.getServiceAddr())){
-        	    serviceAddr=serviceObj.getServiceAddr();
-           }
-            String[] service ={serviceObj.getServiceName(),serviceObj.getServiceChName(),mapStatus(serviceObj.getStatus()),serviceObj.getImgName()
-                    ,new StringBuffer(serviceAddr).append("/").append(serviceObj.getProxyPath()).toString()
-                    ,serviceObj.getCreateDate().toString()};
-            context.add(service);
-        }
-        HSSFWorkbook wb = poiUtil.exportTest(services,header,context);
-        response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment;filename="+newdownfile);
-        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
-        wb.write(out);
-        out.flush();
-        out.close();
-}
+			String serviceAddr = "";
+			if (StringUtils.isNoneBlank(serviceObj.getServiceAddr())) {
+				serviceAddr = serviceObj.getServiceAddr();
+			}
+			String[] service = { serviceObj.getServiceName(), serviceObj.getServiceChName(),
+					mapStatus(serviceObj.getStatus()), serviceObj.getImgName(),
+					new StringBuffer(serviceAddr).append("/").append(serviceObj.getProxyPath()).toString(),
+					serviceObj.getCreateDate().toString(), serviceObj.getCreatorName() };
+			context.add(service);
+		}
+		HSSFWorkbook wb = poiUtil.exportTest(serviceList, header, context);
+		response.setContentType("application/octet-stream");
+		response.setHeader("Content-Disposition", "attachment;filename=" + newdownfile);
+		BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+		wb.write(out);
+		out.flush();
+		out.close();
+	}
 
     /**
      *

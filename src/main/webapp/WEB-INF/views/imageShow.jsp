@@ -23,31 +23,34 @@
             </div>
         </div>
     </div>
-</header>  
-
-    <div class="page-imageContainer container" style="margin-top:100px">
+</header>
+	<div class="searchCenter">
+		<div class="imageText">
+			<span>分享镜像，交流协作</span>
+		</div>
+		<div class="search">
+			<form class="search-group-inner"
+				style="width: 60%; margin: 0 auto; position: relative;">
+				<i class="fa fa-search searchImage-img"></i> <input name="search"
+					class="search-img centerSearchInput" id="centerSearchInput"
+					placeholder="搜索镜像" type="text">
+				<button type="button" id="centerSearchImages"
+					class="btn btn-default btn-color btn-send">搜索</button>
+			</form>
+		</div>
+	</div>
+	<div class="page-imageContainer container">
         <article>
             <div class="page-main">
                 <div class="contentMain">
                     <div class="content">
-                    	<!-- <div class="imageText">
-                            <span>分享镜像，交流协作</span>
-                        </div>
-                        <div class="search">
-                            <form class="search-group-inner" style="width:60%;margin: 0 auto;position: relative;" >
-                                <i class="fa fa-search searchImage-img"></i>
-                                <input name = "search" class="search-img" placeholder="搜索镜像" type="text">
-                                <button type="submit" id="centerSearchImages" class="btn btn-default btn-color btn-send">搜索</button>
-                            </form>
-                        </div> -->
-                        <div class="search row">
+                        <div class="search row searchResult hide">
                         	<div class="col-md-4 ">
                                 <input name = "search" class="search-img" id="searchCon" placeholder="搜索镜像" type="text">
                                 <i class="fa fa-search" id="searchImages"></i>
                             </div>
                             <div class="col-md-1 searchLabel"><label>排序 ：</label></div>
                             <div class="col-md-3">
-                        		
                         		<select class="form-control searchCondition" id="searchCondition" onchange="searchImagesResult()">
                         			<option value="0">默认</option>
                         			<option value="1">按导出次数</option>
@@ -58,14 +61,16 @@
                         
                         <div class="images-layout imagesCenter">
                         	<div class="imageInfo">推荐镜像</div>
-                            <ul id="imageList" style="height:460px">
+                            <ul id="imageList" >
 								<c:forEach items="${imageList }" var = "image">
 								
                                     <li class="images-panel">
                                         <div class="select-img">
                                             <div class="mir-img ">
                                                 <img class="imageTypeSrc" imageType="${image.imageType }" src="<%=path %>/images/image-1.png">
+                                                <c:if test="${image.remark != null && image.remark != '' }">
                                                 <div class="imageInfoText">${image.remark }</div>
+                                                </c:if>
                                             </div>
                                         </div>
                                         <div class="select-info">
@@ -97,11 +102,11 @@
                                         </div>
                                         
                                     </li>
-                               </c:forEach>     
-                                   
-                            </ul><br>
-                            <div class="imageInfo" style="position:absolute;top:633px"><span>最新镜像</span></div><br>
-                            <ul id="newimageList" style="height:460px">
+                                 </c:forEach>     
+                                 <div style="clear:both"></div> 
+                            </ul>
+                            <div class="imageInfo"><span>最新镜像</span></div>
+                            <ul id="newimageList">
                                 <c:forEach items="${newImage }" var = "image" varStatus="status">
                                     <c:if test="${status.index < 8 }">
                                     
@@ -109,8 +114,9 @@
 	                                        <div class="select-img">
 	                                            <div class="mir-img ">
 	                                                <img class="imageTypeSrc" imageType="${image.imageType }" src="<%=path %>/images/image-1.png">
-	                                                <div class="imageInfoText">${image.remark }</div>
-	                                                
+	                                                <c:if test="${image.remark != null && image.remark != '' }">
+	                                                	<div class="imageInfoText">${image.remark }</div>
+	                                                </c:if>
 	                                            </div>
 	                                        </div>
 	                                        <div class="select-info">
@@ -149,6 +155,7 @@
 	                                    </li>
 	                                </c:if>
                                </c:forEach>  
+                               <div style="clear:both"></div>
                              </ul>
                         </div>
                         

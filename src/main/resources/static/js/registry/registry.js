@@ -124,9 +124,24 @@ $(document).ready(function () {
          		}
          	});
         });
-    $(".imagesCenter").removeClass("hide");
+    
+    //镜像中心的搜索功能
+    var searchCon = $("#searchCon").val();
+	var searchCondition = 0;
+    $("#centerSearchImages").click(function(){
+    	$(".searchCenter").addClass("hide");
+    	$(".imagesCenter").addClass("hide");
+    	$(".searchResult").removeClass("hide");
+    	$(".imagesSearchResult").removeClass("hide");
+    	searchCon = $("#centerSearchInput").val();
+    	$("#searchCon").val(searchCon);
+    	searchImagesResult(searchCon,searchCondition);
+    });
+    //镜像搜索结果里的搜索功能
     $("#searchImages").click(function(){
-    	searchImagesResult();
+    	searchCon = $("#searchCon").val();
+    	searchCondition = $("#searchCondition").val();
+    	searchImagesResult(searchCon,searchCondition);
     });
     
    
@@ -562,7 +577,7 @@ function syncImages(){
 }
 
 //镜像搜索结果
-function searchImagesResult(){
+function searchImagesResult(searchCon,searchCondition){
 	$("#searchImagesList").empty();
 	$(".imagesCenter").addClass("hide");
 	$(".imagesSearchResult").removeClass("hide");
@@ -593,8 +608,15 @@ function searchImagesResult(){
 				 }
 				 
 				 var imageResourceName = imageList[i].resourceName;
-				 var imageRemark = imageList[i].remark;
-				 var imageSummary = imageList[i].summary;
+				 var imageRemark = "";
+				 if (imageList[i].remark != null && imageList[i].remark !=""){
+					 imageRemark = imageList[i].remark;
+				 }
+				 var imageSummary = "";
+				 if(imageList[i].summary != null && imageList[i].summary != ""){
+					 imageSummary = imageList[i].summary;
+				 }
+				 var imageSummary
 				 var imageType = imageList[i].imageType;
 				 //搜索结果html
 				 searchImagesHtml += '<li class="images-panel">'+
@@ -615,7 +637,7 @@ function searchImagesResult(){
 									'<div>'+
 										'<span class="searchImageVersion" title="'+imageVersion +'"><i class="fa fa-tag"></i> '+imageVersion +'</span>'+
 										'<div class="pull-right">'+
-											'<a href="<%=path %>/service/add?imageName='+imageName+'&imageVersion='+imageVersion+'&imgID='+imageId+'&resourceName='+imageResourceName+'"'+
+											'<a href="'+ctx+'/service/add?imageName='+imageName+'&imageVersion='+imageVersion+'&imgID='+imageId+'&resourceName='+imageResourceName+'"'+
 												'class="btn-pull-deploy btn" imageversion="'+imageVersion+'"'+
 												'imagename="'+imageName+'">部署</a>'+
 										'</div>'+
@@ -633,6 +655,8 @@ function searchImagesResult(){
 		 }
 	 });
 }
+
+
 
 //镜像图标imageType=1公有2私有
 function imageTypeSrc(){
