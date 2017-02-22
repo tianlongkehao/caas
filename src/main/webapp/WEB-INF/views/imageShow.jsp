@@ -71,7 +71,9 @@
                                         <div class="select-img">
                                             <div class="mir-img ">
                                                 <img class="imageTypeSrc" imageType="${image.imageType }" src="<%=path %>/images/image-1.png">
+                                                <c:if test="${image.remark != null && image.remark != '' }">
                                                 <div class="imageInfoText">${image.remark }</div>
+                                                </c:if>
                                             </div>
                                         </div>
                                         <div class="select-info">
@@ -115,8 +117,9 @@
 	                                        <div class="select-img">
 	                                            <div class="mir-img ">
 	                                                <img class="imageTypeSrc" imageType="${image.imageType }" src="<%=path %>/images/image-1.png">
-	                                                <div class="imageInfoText">${image.remark }</div>
-	                                                
+	                                                <c:if test="${image.remark != null && image.remark != '' }">
+	                                                	<div class="imageInfoText">${image.remark }</div>
+	                                                </c:if>
 	                                            </div>
 	                                        </div>
 	                                        <div class="select-info">

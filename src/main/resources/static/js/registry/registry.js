@@ -130,8 +130,8 @@ $(document).ready(function () {
 	var searchCondition = 0;
     $("#centerSearchImages").click(function(){
     	$(".searchCenter").addClass("hide");
-    	$(".searchResult").removeClass("hide");
     	$(".imagesCenter").addClass("hide");
+    	$(".searchResult").removeClass("hide");
     	$(".imagesSearchResult").removeClass("hide");
     	searchCon = $("#centerSearchInput").val();
     	$("#searchCon").val(searchCon);
@@ -601,11 +601,12 @@ function searchImagesResult(searchCon,searchCondition){
 				 }
 				 
 				 var imageResourceName = imageList[i].resourceName;
-				 var imageRemark = imageList[i].remark;
+				 var imageRemark = "";
+				 if (imageList[i].remark != null && imageList[i].remark !=""){
+					 imageRemark = imageList[i].remark;
+				 }
 				 var imageSummary = "";
-				 if(imageList[i].summary == null || imageList[i].summary == ""){
-					 imageSummary = "";
-				 }else{
+				 if(imageList[i].summary != null && imageList[i].summary != ""){
 					 imageSummary = imageList[i].summary;
 				 }
 				 var imageSummary
