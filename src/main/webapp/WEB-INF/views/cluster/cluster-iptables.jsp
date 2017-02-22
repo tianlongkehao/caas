@@ -110,7 +110,7 @@
 								<tbody id="sameTableList">
 									<!-- <tr>
 										<td rowspan="6">&nbsp;&nbsp;&nbsp;&nbsp;nat</td>
-										<td>wwwwwwwwww</td>
+										<td></td>
 									</tr>
 									<tr>
 										<td>:PREROUTING ACCEPT [291303:18397761]</td>
