@@ -28,7 +28,7 @@
 </header>
 <div class="funs">
 	<div class="head-img">
-		<img src="<%=path %>/images/head-img1.png">
+		<img id="backgroundImg" src="<%=path %>/images/head-img1.png">
 		<a href="<%=path %>/bcm/${cur_user.id }" class="pandectBtn"><i class="fa fa-home icon-home"></i><span>&nbsp;控制台</span></a>
 	</div>
 	
@@ -83,7 +83,7 @@
                     </a>
                  </li>
                  </c:if>
-                 <c:if test="${cur_user.user_autority == 2}">
+                 <c:if test="${cur_user.user_autority != 1}">
                  <li>
                    <a class="icon-view" href="<%=path %>/cluster/containers">
                        	<div class="icon-wrapper">
@@ -91,7 +91,7 @@
                                 <span class="img"><img src="<%=path %>/images/new-cluster.png" alt=""/></span>
                                 <span class="text hide">提供该租户下的所有容器的监控和集群拓扑</span>
                            </div>
-                       	   <div class="icon-name">集群资源</div>
+                       	   <div class="icon-name">监控信息</div>
                        </div>
                     </a>
                  </li>
@@ -245,8 +245,17 @@ $(document).ready(function(){
 		$(this).find(".img").removeClass("hide");
 		$(this).find(".text").addClass("hide");
 	});
+	
+	adjustBtn();
 })
-
+window.onresize=function(){  
+	adjustBtn();
+} 
+function adjustBtn(){
+	var backgroundImgHeight = $("#backgroundImg").height(); 
+    var pandectBtnPostion = backgroundImgHeight*0.87;
+    $(".pandectBtn").css("top",pandectBtnPostion);
+}
 </script>
 </body>
 </html>

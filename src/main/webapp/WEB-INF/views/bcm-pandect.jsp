@@ -175,7 +175,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>卷组容量（G）</td>
+                                        <td>存储（G）</td>
                                         <td>
                                             <div class="slider_bj">
                                                 <div class="slider_block detailVolume" id="usedVolume"></div>
@@ -280,9 +280,9 @@
 	                                    <tbody>
 	                                    	<c:forEach items="${userInfos }" var="userInfos">
 	                                    	<tr>
-	                                    		<td rowspan="3">${userInfos.user.userName }</td>
+	                                    		<td rowspan="3"><a href="<%=path %>/service?userName=${userInfos.user.userName }">${userInfos.user.userName }</a></td>
 	                                    		<td rowspan="3">${userInfos.usedPodNum }</td>
-	                                    		<td rowspan="3">${userInfos.usedServiceNum }</td>
+	                                    		<td rowspan="3"><a href="<%=path %>/service?userName=${userInfos.user.userName }">${userInfos.usedServiceNum }</a></td>
 	                                    		<td>总量</td>
 	                                    		<td class="servCpuNum" value="${userInfos.servCpuNum }">${userInfos.servCpuNum }</td>
 	                                    		<td class="servMemoryNum" value="${userInfos.servMemoryNum }">${userInfos.servMemoryNum }</td>
@@ -376,6 +376,7 @@
 	}
 	
 }) 
+
 </script>
 </body>
 </html>

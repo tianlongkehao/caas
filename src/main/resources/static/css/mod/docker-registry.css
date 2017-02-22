@@ -10,7 +10,7 @@
 }
 .search .search-img {
     height: 40px;
-    width: 80%;
+    width: 86%;
 }
 
 .search .btn-send {
@@ -145,7 +145,7 @@
 .img-icon {
     width: 175px;
     height: 75px;
-    margin: 32px auto;
+    margin: 24px auto;
     text-align: center;
     overflow: hidden;
 }
@@ -397,9 +397,6 @@
 	padding-left: 20px;
 	padding-right: 20px;
 }
-#newimageList{
-	margin-top:50px;
-}
 
 .mirror-head .buttons-info {
     float: left;
@@ -452,3 +449,30 @@ span.cloudNum{
     background-color: #ddd;
     border: 1px solid #ccc;
 }
+
+#centerSearchImages{
+ 	margin-left: -5px;
+}
+i.searchImage-img{
+ 	position: absolute;
+    font-size: 20px;
+    color: #cdcdcd;
+    line-height: 45px;
+    padding-left: 10px;
+} 
+.centerSearchInput{
+	height:45px!important;
+	line-height:45px!important;
+	text-indent: 34px;
+} 
+.searchCenter{
+	background-color: rgb(242,242,242);
+    padding-top: 30px;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+    margin-top:100px;
+}
+.searchResult{
+	margin-top:134px;
+}
+>>>>>>> refs/remotes/origin/Test29

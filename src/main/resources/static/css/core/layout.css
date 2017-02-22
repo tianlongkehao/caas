@@ -5,7 +5,7 @@
     z-index: 69; 
     position: fixed;
     top: 0px;
-    background-color:#F5F6F6;
+    background-color:rgb(251,251,251);
     /* box-shadow: 0 1px 10px #33414E; */
     /* box-shadow: 0px 0px 10px rgba(0,0,0,0.15); */
 }
@@ -254,7 +254,7 @@
 }
 .navbar-tab ul li{
 	float:left;
-	margin-right:70px;
+	padding: 0px 35px;
 	/* color:#e14344; */
 	text-algin:center;
 }

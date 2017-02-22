@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * 镜像
  *
@@ -42,6 +44,7 @@ public class Image {
 	@Transient
 	List<PortConfig> portConfigs;
 
+	@JSONField(serialize=false)
 	@ManyToMany(mappedBy = "favorImages")
 	private List<User> favorUsers;
 
