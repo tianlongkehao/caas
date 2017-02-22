@@ -107,7 +107,7 @@
 				</a></li>
 				<li id="menu_service"><a href="#" class="first-a"> 
 					<i class="fa-nav fa-nav-service"></i> 
-					<span class="nav-label">服务</span> 
+					<span class="nav-label">服务集成</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_service"><a class="J_menuItem" href="<%=path %>/service"><i class="fa fa_circle"></i>服务管理</a></li>
@@ -116,7 +116,7 @@
 					</ul></li>
 				<li id="menu_ci"><a href="#" class="first-a"> 
 					<i class="fa-nav fa-nav-ci"></i>
-				 	<span class="nav-label">构建</span> 
+				 	<span class="nav-label">镜像构建</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_ci"><a class="J_menuItem" href="<%=path %>/ci"><i class="fa fa_circle"></i>镜像构建</a></li>
@@ -126,7 +126,7 @@
 					</ul></li>
 				<li id="menu_registry"><a href="#" class="first-a"> 
 					<i class="fa-nav fa-nav-registry"></i>
-					<span class="nav-label">镜像</span> 
+					<span class="nav-label">镜像中心</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_registry0"><a class="J_menuItem" href="<%=path %>/registry/0"><i class="fa fa_circle"></i>镜像中心</a></li>
@@ -137,7 +137,7 @@
 					<c:if test="${cur_user.user_autority == 1}">
 						<li id="menu_user"><a href="#" class="first-a"> 
 							<i class="fa-nav fa-nav-user"></i>
-							<span class="nav-label">租户</span>
+							<span class="nav-label">租户信息</span>
 						</a>
 							<ul class="nav nav-second-level">
 								<li id="li_user"><a class="J_menuItem" href="<%=path %>/user/list"><i class="fa fa_circle"></i>租户管理</a></li>
@@ -146,7 +146,7 @@
 		        	<c:if test="${cur_user.user_autority == 2}">
 						<li id="menu_usermanage"><a href="#"> 
 							<i class="fa-nav fa-nav-usermanage"></i>
-							<span class="nav-label">用户</span>
+							<span class="nav-label">用户管理</span>
 						</a>
 							<ul class="nav nav-second-level">
 								<li id="li_manage"><a class="J_menuItem" href="<%=path %>/user/manage/list/${cur_user.id }"><i class="fa fa_circle"></i>用户管理</a></li>
@@ -159,7 +159,7 @@
                     <c:if test="${cur_user.user_autority == 1}">
                         <li id="menu_user"><a href="#" class="first-a"> 
                         	<i class="fa-nav fa-nav-user"></i>
-                        	<span class="nav-label">租户</span>
+                        	<span class="nav-label">租户管理</span>
                         </a>
                             <ul class="nav nav-second-level">
                                 <li id="li_user"><a class="J_menuItem" href="<%=path %>/user/list"><i class="fa fa_circle"></i>租户管理</a></li>
@@ -179,7 +179,8 @@
 
 				<li id="menu_cluster"><a href="#" class="first-a"> 
 					<i class="fa-nav fa-nav-cluster"></i>
-					<span class="nav-label">监控</span>
+					<c:if test="${cur_user.user_autority == 1}"><span class="nav-label">集群管理</span></c:if>
+					<c:if test="${cur_user.user_autority != 1}"><span class="nav-label">监控信息</span></c:if>
 				</a>
 					<ul class="nav nav-second-level">
 						<c:if test="${cur_user.user_autority == 1}">
@@ -195,7 +196,7 @@
 					</ul></li>
 				<li id="menu_template"><a href="#" class="first-a">
 					<i class="fa-nav fa-nav-template"></i>
-					<span class="nav-label">模板</span> 
+					<span class="nav-label">模板管理</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_dockerfile"><a class="J_menuItem" href="<%=path %>/template/dockerfile"><i class="fa fa_circle"></i>dockerfile</a></li>
@@ -204,7 +205,7 @@
 				<c:if test="${cur_user.user_autority == 1}">
 				<li id="menu_log"><a href="#" class="first-a"> 
 					<i class="fa-nav fa-nav-log"></i>
-					<span class="nav-label">日志</span> 
+					<span class="nav-label">日志信息</span> 
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_logService"><a class="J_menuItem" href="<%=path %>/logServices"><i class="fa fa_circle"></i>服务操作日志</a></li>
