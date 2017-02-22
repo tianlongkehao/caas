@@ -22,12 +22,33 @@ public class SonarConfig {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
+	/**
+	 * sonar功能总开关(true:使用)
+	 */
 	private boolean enabled;
+	/**
+	 * sonar前端是否显示()
+	 */
 	private boolean hidden;
+	/**
+	 * sonar是否必选(true必选)
+	 */
 	private boolean mandatory;
+	/**
+	 * 代码质量的阈值(12345)
+	 */
 	private Integer threshold;
+	/**
+	 * 是否需要等待sonar结果(true:等待)
+	 */
 	private boolean breakable;
+	/**
+	 * 访问sonar的Token
+	 */
 	private String token;
+	/**
+	 * sonar的地址 (http://code.bonc.com.cn/sonar)
+	 */
 	private String url;
 	/**
 	 * 创建人
