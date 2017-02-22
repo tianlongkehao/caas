@@ -110,133 +110,6 @@ function searchServiceShowIptables(){
 			
 			//不同的iptables
 			loadDiff(data);
-			/*$("#diffTable").empty();
-			var diffNat = data.diff;
-			var diffNatNodeHtml = "";
-			if(diffNat.length == 0 ){
-				diffNatNodeHtml += '<table class="table table-striped table-hover differentTable">'+
-										'<thead class="diffTable">'+
-										'<tr class="u-line">'+
-											'<th colspan="4">&nbsp;&nbsp;&nbsp;&nbsp;对比结果无不同的iptables</th>'+
-										'</tr>'+
-									'</thead>'+
-									'<table>';
-			}else{
-				for(var diffNum=0; diffNum<diffNat.length; diffNum++){
-					var diffNatSep = diffNat[diffNum].nat.kubeSep;
-					var diffNatServices = diffNat[diffNum].nat.kubeServices;
-					var diffNatNodePorts = diffNat[diffNum].nat.kubeNodePorts;
-					var diffSvc = diffNat[diffNum].nat.kubeSvc;
-					var diffOthers = diffNat[diffNum].nat.others;
-					var diffNatNum = 0;
-					
-					var diffLeft = diffNat[diffNum].left;
-					var diffRight = diffNat[diffNum].right;
-					diffNatNodeHtml += '<table class="table table-striped table-hover differentTable">'+
-										'<thead class="diffTable'+diffNum+'">'+
-										'<tr class="u-line">'+
-											'<th colspan="2">相对比的两个节点</th>'+
-											'<th class="td-line">&nbsp;&nbsp;'+diffNat[diffNum].left+'</th>'+
-											'<th class="td-line">&nbsp;&nbsp;'+diffNat[diffNum].right+'</th>'+
-										'</tr>'+
-									'</thead>'+
-									'<tbody class="routeList">';
-					if(diffNatSep.flag == false){
-						diffNatNum += diffNatSep.diffLeft.length;
-					}else{
-						diffNatNum += 1;
-					}
-					if(diffNatServices.flag == false){
-						diffNatNum += diffNatServices.diffLeft.length
-					}else{
-						diffNatNum += 1;
-					}
-					if(diffNatNodePorts.flag == false){
-						diffNatNum += diffNatNodePorts.diffLeft.length
-					}else{
-						diffNatNum += 1;
-					}
-					if(diffSvc.flag == false){
-						diffNatNum += diffSvc.diffLeft.length
-					}else{
-						diffNatNum += 1;
-					}
-					if(diffOthers.flag == false){
-						diffNatNum += diffOthers.diffLeft.length
-					}else{
-						diffNatNum += 1;
-					}
-					
-					diffNatNodeHtml += '<tr class="u-line">'+
-										'<td rowspan="'+diffNatNum+'">&nbsp;&nbsp;&nbsp;&nbsp;nat&nbsp;&nbsp;</td>';
-					if(diffNatSep.flag == true){
-						diffNatNodeHtml += '<td class="td-line">&nbsp;&nbsp;&nbsp;&nbsp;kubeSep</td>'+
-											'<td class="td-line">无</td>'+
-											'<td class="td-line">无</td>'+
-											'</tr>';
-					}else{
-						diffNatNodeHtml += '<td class="td-line" rowspan="'+diffNatSep.diffLeft.length+'">&nbsp;&nbsp;kubeSep</td>'+
-											'<td class="td-line">'+diffNatSep.diffLeft[0]+'</td>'+
-											'<td class="td-line">'+diffNatSep.diffRight[0]+'</td>'+
-											'</tr>';
-					}
-					if(diffNatServices.flag == true){
-						diffNatNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;kubeServices</td>'+
-											'<td class="td-line">无</td>'+
-											'<td class="td-line">无</td>'+
-											'</tr>';
-					}else{
-						diffNatNodeHtml += '<tr class="u-line"><td rowspan="'+diffNatServices.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeServices</td>'+
-											'<td class="td-line">'+diffNatServices.diffLeft[0]+'</td>'+
-											'<td class="td-line">'+diffNatServices.diffRight[0]+'</td>'+
-											'</tr>';
-					}
-					if(diffNatNodePorts.flag == true){
-						diffNatNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;kubeNodePorts</td>'+
-											'<td class="td-line">无</td>'+
-											'<td class="td-line">无</td>'+
-											'</tr>';
-					}else{
-						diffNatNodeHtml += '<tr class="u-line"><td rowspan="'+diffNatNodePorts.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeNodePorts</td>'+
-											'<td class="td-line">'+diffNatNodePorts.diffLeft[0]+'</td>'+
-											'<td class="td-line">'+diffNatNodePorts.diffRight[0]+'</td>'+
-											'</tr>';
-					}
-					if(diffSvc.flag == true){
-						diffNatNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;kubeSvc</td>'+
-											'<td class="td-line">无</td>'+
-											'<td class="td-line">无</td>'+
-											'</tr>';
-					}else{
-						diffNatNodeHtml += '<tr class="u-line"><td rowspan="'+diffSvc.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeSvc</td>'+
-											'<td class="td-line">'+diffSvc.diffLeft[0]+'</td>'+
-											'<td class="td-line">'+diffSvc.diffRight[0]+'</td>'+
-											'</tr>';
-					}
-					if(diffOthers.flag == true){
-						diffNatNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;others</td>'+
-											'<td class="td-line">无</td>'+
-											'<td class="td-line">无</td>'+
-											'</tr>';
-					}else{
-						diffNatNodeHtml += '<tr class="u-line"><td rowspan="'+diffOthers.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;others</td>'+
-											'<td class="td-line">'+diffOthers.diffLeft[0]+'</td>'+
-											'<td class="td-line">'+diffOthers.diffRight[0]+'</td>'+
-											'</tr>';
-					}
-										
-						
-											
-						
-						
-					diffNatNodeHtml +='</tbody></table>';
-						
-				}
-				
-				$("#diffTable").append(diffNatNodeHtml);
-				
-			}*/
-			
 		}
 	})
 }
@@ -271,38 +144,93 @@ function loadDiff(data){
 			
 			var diffLeft = dataDiff[diffNum].left;
 			var diffRight = dataDiff[diffNum].right;
-			diffNodeHtml += '<table class="table table-striped table-hover differentTable">'+
+			diffNodeHtml += '<table class="table table-hover differentTable">'+
 								'<thead class="diffTable'+diffNum+'">'+
 								'<tr class="u-line" style="background:#ddd">'+
-									'<th colspan="2">相对比的两个节点</th>'+
+									'<th colspan="2">&nbsp;&nbsp;相对比的两个节点</th>'+
 									'<th class="td-line">&nbsp;&nbsp;'+dataDiff[diffNum].left+'</th>'+
 									'<th class="td-line">&nbsp;&nbsp;'+dataDiff[diffNum].right+'</th>'+
 								'</tr>'+
 							'</thead>'+
 							'<tbody class="routeList">';
 			//nat
+			//kubeSep
+			var natSepLength = 1;
 			if(diffNatSep.flag == false){
-				diffNatNum += diffNatSep.diffLeft.length;
+				var sepLeftLength = 1;
+				if(diffNatSep.diffLeft != null){
+					sepLeftLength = diffNatSep.diffLeft.length;
+				}
+				var sepRigthLength = 1;
+				if(diffNatSep.diffRight != null){
+					sepRigthLength = diffNatSep.diffRight.length;
+				}
+				natSepLength = (sepLeftLength > sepRigthLength) ? sepLeftLength : sepRigthLength;
+				diffNatNum += natSepLength;
 			}else{
 				diffNatNum += 1;
 			}
+			//kubeService
+			var natServicesLength = 1;
+			var servicesLeftLength = 1;
+			var servicesRightLength = 1;
 			if(diffNatServices.flag == false){
-				diffNatNum += diffNatServices.diffLeft.length
+				if(diffNatServices.diffLeft != null){
+					servicesLeftLength = diffNatServices.diffLeft.length;
+				}
+				if(diffNatServices.diffRight != null){
+					servicesRightLength = diffNatServices.diffRight.length;
+				}
+				natServicesLength = (servicesLeftLength > servicesRightLength) ? servicesLeftLength :servicesRightLength;
+				diffNatNum += natServicesLength;
 			}else{
 				diffNatNum += 1;
 			}
+			//kubeNodePorts
+			var natNodePortsLength = 1;
 			if(diffNatNodePorts.flag == false){
-				diffNatNum += diffNatNodePorts.diffLeft.length
+				var portLeftLength = 1;
+				if(diffNatNodePorts.diffLeft != null){
+					portLeftLength = diffNatNodePorts.diffLeft.length;
+				}
+				var portRightLength = 1;
+				if(diffNatNodePorts.diffRight != null){
+					portRightLength = diffNatNodePorts.diffRight.length;
+				}
+				natNodePortsLength = (portLeftLength > portRightLength) ? portLeftLength :portRightLength;
+				diffNatNum += natNodePortsLength;
 			}else{
 				diffNatNum += 1;
 			}
+			//kubeSvc
+			var natSvcLength = 1;
 			if(diffSvc.flag == false){
-				diffNatNum += diffSvc.diffLeft.length
+				var svcLeftLength = 1;
+				if(diffSvc.diffLeft != null){
+					svcLeftLength = diffSvc.diffLeft.length;
+				}
+				var svcRightLength = 1;
+				if(diffSvc.diffRight != null){
+					svcRightLength = diffSvc.diffRight.length;
+				}
+				natSvcLength = (svcLeftLength > svcRightLength) ? svcLeftLength :svcRightLength;
+				diffNatNum += natSvcLength;
 			}else{
 				diffNatNum += 1;
 			}
+			//kubeOthers
+			var natOthersLength = 1;
 			if(diffOthers.flag == false){
-				diffNatNum += diffOthers.diffLeft.length
+				var othersLeftLength = 1;
+				if(diffOthers.diffLeft != null){
+					othersLeftLength = diffOthers.diffLeft.length;
+				}
+				var othersRightLength = 1;
+				if(diffOthers.diffRight != null){
+					othersRightLength = diffOthers.diffRight.length;
+				}
+				natOthersLength = (othersLeftLength > othersRightLength) ? othersLeftLength :othersRightLength;
+				diffNatNum += natOthersLength;
 			}else{
 				diffNatNum += 1;
 			}
@@ -320,13 +248,22 @@ function loadDiff(data){
 									'<td class="td-line">'+diffNatSep.diffRight[0]+'</td>'+
 									'</tr>';
 			}
+			//kubeServices content
 			if(diffNatServices.flag == true){
 				diffNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;kubeServices</td>'+
 									'<td class="td-line">无</td>'+
 									'<td class="td-line">无</td>'+
 									'</tr>';
 			}else{
-				diffNodeHtml += '<tr class="u-line"><td rowspan="'+diffNatServices.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeServices</td>'+
+				
+				diffNodeHtml += '<tr class="u-line"><td rowspan="'+natServicesLength+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeServices</td>';
+				if(natServicesLength == 1){
+					if(servicesLeftLength == 1){
+						diffNodeHtml += '<td class="td-line">'+diffNatServices.diffLeft[0]+'</td>'+
+											'<td class="td-line">'+diffNatServices.diffRight[0]+'</td>'+
+											'</tr>';
+					}
+				}
 									'<td class="td-line">'+diffNatServices.diffLeft[0]+'</td>'+
 									'<td class="td-line">'+diffNatServices.diffRight[0]+'</td>'+
 									'</tr>';
@@ -365,33 +302,33 @@ function loadDiff(data){
 									'</tr>';
 			}
 								
-			//filter
-			var diffFilterSep = dataDiff[diffNum].filter.kubeSep;
+			/*//filter
+			//var diffFilterSep = dataDiff[diffNum].filter.kubeSep;
 			var diffFilterServices = dataDiff[diffNum].filter.kubeServices;
-			var diffFilterNodePorts = dataDiff[diffNum].filter.kubeNodePorts;
-			var diffFilterSvc = dataDiff[diffNum].filter.kubeSvc;
+			//var diffFilterNodePorts = dataDiff[diffNum].filter.kubeNodePorts;
+			//var diffFilterSvc = dataDiff[diffNum].filter.kubeSvc;
 			var diffFilterOthers = dataDiff[diffNum].filter.others;
 			var diffFilterNum = 0;
-			if(diffFilterSep.flag == false){
-				diffFilterNum += diffFilterSep.diffLeft.length;
-			}else{
-				diffFilterNum += 1;
-			}
+//			if(diffFilterSep.flag == false){
+//				diffFilterNum += diffFilterSep.diffLeft.length;
+//			}else{
+//				diffFilterNum += 1;
+//			}
 			if(diffFilterServices.flag == false){
 				diffFilterNum += diffFilterServices.diffLeft.length
 			}else{
 				diffFilterNum += 1;
 			}
-			if(diffFilterNodePorts.flag == false){
-				diffFilterNum += diffFilterNodePorts.diffLeft.length
-			}else{
-				diffFilterNum += 1;
-			}
-			if(diffFilterSvc.flag == false){
-				diffFilterNum += diffFilterSvc.diffLeft.length
-			}else{
-				diffFilterNum += 1;
-			}
+//			if(diffFilterNodePorts.flag == false){
+//				diffFilterNum += diffFilterNodePorts.diffLeft.length
+//			}else{
+//				diffFilterNum += 1;
+//			}
+//			if(diffFilterSvc.flag == false){
+//				diffFilterNum += diffFilterSvc.diffLeft.length
+//			}else{
+//				diffFilterNum += 1;
+//			}
 			if(diffFilterOthers.flag == false){
 				diffFilterNum += diffFilterOthers.diffLeft.length
 			}else{
@@ -400,61 +337,61 @@ function loadDiff(data){
 			
 			diffNodeHtml += '<tr class="u-line">'+
 						'<td rowspan="'+diffFilterNum+'">&nbsp;&nbsp;&nbsp;&nbsp;filter&nbsp;&nbsp;</td>';
-			if(diffFilterSep.flag == true){
-				diffNodeHtml += '<td class="td-line">&nbsp;&nbsp;&nbsp;&nbsp;kubeSep</td>'+
-								'<td class="td-line">无</td>'+
-								'<td class="td-line">无</td>'+
-								'</tr>';
-			}else{
-				diffNodeHtml += '<td class="td-line" rowspan="'+diffFilterSep.diffLeft.length+'">&nbsp;&nbsp;kubeSep</td>'+
-							'<td class="td-line">'+diffFilterSep.diffLeft[0]+'</td>'+
-							'<td class="td-line">'+diffFilterSep.diffRight[0]+'</td>'+
-							'</tr>';
-			}
+//			if(diffFilterSep.flag == true){
+//				diffNodeHtml += '<td class="td-line">&nbsp;&nbsp;&nbsp;&nbsp;kubeSep</td>'+
+//								'<td class="td-line">无</td>'+
+//								'<td class="td-line">无</td>'+
+//								'</tr>';
+//			}else{
+//				diffNodeHtml += '<td class="td-line" rowspan="'+diffFilterSep.diffLeft.length+'">&nbsp;&nbsp;kubeSep</td>'+
+//							'<td class="td-line">'+diffFilterSep.diffLeft[0]+'</td>'+
+//							'<td class="td-line">'+diffFilterSep.diffRight[0]+'</td>'+
+//							'</tr>';
+//			}
 			if(diffFilterServices.flag == true){
-				diffNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;kubeServices</td>'+
+				diffNodeHtml += '<td class="td-line">&nbsp;&nbsp;&nbsp;&nbsp;kubeServices</td>'+
 							'<td class="td-line">无</td>'+
 							'<td class="td-line">无</td>'+
 							'</tr>';
 			}else{
-				diffNodeHtml += '<tr class="u-line"><td rowspan="'+diffFilterServices.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeServices</td>'+
+				diffNodeHtml += '<tr class="u-line"><td class="td-line" rowspan="'+diffFilterServices.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeServices</td>'+
 							'<td class="td-line">'+diffFilterServices.diffLeft[0]+'</td>'+
 							'<td class="td-line">'+diffFilterServices.diffRight[0]+'</td>'+
 							'</tr>';
 			}
-			if(diffFilterNodePorts.flag == true){
-				diffNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;kubeNodePorts</td>'+
-							'<td class="td-line">无</td>'+
-							'<td class="td-line">无</td>'+
-							'</tr>';
-			}else{
-				diffNodeHtml += '<tr class="u-line"><td rowspan="'+diffFilterNodePorts.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeNodePorts</td>'+
-							'<td class="td-line">'+diffFilterNodePorts.diffLeft[0]+'</td>'+
-							'<td class="td-line">'+diffFilterNodePorts.diffRight[0]+'</td>'+
-							'</tr>';
-			}
-			if(diffFilterSvc.flag == true){
-				diffNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;kubeSvc</td>'+
-							'<td class="td-line">无</td>'+
-							'<td class="td-line">无</td>'+
-							'</tr>';
-			}else{
-				diffNodeHtml += '<tr class="u-line"><td rowspan="'+diffFilterSvc.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeSvc</td>'+
-							'<td class="td-line">'+diffFilterSvc.diffLeft[0]+'</td>'+
-							'<td class="td-line">'+diffFilterSvc.diffRight[0]+'</td>'+
-							'</tr>';
-			}
+//			if(diffFilterNodePorts.flag == true){
+//				diffNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;kubeNodePorts</td>'+
+//							'<td class="td-line">无</td>'+
+//							'<td class="td-line">无</td>'+
+//							'</tr>';
+//			}else{
+//				diffNodeHtml += '<tr class="u-line"><td rowspan="'+diffFilterNodePorts.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeNodePorts</td>'+
+//							'<td class="td-line">'+diffFilterNodePorts.diffLeft[0]+'</td>'+
+//							'<td class="td-line">'+diffFilterNodePorts.diffRight[0]+'</td>'+
+//							'</tr>';
+//			}
+//			if(diffFilterSvc.flag == true){
+//				diffNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;kubeSvc</td>'+
+//							'<td class="td-line">无</td>'+
+//							'<td class="td-line">无</td>'+
+//							'</tr>';
+//			}else{
+//				diffNodeHtml += '<tr class="u-line"><td rowspan="'+diffFilterSvc.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;kubeSvc</td>'+
+//							'<td class="td-line">'+diffFilterSvc.diffLeft[0]+'</td>'+
+//							'<td class="td-line">'+diffFilterSvc.diffRight[0]+'</td>'+
+//							'</tr>';
+//			}
 			if(diffFilterOthers.flag == true){
-				diffNodeHtml += '<tr class="u-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;others</td>'+
+				diffNodeHtml += '<tr class="u-line td-line"><td>&nbsp;&nbsp;&nbsp;&nbsp;others</td>'+
 							'<td class="td-line">无</td>'+
 							'<td class="td-line">无</td>'+
 							'</tr>';
 			}else{
-				diffNodeHtml += '<tr class="u-line"><td rowspan="'+diffFilterOthers.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;others</td>'+
+				diffNodeHtml += '<tr class="u-line td-line"><td rowspan="'+diffFilterOthers.diffLeft.length+'">&nbsp;&nbsp;&nbsp;&nbsp;others</td>'+
 							'<td class="td-line">'+diffFilterOthers.diffLeft[0]+'</td>'+
 							'<td class="td-line">'+diffFilterOthers.diffRight[0]+'</td>'+
 							'</tr>';
-			}						
+			}						*/
 							
 				
 			diffNodeHtml +='</tbody></table>';

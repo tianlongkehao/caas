@@ -100,7 +100,7 @@
 							</c:if>
 						</form>
 						<div class="" style="margin-bottom:15px">
-							<table class="table table-striped table-hover sameTable">
+							<table class="table table-hover sameTable">
 								<thead>
 									<tr><th colspan="3"><h4>iptables对比结果相同的节点：<h4></th></tr>
 									<tr class="u-line">
