@@ -279,6 +279,14 @@ $(document).ready(function () {
 	
 	//提交表单
 	$("#buildBtn").click(function(){
+		var checkedTools = $(".dftools").find("input:checked");
+		var toolsId = "";
+		for(var toolNum=0; toolNum< checkedTools.length; toolNum++){
+			var tools = checkedTools[toolNum].attributes.id.value;
+			toolsId +=  tools+",";
+		}
+		toolsId = toolsId.substring(0,toolsId.length-1);
+		
         if(checkCodeCiAdd(editor_one)) {
         	$("#buildForm").submit();
         	layer.load(0, {shade: [0.3, '#000']});

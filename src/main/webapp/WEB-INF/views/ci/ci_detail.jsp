@@ -299,6 +299,35 @@
 					                        </ul>
 					                        <input type="hidden" id="ciLocation" value="${ci.dockerFileLocation}">
                                             <input type = "hidden" id = "ciMethod" value = '${dockerFileContent }'>
+                                            <div id="dockerfileMethods">
+					                        	<div class="row dockerfileTemp dockerfileTools">
+					                        		<div class="panel-group" id="accordion">
+														<div class="panel panel-default">
+															<div class="panel-heading">
+																<h4 class="panel-title">
+																	<a data-toggle="collapse" data-parent="#accordion" 
+																	   href="#collapseOne">工具集
+																	</a>
+																</h4>
+															</div>
+															<div id="collapseOne" class="panel-collapse collapse in">
+																<div class="panel-body">
+																		<c:forEach items="${toolGroups}" var="tools" >
+																			 <div class="toolItems">
+																			 	<ul class="dftools">
+																					<li class="dftools-firstli">${tools.groupName } :</li>
+																					<c:forEach items="${tools.tools}" var="tool" >
+																						<li class="dftools-li"><label><input type="checkbox" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
+																					</c:forEach>
+																				</ul>
+																			</div> 
+																		</c:forEach>
+																</div>
+															</div>
+														</div>
+					                        		</div>
+					                        	</div>
+					                        </div>
 				                            <div id="dockerfileMethod">
 	                                               
 	                            			</div>
