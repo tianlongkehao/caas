@@ -17,6 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -36,7 +37,7 @@ public class RefService {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
-    
+
     /**
      * 服务名称
      */
@@ -45,6 +46,11 @@ public class RefService {
      * 创建者
      */
     private long createBy;
+	/**
+     * 创建者
+     */
+	@Transient
+	private String creatorName;
     /**
      * 服务访问地址
      */
@@ -61,18 +67,18 @@ public class RefService {
      * 可见域 （0：本租户；1：所有租户）
      */
     private int viDomain;
-    
+
     /**
      * 服务引入方式 （0：service方式 ；1：etcd方式）
      */
     private int improtSerMode;
-    
+
     /**
      * 创建时间
      */
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
-    
+
     /**
      * 服务node暴露端口
      */
@@ -104,6 +110,12 @@ public class RefService {
     public void setCreateBy(long createBy) {
         this.createBy = createBy;
     }
+    public String getCreatorName() {
+		return creatorName;
+	}
+	public void setCreatorName(String creatorName) {
+		this.creatorName = creatorName;
+	}
     public String getSerAddress() {
         return serAddress;
     }
@@ -158,8 +170,8 @@ public class RefService {
     public void setRefSerDesc(String refSerDesc) {
         this.refSerDesc = refSerDesc;
     }
-    
-    
+
+
 	@Override
 	public String toString() {
 		return "RefService [id=" + id + ", serName=" + serName + ", createBy=" + createBy + ", serAddress=" + serAddress
@@ -167,5 +179,5 @@ public class RefService {
 				+ improtSerMode + ", createDate=" + createDate + ", nodePort=" + nodePort + ", refSerDesc=" + refSerDesc
 				+ ", useProxy=" + useProxy + "]";
 	}
-    
+
 }

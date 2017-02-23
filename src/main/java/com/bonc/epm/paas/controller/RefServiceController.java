@@ -10,8 +10,10 @@
 
 package com.bonc.epm.paas.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.RefServiceConstant;
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.RefServiceDao;
 import com.bonc.epm.paas.dao.ServiceDao;
@@ -36,7 +39,6 @@ import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.RefService;
 import com.bonc.epm.paas.entity.User;
-import com.bonc.epm.paas.etcd.util.EtcdClientService;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
@@ -55,42 +57,42 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 
 @Controller
 public class RefServiceController {
-    
+
     /**
      * 日志
      */
     private static final Logger LOG = LoggerFactory.getLogger(RefServiceController.class);
-    
+
     /**
      * serviceDao
      */
     @Autowired
     private  ServiceDao serviceDao;
-    
+
     /**
      * refSreviceDao
      */
     @Autowired
     private RefServiceDao refServiceDao;
-    
+
     /**
      * UserDao
      */
     @Autowired
     private UserDao userDao;
-    
+
     /**
      * KubernetesClientService接口
      */
     @Autowired
     private KubernetesClientService kubernetesClientService;
-    
-    /**
-     * etcdAPI客户端
-     */
-    @Autowired
-    private EtcdClientService etcdClientService;
-    
+
+//    /**
+//     * etcdAPI客户端
+//     */
+//    @Autowired
+//    private EtcdClientService etcdClientService;
+
     /**
      * commonOperationLogDao接口
      */
@@ -100,7 +102,7 @@ public class RefServiceController {
     /**
      * Description: <br>
      * 跳转进入service-import.jsp页面
-     * @param model 
+     * @param model
      * @return String
      */
     @RequestMapping(value = { "service/import" })
@@ -111,9 +113,9 @@ public class RefServiceController {
         model.addAttribute("namespace", namespace);
         return "service/service-import.jsp";
     }
-    
+
     /**
-     * 
+     *
      * Description: 外部服务列表
      * @return json
      * @see
@@ -123,16 +125,27 @@ public class RefServiceController {
     private String list(){
         Map<String,Object> map = new HashMap<String,Object>();
         long userId = CurrentUserUtils.getInstance().getUser().getId();
-        List<RefService> list = refServiceDao.findByCreateByOrViDomainOrderByCreateDateDesc(userId,1);
+        List<RefService> list = new ArrayList<>();
+        if (CurrentUserUtils.getInstance().getUser().getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
+        	 Iterable<RefService> allResService = refServiceDao.findAll();
+        	 Iterator<RefService> it = allResService.iterator();
+        	 while (it.hasNext()) {
+				RefService refService = it.next();
+				refService.setCreatorName(userDao.findById(refService.getCreateBy()).getUserName());
+				list.add(refService);
+			}
+		} else {
+			list = refServiceDao.findByCreateByOrViDomainOrderByCreateDateDesc(userId,1);
+		}
         map.put("data", list);
         return JSON.toJSONString(map);
     }
-    
+
    /**
-    * 
+    *
     * Description: 添加新的引用外部服务信息
     * @param serName 服务名
-    * @param serAddress 服务地址 
+    * @param serAddress 服务地址
     * @param refAddress 外部服务地址
     * @param viDomain 可见域
     * @return string json
@@ -149,7 +162,7 @@ public class RefServiceController {
         if (RefServiceConstant.ALL_TENANT == refService.getViDomain()) {
             nameSpace = "default";
             //判断是否使用nginx代理
-            if (useNginx == 1) {           
+            if (useNginx == 1) {
                 refService.setUseProxy(refService.getSerName());
             }
         } else {
@@ -168,13 +181,13 @@ public class RefServiceController {
 //                response.getAction();
 //                if (EtcdKeyAction.create.name().equals("create"))
 //                map.put("status", "200");
-//                refServiceDao.save(refService); 
+//                refServiceDao.save(refService);
 //            }
-//        } 
+//        }
 //        else {
 //            createServiceMode(map, refService, nameSpace);
-//        }      
-        
+//        }
+
         createServiceMode(map, refService, nameSpace);
         //记录用户添加外部服务操作
         String extraInfo="新增外部服务："+refService.getSerName()+"的主要内容有"+refService.toString();
@@ -182,13 +195,13 @@ public class RefServiceController {
         commonOperationLogDao.save(log);
         return JSON.toJSONString(map);
     }
-    
+
     /**
-     * 
+     *
      * Description: 修改引用外部服务的信息
      * @param id id
      * @param serName 服务名
-     * @param serAddress 服务地址 
+     * @param serAddress 服务地址
      * @param refAddress 外部服务地址
      * @param viDomain 可见域
      * @return json
@@ -215,7 +228,7 @@ public class RefServiceController {
         catch (KubernetesClientException e) {
             LOG.error("delete k8s Service error; namespace:-"+nameSpace+";serviceName:-"+ oldRefService.getSerName());
         }
-        
+
         //添加修改的数据
         oldRefService.setSerName(refService.getSerName());
         oldRefService.setRefAddress(refService.getRefAddress());
@@ -227,7 +240,7 @@ public class RefServiceController {
         if (RefServiceConstant.ALL_TENANT == oldRefService.getViDomain()) {
             nameSpace = "default";
             //判断是否使用nginx代理
-            if (useNginx == 1) {           
+            if (useNginx == 1) {
                 oldRefService.setUseProxy(refService.getSerName());
             } else {
                 oldRefService.setUseProxy(null);
@@ -240,18 +253,18 @@ public class RefServiceController {
                 oldRefService.setUseProxy(null);
             }
         }
-        
+
         createServiceMode(map, oldRefService, nameSpace);
         //记录用户修改外部服务操作
         String extraInfo="修改外部服务："+refService.getSerName()+"的主要内容有"+JSON.toJSONString(oldRefService);
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(oldRefService.getSerName(), extraInfo, CommConstant.REF_SERVICE, CommConstant.OPERATION_TYPE_UPDATE);
         commonOperationLogDao.save(log);
-        
+
         return JSON.toJSONString(map);
     }
-    
+
     /**
-     * 
+     *
      * Description: 删除一个或多个外部服务
      * @param ids 要删除的id
      * @return json
@@ -268,12 +281,12 @@ public class RefServiceController {
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description:
      * 删除引入的外部服务
-     * @param string 
-     * @see 
+     * @param string
+     * @see
      */
     private void removeRefService(long id) {
         RefService localRefService = refServiceDao.findOne(id);
@@ -285,19 +298,18 @@ public class RefServiceController {
                 nameSpace = userDao.findById(localRefService.getCreateBy()).getNamespace();
             }
             if (RefServiceConstant.ETCD_MODE == localRefService.getimprotSerMode()) {
-                //TODO etcd
             }
             else {
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient(nameSpace);
                 try {
                     Status status = client.deleteService(localRefService.getSerName());
                     if (200 == status.getCode() || 404 == status.getCode()) {
-                        
+
                         //添加删除外部服务记录
                         String extraInfo="删除外部服务："+localRefService.getSerName()+"的信息"+JSON.toJSONString(localRefService);
                         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(localRefService.getSerName(), extraInfo, CommConstant.REF_SERVICE, CommConstant.OPERATION_TYPE_DELETE);
                         commonOperationLogDao.save(log);
-                        
+
                         refServiceDao.delete(id);
                     }
                 }
@@ -322,10 +334,10 @@ public class RefServiceController {
         }
         return JSON.toJSONString(map);
     }
-    
+
 
     /**
-     * 
+     *
      * Description:
      * 创建Servie方式 引入外部服务
      * @param map Map
@@ -339,17 +351,17 @@ public class RefServiceController {
         Endpoints k8sEndpoints = null;
         try {
             k8sService = client.getService(refService.getSerName());
-        } 
+        }
         catch (KubernetesClientException e) {
             k8sService = null;
         }
-        
+
         try {
             com.bonc.epm.paas.kubernetes.model.Service k8sServiceTmp = kubernetesClientService.generateRefService(refService.getSerName(),refService.getRefPort());
             if (k8sService == null) {
                 k8sService = client.createService(k8sServiceTmp);
-            } 
-            else { 
+            }
+            else {
                 try {
                     client.deleteService(refService.getSerName());
                     k8sService = client.createService(k8sServiceTmp);
@@ -357,9 +369,9 @@ public class RefServiceController {
                     e.printStackTrace();
                     e.getMessage();
                 }
-                
+
             }
-            
+
             Endpoints k8sEndpointsTmp = kubernetesClientService.generateEndpoints(refService.getSerName(),refService.getRefAddress(),refService.getRefPort(),refService.getUseProxy());
             if (null == k8sEndpoints) {
                 k8sEndpoints = client.createEndpoints(k8sEndpointsTmp);

@@ -292,7 +292,7 @@ public class ServiceController {
 			pageRequest = ResultPager.buildPageRequest(start / length + 1, length);
 		}
 		//判断是否是admin
-		if (!CurrentUserUtils.getInstance().getUser().equals(UserConstant.AUTORITY_MANAGER)) {
+		if (!CurrentUserUtils.getInstance().getUser().getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
 			// 判断是否需要搜索服务
 			if (StringUtils.isEmpty(search)) {
 				services = serviceDao.findByCreateBy(userId, pageRequest);
