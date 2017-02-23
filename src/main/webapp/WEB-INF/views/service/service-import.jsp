@@ -46,6 +46,7 @@
 									</div>
 								</div>
 								<div class="ibox-content">
+								<input type="hidden" value="${cur_user.user_autority}" id="creatorNameValue">
 								<input hidden="ture" value="${namespace}" name="namespace" id="namespace"   />
 									<table class="table table-striped table-hover dataTables-example">
 										<thead>
@@ -56,9 +57,16 @@
 												<th style="width: 18%; padding-left: 5px;">服务名称</th>
 												<th style="width: 20%; text-indent: 8px;">服务访问地址</th>
 												<th style="width: 20%;">外部服务地址</th>
-										    <th style="width: 20%;">代理路径</th>
+										    	<th style="width: 20%;">代理路径</th>
 												<th style="width: 14%;">可见域</th>
-												<th style="width: 10%;" class="del-operation">操作</th>
+												<c:if test="${cur_user.user_autority == 1}">
+													<th style="width: 10%;" class="del-operation">创建人</th>
+												</c:if>
+												<c:if test="${cur_user.user_autority != 1}">
+													<th style="width: 10%;" class="del-operation">操作</th>
+												</c:if>
+												
+												
 											</tr>
 										</thead>
 										<tbody id="importSerList">

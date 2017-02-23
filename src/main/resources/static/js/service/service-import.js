@@ -154,6 +154,7 @@
  	var tr="";
  	var context =$('#importSerList');
  	context.empty();
+ 	var creatorNameValue = $("#creatorNameValue").val();
  	$.ajax({
          type: "GET",
          url: ctx + "/refservice/list.do",
@@ -178,9 +179,14 @@
 			     		}else{
 			     			tr+='<td style="width: 10%;">仅本租户可见</td>';
 			     		}
-			     		tr+='<td style="width: 14%;">'+
-					     		'<a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash"></i></a></td>'+
-					     	'</tr>';
+			     		if(creatorNameValue == 1){
+			     			tr+='<td style="width: 14%;">'+refservice.creatorName+'</tr>';
+			     		}else{
+			     			tr+='<td style="width: 14%;">'+
+				     		'<a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash"></i></a></td>'+
+				     	'</tr>';
+			     		}
+			     		
          	}
             $("#importSerList").append(tr);
             showDataTable();
