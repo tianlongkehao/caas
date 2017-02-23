@@ -1,5 +1,5 @@
  $(document).ready(function () {
-	 
+	
 	$(document).on('click','.no-drop',function(){
 		  return false;
 		});
@@ -150,6 +150,7 @@
     return true;
  }
  //展示列表
+ 
  function  creatable(){
  	var tr="";
  	var context =$('#importSerList');
@@ -247,46 +248,57 @@
 	 }else{
 		 $("#useProxyFlag option[value=1]").attr("selected", true); 
 	 }
-	 
-	 layer.open({
-		 	type: 1,
-	        title: '修改外部引入服务',
-	        content: $("#import-service"),
-	        area: ['600px'],
-	        btn: ['修改', '取消'],
-	        yes: function(index, layero){
-	        	 var importSerName = $("#import-ser-name").val();
-	        	 var importSerIn = "default";
-	        	 var importSerOut = $("#import-ser-out").val();
-	        	 var importSerOutPort = $("#import-ser-out-port").val();
-	        	 var importSerVis = $("#import-ser-visibility").val();
-	        	 var importSerMode = $("#import-ser-mode").val();
-	        	 var importSerDesc =$("#import-ser-desc").val();
-	        	 var useNginx =$("#useProxyFlag").val();
-		       	 if(!checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort,importSerVis,importSerMode,importSerDesc)){
-		       		 return;
-		       	 }
-	             layer.close(index);
-	             $.ajax({
-		         		url : ctx + "/refservice/edit.do",
-		         		type: "POST",
-		         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
-		         			,"refAddress":importSerOut,"viDomain":importSerVis
-		         			,"refPort":importSerOutPort,"importSerMode":importSerMode,"refSerDesc":importSerDesc,"useNginx":useNginx},
-		         		success: function(data) {
-		         			var data = eval("("+data+")");
-		                 	if (data.status == 200) {
-		                 		layer.msg("修改外部服务参数成功！",{icon: 6});
-		                 		creatable();
-		                 	} 
-		                 	else {
-		                 		layer.alert("修改外部服务参数失败！请检查服务器连接");
-		                 	}
-		         		}
-		         	}); 
+	 var creatorNameValue = $("#creatorNameValue").val();
+	 if(creatorNameValue == 1){
+		 layer.open({
+			 	type: 1,
+		        title: '修改外部引入服务',
+		        content: $("#import-service"),
+		        area: ['600px'],
+		        btn: false,
+		 })
+	 }else{
+		 layer.open({
+			 	type: 1,
+		        title: '修改外部引入服务',
+		        content: $("#import-service"),
+		        area: ['600px'],
+		        btn: ['修改', '取消'],
+		        yes: function(index, layero){
+		        	 var importSerName = $("#import-ser-name").val();
+		        	 var importSerIn = "default";
+		        	 var importSerOut = $("#import-ser-out").val();
+		        	 var importSerOutPort = $("#import-ser-out-port").val();
+		        	 var importSerVis = $("#import-ser-visibility").val();
+		        	 var importSerMode = $("#import-ser-mode").val();
+		        	 var importSerDesc =$("#import-ser-desc").val();
+		        	 var useNginx =$("#useProxyFlag").val();
+			       	 if(!checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort,importSerVis,importSerMode,importSerDesc)){
+			       		 return;
+			       	 }
+		             layer.close(index);
+		             $.ajax({
+			         		url : ctx + "/refservice/edit.do",
+			         		type: "POST",
+			         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
+			         			,"refAddress":importSerOut,"viDomain":importSerVis
+			         			,"refPort":importSerOutPort,"importSerMode":importSerMode,"refSerDesc":importSerDesc,"useNginx":useNginx},
+			         		success: function(data) {
+			         			var data = eval("("+data+")");
+			                 	if (data.status == 200) {
+			                 		layer.msg("修改外部服务参数成功！",{icon: 6});
+			                 		creatable();
+			                 	} 
+			                 	else {
+			                 		layer.alert("修改外部服务参数失败！请检查服务器连接");
+			                 	}
+			         		}
+			         	}); 
 
-	        }
-	 })
+		        }
+		 })
+	 }
+	 
  }
  
  //批量删除
