@@ -43,6 +43,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
@@ -250,7 +251,7 @@ public class ServiceController {
 	public String containerLists(Model model,String userName) {
 		// 获取特殊条件的pods
 		try {
-			if (CurrentUserUtils.getInstance().getUser().getId() != 1) {
+			if (!CurrentUserUtils.getInstance().getUser().getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
 				getleftResource(model);
 			}
 		} catch (KubernetesClientException e) {
@@ -291,7 +292,7 @@ public class ServiceController {
 			pageRequest = ResultPager.buildPageRequest(start / length + 1, length);
 		}
 		//判断是否是admin
-		if (userId != 1) {
+		if (!CurrentUserUtils.getInstance().getUser().equals(UserConstant.AUTORITY_MANAGER)) {
 			// 判断是否需要搜索服务
 			if (StringUtils.isEmpty(search)) {
 				services = serviceDao.findByCreateBy(userId, pageRequest);
@@ -2780,7 +2781,7 @@ public class ServiceController {
 			String searchImage, String searchCreatorName) throws IOException {
 		long createBy = CurrentUserUtils.getInstance().getUser().getId();
 		List<Service> serviceList = new ArrayList<>();
-		if (createBy == 1) {
+		if (CurrentUserUtils.getInstance().getUser().getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
 			// admin用户显示一览界面
 			serviceList = serviceDao.search("%" + (searchService != null ? searchService : "") + "%",
 					"%" + (searchImage != null ? searchImage : "") + "%",

@@ -174,7 +174,7 @@ public class IndexController {
 
 		try {
 			User user = userDao.findOne(id);
-			if (!("1".equals(user.getUser_autority()))) {
+			if (!(UserConstant.AUTORITY_MANAGER.equals(user.getUser_autority()))) {
 				// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
 				KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
 				Namespace ns = client.getNamespace(user.getNamespace());
