@@ -295,8 +295,9 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      * @exception Exception
      */
     private void createQuota(User user,UserResource userResource,String tenantId, String namespace) throws Exception{
-        String openCpu = "0";
-        String openMem = "0";
+        double openCpu = 0;
+        long openMem = 0;
+        long volSize = 0;
         try {
             Map<String, Object> params = new HashMap<String, Object>();
             Map<String, Object> data = new HashMap<String, Object>();
@@ -305,6 +306,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             params.put("param", data);
             String rtnStr = WebClientUtil.doGet(resManUrl, params);
             // 解析返回资源数据
+//            rtnStr = "{\"data\":[{\"total\":\"4\",\"image_name\":\"7579\",\"resource_type_desc\":\"支持应用发布的Docker容器\",\"data\":[{\"memo\":null,\"resource_code\":\"RES-Docker-14933\",\"tenant_id\":\"unicom_zb\",\"property\":[{\"unit\":\"核\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"CPU\",\"prop_value\":\"10\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7678,\"ord\":1,\"property_code\":\"CPU\"},{\"unit\":\"G\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"内存\",\"prop_value\":\"40\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7850,\"ord\":2,\"property_code\":\"Memory\"},{\"unit\":\"GB\",\"ext1\":null,\"ext2\":\"2\",\"property_name\":\"存储\",\"prop_value\":\"20\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":14664,\"ord\":3,\"property_code\":\"Storage\"}],\"feedback\":null,\"resource_id\":14933,\"resource_name\":\"容器服务-14933\",\"create_time\":\"2016-10-1118:25:48\",\"value_type_id\":[{\"unit\":\"核\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"CPU\",\"prop_value\":\"10\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7678,\"ord\":1,\"property_code\":\"CPU\"},{\"unit\":\"G\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"内存\",\"prop_value\":\"40\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7850,\"ord\":2,\"property_code\":\"Memory\"},{\"unit\":\"GB\",\"ext1\":null,\"ext2\":\"2\",\"property_name\":\"存储\",\"prop_value\":\"20\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":14664,\"ord\":3,\"property_code\":\"Storage\"}],\"resource_type_id\":7536,\"resource_uri\":null,\"user_id\":\"admin\",\"off_lease\":false,\"property_code\":\"CPU\"},{\"memo\":null,\"resource_code\":\"RES-Docker-14905\",\"tenant_id\":\"unicom_zb\",\"property\":[{\"unit\":\"核\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"CPU\",\"prop_value\":\"10\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7678,\"ord\":1,\"property_code\":\"CPU\"},{\"unit\":\"G\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"内存\",\"prop_value\":\"40\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7850,\"ord\":2,\"property_code\":\"Memory\"},{\"unit\":\"GB\",\"ext1\":null,\"ext2\":\"2\",\"property_name\":\"存储\",\"prop_value\":\"10\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":14664,\"ord\":3,\"property_code\":\"Storage\"}],\"feedback\":null,\"resource_id\":14905,\"resource_name\":\"容器服务-14905\",\"create_time\":\"2016-10-1118:08:54\",\"value_type_id\":[{\"unit\":\"核\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"CPU\",\"prop_value\":\"10\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7678,\"ord\":1,\"property_code\":\"CPU\"},{\"unit\":\"G\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"内存\",\"prop_value\":\"40\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7850,\"ord\":2,\"property_code\":\"Memory\"},{\"unit\":\"GB\",\"ext1\":null,\"ext2\":\"2\",\"property_name\":\"存储\",\"prop_value\":\"10\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":14664,\"ord\":3,\"property_code\":\"Storage\"}],\"resource_type_id\":7536,\"resource_uri\":null,\"user_id\":\"uni000\",\"off_lease\":false,\"property_code\":\"CPU\"},{\"memo\":\"总部租户申请docker\",\"resource_code\":\"RES-Docker-7974\",\"tenant_id\":\"unicom_zb\",\"property\":[{\"unit\":\"核\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"CPU\",\"prop_value\":\"10\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7678,\"ord\":1,\"property_code\":\"CPU\"},{\"unit\":\"G\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"内存\",\"prop_value\":\"100\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7850,\"ord\":2,\"property_code\":\"Memory\"},{\"unit\":\"GB\",\"ext1\":null,\"ext2\":\"2\",\"property_name\":\"存储\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"ord\":3,\"prop_id\":14664}],\"feedback\":null,\"resource_id\":7974,\"resource_name\":\"容器服务-7974\",\"create_time\":\"2016-05-2319:01:05\",\"value_type_id\":[{\"unit\":\"核\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"CPU\",\"prop_value\":\"10\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7678,\"ord\":1,\"property_code\":\"CPU\"},{\"unit\":\"G\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"内存\",\"prop_value\":\"100\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7850,\"ord\":2,\"property_code\":\"Memory\"},{\"unit\":\"GB\",\"ext1\":null,\"ext2\":\"2\",\"property_name\":\"存储\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"ord\":3,\"prop_id\":14664}],\"resource_type_id\":7536,\"resource_uri\":null,\"user_id\":\"uni000\",\"off_lease\":false,\"property_code\":\"CPU\"},{\"memo\":null,\"resource_code\":\"RES-Docker-7938\",\"tenant_id\":\"unicom_zb\",\"property\":[{\"unit\":\"核\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"CPU\",\"prop_value\":\"2\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7678,\"ord\":1,\"property_code\":\"CPU\"},{\"unit\":\"G\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"内存\",\"prop_value\":\"2\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7850,\"ord\":2,\"property_code\":\"Memory\"},{\"unit\":\"GB\",\"ext1\":null,\"ext2\":\"2\",\"property_name\":\"存储\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"ord\":3,\"prop_id\":14664}],\"feedback\":null,\"resource_id\":7938,\"resource_name\":\"容器服务-7938\",\"create_time\":\"2016-05-2313:42:31\",\"value_type_id\":[{\"unit\":\"核\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"CPU\",\"prop_value\":\"2\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7678,\"ord\":1,\"property_code\":\"CPU\"},{\"unit\":\"G\",\"ext1\":null,\"ext2\":\"1,2\",\"property_name\":\"内存\",\"prop_value\":\"2\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"prop_id\":7850,\"ord\":2,\"property_code\":\"Memory\"},{\"unit\":\"GB\",\"ext1\":null,\"ext2\":\"2\",\"property_name\":\"存储\",\"ext3\":\"0\",\"type_name\":\"输入框\",\"value_type_id\":2,\"ord\":3,\"prop_id\":14664}],\"resource_type_id\":7536,\"resource_uri\":null,\"user_id\":\"uni000\",\"off_lease\":false,\"property_code\":\"CPU\"}],\"resource_type_id\":\"7536\",\"ord\":8,\"resource_multi_assigned\":null,\"resource_type_info\":\"容器是PaaS平台的典型应用，它通过Docker引擎实现的基于应用程序的快速部署，整合了负载均衡SLB，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的Linux机器上，也可以实现虚拟化。\",\"is_app\":true,\"resource_type_name\":\"容器服务\",\"type_code\":\"Docker\"}],\"message\":\"\",\"messageDetail\":\"\",\"success\":true,\"systemTime\":1487908772505,\"totalSize\":0}";
             if (StringUtils.isNotBlank(rtnStr)) {
                 JSONObject jsStr = JSONObject.parseObject(rtnStr);
                 if ((boolean)jsStr.get("success")) {
@@ -312,24 +314,27 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                 		JSONArray jsArrData = (JSONArray) jsStr.get("data");
                 		JSONObject jsObj = (JSONObject) jsArrData.get(0);
                 		JSONArray jsArrData2 = (JSONArray) jsObj.get("data");
-                		JSONObject jsObj2 = (JSONObject) jsArrData2.get(0);
-                		JSONArray jsPro = (JSONArray) jsObj2.get("property");
-                		if (jsPro != null && jsPro.size() > 0) { // 获取CPU、MEM和Volume的值
-                			for (Object oneRow : jsPro) {
-                				JSONObject tmp = (JSONObject) oneRow;
-                				if (((String)tmp.get("property_code")).trim().equals("CPU")) {
-                					openCpu = (String) tmp.get("prop_value");
-                				}
-                				else if (((String)tmp.get("property_code")).trim().equals("Memory")) {
-                					openMem = (String) tmp.get("prop_value");
-                				}
-                				else if (((String)tmp.get("property_code")).trim().equals("Storage")){
-                					userResource.setVol_size(Long.parseLong((String)tmp.get("prop_value")));
-                					if (userResource.getUserId() <= 0) {
-                						userResource.setVol_surplus_size(Long.parseLong((String)tmp.get("prop_value")));
-									}
+                		for (Object dataRow : jsArrData2){
+                			JSONObject jsObj2 = (JSONObject) dataRow;
+                			JSONArray jsPro = (JSONArray) jsObj2.get("property");
+                			if (jsPro != null && jsPro.size() > 0) { // 获取CPU、MEM和Volume的值
+                				for (Object oneRow : jsPro) {
+                					JSONObject tmp = (JSONObject) oneRow;
+                					if (((String)tmp.get("property_code")).trim().equals("CPU")) {
+                						openCpu += Double.parseDouble((String)tmp.get("prop_value"));
+                					}
+                					else if (((String)tmp.get("property_code")).trim().equals("Memory")) {
+                						openMem += Long.parseLong((String)tmp.get("prop_value"));
+                					}
+                					else if (((String)tmp.get("property_code")).trim().equals("Storage")){
+                						volSize += Long.parseLong((String)tmp.get("prop_value"));
+                					}
                 				}
                 			}
+                		}
+                		userResource.setVol_size(volSize);
+                		if (userResource.getUserId() <= 0) {
+                			userResource.setVol_surplus_size(userResource.getVol_size());
                 		}
                 		LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem +",volume:"+userResource.getVol_size()+"}");
                 		createResourceQuota(namespace, openCpu, openMem,userResource);
@@ -350,7 +355,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      * @param openCpu
      * @param openMem
      */
-    private void createResourceQuota(String namespace, String openCpu, String openMem,UserResource userResource) {
+    private void createResourceQuota(String namespace, double openCpu, long openMem,UserResource userResource) {
         // 是否创建resourceQuota
         boolean isCreate = false;
         // KUBERNETES是否可以连接
@@ -379,8 +384,8 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             openMap.put("cpu", Double.valueOf(openCpu)/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量(个)
             openMap.put("persistentvolumeclaims", userResource.getVol_size() + "");// 卷组数量
 
-            userResource.setCpu(Double.parseDouble(openCpu));
-            userResource.setMemory(Long.parseLong(openMem));
+            userResource.setCpu(openCpu);
+            userResource.setMemory(openMem);
             ResourceQuota openQuota = kubernetesClientService.generateSimpleResourceQuota(namespace, openMap);
             if (isCreate) { // 是否新建quota
                 openQuota = client.createResourceQuota(openQuota); // 创建quota
