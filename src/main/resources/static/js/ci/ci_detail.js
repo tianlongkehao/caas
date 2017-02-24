@@ -144,12 +144,14 @@ $(document).ready(function(){
     
     $("#dockerfilePath").click(function(){
     	$("#dockerfileMethod").empty();
+    	$(".dockerfileTools").addClass("hide");
     	$("#dockerfileMethod").append(dockerfilePathHtml);
     });
     
     $("#dockerfileTemp").click(function(){
     //$(document).on('click','#dockerfileTemp',function(){
     	$("#dockerfileMethod").empty();
+    	$(".dockerfileTools").removeClass("hide");
     	$("#dockerfileMethod").append(dockerfileTempHtml);
     	
     	editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFileContentEdit"), {
@@ -276,6 +278,7 @@ $(document).ready(function(){
 		layer.open({
 			type : 1,
 			title : '添加认证',
+			area: ['500px'],
 			content : $("#addCredentialsCon"),
 			btn : [ '添加', '取消' ],
 			scrollbar:false,

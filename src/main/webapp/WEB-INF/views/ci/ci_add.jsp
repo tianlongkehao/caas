@@ -177,7 +177,7 @@
 			                          </ul>
 		                            </li>
 		                        </ul>
-		                        <div id="dockerfileMethods">
+		                        <div id="dockerfileMethod-tools">
 		                        	<div class="row dockerfileTemp dockerfileTools hide">
 		                        		<div class="panel-group" id="accordion">
 											<div class="panel panel-default">
