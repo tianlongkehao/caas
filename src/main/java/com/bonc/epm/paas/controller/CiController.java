@@ -350,7 +350,10 @@ public class CiController {
                 CiCode ciCode = ciCodeDao.findByCiId(ci.getId());
                 //代码验证信息的查询和加载
                 Iterable<CiCodeCredential> ciCredentialList = ciCodeCredentialDao.findAll();
-                model.addAttribute("ciCode", ciCode);
+        		List<Object> toolGroups = getToolGroups();
+
+        		model.addAttribute("ciCode", ciCode);
+                model.addAttribute("toolGroups", toolGroups);
                 model.addAttribute("ciCredentialList", ciCredentialList);
                 model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
                 model.addAttribute("jdkList",jdkList.getItems());
@@ -703,6 +706,18 @@ public class CiController {
 			imageNameFirst = cuurentUser.getUserName();
 		}
 
+		List<Object> toolGroups = getToolGroups();
+
+		model.addAttribute("username", imageNameFirst);
+		model.addAttribute("toolGroups", toolGroups);
+		model.addAttribute("userAutority", cuurentUser.getUser_autority());
+		model.addAttribute("menu_flag", "ci");
+		model.addAttribute("li_flag", "ci");
+		return "ci/ci_add.jsp";
+	}
+
+
+	private List<Object> getToolGroups() {
 		List<CodeCiTool> allTools = codeCiToolDao.findAll();
 		List<Object> toolGroups = new ArrayList<>();
 		List<CodeCiTool> tools = new ArrayList<>();
@@ -726,13 +741,7 @@ public class CiController {
 				}
 			}
 		}
-
-		model.addAttribute("username", imageNameFirst);
-		model.addAttribute("toolGroups", toolGroups);
-		model.addAttribute("userAutority", cuurentUser.getUser_autority());
-		model.addAttribute("menu_flag", "ci");
-		model.addAttribute("li_flag", "ci");
-		return "ci/ci_add.jsp";
+		return toolGroups;
 	}
 
     /**
