@@ -299,8 +299,8 @@
 					                        </ul>
 					                        <input type="hidden" id="ciLocation" value="${ci.dockerFileLocation}">
                                             <input type = "hidden" id = "ciMethod" value = '${dockerFileContent }'>
-                                            <div id="dockerfileMethods">
-					                        	<div class="row dockerfileTemp dockerfileTools">
+                                            <div id="dockerfileMethod-tools">
+					                        	<div class="row dockerfileTemp dockerfileTools hide">
 					                        		<div class="panel-group" id="accordion">
 														<div class="panel panel-default">
 															<div class="panel-heading">
@@ -495,7 +495,7 @@
                 </div>
 				<!-- 添加证书 -->
                 <div id="addCredentialsCon">
-                    <div style="width: 345px; margin: 5px 10px 5px 10px">
+                    <div style="margin: 15px 15px">
                         <div class="infoCred">
                             <span class="labelCred">仓库：</span> 
                             <select class="form-control conCred" id="codeType" name="codeType">
