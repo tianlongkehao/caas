@@ -5,9 +5,6 @@ import java.util.Map;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
@@ -31,8 +28,6 @@ import com.bonc.epm.paas.rest.util.RestFactory;
 import com.google.common.base.Joiner;
 
 public class KubernetesApiClient implements KubernetesAPIClientInterface {
-
-    private static final Log LOG = LogFactory.getLog(KubernetesApiClient.class);
 
     private String endpointURI;
     private KubernetesAPI api;
@@ -231,30 +226,30 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	}
 
 	public String getPodLog(String name,String container, Boolean previous,
-			Boolean timestamps, Integer tailLines) throws KubernetesClientException {
+			Boolean timestamps, Integer tailLines, Integer limitBytes) throws KubernetesClientException {
 		try {
 			return api.getPodLog(namespace, name, container,
-					previous, timestamps, tailLines);
+					previous, timestamps, tailLines, limitBytes);
 		} catch (WebApplicationException e) {
 			throw new KubernetesClientException(e);
 		}
 	}
 
 	public String getPodLog(String name,String container, Boolean previous,
-			Boolean timestamps) throws KubernetesClientException {
+			Boolean timestamps, Integer limitBytes) throws KubernetesClientException {
 		try {
 			return api.getPodLog(namespace, name, container,
-					previous, timestamps);
+					previous, timestamps, limitBytes);
 		} catch (WebApplicationException e) {
 			throw new KubernetesClientException(e);
 		}
 	}
 
 	public String getPodLog(String name,String container, Boolean previous,
-			String sinceTime, Boolean timestamps) throws KubernetesClientException {
+			String sinceTime, Boolean timestamps, Integer limitBytes) throws KubernetesClientException {
 		try {
 			return api.getPodLog(namespace, name, container,
-					previous, sinceTime, timestamps);
+					previous, sinceTime, timestamps, limitBytes);
 		} catch (WebApplicationException e) {
 			throw new KubernetesClientException(e);
 		}

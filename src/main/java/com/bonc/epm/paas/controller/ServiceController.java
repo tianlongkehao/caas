@@ -2394,7 +2394,7 @@ public class ServiceController {
         Map<String, Object> datamap = new HashMap<String, Object>();
 
         try {
-        	logStr = client.getPodLog(podName, container, false, false, 5000);
+        	logStr = client.getPodLog(podName, container, false, false, 5000, 1048576);
         	logStr = logStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
             datamap.put("logStr", logStr);
@@ -2501,7 +2501,7 @@ public class ServiceController {
         	calendar.setTime(simpleDateFormat.parse(sinceTime));
         	calendar.add(Calendar.MINUTE, -3);
         	String sinceTime3 = simpleDateFormat.format(calendar.getTime());
-        	logStr = client.getPodLog(podName, container, false, sinceTime3, false);
+        	logStr = client.getPodLog(podName, container, false, sinceTime3, false, 1048576);
         	logStr = logStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
             datamap.put("logStr", logStr);
@@ -2533,7 +2533,7 @@ public class ServiceController {
             OutputStreamWriter writer = new OutputStreamWriter(outputStream);
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
             String logStr = "";
-            logStr = client.getPodLog(podName, container, false, false);
+            logStr = client.getPodLog(podName, container, false, false, 30000, 10485760);
             writer.write(logStr);
             writer.flush();
             outputStream.flush();
