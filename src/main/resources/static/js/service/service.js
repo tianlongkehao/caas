@@ -375,6 +375,8 @@ function versionUpgrade() {
 								} else if (data.status == "500") {
 									$('#myModal').modal('hide');
 									layer.alert("请选择需要升级的版本号！");
+								} else if(data.status == "201"){
+
 								} else {
 									$('#myModal').modal('hide');
 									layer.alert("请检查配置服务！");
@@ -579,15 +581,17 @@ function oneVersionUpgrade(id,serviceName,imgName,obj) {
 					 success:function(data){
 	 						data = eval("(" + data + ")");
 	 						if(data.status=="200"){
-	 							//layer.alert("升级完成");
+	 							window.location.reload();
 	 						}else if(data.status=="500"){
-	 							 //$('#myModal').modal('hide');
-	 							layer.alert("请选择需要升级的版本号！");
+	 							layer.alert("请选择需要升级的版本号！",function(){
+	 								window.location.reload();
+	 							});
+	 						}else if(data.status=="201"){
 	 						}else{
-	 							 //$('#myModal').modal('hide');
-	 							layer.alert("请检查配置服务！");
+	 							layer.alert("请检查配置服务！",function(){
+	 								window.location.reload();
+	 							});
 	 						}
-	 						window.location.reload();
 	 					}
 				 });
 			 },
