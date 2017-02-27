@@ -156,15 +156,6 @@
 				</c:if>
 
                 <c:if test="${cas_enable}">
-                    <c:if test="${cur_user.user_autority == 1}">
-                        <li id="menu_user"><a href="#" class="first-a"> 
-                        	<i class="fa-nav fa-nav-user"></i>
-                        	<span class="nav-label">租户管理</span>
-                        </a>
-                            <ul class="nav nav-second-level">
-                                <li id="li_user"><a class="J_menuItem" href="<%=path %>/user/list"><i class="fa fa_circle"></i>租户管理</a></li>
-                            </ul></li>
-                    </c:if>
                     <c:if test="${cur_user.user_autority == 2}">
                         <li id="menu_usermanage"><a href="#"> 
                         	<i class="fa-nav fa-nav-usermanage"></i>
