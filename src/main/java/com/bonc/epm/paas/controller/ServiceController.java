@@ -1516,11 +1516,11 @@ public class ServiceController {
      * @param imgName 镜像名称
      * @return String
      */
-    @RequestMapping("service/cancelUpdate.do")
+	@RequestMapping("service/cancelUpdate.do")
 	@ResponseBody
 	public String cancelUpdate(long id, String serviceName) {
-    	Map<String, Object> map = new HashMap<String, Object>();
-    	Service service = serviceDao.findOne(id);
+		Map<String, Object> map = new HashMap<String, Object>();
+		Service service = serviceDao.findOne(id);
 		// 保存服务信息
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_CANCELING_UPDATE);
 		Date currentDate = new Date();
@@ -1529,56 +1529,84 @@ public class ServiceController {
 		service.setUpdateBy(currentUser.getId());
 		serviceDao.save(service);
 
-        try {
-        	KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		try {
+			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
-	        ReplicationController originalController = client.getReplicationController(serviceName);
-			// 设置annotations
-	        if (StringUtils.isNotBlank(originalController.getSpec().getSelector().get("deployment"))) {
-	        	originalController.getSpec().setReplicas(service.getInstanceNum());
-	        	originalController.getSpec().getSelector().remove("deployment");
-	        	originalController.getSpec().getTemplate().getMetadata().getLabels().remove("deployment");
-//	        	originalController = client.updateReplicationController(serviceName, originalController);
-	        }
-//	        originalController = client.getReplicationController(serviceName);
-	        originalController.getMetadata().getAnnotations().remove("kubectl.kubernetes.io/original-replicas");
-	        originalController = client.updateReplicationController(serviceName, originalController);
-	        LOG.info("update originalController.  remove original-replicas.");
+			ReplicationController originalController = null;
+			try {
+				originalController = client.getReplicationController(serviceName);
+			} catch (Exception e) {
+				LOG.info(e.getMessage());
+				originalController = null;
+			}
+			if (originalController != null) {
+				// 判断是升级后的版本的rc则删除该rc
+				if (!originalController.getSpec().getTemplate().getSpec().getContainers().get(0).getImage().equals(
+						dockerClientService.generateRegistryImageName(service.getImgName(), service.getImgVersion()))) {
+					originalController = client.updateReplicationController(serviceName, 0);
+					client.deleteReplicationController(serviceName);
+				}
+				// 设置annotations
+				if (StringUtils.isNotBlank(originalController.getSpec().getSelector().get("deployment"))) {
+					originalController.getSpec().setReplicas(service.getInstanceNum());
+					originalController.getSpec().getSelector().remove("deployment");
+					originalController.getSpec().getTemplate().getMetadata().getLabels().remove("deployment");
+				}
+				if (originalController.getMetadata().getAnnotations()
+						.containsKey("kubectl.kubernetes.io/original-replicas")) {
+					originalController.getMetadata().getAnnotations().remove("kubectl.kubernetes.io/original-replicas");
+				}
+				originalController = client.updateReplicationController(serviceName, originalController);
+				LOG.info("update originalController.");
+			}
 
-	        //删除新的rc
-	        String nextControllerName = service.getTempName();
-	        if (StringUtils.isNotBlank(nextControllerName)) {
-	        	ReplicationController nextController;
-	        	try {
+			// 删除新的rc
+			String nextControllerName = service.getTempName();
+			if (StringUtils.isNotBlank(nextControllerName)) {
+				ReplicationController nextController;
+				try {
 					nextController = client.getReplicationController(nextControllerName);
 				} catch (Exception e) {
 					LOG.info(e.getMessage());
 					nextController = null;
 				}
-	        	if (nextController != null) {
-	        		nextController = client.updateReplicationController(nextControllerName, 0);
+				if (nextController != null) {
+					nextController = client.updateReplicationController(nextControllerName, 0);
 					client.deleteReplicationController(nextControllerName);
 				}
 			}
 
-	        //删除annotations
-	        try {
+			// 删除annotations
+			try {
 				originalController = client.getReplicationController(serviceName);
 				originalController.getMetadata().getAnnotations().remove("kubectl.kubernetes.io/next-controller-id");
 				client.updateReplicationController(serviceName, originalController);
-				LOG.info("update originalController.  remove next-controller-id:-"+nextControllerName);
+				LOG.info("update originalController.  remove next-controller-id:-" + nextControllerName);
 			} catch (Exception e) {
-                if (!CreateContainer(id, false).contains("200")) {
-                	map.put("status", "400");
-				};
+				if (!CreateContainer(id, false).contains("200")) {
+					map.put("status", "400");
+					return JSON.toJSONString(map);
+				}
+				;
+				originalController = client.getReplicationController(serviceName);
 			}
 
-        } catch (KubernetesClientException e) {
-            map.put("status", "400");
-            map.put("msg", e.getStatus().getMessage());
-            LOG.error("del service error:" + e.getStatus().getMessage());
-    		return JSON.toJSONString(map);
-        }
+			// 更新SVC的lable Selector
+			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
+			if (!originalController.getSpec().getSelector().get("app")
+					.equals(k8sService.getSpec().getSelector().get("app"))) {
+				Map<String, String> lableMap = new HashMap<String, String>();
+				lableMap.put("app", originalController.getSpec().getSelector().get("app"));
+				k8sService.getSpec().setSelector(lableMap);
+				client.updateService(serviceName, k8sService);
+			}
+
+		} catch (KubernetesClientException e) {
+			map.put("status", "400");
+			map.put("msg", e.getStatus().getMessage());
+			LOG.error("del service error:" + e.getStatus().getMessage());
+			return JSON.toJSONString(map);
+		}
 
 		// 保存服务信息
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_RUNNING);

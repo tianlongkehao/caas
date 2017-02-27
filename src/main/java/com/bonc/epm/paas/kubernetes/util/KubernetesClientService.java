@@ -9,8 +9,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -46,14 +44,9 @@ import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.github.dockerjava.api.model.Ports;
-
-import io.netty.util.internal.StringUtil;
 
 @org.springframework.stereotype.Service
 public class KubernetesClientService {
-
-	private static final Log log = LogFactory.getLog(KubernetesClientService.class);
 
 	@Value("${kubernetes.api.endpoint}")
 	private String endpoint;
