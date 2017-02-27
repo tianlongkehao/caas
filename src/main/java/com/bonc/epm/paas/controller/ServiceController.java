@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.hibernate.annotations.Check;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1563,10 +1562,16 @@ public class ServiceController {
 			}
 
 	        //删除annotations
-	        originalController = client.getReplicationController(serviceName);
-	        originalController.getMetadata().getAnnotations().remove("kubectl.kubernetes.io/next-controller-id");
-	        client.updateReplicationController(serviceName, originalController);
-	        LOG.info("update originalController.  remove next-controller-id:-"+nextControllerName);
+	        try {
+				originalController = client.getReplicationController(serviceName);
+				originalController.getMetadata().getAnnotations().remove("kubectl.kubernetes.io/next-controller-id");
+				client.updateReplicationController(serviceName, originalController);
+				LOG.info("update originalController.  remove next-controller-id:-"+nextControllerName);
+			} catch (Exception e) {
+                if (!CreateContainer(id, false).contains("200")) {
+                	map.put("status", "400");
+				};
+			}
 
         } catch (KubernetesClientException e) {
             map.put("status", "400");
