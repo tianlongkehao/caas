@@ -167,8 +167,10 @@ public class UserInfo {
 		return Double.parseDouble(servMemoryNum) - usedMemoryNum;
 	}
 	public double getRestStorage() {
-		return userResource.getVol_size()-usedStorage;
+		try {
+			return userResource.getVol_size()-usedStorage;
+		} catch (Exception e) {
+			return 0;
+		}
 	}
-
-	
 }
