@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.hibernate.annotations.Check;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1387,13 +1388,25 @@ public class ServiceController {
     			ReplicationController originalController = client.getReplicationController(serviceName);
 
     			// 设置annotations
+    			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+    				map.put("status", "201");
+    				return JSON.toJSONString(map);
+				}
     			ReplicationController updateOriginalController = firstSetAnnotation(serviceName, nextControllerName,
     					client, originalController);
 
     			// 生成新镜像版本的RC
+    			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+    				map.put("status", "201");
+    				return JSON.toJSONString(map);
+				}
     			createNextRc(random, nextControllerName, image, client, originalController);
 
     			// 设置annotations
+    			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+    				map.put("status", "201");
+    				return JSON.toJSONString(map);
+				}
     			boolean isSetDeploy = false;
     			if (StringUtils.isBlank(updateOriginalController.getSpec().getSelector().get("deployment"))) {
     				isSetDeploy = true;
@@ -1402,18 +1415,34 @@ public class ServiceController {
     			updateOriginalController = secondSetAnnotation(serviceName, client, isSetDeploy);
 
     			// 滚动升级
+    			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+    				map.put("status", "201");
+    				return JSON.toJSONString(map);
+				}
     			boolean result = rollingUpdate(id, serviceName, nextControllerName, client, updateOriginalController, isSetDeploy);
     			if (result != true) {
 					return null;
 				}
     			// 删除旧RC
+    			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+    				map.put("status", "201");
+    				return JSON.toJSONString(map);
+				}
     			client.deleteReplicationController(serviceName);
     			LOG.info("Deleting old controller:" + serviceName);
 
     			// 将新RC的名字重命名为旧RC名字
+    			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+    				map.put("status", "201");
+    				return JSON.toJSONString(map);
+				}
     			renameNewRc(serviceName, nextControllerName, client);
 
     			// 更新SVC的lable Selector
+    			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+    				map.put("status", "201");
+    				return JSON.toJSONString(map);
+				}
     			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
     			Map<String, String> lableMap = new HashMap<String, String>();
     			lableMap.put("app", nextControllerName);
@@ -1421,6 +1450,10 @@ public class ServiceController {
     			client.updateService(serviceName, k8sService);
 
     			// 保存服务信息
+    			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+    				map.put("status", "201");
+    				return JSON.toJSONString(map);
+				}
     			service.setImgVersion(imgVersion);
     			Image image2 = imageDao.findByNameAndVersion(service.getImgName(), imgVersion);
     			service.setImgID(image2.getId());
@@ -1487,8 +1520,16 @@ public class ServiceController {
     @RequestMapping("service/cancelUpdate.do")
 	@ResponseBody
 	public String cancelUpdate(long id, String serviceName) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		Service service = serviceDao.findOne(id);
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	Service service = serviceDao.findOne(id);
+		// 保存服务信息
+		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_CANCELING_UPDATE);
+		Date currentDate = new Date();
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		service.setUpdateDate(currentDate);
+		service.setUpdateBy(currentUser.getId());
+		serviceDao.save(service);
+
         try {
         	KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
@@ -1536,8 +1577,7 @@ public class ServiceController {
 
 		// 保存服务信息
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_RUNNING);
-		Date currentDate = new Date();
-		User currentUser = CurrentUserUtils.getInstance().getUser();
+		currentDate = new Date();
 		service.setTempName("");
 		service.setUpdateDate(currentDate);
 		service.setUpdateBy(currentUser.getId());
@@ -1597,10 +1637,16 @@ public class ServiceController {
         for (int i=1, j=replicas-1;i<=replicas && j>=0;i++,j--) {
             LOG.info("Scaling up "+nextControllerName+" from "+(i-1)+" to "+i+";scaling down "+serviceName+" from "+(j+1)+" to "+j);
             // newRc ++
+			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+				return true;
+			}
             nextController = client.updateReplicationController(nextControllerName, i);
             boolean podStatus = true;
             PodList podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
             while (podStatus) {
+    			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+    				return true;
+				}
             	try {
             		client.getReplicationController(nextControllerName);
 				} catch (Exception e) {
@@ -1640,15 +1686,24 @@ public class ServiceController {
                 }
             }
             // oldRc --
+			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+				return true;
+			}
             updateOriginalController = client.getReplicationController(serviceName);
             if (isSetDeploy) { // 首次执行升级
                 updateOriginalController.getSpec().getSelector().remove("deployment");
                 updateOriginalController.getSpec().getTemplate().getMetadata().getLabels().remove("deployment");
             }
 
+			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+				return true;
+			}
             updateOriginalController.getSpec().setReplicas(j);
             updateOriginalController = client.updateReplicationController(serviceName, updateOriginalController);
             while (!(client.getLabelSelectorPods(updateOriginalController.getSpec().getSelector()).size() == j)) {
+    			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+    				return true;
+				}
                 continue;
             }
            LOG.info("Scaling "+nextControllerName+" up to "+i+" and scaling "+serviceName+" down to " +j +" Update succeeded.");

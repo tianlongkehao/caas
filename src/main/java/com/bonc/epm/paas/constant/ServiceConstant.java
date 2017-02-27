@@ -39,7 +39,11 @@ public class ServiceConstant {
      * 容器状态升级中
      */
     public static final Integer CONSTRUCTION_STATUS_UPDATE = 7;
-	
+    /**
+     * 容器状态取消升级中
+     */
+    public static final Integer CONSTRUCTION_STATUS_CANCELING_UPDATE = 8;
+
     /**
      * 默认检测延迟
      */
@@ -65,8 +69,8 @@ public class ServiceConstant {
     public static final Integer OPERATION_TYPE_CONFIGURE     = 80;  //更改配置
     public static final Integer OPERATION_TYPE_DELETE        = 90;  //删除
     public static final Integer OPERATION_TYPE_CANCELUPDATE  = 100; //取消升级
-    
-    
+
+
 	public static Map<Integer, String> OPERATION_TYPE_MAP;
 	static {
 		OPERATION_TYPE_MAP = new HashMap<Integer, String>();
@@ -82,9 +86,9 @@ public class ServiceConstant {
 		OPERATION_TYPE_MAP.put(OPERATION_TYPE_CANCELUPDATE, "取消升级");
 	}
 
-    
-    
-    
+
+
+
     /**
      * 监控设置
      */
