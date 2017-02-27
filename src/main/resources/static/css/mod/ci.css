@@ -751,8 +751,12 @@ td.autocut{
 .dftools li label input{
 	margin-right:4px;
 }
-
-
+.warningInfo{
+	color:#e8504f;
+}
+.warningInfo .fa-warning{
+	margin-right:6px;
+}
 
 
 

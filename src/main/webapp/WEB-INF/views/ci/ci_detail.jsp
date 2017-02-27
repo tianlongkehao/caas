@@ -322,6 +322,7 @@
 																				</ul>
 																			</div> 
 																		</c:forEach>
+																	<div class="toolItems warningInfo"><i class="fa fa-warning"></i><span>重新勾选工具集，将改变dockerfile内容，请谨慎操作！</span></div>
 																</div>
 															</div>
 														</div>

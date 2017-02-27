@@ -360,6 +360,33 @@ $(document).ready(function(){
 	$("#imageInfo").click(function(){
 		$(".imageInfoCon").toggle();
 	})
+	//工具集同组单选
+	$(".toolChk").click(function(){
+		var checkedName = $(this).attr("name");
+		var checkedName = "'"+checkedName+"'";
+		var ccc = '.toolChk[name= '+checkedName+']';
+		var sameNameCount = $(ccc).length;
+		
+		if($(this).is(":checked")){
+			var allToolCode = "";
+			var editorVal = editor_one.getValue();
+			var toolCode = $(this).attr("toolCode");
+			//勾选
+			for(var i=0; i< sameNameCount; i++){
+				  $(ccc).prop("checked",false);
+			}
+			$(this).prop('checked', true);
+		}
+		//勾选工具的执行语句添加到dockerfile中
+		editor_one.setValue('');
+		var checkedTool = $(".toolChk:checked");
+		var allToolCode = "";
+		for(var j=0; j < checkedTool.length; j++){
+			var checkedToolCode = checkedTool[j].attributes.toolcode.value;
+			allToolCode += checkedToolCode + "\n";
+		}
+		editor_one.setValue(allToolCode);
+	});
 });/*ready*/
 
 //停止一个构建执行
