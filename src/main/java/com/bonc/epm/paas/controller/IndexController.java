@@ -263,10 +263,12 @@ public class IndexController {
 			});
 
 			Iterator<Map.Entry<Date, String>> it = list_Data.iterator();
-			while (it.hasNext()) {
-				Entry<Date, String> a = it.next();
-				if (a.getKey().before(list_Data.get(3).getKey())) {
-					it.remove();
+			if (list_Data.size() > 4) {
+				while (it.hasNext()) {
+					Entry<Date, String> a = it.next();
+					if (a.getKey().before(list_Data.get(3).getKey())) {
+						it.remove();
+					}
 				}
 			}
 			System.out.println(list_Data);
@@ -297,6 +299,7 @@ public class IndexController {
      */
     private void getUserResourceInfo(Model model, User user, KubernetesAPIClientInterface client) {
         ResourceQuota quota = client.getResourceQuota(user.getNamespace());
+        model.addAttribute("user", user);
         if (null != quota) {
         	UserResource userResource = new UserResource();
         	if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
@@ -306,7 +309,6 @@ public class IndexController {
                 userResource = userResourceDao.findByUserId(user.getId());
             }
             model.addAttribute("userResource", userResource);
-            model.addAttribute("user", user);
 
             Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
 
@@ -630,6 +632,7 @@ public class IndexController {
 	private UserInfo getUserInfo(User user) {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
 		UserInfo userInfo = new UserInfo();
+		userInfo.setUser(user);
 		Namespace ns = client.getNamespace(user.getNamespace());
 		if (null == ns) {
 			LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
@@ -652,7 +655,6 @@ public class IndexController {
 				userResource = userResourceDao.findByUserId(user.getId());
 			}
 			userInfo.setUserResource(userResource);
-			userInfo.setUser(user);
 
 			Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
 

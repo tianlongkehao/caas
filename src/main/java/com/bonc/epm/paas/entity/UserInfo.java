@@ -161,10 +161,18 @@ public class UserInfo {
 		this.usedServiceNum = usedServiceNum;
 	}
 	public float getRestCpuNum() {
-		return (float)(Math.round(servCpuNum - usedCpuNum)*100)/100;
+		try {
+			return (float)(Math.round(servCpuNum - usedCpuNum)*100)/100;
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 	public double getRestMemoryNum() {
-		return Double.parseDouble(servMemoryNum) - usedMemoryNum;
+		try {
+			return Double.parseDouble(servMemoryNum) - usedMemoryNum;
+		} catch (NumberFormatException e) {
+			return 0;
+		}
 	}
 	public double getRestStorage() {
 		try {
