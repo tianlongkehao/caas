@@ -253,7 +253,7 @@ window.onresize=function(){
 } 
 function adjustBtn(){
 	var backgroundImgHeight = $("#backgroundImg").height(); 
-    var pandectBtnPostion = backgroundImgHeight*0.87;
+    var pandectBtnPostion = backgroundImgHeight*0.92;
     $(".pandectBtn").css("top",pandectBtnPostion);
 }
 </script>
