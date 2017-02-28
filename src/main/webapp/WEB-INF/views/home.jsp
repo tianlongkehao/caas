@@ -31,9 +31,7 @@
 		<img id="backgroundImg" src="<%=path %>/images/head-img1.png">
 		<a href="<%=path %>/bcm/${cur_user.id }" class="pandectBtn"><i class="fa fa-home icon-home"></i><span>&nbsp;控制台</span></a>
 	</div>
-	
 	<div class="head-title"><span><h2>容器云平台</h2></span></div>
-	<div class="head-title cloud-tit"><span>C-cloud</span></div>
 	<div class="head-fun ">
 		<div class="funs-list">
             <ul class="app-list">
@@ -130,7 +128,7 @@
 			<span class="service-tit"><h4>模板管理</h4></span>
 		</div> --%>
 	</div>
-	
+
 	<div class="head-title left"><span><h2>我们的优势</h2></span></div>
 	<div class="funTab left">
 		<div class="funTabRight left">
@@ -138,7 +136,7 @@
 			<div class="tabBtn" id="integrationBtn"><span>持续集成</span></div>
 			<div class="tabBtn" id="microServieBtn"><span>微服务架构</span></div>
 			<div class="tabBtn" id="saasBtn"><span>SAAS私有部署</span></div> -->
-			
+
 			<div class="tabBtn span-active" id="clusterBtn"><span>实时集群管理</span></div>
 			<div class="tabBtn" id="usersBtn"><span>多租户管理</span></div>
 			<div class="tabBtn" id="localCiBtn"><span>本地代码构建</span></div>
@@ -150,7 +148,7 @@
 			<div class="tabCon hide" id="integrationCon"><span><h4>持续集成解决方案</h4></span><br>研发了新的持续集成工具She-Ra，通过提供REST接口，与现有应用平台相结合，通过版本控制工具一站式持续集成，全程可视化管控，为用户提供简单、灵活的持续部署方式，抛弃Jenkins，实现更加一体化的持续集成环境。</div>
 			<div class="tabCon hide" id="microServieCon"><span><h4>微服务架构解决方案</h4></span><br>基于容器云平台可以轻松构建微服务架构系统。微服务架构是一种架构模式，它提倡将单块架构的应用划分成一组小的服务，服务之间互相协调、互相配合，为用户提供最终价值。每个服务运行在其独立的进程中，服务与服务间采用轻量级的通信机制互相沟通。容器云平台现将存量经营平台、北十工作台拆分成微服务应用，实现一键增量部署。</div>
 			<div class="tabCon hide" id="saasCon"><span><h4>SAAS私有部署解决方案</h4></span><br>容器云实现了应用快速部署及便捷管理，租户将部署包或者镜像包提交到能力开放平台，一键部署并运行，支持选择联通办公网、互联网等多种网络接入方式，提供内部应用和对外应用访问的图形化配置，运维人员不再接触任何物理机器，开发人员可以直接完成应用的部署，体现了DevOps中运维开发一体化的思想。</div> -->
-			
+
 			<div class="tabCon" id="clusterCon"><span><h4>实时集群管理</h4></span><br>通过自身平台的技术和优势为用户提供集群的部署、管理和监控的一整套解决方案。通过集群化的管理用户自己的实体主机、虚拟机或者 云主机上的资源，合理规划和充分利用现有的计算和存储资源，并在自己的私有集群上尝试、运用镜像和容器技术，通过这些新技术推进自己的产品 在开发、运维、部署、交付等各个环节上的变革及创新，逐渐搭建和形成自己的私有云架构。</div>
 			<div class="tabCon hide" id="usersCon"><span><h4>多租户管理</h4></span><br>Kubernetes通过用户空间（namespace）来实现了一个简单的多租户模型，然后为每一个用户空间指定一定的配额，所有用户按照租户进行逻辑上的隔 离，Namespace能够帮助不同的租户共享同一个k8s集群。</div>
 			<div class="tabCon hide" id="localCiCon"><span><h4>本地代码构建</h4></span><br>如果您的代码没有托管到GitHub或者BitBucket等代码托管平台上，只有本地的代码或者可部署的应用，BONC-PaaS云平台同样支持从代码到镜像的构建。可以支持 Windows、Linux和 Mac 三种平台，无需关联代码托管服务，如同使用本地 docker 一样的体验，不需要打包源代码文件，保证您的代码安全。</div>
@@ -196,7 +194,7 @@ $(document).ready(function(){
 	    $("#autoOprationCon").removeClass("hide");
 	    $("#autoOprationBtn").addClass("span-active");
 	});
-	
+
 	$("#icon-service").mouseover(function(){
 		$(this).find(".img").addClass("hide");
 		$(this).find(".text").removeClass("hide");
@@ -245,14 +243,14 @@ $(document).ready(function(){
 		$(this).find(".img").removeClass("hide");
 		$(this).find(".text").addClass("hide");
 	});
-	
+
 	adjustBtn();
 })
-window.onresize=function(){  
+window.onresize=function(){
 	adjustBtn();
-} 
+}
 function adjustBtn(){
-	var backgroundImgHeight = $("#backgroundImg").height(); 
+	var backgroundImgHeight = $("#backgroundImg").height();
     var pandectBtnPostion = backgroundImgHeight*0.92;
     $(".pandectBtn").css("top",pandectBtnPostion);
 }
