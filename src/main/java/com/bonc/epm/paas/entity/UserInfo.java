@@ -170,7 +170,7 @@ public class UserInfo {
 	public double getRestMemoryNum() {
 		try {
 			return Double.parseDouble(servMemoryNum) - usedMemoryNum;
-		} catch (NumberFormatException e) {
+		} catch (Exception e) {
 			return 0;
 		}
 	}
