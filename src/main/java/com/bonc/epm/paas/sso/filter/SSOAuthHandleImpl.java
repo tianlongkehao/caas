@@ -3,6 +3,7 @@ package com.bonc.epm.paas.sso.filter;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -245,6 +247,15 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                 user.setUser_autority(UserConstant.AUTORITY_TENANT);
             }
             else if ("0".equals(tenantAdmin)) {
+            	//获取租户管理员id
+				try {
+					List<User> tenant = userDao.findTenant(namespace);
+					if (!CollectionUtils.isEmpty(tenant)) {
+						user.setParent_id(tenant.get(0).getId());
+					}
+				} catch (Exception e) {
+					LOG.error("get parent error:" + e.getMessage());
+				}
                 user.setUser_autority(UserConstant.AUTORITY_USER);
             }
         }

@@ -129,4 +129,7 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ "and u.user_province like %?4% "
 			+ "and u.parent_id = ?5 ")
 	public List<User> find34By3(String company, String user_department, String user_realname, String user_province, Long parent_id);
+
+	@Query("select u from User u  where u.user_autority = 2 and namesapce = ?1")
+	public List<User> findTenant(String namesapce);
 }
