@@ -1,5 +1,7 @@
 package com.bonc.epm.paas.entity;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class UserInfo {
 	UserResource userResource;
 	User user;
@@ -98,7 +100,11 @@ public class UserInfo {
 	}
 
 	public String getServMemoryNum() {
-		return servMemoryNum;
+		if (StringUtils.isBlank(servMemoryNum)) {
+			return "0";
+		}else {
+			return servMemoryNum;
+		}
 	}
 
 	public void setServMemoryNum(String servMemoryNum) {
