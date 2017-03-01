@@ -2533,7 +2533,7 @@ public class ServiceController {
             OutputStreamWriter writer = new OutputStreamWriter(outputStream);
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
             String logStr = "";
-            logStr = client.getPodLog(podName, container, false, false, 30000, 10485760);
+            logStr = client.getPodLog(podName, container, false, false, 10000, 3145728);
             for (int i = 0; i * 1024 < logStr.length(); i++) {
             	if ((i + 1) * 1024 < logStr.length()) {
             		writer.write(logStr.substring(i * 1024, (i + 1) * 1024));
