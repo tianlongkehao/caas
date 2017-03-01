@@ -474,3 +474,6 @@ i.searchImage-img{
 .searchResult{
 	margin-top:134px;
 }
+.breadcrumb li.imageNameTit{
+	width:70%;
+}

@@ -21,7 +21,7 @@
                         <li><i class="fa fa-angle-right"></i></li>
                         <li class="active">镜像</li>
                         <li><i class="fa fa-angle-right"></i></li>
-                        <li class="active">${image.name} </li>
+                        <li class="active imageNameTit">${image.name} </li>
                     </ol>
                     <input type="hidden" id = "imageId" value = "${image.id }" name = "imageId">
                     <input type="hidden" id = "editImage" value = "${editImage }" name = "editImage">
