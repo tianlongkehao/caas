@@ -5,6 +5,7 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-menu.css">
     <script type="text/javascript" src="<%=path %>/js/customer/bcm-menu.js"></script>
+    <script type="text/javascript" src="<%=path %>/plugins/nicescroll/jquery.nicescroll.js"></script>
     <title>BCM</title>
 </head>
 <body>
@@ -260,6 +261,7 @@
             $(".item-click").css("background-color","#e86a6a");
 
         }); */
+        $('#nav-side').niceScroll({ cursorcolor: "#ccc" });
 
     });
 

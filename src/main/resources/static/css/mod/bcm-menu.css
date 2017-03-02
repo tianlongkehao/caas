@@ -145,10 +145,10 @@ nav.navbar-default{
     margin-bottom: 70px;
 }
 #nav-side{
-	/* height:100%; */ 
-	overflow-y: auto;
+	height:100%; 
+	/* overflow-y: auto; */
 	height: calc(100% - 90px);
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
 }
 
 
