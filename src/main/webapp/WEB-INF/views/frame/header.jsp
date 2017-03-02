@@ -7,6 +7,9 @@ var ctx = "<%=path%>";
 
 </script>
 <meta charset="utf-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="no-cache">
 <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/bootstrap-3.3.5/dist/css/bootstrap.min.css"/>
 <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/Font-Awesome-master/css/font-awesome.min.css"/>
 <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/layer/skin/layer.css"/>
