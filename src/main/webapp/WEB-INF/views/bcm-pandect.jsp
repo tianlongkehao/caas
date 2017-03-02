@@ -6,6 +6,7 @@
     <title>总览</title>
     <%@include file="frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-pandect.css"/>
+    <script type="text/javascript" src="<%=path %>/plugins/nicescroll/jquery.nicescroll.js"></script>
 </head>
 <body>
 
@@ -211,7 +212,7 @@
                     <c:if test="${cur_user.user_autority == 1}">
                     		
                         	<div class="detail-info">
-	                            <div class="info-list">
+	                            <div class="info-list fixed-table-header">
 	                                <table class="table" id="table-listing">
 	                                    <thead>
 	                                    <tr class="table-title">
@@ -265,19 +266,20 @@
 	                        <section class="container-count usersResourceInfo">
 		                        <div class="padding">
 		                            <div class="row-title">租户信息</div>
-		                            <table class="table table-hover usersResourceTable">
+									
+									<table class="table table-hover usersResourceTable" id="usersResourceTable">
 	                                    <thead>
-	                                    	<tr class="usersInfoTit u-line">
-	                                    		<th>租户名称</th>
+	                                    	<tr class="usersInfoTit u-line" style="display:block;padding-right:10px">
+	                                    		<th style="text-indent: -20px;">租户名称</th>
 	                                    		<th>实例个数</th>
 	                                    		<th>服务个数</th>
 	                                    		<th>使用情况</th>
 	                                    		<th>CPU(个)</th>
 	                                    		<th>内存(GB)</th>
-	                                    		<th>存储(GB)</th>
+	                                    		<th style="width:130px">存储(GB)</th>
 	                                    	</tr>
 	                                    </thead>
-	                                    <tbody>
+	                                    <tbody id="userInfosList">
 	                                    	<c:forEach items="${userInfos }" var="userInfos">
 	                                    	<tr>
 	                                    		<td rowspan="3"><a href="<%=path %>/service?userName=${userInfos.user.userName }">${userInfos.user.userName }</a></td>
@@ -302,7 +304,7 @@
 	                                    	</tr>
 	                                    	</c:forEach>
 	                                    </tbody>
-	                                </table>
+	                                </table> 
 		                        </div>
 		                    </section>
 	                        
@@ -372,9 +374,12 @@
 	    $("#adminUsedMemory")[0].style.width = userMemPer;
 	    /* var userVolPer = $("#adminDetailVolume")[0].textContent/$("#adminTotalVolume")[0].textContent*100+"%";
 	    $("#adminUsedVolume")[0].style.width = userVolPer; */
-		
+	    $('#userInfosList').niceScroll({ cursorcolor: "#ccc" });
 	}
 	
+		/* $('#usersResourceTable').bootstrapTable({
+	      height: "330"
+	    }); */
 }) 
 
 </script>
