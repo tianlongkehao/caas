@@ -785,11 +785,22 @@ public class ServiceController {
 	@RequestMapping("service/createContainer.do")
 	@ResponseBody
 	public String CreateContainer(long id, boolean isDebug) {
+		Map<String, Object> map = new HashMap<String, Object>();
 		Service service = serviceDao.findOne(id);
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_STOPPED) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
 		delPods(service.getServiceName());
 		List<EnvVariable> envVariables = envVariableDao.findByServiceId(id);
 		List<PortConfig> portConfigs = portConfigDao.findByServiceId(service.getId()); // 获取服务对应的端口映射
-		Map<String, Object> map = new HashMap<String, Object>();
 		// 使用k8s管理服务
 		String registryImgName = dockerClientService.generateRegistryImageName(service.getImgName(),
 				service.getImgVersion());
@@ -1312,8 +1323,19 @@ public class ServiceController {
     @RequestMapping("service/stopContainer.do")
 	@ResponseBody
 	public String stopContainer(long id) {
+    	Map<String, Object> map = new HashMap<String, Object>();
         Service service = serviceDao.findOne(id);
-        Map<String, Object> map = new HashMap<String, Object>();
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_RUNNING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_DEBUG) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
         LOG.debug("service:=========" + service);
         try {
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -1359,7 +1381,17 @@ public class ServiceController {
     public String modifyimgVersion(long id, String serviceName, String imgVersion, String imgName) {
     	Map<String, Object> map = new HashMap<String, Object>();
     	Service service = serviceDao.findOne(id);
-
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_RUNNING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_DEBUG) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
     	try {
     		if (service.getImgVersion().equals(imgVersion)) {
     			map.put("status", "500");
@@ -1521,6 +1553,20 @@ public class ServiceController {
 	public String cancelUpdate(long id, String serviceName) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Service service = serviceDao.findOne(id);
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() == ServiceConstant.CONSTRUCTION_STATUS_CANCELING_UPDATE) {
+				map.put("status", "503");
+				return JSON.toJSONString(map);
+			}
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
 		// 保存服务信息
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_CANCELING_UPDATE);
 		Date currentDate = new Date();
@@ -1544,20 +1590,33 @@ public class ServiceController {
 				if (!originalController.getSpec().getTemplate().getSpec().getContainers().get(0).getImage().equals(
 						dockerClientService.generateRegistryImageName(service.getImgName(), service.getImgVersion()))) {
 					originalController = client.updateReplicationController(serviceName, 0);
+					while (!(client.getLabelSelectorPods(originalController.getSpec().getSelector()).size() == 0)) {
+						try {
+							Thread.sleep(1500);
+						} catch (InterruptedException e) {
+							LOG.error(e.getMessage());
+						}
+						continue;
+					}
 					client.deleteReplicationController(serviceName);
+				} else {
+					// 设置annotations
+					if (StringUtils.isNotBlank(originalController.getSpec().getSelector().get("deployment"))) {
+						originalController.getSpec().setReplicas(service.getInstanceNum());
+						originalController.getSpec().getSelector().remove("deployment");
+						originalController.getSpec().getTemplate().getMetadata().getLabels().remove("deployment");
+					}
+					if (originalController.getMetadata() != null
+							&& originalController.getMetadata().getAnnotations() != null) {
+						if (originalController.getMetadata().getAnnotations()
+								.containsKey("kubectl.kubernetes.io/original-replicas")) {
+							originalController.getMetadata().getAnnotations()
+									.remove("kubectl.kubernetes.io/original-replicas");
+						}
+					}
+					originalController = client.updateReplicationController(serviceName, originalController);
+					LOG.info("update originalController.");
 				}
-				// 设置annotations
-				if (StringUtils.isNotBlank(originalController.getSpec().getSelector().get("deployment"))) {
-					originalController.getSpec().setReplicas(service.getInstanceNum());
-					originalController.getSpec().getSelector().remove("deployment");
-					originalController.getSpec().getTemplate().getMetadata().getLabels().remove("deployment");
-				}
-				if (originalController.getMetadata().getAnnotations()
-						.containsKey("kubectl.kubernetes.io/original-replicas")) {
-					originalController.getMetadata().getAnnotations().remove("kubectl.kubernetes.io/original-replicas");
-				}
-				originalController = client.updateReplicationController(serviceName, originalController);
-				LOG.info("update originalController.");
 			}
 
 			// 删除新的rc
@@ -1572,6 +1631,14 @@ public class ServiceController {
 				}
 				if (nextController != null) {
 					nextController = client.updateReplicationController(nextControllerName, 0);
+					while (!(client.getLabelSelectorPods(nextController.getSpec().getSelector()).size() == 0)) {
+						try {
+							Thread.sleep(1500);
+						} catch (InterruptedException e) {
+							LOG.error(e.getMessage());
+						}
+						continue;
+					}
 					client.deleteReplicationController(nextControllerName);
 				}
 			}
@@ -1736,6 +1803,11 @@ public class ServiceController {
             while (!(client.getLabelSelectorPods(updateOriginalController.getSpec().getSelector()).size() == j)) {
     			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
     				return true;
+				}
+    			try {
+					Thread.sleep(1500);
+				} catch (InterruptedException e) {
+					LOG.error(e.getMessage());
 				}
                 continue;
             }
@@ -1926,6 +1998,17 @@ public class ServiceController {
 	public String modifyServiceNum(long id, Integer addservice) {
         Map<String, String> map = new HashMap<String, String>();
         Service service = serviceDao.findOne(id);
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_RUNNING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_DEBUG) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
 
         if (service.getInstanceNum() == addservice) {
             map.put("status", "300");
@@ -1984,6 +2067,17 @@ public class ServiceController {
 	public String modifyCPU(long id, Double cpus, String rams) {
         Map<String, Object> map = new HashMap<String, Object>();
         Service service = serviceDao.findOne(id);
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_RUNNING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_DEBUG) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
         try {
             service.setCpuNum(cpus);
             service.setRam(rams);
@@ -2072,6 +2166,11 @@ public class ServiceController {
         User user = CurrentUserUtils.getInstance().getUser();
         Service service = serviceDao.findOne(id);
         Map<String, Object> map = new HashMap<String, Object>();
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		}
         try {
             if (service.getStatus() != 1) {
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -2099,7 +2198,30 @@ public class ServiceController {
                     	return JSON.toJSONString(map);
         			}
                 }
-
+                if (StringUtils.isNotBlank(service.getTempName())) {
+                	try {
+                		controller = client.getReplicationController(service.getTempName());
+                	} catch (Exception e1) {
+                		controller = null;
+                	}
+                	if (controller != null) {
+                		controller =  client.updateReplicationController(service.getTempName(), 0);
+                		if (controller !=null && controller.getSpec().getReplicas() == 0) {
+                			Status status = client.deleteReplicationController(service.getServiceName());
+                			if (!status.getStatus().equals("Success")){
+                				map.put("status", "400");
+                				map.put("msg", "Delete a Replication Controller failed:ServiceName["+service.getTempName()+"]");
+                				LOG.error("Delete a Replication Controller failed:ServiceName["+service.getTempName()+"]");
+                				return JSON.toJSONString(map);
+                			}
+                		} else {
+                			map.put("status", "400");
+                			map.put("msg", "Update a Replication Controller (update the number of replicas) failed:ServiceName["+service.getTempName()+"]");
+                			LOG.error("Update a Replication Controller (update the number of replicas) failed:ServiceName["+service.getTempName()+"]");
+                			return JSON.toJSONString(map);
+                		}
+                	}
+				}
         		//删除svc
         		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
         		try {
@@ -2332,8 +2454,13 @@ public class ServiceController {
     @ResponseBody
 	public String findPodsOfService(Long serviceID) {
         Map<String, Object> map = new HashMap<String, Object>();
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         Service service = serviceDao.findOne(serviceID);
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		}
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         List<Container> containerList = new ArrayList<Container>();
 		// 获取特殊条件的pods
 		try {
@@ -2530,10 +2657,16 @@ public class ServiceController {
             response.setContentType(request.getServletContext().getMimeType(podName));
             response.setHeader("Content-Disposition", "attachment;filename="+podName+".log");
             ServletOutputStream outputStream= response.getOutputStream();
+
+
+
             OutputStreamWriter writer = new OutputStreamWriter(outputStream);
             KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+
+            Pod pod = client.getPod(podName);
+            container = pod.getSpec().getContainers().get(0).getName();
             String logStr = "";
-            logStr = client.getPodLog(podName, container, false, false, 10000, 3145728);
+            logStr = client.getPodLog(podName, container, false, false, 30000, 31457280);
             for (int i = 0; i * 1024 < logStr.length(); i++) {
             	if ((i + 1) * 1024 < logStr.length()) {
             		writer.write(logStr.substring(i * 1024, (i + 1) * 1024));
@@ -2587,6 +2720,17 @@ public class ServiceController {
 			map.put("status", "500");
 		} else {
 			Service service = serviceDao.findOne(serId);
+			//服务状态判断
+			if (null == service) {
+				map.put("status", "501");
+				return JSON.toJSONString(map);
+			} else {
+				if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING
+						&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_STOPPED) {
+					map.put("status", "502");
+					return JSON.toJSONString(map);
+				}
+			}
 			service.setServiceAddr(serviceAddr);
 			service.setProxyPath(proxyPath);
 			try {
@@ -2620,6 +2764,17 @@ public class ServiceController {
 	public String editBaseSerForm(Model model, Service service) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Service ser = serviceDao.findOne(service.getId());
+		//服务状态判断
+		if (null == ser) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (ser.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING
+					&& ser.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_STOPPED) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
 		if (delSvcAndRc(ser) == false) {
 			map.put("status", "500");
 			return JSON.toJSONString(map);
@@ -2683,11 +2838,22 @@ public class ServiceController {
     @ResponseBody
     public String editPortCfgForm(PortConfig portConfig , String serviceName ,long serviceId){
         Map<String, String> map = new HashMap<String, String>();
+        Service service = serviceDao.findOne(serviceId);
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_STOPPED) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
         PortConfig portCfg = portConfigDao.findOne(portConfig.getPortId());
         portCfg.setContainerPort(portConfig.getContainerPort());
         portCfg = portConfigDao.save(portCfg);
         // 保存服务信息
-        Service service = serviceDao.findOne(serviceId);
         service.setIsModify(ServiceConstant.MODIFY_TRUE);
 		Date currentDate = new Date();
 		service.setUpdateDate(currentDate);
@@ -2714,13 +2880,24 @@ public class ServiceController {
     @ResponseBody
     public String editEnvForm(EnvVariable envVariable , String serviceName ,long serviceId){
         Map<String, String> map = new HashMap<String, String>();
+        Service service = serviceDao.findOne(serviceId);
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_STOPPED) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
 		EnvVariable envVar = new EnvVariable();
         envVar = envVariableDao.findOne(envVariable.getEnvId());
         envVar.setEnvKey(envVariable.getEnvKey());
         envVar.setEnvValue(envVariable.getEnvValue());
         envVar = envVariableDao.save(envVar);
         // 保存服务信息
-        Service service = serviceDao.findOne(serviceId);
         service.setIsModify(ServiceConstant.MODIFY_TRUE);
 		Date currentDate = new Date();
 		service.setUpdateDate(currentDate);
@@ -2808,8 +2985,19 @@ public class ServiceController {
     public String delPortCfg(long portId){
         Map<String, String> map = new HashMap<String, String>();
         PortConfig portConfig = portConfigDao.findOne(portId);
-        // 保存服务信息
         Service service = serviceDao.findOne(portConfig.getServiceId());
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_STOPPED) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
+        // 保存服务信息
         service.setIsModify(ServiceConstant.MODIFY_TRUE);
 		Date currentDate = new Date();
 		service.setUpdateDate(currentDate);
@@ -2837,6 +3025,19 @@ public class ServiceController {
     @RequestMapping(value ="service/detail/addPortCfg.do",method = RequestMethod.GET)
     @ResponseBody
     public String addPortCfg(PortConfig portConfig,long serviceId){
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	Service service = serviceDao.findOne(serviceId);
+		//服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_STOPPED) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
         PortConfig portCon = new PortConfig();
         PortConfig pCfg = new PortConfig();
         portCon.setContainerPort(portConfig.getContainerPort());
@@ -2845,7 +3046,6 @@ public class ServiceController {
         portCon.setServiceId(serviceId);
         pCfg=portConfigDao.save(portCon);
         // 保存服务信息
-        Service service = serviceDao.findOne(serviceId);
         service.setIsModify(ServiceConstant.MODIFY_TRUE);
 		Date currentDate = new Date();
 		service.setUpdateDate(currentDate);
@@ -2854,7 +3054,6 @@ public class ServiceController {
 		serviceDao.save(service);
 		// 保存服务操作信息
 		serviceOperationLogDao.save(service.getServiceName(), pCfg.toString(), ServiceConstant.OPERATION_TYPE_UPDATE);
-        Map<String, Object> map = new HashMap<String, Object>();
         map.put("pCfg", pCfg);
         map.put("service",service);
             // 向map中添加生成的node端口
