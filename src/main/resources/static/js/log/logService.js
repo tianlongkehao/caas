@@ -29,7 +29,7 @@ $(document).ready(function () {
                     		if (data == null || data == "") {
                     			return "";
                     		}
-                    		var html = '<td><a onmouseover="serviceExtraInfo(this)" onmouseout="ExtraInfo(this)" serviceExtraInfo="'+row.serviceExtraInfo+'">'+data+'</a></td>';
+                    		var html = '<td><a class="serviceExtraInfo" onmouseover="serviceExtraInfo(this)" onmouseout="ExtraInfo(this)" serviceExtraInfo="'+row.serviceExtraInfo+'">'+data+'</a></td>';
 							return html;
                     		
                     	}	
@@ -72,13 +72,14 @@ $(document).ready(function () {
                    ]
 	});
 })
-
+var tip_index = 0;
 function serviceExtraInfo(obj){
 	var serviceExtraInfo = $(obj).attr("serviceExtraInfo");
-	layer.tips(serviceExtraInfo, $(obj) ,{
-		  tips: [2, 'rgba(237,114,114,0.75)'],area: ['640px', '135px'],time:60000}
+	tip_index=layer.tips(serviceExtraInfo, $(obj) ,{
+		  tips: [3, 'rgba(237,114,114,0.75)'],area: ['640px', '135px'],time:0,tipsMore: true}
 	);
 }
-/*function ExtraInfo(obj){
-	layer.closeAll('tips'); 
-}*/
+
+function ExtraInfo(obj){
+	layer.close(tip_index); 
+}

@@ -7,6 +7,13 @@
         .layui-layer-content{
 		   	  word-break: break-all;
 		 }
+		 .serviceExtraInfo{
+		 	 cursor: pointer;
+		 	 color:#e8504f;
+		 }
+		 .serviceExtraInfo:hover{
+		 	 text-decoration: underline;
+		 }
     </style>
     <%@include file="../frame/header.jsp"%>
    	<script type="text/javascript" src="<%=path%>/js/log/logService.js"></script>
