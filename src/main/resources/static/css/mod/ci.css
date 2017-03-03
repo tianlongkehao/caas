@@ -524,7 +524,7 @@ tr.focus{
     text-overflow:ellipsis;
 }
 .c-project-con{
-	width:86%;	
+	width:84%;	
 }
 textarea.c-project-con{
 	margin-top:8px;	
@@ -566,6 +566,7 @@ textarea.c-project-con{
 }
 .ibox-content .c-project-con{
 	width:80%;	
+	float:left;
 }
 .ibox-content .c-project-tit{
 	width:16%;	
@@ -627,6 +628,7 @@ textarea.c-project-con{
 }
 .registryinfo .row input{
 	text-indent: 10px;
+	float: left;
 }
 #sortable .row .col-sm-12{
 	padding-left: 0px;
@@ -755,6 +757,39 @@ td.autocut{
 #ci-sonarInfo{
 	margin-left:10px;
 }
-
-
-
+.questionInfoCon{
+	padding:10px;
+	border:1px solid #ddd;
+	display:none;
+	margin-left: 25px;
+    width: 92%;
+}
+.fa-questionBtn{
+    line-height: 35px;
+    margin-left: 4px;
+    font-size: 16px;
+    float:right;
+    color:#e8504f;
+}
+.fa-questionCon{
+	padding:10px;
+	border:1px solid #ddd;
+	display:none;
+	margin-left: 25px;
+    width: 92%;
+}
+.registryinfo ul.nav ul.dropdown-menu li{
+	cursor:pointer;
+}
+.settingfilePath{
+	padding-left: 18%;
+}
+.settingfilePath-tit{
+	width: 12%;
+    float: left;
+    line-height: 34px;
+}
+.settingfilePath-con{
+	width: 84%;
+    float: left;
+}

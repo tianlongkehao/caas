@@ -53,7 +53,7 @@
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">JDK</label>
 	                                    <select id="jdk-version" autocomplete = 'off' name="jdkVersion" class="form-control c-project-con">
-	                                       <option value="">system</option>
+	                                       <option value="">(system)</option>
 	                                       <c:forEach items="${jdkList}" var="jdk">
 	                                    	  <option value="${jdk.version }">${jdk.version }</option>
 	                                       </c:forEach>
@@ -78,8 +78,11 @@
 	                            	<div class="form-group col-md-12">
 		                                <label class="c-project-tit">代码仓库地址</label>
 		                                <input id="codeUrl" name="codeUrl" class="form-control c-project-con" type="text"
-                                           placeholder="例如：https://github.com/tenxcloud/php-hello-world.git">
+                                           placeholder=""><i class="fa fa-question-circle fa-questionBtn"></i>
 		                            </div>
+		                            <div class="form-group col-md-12 fa-questionCon codeUrlExplain">
+						                
+						            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">认证方式</label>
 		                                <select id="codeCredentials" name="codeCredentials" class="form-control c-project-con" style="width:50%;float:left;">
@@ -103,9 +106,12 @@
 		                            </div>
 		                            <div class="form-group col-md-12" id = "addHook">
 		                                <label class="c-project-tit">HookCode</label>
-		                                <input type="checkbox" id="HookCode" class="c-project-checkbox" >
+		                                <input type="checkbox" id="HookCode" class="c-project-checkbox" ><i class="fa fa-question-circle fa-questionBtn"></i>
                                         <input type="hidden" id = "isHookCode" name ="isHookCode" value = "0"/>
 		                            </div>
+		                            <div class="form-group col-md-12 fa-questionCon">
+						                <p>当代码更新以后，构建时自动下载最新代码</p>
+						            </div>
 	                            </div>
 	                            <div class="row git-config">
 	                            	<button id="git-higher" type="button" style="float:right!important">高级...</button>
@@ -114,13 +120,22 @@
 	                            	<div class="form-group col-md-12">
 		                                <label class="c-project-tit">Name</label>
 		                                <input id="codeUsername" name="codeName" type="text" class="form-control c-project-con reg-input"
-                                                   value="">
+                                                   value=""><i class="fa fa-question-circle fa-questionBtn"></i>
 		                            </div>
+		                            <div class="form-group col-md-12 fa-questionCon">
+						                <p>存储库的ID（如origin），以在其他远程存储库之间唯一标识此存储库。 这与您在git remote命令中使用的“名称”相同。 如果留空，Jenkins将为您生成唯一的名称。</p>
+						            	<p>通常，当您有多个远程存储库时，需要指定此选项。</p>
+						            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">Refspec</label>
 		                                <input id="codePassword" name="codeRefspec" type="text"
-                                                   class="form-control c-project-con reg-input" value="">
+                                                   class="form-control c-project-con reg-input" value=""><i class="fa fa-question-circle fa-questionBtn"></i>
 		                            </div>
+		                            <div class="form-group col-md-12 fa-questionCon">
+						                <p>refspec控制要检索的远程引用以及它们如何映射到本地引用。 如果留空，它将默认为git fetch的正常行为，它将所有分支头作为remotes/REPOSITORYNAME/BRANCHNAME检索。 在大多数情况下，此默认行为是OK。</p>
+						            	<p>换句话说，默认refspec是“+refs/heads/*：refs/remotes/REPOSITORYNAME/*”，其中REPOSITORYNAME是您在上述“存储库名称”文本框中指定的值。</p>
+						            	<p>您要何时修改此值？ 一个很好的例子是当你想要检索一个分支。 例如，+refs/heads/master：refs/remotes/origin/master将仅检索主分支，而不检索其他分支。</p>
+						            </div>
                                 </div>
                             </section>
                             <!--   质量管理：如果配置的是必选 则checkbox自动勾选且不可更改，若选择可选则CheckBox可选 -->

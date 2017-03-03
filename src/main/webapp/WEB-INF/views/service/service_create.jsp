@@ -50,7 +50,7 @@
 						<div class="steps-main">
 							<div class="progre">
 								<ul style="padding: 0 4rem;">
-									<li class="radius_step action"><span>1</span> 镜像来源</li>
+									<li class="radius_step action"><a class="go_backs"><span>1</span> 镜像来源</a></li>
 									<li class="radius_step"><span>2</span> 容器配置</li>
 									<!-- <li class="radius_step"><span>3</span> 高级设置</li> -->
 								</ul>
