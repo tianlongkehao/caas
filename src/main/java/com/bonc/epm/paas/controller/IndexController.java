@@ -174,7 +174,7 @@ public class IndexController {
 
 		try {
 			User user = userDao.findOne(id);
-			if (!("1".equals(user.getUser_autority()))) {
+			if (!(UserConstant.AUTORITY_MANAGER.equals(user.getUser_autority()))) {
 				// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
 				KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
 				Namespace ns = client.getNamespace(user.getNamespace());
@@ -263,10 +263,12 @@ public class IndexController {
 			});
 
 			Iterator<Map.Entry<Date, String>> it = list_Data.iterator();
-			while (it.hasNext()) {
-				Entry<Date, String> a = it.next();
-				if (a.getKey().before(list_Data.get(3).getKey())) {
-					it.remove();
+			if (list_Data.size() > 4) {
+				while (it.hasNext()) {
+					Entry<Date, String> a = it.next();
+					if (a.getKey().before(list_Data.get(3).getKey())) {
+						it.remove();
+					}
 				}
 			}
 			System.out.println(list_Data);
@@ -297,21 +299,21 @@ public class IndexController {
      */
     private void getUserResourceInfo(Model model, User user, KubernetesAPIClientInterface client) {
         ResourceQuota quota = client.getResourceQuota(user.getNamespace());
+        model.addAttribute("user", user);
+    	UserResource userResource = new UserResource();
+    	if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+            userResource = userResourceDao.findByUserId(user.getParent_id());
+        }
+        else {
+            userResource = userResourceDao.findByUserId(user.getId());
+        }
+        model.addAttribute("userResource", userResource);
+
+        Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
+
+        model.addAttribute("imageCount", imageCount);
+
         if (null != quota) {
-        	UserResource userResource = new UserResource();
-        	if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
-                userResource = userResourceDao.findByUserId(user.getParent_id());
-            }
-            else {
-                userResource = userResourceDao.findByUserId(user.getId());
-            }
-            model.addAttribute("userResource", userResource);
-            model.addAttribute("user", user);
-
-            Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
-
-            model.addAttribute("imageCount", imageCount);
-
             Map<String, String> hard = quota.getStatus().getHard();
             model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
             model.addAttribute("servMemoryNum", hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
@@ -630,6 +632,19 @@ public class IndexController {
 	private UserInfo getUserInfo(User user) {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
 		UserInfo userInfo = new UserInfo();
+		userInfo.setUser(user);
+		UserResource userResource = new UserResource();
+		if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+			userResource = userResourceDao.findByUserId(user.getParent_id());
+		} else {
+			userResource = userResourceDao.findByUserId(user.getId());
+		}
+		userInfo.setUserResource(userResource);
+
+		Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
+
+		userInfo.setImageCount(imageCount);
+
 		Namespace ns = client.getNamespace(user.getNamespace());
 		if (null == ns) {
 			LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
@@ -645,19 +660,6 @@ public class IndexController {
 		}
 
 		if (null != quota) {
-			UserResource userResource = new UserResource();
-			if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-				userResource = userResourceDao.findByUserId(user.getParent_id());
-			} else {
-				userResource = userResourceDao.findByUserId(user.getId());
-			}
-			userInfo.setUserResource(userResource);
-			userInfo.setUser(user);
-
-			Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
-
-			userInfo.setImageCount(imageCount);
-
 			Map<String, String> hard = quota.getStatus().getHard();
 			userInfo.setServCpuNum(kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
 			userInfo.setServMemoryNum(hard.get("memory").replace("i", "").replace("G", ""));// 内存个数

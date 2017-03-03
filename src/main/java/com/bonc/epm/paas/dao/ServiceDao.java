@@ -87,4 +87,7 @@ public interface ServiceDao extends CrudRepository<Service, Long>{
 
 	@Query("select i from Service i, User u where i.createBy = u.id order by i.createDate desc")
 	List<Service> getAllService();
+
+	@Query("select i.status from Service i where i.id = ?1")
+	Integer getServiceStatus(long id);
 }

@@ -9,8 +9,8 @@
 	text-align: center;
 }
 .head-title span h2{
-	margin-top: 30px;
-	margin-bottom: 30px;
+	margin-top: 20px;
+	/* margin-bottom: 30px; */
 }
 ..head-fun{
 	width:100%;
@@ -46,21 +46,21 @@
 	margin-bottom:35px;
 	position:relative;
 	top:50px;
-	
+	padding-left:96px;
 }
 .funTabRight{
 	width:25%;
 	height:248px;
 	border-right:1px solid #dadada;
-	margin-left: 100px;
-    margin-top: 50px;
+	/* margin-left: 100px; */
+    /* margin-top: 50px; */
 }
 .span-active{
 	/* background-color: #e8504f; */
 	color:#fff;
 }
 .tabBtn{
-	width: 60%;
+	width: 78%;
     height: 40px;
     line-height: 40px;
     text-align: center;
@@ -68,15 +68,15 @@
     margin-top:8px;
 }
 .funTabLeft{
-	width:50%;
+	width:60%;
 	height:200px;
-	margin-left: 100px;
-    margin-top: 80px;
+	margin-left: 6%;
+    margin-top: 34px;
 }
 .cloud-tit{
 	font-size: 22px;
     color: #676a6a;
-    margin-top: 12px;
+    margin-top: 10px;
 }
 
 .app-list > li {
@@ -88,8 +88,8 @@
     box-sizing: border-box;
     padding-right: 20px;
     padding-left: 20px;
-    margin-top: 20px;
-    margin-bottom: 40px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     width: 100%;
 }
 .app-list .icon-view .icon-wrapper {
@@ -137,9 +137,9 @@
 }
 .pandectBtn{
 	border: 3px solid #fff;
-    width: 120px;
-    height: 50px;
-    line-height: 44px;
+    width: 112px;
+    height: 44px;
+    line-height: 36px;
     text-align: center;
     position: absolute;
     left: 50%;

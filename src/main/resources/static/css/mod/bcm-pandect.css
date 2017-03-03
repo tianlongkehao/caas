@@ -210,6 +210,20 @@ td a{
 }
 td a:hover {text-decoration:underline;} 
 
-
+#userInfosList{
+	height:350px;
+	display: block;
+    width:100%;
+    /* padding-right:20px; */
+}
+#usersResourceTable th{
+	width:15.7%;
+	
+} 
+#userInfosList td{
+	width:16.2%;
+	padding-right:23px;
+	
+}
 
 

@@ -5,9 +5,6 @@ import java.util.Map;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
@@ -31,8 +28,6 @@ import com.bonc.epm.paas.rest.util.RestFactory;
 import com.google.common.base.Joiner;
 
 public class KubernetesApiClient implements KubernetesAPIClientInterface {
-
-	private static final Log LOG = LogFactory.getLog(KubernetesApiClient.class);
 
     private String endpointURI;
     private KubernetesAPI api;

@@ -475,4 +475,6 @@ i.searchImage-img{
 .searchResult{
 	margin-top:134px;
 }
->>>>>>> refs/remotes/origin/Test29
+.breadcrumb li.imageNameTit{
+	width:70%;
+}

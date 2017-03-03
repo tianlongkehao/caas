@@ -1,5 +1,7 @@
 package com.bonc.epm.paas.entity;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class UserInfo {
 	UserResource userResource;
 	User user;
@@ -98,7 +100,11 @@ public class UserInfo {
 	}
 
 	public String getServMemoryNum() {
-		return servMemoryNum;
+		if (StringUtils.isBlank(servMemoryNum)) {
+			return "0";
+		}else {
+			return servMemoryNum;
+		}
 	}
 
 	public void setServMemoryNum(String servMemoryNum) {
@@ -161,14 +167,24 @@ public class UserInfo {
 		this.usedServiceNum = usedServiceNum;
 	}
 	public float getRestCpuNum() {
-		return (float)(Math.round(servCpuNum - usedCpuNum)*100)/100;
+		try {
+			return (float)(Math.round(servCpuNum - usedCpuNum)*100)/100;
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 	public double getRestMemoryNum() {
-		return Double.parseDouble(servMemoryNum) - usedMemoryNum;
+		try {
+			return Double.parseDouble(servMemoryNum) - usedMemoryNum;
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 	public double getRestStorage() {
-		return userResource.getVol_size()-usedStorage;
+		try {
+			return userResource.getVol_size()-usedStorage;
+		} catch (Exception e) {
+			return 0;
+		}
 	}
-
-	
 }
