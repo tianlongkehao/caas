@@ -4,9 +4,12 @@
 <head lang="en">
 <title>服务</title>
 <%@include file="../frame/header.jsp"%>
+<link rel="stylesheet" type="text/css" href= "<%=path%>/plugins/datetimepicker/css/jquery-ui.css"/>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/service.css" />
+<script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-slide.min.js"></script>
+<script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript"
 	src="<%=path%>/js/service/service-detail.js"></script>
 </head>
@@ -636,7 +639,8 @@
 							</div>
 							<div class="pull_right">
 								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
-								<input id="date_log1" type="text" value="" readonly>
+								<input type="text" id="dateTimePicker" value=""/>
+								<!-- <input id="date_log1" type="text" value="" readonly> -->
 								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
 								<%-- <i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i> --%>
 								<a id="getPodlogFile" href="" style="color:#2FBA66"><i id="download" class="fa fa-download margin cursor" ></i></a>
