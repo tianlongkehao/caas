@@ -321,10 +321,14 @@ $(document).ready(function () {
 		//勾选工具的执行语句添加到dockerfile中
 		editor_one.setValue('');
 		var checkedTool = $(".toolChk:checked");
-		var allToolCode = "";
-		for(var j=0; j < checkedTool.length; j++){
-			var checkedToolCode = checkedTool[j].attributes.toolcode.value;
-			allToolCode += checkedToolCode + "\n";
+		var allToolCode = "FROM 192.168.0.76:5000/centos:7.2.1511"+ "\n";
+		if(checkedTool.length == 0){
+			allToolCode = "";
+		}else{
+			for(var j=0; j < checkedTool.length; j++){
+				var checkedToolCode = checkedTool[j].attributes.toolcode.value;
+				allToolCode += checkedToolCode + "\n";
+			}
 		}
 		editor_one.setValue(allToolCode);
 	});
