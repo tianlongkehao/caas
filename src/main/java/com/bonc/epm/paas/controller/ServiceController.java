@@ -4,7 +4,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2551,24 +2550,24 @@ public class ServiceController {
 			DockerClient dockerClient = dockerClientService
 					.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
 			LogStringContainerResultCallback callback = new LogStringContainerResultCallback();
-			if (StringUtils.isBlank(since)) {
+//			if (StringUtils.isBlank(since)) {
 				dockerClient.logContainerCmd(containerId).withTail(DOCKER_LOG_TAIL).withStdOut(true).withStdErr(true).exec(callback)
 						.awaitCompletion(DOCKER_LOG_AWAIT, TimeUnit.SECONDS);
 				logStr = callback.toString();
 				if (logStr.length() > DOCKER_LOG_SIZE) {
 					logStr = logStr.substring(logStr.length() - DOCKER_LOG_SIZE);
 				}
-			} else {
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(new SimpleDateFormat("yyMMddHHmmss").parse(since));
-				dockerClient.logContainerCmd(containerId).withStdOut(true).withStdErr(true)
-						.withSince((int) (calendar.getTimeInMillis() / 1000)).exec(callback)
-						.awaitCompletion(DOCKER_LOG_AWAIT, TimeUnit.SECONDS);
-				logStr = callback.toString();
-				if (logStr.length() > DOCKER_LOG_SIZE) {
-					logStr = logStr.substring(0, DOCKER_LOG_SIZE);
-				}
-			}
+//			} else {
+//				Calendar calendar = Calendar.getInstance();
+//				calendar.setTime(new SimpleDateFormat("yyMMddHHmmss").parse(since));
+//				dockerClient.logContainerCmd(containerId).withStdOut(true).withStdErr(true)
+//						.withSince((int) (calendar.getTimeInMillis() / 1000)).exec(callback)
+//						.awaitCompletion(DOCKER_LOG_AWAIT, TimeUnit.SECONDS);
+//				logStr = callback.toString();
+//				if (logStr.length() > DOCKER_LOG_SIZE) {
+//					logStr = logStr.substring(0, DOCKER_LOG_SIZE);
+//				}
+//			}
 
 			// logStr = client.getPodLog(podName, container, false, false, 5000,
 			// 104857);
@@ -2686,7 +2685,7 @@ public class ServiceController {
 					.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
 			LogStringContainerResultCallback callback = new LogStringContainerResultCallback();
 				dockerClient.logContainerCmd(containerId).withTail(DOCKER_LOG_TAIL).withStdOut(true).withStdErr(true).exec(callback)
-						.awaitCompletion(DOCKER_LOG_AWAIT, TimeUnit.SECONDS);
+						.awaitCompletion();
 				logStr = callback.toString();
 //        	logStr = client.getPodLog(podName, container, false, sinceTime3, false, 1048576);
 			if (logStr.length() > DOCKER_LOG_SIZE) {
@@ -2716,9 +2715,12 @@ public class ServiceController {
 	@RequestMapping(value = "/service/detail/getPodlogFile", method = RequestMethod.GET)
 	public void downloadPodlogFile(String podName, String since, HttpServletRequest request,
 			HttpServletResponse response) {
+//		since = "20170307094000";
 		System.out.println("===============podlog=download=start===============");
 		try {
-			response.setContentType(request.getServletContext().getMimeType(podName));
+			response.reset();
+			response.setContentType("application/x-download");
+//			response.setContentType(request.getServletContext().getMimeType(podName));
 			response.setHeader("Content-Disposition", "attachment;filename=" + podName + ".log");
 			ServletOutputStream outputStream = response.getOutputStream();
 
@@ -2730,16 +2732,15 @@ public class ServiceController {
 			DockerClient dockerClient = dockerClientService
 					.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
 			LogStreamContainerResultCallback callback = new LogStreamContainerResultCallback(outputStream);
-			if (StringUtils.isBlank(since)) {
-				dockerClient.logContainerCmd(containerId).withTailAll().withStdOut(true).withStdErr(true).exec(callback)
-						.awaitCompletion(DOCKER_LOG_DOWNLOAD, TimeUnit.SECONDS);
-			} else {
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(new SimpleDateFormat("yyMMddHHmmss").parse(since));
-				dockerClient.logContainerCmd(containerId).withStdOut(true).withStdErr(true)
-						.withSince((int) (calendar.getTimeInMillis() / 1000)).exec(callback)
-						.awaitCompletion(DOCKER_LOG_DOWNLOAD, TimeUnit.SECONDS);
-			}
+//			if (StringUtils.isBlank(since)) {
+				dockerClient.logContainerCmd(containerId).withStdOut(true).withStdErr(true).exec(callback)
+						.awaitCompletion(DOCKER_LOG_DOWNLOAD,TimeUnit.SECONDS);
+//			} else {
+//				Date date = new SimpleDateFormat("yyyyMMddHHmmss").parse(since);
+//				dockerClient.logContainerCmd(containerId).withStdOut(true).withStdErr(true)
+//						.withTimestamps(true).withSince((int) (date.getTime() / 1000)).exec(callback)
+//						.awaitCompletion(DOCKER_LOG_DOWNLOAD, TimeUnit.SECONDS);
+//			}
 			System.out.println("===============podlog=download=end===============");
 
 		} catch (IOException e) {
