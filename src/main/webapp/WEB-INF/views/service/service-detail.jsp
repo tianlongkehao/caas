@@ -639,7 +639,7 @@
 							</div>
 							<div class="pull_right">
 								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
-								<input type="text" id="dateTimePicker" value=""/>
+<!-- 								<input type="text" id="dateTimePicker" value=""/> -->
 								<!-- <input id="date_log1" type="text" value="" readonly> -->
 								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
 								<%-- <i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i> --%>
