@@ -3,21 +3,24 @@
     z-index: 95;
     width: 200px;
     min-height: 100%;
-    box-shadow: 1px 1px 15px rgba(0,0,0,0.45);
+    box-shadow: 1px 1px 15px rgba(0,0,0,0.45); 
 }
 
 /* 侧边菜单栏 */
 nav.navbar-default{
 	width:200px;
 	position: fixed;
-    top: 160px;
-    left: 0;
+    top: 86px;
+    left: 14px;
     /* bottom: 60px; */
     z-index: 95;
     /* min-height: 100%; */
-	/* background-color:#fff; */
+	/* background-color:#fff; */ 
 	/* box-shadow: 1px 1px 10px #33414E; */
 	
+}
+#side-menu{
+	background-color:#fff;
 }
 .nav ul .nav-header{
 	padding-bottom: 20px;
@@ -126,7 +129,7 @@ nav.navbar-default{
 .fa_circle{
 	width: 5px;
     height: 5px;
-    background-color: #fff;
+    background-color: #bbbbbb;
     border-radius: 50%;
     margin-bottom: 2px;
     margin-right: 10px;
@@ -136,15 +139,19 @@ nav.navbar-default{
 	width:200px; 
 	position:fixed;
 	background-color: #e8504f;
-	z-index:95;
+	z-index: 100;
+    bottom: -70px;
+    left:14px;
+    margin-bottom: 70px;
 }
 #nav-side{
-	/* height:100%; */ 
-	overflow-y: auto;
-	height: calc(100% - 230px);
-   
-    overflow-x: hidden;
+	height:100%; 
+	/* overflow-y: auto; */
+	height: calc(100% - 90px);
+    /* overflow-x: hidden; */
 }
+
+
 /*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
 #nav-side::-webkit-scrollbar{
     width: 6px;
@@ -227,10 +234,122 @@ nav.navbar-downSide{
     box-shadow: 1px 1px 15px rgba(0,0,0,0.45);
     /* background-color: #e8504f; */
 }
-
-	
-
-
+i.fa-nav{
+	background-position: 0 2px;
+	width:18px;
+	height:18px;
+	display:inline-block;
+    position: relative;
+    top: 3px;
+}
+#menu_bcm a i.fa-nav-bcm{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 2px;
+}
+#menu_bcm a:hover i.fa-nav-bcm{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 2px;
+}
+#menu_bcm.active a i.fa-nav-bcm{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 2px;
+}
+#menu_service a i.fa-nav-service{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -21px;
+}
+#menu_service a:hover i.fa-nav-service{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -21px;
+}
+#menu_service.active a i.fa-nav-service{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -21px;
+}
+#menu_ci a i.fa-nav-ci{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -45px;
+}
+#menu_ci a:hover i.fa-nav-ci{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -45px;
+}
+#menu_ci.active a i.fa-nav-ci{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -45px;
+}		
+#menu_registry a i.fa-nav-registry{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -68px;
+}
+#menu_registry a:hover i.fa-nav-registry{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -68px;
+}
+#menu_registry.active a i.fa-nav-registry{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -68px;
+}
+#menu_user a i.fa-nav-user{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_user a:hover i.fa-nav-user{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_user.active a i.fa-nav-user{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_usermanage a i.fa-nav-usermanage{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_usermanage a:hover i.fa-nav-usermanage{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_usermanage.active a i.fa-nav-usermanage{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -90px;
+}
+#menu_cluster a i.fa-nav-cluster{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -113px;
+}
+#menu_cluster a:hover i.fa-nav-cluster{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -113px;
+}
+#menu_cluster.active a i.fa-nav-cluster{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -113px;
+}
+#menu_template a i.fa-nav-template{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -138px;
+}
+#menu_template a:hover i.fa-nav-template{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -138px;
+}
+#menu_template.active a i.fa-nav-template{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -138px;
+}
+#menu_log a i.fa-nav-log{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -163px;
+}
+#menu_log a:hover i.fa-nav-log{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -163px;
+}
+#menu_log.active a i.fa-nav-log{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -163px;
+}
 
 
 

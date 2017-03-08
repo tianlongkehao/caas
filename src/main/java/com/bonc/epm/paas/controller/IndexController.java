@@ -53,14 +53,18 @@ import com.bonc.epm.paas.entity.ServiceOperationLog;
 import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserInfo;
 import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.entity.UserVisitingLog;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.Node;
+import com.bonc.epm.paas.kubernetes.model.NodeList;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -76,7 +80,7 @@ import com.bonc.epm.paas.util.ServiceException;
  */
 @Controller
 public class IndexController {
-    
+
     /**
      * IndexController 日志实例
      */
@@ -87,31 +91,31 @@ public class IndexController {
      */
     @Autowired
 	private CasClientConfigurationProperties configProps;
-	
+
     /**
      * userDao接口
      */
     @Autowired
 	private UserDao userDao;
-    
+
     /**
      * userResourceDao
      */
     @Autowired
     private UserResourceDao userResourceDao;
-    
+
     /**
      * imageDao
      */
     @Autowired
     private ImageDao ImageDao;
-    
+
     /**
      * 记录访问日志dao接口
      */
     @Autowired
     private UserVisitingLogDao userVisitingLogDao;
-    
+
     @Value("${login.showAuthCode}")
     private boolean showAuthCode;
     /**
@@ -124,7 +128,7 @@ public class IndexController {
      */
     @Autowired
 	private StorageDao storageDao;
-    
+
     /**
      * sheraDao
      */
@@ -141,14 +145,14 @@ public class IndexController {
      */
     @Autowired
     private ServiceOperationLogDao serviceOperationLogDao;
-    
+
     /**
      * 通用操作日志dao接口
      */
     @Autowired
 	private CommonOperationLogDao commonOperationLogDao;
 
-    
+
     /**
      * Description: <br>
      * 首页
@@ -158,140 +162,168 @@ public class IndexController {
 	public String home(Model model){
         return "home.jsp";
     }
-    /**
-     * Description: <br>
-     * 总览页面
-     * @return bcm-pandect.jsp
-     */
-    @RequestMapping(value={"bcm/{id}"},method=RequestMethod.GET)
-	public String bcm(Model model, @PathVariable long id){
-    	
-    	try {
-            User user = userDao.findOne(id);
-            if(!("1".equals(user.getUser_autority()))){
+
+	/**
+	 * Description: <br>
+	 * 总览页面
+	 *
+	 * @return bcm-pandect.jsp
+	 */
+	@RequestMapping(value = { "bcm/{id}" }, method = RequestMethod.GET)
+	public String bcm(Model model, @PathVariable long id) {
+
+		try {
+			User user = userDao.findOne(id);
+			if (!(UserConstant.AUTORITY_MANAGER.equals(user.getUser_autority()))) {
 				// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
-	            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-	            Namespace ns = client.getNamespace(user.getNamespace());
-	            if (null != ns) {
-	                getUserResourceInfo(model, user, client);
-	            }
-	            else {
-	                LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
-	            }
-	            
-	            double usedstorage = 0;
-	            List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
-	            for (Storage storage : list) {
-	                usedstorage = usedstorage + (double) storage.getStorageSize();
-	            }
-	            Shera shera = sheraDao.findByUserId(id);
-	            model.addAttribute("userShera", shera);
-	            model.addAttribute("usedstorage",  usedstorage / 1024);
-            }
-            
-            
-//---------最近操作---------------            
-            
-            
-            List<ServiceOperationLog> svcLogs = serviceOperationLogDao.findFourByCreateBy(id,new PageRequest(0, 4, Direction.DESC, "createDate"));
-            List<CommonOperationLog> commonLogs = commonOperationLogDao.findFourByCreateBy(id,new PageRequest(0, 4, Direction.DESC, "createDate"));
-            Map<Date,String> map = new HashMap<Date,String>();
-            for (ServiceOperationLog serviceOperationLog : svcLogs) {
-            	String oprationRecord = "对服务: "+serviceOperationLog.getServiceName()
-            						+ " 进行了"
-            						+ ServiceConstant.OPERATION_TYPE_MAP.get(serviceOperationLog.getOperationType())
-            						+ "操作";
-            	map.put(serviceOperationLog.getCreateDate(), oprationRecord);
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+				Namespace ns = client.getNamespace(user.getNamespace());
+				if (null != ns) {
+					getUserResourceInfo(model, user, client);
+				} else {
+					LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
+				}
+
+				double usedstorage = 0;
+				List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+				for (Storage storage : list) {
+					usedstorage = usedstorage + (double) storage.getStorageSize();
+				}
+				Shera shera = sheraDao.findByUserId(id);
+				model.addAttribute("userShera", shera);
+				model.addAttribute("usedstorage", usedstorage / 1024);
+			} else {
+				//获取所有租户的信息
+				List<User> userList = userDao.findAllTenant();
+				List<UserInfo> userInfos = new ArrayList<>();
+				for (User user2 : userList) {
+					userInfos.add(getUserInfo(user2));
+				}
+				model.addAttribute("userInfos", userInfos);
+
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
+				//获取所有node
+				NodeList allNodes = client.getAllNodes();
+				double cpuCount = 0;
+				double memoryCount = 0;
+				for (Node node : allNodes.getItems()) {
+					Map<String, String> capacity = node.getStatus().getCapacity();
+					cpuCount += Float.valueOf(this.computeCpuOut(capacity)) * Integer.valueOf(RATIO_MEMTOCPU);
+					memoryCount += Float.valueOf(this.computeMemoryOut(capacity));
+				}
+				//获取所有quota
+				double usedCpuCount = 0;
+				double usedMemoryCount = 0;
+				java.text.DecimalFormat   df=new   java.text.DecimalFormat("#.##");
+				ResourceQuotaList allResourceQuotas = client.getAllResourceQuotas();
+				for (ResourceQuota resourceQuota : allResourceQuotas.getItems()) {
+					Map<String, String> used = resourceQuota.getStatus().getUsed();
+					usedCpuCount += Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU);
+					usedMemoryCount += Float.valueOf(this.computeMemoryOut(used));
+				}
+				model.addAttribute("cpuCount", df.format(cpuCount));
+				model.addAttribute("memoryCount", df.format(memoryCount));
+				model.addAttribute("usedCpuCount", df.format(usedCpuCount));
+				model.addAttribute("usedMemoryCount", df.format(usedMemoryCount));
 			}
-            for (CommonOperationLog commonOperationLog : commonLogs) {
-            	String oprationRecord = "在"
-            						+ CommConstant.CatalogType_MAP.get(commonOperationLog.getCatalogType())
-			            			+ "模块进行了"
-			            			+ CommConstant.OPERATION_TYPE_MAP.get(commonOperationLog.getOperationType())
-			            			+ "操作"; 
-            	map.put(commonOperationLog.getCreateDate(), oprationRecord);
+
+			// ---------最近操作---------------
+
+			List<ServiceOperationLog> svcLogs = serviceOperationLogDao.findFourByCreateBy(id,
+					new PageRequest(0, 4, Direction.DESC, "createDate"));
+			List<CommonOperationLog> commonLogs = commonOperationLogDao.findFourByCreateBy(id,
+					new PageRequest(0, 4, Direction.DESC, "createDate"));
+			Map<Date, String> map = new HashMap<Date, String>();
+			for (ServiceOperationLog serviceOperationLog : svcLogs) {
+				String oprationRecord = "对服务: " + serviceOperationLog.getServiceName() + " 进行了"
+						+ ServiceConstant.OPERATION_TYPE_MAP.get(serviceOperationLog.getOperationType()) + "操作";
+				map.put(serviceOperationLog.getCreateDate(), oprationRecord);
 			}
-            
-            //根据时间进行排序
-            //将Map转化为List集合，List采用ArrayList  
-            List<Map.Entry<Date, String>> list_Data = new ArrayList<Map.Entry<Date,String>>(map.entrySet());
-            
-          //通过Collections.sort(List I,Comparator c)方法进行排序  
-            Collections.sort(list_Data,new Comparator<Map.Entry<Date, String>>() {
+			for (CommonOperationLog commonOperationLog : commonLogs) {
+				String oprationRecord = "在" + CommConstant.CatalogType_MAP.get(commonOperationLog.getCatalogType())
+						+ "模块进行了" + CommConstant.OPERATION_TYPE_MAP.get(commonOperationLog.getOperationType()) + "操作";
+				map.put(commonOperationLog.getCreateDate(), oprationRecord);
+			}
+
+			// 根据时间进行排序
+			// 将Map转化为List集合，List采用ArrayList
+			List<Map.Entry<Date, String>> list_Data = new ArrayList<Map.Entry<Date, String>>(map.entrySet());
+
+			// 通过Collections.sort(List I,Comparator c)方法进行排序
+			Collections.sort(list_Data, new Comparator<Map.Entry<Date, String>>() {
 
 				@Override
 				public int compare(Entry<Date, String> o1, Entry<Date, String> o2) {
-					if(o1.getKey().before(o2.getKey())){//o1比o2早
+					if (o1.getKey().before(o2.getKey())) {// o1比o2早
 						return 1;
 					}
 					return -1;
-				}  
-	
-            });
+				}
 
-            Iterator<Map.Entry<Date, String>> it = list_Data.iterator();
-            while(it.hasNext()){
-            	Entry<Date, String> a = it.next();
-                if(a.getKey().before(list_Data.get(3).getKey())){
-                    it.remove();
-                }
-            }
-            System.out.println(list_Data);
-            model.addAttribute("list_Data", list_Data);
-//------------------------            
-            
+			});
 
-        }
-        catch (KubernetesClientException e) {
-            LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            LOG.error("error message:-" + e.getMessage());
-            e.printStackTrace();
-        }
-    	
-        model.addAttribute("showAuthCode", showAuthCode);
-        
-        model.addAttribute("menu_flag", "bcm");
-        return "bcm-pandect.jsp";
-    }
+			Iterator<Map.Entry<Date, String>> it = list_Data.iterator();
+			if (list_Data.size() > 4) {
+				while (it.hasNext()) {
+					Entry<Date, String> a = it.next();
+					if (a.getKey().before(list_Data.get(3).getKey())) {
+						it.remove();
+					}
+				}
+			}
+			System.out.println(list_Data);
+			model.addAttribute("list_Data", list_Data);
+			// ------------------------
+
+		} catch (KubernetesClientException e) {
+			LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+			e.printStackTrace();
+		} catch (Exception e) {
+			LOG.error("error message:-" + e.getMessage());
+			e.printStackTrace();
+		}
+
+		model.addAttribute("showAuthCode", showAuthCode);
+
+		model.addAttribute("menu_flag", "bcm");
+		return "bcm-pandect.jsp";
+	}
     /**
-     * 
+     *
      * Description:
      * 获取用户的资源使用信息
-     * @param model 
-     * @param user 
-     * @param client  
+     * @param model
+     * @param user
+     * @param client
      * @see
      */
     private void getUserResourceInfo(Model model, User user, KubernetesAPIClientInterface client) {
         ResourceQuota quota = client.getResourceQuota(user.getNamespace());
+        model.addAttribute("user", user);
+    	UserResource userResource = new UserResource();
+    	if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+            userResource = userResourceDao.findByUserId(user.getParent_id());
+        }
+        else {
+            userResource = userResourceDao.findByUserId(user.getId());
+        }
+        model.addAttribute("userResource", userResource);
+
+        Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
+
+        model.addAttribute("imageCount", imageCount);
+
         if (null != quota) {
-        	UserResource userResource = new UserResource();
-        	if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
-                userResource = userResourceDao.findByUserId(user.getParent_id());
-            }
-            else {
-                userResource = userResourceDao.findByUserId(user.getId());
-            }
-            model.addAttribute("userResource", userResource);
-            model.addAttribute("user", user);
-            
-            Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
-            
-            model.addAttribute("imageCount", imageCount);
-            
             Map<String, String> hard = quota.getStatus().getHard();
             model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
             model.addAttribute("servMemoryNum", hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
             model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数
-            
+
             Map<String, String> used = quota.getStatus().getUsed();
             ReplicationControllerList rcList = client.getAllReplicationControllers();
-            PodList podList = client.getAllPods();                   
+            PodList podList = client.getAllPods();
             model.addAttribute("usedCpuNum", Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
             model.addAttribute("usedMemoryNum", Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
@@ -302,7 +334,7 @@ public class IndexController {
         }
     }
     /**
-     * 
+     *
      * Description:
      * computeCpuOut
      * @param val Map<String, String> val
@@ -314,30 +346,32 @@ public class IndexController {
         if (cpuVal.contains("m")) {
             Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
             return a1.toString();
-        } 
+        }
         else {
             return cpuVal;
         }
     }
     /**
-     * 
+     *
      * Description:
      * computeMemoryOut
      * @param val Map<String, String>
      * @return memVal String
      * @see
      */
-    private String computeMemoryOut(Map<String, String> val) {
-        String memVal = val.get("memory");
-        if (memVal.contains("Mi")) {
-            Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
-            return a1.toString();
-        } 
-        else {
-            return memVal.replace("Gi", "");
-        }
-    }
-    
+	private String computeMemoryOut(Map<String, String> val) {
+		String memVal = val.get("memory");
+		if (memVal.contains("Ki")) {
+			Float a1 = Float.valueOf(memVal.replace("Ki", "")) / 1024 / 1024;
+			return a1.toString();
+		} else if (memVal.contains("Mi")) {
+			Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
+			return a1.toString();
+		} else {
+			return memVal.replace("Gi", "");
+		}
+	}
+
     /**
      * Description: <br>
      * 跳转登录页面
@@ -358,7 +392,7 @@ public class IndexController {
         //model.addAttribute("showAuthCode", showAuthCode);
         return "imageShow.jsp";
     }
-	
+
     /**
      * Description: <br>
      * 生成图片验证码
@@ -396,8 +430,8 @@ public class IndexController {
             int y1 = random.nextInt(12);
             g.drawLine(x, y, x + x1, y + y1);
         }
-        
-        String[] codeSequence = { "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9" }; 
+
+        String[] codeSequence = { "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9" };
         //绘制字符
         String strCode = "";
         for(int i=0;i<5;i++){
@@ -413,7 +447,7 @@ public class IndexController {
         ImageIO.write(image, "JPEG", response.getOutputStream());
         response.getOutputStream().flush();
     }
-    
+
     /**
      * Description: <br>
      * 生成随机颜色
@@ -434,7 +468,7 @@ public class IndexController {
         int b = fc + random.nextInt(bc - fc);
         return new Color(r,g,b);
     }
-    
+
     /**
      * Description: <br>
      * 登录成功后跳转页面
@@ -454,7 +488,7 @@ public class IndexController {
                 String judgeCode = (String)request.getSession().getAttribute("strCode");
                 if (!judgeCode.equals(authCode.toUpperCase())) {
                     throw new ServiceException("验证码输入错误");
-                } 
+                }
             }
             user = login(user);
         }
@@ -472,7 +506,7 @@ public class IndexController {
         addUserVisitingLog(user, hostIp, headerData, true);
         return "redirect:home";
     }
-    
+
     /**
      * Description: <br>
      * 添加访问记录日志
@@ -487,7 +521,7 @@ public class IndexController {
         userVisitingLog = userVisitingLog.addUserVisitingLog(user, hostIp, headerData, isLegal);
         userVisitingLogDao.save(userVisitingLog);
     }
-    
+
     /**
      * Description: <br>
      * 退出登录
@@ -501,7 +535,7 @@ public class IndexController {
         CurrentUserUtils.getInstance().loginoutUser(user);
         return "redirect:login";
     }
-	
+
     /**
      * Description: <br>
      * 跳转进入index.jsp页面
@@ -511,7 +545,7 @@ public class IndexController {
 	public String index(){
         return "index.jsp";
     }
-    
+
     /**
      * Description: <br>
      * 跳转进入workbench.jsp页面
@@ -521,7 +555,7 @@ public class IndexController {
 	public String workbench(){
         return "workbench.jsp";
     }
-    
+
     /**
      * Description: <br>
      * 跳转进入menu.jsp页面
@@ -534,7 +568,7 @@ public class IndexController {
         model.addAttribute("flag", flag);
         return "menu.jsp";
     }
-	
+
     /**
      * Description: <br>
      * 用户登录
@@ -562,9 +596,9 @@ public class IndexController {
         }
         return userEntity;
     }
-    
+
     /**
-     * 
+     *
      * Description: <br>
      *  初始化admin
      */
@@ -580,11 +614,79 @@ public class IndexController {
         }
         LOG.info("User init success:"+user.toString());
     }
-	
+
 //	public static void main(String[] args)
 //    {
 //        String admin = EncryptUtils.encryptMD5("paas1234");
 //        System.out.println(admin);
 //       System.out.println(EncryptUtils.encryptMD5(admin));
 //    }
+
+	/**
+	 *
+	 * Description: 获取用户的资源使用信息
+	 *
+	 * @param user
+	 * @see
+	 */
+	private UserInfo getUserInfo(User user) {
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUser(user);
+		UserResource userResource = new UserResource();
+		if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+			userResource = userResourceDao.findByUserId(user.getParent_id());
+		} else {
+			userResource = userResourceDao.findByUserId(user.getId());
+		}
+		userInfo.setUserResource(userResource);
+
+		Integer imageCount = ImageDao.findByCreateBy(user.getId()).size();
+
+		userInfo.setImageCount(imageCount);
+
+		Namespace ns = client.getNamespace(user.getNamespace());
+		if (null == ns) {
+			LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
+			return userInfo;
+		}
+
+		ResourceQuota quota = null;
+		try {
+			quota = client.getResourceQuota(user.getNamespace());
+		} catch (KubernetesClientException e) {
+			e.printStackTrace();
+			return userInfo;
+		}
+
+		if (null != quota) {
+			Map<String, String> hard = quota.getStatus().getHard();
+			userInfo.setServCpuNum(kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
+			userInfo.setServMemoryNum(hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
+			userInfo.setServPodNum(hard.get("pods"));// pod个数
+			userInfo.setServServiceNum(hard.get("services")); // 服务个数
+			userInfo.setServControllerNum(hard.get("replicationcontrollers"));// 副本控制数
+
+			Map<String, String> used = quota.getStatus().getUsed();
+			ReplicationControllerList rcList = client.getAllReplicationControllers();
+			PodList podList = client.getAllPods();
+			userInfo.setUsedCpuNum(Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
+			userInfo.setUsedMemoryNum(Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
+			userInfo.setUsedPodNum((null != podList) ? podList.size() : 0); // 已经使用的POD个数
+			userInfo.setUsedServiceNum((null != rcList) ? rcList.size() : 0);// 已经使用的服务个数
+			double usedstorage = 0;
+			List<Storage> list = storageDao.findByCreateBy(user.getId());
+			for (Storage storage : list) {
+				usedstorage = usedstorage + (double) storage.getStorageSize();
+			}
+			Shera shera = sheraDao.findByUserId(user.getId());
+			userInfo.setUserShera(shera);
+			userInfo.setUsedStorage(usedstorage / 1024);
+
+		} else {
+			LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
+		}
+		return userInfo;
+	}
+
 }

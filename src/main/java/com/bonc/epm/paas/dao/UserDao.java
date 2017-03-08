@@ -15,17 +15,24 @@ import com.bonc.epm.paas.entity.User;
 @Transactional
 @Repository
 public interface UserDao extends CrudRepository<User, Long> {
-	
+
 	public User findByUserName(String userName);
-	
+
 	public User findById(long id);
-	
+
+//	@Query("select u from User u where  i.userName like ?1")
+//	public User searchByUserName(String userName);
+
+
+	@Query("select u from User u where u.user_autority=2")
+	public List<User> findAllTenant();
+
 	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 order by  i.name,i.createDate")
 	public List<Image> findAllFavor(long creator);
-	
+
 	@Query("select i from Image i join i.favorUsers fu where fu.id= ?1 and i.name like ?2 order by  i.name,i.createDate")
 	public Page<Image> findByNameCondition(long creator,String imageName,Pageable request);
-	
+
 	@Query("select u from User u "
 			+ "where 1=1 "
 			+ "and u.company like %?1% "
@@ -35,7 +42,7 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ "and u.user_province like %?5% "
 			+ "and u.parent_id= ?6 ")
 	public List<User> findBy4(String company, String user_department, String user_autority, String user_realname, String user_province, Long parent_id);
-	
+
 	@Query("select u from User u "
 			+ "where 1=1 "
 			+ "and u.company like %?1% "
@@ -43,7 +50,7 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ "and u.user_realname like %?3% "
 			+ "and u.user_province like %?4% ")
 	public List<User> findBy3(String company, String user_department, String user_realname,  String user_province);
-	
+
 	@Query("select u.userName from User u where u.userName = ?1")
 	public List<String> checkUsername(String userName);
 
@@ -57,17 +64,17 @@ public interface UserDao extends CrudRepository<User, Long> {
 	public List<User> checkUsermanage(String user_autority, String user_province);
 
 	/**
-	 * 
+	 *
 	 * Description:
 	 * 查找parent_id下的所有租户和管理员
 	 * @param parent_id Long
-	 * @return List<User> 
+	 * @return List<User>
 	 * @see
 	 */
     @Query("select u from User u "
 			+ "where 1=1 "
 			+ "and u.user_autority in(1,2)"
-			+ "and u.parent_id = ?1") 
+			+ "and u.parent_id = ?1")
     List<User> checkUser(Long parent_id);
 
 	@Query("select u from User u "
@@ -76,10 +83,10 @@ public interface UserDao extends CrudRepository<User, Long> {
 	public List<User> getByParentId(Long parent_id);
 
 	/**
-	 * 
+	 *
 	 * Description:
-	 *  
-	 * @param user_province 
+	 *
+	 * @param user_province
 	 * @return List<User>
 	 * @see
 	 */
@@ -90,17 +97,17 @@ public interface UserDao extends CrudRepository<User, Long> {
 	List<User> checkUsermanage34(String user_province);
 
 	/**
-	 * 
+	 *
 	 * Description:
 	 * parent_id和user_autority
 	 * @param parent_id Long
-	 * @return List<User> 
+	 * @return List<User>
 	 * @see
 	 */
     @Query("select u from User u"
 			+ " where 1=1 "
 			+ " and u.user_autority in(3,4)"
-			+ " and u.parent_id = ?1") 
+			+ " and u.parent_id = ?1")
     List<User> checkUser1manage34(Long parent_id);
 
 	@Query("select u from User u "
@@ -122,4 +129,7 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ "and u.user_province like %?4% "
 			+ "and u.parent_id = ?5 ")
 	public List<User> find34By3(String company, String user_department, String user_realname, String user_province, Long parent_id);
-} 
+
+	@Query("select u from User u  where u.user_autority = 2 and namesapce = ?1")
+	public List<User> findTenant(String namesapce);
+}

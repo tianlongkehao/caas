@@ -67,7 +67,7 @@ $(document).ready(function () {
                     		if (data == null || data == "") {
                     			return "";
                     		}
-                    		var html = "<td><a onmouseover='comExtraInfo(this)' onmouseout='ExtraInfo(this)' comExtraInfo='"+row.extraInfo+"'>"+data+"</a></td>";
+                    		var html = "<td><a class='serviceExtraInfo' onmouseover='comExtraInfo(this)' onmouseout='ExtraInfo(this)' comExtraInfo='"+row.extraInfo+"'>"+data+"</a></td>";
 							return html;
                     	}	
                     },
@@ -109,12 +109,14 @@ $(document).ready(function () {
                    ]
 	});
 })
+var tip_index = 0;
 function comExtraInfo(obj){
 	var comExtraInfo = $(obj).attr('comExtraInfo');
-	layer.tips(comExtraInfo, $(obj) ,{
-		  tips: [2, 'rgba(237,114,114,0.75)'],area: ['640px', '135px'],time:60000}
+	tip_index=layer.tips(comExtraInfo, $(obj) ,{
+		  tips: [3, 'rgba(237,114,114,0.75)'],area: ['550px', '150px'],time:0,tipsMore: true}
 	);
 }
-/*function ExtraInfo(){
-	layer.closeAll('tips'); 
-}*/
+
+function ExtraInfo(obj){
+	layer.close(tip_index); 
+}

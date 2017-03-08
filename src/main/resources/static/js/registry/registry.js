@@ -1,13 +1,21 @@
 $(document).ready(function () {
 	$("#delItemcfg").hide();
 	findImages();
-    $(".images-panel").mouseover(function () {
+	imageTypeSrc();
+    /*$(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
+    });*/
+    
+    $(document).on("mouseover",".images-panel",function(){
+    	$(this).children(".create-item").css("opacity", "1");
+    });
+    $(document).on("mouseout",".images-panel",function(){
+    	$(this).children(".create-item").css("opacity", "0");
     });
 
-    $(".images-panel").mouseout(function () {
+    /*$(".images-panel").mouseout(function () {
         $(this).children(".create-item").css("opacity", "0");
-    });
+    });*/
    
     $(".list_info").click(function () {
         $(".table_list>.list_info").removeClass("active");
@@ -117,7 +125,25 @@ $(document).ready(function () {
          	});
         });
     
-  
+    //镜像中心的搜索功能
+    var searchCon = $("#searchCon").val();
+	var searchCondition = 0;
+    $("#centerSearchImages").click(function(){
+    	$(".searchCenter").addClass("hide");
+    	$(".imagesCenter").addClass("hide");
+    	$(".searchResult").removeClass("hide");
+    	$(".imagesSearchResult").removeClass("hide");
+    	searchCon = $("#centerSearchInput").val();
+    	$("#searchCon").val(searchCon);
+    	searchImagesResult(searchCon,searchCondition);
+    });
+    //镜像搜索结果里的搜索功能
+    $("#searchImages").click(function(){
+    	searchCon = $("#searchCon").val();
+    	searchCondition = $("#searchCondition").val();
+    	searchImagesResult(searchCon,searchCondition);
+    });
+    
    
 });/*ready*/
 
@@ -542,3 +568,103 @@ function syncImages(){
 		}
 	})
 }
+
+//镜像搜索结果
+function searchImagesResult(searchCon,searchCondition){
+	$("#searchImagesList").empty();
+	$(".imagesCenter").addClass("hide");
+	$(".imagesSearchResult").removeClass("hide");
+	var searchCon = $("#searchCon").val();
+	var searchCondition = $("#searchCondition").val();
+	$.ajax({
+		 url : ""+ctx+"/registry/searchImages",
+		 type : "get",
+		 data : {
+			 "match":searchCon,
+			 "type" : searchCondition
+		 },
+		 success : function(data){
+			 console.log(data);
+			 var data = eval("(" + data + ")");
+			 var imageList = data.imageList;
+			 $("#imageSearchCount").html(imageList.length);
+			 var searchImagesHtml ="";
+			 for(var i=0; i< imageList.length; i++){
+				 var imageName = imageList[i].name;
+				 var imageVersion = imageList[i].version;
+				 var imageId = imageList[i].id;
+				 var imageExportCount = "";
+				 if(imageList[i].exportCount == "" || imageList[i].exportCount == null){
+					 imageExportCount = 0;
+				 }else{
+					 imageExportCount = imageList[i].exportCount;
+				 }
+				 
+				 var imageResourceName = imageList[i].resourceName;
+				 var imageRemark = "";
+				 if (imageList[i].remark != null && imageList[i].remark !=""){
+					 imageRemark = imageList[i].remark;
+				 }
+				 var imageSummary = "";
+				 if(imageList[i].summary != null && imageList[i].summary != ""){
+					 imageSummary = imageList[i].summary;
+				 }
+				 var imageSummary
+				 var imageType = imageList[i].imageType;
+				 //搜索结果html
+				 searchImagesHtml += '<li class="images-panel">'+
+									'<div class="select-img">'+
+									'<div class="mir-img ">'+
+										'<img class="imageTypeSrc" imageType="'+imageType+'" src="'+ctx+'/images/image-1.png">'+
+										'<div class="imageInfoText">'+imageRemark+'</div>'+
+									'</div>'+
+								'</div>'+
+								'<div class="select-info">'+
+									'<div class="pull-right-text"><span class="imageCenter-name">'+imageName+'</span>'+
+									'<div class="pull-right">'+
+										'<i class="fa fa-cloud-download" style="color: #e8504f"></i>'+
+										'<span class="cloudNum">'+imageExportCount+'</span>'+
+									'</div>'+
+									'</div>'+
+									
+									'<div>'+
+										'<span class="searchImageVersion" title="'+imageVersion +'"><i class="fa fa-tag"></i> '+imageVersion +'</span>'+
+										'<div class="pull-right">'+
+											'<a href="'+ctx+'/service/add?imageName='+imageName+'&imageVersion='+imageVersion+'&imgID='+imageId+'&resourceName='+imageResourceName+'"'+
+												'class="btn-pull-deploy btn" imageversion="'+imageVersion+'"'+
+												'imagename="'+imageName+'">部署</a>'+
+										'</div>'+
+									'</div>'+
+								'</div>'+
+								'<div class="create-item ">'+
+                                    '<a href="'+ctx+'/registry/detail/'+imageId+'">'+
+                                        '<span class="note-text" > '+imageSummary+' </span>'+
+                                    '</a>'+
+                                '</div>'+
+							'</li>';
+			 }
+			 $("#searchImagesList").append(searchImagesHtml);
+			 imageTypeSrc();
+		 }
+	 });
+}
+
+
+
+//镜像图标imageType=1公有2私有
+function imageTypeSrc(){
+	var images = $(".imageTypeSrc");
+	var imageType1 = ctx+"/images/imageType1.png";
+	var imageType2 = ctx+"/images/imageType2.png";
+	for(var i=0; i< images.length; i++){
+		var imageType = images[i].attributes.imagetype.value;
+		if(imageType==1){
+			images[i].src=imageType1;
+		}else{
+			images[i].src=imageType2;
+		}
+	}
+}
+
+
+

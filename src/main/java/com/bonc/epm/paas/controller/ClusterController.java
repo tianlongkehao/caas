@@ -178,6 +178,33 @@ public class ClusterController {
         return "cluster/cluster-topo.jsp";
     }
     
+    /**
+     * Description: <br>
+     * 进入cluster-route.jsp
+     * @param model 添加返回页面的数据
+     * @return String
+     */
+    @RequestMapping(value = { "/route" }, method = RequestMethod.GET)
+	public String clusterRoute(Model model) {
+       
+        model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "route");
+        return "cluster/cluster-route.jsp";
+    }
+    /**
+     * Description: <br>
+     * 进入cluster-iptables.jsp
+     * @param model 添加返回页面的数据
+     * @return String
+     */
+    @RequestMapping(value = { "/iptables" }, method = RequestMethod.GET)
+	public String clusterIptables(Model model) {
+       
+        model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "iptables");
+        return "cluster/cluster-iptables.jsp";
+    }
+    
     @RequestMapping(value = { "/topo/data.do" }, method = RequestMethod.GET)
     @ResponseBody
     public String clusterTopoData(String nameSpace){

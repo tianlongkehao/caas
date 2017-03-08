@@ -6,6 +6,7 @@
     <title>总览</title>
     <%@include file="frame/header.jsp" %>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-pandect.css"/>
+    <script type="text/javascript" src="<%=path %>/plugins/nicescroll/jquery.nicescroll.js"></script>
 </head>
 <body>
 
@@ -23,8 +24,9 @@
                 </ol>
             </div>
             <div class="contentMain">
-                
+                <input type="hidden" id="curUserAutority" value="${cur_user.user_autority}">
                 <div class="account_table" userID="${user.id }">
+                	<c:if test="${cur_user.user_autority != 1}">
 					<div class="serviceDetailInfo hide">
 	                    <ul>
 		                    <li class="serviceNumInfo blue">
@@ -174,7 +176,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>卷组容量（G）</td>
+                                        <td>存储（G）</td>
                                         <td>
                                             <div class="slider_bj">
                                                 <div class="slider_block detailVolume" id="usedVolume"></div>
@@ -204,25 +206,182 @@
                                 </table>
                             </div>
                         </div>
-
                     </div>
-
+                    </c:if>
+                    <!-- admin总览信息 -->
+                    <c:if test="${cur_user.user_autority == 1}">
+                    		
+                        	<div class="detail-info">
+	                            <div class="info-list fixed-table-header">
+	                                <table class="table" id="table-listing">
+	                                    <thead>
+	                                    <tr class="table-title">
+	                                        <th colspan="6" class="detail-rows">集群资源使用情况</th>
+	                                    </tr>
+	                                    </thead>
+	                                    <tbody>
+	                                    <c:if test="${userInfos != null && userInfos != ''}">
+	                                    <tr style="height:20px"></tr>
+	                                    <tr>
+	                                        <td style="width:15%">CPU（个）</td>
+	                                        <td style="width:25%">
+	                                            <div class="slider_bj">
+	                                                <div class="slider_block detailCpu" id="adminUsedCpu"></div>
+	                                            </div>
+	                                        </td>
+	                                        <td style="width:10%">
+	                                            <span id="adminDetailCpu">${usedCpuCount }</span>/
+	                                            
+	                                            <span id="adminTotalCpu">${cpuCount}</span>（个）
+	                                        </td>
+	                                    </tr>
+	                                    <tr>
+	                                        <td>内存（G）</td>
+	                                        <td>
+	                                            <div class="slider_bj">
+	                                                <div class="slider_block detailMemory" id="adminUsedMemory"></div>
+	                                            </div>
+	                                        </td>
+	                                        <td>
+	                                            <span id="adminDetailMemory">${usedMemoryCount }</span>/<span id="adminTotalMemory">${memoryCount }</span>（G）
+	                                        </td>
+	                                    </tr>
+	                                    <!-- <tr>
+	                                        <td>卷组容量（G）</td>
+	                                        <td>
+	                                            <div class="slider_bj">
+	                                                <div class="slider_block detailVolume" id="adminUsedVolume"></div>
+	                                            </div>
+	                                        </td>
+	                                        <td>
+	                                            <span id="adminDetailVolume"></span>/<span id="adminTotalVolume">100</span>（G）
+	                                        </td>
+	                                    </tr> -->
+	                                    </c:if>
+	                                    </tbody>
+	                                </table>
+	                            </div>
+	                        </div>
+	                        
+	                        <section class="container-count usersResourceInfo">
+		                        <div class="padding">
+		                            <div class="row-title">租户信息</div>
+									
+									<table class="table table-hover usersResourceTable" id="usersResourceTable">
+	                                    <thead>
+	                                    	<tr class="usersInfoTit u-line" style="display:block;padding-right:10px">
+	                                    		<th style="text-indent: -20px;">租户名称</th>
+	                                    		<th>实例个数</th>
+	                                    		<th>服务个数</th>
+	                                    		<th>使用情况</th>
+	                                    		<th>CPU(个)</th>
+	                                    		<th>内存(GB)</th>
+	                                    		<th style="width:130px">存储(GB)</th>
+	                                    	</tr>
+	                                    </thead>
+	                                    <tbody id="userInfosList">
+	                                    	<c:forEach items="${userInfos }" var="userInfos">
+	                                    	<tr>
+	                                    		<td rowspan="3"><a href="<%=path %>/service?userName=${userInfos.user.userName }">${userInfos.user.userName }</a></td>
+	                                    		<td rowspan="3">${userInfos.usedPodNum }</td>
+	                                    		<td rowspan="3"><a href="<%=path %>/service?userName=${userInfos.user.userName }">${userInfos.usedServiceNum }</a></td>
+	                                    		<td>总量</td>
+	                                    		<td class="servCpuNum" value="${userInfos.servCpuNum }">${userInfos.servCpuNum }</td>
+	                                    		<td class="servMemoryNum" value="${userInfos.servMemoryNum }">${userInfos.servMemoryNum }</td>
+	                                    		<td class="servVolNum" value="${userInfos.userResource.vol_size }">${userInfos.userResource.vol_size }</td>
+	                                    	</tr>
+	                                    	<tr>
+	                                    		<td>已使用</td>
+	                                    		<td class="usedCpuNum" value="${userInfos.usedCpuNum }">${userInfos.usedCpuNum }</td>
+	                                    		<td class="usedMemoryNum" value="${userInfos.usedMemoryNum }">${userInfos.usedMemoryNum }</td>
+	                                    		<td class="usedStorage" value="${userInfos.usedStorage }">${userInfos.usedStorage }</td>
+	                                    	</tr>
+	                                    	<tr class="u-line">
+	                                    		<td>未使用</td>
+	                                    		<td>${userInfos.restCpuNum }</td>
+	                                    		<td>${userInfos.restMemoryNum }</td>
+	                                    		<td>${userInfos.restStorage }</td>
+	                                    	</tr>
+	                                    	</c:forEach>
+	                                    </tbody>
+	                                </table> 
+		                        </div>
+		                    </section>
+	                        
+                        </c:if>
                 </div>
-
 
             </div>
         </div>
     </article>
 </div>
 <script type="text/javascript">
-$(function(){
-	var userCpuPer = $("#detailCpu")[0].textContent/$("#totalCpu")[0].textContent*100+"%";
-    $("#usedCpu")[0].style.width = userCpuPer;
-    var userMemPer = $("#detailMemory")[0].textContent/$("#totalMemory")[0].textContent*100+"%";
-    $("#usedMemory")[0].style.width = userMemPer;
-    var userVolPer = $("#detailVolume")[0].textContent/$("#totalVolume")[0].textContent*100+"%";
-    $("#usedVolume")[0].style.width = userVolPer;
-})
+ $(function(){
+	var curUserAutority = $("#curUserAutority").val();
+	if(curUserAutority != 1){
+		var userCpuPer = $("#detailCpu")[0].textContent/$("#totalCpu")[0].textContent*100+"%";
+	    $("#usedCpu")[0].style.width = userCpuPer;
+	    var userMemPer = $("#detailMemory")[0].textContent/$("#totalMemory")[0].textContent*100+"%";
+	    $("#usedMemory")[0].style.width = userMemPer;
+	    var userVolPer = $("#detailVolume")[0].textContent/$("#totalVolume")[0].textContent*100+"%";
+	    $("#usedVolume")[0].style.width = userVolPer;
+	}else{
+		//分配出去的
+		/* var servCpuNum = $(".servCpuNum");
+		var servMemoryNum = $(".servMemoryNum");
+		var servVolNum = $(".servVolNum");
+		var allUsedCpuNum = 0;
+		var allUsedMemoryNum = 0;
+		var allUsedStorageNum = 0;
+		for(var m=0; m<servCpuNum.length;m++){
+			allUsedCpuNum += parseFloat(servCpuNum[m].attributes.value.value);
+		}
+		$("#adminDetailCpu").html(allUsedCpuNum);
+		for(var n=0; n<servMemoryNum.length;n++){
+			allUsedMemoryNum += parseFloat(servMemoryNum[n].attributes.value.value);
+		}
+		$("#adminDetailMemory").html(allUsedMemoryNum);
+		for(var x=0; x<servVolNum.length;x++){
+			allUsedStorageNum += parseFloat(servVolNum[x].attributes.value.value);
+		}
+		$("#adminDetailVolume").html(allUsedStorageNum); */
+		
+		//已经使用的
+		/* var cpuNum = $(".usedCpuNum");
+		var memoryNum = $(".usedMemoryNum");
+		var storageNum = $(".usedStorage");
+		var usedCpuNum = 0;
+		var usedMemoryNum = 0;
+		var usedStorageNum = 0;
+		for(var i=0; i<cpuNum.length;i++){
+			usedCpuNum += parseFloat(cpuNum[i].attributes.value.value);
+		}
+		$("#adminDetailCpu").html(usedCpuNum);
+		
+		for(var j=0; j<memoryNum.length;j++){
+			usedMemoryNum += parseFloat(memoryNum[j].attributes.value.value);
+		}
+		$("#adminDetailMemory").html(usedMemoryNum);
+		
+		for(var k=0; k<storageNum.length;k++){
+			usedStorageNum += parseFloat(storageNum[k].attributes.value.value);
+		}
+		$("#adminDetailVolume").html(usedStorageNum); */
+		
+		var userCpuPer = $("#adminDetailCpu")[0].textContent/$("#adminTotalCpu")[0].textContent*100+"%";
+	    $("#adminUsedCpu")[0].style.width = userCpuPer;
+	    var userMemPer = $("#adminDetailMemory")[0].textContent/$("#adminTotalMemory")[0].textContent*100+"%";
+	    $("#adminUsedMemory")[0].style.width = userMemPer;
+	    /* var userVolPer = $("#adminDetailVolume")[0].textContent/$("#adminTotalVolume")[0].textContent*100+"%";
+	    $("#adminUsedVolume")[0].style.width = userVolPer; */
+	    $('#userInfosList').niceScroll({ cursorcolor: "#ccc" });
+	}
+	
+		/* $('#usersResourceTable').bootstrapTable({
+	      height: "330"
+	    }); */
+}) 
+
 </script>
 </body>
 </html>

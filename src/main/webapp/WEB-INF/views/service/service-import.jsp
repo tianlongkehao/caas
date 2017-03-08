@@ -36,16 +36,19 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="javascript:void(0)" id="importServiceBtn" title="新建"><i
-											class="fa fa-plus"></i></a>  
-									    <a  id="delImportSers"
-											onclick="delImportSers()" title="删除"><i
-											class="fa fa-trash"></i></a>
+										<c:if test="${cur_user.user_autority != 1}">
+											<a href="javascript:void(0)" id="importServiceBtn" title="新建"><i
+												class="fa fa-plus"></i></a>  
+										    <a  id="delImportSers"
+												onclick="delImportSers()" title="删除"><i
+												class="fa fa-trash"></i></a>
+										</c:if>
 										<a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 									</div>
 								</div>
 								<div class="ibox-content">
+								<input type="hidden" value="${cur_user.user_autority}" id="creatorNameValue">
 								<input hidden="ture" value="${namespace}" name="namespace" id="namespace"   />
 									<table class="table table-striped table-hover dataTables-example">
 										<thead>
@@ -56,9 +59,16 @@
 												<th style="width: 18%; padding-left: 5px;">服务名称</th>
 												<th style="width: 20%; text-indent: 8px;">服务访问地址</th>
 												<th style="width: 20%;">外部服务地址</th>
-										    <th style="width: 20%;">代理路径</th>
+										    	<th style="width: 20%;">代理路径</th>
 												<th style="width: 14%;">可见域</th>
-												<th style="width: 10%;" class="del-operation">操作</th>
+												<c:if test="${cur_user.user_autority == 1}">
+													<th style="width: 10%;" class="del-operation">创建人</th>
+												</c:if>
+												<c:if test="${cur_user.user_autority != 1}">
+													<th style="width: 10%;" class="del-operation">操作</th>
+												</c:if>
+												
+												
 											</tr>
 										</thead>
 										<tbody id="importSerList">

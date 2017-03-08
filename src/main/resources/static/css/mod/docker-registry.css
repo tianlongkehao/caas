@@ -9,8 +9,8 @@
     font-size: 13px;
 }
 .search .search-img {
-    height: 45px;
-    width: 80%;
+    height: 40px;
+    width: 86%;
 }
 
 .search .btn-send {
@@ -28,6 +28,7 @@
     position: relative;
     float: left;
     margin: 0 20px 20px;
+    background: #fcfcfc;
 }
 
 .images-panel .select-img {
@@ -144,7 +145,7 @@
 .img-icon {
     width: 175px;
     height: 75px;
-    margin: 32px auto;
+    margin: 24px auto;
     text-align: center;
     overflow: hidden;
 }
@@ -270,6 +271,7 @@
 
 
 .infoLog,
+.infoHistory,
 .infoTags,
 .infoInterface,
 .infoDockerfile {
@@ -280,6 +282,7 @@
 }
 
 .infoLog .detail-contents,
+.infoHistory .detail-contents,
 .infoTags .detail-contents,
 .infoInterface .detail-contents,
 .infoDockerfile .detail-contents {
@@ -289,6 +292,7 @@
 }
 
 .infoLog .detail-contents .envobj-tr,
+.infoHistory .detail-contents .envobj-tr,
 .infoTags .detail-contents .envobj-tr,
 .infoInterface .detail-contents .envobj-tr,
 .infoDockerfile .detail-contents .envobj-tr {
@@ -393,9 +397,6 @@
 	padding-left: 20px;
 	padding-right: 20px;
 }
-#newimageList{
-	margin-top:50px;
-}
 
 .mirror-head .buttons-info {
     float: left;
@@ -405,3 +406,74 @@
     margin-top:10%;
 }
 
+#searchImages{
+	margin-left: -38px;
+    font-size: 20px;
+    color: #ccc;
+}
+.searchCondition{
+    line-height: 40px;
+    height: 40px;
+}
+#searchCon{
+	margin-left: 22px;
+    width: 90%;
+}
+.searchLabel{
+	line-height: 40px;
+    height: 40px;
+    text-align: right;
+    padding-right:0px;
+}
+.searchImageVersion ,.imageCenter-name{
+	width:70%;
+	display:block;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+	float:left;
+}
+span.cloudNum{
+	padding-left:4px;
+}
+.fa-cloud-download span{
+	padding-left:4px;
+}
+.envTableValue{
+	word-break: break-word;
+}
+#dockerFileContent{
+	width: 100%;
+    height: 200px;
+    background-color: #ddd;
+    border: 1px solid #ccc;
+}
+
+#centerSearchImages{
+ 	margin-left: -5px;
+}
+i.searchImage-img{
+ 	position: absolute;
+    font-size: 20px;
+    color: #cdcdcd;
+    line-height: 45px;
+    padding-left: 10px;
+} 
+.centerSearchInput{
+	height:45px!important;
+	line-height:45px!important;
+	text-indent: 34px;
+} 
+.searchCenter{
+	background-color: rgb(242,242,242);
+    padding-top: 30px;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+    margin-top:100px;
+}
+.searchResult{
+	margin-top:134px;
+}
+.breadcrumb li.imageNameTit{
+	width:70%;
+}

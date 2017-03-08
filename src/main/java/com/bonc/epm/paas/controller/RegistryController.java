@@ -18,6 +18,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.aspectj.weaver.ast.Var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.dao.CiRecordDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.FavorDao;
 import com.bonc.epm.paas.dao.ImageDao;
@@ -45,15 +47,21 @@ import com.bonc.epm.paas.docker.exception.ErrorList;
 import com.bonc.epm.paas.docker.model.Images;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.docker.util.DockerRegistryService;
+import com.bonc.epm.paas.entity.CiRecord;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.Image;
+import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavorImages;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateUtils;
 import com.bonc.epm.paas.util.FileUtils;
 import com.bonc.epm.paas.util.ResultPager;
+import com.github.dockerjava.api.command.InspectImageResponse;
+import com.github.dockerjava.api.model.ContainerConfig;
+import com.github.dockerjava.api.model.ExposedPort;
 
 /**
  *
@@ -66,6 +74,9 @@ import com.bonc.epm.paas.util.ResultPager;
 @Controller
 public class RegistryController {
 
+	//镜像广场显示数量
+	private static final int IMAGE_FAVOR = 8;
+	private static final int IMAGE_NEW = 8;
     /**
      * RegistryController 日志实例
      */
@@ -106,6 +117,12 @@ public class RegistryController {
      */
     @Autowired
 	private DockerRegistryService dockerRegistryService;
+
+    /**
+     * CiRecordDao接口
+     */
+    @Autowired
+	private CiRecordDao ciRecordDao;
 
     /**
      * 获取paas.image.path中的镜像下载地址
@@ -230,6 +247,52 @@ public class RegistryController {
             model.addAttribute("menu_flag", "registry");
             return "docker-registry/nodetail.jsp";
         }
+        //获取镜像inspect信息
+        InspectImageResponse iir = null;
+        //计算镜像大小
+        double imageSize = 0;
+        java.text.DecimalFormat   df=new   java.text.DecimalFormat("#.##");
+        List<PortConfig> portList = new ArrayList<>();
+        List<EnvVariable> envList = new ArrayList<>();
+        if (dockerClientService.pullImage(image.getName(), image.getVersion())) {
+        	iir = dockerClientService.inspectImage(image.getImageId(), image.getName(), image.getVersion());
+        	imageSize = iir.getSize() / 1000000.0;
+        	ContainerConfig config = iir.getConfig();
+        	if (config != null) {
+        		//取得端口信息
+        		ExposedPort[] exposedPort = config.getExposedPorts();
+        		if (exposedPort != null) {
+        			for (ExposedPort exposedPort2 : exposedPort) {
+        				PortConfig port = new PortConfig();
+        				port.setContainerPort(exposedPort2.getPort() + "");
+        				port.setProtocol(exposedPort2.getProtocol().toString());
+        				portList.add(port);
+					}
+				}
+
+        		String[] envs = config.getEnv();
+        		if (envs != null) {
+					for (int i = 0; i < envs.length; i++) {
+						String[] envString = envs[i].split("=");
+						EnvVariable env = new EnvVariable();
+						env.setEnvKey(envString[0]);
+						env.setEnvValue(envString[1]);
+						envList.add(env);
+					}
+				}
+
+			}
+        }
+        List<CiRecord> ciHistory = ciRecordDao.findByImageId(image.getId());
+        for (CiRecord ciRecord : ciHistory) {
+        	if (ciRecord.getCreatBy() != 0) {
+        		ciRecord.setCreatorName(userDao.findById(ciRecord.getCreatBy()).getUserName());
+			}
+		}
+        String dockerFileContent =new String();
+        if (ciHistory != null && ciHistory.size() != 0) {
+        	dockerFileContent = ciHistory.get(0).getDockerFileContent();
+		}
         //查询有多少租户收藏当前镜像
         int favorUser = imageDao.findAllUserById(id);
         //查询当前镜像的创建者信息
@@ -251,6 +314,11 @@ public class RegistryController {
             model.addAttribute("creator", user.getUserName());
         }
         model.addAttribute("whetherFavor", whetherFavor);
+        model.addAttribute("imageSize",df.format(imageSize));
+        model.addAttribute("portList",portList);
+        model.addAttribute("envList",envList);
+        model.addAttribute("dockerFileContent",dockerFileContent);
+        model.addAttribute("ciHistory",ciHistory);
         model.addAttribute("image", image);
         model.addAttribute("favorUser",favorUser);
         model.addAttribute("menu_flag", "registry");
@@ -474,10 +542,13 @@ public class RegistryController {
                 MultivaluedMap<String, Object> mult = client.getManifestofImage(image.getName(), image.getVersion());
                 if (null != mult.get("Etag") && mult.get("Etag").size() > 0) {
                     for (Object oneRow : mult.get("Etag")) {
-                        ErrorList errors = client.deleteManifestofImage(image.getName(), String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
-/*                        if (null == errors) {
-                            isDeleteFlag = true;
-                        }*/
+
+                        ErrorList errors = null;
+						try {
+							errors = client.deleteManifestofImage(image.getName(), String.valueOf(oneRow).substring(1, String.valueOf(oneRow).length()-1));
+						} catch (Exception e) {
+                        	LOG.info("delete Manifest of Image error:" + e.getMessage());
+						}
                         LOG.info("delete image, docker regsitry API return msg: -"+JSON.toJSONString(errors));
                     }
                 }
@@ -702,36 +773,82 @@ public class RegistryController {
 	 * @see
 	 */
 	@RequestMapping("registry/imageShow")
-	public String findUserFavorImage(Model model){
-	    long userId = CurrentUserUtils.getInstance().getUser().getId();
-	    List<Image> imageList = imageDao.findAllUserFavor();
-	    List<Image> newImage = new ArrayList<>();
-	    Page<Image> imagePage =  imageDao.findByImageType(userId, null);
-	    if (imageList.size() < 8) {
-	       while (imageList.size() < 8) {
-	           imageList.add(imagePage.getContent().get(10-imageList.size()));
-	       }
-	    }
+	public String showAllImages(Model model) {
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		//获取收藏镜像列表
+		List<Image> images = imageDao.findAllUserFavor();
+		List<Image> imageList = new ArrayList<>();
+		int sizefavor = IMAGE_FAVOR;
+		if (IMAGE_FAVOR > images.size()) {
+			sizefavor = images.size();
+		}
+		for (int i = 0; i < sizefavor; i++) {
+			imageList.add(images.get(i));
+		}
+		for (Image image : imageList) {
+			image.setCurrUserFavorCount(image.getFavorUsers().size());
+		}
 
-	    for (Image image : imageList) {
-	        image.setCurrUserFavorCount(image.getFavorUsers().size());
-	    }
+		Collections.sort(imageList, new Comparator<Image>() {
+			public int compare(Image arg0, Image arg1) {
+				return arg1.getCurrUserFavorCount().compareTo(arg0.getCurrUserFavorCount());
+			}
+		});
 
-	    Collections.sort(imageList,new Comparator<Image>(){
-            public int compare(Image arg0, Image arg1) {
-                return arg1.getCurrUserFavorCount().compareTo(arg0.getCurrUserFavorCount());
-            }
-        });
+		//获取最新镜像列表
+		List<Image> newImage = new ArrayList<>();
+		Page<Image> imagePage = imageDao.findByImageType(userId, null);
+		int sizenew = IMAGE_NEW;
+		if (IMAGE_NEW > imagePage.getContent().size()) {
+			sizenew = imagePage.getContent().size();
+		}
+		for (int i = 0; i < sizenew; i++) {
+			newImage.add(imagePage.getContent().get(i));
+		}
+		for (Image image : newImage) {
+			image.setCurrUserFavorCount(image.getFavorUsers().size());
+		}
 
-	    for (int i= 0 ; i < 8 ; i++) {
-	        newImage.add(imagePage.getContent().get(i));
-	    }
-
-	    addCurrUserFavor(imageList);
-	    addCurrUserFavor(newImage);
-	    model.addAttribute("imageList", imageList);
-	    model.addAttribute("newImage",newImage);
-	    return "imageShow.jsp";
+		addCurrUserFavor(imageList);
+		addCurrUserFavor(newImage);
+		model.addAttribute("imageList", imageList);
+		model.addAttribute("newImage", newImage);
+		return "imageShow.jsp";
 	}
+
+	/**
+	 * Description: <br>
+	 * 镜像广场中的镜像搜索
+	 *
+	 * @param model
+	 * @return
+	 * @see
+	 */
+	@RequestMapping("registry/searchImages")
+    @ResponseBody
+	public String searchImages(Model model, String match, Integer type) {
+		Map<String, Object> map = new HashMap<>();
+		long userId = CurrentUserUtils.getInstance().getUser().getId();
+		List<Image> imageList = new ArrayList<>();
+		switch (type) {
+		case 0:
+			imageList = imageDao.findByNameCondition("%"+match+"%",userId);
+			break;
+		case 1:
+			imageList = imageDao.findByNameConditionOrderbyexportCount("%"+match+"%",userId);
+			break;
+		case 2:
+			imageList = imageDao.findByNameConditionOrderbycreateDate("%"+match+"%",userId);
+			break;
+		default:
+			imageList = imageDao.findByNameCondition("%"+match+"%",userId);
+			break;
+		}
+		map.put("imageList", imageList);
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+
+	}
+
 
 }

@@ -11,7 +11,7 @@
 	<jsp:include page="../frame/bcm-menu.jsp" flush="true" >
         <jsp:param name="registry" value="0" />
     </jsp:include>
-    
+
 	 <div class="page-container">
         <article>
             <div class="page-main">
@@ -21,17 +21,22 @@
                         <li><i class="fa fa-angle-right"></i></li>
                         <li class="active">镜像</li>
                         <li><i class="fa fa-angle-right"></i></li>
-                        <li class="active">${image.name} </li>
+                        <li class="active imageNameTit">${image.name} </li>
                     </ol>
                     <input type="hidden" id = "imageId" value = "${image.id }" name = "imageId">
                     <input type="hidden" id = "editImage" value = "${editImage }" name = "editImage">
                 </div>
                 <div class="contentMain">
-                	
+
                     <div class="mirror-head">
                         <section class="images">
                             <div class="img-icon">
-                                <img class="imgIcon" src="<%=path %>/images/image-1.png" style="max-width:80%;">
+                            	<c:if test="${image.imageType == 1 }">
+                            		<img class="imgIcon" src="<%=path %>/images/imageType1.png" width="80px">
+                            	</c:if>
+                                <c:if test="${image.imageType == 2 }">
+                            		<img class="imgIcon" src="<%=path %>/images/imageType2.png" width="80px">
+                            	</c:if>
                             </div>
                         </section>
                         <section class="type-info">
@@ -84,6 +89,9 @@
                         <div class="col-md-8">
                             <div class="table_list">
                                 <div class="list_info INFO active">信息</div>
+                                <div class="list_info ISERVICE">服务接口</div>
+                                <div class="list_info IDOCKERFILE">Dockerfile</div>
+                                <div class="list_info IHISTORY">构建历史</div>
                                 <div class="list_info TAGS">版本</div>
                                <!--  <div id="serviceInfo" class="list_info INTERFACE">服务接口</div>
                                 <div class="list_info Dockerfile">Dockerfile</div> -->
@@ -111,63 +119,93 @@
                                     <br>
                                 </div>
                             </section>
-                            <section class="infoTags hide">
+
+                            <section class="infoInterface hide">
                                 <div class="detail-contents">
-                                    <p><i class="fa fa-tag"></i> ${image.version }</p>
-                                </div>
-                            </section>
-                            <!-- <section class="infoInterface hide">
-                                <div class="detail-contents">
-                                    <p><b>容器端口：<span>3306/tcp</span></b></p>
-                                    <p><b>数据存储卷：<span>/var/lib/mysql</span></b></p>
+                                    <p><b>容器端口：</b></p>
+                                    <table class="table table-hover" id="portTable" style="border:1px solid #eee;">
+                                        <tbody>
+                                        <tr style="background:#F5F6F6">
+                                            <th>端口</th>
+                                            <th>协议</th>
+                                        </tr>
+                                        <c:forEach items="${portList }" var = "port">
+                                        <tr class="envobj-tr">
+                                            <td>${port.containerPort }</td>
+                                            <td>${port.protocol }</td>
+                                        </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
+                                    <!-- <p><b>数据存储卷：<span>/var/lib/mysql</span></b></p> -->
                                     <p><b><b>所需环境变量：</b></b></p>
-                                    <table class="table table-hover" id="editTable" style="border:1px solid #eee;">
+                                    <table class="table table-hover" id="envTable" style="border:1px solid #eee;">
                                         <tbody>
                                         <tr style="background:#F5F6F6">
                                             <th>变量名</th>
                                             <th>默认值</th>
                                         </tr>
+                                        <c:forEach items="${envList}" var="env">
                                         <tr class="envobj-tr">
-                                            <td>PATH</td>
-                                            <td>/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</td>
+                                            <td>${env.envKey }</td>
+                                            <td class="envTableValue">${env.envValue }</td>
                                         </tr>
-                                        <tr class="envobj-tr">
-                                            <td>DEBIAN_FRONTEND</td>
-                                            <td>noninteractive</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>MYSQL_USER</td>
-                                            <td>admin</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>MYSQL_PASS</td>
-                                            <td>**Random**</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>REPLICATION_MASTER</td>
-                                            <td>**False**</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>REPLICATION_SLAVE</td>
-                                            <td>**False**</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>REPLICATION_USER</td>
-                                            <td>replica</td>
-                                        </tr>
-                                        <tr class="envobj-tr">
-                                            <td>REPLICATION_PASS</td>
-                                            <td>replica</td>
-                                        </tr>
+                                        </c:forEach>
                                         </tbody>
                                     </table>
                                 </div>
                             </section>
                             <section class="infoDockerfile hide">
                                 <div class="detail-contents">
+                                	<c:if test="${dockerFileContent == null || dockerFileContent == ''}">
+                                		 这个镜像不提供Dockerfile。
+                                	</c:if>
+                               		<c:if test="${dockerFileContent != null && dockerFileContent != ''}">
+                                		 <textarea id="dockerFileContent">${dockerFileContent}</textarea>
+                                	</c:if>
                                 </div>
-                            </section> -->
-                           
+                            </section>
+                            <section class="infoHistory hide">
+                                <div class="detail-contents">
+                                	<c:if test="${fn:length(ciHistory) == 0}">
+                                		 此镜像无构建历史。
+                                	</c:if>
+                               		<c:if test="${fn:length(ciHistory) != 0}">
+                                	<table class="table table-hover" id="historyTable" style="border:1px solid #eee;">
+                                        <tbody>
+                                        <tr style="background:#F5F6F6">
+                                            <th>构建名称</th>
+                                            <th>构建版本</th>
+                                            <th>构建结果</th>
+                                            <th>构建时长</th>
+                                            <th>创建者</th>
+                                            <th>构建时间</th>
+                                        </tr>
+                                        <c:forEach items="${ciHistory}" var="ciHistory">
+                                        <tr class="envobj-tr">
+                                            <td>${ciHistory.ciName }</td>
+                                            <td>${ciHistory.ciVersion }</td>
+                                            <td>
+                                            <c:if test="${ciHistory.constructResult ==1 }">成功</c:if>
+                                            <c:if test="${ciHistory.constructResult ==2 }">失败</c:if>
+                                            <c:if test="${ciHistory.constructResult ==3 }">构建中</c:if>
+                                            </td>
+                                            <td>${ciHistory.constructTime }s</td>
+                                            <td>${ciHistory.creatorName }</td>
+                                            <td>${ciHistory.constructDate }</td>
+                                        </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
+                                    </c:if>
+                                </div>
+                            </section>
+                            <section class="infoTags hide">
+                                <div class="detail-contents">
+                                    <p><i class="fa fa-tag"></i> ${image.version }</p>
+                                </div>
+                            </section>
+
                         </div>
                         <div class="col-md-4">
                             <ul class="registry-attr">
@@ -179,9 +217,14 @@
                                 	<c:if test="${image.imageType==2 }">
                                 		<p><i class="fa_attr_s"></i><span>属性:&nbsp;&nbsp;&nbsp;&nbsp; 私有</span></p>
                                 	</c:if>
-                                    <p><i class="fa_attr_size"></i><span>大小:&nbsp;&nbsp;&nbsp;&nbsp; 112M</span></p>
+                                    <p><i class="fa_attr_size"></i><span>大小:&nbsp;&nbsp;&nbsp;&nbsp; ${imageSize }M</span></p>
                                     <p><i class="fa fa-star-o"></i><span>收藏数:&nbsp;&nbsp;&nbsp;&nbsp; ${favorUser } 个人收藏了该镜像</span></p>
-                                    <p><i class="fa_attr_download"></i><span>导出数:&nbsp;&nbsp;&nbsp;&nbsp; ${image.exportCount } 次导出了该镜像</span></p>
+                                    <c:if test="${image.exportCount == null || image.exportCount == ''}">
+                                    	<p><i class="fa_attr_download"></i><span>导出数:&nbsp;&nbsp;&nbsp;&nbsp; 0 次导出了该镜像</span></p>
+                                    </c:if>
+                                    <c:if test="${image.exportCount != null && image.exportCount != ''}">
+                                    	<p><i class="fa_attr_download"></i><span>导出数:&nbsp;&nbsp;&nbsp;&nbsp; ${image.exportCount } 次导出了该镜像</span></p>
+                                    </c:if>
                                     <p><i class="fa_datetime"></i><span>创建时间: ${image.createDate }</span></p>
                                 </li>
                             </ul>

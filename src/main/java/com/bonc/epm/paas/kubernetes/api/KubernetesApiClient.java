@@ -5,9 +5,6 @@ import java.util.Map;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
@@ -32,12 +29,10 @@ import com.google.common.base.Joiner;
 
 public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
-    private static final Log LOG = LogFactory.getLog(KubernetesApiClient.class);
-
     private String endpointURI;
     private KubernetesAPI api;
     private String namespace;
-    
+
     public KubernetesApiClient(String namespace,String endpointUrl, String username, String password, RestFactory factory) {
     	this.endpointURI = endpointUrl+"api/" + KubernetesAPIClientInterface.VERSION;
         this.namespace = namespace;
@@ -64,7 +59,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
     }
-    
+
     public PodList getAllPods() throws KubernetesClientException {
         try {
             return api.getAllPods(namespace);
@@ -184,14 +179,14 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
     }
-    
+
     public Service updateService(String name,Service service) throws KubernetesClientException {
         try {
             return api.updateService(namespace, name, service);
         } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
         }
-        
+
     }
 
 	public Namespace getNamespace(String name) throws KubernetesClientException {
@@ -229,37 +224,37 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
 	}
-	
+
 	public String getPodLog(String name,String container, Boolean previous,
-			Boolean timestamps, Integer tailLines) throws KubernetesClientException {
+			Boolean timestamps, Integer tailLines, Integer limitBytes) throws KubernetesClientException {
 		try {
 			return api.getPodLog(namespace, name, container,
-					previous, timestamps, tailLines);
+					previous, timestamps, tailLines, limitBytes);
 		} catch (WebApplicationException e) {
 			throw new KubernetesClientException(e);
 		}
 	}
 
 	public String getPodLog(String name,String container, Boolean previous,
-			Boolean timestamps) throws KubernetesClientException {
+			Boolean timestamps, Integer limitBytes) throws KubernetesClientException {
 		try {
 			return api.getPodLog(namespace, name, container,
-					previous, timestamps);
+					previous, timestamps, limitBytes);
 		} catch (WebApplicationException e) {
 			throw new KubernetesClientException(e);
 		}
 	}
-	
+
 	public String getPodLog(String name,String container, Boolean previous,
-			String sinceTime, Boolean timestamps) throws KubernetesClientException {
+			String sinceTime, Boolean timestamps, Integer limitBytes) throws KubernetesClientException {
 		try {
 			return api.getPodLog(namespace, name, container,
-					previous, sinceTime, timestamps);
+					previous, sinceTime, timestamps, limitBytes);
 		} catch (WebApplicationException e) {
 			throw new KubernetesClientException(e);
 		}
 	}
-	
+
 	public LimitRange getLimitRange(String name) throws KubernetesClientException {
         try {
             return api.getLimitRange(namespace,name);
@@ -306,7 +301,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
     }
-    
+
     public ResourceQuota getResourceQuota(String name) throws KubernetesClientException {
         try {
             return api.getResourceQuota(namespace,name);
@@ -319,7 +314,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
     public ResourceQuotaList getAllResourceQuotas() throws KubernetesClientException {
         try {
-            return api.getAllResourceQuotas(namespace);
+            return api.getAllResourceQuotas();
         } catch (NotFoundException e) {
             return new ResourceQuotaList();
         } catch (WebApplicationException e) {
@@ -408,7 +403,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     		throw new KubernetesClientException(e);
     	}
     }
-    
+
     @Override
     public Node getSpecifiedNode(String name) throws KubernetesClientException {
         try {

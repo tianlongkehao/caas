@@ -30,7 +30,7 @@ import com.bonc.epm.paas.entity.RefService;
 public interface RefServiceDao extends CrudRepository<RefService, Long>{
 
     /**
-     * 
+     *
      * Description: 查询出用户自己创建的且有权查看的数据
      * @param byCreate 创建者
      * @param viDomain 可见域
@@ -47,22 +47,22 @@ public interface RefServiceDao extends CrudRepository<RefService, Long>{
      */
     List<RefService> findByCreateByAndSerName(long byCreate,String name);
     /**
-     * 
+     *
      * 根据服务名查询服务
      * @param name
      * @return List<RefService>
      * @see
      */
     List<RefService> findBySerName(String name);
-    
+
     /**
      * 查询所有的映射端口信息
      * @return HashSet
      * @see
      */
-    @Query("select rs.nodePort from RefService rs") 
+    @Query("select rs.nodePort from RefService rs")
     HashSet<Integer> findPortSets();
-    
+
     /**
      * Description: <br>
      * 根据创建者id查询当前租户的服务
@@ -71,4 +71,8 @@ public interface RefServiceDao extends CrudRepository<RefService, Long>{
      * @see
      */
     List<RefService> findByCreateBy(long userId);
+
+    @Override
+	@Query("select i from RefService i, User u where i.createBy = u.id")
+    Iterable<RefService> findAll();
 }

@@ -52,11 +52,11 @@ import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 
 public interface KubernetesAPI {
-	
+
 	/* resourcequota API */
 	/**
      * Get a resourcequota Info
-     * 
+     *
      * @param controllerId
      *            id of the resourcequota
      * @return {@link ResourceQuota}
@@ -71,18 +71,18 @@ public interface KubernetesAPI {
 
     /**
      * Get all resourcequotas.
-     * 
+     *
      * @return {@link ResourceQuota}s
      * @throws KubernetesClientException
      */
     @GET
-    @Path("/namespaces/{namespace}/resourcequotas")
+    @Path("/resourcequotas")
     @Consumes(MediaType.APPLICATION_JSON)
-    public ResourceQuotaList getAllResourceQuotas(@PathParam("namespace")String namespace) throws KubernetesClientException;
+    public ResourceQuotaList getAllResourceQuotas() throws KubernetesClientException;
 
     /**
      * Create a new resourcequota
-     * 
+     *
      * @param controller
      *            controller to be created
      * @throws KubernetesClientException
@@ -95,7 +95,7 @@ public interface KubernetesAPI {
 
     /**
      * Update a resourcequota
-     * 
+     *
      * @param controllerId
      *            id of the controller to be updated
      * @param controller
@@ -111,7 +111,7 @@ public interface KubernetesAPI {
 
     /**
      * Delete a resourcequota.
-     * 
+     *
      * @param replication
      *            controller id controller id to be deleted.
      * @throws KubernetesClientException
@@ -121,11 +121,11 @@ public interface KubernetesAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     public ResourceQuota deleteResourceQuota(@PathParam("namespace")String namespace,@PathParam("name") String name)
             throws KubernetesClientException;
-	
+
 	/* limitrange API */
 	/**
      * Get a limitrange Info
-     * 
+     *
      * @param controllerId
      *            id of the limitrange
      * @return {@link LimitRange}
@@ -139,7 +139,7 @@ public interface KubernetesAPI {
 
     /**
      * Get all limitranges.
-     * 
+     *
      * @return {@link LimitRange}s
      * @throws KubernetesClientException
      */
@@ -150,7 +150,7 @@ public interface KubernetesAPI {
 
     /**
      * Create a new limitrange
-     * 
+     *
      * @param controller
      *            controller to be created
      * @throws KubernetesClientException
@@ -163,7 +163,7 @@ public interface KubernetesAPI {
 
     /**
      * Update a limitrange
-     * 
+     *
      * @param controllerId
      *            id of the controller to be updated
      * @param controller
@@ -179,7 +179,7 @@ public interface KubernetesAPI {
 
     /**
      * Delete a limitrange.
-     * 
+     *
      * @param replication
      *            controller id controller id to be deleted.
      * @throws KubernetesClientException
@@ -192,7 +192,7 @@ public interface KubernetesAPI {
 
     /**
      * Get all Namespaces
-     * 
+     *
      * @return Namespaces
      * @throws KubernetesClientException
      */
@@ -201,12 +201,12 @@ public interface KubernetesAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public NodeList getAllNodes() throws KubernetesClientException;
-    
+
 	/* Namespace API */
 
     /**
      * Get information of a Namespace given the NamespaceID
-     * 
+     *
      * @param podId
      *            id of the pod
      * @return {@link Namespace}
@@ -220,7 +220,7 @@ public interface KubernetesAPI {
 
     /**
      * Get all Namespaces
-     * 
+     *
      * @return Namespaces
      * @throws KubernetesClientException
      */
@@ -232,7 +232,7 @@ public interface KubernetesAPI {
 
     /**
      * Create a new Namespace
-     * 
+     *
      * @param namespace
      *            Namespace to be created
      * @throws KubernetesClientException
@@ -245,7 +245,7 @@ public interface KubernetesAPI {
 
     /**
      * Delete a Namespace
-     * 
+     *
      * @param namespaceId
      *            Id of the Namespace to be deleted
      * @throws KubernetesClientException
@@ -259,7 +259,7 @@ public interface KubernetesAPI {
 
     /**
      * Get information of a Pod given the PodID
-     * 
+     *
      * @param podId
      *            id of the pod
      * @return {@link Pod}
@@ -273,7 +273,7 @@ public interface KubernetesAPI {
 
     /**
      * Get all Pods
-     * 
+     *
      * @return Pods
      * @throws KubernetesClientException
      */
@@ -282,10 +282,10 @@ public interface KubernetesAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PodList getAllPods(@PathParam("namespace")String namespace) throws KubernetesClientException;
-    
+
     /**
      * Get labelSelector Pods
-     * 
+     *
      * @return Pods
      * @throws KubernetesClientException
      */
@@ -297,7 +297,7 @@ public interface KubernetesAPI {
 
     /**
      * Create a new Pod
-     * 
+     *
      * @param pod
      *            Pod to be created
      * @throws KubernetesClientException
@@ -310,7 +310,7 @@ public interface KubernetesAPI {
 
     /**
      * Delete a Pod
-     * 
+     *
      * @param podId
      *            Id of the Pod to be deleted
      * @throws KubernetesClientException
@@ -319,7 +319,7 @@ public interface KubernetesAPI {
     @Path("/namespaces/{namespace}/pods/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Pod deletePod(@PathParam("namespace")String namespace,@PathParam("name") String name) throws KubernetesClientException;
-    
+
     /**
      * get pod log
      * @param namespace
@@ -338,10 +338,11 @@ public interface KubernetesAPI {
     		@QueryParam("container")String container,
     		@QueryParam("previous")Boolean previous, 			//Return previous terminated container logs. Defaults to false.
     		@QueryParam("timestamps")Boolean timestamps,
-    		@QueryParam("tailLines")Integer tailLines
-    		) 
+    		@QueryParam("tailLines")Integer tailLines,
+    		@QueryParam("limitBytes")Integer limitBytes
+    		)
     		throws KubernetesClientException;
-    
+
     /**
      * get pod log
      * @param namespace
@@ -358,10 +359,11 @@ public interface KubernetesAPI {
     public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name,
     		@QueryParam("container")String container,
     		@QueryParam("previous")Boolean previous, 			//Return previous terminated container logs. Defaults to false.
-    		@QueryParam("timestamps")Boolean timestamps
-    		) 
+    		@QueryParam("timestamps")Boolean timestamps,
+    		@QueryParam("limitBytes")Integer limitBytes
+    		)
     		throws KubernetesClientException;
-    
+
     /**
      * get pod log
      * @param namespace
@@ -380,8 +382,9 @@ public interface KubernetesAPI {
     		@QueryParam("container")String container,
     		@QueryParam("previous")Boolean previous, 			//Return previous terminated container logs. Defaults to false.
     		@QueryParam("sinceTime")String sinceTime,
-    		@QueryParam("timestamps")Boolean timestamps
-    		) 
+    		@QueryParam("timestamps")Boolean timestamps,
+    		@QueryParam("limitBytes")Integer limitBytes
+    		)
     		throws KubernetesClientException;
 
     /**
@@ -394,13 +397,14 @@ public interface KubernetesAPI {
     @GET
     @Path("/namespaces/{namespace}/pods/{name}/log")
     @Consumes(MediaType.APPLICATION_JSON)
-    public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name) 
+    public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name,
+    		@QueryParam("limitBytes")Integer limitBytes)
     		throws KubernetesClientException;
     /* Replication Controller API */
 
     /**
      * Get a Replication Controller Info
-     * 
+     *
      * @param controllerId
      *            id of the Replication Controller
      * @return {@link ReplicationController}
@@ -414,7 +418,7 @@ public interface KubernetesAPI {
 
     /**
      * Get all Replication Controllers.
-     * 
+     *
      * @return {@link ReplicationController}s
      * @throws KubernetesClientException
      */
@@ -425,7 +429,7 @@ public interface KubernetesAPI {
 
     /**
      * Create a new Replication Controller
-     * 
+     *
      * @param controller
      *            controller to be created
      * @throws KubernetesClientException
@@ -439,7 +443,7 @@ public interface KubernetesAPI {
     /**
      * Convenience method to update the number of replicas in a Replication
      * Controller.
-     * 
+     *
      * @param controllerId
      *            id of the controller to be updated
      * @param replicas
@@ -454,7 +458,7 @@ public interface KubernetesAPI {
 
     /**
      * Update a Replication Controller
-     * 
+     *
      * @param controllerId
      *            id of the controller to be updated
      * @param controller
@@ -470,7 +474,7 @@ public interface KubernetesAPI {
 
     /**
      * Delete a Replication Controller.
-     * 
+     *
      * @param replication
      *            controller id controller id to be deleted.
      * @throws KubernetesClientException
@@ -485,7 +489,7 @@ public interface KubernetesAPI {
 
     /**
      * Get the Service with the given id.
-     * 
+     *
      * @param serviceId
      *            id of the service.
      * @return {@link Service}
@@ -498,7 +502,7 @@ public interface KubernetesAPI {
 
     /**
      * Get all the services.
-     * 
+     *
      * @return array of {@link Service}s
      * @throws KubernetesClientException
      */
@@ -509,7 +513,7 @@ public interface KubernetesAPI {
 
     /**
      * Create a new Kubernetes service.
-     * 
+     *
      * @param service
      *            service to be created.
      * @throws KubernetesClientException
@@ -521,7 +525,7 @@ public interface KubernetesAPI {
 
     /**
      * Delete a Service.
-     * 
+     *
      * @param serviceId
      *            service id to be deleted.
      * @throws KubernetesClientException
@@ -536,10 +540,10 @@ public interface KubernetesAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     public Service updateService(@PathParam("namespace") String namespace,@PathParam("name") String name,
                                  Service service) throws KubernetesClientException;
-    
+
     /**
      * Create a new Kubernetes endpoints.
-     * 
+     *
      * @param endpoints
      *            endpoints to be created.
      * @throws KubernetesClientException
@@ -549,16 +553,16 @@ public interface KubernetesAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     public Endpoints createEndpoints(@PathParam("namespace")String namespace,
                                      Endpoints endpoints) throws KubernetesClientException;
-    
+
     @PUT
     @Path("/namespaces/{namespace}/endpoints/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Endpoints updateEndpoints(@PathParam("namespace")String namespace,@PathParam("name") String name, 
+    public Endpoints updateEndpoints(@PathParam("namespace")String namespace,@PathParam("name") String name,
                                      Endpoints endpoints) throws KubernetesClientException;
-    
+
     /**
      * Get all the endpoints.
-     * 
+     *
      * @return array of {@link Endpoints}s
      * @throws KubernetesClientException
      */
@@ -566,10 +570,10 @@ public interface KubernetesAPI {
     @Path("/namespaces/{namespace}/endpoints")
     @Consumes(MediaType.APPLICATION_JSON)
     public EndpointsList getAllEndpoints(@PathParam("namespace")String namespace) throws KubernetesClientException;
-    
+
     /**
      * Get the Endpoints with the given id.
-     * 
+     *
      * @param endpointsId
      *            id of the endpoints.
      * @return {@link Endpoints}
@@ -582,7 +586,7 @@ public interface KubernetesAPI {
 
     /**
      * Create a new secret
-     * 
+     *
      * @param secret
      *            Secret to be created
      * @throws KubernetesClientException
@@ -591,10 +595,10 @@ public interface KubernetesAPI {
     @Path("/namespaces/{namespace}/secrets")
     @Consumes(MediaType.APPLICATION_JSON)
     public Secret createSecret(@PathParam("namespace")String namespace, Secret secret) throws KubernetesClientException;
-    
+
 	/**
 	 * read the specified Node
-	 * 
+	 *
 	 * @param name
 	 *            name of the node
 	 * @throws KubernetesClientException

@@ -9,8 +9,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -46,15 +44,10 @@ import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.github.dockerjava.api.model.Ports;
-
-import io.netty.util.internal.StringUtil;
 
 @org.springframework.stereotype.Service
 public class KubernetesClientService {
-	
-	private static final Log log = LogFactory.getLog(KubernetesClientService.class);
-	
+
 	@Value("${kubernetes.api.endpoint}")
 	private String endpoint;
 	@Value("${kubernetes.api.username}")
@@ -67,16 +60,18 @@ public class KubernetesClientService {
     private String endPort;
 	@Value("${kubernetes.api.address}")
 	private String address;
-	
+
 	/**
      * 内存和cpu的比例大小
      */
     @Value("${ratio.memtocpu}")
     public String RATIO_MEMTOCPU = "4";
-    
+
     public static final Integer INITIAL_DELAY_SECONDS= 30*60;
     public static final Integer TIME_SECONDS = 5;
-    
+
+    public static final String adminNameSpace = "kube-system";
+
     @Autowired
     public ServiceController serviceController;
 	public int getK8sEndPort() {
@@ -97,12 +92,12 @@ public class KubernetesClientService {
 	public int getK8sStartPort(){
 		return Integer.valueOf(startPort);
 	}
-	
+
 	public KubernetesAPIClientInterface getClient() {
 		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
         return getClient(namespace);
     }
-	
+
     public KubernetesAPIClientInterface getClient(String namespace) {
         return new KubernetesApiClient(namespace,endpoint, username, password,new RestFactory());
     }
@@ -110,7 +105,7 @@ public class KubernetesClientService {
     /*public static void main(String[] args) {
 
 			KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("admin");
-			
+
 	    	try{
 	    		client.updateReplicationController("bonctest1", 1);
 				ReplicationControllerList list = client.getAllReplicationControllers();
@@ -118,18 +113,18 @@ public class KubernetesClientService {
 	    	}catch(KubernetesClientException e){
 	    		System.out.println(e.getMessage()+":"+JSON.toJSONString(e.getStatus()));
 	    	}
-			
+
 			//获取特殊条件的pods
 			Map<String,String> map = new HashMap<String,String>();
 	    	map.put("app", "helloworld001");
 	    	PodList podList = client.getLabelSelectorPods(map);
 	    	System.out.println("podList:"+JSON.toJSONString(podList));
-			
+
 			//更新容器
 			client.updateReplicationController("bonctest1", 1);
 			ReplicationControllerList list = client.getAllReplicationControllers();
 			System.out.println("ReplicationControllerList:"+JSON.toJSONString(list));
-			
+
 			//创建命名空间
 			Namespace namespace = KubernetesClientUtil.generateSimpleNamespace("bonc");
 			namespace = client.createNamespace(namespace);
@@ -137,26 +132,26 @@ public class KubernetesClientService {
 			//查询命名空间
 			Namespace namespace = client.getNamespace("bonc");
 			System.out.println("namespace:"+JSON.toJSONString(namespace));
-			
+
 			//创建容器
 			ReplicationController controller = KubernetesClientUtil.generateSimpleReplicationController("bonctest1",3,"10.0.93.25:5000/bonc/hw8:latest",8080);
 			controller = client.createReplicationController(controller);
 			System.out.println("controller:"+JSON.toJSONString(controller));
-			
+
 			ReplicationControllerList list = client.getAllReplicationControllers();
 			System.out.println("ReplicationControllerList:"+JSON.toJSONString(list));
-			
-			
+
+
 			PodList podList = client.getAllPods();
 			System.out.println("podList:"+JSON.toJSONString(podList));
 
 			Service service = KubernetesClientUtil.generateService("bonctest1",80,8080);
 			service = client.createService(service);
 			System.out.println("service:"+JSON.toJSONString(service));
-			
+
 			ServiceList serviceList = client.getAllServices();
 			System.out.println("serviceList:"+JSON.toJSONString(serviceList));
-			
+
 			Map<String,String> map = new HashMap<String,String>();
 	    	map.put("memory", "1Gi");
 	    	map.put("cpu", "20");
@@ -165,25 +160,25 @@ public class KubernetesClientService {
 	    	map.put("replicationcontrollers", "20");
 	    	map.put("resourcequotas", "1");
 	    	ResourceQuota quota = KubernetesClientUtil.generateSimpleResourceQuota("quota",map);
-	    	System.out.println("quota1:"+JSON.toJSONString(quota));		
+	    	System.out.println("quota1:"+JSON.toJSONString(quota));
 	    	quota = client.createResourceQuota(quota);
 	    	System.out.println("quota:"+JSON.toJSONString(quota));
-	    	
+
 	    	Map<String,String> map = new HashMap<String,String>();
 	    	map.put("memory", "128Mi");
 	    	map.put("cpu", "100m");
 	    	LimitRange limitRange = KubernetesClientUtil.generateSimpleLimitRange("limits",map);
-	    	System.out.println("limitRange1:"+JSON.toJSONString(limitRange));		
+	    	System.out.println("limitRange1:"+JSON.toJSONString(limitRange));
 	    	limitRange = client.createLimitRange(limitRange);
 	    	System.out.println("limitRange:"+JSON.toJSONString(limitRange));
-	    	
+
 	    	LimitRangeList limitRangeList = client.getAllLimitRanges();
     		System.out.println("limitRangeList:"+JSON.toJSONString(limitRangeList));
-    		
+
     		LimitRange limitRange = client.getLimitRange("limits");
 		System.out.println("limitRange:"+JSON.toJSONString(limitRange));
-		
-		
+
+
 			//删除
 			 PodList podList = client.getAllPods();
     			System.out.println("podList:"+JSON.toJSONString(podList));
@@ -217,11 +212,11 @@ public class KubernetesClientService {
     					client.deleteLimitRange(limitRange.getMetadata().getName());
     				}
     			}
-		
-		
+
+
 		}
 		*/
-    
+
 //    public void main(String[] args) {
 //    	//创建容器
 //    	KubernetesAPIClientInterface client = KubernetesClientUtil.getClient("feng");
@@ -236,7 +231,7 @@ public class KubernetesClientService {
 		namespace.setMetadata(meta);
 		return namespace;
 	}
-	
+
 	public ResourceQuota generateSimpleResourceQuota(String name,Map<String,String> hard){
 		ResourceQuota resourceQuota = new ResourceQuota();
 		ObjectMeta meta = new ObjectMeta();
@@ -247,13 +242,13 @@ public class KubernetesClientService {
 		resourceQuota.setSpec(spec);
 		return resourceQuota;
 	}
-	
+
 	public LimitRange generateSimpleLimitRange(String name,Map<String,String> defaultVal){
 		LimitRange limitRange = new LimitRange();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
 		limitRange.setMetadata(meta);
-		
+
 		LimitRangeSpec spec = new LimitRangeSpec();
 		List<LimitRangeItem> limits = new ArrayList<LimitRangeItem>();
 		LimitRangeItem limitRangeItem = new LimitRangeItem();
@@ -263,7 +258,7 @@ public class KubernetesClientService {
 		limitRange.setSpec(spec);
 		return limitRange;
 	}
-	
+
 	/*public Map<String,Object> getlimit(Map<String,Object> limit){
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		KubernetesAPIClientInterface client = this.getClient();
@@ -274,9 +269,9 @@ public class KubernetesClientService {
 	    limit.put("cpu", icpuMax);
 		limit.put("memory", imemoryMax+"Mi");
 		return limit;
-	    
+
 	}*/
-	
+
 	public Long transMemory(String memory){
 		if(memory.endsWith("M")){
 			memory = memory.replace("M", "");
@@ -300,16 +295,16 @@ public class KubernetesClientService {
 		}
 		return Long.valueOf(memory);
 	}
-	
-	public boolean isNumeric(String str){ 
-		   Pattern pattern = Pattern.compile("[0-9]*"); 
+
+	public boolean isNumeric(String str){
+		   Pattern pattern = Pattern.compile("[0-9]*");
 		   Matcher isNum = pattern.matcher(str);
 		   if( !isNum.matches() ){
-		       return false; 
-		   } 
-		   return true; 
+		       return false;
+		   }
+		   return true;
 		}
-	
+
 	public Double transCpu(String cpu) {
 		if(cpu.endsWith("m")){
 			cpu = cpu.replace("m", "");
@@ -318,8 +313,8 @@ public class KubernetesClientService {
 		}
 		return Double.valueOf(cpu);
 	}
-	
-	
+
+
     /**
      * Description:
      * computeMemoryOut
@@ -331,50 +326,50 @@ public class KubernetesClientService {
         if (mem.contains("Mi")) {
             Float a1 = Float.valueOf(mem.replace("Mi", "")) / 1024;
             return a1.toString();
-        } 
+        }
         else {
             return mem.replace("G", "").replace("i", "");
         }
     }
-	
+
 	public ReplicationController updateResource(String name,Double cpu,String ram){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta =  replicationController.getMetadata();
 		meta.getName();
 		return null;
 	}
-	
 
-	
+
+
 	public ReplicationController generateSimpleReplicationController(String name,int replicas,
 	                                                                     Integer initialDelay,Integer timeoutDetction,Integer periodDetction,
 	                                                                         String image,List<PortConfig> portConfigs,
-	                                                                             Double cpu,String ram,String nginxObj, 
+	                                                                             Double cpu,String ram,String nginxObj,
 	                                                                                 String servicePath, String proxyPath,String checkPath,
 	                                                                                     List<EnvVariable> envVariables, List<String> command, List<String> args){
-		
-	    
+
+
 	  ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
 		replicationController.setMetadata(meta);
 		ReplicationControllerSpec spec = new ReplicationControllerSpec();
 		spec.setReplicas(replicas);
-		
+
 		PodTemplateSpec template = new PodTemplateSpec();
 		ObjectMeta podMeta = new ObjectMeta();
 		podMeta.setName(name);
 		Map<String,String> labels = new HashMap<String,String>();
 		labels.put("app", name);
 		if (StringUtils.isNotBlank(servicePath)) {
-		    labels.put("servicePath", servicePath.replaceAll("/", "LINE")); 
+		    labels.put("servicePath", servicePath.replaceAll("/", "LINE"));
 		}
 		if (StringUtils.isNotBlank(proxyPath)) {
 		    labels.put("proxyPath", proxyPath.replaceAll("/", "LINE"));
 		}
 		// 添加服务检查路径
 /*		if (StringUtils.isNotBlank(checkPath)) {
-		    labels.put("healthcheck", checkPath.replaceAll("/", "---"));  
+		    labels.put("healthcheck", checkPath.replaceAll("/", "---"));
 		}*/
 		if (StringUtils.isNotBlank(nginxObj)) {
 			String[] proxyArray = nginxObj.split(",");
@@ -412,9 +407,9 @@ public class KubernetesClientService {
 	        httpGet.setPort(8080); // 修改了HTTPGetAction的port字段类型定义
 	        httpGet.setScheme("HTTP");
 	        livenessProbe.setHttpGet(httpGet);
-	        container.setLivenessProbe(livenessProbe); 
+	        container.setLivenessProbe(livenessProbe);
 		}
-		
+
 		if (null != envVariables && envVariables.size() > 0) {
 		    List<EnvVar> envVars = new ArrayList<EnvVar>();
 		    for (EnvVariable oneRow : envVariables) {
@@ -440,13 +435,13 @@ public class KubernetesClientService {
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
 		container.setResources(requirements);
-		
+
 		if (CollectionUtils.isNotEmpty(portConfigs)) {
 		      List<ContainerPort> ports = new ArrayList<ContainerPort>();
 		      for (PortConfig oneRow : portConfigs) {
 		          ContainerPort port = new ContainerPort();
 		          port.setContainerPort(Integer.valueOf(oneRow.getContainerPort().trim()));
-		          ports.add(port); 
+		          ports.add(port);
 		      }
 		      container.setPorts(ports);
 		}
@@ -455,7 +450,7 @@ public class KubernetesClientService {
 		      container.setCommand(command);
 		}
 		if (CollectionUtils.isNotEmpty(args)) {
-		      container.setArgs(args); 
+		      container.setArgs(args);
 		}
 		containers.add(container);
 		podSpec.setContainers(containers);
@@ -464,7 +459,7 @@ public class KubernetesClientService {
 		replicationController.setSpec(spec);
 		return replicationController;
 	}
-	
+
 	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort ){
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
@@ -472,7 +467,7 @@ public class KubernetesClientService {
 		replicationController.setMetadata(meta);
 		ReplicationControllerSpec spec = new ReplicationControllerSpec();
 		spec.setReplicas(replicas);
-		
+
 		PodTemplateSpec template = new PodTemplateSpec();
 		ObjectMeta podMeta = new ObjectMeta();
 		podMeta.setName(name);
@@ -485,7 +480,7 @@ public class KubernetesClientService {
 		Container container = new Container();
 		container.setName(name);
 		container.setImage(image);
-		
+
 //		ResourceRequirements requirements = new ResourceRequirements();
 //		requirements.getLimits();
 //		Map<String,String> def = new HashMap<String,String>();
@@ -494,7 +489,7 @@ public class KubernetesClientService {
 //		def.put("memory", ram+"Mi");
 //		requirements.setRequests(def);
 //		container.setResources(requirements);
-		
+
 		List<ContainerPort> ports = new ArrayList<ContainerPort>();
 		ContainerPort port = new ContainerPort();
 		port.setContainerPort(containerPort);
@@ -507,8 +502,8 @@ public class KubernetesClientService {
 		replicationController.setSpec(spec);
 		return replicationController;
 	}
-	
-	public Service generateService(String appName,List<PortConfig> portConfigs, 
+
+	public Service generateService(String appName,List<PortConfig> portConfigs,
 	                                       String proxyZone, String servicePath, String proxyPath,String sessionAffinity,String nodeIpAffinity){
 	    Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
@@ -521,7 +516,7 @@ public class KubernetesClientService {
 		if (StringUtils.isNotBlank(proxyPath)) {
 		    labels.put("proxyPath", proxyPath.replaceAll("/", "LINE"));
 		}
-		
+
 		if (StringUtils.isNotBlank(proxyZone)) {
 		    String[] proxyArray = proxyZone.split(",");
 		    for (int i = 0; i < proxyArray.length;i++) {
@@ -536,9 +531,9 @@ public class KubernetesClientService {
 		ServiceSpec spec = new ServiceSpec();
 		spec.setType("NodePort");
 		if (StringUtils.isNotBlank(sessionAffinity)) {
-		    spec.setSessionAffinity(sessionAffinity); 
+		    spec.setSessionAffinity(sessionAffinity);
 		}
-		
+
 		Map<String,String> selector = new HashMap<String,String>();
 		selector.put("app", appName);
 		spec.setSelector(selector);
@@ -559,7 +554,7 @@ public class KubernetesClientService {
 		return service;
 	}
 
-	
+
 	public Secret generateSecret(String name, String namespace, String key){
 		Secret secret = new Secret();
 		ObjectMeta meta = new ObjectMeta();
@@ -574,12 +569,12 @@ public class KubernetesClientService {
     /**
      * Description:
      * 创建k8s Service
-     * @param refPort 
+     * @param refPort
      * @param nameSpace
      * @param serAddress
      * @param refAddress
-     * @return 
-     * @see 
+     * @return
+     * @see
      */
     public Service generateRefService(String serName, int refPort) {
         Service service = new Service();
@@ -589,7 +584,7 @@ public class KubernetesClientService {
         labels.put("app", serName);
         meta.setLabels(labels);*/
         service.setMetadata(meta);
-        
+
         ServiceSpec spec = new ServiceSpec();
         //spec.setType("NodePort");
         List<ServicePort> ports = new ArrayList<ServicePort>();
@@ -611,9 +606,9 @@ public class KubernetesClientService {
      * create a new Endpoint Object
      * @param serAddress String
      * @param refAddress String
-     * @param refPort 
-     * @return 
-     * @see 
+     * @param refPort
+     * @return
+     * @see
      */
     public Endpoints generateEndpoints(String serName, String refAddress, int refPort,String useProxy) {
         Endpoints endpoints = new Endpoints();
@@ -626,7 +621,7 @@ public class KubernetesClientService {
                 }
         meta.setLabels(labels);
         endpoints.setMetadata(meta);
-        
+
         List<EndpointSubset> subsets = new ArrayList<EndpointSubset>();
         EndpointSubset subset = new EndpointSubset();
         List<EndpointAddress> addresses = new ArrayList<EndpointAddress>();
@@ -647,15 +642,15 @@ public class KubernetesClientService {
     /**
      * Description: update a rc
 
-     * 
+     *
      * @param controller
-     * @param service 
-     * @return 
-     * @see 
+     * @param service
+     * @return
+     * @see
      */
     public ReplicationController updateSimpleReplicationController(ReplicationController controller,
             com.bonc.epm.paas.entity.Service service,List<String> command,int flag) {
-        
+
         if(flag==0){
             controller.getMetadata().setName(service.getServiceName());
             controller.getMetadata().getLabels().put("app",service.getServiceName());
@@ -703,12 +698,12 @@ public class KubernetesClientService {
             .getContainers().get(0).setLivenessProbe(livenessProbe);
 //---------------------
         }
-        
+
         return controller;
-        
+
     }
     /**
-     * 
+     *
      * Description: update a service
      * @param k8sService
      * @param service
@@ -750,8 +745,8 @@ public class KubernetesClientService {
      * Description: 更新容器端口
      * @param controller
      * @param containerPort
-     * @return 
-     * @see 
+     * @return
+     * @see
      */
     public ReplicationController updateRcContainPort(ReplicationController controller, List<PortConfig> portCfg) {
         if (CollectionUtils.isNotEmpty(portCfg)) {
@@ -759,7 +754,7 @@ public class KubernetesClientService {
             for (PortConfig oneRow : portCfg) {
                 ContainerPort port = new ContainerPort();
                 port.setContainerPort(Integer.valueOf(oneRow.getContainerPort().trim()));
-                ports.add(port); 
+                ports.add(port);
             }
             controller.getSpec().getTemplate().getSpec()
             .getContainers().get(0).setPorts(ports);
@@ -770,8 +765,8 @@ public class KubernetesClientService {
      * Description: 更新service的容器端口信息<br>
      * @param k8sService
      * @param portCfgs
-     * @return 
-     * @see 
+     * @return
+     * @see
      */
     public com.bonc.epm.paas.kubernetes.model.Service updateSvcContainPort(
             com.bonc.epm.paas.kubernetes.model.Service k8sService, List<PortConfig> portCfg) {
@@ -794,8 +789,8 @@ public class KubernetesClientService {
      * Description: <br>
      * @param controller
      * @param envVars
-     * @return 
-     * @see 
+     * @return
+     * @see
      */
     public ReplicationController updateRcEnv(ReplicationController controller, List<EnvVariable> envVariables) {
         if (null != envVariables && envVariables.size() > 0) {

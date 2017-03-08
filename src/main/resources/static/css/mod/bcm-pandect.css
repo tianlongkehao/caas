@@ -21,7 +21,7 @@
     background: #EFF2F7;
     /* background: rgba(238,102,102,0.75); */
     
-    border-bottom: 1px solid #EFF2F7;
+    border-bottom: 1px solid #ccc;
     padding-left: 30px;
     font-size: 16px;
 }
@@ -190,3 +190,40 @@ img.pandect-icon{
     color: #fff;
     padding: 10px;
 }
+/* admin总览 */
+.usersInfoTit th,td{
+	text-align: center;
+}
+.usersResourceInfo{
+	width: 100%;
+	height: auto;
+}
+.usersResourceInfo table{
+	width:98%;
+	margin:0 auto;
+}
+.u-line,.usersResourceTable{
+	border-bottom:1px solid #ddd;
+}
+td a{
+	color:#e8504f;
+}
+td a:hover {text-decoration:underline;} 
+
+#userInfosList{
+	height:350px;
+	display: block;
+    width:100%;
+    /* padding-right:20px; */
+}
+#usersResourceTable th{
+	width:15.7%;
+	
+} 
+#userInfosList td{
+	width:16.2%;
+	padding-right:23px;
+	
+}
+
+
