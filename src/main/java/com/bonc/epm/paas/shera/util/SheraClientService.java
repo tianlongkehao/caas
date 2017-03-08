@@ -12,6 +12,7 @@
 package com.bonc.epm.paas.shera.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,9 +21,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.bonc.epm.paas.constant.CiConstant;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.entity.CiInvoke;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.rest.util.RestFactory;
@@ -107,106 +112,110 @@ public class SheraClientService {
     public Job generateJob(String id ,String jdkVersion,String branch,String url,
                            String codeName,String refspec,String dockerFileContent,String dockerFile,
                            String imgNamePre,String imgName,List<CiInvoke> ciInvokeList,String userName,
-                           Integer type,Integer codeType,String uuid) {
-        Job job = new Job();
-        job.setId(id);
-        job.setJdkVersion(jdkVersion);
-        job.setMaxExecutionRecords(2);
-        job.setMaxKeepDays(2);
-        CodeManager codeManager = new CodeManager();
-        codeManager.setUuid(uuid);
-        codeManager.setCodeChoice(codeType);
-        if (codeType == CiConstant.CODE_TYPE_GIT) {
-            GitConfig gitConfig = new GitConfig();
-            gitConfig.setBranch(branch);
-            Repository repo = new Repository();
-            repo.setUrl(url);
-            Key key = new Key();
-            key.setUsername(userName);
-            key.setType(type);
-            repo.setKey(key);
-            GitAdvancedConfig advanced = new GitAdvancedConfig();
-            advanced.setName(codeName);
-            advanced.setRefspec(refspec);
-            repo.setAdvanced(advanced);
-            gitConfig.setRepo(repo);
-            codeManager.setGitConfig(gitConfig);
-        }
-        else {
-            SvnConfig svnConfig = new SvnConfig();
-            svnConfig.setBranch(branch);
-            Repository repo = new Repository();
-            repo.setUrl(url);
-            Key key = new Key();
-            key.setUsername(userName);
-            key.setType(type);
-            repo.setKey(key);
-            svnConfig.setRepo(repo);
-            codeManager.setSvnConfig(svnConfig);
-        }
-        job.setCodeManager(codeManager);
+			Integer type, Integer codeType, String uuid, String ciTools) {
+		Job job = new Job();
+		job.setId(id);
+		job.setJdkVersion(jdkVersion);
+		job.setMaxExecutionRecords(2);
+		job.setMaxKeepDays(2);
+		CodeManager codeManager = new CodeManager();
+		codeManager.setUuid(uuid);
+		codeManager.setCodeChoice(codeType);
+		if (codeType == CiConstant.CODE_TYPE_GIT) {
+			GitConfig gitConfig = new GitConfig();
+			gitConfig.setBranch(branch);
+			Repository repo = new Repository();
+			repo.setUrl(url);
+			Key key = new Key();
+			key.setUsername(userName);
+			key.setType(type);
+			repo.setKey(key);
+			GitAdvancedConfig advanced = new GitAdvancedConfig();
+			advanced.setName(codeName);
+			advanced.setRefspec(refspec);
+			repo.setAdvanced(advanced);
+			gitConfig.setRepo(repo);
+			codeManager.setGitConfig(gitConfig);
+		} else {
+			SvnConfig svnConfig = new SvnConfig();
+			svnConfig.setBranch(branch);
+			Repository repo = new Repository();
+			repo.setUrl(url);
+			Key key = new Key();
+			key.setUsername(userName);
+			key.setType(type);
+			repo.setKey(key);
+			svnConfig.setRepo(repo);
+			codeManager.setSvnConfig(svnConfig);
+		}
+		job.setCodeManager(codeManager);
 
-        BuildManager buildManager = new BuildManager();
-        List<Integer> seqNo = new ArrayList<Integer>();
-        List<String> cmds = new ArrayList<String>();
-        List<AntConfig> antConfigs = new ArrayList<AntConfig>();
-        List<MvnConfig> mvnConfigs = new ArrayList<MvnConfig>();
-        if (ciInvokeList.size() == 0) {
-            seqNo.add(0);
-        }
-        for (CiInvoke ciInvoke : ciInvokeList ) {
-            if (ciInvoke.getInvokeType() == 1) {
-                seqNo.add(1);
-                AntConfig antConfig = new AntConfig();
-                antConfig.setVersion(ciInvoke.getAntVersion());
-                antConfig.setTargets(ciInvoke.getAntTargets());
-                antConfig.setBuildFile(ciInvoke.getAntBuildFileLocation());
-                antConfig.setProperties(ciInvoke.getAntProperties());
-                antConfig.setJavaopts(ciInvoke.getAntJavaOpts());
-                antConfigs.add(antConfig);
-            }
-            if (ciInvoke.getInvokeType() == 2) {
-                seqNo.add(2);
-                MvnConfig mvnConfig = new MvnConfig();
-                mvnConfig.setVersion(ciInvoke.getMavenVersion());
-                mvnConfig.setGoals(ciInvoke.getMavenGoals());
-                mvnConfig.setPom(ciInvoke.getPomLocation());
-                mvnConfig.setProperties(ciInvoke.getMavenProperty());
-                mvnConfig.setJvmopts(ciInvoke.getMavenJVMOptions());
-                mvnConfig.setSettingFile(ciInvoke.getMavenSetFile());
-                mvnConfig.setGlobalSettingFile(ciInvoke.getMavenGlobalSetFile());
-                mvnConfigs.add(mvnConfig);
-            }
-            if (ciInvoke.getInvokeType() == 3) {
-                seqNo.add(3);
-                cmds.add(ciInvoke.getShellCommand());
-            }
-        }
-        buildManager.setAntConfigs(antConfigs);
-        buildManager.setCmds(cmds);
-        buildManager.setMvnConfigs(mvnConfigs);
-        buildManager.setSeqNo(seqNo);
-        job.setBuildManager(buildManager);
+		BuildManager buildManager = new BuildManager();
+		List<Integer> seqNo = new ArrayList<Integer>();
+		List<String> cmds = new ArrayList<String>();
+		List<AntConfig> antConfigs = new ArrayList<AntConfig>();
+		List<MvnConfig> mvnConfigs = new ArrayList<MvnConfig>();
+		if (ciInvokeList.size() == 0) {
+			seqNo.add(0);
+		}
+		for (CiInvoke ciInvoke : ciInvokeList) {
+			if (ciInvoke.getInvokeType() == 1) {
+				seqNo.add(1);
+				AntConfig antConfig = new AntConfig();
+				antConfig.setVersion(ciInvoke.getAntVersion());
+				antConfig.setTargets(ciInvoke.getAntTargets());
+				antConfig.setBuildFile(ciInvoke.getAntBuildFileLocation());
+				antConfig.setProperties(ciInvoke.getAntProperties());
+				antConfig.setJavaopts(ciInvoke.getAntJavaOpts());
+				antConfigs.add(antConfig);
+			}
+			if (ciInvoke.getInvokeType() == 2) {
+				seqNo.add(2);
+				MvnConfig mvnConfig = new MvnConfig();
+				mvnConfig.setVersion(ciInvoke.getMavenVersion());
+				mvnConfig.setGoals(ciInvoke.getMavenGoals());
+				mvnConfig.setPom(ciInvoke.getPomLocation());
+				mvnConfig.setProperties(ciInvoke.getMavenProperty());
+				mvnConfig.setJvmopts(ciInvoke.getMavenJVMOptions());
+				mvnConfig.setSettingFile(ciInvoke.getMavenSetFile());
+				mvnConfig.setGlobalSettingFile(ciInvoke.getMavenGlobalSetFile());
+				mvnConfigs.add(mvnConfig);
+			}
+			if (ciInvoke.getInvokeType() == 3) {
+				seqNo.add(3);
+				cmds.add(ciInvoke.getShellCommand());
+			}
+		}
+		buildManager.setAntConfigs(antConfigs);
+		buildManager.setCmds(cmds);
+		buildManager.setMvnConfigs(mvnConfigs);
+		buildManager.setSeqNo(seqNo);
+		job.setBuildManager(buildManager);
 
-        ImgManager imgManager = new ImgManager();
-        if (StringUtils.isNotEmpty(dockerFileContent)) {
-            imgManager.setDockerFileContent(dockerFileContent);
-            imgManager.setDockerFile("");
-        }
-        if (StringUtils.isNotEmpty(dockerFile)) {
-            imgManager.setDockerFileContent("");
-            imgManager.setDockerFile(dockerFile);
-        }
-        imgManager.setImgNamePre(imgNamePre);
-        imgManager.setImgName(imgName);
+		ImgManager imgManager = new ImgManager();
+		if (StringUtils.isNotEmpty(dockerFileContent)) {
+			imgManager.setDockerFileContent(dockerFileContent);
+			imgManager.setDockerFile("");
+		}
+		if (StringUtils.isNotEmpty(dockerFile)) {
+			imgManager.setDockerFileContent("");
+			imgManager.setDockerFile(dockerFile);
+		}
+		imgManager.setImgNamePre(imgNamePre);
+		imgManager.setImgName(imgName);
 
-        List<String> tools = new ArrayList<>();
-        tools.add("tomcat/tomcat8");
+		List<String> tools = new ArrayList<>();
+		if (StringUtils.isNotBlank(ciTools)) {
+			String[] ciToolsList = ciTools.split(",");
+			for (String ciTool : ciToolsList) {
+				tools.add(ciTool);
+			}
+		}
 
-        imgManager.setTools(tools);
-        job.setImgManager(imgManager);
-        return job;
-    }
+		imgManager.setTools(tools);
+		job.setImgManager(imgManager);
+		return job;
+	}
 
     /**
      * Description: <br>

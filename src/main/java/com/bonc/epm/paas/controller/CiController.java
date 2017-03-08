@@ -475,7 +475,7 @@ public class CiController {
             Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
                                                             ciCode.getCodeName(),ciCode.getCodeRefspec(),dockerFileContentEdit,ci.getDockerFileLocation(),
                                                             originCi.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
-                                                            ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey());
+                                                            ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),ciCode.getCiTools());
             client.updateJob(job);
             //添加代码挂钩
             if (ciCode.getIsHookCode() == 1) {
@@ -967,7 +967,7 @@ public class CiController {
                 Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
                     ciCode.getCodeName(),ciCode.getCodeRefspec(), dockerFileContent,ci.getDockerFileLocation(),
                     ci.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
-                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey());
+                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),ciCode.getCiTools());
                 client.createJob(job);
                 //添加代码挂钩
                 if (ciCode.getIsHookCode() == 1) {

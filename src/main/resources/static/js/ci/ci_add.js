@@ -13,14 +13,14 @@ $(document).ready(function () {
     		$("#git-higher").show();
     		$(".git-higher").hide();
     	}
-    	
+
     });
     //git-higher
     $("#git-higher").click(function(){
     	$(".git-higher").show();
     	$("#git-higher").hide();
     });
-    
+
     var count = 0;
     //构建maven
     $("#maven").click(function(){
@@ -28,33 +28,33 @@ $(document).ready(function () {
     	var maven = loadMaven(count);
     	$("#sortable").append(maven);
     });
-    
+
     //maven高级按钮选项
     $(document).on('click','.maven-higherBtn',function(){
     	$(this).parent().hide();
     	$(this).parent().next('.maven-higherCon').removeClass("hide");
     });
-    
+
     //构建ant
     $("#ant").click(function(){
     	count++;
     	var ant = loadAnt(count);
     	$("#sortable").append(ant);
     });
-    
+
     //ant高级按钮选项
     $(document).on('click','.ant-higherBtn',function(){
     	$(this).parent().hide();
     	$(this).parent().next('.ant-higherCon').removeClass("hide");
     });
-    
+
     //构建shell
     $("#shell").click(function(){
     	count++;
     	var shell = loadShell(count);
     	$("#sortable").append(shell);
     });
-    
+
     //折叠ibox
     $(document).on('click','.collapse-link',function(){
         var ibox = $(this).closest('div.ibox');
@@ -75,7 +75,7 @@ $(document).ready(function () {
         var content = $(this).closest('div.addCiStepRow');
         content.remove();
     });
-    
+
     //拖拽
     $( "#sortable" ).sortable({
         revert: true
@@ -86,7 +86,7 @@ $(document).ready(function () {
 							    '<label class="c-project-tit">dockerfile路径</label>'+
 							    '<textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5"></textarea>'+
 							'</div></div>';
-    
+
     var dockerfileTempHtml = '<div class="row dockerfileTemp">'+
 							    '<div class="form-group col-md-12">'+
 									'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
@@ -107,9 +107,9 @@ $(document).ready(function () {
     $(document).on('click','#dockerfileTemp',function(){
     	$("#dockerfileMethod").empty();
     	$("#dockerfileMethod").append(dockerfileTempHtml);
-    	
+
     	$(".dockerfileTools").removeClass("hide");
-    	
+
     	editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFile"), {
             lineNumbers: true,
             matchBrackets: true,
@@ -122,7 +122,7 @@ $(document).ready(function () {
 	$("#dockerfile-import").hide();
 	$("#dockerfile-export").hide();
 
-	
+
 	$(".btn-imageType .btns").each(function() {
 		$(this).click(function() {
 			$(".btn-imageType .btns").removeClass("active");
@@ -214,7 +214,7 @@ $(document).ready(function () {
 			}
 		})
 	});
-	
+
 	//添加认证按钮
 	$("#addCredentialsCon").hide();
 	$(document).on('click','#addCredentialsBtn',function(){
@@ -276,7 +276,7 @@ $(document).ready(function () {
 			$("#passwordCred").val("");
 		}
 	});
-	
+
 	//提交表单
 	$("#buildBtn").click(function(){
 		var checkedTools = $(".dftools").find("input:checked");
@@ -286,28 +286,28 @@ $(document).ready(function () {
 			toolsId +=  tools+",";
 		}
 		toolsId = toolsId.substring(0,toolsId.length-1);
-		
+
         if(checkCodeCiAdd(editor_one)) {
         	$("#buildForm").submit();
         	layer.load(0, {shade: [0.3, '#000']});
         }
         return false;
     });
-	
+
 	//镜像信息
 	$(".imageInfoCon").hide()
-	
+
 	$("#imageInfo").click(function(){
 		$(".imageInfoCon").toggle();
-	})
-		
+	});
+
 	//工具集同组单选
 	$(".toolChk").click(function(){
 		var checkedName = $(this).attr("name");
 		var checkedName = "'"+checkedName+"'";
 		var ccc = '.toolChk[name= '+checkedName+']';
 		var sameNameCount = $(ccc).length;
-		
+
 		if($(this).is(":checked")){
 			var allToolCode = "";
 			var editorVal = editor_one.getValue();
@@ -322,19 +322,25 @@ $(document).ready(function () {
 		editor_one.setValue('');
 		var checkedTool = $(".toolChk:checked");
 		var allToolCode = "FROM 192.168.0.76:5000/centos:7.2.1511"+ "\n";
+		var allToolId = "";
 		if(checkedTool.length == 0){
 			allToolCode = "";
+			allToolId = "";
+			$("#ciTools").val(allToolId);
 		}else{
 			for(var j=0; j < checkedTool.length; j++){
 				var checkedToolCode = checkedTool[j].attributes.toolcode.value;
+				var checkedToolId = checkedTool[j].id;
 				allToolCode += checkedToolCode + "\n";
+				allToolId +=checkedToolId + ",";
 			}
+			$("#ciTools").val(allToolId.substring(0, allToolId.length-1));
 		}
 		editor_one.setValue(allToolCode);
 	});
-    
+
 });/*ready*/
-		
+
 //选择不同的代码仓库，显示相对应的认证密钥
 function loadCredentialData (codeType) {
 	if (codeType == 2 ) {
@@ -362,7 +368,7 @@ function loadCredentialData (codeType) {
 			}
 		}
 	})
-	
+
 }
 
 
@@ -381,9 +387,9 @@ function loadDockerFileTemplate(){
 	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
 	                			"</tr>"
                 	}
-	            } 
+	            }
 	            if (html == "") {
-	            	html += '<tr><td>没有保存的模板</td></tr>'	
+	            	html += '<tr><td>没有保存的模板</td></tr>'
 	            }
 	            $("#dockerfile-body").empty();
 	            $("#dockerfile-body").append(html);
@@ -470,7 +476,7 @@ function loadMaven(count){
                 '<div class="row maven-config">'+
                 	'<button class="maven-higherBtn" type="button" style="float:right!important">高级...</button>'+
                 '</div>'+
-                
+
                 '<div class="maven-higherCon hide"><div class="form-group col-md-12">'+
                     '<label class="c-project-tit">POM</label>'+
                     '<input id="pomLocation-'+count+'" name="pomLocation" type="text" class="form-control c-project-con" value="">'+
@@ -539,7 +545,7 @@ function loadShell(count){
 }
 
 function checkCodeCiAdd(editor_one){
-	
+
 	//项目名称的判断
 	var projectName = $("#projectName").val();
 	var flagName = false;
@@ -552,7 +558,7 @@ function checkCodeCiAdd(editor_one){
       layer.tips('项目名称只能由小写字母、数字及横线下划线组成，且首字母只能为字母。','#projectName',{tips: [1, '#3595CC'],time: 3000});
       $('#projectName').focus();
       return;
-    } 
+    }
     else {
     	$.ajax({
     		url : ctx + "/ci/judgeCodeCiName.do",
@@ -563,11 +569,11 @@ function checkCodeCiAdd(editor_one){
     			data = eval("(" + data + ")");
     			if (data.status=="400") {
     	            layer.tips('项目名称重复', '#projectName', {
-    	                tips: [1, '#0FA6D8'] 
+    	                tips: [1, '#0FA6D8']
     	            });
     	            $('#projectName').focus();
     	            flagName = true;
-    			} 
+    			}
     		}
     	});
     }
@@ -575,8 +581,8 @@ function checkCodeCiAdd(editor_one){
     	flagName = false;
     	return false;
     }
-    
-    
+
+
     //项目描述的判断
     var description = $("#description").val();
     if (!description || description.length < 1) {
@@ -584,7 +590,7 @@ function checkCodeCiAdd(editor_one){
     	$("#description").focus();
     	return;
     }
-    
+
     //判断代码库类型
     var codeType = $("#codeType").val();
     if (codeType != 0) {
@@ -595,7 +601,7 @@ function checkCodeCiAdd(editor_one){
     		$('#codeUrl').focus();
     		return;
 	    }
-    	
+
     	//代码地址通过代码验证是否可以通过验证
     	var codeCredentialId = $("#codeCredentials").val();
     	var flagUrl = false;
@@ -608,18 +614,18 @@ function checkCodeCiAdd(editor_one){
     			data = eval("(" + data + ")");
     			if (data.status=="400") {
     	            layer.tips('代码仓库地址验证失败，请您检查是否有误', '#codeUrl', {
-    	                tips: [1, '#0FA6D8'] 
+    	                tips: [1, '#0FA6D8']
     	            });
     	            $('#codeUrl').focus();
     	            flagUrl = true;
-    			} 
+    			}
     		}
     	});
     	if (flagUrl) {
     		flagUrl = false;
         	return false;
         }
-    	
+
     	//判断代码分支
     	var codeBranch = $("#codeBranch").val();
     	if(!codeBranch || codeBranch.length < 1){
@@ -638,12 +644,12 @@ function checkCodeCiAdd(editor_one){
     	$("#codeUsername").val("");
     	$("#codePassword").val("");
     }
-    
+
     //判断构建
     var flag = false;
     var json = "";
     $("#sortable >div").each(function(){
-    	debugger;
+    	// debugger;
     	if (flag) {
     		return false;
     	}
@@ -668,14 +674,14 @@ function checkCodeCiAdd(editor_one){
         	var ijBVId = "#injectBuildVariables-" + count;
         	var mvnSFId = "#mavenSetFile-" + count;
         	var MVnGSFID = "#mavenGlobalSetFile-" + count;
-        	
+
         	var invokeType = 2;
         	var mavenVersion = $(mvnVerId).val();
         	var pomLocation = $(pomId).val();
         	var mavenProperty = $(mvnProId).val();
         	var mavenJVMOptions = $(mvnJvmId).val();
         	var isUserPrivateRegistry = 0 ;
-        	var injectBuildVariables = 0 ; 
+        	var injectBuildVariables = 0 ;
         	var mavenSetFile = $(mvnSFId).val();
         	var mavenGlobalSetFile = $(MVnGSFID).val();
         	//maven存储库的判断
@@ -691,7 +697,7 @@ function checkCodeCiAdd(editor_one){
         					' "injectBuildVariables":"'+injectBuildVariables+'","mavenSetFile":"'+mavenSetFile+'","mavenGlobalSetFile":"'+mavenGlobalSetFile+'"},';
         	json += jsonData;
         }
-        
+
         if (invoke == "ant") {
         	//ant目标判断
         	var target = "#antTargets-" + count;
@@ -702,23 +708,23 @@ function checkCodeCiAdd(editor_one){
         		flag = true;
         		return;
     	    }
-        	
+
         	var antVId = "#antVersion-" + count;
         	var antBFLId = "#antBuildFileLocation-" + count;
         	var antPId = "#antProperties-" + count;
         	var antJOId = "#antJavaOpts-" + count;
-        	
+
         	var invokeType = 1;
         	var antVersion = $(antVId).val();
         	var antBuildFileLocation = $(antBFLId).val();
         	var antProperties = $(antPId).val();
         	var antJavaOpts = $(antJOId).val();
-        	
+
         	var jsonData= '{ "invokeType": "'+invokeType+'", "antTargets":"'+antTargets+'", "antVersion":"'+antVersion+'", "antBuildFileLocation": "'+antBuildFileLocation+'",'+
 							' "antProperties":"'+antProperties+'","antJavaOpts":"'+antJavaOpts+'"},';
         	json += jsonData;
         }
-        
+
         if (invoke == "shell") {
         	//shell脚本的判断
         	var shellId = "#executeShell-" + count ;
@@ -734,15 +740,15 @@ function checkCodeCiAdd(editor_one){
 			json += jsonData;
         }
     });
-    
+
     if (flag) {
     	return false;
     }
-    
+
     json = json.substring(0, json.length-1);
     json = '[' + json + ']';
     $("#jsonData").val(json);
-    
+
     if ($("#imageInfo").prop("checked")) {
     	var imageName = $("#imageName").val();
     	var imgNameFirst = $("#imgNameFirst").val();
@@ -758,7 +764,7 @@ function checkCodeCiAdd(editor_one){
 			$('#imageName').focus();
 			return false;
 		}
-		
+
 		var imgNameVersion = $("#imgNameVersion").val();
 		if (imgNameVersion || imageName.length > 0) {
 			if(imgNameVersion.search(/^[a-z0-9-_]*$/) === -1){
@@ -768,7 +774,7 @@ function checkCodeCiAdd(editor_one){
 				$('#imgNameVersion').focus();
 				return false;
 			}
-			
+
 			$.ajax({
 	    		url : ctx + "/ci/validciinfo.do",
 	    		async:false,
@@ -786,7 +792,7 @@ function checkCodeCiAdd(editor_one){
 	    	            });
 	    	            $('#imgNameVersion').focus();
 	    	            flagName = true;
-	    			} 
+	    			}
 	    		}
 	    	});
 	        if (flagName) {
@@ -794,7 +800,7 @@ function checkCodeCiAdd(editor_one){
 	         	return false;
 	        }
 		}
-		
+
 		//判断是否为基础镜像
 	    if ($("#baseImage").prop("checked")) {
 	    	$("#isBaseImage").val(1);
@@ -809,7 +815,7 @@ function checkCodeCiAdd(editor_one){
 	    else {
 	    	$("#imgType").val(2);
 	    }
-	    
+
 	    //doackerFile文件路径的判断
 		var dockerFileLocation = $("#dockerFileLocation").val();
 		if (dockerFileLocation != undefined) {
@@ -838,7 +844,7 @@ function checkCodeCiAdd(editor_one){
     		editor_one.setValue("");
     	}
     }
-    
+
     return true;
 }
 
