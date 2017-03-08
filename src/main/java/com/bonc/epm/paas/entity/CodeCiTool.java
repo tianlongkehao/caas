@@ -76,7 +76,7 @@ public class CodeCiTool {
 	}
 
 	public String gettoolCode() {
-		return toolCode;
+		return toolCode.replace("\"", "&quot;").replace("'", "&apos;").replace(">", "&gt;").replace("<", "&lt;");
 	}
 
 	public void settoolCode(String code) {
