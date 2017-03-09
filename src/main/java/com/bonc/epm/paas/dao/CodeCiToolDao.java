@@ -7,7 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.CodeCiTool;
-import com.bonc.epm.paas.entity.Service;
 
 /**
  *
@@ -20,6 +19,9 @@ import com.bonc.epm.paas.entity.Service;
 @Transactional
 public interface CodeCiToolDao extends CrudRepository<CodeCiTool, Long> {
 
-    @Query("select i from CodeCiTool i order by i.toolGroup asc")
-    List<CodeCiTool> findAll();
+    @Query("select i from CodeCiTool i where i.toolGroup <> 'image' order by i.toolGroup asc")
+    List<CodeCiTool> findAllTools();
+
+    @Query("select i from CodeCiTool i where i.toolGroup = 'image' order by i.toolGroup asc")
+    List<CodeCiTool> findAllImages();
 }

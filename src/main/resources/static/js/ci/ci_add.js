@@ -165,7 +165,7 @@ $(document).ready(function () {
 				editor_one.setValue(dockerFile);
 				layer.close(index);
 			}
-		})
+		});
 	});
 
 	// 另存为模板
@@ -212,7 +212,7 @@ $(document).ready(function () {
 					}
 				});
 			}
-		})
+		});
 	});
 
 	//添加认证按钮
@@ -250,7 +250,7 @@ $(document).ready(function () {
 					success : function(data) {
 						data = eval("(" + data + ")");
 						if (data.status == "200") {
-							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>"
+							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
 							$("#codeCredentials").append(html);
 							layer.alert("代码认证导入成功");
 							layer.close(index);
@@ -260,7 +260,7 @@ $(document).ready(function () {
 					}
 				});
 			}
-		})
+		});
 	});
 	//选择认证类型
 	$(".ssh").hide();
@@ -295,7 +295,7 @@ $(document).ready(function () {
     });
 
 	//镜像信息
-	$(".imageInfoCon").hide()
+	$(".imageInfoCon").hide();
 
 	$("#imageInfo").click(function(){
 		$(".imageInfoCon").toggle();
@@ -321,7 +321,7 @@ $(document).ready(function () {
 		//勾选工具的执行语句添加到dockerfile中
 		editor_one.setValue('');
 		var checkedTool = $(".toolChk:checked");
-		var allToolCode = "FROM 192.168.0.76:5000/centos:7.2.1511"+ "\n";
+		var allToolCode = $("#basicImage").val()+ "\n";
 		var allToolId = "";
 		if(checkedTool.length == 0){
 			allToolCode = "";
@@ -367,7 +367,7 @@ function loadCredentialData (codeType) {
 				$("#codeCredentials").html(html);
 			}
 		}
-	})
+	});
 
 }
 
@@ -385,11 +385,11 @@ function loadDockerFileTemplate(){
                 		html += "<tr>"+
 	                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
 	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
-	                			"</tr>"
+	                			"</tr>";
                 	}
 	            }
 	            if (html == "") {
-	            	html += '<tr><td>没有保存的模板</td></tr>'
+	            	html += '<tr><td>没有保存的模板</td></tr>';
 	            }
 	            $("#dockerfile-body").empty();
 	            $("#dockerfile-body").append(html);

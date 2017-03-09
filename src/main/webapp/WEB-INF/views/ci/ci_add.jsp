@@ -250,6 +250,7 @@
 												</div>
 												<div id="collapseOne" class="panel-collapse collapse in">
 													<div class="panel-body">
+														<input type = "hidden" id = "basicImage" name = "basicImage" value = "${basicImage }">
 														<input type = "hidden" id = "ciTools" name = "ciTools" value = "">
 														<c:forEach items="${toolGroups}" var="tools" >
 															<div class="toolItems">

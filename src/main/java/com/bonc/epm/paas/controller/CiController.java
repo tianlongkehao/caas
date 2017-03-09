@@ -465,7 +465,7 @@ public class CiController {
         originCiCode.setCodeBranch(ciCode.getCodeBranch());
         originCiCode.setIsHookCode(ciCode.getIsHookCode());
         originCiCode.setCodeName(ciCode.getCodeName());
-        originCiCode.setCodeRefspec(ciCode.getCodeRefspec());;
+        originCiCode.setCodeRefspec(ciCode.getCodeRefspec());
         List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
         CiCodeCredential ciCodeCredential = new CiCodeCredential();
         if (!StringUtils.isEmpty(ciCode.getCodeCredentials())) {
@@ -708,9 +708,11 @@ public class CiController {
 			imageNameFirst = cuurentUser.getUserName();
 		}
 
+		String basicImage = codeCiToolDao.findAllImages().get(0).gettoolCode();
 		List<Object> toolGroups = getToolGroups();
 
 		model.addAttribute("username", imageNameFirst);
+		model.addAttribute("basicImage", basicImage);
 		model.addAttribute("toolGroups", toolGroups);
 		model.addAttribute("userAutority", cuurentUser.getUser_autority());
 		model.addAttribute("menu_flag", "ci");
@@ -720,7 +722,7 @@ public class CiController {
 
 
 	private List<Object> getToolGroups() {
-		List<CodeCiTool> allTools = codeCiToolDao.findAll();
+		List<CodeCiTool> allTools = codeCiToolDao.findAllTools();
 		List<Object> toolGroups = new ArrayList<>();
 		List<CodeCiTool> tools = new ArrayList<>();
 		Map<String, Object> map = new HashMap<>();
