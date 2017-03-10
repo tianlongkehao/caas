@@ -23,46 +23,46 @@ $(document).ready(function(){
     stopCodeCi();
 	//删除一个执行
     deleteCodeCi();
-    
+
     //动态给版本信息赋宽度
     if(printLog()){
     	var btnVersionWidth = $(".btn-version").html().length*14;
         $(".btn-version").css("width",btnVersionWidth);
     }
-    
+
     //是否选中hook
     if ($("#isHookCode").val() == 1) {
-    	document.getElementById("HookCode").checked=true
+    	document.getElementById("HookCode").checked=true;
     }
-    
+
     if ($("#imageName").val()) {
-    	document.getElementById("imageInfo").checked=true
+    	document.getElementById("imageInfo").checked=true;
     }
     else {
     	$(".imageInfoCon").toggle();
     }
-    
+
     if ($("#isBaseImage").val() == 1) {
-    	document.getElementById("baseImage").checked=true
+    	document.getElementById("baseImage").checked=true;
     }
-    
+
     if ($("#imgType").val() == 1) {
-    	document.getElementById("imageType").checked=true
+    	document.getElementById("imageType").checked=true;
     }
-    
+
 	//codeType
 	$(".git-config").hide();
     $("#codeType").change(function(){
     	changeCodeType();
     });
     changeCodeType();
-    
+
     //git-higher
     $("#git-higher").click(function(){
     	$(".git-higher").show();
     	$("#git-higher").hide();
     });
-    
+
     //加载invoke中的数据；
     loadInvokeData();
     //构建maven
@@ -71,33 +71,33 @@ $(document).ready(function(){
     	var maven = loadMaven(count);
     	$("#sortable").append(maven);
     });
-    
+
     //maven高级按钮选项
     $(document).on('click','.maven-higherBtn',function(){
     	$(this).parent().hide();
     	$(this).parent().next('.maven-higherCon').removeClass("hide");
     });
-    
+
     //构建ant
     $("#ant").click(function(){
     	count++;
     	var ant = loadAnt(count);
     	$("#sortable").append(ant);
     });
-    
+
     //ant高级按钮选项
     $(document).on('click','.ant-higherBtn',function(){
     	$(this).parent().hide();
     	$(this).parent().next('.ant-higherCon').removeClass("hide");
     });
-    
+
     //构建shell
     $("#shell").click(function(){
     	count++;
     	var shell = loadShell(count);
     	$("#sortable").append(shell);
     });
-    
+
     //折叠ibox
     $(document).on('click','.collapse-link',function(){
         var ibox = $(this).closest('div.ibox');
@@ -118,19 +118,19 @@ $(document).ready(function(){
         var content = $(this).closest('div.ibox');
         content.parent().parent().remove();
     });
-    
+
 	//拖拽
 	$( "#sortable" ).sortable({
 		revert: true
 	});
-	
+
 	//dockerfile路径&&dockerfile模板
     var dockerfilePathHtml = '<div class="row dockerfilePath">'+
 							    '<div class="form-group1 col-md-12">'+
 							    '<label class="c-project-tit">dockerfile路径</label>'+
 							    '<textarea id="dockerFileLocation" name="dockerFileLocation" class="form-control c-project-con" type="text" required="" row="5"></textarea>'+
 							'</div></div>';
-    
+
     var dockerfileTempHtml = '<div class="row dockerfileTemp">'+
 							    '<div class="form-group1 col-md-12">'+
 									'<label class="c-project-tit" style="line-height:20px">编写dockerfile</label>'+
@@ -141,19 +141,19 @@ $(document).ready(function(){
 									'<textarea id="dockerFileContentEdit" name="dockerFileContentEdit"></textarea>'+
 								'</div>'+
 							'</div>';
-    
+
     $("#dockerfilePath").click(function(){
     	$("#dockerfileMethod").empty();
     	$(".dockerfileTools").addClass("hide");
     	$("#dockerfileMethod").append(dockerfilePathHtml);
     });
-    
+
     $("#dockerfileTemp").click(function(){
     //$(document).on('click','#dockerfileTemp',function(){
     	$("#dockerfileMethod").empty();
     	$(".dockerfileTools").removeClass("hide");
     	$("#dockerfileMethod").append(dockerfileTempHtml);
-    	
+
     	editor_one = CodeMirror.fromTextArea(document.getElementById("dockerFileContentEdit"), {
             lineNumbers: true,
             matchBrackets: true,
@@ -161,18 +161,18 @@ $(document).ready(function(){
             theme: "ambiance"
         });
     });
-    
+
 	$("#dockerfile").focus();
 	$("#dockerfile-import").hide();
 	$("#dockerfile-export").hide();
-	
+
 	$(".btn-imageType .btns").each(function() {
 		$(this).click(function() {
 			$(".btn-imageType .btns").removeClass("active");
 			$(this).addClass("active");
 		});
 	});
-	
+
 	//点击基本设置tab时加载数据
 	$(".create-set").click(function(){
 		var dockerFileLocation = $("#ciLocation").val();
@@ -209,7 +209,7 @@ $(document).ready(function(){
 			}
 		});
     });
-	
+
 	// 导入模板
 	$(document).on('click','#docImport-btn',function(){
 		loadDockerFileTemplate();
@@ -222,7 +222,7 @@ $(document).ready(function(){
 				editor_one.setValue(dockerFile);
 				layer.close(index);
 			}
-		})
+		});
 	});
 
 	// 另存为模板
@@ -269,9 +269,9 @@ $(document).ready(function(){
 					}
 				});
 			}
-		})
+		});
 	});
-	
+
 	//添加认证按钮
 	$("#addCredentialsCon").hide();
 	$(document).on('click','#addCredentialsBtn',function(){
@@ -329,7 +329,7 @@ $(document).ready(function(){
 					success : function(data) {
 						data = eval("(" + data + ")");
 						if (data.status == "200") {
-							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>"
+							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
 							$("#codeCredentials").append(html);
 							layer.alert("代码认证导入成功");
 							layer.close(index);
@@ -339,8 +339,8 @@ $(document).ready(function(){
 					}
 				});
 			}
-			
-		})
+
+		});
 	});
 	//选择认证类型
 	$(".ssh").hide();
@@ -359,14 +359,14 @@ $(document).ready(function(){
 	//镜像信息
 	$("#imageInfo").click(function(){
 		$(".imageInfoCon").toggle();
-	})
+	});
 	//工具集同组单选
 	$(".toolChk").click(function(){
 		var checkedName = $(this).attr("name");
 		var checkedName = "'"+checkedName+"'";
 		var ccc = '.toolChk[name= '+checkedName+']';
 		var sameNameCount = $(ccc).length;
-		
+
 		if($(this).is(":checked")){
 			var allToolCode = "";
 			var editorVal = editor_one.getValue();
@@ -380,10 +380,20 @@ $(document).ready(function(){
 		//勾选工具的执行语句添加到dockerfile中
 		editor_one.setValue('');
 		var checkedTool = $(".toolChk:checked");
-		var allToolCode = "";
-		for(var j=0; j < checkedTool.length; j++){
-			var checkedToolCode = checkedTool[j].attributes.toolcode.value;
-			allToolCode += checkedToolCode + "\n";
+		var allToolCode = $("#basicImage").val()+ "\n";
+		var allToolId = "";
+		if(checkedTool.length == 0){
+			allToolCode = "";
+			allToolId = "";
+			$("#ciTools").val(allToolId);
+		}else{
+			for(var j=0; j < checkedTool.length; j++){
+				var checkedToolCode = checkedTool[j].attributes.toolcode.value;
+				var checkedToolId = checkedTool[j].id;
+				allToolCode += checkedToolCode + "\n";
+				allToolId +=checkedToolId + ",";
+			}
+			$("#ciTools").val(allToolId.substring(0, allToolId.length-1));
 		}
 		editor_one.setValue(allToolCode);
 	});
@@ -410,7 +420,7 @@ function stopCodeCi(){
 				}
 			}
 		});
-	})
+	});
 }
 
 //删除一个构建执行
@@ -436,7 +446,7 @@ function deleteCodeCi(){
 				}
 			}
 		});
-	})
+	});
 }
 
 //单击导入模板，加载模板数据
@@ -452,11 +462,11 @@ function loadDockerFileTemplate(){
                 		html += "<tr>"+
 	                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
 	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
-	                			"</tr>"
+	                			"</tr>";
                 	}
-	            } 
+	            }
 	            if (html == "") {
-	            	html += '<tr><td>没有保存的模板</td></tr>'	
+	            	html += '<tr><td>没有保存的模板</td></tr>';
 	            }
 	            $("#dockerfile-body").empty();
 	            $("#dockerfile-body").append(html);
@@ -504,7 +514,7 @@ function loadCredentialData (codeType) {
 						else {
 							html = '<option value="'+credential.id +'">'+ credential.userName +' (SSH) (' + credential.remark +')</option>' + html;
 						}
-					} 
+					}
 					else {
 						if (credential.type == 1) {
 							html += '<option value="'+credential.id +'">'+ credential.userName +' (HTTP) (' + credential.remark +')</option>';
@@ -513,13 +523,13 @@ function loadCredentialData (codeType) {
 							html += '<option value="'+credential.id +'">'+ credential.userName +' (SSH) (' + credential.remark +')</option>';
 						}
 					}
-					
+
 				}
 				$("#codeCredentials").html(html);
 			}
 		}
-	})
-	
+	});
+
 }
 
 //加载构建invoke的原始数据
@@ -572,18 +582,18 @@ function registerDeployEvent(){
 			window.open(ctx+"/registry/detail/"+imgId);
 		}
 	});
-	
+
 	$("#replayci").unbind("click").click(function(){
 		ciId = $(this).attr("ciId");
 		var ciList = $("#ciRecordList").children().length;
 		if(ciList == 0){
-			replayciEvent(ciId)
+			replayciEvent(ciId);
 		}else {
 			var ciStatus = $(".ciStatus")[0].innerHTML;
 			if(ciStatus == "构建中"){
 		    	$("#replayci").css("cursor","no-drop");
 			}else{
-				replayciEvent(ciId)
+				replayciEvent(ciId);
 			}
 	    }
 	});
@@ -690,7 +700,7 @@ function registerCiEditEvent(){
 			});
 		}
     });
-	
+
 	$("#editCiUploadCodeBtn").click(function(){
 		if (checkQuickCiAdd()) {
 			var index = layer.load(0, {shade: [0.3, '#000']});
@@ -714,7 +724,7 @@ function registerCiEditEvent(){
 			});
 		}
     });
-	
+
 	$("#baseImageName").change(function(){
 		changeBaseImageVersion();
 	});
@@ -726,7 +736,7 @@ function changeBaseImageVersion () {
 	$.ajax({
 		url:""+ctx+"/ci/findBaseImageVersion.do",
 		type:"post",
-		data:{"baseImageName":baseImageName}, 
+		data:{"baseImageName":baseImageName},
 		success: function (data) {
             data = eval("(" + data + ")");
             var html = "";
@@ -737,14 +747,14 @@ function changeBaseImageVersion () {
             			if (baseVersion == image.version) {
             				html = "<option type='text' value='"+image.id+"'>"+image.version+"</option>" + html;
             			}else {
-            				html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>"
+            				html += "<option type='text' value='"+image.id+"'>"+image.version+"</option>";
             			}
             		}
             	}
             }
-            $("#baseImageId").html(html);    
+            $("#baseImageId").html(html);
 		}
-	})
+	});
 }
 
 function registerCiDelEvent(id){
@@ -766,7 +776,7 @@ function registerCiDelEvent(id){
 	        				 }else{
 	        					 window.location.href = ctx+"/ci";
 	        				 }
-                             
+
 	                     } else {
 	                         layer.alert("删除构建失败");
 	                     }
@@ -950,7 +960,7 @@ function loadAntData(count,invoke){
                     '<label class="c-project-tit">java选项</label>'+
                     '<input id="antJavaOpts-'+count+'" name="antJavaOpts" type="text" class="form-control c-project-con">'+
                 '</div></div></div></div></div></div>';
-	
+
 	$("#sortable").append(antHtml);
 	$("#antTargets-"+count).val(invoke.antTargets);
 	$("#antBuildFileLocation-"+count).val(invoke.antBuildFileLocation);
@@ -990,7 +1000,7 @@ function loadMaven(count){
                 '<div class="row maven-config">'+
                 	'<button class="maven-higherBtn" type="button" style="float:right!important">高级...</button>'+
                 '</div>'+
-                
+
                 '<div class="maven-higherCon hide"><div class="form-group col-md-12">'+
                     '<label class="c-project-tit">POM</label>'+
                     '<input id="pomLocation-'+count+'" name="pomLocation" type="text" class="form-control c-project-con" value="">'+
@@ -1052,7 +1062,7 @@ function loadMavenData(count,invoke){
 	else {
 		mavenVersionData = '<option value="maven">maven</option><option value="default">default</option>';
 	}
-	
+
 	var mavenGlobalSet = '';
 	var mavenGlobalSetFile = invoke.mavenGlobalSetFile;
 	if (mavenGlobalSetFile == 'use default maven global setting') {
@@ -1062,7 +1072,7 @@ function loadMavenData(count,invoke){
 		mavenGlobalSet ='<option value="global settings file in filesystem">global settings file in filesystem</option>'+
 					'<option value="use default maven global setting">use default maven global setting</option>';
 	}
-	
+
 	var mavenHtml = '<div class="row addCiStepRow maven" count = '+count+' invoke = "maven">'+
 	'<div class="col-sm-12">'+
 	'<div class="ibox float-e-margins">'+
@@ -1082,7 +1092,7 @@ function loadMavenData(count,invoke){
             	'<div class="form-group col-md-12">'+
                     '<label class="c-project-tit">maven版本</label>'+
                     '<select id="mavenVersion-'+count+'" name="mavenVersion" class="form-control c-project-con" >'+
-                    mavenVersionData + 
+                    mavenVersionData +
                     '</select>'+
                 '</div>'+
                 '<div class="form-group col-md-12">'+
@@ -1092,7 +1102,7 @@ function loadMavenData(count,invoke){
                 '<div class="row maven-config">'+
                 	'<button class="maven-higherBtn" type="button" style="float:right!important">高级...</button>'+
                 '</div>'+
-                
+
                 '<div class="maven-higherCon hide"><div class="form-group col-md-12">'+
                     '<label class="c-project-tit">POM</label>'+
                     '<input id="pomLocation-'+count+'" name="pomLocation" type="text" class="form-control c-project-con" value="'+invoke.pomLocation+'">'+
@@ -1204,7 +1214,7 @@ function checkCodeCiAdd(){
       layer.tips('项目名称只能由小写字母、数字及横线下划线组成，且首字母只能为字母。','#projectName',{tips: [1, '#3595CC'],time: 3000});
       $('#projectName').focus();
       return;
-    } 
+    }
     else {
     	$.ajax({
     		url : ctx + "/ci/judgeProjectName.do",
@@ -1219,7 +1229,7 @@ function checkCodeCiAdd(){
     	            });
     	            $('#projectName').focus();
     	            falgName = true;
-    			} 
+    			}
     		}
     	});
     }
@@ -1227,7 +1237,7 @@ function checkCodeCiAdd(){
     	falgName = false;
     	return false;
     }
-    
+
     //项目描述的判断
     var description = $("#description").val();
     if (!description || description.length < 1) {
@@ -1235,7 +1245,7 @@ function checkCodeCiAdd(){
     	$("#description").focus();
     	return;
     }
-    
+
     //判断代码库类型
     var codeType = $("#codeType").val();
     if (codeType != 0 ) {
@@ -1246,7 +1256,7 @@ function checkCodeCiAdd(){
     		$('#codeUrl').focus();
     		return;
 	    }
-    	
+
     	//代码地址通过代码验证是否可以通过验证
     	var codeCredentialId = $("#codeCredentials").val();
     	var flagUrl = false;
@@ -1259,18 +1269,18 @@ function checkCodeCiAdd(){
     			data = eval("(" + data + ")");
     			if (data.status=="400") {
     	            layer.tips('代码仓库地址验证失败，请您检查是否有误', '#codeUrl', {
-    	                tips: [1, '#0FA6D8'] 
+    	                tips: [1, '#0FA6D8']
     	            });
     	            $('#codeUrl').focus();
     	            flagUrl = true;
-    			} 
+    			}
     		}
     	});
     	if (flagUrl) {
     		flagUrl = false;
         	return false;
         }
-    	
+
     	//判断代码分支
     	var codeBranch = $("#codeBranch").val();
     	if(!codeBranch || codeBranch.length < 1){
@@ -1278,7 +1288,7 @@ function checkCodeCiAdd(){
     		$('#codeBranch').focus();
     		return;
 	    }
-    	
+
     	if ($("#HookCode").prop("checked")==true) {
     		$("#isHookCode").val("1");
     	} else {
@@ -1292,12 +1302,11 @@ function checkCodeCiAdd(){
     	$("#codeUsername").val("");
     	$("#codePassword").val("");
     }
-    
+
     //判断构建
     var flag = false;
     var json = "";
     $("#sortable >div").each(function(){
-    	debugger;
     	if (flag) {
     		return false;
     	}
@@ -1322,14 +1331,14 @@ function checkCodeCiAdd(){
         	var ijBVId = "#injectBuildVariables-" + count;
         	var mvnSFId = "#mavenSetFile-" + count;
         	var MVnGSFID = "#mavenGlobalSetFile-" + count;
-        	
+
         	var invokeType = 2;
         	var mavenVersion = $(mvnVerId).val();
         	var pomLocation = $(pomId).val();
         	var mavenProperty = $(mvnProId).val();
         	var mavenJVMOptions = $(mvnJvmId).val();
         	var isUserPrivateRegistry = 0 ;
-        	var injectBuildVariables = 0 ; 
+        	var injectBuildVariables = 0 ;
         	var mavenSetFile = $(mvnSFId).val();
         	var mavenGlobalSetFile = $(MVnGSFID).val();
         	//maven存储库的判断
@@ -1345,7 +1354,7 @@ function checkCodeCiAdd(){
         					' "injectBuildVariables":"'+injectBuildVariables+'","mavenSetFile":"'+mavenSetFile+'","mavenGlobalSetFile":"'+mavenGlobalSetFile+'"},';
         	json += jsonData;
         }
-        
+
         if (invoke == "ant") {
         	//ant目标判断
         	var target = "#antTargets-" + count;
@@ -1356,23 +1365,23 @@ function checkCodeCiAdd(){
         		flag = true;
         		return;
     	    }
-        	
+
         	var antVId = "#antVersion-" + count;
         	var antBFLId = "#antBuildFileLocation-" + count;
         	var antPId = "#antProperties-" + count;
         	var antJOId = "#antJavaOpts-" + count;
-        	
+
         	var invokeType = 1;
         	var antVersion = $(antVId).val();
         	var antBuildFileLocation = $(antBFLId).val();
         	var antProperties = $(antPId).val();
         	var antJavaOpts = $(antJOId).val();
-        	
+
         	var jsonData= '{ "invokeType": "'+invokeType+'", "antTargets":"'+antTargets+'", "antVersion":"'+antVersion+'", "antBuildFileLocation": "'+antBuildFileLocation+'",'+
 							' "antProperties":"'+antProperties+'","antJavaOpts":"'+antJavaOpts+'"},';
         	json += jsonData;
         }
-        
+
         if (invoke == "shell") {
         	//shell脚本的判断
         	var shellId = "#executeShell-" + count ;
@@ -1388,17 +1397,17 @@ function checkCodeCiAdd(){
 			json += jsonData;
         }
     });
-    
+
     if (flag) {
     	flag = false;
     	return false;
     }
-    
+
     json = json.substring(0, json.length-1);
     json = '[' + json + ']';
     $("#jsonData").val(json);
-    
-    
+
+
     if ($("#imageInfo").prop("checked")) {
     	var imgNameFirst = $("#imgNameFirst").val();
     	var imageName = $("#imageName").val();
@@ -1423,12 +1432,12 @@ function checkCodeCiAdd(){
 				$('#imgNameVersion').focus();
 				return false;
 			}
-			
+
 			$.ajax({
 	    		url : ctx + "/ci/validCiDetailVersion.do",
 	    		async:false,
 	    		type: "POST",
-	    		data:{	
+	    		data:{
 	    				"id" : id,
 	    				"imgNameFirst":imgNameFirst,
 	    				"imgNameLast":imageName,
@@ -1442,7 +1451,7 @@ function checkCodeCiAdd(){
 	    	            });
 	    	            $('#imgNameVersion').focus();
 	    	            flag = true;
-	    			} 
+	    			}
 	    		}
 	    	});
 	        if (flag) {
@@ -1450,7 +1459,7 @@ function checkCodeCiAdd(){
 	         	return false;
 	        }
 		}
-		
+
 		//判断是否为基础镜像
 	    if ($("#baseImage").prop("checked")) {
 	    	$("#isBaseImage").val(1);
@@ -1465,7 +1474,7 @@ function checkCodeCiAdd(){
 	    else {
 	    	$("#imgType").val(2);
 	    }
-	    
+
 	    var dockerFileLocation = $("#dockerFileLocation").val();
 		if (dockerFileLocation != undefined) {
 			if(!dockerFileLocation || dockerFileLocation.length < 1){
@@ -1474,7 +1483,7 @@ function checkCodeCiAdd(){
 				return;
 			}
 		}
-		
+
 		if (editor_one !=null) {
 			var dockerFile = editor_one.getValue();
 			if (dockerFile != undefined) {
@@ -1514,7 +1523,7 @@ function checkQuickCiAdd() {
       layer.tips('项目名称只能由小写字母、数字及横线下划线组成，且首字母只能为字母。','#projectName',{tips: [1, '#3595CC'],time: 3000});
       $('#projectName').focus();
       return;
-    } 
+    }
     else {
     	$.ajax({
     		url : ctx + "/ci/judgeProjectName.do",
@@ -1529,7 +1538,7 @@ function checkQuickCiAdd() {
     	            });
     	            $('#projectName').focus();
     	            falgName = true;
-    			} 
+    			}
     		}
     	});
     }

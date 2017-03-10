@@ -351,8 +351,10 @@ public class CiController {
                 //代码验证信息的查询和加载
                 Iterable<CiCodeCredential> ciCredentialList = ciCodeCredentialDao.findAll();
         		List<Object> toolGroups = getToolGroups();
+        		String basicImage = codeCiToolDao.findAllImages().get(0).gettoolCode();
 
         		model.addAttribute("ciCode", ciCode);
+        		model.addAttribute("basicImage", basicImage);
                 model.addAttribute("toolGroups", toolGroups);
                 model.addAttribute("ciCredentialList", ciCredentialList);
                 model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
@@ -466,6 +468,7 @@ public class CiController {
         originCiCode.setIsHookCode(ciCode.getIsHookCode());
         originCiCode.setCodeName(ciCode.getCodeName());
         originCiCode.setCodeRefspec(ciCode.getCodeRefspec());
+        originCiCode.setCiTools(ciCode.getCiTools());
         List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
         CiCodeCredential ciCodeCredential = new CiCodeCredential();
         if (!StringUtils.isEmpty(ciCode.getCodeCredentials())) {
