@@ -310,6 +310,7 @@
 																	</a>
 																</h4>
 															</div>
+															<input type="hidden" id="ciToolsCheckedVal" value="${ciCode.ciTools }">
 															<div id="collapseOne" class="panel-collapse collapse in">
 																<div class="panel-body">
 																		<input type = "hidden" id = "basicImage" name = "basicImage" value = "${basicImage }">
@@ -319,7 +320,7 @@
 																			 	<ul class="dftools">
 																					<li class="dftools-firstli">${tools.groupName } :</li>
 																					<c:forEach items="${tools.tools}" var="tool" >
-																						<li class="dftools-li"><label><input type="checkbox" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
+																						<li class="dftools-li"><label><input type="checkbox" id="${tools.groupName }/${tool.name }" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
 																					</c:forEach>
 																				</ul>
 																			</div>

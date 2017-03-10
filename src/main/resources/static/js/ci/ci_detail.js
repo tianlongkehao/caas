@@ -397,6 +397,7 @@ $(document).ready(function(){
 		}
 		editor_one.setValue(allToolCode);
 	});
+	loadCiToolsChecked();
 });/*ready*/
 
 //停止一个构建执行
@@ -1547,5 +1548,22 @@ function checkQuickCiAdd() {
     	return false;
     }
     return true;
+}
+
+//加载工具集的勾选项
+function loadCiToolsChecked(){
+	var ciToolsVal = $("#ciToolsCheckedVal").val();
+	var ciTools = ciToolsVal.split(",");
+	var toolChkInput = $(".toolChk");
+	for(var i=0; i<ciTools.length; i++){
+		var ciTool = ciTools[i];
+		for(var j=0; j<toolChkInput.length; j++){
+			var toolInput = toolChkInput[j];
+			var toolInputId = toolInput.getAttribute("id");
+			if(ciTool == toolInputId){
+				toolInput.setAttribute("checked",true);
+			}
+		}
+	}
 }
 
