@@ -203,6 +203,12 @@
             </activation>
         </profile>
         <profile>
+            <id>test</id>
+            <properties>
+                <profileActive>test</profileActive>
+            </properties>
+        </profile>
+        <profile>
             <id>prepare</id>
             <properties>
                 <profileActive>prepare</profileActive>
@@ -224,8 +230,9 @@
                 <excludes>
                     <exclude>application.properties</exclude>
                     <exclude>application-dev.properties</exclude>
-                    <exclude>application-profile.properties</exclude>
+                    <exclude>application-test.properties</exclude>
                     <exclude>application-prepare.properties</exclude>
+                    <exclude>application-profile.properties</exclude>
                 </excludes>
             </resource>
             <resource>
