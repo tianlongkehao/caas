@@ -64,7 +64,7 @@ public class Service {
 	@ResponseBody
 	public String userServices(@PathVariable String user) {
 		List<com.bonc.epm.paas.entity.Service> serviceList = serviceDao
-				.search("%", "%", "%" + (user != null ? user : "") + "%", null).getContent();
+				.search("%", "%", (user != null ? user : ""), null).getContent();
 		for (com.bonc.epm.paas.entity.Service service : serviceList) {
 			service.setCreatorName(userDao.findById(service.getCreateBy()).getUserName());
 		}
@@ -84,7 +84,7 @@ public class Service {
 	@ResponseBody
 	public String userServices(@PathVariable String user, @PathVariable String services) {
 		List<com.bonc.epm.paas.entity.Service> serviceList = serviceDao
-				.search("%" + (services != null ? services : "") + "%", "%", "%" + (user != null ? user : "") + "%",
+				.search((services != null ? services : ""), "%",(user != null ? user : ""),
 						null)
 				.getContent();
 		for (com.bonc.epm.paas.entity.Service service : serviceList) {
