@@ -12,6 +12,7 @@
 package com.bonc.epm.paas.shera.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,9 +21,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.bonc.epm.paas.constant.CiConstant;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.entity.CiInvoke;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.rest.util.RestFactory;
@@ -55,14 +60,14 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
  */
 @Service
 public class SheraClientService {
-    
+
     private String endpoint="";
     private String username="";
     private String password="";
-    
+
     @Autowired
     private SheraDao sheraDao;
-    
+
     public SheraAPIClientInterface getClient() {
         User user = CurrentUserUtils.getInstance().getUser();
         Shera shera = new Shera();
@@ -74,7 +79,7 @@ public class SheraClientService {
         }
         return getClient(shera);
     }
-    
+
     public SheraAPIClientInterface getClient(Shera shera){
         String namespace = CurrentUserUtils.getInstance().getUser().getUserName();
         this.endpoint = "http://" + shera.getSheraUrl() + ":" + shera.getPort() + "/she-ra";
@@ -82,11 +87,11 @@ public class SheraClientService {
         this.password = shera.getPassword();
         return getclient(namespace);
     }
-    
+
     public SheraAPIClientInterface getclient(String namespace) {
         return new SheraAPIClient(endpoint, namespace, username, password,new RestFactory());
     }
-    
+
     /**
      * Description: <br>
      * 创建Job
@@ -101,113 +106,122 @@ public class SheraClientService {
      * @param dockerFile ： dockerFile地址
      * @param imgName ： 镜像名称
      * @param ciInvokeList ：构建信息
-     * @return 
+     * @return
      * @see
      */
     public Job generateJob(String id ,String jdkVersion,String branch,String url,
                            String codeName,String refspec,String dockerFileContent,String dockerFile,
                            String imgNamePre,String imgName,List<CiInvoke> ciInvokeList,String userName,
-                           Integer type,Integer codeType,String uuid) {
-        Job job = new Job();
-        job.setId(id);
-        job.setJdkVersion(jdkVersion);
-        job.setMaxExecutionRecords(2);
-        job.setMaxKeepDays(2);
-        CodeManager codeManager = new CodeManager();
-        codeManager.setUuid(uuid);
-        codeManager.setCodeChoice(codeType);
-        if (codeType == CiConstant.CODE_TYPE_GIT) {
-            GitConfig gitConfig = new GitConfig();
-            gitConfig.setBranch(branch);
-            Repository repo = new Repository();
-            repo.setUrl(url);
-            Key key = new Key();
-            key.setUsername(userName);
-            key.setType(type);
-            repo.setKey(key);
-            GitAdvancedConfig advanced = new GitAdvancedConfig();
-            advanced.setName(codeName);
-            advanced.setRefspec(refspec);
-            repo.setAdvanced(advanced);
-            gitConfig.setRepo(repo);
-            codeManager.setGitConfig(gitConfig);
-        }
-        else {
-            SvnConfig svnConfig = new SvnConfig();
-            svnConfig.setBranch(branch);
-            Repository repo = new Repository();
-            repo.setUrl(url);
-            Key key = new Key();
-            key.setUsername(userName);
-            key.setType(type);
-            repo.setKey(key);
-            svnConfig.setRepo(repo);
-            codeManager.setSvnConfig(svnConfig);
-        }
-        job.setCodeManager(codeManager);
-        
-        BuildManager buildManager = new BuildManager();
-        List<Integer> seqNo = new ArrayList<Integer>();
-        List<String> cmds = new ArrayList<String>();
-        List<AntConfig> antConfigs = new ArrayList<AntConfig>();
-        List<MvnConfig> mvnConfigs = new ArrayList<MvnConfig>();
-        if (ciInvokeList.size() == 0) {
-            seqNo.add(0);
-        }
-        for (CiInvoke ciInvoke : ciInvokeList ) {
-            if (ciInvoke.getInvokeType() == 1) {
-                seqNo.add(1);
-                AntConfig antConfig = new AntConfig();
-                antConfig.setVersion(ciInvoke.getAntVersion());
-                antConfig.setTargets(ciInvoke.getAntTargets());
-                antConfig.setBuildFile(ciInvoke.getAntBuildFileLocation());
-                antConfig.setProperties(ciInvoke.getAntProperties());
-                antConfig.setJavaopts(ciInvoke.getAntJavaOpts());
-                antConfigs.add(antConfig);
-            }
-            if (ciInvoke.getInvokeType() == 2) {
-                seqNo.add(2);
-                MvnConfig mvnConfig = new MvnConfig();
-                mvnConfig.setVersion(ciInvoke.getMavenVersion());
-                mvnConfig.setGoals(ciInvoke.getMavenGoals());
-                mvnConfig.setPom(ciInvoke.getPomLocation());
-                mvnConfig.setProperties(ciInvoke.getMavenProperty());
-                mvnConfig.setJvmopts(ciInvoke.getMavenJVMOptions());
-                mvnConfig.setSettingFile(ciInvoke.getMavenSetFile());
-                mvnConfig.setGlobalSettingFile(ciInvoke.getMavenGlobalSetFile());
-                mvnConfigs.add(mvnConfig);
-            }
-            if (ciInvoke.getInvokeType() == 3) {
-                seqNo.add(3);
-                cmds.add(ciInvoke.getShellCommand());
-            }
-        }
-        buildManager.setAntConfigs(antConfigs);
-        buildManager.setCmds(cmds);
-        buildManager.setMvnConfigs(mvnConfigs);
-        buildManager.setSeqNo(seqNo);
-        job.setBuildManager(buildManager);
-        
-        ImgManager imgManager = new ImgManager();
-        if (StringUtils.isNotEmpty(dockerFileContent)) {
-            imgManager.setDockerFileContent(dockerFileContent);
-            imgManager.setDockerFile("");
-        }
-        if (StringUtils.isNotEmpty(dockerFile)) {
-            imgManager.setDockerFileContent("");
-            imgManager.setDockerFile(dockerFile);
-        }
-        imgManager.setImgNamePre(imgNamePre);
-        imgManager.setImgName(imgName);
-        job.setImgManager(imgManager);
-        return job;
-    }
+			Integer type, Integer codeType, String uuid, String ciTools) {
+		Job job = new Job();
+		job.setId(id);
+		job.setJdkVersion(jdkVersion);
+		job.setMaxExecutionRecords(2);
+		job.setMaxKeepDays(2);
+		CodeManager codeManager = new CodeManager();
+		codeManager.setUuid(uuid);
+		codeManager.setCodeChoice(codeType);
+		if (codeType == CiConstant.CODE_TYPE_GIT) {
+			GitConfig gitConfig = new GitConfig();
+			gitConfig.setBranch(branch);
+			Repository repo = new Repository();
+			repo.setUrl(url);
+			Key key = new Key();
+			key.setUsername(userName);
+			key.setType(type);
+			repo.setKey(key);
+			GitAdvancedConfig advanced = new GitAdvancedConfig();
+			advanced.setName(codeName);
+			advanced.setRefspec(refspec);
+			repo.setAdvanced(advanced);
+			gitConfig.setRepo(repo);
+			codeManager.setGitConfig(gitConfig);
+		} else {
+			SvnConfig svnConfig = new SvnConfig();
+			svnConfig.setBranch(branch);
+			Repository repo = new Repository();
+			repo.setUrl(url);
+			Key key = new Key();
+			key.setUsername(userName);
+			key.setType(type);
+			repo.setKey(key);
+			svnConfig.setRepo(repo);
+			codeManager.setSvnConfig(svnConfig);
+		}
+		job.setCodeManager(codeManager);
+
+		BuildManager buildManager = new BuildManager();
+		List<Integer> seqNo = new ArrayList<Integer>();
+		List<String> cmds = new ArrayList<String>();
+		List<AntConfig> antConfigs = new ArrayList<AntConfig>();
+		List<MvnConfig> mvnConfigs = new ArrayList<MvnConfig>();
+		if (ciInvokeList.size() == 0) {
+			seqNo.add(0);
+		}
+		for (CiInvoke ciInvoke : ciInvokeList) {
+			if (ciInvoke.getInvokeType() == 1) {
+				seqNo.add(1);
+				AntConfig antConfig = new AntConfig();
+				antConfig.setVersion(ciInvoke.getAntVersion());
+				antConfig.setTargets(ciInvoke.getAntTargets());
+				antConfig.setBuildFile(ciInvoke.getAntBuildFileLocation());
+				antConfig.setProperties(ciInvoke.getAntProperties());
+				antConfig.setJavaopts(ciInvoke.getAntJavaOpts());
+				antConfigs.add(antConfig);
+			}
+			if (ciInvoke.getInvokeType() == 2) {
+				seqNo.add(2);
+				MvnConfig mvnConfig = new MvnConfig();
+				mvnConfig.setVersion(ciInvoke.getMavenVersion());
+				mvnConfig.setGoals(ciInvoke.getMavenGoals());
+				mvnConfig.setPom(ciInvoke.getPomLocation());
+				mvnConfig.setProperties(ciInvoke.getMavenProperty());
+				mvnConfig.setJvmopts(ciInvoke.getMavenJVMOptions());
+				mvnConfig.setSettingFile(ciInvoke.getMavenSetFile());
+				mvnConfig.setGlobalSettingFile(ciInvoke.getMavenGlobalSetFile());
+				mvnConfigs.add(mvnConfig);
+			}
+			if (ciInvoke.getInvokeType() == 3) {
+				seqNo.add(3);
+				cmds.add(ciInvoke.getShellCommand());
+			}
+		}
+		buildManager.setAntConfigs(antConfigs);
+		buildManager.setCmds(cmds);
+		buildManager.setMvnConfigs(mvnConfigs);
+		buildManager.setSeqNo(seqNo);
+		job.setBuildManager(buildManager);
+
+		ImgManager imgManager = new ImgManager();
+		if (StringUtils.isNotEmpty(dockerFileContent)) {
+			imgManager.setDockerFileContent(dockerFileContent);
+			imgManager.setDockerFile("");
+		}
+		if (StringUtils.isNotEmpty(dockerFile)) {
+			imgManager.setDockerFileContent("");
+			imgManager.setDockerFile(dockerFile);
+		}
+		imgManager.setImgNamePre(imgNamePre);
+		imgManager.setImgName(imgName);
+
+		List<String> tools = new ArrayList<>();
+		if (StringUtils.isNotBlank(ciTools)) {
+			String[] ciToolsList = ciTools.split(",");
+			for (String ciTool : ciToolsList) {
+				tools.add(ciTool);
+			}
+		}
+
+		imgManager.setTools(tools);
+		job.setImgManager(imgManager);
+		return job;
+	}
 
     /**
      * Description: <br>
      * 封装jobExec数据
      * @param startTime
-     * @return 
+     * @return
      * @see
      */
     public JobExecView generateJobExecView(long startTime,String imgVersion){
@@ -216,14 +230,14 @@ public class SheraClientService {
         jobExecView.setImgVersion(imgVersion);
         return jobExecView;
     }
-    
+
     /**
      * Description: <br>
      * 封装GitCredent数据
-     * @param secretInfo 
-     * @param username 
-     * @param type 
-     * @return 
+     * @param secretInfo
+     * @param username
+     * @param type
+     * @return
      */
     public GitCredential generateGitCredential(String secretInfo,String username,Integer type,String desc){
         GitCredential gitCredential = new GitCredential();
@@ -235,14 +249,14 @@ public class SheraClientService {
         gitCredential.setKey(credentialKey);
         return gitCredential;
     }
-    
+
     /**
      * Description: <br>
      * 验证代码地址是否正确
      * @param url ： 代码地址
      * @param username ： 用户名；
      * @param type ： 类型
-     * @return 
+     * @return
      */
     public CredentialCheckEntity generateCredentialCheckEntity(String url,String username,Integer type,String desc,String uuid){
         CredentialCheckEntity credentialCheckEntity = new CredentialCheckEntity();
@@ -255,7 +269,7 @@ public class SheraClientService {
         credentialCheckEntity.setKey(credentialKey);
         return credentialCheckEntity;
     }
-    
+
     /**
      * Description: <br>
      * 封装hookgit数据参数
@@ -274,7 +288,7 @@ public class SheraClientService {
         changeGit.setFlag(false);
         return changeGit;
     }
-    
+
     /**
      * Description: <br>
      * 封装jdk数据
@@ -288,7 +302,7 @@ public class SheraClientService {
         jdk.setVersion(version);
         return jdk;
     }
-    
+
 //    public static void main(String[] args) {
 //        SheraClientService sheraClientService = new SheraClientService();
 //        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
@@ -296,7 +310,7 @@ public class SheraClientService {
 //        chengeGit = client.deleteGitHooks("test-wxwl1", chengeGit);
 //        System.err.println(chengeGit);
 //    }
-    
+
 //    public static void main(String[] args) {
 //        SheraClientService sheraClientService = new SheraClientService();
 //        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
@@ -305,13 +319,13 @@ public class SheraClientService {
 //            for (Jdk jdk : jdkList) {
 //                System.out.println(jdk.toString());
 //            }
-//            
+//
 ////            JobExecView jobExecView = client.getExecution("testdemo1",1);
 ////            System.out.println(jobExecView);
-//           
+//
 ////            JobExecView jobExecView2 = client.killExecution("testdemo1",2);
 ////            System.out.println(jobExecView2);
-//            
+//
 //        }
 //        catch (SheraClientException e) {
 //           e.printStackTrace();

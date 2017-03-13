@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/jquery-ui.min.css"/>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
     <script type="text/javascript" src="<%=path %>/js/ci/ci_add.js"></script>
-    
+
 </head>
 <body>
 
@@ -61,7 +61,7 @@
 	                                </div>
 	                            </div>
                         	</section>
-                        	
+
                             <h4 class="c-title">代码管理</h4>
                             <section class="registryinfo">
                             	<div class="row">
@@ -193,7 +193,7 @@
 			                                		<li><a id="shell">Execute shell</a></li>
 			                                	</ul>
 		                                	</li>
-		                                	
+
 		                                </ul>
 	                            <div id="sortable">
 	                            </div>
@@ -237,38 +237,40 @@
 			                          </ul>
 		                            </li>
 		                        </ul>
-		                        <%-- <div id="dockerfileMethods">
+		                        <div id="dockerfileMethod-tools">
 		                        	<div class="row dockerfileTemp dockerfileTools hide">
 		                        		<div class="panel-group" id="accordion">
 											<div class="panel panel-default">
 												<div class="panel-heading">
 													<h4 class="panel-title">
-														<a data-toggle="collapse" data-parent="#accordion" 
+														<a data-toggle="collapse" data-parent="#accordion"
 														   href="#collapseOne">工具集
 														</a>
 													</h4>
 												</div>
 												<div id="collapseOne" class="panel-collapse collapse in">
 													<div class="panel-body">
-															<c:forEach items="${toolGroups}" var="tools" >
-																 <div class="toolItems">
-																 	<ul class="dftools">
-																		<li class="dftools-firstli">${tools.groupName } :</li>
-																		<c:forEach items="${tools.tools}" var="tool" >
-																			<li class="dftools-li"><label><input type="checkbox" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
-																		</c:forEach>
-																	</ul>
-																</div> 
-															</c:forEach>
+														<input type = "hidden" id = "basicImage" name = "basicImage" value = "${basicImage }">
+														<input type = "hidden" id = "ciTools" name = "ciTools" value = "">
+														<c:forEach items="${toolGroups}" var="tools" >
+															<div class="toolItems">
+																<ul class="dftools">
+																	<li class="dftools-firstli">${tools.groupName } :</li>
+																	<c:forEach items="${tools.tools}" var="tool" >
+																		<li class="dftools-li"><label><input type="checkbox" id="${tools.groupName }/${tool.name }" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
+																	</c:forEach>
+																</ul>
+															</div>
+														</c:forEach>
 													</div>
 												</div>
 											</div>
 		                        		</div>
 		                        	</div>
-		                        </div> --%>
+		                        </div>
 		                        <div id="dockerfileMethod"></div>
                         	</section>
-                            
+
                         	<input type = "hidden" id = "jsonData" name = "jsonData" value = "">
                             <br>
                             <div class="pull-right">
@@ -287,7 +289,7 @@
                     <table class="table table-hover enabled" id="Path-table-doc"
                         style="width: 326px; margin: 5px 10px 5px 10px">
                         <tbody id="dockerfile-body">
-                           
+
                         </tbody>
                     </table>
                 </div>
@@ -299,10 +301,10 @@
                     </div>
                 </div>
                 <!-- 添加证书 -->
-			     <div id="addCredentialsCon">           
+			     <div id="addCredentialsCon">
 			        <div style="margin: 15px 15px">
 			            <div class="infoCred">
-			                <span class="labelCred">仓库：</span> 
+			                <span class="labelCred">仓库：</span>
 			                <select class="form-control conCred" id="codeType" name="codeType">
 			                    <option value="1">Git</option>
 			                    <option value="2">SVN</option>

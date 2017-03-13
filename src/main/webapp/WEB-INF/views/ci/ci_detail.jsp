@@ -120,7 +120,7 @@
 
                             <%-- 基本设置 --%>
                             <div class="config-details hide">
-                                <c:if test="${ci.type == 1}"> 
+                                <c:if test="${ci.type == 1}">
                                 	<form id="editCiForm" class="form-horizontal" method="post" action="" role="form">
                                 		<section class="registryinfo">
 			                        		<div class="row depot-name">
@@ -151,7 +151,7 @@
 				                                </div>
 				                            </div>
 			                        	</section>
-			                        	
+
 			                        	<hr>
 			                            <h4 class="c-title">代码管理</h4>
 			                            <section class="registryinfo">
@@ -252,7 +252,7 @@
 					                                </li>
 					                            </ul>
 				                            <div id="sortable">
-				                            
+
 				                            </div>
 			                            </section>
 			                            <hr>
@@ -273,7 +273,7 @@
 			                                                   class="form-control c-project-con reg-input imgInput" value="${ci.imgNameVersion }">
 					                            </div>
 				                            </div>
-				                            
+
 				                            <div class="row">
 			                                    <div class="form-group1 col-md-12">
 			                                        <label class="c-project-tit">是否为基础镜像</label>
@@ -288,7 +288,7 @@
 			                                        <input type = "hidden" id = "imgType" name = "imgType" value = "${ci.imgType }">
 			                                    </div>
 			                                </div>
-				                            
+
 				                            <ul class="nav nav-bar">
 					                           <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">dockerfile构建方式<span class="caret"></span></a>
 					                              <ul class="dropdown-menu">
@@ -299,8 +299,41 @@
 					                        </ul>
 					                        <input type="hidden" id="ciLocation" value="${ci.dockerFileLocation}">
                                             <input type = "hidden" id = "ciMethod" value = '${dockerFileContent }'>
+                                            <div id="dockerfileMethod-tools">
+					                        	<div class="row dockerfileTemp dockerfileTools hide">
+					                        		<div class="panel-group" id="accordion">
+														<div class="panel panel-default">
+															<div class="panel-heading">
+																<h4 class="panel-title">
+																	<a data-toggle="collapse" data-parent="#accordion"
+																	   href="#collapseOne">工具集
+																	</a>
+																</h4>
+															</div>
+															<input type="hidden" id="ciToolsCheckedVal" value="${ciCode.ciTools }">
+															<div id="collapseOne" class="panel-collapse collapse in">
+																<div class="panel-body">
+																		<input type = "hidden" id = "basicImage" name = "basicImage" value = "${basicImage }">
+																		<input type = "hidden" id = "ciTools" name = "ciTools" value = "${ciCode.ciTools }">
+																		<c:forEach items="${toolGroups}" var="tools" >
+																			 <div class="toolItems">
+																			 	<ul class="dftools">
+																					<li class="dftools-firstli">${tools.groupName } :</li>
+																					<c:forEach items="${tools.tools}" var="tool" >
+																						<li class="dftools-li"><label><input type="checkbox" id="${tools.groupName }/${tool.name }" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
+																					</c:forEach>
+																				</ul>
+																			</div>
+																		</c:forEach>
+																	<div class="toolItems warningInfo"><i class="fa fa-warning"></i><span>重新勾选工具集，将改变dockerfile内容，请谨慎操作！</span></div>
+																</div>
+															</div>
+														</div>
+					                        		</div>
+					                        	</div>
+					                        </div>
 				                            <div id="dockerfileMethod">
-	                                               
+
 	                            			</div>
 			                        	</section>
 			                            <div class="form-group">
@@ -312,7 +345,7 @@
                                         <input type="hidden" id="id" name="id" value="${ci.id}">
                                         <input type = "hidden" id = "jsonData" name = "jsonData" value = "">
 			                        </form>
-                                </c:if> 
+                                </c:if>
 
                                 <c:if test="${ci.type == 2}">
                                     <form id="editCiUploadForm" class="form-horizontal" method="post" action="" role="form" enctype="multipart/form-data">
@@ -340,7 +373,7 @@
                                             <div class="col-sm-9">
                                             <span id="docImport-btn" class=" btn-info btn-sm" style="cursor: pointer; ">导入模板</span>
                                             <textarea id="dockerFile" name = "dockerFile"
-                                                style="background-color: black; color: #37fc34; border: 0; width: 100%; height: 230px; margin-top:10px">${dockerFileTxt }</textarea>   
+                                                style="background-color: black; color: #37fc34; border: 0; width: 100%; height: 230px; margin-top:10px">${dockerFileTxt }</textarea>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -384,12 +417,12 @@
                                                                <option type="text" value="${image.name }">${image.name }</option>
                                                         </c:if>
                                                     </c:forEach>
-                                                </select> : 
+                                                </select> :
                                                 <select id="baseImageId" name="baseImageId">
                                                     <option type="text" id = "ownBase" value="${ci.baseImageId }">${ci.baseImageVersion }</option>
                                                 </select>
-                                            
-                                               <%--  <input id="baseImageName" name="baseImageName" type="text" 
+
+                                               <%--  <input id="baseImageName" name="baseImageName" type="text"
                                                           value="${ci.baseImageName}" style="width:218px"> :
                                                 <input id="baseImageVersion" name="baseImageVersion" type="text" value="${ci.baseImageVersion}">
                                                  --%>
@@ -425,13 +458,13 @@
                         </div>
                     </div>
                 </div>
-                 
+
                 <!--dockerfile导入模板 -->
                 <div id="dockerfile-import" style="display:none;max-height:170px;overflow-y:scroll;overflow-x:hidden;">
                     <table class="table table-hover enabled" id="Path-table-doc"
                         style="width: 326px; margin: 5px 10px 5px 10px">
                         <tbody id="dockerfile-body">
-                           
+
                         </tbody>
                     </table>
                 </div>
@@ -466,9 +499,9 @@
                 </div>
 				<!-- 添加证书 -->
                 <div id="addCredentialsCon">
-                    <div style="width: 345px; margin: 5px 10px 5px 10px">
+                    <div style="margin: 15px 15px">
                         <div class="infoCred">
-                            <span class="labelCred">仓库：</span> 
+                            <span class="labelCred">仓库：</span>
                             <select class="form-control conCred" id="codeType" name="codeType">
                                 <option value="1">Git</option>
                                 <option value="2">SVN</option>
