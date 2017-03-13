@@ -21,25 +21,28 @@ public class UserSecurityInterceptor implements HandlerInterceptor {
     */
     @Autowired
     public PortConfigDao portConfigDao;
-    
+
     @Override
 	public boolean preHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler) throws Exception {
 		 //验证用户是否登陆
         Object obj = request.getSession().getAttribute("cur_user");
+        if (request.getRequestURI().contains("api")) {
+			return true;
+		}
         if (obj == null || !(obj instanceof User)) {
             response.sendRedirect(request.getContextPath() + "/login");
-            
+
 /*          ServiceController.smalSet.clear();
-            if (portConfigDao == null) {//解决service为null无法注入问题 
-               BeanFactory factory = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getServletContext()); 
-               portConfigDao = (PortConfigDao) factory.getBean("portConfigDao"); 
+            if (portConfigDao == null) {//解决service为null无法注入问题
+               BeanFactory factory = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getServletContext());
+               portConfigDao = (PortConfigDao) factory.getBean("portConfigDao");
                }
             ServiceController.smalSet.addAll(portConfigDao.findPortSets());
             ServiceController.smalSet.remove(null);*/
             return false;
         }
-        
+
         return true;
     }
 
