@@ -247,7 +247,7 @@
 					                                	<ul class="dropdown-menu">
 						                                	<li><a id="maven">Maven</a></li>
 						                                	<li><a id="ant">Ant</a></li>
-						                                	<li><a id="shell">Execute shell</a></li>
+<!-- 						                                	<li><a id="shell">Execute shell</a></li> -->
 						                                </ul>
 					                                </li>
 					                            </ul>
