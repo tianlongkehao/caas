@@ -711,7 +711,13 @@ public class CiController {
 			imageNameFirst = cuurentUser.getUserName();
 		}
 
-		String basicImage = codeCiToolDao.findAllImages().get(0).gettoolCode();
+		String basicImage = new String();
+
+		List<CodeCiTool> allImages = codeCiToolDao.findAllImages();
+		if (!CollectionUtils.isEmpty(allImages)) {
+			basicImage = allImages.get(0).gettoolCode();
+		}
+
 		List<Object> toolGroups = getToolGroups();
 
 		model.addAttribute("username", imageNameFirst);
