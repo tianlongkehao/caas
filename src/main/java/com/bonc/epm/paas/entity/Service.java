@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -147,6 +148,12 @@ public class Service {
 	 */
 	@Transient
 	private boolean updateImage;
+
+	/**
+	 * 端口信息
+	 */
+	@Transient
+	private List<PortConfig> portConfigs;
 
     public String getServiceChName() {
 		return serviceChName;
@@ -398,5 +405,13 @@ public class Service {
 
 	public void setIsModify(Integer isModify) {
 		this.isModify = isModify;
+	}
+
+	public List<PortConfig> getPortConfigs() {
+		return portConfigs;
+	}
+
+	public void setPortConfigs(List<PortConfig> portConfigs) {
+		this.portConfigs = portConfigs;
 	}
 }

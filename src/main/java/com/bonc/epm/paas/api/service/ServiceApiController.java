@@ -1,10 +1,13 @@
 /**
  *
  */
-package com.bonc.epm.paas.api;
+package com.bonc.epm.paas.api.service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.entity.PortConfig;
+import com.bonc.epm.paas.entity.Service;
 
 /**
  * @author Administrator
@@ -22,7 +28,7 @@ import com.bonc.epm.paas.dao.UserDao;
  */
 @Controller
 @RequestMapping(value = "/api/v1")
-public class Service {
+public class ServiceApiController {
 
 	/**
 	 * 服务数据层接口
@@ -37,6 +43,12 @@ public class Service {
 	private UserDao userDao;
 
 	/**
+	 * portConfig数据层接口
+	 */
+	@Autowired
+	private PortConfigDao portConfigDao;
+
+	/**
 	 * Description: <br>
 	 * services 获取所有服务
 	 *
@@ -45,12 +57,19 @@ public class Service {
 	@RequestMapping(value = { "/services" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String services() {
-		List<com.bonc.epm.paas.entity.Service> serviceList = serviceDao.search("%", "%", "%", null).getContent();
-		for (com.bonc.epm.paas.entity.Service service : serviceList) {
+		Iterable<Service> result = serviceDao.search("%", "%", "%");
+		Iterator<Service> it = result.iterator();
+		List<Service> serviceList = new ArrayList<>();
+		while (it.hasNext()) {
+			Service service = it.next();
 			service.setCreatorName(userDao.findById(service.getCreateBy()).getUserName());
+			List<PortConfig> ports = portConfigDao.findByServiceId(service.getId());
+			if (CollectionUtils.isNotEmpty(ports)) {
+				service.setPortConfigs(ports);
+			}
+			serviceList.add(service);
 		}
 		return JSON.toJSONString(serviceList);
-
 	}
 
 	/**
@@ -63,13 +82,19 @@ public class Service {
 	@RequestMapping(value = { "/user/{user}/services" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String userServices(@PathVariable String user) {
-		List<com.bonc.epm.paas.entity.Service> serviceList = serviceDao
-				.search("%", "%", (user != null ? user : ""), null).getContent();
-		for (com.bonc.epm.paas.entity.Service service : serviceList) {
+		Iterable<Service> result = serviceDao.search("%", "%", (user != null ? user : ""));
+		Iterator<Service> it = result.iterator();
+		List<Service> serviceList = new ArrayList<>();
+		while (it.hasNext()) {
+			Service service = it.next();
 			service.setCreatorName(userDao.findById(service.getCreateBy()).getUserName());
+			List<PortConfig> ports = portConfigDao.findByServiceId(service.getId());
+			if (CollectionUtils.isNotEmpty(ports)) {
+				service.setPortConfigs(ports);
+			}
+			serviceList.add(service);
 		}
 		return JSON.toJSONString(serviceList);
-
 	}
 
 	/**
@@ -83,15 +108,20 @@ public class Service {
 	@RequestMapping(value = { "/user/{user}/services/{services}" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String userServices(@PathVariable String user, @PathVariable String services) {
-		List<com.bonc.epm.paas.entity.Service> serviceList = serviceDao
-				.search((services != null ? services : ""), "%",(user != null ? user : ""),
-						null)
-				.getContent();
-		for (com.bonc.epm.paas.entity.Service service : serviceList) {
+		Iterable<Service> result = serviceDao.search((services != null ? services : ""), "%",
+				(user != null ? user : ""));
+		Iterator<Service> it = result.iterator();
+		List<Service> serviceList = new ArrayList<>();
+		while (it.hasNext()) {
+			Service service = it.next();
 			service.setCreatorName(userDao.findById(service.getCreateBy()).getUserName());
+			List<PortConfig> ports = portConfigDao.findByServiceId(service.getId());
+			if (CollectionUtils.isNotEmpty(ports)) {
+				service.setPortConfigs(ports);
+			}
+			serviceList.add(service);
 		}
 		return JSON.toJSONString(serviceList);
-
 	}
 
 }
