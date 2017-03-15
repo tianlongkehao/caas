@@ -267,6 +267,18 @@ public class ServiceController {
     private Integer DOCKER_LOG_DOWNLOAD = 30;
 
 	/**
+     * cpu大小
+     */
+    @Value("${service.cpu.size}")
+    private String SERVICE_CPU_SIZE;
+
+	/**
+     * memory大小
+     */
+    @Value("${service.memory.size}")
+    private String SERVICE_MEMORY_SIZE;
+
+    /**
 	 * Description: <br>
 	 * 展示container和services
 	 *
@@ -557,64 +569,78 @@ public class ServiceController {
      */
     @RequestMapping(value = { "service/add" }, method = RequestMethod.GET)
 	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {
-    	User currentUser = CurrentUserUtils.getInstance().getUser();
-        String isDepoly = "";
-        if (imageName != null) {
-            isDepoly = "deploy";
-		     // 获取基础镜像的暴露端口信息
-            List<PortConfig> list = getBaseImageExposedPorts(imgID);
-            if (null == list) {
-                list = new ArrayList<PortConfig>();
-                PortConfig portConfig = new PortConfig();
-                portConfig.setContainerPort("8080");
-                int randomPort = vailPortSet();
-                if (-1 != randomPort) {
-                    portConfig.setMapPort(String.valueOf(randomPort));
-                }
-                else {
-                    portConfig.setMapPort("-1");
-                }
-                list.add(portConfig);
-            }
-            model.addAttribute("portConfigs",JSON.toJSONString(list));
-        }
-        boolean flag = getleftResource(model);
-        if (!flag) {
-            model.addAttribute("msg", "请创建租户！");
-            return "service/service.jsp";
-        }
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		String isDepoly = "";
+		if (imageName != null) {
+			isDepoly = "deploy";
+			// 获取基础镜像的暴露端口信息
+			List<PortConfig> list = getBaseImageExposedPorts(imgID);
+			if (null == list) {
+				list = new ArrayList<PortConfig>();
+				PortConfig portConfig = new PortConfig();
+				portConfig.setContainerPort("8080");
+				int randomPort = vailPortSet();
+				if (-1 != randomPort) {
+					portConfig.setMapPort(String.valueOf(randomPort));
+				} else {
+					portConfig.setMapPort("-1");
+				}
+				list.add(portConfig);
+			}
+			model.addAttribute("portConfigs", JSON.toJSONString(list));
+		}
+		boolean flag = getleftResource(model);
+		if (!flag) {
+			model.addAttribute("msg", "请创建租户！");
+			return "service/service.jsp";
+		}
 		// 获取配置文件中nginx选择区域
-        getNginxServer(model);
-        User cUser = CurrentUserUtils.getInstance().getUser();
-        //获取未使用的存储卷,租户获取租户创建的，用户获取租户和用户创建的
-        long createBy = cUser.getId();
-        long parentId = cUser.getParent_id();
-        List<Storage> storageList = storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(createBy, 1);
-        if (parentId != 1) {
-            for (Storage storage : storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(parentId,1) ) {
-                storageList.add(storage);
-            }
-        }
+		getNginxServer(model);
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		// 获取未使用的存储卷,租户获取租户创建的，用户获取租户和用户创建的
+		long createBy = cUser.getId();
+		long parentId = cUser.getParent_id();
+		List<Storage> storageList = storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(createBy, 1);
+		if (parentId != 1) {
+			for (Storage storage : storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(parentId, 1)) {
+				storageList.add(storage);
+			}
+		}
 
-        //获取监控配置
-        UserFavor userFavor = userFavorDao.findByUserId(currentUser.getId());
-        Integer monitor;
-        if (null == userFavor) {
+		// 获取监控配置
+		UserFavor userFavor = userFavorDao.findByUserId(currentUser.getId());
+		Integer monitor;
+		if (null == userFavor) {
 			monitor = ServiceConstant.MONITOR_PINPOINT;
 		} else {
 			monitor = userFavor.getMonitor();
 		}
-        model.addAttribute("userName", currentUser.getUserName());
-        model.addAttribute("storageList", storageList);
-        model.addAttribute("imgID", imgID);
-        model.addAttribute("resourceName", resourceName);
-        model.addAttribute("imageName", imageName);
-        model.addAttribute("imageVersion", imageVersion);
-        model.addAttribute("isDepoly", isDepoly);
-        model.addAttribute("menu_flag", "service");
-        model.addAttribute("monitor",monitor);
-        return "service/service_create.jsp";
-    }
+		// 获取cpu大小设置
+		String[] cpuSize = SERVICE_CPU_SIZE.split(",");
+		List<Double> cpuSizeList = new ArrayList<>();
+		for (int i = 0; i < cpuSize.length; i++) {
+			cpuSizeList.add(Double.parseDouble(cpuSize[i]));
+		}
+		// 获取memory大小设置
+		String[] memorySize = SERVICE_MEMORY_SIZE.split(",");
+		List<Double> memorySizeList = new ArrayList<>();
+		for (int i = 0; i < memorySize.length; i++) {
+			memorySizeList.add(Double.parseDouble(memorySize[i]));
+		}
+
+		model.addAttribute("cpuSizeList", cpuSizeList);
+		model.addAttribute("memorySizeList", memorySizeList);
+		model.addAttribute("userName", currentUser.getUserName());
+		model.addAttribute("storageList", storageList);
+		model.addAttribute("imgID", imgID);
+		model.addAttribute("resourceName", resourceName);
+		model.addAttribute("imageName", imageName);
+		model.addAttribute("imageVersion", imageVersion);
+		model.addAttribute("isDepoly", isDepoly);
+		model.addAttribute("menu_flag", "service");
+		model.addAttribute("monitor", monitor);
+		return "service/service_create.jsp";
+	}
 
     /**
      * Description: <br>
