@@ -357,7 +357,8 @@ public class CiController {
         		model.addAttribute("basicImage", basicImage);
                 model.addAttribute("toolGroups", toolGroups);
                 model.addAttribute("ciCredentialList", ciCredentialList);
-                model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
+				model.addAttribute("dockerFileContent", job.getImgManager().getDockerFileContent()
+						.replace("\"", "&quot;").replace("'", "&apos;").replace(">", "&gt;").replace("<", "&lt;"));
                 model.addAttribute("jdkList",jdkList.getItems());
             }
             catch (Exception e) {
