@@ -623,9 +623,12 @@ public class ServiceController {
 		}
 		// 获取memory大小设置
 		String[] memorySize = SERVICE_MEMORY_SIZE.split(",");
-		List<Double> memorySizeList = new ArrayList<>();
+		List<Object> memorySizeList = new ArrayList<>();
 		for (int i = 0; i < memorySize.length; i++) {
-			memorySizeList.add(Double.parseDouble(memorySize[i]));
+			Map<String, Double> map =new HashMap<>();
+			map.put("memorySize", Double.parseDouble(memorySize[i]));
+			map.put("memoryValue", Double.parseDouble(memorySize[i]) * 1024);
+			memorySizeList.add(map);
 		}
 
 		model.addAttribute("cpuSizeList", cpuSizeList);
