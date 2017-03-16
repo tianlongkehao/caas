@@ -231,7 +231,7 @@
 	                            </div>
 	                            <ul class="nav nav-bar">
 		                           <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">dockerfile构建方式<span class="caret"></span></a>
-		                              <ul class="dropdown-menu">
+		                              <ul class="dropdown-menu changeDockerfileM">
 			                             <li><a id="dockerfilePath">dockerfile路径</a></li>
 			                             <li><a id="dockerfileTemp">编写dockerfile</a></li>
 			                          </ul>

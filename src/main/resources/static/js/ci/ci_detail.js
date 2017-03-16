@@ -141,15 +141,22 @@ $(document).ready(function(){
 									'<textarea id="dockerFileContentEdit" name="dockerFileContentEdit"></textarea>'+
 								'</div>'+
 							'</div>';
-
+    //点击dockerfile构建方式-编写dockerfile
     $("#dockerfilePath").click(function(){
+    	$(".changeDockerfileM").find("a").css("background-color","#fff");
+    	$(this).css("background-color","#ddd");
     	$("#dockerfileMethod").empty();
     	$(".dockerfileTools").addClass("hide");
     	$("#dockerfileMethod").append(dockerfilePathHtml);
     });
-
+    
+    var dockerfileMethod = $("#ciMethod").val();
+    
+    //点击dockerfile构建方式-编写dockerfile
     $("#dockerfileTemp").click(function(){
     //$(document).on('click','#dockerfileTemp',function(){
+    	$(".changeDockerfileM").find("a").css("background-color","#fff");
+    	$(this).css("background-color","#ddd");
     	$("#dockerfileMethod").empty();
     	$(".dockerfileTools").removeClass("hide");
     	$("#dockerfileMethod").append(dockerfileTempHtml);
@@ -160,6 +167,28 @@ $(document).ready(function(){
             styleActiveLine: true,
             theme: "ambiance"
         });
+    	//loadCiToolsChecked();
+    	
+    	//勾选工具的执行语句添加到dockerfile中
+		editor_one.setValue('');
+		var checkedTool = $(".toolChk:checked");
+		var allToolCode = $("#basicImage").val()+ "\n";
+		var allToolId = "";
+		if(checkedTool.length == 0){
+			allToolCode = "";
+			allToolId = "";
+			$("#ciTools").val(allToolId);
+		}else{
+			for(var j=0; j < checkedTool.length; j++){
+				var checkedToolCode = checkedTool[j].attributes.toolcode.value;
+				var checkedToolId = checkedTool[j].id;
+				allToolCode += checkedToolCode + "\n";
+				allToolId +=checkedToolId + ",";
+			}
+			$("#ciTools").val(allToolId.substring(0, allToolId.length-1));
+		}
+		editor_one.setValue(allToolCode);
+    	//editor_one.setValue(dockerfileMethod);
     });
 
 	$("#dockerfile").focus();
@@ -176,7 +205,7 @@ $(document).ready(function(){
 	//点击基本设置tab时加载数据
 	$(".create-set").click(function(){
 		var dockerFileLocation = $("#ciLocation").val();
-		var dockerfileMethod = $("#ciMethod").val();
+		
 		if (dockerFileLocation != '' ) {
 			$("#dockerfilePath").click();
 			$("#dockerFileLocation").val(dockerFileLocation);
@@ -1555,6 +1584,7 @@ function loadCiToolsChecked(){
 	var ciToolsVal = $("#ciToolsCheckedVal").val();
 	var ciTools = ciToolsVal.split(",");
 	var toolChkInput = $(".toolChk");
+	toolChkInput.attr("checked",false);
 	for(var i=0; i<ciTools.length; i++){
 		var ciTool = ciTools[i];
 		for(var j=0; j<toolChkInput.length; j++){

@@ -98,6 +98,8 @@ $(document).ready(function () {
 							'</div>';
     //生成dockerfile路径输入框
     $("#dockerfilePath").click(function(){
+    	$(".changeDockerfileM").find("a").css("background-color","#fff");
+    	$(this).css("background-color","#ddd");
     	$("#dockerfileMethod").empty();
     	$(".dockerfileTools").addClass("hide");
     	$("#dockerfileMethod").append(dockerfilePathHtml);
@@ -105,6 +107,8 @@ $(document).ready(function () {
     //生成dockerfile模板输入框
     var editor_one = null;
     $(document).on('click','#dockerfileTemp',function(){
+    	$(".changeDockerfileM").find("a").css("background-color","#fff");
+    	$(this).css("background-color","#ddd");
     	$("#dockerfileMethod").empty();
     	$("#dockerfileMethod").append(dockerfileTempHtml);
 
@@ -117,7 +121,27 @@ $(document).ready(function () {
             theme: "ambiance"
         });
     	$("#dockerfile").focus();
+    	//勾选工具的执行语句添加到dockerfile中
+		editor_one.setValue('');
+		var checkedTool = $(".toolChk:checked");
+		var allToolCode = $("#basicImage").val()+ "\n";
+		var allToolId = "";
+		if(checkedTool.length == 0){
+			allToolCode = "";
+			allToolId = "";
+			$("#ciTools").val(allToolId);
+		}else{
+			for(var j=0; j < checkedTool.length; j++){
+				var checkedToolCode = checkedTool[j].attributes.toolcode.value;
+				var checkedToolId = checkedTool[j].id;
+				allToolCode += checkedToolCode + "\n";
+				allToolId +=checkedToolId + ",";
+			}
+			$("#ciTools").val(allToolId.substring(0, allToolId.length-1));
+		}
+		editor_one.setValue(allToolCode);
     });
+    
     $("#dockerfileMethod").append(dockerfilePathHtml);
 	$("#dockerfile-import").hide();
 	$("#dockerfile-export").hide();
