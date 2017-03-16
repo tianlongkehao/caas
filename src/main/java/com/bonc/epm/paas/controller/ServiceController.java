@@ -292,11 +292,29 @@ public class ServiceController {
 			if (!CurrentUserUtils.getInstance().getUser().getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
 				getleftResource(model);
 			}
+
 		} catch (KubernetesClientException e) {
 			model.addAttribute("msg", e.getStatus().getMessage());
 			LOG.debug("service show:" + e.getStatus().getMessage());
 			return "workbench.jsp";
 		}
+		// 获取cpu大小设置
+		String[] cpuSize = SERVICE_CPU_SIZE.split(",");
+		List<Double> cpuSizeList = new ArrayList<>();
+		for (int i = 0; i < cpuSize.length; i++) {
+			cpuSizeList.add(Double.parseDouble(cpuSize[i]));
+		}
+		// 获取memory大小设置
+		String[] memorySize = SERVICE_MEMORY_SIZE.split(",");
+		List<Object> memorySizeList = new ArrayList<>();
+		for (int i = 0; i < memorySize.length; i++) {
+			Map<String, Double> map =new HashMap<>();
+			map.put("memorySize", Double.parseDouble(memorySize[i]));
+			map.put("memoryValue", Double.parseDouble(memorySize[i]) * 1024);
+			memorySizeList.add(map);
+		}
+		model.addAttribute("cpuSizeList", cpuSizeList);
+		model.addAttribute("memorySizeList", memorySizeList);
 		model.addAttribute("userName", userName);
 		model.addAttribute("menu_flag", "service");
 		model.addAttribute("li_flag", "service");
