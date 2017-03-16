@@ -202,7 +202,7 @@
 													<input type="number" value="1" class="number form-control" min="1"
 														autocomplete="off" max="" placeholder="1" id="instanceNum"
 														onkeyup="this.value=this.value.replace(/\D/g,'')"
-														name="instanceNum"> <span class="s-unit">个</span>
+														name="instanceNum"><span class="s-unit">个</span>
 													<%-- 													<span style="color: grey;margin-left: 50px;">当前可用实例数量：${leftpod }</span>
 													<span class="dynamic-scale"> <input type="checkbox"
 														id="dynamic-service"> <label for="dynamic-service"><font
@@ -238,12 +238,10 @@
 											<li class="line-h-3">
 												<div class="param-set">
 													<span class="ve_top" id= "ve_cpu">CPU数量：<font color="red">*</font></span>
-													<label><input type="radio" id = "cpu1" class="cpuNum" name="cpuNum" value="1"
-														placeholder="当前可用cpu数量：${leftcpu }个"checked>1<span>个</span></label>
-													<label><input type="radio" class="cpuNum" name="cpuNum" value="2"
-														placeholder="当前可用cpu数量：${leftcpu }个">2<span>个</span></label>
-													<label><input type="radio" class="cpuNum" name="cpuNum" value="4"
-                                                       placeholder="当前可用cpu数量：${leftcpu }个">4<span>个</span></label>
+													<c:forEach items="${cpuSizeList }" var="cpuSize" >
+														<label><input type="radio" class="cpuNum" name="cpuNum" value="${cpuSize }">${cpuSize }
+														<span>个 </span></label>
+													</c:forEach>
 													<span style="color: #1E90FF; margin-left: 50px;">当前可用cpu数量：${leftcpu }个</span>
 													<input type = "hidden" id = "leftcpu" value = "${leftcpu }"/>
 												</div>
@@ -252,9 +250,12 @@
 											<li class="line-h-3">
 												<div class="param-set">
 													<span class="ve_top" id = "ve_ram" >内存：<font color="red">*</font></span> 
-													<label><input type="radio" class="ram" name="ram" id = "ram1" value="4096"checked>4<span>G</span></label>
+													<c:forEach items="${memorySizeList }" var="memorySize" >
+														<label><input type="radio" class="ram" name="ram" value="${memorySize.memoryValue }">${memorySize.memorySize }<span> G  </span></label>
+													</c:forEach>
+													<!-- <label><input type="radio" class="ram" name="ram" id = "ram1" value="4096"checked>4<span>G</span></label>
 													<label><input type="radio" class="ram" name="ram" id = "ram2" value="8192">8<span>G</span></label>
-													<label><input type="radio" class="ram" name="ram" id = "ram4" value="16384">16<span>G</span></label>
+													<label><input type="radio" class="ram" name="ram" id = "ram4" value="16384">16<span>G</span></label> -->
 													<span style="color: #1E90FF; margin-left: 60px;">当前可用内存：${leftmemory }G</span>
 													<input type="hidden" id = "leftmemory" value = "${leftmemory * 1024 }"/>
 												</div>

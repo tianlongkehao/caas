@@ -3,8 +3,8 @@ $(document).ready(function(){
 	var count=1;
 	loadImageList();
 	
-	document.getElementById("cpu1").checked=true;
-	document.getElementById("ram1").checked=true;
+	$(".cpuNum")[0].setAttribute("checked",true);
+	$(".ram")[0].setAttribute("checked",true);
 	//调节高度
 	var imagePage_height = $(".host_step1").height();
 	//$(".step-inner").height(imagePage_height +100);
