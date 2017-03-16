@@ -689,15 +689,24 @@ function oneVersionUpgrade(id, serviceName, imgName, obj) {
 
 // 响应每一行上的修改配置
 function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
+	 for(var i=0; i<$(".confCpu").length; i++){
+		 var cpuVal = $(".confCpu")[i].getAttribute("value");
+		 if(parseInt(cpuVal)==cpu){
+			 $(".confCpu")[i].setAttribute("checked",true);
+			 break;
+		 }
+	 }
+	 for(var j=0; j<$(".confCpu").length; j++){
+		 var ramVal = $(".confRam")[j].getAttribute("value");
+		 if(parseInt(ramVal)==ram){
+			 $(".confRam")[j].setAttribute("checked",true);
+			 break;
+		 }
+	 }
+	 //$(".confCpu")[0].setAttribute("checked",true);
+	 //$(".confRam")[0].setAttribute("checked",true);
+	 
 	 $('#confServiceName').val(containerName);
-	 $('#confCpu').val(cpu);
-	 $('#confRamSlider_input').val(ram);
-	 var totalcpu = 0;
-	 var totalram = 0;
-	 totalcpu = parseInt($('#confCpu').attr('max'))+parseFloat(cpu);
-	 totalram = '1024';
-	 $('#confCpu').attr("max",totalcpu);
-	 //var confRamSlider = sliderFn('confRamSlider', totalram,0, Number(ram));
 
 	 layer.open({
 		 type:1,
@@ -707,8 +716,8 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 		 btn: ['确定', '取消'],
 		 yes: function(index, layero){ //或者使用btn1
 			 //按钮【按钮一】的回调
-			 var cpus = $('#confCpu').val();
-			 var rams = $('#confRamSlider_input').val();
+			 var cpus = $(".confCpu:checked").val();
+			 var rams = $(".confRam:checked").val();
 			 var leftcpu = $("#leftcpu").html();
 			 var leftmemory = $("#leftram").html();
 			 //服务在运行中

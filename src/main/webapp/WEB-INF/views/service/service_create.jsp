@@ -253,9 +253,6 @@
 													<c:forEach items="${memorySizeList }" var="memorySize" >
 														<label><input type="radio" class="ram" name="ram" value="${memorySize.memoryValue }">${memorySize.memorySize }<span> G  </span></label>
 													</c:forEach>
-													<!-- <label><input type="radio" class="ram" name="ram" id = "ram1" value="4096"checked>4<span>G</span></label>
-													<label><input type="radio" class="ram" name="ram" id = "ram2" value="8192">8<span>G</span></label>
-													<label><input type="radio" class="ram" name="ram" id = "ram4" value="16384">16<span>G</span></label> -->
 													<span style="color: #1E90FF; margin-left: 60px;">当前可用内存：${leftmemory }G</span>
 													<input type="hidden" id = "leftmemory" value = "${leftmemory * 1024 }"/>
 												</div>
