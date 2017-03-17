@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.UserDao;
@@ -43,6 +44,12 @@ public class ServiceApiController {
 	private UserDao userDao;
 
 	/**
+	 * 镜像数据接口
+	 */
+	@Autowired
+	private ImageDao imageDao;
+
+	/**
 	 * portConfig数据层接口
 	 */
 	@Autowired
@@ -59,16 +66,7 @@ public class ServiceApiController {
 	public String services() {
 		Iterable<Service> result = serviceDao.search("%", "%", "%");
 		Iterator<Service> it = result.iterator();
-		List<Service> serviceList = new ArrayList<>();
-		while (it.hasNext()) {
-			Service service = it.next();
-			service.setCreatorName(userDao.findById(service.getCreateBy()).getUserName());
-			List<PortConfig> ports = portConfigDao.findByServiceId(service.getId());
-			if (CollectionUtils.isNotEmpty(ports)) {
-				service.setPortConfigs(ports);
-			}
-			serviceList.add(service);
-		}
+		List<Service> serviceList = fillServiceInfo(it);
 		return JSON.toJSONString(serviceList);
 	}
 
@@ -84,16 +82,7 @@ public class ServiceApiController {
 	public String userServices(@PathVariable String user) {
 		Iterable<Service> result = serviceDao.search("%", "%", (user != null ? user : ""));
 		Iterator<Service> it = result.iterator();
-		List<Service> serviceList = new ArrayList<>();
-		while (it.hasNext()) {
-			Service service = it.next();
-			service.setCreatorName(userDao.findById(service.getCreateBy()).getUserName());
-			List<PortConfig> ports = portConfigDao.findByServiceId(service.getId());
-			if (CollectionUtils.isNotEmpty(ports)) {
-				service.setPortConfigs(ports);
-			}
-			serviceList.add(service);
-		}
+		List<Service> serviceList = fillServiceInfo(it);
 		return JSON.toJSONString(serviceList);
 	}
 
@@ -111,6 +100,11 @@ public class ServiceApiController {
 		Iterable<Service> result = serviceDao.search((services != null ? services : ""), "%",
 				(user != null ? user : ""));
 		Iterator<Service> it = result.iterator();
+		List<Service> serviceList = fillServiceInfo(it);
+		return JSON.toJSONString(serviceList);
+	}
+
+	private List<Service> fillServiceInfo(Iterator<Service> it) {
 		List<Service> serviceList = new ArrayList<>();
 		while (it.hasNext()) {
 			Service service = it.next();
@@ -119,9 +113,11 @@ public class ServiceApiController {
 			if (CollectionUtils.isNotEmpty(ports)) {
 				service.setPortConfigs(ports);
 			}
+//			Image image = imageDao.findById(service.getImgID());
+//			service.setCodeRating(1);
+//			service.setCodeRatingURL("http://test.com");
 			serviceList.add(service);
 		}
-		return JSON.toJSONString(serviceList);
+		return serviceList;
 	}
-
 }

@@ -101,6 +101,7 @@ import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
+import com.jcraft.jsch.jce.Random;
 
 /**
  * ServiceController
@@ -1158,6 +1159,12 @@ public class ServiceController {
             }
         }
         service.setServiceAddr("http://"+currentUser.getUserName() + "." + serverAddr);
+
+
+        //随机赋值
+        service.setCodeRating((1+(((int)Math.random()*10)%5)));
+        service.setCodeRatingURL("http://test.com/"+service.getCodeRating());
+
         service = serviceDao.save(service);
 
 		// 保存服务操作信息
@@ -2054,7 +2061,7 @@ public class ServiceController {
 	public String findImageVersion(String imageName){
         User cUser = CurrentUserUtils.getInstance().getUser();
         Map<String, Object> map = new HashMap<String, Object>();
-        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName, new Sort(new Order(Direction.DESC,"createDate")));
+        List<Image> images = imageDao.findByImageVersionOfName(cUser.getId(), imageName, new Sort(new Order(Direction.DESC,"createDate")));
         map.put("data", images);
         return JSON.toJSONString(map);
     }
