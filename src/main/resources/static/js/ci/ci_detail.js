@@ -149,9 +149,9 @@ $(document).ready(function(){
     	$(".dockerfileTools").addClass("hide");
     	$("#dockerfileMethod").append(dockerfilePathHtml);
     });
-    
+
     var dockerfileMethod = $("#ciMethod").val();
-    
+
     //点击dockerfile构建方式-编写dockerfile
     $("#dockerfileTemp").click(function(){
     //$(document).on('click','#dockerfileTemp',function(){
@@ -168,7 +168,7 @@ $(document).ready(function(){
             theme: "ambiance"
         });
     	//loadCiToolsChecked();
-    	
+
     	//勾选工具的执行语句添加到dockerfile中
 		editor_one.setValue('');
 		var checkedTool = $(".toolChk:checked");
@@ -205,7 +205,7 @@ $(document).ready(function(){
 	//点击基本设置tab时加载数据
 	$(".create-set").click(function(){
 		var dockerFileLocation = $("#ciLocation").val();
-		
+
 		if (dockerFileLocation != '' ) {
 			$("#dockerfilePath").click();
 			$("#dockerFileLocation").val(dockerFileLocation);
@@ -1586,14 +1586,7 @@ function loadCiToolsChecked(){
 	var toolChkInput = $(".toolChk");
 	toolChkInput.attr("checked",false);
 	for(var i=0; i<ciTools.length; i++){
-		var ciTool = ciTools[i];
-		for(var j=0; j<toolChkInput.length; j++){
-			var toolInput = toolChkInput[j];
-			var toolInputId = toolInput.getAttribute("id");
-			if(ciTool == toolInputId){
-				toolInput.setAttribute("checked",true);
-			}
-		}
+		$("#"+ciTools[i].replace(/\//g, '\\/')).prop("checked",true);
 	}
 }
 
