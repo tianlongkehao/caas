@@ -1584,13 +1584,15 @@ function loadCiToolsChecked(){
 	var ciToolsVal = $("#ciToolsCheckedVal").val();
 	var ciTools = ciToolsVal.split(",");
 	var toolChkInput = $(".toolChk");
-	toolChkInput.attr("checked",false);
+	toolChkInput.prop("checked") == true;
+	//toolChkInput.attr("checked",false);
 	for(var i=0; i<ciTools.length; i++){
 		var ciTool = ciTools[i];
 		for(var j=0; j<toolChkInput.length; j++){
 			var toolInput = toolChkInput[j];
 			var toolInputId = toolInput.getAttribute("id");
 			if(ciTool == toolInputId){
+				//toolInput.prop("checked") == true;
 				toolInput.setAttribute("checked",true);
 			}
 		}

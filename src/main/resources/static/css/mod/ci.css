@@ -746,7 +746,7 @@ td.autocut{
 	width:16%;
 }
 .dftools li.dftools-firstli{
-	width:8%;
+	width:12%;
 }
 .dftools li label input{
 	margin-right:4px;
@@ -757,6 +757,41 @@ td.autocut{
 .warningInfo .fa-warning{
 	margin-right:6px;
 }
+i.fa-toolIcon{
+	width:18px;
+	height:18px;
+	background: url(../../images/tools-icon.png) no-repeat;
+	background-position: -1px -10px;
+	margin: 0px 6px 0px 4px;
+}
+i.fa-APM{
+	background-position: -1px 2px;
+}
+i.fa-busybox{
+	background-position: -1px -18px;
+}
+i.fa-dig{
+	background-position: -1px -39px;
+}
+i.fa-ftp{
+	background-position: -1px -61px;
+}
+i.fa-jdk{
+	background-position: -1px -86px;
+}
+i.fa-mysql{
+	background-position: -1px -104px;
+}
+i.fa-oracle{
+	background-position: -1px -120px;
+}
+i.fa-telnet{
+	background-position: -1px -141px;
+}
+i.fa-tomcat{
+	background-position: -1px -161px;
+}
+
 
 
 
