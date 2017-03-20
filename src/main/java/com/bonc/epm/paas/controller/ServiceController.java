@@ -1163,7 +1163,7 @@ public class ServiceController {
 
         //随机赋值
         service.setCodeRating((1+(((int)Math.random()*10)%5)));
-        service.setCodeRatingURL("http://test.com/"+service.getCodeRating());
+        service.setCodeRatingURL("http://test.com/"+service.getImgName());
 
         service = serviceDao.save(service);
 
