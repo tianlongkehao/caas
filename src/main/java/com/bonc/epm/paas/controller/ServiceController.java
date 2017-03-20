@@ -2,16 +2,15 @@ package com.bonc.epm.paas.controller;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,6 +56,8 @@ import com.bonc.epm.paas.dao.ServiceOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.dao.UserFavorDao;
+import com.bonc.epm.paas.docker.model.LogStreamContainerResultCallback;
+import com.bonc.epm.paas.docker.model.LogStringContainerResultCallback;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeHook;
@@ -97,8 +98,10 @@ import com.bonc.epm.paas.util.PoiUtils;
 import com.bonc.epm.paas.util.RandomString;
 import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
+import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
+import com.jcraft.jsch.jce.Random;
 
 /**
  * ServiceController
@@ -241,6 +244,42 @@ public class ServiceController {
     private String NGINX_SERVICE_ZONE;
 
 	/**
+     * 服务日志显示的最大行数
+     */
+    @Value("${docker.log.tail}")
+    private Integer DOCKER_LOG_TAIL = 1000;
+
+	/**
+     * 服务日志显示的文字最大值
+     */
+    @Value("${docker.log.size}")
+    private Integer DOCKER_LOG_SIZE = 524288;
+
+	/**
+     * 服务日志显示等候时长
+     */
+    @Value("${docker.log.await}")
+    private Integer DOCKER_LOG_AWAIT = 3;
+
+	/**
+     * 服务日志下载等候时长
+     */
+    @Value("${docker.log.download}")
+    private Integer DOCKER_LOG_DOWNLOAD = 30;
+
+	/**
+     * cpu大小
+     */
+    @Value("${service.cpu.size}")
+    private String SERVICE_CPU_SIZE;
+
+	/**
+     * memory大小
+     */
+    @Value("${service.memory.size}")
+    private String SERVICE_MEMORY_SIZE;
+
+    /**
 	 * Description: <br>
 	 * 展示container和services
 	 *
@@ -254,11 +293,29 @@ public class ServiceController {
 			if (!CurrentUserUtils.getInstance().getUser().getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
 				getleftResource(model);
 			}
+
 		} catch (KubernetesClientException e) {
 			model.addAttribute("msg", e.getStatus().getMessage());
 			LOG.debug("service show:" + e.getStatus().getMessage());
 			return "workbench.jsp";
 		}
+		// 获取cpu大小设置
+		String[] cpuSize = SERVICE_CPU_SIZE.split(",");
+		List<Double> cpuSizeList = new ArrayList<>();
+		for (int i = 0; i < cpuSize.length; i++) {
+			cpuSizeList.add(Double.parseDouble(cpuSize[i]));
+		}
+		// 获取memory大小设置
+		String[] memorySize = SERVICE_MEMORY_SIZE.split(",");
+		List<Object> memorySizeList = new ArrayList<>();
+		for (int i = 0; i < memorySize.length; i++) {
+			Map<String, Double> map =new HashMap<>();
+			map.put("memorySize", Double.parseDouble(memorySize[i]));
+			map.put("memoryValue", Double.parseDouble(memorySize[i]) * 1024);
+			memorySizeList.add(map);
+		}
+		model.addAttribute("cpuSizeList", cpuSizeList);
+		model.addAttribute("memorySizeList", memorySizeList);
 		model.addAttribute("userName", userName);
 		model.addAttribute("menu_flag", "service");
 		model.addAttribute("li_flag", "service");
@@ -531,64 +588,81 @@ public class ServiceController {
      */
     @RequestMapping(value = { "service/add" }, method = RequestMethod.GET)
 	public String create(String imgID, String imageName, String imageVersion, String resourceName, Model model) {
-    	User currentUser = CurrentUserUtils.getInstance().getUser();
-        String isDepoly = "";
-        if (imageName != null) {
-            isDepoly = "deploy";
-		     // 获取基础镜像的暴露端口信息
-            List<PortConfig> list = getBaseImageExposedPorts(imgID);
-            if (null == list) {
-                list = new ArrayList<PortConfig>();
-                PortConfig portConfig = new PortConfig();
-                portConfig.setContainerPort("8080");
-                int randomPort = vailPortSet();
-                if (-1 != randomPort) {
-                    portConfig.setMapPort(String.valueOf(randomPort));
-                }
-                else {
-                    portConfig.setMapPort("-1");
-                }
-                list.add(portConfig);
-            }
-            model.addAttribute("portConfigs",JSON.toJSONString(list));
-        }
-        boolean flag = getleftResource(model);
-        if (!flag) {
-            model.addAttribute("msg", "请创建租户！");
-            return "service/service.jsp";
-        }
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		String isDepoly = "";
+		if (imageName != null) {
+			isDepoly = "deploy";
+			// 获取基础镜像的暴露端口信息
+			List<PortConfig> list = getBaseImageExposedPorts(imgID);
+			if (null == list) {
+				list = new ArrayList<PortConfig>();
+				PortConfig portConfig = new PortConfig();
+				portConfig.setContainerPort("8080");
+				int randomPort = vailPortSet();
+				if (-1 != randomPort) {
+					portConfig.setMapPort(String.valueOf(randomPort));
+				} else {
+					portConfig.setMapPort("-1");
+				}
+				list.add(portConfig);
+			}
+			model.addAttribute("portConfigs", JSON.toJSONString(list));
+		}
+		boolean flag = getleftResource(model);
+		if (!flag) {
+			model.addAttribute("msg", "请创建租户！");
+			return "service/service.jsp";
+		}
 		// 获取配置文件中nginx选择区域
-        getNginxServer(model);
-        User cUser = CurrentUserUtils.getInstance().getUser();
-        //获取未使用的存储卷,租户获取租户创建的，用户获取租户和用户创建的
-        long createBy = cUser.getId();
-        long parentId = cUser.getParent_id();
-        List<Storage> storageList = storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(createBy, 1);
-        if (parentId != 1) {
-            for (Storage storage : storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(parentId,1) ) {
-                storageList.add(storage);
-            }
-        }
+		getNginxServer(model);
+		User cUser = CurrentUserUtils.getInstance().getUser();
+		// 获取未使用的存储卷,租户获取租户创建的，用户获取租户和用户创建的
+		long createBy = cUser.getId();
+		long parentId = cUser.getParent_id();
+		List<Storage> storageList = storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(createBy, 1);
+		if (parentId != 1) {
+			for (Storage storage : storageDao.findByCreateByAndUseTypeOrderByCreateDateDesc(parentId, 1)) {
+				storageList.add(storage);
+			}
+		}
 
-        //获取监控配置
-        UserFavor userFavor = userFavorDao.findByUserId(currentUser.getId());
-        Integer monitor;
-        if (null == userFavor) {
+		// 获取监控配置
+		UserFavor userFavor = userFavorDao.findByUserId(currentUser.getId());
+		Integer monitor;
+		if (null == userFavor) {
 			monitor = ServiceConstant.MONITOR_PINPOINT;
 		} else {
 			monitor = userFavor.getMonitor();
 		}
-        model.addAttribute("userName", currentUser.getUserName());
-        model.addAttribute("storageList", storageList);
-        model.addAttribute("imgID", imgID);
-        model.addAttribute("resourceName", resourceName);
-        model.addAttribute("imageName", imageName);
-        model.addAttribute("imageVersion", imageVersion);
-        model.addAttribute("isDepoly", isDepoly);
-        model.addAttribute("menu_flag", "service");
-        model.addAttribute("monitor",monitor);
-        return "service/service_create.jsp";
-    }
+		// 获取cpu大小设置
+		String[] cpuSize = SERVICE_CPU_SIZE.split(",");
+		List<Double> cpuSizeList = new ArrayList<>();
+		for (int i = 0; i < cpuSize.length; i++) {
+			cpuSizeList.add(Double.parseDouble(cpuSize[i]));
+		}
+		// 获取memory大小设置
+		String[] memorySize = SERVICE_MEMORY_SIZE.split(",");
+		List<Object> memorySizeList = new ArrayList<>();
+		for (int i = 0; i < memorySize.length; i++) {
+			Map<String, Double> map =new HashMap<>();
+			map.put("memorySize", Double.parseDouble(memorySize[i]));
+			map.put("memoryValue", Double.parseDouble(memorySize[i]) * 1024);
+			memorySizeList.add(map);
+		}
+
+		model.addAttribute("cpuSizeList", cpuSizeList);
+		model.addAttribute("memorySizeList", memorySizeList);
+		model.addAttribute("userName", currentUser.getUserName());
+		model.addAttribute("storageList", storageList);
+		model.addAttribute("imgID", imgID);
+		model.addAttribute("resourceName", resourceName);
+		model.addAttribute("imageName", imageName);
+		model.addAttribute("imageVersion", imageVersion);
+		model.addAttribute("isDepoly", isDepoly);
+		model.addAttribute("menu_flag", "service");
+		model.addAttribute("monitor", monitor);
+		return "service/service_create.jsp";
+	}
 
     /**
      * Description: <br>
@@ -1085,6 +1159,12 @@ public class ServiceController {
             }
         }
         service.setServiceAddr("http://"+currentUser.getUserName() + "." + serverAddr);
+
+
+        //随机赋值
+        service.setCodeRating((1+(((int)Math.random()*10)%5)));
+        service.setCodeRatingURL("http://test.com/"+service.getImgName());
+
         service = serviceDao.save(service);
 
 		// 保存服务操作信息
@@ -1981,7 +2061,7 @@ public class ServiceController {
 	public String findImageVersion(String imageName){
         User cUser = CurrentUserUtils.getInstance().getUser();
         Map<String, Object> map = new HashMap<String, Object>();
-        List<Image> images = imageDao.findByImageVarsionOfName(cUser.getId(), imageName, new Sort(new Order(Direction.DESC,"createDate")));
+        List<Image> images = imageDao.findByImageVersionOfName(cUser.getId(), imageName, new Sort(new Order(Direction.DESC,"createDate")));
         map.put("data", images);
         return JSON.toJSONString(map);
     }
@@ -2510,31 +2590,54 @@ public class ServiceController {
 	 * @param date 日期
 	 * @return String
 	 */
-    @RequestMapping("service/detail/getPodlogs.do")
+	@RequestMapping("service/detail/getPodlogs.do")
 	@ResponseBody
-	public String getPodLogs(String podName,String container) {
-        if (container == null) {
-			container = "";
+	public String getPodLogs(String podName, String since) {
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		String logStr = "";
+		Map<String, Object> datamap = new HashMap<String, Object>();
+
+		try {
+			Pod pod = client.getPod(podName);
+			String containerId = pod.getStatus().getContainerStatuses().get(0).getContainerID().replace("docker://",
+					"");
+			DockerClient dockerClient = dockerClientService
+					.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
+			LogStringContainerResultCallback callback = new LogStringContainerResultCallback();
+//			if (StringUtils.isBlank(since)) {
+				dockerClient.logContainerCmd(containerId).withTail(DOCKER_LOG_TAIL).withStdOut(true).withStdErr(true).exec(callback)
+						.awaitCompletion(DOCKER_LOG_AWAIT, TimeUnit.SECONDS);
+				logStr = callback.toString();
+				if (logStr.length() > DOCKER_LOG_SIZE) {
+					logStr = logStr.substring(logStr.length() - DOCKER_LOG_SIZE);
+				}
+//			} else {
+//				Calendar calendar = Calendar.getInstance();
+//				calendar.setTime(new SimpleDateFormat("yyMMddHHmmss").parse(since));
+//				dockerClient.logContainerCmd(containerId).withStdOut(true).withStdErr(true)
+//						.withSince((int) (calendar.getTimeInMillis() / 1000)).exec(callback)
+//						.awaitCompletion(DOCKER_LOG_AWAIT, TimeUnit.SECONDS);
+//				logStr = callback.toString();
+//				if (logStr.length() > DOCKER_LOG_SIZE) {
+//					logStr = logStr.substring(0, DOCKER_LOG_SIZE);
+//				}
+//			}
+
+			// logStr = client.getPodLog(podName, container, false, false, 5000,
+			// 104857);
+
+			logStr = logStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+
+			datamap.put("logStr", logStr);
+			datamap.put("status", "200");
+		} catch (Exception e) {
+			datamap.put("status", "400");
+			LOG.error("日志读取错误：" + e);
 		}
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        String logStr = "";
-        Map<String, Object> datamap = new HashMap<String, Object>();
 
-        try {
-        	logStr = client.getPodLog(podName, container, false, false, 5000, 1048576);
-        	logStr = logStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+		return JSON.toJSONString(datamap);
 
-            datamap.put("logStr", logStr);
-            datamap.put("status", "200");
-        }
-        catch (Exception e) {
-            datamap.put("status", "400");
-            LOG.error("日志读取错误：" + e);
-        }
-
-        return JSON.toJSONString(datamap);
-
-    }
+	}
 
     /**
      * Description: <br>
@@ -2617,18 +2720,31 @@ public class ServiceController {
     @RequestMapping("service/detail/getCurrentPodlogs.do")
 	@ResponseBody
 	public String getCurrentPodLogs(String podName,String sinceTime) {
-    	String container = new String();
+//    	String container = new String();
         KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         String logStr = "";
         Map<String, Object> datamap = new HashMap<String, Object>();
 
         try {
-        	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000000000Z'");
-        	Calendar calendar = Calendar.getInstance();
-        	calendar.setTime(simpleDateFormat.parse(sinceTime));
-        	calendar.add(Calendar.MINUTE, -3);
-        	String sinceTime3 = simpleDateFormat.format(calendar.getTime());
-        	logStr = client.getPodLog(podName, container, false, sinceTime3, false, 1048576);
+//        	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000000000Z'");
+//        	Calendar calendar = Calendar.getInstance();
+//        	calendar.setTime(simpleDateFormat.parse(sinceTime));
+//        	calendar.add(Calendar.MINUTE, -3);
+//        	String sinceTime3 = simpleDateFormat.format(calendar.getTime());
+
+			Pod pod = client.getPod(podName);
+			String containerId = pod.getStatus().getContainerStatuses().get(0).getContainerID().replace("docker://",
+					"");
+			DockerClient dockerClient = dockerClientService
+					.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
+			LogStringContainerResultCallback callback = new LogStringContainerResultCallback();
+				dockerClient.logContainerCmd(containerId).withTail(DOCKER_LOG_TAIL).withStdOut(true).withStdErr(true).exec(callback)
+						.awaitCompletion();
+				logStr = callback.toString();
+//        	logStr = client.getPodLog(podName, container, false, sinceTime3, false, 1048576);
+			if (logStr.length() > DOCKER_LOG_SIZE) {
+				logStr = logStr.substring(logStr.length() - DOCKER_LOG_SIZE);
+			}
         	logStr = logStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
             datamap.put("logStr", logStr);
@@ -2650,42 +2766,44 @@ public class ServiceController {
      * @param request request
      * @param response response
      */
-    @RequestMapping(value ="/service/detail/getPodlogFile", method = RequestMethod.GET)
-	public void downloadPodlogFile(String podName, HttpServletRequest request,HttpServletResponse response) {
-    	String container = new String();
-    	try {
-            response.setContentType(request.getServletContext().getMimeType(podName));
-            response.setHeader("Content-Disposition", "attachment;filename="+podName+".log");
-            ServletOutputStream outputStream= response.getOutputStream();
+	@RequestMapping(value = "/service/detail/getPodlogFile", method = RequestMethod.GET)
+	public void downloadPodlogFile(String podName, String since, HttpServletRequest request,
+			HttpServletResponse response) {
+//		since = "20170307094000";
+		System.out.println("===============podlog=download=start===============");
+		try {
+			response.reset();
+			response.setContentType("application/x-download");
+//			response.setContentType(request.getServletContext().getMimeType(podName));
+			response.setHeader("Content-Disposition", "attachment;filename=" + podName + ".log");
+			ServletOutputStream outputStream = response.getOutputStream();
 
+			KubernetesAPIClientInterface k8sClient = kubernetesClientService.getClient();
 
+			Pod pod = k8sClient.getPod(podName);
+			String containerId = pod.getStatus().getContainerStatuses().get(0).getContainerID().replace("docker://",
+					"");
+			DockerClient dockerClient = dockerClientService
+					.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
+			LogStreamContainerResultCallback callback = new LogStreamContainerResultCallback(outputStream);
+//			if (StringUtils.isBlank(since)) {
+				dockerClient.logContainerCmd(containerId).withStdOut(true).withStdErr(true).exec(callback)
+						.awaitCompletion(DOCKER_LOG_DOWNLOAD,TimeUnit.SECONDS);
+//			} else {
+//				Date date = new SimpleDateFormat("yyyyMMddHHmmss").parse(since);
+//				dockerClient.logContainerCmd(containerId).withStdOut(true).withStdErr(true)
+//						.withTimestamps(true).withSince((int) (date.getTime() / 1000)).exec(callback)
+//						.awaitCompletion(DOCKER_LOG_DOWNLOAD, TimeUnit.SECONDS);
+//			}
+			System.out.println("===============podlog=download=end===============");
 
-            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-            KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-
-            Pod pod = client.getPod(podName);
-            container = pod.getSpec().getContainers().get(0).getName();
-            String logStr = "";
-            logStr = client.getPodLog(podName, container, false, false, 30000, 31457280);
-            for (int i = 0; i * 1024 < logStr.length(); i++) {
-            	if ((i + 1) * 1024 < logStr.length()) {
-            		writer.write(logStr.substring(i * 1024, (i + 1) * 1024));
-				} else {
-					writer.write(logStr.substring(i * 1024, logStr.length()));
-				}
-			}
-            writer.flush();
-            outputStream.flush();
-            writer.close();
-            outputStream.close();
-        }
-        catch (IOException e) {
-        	LOG.error("FileController  downloadTemplate:"+e.getMessage());
-        }
-        catch (Exception e) {
-        	LOG.error("日志读取错误：" + e);
-        }
-    }
+		} catch (IOException e) {
+			LOG.error("FileController  downloadTemplate:" + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOG.error("日志读取错误：" + e);
+		}
+	}
 
 	/**
 	 * 获取前缀

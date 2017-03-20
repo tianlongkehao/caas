@@ -350,9 +350,15 @@ public class CiController {
                 CiCode ciCode = ciCodeDao.findByCiId(ci.getId());
                 //代码验证信息的查询和加载
                 Iterable<CiCodeCredential> ciCredentialList = ciCodeCredentialDao.findAll();
-                model.addAttribute("ciCode", ciCode);
+        		List<Object> toolGroups = getToolGroups();
+        		String basicImage = codeCiToolDao.findAllImages().get(0).gettoolCode();
+
+        		model.addAttribute("ciCode", ciCode);
+        		model.addAttribute("basicImage", basicImage);
+                model.addAttribute("toolGroups", toolGroups);
                 model.addAttribute("ciCredentialList", ciCredentialList);
-                model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
+				model.addAttribute("dockerFileContent", job.getImgManager().getDockerFileContent()
+						.replace("\"", "&quot;").replace("'", "&apos;").replace(">", "&gt;").replace("<", "&lt;"));
                 model.addAttribute("jdkList",jdkList.getItems());
             }
             catch (Exception e) {
@@ -462,7 +468,8 @@ public class CiController {
         originCiCode.setCodeBranch(ciCode.getCodeBranch());
         originCiCode.setIsHookCode(ciCode.getIsHookCode());
         originCiCode.setCodeName(ciCode.getCodeName());
-        originCiCode.setCodeRefspec(ciCode.getCodeRefspec());;
+        originCiCode.setCodeRefspec(ciCode.getCodeRefspec());
+        originCiCode.setCiTools(ciCode.getCiTools());
         List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
         CiCodeCredential ciCodeCredential = new CiCodeCredential();
         if (!StringUtils.isEmpty(ciCode.getCodeCredentials())) {
@@ -473,7 +480,7 @@ public class CiController {
             Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
                                                             ciCode.getCodeName(),ciCode.getCodeRefspec(),dockerFileContentEdit,ci.getDockerFileLocation(),
                                                             originCi.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
-                                                            ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),false,"");
+                                                            ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),false,"",ciCode.getCiTools());
             client.updateJob(job);
             //添加代码挂钩
             if (ciCode.getIsHookCode() == 1) {
@@ -705,7 +712,27 @@ public class CiController {
 			imageNameFirst = cuurentUser.getUserName();
 		}
 
-		List<CodeCiTool> allTools = codeCiToolDao.findAll();
+		String basicImage = new String();
+
+		List<CodeCiTool> allImages = codeCiToolDao.findAllImages();
+		if (!CollectionUtils.isEmpty(allImages)) {
+			basicImage = allImages.get(0).gettoolCode();
+		}
+
+		List<Object> toolGroups = getToolGroups();
+
+		model.addAttribute("username", imageNameFirst);
+		model.addAttribute("basicImage", basicImage);
+		model.addAttribute("toolGroups", toolGroups);
+		model.addAttribute("userAutority", cuurentUser.getUser_autority());
+		model.addAttribute("menu_flag", "ci");
+		model.addAttribute("li_flag", "ci");
+		return "ci/ci_add.jsp";
+	}
+
+
+	private List<Object> getToolGroups() {
+		List<CodeCiTool> allTools = codeCiToolDao.findAllTools();
 		List<Object> toolGroups = new ArrayList<>();
 		List<CodeCiTool> tools = new ArrayList<>();
 		Map<String, Object> map = new HashMap<>();
@@ -728,13 +755,7 @@ public class CiController {
 				}
 			}
 		}
-
-		model.addAttribute("username", imageNameFirst);
-		model.addAttribute("toolGroups", toolGroups);
-		model.addAttribute("userAutority", cuurentUser.getUser_autority());
-		model.addAttribute("menu_flag", "ci");
-		model.addAttribute("li_flag", "ci");
-		return "ci/ci_add.jsp";
+		return toolGroups;
 	}
 
     /**
@@ -961,7 +982,7 @@ public class CiController {
                 Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
                     ciCode.getCodeName(),ciCode.getCodeRefspec(), dockerFileContent,ci.getDockerFileLocation(),
                     ci.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
-                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),false,"");
+                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),false,"",ciCode.getCiTools());
                 client.createJob(job);
                 //添加代码挂钩
                 if (ciCode.getIsHookCode() == 1) {

@@ -71,8 +71,20 @@ $(document).ready(function(){
         $(".containerEvent").removeClass("hide");
     });
     
-    $('#datePicker').click(function(event) {
-        /* Act on the event */
+    var dateInput = $('#dateTimePicker');
+    dateInput.datetimepicker({
+    	changeMonth: true,
+        changeYear: true,
+        dateFormat: 'yy/mm/dd',
+        monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+        monthNamesShort:["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+        dayNamesMin: ["日", "一", "二", "三", "四", "五", "六"],
+        /*minDate: -20, 
+        maxDate: "+1M +10D"*/
+    });
+    dateInput.datetimepicker('setDate', (new Date()) );
+    /*$('#datePicker').click(function(event) {
+         Act on the event 
         laydate({
           elem: '#date_log',
           // event: 'focus',
@@ -86,7 +98,7 @@ $(document).ready(function(){
         });
       });
     $('#datePicker1').click(function(event) {
-        /* Act on the event */
+         Act on the event 
         laydate({
           elem: '#date_log1',
           // event: 'focus',
@@ -101,7 +113,7 @@ $(document).ready(function(){
         	  dropdownLog();
           }
         });
-      });
+      });*/
     
       $('#refreshLog').click(function (event) {
     	  getServiceLogs();

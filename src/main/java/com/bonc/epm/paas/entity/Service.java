@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,6 +26,16 @@ public class Service {
 	 * 镜像版本
 	 */
 	private String imgVersion;
+	/**
+	 * 镜像代码质量级别
+	 */
+	private Integer codeRating;
+
+	/**
+	 * 镜像代码详细的分析结果
+	 */
+	private String codeRatingURL;
+
 	/**
 	 * 服务名称
 	 */
@@ -54,6 +65,7 @@ public class Service {
 	 */
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
+
 	public String getCreatorName() {
 		return creatorName;
 	}
@@ -67,7 +79,7 @@ public class Service {
 	private String creatorName;
 	private double cpuNum;
 	private String ram;
-	private long imgID;         //imageId
+	private long imgID; // imageId
 
 	/**
 	 * 自定义启动命令
@@ -148,7 +160,13 @@ public class Service {
 	@Transient
 	private boolean updateImage;
 
-    public String getServiceChName() {
+	/**
+	 * 端口信息
+	 */
+	@Transient
+	private List<PortConfig> portConfigs;
+
+	public String getServiceChName() {
 		return serviceChName;
 	}
 
@@ -245,14 +263,14 @@ public class Service {
 	}
 
 	public String getCheckPath() {
-        return checkPath;
-    }
+		return checkPath;
+	}
 
-    public void setCheckPath(String checkPath) {
-        this.checkPath = checkPath;
-    }
+	public void setCheckPath(String checkPath) {
+		this.checkPath = checkPath;
+	}
 
-    public String getServiceAddr() {
+	public String getServiceAddr() {
 		return serviceAddr;
 	}
 
@@ -300,53 +318,53 @@ public class Service {
 		this.proxyPath = proxyPath;
 	}
 
-    public String getSessionAffinity() {
-        return sessionAffinity;
-    }
+	public String getSessionAffinity() {
+		return sessionAffinity;
+	}
 
-    public void setSessionAffinity(String sessionAffinity) {
-        this.sessionAffinity = sessionAffinity;
-    }
+	public void setSessionAffinity(String sessionAffinity) {
+		this.sessionAffinity = sessionAffinity;
+	}
 
-    public Integer getInitialDelay() {
-        return initialDelay;
-    }
+	public Integer getInitialDelay() {
+		return initialDelay;
+	}
 
-    public void setInitialDelay(Integer initialDelay) {
-        this.initialDelay = initialDelay;
-    }
+	public void setInitialDelay(Integer initialDelay) {
+		this.initialDelay = initialDelay;
+	}
 
-    public Integer getTimeoutDetction() {
-        return timeoutDetction;
-    }
+	public Integer getTimeoutDetction() {
+		return timeoutDetction;
+	}
 
-    public void setTimeoutDetction(Integer timeoutDetction) {
-        this.timeoutDetction = timeoutDetction;
-    }
+	public void setTimeoutDetction(Integer timeoutDetction) {
+		this.timeoutDetction = timeoutDetction;
+	}
 
-    public Integer getPeriodDetction() {
-        return periodDetction;
-    }
+	public Integer getPeriodDetction() {
+		return periodDetction;
+	}
 
-    public void setPeriodDetction(Integer periodDetction) {
-        this.periodDetction = periodDetction;
-    }
+	public void setPeriodDetction(Integer periodDetction) {
+		this.periodDetction = periodDetction;
+	}
 
-    public String getNodeIpAffinity() {
-        return nodeIpAffinity;
-    }
+	public String getNodeIpAffinity() {
+		return nodeIpAffinity;
+	}
 
-    public void setNodeIpAffinity(String nodeIpAffinity) {
-        this.nodeIpAffinity = nodeIpAffinity;
-    }
+	public void setNodeIpAffinity(String nodeIpAffinity) {
+		this.nodeIpAffinity = nodeIpAffinity;
+	}
 
-    public boolean isUpdateImage() {
-        return updateImage;
-    }
+	public boolean isUpdateImage() {
+		return updateImage;
+	}
 
-    public void setUpdateImage(boolean updateImage) {
-        this.updateImage = updateImage;
-    }
+	public void setUpdateImage(boolean updateImage) {
+		this.updateImage = updateImage;
+	}
 
 	public Date getUpdateDate() {
 		return updateDate;
@@ -398,5 +416,29 @@ public class Service {
 
 	public void setIsModify(Integer isModify) {
 		this.isModify = isModify;
+	}
+
+	public List<PortConfig> getPortConfigs() {
+		return portConfigs;
+	}
+
+	public void setPortConfigs(List<PortConfig> portConfigs) {
+		this.portConfigs = portConfigs;
+	}
+
+	public Integer getCodeRating() {
+		return codeRating;
+	}
+
+	public void setCodeRating(Integer codeRating) {
+		this.codeRating = codeRating;
+	}
+
+	public String getCodeRatingURL() {
+		return codeRatingURL;
+	}
+
+	public void setCodeRatingURL(String codeRatingURL) {
+		this.codeRatingURL = codeRatingURL;
 	}
 }

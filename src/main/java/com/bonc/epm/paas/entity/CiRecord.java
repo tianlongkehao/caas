@@ -94,6 +94,8 @@ public class CiRecord {
 	/**
 	 * 构建dockerFileContent
 	 */
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String dockerFileContent;
 
 

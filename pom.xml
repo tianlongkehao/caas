@@ -8,7 +8,7 @@
             <url>http://code.bonc.com.cn/nexus/content/groups/public</url>
         </repository>
     </repositories>
-    
+
 	<groupId>com.bonc.epm</groupId>
 	<artifactId>paas</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -138,7 +138,7 @@
 	    <artifactId>poi</artifactId>
 	    <version>3.11</version>
     </dependency>
-		<!-- <dependency> <groupId>net.unicon.cas</groupId> <artifactId>cas-client-autoconfig-support</artifactId> 
+		<!-- <dependency> <groupId>net.unicon.cas</groupId> <artifactId>cas-client-autoconfig-support</artifactId>
 			<version>1.1.0-GA</version> </dependency> -->
         <dependency>
             <groupId>com.bonc</groupId>
@@ -203,6 +203,12 @@
             </activation>
         </profile>
         <profile>
+            <id>test</id>
+            <properties>
+                <profileActive>test</profileActive>
+            </properties>
+        </profile>
+        <profile>
             <id>prepare</id>
             <properties>
                 <profileActive>prepare</profileActive>
@@ -224,8 +230,9 @@
                 <excludes>
                     <exclude>application.properties</exclude>
                     <exclude>application-dev.properties</exclude>
-                    <exclude>application-profile.properties</exclude>
+                    <exclude>application-test.properties</exclude>
                     <exclude>application-prepare.properties</exclude>
+                    <exclude>application-profile.properties</exclude>
                 </excludes>
             </resource>
             <resource>

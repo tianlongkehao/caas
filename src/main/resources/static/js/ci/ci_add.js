@@ -114,6 +114,8 @@ $(document).ready(function () {
 							'</div>';
     //生成dockerfile路径输入框
     $("#dockerfilePath").click(function(){
+    	$(".changeDockerfileM").find("a").css("background-color","#fff");
+    	$(this).css("background-color","#ddd");
     	$("#dockerfileMethod").empty();
     	$(".dockerfileTools").addClass("hide");
     	$("#dockerfileMethod").append(dockerfilePathHtml);
@@ -121,6 +123,8 @@ $(document).ready(function () {
     //生成dockerfile模板输入框
     var editor_one = null;
     $(document).on('click','#dockerfileTemp',function(){
+    	$(".changeDockerfileM").find("a").css("background-color","#fff");
+    	$(this).css("background-color","#ddd");
     	$("#dockerfileMethod").empty();
     	$("#dockerfileMethod").append(dockerfileTempHtml);
 
@@ -133,7 +137,27 @@ $(document).ready(function () {
             theme: "ambiance"
         });
     	$("#dockerfile").focus();
+    	//勾选工具的执行语句添加到dockerfile中
+		editor_one.setValue('');
+		var checkedTool = $(".toolChk:checked");
+		var allToolCode = $("#basicImage").val()+ "\n";
+		var allToolId = "";
+		if(checkedTool.length == 0){
+			allToolCode = "";
+			allToolId = "";
+			$("#ciTools").val(allToolId);
+		}else{
+			for(var j=0; j < checkedTool.length; j++){
+				var checkedToolCode = checkedTool[j].attributes.toolcode.value;
+				var checkedToolId = checkedTool[j].id;
+				allToolCode += checkedToolCode + "\n";
+				allToolId +=checkedToolId + ",";
+			}
+			$("#ciTools").val(allToolId.substring(0, allToolId.length-1));
+		}
+		editor_one.setValue(allToolCode);
     });
+
     $("#dockerfileMethod").append(dockerfilePathHtml);
 	$("#dockerfile-import").hide();
 	$("#dockerfile-export").hide();
@@ -181,7 +205,7 @@ $(document).ready(function () {
 				editor_one.setValue(dockerFile);
 				layer.close(index);
 			}
-		})
+		});
 	});
 
 	// 另存为模板
@@ -228,7 +252,7 @@ $(document).ready(function () {
 					}
 				});
 			}
-		})
+		});
 	});
 
 	//添加认证按钮
@@ -266,7 +290,7 @@ $(document).ready(function () {
 					success : function(data) {
 						data = eval("(" + data + ")");
 						if (data.status == "200") {
-							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>"
+							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
 							$("#codeCredentials").append(html);
 							layer.alert("代码认证导入成功");
 							layer.close(index);
@@ -276,7 +300,7 @@ $(document).ready(function () {
 					}
 				});
 			}
-		})
+		});
 	});
 	//选择认证类型
 	$(".ssh").hide();
@@ -295,6 +319,14 @@ $(document).ready(function () {
 
 	//提交表单
 	$("#buildBtn").click(function(){
+		var checkedTools = $(".dftools").find("input:checked");
+		var toolsId = "";
+		for(var toolNum=0; toolNum< checkedTools.length; toolNum++){
+			var tools = checkedTools[toolNum].attributes.id.value;
+			toolsId +=  tools+",";
+		}
+		toolsId = toolsId.substring(0,toolsId.length-1);
+
         if(checkCodeCiAdd(editor_one)) {
         	$("#buildForm").submit();
         	layer.load(0, {shade: [0.3, '#000']});
@@ -303,14 +335,14 @@ $(document).ready(function () {
     });
 
 	//镜像信息
-	$(".imageInfoCon").hide()
+	$(".imageInfoCon").hide();
 
 	$("#imageInfo").click(function(){
 		$(".imageInfoCon").toggle();
-	})
+	});
 
 	//工具集同组单选
-	/*$(".toolChk").click(function(){
+	$(".toolChk").click(function(){
 		var checkedName = $(this).attr("name");
 		var checkedName = "'"+checkedName+"'";
 		var ccc = '.toolChk[name= '+checkedName+']';
@@ -329,21 +361,29 @@ $(document).ready(function () {
 		//勾选工具的执行语句添加到dockerfile中
 		editor_one.setValue('');
 		var checkedTool = $(".toolChk:checked");
-		var allToolCode = "";
-		for(var j=0; j < checkedTool.length; j++){
-			var checkedToolCode = checkedTool[j].attributes.toolcode.value;
-			allToolCode += checkedToolCode + "\n";
+		var allToolCode = $("#basicImage").val()+ "\n";
+		var allToolId = "";
+		if(checkedTool.length == 0){
+			allToolCode = "";
+			allToolId = "";
+			$("#ciTools").val(allToolId);
+		}else{
+			for(var j=0; j < checkedTool.length; j++){
+				var checkedToolCode = checkedTool[j].attributes.toolcode.value;
+				var checkedToolId = checkedTool[j].id;
+				allToolCode += checkedToolCode + "\n";
+				allToolId +=checkedToolId + ",";
+			}
+			$("#ciTools").val(allToolId.substring(0, allToolId.length-1));
 		}
 		editor_one.setValue(allToolCode);
-	});*/
+	});
 	$(document).on('click','.questionInfoBtn',function(){
 		$(this).parent().parent().parent().find("div.questionInfoCon").toggle();
 	});
 	$(document).on('click','.fa-questionBtn',function(){
 		$(this).parent().next().toggle();
 	});
-	
-
 });/*ready*/
 
 //选择不同的代码仓库，显示相对应的认证密钥
@@ -372,8 +412,7 @@ function loadCredentialData (codeType) {
 				$("#codeCredentials").html(html);
 			}
 		}
-	})
-
+	});
 }
 
 
@@ -390,11 +429,11 @@ function loadDockerFileTemplate(){
                 		html += "<tr>"+
 	                				"<td class='vals vals-doc'>"+dockerFile.templateName+"<span class='doc-tr hide'><i class='fa fa-check'></i></span>"+
 	                				"<input type='hidden' class='dockerFileTemplate' value='"+dockerFile.id+"' /></td>"+
-	                			"</tr>"
+	                			"</tr>";
                 	}
 	            }
 	            if (html == "") {
-	            	html += '<tr><td>没有保存的模板</td></tr>'
+	            	html += '<tr><td>没有保存的模板</td></tr>';
 	            }
 	            $("#dockerfile-body").empty();
 	            $("#dockerfile-body").append(html);
@@ -738,7 +777,7 @@ function checkCodeCiAdd(editor_one){
     		$("#isHookCode").val("1");
     	}
     }
-    
+
     if (codeType == 0) {
     	$("#codeUrl").val("");
     	$("#codeBranch").val("");
@@ -751,7 +790,7 @@ function checkCodeCiAdd(editor_one){
     var flag = false;
     var json = "";
     $("#sortable >div").each(function(){
-    	debugger;
+    	// debugger;
     	if (flag) {
     		return false;
     	}
@@ -1013,7 +1052,7 @@ function changeMavenSetting(obj){
 	}else{
 		$(obj).parent().find("div.settingfilePath").addClass("hide");
 		$(obj).parent().find("div.fa-questionCon").css("display","none");
-		
+
 	}
 }
 

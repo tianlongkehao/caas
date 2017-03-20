@@ -19,7 +19,6 @@ var ctx = "<%=path%>";
 <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/base.css">
 <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/layout.css"/>
 <link rel="stylesheet" type="text/css" href="" id="skinColor"/>
-<%-- <link rel="stylesheet" type="text/css" href="<%=path %>/plugins/jq-pagination/jquery.list.css"/> --%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/core/dataTables.bootstrap.css">
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/core/ambiance.css"/>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/core/codemirror.css"/>
@@ -28,14 +27,14 @@ var ctx = "<%=path%>";
 <script type="text/javascript" src="<%=path %>/js/plugins/jquery-1.11.3.js"></script>
 <script type="text/javascript" src="<%=path %>/plugins/bootstrap-3.3.5/dist/js/bootstrap.js" ></script>
 <script type="text/javascript" src="<%=path %>/js/plugins/footable.all.min.js"></script>
-<script type="text/javascript" src="<%=path %>/plugins/bootstrap-slider/dist/bootstrap-slider.min.js" ></script>
+<%-- <script type="text/javascript" src="<%=path %>/plugins/bootstrap-slider/dist/bootstrap-slider.min.js" ></script> --%>
 <script type="text/javascript" src="<%=path %>/plugins/layer/layer.js"></script>
 <script type="text/javascript" src="<%=path %>/js/plugins/jquery.form.js"></script>
 <script type="text/javascript" src="<%=path %>/plugins/editor/editor.js"></script>
 <script type="text/javascript" src="<%=path %>/plugins/editor/marked.js"></script>
 <script type="text/javascript" src="<%=path %>/js/customer/custom.js"></script>
 <script type="text/javascript" src="<%=path %>/js/plugins/jquery-ui.min.js"></script>
-<%-- <script type="text/javascript" src="<%=path %>/plugins/jq-pagination/jquery.list.js"></script> --%>
+<%-- <script type="text/javascript" src="<%=path %>/plugins/datetimepicker/js/jquery-ui.js"></script> --%>
 <!-- Data Tables -->
 <script type="text/javascript" src="<%=path%>/js/plugins/jquery.dataTables.js"></script>
 <script type="text/javascript" src="<%=path%>/js/plugins/dataTables.bootstrap.js"></script>

@@ -327,18 +327,27 @@
 			</li>
 			<li class="line-h-3 c-ser">
 				<div class="param-set">
-					<span class="c-title">CPU数量：</span> <input type="number" value="" class="c-con"
+					<span class="c-title">CPU数量：</span> 
+					<c:forEach items="${cpuSizeList }" var="cpuSize" >
+						<label><input type="radio" class="confCpu" name="confCpu" value="${cpuSize }">${cpuSize }
+						<span>个 </span></label>
+					</c:forEach>
+					<%-- <input type="number" value="" class="c-con"
 						min="${cpumin }"
 						max="${cpumax }" autocomplete="off" step="0.1" placeholder=""
-						id="confCpu" name="confCpu"> <span class="unit">个</span>
-					<span style="color: grey;margin-left: 50px;">当前可用cpu数量：<label id="leftcpu" >${leftcpu>0?leftcpu:0 }</label></span>
+						id="confCpu" name="confCpu"> <span class="unit">个</span> --%>
+					<span style="color: grey;margin-left: 30px;">当前可用cpu数量：<label id="leftcpu" >${leftcpu>0?leftcpu:0 }</label>个</span>
 				</div>
 			</li>
 			<li class="line-h-3 c-ser">
 				<div class="param-set">
-					<span class="c-title">内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;存：</span>  <input type="text" left="" value="" class="c-con"
-						id="confRamSlider_input" name="confRam" min="${memorymin }" max="${memorymax }"> <span class="unit">M</span>
-					<span style="color: grey;margin-left: 50px;">当前可用ram：<label id="leftram" >${leftmemory * 1024 }</label>M</span>
+					<span class="c-title">内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;存：</span>
+					<c:forEach items="${memorySizeList }" var="memorySize" >
+						<label><input type="radio" class="confRam" name="confRam" value="${memorySize.memoryValue }">${memorySize.memorySize }<span> G  </span></label>
+					</c:forEach>
+					  <%-- <input type="text" left="" value="" class="c-con"
+						id="confRamSlider_input" name="confRam" min="${memorymin }" max="${memorymax }"> <span class="unit">M</span> --%>
+					<span style="color: grey;margin-left: 30px;">当前可用ram：<label id="leftram" >${leftmemory * 1024 }</label>M</span>
 				</div>
 			</li>
 		</ul>

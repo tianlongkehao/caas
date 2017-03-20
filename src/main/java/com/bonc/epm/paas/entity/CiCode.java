@@ -17,7 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * 
+ *
  * 代码构建特殊字段
  * @author zhoutao
  * @version 2016年12月27日
@@ -32,7 +32,7 @@ public class CiCode {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
-    
+
     /**
      * ciId
      */
@@ -42,52 +42,57 @@ public class CiCode {
      * 是否为基础镜像
      * 1 是基础镜像，2不是基础镜像；
      */
-    private Integer isBaseImage; 
-    
+    private Integer isBaseImage;
+
     /**
      * 代码类型：0:none、1:git、2:svn
      */
     private Integer codeType;
-    
+
     /**
      * 代码url
      */
     private String codeUrl;
-    
+
     /**
      * 是否需要挂钩代码，0：不挂钩、1：挂钩代码
      */
     private Integer isHookCode;
-    
+
     /**
      * 代码挂钩Id
      */
     private long hookCodeId;
-    
+
     /**
      * name;
      */
     private String codeName;
-    
+
     /**
      * Refspec
      */
     private String codeRefspec;
-    
+
     /**
      * 代码分支
      */
     private String codeBranch;
-    
+
     /**
      * 代码认证方式
      */
     private Long codeCredentials;
-    
+
     /**
      * 代码构建jdk版本
      */
     private String jdkVersion;
+
+    /**
+     * 代码构建工具集
+     */
+    private String ciTools;
 
     public long getId() {
         return id;
@@ -184,5 +189,13 @@ public class CiCode {
     public void setJdkVersion(String jdkVersion) {
         this.jdkVersion = jdkVersion;
     }
-    
+
+	public String getCiTools() {
+		return ciTools;
+	}
+
+	public void setCiTools(String ciTools) {
+		this.ciTools = ciTools;
+	}
+
 }

@@ -31,18 +31,18 @@ import com.bonc.sso.client.SSOFilter;
  */
 @Configuration
 public class ApplicationFilterConfiguration {
-    
+
     /**
      * configProps
      */
     @Autowired
     private CasClientConfigurationProperties configProps;
-    
+
     /**
-     * 
+     *
      * Description:
      * filterRegistration
-     * @return FilterRegistrationBean 
+     * @return FilterRegistrationBean
      * @see
      */
     @Bean
@@ -57,18 +57,18 @@ public class ApplicationFilterConfiguration {
         registration.addInitParameter("singleSignOut", "true"); //是否启用单点登出
         registration.addInitParameter("skipUrls", "/login.jsp"); // 单点登录忽略校验URL
         //登录成功后的的用户信息准备 须实现com.bonc.pure.sso.client.ILoginUserHand 接口
-        registration.addInitParameter("loginUserHandle", "com.bonc.epm.paas.sso.filter.SSOAuthHandleImpl"); 
+        registration.addInitParameter("loginUserHandle", "com.bonc.epm.paas.sso.filter.SSOAuthHandleImpl");
         // 可选参数，客户端应用使用的字符集，如果已经有其他的地方设置过了，则会忽略这个配置。默认将使用UTF-8作为默认字符集
         registration.addInitParameter("characterEncoding", "UTF-8");
         // 解决读取CAS server端返用户扩展信息中文乱码问题
         registration.addInitParameter("encoding", "UTF-8");
-        registration.addUrlPatterns("/*");
-        registration.setOrder(1);            
+        registration.addUrlPatterns("/home/*");
+        registration.setOrder(1);
         return registration;
-    } 
+    }
 
     /**
-     * 
+     *
      * Description:
      * 返回SSOFilter
      * @return com.bonc.sso.client.SSOFilter
@@ -76,6 +76,6 @@ public class ApplicationFilterConfiguration {
      */
     @Bean(name = "SSO Filter")
     public Filter ssoFilter() {
-        return new SSOFilter();  
+        return new SSOFilter();
     }
 }
