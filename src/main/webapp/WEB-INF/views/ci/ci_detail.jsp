@@ -318,7 +318,7 @@
 																		<c:forEach items="${toolGroups}" var="tools" >
 																			 <div class="toolItems">
 																			 	<ul class="dftools">
-																					<li class="dftools-firstli">${tools.groupName } :</li>
+																					<li class="dftools-firstli"><i class="fa fa-toolIcon fa-${tools.groupName }"></i>${tools.groupName } :</li>
 																					<c:forEach items="${tools.tools}" var="tool" >
 																						<li class="dftools-li"><label><input type="checkbox" id="${tools.groupName }/${tool.name }" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
 																					</c:forEach>
