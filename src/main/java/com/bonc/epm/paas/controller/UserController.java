@@ -56,7 +56,6 @@ import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
 import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
-import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.SonarConfig;
@@ -410,12 +409,13 @@ public class UserController {
 	public String updateSonarConfig(SonarConfig sonarConfig) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		SheraAPIClientInterface client = sheraClientService.getClient();
+		map.put("status", "200");
 		try {
 			client.updateSonarConfig(sonarConfig);
-		} catch (SheraClientException e) {
+		} catch (Exception e) {
+			map.put("status", "400");
 			e.printStackTrace();
 		}
-		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
 
@@ -970,11 +970,15 @@ public class UserController {
 
 			// 获取sonarConfig
 			SheraAPIClientInterface sheraClient = sheraClientService.getClient();
-			SonarConfig sonarConfig = sheraClient.getSonarConfig();
-			if (null == sonarConfig) {
+			SonarConfig sonarConfig;
+			try {
+				sonarConfig = sheraClient.getSonarConfig();
+			} catch (Exception e) {
 				SonarConfig config = sheraClientService.generateSonarConfig(true, false, false, 5, false, SONAR_TOKEN,
 						SONAR_URL);
 				sonarConfig = sheraClient.createSonarConfig(config);
+			}
+			if (null == sonarConfig) {
 			}
 			model.addAttribute("userFavor", userFavor);
 			model.addAttribute("userShera", shera);
