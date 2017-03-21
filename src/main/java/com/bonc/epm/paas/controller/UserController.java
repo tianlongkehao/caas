@@ -56,8 +56,10 @@ import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
 import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
+import com.bonc.epm.paas.shera.model.SonarConfig;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
@@ -157,6 +159,18 @@ public class UserController {
      */
     @Value("${ratio.memtocpu}")
     private String RATIO_MEMTOCPU = "4";
+
+    /**
+     * sonar token
+     */
+    @Value("${sonar.token}")
+    private String SONAR_TOKEN;
+
+    /**
+     * sonar url
+     */
+    @Value("${sonar.url}")
+    private String SONAR_URL;
 
     /**
      * Model
@@ -361,28 +375,49 @@ public class UserController {
     }
 
     /**
-     *
-     * Description:
-     * 更新用户偏好设置
-     * @param Integer monitor
-     * @return .jsp String
-     * @see
-     */
-    @RequestMapping(value = { "/userFavorUpdate.do" }, method = RequestMethod.POST)
-    @ResponseBody
-    public String userFavorUpdate(Integer monitor) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        User user = CurrentUserUtils.getInstance().getUser();
-    	UserFavor userFavor = userFavorDao.findByUserId(user.getId());
-    	if (null == userFavor) {
+    *
+    * Description:
+    * 更新用户偏好设置
+    * @param Integer monitor
+    * @return .jsp String
+    * @see
+    */
+   @RequestMapping(value = { "/userFavorUpdate.do" }, method = RequestMethod.POST)
+   @ResponseBody
+   public String userFavorUpdate(Integer monitor) {
+       Map<String, Object> map = new HashMap<String, Object>();
+       User user = CurrentUserUtils.getInstance().getUser();
+   	UserFavor userFavor = userFavorDao.findByUserId(user.getId());
+   	if (null == userFavor) {
 			userFavor = new UserFavor();
 			userFavor.setUserId(user.getId());
-    	}
-    	userFavor.setMonitor(monitor);
-    	userFavorDao.save(userFavor);
-    	map.put("status", "200");
-    	return JSON.toJSONString(map);
-    }
+   	}
+   	userFavor.setMonitor(monitor);
+   	userFavorDao.save(userFavor);
+   	map.put("status", "200");
+   	return JSON.toJSONString(map);
+   }
+
+	/**
+	 *
+	 * Description: 更新用户偏好设置
+	 * @param Integer monitor
+	 * @return .jsp String
+	 * @see
+	 */
+	@RequestMapping(value = { "/updateSonarConfig.do" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String updateSonarConfig(SonarConfig sonarConfig) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		SheraAPIClientInterface client = sheraClientService.getClient();
+		try {
+			client.updateSonarConfig(sonarConfig);
+		} catch (SheraClientException e) {
+			e.printStackTrace();
+		}
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
 
     /**
      *
@@ -914,39 +949,46 @@ public class UserController {
      */
     @RequestMapping(value = { "/detail/{id}/a", "/detail/{id}/b" }, method = RequestMethod.GET)
 	public String detail(Model model, @PathVariable long id) {
-        try {
-            User user = userDao.findOne(id);
-            UserFavor userFavor = userFavorDao.findByUserId(user.getId());
+		try {
+			User user = userDao.findOne(id);
+			UserFavor userFavor = userFavorDao.findByUserId(user.getId());
 			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
-            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-            Namespace ns = client.getNamespace(user.getNamespace());
-            if (null != ns) {
-                getUserResourceInfo(model, user, client);
-            }
-            else {
-                LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
-            }
+			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+			Namespace ns = client.getNamespace(user.getNamespace());
+			if (null != ns) {
+				getUserResourceInfo(model, user, client);
+			} else {
+				LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
+			}
 
-            double usedstorage = 0;
-            List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
-            for (Storage storage : list) {
-                usedstorage = usedstorage + (double) storage.getStorageSize();
-            }
-            Shera shera = sheraDao.findByUserId(id);
-            model.addAttribute("userFavor", userFavor);
-            model.addAttribute("userShera", shera);
-            model.addAttribute("usedstorage",  usedstorage / 1024);
-        }
-        catch (KubernetesClientException e) {
-            LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            LOG.error("error message:-" + e.getMessage());
-            e.printStackTrace();
-        }
-        return "user/user-own.jsp";
-    }
+			double usedstorage = 0;
+			List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+			for (Storage storage : list) {
+				usedstorage = usedstorage + (double) storage.getStorageSize();
+			}
+			Shera shera = sheraDao.findByUserId(id);
+
+			// 获取sonarConfig
+			SheraAPIClientInterface sheraClient = sheraClientService.getClient();
+			SonarConfig sonarConfig = sheraClient.getSonarConfig();
+			if (null == sonarConfig) {
+				SonarConfig config = sheraClientService.generateSonarConfig(true, false, false, 5, false, SONAR_TOKEN,
+						SONAR_URL);
+				sonarConfig = sheraClient.createSonarConfig(config);
+			}
+			model.addAttribute("userFavor", userFavor);
+			model.addAttribute("userShera", shera);
+			model.addAttribute("usedstorage", usedstorage / 1024);
+			model.addAttribute("sonarConfig", sonarConfig);
+		} catch (KubernetesClientException e) {
+			LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+			e.printStackTrace();
+		} catch (Exception e) {
+			LOG.error("error message:-" + e.getMessage());
+			e.printStackTrace();
+		}
+		return "user/user-own.jsp";
+	}
 
     /**
      *
