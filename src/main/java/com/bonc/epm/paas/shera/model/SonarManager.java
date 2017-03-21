@@ -8,8 +8,8 @@ package com.bonc.epm.paas.shera.model;
  *
  */
 public class SonarManager {
-	boolean check;
-	String sources;
+	private boolean check;
+	private String sources;
 	public boolean isCheck() {
 		return check;
 	}

@@ -19,6 +19,7 @@ import javax.persistence.Id;
 /**
  *
  * 代码构建特殊字段
+ *
  * @author zhoutao
  * @version 2016年12月27日
  * @see CiCode
@@ -26,169 +27,194 @@ import javax.persistence.Id;
  */
 @Entity
 public class CiCode {
-    /**
-     * 主键
-     */
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private long id;
+	/**
+	 * 主键
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
 
-    /**
-     * ciId
-     */
-    private long ciId;
+	/**
+	 * ciId
+	 */
+	private long ciId;
 
-    /**
-     * 是否为基础镜像
-     * 1 是基础镜像，2不是基础镜像；
-     */
-    private Integer isBaseImage;
+	/**
+	 * 是否为基础镜像 1 是基础镜像，2不是基础镜像；
+	 */
+	private Integer isBaseImage;
 
-    /**
-     * 代码类型：0:none、1:git、2:svn
-     */
-    private Integer codeType;
+	/**
+	 * 代码类型：0:none、1:git、2:svn
+	 */
+	private Integer codeType;
 
-    /**
-     * 代码url
-     */
-    private String codeUrl;
+	/**
+	 * 代码url
+	 */
+	private String codeUrl;
 
-    /**
-     * 是否需要挂钩代码，0：不挂钩、1：挂钩代码
-     */
-    private Integer isHookCode;
+	/**
+	 * 是否需要挂钩代码，0：不挂钩、1：挂钩代码
+	 */
+	private Integer isHookCode;
 
-    /**
-     * 代码挂钩Id
-     */
-    private long hookCodeId;
+	/**
+	 * 代码挂钩Id
+	 */
+	private long hookCodeId;
 
-    /**
-     * name;
-     */
-    private String codeName;
+	/**
+	 * name;
+	 */
+	private String codeName;
 
-    /**
-     * Refspec
-     */
-    private String codeRefspec;
+	/**
+	 * Refspec
+	 */
+	private String codeRefspec;
 
-    /**
-     * 代码分支
-     */
-    private String codeBranch;
+	/**
+	 * 代码分支
+	 */
+	private String codeBranch;
 
-    /**
-     * 代码认证方式
-     */
-    private Long codeCredentials;
+	/**
+	 * 代码认证方式
+	 */
+	private Long codeCredentials;
 
-    /**
-     * 代码构建jdk版本
-     */
-    private String jdkVersion;
+	/**
+	 * 代码质量检查 1：检查 0：不检查
+	 */
+	private Integer check;
 
-    /**
-     * 代码构建工具集
-     */
-    private String ciTools;
+	/**
+	 * 代码质量检查路径
+	 */
+	private String sources;
 
-    public long getId() {
-        return id;
-    }
+	/**
+	 * 代码构建jdk版本
+	 */
+	private String jdkVersion;
 
-    public void setId(long id) {
-        this.id = id;
-    }
+	/**
+	 * 代码构建工具集
+	 */
+	private String ciTools;
 
-    public long getCiId() {
-        return ciId;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public void setCiId(long ciId) {
-        this.ciId = ciId;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public Integer getIsBaseImage() {
-        return isBaseImage;
-    }
+	public long getCiId() {
+		return ciId;
+	}
 
-    public void setIsBaseImage(Integer isBaseImage) {
-        this.isBaseImage = isBaseImage;
-    }
+	public void setCiId(long ciId) {
+		this.ciId = ciId;
+	}
 
-    public Integer getCodeType() {
-        return codeType;
-    }
+	public Integer getIsBaseImage() {
+		return isBaseImage;
+	}
 
-    public void setCodeType(Integer codeType) {
-        this.codeType = codeType;
-    }
+	public void setIsBaseImage(Integer isBaseImage) {
+		this.isBaseImage = isBaseImage;
+	}
 
-    public String getCodeUrl() {
-        return codeUrl;
-    }
+	public Integer getCodeType() {
+		return codeType;
+	}
 
-    public void setCodeUrl(String codeUrl) {
-        this.codeUrl = codeUrl;
-    }
+	public void setCodeType(Integer codeType) {
+		this.codeType = codeType;
+	}
 
-    public Integer getIsHookCode() {
-        return isHookCode;
-    }
+	public String getCodeUrl() {
+		return codeUrl;
+	}
 
-    public void setIsHookCode(Integer isHookCode) {
-        this.isHookCode = isHookCode;
-    }
+	public void setCodeUrl(String codeUrl) {
+		this.codeUrl = codeUrl;
+	}
 
-    public long getHookCodeId() {
-        return hookCodeId;
-    }
+	public Integer getIsHookCode() {
+		return isHookCode;
+	}
 
-    public void setHookCodeId(long hookCodeId) {
-        this.hookCodeId = hookCodeId;
-    }
+	public void setIsHookCode(Integer isHookCode) {
+		this.isHookCode = isHookCode;
+	}
 
-    public String getCodeName() {
-        return codeName;
-    }
+	public long getHookCodeId() {
+		return hookCodeId;
+	}
 
-    public void setCodeName(String codeName) {
-        this.codeName = codeName;
-    }
+	public void setHookCodeId(long hookCodeId) {
+		this.hookCodeId = hookCodeId;
+	}
 
-    public String getCodeRefspec() {
-        return codeRefspec;
-    }
+	public String getCodeName() {
+		return codeName;
+	}
 
-    public void setCodeRefspec(String codeRefspec) {
-        this.codeRefspec = codeRefspec;
-    }
+	public void setCodeName(String codeName) {
+		this.codeName = codeName;
+	}
 
-    public String getCodeBranch() {
-        return codeBranch;
-    }
+	public String getCodeRefspec() {
+		return codeRefspec;
+	}
 
-    public void setCodeBranch(String codeBranch) {
-        this.codeBranch = codeBranch;
-    }
+	public void setCodeRefspec(String codeRefspec) {
+		this.codeRefspec = codeRefspec;
+	}
 
-    public Long getCodeCredentials() {
-        return codeCredentials;
-    }
+	public String getCodeBranch() {
+		return codeBranch;
+	}
 
-    public void setCodeCredentials(Long codeCredentials) {
-        this.codeCredentials = codeCredentials;
-    }
+	public void setCodeBranch(String codeBranch) {
+		this.codeBranch = codeBranch;
+	}
 
-    public String getJdkVersion() {
-        return jdkVersion;
-    }
+	public Long getCodeCredentials() {
+		return codeCredentials;
+	}
 
-    public void setJdkVersion(String jdkVersion) {
-        this.jdkVersion = jdkVersion;
-    }
+	public void setCodeCredentials(Long codeCredentials) {
+		this.codeCredentials = codeCredentials;
+	}
+
+	public Integer getCheck() {
+		return check;
+	}
+
+	public void setCheck(Integer check) {
+		this.check = check;
+	}
+
+	public String getSources() {
+		return sources;
+	}
+
+	public void setSources(String sources) {
+		this.sources = sources;
+	}
+
+	public String getJdkVersion() {
+		return jdkVersion;
+	}
+
+	public void setJdkVersion(String jdkVersion) {
+		this.jdkVersion = jdkVersion;
+	}
 
 	public String getCiTools() {
 		return ciTools;

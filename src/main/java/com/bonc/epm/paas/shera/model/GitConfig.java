@@ -18,20 +18,32 @@ package com.bonc.epm.paas.shera.model;
  * @since
  */
 public class GitConfig {
-    private String branch;
-    private Repository repo;
-    
-    public String getBranch() {
-        return branch;
-    }
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
-    public Repository getRepo() {
-        return repo;
-    }
-    public void setRepo(Repository repo) {
-        this.repo = repo;
-    }
-    
+	private String uuid;
+	private String branch;
+	private Repository repo;
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
+	public Repository getRepo() {
+		return repo;
+	}
+
+	public void setRepo(Repository repo) {
+		this.repo = repo;
+	}
+
 }

@@ -27,7 +27,8 @@ public class JobExecView {
     private Long startTime;
     private Long endTime;
     private String imgVersion;
-    
+    private String projectKey;
+
     public Integer getSeqNo() {
         return seqNo;
     }
@@ -64,5 +65,11 @@ public class JobExecView {
     public void setImgVersion(String imgVersion) {
         this.imgVersion = imgVersion;
     }
-    
+	public String getProjectKey() {
+		return projectKey;
+	}
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
+	}
+
 }

@@ -12,22 +12,16 @@
 package com.bonc.epm.paas.shera.util;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.bonc.epm.paas.constant.CiConstant;
-import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.entity.CiInvoke;
-import com.bonc.epm.paas.entity.CommonOperationLog;
-import com.bonc.epm.paas.entity.CommonOprationLogUtils;
-import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.rest.util.RestFactory;
@@ -230,10 +224,11 @@ public class SheraClientService {
      * @return
      * @see
      */
-    public JobExecView generateJobExecView(long startTime,String imgVersion){
+    public JobExecView generateJobExecView(long startTime, String imgVersion, String projectKey){
         JobExecView jobExecView = new JobExecView();
         jobExecView.setStartTime(startTime);
         jobExecView.setImgVersion(imgVersion);
+        jobExecView.setProjectKey(projectKey);
         return jobExecView;
     }
 
