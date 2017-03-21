@@ -974,6 +974,7 @@ public class UserController {
 			try {
 				sonarConfig = sheraClient.getSonarConfig();
 			} catch (Exception e) {
+				LOG.info(e.getMessage());
 				SonarConfig config = sheraClientService.generateSonarConfig(true, false, false, 5, false, SONAR_TOKEN,
 						SONAR_URL);
 				sonarConfig = sheraClient.createSonarConfig(config);
