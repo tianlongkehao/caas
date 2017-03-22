@@ -72,6 +72,7 @@ import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.ChangeGit;
+import com.bonc.epm.paas.shera.model.CodeManager;
 import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
@@ -198,18 +199,6 @@ public class CiController {
      */
     @Autowired
     private CodeCiToolDao codeCiToolDao;
-
-    /**
-     * sonar token
-     */
-    @Value("${sonar.token}")
-    private String SONAR_TOKEN;
-
-    /**
-     * sonar url
-     */
-    @Value("${sonar.url}")
-    private String SONAR_URL;
 
     /**
      * 进入构建主页面
@@ -997,9 +986,10 @@ public class CiController {
             //添加代码构建详细信息
             ciCode.setCiId(ci.getId());
             ciCode.setCodeUrl(ciCode.getCodeUrl().trim());
-
+/***********************************************************/
             ciCode.setSonarCheck(1);
             ciCode.setSources("src");
+/***********************************************************/
             ciCodeDao.save(ciCode);
 
 			//查询代码构建详细信息
@@ -1578,6 +1568,7 @@ public class CiController {
 								LOG.error("exec job error : " + e.getMessage());
 							}
 							// 执行完成
+							long endTime = System.currentTimeMillis();
 							if (jobExecView.getFinished() == 1) {
 								// 执行成功
 								if (jobExecView.getEndStatus() == 0) {
@@ -1602,8 +1593,15 @@ public class CiController {
 										image.setIsDelete(CommConstant.TYPE_NO_VALUE);
 										if (ciCode.getSonarCheck() == CiConstant.CODE_CHECK_TRUE) {
 											Rating jobRating = null;
+											String branch = "";
 											try {
-												jobRating = client.getJobRating(projectKey);
+												CodeManager codeManager = client.getJob(ci.getProjectName()).getCodeManager();
+												if (codeManager.getCodeChoice() == CiConstant.CODE_TYPE_GIT) {
+													branch = codeManager.getGitConfig().getBranch();
+												} else {
+													branch = codeManager.getSvnConfig().getBranch();
+												}
+												jobRating = client.getJobRating(projectKey + ":" + branch);
 											} catch (Exception e) {
 												LOG.error("获取JobRating失败");
 												e.printStackTrace();
@@ -1621,7 +1619,7 @@ public class CiController {
 												if (!url.endsWith("/")) {
 													url = url + "/";
 												}
-												image.setCodeRatingURL(url + "sonar/overview?id=" + projectKey);
+												image.setCodeRatingURL(url + "overview?id=" + projectKey + ":" + branch);
 											}
 										}
 										imageDao.save(image);
@@ -1635,14 +1633,17 @@ public class CiController {
 										ci.setImgId(image.getId());
 									}
 									// 添加构建和日志的信息
-									ci.setConstructionTime(jobExecView.getEndTime() - startTime);
+									ci.setConstructionTime(endTime - startTime);
+									ci.setConstructionDate(new Date(startTime));
 									ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
-									ciRecord.setConstructTime(jobExecView.getEndTime() - startTime);
+									ciRecord.setConstructTime(endTime - startTime);
 									ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
 									ciRecord.setImageId(ci.getImgId());
 								}
 								// 执行失败
 								if (jobExecView.getEndStatus() == 1) {
+									ci.setConstructionTime(endTime - startTime);
+									ci.setConstructionFailDate(new Date(startTime));
 									ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
 									ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
 								}
@@ -1657,6 +1658,8 @@ public class CiController {
 						LOG.error("exec job error : " + e.getMessage());
 						ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
 						ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+						ci.setConstructionTime(System.currentTimeMillis() - startTime);
+						ci.setConstructionFailDate(new Date(startTime));
 						ciDao.save(ci);
 						ciRecordDao.save(ciRecord);
 					}

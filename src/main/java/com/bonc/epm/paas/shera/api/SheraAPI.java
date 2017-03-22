@@ -449,10 +449,10 @@ public interface SheraAPI {
 	 * @throws SheraClientException
 	 */
 	@GET
-	@Path("/jobs/rating/{namespace}")
+	@Path("/sonar/rating/{namespace}/{projectKey}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Rating getJobRating(@PathParam("namespace") String namespace, @PathParam("namespace") String projectKey) throws SheraClientException;
+	public Rating getJobRating(@PathParam("namespace") String namespace, @PathParam("projectKey") String projectKey) throws SheraClientException;
 
 	/**
 	 *
@@ -464,9 +464,9 @@ public interface SheraAPI {
 	 * @throws SheraClientException
 	 */
 	@DELETE
-	@Path("/jobs/rating/{namespace}")
+	@Path("/sonar/{projectKey}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Rating deleteJobRating(@PathParam("namespace") String namespace, @PathParam("namespace") String projectKey) throws SheraClientException;
+	public Rating deleteJobRating(@PathParam("namespace") String namespace, @PathParam("projectKey") String projectKey) throws SheraClientException;
 
 }

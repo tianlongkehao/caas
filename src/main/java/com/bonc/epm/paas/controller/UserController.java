@@ -160,18 +160,6 @@ public class UserController {
     private String RATIO_MEMTOCPU = "4";
 
     /**
-     * sonar token
-     */
-    @Value("${sonar.token}")
-    private String SONAR_TOKEN;
-
-    /**
-     * sonar url
-     */
-    @Value("${sonar.url}")
-    private String SONAR_URL;
-
-    /**
      * Model
      */
     public Model model;
@@ -975,9 +963,6 @@ public class UserController {
 				sonarConfig = sheraClient.getSonarConfig();
 			} catch (Exception e) {
 				LOG.info(e.getMessage());
-//				SonarConfig config = sheraClientService.generateSonarConfig(true, false, false, 5, false, SONAR_TOKEN,
-//						SONAR_URL);
-//				sonarConfig = sheraClient.createSonarConfig(config);
 			}
 			model.addAttribute("userFavor", userFavor);
 			model.addAttribute("userShera", shera);

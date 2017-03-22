@@ -131,7 +131,7 @@ function registerConstructCiEvent(){
 				}
 			}
 		});
-	})
+	});
 
 	$(document).on('click','.bj-green',function(){
 //	$(".bj-green").unbind("click").click(function(){
@@ -275,7 +275,7 @@ function loadCi() {
 						}
 					}
 		]
-	})
+	});
 }
 function loadCiCode() {
 	$('.dataTables-example').dataTable({
@@ -381,7 +381,7 @@ function loadCiCode() {
 						}
 					}
 		]
-	})
+	});
 }
 function overImg(obj){
 	var redImage = ctx +"/images/dockerfile-red.png";
