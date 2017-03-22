@@ -7,7 +7,7 @@ public enum Kind {
     STATUS("Status"), STATUSDETAILS("StatusDetails"), NODE("Node"), NODELIST("NodeList"), POD("Pod"), PODLIST("PodList"), REPLICATIONCONTROLLER(
             "ReplicationController"), REPLICATIONCONTROLLERLIST("ReplicationControllerList"), SERVICE("Service"), SERVICELIST(
             "ServiceList"),ENDPOINTS("Endpoints"),ENDPOINTSLIST("EndpointsList"), NAMESPACE("Namespace"), NAMESPACELIST("NamespaceList"), LIMITRANGE("LimitRange"), LIMITRANGELIST(
-            		"LimitRangeList"), RESOURCEQUOTA("ResourceQuota"), RESOURCEQUOTALIST("ResourceQuotaList"), SECRET("Secret");
+            		"LimitRangeList"), RESOURCEQUOTA("ResourceQuota"), RESOURCEQUOTALIST("ResourceQuotaList"), SECRET("Secret"),CONFIGMAP("ConfigMap"),CONFIGMAPLIST("ConfigMapList");
 
     private final String text;
 

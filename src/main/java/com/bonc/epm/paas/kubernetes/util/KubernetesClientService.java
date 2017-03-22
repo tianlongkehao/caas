@@ -17,6 +17,7 @@ import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
+import com.bonc.epm.paas.kubernetes.model.ConfigMap;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
 import com.bonc.epm.paas.kubernetes.model.EndpointAddress;
@@ -458,6 +459,23 @@ public class KubernetesClientService {
 		spec.setTemplate(template);
 		replicationController.setSpec(spec);
 		return replicationController;
+	}
+
+	public ConfigMap generateConfigMap(String configMapName,String keyValues){
+		ConfigMap configmap = new ConfigMap();
+		Map<String,String> data = new HashMap<String,String>();
+		if (StringUtils.isNotBlank(keyValues)) {
+			String[] keyValuetemps = keyValues.split(",");
+			for(String keyValue:keyValuetemps){
+				data.put(keyValue.split(":")[0], keyValue.split(":")[1]);
+			}
+		}
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setName(configMapName);
+		configmap.setMetadata(metadata);
+		configmap.setData(data);
+
+		return configmap;
 	}
 
 	public ReplicationController generateSimpleReplicationController(String name,int replicas,String image,int containerPort ){

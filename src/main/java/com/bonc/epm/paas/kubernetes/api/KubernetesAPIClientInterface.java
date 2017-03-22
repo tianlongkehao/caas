@@ -24,6 +24,8 @@ import java.util.Map;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.ConfigMap;
+import com.bonc.epm.paas.kubernetes.model.ConfigMapList;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.EndpointsList;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
@@ -286,6 +288,47 @@ public interface KubernetesAPIClientInterface {
     		String sinceTime,
     		Boolean timestamps,
     		Integer limitBytes) throws KubernetesClientException;
+
+    /* ConfigMap API*/
+
+    /**
+     * @param configMap
+     * @return
+     * @throws KubernetesClientException
+     */
+    public ConfigMap createConfigMap(ConfigMap configMap)throws KubernetesClientException;
+
+    /**
+     *
+     * @param name
+     * @return
+     * @throws KubernetesClientException
+     */
+    public Status deleteConfigMap(String name)throws KubernetesClientException;
+
+    /**
+     *
+     * @param name
+     * @return
+     * @throws KubernetesClientException
+     */
+    public ConfigMap getConfigMap(String name)throws KubernetesClientException;
+
+    /**
+     *
+     * @param name
+     * @param configMap
+     * @return
+     * @throws KubernetesClientException
+     */
+    public ConfigMap updateConfigMap(String name,ConfigMap configMap)throws KubernetesClientException;
+
+    /**
+     *
+     * @return
+     * @throws KubernetesClientException
+     */
+    public ConfigMapList getAllConfigMaps()throws KubernetesClientException;
 
     /* Replication Controller API */
 

@@ -7,6 +7,8 @@ import javax.ws.rs.WebApplicationException;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.ConfigMap;
+import com.bonc.epm.paas.kubernetes.model.ConfigMapList;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.EndpointsList;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
@@ -82,6 +84,51 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         try {
             return api.deletePod(namespace,name);
         } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public ConfigMap createConfigMap(ConfigMap configMap)throws KubernetesClientException{
+    	try {
+            return api.createConfigMap(namespace, configMap);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public Status deleteConfigMap(String name) throws KubernetesClientException{
+    	try {
+            return api.deleteConfigMap(namespace, name);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public ConfigMap updateConfigMap(String name,ConfigMap configMap)throws KubernetesClientException{
+    	try {
+            return api.updateConfigMap(namespace, name,configMap);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+    public ConfigMap getConfigMap(String name) throws KubernetesClientException {
+        try {
+            return api.getConfigMap(namespace, name);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public ConfigMapList getAllConfigMaps() throws KubernetesClientException {
+        try {
+            return api.getAllConfigMaps(namespace);
+        } catch (NotFoundException e) {
+            return new ConfigMapList();
+        } catch (WebApplicationException e) {
+        	e.printStackTrace();
             throw new KubernetesClientException(e);
         }
     }

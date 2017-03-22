@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +47,7 @@ import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
+import com.bonc.epm.paas.dao.ConfigMapInfoDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
@@ -76,6 +78,8 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.ConfigMap;
+import com.bonc.epm.paas.kubernetes.model.ConfigMapList;
 import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
@@ -149,6 +153,12 @@ public class ServiceController {
      */
     @Autowired
     private CommonOperationLogDao commonOperationLogDao;
+
+    /**
+     * 配置文件信息层接口
+     */
+    @Autowired
+    private ConfigMapInfoDao configMapInfoDao;
 
     /**
      * 环境变量数据层接口
@@ -1093,6 +1103,82 @@ public class ServiceController {
 
         LOG.debug("container--Name:" + service.getServiceName());
         return "redirect:/service";
+    }
+
+    /**
+     * 创建ConfigMap
+     * @param configMapName 名称
+     * @param keyValues 键值对
+     * @return String
+     */
+    @RequestMapping("service/createConfigMap.do")
+    @ResponseBody
+    public String createConfigMap(String configMapName,String keyValues){
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+
+    	ConfigMap configmap = kubernetesClientService.generateConfigMap(configMapName, keyValues);
+    	try {
+    		client.createConfigMap(configmap);
+    	} catch (KubernetesClientException e) {
+			e.printStackTrace();
+			map.put("status", "500");
+			map.put("msg", e.getStatus().getMessage());
+			LOG.error("create configMap error:" + e.getStatus().getMessage());
+			return JSON.toJSONString(map);
+		}
+    	map.put("status", "200");
+    	return JSON.toJSONString(map);
+    }
+
+    /**
+     * 检验用户输入的ConfigMap名称是否重复
+     * @param configMapName
+     * @return String
+     */
+    @RequestMapping("service/matchConfigMapName.do")
+    @ResponseBody
+    public String matchConfigMapName(String configMapName){
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+    	ConfigMapList configMapList = client.getAllConfigMaps();
+    	List<ConfigMap> mapList = configMapList.getItems();
+    	Iterator<ConfigMap> iterator = mapList.iterator();
+    	while (iterator.hasNext()) {
+			if(iterator.next().getMetadata().getName().equals(configMapName)){
+				map.put("status", "500");
+				return JSON.toJSONString(map);//名称重复，返回错误代码
+			}
+		}
+    	map.put("status", "200");
+    	return JSON.toJSONString(map);
+    }
+
+    /**
+     * 删除ConfigMap
+     * @param configMapName
+     * @return String
+     */
+    @RequestMapping("service/deleteConfigMap.do")
+    @ResponseBody
+    public String deleteConfigMap(String configMapName){
+    	Map<String, Object> map = new HashMap<String, Object>();
+
+    	try{
+    		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        	client.deleteConfigMap(configMapName);
+    	}catch(KubernetesClientException e){
+    		e.printStackTrace();
+			map.put("status", "500");
+			map.put("msg", e.getStatus().getMessage());
+			LOG.error("delete configMap error:" + e.getStatus().getMessage());
+			return JSON.toJSONString(map);
+    	}
+
+    	configMapInfoDao.deleteByConfigMapName(configMapName);//从数据库删除所有引用此ConfigMap的记录
+
+    	map.put("status", "200");
+    	return JSON.toJSONString(map);
     }
 
 	/**
