@@ -665,4 +665,44 @@ public class StorageController {
         map.put("storages", storages);
         return JSON.toJSONString(map);
     }
+    
+    /**
+     * storage-file.jsp
+     * 
+     * @param model Model
+     * @return String
+     */
+
+    @RequestMapping(value = { "storage/storageFile" }, method = RequestMethod.GET)
+    public String storageFile(Model model) {
+        model.addAttribute("menu_flag", "storage");
+        model.addAttribute("li_flag", "storageFile");
+        return "storage/storage-file.jsp";
+    }
+    /**
+     * storage-file.jsp
+     * 
+     * @param model Model
+     * @return String
+     */
+
+    @RequestMapping(value = { "storage/storageQuick" }, method = RequestMethod.GET)
+    public String storageQuick(Model model) {
+        model.addAttribute("menu_flag", "storage");
+        model.addAttribute("li_flag", "storageQuick");
+        return "storage/storage-quick.jsp";
+    }
+    /**
+     * storage-file.jsp
+     * 
+     * @param model Model
+     * @return String
+     */
+
+    @RequestMapping(value = { "storage/storageObj" }, method = RequestMethod.GET)
+    public String storageObj(Model model) {
+        model.addAttribute("menu_flag", "storage");
+        model.addAttribute("li_flag", "storageObj");
+        return "storage/storage-obj.jsp";
+    }
 }

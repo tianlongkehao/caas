@@ -754,3 +754,48 @@ span.i {
 .volNumber{
 	padding-top: 14px;
 }
+/* storage-quick.jsp */
+.q-storage{
+	width: 80%;
+}
+.s-edit-name{
+	width:18%;
+	float:left;
+	line-height:34px;
+	dispaly:inline-block;
+}
+i.fa-toggle-onORoff{
+	background:url(../../images/off_on.png) no-repeat;
+	width:56px;
+	height: 22px;
+	margin-top: 6px;
+    float: left;
+}
+i.fa-on{
+	background-position: 2px -23px;
+}
+i.fa-off{
+	background-position: 2px 0px;
+}
+.toggle-text{
+	line-height:35px;
+}
+#storage-mark{
+	margin-top:10px;
+}
+#updatedefVol{
+	width: 80px;
+    font-size: 8px;
+    height: 25px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+
+
+
+
+
+
+
+
+

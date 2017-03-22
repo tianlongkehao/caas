@@ -205,11 +205,21 @@
 						<li id="li_logCommon"><a class="J_menuItem" href="<%=path %>/logCommon"><i class="fa fa_circle"></i>通用操作日志</a></li>
 					</ul></li>
 				</c:if>
+				<li id="menu_storage"><a href="#" class="first-a">
+					<i class="fa-nav fa-nav-log"></i>
+					<span class="nav-label">云存储</span>
+				</a>
+					<ul class="nav nav-second-level">
+						<li id="li_storageFile"><a class="J_menuItem" href="<%=path %>/storage/storageFile"><i class="fa fa_circle"></i>文件存储</a></li>
+						<li id="li_storageQuick"><a class="J_menuItem" href="<%=path %>/storage/storageQuick"><i class="fa fa_circle"></i>快存储</a></li>
+						<li id="li_storageObj"><a class="J_menuItem" href="<%=path %>/storage/storageObj"><i class="fa fa_circle"></i>对象存储</a></li>
+					</ul>
+				</li>
 				<%-- <li id="menu_product"><a href="<%=path %>/product/help" target="_blank"> <img alt="image" class="tit-image"
 						src="<%=path%>/images/help-red.png"
 						style="width: 14px; margin-left: 3px;" /> <span class="nav-label">帮助文档</span>
 				</a></li> --%>
-
+	
 			</ul>
 		</div>
 	</nav></div>
