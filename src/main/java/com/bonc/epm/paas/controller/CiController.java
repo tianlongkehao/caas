@@ -742,11 +742,15 @@ public class CiController {
 		}
 
 		List<Object> toolGroups = getToolGroups();
+		//获取sonarConfig
+		SheraAPIClientInterface client = sheraClientService.getClient();
+		SonarConfig sonarConfig = client.getSonarConfig();
 
 		model.addAttribute("username", imageNameFirst);
 		model.addAttribute("basicImage", basicImage);
 		model.addAttribute("toolGroups", toolGroups);
 		model.addAttribute("userAutority", cuurentUser.getUser_autority());
+		model.addAttribute("sonarConfig", sonarConfig);
 		model.addAttribute("menu_flag", "ci");
 		model.addAttribute("li_flag", "ci");
 		return "ci/ci_add.jsp";
@@ -908,6 +912,19 @@ public class CiController {
         else {
             map.put("status", "200");
         }
+        return JSON.toJSONString(map);
+
+    }
+
+    /**
+     * Description: <br>
+     * 进行代码构建时判断当前租户是否配置了SonarConfig环境
+     * @see
+     */
+    @RequestMapping("ci/judgeSonarConfig.do")
+    @ResponseBody
+    public String judgeSonarConfig(){
+        Map<String,Object> map = new HashMap<>();
         return JSON.toJSONString(map);
 
     }
@@ -2059,14 +2076,14 @@ public class CiController {
 			sonarConfig = sheraClient.getSonarConfig();
 		} catch (Exception e) {
 			LOG.info(e.getMessage());
-			SonarConfig config = sheraClientService.generateSonarConfig(true, false, false, 5, false, SONAR_TOKEN,
-					SONAR_URL);
-			try {
-				sonarConfig = sheraClient.createSonarConfig(config);
-			} catch (SheraClientException e1) {
-				e1.printStackTrace();
+//			SonarConfig config = sheraClientService.generateSonarConfig(true, false, false, 5, false, SONAR_TOKEN,
+//					SONAR_URL);
+//			try {
+//				sonarConfig = sheraClient.createSonarConfig(config);
+//			} catch (SheraClientException e1) {
+//				e1.printStackTrace();
 				map.put("status", "400");
-			}
+//			}
 		}
 		map.put("sonarConfig", sonarConfig);
 		return JSON.toJSONString(map);
