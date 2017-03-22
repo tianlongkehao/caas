@@ -200,6 +200,18 @@ public class CiController {
     private CodeCiToolDao codeCiToolDao;
 
     /**
+     * sonar token
+     */
+    @Value("${sonar.token}")
+    private String SONAR_TOKEN;
+
+    /**
+     * sonar url
+     */
+    @Value("${sonar.url}")
+    private String SONAR_URL;
+
+    /**
      * 进入构建主页面
      *
      * @param model ：model
@@ -348,7 +360,12 @@ public class CiController {
                 //获取jdk信息
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 JdkList jdkList = client.getAllJdk();
-                Job job = client.getJob(ci.getProjectName());
+                Job job = null;
+				try {
+					job = client.getJob(ci.getProjectName());
+				} catch (Exception e) {
+					LOG.error("查询构建对应的job失败：" + e.getMessage());
+				}
                 CiCode ciCode = ciCodeDao.findByCiId(ci.getId());
                 //代码验证信息的查询和加载
                 Iterable<CiCodeCredential> ciCredentialList = ciCodeCredentialDao.findAll();
@@ -359,7 +376,7 @@ public class CiController {
         		model.addAttribute("basicImage", basicImage);
                 model.addAttribute("toolGroups", toolGroups);
                 model.addAttribute("ciCredentialList", ciCredentialList);
-				model.addAttribute("dockerFileContent", job.getImgManager().getDockerFileContent()
+				model.addAttribute("dockerFileContent", job==null?"":job.getImgManager().getDockerFileContent()
 						.replace("\"", "&quot;").replace("'", "&apos;").replace(">", "&gt;").replace("<", "&lt;"));
                 model.addAttribute("jdkList",jdkList.getItems());
             }
@@ -483,7 +500,7 @@ public class CiController {
                                                             ciCode.getCodeName(),ciCode.getCodeRefspec(),dockerFileContentEdit,ci.getDockerFileLocation(),
                                                             originCi.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
                                                             ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),
-                                                            ciCode.getCheck()==CiConstant.CODE_CHECK_TRUE,ciCode.getSources(),ciCode.getCiTools());
+                                                            ciCode.getSonarCheck()==CiConstant.CODE_CHECK_TRUE,ciCode.getSources(),ciCode.getCiTools());
             client.updateJob(job);
             //添加代码挂钩
             if (ciCode.getIsHookCode() == 1) {
@@ -657,16 +674,18 @@ public class CiController {
 
                 try {
                     CiCode ciCode = ciCodeDao.findByCiId(idl);
-                    SheraAPIClientInterface client = sheraClientService.getClient();
-                    client.deleteJob(ci.getProjectName());
-                    //删除关联的hook数据
-                    if (!StringUtils.isEmpty(ciCode.getHookCodeId()) && ciCode.getHookCodeId() !=0 ) {
-                        CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ciCode.getHookCodeId());
-                        hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
-                        ciCodeHookDao.delete(ciCodeHook);
-                    }
-                    ciInvokeDao.deleteByCiId(idl);
-                    ciCodeDao.delete(ciCode);
+                    if (null != ciCode) {
+                    	SheraAPIClientInterface client = sheraClientService.getClient();
+                    	client.deleteJob(ci.getProjectName());
+                    	//删除关联的hook数据
+                    	if (!StringUtils.isEmpty(ciCode.getHookCodeId()) && ciCode.getHookCodeId() !=0 ) {
+                    		CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ciCode.getHookCodeId());
+                    		hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
+                    		ciCodeHookDao.delete(ciCodeHook);
+                    	}
+                    	ciInvokeDao.deleteByCiId(idl);
+                    	ciCodeDao.delete(ciCode);
+					}
                 }
                 catch (SheraClientException e) {
                     e.printStackTrace();
@@ -961,6 +980,9 @@ public class CiController {
             //添加代码构建详细信息
             ciCode.setCiId(ci.getId());
             ciCode.setCodeUrl(ciCode.getCodeUrl().trim());
+
+            ciCode.setSonarCheck(1);
+            ciCode.setSources("src");
             ciCodeDao.save(ciCode);
 
 			//查询代码构建详细信息
@@ -985,7 +1007,8 @@ public class CiController {
                 Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
                     ciCode.getCodeName(),ciCode.getCodeRefspec(), dockerFileContent,ci.getDockerFileLocation(),
                     ci.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
-                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),ciCode.getCheck()==CiConstant.CODE_CHECK_TRUE,ciCode.getSources(),ciCode.getCiTools());
+                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),ciCode.getSonarCheck()==CiConstant.CODE_CHECK_TRUE,ciCode.getSources(),ciCode.getCiTools());
+//                System.out.println(JSON.toJSONString(job));
                 client.createJob(job);
                 //添加代码挂钩
                 if (ciCode.getIsHookCode() == 1) {
@@ -1560,15 +1583,29 @@ public class CiController {
 										image.setCreateDate(DateUtils.getLongToDate(startTime));
 										image.setIsBaseImage(ciCode.getIsBaseImage());
 										image.setIsDelete(CommConstant.TYPE_NO_VALUE);
-										Rating jobRating = client.getJobRating(projectKey);
-										image.setCodeRating(jobRating == null ? 0 : jobRating.getRating());
-										SonarConfig sonarConfig = client.getSonarConfig();
-										if (null != sonarConfig && null != sonarConfig.getUrl()) {
-											String url = sonarConfig.getUrl();
-											if (!url.endsWith("/")) {
-												url = url + "/";
+										if (ciCode.getSonarCheck() == CiConstant.CODE_CHECK_TRUE) {
+											Rating jobRating = null;
+											try {
+												jobRating = client.getJobRating(projectKey);
+											} catch (Exception e) {
+												LOG.error("获取JobRating失败");
+												e.printStackTrace();
 											}
-											image.setCodeRatingURL(url + "sonar/overview?id=" + projectKey);
+											image.setCodeRating(jobRating == null ? 0 : jobRating.getRating());
+											SonarConfig sonarConfig = null;
+											try {
+												sonarConfig = client.getSonarConfig();
+											} catch (Exception e) {
+												LOG.error("获取SonarConfig失败");
+												e.printStackTrace();
+											}
+											if (null != sonarConfig && null != sonarConfig.getUrl()) {
+												String url = sonarConfig.getUrl();
+												if (!url.endsWith("/")) {
+													url = url + "/";
+												}
+												image.setCodeRatingURL(url + "sonar/overview?id=" + projectKey);
+											}
 										}
 										imageDao.save(image);
 										// 判断是否需要添加hookAndImages关联信息
@@ -2003,5 +2040,35 @@ public class CiController {
             return "redirect:/ci/detail/"+ciCode.getCiId();
         }
         return "redirect:/error";
+    }
+
+    /**
+     * Description: <br>
+     * 获取sonarconfig
+     * @see
+     */
+    @RequestMapping(value = {"ci/getSonarConfig.do"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String  getSonarConfig(){
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("status", "200");
+		// 获取sonarConfig
+		SheraAPIClientInterface sheraClient = sheraClientService.getClient();
+		SonarConfig sonarConfig = null;
+		try {
+			sonarConfig = sheraClient.getSonarConfig();
+		} catch (Exception e) {
+			LOG.info(e.getMessage());
+			SonarConfig config = sheraClientService.generateSonarConfig(true, false, false, 5, false, SONAR_TOKEN,
+					SONAR_URL);
+			try {
+				sonarConfig = sheraClient.createSonarConfig(config);
+			} catch (SheraClientException e1) {
+				e1.printStackTrace();
+				map.put("status", "400");
+			}
+		}
+		map.put("sonarConfig", sonarConfig);
+		return JSON.toJSONString(map);
     }
 }

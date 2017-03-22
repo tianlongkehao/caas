@@ -979,8 +979,6 @@ public class UserController {
 						SONAR_URL);
 				sonarConfig = sheraClient.createSonarConfig(config);
 			}
-			if (null == sonarConfig) {
-			}
 			model.addAttribute("userFavor", userFavor);
 			model.addAttribute("userShera", shera);
 			model.addAttribute("usedstorage", usedstorage / 1024);

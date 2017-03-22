@@ -87,7 +87,7 @@ public class CiCode {
 	/**
 	 * 代码质量检查 1：检查 0：不检查
 	 */
-	private Integer check;
+	private Integer sonarCheck;
 
 	/**
 	 * 代码质量检查路径
@@ -192,12 +192,12 @@ public class CiCode {
 		this.codeCredentials = codeCredentials;
 	}
 
-	public Integer getCheck() {
-		return check;
+	public Integer getSonarCheck() {
+		return sonarCheck;
 	}
 
-	public void setCheck(Integer check) {
-		this.check = check;
+	public void setSonarCheck(Integer sonarCheck) {
+		this.sonarCheck = sonarCheck;
 	}
 
 	public String getSources() {
