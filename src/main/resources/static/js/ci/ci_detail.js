@@ -18,7 +18,7 @@ $(document).ready(function(){
     //删除hookcode
     registerHookCode($("#id").val());
     //加载构建日志
-    printLog();
+    // printLog();
     //停止构建执行
     stopCodeCi();
 	//删除一个执行

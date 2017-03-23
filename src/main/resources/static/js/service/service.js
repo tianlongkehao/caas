@@ -705,7 +705,7 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 	 }
 	 //$(".confCpu")[0].setAttribute("checked",true);
 	 //$(".confRam")[0].setAttribute("checked",true);
-	 
+
 	 $('#confServiceName').val(containerName);
 
 	 layer.open({
@@ -967,14 +967,20 @@ function loadServices() {
 					{
 						data : null,
 						render : function ( data, type, row ) {
-							var html = '<a style="margin-left:2px;" href="#"'+
-								'value="'+row.id+'"'+
-								'serviceName="'+row.serviceName+'"'+
-								'serviceNum="'+row.instanceNum +'"'+
-								'confRam="'+row.ram +'" status="'+row.status +'"'+
-								'imagename="'+row.imgName +'"'+
-								'imageversion="'+row.imgVersion +'"'+
-								'confCpu="'+row.cpuNum + '"><span class="fa_level fa_level_d">D</span></a>';
+								var html = '';
+								if (row.codeRating == 1) {
+									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_a">A</span></a>';
+								} else if (row.codeRating == 2) {
+									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_b">B</span></a>';
+								} else if (row.codeRating == 3) {
+									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_c">C</span></a>';
+								} else if (row.codeRating == 4) {
+									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_d">D</span></a>';
+								} else if (row.codeRating == 5) {
+									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_e">E</span></a>';
+								} else {
+									html = '<span class="fa_level fa_level_a">无</span>';
+								}
 							return html;
 						}
 					},

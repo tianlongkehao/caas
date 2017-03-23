@@ -47,12 +47,12 @@ import com.bonc.epm.paas.dao.CiCodeHookDao;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiInvokeDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
+import com.bonc.epm.paas.dao.CodeCiToolDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.HookAndImagesDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.SheraDao;
-import com.bonc.epm.paas.dao.CodeCiToolDao;
 import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
@@ -61,13 +61,13 @@ import com.bonc.epm.paas.entity.CiCodeCredential;
 import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.CiRecord;
+import com.bonc.epm.paas.entity.CodeCiTool;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.HookAndImages;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Shera;
-import com.bonc.epm.paas.entity.CodeCiTool;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
@@ -76,8 +76,6 @@ import com.bonc.epm.paas.shera.model.CodeManager;
 import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
-import com.bonc.epm.paas.shera.model.JobExec;
-import com.bonc.epm.paas.shera.model.JobExecList;
 import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.Log;
 import com.bonc.epm.paas.shera.model.Rating;
@@ -280,53 +278,48 @@ public class CiController {
         } else {
             cis = ciDao.findByNameOfCodeCi(userId, "%" + search + "%",pageRequest);
         }
-        //判断是否获取shera信息
-        if (cis.getContent().size() > 0) {
-            List<Ci> ciList = findSheraData(cis.getContent());
-            map.put("data", ciList);
-        } else {
-            map.put("data", cis.getContent());
-        }
         map.put("draw", draw);
+        map.put("data", cis.getContent());
         map.put("recordsTotal", cis.getTotalElements());
         map.put("recordsFiltered", cis.getTotalElements());
         return JSON.toJSONString(map);
     }
 
-    /**
-     * Description: <br>
-     * 代码构建shera中job的构建信息查询和展示；
-     * @param cis cis
-     * @return
-     */
-    public List<Ci> findSheraData(List<Ci> cis){
-        try {
-            SheraAPIClientInterface client = sheraClientService.getClient();
-            JobExecList jobExecList = client.getAllJobs();
-            if (StringUtils.isEmpty(jobExecList.getItems())) {
-                return cis;
-            }
-            if (cis.size()!=0 && jobExecList != null) {
-                for (Ci ci :cis) {
-                    for (JobExec jobExec :jobExecList) {
-                        if (ci.getProjectName().equals(jobExec.getJobId())) {
-                            if (jobExec.getLastSuccessTime() != 0 ) {
-                                ci.setConstructionDate(DateUtils.getLongToDate(jobExec.getLastSuccessTime()));
-                            }
-                            if (jobExec.getLastFailureTime() != 0) {
-                                ci.setConstructionFailDate(DateUtils.getLongToDate(jobExec.getLastFailureTime()));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception e) {
-            LOG.error("find all job data error : " + e.getMessage());
-            e.printStackTrace();
-        }
-        return cis;
-    }
+
+//    /**
+//     * Description: <br>
+//     * 代码构建shera中job的构建信息查询和展示；
+//     * @param cis cis
+//     * @return
+//     */
+//    public List<Ci> findSheraData(List<Ci> cis){
+//        try {
+//            SheraAPIClientInterface client = sheraClientService.getClient();
+//            JobExecList jobExecList = client.getAllJobs();
+//            if (StringUtils.isEmpty(jobExecList.getItems())) {
+//                return cis;
+//            }
+//            if (cis.size()!=0 && jobExecList != null) {
+//                for (Ci ci :cis) {
+//                    for (JobExec jobExec :jobExecList) {
+//                        if (ci.getProjectName().equals(jobExec.getJobId())) {
+//                            if (jobExec.getLastSuccessTime() != 0 ) {
+//                                ci.setConstructionDate(DateUtils.getLongToDate(jobExec.getLastSuccessTime()));
+//                            }
+//                            if (jobExec.getLastFailureTime() != 0) {
+//                                ci.setConstructionFailDate(DateUtils.getLongToDate(jobExec.getLastFailureTime()));
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        catch (Exception e) {
+//            LOG.error("find all job data error : " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//        return cis;
+//    }
 
     /**
      *
@@ -1570,6 +1563,8 @@ public class CiController {
 							// 执行完成
 							long endTime = System.currentTimeMillis();
 							if (jobExecView.getFinished() == 1) {
+								Integer rating = -1;
+								String url = "";
 								// 执行成功
 								if (jobExecView.getEndStatus() == 0) {
 									// 判断是否添加镜像
@@ -1594,7 +1589,7 @@ public class CiController {
 										if (ciCode.getSonarCheck() == CiConstant.CODE_CHECK_TRUE) {
 											Rating jobRating = null;
 											String branch = "";
-											try {
+//											try {
 												CodeManager codeManager = client.getJob(ci.getProjectName()).getCodeManager();
 												if (codeManager.getCodeChoice() == CiConstant.CODE_TYPE_GIT) {
 													branch = codeManager.getGitConfig().getBranch();
@@ -1602,24 +1597,26 @@ public class CiController {
 													branch = codeManager.getSvnConfig().getBranch();
 												}
 												jobRating = client.getJobRating(projectKey + ":" + branch);
-											} catch (Exception e) {
-												LOG.error("获取JobRating失败");
-												e.printStackTrace();
-											}
+//											} catch (Exception e) {
+//												LOG.error("获取JobRating失败");
+//												e.printStackTrace();
+//											}
+											rating = jobRating == null ? 0 : jobRating.getRating();
 											image.setCodeRating(jobRating == null ? 0 : jobRating.getRating());
 											SonarConfig sonarConfig = null;
-											try {
+//											try {
 												sonarConfig = client.getSonarConfig();
-											} catch (Exception e) {
-												LOG.error("获取SonarConfig失败");
-												e.printStackTrace();
-											}
+//											} catch (Exception e) {
+//												LOG.error("获取SonarConfig失败");
+//												e.printStackTrace();
+//											}
 											if (null != sonarConfig && null != sonarConfig.getUrl()) {
-												String url = sonarConfig.getUrl();
+												url = sonarConfig.getUrl();
 												if (!url.endsWith("/")) {
 													url = url + "/";
 												}
-												image.setCodeRatingURL(url + "overview?id=" + projectKey + ":" + branch);
+												url = url + "overview?id=" + projectKey + ":" + branch;
+												image.setCodeRatingURL(url);
 											}
 										}
 										imageDao.save(image);
@@ -1635,6 +1632,8 @@ public class CiController {
 									// 添加构建和日志的信息
 									ci.setConstructionTime(endTime - startTime);
 									ci.setConstructionDate(new Date(startTime));
+									ci.setCodeRating(rating);
+									ci.setCodeRatingURL(url);
 									ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
 									ciRecord.setConstructTime(endTime - startTime);
 									ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
