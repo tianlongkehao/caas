@@ -1009,8 +1009,8 @@ i.pushOrg {
 	line-height:35px;
 }
 .sonarInfo select{
-	width: 30%; 
-	display: inline; 
+	width: 30%;
+	display: inline;
 	float: left;
 	margin-left:15px;
 }
@@ -1045,6 +1045,12 @@ i.pushOrg {
 .tokenValue{
 	width:60%;
 	margin-left:42px!important;
+	margin-top:6px;
+	float:left;
+}
+.urlValue{
+	width:60%;
+	margin-left:22px!important;
 	margin-top:6px;
 	float:left;
 }

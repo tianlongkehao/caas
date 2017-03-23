@@ -161,7 +161,7 @@
 								<div class="panel panel-info">
 									<div class="panel-heading">
 										<h4 class="panel-title">
-											<a data-toggle="collapse" data-parent="#accordion" 
+											<a data-toggle="collapse" data-parent="#accordion"
 											   href="#collapseOne">
 												监控设置
 											</a>
@@ -200,7 +200,7 @@
 							<div class="panel panel-success ">
 								<div class="panel-heading">
 									<h4 class="panel-title">
-										<a data-toggle="collapse" data-parent="#accordion" 
+										<a data-toggle="collapse" data-parent="#accordion"
 										   href="#collapseTwo">
 											质量检查设置
 										</a>
@@ -209,7 +209,7 @@
 								<div id="collapseTwo" class="panel-collapse collapse">
 									<div class="panel-body">
 										<div class="setColor preferInfo">
-											
+
 											<input type="hidden" value="${sonarConfig.enabled }" id="SonarConfigVal">
 											<input type="hidden" value="${sonarConfig.hidden }" id="">
 											<input type="hidden" value="${sonarConfig.mandatory }" id="mandatoryVal">
@@ -217,7 +217,7 @@
 											<%-- <input type="hidden" value="${sonarConfig.breakable }" id=""> --%>
 											<input type="hidden" value="${sonarConfig.token }" id="">
 											<input type="hidden" value="${sonarConfig.url }" id="">
-											
+
 											<c:if test="${sonarConfig.enabled == false }">
 													<div>是否检查：
 														<label id="sonarYesOrNo"><i class="fa fa-toggle-onORoff fa-off" id="sonarYesOrNoBtn" value="false"></i><span class="fa-text">不检查</span></label>
@@ -273,11 +273,14 @@
 							                        	<div class="left sonardiv"><span class="labelInfo left">token：</span>
 							                        		<input type="text" class="form-control tokenValue" id="tokenValue" value="${sonarConfig.token }">
 							                        	</div>
+							                        	<div class="left sonardiv"><span class="labelInfo left">SonarUrl：</span>
+							                        		<input type="text" class="form-control urlValue" id="urlValue" value="${sonarConfig.url }">
+							                        	</div>
 						                        	</div>
-						                       
-						                        
-											
-											
+
+
+
+
 				                        </div>
 				                        <div class="form-group">
 					                        <div class="col-md-offset-10 col-md-2">
@@ -290,7 +293,7 @@
 							<div class="panel panel-warning">
 								<div class="panel-heading">
 									<h4 class="panel-title">
-										<a data-toggle="collapse" data-parent="#accordion" 
+										<a data-toggle="collapse" data-parent="#accordion"
 										   href="#collapseThree">
 											黑白名单设置
 										</a>
@@ -319,7 +322,7 @@
 							<div class="panel panel-success hide">
 								<div class="panel-heading">
 									<h4 class="panel-title">
-										<a data-toggle="collapse" data-parent="#accordion" 
+										<a data-toggle="collapse" data-parent="#accordion"
 										   href="#collapseTwo">
 											主题颜色设置
 										</a>

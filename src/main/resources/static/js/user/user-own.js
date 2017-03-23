@@ -64,7 +64,7 @@ $(function(){
     	var user_cellphone = $.trim($("#user_cellphone").val());
     	var user_phone = $.trim($("#user_phone").val());
         var email = $.trim($("#email").val());
-        
+
     	var flag = checkBasicInfo();
     	if(flag === false){
     		return;
@@ -100,12 +100,12 @@ $(function(){
         });
 
     });
-    
+
     $("#modifyPwd").click(function(){
     	var id = $("#user_id").val();
     	var pwd = $.trim($("#originalPwd").val());
     	var newpwd = $.trim($("#newPwd").val());
-    	
+
     	var flag = checkpwd();
     	if(flag === false){
     		return;
@@ -124,7 +124,7 @@ $(function(){
                         if(data.status === '200'){
                             layer.msg("密码修改成功",{icon: 6});
                             setTimeout('window.location.href = ctx + "/login"',2000);
-                            
+
                         }else{
                             layer.alert("密码修改失败");
                         }
@@ -136,13 +136,13 @@ $(function(){
             }
         });
     });
-    
+
    function checkpwd (){
-	   
+
 	   var pwd = $.trim($("#originalPwd").val());
 	   var newpwd = $.trim($("#newPwd").val());
 	   var confirmpwd = $.trim($("#confirmNewPwd").val());
-	   
+
 	   if(pwd === ''){
 		   layer.alert("请输入原密码");
 		   return false;
@@ -152,12 +152,12 @@ $(function(){
 		   $("#newPwd").focus();
 		   return false;
 	   }
-    		 
+
     };
-    
+
     function checkBasicInfo(){
         var email = $.trim($("#email").val());
-       
+
         if (email.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) !== -1) {
             if (email.length > 50) {
              layer.tips('邮箱长度不能大于50', $('#email'),{tips: [1, '#EF6578']});
@@ -176,7 +176,7 @@ $(function(){
             }
         }
     }
-    
+
     //保存监控的偏好设置
     $("#preferSave").click(function(){
     	var monitor = 1;
@@ -197,7 +197,7 @@ $(function(){
     		}
     	});
     })
-    
+
 //    $("#sonarYesOrNo").click(function(){
 //    	if($("#sonarYesOrNoChecked").is(":checked")){
 //    		$(".sonarTwoStep").removeClass("hide");
@@ -229,7 +229,7 @@ $(function(){
 					    	'</div>';
     	$(".whiteLists").append(whiteListHtml);
     });
-    
+
   //是否进行sonar质量检查 检查true 不检查false
  	$("#sonarYesOrNoBtn").click(function(){
  		var $this = $(this);
@@ -275,6 +275,7 @@ $(function(){
 			breakable = true;
 		}
 		var token = $("#tokenValue").val();
+		var url = $("#urlValue").val();
 		$.ajax({
 			type : "POST",
 			url : ctx + "/user/updateSonarConfig.do",
@@ -284,7 +285,8 @@ $(function(){
 				"mandatory" : mandatory,
 				"threshold" : threshold,
 				"breakable" : breakable,
-				"token" : token
+				"token" : token,
+				"url" : url
 			},
 			success : function(data) {
 				var data = eval("(" + data + ")");
@@ -302,7 +304,7 @@ $(function(){
     }else{
     	$(".sonarTwoStep").addClass("hide");
     }
-    
+
     var threshold = $("#thresholdVal").val();
     if(threshold != 6){
     	$(".sonarInfo").removeClass("hide");
@@ -310,8 +312,8 @@ $(function(){
     	$(".sonarInfo").addClass("hide");
     }
     $("#sonarThreshold").val(threshold);
-    
-    
+
+
 });/*ready*/
 $(function () { $('#collapseTwo').collapse('show')});
 $(function () { $('#collapseOne').collapse('show')});
