@@ -1049,6 +1049,20 @@ i.pushOrg {
 	float:left;
 }
 
+i.fa-toggle-onORoff{
+ 	background:url(../../images/off_on.png) no-repeat;
+ 	width:56px;
+ 	height: 22px;
+    float: left;
+    margin-left:16px;
+ }
+ i.fa-on{
+ 	background-position: 2px -23px;
+ }
+ i.fa-off{
+ 	background-position: 2px -1px;
+}
+
 
 
 
