@@ -290,7 +290,20 @@ function loadCiCode() {
 					{
 						data : null,
 						render : function ( data, type, row ) {
-							var html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#"><span class="fa_level fa_level_e">E</span></a>';
+							var html = '';
+							if (row.codeRating == 1) {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_a">A</span></a>';
+							} else if (row.codeRating == 2) {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_b">B</span></a>';
+							} else if (row.codeRating == 3) {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_c">C</span></a>';
+							} else if (row.codeRating == 4) {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_d">D</span></a>';
+							} else if (row.codeRating == 5) {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_e">E</span></a>';
+							} else {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fa_level fa_level_a">无</span>';
+							}
 							return html;
 						}
 					},

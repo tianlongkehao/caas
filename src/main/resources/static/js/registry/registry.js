@@ -5,7 +5,7 @@ $(document).ready(function () {
     /*$(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
     });*/
-    
+
     $(document).on("mouseover",".images-panel",function(){
     	$(this).children(".create-item").css("opacity", "1");
     });
@@ -16,13 +16,13 @@ $(document).ready(function () {
     /*$(".images-panel").mouseout(function () {
         $(this).children(".create-item").css("opacity", "0");
     });*/
-   
+
     $(".list_info").click(function () {
         $(".table_list>.list_info").removeClass("active");
         $(".table_list").siblings("section").addClass("hide");
         $(this).addClass("active").parent().siblings("section").eq($(this).index()).removeClass("hide");
     });
-    
+
     $(".fork").click(function(){
     	var imageId = $("#imageId").val();
     	var _this = $(this);
@@ -49,15 +49,15 @@ $(document).ready(function () {
     		}
     	});
     });
-    
+
 	// 快速收藏
-    
+
     $(document).on("click",".forkquick",function(){
-    
+
     	var imageId = $(this).attr('imageId');
     	var _this = $(this);
     	$.ajax({
-    		async:false, 
+    		async:false,
     		url:""+ctx+"/registry/detail/favor",
     		type:"post",
     		data:{"imageId":imageId},
@@ -78,7 +78,7 @@ $(document).ready(function () {
     		}
     	});
     });
-    
+
     // 导出镜像
     var downloadIndex;
     $(document).on("click",".downloadImage",function(){
@@ -98,7 +98,7 @@ $(document).ready(function () {
          	        	$.ajax({
          	        		url:""+ctx+"/registry/downloadImage",
          	        		type:"get",
-         	        		async:false, 
+         	        		async:false,
          	        		data:{
          	        			"imageName" : _this.attr("imagename"),
          	        			"imageVersion" : _this.attr("imageversion"),
@@ -110,11 +110,11 @@ $(document).ready(function () {
          	        			var data1 = eval("(" + data + ")");
          	        			if(data1.status == "200"){
          	        				window.location.href = ctx + "/registry/download?imageName="+_this.attr("imagename") +"&imageVersion="+_this.attr("imageversion");
-         	        			} 
+         	        			}
          	        			else {
            		   		     		layer.msg( "导出镜像失败", {
            		   						icon: 1
-           		   					}); 
+           		   					});
          	        			}
          	        		}
          	        	});
@@ -124,7 +124,7 @@ $(document).ready(function () {
          		}
          	});
         });
-    
+
     //镜像中心的搜索功能
     var searchCon = $("#searchCon").val();
 	var searchCondition = 0;
@@ -143,8 +143,8 @@ $(document).ready(function () {
     	searchCondition = $("#searchCondition").val();
     	searchImagesResult(searchCon,searchCondition);
     });
-    
-   
+
+
 });/*ready*/
 
 //折叠三角的方向
@@ -165,37 +165,50 @@ function findImages(){
 //	        "bStateSave":true,
 	        "ajax": ctx+"/registry/pager/"+index,
 	        "columns": [
-	                    {   
+	                    {
 	                    	data : null,
 	                    	render : function ( data, type, row ) {
-	                    		var html = '<input type="checkbox" class="chkItem" name="ids" style="margin-left:22px;"  value="'+row.id+'">'
+	                    		var html = '<input type="checkbox" class="chkItem" name="ids" style="margin-left:22px;"  value="'+row.id+'">';
 	                    		return html;
 	                    	}
 	                    },
-	                    {   
+	                    {
 	                    	data : null,
 	                    	render : function ( data, type, row ) {
-	                    		var html = '<a href="#"><span class="fa_level fa_level_a">A</span></a>'
+								var html = '';
+								if (row.codeRating == 1) {
+									html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_a">A</span></a>';
+								} else if (row.codeRating == 2) {
+									html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_b">B</span></a>';
+								} else if (row.codeRating == 3) {
+									html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_c">C</span></a>';
+								} else if (row.codeRating == 4) {
+									html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_d">D</span></a>';
+								} else if (row.codeRating == 5) {
+									html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_e">E</span></a>';
+								} else {
+									html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fa_level fa_level_a">无</span>';
+								}
 	                    		return html;
 	                    	}
 	                    },
-	                    { 	
+	                    {
 	                    	data : null ,
 	                    	render : function ( data, type, row ) {
-	                    		var html = '<a href="'+ctx+'/registry/detail/'+row.id+'" title="查看详细信息" >'+row.name+'</a>'
+	                    		var html = '<a href="'+ctx+'/registry/detail/'+row.id+'" title="查看详细信息" >'+row.name+'</a>';
 	                    		return html;
 	                    	}
 	                    },
-	                    { 
+	                    {
 	                    	data : "version" ,
                     		render : function ( data, type, row ) {
 	                    		if (data == null || data == "") {
 	                    			return "";
 	                    		}
 	                    		return data;
-	                    	}	
+	                    	}
 	                    },
-	                    {	
+	                    {
 	                    	data : "remark",
 	                    	render : function ( data, type, row ) {
 	                    		if (data == null || data == "") {
@@ -203,9 +216,9 @@ function findImages(){
 	                    		}
 	                    		return data;
 	                    	}
-	                    	
+
 	                    },
-	                    { 
+	                    {
 	                    	data : "creatorName" ,
                     		render : function ( data, type, row ) {
 	                    		if (data == null || data == "") {
@@ -214,59 +227,59 @@ function findImages(){
 	                    		return data;
 	                    	}
 	                    },
-	                    { 
+	                    {
 	                    	data : 'createDate',
 	                    	render : function ( data, type, row ) {
 	                    		var date = calendarFormat(data);
 	                    		return date;
 	                        }
 	                    },
-	                    { 	
+	                    {
 	                    	data: null,
 	                    	render: function ( data, type, row ) {
 	                    		var html = "";
 	                    		if (row.isDelete == 1 ) {
 	                    			if (row.currUserFavor == 0) {
-	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' +
 	                    						'<i class="fa fa-star-o star-style" style="color: #e8504f;margin-left:55px;"></i>'+
-	                    					'</a>'
+	                    					'</a>';
 	                    			} else {
-	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' +
                 									'<i class="fa fa-star star-style" style="color: #e8504f;margin-left:35px;"></i>'+
-                								'</a>'
+                								'</a>';
 	                    			}
 	                    		} else {
 	                    			html += '<a class="no-drop" href="'+ctx+'/service/add?imageName='+row.name+'&imageVersion='+row.version+'&imgID='+row.id+'&resourceName='+row.resourceName+'"'+
 										 		'imageversion="'+row.version+'" imagename="'+row.name+'" title="部署">'+
 										 		'<i class="fa fa-wrench"></i>'+
 										 	'</a>'+
-										 	'<a class="no-drop a-oper downloadImage" imageversion="'+row.version+'" imagename="'+row.name+'" imgID="'+row.id+'" resourcename= "'+row.resourceName+'" title="导出">'+ 
+										 	'<a class="no-drop a-oper downloadImage" imageversion="'+row.version+'" imagename="'+row.name+'" imgID="'+row.id+'" resourcename= "'+row.resourceName+'" title="导出">'+
 										 		'<i class="fa fa-share-square-o"></i>'+
-										 	'</a>' 
+										 	'</a>' ;
 							 		if (row.currUserFavor == 0) {
-	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' +
 	                    						'<i class="fa fa-star-o star-style" style="color: #e8504f;"></i>'+
-	                    					'</a>'
+	                    					'</a>';
 	                    			} else {
-	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' + 
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' +
                 									'<i class="fa fa-star star-style" style="color: #e8504f;"></i>'+
-                								'</a>'
+                								'</a>';
 	                    			}
-	                    			
+
 	                    			if (userId == row.createBy) {
 	                    				html +=	'<a class="no-drop a-oper" href="javascript:void(0)" onclick="deleteImage(this)"'+
 													'title="删除" imageversion="'+row.version+'" imagename="'+row.name+'" imageid="'+row.id+'">' +
 													'<i class="fa fa-trash"></i>'+
-												'</a>'
+												'</a>';
 	                    			}
 	                    		}
-	                    		
+
 	                    		return html;
 	                    	}
 	                    }
 	                ]
 	  });
-	
+
 }
 
 /*删除单个镜像*/
@@ -276,7 +289,7 @@ function deleteImage(obj){
 	        title: '删除镜像',
 	        content: '确定删除镜像？',
 	        btn: ['确定', '取消'],
-	        yes: function(index){ 
+	        yes: function(index){
 	        	layer.close(index);
 	        	$.ajax({
    		     		url:""+ctx+"/registry/detail/deleteimage",
@@ -292,7 +305,7 @@ function deleteImage(obj){
    		     			} else {
    		   		     		layer.msg( "删除失败", {
    		   						icon: 1
-   		   					});  		     				
+   		   					});
    		     			}
    		     		},
    		     		error:function(){
@@ -306,13 +319,13 @@ function deleteImage(obj){
 	 });
 }
 function checkbox(count){
-	// 删除条件筛选中的   全选checkbox 
+	// 删除条件筛选中的   全选checkbox
     var checkAllItem = '.checkAllItem'+count;
     var checkItem = '.checkItem'+count;
     $(checkAllItem).click(function(){
         $(checkItem).prop('checked',$(checkAllItem).is(":checked"));
     });
- 
+
     // 删除条件筛选中的  选项
     $(document).on("click",checkItem, function(){
         if($(this).is(":checked")){
@@ -351,7 +364,7 @@ function delImages(){
 				'<div id="collapseOne'+count+'" class="panel-collapse collapse in">'+
 					'<div class="panel-body">'+
 						'<ul class="image-version versionList'+count+'">'+
-							
+
 						'</ul>'+
 					'</div></div></div></div>';
 				$(".namefiltercon").append(imageHtml);
@@ -366,7 +379,7 @@ function delImages(){
 				count++;
 			}
 		}
-	})
+	});
 	$.ajax({
 		url:""+ctx+"/registry/getImagesGroupByMonth.do",
 		type:"post",
@@ -392,7 +405,7 @@ function delImages(){
 					'<div id="collapseOne'+count+'" class="panel-collapse collapse in">'+
 						'<div class="panel-body">'+
 							'<ul class="image-version timeImageList'+count+'">'+
-								
+
 							'</ul>'+
 						'</div></div></div></div>';
 					$(".timefiltercon").append(timeImages0Html);
@@ -408,17 +421,17 @@ function delImages(){
 					count++;
 				}
 			}
-			
+
 		}
-	})
-	
+	});
+
     layer.open({
     	type: 1,
         title: '批量删除条件',
         content: $("#delItemcfg"),
         area: ['880px','600px'],
         btn: ['确定删除', '取消'],
-        yes: function(index, layero){ 
+        yes: function(index, layero){
         	obj = document.getElementsByName("ids");
         	var imageIds = [];
             for (k in obj) {
@@ -430,7 +443,7 @@ function delImages(){
             	layer.msg( "请选择需要删除的镜像", {icon: 2 });
             	return;
             }
-        	
+
 			$.ajax({
 				url:""+ctx+"/registry/delImages.do?imageIds="+imageIds,
 				success:function(data){
@@ -443,10 +456,10 @@ function delImages(){
 					}
 
 				}
-			})
+			});
             layer.close(index);
         }
-    })
+    });
 }
 
 $(function(){
@@ -573,7 +586,7 @@ function syncImages(){
 			}
 
 		}
-	})
+	});
 }
 
 //镜像搜索结果
@@ -606,7 +619,7 @@ function searchImagesResult(searchCon,searchCondition){
 				 }else{
 					 imageExportCount = imageList[i].exportCount;
 				 }
-				 
+
 				 var imageResourceName = imageList[i].resourceName;
 				 var imageRemark = "";
 				 if (imageList[i].remark != null && imageList[i].remark !=""){
@@ -616,7 +629,7 @@ function searchImagesResult(searchCon,searchCondition){
 				 if(imageList[i].summary != null && imageList[i].summary != ""){
 					 imageSummary = imageList[i].summary;
 				 }
-				 var imageSummary
+				 var imageSummary;
 				 var imageType = imageList[i].imageType;
 				 //搜索结果html
 				 searchImagesHtml += '<li class="images-panel">'+
@@ -633,7 +646,7 @@ function searchImagesResult(searchCon,searchCondition){
 										'<span class="cloudNum">'+imageExportCount+'</span>'+
 									'</div>'+
 									'</div>'+
-									
+
 									'<div>'+
 										'<span class="searchImageVersion" title="'+imageVersion +'"><i class="fa fa-tag"></i> '+imageVersion +'</span>'+
 										'<div class="pull-right">'+

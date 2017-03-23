@@ -154,6 +154,16 @@ public class Ci {
 	 */
 	private Date createDate;
 
+    /**
+	 * 镜像代码质量级别
+	 */
+	private Integer codeRating;
+
+    /**
+	 * 镜像代码详细的分析结果
+	 */
+	private String codeRatingURL;
+
 	public long getId() {
 		return id;
 	}
@@ -352,6 +362,22 @@ public class Ci {
 
 	public void setDockerFileContent(String dockerFileContent) {
 		this.dockerFileContent = dockerFileContent;
+	}
+
+	public Integer getCodeRating() {
+		return codeRating;
+	}
+
+	public void setCodeRating(Integer codeRating) {
+		this.codeRating = codeRating;
+	}
+
+	public String getCodeRatingURL() {
+		return codeRatingURL;
+	}
+
+	public void setCodeRatingURL(String codeRatingURL) {
+		this.codeRatingURL = codeRatingURL;
 	}
 
 }
