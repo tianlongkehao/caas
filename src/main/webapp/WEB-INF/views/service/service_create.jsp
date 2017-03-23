@@ -249,7 +249,7 @@
 											</li>
 											<li class="line-h-3">
 												<div class="param-set">
-													<span class="ve_top" id = "ve_ram" >内存：<font color="red">*</font></span> 
+													<span class="ve_top" id = "ve_ram" >内存：<font color="red">*</font></span>
 													<c:forEach items="${memorySizeList }" var="memorySize" >
 														<label><input type="radio" class="ram" name="ram" value="${memorySize.memoryValue }">${memorySize.memorySize }<span> G  </span></label>
 													</c:forEach>
@@ -264,11 +264,11 @@
 													<span class="mountTips"></span>
 												<input type="hidden" id = "serviceType" name ="serviceType" value = "1"/>
 											</span></li>
-											
+
 											<li class="hide-set" id="save_roll_dev"><span class="ve_top">挂载地址：</span>
 												<ol id="mountPathList">
 													<li class="hide-select">
-														<select class="selectVolume form-control" id="selectVolume" 
+														<select class="selectVolume form-control" id="selectVolume"
 																		style="height: 34px; width: 230px;">
 																<option  value="">选择一个存储卷</option>
 																<c:forEach items="${storageList }" var = "storage">
@@ -297,8 +297,8 @@
 												<input type = "hidden" id = "userName" value="${userName }"/>
 												<ol>
 													<li class="hide-select">
-												       <input type="text" class="form-control" placeholder="name" id="Name"> 
-												       <input type="text" class="form-control" placeholder="value" id="Value"> 
+												       <input type="text" class="form-control" placeholder="name" id="Name">
+												       <input type="text" class="form-control" placeholder="value" id="Value">
 												       <a id="cratePATH"><i class="fa fa-plus"></i>添加</a>
 														<div style="float: right;margin-top:7px;">
 															<span id="importBtn" class=" btn-info btn-sm"
@@ -336,7 +336,7 @@
 															<td><input class="port" type="text" value="8080"></td>
 															<td><select class="T-http">
 																	<option>TCP</option>
-																	<option>HTTP</option>
+																	<option>UDP</option>
 															</select></td>
 															<td><i>30099</i></td>
 															<td><a href="javascript:void(0)"
@@ -357,7 +357,7 @@
 									<table class="table table-hover enabled" id="Path-table"
 										style="width: 326px; margin: 5px 10px 5px 10px">
 										<tbody id="Path-env">
-										
+
 										</tbody>
 									</table>
 								</div>
