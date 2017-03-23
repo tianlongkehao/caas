@@ -689,29 +689,30 @@ function oneVersionUpgrade(id, serviceName, imgName, obj) {
 
 // 响应每一行上的修改配置
 function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
+	 $(".confCpu").prop("checked",false);
+	 $(".confRam").prop("checked",false);
 	 for(var i=0; i<$(".confCpu").length; i++){
 		 var cpuVal = $(".confCpu")[i].getAttribute("value");
-		 if(parseInt(cpuVal)==cpu){
-			 $(".confCpu")[i].setAttribute("checked",true);
+		 if(cpu==parseInt(cpuVal)){
+			 var aa = $(".confCpu")[i];
+			 $(aa).prop("checked",true);
 			 break;
 		 }
 	 }
-	 for(var j=0; j<$(".confCpu").length; j++){
+	 for(var j=0; j<$(".confRam").length; j++){
 		 var ramVal = $(".confRam")[j].getAttribute("value");
-		 if(parseInt(ramVal)==ram){
-			 $(".confRam")[j].setAttribute("checked",true);
+		 if(ram==parseInt(ramVal)){
+			 var bb = $(".confRam")[j];
+			 $(bb).prop("checked",true);
 			 break;
 		 }
 	 }
-	 //$(".confCpu")[0].setAttribute("checked",true);
-	 //$(".confRam")[0].setAttribute("checked",true);
-
 	 $('#confServiceName').val(containerName);
 
 	 layer.open({
 		 type:1,
 		 title: '更改配置',
-		 area: ['500px', '300px'],
+		 area: ['500px', '350px'],
 		 content: $("#changeConf"),
 		 btn: ['确定', '取消'],
 		 yes: function(index, layero){ //或者使用btn1
