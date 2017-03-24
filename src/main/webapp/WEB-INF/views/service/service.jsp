@@ -329,7 +329,7 @@
 				<div class="param-set">
 					<span class="c-title">CPU数量：</span> 
 					<c:forEach items="${cpuSizeList }" var="cpuSize" >
-						<label><input type="radio" class="confCpu" value="${cpuSize }">${cpuSize }
+						<label><input type="radio" class="confCpu" name="confCpu" value="${cpuSize }">${cpuSize }
 						<span>个 </span></label>
 					</c:forEach>
 					<%-- <input type="number" value="" class="c-con"
@@ -343,7 +343,7 @@
 				<div class="param-set">
 					<span class="c-title">内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;存：</span>
 					<c:forEach items="${memorySizeList }" var="memorySize" >
-						<label><input type="radio" class="confRam" value="${memorySize.memoryValue }">${memorySize.memorySize }<span> G  </span></label>
+						<label><input type="radio" class="confRam" name="confRam" value="${memorySize.memoryValue }">${memorySize.memorySize }<span> G  </span></label>
 					</c:forEach>
 					  <%-- <input type="text" left="" value="" class="c-con"
 						id="confRamSlider_input" name="confRam" min="${memorymin }" max="${memorymax }"> <span class="unit">M</span> --%>
