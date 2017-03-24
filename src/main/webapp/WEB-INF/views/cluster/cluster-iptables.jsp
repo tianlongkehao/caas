@@ -61,10 +61,10 @@
 									name="search_service" id="search_service" onchange="searchServiceShowIptables()"
 									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
 									<option value="">-----请选择-----</option>
-                                    
+
 								</select>
 							</div>
-							
+
 							<div class="searchFun"
 								style="float: left; text-align: center; margin: 0px 10px; float: right"
 								align="right">
@@ -77,21 +77,21 @@
                                 	</c:forEach>
                                     <%-- <c:forEach items=${users } var="user">
                                     	<option value="${user.namespace }">${user.namespace }</option>
-                                    </c:forEach> --%> 
+                                    </c:forEach> --%>
 								</select>
 							</div>
 							</c:if>
-							
+
 							<c:if test="${cur_user.user_autority != 1}">
 							<div class="searchFun"
 								style="float: left; text-align: center; margin: 0px 10px; float: right"
 								align="right">
 								<label style="line-height: 35px">服务:</label> <select
-									name="search_service" id="search_service" onchange="searchServiceDiff()"
+									name="search_service" id="search_service" onchange="searchServiceShowIptables()"
 									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
 									<option value="">-----请选择-----</option>
 									<%-- <option value="">${user }</option> --%>
-									
+
                                     <c:forEach items="${services }" var="service">
                                     	<option value="${service.metadata.name }">${service.metadata.name }</option>
                                     </c:forEach>
@@ -127,7 +127,7 @@
 									<tr class="u-line">
 										<td>:PREROUTING ACCEPT [291303:18397761]</td>
 									</tr> -->
-									
+
 									<!-- <tr>
 										<td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;filter</td>
 										<td>:PREROUTING ACCEPT [291303:18397761]222222</td>
@@ -138,7 +138,7 @@
 									<tr>
 										<td>:PREROUTING ACCEPT [291303:18397761]222222</td>
 									</tr> -->
-									
+
 								</tbody>
 							</table>
 							<div class="diffTitle"><span><h4>iptables对比结果不同之处：<h4></span></div>
@@ -166,7 +166,7 @@
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
 										</tr>
-										
+
 										<tr class="u-line">
 											<td rowspan="2">kubeServices</td>
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
@@ -176,11 +176,11 @@
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
 										</tr>
-										
-										
+
+
 									</tbody>
 								</table> -->
-								
+
 								<!-- <table class="table table-striped table-hover differentTable">
 									<thead>
 										<tr class="u-line">
@@ -195,7 +195,7 @@
 											<td rowspan="3">sep</td>
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
-											
+
 										</tr>
 										<tr class="u-line">
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
@@ -205,7 +205,7 @@
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
 										</tr>
-										
+
 										<tr class="u-line">
 											<td rowspan="2">services</td>
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
@@ -215,8 +215,8 @@
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
 											<td>:PREROUTING ACCEPT [291303:18397761]</td>
 										</tr>
-										
-										
+
+
 									</tbody>
 								</table> -->
 							</div>

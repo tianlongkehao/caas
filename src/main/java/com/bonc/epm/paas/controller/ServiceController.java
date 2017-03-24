@@ -101,7 +101,6 @@ import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
-import com.jcraft.jsch.jce.Random;
 
 /**
  * ServiceController
@@ -726,7 +725,10 @@ public class ServiceController {
                 dockerClientService.pullImage(image.getName(), image.getVersion());
                 InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
                 if (null != iir) {
-                    long countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
+                	long countOfExposedPort  = 0;
+                	if (iir.getContainerConfig().getExposedPorts() != null) {
+                		countOfExposedPort = iir.getContainerConfig().getExposedPorts().length;
+					}
                     if (countOfExposedPort > 0) {
                         ExposedPort[] exposedPorts = iir.getContainerConfig().getExposedPorts();
                         List<PortConfig> tmpPortConfigs = new ArrayList<PortConfig>();
@@ -1160,10 +1162,10 @@ public class ServiceController {
         }
         service.setServiceAddr("http://"+currentUser.getUserName() + "." + serverAddr);
 
-
-        //随机赋值
-        service.setCodeRating((1+(((int)Math.random()*10)%5)));
-        service.setCodeRatingURL("http://test.com/"+service.getImgName());
+        //获取代码质量
+        Image image = imageDao.findByNameAndVersion(service.getImgName(), service.getImgVersion());
+        service.setCodeRating(image.getCodeRating()==null?0:image.getCodeRating());
+        service.setCodeRatingURL(image.getCodeRatingURL()==null?"":image.getCodeRatingURL());
 
         service = serviceDao.save(service);
 

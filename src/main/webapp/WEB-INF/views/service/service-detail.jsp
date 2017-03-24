@@ -618,7 +618,7 @@
 					              	<p class="portLabel"><span>容器端口：</span><input type="text" name="containerPort" id="containerPort" class="form-control" /></p>
 					                <p class="portLabel"><span>协议：</span><select class="T-http form-control" name="protocol" id="protocol">
 					                          <option>TCP</option>
-					                          <option>HTTP</option>
+					                          <option>UDP</option>
 					                       </select>
 					                </p>
 					            </div>

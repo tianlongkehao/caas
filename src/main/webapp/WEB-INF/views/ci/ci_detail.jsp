@@ -240,6 +240,20 @@
 			                                </div>
 			                            </section>
 			                            <hr>
+			                            <!--   质量管理：如果配置的是必选 则checkbox自动勾选且不可更改，若选择可选则CheckBox可选 -->
+			                            <h4 class="c-title"><label><strong>质量管理</strong><input type="checkbox" id="ci-sonarInfo"></label></h4>
+										<input id="sonarCheck" name="sonarCheck" type="hidden" value="">
+			                            <section class="registryinfo sonarInfo" >
+
+				                            <div class="row">
+				                                <div class="form-group1 col-md-12">
+				                                    <label class="c-project-tit">源码所在目录</label>
+				                                    <input id="sources" name="sources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔" value="${ciCode.sources }">
+			<!-- 	                                    <textarea id="sonarProjectSources" autocomplete = 'off' name="sonarProjectSources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔" -->
+			<!-- 	                                           required="" row="5"></textarea> -->
+				                                </div>
+				                            </div>
+			                        	</section>
 			                            <h4 class="c-title">构建</h4>
 			                            	<section class="registryinfo">
 					                            <ul class="nav nav-bar">

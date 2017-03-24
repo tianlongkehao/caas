@@ -4,13 +4,13 @@ $(document).ready(function () {
 		window.location.href = ctx + "/registry/1";
 	});
 	$(".ci-code-content").hide();
-	
+
 	loadList();
-	
+
     registerConstructCiEvent();
-    
+
     //ci and ci-code 列表切换
-    
+
     $(document).on('click','#ciTab',function(){
     	ciClick();
     });
@@ -36,7 +36,7 @@ function ciClick(){
 	$("#ciTab").addClass("active");
 }
 function cicodeClick(){
-	
+
 	$(".ci-code-content").show();
 	$(".ci-content").hide();
 	$("#ciCodeTab").addClass("active");
@@ -59,7 +59,7 @@ function addCiInfo(type) {
 			        yes: function(index, layero){ //或者使用btn1
 			        	window.location.href = ctx + "/registry/1";
 			        }
-				});				
+				});
 			}else{
 				if (type == 0) {
 					$.ajax({
@@ -68,17 +68,33 @@ function addCiInfo(type) {
 						success : function(data){
 							data = eval("("+data+")");
 							if (data.status == "200") {
-								window.location.href = ctx + "/ci/add";
+								$.ajax({
+									url : ctx + "/ci/getSonarConfig.do",
+									async : false,
+									success : function(data) {
+										data = eval("(" + data + ")");
+										if (data.status == "200") {
+											window.location.href = ctx + "/ci/add";
+										}
+										if (data.status == "400") {
+											layer.open({
+												title : '提示',
+												content : '当前租户没有配置sonar环境',
+												btn : ['确定', '取消']
+											});
+										}
+									}
+								});
 							}
 							if (data.status == "400") {
 								layer.open({
 							        title: '提示',
 							        content: '当前租户没有添加shera环境，请您联系管理员',
 							        btn: ['确定', '取消']
-								});		
+								});
 							}
 						}
-					})
+					});
 				}
 				if (type == 1) {
 					window.location.href = ctx + "/ci/addCodeSource";
@@ -91,7 +107,7 @@ function addCiInfo(type) {
 				}
 			}
 		}
-	});	
+	});
 }
 
 function registerConstructCiEvent(){
@@ -115,8 +131,8 @@ function registerConstructCiEvent(){
 				}
 			}
 		});
-	})
-	
+	});
+
 	$(document).on('click','.bj-green',function(){
 //	$(".bj-green").unbind("click").click(function(){
 		if($(this).attr("constructionStatus")=="2"){
@@ -132,7 +148,7 @@ function registerConstructCiEvent(){
 		$this.find("i").removeClass("bj-no-drop");
 		$this.next().removeClass("hide");
 		$(this).unbind("click");
-		$.ajax({	
+		$.ajax({
 			url:ctx+"/ci/constructCi.do?id="+id,
 			async:true,
 			success:function(data){
@@ -155,7 +171,7 @@ function registerConstructCiEvent(){
 	        content: '确定构建镜像？',
 	        btn: ['确定', '取消'],
 	        yes: function(index, layero){ //或者使用btn1
-	        	
+
 	        },
 	        cancel: function(index){ //或者使用btn2
 	        }
@@ -173,14 +189,14 @@ function loadCi() {
         "ordering":false,
         "ajax": ctx+"/ci/page.do",
         "columns": [
-					{   
+					{
 						data : null,
 						render : function ( data, type, row ) {
 							var html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息">'+row.projectName+'</a>';
 							return html;
 						}
 					},
-					
+
 					{
 						data : null,
 						className : 'cStatusColumn',
@@ -208,7 +224,7 @@ function loadCi() {
 							}
 							return html;
 						}
-					
+
 					},
 					{
 						data : null,
@@ -259,7 +275,7 @@ function loadCi() {
 						}
 					}
 		]
-	})					
+	});
 }
 function loadCiCode() {
 	$('.dataTables-example').dataTable({
@@ -271,21 +287,34 @@ function loadCiCode() {
         "ordering":false,
         "ajax": ctx+"/ci/codepage.do",
         "columns": [
-					{   
+					{
 						data : null,
 						render : function ( data, type, row ) {
-							var html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#"><span class="fa_level fa_level_e">E</span></a>';
+							var html = '';
+							if (row.codeRating == 1) {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_a">A</span></a>';
+							} else if (row.codeRating == 2) {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_b">B</span></a>';
+							} else if (row.codeRating == 3) {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_c">C</span></a>';
+							} else if (row.codeRating == 4) {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_d">D</span></a>';
+							} else if (row.codeRating == 5) {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_e">E</span></a>';
+							} else {
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fa_level fa_level_a">无</span>';
+							}
 							return html;
 						}
 					},
-					{   
+					{
 						data : null,
 						render : function ( data, type, row ) {
 							var html = '<a href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息">'+row.projectName+'</a>';
 							return html;
 						}
 					},
-					
+
 					{
 						data : null,
 						className : 'cStatusColumn',
@@ -313,7 +342,7 @@ function loadCiCode() {
 							}
 							return html;
 						}
-					
+
 					},
 					{
 						data : null,
@@ -365,7 +394,7 @@ function loadCiCode() {
 						}
 					}
 		]
-	})					
+	});
 }
 function overImg(obj){
 	var redImage = ctx +"/images/dockerfile-red.png";
