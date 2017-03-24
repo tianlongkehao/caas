@@ -196,7 +196,7 @@ $(function(){
     			}
     		}
     	});
-    })
+    });
 
 //    $("#sonarYesOrNo").click(function(){
 //    	if($("#sonarYesOrNoChecked").is(":checked")){
@@ -251,12 +251,12 @@ $(function(){
  		var $this = $(this);
  		var changeVal =  $this.attr("value");
  		if(changeVal == "true"){
- 			$this.removeClass("fa-on").addClass("fa-off");
- 			$this.next().empty().html("不显示检查结果");
+			$this.removeClass("fa-off").addClass("fa-on");
+ 			$this.next().empty().html("显示检查结果");
  			$this.attr("value","false");
  		}else{
- 			$this.removeClass("fa-off").addClass("fa-on");
- 			$this.next().empty().html("显示检查结果");
+  			$this.removeClass("fa-on").addClass("fa-off");
+ 			$this.next().empty().html("不显示检查结果");
  			$this.attr("value","true");
  		}
 	});
@@ -292,6 +292,9 @@ $(function(){
 				var data = eval("(" + data + ")");
 				if (data.status == "200") {
 					layer.alert("修改成功");
+					return;
+				} else {
+					layer.alert("修改失败");
 					return;
 				}
 			}
