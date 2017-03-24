@@ -471,6 +471,9 @@ public class CiController {
         originCiCode.setCodeName(ciCode.getCodeName());
         originCiCode.setCodeRefspec(ciCode.getCodeRefspec());
         originCiCode.setCiTools(ciCode.getCiTools());
+        originCiCode.setSonarCheck(ciCode.getSonarCheck());
+        originCiCode.setSources(ciCode.getSources());
+
         List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
         CiCodeCredential ciCodeCredential = new CiCodeCredential();
         if (!StringUtils.isEmpty(ciCode.getCodeCredentials())) {
@@ -979,10 +982,6 @@ public class CiController {
             //添加代码构建详细信息
             ciCode.setCiId(ci.getId());
             ciCode.setCodeUrl(ciCode.getCodeUrl().trim());
-/***********************************************************/
-            ciCode.setSonarCheck(1);
-            ciCode.setSources("src");
-/***********************************************************/
             ciCodeDao.save(ciCode);
 
 			//查询代码构建详细信息
@@ -1589,7 +1588,7 @@ public class CiController {
 										if (ciCode.getSonarCheck() == CiConstant.CODE_CHECK_TRUE) {
 											Rating jobRating = null;
 											String branch = "";
-//											try {
+											try {
 												CodeManager codeManager = client.getJob(ci.getProjectName()).getCodeManager();
 												if (codeManager.getCodeChoice() == CiConstant.CODE_TYPE_GIT) {
 													branch = codeManager.getGitConfig().getBranch();
@@ -1597,19 +1596,21 @@ public class CiController {
 													branch = codeManager.getSvnConfig().getBranch();
 												}
 												jobRating = client.getJobRating(projectKey + ":" + branch);
-//											} catch (Exception e) {
-//												LOG.error("获取JobRating失败");
+											} catch (Exception e) {
+												LOG.error("获取JobRating失败:" + e.getMessage());
+												ciRecord.setLogPrint(ciRecord.getLogPrint() + "<br>获取Sonar代码质量评价失败");
 //												e.printStackTrace();
-//											}
+											}
 											rating = jobRating == null ? 0 : jobRating.getRating();
 											image.setCodeRating(jobRating == null ? 0 : jobRating.getRating());
 											SonarConfig sonarConfig = null;
-//											try {
+											try {
 												sonarConfig = client.getSonarConfig();
-//											} catch (Exception e) {
-//												LOG.error("获取SonarConfig失败");
+											} catch (Exception e) {
+												LOG.error("获取SonarConfig失败:" + e.getMessage());
+												ciRecord.setLogPrint(ciRecord.getLogPrint() + "<br>获取用户Sonar配置失败");
 //												e.printStackTrace();
-//											}
+											}
 											if (null != sonarConfig && null != sonarConfig.getUrl()) {
 												url = sonarConfig.getUrl();
 												if (!url.endsWith("/")) {

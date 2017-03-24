@@ -384,6 +384,19 @@ $(document).ready(function () {
 	$(document).on('click','.fa-questionBtn',function(){
 		$(this).parent().next().toggle();
 	});
+
+	$(".sonarInfo").hide();
+	$("#ci-sonarInfo").click(function() {
+		if ($('#ci-sonarInfo').is(":checked")) {
+			$("#sonarCheck").val("1");
+			$(".sonarInfo").show();
+		} else {
+			$("#sonarCheck").val("0");
+			$(".sonarInfo").hide();
+			$("#sources").val("");
+		}
+	});
+
 });/*ready*/
 
 //选择不同的代码仓库，显示相对应的认证密钥

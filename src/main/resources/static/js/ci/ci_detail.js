@@ -65,6 +65,28 @@ $(document).ready(function(){
 
     //加载invoke中的数据；
     loadInvokeData();
+
+	//sonar配置
+	if ($("#sources").val()) {
+		$("#ci-sonarInfo").prop("checked",true);
+		$("#sonarCheck").val("1");
+		$(".sonarInfo").show();
+    } else {
+		$("#sonarCheck").val("0");
+		$(".sonarInfo").hide();
+    }
+
+	$("#ci-sonarInfo").click(function() {
+		if ($('#ci-sonarInfo').is(":checked")) {
+			$("#sonarCheck").val("1");
+			$(".sonarInfo").show();
+		} else {
+			$("#sonarCheck").val("0");
+			$(".sonarInfo").hide();
+			$("#sources").val("");
+		}
+	});
+
     //构建maven
     $("#maven").click(function(){
     	count++;

@@ -715,7 +715,7 @@ td.autocut{
 #imageVersion{
 	float: left;
 }
-#imageInfo{
+#imageInfo,#ci-sonarInfo{
 	margin-left:10px;
 }
 .imgInput{
