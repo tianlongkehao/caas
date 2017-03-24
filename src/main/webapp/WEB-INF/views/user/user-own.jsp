@@ -231,10 +231,10 @@
 						                        	<div class="sonarTwoStep hide">
 							                        	<div>是否显示：
 							                        		<c:if test="${sonarConfig.hidden == true }">
-							                        		<label id="showSonarYesOrNo"><i class="fa fa-toggle-onORoff fa-on" id="showSonarYesOrNoBtn" value="true"></i><span class="fa-text">不显示检查结果</span></label>
+							                        		<label id="showSonarYesOrNo"><i class="fa fa-toggle-onORoff fa-off" id="showSonarYesOrNoBtn" value="true"></i><span class="fa-text">不显示检查结果</span></label>
 							                        		</c:if>
 							                        		<c:if test="${sonarConfig.hidden == false }">
-							                        		<label id="showSonarYesOrNo"><i class="fa fa-toggle-onORoff fa-off" id="showSonarYesOrNoBtn" value="false"></i><span class="fa-text">不显示检查结果</span></label>
+							                        		<label id="showSonarYesOrNo"><i class="fa fa-toggle-onORoff fa-on" id="showSonarYesOrNoBtn" value="false"></i><span class="fa-text">显示检查结果</span></label>
 							                        		</c:if>
 							                        	</div>
 														<div>质量检查：
@@ -270,11 +270,11 @@
 																<span>代码质量检查阈值，若代码质量不能达到设定的阈值级别则代码不能继续编译！</span>
 															</div>
 							                        	</div>
-							                        	<div class="left sonardiv"><span class="labelInfo left">token：</span>
-							                        		<input type="text" class="form-control tokenValue" id="tokenValue" value="${sonarConfig.token }">
+							                        	<div class="left sonardiv"><span class="labelInfo left" style="margin-top: 6px;">token：</span>
+							                        		<input type="text" class="form-control tokenValue" id="tokenValue" value="${sonarConfig.token }" placeholder="请填写Sonar个人配置→安全中生成的token">
 							                        	</div>
-							                        	<div class="left sonardiv"><span class="labelInfo left">SonarUrl：</span>
-							                        		<input type="text" class="form-control urlValue" id="urlValue" value="${sonarConfig.url }">
+							                        	<div class="left sonardiv"><span class="labelInfo left" style="margin-top: 6px;">SonarUrl：</span>
+							                        		<input type="text" class="form-control urlValue" id="urlValue" value="${sonarConfig.url }" placeholder="http://code.bonc.com.cn/sonar">
 							                        	</div>
 						                        	</div>
 

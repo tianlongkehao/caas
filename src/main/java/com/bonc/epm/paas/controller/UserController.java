@@ -399,6 +399,16 @@ public class UserController {
 		SheraAPIClientInterface client = sheraClientService.getClient();
 		map.put("status", "200");
 		try {
+			client.getSonarConfig();
+		} catch (Exception e) {
+			try {
+				client.createSonarConfig(sonarConfig);
+			} catch (Exception e1) {
+				map.put("status", "400");
+				e.printStackTrace();
+			}
+		}
+		try {
 			client.updateSonarConfig(sonarConfig);
 		} catch (Exception e) {
 			map.put("status", "400");
@@ -958,7 +968,10 @@ public class UserController {
 
 			// 获取sonarConfig
 			SheraAPIClientInterface sheraClient = sheraClientService.getClient();
-			SonarConfig sonarConfig = null;
+			SonarConfig sonarConfig = new SonarConfig();
+			sonarConfig.setHidden(false);
+			sonarConfig.setBreak(false);
+			sonarConfig.setThreshold(6);
 			try {
 				sonarConfig = sheraClient.getSonarConfig();
 			} catch (Exception e) {

@@ -567,7 +567,7 @@ function oneUpGradeContainer(id, containerName, nums, cpu, ram) {
 	var leftram = $("#leftram").html();
 
 	var maxcpu = parseInt(leftcpu) / parseInt(cpu);
-	var maxram = parseInt(leftram) / parseInt(ram);
+	var maxram = parseInt(leftram) / (parseInt(ram) / 1024);
 
 	var total = 0;
 	if (parseInt(maxcpu) > parseInt(maxram)) {

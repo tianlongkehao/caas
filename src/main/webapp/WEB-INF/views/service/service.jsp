@@ -327,7 +327,7 @@
 			</li>
 			<li class="line-h-3 c-ser">
 				<div class="param-set">
-					<span class="c-title">CPU数量：</span> 
+					<span class="c-title">CPU数量：</span>
 					<c:forEach items="${cpuSizeList }" var="cpuSize" >
 						<label><input type="radio" class="confCpu" name="confCpu" value="${cpuSize }">${cpuSize }
 						<span>个 </span></label>
