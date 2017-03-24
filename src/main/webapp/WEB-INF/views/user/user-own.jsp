@@ -290,35 +290,35 @@
 									</div>
 								</div>
 							</div>
-							<div class="panel panel-warning">
-								<div class="panel-heading">
-									<h4 class="panel-title">
-										<a data-toggle="collapse" data-parent="#accordion"
-										   href="#collapseThree">
-											黑白名单设置
-										</a>
-									</h4>
-								</div>
-								<div id="collapseThree" class="panel-collapse collapse">
-									<div class="panel-body">
-										<div class="setColor preferInfo">
-											<button type="button" class="btn btn-default" id="addOneWhiteList" value="添加白名单服务项"><i class="fa fa-plus"></i>&nbsp;添加白名单服务项</button>
-				                        	<div class="whiteLists">
-				                        		<!-- js添加黑白名单git和分支输入框 -->
-				                        	</div>
-				                        </div>
-				                        <div class="alertInfo col-md-10" style="margin-left:28px;">
-											<i class="fa fa-warning" style="color:#efa421"></i>
-											<span>填写服务的git地址和分支，并设置质量检查阈值！</span>
-										</div>
-										<div class="form-group">
-					                        <div class="col-md-offset-10 col-md-2">
-					                            <button type="button" class="btn btn-primary btn-color preferSave" id="whiteListSave">保存</button>
-					                        </div>
-					                    </div>
-									</div>
-								</div>
-							</div>
+<!-- 							<div class="panel panel-warning"> -->
+<!-- 								<div class="panel-heading"> -->
+<!-- 									<h4 class="panel-title"> -->
+<!-- 										<a data-toggle="collapse" data-parent="#accordion" -->
+<!-- 										   href="#collapseThree"> -->
+<!-- 											黑白名单设置 -->
+<!-- 										</a> -->
+<!-- 									</h4> -->
+<!-- 								</div> -->
+<!-- 								<div id="collapseThree" class="panel-collapse collapse"> -->
+<!-- 									<div class="panel-body"> -->
+<!-- 										<div class="setColor preferInfo"> -->
+<!-- 											<button type="button" class="btn btn-default" id="addOneWhiteList" value="添加白名单服务项"><i class="fa fa-plus"></i>&nbsp;添加白名单服务项</button> -->
+<!-- 				                        	<div class="whiteLists"> -->
+<!-- 				                        		js添加黑白名单git和分支输入框 -->
+<!-- 				                        	</div> -->
+<!-- 				                        </div> -->
+<!-- 				                        <div class="alertInfo col-md-10" style="margin-left:28px;"> -->
+<!-- 											<i class="fa fa-warning" style="color:#efa421"></i> -->
+<!-- 											<span>填写服务的git地址和分支，并设置质量检查阈值！</span> -->
+<!-- 										</div> -->
+<!-- 										<div class="form-group"> -->
+<!-- 					                        <div class="col-md-offset-10 col-md-2"> -->
+<!-- 					                            <button type="button" class="btn btn-primary btn-color preferSave" id="whiteListSave">保存</button> -->
+<!-- 					                        </div> -->
+<!-- 					                    </div> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
 							<div class="panel panel-success hide">
 								<div class="panel-heading">
 									<h4 class="panel-title">
