@@ -83,35 +83,35 @@
 														<td style="width: 20%; text-indent: 10;"
 															id="user.user_autority" name="user.user_autority">${image.createDate }</td>
 														<td style="width: 10%; text-indent: 10;">
-														
+
 	                                                        <c:if test="${image.isDelete == 1 }">
 	                                                            <c:if test="${image.currUserFavor==0 }">
 	                                                                    <a class="no-drop a-oper forkquick" imageId="${image.id }">
 	                                                                       <i class="fa fa-star-o star-style" style="color: #4280CB;margin-left:35px;"></i>
 	                                                                    </a>
-	                                                            </c:if> 
-	                                                            
+	                                                            </c:if>
+
 	                                                            <c:if test="${image.currUserFavor==1 }">
 	                                                                <a class="no-drop a-oper forkquick"  imageId="${image.id }">
 	                                                                    <i class="fa fa-star star-style" style="color: #337ab7;margin-left:35px;"></i>
 	                                                                </a>
 	                                                            </c:if>
 	                                                        </c:if>
-														      
+
 														    <c:if test="${image.isDelete != 1 }">
 																<a class="no-drop" href="<%=path %>/service/add?imageName=${image.name}&imageVersion=${image.version}&imgID=${image.id}&resourceName=${image.resourceName}"
 																	 imageversion="${image.version}" imagename="${image.name}" title="部署">
 																	 <i class="fa fa-wrench"></i>
 																</a>
-																<a class="no-drop a-oper downloadImage" imageversion="${image.version}" imagename="${image.name}" imgID="${image.id }" resourcename= "${image.resourceName}" title="导出"> 
+																<a class="no-drop a-oper downloadImage" imageversion="${image.version}" imagename="${image.name}" imgID="${image.id }" resourcename= "${image.resourceName}" title="导出">
 																	<i class="fa fa-share-square-o"></i>
-																</a> 
+																</a>
 																<c:if test="${image.currUserFavor==0 }">
 																		<a class="no-drop a-oper forkquick" imageId="${image.id }"><i
 																			class="fa fa-star-o star-style"
 																			style="color: #4280CB"></i></a>
-																</c:if> 
-																
+																</c:if>
+
 																<c:if test="${image.currUserFavor==1 }">
 																	<a class="no-drop a-oper forkquick" imageId="${image.id }">
 																		<i class="fa fa-star star-style" style="color: #337ab7"></i>
@@ -121,7 +121,7 @@
 																	<a class="no-drop a-oper" href="javascript:void(0)" onclick="deleteImage(this)"
 																			title="删除" imageversion="${image.version}" imagename="${image.name}" imageid="${image.id}"> <i class="fa fa-trash"></i>
 																	</a>
-																</c:if> 
+																</c:if>
 															</c:if>
 														</td>
 													</tr>
@@ -143,16 +143,16 @@
 					</div>
 				</div>
 			</div>
-			
+
 		</article>
 	</div>
 	<div id="delItemcfg" style="display:none;min-height:200px;max-height:600px;">
-	
+
 		<div class="panel-group" id="namefilter">
 			<div class="panel panel-success">
 				<div class="panel-heading">
 					<h4 class="panel-title">
-						<a data-toggle="collapse" data-parent="#accordion" 
+						<a data-toggle="collapse" data-parent="#accordion"
 						   href="#collapseOne" onclick="filters(this)">
 							<span class="">按名称筛选</span><span class="caret caret-filter"></span>
 						</a>
@@ -165,7 +165,7 @@
 								<div class="panel-heading">
 									<h4 class="panel-title">
 										<input type="checkbox" class="checkAllItem1">
-										<a data-toggle="collapse" data-parent="#accordion1" 
+										<a data-toggle="collapse" data-parent="#accordion1"
 										   href="#collapseOne1" onclick="filters(this)">
 											<span class="">demo1</span><span class="caret caret-filter"></span>
 										</a>
@@ -183,17 +183,17 @@
 								</div>
 							</div>
 						</div> -->
-						
+
 					</div>
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="panel-group" id="timefilter">
 			<div class="panel panel-info">
 				<div class="panel-heading">
 					<h4 class="panel-title">
-						<a data-toggle="collapse" data-parent="#timefilter" 
+						<a data-toggle="collapse" data-parent="#timefilter"
 						   href="#timeOne" onclick="filters(this)">
 							<span class="">按时间筛选</span><span class="caret caret-filter"></span>
 						</a>
@@ -206,7 +206,7 @@
 								<div class="panel-heading">
 									<h4 class="panel-title">
 										<input type="checkbox">
-										<a data-toggle="collapse" data-parent="#timeAccordion1" 
+										<a data-toggle="collapse" data-parent="#timeAccordion1"
 										   href="#timecollapseOne1" onclick="filters(this)">
 											<span class="">一个月前</span><span class="caret caret-filter"></span>
 										</a>
@@ -229,7 +229,7 @@
 								<div class="panel-heading">
 									<h4 class="panel-title">
 										<input type="checkbox">
-										<a data-toggle="collapse" data-parent="#timeAccordion2" 
+										<a data-toggle="collapse" data-parent="#timeAccordion2"
 										   href="#timecollapseOne2" onclick="filters(this)">
 											<span class="">两个月前</span><span class="caret caret-filter"></span>
 										</a>
@@ -259,9 +259,9 @@
 				</div>
 			</div>
 		</div>
-		
-		
-		
+
+
+
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function() {
