@@ -730,7 +730,7 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 					 return;
 				 }
 
-				 if ((parseFloat(rams)*parseFloat(instanceNum)) > (parseFloat(leftmemory) + parseFloat(ram)*parseFloat(instanceNum) )) {
+				 if ((parseFloat(rams)*parseFloat(instanceNum)/1024) > (parseFloat(leftmemory) + parseFloat(ram)*parseFloat(instanceNum) )) {
 					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]});
 					 $("#confRamSlider_input").focus();
 					 return;
@@ -742,7 +742,7 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 					 return;
 				 }
 
-				 if ((parseFloat(rams)*parseFloat(instanceNum)) > parseFloat(leftmemory)) {
+				 if ((parseFloat(rams)*parseFloat(instanceNum)/1024) > parseFloat(leftmemory)) {
 					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]});
 					 $("#confRamSlider_input").focus();
 					 return;
@@ -954,7 +954,7 @@ function loadServices() {
 					{
 						data : null,
 						render : function ( data, type, row ) {
-							var html = '<input type= "checkbox" class="chkItem" style="margin-left:30px;" name="chkItem"'+
+							var html = '<input type= "checkbox" class="chkItem" style="margin-left:10px;" name="chkItem"'+
 								'autocomplete="off" id="checkboxID" value="'+row.id+'"'+
 								'serviceName="'+row.serviceName+'"'+
 								'serviceNum="'+row.instanceNum +'"'+
@@ -980,7 +980,7 @@ function loadServices() {
 								} else if (row.codeRating == 5) {
 									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_e">E</span></a>';
 								} else {
-									html = '<span class="fa_level fa_level_a">无</span>';
+									html = '<span class="fa_level fa_level_n">无</span>';
 								}
 							return html;
 						}
@@ -1212,7 +1212,7 @@ function loadServices() {
 								html +=	'</li>'+
 										'<li>';
 
-								if ( row.status == 6){
+								if ( row.status != 3 && row.status != 6){
 									html += '<a id="'+row.id+'_changeConfiguration" class="no-drop changeConfiguration_a " '+
 									'href="javascript:void(0);" title="更改配置"'+
 									'><i class="fa fa-cog self_a"></i>更改配置</a> ';
