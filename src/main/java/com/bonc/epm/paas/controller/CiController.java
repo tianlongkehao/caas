@@ -1540,7 +1540,13 @@ public class CiController {
 			final CiDao ciDao, final CiRecordDao ciRecordDao, final HookAndImagesDao hookAndImagesDao) {
 		try {
 			final SheraAPIClientInterface client = sheraClientService.getClient();
-			String projectKey = ci.getImgNameFirst() + "_" + ci.getImgNameLast() + "_" + ci.getImgNameVersion();
+			String projectKey;
+//			if (!StringUtils.isEmpty(ci.getImgNameLast())) {
+//				projectKey = ci.getImgNameFirst() + "_" + ci.getImgNameLast() + "_" + ci.getImgNameVersion();
+//			} else {
+				projectKey = CurrentUserUtils.getInstance().getUser().getUserName() + ci.getProjectName();
+//			}
+
 			JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime, ciRecord.getCiVersion(), projectKey);
 			jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
 			ciRecord.setExecutionId(jobExecViewNew.getSeqNo());
