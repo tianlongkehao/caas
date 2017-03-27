@@ -358,8 +358,12 @@ public class CiController {
         		model.addAttribute("basicImage", basicImage);
                 model.addAttribute("toolGroups", toolGroups);
                 model.addAttribute("ciCredentialList", ciCredentialList);
-				model.addAttribute("dockerFileContent", job==null?"":job.getImgManager().getDockerFileContent()
-						.replace("\"", "&quot;").replace("'", "&apos;").replace(">", "&gt;").replace("<", "&lt;"));
+                if (job!=null && job.getImgManager() != null && job.getImgManager().getDockerFileContent() != null) {
+                	model.addAttribute("dockerFileContent", job.getImgManager().getDockerFileContent()
+                			.replace("\"", "&quot;").replace("'", "&apos;").replace(">", "&gt;").replace("<", "&lt;"));
+				} else {
+					model.addAttribute("dockerFileContent", "");
+				}
                 model.addAttribute("jdkList",jdkList.getItems());
             }
             catch (Exception e) {
