@@ -1541,11 +1541,11 @@ public class CiController {
 		try {
 			final SheraAPIClientInterface client = sheraClientService.getClient();
 			String projectKey;
-//			if (!StringUtils.isEmpty(ci.getImgNameLast())) {
-//				projectKey = ci.getImgNameFirst() + "_" + ci.getImgNameLast() + "_" + ci.getImgNameVersion();
-//			} else {
+			if (!StringUtils.isEmpty(ci.getImgNameLast())) {
+				projectKey = ci.getImgNameFirst() + "_" + ci.getImgNameLast() + "_" + ci.getImgNameVersion();
+			} else {
 				projectKey = CurrentUserUtils.getInstance().getUser().getUserName() + ci.getProjectName();
-//			}
+			}
 
 			JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime, ciRecord.getCiVersion(), projectKey);
 			jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
@@ -1576,6 +1576,40 @@ public class CiController {
 								String url = "";
 								// 执行成功
 								if (jobExecView.getEndStatus() == 0) {
+									//获取代码质量信息
+									if (ciCode.getSonarCheck() == CiConstant.CODE_CHECK_TRUE) {
+										Rating jobRating = null;
+										String branch = "";
+										try {
+											CodeManager codeManager = client.getJob(ci.getProjectName()).getCodeManager();
+											if (codeManager.getCodeChoice() == CiConstant.CODE_TYPE_GIT) {
+												branch = codeManager.getGitConfig().getBranch();
+											} else {
+												branch = codeManager.getSvnConfig().getBranch();
+											}
+											jobRating = client.getJobRating(projectKey + ":" + branch);
+										} catch (Exception e) {
+											LOG.error("获取JobRating失败:" + e.getMessage());
+											ciRecord.setLogPrint(ciRecord.getLogPrint() + "<br>获取Sonar代码质量评价失败");
+//											e.printStackTrace();
+										}
+										rating = jobRating == null ? 0 : jobRating.getRating();
+										SonarConfig sonarConfig = null;
+										try {
+											sonarConfig = client.getSonarConfig();
+										} catch (Exception e) {
+											LOG.error("获取SonarConfig失败:" + e.getMessage());
+											ciRecord.setLogPrint(ciRecord.getLogPrint() + "<br>获取用户Sonar配置失败");
+//											e.printStackTrace();
+										}
+										if (null != sonarConfig && null != sonarConfig.getUrl()) {
+											url = sonarConfig.getUrl();
+											if (!url.endsWith("/")) {
+												url = url + "/";
+											}
+											url = url + "overview?id=" + projectKey + ":" + branch;
+										}
+									}
 									// 判断是否添加镜像
 									if (!StringUtils.isEmpty(ci.getImgNameLast())) {
 										Image image;
@@ -1595,41 +1629,8 @@ public class CiController {
 										image.setCreateDate(DateUtils.getLongToDate(startTime));
 										image.setIsBaseImage(ciCode.getIsBaseImage());
 										image.setIsDelete(CommConstant.TYPE_NO_VALUE);
-										if (ciCode.getSonarCheck() == CiConstant.CODE_CHECK_TRUE) {
-											Rating jobRating = null;
-											String branch = "";
-											try {
-												CodeManager codeManager = client.getJob(ci.getProjectName()).getCodeManager();
-												if (codeManager.getCodeChoice() == CiConstant.CODE_TYPE_GIT) {
-													branch = codeManager.getGitConfig().getBranch();
-												} else {
-													branch = codeManager.getSvnConfig().getBranch();
-												}
-												jobRating = client.getJobRating(projectKey + ":" + branch);
-											} catch (Exception e) {
-												LOG.error("获取JobRating失败:" + e.getMessage());
-												ciRecord.setLogPrint(ciRecord.getLogPrint() + "<br>获取Sonar代码质量评价失败");
-//												e.printStackTrace();
-											}
-											rating = jobRating == null ? 0 : jobRating.getRating();
-											image.setCodeRating(jobRating == null ? 0 : jobRating.getRating());
-											SonarConfig sonarConfig = null;
-											try {
-												sonarConfig = client.getSonarConfig();
-											} catch (Exception e) {
-												LOG.error("获取SonarConfig失败:" + e.getMessage());
-												ciRecord.setLogPrint(ciRecord.getLogPrint() + "<br>获取用户Sonar配置失败");
-//												e.printStackTrace();
-											}
-											if (null != sonarConfig && null != sonarConfig.getUrl()) {
-												url = sonarConfig.getUrl();
-												if (!url.endsWith("/")) {
-													url = url + "/";
-												}
-												url = url + "overview?id=" + projectKey + ":" + branch;
-												image.setCodeRatingURL(url);
-											}
-										}
+										image.setCodeRatingURL(url);
+										image.setCodeRating(rating);
 										imageDao.save(image);
 										// 判断是否需要添加hookAndImages关联信息
 										if (ciCode.getIsHookCode() == 1) {
