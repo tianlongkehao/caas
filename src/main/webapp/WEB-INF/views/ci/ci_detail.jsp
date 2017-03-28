@@ -99,7 +99,7 @@
 	                                                    </c:if>
                                                     </c:if>
                                                     <div class='datetimes'><i class='fa fa-calendar margin'></i><fmt:formatDate value="${ciRecord.constructDate}" pattern="yyyy-MM-dd HH:mm:ss"/></div>
-                                                    <div class='time-on-timeout'><i class='fa fa-time'></i><fmt:formatNumber type="number" value="${ciRecord.constructTime/1000}" maxFractionDigits="0"/>s</div>
+                                                    <div class='time-on-timeout'><i class='fa fa-time'></i><fmt:formatNumber type="number" value="${ciRecord.constructTime}" maxFractionDigits="0"/>s</div>
                                                 </div>
                                                 <div class='time-line-message' style='display: ${displayClass};'>
                                                     <div class='buildForm' buildid='' containerid='' buildername='builder2' status='fail'>
