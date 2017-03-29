@@ -396,8 +396,15 @@ public class UserController {
 	@ResponseBody
 	public String updateSonarConfig(SonarConfig sonarConfig) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		SheraAPIClientInterface client = sheraClientService.getClient();
 		map.put("status", "200");
+		SheraAPIClientInterface client = null;
+		try {
+			client = sheraClientService.getClient();
+		} catch (Exception e2) {
+			map.put("status", "500");
+			LOG.info(e2.getMessage());
+			return JSON.toJSONString(map);
+		}
 		try {
 			client.getSonarConfig();
 		} catch (Exception e) {
@@ -967,12 +974,12 @@ public class UserController {
 			Shera shera = sheraDao.findByUserId(id);
 
 			// 获取sonarConfig
-			SheraAPIClientInterface sheraClient = sheraClientService.getClient();
 			SonarConfig sonarConfig = new SonarConfig();
 			sonarConfig.setHidden(false);
 			sonarConfig.setBreak(false);
 			sonarConfig.setThreshold(6);
 			try {
+				SheraAPIClientInterface sheraClient = sheraClientService.getClient();
 				sonarConfig = sheraClient.getSonarConfig();
 			} catch (Exception e) {
 				LOG.info(e.getMessage());
