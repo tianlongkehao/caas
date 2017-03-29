@@ -293,6 +293,9 @@ $(function(){
 				if (data.status == "200") {
 					layer.alert("修改成功");
 					return;
+				} else if (data.status == "500"){
+					layer.alert("没有shera环境，无法保存");
+					return;
 				} else {
 					layer.alert("修改失败");
 					return;
