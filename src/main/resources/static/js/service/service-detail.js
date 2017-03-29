@@ -513,7 +513,7 @@ function editSerAddr(){
 		success : function(data) {
 			data = eval("(" + data + ")");
 			if (data.status == "200") {
-				$('#oldServiceAddr').html("http://" + editServiceAddr);
+				$('#oldServiceAddr').html(editServiceAddr);
 				$('#oldProxyPath').html(editProxyPath);
 				layer.msg("修改成功", {
 					icon : 1
