@@ -221,8 +221,14 @@ public class ServiceController {
     /**
      * TemplateConf
      */
+    @Value("${nginxConf.io}")
+	private boolean NGINXCONF_IO;
+
+    /**
+     * TemplateConf
+     */
     @Value("${nginxConf.io.serverAddr}")
-	private String serverAddr;
+	private String SERVERADDR;
 
     /**
      * 获取ceph.monitor数据
@@ -1160,7 +1166,11 @@ public class ServiceController {
                 smalSet.add(Integer.valueOf(portCon.getMapPort().trim()));
             }
         }
-        service.setServiceAddr("http://"+currentUser.getUserName() + "." + serverAddr);
+        if (NGINXCONF_IO) {
+        	service.setServiceAddr("http://"+currentUser.getUserName() + "." + SERVERADDR);
+		} else {
+			service.setServiceAddr(SERVERADDR);
+		}
 
         //获取代码质量
         Image image = imageDao.findByNameAndVersion(service.getImgName(), service.getImgVersion());
@@ -2844,12 +2854,6 @@ public class ServiceController {
 			if (null == service) {
 				map.put("status", "501");
 				return JSON.toJSONString(map);
-			} else {
-				if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING
-						&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_STOPPED) {
-					map.put("status", "502");
-					return JSON.toJSONString(map);
-				}
 			}
 			service.setServiceAddr(serviceAddr);
 			service.setProxyPath(proxyPath);

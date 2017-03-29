@@ -24,7 +24,7 @@ $(document).ready(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".bindDomain").removeClass("hide");
     });
-    
+
     $(".SERVOL").click(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".serVolMapping").removeClass("hide");
@@ -53,7 +53,7 @@ $(document).ready(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".containerLog").removeClass("hide");
     });
-    
+
     $(".historyLOG").click(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".historycontainerLog").removeClass("hide");
@@ -64,13 +64,13 @@ $(document).ready(function(){
         $("#containerexec").removeClass("hide");
         $("#execText").val("");
     });
-    
+
     $(".EVENT").click(function(){
 
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".containerEvent").removeClass("hide");
     });
-    
+
     var dateInput = $('#dateTimePicker');
     dateInput.datetimepicker({
     	changeMonth: true,
@@ -79,12 +79,12 @@ $(document).ready(function(){
         monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
         monthNamesShort:["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
         dayNamesMin: ["日", "一", "二", "三", "四", "五", "六"],
-        /*minDate: -20, 
+        /*minDate: -20,
         maxDate: "+1M +10D"*/
     });
     dateInput.datetimepicker('setDate', (new Date()) );
     /*$('#datePicker').click(function(event) {
-         Act on the event 
+         Act on the event
         laydate({
           elem: '#date_log',
           // event: 'focus',
@@ -98,7 +98,7 @@ $(document).ready(function(){
         });
       });
     $('#datePicker1').click(function(event) {
-         Act on the event 
+         Act on the event
         laydate({
           elem: '#date_log1',
           // event: 'focus',
@@ -114,14 +114,14 @@ $(document).ready(function(){
           }
         });
       });*/
-    
+
       $('#refreshLog').click(function (event) {
     	  getServiceLogs();
       });
       $('#refreshLog1').click(function (event) {
     	  clearLog();
       });
-       
+
       $('#fullScreen').click(function () {
         $('.containerLog').toggleClass('all');
         var title = $(this).attr('title');
@@ -131,7 +131,7 @@ $(document).ready(function(){
           $(this).addClass('fa-exprend').attr('title','满屏').removeClass('fa-compress');
         }
       });
-      
+
        $("#execcmd").click(function(){
     	   var cmd = $("#execText").val();
     	   if (cmd == "" || cmd == null) {
@@ -161,15 +161,15 @@ $(document).ready(function(){
     			   if (data.status == "400") {
     				    html += '<pre id="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px;">执行失败！！！</pre>';
     				    $("#containerlogList").html("");
-    				    $("#containerlogList").html(html);	
+    				    $("#containerlogList").html(html);
     				    layer.close(load);
     			   }
     		   }
     	   });
        });
 
-       
- 
+
+
 
 	//可编辑的基本信息
 	//编辑
@@ -327,7 +327,7 @@ $(document).ready(function(){
 			$(".editBaseCon").hide();
 			$(".oldBaseCon").show();
 		}
-	}); 
+	});
 
        			//取消
        $("#canclSerBtn").click(function(){
@@ -345,32 +345,45 @@ $(document).ready(function(){
     	   $("#BaseSerForm").ajaxSubmit(function(data) {
     		   var data = eval("(" + data + ")");
     		   location.reload();
-    		}); 
+    		});
        }
-       
-       //可编辑的服务地址
-       $(".editCon").hide();
-       $("#editServiceAddrBtn").click(function(){
-    	   getprex();
-    	   $(".editCon").show();
-    	   $(".oldCon").hide();
-       });
-       $("#saveEdit").click(function(){
-   			if(false==checkSerAddr()){return ;};
-    	   $(".editCon").hide();
-    	   editSerAddr();
-    	   $(".oldCon").show();
-       });
-       $("#canclEdit").click(function(){
-    	   $(".editCon").hide();
-    	   $(".oldCon").show();
-       });
-       //可以编辑的端口号
-       $(".editPortConfig").hide();
-       //可编辑的环境变量
-       $(".editEnv").hide();
+
+
+	//可编辑的服务地址
+	$(".editCon").hide();
+	$("#editServiceAddrBtn").click(function() {
+/*
+		// $('#addrPrex').html("http://");
+		// var addr = $('#editServiceAddrValue').val().substr(7);
+		// $('#editServiceAddr').val(addr);*/
+
+		$("#editServiceAddrBtn").hide();
+		$(".editCon").show();
+		$(".oldCon").hide();
+	});
+	$("#saveEdit").click(function() {
+		if (false == checkSerAddr()) {
+			return;
+		};
+		$("#editServiceAddrBtn").show();
+		$(".editCon").hide();
+		editSerAddr();
+		$(".oldCon").show();
+	});
+	$("#canclEdit").click(function() {
+		$("#editServiceAddrBtn").show();
+		$(".editCon").hide();
+		$(".oldCon").show();
+	});
+
+
+	//可以编辑的端口号
+	$(".editPortConfig").hide();
+	//可编辑的环境变量
+	$(".editEnv").hide();
+
 });/*ready*/
-  
+
 function editPortComm(portConfigId,containerPort){
 	   alert(portConfigId);
 //	   $(this).parent().(".e")
@@ -402,8 +415,8 @@ function execCommand(){
 $(function(){
 	$(".podName").on("click",execCommand);
 });
-	
-	
+
+
 var sinceTime;
 var interval;
 function clearLog() {
@@ -430,7 +443,7 @@ function dropdownLog(obj){
 		success:function(data){
 			data = $.parseJSON(data);
 			if(data.status == '200' && data.logStr != ""){
-				
+
 				var containerlog = data.logStr;
 				$(".printLogSpan").html(containerlog);
 			}else{
@@ -449,10 +462,10 @@ function getCurrentPodlogs(){
 		success:function(data){
 			data = $.parseJSON(data);
 			if(data.status == '200' && data.logStr != ""){
-				
+
 				var containerlog = data.logStr;
 				$(".printLogSpan").html(containerlog);
-				
+
 			}else{
 				$(".printLogSpan").html("该实例没有产生日志。");
 			}
@@ -483,7 +496,7 @@ function getprex(){
    url: ctx + "/service/detail/getprex.do",
    success : function(data) {
 	  data = eval("(" + data + ")");
-	  $('#addrPrex').html(data.prex);
+
 	  }
 	});
 }
@@ -500,20 +513,22 @@ function editSerAddr(){
 		success : function(data) {
 			data = eval("(" + data + ")");
 			if (data.status == "200") {
-				$('#oldServiceAddr').html(editServiceAddr);
+				$('#oldServiceAddr').html("http://" + editServiceAddr);
 				$('#oldProxyPath').html(editProxyPath);
-				layer.msg("修改成功，重启服务后生效", {
+				layer.msg("修改成功", {
 					icon : 1
+				},function(){
+					location.reload();
 				});
 			} else if (data.status == "500") {
-				layer.alert("服务名称重复，请重新输入！");
+				layer.alert("服务地址重复，请重新输入！");
 			} else {
 				layer.msg("修改失败，请检查连接", {
 					icon : 1
 				});
 			}
 		}
-	}); 
+	});
 }
 function checkSerAddr(){
     if ($('#editServiceAddr').val() === '') {
@@ -545,7 +560,7 @@ function saveEnvEdit(obj){
    if(1==checkRepEnv($(obj).parent().parent().find("input.envKey"),id,envKey)){return;};
 	//环境变量Key只能是字母数字下划线；
 	reg=/^[A-Za-z_][A-Za-z0-9_]*$/;
-	if(!reg.test(envKey)){ 
+	if(!reg.test(envKey)){
 		layer.tips('环境变量key只能是字母数字下划线，不能以数字开头',$(obj).parent().parent().find("input.envKey"),{tips: [1, '#3595CC']});
 		$('#newKey').focus();
 		return;
@@ -562,7 +577,7 @@ function saveEnvEdit(obj){
 		$('#newValue').focus();
 		return;
     }
-    
+
 	$.ajax({
 		url : ctx + "/service/detail/editEnv.do?envKey=" + envKey + "&envValue=" + envValue + "&envId=" + id + "&serviceId=" + serId + "&serviceName=" + serName,
 		success : function(data) {
@@ -579,12 +594,12 @@ function saveEnvEdit(obj){
 					document.getElementById("key"+id).innerHTML=envKey;
 					document.getElementById("value"+id).innerHTML=envValue;
 					$(obj).parent().parent().find("span.editEnv").hide();
-					$(obj).hide(); 
+					$(obj).hide();
 				});
 			}
 		}
-	}); 
-	
+	});
+
 }
 //环境变量取消按钮
 function canclEnvEdit(obj){
@@ -641,7 +656,7 @@ function savePortEdit(obj){
    $(obj).parent().parent().find("span.oldPortConfig").show();
    $(obj).parent().parent().find("span.editPortConfig").hide();
    $(obj).hide();
-   
+
 	$.ajax({
 		url:ctx+"/service/detail/editPortConfig.do?containerPort="+port+"&serviceName="+serName+"&portId="+id+"&serviceId="+serId,
 		success:function(data){
@@ -716,7 +731,7 @@ function addPortCfgClick(obj){
 					$("#editPortCfgBody").append(portTr);
 					$(".editPortConfig").hide();
 					$(".editPortCfgBtn").show();
-					
+
 					layer.close(index);
 				}
 				});
@@ -775,7 +790,7 @@ function addEnvClick(obj){
 			};
 			//环境变量Key只能是字母数字下划线；
 			reg=/^[A-Za-z_][A-Za-z0-9_]*$/;
-			if(!reg.test(envKey)){ 
+			if(!reg.test(envKey)){
 				layer.tips('环境变量key只能是字母数字下划线，不能以数字开头',$("#newKey"),{tips: [1, '#3595CC']});
 				$('#newKey').focus();
 				return;
@@ -806,10 +821,10 @@ function addEnvClick(obj){
 		            +'<span id="value'+envVariable.envId+'" class="oldEnv">'+envVariable.envValue+'</span>'
 		            +' <span class="editEnv" hidden="true"><input class="envValue" type="text" name="envValue" value="'+envVariable.envValue+'"  /></span></td>'
 		               +'<td style="width:10%;" class="editBtn">'
-		                   +'<i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i>' 
+		                   +'<i onclick="editEnvBtn(this)"  type="button" value="修改"  class="fa fa-edit oldEnvConfig editEnvBtn"></i>'
 		                   +'<i onclick="saveEnvEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editEnv saveEnv"></i>'
-		                   +'<i onclick="canclEnvEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editEnv"></i>' 
-		                   +' <i onclick="delEnvEdit(this)"  type="button" value="删除"  class="fa fa-trash editEnv editEnvBtn"></i>' 
+		                   +'<i onclick="canclEnvEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editEnv"></i>'
+		                   +' <i onclick="delEnvEdit(this)"  type="button" value="删除"  class="fa fa-trash editEnv editEnvBtn"></i>'
 		                   +'</td>'
 		        +'</tr>';
 					$("#editEnvBody").append(newEnv);
@@ -828,7 +843,7 @@ function addEnvClick(obj){
 //删除环境变量
 	function delEnvEdit(obj){
 		layer.open({
-			
+
 			title:'删除环境变量',
 			content:"确定删除？",
 			btn:['确定','取消'],
