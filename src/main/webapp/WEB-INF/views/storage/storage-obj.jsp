@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>服务</title>
+    <title>云存储</title>
     <%@include file="../frame/header.jsp"%>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/storage.css"/>
-  	<script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script> 
+  	<script type="text/javascript" src="<%=path %>/js/storage/storage-obj.js"></script> 
 </head>
 <body>
 <jsp:include page="../frame/bcm-menu.jsp" flush="true">
@@ -20,7 +20,9 @@
                     <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active">存储和备份</li>
+                    <li class="active">云存储</li>
+                    <li><i class="fa fa-angle-right"></i></li>
+                    <li class="active">对象存储</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -29,7 +31,7 @@
 							<div class="ibox float-e-margins">
 								<div class="ibox-title">
 									<h5>
-										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>存储卷
+										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>对象存储
 									</h5>
 
 									<div class="ibox-tools">

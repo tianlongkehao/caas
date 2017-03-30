@@ -11,8 +11,26 @@ $(function(){
 				
 				}
 		})
-		
 	});
+	
+	$(".baseInfo>ul>li>a").click(function(){
+
+        $(".baseInfo>ul>li>a").removeClass("btn-prim");
+        $(this).addClass("btn-prim");
+    });
+
+    $(".BASE").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".containerInfo").removeClass("hide");
+    });
+
+
+    $(".INSTANCES").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".containerInstances").removeClass("hide");
+    });
 	//是否支持卸载 按钮  1支持2不支持
 	$("#unloadBtn").click(function(){
 		var $this = $(this);
@@ -66,7 +84,6 @@ function loadStorageList(){
         						+'</tr>';
         	}
         	//$('#storageList').html(itemsHtml);
-        	
 		}
 		$('.dataTables-example').dataTable({
 			"aoColumnDefs" : [ {
@@ -77,5 +94,101 @@ function loadStorageList(){
 		$("#checkallbox").parent().removeClass("sorting_asc");
 		}
 	});
+}
+//释放
+function releaseStorage(obj){
+	layer.open({
+			title: '释放',
+			content: "是否确定删除该磁盘？",
+			btn: ['确定', '取消'],
+			yes: function(index, layero){
+				
+				}
+	})
+}
+function formatStrategy(){
+	layer.open({
+		title: '格式化磁盘',
+		content: "是否确定格式化该磁盘？",
+		btn: ['确定', '取消'],
+		yes: function(index, layero){
+			
+			}
+})
+}
+function changeProperty(){
+	layer.open({
+		type:1,
+			title: '修改磁盘属性',
+			area: ['500px'],
+			content: $("#changeProperty"),
+			btn: ['确定', '取消'],
+			yes: function(index, layero){
+				
+				}
+	})
+}
+
+function changeDescribe(){
+	layer.open({
+		type:1,
+			title: '修改磁盘描述',
+			area: ['500px'],
+			content: $("#changeDescribe"),
+			btn: ['确定', '取消'],
+			yes: function(index, layero){
+				
+				}
+	})
+}
+function createSnapshoot(){
+	layer.open({
+		type:1,
+			title: '创建快照',
+			area: ['500px'],
+			content: $("#createSnapshoot"),
+			btn: ['确定', '取消'],
+			yes: function(index, layero){
+				
+				}
+	})
+}
+function createStrategy(){
+	layer.open({
+		type:1,
+			title: '创建策略',
+			area: ['500px'],
+			content: $("#createStrategy"),
+			btn: ['确定', '取消'],
+			yes: function(index, layero){
+				
+				}
+	})
 	
 }
+function changeStorageSize(){
+	layer.open({
+		type:1,
+			title: '磁盘扩容',
+			area: ['500px'],
+			content: $("#changeStorageSize"),
+			btn: ['确定', '取消'],
+			yes: function(index, layero){
+				
+				}
+	})
+}
+/*磁盘详细信息*/
+function storageDetail(obj){
+	
+}
+
+
+
+
+
+
+
+
+
+

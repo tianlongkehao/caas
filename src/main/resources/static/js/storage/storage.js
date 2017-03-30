@@ -275,3 +275,22 @@ function dilatationStorage(){
 
 	});
 }
+
+function storageAdd(){
+	layer.open({
+		type:1,
+		title: '创建磁盘',
+		area: ['500px', '300px'],
+		content: $("#storageAdd"),
+		btn: ['确定', '取消'],
+		yes: function(index, layero){ 
+//			$("#updatedefVolNum")[0].value = ($("#updatedefVol").val()*1024);
+//			var storageUpdateSize = $(".updateStorageSize:checked").val();
+//			if($("#updatedefVol").val().search(/^[1-9]\d*$/) === -1){
+//		        layer.tips('自定义大小请填正整数', $('#updatedefVol'),{tips: [1, '#EF6578']});
+//		            return;
+//		    }
+		}
+	})
+	
+}

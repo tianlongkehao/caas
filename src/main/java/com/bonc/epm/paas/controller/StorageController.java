@@ -112,8 +112,8 @@ public class StorageController {
         }
         //获取存储卷剩余容量
         model.addAttribute("userResource", userResource);
-        model.addAttribute("menu_flag", "service");
-        model.addAttribute("li_flag", "storage");
+        model.addAttribute("menu_flag", "storage");
+        //model.addAttribute("li_flag", "storage");
         return "storage/storage.jsp";
     }
 
@@ -142,7 +142,7 @@ public class StorageController {
         map.put("storages", storages);
         map.put("status", "200");
         map.put("count", storageDao.countByCreateBy(createBy));
-        model.addAttribute("menu_flag", "service");
+        model.addAttribute("menu_flag", "storage");
         return JSON.toJSONString(map);
 
     }
@@ -159,8 +159,8 @@ public class StorageController {
         Storage storage = storageDao.findOne(id);
         model.addAttribute("id", id);
         model.addAttribute("storage", storage);
-        model.addAttribute("menu_flag", "service");
-        model.addAttribute("li_flag", "storage");
+        model.addAttribute("menu_flag", "storage");
+        model.addAttribute("li_flag", "storageFile");
         return "storage/storage_detail.jsp";
     }
 
@@ -170,22 +170,22 @@ public class StorageController {
      * @param model Model
      * @return storager_add.jsp
      */
-    @RequestMapping(value = { "service/storage/add" }, method = RequestMethod.GET)
-    public String storageAdd(Model model) {
-        User cUser = CurrentUserUtils.getInstance().getUser();
-        UserResource userResource = new UserResource();
-        if (cUser.getUser_autority().equals(UserConstant.AUTORITY_USER)){
-            userResource = userResourceDao.findByUserId(cUser.getParent_id());
-        }
-        else {
-            userResource = userResourceDao.findByUserId(cUser.getId());
-        }
-        //获取存储卷剩余容量
-        model.addAttribute("userResource", userResource);
-        model.addAttribute("menu_flag", "service");
-        model.addAttribute("li_flag", "storage");
-        return "storage/storage_add.jsp";
-    }
+//    @RequestMapping(value = { "service/storage/add" }, method = RequestMethod.GET)
+//    public String storageAdd(Model model) {
+//        User cUser = CurrentUserUtils.getInstance().getUser();
+//        UserResource userResource = new UserResource();
+//        if (cUser.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+//            userResource = userResourceDao.findByUserId(cUser.getParent_id());
+//        }
+//        else {
+//            userResource = userResourceDao.findByUserId(cUser.getId());
+//        }
+//        //获取存储卷剩余容量
+//        model.addAttribute("userResource", userResource);
+//        model.addAttribute("menu_flag", "service");
+//        model.addAttribute("li_flag", "storage");
+//        return "storage/storage_add.jsp";
+//    }
 
     /**
      * 新建存储
@@ -675,9 +675,19 @@ public class StorageController {
 
     @RequestMapping(value = { "storage/storageFile" }, method = RequestMethod.GET)
     public String storageFile(Model model) {
+    	User cUser = CurrentUserUtils.getInstance().getUser();
+        UserResource userResource = new UserResource();
+        if (cUser.getUser_autority().equals(UserConstant.AUTORITY_USER)){
+            userResource = userResourceDao.findByUserId(cUser.getParent_id());
+        }
+        else {
+            userResource = userResourceDao.findByUserId(cUser.getId());
+        }
+        //获取存储卷剩余容量
+        model.addAttribute("userResource", userResource);
         model.addAttribute("menu_flag", "storage");
         model.addAttribute("li_flag", "storageFile");
-        return "storage/storage-file.jsp";
+        return "storage/storage.jsp";
     }
     /**
      * storage-file.jsp
@@ -686,11 +696,17 @@ public class StorageController {
      * @return String
      */
 
-    @RequestMapping(value = { "storage/storageQuick" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "storage/storageBlock" }, method = RequestMethod.GET)
     public String storageQuick(Model model) {
         model.addAttribute("menu_flag", "storage");
-        model.addAttribute("li_flag", "storageQuick");
-        return "storage/storage-quick.jsp";
+        model.addAttribute("li_flag", "storageBlock");
+        return "storage/storage-block.jsp";
+    }
+    @RequestMapping(value = { "storage/storage-blockDetail" }, method = RequestMethod.GET)
+    public String storageQuickDetail(Model model) {
+        model.addAttribute("menu_flag", "storage");
+        model.addAttribute("li_flag", "storageBlock");
+        return "storage/storage-blockDetail.jsp";
     }
     /**
      * storage-file.jsp
@@ -704,5 +720,17 @@ public class StorageController {
         model.addAttribute("menu_flag", "storage");
         model.addAttribute("li_flag", "storageObj");
         return "storage/storage-obj.jsp";
+    }
+    @RequestMapping(value = { "storage/storageSnap" }, method = RequestMethod.GET)
+    public String storageSnap(Model model) {
+        model.addAttribute("menu_flag", "storage");
+        model.addAttribute("li_flag", "storageSnap");
+        return "storage/storage-snap.jsp";
+    }
+    @RequestMapping(value = { "storage/snapStrategy" }, method = RequestMethod.GET)
+    public String storageSnapStrategy(Model model) {
+        model.addAttribute("menu_flag", "storage");
+        model.addAttribute("li_flag", "snapStrategy");
+        return "storage/storage-snapStrategy.jsp";
     }
 }
