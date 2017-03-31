@@ -11,16 +11,15 @@ import com.bonc.epm.paas.entity.ConfigMapInfo;
 @Transactional
 public interface ConfigMapInfoDao extends CrudRepository<ConfigMapInfo, Long> {
 
-	public List<ConfigMapInfo> findByServiceId(long id);
+	public List<ConfigMapInfo> findByServiceId(long serviceId);
 
-	public List<ConfigMapInfo> findByCreateBy(long id);
+	public List<ConfigMapInfo> findByCreateBy(long createBy);
 
     public void deleteByServiceId(long serviceId);
 
     @Query("delete from ConfigMapInfo  where name = ?1")
-    public void deleteByConfigMapName(String configMapName);
+    public void deleteByName(String name);
 
-    @Query("select * from ConfigMapInfo where name = ?1")
-    public List<ConfigMapInfo> findByConfigMapName(String configMapName);
+    public List<ConfigMapInfo> findByName(String name);
 
 }

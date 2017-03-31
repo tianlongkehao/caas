@@ -1111,15 +1111,19 @@ public class ServiceController {
      * @param keyValues 键值对
      * @return String
      */
-    @RequestMapping("service/createConfigMap.do")
+    @RequestMapping("service/createOrUpdateConfigMap.do")
     @ResponseBody
-    public String createConfigMap(String configMapName,String keyValues){
+    public String createOrUpdateConfigMap(String configMapName,String keyValues){
     	Map<String, Object> map = new HashMap<String, Object>();
     	KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
     	ConfigMap configmap = kubernetesClientService.generateConfigMap(configMapName, keyValues);
     	try {
-    		client.createConfigMap(configmap);
+    		if(client.getConfigMap(configMapName)!=null){//已经存在，则更新
+    			client.updateConfigMap(configMapName, configmap);
+    		}else{//没有，则新增
+    			client.createConfigMap(configmap);
+    		}
     	} catch (KubernetesClientException e) {
 			e.printStackTrace();
 			map.put("status", "500");
@@ -1175,7 +1179,7 @@ public class ServiceController {
 			return JSON.toJSONString(map);
     	}
 
-    	configMapInfoDao.deleteByConfigMapName(configMapName);//从数据库删除所有引用此ConfigMap的记录
+    	configMapInfoDao.deleteByName(configMapName);//从数据库删除所有引用此ConfigMap的记录
 
     	map.put("status", "200");
     	return JSON.toJSONString(map);

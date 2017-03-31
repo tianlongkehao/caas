@@ -14,7 +14,12 @@ public class ConfigMapInfo {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private long configMapId;
+
+	/**
+	 * 关联的服务Id
+	 */
+	private String serviceId;
 
 	/**
 	 * 配置文件应用的路径
@@ -37,12 +42,21 @@ public class ConfigMapInfo {
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
 
-	public long getId() {
-		return id;
+
+	public String getServiceId() {
+		return serviceId;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setServiceId(String serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public long getConfigMapId() {
+		return configMapId;
+	}
+
+	public void setConfigMapId(long configMapId) {
+		this.configMapId = configMapId;
 	}
 
 	public String getPath() {
