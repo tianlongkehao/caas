@@ -221,7 +221,7 @@ public class UserApiController {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		// 判断用户名称是否为空
-		if (user.getUserName().equals("")) {
+		if (StringUtils.isBlank(user.getUserName())) {
 			map.put("message", "用户名称为空，操作失败！");
 			map.put("flag", "400");
 			return JSON.toJSONString(map);
