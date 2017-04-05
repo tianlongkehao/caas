@@ -9,10 +9,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.bonc.epm.paas.controller.ServiceController;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -72,8 +70,6 @@ public class KubernetesClientService {
 
     public static final String adminNameSpace = "kube-system";
 
-    @Autowired
-    public ServiceController serviceController;
 	public int getK8sEndPort() {
 		return Integer.valueOf(endPort);
 	}
