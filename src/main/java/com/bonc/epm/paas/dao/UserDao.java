@@ -82,6 +82,12 @@ public interface UserDao extends CrudRepository<User, Long> {
 			+ "and u.parent_id = ?1")
 	public List<User> getByParentId(Long parent_id);
 
+	@Query("select u from User u "
+			+ "where 1=1 "
+			+ "and u.parent_id = ?1 "
+			+ "and u.userName = ?2")
+	public List<User> getByParentIdAndUsername(Long parent_id,String userName);
+
 	/**
 	 *
 	 * Description:
