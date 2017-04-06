@@ -10,16 +10,21 @@ import javax.persistence.Id;
 import com.alibaba.fastjson.annotation.JSONField;
 
 @Entity
-public class ConfigMapInfo {
+public class ServiceConfigmap {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long configMapId;
+	private long id;
+
+	/**
+	 * 关联的ConfigmapId
+	 */
+	private long configmapId;
 
 	/**
 	 * 关联的服务Id
 	 */
-	private String serviceId;
+	private long serviceId;
 
 	/**
 	 * 配置文件应用的路径
@@ -34,7 +39,7 @@ public class ConfigMapInfo {
 	/**
 	 * 创建者
 	 */
-	private Long createBy;
+	private long createBy;
 
 	/**
 	 * 创建时间
@@ -42,21 +47,28 @@ public class ConfigMapInfo {
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
 
+	public long getId() {
+		return id;
+	}
 
-	public String getServiceId() {
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public long getConfigmapId() {
+		return configmapId;
+	}
+
+	public void setConfigmapId(long configmapId) {
+		this.configmapId = configmapId;
+	}
+
+	public long getServiceId() {
 		return serviceId;
 	}
 
-	public void setServiceId(String serviceId) {
+	public void setServiceId(long serviceId) {
 		this.serviceId = serviceId;
-	}
-
-	public long getConfigMapId() {
-		return configMapId;
-	}
-
-	public void setConfigMapId(long configMapId) {
-		this.configMapId = configMapId;
 	}
 
 	public String getPath() {
@@ -75,11 +87,11 @@ public class ConfigMapInfo {
 		this.name = name;
 	}
 
-	public Long getCreateBy() {
+	public long getCreateBy() {
 		return createBy;
 	}
 
-	public void setCreateBy(Long createBy) {
+	public void setCreateBy(long createBy) {
 		this.createBy = createBy;
 	}
 

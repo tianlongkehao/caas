@@ -47,7 +47,7 @@ import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
-import com.bonc.epm.paas.dao.ConfigMapInfoDao;
+import com.bonc.epm.paas.dao.ServiceConfigmapDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
@@ -158,7 +158,7 @@ public class ServiceController {
      * 配置文件信息层接口
      */
     @Autowired
-    private ConfigMapInfoDao configMapInfoDao;
+    private ServiceConfigmapDao configMapInfoDao;
 
     /**
      * 环境变量数据层接口
