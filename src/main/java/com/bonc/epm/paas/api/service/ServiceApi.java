@@ -29,7 +29,7 @@ import com.bonc.epm.paas.entity.Service;
  */
 @Controller
 @RequestMapping(value = "/api/v1")
-public class ServiceApiController {
+public class ServiceApi {
 
 	/**
 	 * 服务数据层接口
@@ -96,7 +96,7 @@ public class ServiceApiController {
 	 */
 	@RequestMapping(value = { "/user/{user}/services/{services}" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String userServices(@PathVariable String user, @PathVariable String services) {
+	public String userServices2(@PathVariable String user, @PathVariable String services) {
 		Iterable<Service> result = serviceDao.search((services != null ? services : ""), "%",
 				(user != null ? user : ""));
 		Iterator<Service> it = result.iterator();
