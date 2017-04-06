@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,9 +37,11 @@ import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.EncryptUtils;
 
+import springfox.documentation.annotations.ApiIgnore;
+
 @Controller
 @RequestMapping(value = "/api/v1")
-public class UserApiController {
+public class UserApi {
 
 	/**
 	 * 内存和cpu的比例大小
@@ -119,7 +123,7 @@ public class UserApiController {
 	 *            String 用户姓名
 	 * @see
 	 */
-	@RequestMapping(value = { "/tenant/{tenantName}/user/{username}" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/tenant/{tenantName}/user/{username}" }, method = RequestMethod.DELETE)
 	@ResponseBody
 	public String deleteUser(@PathVariable String tenantName, @PathVariable String username) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -135,7 +139,7 @@ public class UserApiController {
 		Long parentId = parent.getId();
 		List<User> userlist = userDao.getByParentIdAndUsername(parentId, username);
 
-		if (userlist == null) {
+		if (CollectionUtils.isEmpty(userlist)) {
 			map.put("message", "指定租户下不存在该用户！");
 			map.put("flag", "400");
 			return JSON.toJSONString(map);
@@ -164,7 +168,7 @@ public class UserApiController {
 	 */
 	@RequestMapping(value = { "/tenant/{tenantName}/user" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String saveUser(@PathVariable String tenantName,User user) {
+	public String saveUser(@PathVariable String tenantName, @RequestBody User user) {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		User parent = userDao.findByUserName(tenantName);
@@ -209,15 +213,13 @@ public class UserApiController {
 	 *
 	 * Description: 创建或更新租户
 	 *
-	 * @param user
-	 *            User
-	 * @param resource
-	 *            UserResource
+	 * @param user User
+	 * @param resource UserResource
 	 * @see
 	 */
 	@RequestMapping(value = { "/tenant/resource" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String saveTenant(User user,UserResource resource) {
+	public String saveTenant(@RequestBody User user, @RequestBody UserResource resource) {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		// 判断用户名称是否为空
