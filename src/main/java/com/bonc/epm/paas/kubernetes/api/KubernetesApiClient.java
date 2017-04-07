@@ -302,15 +302,19 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
     }
 
-    public ResourceQuota getResourceQuota(String name) throws KubernetesClientException {
-        try {
-            return api.getResourceQuota(namespace,name);
-        } catch (NotFoundException e) {
-            return null;
-        } catch (WebApplicationException e) {
-            throw new KubernetesClientException(e);
-        }
-    }
+	public ResourceQuota getResourceQuota(String name) throws KubernetesClientException {
+		try {
+			return api.getResourceQuota(namespace, name);
+		} catch (KubernetesClientException e) {
+			if (e.getMessage().equals("NotFound")) {
+				return null;
+			} else {
+				throw new KubernetesClientException(e);
+			}
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
 
     public ResourceQuotaList getAllResourceQuotas() throws KubernetesClientException {
         try {
