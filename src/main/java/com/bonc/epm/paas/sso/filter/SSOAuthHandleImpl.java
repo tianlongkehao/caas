@@ -233,6 +233,9 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
 		if (null != attributes.get("email")) { // email
 			user.setEmail(attributes.get("email").toString());
 		}
+		if (null != attributes.get("telephone")) { // 电话
+			user.setUser_phone(attributes.get("telephone").toString());
+		}
 		if (null != attributes.get("mobile")) { // 手机
 			user.setUser_cellphone(attributes.get("mobile").toString());
 		}
