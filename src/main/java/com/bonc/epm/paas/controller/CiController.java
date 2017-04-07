@@ -47,12 +47,12 @@ import com.bonc.epm.paas.dao.CiCodeHookDao;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CiInvokeDao;
 import com.bonc.epm.paas.dao.CiRecordDao;
+import com.bonc.epm.paas.dao.CodeCiToolDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.DockerFileTemplateDao;
 import com.bonc.epm.paas.dao.HookAndImagesDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.SheraDao;
-import com.bonc.epm.paas.dao.CodeCiToolDao;
 import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Ci;
@@ -61,24 +61,25 @@ import com.bonc.epm.paas.entity.CiCodeCredential;
 import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.CiRecord;
+import com.bonc.epm.paas.entity.CodeCiTool;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.DockerFileTemplate;
 import com.bonc.epm.paas.entity.HookAndImages;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.Shera;
-import com.bonc.epm.paas.entity.CodeCiTool;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.ChangeGit;
+import com.bonc.epm.paas.shera.model.CodeManager;
 import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.Job;
-import com.bonc.epm.paas.shera.model.JobExec;
-import com.bonc.epm.paas.shera.model.JobExecList;
 import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.Log;
+import com.bonc.epm.paas.shera.model.Rating;
+import com.bonc.epm.paas.shera.model.SonarConfig;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.DateUtils;
@@ -277,53 +278,48 @@ public class CiController {
         } else {
             cis = ciDao.findByNameOfCodeCi(userId, "%" + search + "%",pageRequest);
         }
-        //判断是否获取shera信息
-        if (cis.getContent().size() > 0) {
-            List<Ci> ciList = findSheraData(cis.getContent());
-            map.put("data", ciList);
-        } else {
-            map.put("data", cis.getContent());
-        }
         map.put("draw", draw);
+        map.put("data", cis.getContent());
         map.put("recordsTotal", cis.getTotalElements());
         map.put("recordsFiltered", cis.getTotalElements());
         return JSON.toJSONString(map);
     }
 
-    /**
-     * Description: <br>
-     * 代码构建shera中job的构建信息查询和展示；
-     * @param cis cis
-     * @return
-     */
-    public List<Ci> findSheraData(List<Ci> cis){
-        try {
-            SheraAPIClientInterface client = sheraClientService.getClient();
-            JobExecList jobExecList = client.getAllJobs();
-            if (StringUtils.isEmpty(jobExecList.getItems())) {
-                return cis;
-            }
-            if (cis.size()!=0 && jobExecList != null) {
-                for (Ci ci :cis) {
-                    for (JobExec jobExec :jobExecList) {
-                        if (ci.getProjectName().equals(jobExec.getJobId())) {
-                            if (jobExec.getLastSuccessTime() != 0 ) {
-                                ci.setConstructionDate(DateUtils.getLongToDate(jobExec.getLastSuccessTime()));
-                            }
-                            if (jobExec.getLastFailureTime() != 0) {
-                                ci.setConstructionFailDate(DateUtils.getLongToDate(jobExec.getLastFailureTime()));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception e) {
-            LOG.error("find all job data error : " + e.getMessage());
-            e.printStackTrace();
-        }
-        return cis;
-    }
+
+//    /**
+//     * Description: <br>
+//     * 代码构建shera中job的构建信息查询和展示；
+//     * @param cis cis
+//     * @return
+//     */
+//    public List<Ci> findSheraData(List<Ci> cis){
+//        try {
+//            SheraAPIClientInterface client = sheraClientService.getClient();
+//            JobExecList jobExecList = client.getAllJobs();
+//            if (StringUtils.isEmpty(jobExecList.getItems())) {
+//                return cis;
+//            }
+//            if (cis.size()!=0 && jobExecList != null) {
+//                for (Ci ci :cis) {
+//                    for (JobExec jobExec :jobExecList) {
+//                        if (ci.getProjectName().equals(jobExec.getJobId())) {
+//                            if (jobExec.getLastSuccessTime() != 0 ) {
+//                                ci.setConstructionDate(DateUtils.getLongToDate(jobExec.getLastSuccessTime()));
+//                            }
+//                            if (jobExec.getLastFailureTime() != 0) {
+//                                ci.setConstructionFailDate(DateUtils.getLongToDate(jobExec.getLastFailureTime()));
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        catch (Exception e) {
+//            LOG.error("find all job data error : " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//        return cis;
+//    }
 
     /**
      *
@@ -346,13 +342,28 @@ public class CiController {
                 //获取jdk信息
                 SheraAPIClientInterface client = sheraClientService.getClient();
                 JdkList jdkList = client.getAllJdk();
-                Job job = client.getJob(ci.getProjectName());
+                Job job = null;
+				try {
+					job = client.getJob(ci.getProjectName());
+				} catch (Exception e) {
+					LOG.error("查询构建对应的job失败：" + e.getMessage());
+				}
                 CiCode ciCode = ciCodeDao.findByCiId(ci.getId());
                 //代码验证信息的查询和加载
                 Iterable<CiCodeCredential> ciCredentialList = ciCodeCredentialDao.findAll();
-                model.addAttribute("ciCode", ciCode);
+        		List<Object> toolGroups = getToolGroups();
+        		String basicImage = codeCiToolDao.findAllImages().get(0).gettoolCode();
+
+        		model.addAttribute("ciCode", ciCode);
+        		model.addAttribute("basicImage", basicImage);
+                model.addAttribute("toolGroups", toolGroups);
                 model.addAttribute("ciCredentialList", ciCredentialList);
-                model.addAttribute("dockerFileContent",job.getImgManager().getDockerFileContent());
+                if (job!=null && job.getImgManager() != null && job.getImgManager().getDockerFileContent() != null) {
+                	model.addAttribute("dockerFileContent", job.getImgManager().getDockerFileContent()
+                			.replace("\"", "&quot;").replace("'", "&apos;").replace(">", "&gt;").replace("<", "&lt;"));
+				} else {
+					model.addAttribute("dockerFileContent", "");
+				}
                 model.addAttribute("jdkList",jdkList.getItems());
             }
             catch (Exception e) {
@@ -462,7 +473,11 @@ public class CiController {
         originCiCode.setCodeBranch(ciCode.getCodeBranch());
         originCiCode.setIsHookCode(ciCode.getIsHookCode());
         originCiCode.setCodeName(ciCode.getCodeName());
-        originCiCode.setCodeRefspec(ciCode.getCodeRefspec());;
+        originCiCode.setCodeRefspec(ciCode.getCodeRefspec());
+        originCiCode.setCiTools(ciCode.getCiTools());
+        originCiCode.setSonarCheck(ciCode.getSonarCheck());
+        originCiCode.setSources(ciCode.getSources());
+
         List<CiInvoke> ciInvokeList = addCiInvokes(jsonData,ci.getId());
         CiCodeCredential ciCodeCredential = new CiCodeCredential();
         if (!StringUtils.isEmpty(ciCode.getCodeCredentials())) {
@@ -473,7 +488,8 @@ public class CiController {
             Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
                                                             ciCode.getCodeName(),ciCode.getCodeRefspec(),dockerFileContentEdit,ci.getDockerFileLocation(),
                                                             originCi.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
-                                                            ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),false,"");
+                                                            ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),
+                                                            ciCode.getSonarCheck()==CiConstant.CODE_CHECK_TRUE,ciCode.getSources(),ciCode.getCiTools());
             client.updateJob(job);
             //添加代码挂钩
             if (ciCode.getIsHookCode() == 1) {
@@ -647,16 +663,18 @@ public class CiController {
 
                 try {
                     CiCode ciCode = ciCodeDao.findByCiId(idl);
-                    SheraAPIClientInterface client = sheraClientService.getClient();
-                    client.deleteJob(ci.getProjectName());
-                    //删除关联的hook数据
-                    if (!StringUtils.isEmpty(ciCode.getHookCodeId()) && ciCode.getHookCodeId() !=0 ) {
-                        CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ciCode.getHookCodeId());
-                        hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
-                        ciCodeHookDao.delete(ciCodeHook);
-                    }
-                    ciInvokeDao.deleteByCiId(idl);
-                    ciCodeDao.delete(ciCode);
+                    if (null != ciCode) {
+                    	SheraAPIClientInterface client = sheraClientService.getClient();
+                    	client.deleteJob(ci.getProjectName());
+                    	//删除关联的hook数据
+                    	if (!StringUtils.isEmpty(ciCode.getHookCodeId()) && ciCode.getHookCodeId() !=0 ) {
+                    		CiCodeHook ciCodeHook = ciCodeHookDao.findOne(ciCode.getHookCodeId());
+                    		hookAndImagesDao.deleteByHookId(ciCodeHook.getId());
+                    		ciCodeHookDao.delete(ciCodeHook);
+                    	}
+                    	ciInvokeDao.deleteByCiId(idl);
+                    	ciCodeDao.delete(ciCode);
+					}
                 }
                 catch (SheraClientException e) {
                     e.printStackTrace();
@@ -705,7 +723,31 @@ public class CiController {
 			imageNameFirst = cuurentUser.getUserName();
 		}
 
-		List<CodeCiTool> allTools = codeCiToolDao.findAll();
+		String basicImage = new String();
+
+		List<CodeCiTool> allImages = codeCiToolDao.findAllImages();
+		if (!CollectionUtils.isEmpty(allImages)) {
+			basicImage = allImages.get(0).gettoolCode();
+		}
+
+		List<Object> toolGroups = getToolGroups();
+		//获取sonarConfig
+		SheraAPIClientInterface client = sheraClientService.getClient();
+		SonarConfig sonarConfig = client.getSonarConfig();
+
+		model.addAttribute("username", imageNameFirst);
+		model.addAttribute("basicImage", basicImage);
+		model.addAttribute("toolGroups", toolGroups);
+		model.addAttribute("userAutority", cuurentUser.getUser_autority());
+		model.addAttribute("sonarConfig", sonarConfig);
+		model.addAttribute("menu_flag", "ci");
+		model.addAttribute("li_flag", "ci");
+		return "ci/ci_add.jsp";
+	}
+
+
+	private List<Object> getToolGroups() {
+		List<CodeCiTool> allTools = codeCiToolDao.findAllTools();
 		List<Object> toolGroups = new ArrayList<>();
 		List<CodeCiTool> tools = new ArrayList<>();
 		Map<String, Object> map = new HashMap<>();
@@ -728,13 +770,7 @@ public class CiController {
 				}
 			}
 		}
-
-		model.addAttribute("username", imageNameFirst);
-		model.addAttribute("toolGroups", toolGroups);
-		model.addAttribute("userAutority", cuurentUser.getUser_autority());
-		model.addAttribute("menu_flag", "ci");
-		model.addAttribute("li_flag", "ci");
-		return "ci/ci_add.jsp";
+		return toolGroups;
 	}
 
     /**
@@ -871,6 +907,19 @@ public class CiController {
 
     /**
      * Description: <br>
+     * 进行代码构建时判断当前租户是否配置了SonarConfig环境
+     * @see
+     */
+    @RequestMapping("ci/judgeSonarConfig.do")
+    @ResponseBody
+    public String judgeSonarConfig(){
+        Map<String,Object> map = new HashMap<>();
+        return JSON.toJSONString(map);
+
+    }
+
+    /**
+     * Description: <br>
      * 代码构建验证代码地址是否正确
      * @param codeUrl
      * @param codeCredentialId
@@ -961,7 +1010,8 @@ public class CiController {
                 Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
                     ciCode.getCodeName(),ciCode.getCodeRefspec(), dockerFileContent,ci.getDockerFileLocation(),
                     ci.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
-                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),false,"");
+                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),ciCode.getSonarCheck()==CiConstant.CODE_CHECK_TRUE,ciCode.getSources(),ciCode.getCiTools());
+//                System.out.println(JSON.toJSONString(job));
                 client.createJob(job);
                 //添加代码挂钩
                 if (ciCode.getIsHookCode() == 1) {
@@ -1487,108 +1537,159 @@ public class CiController {
      */
     public boolean fetchCodeCi(final Ci ci,final CiCode ciCode,final CiRecord ciRecord,final long startTime,
                                final SheraClientService sheraClientService,final ImageDao imageDao,
-                               final CiDao ciDao,final CiRecordDao ciRecordDao,final HookAndImagesDao hookAndImagesDao) {
-        try {
-            final SheraAPIClientInterface client = sheraClientService.getClient();
-            JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime,ciRecord.getCiVersion());
-            jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
-            ciRecord.setExecutionId(jobExecViewNew.getSeqNo());
-            ciRecordDao.save(ciRecord);
-            //获取执行状态和执行日志
-            new Thread() {
-                public void run() {
-                    try {
-                        boolean flag = true;
-                        Integer seek = 0;
-                        while(flag){
-                            Thread.sleep(5000);
-                            JobExecView jobExecView = new JobExecView();
-                            Log log = new Log();
-                            try {
-                                jobExecView = client.getExecution(ci.getProjectName(),ciRecord.getExecutionId());
-                                log = client.getExecLog(ci.getProjectName(),ciRecord.getExecutionId().toString(),seek);
-                                seek = log.getSeek();
-                            }
-                            catch (Exception e) {
-                                LOG.error("exec job error : "+e.getMessage());
-                            }
-                            //执行完成
-                            if (jobExecView.getFinished() == 1) {
-                                //执行成功
-                                if (jobExecView.getEndStatus() == 0) {
-                                    //判断是否添加镜像
-                                    if (!StringUtils.isEmpty(ci.getImgNameLast())) {
-                                        Image image;
-                                        String imageName = ci.getImgNameFirst()+"/"+ci.getImgNameLast();
-                                        //根据镜像名称和版本信息查询镜像信息是否存在
-                                        image = imageDao.findByNameAndVersion(imageName, ciRecord.getCiVersion());
-                                        if (!StringUtils.isEmpty(image)){
-                                            hookAndImagesDao.deleteByImageId(image.getId());
-                                        }
-                                        else {
-                                            image = new Image();
-                                        }
-                                        image.setName(imageName);
-                                        image.setVersion(ciRecord.getCiVersion());
-                                        image.setImageType(ci.getImgType());
-                                        image.setRemark(ci.getDescription());
-                                        image.setCreateBy(ci.getCreateBy());
-                                        image.setCreateDate(DateUtils.getLongToDate(startTime));
-                                        image.setIsBaseImage(ciCode.getIsBaseImage());
-                                        image.setIsDelete(CommConstant.TYPE_NO_VALUE);
-                                        imageDao.save(image);
-                                        //判断是否需要添加hookAndImages关联信息
-                                        if (ciCode.getIsHookCode() == 1) {
-                                            HookAndImages hookAndImg = new HookAndImages();
-                                            hookAndImg.setHookId(ciCode.getHookCodeId());
-                                            hookAndImg.setImageId(image.getId());
-                                            hookAndImagesDao.save(hookAndImg);
-                                        }
-                                        ci.setImgId(image.getId());
-                                    }
-                                    //添加构建和日志的信息
-                                    ci.setConstructionTime(jobExecView.getEndTime()-startTime);
-                                    ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
-                                    ciRecord.setConstructTime(jobExecView.getEndTime()-startTime);
-                                    ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
-                                    ciRecord.setImageId(ci.getImgId());
-                                }
-                                //执行失败
-                                if (jobExecView.getEndStatus() == 1) {
-                                    ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
-                                    ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
-                                }
-                                ciDao.save(ci);
-                                flag = false;
-                            }
-                            //获取和保存日志
-                            ciRecord.setLogPrint(ciRecord.getLogPrint()+log.getContent());
-                            ciRecordDao.save(ciRecord);
-                        }
-                    }
-                    catch (Exception e) {
-                        LOG.error("exec job error : "+e.getMessage());
-                        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
-                        ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
-                        ciDao.save(ci);
-                        ciRecordDao.save(ciRecord);
-                    }
-                }
+			final CiDao ciDao, final CiRecordDao ciRecordDao, final HookAndImagesDao hookAndImagesDao) {
+		try {
+			final SheraAPIClientInterface client = sheraClientService.getClient();
+			String projectKey;
+			if (!StringUtils.isEmpty(ci.getImgNameLast())) {
+				projectKey = ci.getImgNameFirst() + "_" + ci.getImgNameLast() + "_" + ci.getImgNameVersion();
+			} else {
+				projectKey = CurrentUserUtils.getInstance().getUser().getUserName() + ci.getProjectName();
+			}
 
-            }.start();
-            return true;
-        }
-        catch(SheraClientException e){
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            CiRecord newCiRecord = ciRecord;
-            newCiRecord.setLogPrint(newCiRecord.getLogPrint()+"<br>"+"["+DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS)+"] "+"error:"+e.getMessage());
-            ciRecordDao.save(newCiRecord);
-            LOG.error("==========fetchCode error:"+e.getMessage());
-        }
-        return false;
-    }
+			JobExecView jobExecViewNew = sheraClientService.generateJobExecView(startTime, ciRecord.getCiVersion(), projectKey);
+			jobExecViewNew = client.execJob(ci.getProjectName(), jobExecViewNew);
+			ciRecord.setExecutionId(jobExecViewNew.getSeqNo());
+			ciRecordDao.save(ciRecord);
+			// 获取执行状态和执行日志
+			new Thread() {
+				public void run() {
+					try {
+						boolean flag = true;
+						Integer seek = 0;
+						while (flag) {
+							Thread.sleep(5000);
+							JobExecView jobExecView = new JobExecView();
+							Log log = new Log();
+							try {
+								jobExecView = client.getExecution(ci.getProjectName(), ciRecord.getExecutionId());
+								log = client.getExecLog(ci.getProjectName(), ciRecord.getExecutionId().toString(),
+										seek);
+								seek = log.getSeek();
+							} catch (Exception e) {
+								LOG.error("exec job error : " + e.getMessage());
+							}
+							// 执行完成
+							long endTime = System.currentTimeMillis();
+							if (jobExecView.getFinished() == 1) {
+								Integer rating = -1;
+								String url = "";
+								// 执行成功
+								if (jobExecView.getEndStatus() == 0) {
+									//获取代码质量信息
+									if (ciCode.getSonarCheck() == CiConstant.CODE_CHECK_TRUE) {
+										Rating jobRating = null;
+										String branch = "";
+										try {
+											CodeManager codeManager = client.getJob(ci.getProjectName()).getCodeManager();
+											if (codeManager.getCodeChoice() == CiConstant.CODE_TYPE_GIT) {
+												branch = codeManager.getGitConfig().getBranch();
+											} else {
+												branch = codeManager.getSvnConfig().getBranch();
+											}
+											jobRating = client.getJobRating(projectKey + ":" + branch);
+										} catch (Exception e) {
+											LOG.error("获取JobRating失败:" + e.getMessage());
+											ciRecord.setLogPrint(ciRecord.getLogPrint() + "<br>获取Sonar代码质量评价失败");
+//											e.printStackTrace();
+										}
+										rating = jobRating == null ? 0 : jobRating.getRating();
+										SonarConfig sonarConfig = null;
+										try {
+											sonarConfig = client.getSonarConfig();
+										} catch (Exception e) {
+											LOG.error("获取SonarConfig失败:" + e.getMessage());
+											ciRecord.setLogPrint(ciRecord.getLogPrint() + "<br>获取用户Sonar配置失败");
+//											e.printStackTrace();
+										}
+										if (null != sonarConfig && null != sonarConfig.getUrl()) {
+											url = sonarConfig.getUrl();
+											if (!url.endsWith("/")) {
+												url = url + "/";
+											}
+											url = url + "overview?id=" + projectKey + ":" + branch;
+										}
+									}
+									// 判断是否添加镜像
+									if (!StringUtils.isEmpty(ci.getImgNameLast())) {
+										Image image;
+										String imageName = ci.getImgNameFirst() + "/" + ci.getImgNameLast();
+										// 根据镜像名称和版本信息查询镜像信息是否存在
+										image = imageDao.findByNameAndVersion(imageName, ciRecord.getCiVersion());
+										if (!StringUtils.isEmpty(image)) {
+											hookAndImagesDao.deleteByImageId(image.getId());
+										} else {
+											image = new Image();
+										}
+										image.setName(imageName);
+										image.setVersion(ciRecord.getCiVersion());
+										image.setImageType(ci.getImgType());
+										image.setRemark(ci.getDescription());
+										image.setCreateBy(ci.getCreateBy());
+										image.setCreateDate(DateUtils.getLongToDate(startTime));
+										image.setIsBaseImage(ciCode.getIsBaseImage());
+										image.setIsDelete(CommConstant.TYPE_NO_VALUE);
+										image.setCodeRatingURL(url);
+										image.setCodeRating(rating);
+										imageDao.save(image);
+										// 判断是否需要添加hookAndImages关联信息
+										if (ciCode.getIsHookCode() == 1) {
+											HookAndImages hookAndImg = new HookAndImages();
+											hookAndImg.setHookId(ciCode.getHookCodeId());
+											hookAndImg.setImageId(image.getId());
+											hookAndImagesDao.save(hookAndImg);
+										}
+										ci.setImgId(image.getId());
+									}
+									// 添加构建和日志的信息
+									ci.setConstructionTime(endTime - startTime);
+									ci.setConstructionDate(new Date(startTime));
+									ci.setCodeRating(rating);
+									ci.setCodeRatingURL(url);
+									ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_OK);
+									ciRecord.setConstructTime(endTime - startTime);
+									ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_OK);
+									ciRecord.setImageId(ci.getImgId());
+								}
+								// 执行失败
+								if (jobExecView.getEndStatus() == 1) {
+									ci.setConstructionTime(endTime - startTime);
+									ci.setConstructionFailDate(new Date(startTime));
+									ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+									ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+								}
+								ciDao.save(ci);
+								flag = false;
+							}
+							// 获取和保存日志
+							ciRecord.setLogPrint(ciRecord.getLogPrint() + log.getContent());
+							ciRecordDao.save(ciRecord);
+						}
+					} catch (Exception e) {
+						LOG.error("exec job error : " + e.getMessage());
+						ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_FAIL);
+						ciRecord.setConstructResult(CiConstant.CONSTRUCTION_RESULT_FAIL);
+						ci.setConstructionTime(System.currentTimeMillis() - startTime);
+						ci.setConstructionFailDate(new Date(startTime));
+						ciDao.save(ci);
+						ciRecordDao.save(ciRecord);
+					}
+				}
+
+			}.start();
+			return true;
+		} catch (SheraClientException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			CiRecord newCiRecord = ciRecord;
+			newCiRecord.setLogPrint(newCiRecord.getLogPrint() + "<br>" + "["
+					+ DateUtils.formatDateToString(new Date(), DateUtils.YYYY_MM_DD_HH_MM_SS) + "] " + "error:"
+					+ e.getMessage());
+			ciRecordDao.save(newCiRecord);
+			LOG.error("==========fetchCode error:" + e.getMessage());
+		}
+		return false;
+	}
 
     /**
      * Description: <br>
@@ -1970,5 +2071,35 @@ public class CiController {
             return "redirect:/ci/detail/"+ciCode.getCiId();
         }
         return "redirect:/error";
+    }
+
+    /**
+     * Description: <br>
+     * 获取sonarconfig
+     * @see
+     */
+    @RequestMapping(value = {"ci/getSonarConfig.do"}, method = RequestMethod.GET)
+    @ResponseBody
+    public String  getSonarConfig(){
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("status", "200");
+		// 获取sonarConfig
+		SheraAPIClientInterface sheraClient = sheraClientService.getClient();
+		SonarConfig sonarConfig = null;
+		try {
+			sonarConfig = sheraClient.getSonarConfig();
+		} catch (Exception e) {
+			LOG.info(e.getMessage());
+//			SonarConfig config = sheraClientService.generateSonarConfig(true, false, false, 5, false, SONAR_TOKEN,
+//					SONAR_URL);
+//			try {
+//				sonarConfig = sheraClient.createSonarConfig(config);
+//			} catch (SheraClientException e1) {
+//				e1.printStackTrace();
+				map.put("status", "400");
+//			}
+		}
+		map.put("sonarConfig", sonarConfig);
+		return JSON.toJSONString(map);
     }
 }

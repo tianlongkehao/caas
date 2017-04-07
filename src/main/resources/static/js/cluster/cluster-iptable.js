@@ -7,8 +7,8 @@ $(document).ready(function () {
 	}else{
 		$("#search_service").attr("disabled",false);
 	}
-	
-})
+
+});
 
 //admin登录时选择租户；对应显示该租户下的服务下拉列表
 function changeNamespace(){
@@ -28,7 +28,7 @@ function changeNamespace(){
 				data = eval("(" + data + ")");
 				var serviceNameHtml = '';
 				if( data.length == 0 ){
-					serviceNameHtml = '<option value="">无服务</option>'
+					serviceNameHtml = '<option value="">无服务</option>';
 				}else{
 					serviceNameHtml = '<option value="">-----请选择-----</option>';
 					for(var i=0; i< data.length; i++){
@@ -38,7 +38,7 @@ function changeNamespace(){
 				}
 				$("#search_service").append(serviceNameHtml);
 			}
-		})
+		});
 	}
 }
 
@@ -76,16 +76,16 @@ function searchServiceShowIptables(){
 				var dataSame = data.same[0].item;
 				var sameNat = dataSame.nat;
 				var sameFilter = dataSame.filter;
-				
+
 				var sameNatKubeSep = sameNat.kubeSep;
 				var sameNatKubeServices = sameNat.kubeServices;
 				var sameNatKubeNodePorts = sameNat.kubeNodePorts;
 				var sameNatkubeSvc = sameNat.kubeSvc;
 				var sameNatOthers = sameNat.others;
-				
+
 				var sameFilterKubeServices = sameFilter.kubeServices;
 				var sameFilterOthers = sameFilter.others;
-				
+
 				var sameNatLength = 1;
 				if(sameNatKubeSep != null){
 					sameNatLength += sameNatKubeSep.length;
@@ -102,7 +102,7 @@ function searchServiceShowIptables(){
 				if(sameNatOthers != null){
 					sameNatLength += sameNatOthers.length;
 				}
-				 
+
 				var sameFilterLength = 1;
 				if(sameFilterKubeServices != null){
 					sameFilterLength += sameFilterKubeServices.length;
@@ -115,7 +115,7 @@ function searchServiceShowIptables(){
 									'<td rowspan="'+sameNatLength+'">&nbsp;&nbsp;&nbsp;&nbsp;nat&nbsp;&nbsp;</td>'+
 									'<td class="td-line" style="color:#ccc">*nat</td>'+
 									'</tr>';
-				//same Nat KubeSep					
+				//same Nat KubeSep
 				if(sameNatKubeSep != null){
 					for(var sepNum=0; sepNum<sameNatKubeSep.length; sepNum++){
 						sameNatHtml += '<tr class="u-line">'+
@@ -155,9 +155,9 @@ function searchServiceShowIptables(){
 						'</tr>';
 					}
 				}
-				
+
 				$("#sameTableList").append(sameNatHtml);
-				
+
 				//filter
 				samefilterHtml = '<tr class="u-line">'+
 									'<td rowspan="'+sameFilterLength+'">&nbsp;&nbsp;&nbsp;&nbsp;filter&nbsp;&nbsp;</td>'+
@@ -178,7 +178,7 @@ function searchServiceShowIptables(){
 					}
 				}
 				$("#sameTableList").append(samefilterHtml);
-				
+
 				/*var sameNatHtml = '<tr class="u-line">'+
 									'<td rowspan="'+sameLength+'">&nbsp;&nbsp;&nbsp;&nbsp;nat&nbsp;&nbsp;</td>'+
 									'<td class="td-line">'+sameNat1[0]+'</td>'+
@@ -188,8 +188,8 @@ function searchServiceShowIptables(){
 									'<td class="td-line">'+sameNat1[j]+'</td>'+
 									'</tr>';
 				}
-				
-				
+
+
 				for(var k=0; k<sameNat2.length; k++){
 					sameNatHtml += '<tr class="u-line">'+
 									'<td class="td-line">'+sameNat2[k]+'</td>'+
@@ -217,7 +217,7 @@ function searchServiceShowIptables(){
 				}
 				$("#sameTableList").append(samefilterHtml);*/
 			}
-			
+
 			//不同的iptables
 			if(data.diff.length == 0){
 				diffNodeCon = '<span>&nbsp;&nbsp;&nbsp;&nbsp;此服务所有节点的iptables均相同<span>';
@@ -225,9 +225,9 @@ function searchServiceShowIptables(){
 			}else{
 				loadDiff(data);
 			}
-			
+
 		}
-	})
+	});
 }
 
 function loadDiff(data){
@@ -250,14 +250,14 @@ function loadDiff(data){
 			var diffSvc = dataDiff[diffNum].nat.kubeSvc;
 			var diffOthers = dataDiff[diffNum].nat.others;
 			var diffNatNum = 0;
-			
+
 			var diffFilterSep = dataDiff[diffNum].filter.kubeSep;
 			var diffFilterServices = dataDiff[diffNum].filter.kubeServices;
 			var diffFilterNodePorts = dataDiff[diffNum].filter.kubeNodePorts;
 			var diffFilterSvc = dataDiff[diffNum].filter.kubeSvc;
 			var diffFilterOthers = dataDiff[diffNum].filter.others;
 			var diffFilterNum = 0;
-			
+
 			var diffLeft = dataDiff[diffNum].left;
 			var diffRight = dataDiff[diffNum].right;
 			diffNodeHtml += '<table class="table table-hover differentTable">'+
@@ -350,7 +350,7 @@ function loadDiff(data){
 			}else{
 				diffNatNum += 1;
 			}
-			
+
 			diffNodeHtml += '<tr class="u-line">'+
 								'<td rowspan="'+diffNatNum+'">&nbsp;&nbsp;&nbsp;&nbsp;nat&nbsp;&nbsp;</td>';
 			//kubeSep content
@@ -404,7 +404,7 @@ function loadDiff(data){
 												'</tr>';
 						}
 					}
-					
+
 				}
 			}
 			//kubeServices content
@@ -458,7 +458,7 @@ function loadDiff(data){
 												'</tr>';
 						}
 					}
-					
+
 				}
 			}
 			//kubeNodePorts content
@@ -512,9 +512,9 @@ function loadDiff(data){
 												'</tr>';
 						}
 					}
-					
+
 				}
-				
+
 			}
 			//kubeSvc content
 			if(diffSvc.flag == true){
@@ -567,7 +567,7 @@ function loadDiff(data){
 												'</tr>';
 						}
 					}
-					
+
 				}
 			}
 			//others content
@@ -621,10 +621,10 @@ function loadDiff(data){
 												'</tr>';
 						}
 					}
-					
+
 				}
 			}
-								
+
 			//filter
 			var diffFilterServices = dataDiff[diffNum].filter.kubeServices;
 			var diffFilterOthers = dataDiff[diffNum].filter.others;
@@ -661,7 +661,7 @@ function loadDiff(data){
 			}else{
 				diffFilterNum += 1;
 			}
-			
+
 			diffNodeHtml += '<tr class="u-line">'+
 						'<td rowspan="'+diffFilterNum+'">&nbsp;&nbsp;&nbsp;&nbsp;filter&nbsp;&nbsp;</td>';
 			//filter kubeServices content
@@ -715,7 +715,7 @@ function loadDiff(data){
 												'</tr>';
 						}
 					}
-					
+
 				}
 			}
 			if(diffFilterOthers.flag == true){
@@ -768,17 +768,17 @@ function loadDiff(data){
 												'</tr>';
 						}
 					}
-					
+
 				}
-			}						
-							
-				
+			}
+
+
 			diffNodeHtml +='</tbody></table>';
-				
+
 		}
-		
+
 		$("#diffTable").append(diffNodeHtml);
-		
+
 	}
 }
 

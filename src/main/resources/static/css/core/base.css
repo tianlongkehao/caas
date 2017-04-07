@@ -604,4 +604,10 @@ a .fa_level_d {
 a .fa_level_e {
     border-bottom-color: #e00;
 }
+.fa_level_n {
+    background-color: #50b3d3;
+}
+a .fa_level_n {
+    border-bottom-color: #50b3d3;
+}
 

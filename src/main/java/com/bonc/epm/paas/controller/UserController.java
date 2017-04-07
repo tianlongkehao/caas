@@ -58,12 +58,13 @@ import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
+import com.bonc.epm.paas.shera.model.SonarConfig;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
 
 /**
- * 
+ *
  * 用户相关操作控制器
  * @author ke_wang
  * @version 2016年9月5日
@@ -73,66 +74,66 @@ import com.bonc.epm.paas.util.EncryptUtils;
 @Controller
 @RequestMapping(value = "/user")
 public class UserController {
-    
+
     /**
      * LOG
      */
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
-    
+
     /**
      * UserDao
      */
     @Autowired
     private UserDao userDao;
-    
+
     /**
      * UserFavorDao
      */
     @Autowired
     private UserFavorDao userFavorDao;
-    
+
     /**
      * userResourceDao
      */
     @Autowired
     private UserResourceDao userResourceDao;
-    
+
     /**
      * StorageDao
      */
     @Autowired
 	private StorageDao storageDao;
-    
+
     /**
      * sheraDao
      */
     @Autowired
     private SheraDao sheraDao;
-    
+
     /**
      * UserAndSheraDao
      */
     @Autowired
     private UserAndSheraDao userAndSheraDao;
-    
+
     /**
      * 服务数据层接口
      */
     @Autowired
     private ServiceDao serviceDao;
-    
+
     /**
      * 调用服务controller
      */
     @Autowired
     private ServiceController serviceController;
-    
+
     /**
      * KubernetesClientService
      */
     @Autowired
 	private KubernetesClientService kubernetesClientService;
-    
+
     /**
      * sheraClientService
      */
@@ -145,32 +146,32 @@ public class UserController {
     @Autowired
     private CommonOperationLogDao commonOperationLogDao;
 
-    
+
     /**
-     * CEPH_KEY ${ceph.key} 
+     * CEPH_KEY ${ceph.key}
      */
     @Value("${ceph.key}")
     private String CEPH_KEY;
-    
+
     /**
      * 内存和cpu的比例大小
      */
     @Value("${ratio.memtocpu}")
     private String RATIO_MEMTOCPU = "4";
-    
+
     /**
      * Model
      */
     public Model model;
 
     /**
-     * 
+     *
      * Description:
      * 展示所有用户信息
      * Q:租户、管理员无差别？
      * @param model Model
      * @return .jsp String
-     * @see Model 
+     * @see Model
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
 	public String index(Model model) {
@@ -180,9 +181,9 @@ public class UserController {
         model.addAttribute("li_flag", "user");
         return "user/user.jsp";
     }
-    
+
     /**s
-     * 
+     *
      * Description:
      * @param model Model
      * @param id long
@@ -199,7 +200,7 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 返回到user_create.jsp页面
      * @param model Model
@@ -215,7 +216,7 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 返回user_manage_create.jsp
      * @param model Model
@@ -228,11 +229,11 @@ public class UserController {
         model.addAttribute("menu_flag", "usermanage");
         return "user/user_manage_create.jsp";
     }
-    
+
     /**
-     * 
+     *
      * Description:
-     * 创建新租户 
+     * 创建新租户
      * 以用户登陆帐号（用户名）为名称，创建Namespace
      * @param user User
      * @param resource Resource
@@ -256,10 +257,10 @@ public class UserController {
             userResource.setVol_size(resource.getVol());
             //创建租户时卷组剩余容量默认和卷组容量相等
             userResource.setVol_surplus_size(resource.getVol());
-            
+
             userResource.setImage_count(resource.getImage_count());
             userResource.setCreateDate(new Date());
-            
+
             fillPartUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，为client创建Namespace
             Namespace namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
@@ -291,7 +292,7 @@ public class UserController {
 			// restriction);
 			// limitRange = client.createLimitRange(limitRange);
 			// System.out.println("limitRange:"+JSON.toJSONString(limitRange));
-            
+
 			// DB保存用户信息
             userDao.save(user);
             userResource.setUserId(user.getId());
@@ -303,12 +304,12 @@ public class UserController {
                 userAndSheraDao.save(userAndShera);
             }
             map.put("creatFlag", "200");
-            
+
             //记录新增租户信息
             String extraInfo = "新增租户 ： " + user.getUserName() +"信息" + JSON.toJSONString(user) + "租户资源信息：" + JSON.toJSONString(userResource);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.TENANT_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
             commonOperationLogDao.save(log);
-        } 
+        }
         catch (Exception e) {
             client.deleteNamespace(user.getNamespace());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -322,7 +323,7 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 创建新用户
      * @param user User
@@ -339,19 +340,19 @@ public class UserController {
                 user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
                 user.setNamespace(CurrentUserUtils.getInstance().getUser().getNamespace());
                 userDao.save(user);
-                
+
                 //记录用户添加用户操作
                 String extraInfo = "新增用户 ： " + user.getUserName() + "信息" + JSON.toJSONString(user);
                 CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
                 commonOperationLogDao.save(log);
             }
             model.addAttribute("creatFlag", "200");
-        } 
+        }
         catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("creatFlag", "400");
         }
-		
+
 //        User userManger = userDao.findOne(CurrentUserUtils.getInstance().getUser().getId());
 //        List<User> userManageList = userDao.checkUsermanage34(userManger.getUser_province());
         List<User> userManageList = userDao.checkUser1manage34(user.getParent_id());
@@ -361,33 +362,72 @@ public class UserController {
     }
 
     /**
-     * 
-     * Description:
-     * 更新用户偏好设置
-     * @param Integer monitor
-     * @return .jsp String
-     * @see
-     */
-    @RequestMapping(value = { "/userFavorUpdate.do" }, method = RequestMethod.POST)
-    @ResponseBody
-    public String userFavorUpdate(Integer monitor) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        User user = CurrentUserUtils.getInstance().getUser();
-    	UserFavor userFavor = userFavorDao.findByUserId(user.getId());
-    	if (null == userFavor) {
+    *
+    * Description:
+    * 更新用户偏好设置
+    * @param Integer monitor
+    * @return .jsp String
+    * @see
+    */
+   @RequestMapping(value = { "/userFavorUpdate.do" }, method = RequestMethod.POST)
+   @ResponseBody
+   public String userFavorUpdate(Integer monitor) {
+       Map<String, Object> map = new HashMap<String, Object>();
+       User user = CurrentUserUtils.getInstance().getUser();
+   	UserFavor userFavor = userFavorDao.findByUserId(user.getId());
+   	if (null == userFavor) {
 			userFavor = new UserFavor();
 			userFavor.setUserId(user.getId());
-    	}
-    	userFavor.setMonitor(monitor);
-    	userFavorDao.save(userFavor);
-    	map.put("status", "200");
-    	return JSON.toJSONString(map);
-    }
-    
+   	}
+   	userFavor.setMonitor(monitor);
+   	userFavorDao.save(userFavor);
+   	map.put("status", "200");
+   	return JSON.toJSONString(map);
+   }
+
+	/**
+	 *
+	 * Description: 更新用户偏好设置
+	 * @param Integer monitor
+	 * @return .jsp String
+	 * @see
+	 */
+	@RequestMapping(value = { "/updateSonarConfig.do" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String updateSonarConfig(SonarConfig sonarConfig) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", "200");
+		SheraAPIClientInterface client = null;
+		try {
+			client = sheraClientService.getClient();
+		} catch (Exception e2) {
+			map.put("status", "500");
+			LOG.info(e2.getMessage());
+			return JSON.toJSONString(map);
+		}
+		try {
+			client.getSonarConfig();
+		} catch (Exception e) {
+			try {
+				client.createSonarConfig(sonarConfig);
+			} catch (Exception e1) {
+				map.put("status", "400");
+				e.printStackTrace();
+			}
+		}
+		try {
+			client.updateSonarConfig(sonarConfig);
+		} catch (Exception e) {
+			map.put("status", "400");
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
+	}
+
     /**
-     * 
+     *
      * Description:
-     * 更新租户信息 
+     * 更新租户信息
      * @param user User
      * @param resource Resource
      * @param restriction Restriction
@@ -405,7 +445,7 @@ public class UserController {
                 userResource.setUserId(user.getId());
                 userResource.setCreateDate(new Date());
             }
-            
+
         	//设置存储卷余量
         	userResource.setVol_surplus_size(userResource.getVol_surplus_size()+resource.getVol()-userResource.getVol_size());
             userResource.setCpu(Double.valueOf(resource.getCpu_account()));
@@ -413,34 +453,34 @@ public class UserController {
             userResource.setVol_size(resource.getVol());
             userResource.setImage_count(resource.getImage_count());
             userResource.setUpdateDate(new Date());
-            
+
             updateUserInfo(user, resource);
 			// 以用户名(登陆帐号)为name，创建client
             KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
             Namespace namespace=null;
             try {
-                namespace = client.getNamespace(user.getNamespace()); 
+                namespace = client.getNamespace(user.getNamespace());
             }
             catch (Exception e) {
                 LOG.error("no namespace info!");
                 namespace= kubernetesClientService.generateSimpleNamespace(user.getNamespace());
                 namespace = client.createNamespace(namespace);
             }
-            
+
             if (namespace != null) {
             	try {
             		ResourceQuota quota = updateQuotaInfo(client, user, resource);
             		client.updateResourceQuota(user.getNamespace(), quota);
-            		
+
             		// LimitRange limit = updateLimitRange(client, user.getNamespace(),
             		// restriction);
             		// LimitRange updateLimitRange =
             		// client.updateLimitRange(user.getNamespace(), limit);
-            		
+
             		userDao.save(user);
             		userResourceDao.save(userResource);
             		model.addAttribute("updateFlag", "200");
-            		
+
             		 //记录更新租户信息
                     String extraInfo = "更新租户 " + user.getUserName() + "的信息" + JSON.toJSONString(user) + "租户资源信息：" + JSON.toJSONString(userResource);
                     CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.TENANT_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
@@ -453,11 +493,11 @@ public class UserController {
 			} else {
 				LOG.error("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
 			}
-            
+
             if (sheraId != 0) {
                 userAndSheraUpdate(user.getId(),sheraId);
             }
-        } 
+        }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             LOG.error("error message:-"+ e.getMessage());
@@ -468,7 +508,7 @@ public class UserController {
         model.addAttribute("menu_flag", "user");
         return "user/user.jsp";
     }
-    
+
     /**
      * Description: <br>
      * userAndShera数据的更新
@@ -487,9 +527,9 @@ public class UserController {
         }
         userAndSheraDao.save(userAndShera);
     }
-    
+
     /**
-     * 
+     *
      * Description:
      * 租户修改自己创建的用户的信息
      * @param user ：用户信息
@@ -509,16 +549,15 @@ public class UserController {
             }
             user.setNamespace(userManage.getNamespace());
             user.setParent_id(userManage.getId());
-            
+
             //获取修改前的user
-            User user1=userDao.findById(user.getId());
             userDao.save(user);
-            
+
             //记录修改用户信息操作
             String extraInfo = "更新用户" + user.getUserName() + "的信息，" + JSON.toJSONString(user);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
             commonOperationLogDao.save(log);
-        } 
+        }
         catch (KubernetesClientException e) {
             LOG.error("error message :-"+ e.getMessage());
         }
@@ -527,10 +566,10 @@ public class UserController {
         model.addAttribute("menu_flag", "usermanage");
         return "user/user-management.jsp";
     }
-	
+
 
     /**
-     * 
+     *
      * Description:
      * 局部刷新，批量删除租户
      * @param ids String
@@ -548,7 +587,7 @@ public class UserController {
                 for (int i = 0; i < idArr.length; i++) {
                     idList.add(Long.parseLong(idArr[i]));
                 }
-                
+
                 List<String> namespaceList = new ArrayList<String>();
                 List<User> users = deleteTenAndUser(idList, namespaceList);
                 delNamespace(namespaceList);
@@ -559,7 +598,7 @@ public class UserController {
         catch (javax.ws.rs.ProcessingException e) {
             LOG.error("javax.ws.rs.ProcessingException :-" + e.getMessage());
             map.put("status", "400");
-        } 
+        }
         catch (KubernetesClientException e) {
             LOG.error("KubernetesClientException :-" + e.getMessage());
             map.put("status", "400");
@@ -570,7 +609,7 @@ public class UserController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 批量删除用户
@@ -588,12 +627,12 @@ public class UserController {
                     delUserService(Long.parseLong(idArr[i]));
                     //获取删除前的user
                     User user=userDao.findById(Long.parseLong(idArr[i]));
-                    
+
                     //记录用户删除用户操作
                     String extraInfo = "删除用户"+user.getUserName()+"的信息" + JSON.toJSONString(user);
                     CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.USER_MANAGER, CommConstant.OPERATION_TYPE_DELETE);
-                    commonOperationLogDao.save(log);    
-                    
+                    commonOperationLogDao.save(log);
+
                     userDao.delete(user);
                 }
             }
@@ -605,12 +644,12 @@ public class UserController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 删除用户时同步删除用户创建的服务
      * @param userId : 用户Id
-     * @return 
+     * @return
      * @see
      */
     public void delUserService(long userId){
@@ -630,7 +669,7 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 根据用户id查询用户信息
      * @param model Model
@@ -662,14 +701,14 @@ public class UserController {
                 }
 
 /*                LimitRange lr = client.getLimitRange(user.getNamespace());
-                
+
                  if (lr != null && lr.getSpec().getLimits().size() > 0) {
                  for (LimitRangeItem limit : lr.getSpec().getLimits()) {
                  String type = limit.getType();
                  Map<String, String> def = limit.getDefaultVal();
                  Map<String, String> max = limit.getMax();
                  Map<String, String> min = limit.getMin();
-                
+
                  if (type.trim().equals("pod")) {
                  restriction.setPod_cpu_default(computeCpuOut(def));
                  restriction.setPod_memory_default(computeMemoryOut(def));
@@ -688,7 +727,7 @@ public class UserController {
                  }
                  }
                  }*/
-            } 
+            }
             else {
                 LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
             }
@@ -710,8 +749,8 @@ public class UserController {
     }
 
     /**
-     * 
-     * Description: 
+     *
+     * Description:
      * 管理员明细
      * @param model Model
      * @param id long
@@ -728,19 +767,19 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 通过筛选条件查询用户
-     * @param search_company 
-     * @param search_department 
-     * @param search_autority 
-     * @param search_userName 
-     * @param search_province 
-     * @param model 
+     * @param search_company
+     * @param search_department
+     * @param search_autority
+     * @param search_userName
+     * @param search_province
+     * @param model
      * @return .jsp String
      */
     @RequestMapping(value = { "/searchByCondition" }, method = RequestMethod.POST)
-	public String searchByCondition(String search_company, String search_department, 
+	public String searchByCondition(String search_company, String search_department,
 	                                        String search_autority,String search_userName, String search_province, Model model) {
         String company = "";
         String department = "";
@@ -782,16 +821,16 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 租户搜查
-     * @param search_company 
-     * @param search_department 
-     * @param search_autority 
-     * @param search_userName  
-     * @param search_province 
-     * @param model 
-     * @return .jsp string 
+     * @param search_company
+     * @param search_department
+     * @param search_autority
+     * @param search_userName
+     * @param search_province
+     * @param model
+     * @return .jsp string
      * @see
      */
     @RequestMapping(value = { "/manage/searchByCondition/{id}" }, method = RequestMethod.POST)
@@ -818,19 +857,19 @@ public class UserController {
             String autority = search_autority.trim();
             arr = autority.substring(0, autority.length() - 1).split(",");
         }
-        
+
         List<User> userManageList = new ArrayList<User>();
         Long parentId = CurrentUserUtils.getInstance().getUser().getId();
         if (null != arr && 1 == arr.length) {
             for (User user : userDao.findBy4(company, department, arr[0].trim(), realName, province,parentId)) {
                 userManageList.add(user);
             }
-        } 
+        }
         else if (null != arr && 1 != arr.length) {
             for (User user : userDao.find12By3(company, department, realName, province, parentId)) {
                 userManageList.add(user);
             }
-        } 
+        }
         else {
             for (User user : userDao.find34By3(company, department, realName, province, parentId)) {
                 userManageList.add(user);
@@ -842,7 +881,7 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 查询用户名是存在
      * @param username String
@@ -855,7 +894,7 @@ public class UserController {
         List<String> names = userDao.checkUsername(username);
         if (CollectionUtils.isNotEmpty(names)) {
             map.put("status", "400");
-        } 
+        }
         else {
             try {
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient(username);
@@ -866,7 +905,7 @@ public class UserController {
                 else {
                     map.put("status", "200");
                 }
-            } 
+            }
             catch (KubernetesClientException e) {
                 LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
                 map.put("status", "200");
@@ -876,7 +915,7 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * @param user User
      * @return redirect .jsp
@@ -890,11 +929,11 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 删除单条记录
-     * @param model 
-     * @param id 
+     * @param model
+     * @param id
      * @return redirect .jsp
      */
     @RequestMapping(value = { "user/del/{id}" }, method = RequestMethod.GET)
@@ -905,57 +944,67 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 查询登陆用户的基本信息、资源信息
-     * @param model 
-     * @param id 
-     * @return .jsp 
+     * @param model
+     * @param id
+     * @return .jsp
      * @see
      */
     @RequestMapping(value = { "/detail/{id}/a", "/detail/{id}/b" }, method = RequestMethod.GET)
 	public String detail(Model model, @PathVariable long id) {
-        try {
-            User user = userDao.findOne(id);
-            UserFavor userFavor = userFavorDao.findByUserId(user.getId());
+		try {
+			User user = userDao.findOne(id);
+			UserFavor userFavor = userFavorDao.findByUserId(user.getId());
 			// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 namespace 资源详情
-            KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
-            Namespace ns = client.getNamespace(user.getNamespace());
-            if (null != ns) {
-                getUserResourceInfo(model, user, client);
-            }
-            else {
-                LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
-            }
-            
-            double usedstorage = 0;
-            List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
-            for (Storage storage : list) {
-                usedstorage = usedstorage + (double) storage.getStorageSize();
-            }
-            Shera shera = sheraDao.findByUserId(id);
-            model.addAttribute("userFavor", userFavor);
-            model.addAttribute("userShera", shera);
-            model.addAttribute("usedstorage",  usedstorage / 1024);
-        }
-        catch (KubernetesClientException e) {
-            LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            LOG.error("error message:-" + e.getMessage());
-            e.printStackTrace();
-        }
-        return "user/user-own.jsp";
-    }
+			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+			Namespace ns = client.getNamespace(user.getNamespace());
+			if (null != ns) {
+				getUserResourceInfo(model, user, client);
+			} else {
+				LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
+			}
+
+			double usedstorage = 0;
+			List<Storage> list = storageDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+			for (Storage storage : list) {
+				usedstorage = usedstorage + (double) storage.getStorageSize();
+			}
+			Shera shera = sheraDao.findByUserId(id);
+
+			// 获取sonarConfig
+			SonarConfig sonarConfig = new SonarConfig();
+			sonarConfig.setHidden(false);
+			sonarConfig.setBreak(false);
+			sonarConfig.setThreshold(6);
+			try {
+				SheraAPIClientInterface sheraClient = sheraClientService.getClient();
+				sonarConfig = sheraClient.getSonarConfig();
+			} catch (Exception e) {
+				LOG.info(e.getMessage());
+			}
+			model.addAttribute("userFavor", userFavor);
+			model.addAttribute("userShera", shera);
+			model.addAttribute("usedstorage", usedstorage / 1024);
+			model.addAttribute("sonarConfig", sonarConfig);
+		} catch (KubernetesClientException e) {
+			LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
+			e.printStackTrace();
+		} catch (Exception e) {
+			LOG.error("error message:-" + e.getMessage());
+			e.printStackTrace();
+		}
+		return "user/user-own.jsp";
+	}
 
     /**
-     * 
+     *
      * Description:
      * userModifyPsw
-     * @param id 
-     * @param password 
-     * @param newpwd 
+     * @param id
+     * @param password
+     * @param newpwd
      * @return jsonString
      * @see
      */
@@ -972,7 +1021,7 @@ public class UserController {
             String extraInfo = "修改用户 ： " + user.getUserName() + "密码：" + JSON.toJSONString(user);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.TENANT_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
             commonOperationLogDao.save(log);
-            
+
             //退出当前用户
             CurrentUserUtils.getInstance().loginoutUser(user1);
             map.put("status", "200");
@@ -984,27 +1033,27 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 修改用户基本信息
-     * @param id 
-     * @param email 
-     * @param company 
-     * @param user_cellphone 
-     * @param user_department 
-     * @param user_employee_id 
-     * @param user_phone 
-     * @return jsonString 
+     * @param id
+     * @param email
+     * @param company
+     * @param user_cellphone
+     * @param user_department
+     * @param user_employee_id
+     * @param user_phone
+     * @return jsonString
      */
     @RequestMapping("/userModifyBasic.do")
 	@ResponseBody
-	public String userModifyBasic(long id, String email, String company, String user_cellphone, 
+	public String userModifyBasic(long id, String email, String company, String user_cellphone,
 	                                              String user_department,String user_employee_id, String user_phone) {
         Map<String, Object> map = new HashMap<String, Object>();
         User user = updateUserInfo(id, email, company, user_cellphone, user_department,user_employee_id, user_phone);
         if (null != user) {
             map.put("status", "200");
-        } 
+        }
         else {
             map.put("status", "400");
         }
@@ -1012,10 +1061,10 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
-     * @param model 
-     * @param id 
+     * @param model
+     * @param id
      * @return .jsp String
      */
     @RequestMapping(value = "/list/{id}", method = RequestMethod.GET)
@@ -1027,10 +1076,10 @@ public class UserController {
     }
 //2016年12月30日 17:42:02 判定为无效方法
 //    /**
-//     * 
+//     *
 //     * Description:
 //     * userOwn
-//     * @param model  
+//     * @param model
 //     * @return .jsp String
 //     */
 //    @RequestMapping(value = { "/own" }, method = RequestMethod.GET)
@@ -1040,12 +1089,12 @@ public class UserController {
 //    }
 
     /**
-     * 
+     *
      * Description:
      * 获取更新后的 LimitRange
-     * @param client 
-     * @param namespace 
-     * @param restriction 
+     * @param client
+     * @param namespace
+     * @param restriction
      * @return limitRange LimitRange
      * @see LimitRange
      */
@@ -1067,9 +1116,9 @@ public class UserController {
 
 	/**
 	 * 获取更新后的 ResourceQuota
-	 * @param client 
-	 * @param namespace 
-	 * @param resource 
+	 * @param client
+	 * @param namespace
+	 * @param resource
 	 * @return quota ResourceQuota
 	 */
     private ResourceQuota updateQuotaInfo(KubernetesAPIClientInterface client, User user, Resource resource) {
@@ -1082,7 +1131,7 @@ public class UserController {
         }
         quota = client.getResourceQuota(user.getNamespace());
         ResourceQuotaSpec spec = quota.getSpec();
-        
+
         Map<String, String> hard = quota.getSpec().getHard();
         hard.put("memory", resource.getRam() + "G"); // 内存
         hard.put("cpu", Double.valueOf(resource.getCpu_account())/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量
@@ -1096,14 +1145,14 @@ public class UserController {
         quota.setSpec(spec);
         return quota;
     }
-	
+
     /**
-     * 
+     *
      * Description:
      * fillPartUserInfo
-     * @param user 
-     * @param resource  
-     * @see Resource 
+     * @param user
+     * @param resource
+     * @see Resource
      */
     private void fillPartUserInfo(User user, Resource resource) {
         user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
@@ -1114,10 +1163,10 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
-     * ceph中创建租户目录  
-     * @param user 
+     * ceph中创建租户目录
+     * @param user
      * @return boolean
      * @see
      */
@@ -1135,13 +1184,13 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 为client创建资源配额
      * @param user User
      * @param resource Resource
      * @param client KubernetesAPIClientInterface
-     * @return boolean 
+     * @return boolean
      * @see KubernetesAPIClientInterface Resource
      */
     public boolean createQuota(User user, Resource resource, KubernetesAPIClientInterface client) {
@@ -1171,12 +1220,12 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * Description:
      * 创建命名空间的secret
      * @param user User
      * @param namespace Namespace
-     * @param client 
+     * @param client
      * @return boolean
      * @see
      */
@@ -1200,9 +1249,9 @@ public class UserController {
         }
 
     }
-    
+
     /**
-     * 
+     *
      * Description:
      * 更新用户信息
      * @param user User
@@ -1222,9 +1271,9 @@ public class UserController {
         user.setParent_id(CurrentUserUtils.getInstance().getUser().getId());
         user.setNamespace(user.getUserName());
     }
-    
+
     /**
-     * 
+     *
      * Description:
      * deleteTenAndUser
      * @param idList List<Long>
@@ -1251,39 +1300,39 @@ public class UserController {
         }
         return users;
     }
-    
+
     /**
-     * 
+     *
      * Description:
      * 删除租户命名空间
-     * @param namespaceList 
+     * @param namespaceList
      */
     private void delNamespace(List<String> namespaceList) {
         if (CollectionUtils.isNotEmpty(namespaceList)) {
             for (String namespace : namespaceList) {
                 // 以用户名(登陆帐号)为name，创建client
                 KubernetesAPIClientInterface client = kubernetesClientService.getClient(namespace);
-                
+
                 if (null != client.getNamespace(namespace)) {
                     try {
                         client.deleteNamespace(namespace);
 						// 逻辑删除卷组信息
-                    } 
+                    }
                     catch (javax.ws.rs.ProcessingException e) {
                         LOG.error("delete namespace error" + e.getMessage());
                     }
                 }
-            } 
+            }
         }
     }
-    
+
     /**
-     * 
+     *
      * Description:
      * 获取用户的资源使用信息
-     * @param model 
-     * @param user 
-     * @param client  
+     * @param model
+     * @param user
+     * @param client
      * @see
      */
     private void getUserResourceInfo(Model model, User user, KubernetesAPIClientInterface client) {
@@ -1304,10 +1353,10 @@ public class UserController {
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
             model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数
-            
+
             Map<String, String> used = quota.getStatus().getUsed();
             ReplicationControllerList rcList = client.getAllReplicationControllers();
-            PodList podList = client.getAllPods();         
+            PodList podList = client.getAllPods();
             model.addAttribute("usedCpuNum", kubernetesClientService.transCpu(used.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
             model.addAttribute("usedMemoryNum", kubernetesClientService.computeMemoryOut(used.get("memory")));// 已使用内存
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
@@ -1317,18 +1366,18 @@ public class UserController {
             LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
         }
     }
-    
+
     /**
-     * 
+     *
      * Description:
      * 更新用户信息
-     * @param id 
-     * @param email 
-     * @param company 
-     * @param user_cellphone 
-     * @param user_department 
-     * @param user_employee_id 
-     * @param user_phone 
+     * @param id
+     * @param email
+     * @param company
+     * @param user_cellphone
+     * @param user_department
+     * @param user_employee_id
+     * @param user_phone
      * @return user User
      */
     private User updateUserInfo(long id, String email, String company, String user_cellphone,
@@ -1341,15 +1390,15 @@ public class UserController {
         user.setUser_cellphone(user_cellphone);
         user.setUser_phone(user_phone);
         user = userDao.save(user);
-        
+
         //记录更新用户信息操作
         String extraInfo = "更新用户 ： " + user.getUserName() + "信息" + JSON.toJSONString(user);
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(user.getUserName(), extraInfo, CommConstant.TENANT_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
         commonOperationLogDao.save(log);
-        
+
         return user;
     }
-    
+
     /**
      * Description: <br>
      * 查询所有的shera
@@ -1363,7 +1412,7 @@ public class UserController {
         model.addAttribute("li_flag", "shera");
         return "ci/shera.jsp";
     }
-    
+
     /**
      * Description: <br>
      * 创建shera路由信息
@@ -1387,12 +1436,12 @@ public class UserController {
                 }
             }
             sheraDao.save(shera);
-            
+
             //记录新增shera操作
             String extraInfo = "新增shera ： " + shera.getSheraUrl() + "信息：" + JSON.toJSONString(shera);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(shera.getSheraUrl() , extraInfo, CommConstant.SHERA_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
             commonOperationLogDao.save(log);
-            
+
             map.put("status", "200");
         }
         catch (Exception e) {
@@ -1401,11 +1450,11 @@ public class UserController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * 删除shera
      * @param sheraId sheraId
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping("/shera/deleteShera.do")
@@ -1416,12 +1465,12 @@ public class UserController {
             Shera shera = sheraDao.findOne(sheraId);
             sheraDao.delete(sheraId);
             userAndSheraDao.deleteBySheraId(sheraId);
-            
+
             //记录删除shera操作
             String extraInfo = "删除shera ： " + shera.getSheraUrl() + "信息：" + JSON.toJSONString(shera);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(shera.getSheraUrl() , extraInfo, CommConstant.SHERA_MANAGER, CommConstant.OPERATION_TYPE_DELETE);
             commonOperationLogDao.save(log);
-            
+
             map.put("status", "200");
         }
         catch (Exception e) {
@@ -1430,7 +1479,7 @@ public class UserController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 批量删除shera
@@ -1453,19 +1502,19 @@ public class UserController {
                 deleteShera(id);
             }
             map.put("status", "200");
-        } 
+        }
         catch (Exception e) {
             map.put("status", "400");
             LOG.error("delete sheras error : " + e.getMessage());
         }
-        return JSON.toJSONString(map); 
+        return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 更新shera
      * @param shera shera
-     * @return 
+     * @return
      */
     @RequestMapping("/shera/updateShera.do")
     @ResponseBody
@@ -1479,12 +1528,12 @@ public class UserController {
             oldShera.setPassword(shera.getPassword());
             oldShera.setRemark(shera.getRemark());
             sheraDao.save(oldShera);
-            
+
             //记录更新shera操作
             String extraInfo = "更新shera ： " + shera.getSheraUrl() + "信息：" + JSON.toJSONString(shera);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(shera.getSheraUrl() , extraInfo, CommConstant.SHERA_MANAGER, CommConstant.OPERATION_TYPE_UPDATE);
             commonOperationLogDao.save(log);
-            
+
             if (updateJdk(oldShera, jdkJson)) {
                 map.put("status", "200");
             }
@@ -1498,7 +1547,7 @@ public class UserController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 更新jdk信息
@@ -1531,7 +1580,7 @@ public class UserController {
         }
         return true;
     }
-    
+
     /**
      * Description: <br>
      * 获取shera的详细信息
@@ -1555,7 +1604,7 @@ public class UserController {
         }
         return JSON.toJSONString(map);
     }
-    
+
     /**
      * Description: <br>
      * 查询所有的sonar
@@ -1567,4 +1616,25 @@ public class UserController {
         model.addAttribute("li_flag", "sonar");
         return "ci/sonar.jsp";
     }
+
+	/**
+	 * Description: <br>
+	 * 删除指定的loginId
+	 *
+	 * @param loginId
+	 * @return String
+	 * @see
+	 */
+	@RequestMapping("/deleteByLoginId.do")
+	@ResponseBody
+	public String deleteByLoginId(String loginId) {
+		LOG.info("DELETE USER:" + loginId);
+		User user = userDao.findByUserName(loginId);
+		if (user.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
+			return userDelMul(user.getId() + "");
+		} else {
+			return userDel(user.getId() + "");
+		}
+	}
+
 }

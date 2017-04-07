@@ -35,6 +35,7 @@ import com.bonc.epm.paas.shera.model.JobExecList;
 import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.JobExecViewList;
 import com.bonc.epm.paas.shera.model.Log;
+import com.bonc.epm.paas.shera.model.Rating;
 import com.bonc.epm.paas.shera.model.SonarConfig;
 
 /**
@@ -182,6 +183,22 @@ public interface SheraAPI {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ChangeGit deleteGitHooks(@PathParam("namespace") String namespace, @PathParam("name") String name)
+			throws SheraClientException;
+
+	/**
+	 * update a git hook
+	 *
+	 * @param namespace
+	 * @param name id of a job
+	 * @param changeGit a ChangeGit
+	 * @throws SheraClientException
+	 * @return {@link ChangeGit}
+	 */
+	@DELETE
+	@Path("/git/hooks/update/{namespace}/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ChangeGit updateGitHooks(@PathParam("namespace") String namespace, @PathParam("name") String name, ChangeGit changeGit)
 			throws SheraClientException;
 
 	/**
@@ -336,6 +353,19 @@ public interface SheraAPI {
 
 	/**
 	 *
+	 * Description: update jdk
+	 *
+	 * @return {@link Jdk}s
+	 * @throws SheraClientException
+	 */
+	@PUT
+	@Path("/jdk/update")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Jdk updateJdk(Jdk jdk) throws SheraClientException;
+
+	/**
+	 *
 	 * Description: delete a jdk
 	 *
 	 * @param jdkVersion
@@ -343,10 +373,10 @@ public interface SheraAPI {
 	 * @throws SheraClientException
 	 */
 	@DELETE
-	@Path("/jdk/del/{jdkVersion}")
+	@Path("/jdk/del/{version}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Jdk deleteJdk(@PathParam("jdkVersion") String jdkVersion) throws SheraClientException;
+	public Jdk deleteJdk(@PathParam("version") String version) throws SheraClientException;
 
 	/**
 	 *
@@ -389,7 +419,7 @@ public interface SheraAPI {
 	 * @see
 	 */
 	@PUT
-	@Path("/config/{namespace}")
+	@Path("/sonar/update/{namespace}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public SonarConfig updateSonarConfig(@PathParam("namespace") String namespace, SonarConfig sonarConfig) throws SheraClientException;
@@ -404,9 +434,39 @@ public interface SheraAPI {
 	 * @throws SheraClientException
 	 */
 	@GET
-	@Path("/config/{namespace}")
+	@Path("/sonar/get/{namespace}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public SonarConfig getSonarConfig(@PathParam("namespace") String namespace, SonarConfig sonarConfig) throws SheraClientException;
+	public SonarConfig getSonarConfig(@PathParam("namespace") String namespace) throws SheraClientException;
+
+	/**
+	 *
+	 * Description: get quality rating
+	 *
+	 * @param namespace
+	 * @param sonarConfig
+	 * @return SonarConfig
+	 * @throws SheraClientException
+	 */
+	@GET
+	@Path("/sonar/rating/{namespace}/{projectKey}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Rating getJobRating(@PathParam("namespace") String namespace, @PathParam("projectKey") String projectKey) throws SheraClientException;
+
+	/**
+	 *
+	 * Description: delete one sonar project
+	 *
+	 * @param namespace
+	 * @param sonarConfig
+	 * @return SonarConfig
+	 * @throws SheraClientException
+	 */
+	@DELETE
+	@Path("/sonar/{projectKey}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Rating deleteJobRating(@PathParam("namespace") String namespace, @PathParam("projectKey") String projectKey) throws SheraClientException;
 
 }

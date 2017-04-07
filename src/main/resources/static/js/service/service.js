@@ -567,7 +567,7 @@ function oneUpGradeContainer(id, containerName, nums, cpu, ram) {
 	var leftram = $("#leftram").html();
 
 	var maxcpu = parseInt(leftcpu) / parseInt(cpu);
-	var maxram = parseInt(leftram) / parseInt(ram);
+	var maxram = parseInt(leftram) / (parseInt(ram) / 1024);
 
 	var total = 0;
 	if (parseInt(maxcpu) > parseInt(maxram)) {
@@ -689,26 +689,36 @@ function oneVersionUpgrade(id, serviceName, imgName, obj) {
 
 // 响应每一行上的修改配置
 function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
+	 $(".confCpu").prop("checked",false);
+	 $(".confRam").prop("checked",false);
+	 for(var i=0; i<$(".confCpu").length; i++){
+		 var cpuVal = $(".confCpu")[i].getAttribute("value");
+		 if(cpu==parseInt(cpuVal)){
+			 var aa = $(".confCpu")[i];
+			 $(aa).prop("checked",true);
+			 break;
+		 }
+	 }
+	 for(var j=0; j<$(".confRam").length; j++){
+		 var ramVal = $(".confRam")[j].getAttribute("value");
+		 if(ram==parseInt(ramVal)){
+			 var bb = $(".confRam")[j];
+			 $(bb).prop("checked",true);
+			 break;
+		 }
+	 }
 	 $('#confServiceName').val(containerName);
-	 $('#confCpu').val(cpu);
-	 $('#confRamSlider_input').val(ram);
-	 var totalcpu = 0;
-	 var totalram = 0;
-	 totalcpu = parseInt($('#confCpu').attr('max'))+parseFloat(cpu);
-	 totalram = '1024';
-	 $('#confCpu').attr("max",totalcpu);
-	 //var confRamSlider = sliderFn('confRamSlider', totalram,0, Number(ram));
 
 	 layer.open({
 		 type:1,
 		 title: '更改配置',
-		 area: ['500px', '300px'],
+		 area: ['500px', '350px'],
 		 content: $("#changeConf"),
 		 btn: ['确定', '取消'],
 		 yes: function(index, layero){ //或者使用btn1
 			 //按钮【按钮一】的回调
-			 var cpus = $('#confCpu').val();
-			 var rams = $('#confRamSlider_input').val();
+			 var cpus = $(".confCpu:checked").val();
+			 var rams = $(".confRam:checked").val();
 			 var leftcpu = $("#leftcpu").html();
 			 var leftmemory = $("#leftram").html();
 			 //服务在运行中
@@ -720,7 +730,7 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 					 return;
 				 }
 
-				 if ((parseFloat(rams)*parseFloat(instanceNum)) > (parseFloat(leftmemory) + parseFloat(ram)*parseFloat(instanceNum) )) {
+				 if ((parseFloat(rams)*parseFloat(instanceNum)/1024) > (parseFloat(leftmemory) + parseFloat(ram)*parseFloat(instanceNum) )) {
 					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]});
 					 $("#confRamSlider_input").focus();
 					 return;
@@ -732,7 +742,7 @@ function oneChangeContainerConf(id,containerName,instanceNum,cpu,ram,status) {
 					 return;
 				 }
 
-				 if ((parseFloat(rams)*parseFloat(instanceNum)) > parseFloat(leftmemory)) {
+				 if ((parseFloat(rams)*parseFloat(instanceNum)/1024) > parseFloat(leftmemory)) {
 					 layer.tips('内存剩余不足',"#confRamSlider_input",{tips: [1,"#3595CC"]});
 					 $("#confRamSlider_input").focus();
 					 return;
@@ -944,7 +954,7 @@ function loadServices() {
 					{
 						data : null,
 						render : function ( data, type, row ) {
-							var html = '<input type= "checkbox" class="chkItem" style="margin-left:30px;" name="chkItem"'+
+							var html = '<input type= "checkbox" class="chkItem" style="margin-left:10px;" name="chkItem"'+
 								'autocomplete="off" id="checkboxID" value="'+row.id+'"'+
 								'serviceName="'+row.serviceName+'"'+
 								'serviceNum="'+row.instanceNum +'"'+
@@ -958,14 +968,20 @@ function loadServices() {
 					{
 						data : null,
 						render : function ( data, type, row ) {
-							var html = '<a style="margin-left:2px;" href="#"'+
-								'value="'+row.id+'"'+
-								'serviceName="'+row.serviceName+'"'+
-								'serviceNum="'+row.instanceNum +'"'+
-								'confRam="'+row.ram +'" status="'+row.status +'"'+
-								'imagename="'+row.imgName +'"'+
-								'imageversion="'+row.imgVersion +'"'+
-								'confCpu="'+row.cpuNum + '"><span class="fa_level fa_level_d">D</span></a>';
+								var html = '';
+								if (row.codeRating == 1) {
+									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_a">A</span></a>';
+								} else if (row.codeRating == 2) {
+									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_b">B</span></a>';
+								} else if (row.codeRating == 3) {
+									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_c">C</span></a>';
+								} else if (row.codeRating == 4) {
+									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_d">D</span></a>';
+								} else if (row.codeRating == 5) {
+									html = '<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_e">E</span></a>';
+								} else {
+									html = '<span class="fa_level fa_level_n">无</span>';
+								}
 							return html;
 						}
 					},
@@ -1143,19 +1159,21 @@ function loadServices() {
 										'style="margin-left: 5px" title="停止"> '+
 										'<i class="fa fa-power-off self_a"></i></a>';
 							}
+/*
 							if (row.status != 3 && row.status != 6 && row.status != 7 && row.status != 8) {
 								html += '<a id="'+row.id+'_change" class="a-live change " '+
-										'href="javascript:startdebug('+ row.id +','+ row.status +')" title="调试"'+
+										'href="javascript:startdebug('+ row.id +','+ row.status +')" title="璋冭瘯"'+
 										'style="margin-left: 5px">'+
 											'<i class="fa fa-bug"></i>'
 										+'</a> ';
 							} else {
 								html += '<a id="'+row.id+'_change" class="a-live change " '+
-								'href="javascript:void(0)" title="调试"'+
+								'href="javascript:void(0)" title="璋冭瘯"'+
 								'style="margin-left: 5px">'+
 									'<i class="fa fa-bug  self_a"></i>'
 								+'</a> ';
-							}
+							}*/
+
 
 							if ( row.status == 7 || row.status == 8){
 								html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="'+row.id+'" serviceName="'+row.serviceName+'" imgName="'+row.imgName+'">'+
@@ -1194,7 +1212,7 @@ function loadServices() {
 								html +=	'</li>'+
 										'<li>';
 
-								if ( row.status == 6){
+								if ( row.status != 3 && row.status != 6){
 									html += '<a id="'+row.id+'_changeConfiguration" class="no-drop changeConfiguration_a " '+
 									'href="javascript:void(0);" title="更改配置"'+
 									'><i class="fa fa-cog self_a"></i>更改配置</a> ';

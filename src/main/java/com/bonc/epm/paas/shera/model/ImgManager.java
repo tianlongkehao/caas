@@ -11,6 +11,8 @@
 
 package com.bonc.epm.paas.shera.model;
 
+import java.util.List;
+
 /**
  * @author ke_wang
  * @version 2016年11月15日
@@ -22,7 +24,8 @@ public class ImgManager {
     private String dockerFile;
     private String imgName;
     private String imgNamePre;
-    
+    private List<String> tools;
+
     public String getDockerFileContent() {
         return dockerFileContent;
     }
@@ -47,5 +50,11 @@ public class ImgManager {
     public void setImgNamePre(String imgNamePre) {
         this.imgNamePre = imgNamePre;
     }
-    
+	public List<String> getTools() {
+		return tools;
+	}
+	public void setTools(List<String> tools) {
+		this.tools = tools;
+	}
+
 }

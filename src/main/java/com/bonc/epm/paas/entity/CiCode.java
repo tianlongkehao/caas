@@ -17,8 +17,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * 
+ *
  * 代码构建特殊字段
+ *
  * @author zhoutao
  * @version 2016年12月27日
  * @see CiCode
@@ -26,163 +27,201 @@ import javax.persistence.Id;
  */
 @Entity
 public class CiCode {
-    /**
-     * 主键
-     */
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private long id;
-    
-    /**
-     * ciId
-     */
-    private long ciId;
+	/**
+	 * 主键
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
 
-    /**
-     * 是否为基础镜像
-     * 1 是基础镜像，2不是基础镜像；
-     */
-    private Integer isBaseImage; 
-    
-    /**
-     * 代码类型：0:none、1:git、2:svn
-     */
-    private Integer codeType;
-    
-    /**
-     * 代码url
-     */
-    private String codeUrl;
-    
-    /**
-     * 是否需要挂钩代码，0：不挂钩、1：挂钩代码
-     */
-    private Integer isHookCode;
-    
-    /**
-     * 代码挂钩Id
-     */
-    private long hookCodeId;
-    
-    /**
-     * name;
-     */
-    private String codeName;
-    
-    /**
-     * Refspec
-     */
-    private String codeRefspec;
-    
-    /**
-     * 代码分支
-     */
-    private String codeBranch;
-    
-    /**
-     * 代码认证方式
-     */
-    private Long codeCredentials;
-    
-    /**
-     * 代码构建jdk版本
-     */
-    private String jdkVersion;
+	/**
+	 * ciId
+	 */
+	private long ciId;
 
-    public long getId() {
-        return id;
-    }
+	/**
+	 * 是否为基础镜像 1 是基础镜像，2不是基础镜像；
+	 */
+	private Integer isBaseImage;
 
-    public void setId(long id) {
-        this.id = id;
-    }
+	/**
+	 * 代码类型：0:none、1:git、2:svn
+	 */
+	private Integer codeType;
 
-    public long getCiId() {
-        return ciId;
-    }
+	/**
+	 * 代码url
+	 */
+	private String codeUrl;
 
-    public void setCiId(long ciId) {
-        this.ciId = ciId;
-    }
+	/**
+	 * 是否需要挂钩代码，0：不挂钩、1：挂钩代码
+	 */
+	private Integer isHookCode;
 
-    public Integer getIsBaseImage() {
-        return isBaseImage;
-    }
+	/**
+	 * 代码挂钩Id
+	 */
+	private long hookCodeId;
 
-    public void setIsBaseImage(Integer isBaseImage) {
-        this.isBaseImage = isBaseImage;
-    }
+	/**
+	 * name;
+	 */
+	private String codeName;
 
-    public Integer getCodeType() {
-        return codeType;
-    }
+	/**
+	 * Refspec
+	 */
+	private String codeRefspec;
 
-    public void setCodeType(Integer codeType) {
-        this.codeType = codeType;
-    }
+	/**
+	 * 代码分支
+	 */
+	private String codeBranch;
 
-    public String getCodeUrl() {
-        return codeUrl;
-    }
+	/**
+	 * 代码认证方式
+	 */
+	private Long codeCredentials;
 
-    public void setCodeUrl(String codeUrl) {
-        this.codeUrl = codeUrl;
-    }
+	/**
+	 * 代码质量检查 1：检查 0：不检查
+	 */
+	private Integer sonarCheck;
 
-    public Integer getIsHookCode() {
-        return isHookCode;
-    }
+	/**
+	 * 代码质量检查路径
+	 */
+	private String sources;
 
-    public void setIsHookCode(Integer isHookCode) {
-        this.isHookCode = isHookCode;
-    }
+	/**
+	 * 代码构建jdk版本
+	 */
+	private String jdkVersion;
 
-    public long getHookCodeId() {
-        return hookCodeId;
-    }
+	/**
+	 * 代码构建工具集
+	 */
+	private String ciTools;
 
-    public void setHookCodeId(long hookCodeId) {
-        this.hookCodeId = hookCodeId;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public String getCodeName() {
-        return codeName;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public void setCodeName(String codeName) {
-        this.codeName = codeName;
-    }
+	public long getCiId() {
+		return ciId;
+	}
 
-    public String getCodeRefspec() {
-        return codeRefspec;
-    }
+	public void setCiId(long ciId) {
+		this.ciId = ciId;
+	}
 
-    public void setCodeRefspec(String codeRefspec) {
-        this.codeRefspec = codeRefspec;
-    }
+	public Integer getIsBaseImage() {
+		return isBaseImage;
+	}
 
-    public String getCodeBranch() {
-        return codeBranch;
-    }
+	public void setIsBaseImage(Integer isBaseImage) {
+		this.isBaseImage = isBaseImage;
+	}
 
-    public void setCodeBranch(String codeBranch) {
-        this.codeBranch = codeBranch;
-    }
+	public Integer getCodeType() {
+		return codeType;
+	}
 
-    public Long getCodeCredentials() {
-        return codeCredentials;
-    }
+	public void setCodeType(Integer codeType) {
+		this.codeType = codeType;
+	}
 
-    public void setCodeCredentials(Long codeCredentials) {
-        this.codeCredentials = codeCredentials;
-    }
+	public String getCodeUrl() {
+		return codeUrl;
+	}
 
-    public String getJdkVersion() {
-        return jdkVersion;
-    }
+	public void setCodeUrl(String codeUrl) {
+		this.codeUrl = codeUrl;
+	}
 
-    public void setJdkVersion(String jdkVersion) {
-        this.jdkVersion = jdkVersion;
-    }
-    
+	public Integer getIsHookCode() {
+		return isHookCode;
+	}
+
+	public void setIsHookCode(Integer isHookCode) {
+		this.isHookCode = isHookCode;
+	}
+
+	public long getHookCodeId() {
+		return hookCodeId;
+	}
+
+	public void setHookCodeId(long hookCodeId) {
+		this.hookCodeId = hookCodeId;
+	}
+
+	public String getCodeName() {
+		return codeName;
+	}
+
+	public void setCodeName(String codeName) {
+		this.codeName = codeName;
+	}
+
+	public String getCodeRefspec() {
+		return codeRefspec;
+	}
+
+	public void setCodeRefspec(String codeRefspec) {
+		this.codeRefspec = codeRefspec;
+	}
+
+	public String getCodeBranch() {
+		return codeBranch;
+	}
+
+	public void setCodeBranch(String codeBranch) {
+		this.codeBranch = codeBranch;
+	}
+
+	public Long getCodeCredentials() {
+		return codeCredentials;
+	}
+
+	public void setCodeCredentials(Long codeCredentials) {
+		this.codeCredentials = codeCredentials;
+	}
+
+	public Integer getSonarCheck() {
+		return sonarCheck;
+	}
+
+	public void setSonarCheck(Integer sonarCheck) {
+		this.sonarCheck = sonarCheck;
+	}
+
+	public String getSources() {
+		return sources;
+	}
+
+	public void setSources(String sources) {
+		this.sources = sources;
+	}
+
+	public String getJdkVersion() {
+		return jdkVersion;
+	}
+
+	public void setJdkVersion(String jdkVersion) {
+		this.jdkVersion = jdkVersion;
+	}
+
+	public String getCiTools() {
+		return ciTools;
+	}
+
+	public void setCiTools(String ciTools) {
+		this.ciTools = ciTools;
+	}
+
 }

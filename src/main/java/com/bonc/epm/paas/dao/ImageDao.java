@@ -82,7 +82,7 @@ public interface ImageDao extends CrudRepository<Image, Long>{
     public Image findByNameAndVersion(String name, String version);
 
 	@Query("select i from Image i where (i.imageType = 1 or i.createBy = ?1) and i.name = ?2 and i.isDelete != 1")
-	public List<Image> findByImageVarsionOfName(long createBy,String name,Sort sort);
+	public List<Image> findByImageVersionOfName(long createBy,String name,Sort sort);
 
 	@Query(" select i from Image i where "
 	      + " i.id in (select ufi.favor_images from UserFavorImages ufi group by ufi.favor_images)"

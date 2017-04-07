@@ -25,6 +25,7 @@ import com.bonc.epm.paas.shera.model.JobExecList;
 import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.JobExecViewList;
 import com.bonc.epm.paas.shera.model.Log;
+import com.bonc.epm.paas.shera.model.Rating;
 import com.bonc.epm.paas.shera.model.SonarConfig;
 
 /**
@@ -77,6 +78,8 @@ public interface SheraAPIClientInterface {
 
 	public ChangeGit addGitHooks(String name, ChangeGit changeGit) throws SheraClientException;
 
+	public ChangeGit updateGitHooks(String name, ChangeGit changeGit) throws SheraClientException;
+
 	public ChangeGit deleteGitHooks(String name) throws SheraClientException;
 
 	public Job deleteJob(String jobId) throws SheraClientException;
@@ -101,7 +104,9 @@ public interface SheraAPIClientInterface {
 	/* Jdk API */
 	public JdkList getAllJdk() throws SheraClientException;
 
-	public Jdk deleteJdk(String jdkVersion) throws SheraClientException;
+	public Jdk deleteJdk(String version) throws SheraClientException;
+
+	public Jdk updateJdk(Jdk jdk) throws SheraClientException;
 
 	public Jdk createJdk(Jdk jdk) throws SheraClientException;
 
@@ -109,5 +114,9 @@ public interface SheraAPIClientInterface {
 
 	public SonarConfig updateSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
 
-	public SonarConfig getSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
+	public SonarConfig getSonarConfig() throws SheraClientException;
+
+	public Rating getJobRating(String projectKey) throws SheraClientException;
+
+	public Rating deleteJobRating(String projectKey) throws SheraClientException;
 }

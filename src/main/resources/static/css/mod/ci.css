@@ -524,10 +524,10 @@ tr.focus{
     text-overflow:ellipsis;
 }
 .c-project-con{
-	width:84%;	
+	width:84%;
 }
 textarea.c-project-con{
-	margin-top:8px;	
+	margin-top:8px;
 }
 .c-title{
 	margin-top:20px;
@@ -547,7 +547,7 @@ textarea.c-project-con{
 	padding-right: 10px!important;
 	padding-left:10px!important;
 	cursor: pointer!important;
-	
+
 }
 .addCiStepRow{
 	width: 98%;
@@ -565,11 +565,11 @@ textarea.c-project-con{
 	border-bottom: 1px solid #dadada;
 }
 .ibox-content .c-project-con{
-	width:80%;	
+	width:80%;
 	float:left;
 }
 .ibox-content .c-project-tit{
-	width:16%;	
+	width:16%;
 }
 .ibox-content .ant-higherBtn{
 	border: 1px solid #ccc;
@@ -648,7 +648,7 @@ textarea.c-project-con{
 	margin-left: 20px;
 	float: left;
 	line-height:34px;
-	
+
 }
 .conCred{
 	width: 77%;
@@ -695,16 +695,16 @@ textarea.c-project-con{
 	width:96%;
 }
 td.autocut{
-	width:350px; 
+	width:350px;
 	line-height:40px!important;
-	display:block; 
-    overflow:hidden;  
-    white-space:nowrap;  
-    text-overflow:ellipsis;  
-    -o-text-overflow:ellipsis;  
-    -icab-text-overflow: ellipsis;  
-    -khtml-text-overflow: ellipsis;  
-    -moz-text-overflow: ellipsis;  
+	display:block;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    -o-text-overflow:ellipsis;
+    -icab-text-overflow: ellipsis;
+    -khtml-text-overflow: ellipsis;
+    -moz-text-overflow: ellipsis;
     -webkit-text-overflow: ellipsis;
 }
 .imgVersionFA{
@@ -715,7 +715,7 @@ td.autocut{
 #imageVersion{
 	float: left;
 }
-#imageInfo{
+#imageInfo,#ci-sonarInfo{
 	margin-left:10px;
 }
 .imgInput{
@@ -748,48 +748,48 @@ td.autocut{
 	width:16%;
 }
 .dftools li.dftools-firstli{
-	width:8%;
+	width:12%;
 }
 .dftools li label input{
 	margin-right:4px;
 }
-
-#ci-sonarInfo{
-	margin-left:10px;
+.warningInfo{
+	color:#e8504f;
 }
-.questionInfoCon{
-	padding:10px;
-	border:1px solid #ddd;
-	display:none;
-	margin-left: 25px;
-    width: 92%;
+.warningInfo .fa-warning{
+	margin-right:6px;
 }
-.fa-questionBtn{
-    line-height: 35px;
-    margin-left: 4px;
-    font-size: 16px;
-    float:right;
-    color:#e8504f;
+i.fa-toolIcon{
+	width:18px;
+	height:18px;
+	background: url(../../images/tools-icon.png) no-repeat;
+	background-position: -1px -10px;
+	margin: 0px 6px 0px 4px;
 }
-.fa-questionCon{
-	padding:10px;
-	border:1px solid #ddd;
-	display:none;
-	margin-left: 25px;
-    width: 92%;
+i.fa-APM{
+	background-position: -1px 2px;
 }
-.registryinfo ul.nav ul.dropdown-menu li{
-	cursor:pointer;
+i.fa-busybox{
+	background-position: -1px -18px;
 }
-.settingfilePath{
-	padding-left: 18%;
+i.fa-dig{
+	background-position: -1px -39px;
 }
-.settingfilePath-tit{
-	width: 12%;
-    float: left;
-    line-height: 34px;
+i.fa-ftp{
+	background-position: -1px -61px;
 }
-.settingfilePath-con{
-	width: 84%;
-    float: left;
+i.fa-jdk{
+	background-position: -1px -86px;
+}
+i.fa-mysql{
+	background-position: -1px -104px;
+}
+i.fa-oracle{
+	background-position: -1px -120px;
+}
+i.fa-telnet{
+	background-position: -1px -141px;
+}
+i.fa-tomcat{
+	background-position: -1px -161px;
 }

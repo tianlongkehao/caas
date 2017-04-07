@@ -4,9 +4,12 @@
 <head lang="en">
 <title>服务</title>
 <%@include file="../frame/header.jsp"%>
+<link rel="stylesheet" type="text/css" href= "<%=path%>/plugins/datetimepicker/css/jquery-ui.css"/>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/service.css" />
+<script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-slide.min.js"></script>
+<script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript"
 	src="<%=path%>/js/service/service-detail.js"></script>
 </head>
@@ -54,15 +57,16 @@
 							<li class="oldCon">服务地址：<a href="${service.serviceAddr}/${service.proxyPath}"target="_blank">
 								<span id="oldServiceAddr">${service.serviceAddr}</span>/<span id="oldProxyPath">${service.proxyPath}</span>
 								</a>
+								<a id="editServiceAddrBtn" style="margin-left:20px" class="fa fa-edit"></a>
 							</li>
-<!-- 								<i id="editServiceAddrBtn" style="margin-left:20px" class="fa fa-edit"></i> -->
-<!-- 							<li class="editCon">服务地址： -->
-<!-- 							  <prex id=addrPrex ></prex> -->
-<%-- 								<input id="editServiceAddr" type="text" value="${service.serviceAddr}">/ --%>
-<%-- 								<input id="editProxyPath" type="text" value="${service.proxyPath}"> --%>
-<!-- 								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i> -->
-<!-- 								<i id="canclEdit" style="margin-left:6px" class="fa fa-times"></i> -->
-<!-- 								</li> -->
+							<li class="editCon">服务地址：
+							  <prex id=addrPrex ></prex>
+<%-- 							  	<input id="editServiceAddrValue" type="hidden" value="${service.serviceAddr}"> --%>
+								<input id="editServiceAddr" type="text" value="${service.serviceAddr}">/
+								<input id="editProxyPath" type="text" value="${service.proxyPath}">
+								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i>
+								<i id="canclEdit" style="margin-left:6px" class="fa fa-times"></i>
+								</li>
 							<li>创建时间：${service.createDate }</li>
 							<li>更新时间：${service.createDate }</li>
 						</ul>
@@ -615,7 +619,7 @@
 					              	<p class="portLabel"><span>容器端口：</span><input type="text" name="containerPort" id="containerPort" class="form-control" /></p>
 					                <p class="portLabel"><span>协议：</span><select class="T-http form-control" name="protocol" id="protocol">
 					                          <option>TCP</option>
-					                          <option>HTTP</option>
+					                          <option>UDP</option>
 					                       </select>
 					                </p>
 					            </div>
@@ -636,7 +640,8 @@
 							</div>
 							<div class="pull_right">
 								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
-								<input id="date_log1" type="text" value="" readonly>
+<!-- 								<input type="text" id="dateTimePicker" value=""/> -->
+								<!-- <input id="date_log1" type="text" value="" readonly> -->
 								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
 								<%-- <i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i> --%>
 								<a id="getPodlogFile" href="" style="color:#2FBA66"><i id="download" class="fa fa-download margin cursor" ></i></a>

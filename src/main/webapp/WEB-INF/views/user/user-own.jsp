@@ -161,7 +161,7 @@
 								<div class="panel panel-info">
 									<div class="panel-heading">
 										<h4 class="panel-title">
-											<a data-toggle="collapse" data-parent="#accordion" 
+											<a data-toggle="collapse" data-parent="#accordion"
 											   href="#collapseOne">
 												监控设置
 											</a>
@@ -200,7 +200,7 @@
 							<div class="panel panel-success ">
 								<div class="panel-heading">
 									<h4 class="panel-title">
-										<a data-toggle="collapse" data-parent="#accordion" 
+										<a data-toggle="collapse" data-parent="#accordion"
 										   href="#collapseTwo">
 											质量检查设置
 										</a>
@@ -209,38 +209,78 @@
 								<div id="collapseTwo" class="panel-collapse collapse">
 									<div class="panel-body">
 										<div class="setColor preferInfo">
-											<div>是否检查：
-				                        		<label id="sonarYesOrNo"><input type="checkbox" value="" id="sonarYesOrNoChecked">检查</label>
-				                        	</div>
-				                        	<div class="sonarTwoStep hide"><div>是否显示：
-				                        		<label id=""><input type="checkbox" value="" id="">显示检查结果</label>
-				                        	</div>
-											<div>质量检查：
-				                        		<label id=""><input type="radio" name="sonarCheck" value="">必选</label>
-				                        		<label id=""><input type="radio" name="sonarCheck" checked value="">可选</label>
-				                        	</div>
-				                        	<div class="sonarCheckInfo ">检查进程：
-				                        		<label id="sonarSyn"><input type="radio" name="sonarProgress" value="" id="sonarSynChecked">同步</label>
-				                        		<label id="sonarAsyn"><input type="radio" name="sonarProgress" checked value="">异步</label>
-				                        	</div>
-				                        	<div class="sonarInfo hide left sonardiv"><span class="labelInfo left">sonar阈值：</span>
-				                        		<select class="form-control" name="sheraId">
-                                                        <option value="a">A</option>
-                                                        <option value="b">B</option>
-                                                        <option value="c">C</option>
-                                                        <option value="d">D</option>
-                                                        <option value="e">E</option>
-                                                        <option value="f">F</option>
-                                                </select>
-                                                <div class="alertInfo col-md-10" >
-													<i class="fa fa-warning" style="color:#efa421"></i>
-													<span>代码质量检查阈值，若代码质量不能达到设定的阈值级别则代码不能继续编译！</span>
-												</div>
-				                        	</div>
-				                        	<div class="left sonardiv"><span class="labelInfo left">token：</span>
-				                        		<input type="text" class="form-control tokenValue">
-				                        	</div>
-				                        	</div>
+
+											<input type="hidden" value="${sonarConfig.enabled }" id="SonarConfigVal">
+											<input type="hidden" value="${sonarConfig.hidden }" id="">
+											<input type="hidden" value="${sonarConfig.mandatory }" id="mandatoryVal">
+											<input type="hidden" value="${sonarConfig.threshold }" id="thresholdVal">
+											<%-- <input type="hidden" value="${sonarConfig.breakable }" id=""> --%>
+											<input type="hidden" value="${sonarConfig.token }" id="">
+											<input type="hidden" value="${sonarConfig.url }" id="">
+
+											<c:if test="${sonarConfig.enabled == false }">
+													<div>是否检查：
+														<label id="sonarYesOrNo"><i class="fa fa-toggle-onORoff fa-off" id="sonarYesOrNoBtn" value="false"></i><span class="fa-text">不检查</span></label>
+						                        	</div>
+						                    </c:if>
+						                    <c:if test="${sonarConfig.enabled == true }">
+													<div>是否检查：
+														<label id="sonarYesOrNo"><i class="fa fa-toggle-onORoff fa-on" id="sonarYesOrNoBtn" value="true"></i><span class="fa-text">检查</span></label>
+						                        	</div>
+						                    </c:if>
+						                        	<div class="sonarTwoStep hide">
+							                        	<div>是否显示：
+							                        		<c:if test="${sonarConfig.hidden == true }">
+							                        		<label id="showSonarYesOrNo"><i class="fa fa-toggle-onORoff fa-off" id="showSonarYesOrNoBtn" value="true"></i><span class="fa-text">不显示检查结果</span></label>
+							                        		</c:if>
+							                        		<c:if test="${sonarConfig.hidden == false }">
+							                        		<label id="showSonarYesOrNo"><i class="fa fa-toggle-onORoff fa-on" id="showSonarYesOrNoBtn" value="false"></i><span class="fa-text">显示检查结果</span></label>
+							                        		</c:if>
+							                        	</div>
+														<div>质量检查：
+															<c:if test="${sonarConfig.mandatory == false }">
+							                        		<label id=""><input type="radio" name="sonarCheck" class="sonarCheck" value="true">必选</label>
+							                        		<label id=""><input type="radio" name="sonarCheck" class="sonarCheck" checked value="false">可选</label>
+							                        		</c:if>
+							                        		<c:if test="${sonarConfig.mandatory == true }">
+							                        		<label id=""><input type="radio" name="sonarCheck" class="sonarCheck" checked value="true">必选</label>
+							                        		<label id=""><input type="radio" name="sonarCheck" class="sonarCheck" value="false">可选</label>
+							                        		</c:if>
+							                        	</div>
+							                        	<div class="sonarCheckInfo ">检查进程：
+							                        		<c:if test="${sonarConfig.threshold != 6 }">
+							                        		<label id="sonarSyn"><input type="radio" name="sonarProgress" checked value="" id="sonarSynChecked">同步</label>
+							                        		<label id="sonarAsyn"><input type="radio" name="sonarProgress"  value="6" id="sonarAsynChecked">异步</label>
+							                        		</c:if>
+							                        		<c:if test="${sonarConfig.threshold == 6 }">
+							                        		<label id="sonarSyn"><input type="radio" name="sonarProgress" value="" id="sonarSynChecked">同步</label>
+							                        		<label id="sonarAsyn"><input type="radio" name="sonarProgress" checked value="6" id="sonarAsynChecked">异步</label>
+							                        		</c:if>
+							                        	</div>
+							                        	<div class="sonarInfo hide left sonardiv"><span class="labelInfo left">sonar阈值：</span>
+							                        		<select class="form-control" id="sonarThreshold" value="${sonarConfig.threshold}">
+			                                                        <option value="1">A</option>
+			                                                        <option value="2">B</option>
+			                                                        <option value="3">C</option>
+			                                                        <option value="4">D</option>
+			                                                        <option value="5">E</option>
+			                                                </select>
+			                                                <div class="alertInfo col-md-10" >
+																<i class="fa fa-warning" style="color:#efa421"></i>
+																<span>代码质量检查阈值，若代码质量不能达到设定的阈值级别则代码不能继续编译！</span>
+															</div>
+							                        	</div>
+							                        	<div class="left sonardiv"><span class="labelInfo left" style="margin-top: 6px;">token：</span>
+							                        		<input type="text" class="form-control tokenValue" id="tokenValue" value="${sonarConfig.token }" placeholder="请填写Sonar个人配置→安全中生成的token">
+							                        	</div>
+							                        	<div class="left sonardiv"><span class="labelInfo left" style="margin-top: 6px;">SonarUrl：</span>
+							                        		<input type="text" class="form-control urlValue" id="urlValue" value="${sonarConfig.url }" placeholder="http://code.bonc.com.cn/sonar">
+							                        	</div>
+						                        	</div>
+
+
+
+
 				                        </div>
 				                        <div class="form-group">
 					                        <div class="col-md-offset-10 col-md-2">
@@ -250,39 +290,39 @@
 									</div>
 								</div>
 							</div>
-							<div class="panel panel-warning">
-								<div class="panel-heading">
-									<h4 class="panel-title">
-										<a data-toggle="collapse" data-parent="#accordion" 
-										   href="#collapseThree">
-											黑白名单设置
-										</a>
-									</h4>
-								</div>
-								<div id="collapseThree" class="panel-collapse collapse">
-									<div class="panel-body">
-										<div class="setColor preferInfo">
-											<button type="button" class="btn btn-default" id="addOneWhiteList" value="添加白名单服务项"><i class="fa fa-plus"></i>&nbsp;添加白名单服务项</button>
-				                        	<div class="whiteLists">
-				                        		<!-- js添加黑白名单git和分支输入框 -->
-				                        	</div>
-				                        </div>
-				                        <div class="alertInfo col-md-10" style="margin-left:28px;">
-											<i class="fa fa-warning" style="color:#efa421"></i>
-											<span>填写服务的git地址和分支，并设置质量检查阈值！</span>
-										</div>
-										<div class="form-group">
-					                        <div class="col-md-offset-10 col-md-2">
-					                            <button type="button" class="btn btn-primary btn-color preferSave" id="whiteListSave">保存</button>
-					                        </div>
-					                    </div>
-									</div>
-								</div>
-							</div>
+<!-- 							<div class="panel panel-warning"> -->
+<!-- 								<div class="panel-heading"> -->
+<!-- 									<h4 class="panel-title"> -->
+<!-- 										<a data-toggle="collapse" data-parent="#accordion" -->
+<!-- 										   href="#collapseThree"> -->
+<!-- 											黑白名单设置 -->
+<!-- 										</a> -->
+<!-- 									</h4> -->
+<!-- 								</div> -->
+<!-- 								<div id="collapseThree" class="panel-collapse collapse"> -->
+<!-- 									<div class="panel-body"> -->
+<!-- 										<div class="setColor preferInfo"> -->
+<!-- 											<button type="button" class="btn btn-default" id="addOneWhiteList" value="添加白名单服务项"><i class="fa fa-plus"></i>&nbsp;添加白名单服务项</button> -->
+<!-- 				                        	<div class="whiteLists"> -->
+<!-- 				                        		js添加黑白名单git和分支输入框 -->
+<!-- 				                        	</div> -->
+<!-- 				                        </div> -->
+<!-- 				                        <div class="alertInfo col-md-10" style="margin-left:28px;"> -->
+<!-- 											<i class="fa fa-warning" style="color:#efa421"></i> -->
+<!-- 											<span>填写服务的git地址和分支，并设置质量检查阈值！</span> -->
+<!-- 										</div> -->
+<!-- 										<div class="form-group"> -->
+<!-- 					                        <div class="col-md-offset-10 col-md-2"> -->
+<!-- 					                            <button type="button" class="btn btn-primary btn-color preferSave" id="whiteListSave">保存</button> -->
+<!-- 					                        </div> -->
+<!-- 					                    </div> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
 							<div class="panel panel-success hide">
 								<div class="panel-heading">
 									<h4 class="panel-title">
-										<a data-toggle="collapse" data-parent="#accordion" 
+										<a data-toggle="collapse" data-parent="#accordion"
 										   href="#collapseTwo">
 											主题颜色设置
 										</a>

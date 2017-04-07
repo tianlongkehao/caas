@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/core/jquery-ui.min.css"/>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/ci.css"/>
     <script type="text/javascript" src="<%=path %>/js/ci/ci_add.js"></script>
-    
+
 </head>
 <body>
 
@@ -61,7 +61,7 @@
 	                                </div>
 	                            </div>
                         	</section>
-                        	
+
                             <h4 class="c-title">代码管理</h4>
                             <section class="registryinfo">
                             	<div class="row">
@@ -81,7 +81,7 @@
                                            placeholder=""><i class="fa fa-question-circle fa-questionBtn"></i>
 		                            </div>
 		                            <div class="form-group col-md-12 fa-questionCon codeUrlExplain">
-						                
+
 						            </div>
 		                            <div class="form-group col-md-12">
 		                                <label class="c-project-tit">认证方式</label>
@@ -140,16 +140,18 @@
                             </section>
                             <!--   质量管理：如果配置的是必选 则checkbox自动勾选且不可更改，若选择可选则CheckBox可选 -->
                             <h4 class="c-title"><label><strong>质量管理</strong><input type="checkbox" id="ci-sonarInfo"></label></h4>
-                            <section class="registryinfo">
-                        		
+							<input id="sonarCheck" name="sonarCheck" type="hidden" value="">
+                            <section class="registryinfo sonarInfo" >
+
 	                            <div class="row">
 	                                <div class="form-group col-md-12">
 	                                    <label class="c-project-tit">源码所在目录</label>
-	                                    <textarea id="sonarProjectSources" autocomplete = 'off' name="sonarProjectSources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔"
-	                                           required="" row="5"></textarea>
+	                                    <input id="sources" name="sources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔">
+<!-- 	                                    <textarea id="sonarProjectSources" autocomplete = 'off' name="sonarProjectSources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔" -->
+<!-- 	                                           required="" row="5"></textarea> -->
 	                                </div>
 	                            </div>
-	                            
+
                         	</section>
                             <h4 class="c-title">构建</h4>
                             <section class="registryinfo">
@@ -158,10 +160,10 @@
 		                                		<ul class="dropdown-menu">
 			                                		<li><a id="maven">Maven</a></li>
 			                                		<li><a id="ant">Ant</a></li>
-			                                		<li><a id="shell">Execute shell</a></li>
+<!-- 			                                		<li><a id="shell">Execute shell</a></li> -->
 			                                	</ul>
 		                                	</li>
-		                                	
+
 		                                </ul>
 	                            <div id="sortable">
 	                            </div>
@@ -199,44 +201,46 @@
 	                            </div>
 	                            <ul class="nav nav-bar">
 		                           <li class="dropdown"><a type="button" id="dropdown-btn" class="dropdown-toggle btn btn-default" data-toggle="dropdown">dockerfile构建方式<span class="caret"></span></a>
-		                              <ul class="dropdown-menu">
+		                              <ul class="dropdown-menu changeDockerfileM">
 			                             <li><a id="dockerfilePath">dockerfile路径</a></li>
 			                             <li><a id="dockerfileTemp">编写dockerfile</a></li>
 			                          </ul>
 		                            </li>
 		                        </ul>
-		                        <%-- <div id="dockerfileMethods">
+		                        <div id="dockerfileMethod-tools">
 		                        	<div class="row dockerfileTemp dockerfileTools hide">
 		                        		<div class="panel-group" id="accordion">
 											<div class="panel panel-default">
 												<div class="panel-heading">
 													<h4 class="panel-title">
-														<a data-toggle="collapse" data-parent="#accordion" 
+														<a data-toggle="collapse" data-parent="#accordion"
 														   href="#collapseOne">工具集
 														</a>
 													</h4>
 												</div>
 												<div id="collapseOne" class="panel-collapse collapse in">
 													<div class="panel-body">
-															<c:forEach items="${toolGroups}" var="tools" >
-																 <div class="toolItems">
-																 	<ul class="dftools">
-																		<li class="dftools-firstli">${tools.groupName } :</li>
-																		<c:forEach items="${tools.tools}" var="tool" >
-																			<li class="dftools-li"><label><input type="checkbox" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
-																		</c:forEach>
-																	</ul>
-																</div> 
-															</c:forEach>
+														<input type = "hidden" id = "basicImage" name = "basicImage" value = "${basicImage }">
+														<input type = "hidden" id = "ciTools" name = "ciTools" value = "">
+														<c:forEach items="${toolGroups}" var="tools" >
+															<div class="toolItems">
+																<ul class="dftools">
+																	<li class="dftools-firstli"><i class="fa fa-toolIcon fa-${tools.groupName }"></i>${tools.groupName } :</li>
+																	<c:forEach items="${tools.tools}" var="tool" >
+																		<li class="dftools-li"><label><input type="checkbox" id="${tools.groupName }/${tool.name }" name="${tool.toolGroup }" class="toolChk" toolCode="${tool.toolCode }">${tool.name }</label></li>
+																	</c:forEach>
+																</ul>
+															</div>
+														</c:forEach>
 													</div>
 												</div>
 											</div>
 		                        		</div>
 		                        	</div>
-		                        </div> --%>
+		                        </div>
 		                        <div id="dockerfileMethod"></div>
                         	</section>
-                            
+
                         	<input type = "hidden" id = "jsonData" name = "jsonData" value = "">
                             <br>
                             <div class="pull-right">
@@ -255,7 +259,7 @@
                     <table class="table table-hover enabled" id="Path-table-doc"
                         style="width: 326px; margin: 5px 10px 5px 10px">
                         <tbody id="dockerfile-body">
-                           
+
                         </tbody>
                     </table>
                 </div>
@@ -267,10 +271,10 @@
                     </div>
                 </div>
                 <!-- 添加证书 -->
-			     <div id="addCredentialsCon">           
+			     <div id="addCredentialsCon">
 			        <div style="margin: 15px 15px">
 			            <div class="infoCred">
-			                <span class="labelCred">仓库：</span> 
+			                <span class="labelCred">仓库：</span>
 			                <select class="form-control conCred" id="codeType" name="codeType">
 			                    <option value="1">Git</option>
 			                    <option value="2">SVN</option>

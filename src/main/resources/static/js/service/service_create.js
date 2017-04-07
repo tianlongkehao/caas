@@ -2,15 +2,15 @@ $(document).ready(function(){
 	// 控制环境变量的参数
 	var count=1;
 	loadImageList();
-	
-	document.getElementById("cpu1").checked=true;
-	document.getElementById("ram1").checked=true;
+
+	$(".cpuNum")[0].setAttribute("checked",true);
+	$(".ram")[0].setAttribute("checked",true);
 	//调节高度
 	var imagePage_height = $(".host_step1").height();
 	//$(".step-inner").height(imagePage_height +100);
-	
+
 	$(".createPadding").addClass("hide");
-	
+
 	$("#createButton").click(function(){
 		if(!saveEnvVariable()) {
 			return;
@@ -24,7 +24,7 @@ $(document).ready(function(){
 	      return;
 	    }
 	    reg=/^[a-z]([-a-z0-9]*[a-z0-9])?$/;
-	    if(!reg.test(name)){    
+	    if(!reg.test(name)){
 		      layer.tips('服务名称只能由小写字母、数字及横线组成，且首字母不能为数字及横线。','#serviceName',{tips: [1, '#3595CC'],time: 3000});
 		      $('#serviceName').focus();
 		      return;
@@ -34,7 +34,7 @@ $(document).ready(function(){
 	      $('#serviceName').focus();
 	      return;
 	    }
-	    
+
 	    //自定义启动命令的判断
 	    var startCommand_input = $("#startCommand_input").val();
 	    if($("#startCommand").prop("checked")==true){
@@ -42,7 +42,7 @@ $(document).ready(function(){
 			      layer.tips('自定义启动命令不能为空','#startCommand_input',{tips: [1, '#3595CC']});
 			      $('#startCommand_input').focus();
 			      return;
-		    }		   
+		    }
 /*		    if(startCommand_input.search(/^[a-zA-Z][a-zA-Z0-9-]*$/) === -1){
 		    	layer.tips('自定义启动命令只能由字母、数字及横线组成，且首字母不能为数字及横线。','#startCommand_input',{tips: [1, '#3595CC'],time: 3000});
 		    	$('#startCommand_input').focus();
@@ -56,7 +56,7 @@ $(document).ready(function(){
 	    } else {
 	    	$("#startCommand_input").val(null);
 	    }
-	    
+
 	  //检查服务状态的判断
 	    var checkPath = $("#checkSerStatus_input").val();
 	    var initialDelay = $("#initialDelay").val();
@@ -78,25 +78,25 @@ $(document).ready(function(){
 			      $('#checkSerStatus_input').focus();
 			      return;
 		    }
-		    
+
 		    if (!initialDelay || initialDelay.length < 1) {
 		    	  layer.tips('检测延迟时间不能为空','#initialDelay',{tips: [1, '#3595CC'],time: 3000});
 			      $('#initialDelay').focus();
 			      return;
 		    }
-		    
+
 		    if (!timeoutDetction || timeoutDetction.length < 1) {
 		    	  layer.tips('检测超时时间不能为空','#timeoutDetction',{tips: [1, '#3595CC'],time: 3000});
 			      $('#timeoutDetction').focus();
 			      return;
 		    }
-		    
+
 		    if (!periodDetction || periodDetction.length < 1) {
 		    	  layer.tips('检测频率时间不能为空','#periodDetction',{tips: [1, '#3595CC'],time: 3000});
 			      $('#periodDetction').focus();
 			      return;
 		    }
-		    
+
 	    } else {
 	    	$("#checkSerStatus_input").val(null);
 		    $("#initialDelay").val(null);
@@ -126,7 +126,7 @@ $(document).ready(function(){
 //	      $('#webPath').focus();
 //	      return;
 //	    }
-	    
+
 	    //nginx代理路径的判断
 	    var proxyPath = $("#nginxPath").val();
 	    if(!proxyPath || proxyPath.length < 1){
@@ -144,7 +144,7 @@ $(document).ready(function(){
 //		      $('#nginxPath').focus();
 //		      return;
 //	    }
-	    
+
 	    //判断实例数量是否超过上限
 	    var cpuNum = $("input[name='cpuNum']:checked").val();
 	    var leftcpu = $("#leftcpu").val();
@@ -169,7 +169,7 @@ $(document).ready(function(){
 	    	$('#instanceNum').focus();
 			return;
 	    }
-	    
+
 	    //判断cpu是否有足够的剩余
 	    var cpuNum = $("input[name='cpuNum']:checked").val();
 	    var leftcpu = $("#leftcpu").val();
@@ -183,7 +183,7 @@ $(document).ready(function(){
 		    $("input[name='cpuNum']:checked").focus();
 			return;
 	    }
-	    
+
 	    //判断内存是否有足够的剩余
 	    var ram = $("input[name='ram']:checked").val();
 	    var leftmemory = $("#leftmemory").val();
@@ -193,11 +193,11 @@ $(document).ready(function(){
 			return;
 	    }
 	    if (parseInt(ram) > parseInt(leftmemory)) {
-	    	layer.tips('内存剩余不足',"input[name='ram']:checked",{tips: [1,"#3595CC"]})
+	    	layer.tips('内存剩余不足',"input[name='ram']:checked",{tips: [1,"#3595CC"]});
 	    	$("input[name='ram']:checked").focus();
 	    	return;
 	    }
-	    
+
 	    //挂载路径的判断
 	    if ($("#state_service").prop("checked")==true) {
 	    	if(!saveCephData()) {
@@ -206,7 +206,7 @@ $(document).ready(function(){
 	    } else {
 	    	$("#serviceType").val(2);
 	    }
-	    
+
 	    var nginxstr = "";
 	    $('input[name="nginxserv"]:checked').each(function(){
     		var servname = $(this).val();
@@ -216,9 +216,9 @@ $(document).ready(function(){
     		} else {
     			nginxstr += ","+servid;
     		}
-    	})
+    	});
     	$('#proxyZone').val(nginxstr);
-    	
+
     	//将端口配置 数据变为json放入到
 	    var flag = false;
 	    var portJson ="";
@@ -226,9 +226,9 @@ $(document).ready(function(){
 			var protocol = "";
 			var mapPort = "";
 			var containerPort = "";
-			$(domEle).find("input").each(function(index,data){  
-				if(index == 0){  
-					containerPort = $(data).val(); 
+			$(domEle).find("input").each(function(index,data){
+				if(index == 0){
+					containerPort = $(data).val();
 					if(!containerPort || containerPort.length < 1){
 					      layer.tips('容器端口不能为空',data,{tips: [1, '#3595CC']});
 					      $(data).focus();
@@ -242,29 +242,29 @@ $(document).ready(function(){
 					      return;
 					}
 				}
-			});  
-			$(domEle).find("select").each(function(index,data){  
+			});
+			$(domEle).find("select").each(function(index,data){
 				if(index == 0){
-					protocol = $(data).val();  
+					protocol = $(data).val();
 				}
-			}); 
-			$(domEle).find("i").each(function(index,data){  
+			});
+			$(domEle).find("i").each(function(index,data){
 				if(index == 0){
-					mapPort = $(data).html();  
+					mapPort = $(data).html();
 				}
-			}); 
+			});
 			portJson += "{"+"\"containerPort\":\""+containerPort+"\","+"\"protocol\":\""+protocol+"\","
-			+"\"mapPort\":\""+mapPort+"\"},";                 
+			+"\"mapPort\":\""+mapPort+"\"},";
         });
         if (flag) {
         	return;
         }
-        if (portJson != "") {  
-        		portJson = portJson.substring(0,portJson.length -1);  
-        		portJson ="[" +portJson+ "]";  
+        if (portJson != "") {
+        		portJson = portJson.substring(0,portJson.length -1);
+        		portJson ="[" +portJson+ "]";
         }
         $('#portConfig').val(portJson);
-        
+
         var serviceName = $("#serviceName").val();
         $.ajax({
     		url : ctx + "/service/matchPath.do",
@@ -282,26 +282,26 @@ $(document).ready(function(){
     		}
     	});
     });
-	
+
 	$("#service-path").click(function(){
     	layer.tips('内容必须和上传的项目名一致！', '#service-path', {
-            tips: [2, '#0FA6D8'] 
+            tips: [2, '#0FA6D8']
         });
     });
-	
+
 	$("#proxy-path").click(function(){
     	layer.tips('内容建议为“用户名+项目名”！', '#proxy-path', {
-            tips: [2, '#0FA6D8'] 
+            tips: [2, '#0FA6D8']
         });
     });
-	
+
 	//选择cpu数量之后，默认选择相对应的内存大小；
 	/*$(".cpuNum").change(function(){
 		var cpuNum = $("input[name='cpuNum']:checked").val();
 		var ramId = "ram"+cpuNum;
 		document.getElementById(ramId).checked=true;
     });*/
-	
+
 	/*
 	 * $(".cpuNum").click(function(){ var tips = $(this).attr("placeholder");
 	 * layer.tips(tips,'.cpuNum',{tips: [1, '#3595CC']}); })
@@ -315,7 +315,7 @@ $(document).ready(function(){
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
     	$(".step-inner").height(imagePage_height+100);
-	})
+	});
 
 	// 启动命令
 	$("#startCommand_li").hide();
@@ -325,8 +325,8 @@ $(document).ready(function(){
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
     	$(".step-inner").height(imagePage_height+100);
-	})
-	
+	});
+
 	// 启动命令
 	$("#checkSerStatus_li").hide();
 	$("#checkItems").hide();
@@ -337,15 +337,15 @@ $(document).ready(function(){
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
     	$(".step-inner").height(imagePage_height+100);
-	})
-	
+	});
+
 	// 添加环境变量
 	$("#cratePATH").click(function(){
 		var addName = $("#Name").val();
 		var addValue = $("#Value").val();
 		//环境变量Key只能是字母数字下划线；
 		reg=/^[A-Za-z_][A-Za-z0-9_]*$/;
-		if(!reg.test(addName)){ 
+		if(!reg.test(addName)){
 			layer.tips('环境变量key只能是字母数字下划线，不能以数字开头','#Name',{tips: [1, '#3595CC']});
 			$('#Name').focus();
 			return;
@@ -373,7 +373,7 @@ $(document).ready(function(){
 	    }
 		arrayKey.push(addName);
 		$("#arrayKey").attr("value",arrayKey);
-		
+
 		if(addName != "" && addValue != ""){
 			var tr = '<tr>'+
 						'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'+
@@ -384,7 +384,7 @@ $(document).ready(function(){
 							'</a>'+
 							'<input type="hidden" class="oldValue" value="'+addName+'">'+
 						'</td>'+
-					'</tr>'
+					'</tr>';
 			$("#Path-oper1").append(tr);
 			$("#key_"+count).val(addName);
 			$("#value_"+count).val(addValue);
@@ -392,22 +392,22 @@ $(document).ready(function(){
 		}
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height+100);	
+    	$(".step-inner").height(imagePage_height+100);
 	});
-	
+
 	// 添加挂载卷
 	var size = 0;
 	$("#addVolume").click(function(){
 		var id = $("#selectVolume").val();
 		var selectVolume = $("#selectVolume option:selected").text();
 		var mountPath = $("#mountPath").val();
-		
+
 		if (id == null || id == "") {
     		layer.tips('请选择存储卷','#selectVolume',{tips: [1, '#3595CC']});
 			$('#selectVolume').focus();
 			return;
     	}
-		
+
 		if (mountPath == null || mountPath == "") {
     		layer.tips('挂载地址不能为空','#mountPath',{tips: [1, '#3595CC']});
 			$('#mountPath').focus();
@@ -418,24 +418,24 @@ $(document).ready(function(){
 			$('#mountPath').focus();
 			return;
 		}
-		
+
 		var tr = '<tr>'+
 					'<td class="keys"><input type="text" id = "storageName_'+count+'" style="width: 98% " readonly="readonly"></td>'+
 					'<td class="vals"><input type="text" id = "mountPoint_'+count+'" style="width: 98%"></td>'+
 					'<td class="func"><a href="javascript:void(0)" onclick="deleteCephRow(this)" class="gray">'+
 						'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" id = "id_'+count+'">'+
 					'</td>'+
-				'</tr>'
+				'</tr>';
 		$("#volList").append(tr);
 		$("#storageName_"+count).val(selectVolume);
 		$("#mountPoint_"+count).val(mountPath);
 		$("#id_"+count).val(id);
-		count++;	
+		count++;
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
-    	$(".step-inner").height(imagePage_height+100);	
+    	$(".step-inner").height(imagePage_height+100);
 	});
-	
+
 	//自动化伸缩范围&伸缩阈值
 	var trueOrfalse = false;
 	$("#dynamic-range").hide();
@@ -447,7 +447,7 @@ $(document).ready(function(){
 		$("#dynamic-threshold").toggle();
 		$("#minNum").focus();
 	});
-	
+
 	// 添加端口
 	$("#createPort").click(function(){
 		$.ajax({
@@ -458,7 +458,7 @@ $(document).ready(function(){
 	    		if(!data.mapPort||"error"==(data.ERROR)){
 	    				alert("可用映射端口已经用尽，请联系管理员。");
 	    		}else{
-		    		var portTr =''+ 
+		    		var portTr =''+
 						'<tr class="plus-row">'+
 		    					'<td>'+
 		    						'<input class="port" type="text">'+
@@ -466,7 +466,7 @@ $(document).ready(function(){
 									'<td>'+
 											'<select class="T-http">'+
 												  '<option>TCP</option>'+
-													'<option>HTTP</option>'+
+													'<option>UDP</option>'+
 											'</select>'+
 									'</td>'+
 									'<td>'+
@@ -485,9 +485,9 @@ $(document).ready(function(){
 	        	$(".step-inner").height(imagePage_height+100);
     		}
 		});
-		
+
 	});
-	
+
 	//导入模板文件选项对勾
 	var templateName = null;
 	$(document).on("click","#Path-table tr", function () {
@@ -499,7 +499,7 @@ $(document).ready(function(){
 		templateName = $(this).parent().find("tr.focus").find(".templateName").val();
 		console.log(templateName);
 	});
-	
+
 	//导入模板
 	$("#importBtn").click(function(){
 		loadEnvironment();
@@ -529,8 +529,8 @@ $(document).ready(function(){
 		    	    	    						'<i class="fa fa-trash-o fa-lg"></i>'+
 		    	    	    						'</a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
 		    	    	    					'</td>'+
-		    	    	    				'</tr>'
-		    	    	    		
+		    	    	    				'</tr>';
+
 	    	                		$("#Path-oper1").append(html);
 	    	                		$("#key_"+count).val(envTemplate.envKey);
 	    	                		$("#value_"+count).val(envTemplate.envValue);
@@ -545,11 +545,11 @@ $(document).ready(function(){
 	        	var containerRes_height = $(".host_step2").height();
 	          $(".step-inner").height(containerRes_height+100);
 	        	layer.close(index);
-	        	
+
 	        }
-		})
+		});
 	});
-	
+
 	//另存为模板
 	$("#exportBtn").click(function(){
 		if (!saveEnvVariable()) {
@@ -561,14 +561,14 @@ $(document).ready(function(){
 		        content: $("#environment-template"),
 		        btn: ['保存', '取消'],
 		        scrollbar: false,
-		        yes: function(index, layero){ 
+		        yes: function(index, layero){
 		        	var templateName = $("#envTemplateName").val();
 		        	if (templateName == null || templateName == "") {
 		        		layer.tips('模板名称不能为空','#envTemplateName',{tips: [1, '#3595CC']});
 						$('#envTemplateName').focus();
 						return;
 		        	}
-		        	
+
 		        	var envVariable = $("#envVariable").val();
 		        	if (envVariable == null || envVariable == "") {
 		        		layer.tips('环境变量不能为空','#Path',{tips: [1, '#3595CC']});
@@ -576,7 +576,7 @@ $(document).ready(function(){
 						layer.close(index);
 						return;
 		        	}
-		        	
+
 		        	$.ajax({
 						url:ctx+"/template/saveEnvTemplate.do",
 						type: "POST",
@@ -599,7 +599,7 @@ $(document).ready(function(){
 													layer.close(index2);
 													layer.close(index);
 												}
-											}	
+											}
 							        	});
 									  }
 									});
@@ -607,10 +607,10 @@ $(document).ready(function(){
 								layer.msg("环境变量模板保存成功",{icon: 6});
 								layer.close(index);
 							}
-						}	
+						}
 		        	});
 		        }
-			})
+			});
 		}
 	});
 
@@ -627,7 +627,7 @@ $(document).ready(function(){
 	                        var image = data.data[i];
 	                        var portConfigs = JSON.stringify(image.portConfigs);
 	                        if (image.isBaseImage == 2) {		//判断是否为基础镜像，是基础镜像不显示
-	                        	
+
 		                        html += "<li class='image-item'><span class='img_icon span16'>"+
 								"<img src='"+ctx+"/images/image-1.png'>"+
 						"</span> <span class='span4 type span5add' type='database'>"+
@@ -647,7 +647,7 @@ $(document).ready(function(){
 									"</span>"+
 								"</div>"+
 						"</span></li>";
-		                        
+
 		                    	}
 	                    	}
 	                    	$("#imageList").html(html);
@@ -673,7 +673,7 @@ $(document).ready(function(){
 	                	}
 	            }
 	        }
-	    })
+	   });
 	});
 
 	cpuMouseOut();
@@ -701,7 +701,7 @@ $(document).ready(function(){
     	var imagePage_height = $(".host_step1").height();
     	$(".step-inner").height(imagePage_height +100);
     });
-    
+
     //从镜像中心部署，跳转服务之后的页面高度
     var localUrl = window.location;
 	if(localUrl.search != ""){
@@ -753,11 +753,11 @@ function loadEnvironment(){
 	                				'<td class="vals vals-env">'+templateName+'<span class="vals-path hide"><i class="fa fa-check"></i></span>'+
 	                					'<input type="hidden" class="templateName" value="'+templateName+'" />'+
 	                				'</td>'+
-	                			'</tr>'
+	                			'</tr>';
                 	}
-	            } 
+	            }
 	            if (html == "") {
-	            	html += '<tr><td>没有保存的模板</td></tr>'	
+	            	html += '<tr><td>没有保存的模板</td></tr>';
 	            }
 	            $("#Path-env").empty();
 	            $("#Path-env").append(html);
@@ -769,20 +769,20 @@ function loadEnvironment(){
 
 //保存环境变量到json中
 function saveEnvVariable() {
-	var dataJson="";  
+	var dataJson="";
 	var arrayKey = new Array(1) ;
 	var flag = 0;
     $("#Path-oper1 tr").each(function (index, domEle){
-        var envKey = "";  
-        var envValue = "";  
-        $(domEle).find("input").each(function(index,data){  
-            if(index == 0){  
+        var envKey = "";
+        var envValue = "";
+        $(domEle).find("input").each(function(index,data){
+            if(index == 0){
             	envKey = $(data).val();
-            } else if (index == 1){  
+            } else if (index == 1){
             	envValue = $(data).val();
-            }  
-        });  
-        
+            }
+        });
+
 		for (var i = 0; i<arrayKey.length;i++) {
 			if (envKey == arrayKey[i]) {
 				layer.tips('环境变量Key不能重复',$(domEle).find("input")[0],{tips: [1, '#3595CC']});
@@ -793,7 +793,7 @@ function saveEnvVariable() {
 		}
 		//环境变量Key只能是字母数字下划线；
 		reg=/^[A-Za-z_][A-Za-z0-9_]*$/;
-		if(!reg.test(envKey)){ 
+		if(!reg.test(envKey)){
 			layer.tips('环境变量key只能是字母数字下划线，不能以数字开头',$(domEle).find("input")[0],{tips: [1, '#3595CC']});
 			$('#Name').focus();
 				flag = 1;
@@ -812,17 +812,17 @@ function saveEnvVariable() {
 	    }
 
 		arrayKey.push(envKey);
-        
-//        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},"; 
+
+//        dataJson += "{"+"\"envKey\":\""+envKey+"\","+"\"envValue\":\""+envValue+"\"},";
 		 dataJson += envKey+","+envValue+";";
     });
-    
+
     if (flag == 1) {
     	return false;
     }
-    if (dataJson != "") {  
-        dataJson = dataJson.substring(0,dataJson.length -1);  
-//        dataJson ="[" +dataJson+ "]";  
+    if (dataJson != "") {
+        dataJson = dataJson.substring(0,dataJson.length -1);
+//        dataJson ="[" +dataJson+ "]";
     }
     $('#envVariable').val(dataJson);
     return true;
@@ -842,27 +842,27 @@ function deleteRow(obj){
 	$(obj).parent().parent().remove();
 	//调节界面高度
 	var imagePage_height = $(".host_step2").height();
-	$(".step-inner").height(imagePage_height+100);	
+	$(".step-inner").height(imagePage_height+100);
 }
 
 //保存挂载地址数据到json中
 function saveCephData(){
-	var dataJson="";  
+	var dataJson="";
 	var arrayKey = new Array(1) ;
 	var arrayValue = new Array(1);
 	var flag = 0;
     $("#volList tr").each(function (index, domEle){
-    	 var id = "";  
-         var mountPoint = "";  
-         $(domEle).find("input").each(function(index,data){  
-             if (index == 1){  
+    	 var id = "";
+         var mountPoint = "";
+         $(domEle).find("input").each(function(index,data){
+             if (index == 1){
              	mountPoint = $(data).val();
-             }  
-             if(index == 2){  
+             }
+             if(index == 2){
              	id = $(data).val();
-             } 
-         });  
-         
+             }
+         });
+
  		for (var i = 0; i<arrayKey.length;i++) {
  			if (id == arrayKey[i]) {
  				layer.tips('存储卷不能重复，请您重新选择',domEle,{tips: [1, '#3595CC']});
@@ -883,12 +883,12 @@ function saveCephData(){
  		arrayValue.push(mountPoint);
  		dataJson += id+","+mountPoint+";";
     });
-    
+
     if (flag == 1) {
     	return false;
     }
-    if (dataJson != "") {  
-        dataJson = dataJson.substring(0,dataJson.length -1);  
+    if (dataJson != "") {
+        dataJson = dataJson.substring(0,dataJson.length -1);
     }
     $('#cephAds').val(dataJson);
     return true;
@@ -926,11 +926,11 @@ function cpuMouseOut(){
  * function(value) { return value; }, value:100, min: 512, max: 8192, step: 512,
  * slide: function( event, ui ) { $( "#ram" ).val( "$" + ui.value ); } }); //$(
  * "#ram" ).val( "$" + $( "#ramSlider" ).slider( "value" ) );
- * 
+ *
  * ramSlider.on("slide", function(slideEvt) { $("#ram").val(slideEvt.value);
  * }).on("change", function(slideEvt){ $("#ram").val(slideEvt.value.newValue);
  * });
- * 
+ *
  * $("#ram").on("change",function(){ var ramVal = Number($(this).val());
  * console.log(ramVal); ramSlider.slider('setValue', ramVal); }); });
  */
@@ -947,7 +947,7 @@ function loadImageList() {
                         var image = data.data[i];
                         var portConfigs = JSON.stringify(image.portConfigs);
                         if (image.isBaseImage == 2) {   //判断是否为基础镜像，是基础镜像不显示
-                        	
+
 	                        html += "<li class='image-item'><span class='img_icon span16'>"+
 							"<img src='"+ctx+"/images/image-1.png'>"+
 					"</span> <span class='span4 type span5add' type='database'>"+
@@ -960,14 +960,14 @@ function loadImageList() {
 							"</div>"+
 					"</span> <span class='span4'>"+
 							"<div class='list-item-description'>"+
-								"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+ 
+								"<span class='id h5' title='latest,5.6' value='"+ image.version+"'>版本:"+
 									""+ image.version +"</span> <span imgID='"+image.id+"'resourceName='"+image.resourceName+"'  imageName='"+image.name+"' imageVersion='"+image.version+"' portConfigs='"+portConfigs+"' class='pull-deploy btn btn-primary btn-color'"+
 									"data-attr='tenxcloud/mysql'> 部署 <i"+
 									"class='fa fa-arrow-circle-o-right margin fa-lg'></i>"+
 								"</span>"+
 							"</div>"+
 					"</span></li>";
-	                        
+
 	                    	}
                     	}
                     	$("#imageList").html(html);
@@ -989,7 +989,7 @@ function loadImageList() {
                                 	data = eval("(" + data + ")");
                                  portConfigs =	JSON.stringify(data.data);
                                  deploy(imgID,imageName, imageVersion,resourceName,portConfigs);
-                                									
+
                                 }
                         	});
                         	// containerName();
@@ -997,7 +997,7 @@ function loadImageList() {
                 	}
             }
         }
-    })
+    });
 }
 
 function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
@@ -1012,7 +1012,7 @@ function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
 				  									'<td>' +
 				  											'<select class="T-http">'+
 				  													'<option>TCP</option>'+
-				  													'<option>HTTP</option>'+
+				  													'<option>UDP</option>'+
 				  											'</select>'+
 				  									'</td>'+
 				  									'<td>'+
@@ -1060,13 +1060,13 @@ function deletePortRow(obj,int){
 			url:""+ctx+"/service/removeSet.do?set="+int,
 			type: "GET",
 			success : function(data) {
-				
+
 			}
 	 });
 	 $(obj).parent().parent().remove();
 	//调节界面高度
 	var imagePage_height = $(".host_step2").height();
- 	$(".step-inner").height(imagePage_height);	
+ 	$(".step-inner").height(imagePage_height);
 }
 
 /*
