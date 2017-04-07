@@ -2,8 +2,10 @@ package com.bonc.epm.paas.kubernetes.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -461,15 +463,16 @@ public class KubernetesClientService {
 		return replicationController;
 	}
 
-	public ConfigMap generateConfigMap(String configMapName,String keyValues){
+	public ConfigMap generateConfigMap(String configMapName,Map<String,String> mapData){
 		ConfigMap configmap = new ConfigMap();
 		Map<String,String> data = new HashMap<String,String>();
-		if (StringUtils.isNotBlank(keyValues)) {
-			String[] keyValuetemps = keyValues.split(",");
-			for(String keyValue:keyValuetemps){
-				data.put(keyValue.split(":")[0], keyValue.split(":")[1]);
-			}
+
+		Iterator<String> iterator= mapData.keySet().iterator();
+
+		while (iterator.hasNext()) {
+			data.put(iterator.next(), mapData.get(iterator.next()));
 		}
+
 		ObjectMeta metadata = new ObjectMeta();
 		metadata.setName(configMapName);
 		configmap.setMetadata(metadata);

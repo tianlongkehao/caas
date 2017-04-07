@@ -6,18 +6,17 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bonc.epm.paas.entity.Configmap;
-import com.bonc.epm.paas.entity.ServiceConfigmap;
 
 @Transactional
-public interface ConfigmapDap extends CrudRepository<Configmap, Long> {
+public interface ConfigmapDao extends CrudRepository<Configmap, Long> {
 
-	public List<ServiceConfigmap> findById(long id);
+	public List<Configmap> findById(long id);
 
-	public List<ServiceConfigmap> findByCreateBy(long createBy);
+	public List<Configmap> findByCreateBy(long createBy);
 
-	public List<ServiceConfigmap> findByName(String name);
+	public List<Configmap> findByName(String name);
 
-	public List<ServiceConfigmap> findByNamespace(String namespace);
+	public List<Configmap> findByNamespace(String namespace);
 
     public void deleteById(long id);
 

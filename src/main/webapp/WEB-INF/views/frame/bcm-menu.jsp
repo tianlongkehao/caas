@@ -194,6 +194,7 @@
 					<ul class="nav nav-second-level">
 						<li id="li_dockerfile"><a class="J_menuItem" href="<%=path %>/template/dockerfile"><i class="fa fa_circle"></i>dockerfile</a></li>
 						<li id="li_env"><a class="J_menuItem" href="<%=path %>/template/env"><i class="fa fa_circle"></i>环境变量</a></li>
+						<li id="li_configmap"><a class="J_menuItem" href="<%=path %>/configmap/list"><i class="fa fa_circle"></i>配置文件</a></li>
 					</ul></li>
 				<c:if test="${cur_user.user_autority == 1}">
 				<li id="menu_log"><a href="#" class="first-a">
