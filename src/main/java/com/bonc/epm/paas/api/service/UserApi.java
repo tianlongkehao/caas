@@ -37,8 +37,6 @@ import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.EncryptUtils;
 
-import springfox.documentation.annotations.ApiIgnore;
-
 @Controller
 @RequestMapping(value = "/api/v1")
 public class UserApi {
@@ -67,16 +65,16 @@ public class UserApi {
 	private KubernetesClientService kubernetesClientService;
 
 	/**
-     * 调用服务controller
-     */
-    @Autowired
-    private ServiceController serviceController;
+	 * 调用服务controller
+	 */
+	@Autowired
+	private ServiceController serviceController;
 
-    /**
-     * 服务数据层接口
-     */
-    @Autowired
-    private ServiceDao serviceDao;
+	/**
+	 * 服务数据层接口
+	 */
+	@Autowired
+	private ServiceDao serviceDao;
 
 	/**
 	 * 用户层接口
@@ -91,27 +89,28 @@ public class UserApi {
 	private UserResourceDao userResourceDao;
 
 	/**
-     * Description: <br>
-     * 删除用户时同步删除用户创建的服务
-     * @param userId : 用户Id
-     * @return
-     * @see
-     */
-    public void delUserService(long userId){
-        try {
-            List<Service> list = serviceDao.findByCreateBy(userId);
-            String serviceIds = "";
-            if (list.size() > 0) {
-                for (Service service : list) {
-                    serviceIds += service.getId() + ",";
-                }
-                serviceController.delServices(serviceIds);
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	 * Description: <br>
+	 * 删除用户时同步删除用户创建的服务
+	 *
+	 * @param userId
+	 *            : 用户Id
+	 * @return
+	 * @see
+	 */
+	public void delUserService(long userId) {
+		try {
+			List<Service> list = serviceDao.findByCreateBy(userId);
+			String serviceIds = "";
+			if (list.size() > 0) {
+				for (Service service : list) {
+					serviceIds += service.getId() + ",";
+				}
+				serviceController.delServices(serviceIds);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 *
@@ -213,13 +212,15 @@ public class UserApi {
 	 *
 	 * Description: 创建或更新租户
 	 *
-	 * @param user User
-	 * @param resource UserResource
+	 * @param user
+	 *            User
+	 * @param resource
+	 *            UserResource
 	 * @see
 	 */
-	@RequestMapping(value = { "/tenant/resource" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/tenant" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String saveTenant(@RequestBody User user, @RequestBody UserResource resource) {
+	public String saveTenant(@RequestBody User user) {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		// 判断用户名称是否为空
@@ -235,7 +236,6 @@ public class UserApi {
 		// 判断操作为新增还是更新
 		if (userDao.findByUserName(user.getUserName()) == null) {// 新增
 			user.setPassword(EncryptUtils.encryptMD5(user.getPassword()));
-			resource.setCreateDate(new Date());
 			try {
 
 				Namespace namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
@@ -248,16 +248,9 @@ public class UserApi {
 					return JSON.toJSONString(map);
 				}
 
-				if (!createQuota(user, resource, client)) {
-					client.deleteNamespace(user.getNamespace());
-					map.put("message", "创建quota失败");
-					map.put("flag", "400");
-					return JSON.toJSONString(map);
-				}
-
 				if (!createCeph(user)) {
 					client.deleteNamespace(user.getNamespace());
-					client.deleteResourceQuota(user.getNamespace());
+					//client.deleteResourceQuota(user.getNamespace());
 					map.put("message", "创建ceph失败");
 					map.put("flag", "400");
 					return JSON.toJSONString(map);
@@ -288,7 +281,75 @@ public class UserApi {
 				namespace = client.createNamespace(namespace);
 			}
 
-			if (namespace != null) {
+			Long originalId = userDao.findByUserName(user.getUserName()).getId();// 该用户原ID
+			user.setId(originalId);
+		}
+
+		user.setParent_id(1);// 默认填写为1
+		user.setUser_autority("2");
+
+		// DB保存用户信息
+		userDao.save(user);
+		map.put("flag", "200");
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 *
+	 * Description: 创建或更新资源配额
+	 *
+	 * @param user
+	 *            User
+	 * @param resource
+	 *            UserResource
+	 * @see
+	 */
+	@RequestMapping(value = { "/tenant/{tenantName}/resource" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String saveResoure(@PathVariable String tenantName, @RequestBody UserResource resource) {
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		// 判断用户名称是否为空
+		if (StringUtils.isBlank(tenantName)) {
+			map.put("message", "租户名称为空，操作失败！");
+			map.put("flag", "400");
+			return JSON.toJSONString(map);
+		}
+
+		KubernetesAPIClientInterface client = null;
+		User user = userDao.findByUserName(tenantName);
+
+		// 判断是否存在该租户
+		if (user == null) {
+			map.put("message", "指定的租户不存在，操作失败！");
+			map.put("flag", "400");
+			return JSON.toJSONString(map);
+		}
+
+		client = kubernetesClientService.getClient(user.getNamespace());
+		Namespace namespace = null;
+
+		try {
+			namespace = client.getNamespace(user.getNamespace());
+		} catch (Exception e) {
+			LOG.error("no namespace info!");
+			namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
+			namespace = client.createNamespace(namespace);
+		}
+
+		if (namespace != null) {
+			UserResource userResource = userResourceDao.findByUserId(user.getId());
+
+			// 根据资源是否存在，判断操作为新增还是更新
+			if (userResource == null) {// 新增
+				if (!createQuota(user, resource, client)) {
+					map.put("message", "创建quota失败");
+					map.put("flag", "400");
+					return JSON.toJSONString(map);
+				}
+				resource.setCreateDate(new Date());
+			} else {
 				try {
 					ResourceQuota quota = updateQuotaInfo(client, user, resource);
 					client.updateResourceQuota(user.getNamespace(), quota);
@@ -298,23 +359,18 @@ public class UserApi {
 					map.put("flag", "400");
 					return JSON.toJSONString(map);
 				}
-			} else {
-				LOG.error("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
+				resource.setId(userResource.getId());
+				resource.setCreateDate(userResource.getCreateDate());
 			}
-
-			Long originalId = userDao.findByUserName(user.getUserName()).getId();//该用户原ID
-
-			user.setId(originalId);
-			resource.setId(userResourceDao.findByUserId(originalId).getId());
+		} else {
+			LOG.error("租户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
+			map.put("message", "没有Namespace，操作失败！");
+			map.put("flag", "400");
+			return JSON.toJSONString(map);
 		}
 
-		user.setParent_id(1);// 默认填写为1
-		user.setUser_autority("2");
-		resource.setUpdateDate(new Date());
-
-		// DB保存用户信息
-		userDao.save(user);
 		resource.setUserId(user.getId());
+		resource.setUpdateDate(new Date());
 		userResourceDao.save(resource);
 
 		map.put("flag", "200");
