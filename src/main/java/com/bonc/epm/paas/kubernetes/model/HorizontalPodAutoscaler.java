@@ -3,29 +3,15 @@ package com.bonc.epm.paas.kubernetes.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HorizontalPodAutoscaler {
+public class HorizontalPodAutoscaler extends AbstractKubernetesExtensionsModel {
 
-	private String apiVersion = "extensions/v1beta1";
-	private String kind = "HorizontalPodAutoscaler";
 	private ObjectMeta metadata;
 	private HorizontalPodAutoscalerSpec spec;
 	private HorizontalPodAutoscalerStatus status;
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-	public String getApiVersion() {
-		return apiVersion;
-	}
-
-	public void setApiVersion(String apiVersion) {
-		this.apiVersion = apiVersion;
-	}
-
-	public String getKind() {
-		return kind;
-	}
-
-	public void setKind(String kind) {
-		this.kind = kind;
+	public HorizontalPodAutoscaler(){
+		super(Kind.HORIZONTALPODAUTOSCALER);
 	}
 
 	public ObjectMeta getMetadata() {

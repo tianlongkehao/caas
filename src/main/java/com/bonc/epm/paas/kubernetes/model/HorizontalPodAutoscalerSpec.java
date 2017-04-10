@@ -1,17 +1,17 @@
 package com.bonc.epm.paas.kubernetes.model;
 
 public class HorizontalPodAutoscalerSpec {
-	private CPUTargetUtilization cpuUtilization;
+	private Integer targetCPUUtilizationPercentage;
 	private Integer maxReplicas;
 	private Integer minReplicas;
-	private SubresourceReference scaleRef;
+	private CrossVersionObjectReference scaleTargetRef;
 
-	public CPUTargetUtilization getCpuUtilization() {
-		return cpuUtilization;
+	public Integer getTargetCPUUtilizationPercentage() {
+		return targetCPUUtilizationPercentage;
 	}
 
-	public void setCpuUtilization(CPUTargetUtilization cpuUtilization) {
-		this.cpuUtilization = cpuUtilization;
+	public void setTargetCPUUtilizationPercentage(Integer targetCPUUtilizationPercentage) {
+		this.targetCPUUtilizationPercentage = targetCPUUtilizationPercentage;
 	}
 
 	public Integer getMaxReplicas() {
@@ -30,12 +30,12 @@ public class HorizontalPodAutoscalerSpec {
 		this.minReplicas = minReplicas;
 	}
 
-	public SubresourceReference getScaleRef() {
-		return scaleRef;
+	public CrossVersionObjectReference getScaleTargetRef() {
+		return scaleTargetRef;
 	}
 
-	public void setScaleRef(SubresourceReference scaleRef) {
-		this.scaleRef = scaleRef;
+	public void setScaleTargetRef(CrossVersionObjectReference scaleTargetRef) {
+		this.scaleTargetRef = scaleTargetRef;
 	}
 
 }

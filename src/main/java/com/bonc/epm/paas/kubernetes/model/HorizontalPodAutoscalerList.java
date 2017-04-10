@@ -1,11 +1,11 @@
 package com.bonc.epm.paas.kubernetes.model;
 
-public class NamespaceList extends AbstractKubernetesModelList<Namespace>{
+public class HorizontalPodAutoscalerList extends AbstractKubernetesModelList<HorizontalPodAutoscaler> {
 
 	private ListMeta metadata;
 
-	public NamespaceList() {
-		super(Kind.NAMESPACELIST);
+	public HorizontalPodAutoscalerList() {
+		super(Kind.HORIZONTALPODAUTOSCALERLIST);
 	}
 
 	public ListMeta getMetadata() {
