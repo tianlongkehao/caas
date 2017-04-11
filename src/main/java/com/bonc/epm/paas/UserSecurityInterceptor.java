@@ -27,9 +27,6 @@ public class UserSecurityInterceptor implements HandlerInterceptor {
 			HttpServletResponse response, Object handler) throws Exception {
 		 //验证用户是否登陆
         Object obj = request.getSession().getAttribute("cur_user");
-        if (request.getRequestURI().contains("api")) {
-			return true;
-		}
         if (obj == null || !(obj instanceof User)) {
             response.sendRedirect(request.getContextPath() + "/login");
 
