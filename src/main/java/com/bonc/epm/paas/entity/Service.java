@@ -166,6 +166,21 @@ public class Service {
 	@Transient
 	private List<PortConfig> portConfigs;
 
+	/**
+	 * targetCPUUtilizationPercentage:hpa的cpu阈值.
+	 */
+	private Integer targetCPUUtilizationPercentage;
+
+	/**
+	 * maxReplicas:hpa最大pod数量.
+	 */
+	private Integer maxReplicas;
+
+	/**
+	 * minReplicas:hpa最小pod数量.
+	 */
+	private Integer minReplicas;
+
 	public String getServiceChName() {
 		return serviceChName;
 	}
@@ -440,5 +455,29 @@ public class Service {
 
 	public void setCodeRatingURL(String codeRatingURL) {
 		this.codeRatingURL = codeRatingURL;
+	}
+
+	public Integer getTargetCPUUtilizationPercentage() {
+		return targetCPUUtilizationPercentage;
+	}
+
+	public void setTargetCPUUtilizationPercentage(Integer targetCPUUtilizationPercentage) {
+		this.targetCPUUtilizationPercentage = targetCPUUtilizationPercentage;
+	}
+
+	public Integer getMaxReplicas() {
+		return maxReplicas;
+	}
+
+	public void setMaxReplicas(Integer maxReplicas) {
+		this.maxReplicas = maxReplicas;
+	}
+
+	public Integer getMinReplicas() {
+		return minReplicas;
+	}
+
+	public void setMinReplicas(Integer minReplicas) {
+		this.minReplicas = minReplicas;
 	}
 }
