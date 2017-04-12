@@ -161,6 +161,16 @@ public class Service {
 	private boolean updateImage;
 
 	/**
+	 * responsiblePerson:责任人.
+	 */
+	private String responsiblePerson;
+
+	/**
+	 * responsiblePersonTelephone:责任人电话.
+	 */
+	private String responsiblePersonTelephone;
+
+	/**
 	 * 端口信息
 	 */
 	@Transient
@@ -440,5 +450,21 @@ public class Service {
 
 	public void setCodeRatingURL(String codeRatingURL) {
 		this.codeRatingURL = codeRatingURL;
+	}
+
+	public String getResponsiblePerson() {
+		return responsiblePerson;
+	}
+
+	public void setResponsiblePerson(String responsiblePerson) {
+		this.responsiblePerson = responsiblePerson;
+	}
+
+	public String getResponsiblePersonTelephone() {
+		return responsiblePersonTelephone;
+	}
+
+	public void setResponsiblePersonTelephone(String responsiblePersonTelephone) {
+		this.responsiblePersonTelephone = responsiblePersonTelephone;
 	}
 }
