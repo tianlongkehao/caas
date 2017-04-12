@@ -18,6 +18,8 @@ public interface ConfigmapDao extends CrudRepository<Configmap, Long> {
 
 	public List<Configmap> findByNamespace(String namespace);
 
+	public List<Configmap> findByNamespaceAndName(String namespace,String name);
+
     public void deleteById(long id);
 
     public void deleteByCreateBy(long createBy);

@@ -1,5 +1,6 @@
 package com.bonc.epm.paas.entity;
 
+import java.sql.Clob;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -22,14 +23,14 @@ public class ConfigmapData {
 	private long configmapId;
 
 	/**
-	 * 数据的key
+	 * 配置文件的名称
 	 */
-	private String key;
+	private String name;
 
 	/**
-	 * 数据的值
+	 * 配置文件的内容
 	 */
-	private String value;
+	private Clob content;
 
 	/**
 	 * 名称空间
@@ -58,20 +59,20 @@ public class ConfigmapData {
 		this.configmapId = configmapId;
 	}
 
-	public String getKey() {
-		return key;
+	public String getName() {
+		return name;
 	}
 
-	public void setKey(String key) {
-		this.key = key;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getValue() {
-		return value;
+	public Clob getContent() {
+		return content;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setContent(Clob content) {
+		this.content = content;
 	}
 
 	public Date getCreateDate() {

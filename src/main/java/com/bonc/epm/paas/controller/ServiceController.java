@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.bouncycastle.asn1.dvcs.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,12 +46,14 @@ import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
+import com.bonc.epm.paas.dao.ConfigmapDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.RefServiceDao;
 import com.bonc.epm.paas.dao.ServiceAndStorageDao;
+import com.bonc.epm.paas.dao.ServiceConfigmapDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
@@ -63,6 +66,8 @@ import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+import com.bonc.epm.paas.entity.Configmap;
+import com.bonc.epm.paas.entity.ConfigmapData;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
@@ -70,6 +75,7 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.ServiceAndStorage;
+import com.bonc.epm.paas.entity.ServiceConfigmap;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavor;
@@ -158,6 +164,18 @@ public class ServiceController {
 	 */
 	@Autowired
 	private EnvVariableDao envVariableDao;
+
+	/**
+	 * 配置文件数据层接口
+	 */
+	@Autowired
+	private ConfigmapDao configmapDao;
+
+	/**
+	 * 服务与配置文件数据层接口
+	 */
+	@Autowired
+	private ServiceConfigmapDao serviceConfigmapDao;
 
 	/**
 	 * portConfig数据层接口
@@ -514,6 +532,14 @@ public class ServiceController {
 		Service service = serviceDao.findOne(id);
 		List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
 		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+
+		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
+		List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(id);
+		ServiceConfigmap serviceConfigmap = null;
+		if(!CollectionUtils.isEmpty(serviceConfigmapList)){
+			serviceConfigmap = serviceConfigmapList.get(0);
+		}
+
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
 		List<Container> containerList = new ArrayList<Container>();
@@ -549,6 +575,9 @@ public class ServiceController {
 			}
 		}
 		List<Storage> storageList = storageDao.findByServiceId(service.getId());
+
+		model.addAttribute("configmapList", configmapList);
+		model.addAttribute("serviceConfigmap", serviceConfigmap);
 		model.addAttribute("storageList", storageList);
 		model.addAttribute("namespace", currentUser.getNamespace());
 		model.addAttribute("id", id);
@@ -671,6 +700,9 @@ public class ServiceController {
 			memorySizeList.add(map);
 		}
 
+		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
+
+		model.addAttribute("configmapList", configmapList);
 		model.addAttribute("cpuSizeList", cpuSizeList);
 		model.addAttribute("memorySizeList", memorySizeList);
 		model.addAttribute("userName", currentUser.getUserName());
@@ -966,6 +998,11 @@ public class ServiceController {
 		}
 
 		/*************************************
+		 * 根据serviceId,查找ServiceConfigmap
+		 *************************************/
+		List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(service.getId());
+
+		/*************************************
 		 * 先查询rc是否已经创建，如果没有找到则创建一个新的rc
 		 *************************************/
 		try {
@@ -997,7 +1034,7 @@ public class ServiceController {
 						service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 						service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
 						service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-						service.getCheckPath(), envVariables, command, args);
+						service.getCheckPath(), envVariables, command, args,serviceConfigmapList);
 				// 给controller设置卷组挂载的信息
 				LOG.debug("给rc添加存储卷信息");
 				if (service.getServiceType().equals("1")) {
@@ -1094,7 +1131,7 @@ public class ServiceController {
 	 */
 	@RequestMapping("service/constructContainer.do")
 	public String constructContainer(Service service, String resourceName, String envVariable, String portConfig,
-			String cephAds) {
+			String cephAds,String configmap,String configmapPath) {
 		Date currentDate = new Date();
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		// 保存服务信息
@@ -1108,6 +1145,18 @@ public class ServiceController {
 
 		if (StringUtils.isEmpty(service.getSessionAffinity())) {
 			service.setSessionAffinity(null);
+		}
+
+		if(Long.parseLong(configmap)!=-1){//选择了configmap
+		   Configmap configmap2 = configmapDao.findOne(Long.parseLong(configmap));
+           ServiceConfigmap serviceConfigmap = new ServiceConfigmap();
+           serviceConfigmap.setConfigmapId(Long.parseLong(configmap));
+           serviceConfigmap.setServiceId(service.getId());
+           serviceConfigmap.setCreateDate(currentDate);
+           serviceConfigmap.setCreateBy(currentUser.getId());
+           serviceConfigmap.setPath(configmapPath);
+           serviceConfigmap.setName(configmap2.getName());
+           serviceConfigmapDao.save(serviceConfigmap);
 		}
 
 		// 将服务中的环境变量循环遍历，保存到相关联的实体类中；
@@ -2396,6 +2445,7 @@ public class ServiceController {
 			map.put("status", "200");
 			serviceDao.delete(id);
 			envVariableDao.deleteByServiceId(id);
+			serviceConfigmapDao.deleteByServiceId(id);//删除serviceConfigmap记录
 			// 保存服务操作信息
 			serviceOperationLogDao.save(service.getServiceName(), service.toString(),
 					ServiceConstant.OPERATION_TYPE_DELETE);
@@ -3029,6 +3079,63 @@ public class ServiceController {
 
 	}
 
+
+	/**
+	 *
+	 * Description: 编辑端口配置信息
+	 *
+	 * @param portConfig
+	 * @param serviceName
+	 * @param serviceId
+	 * @return String
+	 * @see
+	 */
+	@RequestMapping(value = "service/detail/editConfigmap.do")
+	@ResponseBody
+	public String editConfigmap(String serviceId,String configmapPath, String configmap) {
+		Map<String, String> map = new HashMap<String, String>();
+		Service service = serviceDao.findOne(Long.parseLong(serviceId));
+		// 服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_STOPPED) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
+		Date currentDate = new Date();
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		//保存serviceConfigmap
+
+		serviceConfigmapDao.deleteByServiceId(service.getId());
+		ServiceConfigmap serviceConfigmap =null;
+		if(!configmap.equals("-1")){
+			Configmap configmap2 = configmapDao.findOne(Long.parseLong(configmap));
+			serviceConfigmap = new ServiceConfigmap();
+			serviceConfigmap.setConfigmapId(Long.parseLong(configmap));
+			serviceConfigmap.setCreateBy(currentUser.getId());
+			serviceConfigmap.setCreateDate(currentDate);
+			serviceConfigmap.setName(configmap2.getName());
+			serviceConfigmap.setPath(configmapPath);
+			serviceConfigmap.setServiceId(service.getId());
+			serviceConfigmapDao.save(serviceConfigmap);
+		}
+
+		// 保存服务信息
+		service.setIsModify(ServiceConstant.MODIFY_TRUE);
+		service.setUpdateDate(currentDate);
+		service.setUpdateBy(currentUser.getId());
+		serviceDao.save(service);
+		// 保存服务操作信息
+		serviceOperationLogDao.save(service.getServiceName(), serviceConfigmap !=null?serviceConfigmap.toString():"没选择configmap",
+				ServiceConstant.OPERATION_TYPE_UPDATE);
+		map.put("status", "200");
+
+		return JSON.toJSONString(map);
+	}
 	/**
 	 *
 	 * Description: 编辑端口配置信息

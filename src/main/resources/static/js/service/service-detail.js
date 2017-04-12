@@ -36,6 +36,12 @@ $(document).ready(function(){
         $(".envMapping").removeClass("hide");
     });
 
+    $(".CONFIGMAP").click(function(){
+
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".configmap").removeClass("hide");
+    });
+
     $(".PORTS").click(function(){
 
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
@@ -114,6 +120,8 @@ $(document).ready(function(){
           }
         });
       });*/
+
+
 
       $('#refreshLog').click(function (event) {
     	  getServiceLogs();
@@ -609,6 +617,33 @@ function canclEnvEdit(obj){
   $(obj).parent().parent().find("span.editEnv").hide();
   $(obj).hide();
 //  $("#BaseSerForm").resetForm();
+}
+
+//保存configmap
+function saveConfigmap(){
+   var serId =$('#serId').val();
+   var configmapId=$('#configmap option:selected').val();
+   var configmapPath = $('#configmapPath').val();
+   if(configmapId!=-1&&configmapPath==''){
+	   layer.tips('配置文件挂载路径不能为空！', "#configmapPath", {
+			tips : [1, '#3595CC']
+		});
+		$("#configmapPath").focus();
+		return;
+   }
+
+   $.ajax({
+		url:ctx+"/service/detail/editConfigmap.do?configmap="+configmapId+"&configmapPath="+configmapPath+"&serviceId="+serId,
+		success:function(data){
+			var data = eval("(" + data + ")");
+			if("200"==data.status){
+				layer.msg( "修改成功，重启服务后生效", {
+					icon: 1,
+					time: 2000
+               });
+			}
+		}
+	});
 }
 
 //端口修改按钮
