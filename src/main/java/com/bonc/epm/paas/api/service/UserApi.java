@@ -1,7 +1,9 @@
 package com.bonc.epm.paas.api.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.controller.CephController;
 import com.bonc.epm.paas.controller.ServiceController;
 import com.bonc.epm.paas.controller.UserController;
@@ -30,6 +33,7 @@ import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
@@ -489,5 +493,66 @@ public class UserApi {
 		spec.setHard(hard);
 		quota.setSpec(spec);
 		return quota;
+	}
+
+	public String buildUsers() {
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		Iterable<User> allUsers = userDao.findAll();
+		Iterator<User> iterator = allUsers.iterator();
+		while (iterator.hasNext()) {
+			createUserResource(iterator.next(), messages);
+		}
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
+
+	private void createUserResource(User user, List<String> messages) {
+
+		if (user.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
+			UserResource userResource = userResourceDao.findByUserId(user.getId());
+
+			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+			Namespace namespace = null;
+			try {
+				namespace = client.getNamespace(user.getNamespace());
+			} catch (KubernetesClientException e1) {
+				namespace = null;
+			}
+			if (namespace!=null) {
+				messages.add("namespace已存在[userName=" + user.getUserName() + ",nameSpace="
+						+ user.getNamespace() + "]");
+				return;
+			}
+			namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
+			try {
+				if (!createNsAndSec(user, namespace, client)) {
+					client.deleteNamespace(user.getNamespace());
+					messages.add("创建namespace或者secret失败！[userName=" + user.getUserName() + ",nameSpace="
+							+ user.getNamespace() + "]");
+				}
+
+				// 根据资源是否存在，判断操作为新增还是更新
+				if (userResource != null) {
+					if (!createQuota(user, userResource, client)) {
+						client.deleteNamespace(user.getNamespace());
+						messages.add("创建quota失败[userName=" + user.getUserName() + ",nameSpace="
+							+ user.getNamespace() + "]");
+					}
+				}
+
+				if (!createCeph(user)) {
+					client.deleteNamespace(user.getNamespace());
+					messages.add("创建ceph失败！[userName=" + user.getUserName() + ",nameSpace="
+							+ user.getNamespace() + "]");
+				}
+			} catch (Exception e) {
+				client.deleteNamespace(user.getNamespace());
+				e.printStackTrace();
+				messages.add("创建失败！[userName=" + user.getUserName() + ",nameSpace="
+						+ user.getNamespace() + "]");
+			}
+		}
 	}
 }
