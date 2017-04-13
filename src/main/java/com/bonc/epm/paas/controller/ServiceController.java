@@ -2874,6 +2874,44 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 	}
 
+	/**
+	 * editResponse:修改责任人信息. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param responsiblePerson
+	 * @param responsiblePersonTelephone
+	 * @param serId
+	 * @return String
+	 */
+	@RequestMapping("service/detail/editResponse.do")
+	@ResponseBody
+	public String editResponse(String responsiblePerson, String responsiblePersonTelephone, Long serId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Service service = serviceDao.findOne(serId);
+		// 服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		}
+		service.setResponsiblePerson(responsiblePerson);;
+		service.setResponsiblePersonTelephone(responsiblePersonTelephone);
+		try {
+			Date currentDate = new Date();
+			User currentUser = CurrentUserUtils.getInstance().getUser();
+			service.setUpdateDate(currentDate);
+			service.setUpdateBy(currentUser.getId());
+			service = serviceDao.save(service);
+			// 保存服务操作信息
+			serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+					ServiceConstant.OPERATION_TYPE_UPDATE);
+			map.put("status", "200");
+		} catch (Exception e) {
+			map.put("status", "400");
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
+	}
+
     /**
      *
      * Description: 修改服务详情的基础信息表
