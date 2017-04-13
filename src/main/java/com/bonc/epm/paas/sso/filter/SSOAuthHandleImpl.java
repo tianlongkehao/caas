@@ -244,7 +244,11 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
 			if ("1".equals(isSuperAdmin)) {
 				user.setUser_autority(UserConstant.AUTORITY_MANAGER);
 			}
-		} else {
+		} else if(user.getUserName().equals("admin")) {
+			//兼容旧版能力平台
+			user.setUser_autority(UserConstant.AUTORITY_MANAGER);
+		}
+			else {
 			if (null != attributes.get("tenantAdmin")) {
 				String tenantAdmin = attributes.get("tenantAdmin").toString();
 				if ("1".equals(tenantAdmin)) { // 是租户

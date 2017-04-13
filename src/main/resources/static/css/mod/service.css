@@ -34,7 +34,7 @@
 
 .clusterId {
     border-bottom: 1px solid #eee;
-    
+
 }
 
 .tr-row {
@@ -466,7 +466,7 @@
 .createPadding {
     padding: 20px 60px;
     position: absolute;
-    bottom: 0; 
+    bottom: 0;
     width: 100% !important;
     background: #fff;
     height: 80px !important;
@@ -840,7 +840,7 @@ i.pushOrg {
 #serviceBody .clusterId:hover{
 
     background: #fbfbfb;
-} 
+}
 
 .serviceOperation a.no-drop,
 .serviceOperation a.no-drop:focus,
@@ -926,7 +926,7 @@ tr.focus{
 	width: 165px;
 	height: 34px;
 	border-radius: 5px;
-	margin-top: 10px; 
+	margin-top: 10px;
 }
 #confCpu,#numberChange{
 	text-indent: 6px;
@@ -937,7 +937,7 @@ tr.focus{
 	cursor: pointer;
 }
 /* service-create */
-li.line-h-3 { 
+li.line-h-3 {
     margin-bottom: 8px;
 }
 li.line-h-3 input.in_style,#instanceNum,#Name,#Value,#mountPath,#selectVolume{
@@ -967,16 +967,16 @@ li.line-h-3 span i{
 .envlabel{
 	margin-bottom:15px;
 }
-.editCon input{
+.editCon editCon1 input{
 	border-radius: 5px;
 }
-#editServiceAddrBtn,#saveEdit,#canclEdit{
+#editServiceAddrBtn,#editResponseBtn,#saveEdit,#saveEdit1,#canclEdit,#canclEdit1{
 	color: #337ab7;
 }
 #editServiceAddr{
 	margin-right: 6px;
 	width:36%;
-} 
+}
 
 /* AGILE BOARD */
 .agile-list tr:hover {
@@ -994,7 +994,7 @@ li.line-h-3 span i{
 	padding-right: 2px;
 	border-left: 1px solid #e7eaec;
 	border-bottom: 1px solid #e7eaec;
-	
+
 }
 .localDoc div.ibox{
 	border-right: 1px solid #e7eaec;
@@ -1008,7 +1008,7 @@ li.line-h-3 span i{
 }
 .scpDoc div.ibox{
 	border-left: 1px solid #e7eaec;
-} 
+}
 .bgcolor{
 	background-color:#ddd;
 }
@@ -1027,7 +1027,7 @@ li.line-h-3 span i{
 	border-radius: 5px;
 }
 #createEnv-templat div{
-	width: 345px; 
+	width: 345px;
 	margin: 5px 10px 5px 10px
 }
 #createEnv-templat div p{
@@ -1139,8 +1139,8 @@ p.portLabel input{
 	margin-left:10px;
 }
 .service-searchFun{
-	text-align: center; 
-	margin: 0px 10px; 
+	text-align: center;
+	margin: 0px 10px;
 	float: right;
 	padding-top:12px;
 }

@@ -34,7 +34,16 @@ $(document).ready(function(){
 	      $('#serviceName').focus();
 	      return;
 	    }
-
+		reg = /^((\d{11})|((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})))$/;
+		var responsiblePersonTelephone = $('#responsiblePersonTelephone').val();
+		if (!reg.test(responsiblePersonTelephone)) {
+			layer.tips('非法的电话格式', '#responsiblePersonTelephone', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#responsiblePersonTelephone').focus();
+			return;
+		}
 	    //自定义启动命令的判断
 	    var startCommand_input = $("#startCommand_input").val();
 	    if($("#startCommand").prop("checked")==true){
