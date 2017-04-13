@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -105,19 +106,22 @@ public class CephController {
     /**
      * createNamespaceCephFS
      *               文件属主   文件属组   其他所有用户(x:执行；w：写；r：读)
-     *  O_CREAT              x  
+     *  O_CREAT              x
      *  O_TRUNC              w
      *  O_RDWR                          w
      *  O_RDONLY                        x
      *  O_APPEND                        r
      *  O_WRONLY    x
-     *  O_EXCL                r                 
-     *  @param namespace    
-     * @throws FileNotFoundException 
+     *  O_EXCL                r
+     *  @param namespace
+     * @throws FileNotFoundException
      */
     public void createNamespaceCephFS(String namespace) throws Exception {
         LOGGER.info("进入方法：createNamespaceCephFS");
         String[] listdir = cephMount.listdir("/");
+        if (StringUtils.isBlank(namespace)) {
+			return;
+		}
         int  flag =0;
         for (String strDir : listdir) {
            if (strDir.equals(namespace)){
@@ -172,8 +176,8 @@ public class CephController {
 
     /**
      * 创建ceph文件系统卷组
-     * @param storageName 
-     * @param isVolReadOnly  
+     * @param storageName
+     * @param isVolReadOnly
      * @see
      */
     public void createStorageCephFS(String storageName, boolean isVolReadOnly) {
@@ -206,7 +210,7 @@ public class CephController {
 
     /**
      * 删除ceph文件系统的卷组
-     * @param storageName 
+     * @param storageName
      * @see
      */
     public void deleteStorageCephFS(String storageName) {
@@ -240,10 +244,10 @@ public class CephController {
 
     /**
      *  格式化卷组
-     * 
+     *
      * @param storageName
-     * @param isVolReadOnly 
-     * @throws FileNotFoundException 
+     * @param isVolReadOnly
+     * @throws FileNotFoundException
      * @see
      */
     public void formatStorageCephFS(String root,String storageName,boolean isVolReadOnly) throws FileNotFoundException{
@@ -258,7 +262,7 @@ public class CephController {
 
     /**
      * 连接Ceph
-     * @param radosName  
+     * @param radosName
      * @see
      */
     public void conCeph(String radosName) {
@@ -278,7 +282,7 @@ public class CephController {
     }
 
     /**
-     * 
+     *
      * Description: 根据命名空间创建POOL
      * @see
      */
@@ -309,7 +313,7 @@ public class CephController {
 
     /**
      * 创建image
-     * 
+     *
      * @param conName conName
      */
     public void createCephImage(String conName) {
@@ -373,7 +377,7 @@ public class CephController {
     }
 
     /**
-     * 
+     *
      * 文件转byte[]
      * @param filePath 文件路径
      * @return byte[]
@@ -407,7 +411,7 @@ public class CephController {
 
     /**
      * byte[]转文件
-     * 
+     *
      * @param buf 比特
      * @param filePath 文件路径
      * @param fileName 文件名
@@ -463,5 +467,5 @@ public class CephController {
     public String getCephDir() {
         return cephDir;
     }
-    
+
 }
