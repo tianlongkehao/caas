@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.UserConstant;
-import com.bonc.epm.paas.controller.CephController;
 import com.bonc.epm.paas.controller.ServiceController;
 import com.bonc.epm.paas.controller.UserController;
 import com.bonc.epm.paas.dao.ServiceDao;
@@ -254,7 +253,7 @@ public class UserApi {
 
 				if (!createCeph(user)) {
 					client.deleteNamespace(user.getNamespace());
-					//client.deleteResourceQuota(user.getNamespace());
+					// client.deleteResourceQuota(user.getNamespace());
 					map.put("message", "创建ceph失败");
 					map.put("flag", "400");
 					return JSON.toJSONString(map);
@@ -457,15 +456,15 @@ public class UserApi {
 	 * @see
 	 */
 	public boolean createCeph(User user) {
-		try {
-			CephController ceph = new CephController();
-			ceph.connectCephFS();
-			ceph.createNamespaceCephFS(user.getNamespace());
-			return true;
-		} catch (Exception e) {
-			LOG.error(e.getMessage());
-			return false;
-		}
+		// try {
+		// CephController ceph = new CephController();
+		// ceph.connectCephFS();
+		// ceph.createNamespaceCephFS(user.getNamespace());
+		return true;
+		// } catch (Exception e) {
+		// LOG.error(e.getMessage());
+		// return false;
+		// }
 	}
 
 	/**
@@ -494,22 +493,58 @@ public class UserApi {
 		quota.setSpec(spec);
 		return quota;
 	}
-
+	/**
+	 * buildUsers:根据数据库创建用户的namespace，quota，ceph. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return String
+	 */
+	@RequestMapping(value = { "/user/build" }, method = RequestMethod.POST)
+	@ResponseBody
 	public String buildUsers() {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
-		Iterable<User> allUsers = userDao.findAll();
+		Iterable<User> allUsers = userDao.findAllTenant();
 		Iterator<User> iterator = allUsers.iterator();
 		while (iterator.hasNext()) {
-			createUserResource(iterator.next(), messages);
+			messages = createUserResource(iterator.next(), messages);
 		}
 		map.put("status", "200");
+		if (messages.size() > 0) {
+			map.replace("status", "400");
+			map.put("message", messages);
+		}
 		return JSON.toJSONString(map);
 	}
 
+	/**
+	 * buildUsers:根据用户名查找数据库创建用户的namespace，quota，ceph. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return String
+	 */
+	@RequestMapping(value = { "/user/{user}/build" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String buildSpecifiedUser(@PathVariable("user") String userName) {
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		User user = userDao.findByUserName(userName);
+		if (null == user) {
+			messages.add("未找到用户[" + userName + "]");
+		}
+		messages = createUserResource(user, messages);
+		map.put("status", "200");
+		if (messages.size() > 0) {
+			map.replace("status", "400");
+			map.put("message", messages);
+		}
+		return JSON.toJSONString(map);
+	}
 
-	private void createUserResource(User user, List<String> messages) {
-
+	private List<String> createUserResource(User user, List<String> messages) {
+		if (null == messages) {
+			messages = new ArrayList<>();
+		}
 		if (user.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
 			UserResource userResource = userResourceDao.findByUserId(user.getId());
 
@@ -520,10 +555,9 @@ public class UserApi {
 			} catch (KubernetesClientException e1) {
 				namespace = null;
 			}
-			if (namespace!=null) {
-				messages.add("namespace已存在[userName=" + user.getUserName() + ",nameSpace="
-						+ user.getNamespace() + "]");
-				return;
+			if (namespace != null) {
+				messages.add("namespace已存在[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
+				return messages;
 			}
 			namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
 			try {
@@ -537,22 +571,25 @@ public class UserApi {
 				if (userResource != null) {
 					if (!createQuota(user, userResource, client)) {
 						client.deleteNamespace(user.getNamespace());
-						messages.add("创建quota失败[userName=" + user.getUserName() + ",nameSpace="
-							+ user.getNamespace() + "]");
+						messages.add(
+								"创建quota失败[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
 					}
 				}
 
 				if (!createCeph(user)) {
 					client.deleteNamespace(user.getNamespace());
-					messages.add("创建ceph失败！[userName=" + user.getUserName() + ",nameSpace="
-							+ user.getNamespace() + "]");
+					messages.add(
+							"创建ceph失败！[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
 				}
 			} catch (Exception e) {
 				client.deleteNamespace(user.getNamespace());
 				e.printStackTrace();
-				messages.add("创建失败！[userName=" + user.getUserName() + ",nameSpace="
-						+ user.getNamespace() + "]");
+				messages.add("创建失败！[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
 			}
+		} else {
+			messages.add("不是租户：[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
 		}
+		return messages;
 	}
+
 }
