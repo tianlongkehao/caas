@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.controller.CephController;
 import com.bonc.epm.paas.controller.ServiceController;
 import com.bonc.epm.paas.controller.UserController;
 import com.bonc.epm.paas.dao.ServiceDao;
@@ -456,15 +457,15 @@ public class UserApi {
 	 * @see
 	 */
 	public boolean createCeph(User user) {
-		// try {
-		// CephController ceph = new CephController();
-		// ceph.connectCephFS();
-		// ceph.createNamespaceCephFS(user.getNamespace());
-		return true;
-		// } catch (Exception e) {
-		// LOG.error(e.getMessage());
-		// return false;
-		// }
+		try {
+			CephController ceph = new CephController();
+			ceph.connectCephFS();
+			ceph.createNamespaceCephFS(user.getNamespace());
+			return true;
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+			return false;
+		}
 	}
 
 	/**
@@ -493,6 +494,7 @@ public class UserApi {
 		quota.setSpec(spec);
 		return quota;
 	}
+
 	/**
 	 * buildUsers:根据数据库创建用户的namespace，quota，ceph. <br/>
 	 *
@@ -576,11 +578,11 @@ public class UserApi {
 					}
 				}
 
-				if (!createCeph(user)) {
-					client.deleteNamespace(user.getNamespace());
-					messages.add(
-							"创建ceph失败！[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
-				}
+//				if (!createCeph(user)) {
+//					client.deleteNamespace(user.getNamespace());
+//					messages.add(
+//							"创建ceph失败！[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
+//				}
 			} catch (Exception e) {
 				client.deleteNamespace(user.getNamespace());
 				e.printStackTrace();
