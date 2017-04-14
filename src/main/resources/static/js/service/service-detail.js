@@ -566,8 +566,9 @@ function checkSerAddr(){
 }
 
 function checkResponse() {
-	if ($('#editResponsiblePerson').val() === '') {
-		layer.tips('责任人不能为空', $('#editResponsiblePerson'), {
+	var responsiblePerson = $('#editResponsiblePerson').val();
+	if (responsiblePerson.length > 24 || responsiblePerson.length < 1) {
+		layer.tips('责任人为1~24个字符', $('#editResponsiblePerson'), {
 			tips : [1, '#EF6578']
 		});
 		$('#editResponsiblePerson').focus();
