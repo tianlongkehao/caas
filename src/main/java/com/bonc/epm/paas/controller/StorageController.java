@@ -52,9 +52,9 @@ import com.bonc.epm.paas.util.ZipCompressing;
 import com.jcraft.jsch.JSchException;
 
 /**
- * 
+ *
  * 〈一句话功能简述〉 〈功能详细描述〉
- * 
+ *
  * @author YuanPeng
  * @version 2016年9月5日
  * @see StorageController
@@ -64,37 +64,37 @@ import com.jcraft.jsch.JSchException;
 public class StorageController {
 
     /**
-     * 
+     *
      */
     private static final Logger LOG = LoggerFactory.getLogger(StorageController.class);
-    
+
     /**
      * storageDao
      */
     @Autowired
     private StorageDao storageDao;
-    
+
     /**
      * userResourceDao
      */
     @Autowired
     private UserResourceDao userResourceDao;
-    
+
     /**
      * commonOperationLogDao
      */
     @Autowired
     private CommonOperationLogDao commonOperationLogDao;
-    
+
     /**
-     * 
+     *
      */
     @Autowired
     private CephController cephController;
 
     /**
      * 进入存储卷组页面
-     * 
+     *
      * @param model
      *            Model
      * @return String
@@ -119,7 +119,7 @@ public class StorageController {
 
     /**
      * 根据分页配置查询当前存储卷组
-     * 
+     *
      * @param pageable
      *            Pageable
      * @param model
@@ -149,9 +149,9 @@ public class StorageController {
 
     /**
      * 根据存储卷id跳转进入存储卷组详细页面
-     * 
+     *
      * @param model Model
-     * @param id  
+     * @param id
      * @return storage_detail.jsp
      */
     @RequestMapping(value = { "service/storage/detail/{id}" }, method = RequestMethod.GET)
@@ -166,7 +166,7 @@ public class StorageController {
 
     /**
      * 跳转进入新建卷组页面
-     * 
+     *
      * @param model Model
      * @return storager_add.jsp
      */
@@ -189,7 +189,7 @@ public class StorageController {
 
     /**
      * 新建存储
-     * 
+     *
      * @param storage 新建卷组名
      * @param model Model
      * @return JSON
@@ -217,7 +217,7 @@ public class StorageController {
             ceph.createStorageCephFS(storage.getStorageName(), storage.isVolReadOnly());
 
             storageDao.save(storage);
-            
+
             //修改租户的卷组剩余容量
             UserResource userResource = new UserResource();
             if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
@@ -228,14 +228,14 @@ public class StorageController {
             }
             userResource.setVol_surplus_size(userResource.getVol_surplus_size()-storage.getStorageSize()/1024);
             userResourceDao.save(userResource);
-            
+
             //记录新增storage存储卷
             String extraInfo = "新增storage存储卷 " + JSON.toJSONString(storage);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_CREATED);
             commonOperationLogDao.save(log);
-            
+
             map.put("status", "200");
-        } 
+        }
         else {
             map.put("status", "500");
         }
@@ -244,7 +244,7 @@ public class StorageController {
 
     /**
      * 新建存储时，对存储名进行查重；
-     * 
+     *
      * @param storageName 卷组名
      * @return JSON
      */
@@ -256,7 +256,7 @@ public class StorageController {
         Storage StorageValidate = storageDao.findByCreateByAndStorageName(createBy, storageName);
         if (StorageValidate == null) {
             map.put("status", "200");
-        } 
+        }
         else {
             map.put("status", "500");
         }
@@ -266,7 +266,7 @@ public class StorageController {
 
     /**
      * 根据存储卷组Id修改存储卷组的存储大小；
-     * 
+     *
      * @param storageId 卷组id
      * @param storageUpdateSize 卷组修改大小
      * @return JSON
@@ -286,38 +286,38 @@ public class StorageController {
         Storage storage = storageDao.findOne(storageId);
         int usedStorage=0;
         List<Storage> list = storageDao.findByCreateBy(cUser.getId());
-        
+
         //判断卷组剩余容量是否大于扩充容量
         if (storageUpdateSize/1024 - storage.getStorageSize()/1024>((int) userResource.getVol_surplus_size())){
             map.put("status", "500");
             return JSON.toJSONString(map);
         }
-        
+
         //修改租户的卷组剩余容量
         userResource.setVol_surplus_size(userResource.getVol_surplus_size()+storage.getStorageSize()/1024-storageUpdateSize/1024);
         userResourceDao.save(userResource);
-        
+
         storage.setStorageSize(storageUpdateSize);
         storageDao.save(storage);
-        
+
         //记录更新storage存储卷
         String extraInfo = "更新storage存储卷 " + JSON.toJSONString(storage);
         CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_UPDATE);
         commonOperationLogDao.save(log);
-        
+
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
 
     /**
-     * 
+     *
      * Description: <br>
      * 1、…<br>
      * 2、…<br>
      * Implement: <br>
      * 1、…<br>
      * 2、…<br>
-     * 
+     *
      * @param storageId 卷组id
      * @return JSON
      * @see
@@ -333,16 +333,16 @@ public class StorageController {
             if (StorageConstant.IS_USER == storage.getUseType()) {
                 map.put("status", "500");
                 return JSON.toJSONString(map);
-            } 
+            }
         }
         for(int i=0 ;i<id.length;i++){
             Storage storage1 = storageDao.findOne(Long.parseLong(id[i]));
-            
+
             //记录删除storage存储卷
             String extraInfo = "删除storage存储卷 " + JSON.toJSONString(storage1);
             CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage1.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_DELETE);
             commonOperationLogDao.save(log);
-            
+
             storageDao.delete(Long.parseLong(id[i]));
             //判断登录者为用户还是租户，并获取其对应的userResorce
             User cUser = CurrentUserUtils.getInstance().getUser();
@@ -352,11 +352,11 @@ public class StorageController {
             }
             else {//其身份是租户
                 userResource = userResourceDao.findByUserId(cUser.getId());
-            }   
+            }
             //修改租户的卷组剩余容量
             userResource.setVol_surplus_size(userResource.getVol_surplus_size()+storage.getStorageSize()/1024);
             userResourceDao.save(userResource);
-            
+
             CephController cephCon = new CephController();
             try {
                 cephCon.connectCephFS();
@@ -398,9 +398,9 @@ public class StorageController {
     }
 
     /**
-     * 
+     *
      * Description:展示文件列表
-     * 
+     *
      * @param path 文件夹路径
      * @param dirName 目录名
      * @param storageName 卷组名
@@ -426,24 +426,24 @@ public class StorageController {
             }
             directory = directory.substring(0, directory.lastIndexOf('/'));
             directory = directory.substring(0, directory.lastIndexOf('/') + 1);
-        } 
+        }
         else {
             directory += dirName;
         }
-        if(new File(directory).exists()){
+        if(directory.startsWith(cephController.getMountpoint() + namespace + storageName) && new File(directory).exists()){
             List<FileInfo> list = SFTPUtil.listFileInfo(directory);
             map.put("fileList", list);
         }else{
             map.put("status","400");
         }
-        
+
         return JSON.toJSONString(map);
     }
 
     /**
-     * 
+     *
      * Description: 如果没有本地cephfs目录没有挂载，则挂载。
-     * 
+     *
      * @param file 文件名
      * @see
      */
@@ -464,7 +464,7 @@ public class StorageController {
             try {
                 CmdUtil.exeCmd(cephController.getMountexec(), cephController.getCephDir());
                 map.put("status", "200");
-            } 
+            }
             catch (IOException  e) {
                 map.put("status", "500");
                 e.printStackTrace();
@@ -474,9 +474,9 @@ public class StorageController {
     }
 
     /**
-     * 
+     *
      * Description: 上传文件到卷组
-     * 
+     *
      * @param file 上传文件名
      * @param path 路径
      * @param storageName 卷组名
@@ -509,28 +509,28 @@ public class StorageController {
                 map.put("status", "200");
                 }
                 return JSON.toJSONString(map);
-            } 
+            }
             catch (FileNotFoundException e) {
                 e.printStackTrace();
                 return "上传失败," + e.getMessage();
-            } 
+            }
             catch (IOException e) {
                 e.printStackTrace();
                 return "上传失败," + e.getMessage();
             }
-        } 
+        }
 
     /**
-     * 
+     *
      * Description: 下载卷组中的文件
-     * 
+     *
      * @param downfiles 需要下载的文件和文件夹名们
      * @param directory 所在目录
-     * @param request 
-     * @param response 
-     * @throws IOException 
-     * @throws JSchException 
-     * @throws InterruptedException 
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws JSchException
+     * @throws InterruptedException
      * @see
      */
     @RequestMapping(value = { "media" }, method = RequestMethod.GET)
@@ -554,9 +554,9 @@ public class StorageController {
             IOUtils.copy(myStream, response.getOutputStream());
             response.flushBuffer();
             System.out.println("下载成功");
-        } 
+        }
         catch (IOException e) {
-        } 
+        }
         finally {
             File rm = new File(fullPath);
             rm.delete();
@@ -576,36 +576,37 @@ public class StorageController {
         }finally{
             return JSON.toJSONString(map);
         }
-    } 
+    }
     /**
      * 手动创建文件夹
-     * 
+     *
      * @param storageName
      * @param isVolReadOnly
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping(value = { "storage/createFile.do" }, method = RequestMethod.POST)
     @ResponseBody
-    public String createFile(String storageName,String dirName,String path){
-        Map map = new HashMap();
-        String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-//        String directory = cephController.getMountpoint() + namespace + storageName;
-        File file = new File(path+"/"+dirName);
-        if(true==file.mkdir()){
-            map.put("status", "200");
-        }else{
-            map.put("status", "500");
-                }
-        return JSON.toJSONString(map);
+	public String createFile(String storageName, String dirName, String path) {
+		Map<String, String> map = new HashMap<>();
+//		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		// String directory = cephController.getMountpoint() + namespace +
+		// storageName;
+		File file = new File(path + "/" + dirName);
+		if (true == file.mkdir()) {
+			map.put("status", "200");
+		} else {
+			map.put("status", "500");
+		}
+		return JSON.toJSONString(map);
 
-    } 
+	}
     /**
      * 手动删除文件或文件夹
-     * 
+     *
      * @param storageName
      * @param isVolReadOnly
-     * @return 
+     * @return
      * @see
      */
     @RequestMapping(value = { "storage/delFile.do" }, method = RequestMethod.GET)
@@ -627,9 +628,9 @@ public class StorageController {
                   }
         map.put("status", "200");
         return JSON.toJSONString(map);
-    } 
+    }
     /**
-     * 
+     *
      * Description: 解压压缩文件
      * @param storageName
      * @param fileName
@@ -649,7 +650,7 @@ public class StorageController {
         map.put("status", "200");
         return JSON.toJSONString(map);
     }
-    
+
     @RequestMapping(value = { "service/storage/getVols.do" }, method = RequestMethod.GET)
     @ResponseBody
     public String getVol(){

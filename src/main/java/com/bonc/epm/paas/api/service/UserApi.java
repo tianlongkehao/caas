@@ -530,7 +530,7 @@ public class UserApi {
 		List<String> messages = new ArrayList<>();
 		User user = userDao.findByUserName(userName);
 		if (null == user) {
-			messages.add("未找到用户[" + userName + "]");
+			messages.add("未找到用户[userName=" + userName + "]");
 		}
 		messages = createUserResource(user, messages);
 		map.put("status", "200");
