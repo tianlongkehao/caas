@@ -265,6 +265,24 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
 		} else if(user.getUserName().equals("admin")) {
 			//兼容旧版能力平台
 			user.setUser_autority(UserConstant.AUTORITY_MANAGER);
+		} else {
+			if (null != attributes.get("tenantAdmin")) {
+				String tenantAdmin = attributes.get("tenantAdmin").toString();
+				if ("1".equals(tenantAdmin)) { // 是租户
+					user.setUser_autority(UserConstant.AUTORITY_TENANT);
+				} else if ("0".equals(tenantAdmin)) {
+					// 获取租户管理员id
+					try {
+						List<User> tenant = userDao.findTenant(namespace);
+						if (!CollectionUtils.isEmpty(tenant)) {
+							user.setParent_id(tenant.get(0).getId());
+						}
+					} catch (Exception e) {
+						LOG.error("get parent error:" + e.getMessage());
+					}
+					user.setUser_autority(UserConstant.AUTORITY_USER);
+				}
+			}
 		}
 		return user;
 	}
