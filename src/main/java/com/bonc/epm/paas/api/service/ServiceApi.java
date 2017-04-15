@@ -171,17 +171,21 @@ public class ServiceApi {
 
 	@RequestMapping(value = { "/services/build" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String buildAllServices(@PathVariable("user") String userName) {
+	public String buildAllServices() {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
-		User user = userDao.findByUserName(userName);
-		if (null == user) {
-			messages.add("未找到用户[userName" + userName + "]");
-		}
 		Iterable<Service> services = serviceDao.findAll();
 		Iterator<Service> iterator = services.iterator();
 		while (iterator.hasNext()) {
-			messages = createService(user.getNamespace(), iterator.next(), messages);
+			Service service = iterator.next();
+			if (service.getStatus().equals(ServiceConstant.CONSTRUCTION_STATUS_RUNNING)) {
+				User user = userDao.findOne(service.getCreateBy());
+				if (null == user) {
+					messages.add("找不到创建用户[serviceName"+service.getServiceName()+"]");
+					continue;
+				}
+				messages = createService(user.getNamespace(), service, messages);
+			}
 		}
 		map.put("status", "200");
 		if (messages.size() > 0) {
@@ -206,11 +210,16 @@ public class ServiceApi {
 		User user = userDao.findByUserName(userName);
 		if (null == user) {
 			messages.add("未找到用户[userName" + userName + "]");
+			map.put("status", "400");
+			return JSON.toJSONString(map);
 		}
-		List<Service> service = serviceDao.findByCreateBy(user.getId());
-		Iterator<Service> iterator = service.iterator();
+		List<Service> services = serviceDao.findByCreateBy(user.getId());
+		Iterator<Service> iterator = services.iterator();
 		while (iterator.hasNext()) {
-			messages = createService(user.getNamespace(), iterator.next(), messages);
+			Service service = iterator.next();
+			if (service.getStatus().equals(ServiceConstant.CONSTRUCTION_STATUS_RUNNING)) {
+				messages = createService(user.getNamespace(), service, messages);
+			}
 		}
 		map.put("status", "200");
 		if (messages.size() > 0) {
@@ -237,12 +246,20 @@ public class ServiceApi {
 		User user = userDao.findByUserName(userName);
 		if (null == user) {
 			messages.add("未找到用户[userName" + userName + "]");
+			map.put("status", "400");
+			return JSON.toJSONString(map);
 		}
-		List<Service> service = serviceDao.findByNameOf(user.getId(), serviceName);
-		if (CollectionUtils.isEmpty(service)) {
+		List<Service> services = serviceDao.findByNameOf(user.getId(), serviceName);
+		if (CollectionUtils.isEmpty(services)) {
 			messages.add("未找到服务[userName" + userName + ", serviceName=" + serviceName + "]");
+			map.put("status", "400");
+			return JSON.toJSONString(map);
 		}
-		messages = createService(user.getNamespace(), service.get(0), messages);
+
+		Service service = services.get(0);
+		if (service.getStatus().equals(ServiceConstant.CONSTRUCTION_STATUS_RUNNING)) {
+			messages = createService(user.getNamespace(), service, messages);
+		}
 		map.put("status", "200");
 		if (messages.size() > 0) {
 			map.replace("status", "400");
@@ -267,23 +284,21 @@ public class ServiceApi {
 		ReplicationController rc = null;
 
 		/*************************************
-		 * 服务不是未启动状态时,获取svc和rc并删除
+		 * 获取svc和rc并删除
 		 *************************************/
-		if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
-			try {
-				// 获取svc
-				k8sService = client.getService(service.getServiceName());
-				client.deleteService(service.getServiceName());
-			} catch (KubernetesClientException e) {
-				k8sService = null;
-			}
-			try {
-				// 获取rc
-				rc = client.getReplicationController(service.getServiceName());
-				client.deleteReplicationController(service.getServiceName());
-			} catch (KubernetesClientException e) {
-				rc = null;
-			}
+		try {
+			// 获取svc
+			k8sService = client.getService(service.getServiceName());
+			client.deleteService(service.getServiceName());
+		} catch (KubernetesClientException e) {
+			k8sService = null;
+		}
+		try {
+			// 获取rc
+			rc = client.getReplicationController(service.getServiceName());
+			client.deleteReplicationController(service.getServiceName());
+		} catch (KubernetesClientException e) {
+			rc = null;
 		}
 
 		/***************************************
