@@ -180,33 +180,34 @@ public class CephController {
      * @param isVolReadOnly
      * @see
      */
-    public void createStorageCephFS(String storageName, boolean isVolReadOnly) {
-        try {
-            LOGGER.info("进入方法：createStorageCephFS");
-            String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-            int readOrWrite = mode;
-            if (isVolReadOnly) {
-                readOrWrite = 292;
-            }
-            // 指定当前工作目录
-            cephMount.chdir("/" + namespace);
-            // 创建挂载卷目录
-            cephMount.mkdir(storageName, readOrWrite);
-            cephMount.chmod("/" + namespace, mode);
+	public boolean createStorageCephFS(String storageName, boolean isVolReadOnly) {
+		LOGGER.info("进入方法：createStorageCephFS");
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		int readOrWrite = mode;
+		if (isVolReadOnly) {
+			readOrWrite = 292;
+		}
+		try {
+			// 指定当前工作目录
+			cephMount.chdir("/" + namespace);
+			// 创建挂载卷目录
+			cephMount.mkdir(storageName, readOrWrite);
+			cephMount.chmod("/" + namespace, mode);
 
-            LOGGER.info("打印" + namespace + "下的所有目录");
-            String[] listdir2 = cephMount.listdir("/" + namespace);
-            for (String strDir : listdir2) {
-                LOGGER.info("dir:" + strDir);
-            }
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+			LOGGER.info("打印" + namespace + "下的所有目录");
+			String[] listdir2 = cephMount.listdir("/" + namespace);
+			for (String strDir : listdir2) {
+				LOGGER.info("dir:" + strDir);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 
     /**
      * 删除ceph文件系统的卷组

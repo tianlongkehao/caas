@@ -196,51 +196,52 @@ public class StorageController {
      */
     @RequestMapping(value = { "service/storage/build" }, method = RequestMethod.POST)
     @ResponseBody
-    public String buildStorage(Storage storage, Model model) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        User user = CurrentUserUtils.getInstance().getUser();
-        long createBy = user.getId();
-        storage.setCreateDate(new Date());
-        storage.setUseType(StorageConstant.NOT_USER);
-        storage.setCreateBy(createBy);
-        Storage storageValidate = storageDao.findByCreateByAndStorageName(createBy, storage.getStorageName());
-        if (null == storageValidate) {
-            // ceph中创建存储卷目录 TODO 3
-            CephController ceph = new CephController();
-            try {
-                ceph.connectCephFS();
-            }
-            catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            ceph.createStorageCephFS(storage.getStorageName(), storage.isVolReadOnly());
+	public String buildStorage(Storage storage, Model model) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		User user = CurrentUserUtils.getInstance().getUser();
+		long createBy = user.getId();
+		storage.setCreateDate(new Date());
+		storage.setUseType(StorageConstant.NOT_USER);
+		storage.setCreateBy(createBy);
+		Storage storageValidate = storageDao.findByCreateByAndStorageName(createBy, storage.getStorageName());
+		if (null == storageValidate) {
+			// ceph中创建存储卷目录
+			CephController ceph = new CephController();
+			try {
+				ceph.connectCephFS();
+			} catch (Exception e) {
+				e.printStackTrace();
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			}
+			if (!ceph.createStorageCephFS(storage.getStorageName(), storage.isVolReadOnly())) {
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			}
+			storageDao.save(storage);
 
-            storageDao.save(storage);
+			// 修改租户的卷组剩余容量
+			UserResource userResource = new UserResource();
+			if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+				userResource = userResourceDao.findByUserId(user.getParent_id());
+			} else {
+				userResource = userResourceDao.findByUserId(user.getId());
+			}
+			userResource.setVol_surplus_size(userResource.getVol_surplus_size() - storage.getStorageSize() / 1024);
+			userResourceDao.save(userResource);
 
-            //修改租户的卷组剩余容量
-            UserResource userResource = new UserResource();
-            if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)){
-                userResource = userResourceDao.findByUserId(user.getParent_id());
-            }
-            else {
-                userResource = userResourceDao.findByUserId(user.getId());
-            }
-            userResource.setVol_surplus_size(userResource.getVol_surplus_size()-storage.getStorageSize()/1024);
-            userResourceDao.save(userResource);
+			// 记录新增storage存储卷
+			String extraInfo = "新增storage存储卷 " + JSON.toJSONString(storage);
+			CommonOperationLog log = CommonOprationLogUtils.getOprationLog(storage.getStorageName(), extraInfo,
+					CommConstant.STORAGE, CommConstant.OPERATION_TYPE_CREATED);
+			commonOperationLogDao.save(log);
 
-            //记录新增storage存储卷
-            String extraInfo = "新增storage存储卷 " + JSON.toJSONString(storage);
-            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(storage.getStorageName(), extraInfo, CommConstant.STORAGE, CommConstant.OPERATION_TYPE_CREATED);
-            commonOperationLogDao.save(log);
-
-            map.put("status", "200");
-        }
-        else {
-            map.put("status", "500");
-        }
-        return JSON.toJSONString(map);
-    }
+			map.put("status", "200");
+		} else {
+			map.put("status", "500");
+		}
+		return JSON.toJSONString(map);
+	}
 
     /**
      * 新建存储时，对存储名进行查重；
