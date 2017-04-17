@@ -342,7 +342,7 @@ public class ServiceApi {
 					service.getCheckPath(), envVariables, command, args);
 			// 给rc设置卷组挂载的信息
 			if (service.getServiceType().equals("1")) {
-				rc = setVolumeStorage(rc, service.getId());
+				rc = setVolumeStorage(namespace, rc, service.getId());
 			}
 			rc = client.createReplicationController(rc);
 		} catch (KubernetesClientException e) {
@@ -361,16 +361,19 @@ public class ServiceApi {
      * @param serviceId
      * @return ReplicationController
      */
-    private ReplicationController setVolumeStorage(ReplicationController rc,long serviceId) {
+    private ReplicationController setVolumeStorage(String namespace, ReplicationController rc,long serviceId) {
         List<Storage> storageList = storageDao.findByServiceId(serviceId);
         ReplicationControllerSpec rcSpec = rc.getSpec();
         PodTemplateSpec template = rcSpec.getTemplate();
         PodSpec podSpec = template.getSpec();
         List<Volume> volumes = new ArrayList<Volume>();
         List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
+        int i = 0;
         for (Storage storage : storageList) {
+        	i++;
             Volume volume = new Volume();
-            volume.setName("cephfs-"+storage.getStorageName());
+//            volume.setName("cephfs-"+storage.getStorageName());
+            volume.setName("cephfs-" + i);
             CephFSVolumeSource cephfs = new CephFSVolumeSource();
             List<String> monitors = new ArrayList<String>();
             System.out.println("CEPH_MONITOR:" + CEPH_MONITOR);
@@ -379,7 +382,6 @@ public class ServiceApi {
                 monitors.add(ceph_monitor);
             }
             cephfs.setMonitors(monitors);
-            String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
             cephfs.setPath("/" + namespace + "/" + storage.getStorageName());
             cephfs.setUser("admin");
             LocalObjectReference secretRef = new LocalObjectReference();
@@ -391,7 +393,8 @@ public class ServiceApi {
 
             VolumeMount volumeMount = new VolumeMount();
             volumeMount.setMountPath(storage.getMountPoint());
-            volumeMount.setName("cephfs-"+storage.getStorageName());
+//            volumeMount.setName("cephfs-"+storage.getStorageName());
+            volumeMount.setName("cephfs-" + i);
             volumeMounts.add(volumeMount);
         }
 

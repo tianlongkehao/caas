@@ -2484,9 +2484,11 @@ public class ServiceController {
         PodSpec podSpec = template.getSpec();
         List<Volume> volumes = new ArrayList<Volume>();
         List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
+        int i = 0;
         for (Storage storage : storageList) {
+        	i++;
             Volume volume = new Volume();
-            volume.setName("cephfs-"+storage.getStorageName());
+            volume.setName("cephfs-"+i);
             CephFSVolumeSource cephfs = new CephFSVolumeSource();
             List<String> monitors = new ArrayList<String>();
             System.out.println("CEPH_MONITOR:" + CEPH_MONITOR);
@@ -2507,7 +2509,7 @@ public class ServiceController {
 
             VolumeMount volumeMount = new VolumeMount();
             volumeMount.setMountPath(storage.getMountPoint());
-            volumeMount.setName("cephfs-"+storage.getStorageName());
+            volumeMount.setName("cephfs-"+i);
             volumeMounts.add(volumeMount);
         }
 
