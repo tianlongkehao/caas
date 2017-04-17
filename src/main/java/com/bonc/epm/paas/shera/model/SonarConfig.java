@@ -10,8 +10,8 @@ package com.bonc.epm.paas.shera.model;
 public class SonarConfig {
 
 	boolean enabled;
-	boolean hidden;
-	boolean mandatory;
+	boolean hidden;  //是否显示   不显示true   显示检查结果false
+	boolean mandatory; //质量检查 必选true 可选false
 	Integer threshold;
 	boolean breakable;
 	String token;
