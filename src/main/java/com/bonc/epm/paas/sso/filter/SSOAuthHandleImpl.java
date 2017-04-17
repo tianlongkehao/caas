@@ -34,6 +34,7 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -94,6 +95,12 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      */
     @Value("${ratio.memtocpu}")
     private String RATIO_MEMTOCPU = "4";
+
+	/**
+	 * CEPH_KEY ${ceph.key}
+	 */
+	@Value("${ceph.key}")
+	private String CEPH_KEY;
 
     @Override
 	public boolean onSuccess(HttpServletRequest request, HttpServletResponse response, String loginId) {
@@ -295,32 +302,39 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      * @return boolean
      * @throws ServiceException
      */
-    private boolean createNamespace(String namespace) throws ServiceException{
-        // 以用户名(登陆帐号)为name，创建client ??
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
-        // 是否创建nameSpace
-        try {
-            client.getNamespace(namespace);
-        }
-        catch (KubernetesClientException e) {
-            // 以用户名(登陆帐号)为name，为client创建nameSpace
-            Namespace nSpace = kubernetesClientService.generateSimpleNamespace(namespace);
-            nSpace = client.createNamespace(nSpace);
-            if (nSpace == null) {
-                //client.deleteNamespace(namespace);
-                LOG.error("Create a new Namespace:namespace["+nSpace+"]");
-                return false;
-            }
-            else {
-                LOG.info("create namespace:" + JSON.toJSONString(nSpace));
-            }
-        }
-        catch (RuntimeException e) {
-            LOG.error("连接kubernetesAPI超时！" + e);
-            throw new ServiceException();
-        }
-        return true;
-    }
+	private boolean createNamespace(String namespace) throws ServiceException {
+		// 以用户名(登陆帐号)为name，创建client ??
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
+		// 是否创建nameSpace
+		try {
+			client.getNamespace(namespace);
+		} catch (KubernetesClientException e) {
+			// 以用户名(登陆帐号)为name，为client创建nameSpace
+			Namespace nSpace = kubernetesClientService.generateSimpleNamespace(namespace);
+			nSpace = client.createNamespace(nSpace);
+			if (nSpace == null) {
+				// client.deleteNamespace(namespace);
+				LOG.error("Create a new Namespace:namespace[" + nSpace + "]");
+				return false;
+			} else {
+				LOG.info("create namespace:" + JSON.toJSONString(nSpace));
+			}
+
+		} catch (RuntimeException e) {
+			LOG.error("连接kubernetesAPI超时！" + e);
+			throw new ServiceException();
+		}
+
+		Secret secret = kubernetesClientService.generateSecret("ceph-secret", namespace, CEPH_KEY);
+		try {
+			secret = client.createSecret(secret);
+			LOG.info("create secret:" + JSON.toJSONString(secret));
+		} catch (KubernetesClientException e) {
+			LOG.info("secret exists" + JSON.toJSONString(secret));
+		}
+
+		return true;
+	}
 
     /**
      *
