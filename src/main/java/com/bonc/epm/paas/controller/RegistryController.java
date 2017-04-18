@@ -659,7 +659,7 @@ public class RegistryController {
 			} catch (DokcerRegistryClientException e) {
 				tags = null;
 			}
-			if (tags == null || !tags.getTags().contains(image.getVersion())) {
+			if (tags == null || tags.getTags() == null || !tags.getTags().contains(image.getVersion())) {
 				// 将数据库中的镜像的isDelete字段设置为1
 				image.setIsDelete(1);
 				imageDao.save(image);
