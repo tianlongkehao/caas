@@ -4,16 +4,16 @@
 			async:false,
 			success:function(data){
 				data = eval("(" + data + ")");
-				if(data.sonarConfig.hidden == false){
+				if(data.status == 200 && data.sonarConfig.hidden == false){
 					loadServices();
 				}else{
 					$(".sonarTh").hide();
 					loadServicesNoSonar();
 				}
-				
+
 			}
-	})
-	
+	});
+
 	$("#serviceReloadBtn").click(function(){
 		window.location.reload();
 	});

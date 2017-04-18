@@ -41,22 +41,22 @@ function cicodeClick(){
 	$(".ci-content").hide();
 	$("#ciCodeTab").addClass("active");
 	$("#ciTab").removeClass("active");
-	
+
 	$.ajax({
 		url:ctx+"/ci/getSonarConfig.do",
 		async:false,
 		success:function(data){
 			data = eval("(" + data + ")");
-			if(data.sonarConfig.hidden == false){
+			if(data.status == 200 && data.sonarConfig.hidden == false){
 				loadCiCode();
 			}else{
 				$(".sonarTh").next().css("text-indent","20px");
 				$(".sonarTh").hide();
 				loadCiCodeNoSonar();
 			}
-			
+
 		}
-	})
+	});
 }
 
 

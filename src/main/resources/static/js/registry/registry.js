@@ -5,16 +5,16 @@ $(document).ready(function () {
 		async:false,
 		success:function(data){
 			data = eval("(" + data + ")");
-			if(data.sonarConfig.hidden == false){
+			if(data.status == 200 && data.sonarConfig.hidden == false){
 				findImages();
 			}else{
 				$(".sonarTh").hide();
 				findImagesNoSonar();
 			}
-			
+
 		}
-	})
-	
+	});
+
 	imageTypeSrc();
     /*$(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
