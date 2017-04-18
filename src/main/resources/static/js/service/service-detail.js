@@ -53,6 +53,10 @@ $(document).ready(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".containerLog").removeClass("hide");
     });
+    $(".CMD").click(function(){
+        $(".contentMain>div:not('.baseInfo')").addClass("hide");
+        $(".containerCMD").removeClass("hide");
+    });
 
     $(".historyLOG").click(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");

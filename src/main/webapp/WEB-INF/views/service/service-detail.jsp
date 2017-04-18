@@ -8,10 +8,21 @@
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/service.css" />
+	
+<link rel="stylesheet" href="<%=path%>/plugins/xterm/build/xterm.css" />
+<link rel="stylesheet" href="<%=path%>/plugins/xterm/build/addons/fullscreen/fullscreen.css" />
+<link rel="stylesheet" href="<%=path%>/css/mod/xtermStyle.css" />
+      	
+<script type="text/javascript" src="<%=path%>/plugins/xterm/build/xterm.js" ></script>
+<script type="text/javascript" src="<%=path%>/plugins/xterm/build/addons/attach/attach.js" ></script>
+<script type="text/javascript" src="<%=path%>/plugins/xterm/build/addons/fit/fit.js" ></script>
+<script type="text/javascript" src="<%=path%>/plugins/xterm/build/addons/fullscreen/fullscreen.js" ></script>
+<%-- <script type="text/javascript" src="<%=path%>/plugins/xterm/build/jquery-1.11.3.min.js"></script> --%>
 <script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-slide.min.js"></script>
 <script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-timepicker-addon.js"></script>
-<script type="text/javascript"
-	src="<%=path%>/js/service/service-detail.js"></script>
+<script type="text/javascript" src="<%=path%>/js/service/service-detail.js"></script>
+<script type="text/javascript" src="<%=path%>/plugins/xterm/main.js" defer ></script>
+<%-- <script type="text/javascript" src="<%=path%>/plugins/xterm/app.js" defer ></script> --%>
 </head>
 <body>
 
@@ -98,6 +109,18 @@
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podNameList}" var="pod" >
 								 		<li class="LOG"><a class="dropdown-pod" podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)"
+								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
+								 	</c:forEach>
+
+								</ul>
+							</li>
+							<li class="dropdown">
+								<a class="dropdown-toggle serDetail" id="dropdown-log"
+									data-toggle="dropdown"> 终端 <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+								 	<c:forEach items="${podNameList}" var="pod" >
+								 		<li class="CMD"><a class="dropdown-pod" podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownCMD(this)"
 								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
 								 	</c:forEach>
 
@@ -714,6 +737,29 @@
 						</div>
 						<div
 							style="text-align: center; margin-top: 40px; font-size: 12px;">结果为空</div>
+					</div>
+					<!-- CMD -->
+					<div class="containerCMD hide" style="min-height: 500px;">
+						<div id="terminal-container" style="width:98%"></div>
+				        <!-- <div>
+				          <h2>Options</h2>
+				          <label><input type="checkbox" id="option-cursor-blink" checked> cursorBlink</label>
+				          <div>
+				          	<h3>Size</h3>
+				            <div>
+				              <div style="display: inline-block; margin-right: 16px;">
+				                <label for="cols">Columns</label>
+				                <input type="number" id="cols" value="81" />
+				              </div>
+				              <div style="display: inline-block; margin-right: 16px;">
+				                <label for="rows">Rows</label>
+				                <input type="number" id="rows" />
+				              </div>
+				            </div>
+				          </div>
+				        </div> -->
+                        
+						
 					</div>
 				</div>
 			</div>
