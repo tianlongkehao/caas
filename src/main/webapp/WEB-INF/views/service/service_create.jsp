@@ -119,6 +119,12 @@
 											<li class="line-h-3"><span class="ve_top">服务中文名称：
 											</span><input type="text" value=""
 												class="in_style form-control" id="serviceChName" name="serviceChName"></li>
+											<li class="line-h-3"><span class="ve_top">责任人：
+											</span><input type="text" value=""
+												class="in_style form-control" id="responsiblePerson" name="responsiblePerson"></li>
+											<li class="line-h-3"><span class="ve_top">责任人电话：
+											</span><input type="text" value=""
+												class="in_style form-control" id="responsiblePersonTelephone" name="responsiblePersonTelephone"></li>
 											<li id="service_type"><span class="ve_top">启动命令：</span>
 												<span class="update-mi"> <input type="checkbox"
 													id="startCommand"> <label for="startCommand"><font

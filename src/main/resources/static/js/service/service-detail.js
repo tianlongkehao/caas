@@ -384,6 +384,28 @@ $(document).ready(function(){
 		$(".oldCon").show();
 	});
 
+	//可编辑的责任人
+	$(".editCon1").hide();
+	$("#editResponseBtn").click(function() {
+
+		$("#editResponseBtn").hide();
+		$(".editCon1").show();
+		$(".oldCon1").hide();
+	});
+	$("#saveEdit1").click(function() {
+		if (false == checkResponse()) {
+			return;
+		};
+		$("#editResponseBtn").show();
+		$(".editCon1").hide();
+		editResponse();
+		$(".oldCon1").show();
+	});
+	$("#canclEdit1").click(function() {
+		$("#editResponseBtn").show();
+		$(".editCon1").hide();
+		$(".oldCon1").show();
+	});
 
 	//可以编辑的端口号
 	$(".editPortConfig").hide();
@@ -550,6 +572,51 @@ function checkSerAddr(){
         return false;
     }
 }
+
+function checkResponse() {
+	if ($('#editResponsiblePerson').val() === '') {
+		layer.tips('责任人不能为空', $('#editResponsiblePerson'), {
+			tips : [1, '#EF6578']
+		});
+		$('#editResponsiblePerson').focus();
+		return false;
+	}
+	reg = /^((\d{11})|((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})))$/;
+	var responsiblePersonTelephone = $('#editResponsiblePersonTelephone').val();
+	if (!reg.test(responsiblePersonTelephone)) {
+		layer.tips('非法的电话格式', '#editResponsiblePersonTelephone', {
+			tips : [1, '#EF6578'],
+		});
+		$('#editResponsiblePersonTelephone').focus();
+		return false;
+	}
+}
+//修改责任人信息
+function editResponse(){
+	var editResponsiblePerson = $('#editResponsiblePerson').val();
+	var editResponsiblePersonTelephone = $('#editResponsiblePersonTelephone').val();
+	var serId = $('#serId').val();
+	$.ajax({
+		type : "GET",
+		url : ctx + "/service/detail/editResponse.do?responsiblePerson=" + editResponsiblePerson + "&responsiblePersonTelephone=" + editResponsiblePersonTelephone + "&serId=" + serId,
+		success : function(data) {
+			data = eval("(" + data + ")");
+			if (data.status == "200") {
+				$('.oldCon1').html('责任人：' + editResponsiblePerson + ' ' + editResponsiblePersonTelephone);
+				layer.msg("修改成功", {
+					icon : 1
+				},function(){
+					location.reload();
+				});
+			} else {
+				layer.msg("修改失败，请检查连接", {
+					icon : 1
+				});
+			}
+		}
+	});
+}
+
 //环境变量修改按钮
 function editEnvBtn(obj){
 	$(obj).hide();
