@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.persistence.criteria.CriteriaBuilder.Case;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -648,7 +650,7 @@ public class KubernetesClientService {
 	 * @return
 	 * @see
 	 */
-	public Endpoints generateEndpoints(String serName, String refAddress, int refPort, String useProxy) {
+	public Endpoints generateEndpoints(String serName, String refAddress, int refPort, String useProxy,String zone) {
 		Endpoints endpoints = new Endpoints();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(serName);
@@ -656,6 +658,15 @@ public class KubernetesClientService {
 		labels.put("app", serName);
 		if (StringUtils.isNotBlank(useProxy)) {
 			labels.put("useProxy", useProxy);
+			if (StringUtils.isNotBlank(zone)) {
+				switch (zone) {
+					case "0":labels.put("user", "user");break;
+					case "1":labels.put("dmz", "dmz");break;
+					case "2":labels.put("dmz1", "dmz1");break;
+					case "3":labels.put("all", "all");break;
+					default:labels.put("all", "all");break;
+				}
+			}
 		}
 		meta.setLabels(labels);
 		endpoints.setMetadata(meta);
