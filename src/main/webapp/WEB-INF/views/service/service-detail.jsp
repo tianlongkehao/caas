@@ -11,7 +11,7 @@
 
 <link rel="stylesheet" href="<%=path%>/plugins/xterm/build/xterm.css" />
 <link rel="stylesheet" href="<%=path%>/plugins/xterm/build/addons/fullscreen/fullscreen.css" />
-<link rel="stylesheet" href="<%=path%>/css/mod/xtermStyle.css" />
+<%-- <link rel="stylesheet" href="<%=path%>/css/mod/xtermStyle.css" /> --%>
 
 <script type="text/javascript" src="<%=path%>/plugins/xterm/build/xterm.js" ></script>
 <script type="text/javascript" src="<%=path%>/plugins/xterm/build/addons/attach/attach.js" ></script>
