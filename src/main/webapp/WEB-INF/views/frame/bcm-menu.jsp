@@ -177,6 +177,7 @@
 				</a>
 					<ul class="nav nav-second-level">
 						<c:if test="${cur_user.user_autority == 1}">
+						<li id="li_rate"><a class="J_menuItem" href="<%=path %>/cluster/rate"><i class="fa fa_circle"></i>集群资源</a></li>
 						<li id="li_cluster"><a class="J_menuItem" href="<%=path %>/cluster/resource"><i class="fa fa_circle"></i>集群监控</a></li></c:if>
 						<li id="li_container"><a class="J_menuItem" href="<%=path %>/cluster/containers"><i class="fa fa_circle"></i>容器监控</a></li>
 						<c:if test="${cur_user.user_autority == 1}">

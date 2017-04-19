@@ -790,5 +790,12 @@ public class ClusterController {
 		ServiceList allServices = client.getAllServices();
 		return JSON.toJSONString(allServices.getItems());
 	}
+	
+	@RequestMapping(value = { "/rate" }, method = RequestMethod.GET)
+	public String resourceRate(Model model) {
+        model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "rate");
+        return "cluster/cluster-rate.jsp";
+    }
 
 }
