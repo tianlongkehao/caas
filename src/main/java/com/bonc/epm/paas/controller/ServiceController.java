@@ -266,11 +266,17 @@ public class ServiceController {
     @Value("${docker.log.await}")
     private Integer DOCKER_LOG_AWAIT = 3;
 
-	/**
+    /**
      * 服务日志下载等候时长
      */
     @Value("${docker.log.download}")
     private Integer DOCKER_LOG_DOWNLOAD = 30;
+
+	/**
+     * docker api 端口
+     */
+    @Value("${docker.io.port}")
+    private Integer DOCKER_IO_PORT;
 
 	/**
      * cpu大小
@@ -283,6 +289,12 @@ public class ServiceController {
      */
     @Value("${service.memory.size}")
     private String SERVICE_MEMORY_SIZE;
+
+	/**
+     * entry地址
+     */
+    @Value("${entry.host}")
+	private String ENTRY_HOST;
 
     /**
 	 * Description: <br>
@@ -493,7 +505,6 @@ public class ServiceController {
      * @param id 服务Id
      * @return String
      */
-    @SuppressWarnings("unused")
 	@RequestMapping(value = { "service/detail/{id}" }, method = RequestMethod.GET)
 	public String detail(Model model, @PathVariable long id) {
 	    System.out.printf("id: " + id);
@@ -503,7 +514,8 @@ public class ServiceController {
 	    List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
 	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
         List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
-	    List<Container> containerList = new ArrayList<Container>();
+        List<Container> containerList = new ArrayList<Container>();
+	    List<Pod> podList = new ArrayList<>();
   		// 通过服务名获取pod列表
 	    if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
 	    	com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
@@ -513,13 +525,13 @@ public class ServiceController {
 				k8sService = null;
 			}
 	    	if (k8sService != null) {
-	    		PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
-	    		if (podList != null) {
-	    			List<Pod> pods = podList.getItems();
-	    			if (CollectionUtils.isNotEmpty(pods)) {
+	    		PodList pods = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+	    		if (pods != null) {
+	    			podList = pods.getItems();
+	    			if (CollectionUtils.isNotEmpty(podList)) {
 	    				int i = 1;
-	    				for (Pod pod : pods) {
-	    					for(com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
+	    				for (Pod pod : podList) {
+	    					for(@SuppressWarnings("unused") com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
 	    						Container container = new Container();
 	    						container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
 	    						container.setServiceid(service.getId());
@@ -534,10 +546,14 @@ public class ServiceController {
 			}
 		}
         List<Storage> storageList = storageDao.findByServiceId(service.getId());
+
+        model.addAttribute("entryHost", ENTRY_HOST);
+        model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
         model.addAttribute("storageList", storageList);
         model.addAttribute("namespace",currentUser.getNamespace());
         model.addAttribute("id", id);
         model.addAttribute("podNameList", podNameList);
+        model.addAttribute("podList", podList);
         model.addAttribute("containerList", containerList);
         model.addAttribute("service", service);
         model.addAttribute("envVariableList", envVariableList);

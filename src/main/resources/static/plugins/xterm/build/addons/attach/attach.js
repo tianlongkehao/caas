@@ -138,18 +138,14 @@ function Base64(input) {
         term._getMessage = function (ev) {
             if (buffered) {
                 term._pushToBuffer(ev.data);
-                console.log('[src-attach.js]term push to buffer----ev.data' + ev.data + '----时间----' + new Date().getTime());
-                //term.write("-----buffer-----helloworld");
             }
             else {
-                console.log('[src-attach.js]-----显示在屏幕上----ev.data' + ev.data + '----时间----' + new Date().getTime());
                 var reader = new FileReader();
                 reader.readAsBinaryString(ev.data); //blob
                 reader.onloadend = function () {
                     var object = eval('(' + reader.result + ')');
                     term.write(Base64(object.content)); //4.回显
                 };
-                //term.write(ev.data);//4.回显
             }
         };
         term._sendData = function (data) {
@@ -157,9 +153,7 @@ function Base64(input) {
                 "MsgType": 0,
                 "Content": stringToByte(data),
             };
-            console.log('[src-attach.js]-----抓到键盘的输入-----' + stdinMsg);
             socket.send(JSON.stringify(stdinMsg)); //1.抓到键盘 发给ws
-            //socket.send(data);//1.抓到键盘 发给ws
         };
         socket.addEventListener('message', term._getMessage);
         if (bidirectional) {

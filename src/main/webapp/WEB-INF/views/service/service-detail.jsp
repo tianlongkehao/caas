@@ -8,11 +8,11 @@
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/service.css" />
-	
+
 <link rel="stylesheet" href="<%=path%>/plugins/xterm/build/xterm.css" />
 <link rel="stylesheet" href="<%=path%>/plugins/xterm/build/addons/fullscreen/fullscreen.css" />
 <link rel="stylesheet" href="<%=path%>/css/mod/xtermStyle.css" />
-      	
+
 <script type="text/javascript" src="<%=path%>/plugins/xterm/build/xterm.js" ></script>
 <script type="text/javascript" src="<%=path%>/plugins/xterm/build/addons/attach/attach.js" ></script>
 <script type="text/javascript" src="<%=path%>/plugins/xterm/build/addons/fit/fit.js" ></script>
@@ -22,7 +22,6 @@
 <script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="<%=path%>/js/service/service-detail.js"></script>
 <script type="text/javascript" src="<%=path%>/plugins/xterm/main.js" defer ></script>
-<%-- <script type="text/javascript" src="<%=path%>/plugins/xterm/app.js" defer ></script> --%>
 </head>
 <body>
 
@@ -119,9 +118,9 @@
 									data-toggle="dropdown"> 终端 <b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">
-								 	<c:forEach items="${podNameList}" var="pod" >
-								 		<li class="CMD"><a class="dropdown-pod" podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownCMD(this)"
-								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
+								 	<c:forEach items="${podList}" var="pod" >
+								 		<li class="CMD"><a class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }" value="2" onclick="dropdownCMD(this)"
+								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.metadata.name }">${pod.metadata.name }</a></li>
 								 	</c:forEach>
 
 								</ul>
@@ -670,15 +669,8 @@
 								<span class="circle green"></span>
 							</div>
 							<div class="pull_right">
-								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
-<!-- 								<input type="text" id="dateTimePicker" value=""/> -->
-								<!-- <input id="date_log1" type="text" value="" readonly> -->
-								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
-								<%-- <i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i> --%>
 								<a id="getPodlogFile" href="" style="color:#2FBA66"><i id="download" class="fa fa-download margin cursor" ></i></a>
 								<input type="hidden" id="podName" name="podName" value=""></input>
- 								<!--<input type="hidden" id="serviceid" name="serviceid" value=""></input> -->
-									<!--</div>-->
 								<i id="refreshLog1" class="fa fa-refresh margin cursor" title="获取实时日志" ></i>
 								<i id="fullScreen" class="fa fa-expand margin cursor" title="满屏"></i>
 							</div>
@@ -696,20 +688,6 @@
 						<input id="serviceInstances" type="hidden" value="">
 						<input id="creationTime" type="hidden" value="${service.createDate }">
 					</div>
-<%-- 					<!-- 历史日志 -->
-					<div class="historycontainerLog hide" style="margin-bottom:30px;">
-						<div class="weblogtitle">
-							<div class="pull_right" style="width:99%">
-								<input id="date_log" type="text" value="" readonly>
-								<i id="datePicker" class="fa fa-calendar margin cursor"
-									serviceid="${service.id }" serviceName = "${service.serviceName }"></i>
-								<i id="refreshLog" class="fa fa-refresh margin cursor"
-									data-toggle="tooltip" data-placement="top" title=""
-									data-original-title="刷新日志"></i>
-							</div>
-						</div>
-						<div id="hisLogList"><div>
-					</div> --%>
 					<div class="containerEvent hide" style="min-height: 500px;">
 						<div class="containerEvent" style="min-height: 500px; display: block;">
 							<div class="event">
@@ -741,46 +719,9 @@
 					<!-- CMD -->
 					<div class="containerCMD hide" style="min-height: 500px;">
 						<div id="terminal-container" style="width:98%"></div>
-				        <!-- <div>
-				          <h2>Options</h2>
-				          <label><input type="checkbox" id="option-cursor-blink" checked> cursorBlink</label>
-				          <div>
-				          	<h3>Size</h3>
-				            <div>
-				              <div style="display: inline-block; margin-right: 16px;">
-				                <label for="cols">Columns</label>
-				                <input type="number" id="cols" value="81" />
-				              </div>
-				              <div style="display: inline-block; margin-right: 16px;">
-				                <label for="rows">Rows</label>
-				                <input type="number" id="rows" />
-				              </div>
-				            </div>
-				          </div>
-				        </div> -->
-                        
-						
 					</div>
 				</div>
 			</div>
-
-<%-- 			         <!-- 命令操作 -->
-                    <div class="containerLog hide" id = "containerexec" style="min-height: 500px;">
-                        <div class="weblogtitle">
-                            <div class="pull_right" style="width:99%">
-                                <input id="execText" type="text" value="" style="width:90%;background: none;border:0;text-align: right;">
-                                <a id="execcmd" >运行</a>
-                                <input type="hidden" id="podName" name="podName" value=""></input>
-                                <input type="hidden" id="serviceid" name="serviceid" value=""></input>
-                            </div>
-                        </div>
-                        <div id="containerlogList2" class="weblog">
-
-                        </div>
-                        <input id="serviceInstances2" type="hidden" value="">
-                        <input id="creationTime2" type="hidden" value="${service.createDate }">
-                    </div>
- --%>
 		</article>
 	</div>
 </body>
