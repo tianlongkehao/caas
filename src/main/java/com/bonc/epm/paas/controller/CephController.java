@@ -251,11 +251,10 @@ public class CephController {
      * @throws FileNotFoundException
      * @see
      */
-    public void formatStorageCephFS(String root,String storageName,boolean isVolReadOnly) throws FileNotFoundException{
+    public void formatStorageCephFS(String root,String storageName) throws FileNotFoundException{
         LOGGER.info("进入方法：deleteStorageCephFS");
         // 获取NAMESPACE
         String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-        CephController cep = new CephController();
         StringBuffer path = new StringBuffer(root);
         path.append(namespace).append("/").append(storageName);
         FileUtils.delAllFile(path.toString());
