@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.bouncycastle.asn1.dvcs.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +66,6 @@ import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.Configmap;
-import com.bonc.epm.paas.entity.ConfigmapData;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
@@ -285,11 +283,17 @@ public class ServiceController {
     @Value("${docker.log.await}")
     private Integer DOCKER_LOG_AWAIT = 3;
 
-	/**
+    /**
      * 服务日志下载等候时长
      */
     @Value("${docker.log.download}")
     private Integer DOCKER_LOG_DOWNLOAD = 30;
+
+	/**
+     * docker api 端口
+     */
+    @Value("${docker.io.port}")
+    private Integer DOCKER_IO_PORT;
 
 	/**
      * cpu大小
@@ -302,6 +306,12 @@ public class ServiceController {
      */
     @Value("${service.memory.size}")
     private String SERVICE_MEMORY_SIZE;
+
+	/**
+     * entry地址
+     */
+    @Value("${entry.host}")
+	private String ENTRY_HOST;
 
     /**
 	 * Description: <br>
@@ -404,192 +414,128 @@ public class ServiceController {
 
 	}
 
-	/**
-	 * Description: <br>
-	 * 查询代码构建中的代码是否更新，服务中添加提醒代码更新
-	 *
-	 * @param listService
-	 *            需要查询的服务
-	 * @return
-	 * @see
-	 */
-	public List<Service> findIsUpdateCode(List<Service> listService) {
-		for (Service service : listService) {
-			CiCodeHook ciCodeHook = serviceDao.findByImgId(service.getImgID());
-			if (ciCodeHook != null) {
-				try {
-					SheraAPIClientInterface client = sheraClientService.getClient();
-					ChangeGit changeGit = client.getChangeGit(ciCodeHook.getName());
-					service.setUpdateImage(changeGit.isFlag());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return listService;
-	}
+    /**
+     * Description: <br>
+     * 查询代码构建中的代码是否更新，服务中添加提醒代码更新
+     * @param listService 需要查询的服务
+     * @return
+     * @see
+     */
+    public List<Service> findIsUpdateCode(List<Service> listService){
+        for (Service service : listService) {
+            CiCodeHook ciCodeHook = serviceDao.findByImgId(service.getImgID());
+            if (ciCodeHook != null) {
+                try {
+                    SheraAPIClientInterface client = sheraClientService.getClient();
+                    ChangeGit changeGit = client.getChangeGit(ciCodeHook.getName());
+                    service.setUpdateImage(changeGit.isFlag());
+                }
+                catch (Exception e) {
+                   e.printStackTrace();
+                }
+            }
+        }
+        return listService;
+    }
 
-	/**
-	 * Description: <br>
-	 * 获取nginxService参数
-	 *
-	 * @param model
-	 */
-	public void getNginxServer(Model model) {
-		List<String> serviceZone = new ArrayList<>();
-		if (StringUtils.isNoneBlank(NGINX_SERVICE_ZONE)) {
-			String[] zoneArray = NGINX_SERVICE_ZONE.split(",");
-			for (String zone : zoneArray) {
-				serviceZone.add(zone);
-			}
-		}
-		model.addAttribute("zoneList", serviceZone);
-	}
+    /**
+     * Description: <br>
+     * 获取nginxService参数
+     * @param model
+     */
+    public void getNginxServer(Model model) {
+        List<String> serviceZone = new ArrayList<>();
+        if (StringUtils.isNoneBlank(NGINX_SERVICE_ZONE)) {
+            String[] zoneArray = NGINX_SERVICE_ZONE.split(",");
+            for (String zone :zoneArray) {
+                serviceZone.add(zone);
+            }
+        }
+        model.addAttribute("zoneList", serviceZone);
+    }
 
-	// 注释时间 2016年12月26日 11:50:58 判断为无用方法
-	// /**
-	// * Description: <br>
-	// * 根据服务名称模糊查询服务和容器
-	// * @param model
-	// * @param searchNames 服务名称
-	// * @return String
-	// */
-	// @RequestMapping(value = { "service/findservice" }, method =
-	// RequestMethod.POST)
-	// public String findService(Model model, String searchNames) {
-	// User currentUser = CurrentUserUtils.getInstance().getUser();
-	// KubernetesAPIClientInterface client =
-	// kubernetesClientService.getClient();
-	// List<Service> serviceList = new ArrayList<Service>();
-	// List<Container> containerList = new ArrayList<Container>();
-	// // 获取特殊条件的pods
-	// try {
-	// for (Service service : serviceDao.findByNameOf(currentUser.getId(), "%" +
-	// searchNames + "%",null)) {
-	// Map<String, String> map = new HashMap<String, String>();
-	// map.put("app", service.getServiceName());
-	// PodList podList = client.getLabelSelectorPods(map);
-	// if (podList != null) {
-	// List<Pod> pods = podList.getItems();
-	// if (CollectionUtils.isNotEmpty(pods)) {
-	// int i = 1;
-	// for (Pod pod : pods) {
-	// Container container = new Container();
-	// container.setContainerName(
-	// service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-	// container.setServiceid(service.getId());
-	// if (pod.getStatus().getPhase().equals("Running")) {
-	// container.setContainerStatus(0);
-	// } else {
-	// container.setContainerStatus(1);
-	// }
-	// containerList.add(container);
-	// }
-	// }
-	// }
-	// serviceList.add(service);
-	// LOG.debug("service=========" + service);
-	// }
-	// } catch (Exception e) {
-	// LOG.error("服务查询错误：" + e);
-	// }
-	// model.addAttribute("serviceList", serviceList);
-	// model.addAttribute("containerList", containerList);
-	//
-	// return "service/service.jsp";
-	// }
 
-	/**
-	 * Description: <br>
-	 * 根据服务Id查询当前服务和容器
-	 *
-	 * @param model
-	 * @param id
-	 * @return String
-	 */
-	@RequestMapping(value = { "service/{id}" }, method = RequestMethod.GET)
+    /**
+     * Description: <br>
+     * 根据服务Id查询当前服务和容器
+     * @param model
+     * @param id
+     * @return  String
+     */
+    @RequestMapping(value = { "service/{id}" }, method = RequestMethod.GET)
 	public String service(Model model, @PathVariable long id) {
-		Service service = serviceDao.findOne(id);
-		model.addAttribute("service", service);
-		model.addAttribute("menu_flag", "service");
-		return "service/service.jsp";
-	}
+        Service service = serviceDao.findOne(id);
+        model.addAttribute("service", service);
+        model.addAttribute("menu_flag", "service");
+        return "service/service.jsp";
+    }
 
-	/**
-	 * Description: <br>
-	 * 根据Id查找container和servies，跳转进入服务详细页面
-	 *
-	 * @param model
-	 * @param id
-	 *            服务Id
-	 * @return String
-	 */
-	@SuppressWarnings("unused")
+    /**
+     * Description: <br>
+     *  根据Id查找container和servies，跳转进入服务详细页面
+     * @param model
+     * @param id 服务Id
+     * @return String
+     */
 	@RequestMapping(value = { "service/detail/{id}" }, method = RequestMethod.GET)
 	public String detail(Model model, @PathVariable long id) {
-		System.out.printf("id: " + id);
-		User currentUser = CurrentUserUtils.getInstance().getUser();
-		Service service = serviceDao.findOne(id);
-		List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
-		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
-
-		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
-		List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(id);
-		ServiceConfigmap serviceConfigmap = null;
-		if(!CollectionUtils.isEmpty(serviceConfigmapList)){
-			serviceConfigmap = serviceConfigmapList.get(0);
-		}
-
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-		List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
-		List<Container> containerList = new ArrayList<Container>();
-		// 通过服务名获取pod列表
-		if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
-			com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
-			try {
-				k8sService = client.getService(service.getServiceName());
+	    System.out.printf("id: " + id);
+	    User currentUser = CurrentUserUtils.getInstance().getUser();
+	    Service service = serviceDao.findOne(id);
+	    List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
+	    List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
+        List<Container> containerList = new ArrayList<Container>();
+	    List<Pod> podList = new ArrayList<>();
+  		// 通过服务名获取pod列表
+	    if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
+	    	com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+	    	try {
+	    		k8sService = client.getService(service.getServiceName());
 			} catch (Exception e) {
 				k8sService = null;
 			}
-			if (k8sService != null) {
-				PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
-				if (podList != null) {
-					List<Pod> pods = podList.getItems();
-					if (CollectionUtils.isNotEmpty(pods)) {
-						int i = 1;
-						for (Pod pod : pods) {
-							for (com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec()
-									.getContainers()) {
-								Container container = new Container();
-								container.setContainerName(
-										service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-								container.setServiceid(service.getId());
-								containerList.add(container);
-							}
-							com.bonc.epm.paas.entity.Pod current_pod = new com.bonc.epm.paas.entity.Pod();
-							current_pod.setPodName(pod.getMetadata().getName());
-							podNameList.add(current_pod);
-						}
-					}
-				}
+	    	if (k8sService != null) {
+	    		PodList pods = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+	    		if (pods != null) {
+	    			podList = pods.getItems();
+	    			if (CollectionUtils.isNotEmpty(podList)) {
+	    				int i = 1;
+	    				for (Pod pod : podList) {
+	    					for(@SuppressWarnings("unused") com.bonc.epm.paas.kubernetes.model.Container k8scontainer : pod.getSpec().getContainers()){
+	    						Container container = new Container();
+	    						container.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+	    						container.setServiceid(service.getId());
+	    						containerList.add(container);
+	    					}
+	    					com.bonc.epm.paas.entity.Pod current_pod = new com.bonc.epm.paas.entity.Pod();
+	    					current_pod.setPodName(pod.getMetadata().getName());
+	    					podNameList.add(current_pod);
+	    				}
+	    			}
+	    		}
 			}
 		}
-		List<Storage> storageList = storageDao.findByServiceId(service.getId());
+        List<Storage> storageList = storageDao.findByServiceId(service.getId());
 
-		model.addAttribute("configmapList", configmapList);
-		model.addAttribute("serviceConfigmap", serviceConfigmap);
-		model.addAttribute("storageList", storageList);
-		model.addAttribute("namespace", currentUser.getNamespace());
-		model.addAttribute("id", id);
-		model.addAttribute("podNameList", podNameList);
-		model.addAttribute("containerList", containerList);
-		model.addAttribute("service", service);
-		model.addAttribute("envVariableList", envVariableList);
-		model.addAttribute("portConfigList", portConfigList);
-		model.addAttribute("menu_flag", "service");
-		model.addAttribute("li_flag", "service");
-		return "service/service-detail.jsp";
-	}
+        model.addAttribute("entryHost", ENTRY_HOST);
+        model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
+        model.addAttribute("storageList", storageList);
+        model.addAttribute("namespace",currentUser.getNamespace());
+        model.addAttribute("id", id);
+        model.addAttribute("podNameList", podNameList);
+        model.addAttribute("podList", podList);
+        model.addAttribute("containerList", containerList);
+        model.addAttribute("service", service);
+        model.addAttribute("envVariableList", envVariableList);
+        model.addAttribute("portConfigList", portConfigList);
+        model.addAttribute("menu_flag", "service");
+        model.addAttribute("li_flag", "service");
+        return "service/service-detail.jsp";
+    }
+
+
 
 	/**
 	 * Description: <br>
@@ -2587,48 +2533,48 @@ public class ServiceController {
 		return JSON.toJSONString(maps);
 	}
 
-	/**
-	 * Description: <br>
-	 * 给controller设置卷组挂载的信息
-	 *
-	 * @param controller
-	 * @param storageName
-	 * @param mountPath
-	 * @return ReplicationController
-	 */
-	private ReplicationController setVolumeStorage(ReplicationController controller, long serviceId) {
-		List<Storage> storageList = storageDao.findByServiceId(serviceId);
-		ReplicationControllerSpec rcSpec = controller.getSpec();
-		PodTemplateSpec template = rcSpec.getTemplate();
-		PodSpec podSpec = template.getSpec();
-		List<Volume> volumes = new ArrayList<Volume>();
-		List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
-		for (Storage storage : storageList) {
-			Volume volume = new Volume();
-			volume.setName("cephfs-" + storage.getStorageName());
-			CephFSVolumeSource cephfs = new CephFSVolumeSource();
-			List<String> monitors = new ArrayList<String>();
-			System.out.println("CEPH_MONITOR:" + CEPH_MONITOR);
-			String[] ceph_monitors = CEPH_MONITOR.split(",");
-			for (String ceph_monitor : ceph_monitors) {
-				monitors.add(ceph_monitor);
-			}
-			cephfs.setMonitors(monitors);
-			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-			cephfs.setPath("/" + namespace + "/" + storage.getStorageName());
-			cephfs.setUser("admin");
-			LocalObjectReference secretRef = new LocalObjectReference();
-			secretRef.setName("ceph-secret");
-			cephfs.setSecretRef(secretRef);
-			cephfs.setReadOnly(false);
-			volume.setCephfs(cephfs);
-			volumes.add(volume);
-
-			VolumeMount volumeMount = new VolumeMount();
-			volumeMount.setMountPath(storage.getMountPoint());
-			volumeMount.setName("cephfs-" + storage.getStorageName());
-			volumeMounts.add(volumeMount);
-		}
+    /**
+     * Description: <br>
+     * 给controller设置卷组挂载的信息
+     * @param controller
+     * @param storageName
+     * @param mountPath
+     * @return ReplicationController
+     */
+    private ReplicationController setVolumeStorage(ReplicationController controller,long serviceId) {
+        List<Storage> storageList = storageDao.findByServiceId(serviceId);
+        ReplicationControllerSpec rcSpec = controller.getSpec();
+        PodTemplateSpec template = rcSpec.getTemplate();
+        PodSpec podSpec = template.getSpec();
+        List<Volume> volumes = new ArrayList<Volume>();
+        List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
+        int i = 0;
+        for (Storage storage : storageList) {
+        	i++;
+            Volume volume = new Volume();
+            volume.setName("cephfs-"+i);
+            CephFSVolumeSource cephfs = new CephFSVolumeSource();
+            List<String> monitors = new ArrayList<String>();
+            System.out.println("CEPH_MONITOR:" + CEPH_MONITOR);
+            String[] ceph_monitors = CEPH_MONITOR.split(",");
+            for (String ceph_monitor : ceph_monitors) {
+                monitors.add(ceph_monitor);
+            }
+            cephfs.setMonitors(monitors);
+            String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+            cephfs.setPath("/" + namespace + "/" + storage.getStorageName());
+            cephfs.setUser("admin");
+            LocalObjectReference secretRef = new LocalObjectReference();
+            secretRef.setName("ceph-secret");
+            cephfs.setSecretRef(secretRef);
+            cephfs.setReadOnly(false);
+            volume.setCephfs(cephfs);
+            volumes.add(volume);
+            VolumeMount volumeMount = new VolumeMount();
+            volumeMount.setMountPath(storage.getMountPoint());
+            volumeMount.setName("cephfs-"+i);
+            volumeMounts.add(volumeMount);
+        }
 
 		podSpec.setVolumes(volumes);
 		List<com.bonc.epm.paas.kubernetes.model.Container> containers = podSpec.getContainers();
@@ -3002,14 +2948,52 @@ public class ServiceController {
 	}
 
 	/**
+	 * editResponse:修改责任人信息. <br/>
 	 *
-	 * Description: 修改服务详情的基础信息表
-	 *
-	 * @param service
-	 * @return
-	 * @return
-	 * @see
+	 * @author longkaixiang
+	 * @param responsiblePerson
+	 * @param responsiblePersonTelephone
+	 * @param serId
+	 * @return String
 	 */
+	@RequestMapping("service/detail/editResponse.do")
+	@ResponseBody
+	public String editResponse(String responsiblePerson, String responsiblePersonTelephone, Long serId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Service service = serviceDao.findOne(serId);
+		// 服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		}
+		service.setResponsiblePerson(responsiblePerson);;
+		service.setResponsiblePersonTelephone(responsiblePersonTelephone);
+		try {
+			Date currentDate = new Date();
+			User currentUser = CurrentUserUtils.getInstance().getUser();
+			service.setUpdateDate(currentDate);
+			service.setUpdateBy(currentUser.getId());
+			service = serviceDao.save(service);
+			// 保存服务操作信息
+			serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+					ServiceConstant.OPERATION_TYPE_UPDATE);
+			map.put("status", "200");
+		} catch (Exception e) {
+			map.put("status", "400");
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
+	}
+
+    /**
+     *
+     * Description: 修改服务详情的基础信息表
+     *
+     * @param service
+     * @return
+     * @return
+     * @see
+     */
 	@RequestMapping(value = "service/detail/editBaseSerForm.do")
 	@ResponseBody
 	public String editBaseSerForm(Model model, Service service) {

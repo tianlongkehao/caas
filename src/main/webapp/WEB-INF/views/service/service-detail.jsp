@@ -9,32 +9,20 @@
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/service.css" />
-<script type="text/javascript"
-	src="<%=path%>/plugins/datetimepicker/js/jquery-ui-slide.min.js"></script>
-<script type="text/javascript"
-	src="<%=path%>/plugins/datetimepicker/js/jquery-ui-timepicker-addon.js"></script>
-<script type="text/javascript"
-	src="<%=path%>/js/service/service-detail.js"></script>
-<style type="text/css">
-.self-define {
-	height: 34px;
-	padding: 6px 12px;
-	font-size: 14px;
-	line-height: 1.42857143;
-	color: #555;
-	background-color: #fff;
-	background-image: none;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-	-webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow
-		ease-in-out .15s;
-	-o-transition: border-color ease-in-out .15s, box-shadow ease-in-out
-		.15s;
-	transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-}
-</style>
+
+<link rel="stylesheet" href="<%=path%>/plugins/xterm/build/xterm.css" />
+<link rel="stylesheet" href="<%=path%>/plugins/xterm/build/addons/fullscreen/fullscreen.css" />
+<%-- <link rel="stylesheet" href="<%=path%>/css/mod/xtermStyle.css" /> --%>
+
+<script type="text/javascript" src="<%=path%>/plugins/xterm/build/xterm.js" ></script>
+<script type="text/javascript" src="<%=path%>/plugins/xterm/build/addons/attach/attach.js" ></script>
+<script type="text/javascript" src="<%=path%>/plugins/xterm/build/addons/fit/fit.js" ></script>
+<script type="text/javascript" src="<%=path%>/plugins/xterm/build/addons/fullscreen/fullscreen.js" ></script>
+<%-- <script type="text/javascript" src="<%=path%>/plugins/xterm/build/jquery-1.11.3.min.js"></script> --%>
+<script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-slide.min.js"></script>
+<script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="<%=path%>/js/service/service-detail.js"></script>
+<script type="text/javascript" src="<%=path%>/plugins/xterm/main.js" defer ></script>
 </head>
 <body>
 
@@ -86,22 +74,30 @@
 							</a> <a id="editServiceAddrBtn" style="margin-left: 20px"
 								class="fa fa-edit"></a>
 							</li>
-							<li class="editCon">服务地址： <prex id=addrPrex></prex> <%-- 							  	<input id="editServiceAddrValue" type="hidden" value="${service.serviceAddr}"> --%>
-								<input id="editServiceAddr" type="text"
-								value="${service.serviceAddr}">/ <input
-								id="editProxyPath" type="text" value="${service.proxyPath}">
-								<i id="saveEdit" style="margin-left: 20px" class="fa fa-save"></i>
-								<i id="canclEdit" style="margin-left: 6px" class="fa fa-times"></i>
-							</li>
+							<li class="editCon">服务地址：
+							  <prex id=addrPrex ></prex>
+<%-- 							  	<input id="editServiceAddrValue" type="hidden" value="${service.serviceAddr}"> --%>
+								<input id="editServiceAddr" type="text" value="${service.serviceAddr}">/
+								<input id="editProxyPath" type="text" value="${service.proxyPath}">
+								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i>
+								<i id="canclEdit" style="margin-left:6px" class="fa fa-times"></i>
+								</li>
+							<li class="oldCon1">责任人：${service.responsiblePerson } ${service.responsiblePersonTelephone }
+								<a id="editResponseBtn" style="margin-left:20px" class="fa fa-edit"></a></li>
+							<li class="editCon1">责任人：
+								<input id="editResponsiblePerson" type="text" value="${service.responsiblePerson}">/
+								<input id="editResponsiblePersonTelephone" type="text" value="${service.responsiblePersonTelephone}">
+								<i id="saveEdit1" style="margin-left:20px" class="fa fa-save"></i>
+								<i id="canclEdit1" style="margin-left:6px" class="fa fa-times"></i>
+								</li>
 							<li>创建时间：${service.createDate }</li>
-							<li>更新时间：${service.createDate }</li>
+							<li>更新时间：${service.updateDate }</li>
 						</ul>
 						<div class="applocation">
 							<a href="${service.serviceAddr}/${service.proxyPath}"
 								target="_blank" class="open">打开应用</a>
 						</div>
 					</section>
-
 					<div class="baseInfo center-style">
 						<ul class="nav navbar-nav">
 							<li><a class="BASE btn-prim serDetail">基本信息</a></li>
@@ -115,14 +111,22 @@
 									class="caret"></b>
 							</a>
 								<ul class="dropdown-menu">
-									<c:forEach items="${podNameList}" var="pod">
-										<li class="LOG"><a class="dropdown-pod"
-											podName="${pod.podName }" serviceid="${service.id }"
-											value="2" onclick="dropdownLog(this)"
-											style="width: 100%; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
-											title="${pod.podName }">${pod.podName }</a></li>
-									</c:forEach>
+								 	<c:forEach items="${podNameList}" var="pod" >
+								 		<li class="LOG"><a class="dropdown-pod" podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)"
+								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
+								 	</c:forEach>
 
+								</ul>
+							</li>
+							<li class="dropdown">
+								<a class="dropdown-toggle serDetail" id="dropdown-log"
+									data-toggle="dropdown"> 终端 <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+								 	<c:forEach items="${podList}" var="pod" >
+								 		<li class="CMD"><a class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }" value="2" onclick="dropdownCMD(this)"
+								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.metadata.name }">${pod.metadata.name }</a></li>
+								 	</c:forEach>
 								</ul></li>
 						</ul>
 					</div>
@@ -760,19 +764,10 @@
 								<span class="circle green"></span>
 							</div>
 							<div class="pull_right">
-								<!--<div class="input-append date form_datetime" style="display: inline-block;">-->
-								<!-- 								<input type="text" id="dateTimePicker" value=""/> -->
-								<!-- <input id="date_log1" type="text" value="" readonly> -->
-								<!--<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="" data-original-title="选择日期"></i>-->
-								<%-- <i id="datePicker1" class="fa fa-calendar margin cursor" serviceid="${service.id }"></i> --%>
-								<a id="getPodlogFile" href="" style="color: #2FBA66"><i
-									id="download" class="fa fa-download margin cursor"></i></a> <input
-									type="hidden" id="podName" name="podName" value=""></input>
-								<!--<input type="hidden" id="serviceid" name="serviceid" value=""></input> -->
-								<!--</div>-->
-								<i id="refreshLog1" class="fa fa-refresh margin cursor"
-									title="获取实时日志"></i> <i id="fullScreen"
-									class="fa fa-expand margin cursor" title="满屏"></i>
+								<a id="getPodlogFile" href="" style="color:#2FBA66"><i id="download" class="fa fa-download margin cursor" ></i></a>
+								<input type="hidden" id="podName" name="podName" value=""></input>
+								<i id="refreshLog1" class="fa fa-refresh margin cursor" title="获取实时日志" ></i>
+								<i id="fullScreen" class="fa fa-expand margin cursor" title="满屏"></i>
 							</div>
 						</div>
 						<!--                         <div id="containerlogList" class="weblog">
@@ -791,20 +786,6 @@
 						<input id="serviceInstances" type="hidden" value=""> <input
 							id="creationTime" type="hidden" value="${service.createDate }">
 					</div>
-					<%-- 					<!-- 历史日志 -->
-					<div class="historycontainerLog hide" style="margin-bottom:30px;">
-						<div class="weblogtitle">
-							<div class="pull_right" style="width:99%">
-								<input id="date_log" type="text" value="" readonly>
-								<i id="datePicker" class="fa fa-calendar margin cursor"
-									serviceid="${service.id }" serviceName = "${service.serviceName }"></i>
-								<i id="refreshLog" class="fa fa-refresh margin cursor"
-									data-toggle="tooltip" data-placement="top" title=""
-									data-original-title="刷新日志"></i>
-							</div>
-						</div>
-						<div id="hisLogList"><div>
-					</div> --%>
 					<div class="containerEvent hide" style="min-height: 500px;">
 						<div class="containerEvent"
 							style="min-height: 500px; display: block;">
@@ -834,26 +815,12 @@
 						<div
 							style="text-align: center; margin-top: 40px; font-size: 12px;">结果为空</div>
 					</div>
+					<!-- CMD -->
+					<div class="containerCMD hide" style="min-height: 520px;">
+						<div id="terminal-container" style="width: 98%;min-height: 500px;margin: 0 auto;"></div>
+					</div>
 				</div>
 			</div>
-
-			<%-- 			         <!-- 命令操作 -->
-                    <div class="containerLog hide" id = "containerexec" style="min-height: 500px;">
-                        <div class="weblogtitle">
-                            <div class="pull_right" style="width:99%">
-                                <input id="execText" type="text" value="" style="width:90%;background: none;border:0;text-align: right;">
-                                <a id="execcmd" >运行</a>
-                                <input type="hidden" id="podName" name="podName" value=""></input>
-                                <input type="hidden" id="serviceid" name="serviceid" value=""></input>
-                            </div>
-                        </div>
-                        <div id="containerlogList2" class="weblog">
-
-                        </div>
-                        <input id="serviceInstances2" type="hidden" value="">
-                        <input id="creationTime2" type="hidden" value="${service.createDate }">
-                    </div>
- --%>
 		</article>
 	</div>
 </body>

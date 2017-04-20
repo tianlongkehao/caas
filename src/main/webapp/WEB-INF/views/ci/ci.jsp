@@ -145,20 +145,20 @@
                                         </c:forEach>
 												
 										</tbody>
-										<tfoot class="hide">
+										<!-- <tfoot class="hide">
 											<tr>
 												<td colspan="6">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
-										</tfoot>
+										</tfoot> -->
 									</table>
 								</div>
 								<div class="ibox-content ci-code-content">
 									<table class="table table-stripped table-hover dataTables-example">
 											<thead>
-												<tr style="height: 40px;">
-													<th style="text-indent: 30px;">代码质量</th>
+												<tr style="height: 40px;margin-left:20px">
+													<th class="sonarTh" style="text-indent: 30px;">代码质量</th>
 													<th>项目名称</th>
 													<th>上次构建状态</th>
 													<th>上次成功时间</th>
@@ -171,13 +171,13 @@
 											<tbody id="ciCodeList">
 												
 										    </tbody>
-										<tfoot class="hide">
+										<!-- <tfoot class="hide">
 											<tr>
-												<td colspan="7">
+												<td colspan="6">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
-										</tfoot>
+										</tfoot> -->
 									</table>
 								</div>
 							</div>

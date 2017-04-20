@@ -51,7 +51,7 @@
 											<tr>
 												<th style="text-indent: 30px;"><input
 													type="checkbox" class="chkAll" id="checkallbox" /></th>
-												<th style="text-indent: 10px;">代码质量</th>
+												<th style="text-indent: 10px;" class="sonarTh">代码质量</th>
 												<th style="text-indent: 10px;">名称</th>
 												<th style="text-indent: 8px;">版本</th>
 												<th style="text-indent: 8px;">镜像信息</th>

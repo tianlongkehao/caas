@@ -13,6 +13,10 @@ import com.bonc.epm.paas.entity.Image;
 
 @Transactional
 public interface ImageDao extends CrudRepository<Image, Long>{
+
+    @Query("select i from Image i where i.isDelete != 1")
+	public Iterable<Image> findIsNotDeleted();
+
     @Query("select i from Image i where i.name=?1 and i.isDelete != 1")
 	public List<Image> findByName(String name);
 

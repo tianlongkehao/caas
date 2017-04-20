@@ -2,14 +2,10 @@ package com.bonc.epm.paas.kubernetes.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.persistence.criteria.CriteriaBuilder.Case;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.bonc.epm.paas.controller.ServiceController;
-import com.bonc.epm.paas.entity.Configmap;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.KeyValue;
 import com.bonc.epm.paas.entity.PortConfig;
@@ -119,114 +114,6 @@ public class KubernetesClientService {
 		return new KubernetesApiClient(namespace, endpoint, username, password, new RestFactory());
 	}
 
-	/*
-	 * public static void main(String[] args) {
-	 *
-	 * KubernetesAPIClientInterface client =
-	 * KubernetesClientUtil.getClient("admin");
-	 *
-	 * try{ client.updateReplicationController("bonctest1", 1);
-	 * ReplicationControllerList list = client.getAllReplicationControllers();
-	 * System.out.println("ReplicationControllerList:"+JSON.toJSONString(list));
-	 * }catch(KubernetesClientException e){
-	 * System.out.println(e.getMessage()+":"+JSON.toJSONString(e.getStatus()));
-	 * }
-	 *
-	 * //获取特殊条件的pods Map<String,String> map = new HashMap<String,String>();
-	 * map.put("app", "helloworld001"); PodList podList =
-	 * client.getLabelSelectorPods(map);
-	 * System.out.println("podList:"+JSON.toJSONString(podList));
-	 *
-	 * //更新容器 client.updateReplicationController("bonctest1", 1);
-	 * ReplicationControllerList list = client.getAllReplicationControllers();
-	 * System.out.println("ReplicationControllerList:"+JSON.toJSONString(list));
-	 *
-	 * //创建命名空间 Namespace namespace =
-	 * KubernetesClientUtil.generateSimpleNamespace("bonc"); namespace =
-	 * client.createNamespace(namespace);
-	 * System.out.println("namespace:"+JSON.toJSONString(namespace)); //查询命名空间
-	 * Namespace namespace = client.getNamespace("bonc");
-	 * System.out.println("namespace:"+JSON.toJSONString(namespace));
-	 *
-	 * //创建容器 ReplicationController controller =
-	 * KubernetesClientUtil.generateSimpleReplicationController("bonctest1",3,
-	 * "10.0.93.25:5000/bonc/hw8:latest",8080); controller =
-	 * client.createReplicationController(controller);
-	 * System.out.println("controller:"+JSON.toJSONString(controller));
-	 *
-	 * ReplicationControllerList list = client.getAllReplicationControllers();
-	 * System.out.println("ReplicationControllerList:"+JSON.toJSONString(list));
-	 *
-	 *
-	 * PodList podList = client.getAllPods();
-	 * System.out.println("podList:"+JSON.toJSONString(podList));
-	 *
-	 * Service service =
-	 * KubernetesClientUtil.generateService("bonctest1",80,8080); service =
-	 * client.createService(service);
-	 * System.out.println("service:"+JSON.toJSONString(service));
-	 *
-	 * ServiceList serviceList = client.getAllServices();
-	 * System.out.println("serviceList:"+JSON.toJSONString(serviceList));
-	 *
-	 * Map<String,String> map = new HashMap<String,String>(); map.put("memory",
-	 * "1Gi"); map.put("cpu", "20"); map.put("pods", "10"); map.put("services",
-	 * "5"); map.put("replicationcontrollers", "20"); map.put("resourcequotas",
-	 * "1"); ResourceQuota quota =
-	 * KubernetesClientUtil.generateSimpleResourceQuota("quota",map);
-	 * System.out.println("quota1:"+JSON.toJSONString(quota)); quota =
-	 * client.createResourceQuota(quota);
-	 * System.out.println("quota:"+JSON.toJSONString(quota));
-	 *
-	 * Map<String,String> map = new HashMap<String,String>(); map.put("memory",
-	 * "128Mi"); map.put("cpu", "100m"); LimitRange limitRange =
-	 * KubernetesClientUtil.generateSimpleLimitRange("limits",map);
-	 * System.out.println("limitRange1:"+JSON.toJSONString(limitRange));
-	 * limitRange = client.createLimitRange(limitRange);
-	 * System.out.println("limitRange:"+JSON.toJSONString(limitRange));
-	 *
-	 * LimitRangeList limitRangeList = client.getAllLimitRanges();
-	 * System.out.println("limitRangeList:"+JSON.toJSONString(limitRangeList));
-	 *
-	 * LimitRange limitRange = client.getLimitRange("limits");
-	 * System.out.println("limitRange:"+JSON.toJSONString(limitRange));
-	 *
-	 *
-	 * //删除 PodList podList = client.getAllPods();
-	 * System.out.println("podList:"+JSON.toJSONString(podList));
-	 * if(podList.getItems().size()>0){ for(Pod pod:podList.getItems()){
-	 * client.deletePod(pod.getMetadata().getName());
-	 * System.out.println("pod:"+JSON.toJSONString(pod)); } }
-	 * ReplicationControllerList list = client.getAllReplicationControllers();
-	 * if(list.getItems().size()>0){ for(ReplicationController
-	 * controller:list.getItems()){
-	 * client.deleteReplicationController(controller.getMetadata().getName()); }
-	 * } ServiceList serviceList = client.getAllServices();
-	 * if(serviceList.getItems().size()>0){ for(Service
-	 * service:serviceList.getItems()){
-	 * client.deleteService(service.getMetadata().getName()); } }
-	 * ResourceQuotaList quotaList = client.getAllResourceQuotas();
-	 * if(quotaList!=null&&quotaList.getItems().size()>0){ for(ResourceQuota
-	 * quota:quotaList.getItems()){
-	 * client.deleteResourceQuota(quota.getMetadata().getName()); } }
-	 * LimitRangeList limitRangeList = client.getAllLimitRanges();
-	 * if(limitRangeList!=null&&limitRangeList.getItems().size()>0){
-	 * for(LimitRange limitRange:limitRangeList.getItems()){
-	 * client.deleteLimitRange(limitRange.getMetadata().getName()); } }
-	 *
-	 *
-	 * }
-	 */
-
-	// public void main(String[] args) {
-	// //创建容器
-	// KubernetesAPIClientInterface client =
-	// KubernetesClientUtil.getClient("feng");
-	// ReplicationController controller =
-	// KubernetesClientUtil.generateSimpleReplicationController("bonctest1",3,"10.0.93.25:5000/bonc/hw8:latest",8080,1.0f,"512");
-	// controller = client.createReplicationController(controller);
-	// System.out.println("controller:"+JSON.toJSONString(controller));
-	// }
 	public Namespace generateSimpleNamespace(String name) {
 		Namespace namespace = new Namespace();
 		ObjectMeta meta = new ObjectMeta();
@@ -261,20 +148,6 @@ public class KubernetesClientService {
 		limitRange.setSpec(spec);
 		return limitRange;
 	}
-
-	/*
-	 * public Map<String,Object> getlimit(Map<String,Object> limit){ User
-	 * currentUser = CurrentUserUtils.getInstance().getUser();
-	 * KubernetesAPIClientInterface client = this.getClient(); LimitRange
-	 * limitRange = client.getLimitRange(currentUser.getUserName());
-	 * LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
-	 * double icpuMax = transCpu(limitRangeItem.getMax().get("cpu")); Integer
-	 * imemoryMax = transMemory(limitRangeItem.getMax().get("memory"));
-	 * limit.put("cpu", icpuMax); limit.put("memory", imemoryMax+"Mi"); return
-	 * limit;
-	 *
-	 * }
-	 */
 
 	public Long transMemory(String memory) {
 		if (memory.endsWith("M")) {
@@ -365,11 +238,6 @@ public class KubernetesClientService {
 		if (StringUtils.isNotBlank(proxyPath)) {
 			labels.put("proxyPath", proxyPath.replaceAll("/", "LINE"));
 		}
-		// 添加服务检查路径
-		/*
-		 * if (StringUtils.isNotBlank(checkPath)) { labels.put("healthcheck",
-		 * checkPath.replaceAll("/", "---")); }
-		 */
 		if (StringUtils.isNotBlank(nginxObj)) {
 			String[] proxyArray = nginxObj.split(",");
 			for (int i = 0; i < proxyArray.length; i++) {
@@ -516,15 +384,6 @@ public class KubernetesClientService {
 		container.setName(name);
 		container.setImage(image);
 
-		// ResourceRequirements requirements = new ResourceRequirements();
-		// requirements.getLimits();
-		// Map<String,String> def = new HashMap<String,String>();
-		// //float fcpu = cpu*1024;
-		// def.put("cpu", String.valueOf(cpu));
-		// def.put("memory", ram+"Mi");
-		// requirements.setRequests(def);
-		// container.setResources(requirements);
-
 		List<ContainerPort> ports = new ArrayList<ContainerPort>();
 		ContainerPort port = new ContainerPort();
 		port.setContainerPort(containerPort);
@@ -615,26 +474,15 @@ public class KubernetesClientService {
 		Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(serName);
-		/*
-		 * Map<String,String> labels = new HashMap<String,String>();
-		 * labels.put("app", serName); meta.setLabels(labels);
-		 */
 		service.setMetadata(meta);
 
 		ServiceSpec spec = new ServiceSpec();
-		// spec.setType("NodePort");
 		List<ServicePort> ports = new ArrayList<ServicePort>();
 		ServicePort portObj = new ServicePort();
-		// portObj.setName("http");
 		portObj.setProtocol("TCP");
 		portObj.setPort(refPort);
-		// portObj.setNodePort(serviceController.vailPortSet());
 		ports.add(portObj);
 		spec.setPorts(ports);
-		/*
-		 * Map<String,String> selector = new HashMap<String,String>();
-		 * selector.put("app", serName); spec.setSelector(selector);
-		 */
 		service.setSpec(spec);
 		return service;
 	}
@@ -701,14 +549,10 @@ public class KubernetesClientService {
 	 */
 	public ReplicationController updateSimpleReplicationController(ReplicationController controller,
 			com.bonc.epm.paas.entity.Service service, List<String> command, int flag) {
-
 		if (flag == 0) {
 			controller.getMetadata().setName(service.getServiceName());
 			controller.getMetadata().getLabels().put("app", service.getServiceName());
 			controller.getSpec().getTemplate().getSpec().getContainers().get(0).setCommand(command);
-			// if(!StringUtils.isNotBlank(service.getVolName())){
-			// controller.getSpec().getTemplate().getSpec().getContainers().get(0).setVolumeMounts(null);
-			// }
 		}
 		controller.getMetadata().getLabels().remove("dmz");
 		controller.getMetadata().getLabels().remove("user");
@@ -719,8 +563,6 @@ public class KubernetesClientService {
 			}
 			controller.getMetadata().getLabels().put("proxyPath", service.getProxyPath());
 			controller.getMetadata().getLabels().put("servicePath", service.getServicePath());
-			// controller.getSpec().setSelector(controller.getMetadata().getLabels());
-			// controller.getSpec().getTemplate().getMetadata().setLabels(controller.getMetadata().getLabels());
 		}
 		if (StringUtils.isNotBlank(service.getCheckPath())) {
 			Probe livenessProbe = new Probe();

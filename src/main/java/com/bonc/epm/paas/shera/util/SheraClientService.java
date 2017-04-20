@@ -64,17 +64,20 @@ public class SheraClientService {
     @Autowired
     private SheraDao sheraDao;
 
-    public SheraAPIClientInterface getClient() {
-        User user = CurrentUserUtils.getInstance().getUser();
-        Shera shera = new Shera();
-        if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-            shera = sheraDao.findByUserId(user.getParent_id());
-        }
-        else {
-            shera = sheraDao.findByUserId(user.getId());
-        }
-        return getClient(shera);
-    }
+	public SheraAPIClientInterface getClient() {
+		User user = CurrentUserUtils.getInstance().getUser();
+		Shera shera = new Shera();
+		if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+			shera = sheraDao.findByUserId(user.getParent_id());
+		} else {
+			shera = sheraDao.findByUserId(user.getId());
+		}
+		//找不到shera时候，使用默认shera
+		if (null == shera) {
+			shera = sheraDao.findAll().iterator().next();
+		}
+		return getClient(shera);
+	}
 
     public SheraAPIClientInterface getClient(Shera shera){
         String namespace = CurrentUserUtils.getInstance().getUser().getUserName();

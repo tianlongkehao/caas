@@ -161,10 +161,35 @@ public class Service {
 	private boolean updateImage;
 
 	/**
+	 * responsiblePerson:责任人.
+	 */
+	private String responsiblePerson;
+
+	/**
+	 * responsiblePersonTelephone:责任人电话.
+	 */
+	private String responsiblePersonTelephone;
+
+	/**
 	 * 端口信息
 	 */
 	@Transient
 	private List<PortConfig> portConfigs;
+
+	/**
+	 * targetCPUUtilizationPercentage:hpa的cpu阈值.
+	 */
+	private Integer targetCPUUtilizationPercentage;
+
+	/**
+	 * maxReplicas:hpa最大pod数量.
+	 */
+	private Integer maxReplicas;
+
+	/**
+	 * minReplicas:hpa最小pod数量.
+	 */
+	private Integer minReplicas;
 
 	public String getServiceChName() {
 		return serviceChName;
@@ -440,5 +465,45 @@ public class Service {
 
 	public void setCodeRatingURL(String codeRatingURL) {
 		this.codeRatingURL = codeRatingURL;
+	}
+
+	public Integer getTargetCPUUtilizationPercentage() {
+		return targetCPUUtilizationPercentage;
+	}
+
+	public void setTargetCPUUtilizationPercentage(Integer targetCPUUtilizationPercentage) {
+		this.targetCPUUtilizationPercentage = targetCPUUtilizationPercentage;
+	}
+
+	public Integer getMaxReplicas() {
+		return maxReplicas;
+	}
+
+	public void setMaxReplicas(Integer maxReplicas) {
+		this.maxReplicas = maxReplicas;
+	}
+
+	public Integer getMinReplicas() {
+		return minReplicas;
+	}
+
+	public void setMinReplicas(Integer minReplicas) {
+		this.minReplicas = minReplicas;
+	}
+
+	public String getResponsiblePerson() {
+		return responsiblePerson;
+	}
+
+	public void setResponsiblePerson(String responsiblePerson) {
+		this.responsiblePerson = responsiblePerson;
+	}
+
+	public String getResponsiblePersonTelephone() {
+		return responsiblePersonTelephone;
+	}
+
+	public void setResponsiblePersonTelephone(String responsiblePersonTelephone) {
+		this.responsiblePersonTelephone = responsiblePersonTelephone;
 	}
 }

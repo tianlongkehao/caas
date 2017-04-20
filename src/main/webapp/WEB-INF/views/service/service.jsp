@@ -89,7 +89,7 @@
 												<th style="width:3%;text-indent: 10px;"><input
 													type="checkbox" autocomplete="off" class="chkAll"
 													id="checkallbox" /></th>
-												<th style="width:8%;padding-left: 5px;">代码质量</th>
+												<th style="width:8%;padding-left: 5px;" class="sonarTh">代码质量</th>
 												<th style="width:15%;padding-left: 5px;">名称</th>
 												<th style="width:10%;text-indent: 8px;">运行状态</th>
 												<th style="width:17%;">镜像</th>

@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import com.bonc.epm.paas.docker.api.DockerRegistryAPI;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPI;
+import com.bonc.epm.paas.kubernetes.apis.KubernetesAPIS;
 import com.bonc.epm.paas.net.api.NetAPI;
 import com.bonc.epm.paas.shera.api.SheraAPI;
 
@@ -23,6 +24,21 @@ public class RestFactory {
 	         methodMap.put(method, invoker);
 		}
     	return (KubernetesAPI)Proxy.newProxyInstance(clazz.getClassLoader(),intfs,new ClientProxy(methodMap));
+    }
+
+    public KubernetesAPIS createKubernetesAPIS(String url, String userName, String password){
+    	Class<KubernetesAPIS> clazz = KubernetesAPIS.class;
+    	Class<?>[] intfs =
+		{
+			clazz
+		};
+    	HashMap<Method, MethodInvoker> methodMap = new HashMap<Method, MethodInvoker>();
+    	for (Method method : clazz.getMethods())
+		{
+	         MethodInvoker invoker = new MethodInvoker(url,userName,password,method);
+	         methodMap.put(method, invoker);
+		}
+    	return (KubernetesAPIS)Proxy.newProxyInstance(clazz.getClassLoader(),intfs,new ClientProxy(methodMap));
     }
 
     public NetAPI createNetAPI(String url, String userName, String password){

@@ -39,5 +39,6 @@ var ctx = "<%=path%>";
 <script type="text/javascript" src="<%=path%>/js/plugins/jquery.dataTables.js"></script>
 <script type="text/javascript" src="<%=path%>/js/plugins/dataTables.bootstrap.js"></script>
 <script type="text/javascript" src="<%=path%>/js/plugins/codemirror.js"></script>
+<script type="text/javascript" src="<%=path %>/plugins/nicescroll/jquery.nicescroll.js"></script>
 
 

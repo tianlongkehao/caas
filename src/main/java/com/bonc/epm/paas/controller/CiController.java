@@ -2080,26 +2080,19 @@ public class CiController {
      */
     @RequestMapping(value = {"ci/getSonarConfig.do"}, method = RequestMethod.GET)
     @ResponseBody
-    public String  getSonarConfig(){
-        Map<String,Object> map = new HashMap<String, Object>();
-        map.put("status", "200");
+	public String getSonarConfig() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", "200");
 		// 获取sonarConfig
-		SheraAPIClientInterface sheraClient = sheraClientService.getClient();
 		SonarConfig sonarConfig = null;
 		try {
+			SheraAPIClientInterface sheraClient = sheraClientService.getClient();
 			sonarConfig = sheraClient.getSonarConfig();
 		} catch (Exception e) {
 			LOG.info(e.getMessage());
-//			SonarConfig config = sheraClientService.generateSonarConfig(true, false, false, 5, false, SONAR_TOKEN,
-//					SONAR_URL);
-//			try {
-//				sonarConfig = sheraClient.createSonarConfig(config);
-//			} catch (SheraClientException e1) {
-//				e1.printStackTrace();
-				map.put("status", "400");
-//			}
+			map.put("status", "400");
 		}
 		map.put("sonarConfig", sonarConfig);
 		return JSON.toJSONString(map);
-    }
+	}
 }

@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -22,13 +23,20 @@ public class UserSecurityInterceptor implements HandlerInterceptor {
     @Autowired
     public PortConfigDao portConfigDao;
 
+    @Value("${cas.enable}")
+    private boolean CAS_ENABLE;
+
     @Override
 	public boolean preHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler) throws Exception {
 		 //验证用户是否登陆
         Object obj = request.getSession().getAttribute("cur_user");
         if (obj == null || !(obj instanceof User)) {
-            response.sendRedirect(request.getContextPath() + "/login");
+        	if (CAS_ENABLE) {
+        		response.sendRedirect(request.getContextPath() + "/home");
+			} else {
+				response.sendRedirect(request.getContextPath() + "/login");
+			}
 
 /*          ServiceController.smalSet.clear();
             if (portConfigDao == null) {//解决service为null无法注入问题

@@ -41,7 +41,22 @@ function cicodeClick(){
 	$(".ci-content").hide();
 	$("#ciCodeTab").addClass("active");
 	$("#ciTab").removeClass("active");
-	loadCiCode();
+
+	$.ajax({
+		url:ctx+"/ci/getSonarConfig.do",
+		async:false,
+		success:function(data){
+			data = eval("(" + data + ")");
+			if(data.status == 200 && data.sonarConfig.hidden == false){
+				loadCiCode();
+			}else{
+				$(".sonarTh").next().css("text-indent","20px");
+				$(".sonarTh").hide();
+				loadCiCodeNoSonar();
+			}
+
+		}
+	});
 }
 
 
@@ -292,17 +307,17 @@ function loadCiCode() {
 						render : function ( data, type, row ) {
 							var html = '';
 							if (row.codeRating == 1) {
-								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_a">A</span></a>';
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_a">A</span></a>';
 							} else if (row.codeRating == 2) {
-								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_b">B</span></a>';
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_b">B</span></a>';
 							} else if (row.codeRating == 3) {
-								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_c">C</span></a>';
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_c">C</span></a>';
 							} else if (row.codeRating == 4) {
-								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_d">D</span></a>';
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_d">D</span></a>';
 							} else if (row.codeRating == 5) {
-								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '"><span class="fa_level fa_level_e">E</span></a>';
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_e">E</span></a>';
 							} else {
-								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fa_level fa_level_a">无</span>';
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fa_level fa_level_n">无</span>';
 							}
 							return html;
 						}
@@ -311,6 +326,105 @@ function loadCiCode() {
 						data : null,
 						render : function ( data, type, row ) {
 							var html = '<a href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息">'+row.projectName+'</a>';
+							return html;
+						}
+					},
+
+					{
+						data : null,
+						className : 'cStatusColumn',
+						render : function (data,type,row) {
+							var html = '';
+							if (row.constructionStatus == 1) {
+								html = '<i class="fa_stop"></i>' +
+									'未构建 <img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" class="hide" />';
+							}
+							if (row.constructionStatus == 2) {
+								html = '<i class="fa_success"></i>' +
+									'构建中 <img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" class="" />';
+							}
+							if (row.constructionStatus == 3) {
+								html = '<i class="fa_success"></i>' +
+									'成功 <img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" class="hide" />';
+							}
+							if (row.constructionStatus == 4) {
+								html = '<i class="fa_stop"></i>' +
+									'失败<img src="'+ctx+'/images/loading4.gif"'+
+									'alt="" class="hide" />';
+							}
+							return html;
+						}
+
+					},
+					{
+						data : null,
+						render : function (data,type,row) {
+							var html = row.constructionDate;
+							if (html == null || html == "") {
+								return "无";
+							}
+							return html;
+						}
+					},
+					{
+						data : null,
+						render : function (data,type,row) {
+							var html = row.constructionFailDate;
+							if (html == null || html == "") {
+								return "无";
+							}
+							return html;
+						}
+					},
+					{
+						data : null,
+						render : function (data,type,row) {
+							var html ="&nbsp;&nbsp;&nbsp;"+ Math.round(row.constructionTime/1000) + "s";
+							return html;
+						}
+					},
+					{
+						data : null,
+						render : function (data,type,row) {
+							var btnCursorClass = '';
+							var html = '';
+							if (row.constructionStatus == 2 ) {
+								btnCursorClass = 'cursor-no-drop';
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
+												'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
+												'<i class="fa fa-arrow-circle-right "></i>'+
+											'</span>'+
+											'&nbsp;&nbsp;&nbsp;<span class="stop-ci" style="cursor:pointer" title="停止构建" ciId="'+row.id+'" ><i class="fa fa-power-off ci-powerOff"></i></span>';
+							}else{
+								html = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="bj-green '+btnCursorClass+'" data-toggle="tooltip" data-placement="right" title="构建" '+
+													'data-original-title="重新构建" constructionStatus="'+row.constructionStatus+'"  ciId="'+row.id+'">'+
+													'<i class="fa fa-arrow-circle-right bj-no-drop"></i>'+
+											'</span>'+
+											'&nbsp;&nbsp;&nbsp;<span class="stop-ci hide" style="cursor:pointer" title="停止构建" ciId="'+row.id+'"><i class="fa fa-power-off ci-powerOff"></i></span>';
+							}
+							return html;
+						}
+					}
+		]
+	});
+}
+function loadCiCodeNoSonar() {
+	$('.dataTables-example').dataTable({
+	 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }],
+	 	"autoWidth": false,
+        "processing": true,
+        "serverSide": true,
+        "stateSave":false,
+        "ordering":false,
+        "ajax": ctx+"/ci/codepage.do",
+        "columns": [
+					{
+						data : null,
+						render : function ( data, type, row ) {
+							var html = '<a href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息" style="padding-left:20px">'+row.projectName+'</a>';
 							return html;
 						}
 					},

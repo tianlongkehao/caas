@@ -1,6 +1,6 @@
 var jsonData = {
-		
-}
+
+};
 
 $(document).ready(function () {
   hasUsed();
@@ -16,18 +16,18 @@ $(document).ready(function () {
 	    	content:$('#environment-templat'),
 	    	title:'上传文件',
 	    	btn:['保存','取消'],
-	    	yes: function(index, layero){ 
+	    	yes: function(index, layero){
 	    			var path = $('#downfilepath').val();
 	        	$('#path').val(path);
 	        	var formData = new FormData($( "#form1" )[0]);
 	        	var fileName = document.getElementById("file").value;
 	        	var flag =0;
 	         $("#mybody tr").each(function (index, domEle){
-	    				$(domEle).find("span").each(function(index,data){  
+	    				$(domEle).find("span").each(function(index,data){
 	    					if(fileName == $(data).html()){
 	    						flag=1;
 	    						}
-							});                  
+							});
 	         			});
 	         if(flag==0){
 //	        	  layer.closeAll();
@@ -48,7 +48,7 @@ $(document).ready(function () {
 	      cancal: function (index, layero){
 							cancleUploadFile();
 				 }
-	    	})
+	    	});
 	});
 	$("#storageReloadBtn").click(function(){
 		window.location.reload();
@@ -56,7 +56,7 @@ $(document).ready(function () {
 });
 
 	function up(formData,flag){
-        var url = ctx + '/upload'; // 接收上传文件的后台地址 
+        var url = ctx + '/upload'; // 接收上传文件的后台地址
         xhr = new XMLHttpRequest();  // XMLHttpRequest 对象
         xhr.open("post", url, true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
         xhr.onload = uploadComplete; //请求完成
@@ -71,7 +71,7 @@ $(document).ready(function () {
 
 	//上传进度实现方法，上传过程中会频繁调用该方法
     function progressFunction(evt) {
-        
+
          var progressBar = document.getElementById("progressBar");
          var percentageDiv = document.getElementById("percentage");
          // event.total是需要传输的总字节，event.loaded是已经传输的字节。如果event.lengthComputable不为真，则event.total等于0
@@ -80,15 +80,15 @@ $(document).ready(function () {
              progressBar.value = evt.loaded;
              percentageDiv.innerHTML = Math.round(evt.loaded / evt.total * 100) + "%";
          }
-        
+
         var time = document.getElementById("time");
         var nt = new Date().getTime();//获取当前时间
         var pertime = (nt-ot)/1000; //计算出上次调用该方法时到现在的时间差，单位为s
         ot = new Date().getTime(); //重新赋值时间，用于下次计算
-        
-        var perload = evt.loaded - oloaded; //计算该分段上传的文件大小，单位b       
+
+        var perload = evt.loaded - oloaded; //计算该分段上传的文件大小，单位b
         oloaded = evt.loaded;//重新赋值已上传文件大小，用以下次计算
-    
+
         //上传速度计算
         var speed = perload/pertime;//单位b/s
         var bspeed = speed;
@@ -124,7 +124,7 @@ $(document).ready(function () {
 				content:'上传失败，文件大小超过卷组可用大小！',
 				title:'上传失败',
 				btn:['确定'],
-				yes: function(index, layero){ 
+				yes: function(index, layero){
 					refreshtable();
 					layer.closeAll();
 				}
@@ -138,34 +138,35 @@ $(document).ready(function () {
 		   $("#progressBar").val(0);
 	     $("#time").empty();
 	}
-    }
-    //上传失败
-    function uploadFailed(evt) {
-        alert("上传失败！");
-    }
-      //取消上传
-    function cancleUploadFile(){
-        xhr.abort();
-    }
-	
-	
+}
+//上传失败
+function uploadFailed(evt) {
+	alert("上传失败！");
+}
+
+//取消上传
+function cancleUploadFile() {
+	xhr.abort();
+}
+
+
 /**
  * 总用量
  */
-function hasUsed(){
-	var storageName=$('#storageName').html();
-	var totalSize =$('#totalSize').html();
+function hasUsed() {
+	var storageName = $('#storageName').html();
+	var totalSize = $('#totalSize').html();
 	$.ajax({
-		type: "GET",
-    url: ctx + "/hasUsed.do?storageName=/"+storageName+"&totalSize="+totalSize,
-    success : function(data) {
-    	data = eval('('+data+')');
-    	if("500"!=data.status){
-    		var hasUsed =data.length;
-    		$('#hasUsed').html(hasUsed);
-    		}
-    	}
-	})
+		type : "GET",
+		url : ctx + "/hasUsed.do?storageName=/" + storageName + "&totalSize=" + totalSize,
+		success : function(data) {
+			data = eval('(' + data + ')');
+			if ("400" != data.status) {
+				var hasUsed = data.length;
+				$('#hasUsed').html(hasUsed);
+			}
+		}
+	});
 }
 
 /**
@@ -183,94 +184,76 @@ function refreshtable(){
  * @param path
  * @param dirName
  */
-function  creatable(isDir,path,dirName){
-	
-	if(null==isDir ||"true"==isDir ){
-		var tbody="";
-		var context =$('#mybody');
-		var param="";
-		var storageName=$('#storageName').html();
-		if(null==path||null==path){
-		 param="path=&dirName=&storageName=/"+storageName+"/";
-		}else{
-			if(null==dirName){dirName="";}
-			param="path="+path+"&dirName="+dirName+"/&storageName=/"+storageName+"/";
+function creatable(isDir, path, dirName) {
+
+	if (null == isDir || "true" == isDir) {
+		var tbody = "";
+		var context = $('#mybody');
+		var param = "";
+		var storageName = $('#storageName').html();
+		if (null == path || null == path) {
+			param = "path=&dirName=&storageName=/" + storageName + "/";
+		} else {
+			if (null == dirName) {
+				dirName = "";
+			} else {
+				dirName += "/";
+			}
+			param = "path=" + path + "&dirName=" + dirName + "&storageName=/" + storageName + "/";
 		}
 		context.empty();
 
 		$.ajax({
-	        type: "GET",
-	        url: ctx + "/listFile?"+param,
-	        success : function(data) {
-	        	//alert(data);
-	        	var data = eval("("+data+")");
-	        	if(data.status=="500"){
-	        		layer.alert("您没有权限浏览上一级内容");
-	        		creatable(null,null,null);
-	        		return;
-	        			}
-	        	if(data.status=="400"){
-	        		layer.alert("对不起，没有找到相应的目录");
-	        		return;
-	        			}
-	        	for (i in data.fileList) {
-	        		var	fileInfo =	JSON.stringify(data.fileList[i]);
-	    				fileInfo = eval("(" + fileInfo + ")");
-	    				$('#downfilepath').val(fileInfo.path);
-   					 fileInfo.path = encodeURI(fileInfo.path);
-   					 fileInfo.fileNameEnc=encodeURI(fileInfo.fileName);
-	    				//alert(fileInfo.day);
-	    				if(fileInfo.fileName=='..'){
-			    				tbody+='<tr class="vol_list" style="cursor:pointer">'+
-									'<td style="width: 5%;text-indent: 14px;">'+
-									'</td>'+
-									'<td style="width: 25%; text-indent: 30px;"  onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileNameEnc+'") >'+
-									'<a hrer="">';
-									if(true==fileInfo.dir){
-										tbody+='<img src="'+ctx+'/images/img-file.png ">';
-									}else{
-										tbody+='<img src="'+ctx+'/images/file-f.png ">';
-;									 }
-									tbody+='<span style="margin-left:5px"  >'+
-									fileInfo.fileName+'</span>'+
-									'</a>'+
-									'</td>'+
-									'<td style="width: 20%;">'+fileInfo.size+'</td>'+
-									'<td style="width: 25%;"></td>'+
-									'<td style="width: 10%;text-indent: 56px;"></td>'+
-								'</tr>';
-	    				}else{
-			    				tbody+='<tr class="vol_list" style="cursor:pointer">'+
-									'<td style="width: 5%;text-indent: 14px;">'+
-									'<input type="checkbox" class="chkItem" name="downfiles" value="'+fileInfo.fileName+'" >'+
-									'</td>'+
-									'<td style="width: 25%;text-indent: 30px;" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileNameEnc+'") >'+
-									'<a hrer="">'
-									if(true==fileInfo.dir){
-										tbody+='<img src="'+ctx+'/images/img-file.png ">';
-									}else{
-										tbody+='<img src="'+ctx+'/images/file-f.png ">';
-;									 }
-			    				tbody+='<span style="margin-left:5px"  >'+
-									fileInfo.fileName+'</span>'+
-									'</a>'+
-									'</td>'+
-									'<td style="width: 20%;">'+fileInfo.size+'KB</td>'+
-									'<td style="width: 25%;">'+fileInfo.modifiedTime+'</td>'+
-									'<td style="width: 10%;text-indent: 56px;">'+'<a class="deleteButton" href="javascript:void(0)" onclick="delfile(this)"  fileName="'+fileInfo.fileName+'"> <i class="fa fa-trash fa-lg"></i></a>'+'</td>'+
-								'</tr>';
-	    				}
-	           
+			type : "GET",
+			url : ctx + "/listFile?" + param,
+			success : function(data) {
+				//alert(data);
+				var data = eval("(" + data + ")");
+				if (data.status == "500") {
+					layer.alert("您没有权限浏览上一级内容");
+					creatable(null, null, null);
+					return;
+				}
+				if (data.status == "400") {
+					layer.alert("对不起，没有找到相应的目录");
+					return;
+				}
+				for (i in data.fileList) {
+					var fileInfo = JSON.stringify(data.fileList[i]);
+					fileInfo = eval("(" + fileInfo + ")");
+					$('#downfilepath').val(fileInfo.path);
+					fileInfo.path = encodeURI(fileInfo.path);
+					fileInfo.fileNameEnc = encodeURI(fileInfo.fileName);
+					//alert(fileInfo.day);
+					if (fileInfo.fileName == '..') {
+						tbody += '<tr class="vol_list" style="cursor:pointer">' + '<td style="width: 5%;text-indent: 14px;">' + '</td>' + '<td style="width: 25%; text-indent: 30px;"  onclick=creatable("' + fileInfo.dir + '","' + fileInfo.path + '","' + fileInfo.fileNameEnc + '") >' + '<a hrer="">';
+						if (true == fileInfo.dir) {
+							tbody += '<img src="' + ctx + '/images/img-file.png ">';
+						} else {
+							tbody += '<img src="' + ctx + '/images/file-f.png ">';
+							;
+						}
+						tbody += '<span style="margin-left:5px"  >' + fileInfo.fileName + '</span>' + '</a>' + '</td>' + '<td style="width: 20%;">' + fileInfo.size + '</td>' + '<td style="width: 25%;"></td>' + '<td style="width: 10%;text-indent: 56px;"></td>' + '</tr>';
+					} else {
+						tbody += '<tr class="vol_list" style="cursor:pointer">' + '<td style="width: 5%;text-indent: 14px;">' + '<input type="checkbox" class="chkItem" name="downfiles" value="' + fileInfo.fileName + '" >' + '</td>' + '<td style="width: 25%;text-indent: 30px;" onclick=creatable("' + fileInfo.dir + '","' + fileInfo.path + '","' + fileInfo.fileNameEnc + '") >' + '<a hrer="">';
+						if (true == fileInfo.dir) {
+							tbody += '<img src="' + ctx + '/images/img-file.png ">';
+						} else {
+							tbody += '<img src="' + ctx + '/images/file-f.png ">';
+							;
+						}
+						tbody += '<span style="margin-left:5px"  >' + fileInfo.fileName + '</span>' + '</a>' + '</td>' + '<td style="width: 20%;">' + fileInfo.size + 'KB</td>' + '<td style="width: 25%;">' + fileInfo.modifiedTime + '</td>' + '<td style="width: 10%;text-indent: 56px;">' + '<a class="deleteButton" href="javascript:void(0)" onclick="delfile(this)"  fileName="' + fileInfo.fileName + '"> <i class="fa fa-trash fa-lg"></i></a>' + '</td>' + '</tr>';
+					}
 
-	        	} 
-	        	$('#mybody').html($(tbody)); 
-	  	      //showDataTable();
-	        }
-		
-	      })
+				}
+				$('#mybody').html($(tbody));
+				//showDataTable();
+			}
+		});
 
 	}
 }
+
 
 function showDataTable(){
 	$('.dataTables-example').dataTable({
@@ -281,7 +264,7 @@ function showDataTable(){
 		"aaSorting": [[ 3, "desc" ]]
 	});
 	$("#checkallbox").parent().removeClass("sorting_asc");
-	 
+
 }
 //解压文件
 function unzipFile(){
@@ -308,28 +291,39 @@ function unzipFile(){
         	layer.close(index);
         	refreshtable();
 		}
-	})
+	});
 }
 //新建文件夹
-function createdir(){
-	var storageName=$('#storageName').html();
-	var path =$('#downfilepath').val();
+function createdir() {
+	var storageName = $('#storageName').html();
+	var path = $('#downfilepath').val();
 	layer.open({
-		type:1,
-		content:$('#createdir-templat'),
-		title:'新建文件夹',
-		btn:['新建','取消'],
-		yes: function(index, layero){
-			var dirName=$('#newdir').val();
+		type : 1,
+		content : $('#createdir-templat'),
+		title : '新建文件夹',
+		btn : ['新建', '取消'],
+		yes : function(index, layero) {
+			var dirName = $('#newdir').val();
 			$.ajax({
-        		type: "POST",
-           url: ctx + "/storage/createFile.do?path="+path+"&dirName="+dirName+"&storageName=/"+storageName,
-        	});
-        	layer.close(index);
-        	refreshtable();
+				type : "POST",
+				url : ctx + "/storage/createFile.do?path=" + path + "&dirName=" + dirName + "&storageName=/" + storageName,
+				success : function(data) {
+					var data = eval("(" + data + ")");
+					if (data.status == "200") {
+						layer.close(index);
+						refreshtable();
+					} else {
+						layer.alert("创建失败");
+						return;
+					}
+				}
+			});
 		}
-	})
+	});
 }
+
+
+
 //删除某一行
 function delfile(obj){
 		var storageName=$('#storageName').html();
@@ -339,7 +333,7 @@ function delfile(obj){
 		        title: '删除卷组中的文件',
 		        content: '确定删除卷组中的文件？',
 		        btn: ['确定', '取消'],
-		        yes: function(index, layero){ 
+		        yes: function(index, layero){
 		        	$(obj).parent().parent().remove();
 		        	//refservice/delete.do
 		        	$.ajax({
@@ -349,7 +343,7 @@ function delfile(obj){
 		        	layer.close(index);
 		       	 hasUsed();
 		        }
-	 })
+	 });
 }
 //批量删除
 function delfiles(){
@@ -366,7 +360,7 @@ function delfiles(){
 		 			 title: '删除卷组中的文件',
 	        content: '确定删除卷组中的文件？',
 	        btn: ['确定', '取消'],
-	        yes: function(index, layero){ 
+	        yes: function(index, layero){
 	        	layer.close(index);
 	        	if(""==fileNames){
 	        		alert("你总要选一个呀");
@@ -382,18 +376,18 @@ function delfiles(){
 						}else{
 							layer.alert("服务删除失败，请检查服务器连接");
 						}
-	
+
 					}
-				})
+				});
 	        }
-	 })
-	 
+	 });
+
 }
 
 function loadStorageList(){
 	var url = ""+ctx+"/service/storageList";
 	var json = {pageable:"pageable"};
-	
+
 	jqList.query(url,json, function(data){
 		if(data.status == 200) {
         	var itemsHtml = '';
@@ -409,7 +403,7 @@ function loadStorageList(){
         		(function(){
         			var storage = data.storages[i];
         			var useType = storage.useType ==1 ? "未使用" : "使用" ;
-        			
+
         			if(storage.mountPoint == null || storage.mountPoint == ""){
         				storage.mountPoint = "未挂载";
         			}
@@ -428,8 +422,8 @@ function loadStorageList(){
         								' <span class="btn btn-primary format formatStorage"> 格式化 </span>'+
         								' <span class="btn btn-primary dilation dilatationStorage" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'">扩容</span>'+
         								' <span class="btn btn-primary delete deleteStorage" storageId="'+storage.id +'"> 删除 </span>'+
-        							'</td>'+	
-        						+'</tr>'
+        							'</td>'+
+        						+'</tr>';
         		})(i);
         	}
         	$('tbody #storageList').html(itemsHtml);
@@ -499,9 +493,9 @@ var datas = [ {
 ];
 /* 存储卷 */
 function expand(obj) {
-	
+
 	var vol_name = $(obj).find("span.volName")[0].innerHTML;
-	
+
 	var _table = document.getElementById('table-vol');
 	var _tbody = _table.getElementsByTagName('tbody')[0];
 	_tbody.innerHTML = "";
@@ -524,8 +518,8 @@ function expand(obj) {
 					$("#tbody-vol").find("img.imgSrc")[j].src = ctx +"/images/file-f.png";
 				}
 			}
-			
-			
+
+
 
 			$("#allboxs").addClass("hide");
 
@@ -542,7 +536,7 @@ function expand(obj) {
 					+ datas[i].filename
 					+ '</li>'
 					+ '</ul>' + '</div>';
-			
+
 			$("#val-path").append(valPath);
 		}
 	}
