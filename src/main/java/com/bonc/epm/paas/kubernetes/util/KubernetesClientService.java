@@ -19,16 +19,22 @@ import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.ServiceConfigmap;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
+import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
+import com.bonc.epm.paas.kubernetes.apis.KubernetesApisClient;
 import com.bonc.epm.paas.kubernetes.model.ConfigMap;
 import com.bonc.epm.paas.kubernetes.model.ConfigMapTemplate;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
+import com.bonc.epm.paas.kubernetes.model.CrossVersionObjectReference;
 import com.bonc.epm.paas.kubernetes.model.EndpointAddress;
 import com.bonc.epm.paas.kubernetes.model.EndpointPort;
 import com.bonc.epm.paas.kubernetes.model.EndpointSubset;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.EnvVar;
 import com.bonc.epm.paas.kubernetes.model.HTTPGetAction;
+import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
+import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscalerSpec;
+import com.bonc.epm.paas.kubernetes.model.Kind;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
@@ -112,6 +118,15 @@ public class KubernetesClientService {
 
 	public KubernetesAPIClientInterface getClient(String namespace) {
 		return new KubernetesApiClient(namespace, endpoint, username, password, new RestFactory());
+	}
+
+	public KubernetesAPISClientInterface getApisClient() {
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		return getApisClient(namespace);
+	}
+
+	public KubernetesAPISClientInterface getApisClient(String namespace) {
+		return new KubernetesApisClient(namespace, endpoint, username, password, new RestFactory());
 	}
 
 	public Namespace generateSimpleNamespace(String name) {
@@ -536,6 +551,40 @@ public class KubernetesClientService {
 		subsets.add(subset);
 		endpoints.setSubsets(subsets);
 		return endpoints;
+	}
+	/**
+	 * Description: create a new HorizontalPodAutoscaler Object
+	 * @param maxReplicas
+	 * @param minReplicas
+	 * @param kind
+	 * @param targetCPUUtilizationPercentage
+	 *
+	 * @param serAddress
+	 *            String
+	 * @param refAddress
+	 *            String
+	 * @param refPort
+	 * @return
+	 * @see
+	 */
+	public HorizontalPodAutoscaler generateHorizontalPodAutoscaler(String name, Integer maxReplicas,
+			Integer minReplicas, Kind kind, Integer targetCPUUtilizationPercentage) {
+		HorizontalPodAutoscaler hpa = new HorizontalPodAutoscaler();
+		// 璁剧疆metadata
+		ObjectMeta meta = new ObjectMeta();
+		meta.setName(name);
+		hpa.setMetadata(meta);
+		// 璁剧疆spec
+		HorizontalPodAutoscalerSpec spec = new HorizontalPodAutoscalerSpec();
+		spec.setMaxReplicas(maxReplicas);
+		spec.setMinReplicas(minReplicas);
+		CrossVersionObjectReference scaleTargetRef = new CrossVersionObjectReference();
+		scaleTargetRef.setKind(kind);
+		scaleTargetRef.setName(name);
+		spec.setScaleTargetRef(scaleTargetRef);
+		spec.setTargetCPUUtilizationPercentage(targetCPUUtilizationPercentage);
+		hpa.setSpec(spec);
+		return hpa;
 	}
 
 	/**
