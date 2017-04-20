@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
+import com.bonc.epm.paas.dao.ServiceConfigmapDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
@@ -30,6 +31,7 @@ import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
+import com.bonc.epm.paas.entity.ServiceConfigmap;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -43,7 +45,6 @@ import com.bonc.epm.paas.kubernetes.model.ReplicationControllerSpec;
 import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
-import com.bonc.epm.paas.util.CurrentUserUtils;
 
 /**
  * @author Administrator
@@ -82,6 +83,12 @@ public class ServiceApi {
 	 */
 	@Autowired
 	private StorageDao storageDao;
+
+	/**
+	 * 服务与配置文件数据层接口
+	 */
+	@Autowired
+	private ServiceConfigmapDao serviceConfigmapDao;
 
 	/**
 	 * dockerClientService:docker服务接口.
@@ -335,11 +342,16 @@ public class ServiceApi {
 					args.add(item);
 				}
 			}
+			/*************************************
+			 * 根据serviceId,查找ServiceConfigmap
+			 *************************************/
+			List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(service.getId());
+
 			rc = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 					service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 					service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
 					service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-					service.getCheckPath(), envVariables, command, args);
+					service.getCheckPath(), envVariables, command, args, serviceConfigmapList);
 			// 给rc设置卷组挂载的信息
 			if (service.getServiceType().equals("1")) {
 				rc = setVolumeStorage(namespace, rc, service.getId());
