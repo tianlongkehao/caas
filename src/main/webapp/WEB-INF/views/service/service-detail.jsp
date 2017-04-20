@@ -717,8 +717,8 @@
 							style="text-align: center; margin-top: 40px; font-size: 12px;">结果为空</div>
 					</div>
 					<!-- CMD -->
-					<div class="containerCMD hide" style="min-height: 500px;">
-						<div id="terminal-container" style="width:98%"></div>
+					<div class="containerCMD hide" style="min-height: 520px;">
+						<div id="terminal-container" style="width: 98%;min-height: 500px;margin: 0 auto;"></div>
 					</div>
 				</div>
 			</div>

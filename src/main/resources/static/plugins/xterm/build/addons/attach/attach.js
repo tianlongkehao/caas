@@ -155,6 +155,13 @@ function Base64(input) {
             };
             socket.send(JSON.stringify(stdinMsg)); //1.抓到键盘 发给ws
         };
+        term._setSize = function (width, height) {
+            var sizeMsg = {
+                "MsgType": 1,
+                "Content": stringToByte(width + " " + height),
+            };
+            socket.send(JSON.stringify(sizeMsg));
+        };
         socket.addEventListener('message', term._getMessage);
         if (bidirectional) {
             term.on('data', term._sendData);
