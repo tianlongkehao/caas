@@ -286,6 +286,18 @@ public interface KubernetesAPI {
     public PodList getAllPods(@PathParam("namespace")String namespace) throws KubernetesClientException;
 
     /**
+     * Get all Pods
+     *
+     * @return Pods
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/pods")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PodList getPods() throws KubernetesClientException;
+
+    /**
      * Get labelSelector Pods
      *
      * @return Pods
@@ -667,5 +679,10 @@ public interface KubernetesAPI {
 	@Path("/nodes/{name}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Node getSpecifiedNode(@PathParam("name") String name) throws KubernetesClientException;
+
+    @PUT
+    @Path("/nodes/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Node updateSpecifiedNode(@PathParam("name") String name,Node node) throws KubernetesClientException;
 
 }

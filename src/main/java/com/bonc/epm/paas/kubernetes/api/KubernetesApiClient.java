@@ -88,6 +88,17 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
     }
 
+    /*
+     * 管理员在删除pod时,通过此方法删除指定namespace上的pod
+     */
+    public Pod deletePodOfNamespace(String namespace,String name)throws KubernetesClientException {
+        try {
+            return api.deletePod(namespace,name);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
     public ConfigMap createConfigMap(ConfigMap configMap)throws KubernetesClientException{
     	try {
             return api.createConfigMap(namespace, configMap);
@@ -463,4 +474,24 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
     }
+
+	@Override
+	public Node updateNode(String name, Node node) throws KubernetesClientException {
+		try {
+    		return api.updateSpecifiedNode(name, node);
+    	} catch (WebApplicationException e) {
+    		throw new KubernetesClientException(e);
+    	}
+	}
+
+	@Override
+	public PodList getPods() throws KubernetesClientException {
+		try {
+            return api.getPods();
+        } catch (NotFoundException e) {
+            return new PodList();
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
 }
