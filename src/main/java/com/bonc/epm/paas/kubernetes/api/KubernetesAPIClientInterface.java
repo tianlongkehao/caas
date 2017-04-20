@@ -244,6 +244,16 @@ public interface KubernetesAPIClientInterface {
     public Pod deletePod(String name) throws KubernetesClientException;
 
     /**
+     * Delete a Pod of Specified Namespace
+     *
+     * @param namespace
+     * @param name
+     *            Id of the Pod to be deleted
+     * @throws KubernetesClientException
+     */
+    public Pod deletePodOfNamespace(String namespace,String name) throws KubernetesClientException;
+
+    /**
      * get pod log
      * @param name
      * @param container
@@ -496,4 +506,14 @@ public interface KubernetesAPIClientInterface {
 	 */
     public Node getSpecifiedNode(String name) throws KubernetesClientException;
 
+    /**
+	 * update the specified Node
+	 *
+	 * @param name name of the node
+	 * @param node
+	 * @throws KubernetesClientException
+	 */
+    public Node updateNode(String name,Node node) throws KubernetesClientException;
+
+    public PodList getPods() throws KubernetesClientException;
 }

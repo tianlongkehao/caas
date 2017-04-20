@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.influxdb.InfluxDB;
 import org.slf4j.Logger;
@@ -791,4 +792,95 @@ public class ClusterController {
 		return JSON.toJSONString(allServices.getItems());
 	}
 
+	/**
+	 * @param namespace
+	 * @return
+	 */
+	@RequestMapping(value = { "/node" }, method = RequestMethod.GET)
+	public String getAllNode(Model model) {
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		NodeList nodes = client.getAllNodes();
+	    List<Node> nodeList	= nodes.getItems();
+		model.addAttribute("nodeList", nodeList);
+        model.addAttribute("menu_flag", "cluster");
+        model.addAttribute("li_flag", "node");
+        return "cluster/node.jsp";
+	}
+
+	/**
+	 * @param namespace
+	 * @return
+	 */
+	@RequestMapping(value = { "/addnode" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getAddNode(String nodename) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		Node node = client.getSpecifiedNode(nodename);
+		node.getSpec().setunschedulable(false);
+		client.updateNode(nodename, node);
+
+	    map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * @param namespace
+	 * @return
+	 */
+	@RequestMapping(value = { "/deletenode" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getDeleteNode(String nodename) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		Node node = client.getSpecifiedNode(nodename);
+		node.getSpec().setunschedulable(true);
+		client.updateNode(nodename, node);
+        deletePodsOfNode(nodename);//隔离节点之后，将节点上的pod全部删除掉
+	    map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
+	/*
+	 * 删除指定Node上的所有pod
+	 */
+	private void deletePodsOfNode(String name){
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		List<Pod> pods = client.getPods().getItems();
+		if(!CollectionUtils.isEmpty(pods)){
+			for(Pod pod:pods){
+				if(pod.getSpec().getNodeName().equals(name)){
+					client.deletePodOfNamespace(pod.getMetadata().getNamespace(), pod.getMetadata().getName());
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param namespace
+	 * @return
+	 */
+	@RequestMapping(value = { "/nodedetail" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getNode(String nodename) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		Node node = client.getSpecifiedNode(nodename);
+        List<Pod> tempPods = client.getPods().getItems();
+        List<Pod> pods = new ArrayList<Pod>();
+
+        if(!CollectionUtils.isEmpty(tempPods)){
+        	for(Pod pod:tempPods){
+        		if(pod.getSpec().getNodeName().equals(nodename)){
+        			pods.add(pod);
+        		}
+        	}
+        }
+        Boolean status = node.getSpec().getunschedulable();
+
+        map.put("status", status);
+		map.put("node", node);
+		map.put("pods", pods);
+	    return JSON.toJSONString(map);
+	}
 }
