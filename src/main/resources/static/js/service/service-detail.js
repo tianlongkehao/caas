@@ -72,8 +72,8 @@ $(document).ready(function() {
 		$(".containerEvent").removeClass("hide");
 	});
 
-	var dateInput = $('#dateTimePicker');
-	dateInput.datetimepicker({
+	var dateTimePickerFrom = $('#dateTimePickerFrom');
+	dateTimePickerFrom.datetimepicker({
 		changeMonth : true,
 		changeYear : true,
 		dateFormat : 'yy/mm/dd',
@@ -83,7 +83,20 @@ $(document).ready(function() {
 		/*minDate: -20,
 		 maxDate: "+1M +10D"*/
 	});
-	dateInput.datetimepicker('setDate', (new Date()));
+	dateTimePickerFrom.datetimepicker('setDate', (new Date()));
+
+	var dateTimePickerTo = $('#dateTimePickerTo');
+	dateTimePickerTo.datetimepicker({
+		changeMonth : true,
+		changeYear : true,
+		dateFormat : 'yy/mm/dd',
+		monthNames : ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+		monthNamesShort : ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+		dayNamesMin : ["日", "一", "二", "三", "四", "五", "六"],
+		/*minDate: -20,
+		 maxDate: "+1M +10D"*/
+	});
+	dateTimePickerTo.datetimepicker('setDate', (new Date()));
 
 	$('#refreshLog').click(function(event) {
 		getServiceLogs();
