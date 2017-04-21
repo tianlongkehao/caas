@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.el.ArrayELResolver;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.influxdb.InfluxDB;
@@ -19,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +58,7 @@ import com.bonc.epm.paas.net.model.Diff;
 import com.bonc.epm.paas.net.model.RouteTable;
 import com.bonc.epm.paas.net.util.NetClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -808,6 +814,87 @@ public class ClusterController {
 	}
 
 	/**
+	 * @param
+	 *       根据查询条件，返回node信息
+	 * @return
+	 * @see
+	 */
+	@RequestMapping(value = { "/nodeinfo" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getNodeInfo(String clusterstatus,String nodestatus, String ip) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		NodeList nodes = client.getAllNodes();
+	    List<Node> tempList	= nodes.getItems();
+	    List<Node> nodeList1 = new ArrayList<Node>();
+
+	    if(clusterstatus.equals("1")){
+	    	for(Node node:tempList){
+	            //if(node.getSpec().getunschedulable()==false){\
+	            if(node.getSpec().getUnschedulable()==null){
+	            	nodeList1.add(node);
+	            }
+		    }
+        }else if(clusterstatus.equals("2")){
+        	for(Node node:tempList){
+	            if(node.getSpec().getUnschedulable()!=null){
+	            	nodeList1.add(node);
+	            }
+		    }
+        }else{
+        	for(Node node:tempList){
+	            nodeList1.add(node);
+		    }
+        }
+
+	    tempList.clear();
+	    tempList=null;
+	    List<Node> nodeList2 = new ArrayList<Node>();
+
+	    if(nodestatus.equals("1")){
+	    	for(Node node:nodeList1){
+	            if(node.getStatus().getConditions().get(1).getStatus().equals("True")){
+	            	nodeList2.add(node);
+	            }
+		    }
+	    }else if(nodestatus.equals("2")){
+	    	for(Node node:nodeList1){
+	            if(!node.getStatus().getConditions().get(1).getStatus().equals("True")){
+	            	nodeList2.add(node);
+	            }
+		    }
+	    }else{
+	    	for(Node node:nodeList1){
+	            	nodeList2.add(node);
+		    }
+	    }
+
+	    nodeList1.clear();
+	    nodeList1=null;
+	    List<Node> nodeList3 = new ArrayList<Node>();
+
+	    if(!ip.equals("")){
+	    	for(Node node:nodeList2){
+	            if(node.getStatus().getAddresses().get(0).getAddress().equals(ip)){
+	            	nodeList3.add(node);
+	            }
+		    }
+	    }else{
+	    	for(Node node:nodeList2){
+	            	nodeList3.add(node);
+		    }
+	    }
+
+	    nodeList2.clear();
+	    nodeList2=null;
+
+	    map.put("status", "200");
+		map.put("nodelist", nodeList3);
+        String result = JSON.toJSONString(map);
+		return JSON.toJSONString(map);
+	}
+
+	/**
 	 * @param namespace
 	 * @return
 	 */
@@ -817,7 +904,8 @@ public class ClusterController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		Node node = client.getSpecifiedNode(nodename);
-		node.getSpec().setunschedulable(false);
+		node.getSpec().setUnschedulable(false);
+		//node.getSpec().setunschedulable("false");
 		client.updateNode(nodename, node);
 
 	    map.put("status", "200");
@@ -830,13 +918,32 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/deletenode" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String getDeleteNode(String nodename) {
+	public String deleteNode(String nodename) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		Node node = client.getSpecifiedNode(nodename);
-		node.getSpec().setunschedulable(true);
+		//node.getSpec().setunschedulable("true");
+		node.getSpec().setUnschedulable(true);
 		client.updateNode(nodename, node);
         deletePodsOfNode(nodename);//隔离节点之后，将节点上的pod全部删除掉
+	    map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * @param namespace
+	 * @return
+	 */
+	@RequestMapping(value = { "/partdeletenode" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String partDeleteNode(String nodename) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		Node node = client.getSpecifiedNode(nodename);
+		//node.getSpec().setunschedulable("true");
+		node.getSpec().setUnschedulable(true);
+		client.updateNode(nodename, node);
+        //deletePodsOfNode(nodename);
 	    map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
@@ -876,7 +983,7 @@ public class ClusterController {
         		}
         	}
         }
-        Boolean status = node.getSpec().getunschedulable();
+        Boolean status = node.getSpec().getUnschedulable();
 
         map.put("status", status);
 		map.put("node", node);
