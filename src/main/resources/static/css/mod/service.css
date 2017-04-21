@@ -1192,3 +1192,7 @@ p.portLabel input{
 .ui_tpicker_time_label {
 	padding-left:20px
 }
+.BORDER td{
+	line-height:40px!important;
+	
+}

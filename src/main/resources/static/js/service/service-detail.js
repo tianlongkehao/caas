@@ -403,6 +403,39 @@ $(document).ready(function(){
 	$(".editPortConfig").hide();
 	//可编辑的环境变量
 	$(".editEnv").hide();
+	
+	//编辑服务中文名称
+	$(".editSerChName").click(function(){
+		$(this).parent().hide();
+		$(this).parent().next().show();
+	});
+	//保存编辑后的服务中文名称
+	$(".saveSerChName").click(function(){
+		$(this).parent().hide();
+		$(this).parent().prev().show();
+		
+		var serChName = $('#serChName').val();
+		var serId =$("#serId").val();
+		$.ajax({
+			type : "GET",
+			url : ctx + "/service/modifyServiceChName.do?serviceId="+serId+"&serviceChName="+serChName,
+			success : function(data) {
+				data = eval("(" + data + ")");
+				if (data.status == "200") {
+					$('.editAfter').html("服务中文名称："+serChName);
+					layer.msg("修改成功", {
+						icon : 1
+					},function(){
+						location.reload();
+					});
+				} else {
+					layer.msg("修改失败，请检查连接", {
+						icon : 1
+					});
+				}
+			}
+		});
+	});
 
 });/*ready*/
 
