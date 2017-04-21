@@ -721,11 +721,43 @@
 					</div>
 					<!-- CMD -->
 					<div class="containerCMD hide" style="min-height: 520px;">
+						<div class="weblogtitle">
+							<div class="pull_left">
+								<span class="circle red"></span> <span class="circle blue"></span>
+								<span class="circle green"></span>
+							</div>
+							<div class="pull_right">
+								<i id="saveImage" class="fa fa-save cursor" style="color:#2FBA66" title="保存镜像"></i>
+							</div>
+						</div>
 						<div id="terminal-container" style="width: 98%;min-height: 500px;margin: 0 auto;"></div>
 					</div>
 				</div>
 			</div>
 		</article>
+	</div>
+	<!-- 保存镜像 -->
+	<div id="saveImageCon" style="display: none">
+		<ul class="popWin">
+			<li class="line-h-3 c-ser">
+				<div class="">
+					<span class="">镜像名称：</span> 
+					<input class="needImageInfo" id="confServiceName" type="text" value="">
+				</div>
+			</li>
+			<li class="line-h-3 c-ser">
+				<div class="">
+					<span class="">镜像版本：</span>
+					<input type="text" class="needImageInfo" value="">
+				</div>
+			</li>
+			<li class="line-h-3 c-ser">
+				<div class="">
+					<span class="">启动命令：</span>
+					<input type="text" class="needImageInfo" value="">
+				</div>
+			</li>
+		</ul>
 	</div>
 </body>
 </html>
