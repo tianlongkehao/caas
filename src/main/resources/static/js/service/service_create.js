@@ -35,6 +35,14 @@ $(document).ready(function(){
 	      return;
 	    }
 		var serviceChName = $('#serviceChName').val();
+		if (isChinese(serviceChName)==false) {
+			layer.tips('服务中文名称必须包含中文', '#serviceChName', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#serviceChName').focus();
+			return;
+		}
 		if (serviceChName.length > 24 || serviceChName.length < 1) {
 			layer.tips('服务中文名称为1~24个字符', '#serviceChName', {
 				tips : [1, '#3595CC'],

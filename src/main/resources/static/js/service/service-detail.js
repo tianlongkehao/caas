@@ -420,13 +420,14 @@ $(document).ready(function(){
 		//		$(this).parent().prev().show();
 
 		var serChName = $('#serChName').val();
-		//		if(isChinese(serChName)==false){
-		//			layer.msg("服务中文名称必须包含中文", {
-		//				icon : 2
-		//			});
-		//			return false;
-		//		};
-		if (serChName.length > 24 || serChName.length < 1) {
+		if(isChinese(serChName)==false){
+			layer.tips('服务中文名称必须包含中文', '#serChName', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#serChName').focus();
+			return;
+		}else if (serChName.length > 24 || serChName.length < 1) {
 			layer.tips('服务中文名称为1~24个字符', '#serChName', {
 				tips : [1, '#3595CC'],
 				time : 3000
@@ -1030,9 +1031,4 @@ function addEnvClick(obj){
 			   });
 			 return flag;
 	}
-	//验证服务中文名称必须包含中文
-//	function isChinese(temp){
-//		 var re = [\u4e00-\u9fa5];
-//		 if(re.test(temp)) return false;
-//		 return true;
-//	}
+	

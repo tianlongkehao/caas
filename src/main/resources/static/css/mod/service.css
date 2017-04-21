@@ -1192,11 +1192,23 @@ p.portLabel input{
 .ui_tpicker_time_label {
 	padding-left:20px
 }
-.BORDER td{
+/* .BORDER td{
 	line-height:40px!important;	
-}
-.saveSerChName, .editSerChName, .canclEditSerChName{
+} */
+.editSerChName{
 	float:right;
 	margin-right:10px;
-	line-height:40px
+	color: #337ab7;
+	margin-top:5px;
+}
+.canclEditSerChName{
+	float:right;
+	margin-right:10px;
+	color: #337ab7;
+	margin-top:8px;
+}
+.saveSerChName{
+	float:right;
+	color:#337ab7;
+	margin-top:8px;
 }
