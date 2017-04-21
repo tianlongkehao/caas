@@ -85,8 +85,8 @@
 							<li class="oldCon1">责任人：${service.responsiblePerson } ${service.responsiblePersonTelephone }
 								<a id="editResponseBtn" style="margin-left:20px" class="fa fa-edit"></a></li>
 							<li class="editCon1">责任人：
-								<input id="editResponsiblePerson" type="text" value="${service.responsiblePerson}">/
-								<input id="editResponsiblePersonTelephone" type="text" value="${service.responsiblePersonTelephone}">
+								<input id="editResponsiblePerson" type="text" value="${service.responsiblePerson}" placeholder="责任人姓名">
+								<input id="editResponsiblePersonTelephone" type="text" value="${service.responsiblePersonTelephone}" placeholder="责任人电话">
 								<i id="saveEdit1" style="margin-left:20px" class="fa fa-save"></i>
 								<i id="canclEdit1" style="margin-left:6px" class="fa fa-times"></i>
 								</li>
@@ -764,6 +764,9 @@
 								<span class="circle green"></span>
 							</div>
 							<div class="pull_right">
+								<input type="text" id="dateTimePickerFrom" value="" readonly="readonly" style="width: 126px;"/>~
+								<input type="text" id="dateTimePickerTo" value="" readonly="readonly" style="width: 126px;"/>
+								<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="选择日期" data-original-title="选择日期"></i>
 								<a id="getPodlogFile" href="" style="color:#2FBA66"><i id="download" class="fa fa-download margin cursor" ></i></a>
 								<input type="hidden" id="podName" name="podName" value=""></input>
 								<i id="refreshLog1" class="fa fa-refresh margin cursor" title="获取实时日志" ></i>

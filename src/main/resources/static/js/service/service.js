@@ -1173,20 +1173,20 @@ function loadServices() {
 										'style="margin-left: 5px" title="停止"> '+
 										'<i class="fa fa-power-off self_a"></i></a>';
 							}
-/*
+
 							if (row.status != 3 && row.status != 6 && row.status != 7 && row.status != 8) {
 								html += '<a id="'+row.id+'_change" class="a-live change " '+
-										'href="javascript:startdebug('+ row.id +','+ row.status +')" title="璋冭瘯"'+
+										'href="javascript:startdebug('+ row.id +','+ row.status +')" title="调试"'+
 										'style="margin-left: 5px">'+
 											'<i class="fa fa-bug"></i>'
 										+'</a> ';
 							} else {
 								html += '<a id="'+row.id+'_change" class="a-live change " '+
-								'href="javascript:void(0)" title="璋冭瘯"'+
+								'href="javascript:void(0)" title="调试"'+
 								'style="margin-left: 5px">'+
 									'<i class="fa fa-bug  self_a"></i>'
 								+'</a> ';
-							}*/
+							}
 
 
 							if ( row.status == 7 || row.status == 8){
@@ -1468,20 +1468,20 @@ function loadServicesNoSonar() {
 										'style="margin-left: 5px" title="停止"> '+
 										'<i class="fa fa-power-off self_a"></i></a>';
 							}
-/*
+
 							if (row.status != 3 && row.status != 6 && row.status != 7 && row.status != 8) {
 								html += '<a id="'+row.id+'_change" class="a-live change " '+
-										'href="javascript:startdebug('+ row.id +','+ row.status +')" title="璋冭瘯"'+
+										'href="javascript:startdebug('+ row.id +','+ row.status +')" title="调试"'+
 										'style="margin-left: 5px">'+
 											'<i class="fa fa-bug"></i>'
 										+'</a> ';
 							} else {
 								html += '<a id="'+row.id+'_change" class="a-live change " '+
-								'href="javascript:void(0)" title="璋冭瘯"'+
+								'href="javascript:void(0)" title="调试"'+
 								'style="margin-left: 5px">'+
 									'<i class="fa fa-bug  self_a"></i>'
 								+'</a> ';
-							}*/
+							}
 
 
 							if ( row.status == 7 || row.status == 8){
