@@ -34,7 +34,15 @@ $(document).ready(function(){
 	      $('#serviceName').focus();
 	      return;
 	    }
-
+		var serviceChName = $('#serviceChName').val();
+		if (serviceChName.length > 24 || serviceChName.length < 1) {
+			layer.tips('服务中文名称为1~24个字符', '#serviceChName', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#serviceChName').focus();
+			return;
+		}
 		var responsiblePerson = $('#responsiblePerson').val();
 		if (responsiblePerson.length > 24 || responsiblePerson.length < 1) {
 			layer.tips('责任人为1~24个字符', '#responsiblePerson', {

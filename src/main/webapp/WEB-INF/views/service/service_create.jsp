@@ -98,7 +98,8 @@
 												class="in_style form-control" id="serviceName" name="serviceName" oninput="javascript:onEditServiceName()">
 												<input type="hidden" value="" class="in_style"
 												id="resourceName" name="resourceName"></li>
-											<li class="line-h-3"><span class="ve_top">服务中文名称：
+											<li class="line-h-3"><span class="ve_top">服务中文名称：<font
+													color="red">*</font>
 											</span><input type="text" value=""
 												class="in_style form-control" id="serviceChName" name="serviceChName"></li>
 											<li class="line-h-3"><span class="ve_top">责任人：<font color="red">*</font>
