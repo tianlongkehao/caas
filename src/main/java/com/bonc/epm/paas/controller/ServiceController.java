@@ -3423,4 +3423,31 @@ public class ServiceController {
 		}
 		return true;
 	}
+
+	/**
+	 * modifyServiceChName:修改服务的中文名. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param serviceId
+	 * @param serviceChName
+	 * @return String
+	 */
+	@RequestMapping(value = "service/modifyServiceChName.do",method = RequestMethod.GET)
+	@ResponseBody
+	public String modifyServiceChName(long serviceId, String serviceChName) {
+		Map<String, String> map = new HashMap<>();
+		if (StringUtils.isBlank(serviceChName)) {
+			map.put("status", "400");
+			return JSON.toJSONString(map);
+		}
+		Service service = serviceDao.findOne(serviceId);
+		if (null == service) {
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+		service.setServiceChName(serviceChName);
+		serviceDao.save(service);
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
 }
