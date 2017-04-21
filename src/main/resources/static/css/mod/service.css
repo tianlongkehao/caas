@@ -1193,6 +1193,10 @@ p.portLabel input{
 	padding-left:20px
 }
 .BORDER td{
-	line-height:40px!important;
-	
+	line-height:40px!important;	
+}
+.saveSerChName, .editSerChName, .canclEditSerChName{
+	float:right;
+	margin-right:10px;
+	line-height:40px
 }

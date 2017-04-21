@@ -409,12 +409,23 @@ $(document).ready(function(){
 		$(this).parent().hide();
 		$(this).parent().next().show();
 	});
+	//取消编辑
+	$(".canclEditSerChName").click(function(){
+		$(this).parent().hide();
+		$(this).parent().prev().show();
+	})
 	//保存编辑后的服务中文名称
 	$(".saveSerChName").click(function(){
 		$(this).parent().hide();
 		$(this).parent().prev().show();
 		
 		var serChName = $('#serChName').val();
+//		if(isChinese(serChName)==false){
+//			layer.msg("服务中文名称必须包含中文", {
+//				icon : 2
+//			});
+//			return false;
+//		};
 		var serId =$("#serId").val();
 		$.ajax({
 			type : "GET",
@@ -430,7 +441,7 @@ $(document).ready(function(){
 					});
 				} else {
 					layer.msg("修改失败，请检查连接", {
-						icon : 1
+						icon : 2
 					});
 				}
 			}
@@ -1008,3 +1019,9 @@ function addEnvClick(obj){
 			   });
 			 return flag;
 	}
+	//验证服务中文名称必须包含中文
+//	function isChinese(temp){ 
+//		 var re = [\u4e00-\u9fa5];
+//		 if(re.test(temp)) return false; 
+//		 return true; 
+//	}  

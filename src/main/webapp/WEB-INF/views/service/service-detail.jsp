@@ -142,11 +142,12 @@
 									</span>
 									</td>
 									<c:if test="${service.serviceChName == '' }">
-									<td class="editAfter">服务中文名称：未设置<i class="fa fa-edit editSerChName" style="float:right;margin-right:10px;line-height:40px"></i></td>
-									<td style="display:none">服务中文名称：<input type="text" id="serChName" value=""><i class="fa fa-save saveSerChName" style="float:right;margin-right:10px;line-height:40px"></i></td>
+									<td class="editAfter">服务中文名称：未设置<i class="fa fa-edit editSerChName"></i></td>
+									<td style="display:none">服务中文名称：<input type="text" id="serChName" value=""><i class="fa fa-times canclEditSerChName"></i><i class="fa fa-save saveSerChName"></i></td>
 									</c:if>
 									<c:if test="${service.serviceChName != '' }">
-									<td>服务中文名称：${service.serviceChName }</td>
+									<td class="editAfter">服务中文名称：${service.serviceChName }<i class="fa fa-edit editSerChName"></i></td>
+									<td style="display:none">服务中文名称：<input type="text" id="serChName" value="${service.serviceChName }"><i class="fa fa-times canclEditSerChName"></i><i class="fa fa-save saveSerChName"></i></td>
 									</c:if>
 								</tr>
 								<tr>
