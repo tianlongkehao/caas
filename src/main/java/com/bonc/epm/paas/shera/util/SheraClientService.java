@@ -111,7 +111,7 @@ public class SheraClientService {
     public Job generateJob(String id ,String jdkVersion,String branch,String url,
                            String codeName,String refspec,String dockerFileContent,String dockerFile,
                            String imgNamePre,String imgName,List<CiInvoke> ciInvokeList,String userName,
-			Integer type, Integer codeType, String uuid, boolean check, String sources, String ciTools) {
+			Integer type, Integer codeType, String uuid, Integer check, String sources, String ciTools) {
 		Job job = new Job();
 		job.setId(id);
 		job.setJdkVersion(jdkVersion);
@@ -149,8 +149,13 @@ public class SheraClientService {
 		}
 		job.setCodeManager(codeManager);
         SonarManager sonarManager = new SonarManager();
-        sonarManager.setCheck(check);
-        sonarManager.setSources(sources);
+        if (null != check && null != sources) {
+        	sonarManager.setCheck(check.equals(CiConstant.CODE_CHECK_TRUE));
+        	sonarManager.setSources(sources);
+		} else {
+        	sonarManager.setCheck(false);
+        	sonarManager.setSources("");
+		}
 
         job.setSonarManager(sonarManager);
 

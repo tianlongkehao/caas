@@ -82,6 +82,8 @@ $(document).ready(function() {
 		dayNamesMin : ["日", "一", "二", "三", "四", "五", "六"],
 		/*minDate: -20,
 		 maxDate: "+1M +10D"*/
+	}).on('changeDate', function(ev) {
+		alert(1);
 	});
 	dateTimePickerFrom.datetimepicker('setDate', (new Date()));
 
@@ -95,9 +97,10 @@ $(document).ready(function() {
 		dayNamesMin : ["日", "一", "二", "三", "四", "五", "六"],
 		/*minDate: -20,
 		 maxDate: "+1M +10D"*/
+	}).on('changeDate', function(ev) {
+		alert(2);
 	});
 	dateTimePickerTo.datetimepicker('setDate', (new Date()));
-
 	$('#refreshLog').click(function(event) {
 		getServiceLogs();
 	});
