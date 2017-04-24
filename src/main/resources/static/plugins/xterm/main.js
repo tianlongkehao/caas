@@ -1,4 +1,4 @@
-var term, protocol, socketURL, socket, pid, charWidth, charHeight, alive;
+var term, socket, alive;
 
 var terminalContainer = document.getElementById('terminal-container');
 
@@ -12,9 +12,6 @@ function dropdownCMD(object) {
 
 	var soc = "ws://" + host + "/enter?method=web&containerID=" + containerID + "&dockerServerURL=" + dockerServerURL;
 	socket = new WebSocket(soc);
-	//todo
-	protocol = (location.protocol === 'https:') ? 'wss://' : 'ws://';
-	socketURL = protocol + location.hostname + ((location.port) ? (':' + location.port) : '') + '/terminals/';
 	term = new Terminal();
 	term.open(terminalContainer);
 	socket.onopen = runRealTerminal;
@@ -51,7 +48,7 @@ function runRealTerminal() {
 	term.attach(socket);
 	term._initialized = true;
 	term.fit();
-	alive = setInterval("keepAlive()",10);
+	alive = setInterval("keepAlive()",3000);
 }
 
 function keepAlive() {

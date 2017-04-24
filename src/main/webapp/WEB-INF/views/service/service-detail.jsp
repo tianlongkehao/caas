@@ -21,6 +21,7 @@
 <script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-slide.min.js"></script>
 <script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="<%=path%>/js/service/service-detail.js"></script>
+<script type="text/javascript" src="<%=path%>/js/service/service-file.js"></script>
 <script type="text/javascript" src="<%=path%>/plugins/xterm/main.js" defer ></script>
 </head>
 <body>
@@ -123,6 +124,17 @@
 								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.metadata.name }">${pod.metadata.name }</a></li>
 								 	</c:forEach>
 
+								</ul>
+							</li>
+							<li class="dropdown">
+								<a class="dropdown-toggle serDetail" id="dropdown-log"
+									data-toggle="dropdown"> 文件 <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+								 	<c:forEach items="${podList}" var="pod" >
+								 		<li class="CMD"><a class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }" value="2" onclick="dropdownFile(this)"
+								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.metadata.name }">${pod.metadata.name }</a></li>
+								 	</c:forEach>
 								</ul>
 							</li>
 						</ul>
@@ -661,8 +673,6 @@
 					</div>
 					<!-- 日志 -->
 					<div class="containerLog hide" style="min-height: 500px;">
-					<!-- <li ></li> -->
-					<!-- <li ><a id="getCurrentPodlogs" href="javascript:clearLog()">获取实时日志</a></li> -->
 						<div class="weblogtitle">
 							<div class="pull_left">
 								<span class="circle red"></span> <span class="circle blue"></span>
@@ -678,16 +688,11 @@
 								<i id="fullScreen" class="fa fa-expand margin cursor" title="满屏"></i>
 							</div>
 						</div>
-<!--                         <div id="containerlogList" class="weblog">
-
-                        </div> -->
                         <div class='containerlogList weblog' style='overflow: auto;margin-top:10px;background-color:black;color: #37fc34'>
                             <pre class="serviceLogs" style="background: none repeat scroll 0 0 black; color: #37fc34; border: 0; font-size: 12px; overflow: hidden; float: left;">
                                    <span class='printLogSpan' style="overflow: hidden; float: left;"></span>
                             </pre>
                         </div>
-
-
 						<input id="serviceInstances" type="hidden" value="">
 						<input id="creationTime" type="hidden" value="${service.createDate }">
 					</div>
@@ -732,6 +737,10 @@
 						</div>
 						<div id="terminal-container" style="width: 98%;min-height: 500px;margin: 0 auto;"></div>
 					</div>
+					<!-- 文件 -->
+					<div class="containerFile hide" style="min-height: 520px;">
+						<div id="file-container" style="width: 98%;min-height: 500px;margin: 0 auto;"></div>
+					</div>
 				</div>
 			</div>
 		</article>
@@ -741,7 +750,7 @@
 		<ul class="popWin">
 			<li class="line-h-3 c-ser">
 				<div class="">
-					<span class="">镜像名称：</span> 
+					<span class="">镜像名称：</span>
 					<input class="needImageInfo" id="confServiceName" type="text" value="">
 				</div>
 			</li>
