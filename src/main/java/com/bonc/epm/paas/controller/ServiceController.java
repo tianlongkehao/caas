@@ -433,56 +433,6 @@ public class ServiceController {
         model.addAttribute("zoneList", serviceZone);
     }
 
-//注释时间 2016年12月26日 11:50:58 判断为无用方法
-//    /**
-//     * Description: <br>
-//     * 根据服务名称模糊查询服务和容器
-//     * @param model
-//     * @param searchNames 服务名称
-//     * @return String
-//     */
-//    @RequestMapping(value = { "service/findservice" }, method = RequestMethod.POST)
-//	public String findService(Model model, String searchNames) {
-//        User currentUser = CurrentUserUtils.getInstance().getUser();
-//        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-//        List<Service> serviceList = new ArrayList<Service>();
-//        List<Container> containerList = new ArrayList<Container>();
-//		// 获取特殊条件的pods
-//		try {
-//			for (Service service : serviceDao.findByNameOf(currentUser.getId(), "%" + searchNames + "%",null)) {
-//				Map<String, String> map = new HashMap<String, String>();
-//				map.put("app", service.getServiceName());
-//				PodList podList = client.getLabelSelectorPods(map);
-//				if (podList != null) {
-//					List<Pod> pods = podList.getItems();
-//					if (CollectionUtils.isNotEmpty(pods)) {
-//						int i = 1;
-//						for (Pod pod : pods) {
-//							Container container = new Container();
-//							container.setContainerName(
-//									service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-//							container.setServiceid(service.getId());
-//							if (pod.getStatus().getPhase().equals("Running")) {
-//								container.setContainerStatus(0);
-//							} else {
-//								container.setContainerStatus(1);
-//							}
-//							containerList.add(container);
-//						}
-//					}
-//				}
-//				serviceList.add(service);
-//				LOG.debug("service=========" + service);
-//			}
-//		} catch (Exception e) {
-//			LOG.error("服务查询错误：" + e);
-//		}
-//		model.addAttribute("serviceList", serviceList);
-//		model.addAttribute("containerList", containerList);
-//
-//		return "service/service.jsp";
-//	}
-
     /**
      * Description: <br>
      * 根据服务Id查询当前服务和容器
@@ -685,48 +635,48 @@ public class ServiceController {
 		return "service/service_create.jsp";
 	}
 
-    /**
-     * Description: <br>
-     * 获取镜像的启动命令
-     * @param imgName
-     * @param imgVersion
-     * @return List
-     */
-    private String getBaseImageStartCommand(String imgName, String imgVersion) {
-    	StringBuffer startCommand = new StringBuffer();
-    	try {
-    		//获取镜像信息
-    		Image image = imageDao.findByNameAndVersion(imgName, imgVersion);
-    		if (null != image) {
-    			//从仓库中拉取镜像到本地
-    			dockerClientService.pullImage(image.getName(), image.getVersion());
-    			//获取镜像inspect
-    			InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
-    			if (null != iir) {
-    				//获取Entrypoint信息
-    				if (null != iir.getConfig().getEntrypoint()) {
-    					for (String entrypoint : iir.getConfig().getEntrypoint()) {
-    						startCommand.append(entrypoint);
-    					}
-					}
-    				//获取cmd信息
-    				if (null != iir.getConfig().getCmd()) {
-    					for (String cmd : iir.getConfig().getCmd()) {
-    						if (startCommand.length() > 0) {
-    							startCommand.append(" ");
-    						}
-    						startCommand.append(cmd);
-    					}
-					}
-    			}
-    		}
-    	}
-    	catch (Exception e) {
-    		LOG.error(e.getMessage());
-    		e.printStackTrace();
-    	}
-    	return startCommand.toString();
-    }
+//    /**
+//     * Description: <br>
+//     * 获取镜像的启动命令
+//     * @param imgName
+//     * @param imgVersion
+//     * @return List
+//     */
+//    private String getBaseImageStartCommand(String imgName, String imgVersion) {
+//    	StringBuffer startCommand = new StringBuffer();
+//    	try {
+//    		//获取镜像信息
+//    		Image image = imageDao.findByNameAndVersion(imgName, imgVersion);
+//    		if (null != image) {
+//    			//从仓库中拉取镜像到本地
+//    			dockerClientService.pullImage(image.getName(), image.getVersion());
+//    			//获取镜像inspect
+//    			InspectImageResponse iir = dockerClientService.inspectImage(image.getImageId(),image.getName(),image.getVersion());
+//    			if (null != iir) {
+//    				//获取Entrypoint信息
+//    				if (null != iir.getConfig().getEntrypoint()) {
+//    					for (String entrypoint : iir.getConfig().getEntrypoint()) {
+//    						startCommand.append(entrypoint);
+//    					}
+//					}
+//    				//获取cmd信息
+//    				if (null != iir.getConfig().getCmd()) {
+//    					for (String cmd : iir.getConfig().getCmd()) {
+//    						if (startCommand.length() > 0) {
+//    							startCommand.append(" ");
+//    						}
+//    						startCommand.append(cmd);
+//    					}
+//					}
+//    			}
+//    		}
+//    	}
+//    	catch (Exception e) {
+//    		LOG.error(e.getMessage());
+//    		e.printStackTrace();
+//    	}
+//    	return startCommand.toString();
+//    }
 
 	/**
 	 * Description: <br>
@@ -885,7 +835,7 @@ public class ServiceController {
 	public String CreateContainer(long id, boolean isDebug) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Service service = serviceDao.findOne(id);
-		//服务状态判断
+		// 服务状态判断
 		if (null == service) {
 			map.put("status", "501");
 			return JSON.toJSONString(map);
@@ -926,7 +876,7 @@ public class ServiceController {
 		/*************************************
 		 * 判断服务信息是否有改动，有改动则删除rc和svc
 		 *************************************/
-		if (service.getIsModify() == ServiceConstant.MODIFY_TRUE) {
+		if (service.getIsModify() == ServiceConstant.MODIFY_TRUE || isDebug) {
 			if (delSvcAndRc(service) == false) {
 				map.put("status", "500");
 				return JSON.toJSONString(map);
@@ -970,14 +920,10 @@ public class ServiceController {
 				String startCommand = service.getStartCommand().trim();
 				// debug模式下
 				if (isDebug) {
-					command.add("/debug.sh");
-					if (StringUtils.isBlank(startCommand)) {
-						startCommand = getBaseImageStartCommand(service.getImgName(), service.getImgVersion());
-					}
-				}
-				if (StringUtils.isNotBlank(startCommand)) {
-					String[] startCommandArray = startCommand.replaceAll("\\s+", " ").replaceAll("/debug.sh", "").trim()
-							.split(" ");
+					command.add("sleep");
+					args.add("3153600000");
+				} else if (StringUtils.isNotBlank(startCommand)) {
+					String[] startCommandArray = startCommand.replaceAll("\\s+", " ").trim().split(" ");
 					for (String item : startCommandArray) {
 						if (CollectionUtils.isEmpty(command)) {
 							command.add(item);
@@ -1007,10 +953,8 @@ public class ServiceController {
 				String startCommand = service.getStartCommand().trim();
 				// debug模式下
 				if (isDebug) {
-					command.add("/debug.sh");
-					if (StringUtils.isBlank(startCommand)) {
-						startCommand = getBaseImageStartCommand(service.getImgName(), service.getImgVersion());
-					}
+					command.add("sleep");
+					args.add("3153600000");
 				}
 				if (StringUtils.isNotBlank(startCommand)) {
 					String[] startCommandArray = startCommand.replaceAll("\\s+", " ").replaceAll("/debug.sh", "").trim()
