@@ -97,8 +97,6 @@ $(document).ready(function() {
 		dayNamesMin : ["日", "一", "二", "三", "四", "五", "六"],
 		/*minDate: -20,
 		 maxDate: "+1M +10D"*/
-	}).on('changeDate', function(ev) {
-		alert(2);
 	});
 	dateTimePickerTo.datetimepicker('setDate', (new Date()));
 	$('#refreshLog').click(function(event) {
@@ -386,6 +384,21 @@ $(document).ready(function() {
 	$(".editPortConfig").hide();
 	//可编辑的环境变量
 	$(".editEnv").hide();
+
+	//保存镜像
+	$("#saveImage").click(function(){
+		layer.open({
+			type : 1,
+			title : '保存镜像',
+			content : $("#saveImageCon"),
+			btn : [ '确定', '取消' ],
+			yes : function(index, layero) {
+				layer.close(index);
+				var num = $('#numberChange').val();
+
+			}
+		});
+	});
 
 });
 /*ready*/

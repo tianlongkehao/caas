@@ -751,17 +751,21 @@ i.pushOrg {
 }
 
 
-.containerLog .weblogtitle {
+.containerLog .weblogtitle, .containerCMD .weblogtitle{
     height: 40px;
     background: #1C2022;
     padding-left: 2%;
     padding-right: 2%;
 }
-.historycontainerLog .weblogtitle {
+.historycontainerLog .weblogtitle, .containerCMD .weblogtitle{
     height: 40px;
     background: #1C2022;
     padding-left: 2%;
     padding-right: 2%;
+}
+.containerCMD .weblogtitle{
+	width:98%;
+	margin: 0 auto;
 }
 
 .weblogtitle .pull_left {
