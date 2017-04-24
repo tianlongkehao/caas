@@ -1554,17 +1554,17 @@ function loadServicesNoSonar() {
 }
 
 function startdebug(id, status) {
-	if (3 == status) {
+	if (1 != status && 4 != status) {
 		return;
 	}
 
-	$.ajax({
-		url : "" + ctx + "/service/isDebugService.do?id=" + id,
-		success : function(data) {
-			data = eval("(" + data + ")");
-			if (data.status != "200") {
-				layer.alert("该服务不支持调试");
-			} else {
+//	$.ajax({
+//		url : "" + ctx + "/service/isDebugService.do?id=" + id,
+//		success : function(data) {
+//			data = eval("(" + data + ")");
+//			if (data.status != "200") {
+//				layer.alert("该服务不支持调试");
+//			} else {
 				$.ajax({
 					url : "" + ctx + "/service/createContainer.do?id=" + id + "&isDebug=" + true,
 					success : function(data) {
@@ -1588,9 +1588,9 @@ function startdebug(id, status) {
 					}
 				});
 
-			}
-		}
-	});
+//			}
+//		}
+//	});
 
 }
 

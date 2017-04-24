@@ -1,4 +1,4 @@
-var filesocket, alive;
+var filesocket, fileSocketAlive;
 function dropdownFile(object) {
 	var num = 0;
 	$(".contentMain>div:not('.baseInfo')").addClass("hide");
@@ -19,7 +19,7 @@ function dropdownFile(object) {
 
 	//连接成功建立的回调方法
 	filesocket.onopen = function() {
-		alive = setInterval("keepFIleSocketAlive()",3000);
+		fileSocketAlive = setInterval("keepFileSocketAlive()",3000);
 		listFile("/");
 	};
 
@@ -49,7 +49,7 @@ function dropdownFile(object) {
 
 	//监听窗口关闭事件，当窗口关闭时，主动去关闭filesocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
 	window.onbeforeunload = function() {
-		if(alive != null)clearInterval(alive);
+		if(fileSocketAlive != null)clearInterval(fileSocketAlive);
 		closefilesocket();
 	};
 
@@ -65,7 +65,7 @@ function listFile(path) {
 	filesocket.send(JSON.stringify(stdinMsg));
 }
 
-function keepFIleSocketAlive() {
+function keepFileSocketAlive() {
 	var keepAliveMsg = {
 		"MsgType" : 3,
 		"Content" : stringToByte("js---keepalive"),
