@@ -1,4 +1,4 @@
-var term, protocol, socketURL, socket, pid, charWidth, charHeight;
+var term, protocol, socketURL, socket, pid, charWidth, charHeight, alive;
 
 var terminalContainer = document.getElementById('terminal-container');
 
@@ -51,14 +51,23 @@ function runRealTerminal() {
 	term.attach(socket);
 	term._initialized = true;
 	term.fit();
+	alive = setInterval("keepAlive()",10);
 }
 
+function keepAlive() {
+	var keepAliveMsg = {
+		"MsgType" : 3,
+		"Content" : stringToByte("js---keepalive"),
+	};
+	socket.send(JSON.stringify(keepAliveMsg));
+}
 
 $(window).resize(function() {
 	term.fit();
 });
 
 function runFakeTerminal() {
+	if(alive != null)clearInterval(alive);
 	if (term._initialized) {
 		return;
 	}
