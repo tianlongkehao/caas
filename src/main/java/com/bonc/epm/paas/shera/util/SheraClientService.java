@@ -152,10 +152,6 @@ public class SheraClientService {
         sonarManager.setCheck(check);
         sonarManager.setSources(sources);
 
-        sonarManager.setCheck(true);
-        sonarManager.setSources("src");
-
-
         job.setSonarManager(sonarManager);
 
 		BuildManager buildManager = new BuildManager();
