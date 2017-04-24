@@ -1382,7 +1382,7 @@ function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetC
 	
 	layer.open({
 		type : 1,
-		title : '弹性伸缩',
+		title : '自动伸缩',
 		content : $("#autoFlexInfo"),
 		area: ['500px'],
 		btn : ['创建','删除', '取消'],
