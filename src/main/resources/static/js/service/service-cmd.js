@@ -66,6 +66,7 @@ function keepAlive() {
 }
 
 $(window).resize(function() {
+	if(alive != null)
 	term.fit();
 });
 

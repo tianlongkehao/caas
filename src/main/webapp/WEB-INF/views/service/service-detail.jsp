@@ -745,19 +745,19 @@
 									<div class="ibox float-e-margins">
 										<div class="ibox-title">
 											<h5>
-												<span >路径：<input type="text" value="" disabled></span>
+												<span >路径：<input id="path" type="text" value="" disabled></span>
 											</h5>
 
 											<div class="ibox-tools">
 												<a href="javascript:refreshtable()"
 													id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
 												<a href="javascript:createdir()" id="adddir" title="新建"><i
-	                                          class="fa fa-plus"></i></a>  
+	                                          class="fa fa-plus"></i></a>
 												<!-- <a  id="fileUpload" title="上传文件"><i
 													class="fa fa-upload"></i></a> <a id="fileDownload"
 													title="导出文件"><i class="fa fa-download"></i>
 													<input hidden="true" value="" id="downfilepath"/>
-													</a> 
+													</a>
 												<a id="deleteButton" class="no-drop"
 													href="javascript:delfiles()" title="删除"> <i
 													id="deleteButtonfile" class="fa fa-trash self_a"></i>
@@ -778,18 +778,18 @@
 											<div class="" style="overflow-y:auto; height:400px;display:block;width:100%">
 												<table style="border-collapse:collapse;margin:0 auto;"
 												class="table table-stripped table-hover dataTables-example">
-												
+
 													<tbody id="fileBody" >
-	
+
 													</tbody>
-												
+
 												</table>
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-							
+
 						</div>
 					</div>
 				</div>
