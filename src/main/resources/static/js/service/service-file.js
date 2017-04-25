@@ -32,9 +32,49 @@ function dropdownFile(object) {
 			//blob
 			reader.onloadend = function() {
 				var object = eval('(' + reader.result + ')');
-				layer.msg(Base64(object.content), {
+				/*layer.msg(Base64(object.content), {
 					icon : 1
-				});
+				});*/
+				var fileObj = Base64(object.content);
+				var fileObjArray = fileObj.replace(/\s+/g, ',').split(",");
+				var fileHtml = "";
+				for(var i=0;i<fileObjArray.length;i++){
+					if(fileObjArray[i]=="" || fileObjArray[i] == null){
+						fileHtml +='';
+					}else{
+						var fileName = fileObjArray[i];
+						fileHtml += '<tr>'
+							+'<td style="width: 5%;text-indent: 14px;"><input type="checkbox"></td>'
+							+'<td class="fileName" style="width: 45%;">';
+						if(fileName.indexOf("/") != -1){
+							fileHtml += '<i class="fa fa-folder"></i>';
+						}else if(fileName.indexOf("*") != -1){
+							fileHtml += '<i class="fa fa-file-code-o"></i>';
+						}else if(fileName.indexOf("@") != -1){
+							fileHtml += '<i class="fa fa-share-square"></i>';
+						}else{
+							fileHtml += '<i class="fa fa-file"></i>';
+						}
+						fileHtml +=fileName+'</td>';
+						if(fileName.indexOf("/") != -1){
+							fileHtml +='<td style="width: 40%;"></td>'
+								+'</tr>';
+						}else{
+							fileHtml +='<td style="width: 40%; text-indent:6px">'
+								+'<a onclick="uploadOneFile()" title="上传文件"><i class="fa fa-upload"></i></a>' 
+								+'<a onclick="downloadOneFile()" title="导出文件"><i class="fa fa-download"></i>'
+								+'<input hidden="true" value="" id="downfilepath"/>'
+								+'</a>'
+								+'<a id="deleteButton" class="no-drop"'
+								+'href="javascript:delOneFile()" title="删除">'
+								+'<i id="deleteButtonfile" class="fa fa-trash"></i>'
+								+'</a></td>'
+								+'</tr>';
+						}
+							
+					}
+				}
+				$("#fileBody").append(fileHtml);
 				console.log(Base64(object.content));
 			};
 		}
