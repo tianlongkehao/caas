@@ -144,11 +144,11 @@ function loadContainers(obj,serviceId) {
 									+ '">'
 									+ '<td colspan="2">&nbsp;</td>'
 									+ '<td>';
-							if (data.service.status == 6){
-								containersHtml += '<a style="margin-left: 19px;" href="javascript:debug('+serviceID+','+data.containerList[i].containerStatus+')">';
-							} else {
+							//if (data.service.status == 6){
+							//	containersHtml += '<a style="margin-left: 19px;" href="javascript:debug('+serviceID+','+data.containerList[i].containerStatus+')">';
+							//} else {
 								containersHtml += '<a style="margin-left: 19px;">';
-							}
+							//}
 							containersHtml += containerName
 									+ '</a>'
 									+ '</td>'
