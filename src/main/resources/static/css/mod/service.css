@@ -1202,3 +1202,13 @@ p.portLabel input{
 .ui_tpicker_time_label {
 	padding-left:20px
 }
+#fileBody td a{
+	margin-right:6px;
+}
+.fileName i.fa{
+	margin-right:4px;
+	color:#337ab7;
+}
+#fileBody tr{
+	border-bottom:1px solid #ddd;
+}
