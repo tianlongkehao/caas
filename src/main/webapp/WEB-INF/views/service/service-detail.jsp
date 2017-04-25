@@ -132,7 +132,7 @@
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podList}" var="pod" >
-								 		<li class="CMD"><a class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }" value="2" onclick="dropdownFile(this)"
+								 		<li class="File"><a class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }" value="2" onclick="dropdownFile(this)"
 								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.metadata.name }">${pod.metadata.name }</a></li>
 								 	</c:forEach>
 								</ul>
@@ -739,7 +739,58 @@
 					</div>
 					<!-- 文件 -->
 					<div class="containerFile hide" style="min-height: 520px;">
-						<div id="file-container" style="width: 98%;min-height: 500px;margin: 0 auto;"></div>
+						<div id="file-container" style="width: 98%;min-height: 500px;margin: 0 auto;">
+							<div class="row">
+								<div class="col-sm-12">
+									<div class="ibox float-e-margins">
+										<div class="ibox-title">
+											<h5>
+												<span >路径：<input type="text" value="" disabled></span>
+											</h5>
+
+											<div class="ibox-tools">
+												<a href="javascript:refreshtable()"
+													id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i></a>
+												<a href="javascript:createdir()" id="adddir" title="新建"><i
+	                                          class="fa fa-plus"></i></a>  
+												<!-- <a  id="fileUpload" title="上传文件"><i
+													class="fa fa-upload"></i></a> <a id="fileDownload"
+													title="导出文件"><i class="fa fa-download"></i>
+													<input hidden="true" value="" id="downfilepath"/>
+													</a> 
+												<a id="deleteButton" class="no-drop"
+													href="javascript:delfiles()" title="删除"> <i
+													id="deleteButtonfile" class="fa fa-trash self_a"></i>
+												</a> -->
+											</div>
+										</div>
+										<div class="ibox-content" >
+											<table style="width:100%">
+												<thead>
+													<tr>
+														<th style="width: 5%;text-indent: 14px;"><input type="checkbox" class="chkAll"></th>
+														<th style="width: 45%;">文件名</th>
+														<th style="width: 40%;"
+															class="del-operation">操作</th>
+													</tr>
+												</thead>
+											</table>
+											<div class="" style="overflow-y:auto; height:400px;display:block;width:100%">
+												<table style="border-collapse:collapse;margin:0 auto;"
+												class="table table-stripped table-hover dataTables-example">
+												
+													<tbody id="fileBody" >
+	
+													</tbody>
+												
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
 					</div>
 				</div>
 			</div>

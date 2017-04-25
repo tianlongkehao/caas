@@ -980,3 +980,4 @@ function checkRepPortCfg(obj, id, port) {
 	});
 	return flag;
 }
+
