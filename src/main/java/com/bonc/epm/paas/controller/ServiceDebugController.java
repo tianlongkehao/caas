@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ImageConstant;
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.ServiceDao;
@@ -63,7 +64,7 @@ import com.jcraft.jsch.SftpException;
 
 /**
  * ServiceDebugController
- * 
+ *
  * @author longkx
  * @version 2016年11月1日
  * @see ServiceDebugController
@@ -74,29 +75,29 @@ public class ServiceDebugController {
 
 	private static final String ROOT = "/";
 	private Map<String, ChannelSftp> sftpPool = new HashMap<String, ChannelSftp>();
-	
-    /**
-     * 获取SFTP数据
-     */
-    @Value("${sftp.host}")
+
+	/**
+	 * 获取SFTP数据
+	 */
+	@Value("${sftp.host}")
 	private String SFTP_HOST;
 
-    /**
-     * 获取SFTP用户
-     */
-    @Value("${sftp.user}")
+	/**
+	 * 获取SFTP用户
+	 */
+	@Value("${sftp.user}")
 	private String SFTP_USER;
 
-    /**
-     * 获取SFTP密码
-     */
-    @Value("${sftp.password}")
+	/**
+	 * 获取SFTP密码
+	 */
+	@Value("${sftp.password}")
 	private String SFTP_PASSWORD;
 
-    /**
-     * 获取SFTP密码
-     */
-    @Value("${ssh.host}")
+	/**
+	 * 获取SFTP密码
+	 */
+	@Value("${ssh.host}")
 	private String SSH_HOST;
 
 	/**
@@ -104,41 +105,41 @@ public class ServiceDebugController {
 	 */
 	@Autowired
 	private ServiceDao serviceDao;
-	
-    /**
-     * portConfig数据层接口
-     */
-    @Autowired
+
+	/**
+	 * portConfig数据层接口
+	 */
+	@Autowired
 	private PortConfigDao portConfigDao;
 
-    /**
-     * ImageDao接口
-     */
-    @Autowired
+	/**
+	 * ImageDao接口
+	 */
+	@Autowired
 	private ImageDao imageDao;
-    
-   /**
-     * KubernetesClientService接口
-     */
-    @Autowired
-    private KubernetesClientService kubernetesClientService;
-    
-    /**
-     * KubernetesClientService接口
-     */
-    @Autowired
+
+	/**
+	 * KubernetesClientService接口
+	 */
+	@Autowired
+	private KubernetesClientService kubernetesClientService;
+
+	/**
+	 * KubernetesClientService接口
+	 */
+	@Autowired
 	private DockerClientService dockerClientService;
 
-    /**
-     * DockerClientService 接口
-     */
-    @Autowired
+	/**
+	 * DockerClientService 接口
+	 */
+	@Autowired
 	private DockerRegistryService dockerRegistryService;
 
 	/**
 	 * Description: <br>
 	 * 跳转进入服务DEBUG页面
-	 * 
+	 *
 	 * @param model
 	 * @return String
 	 */
@@ -147,43 +148,43 @@ public class ServiceDebugController {
 		System.out.printf("id: " + id);
 		User user = CurrentUserUtils.getInstance().getUser();
 		Service service = serviceDao.findOne(id);
-		//获取端口信息
+		// 获取端口信息
 		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
 		int port = 0;
 		for (PortConfig portConfig : portConfigList) {
-			if (portConfig.getContainerPort().equals("22")){
+			if (portConfig.getContainerPort().equals("22")) {
 				port = Integer.parseInt(portConfig.getMapPort());
 				break;
 			}
 		}
-		//获取pod信息
-	    KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		// 获取pod信息
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("app", service.getServiceName());
-  		// 通过服务名获取pod列表
-        PodList podList = client.getLabelSelectorPods(map);
-        String podIP = null;
-        String containerId = null;
-        String nodeIP = null;
-        String imageName = null;
-        if (podList != null) {
-            List<Pod> pods = podList.getItems();
-	        if (CollectionUtils.isNotEmpty(pods)) {
-	            for (Pod pod : pods) {
-	            	podIP = pod.getStatus().getPodIP();
-	            	containerId = pod.getStatus().getContainerStatuses().get(0).getContainerID();
-	            	nodeIP = pod.getStatus().getHostIP();
-	            	imageName =pod.getStatus().getContainerStatuses().get(0).getImage();
-	            	break;
-	            }
-	        }
-        }
+		// 通过服务名获取pod列表
+		PodList podList = client.getLabelSelectorPods(map);
+		String podIP = null;
+		String containerId = null;
+		String nodeIP = null;
+		String imageName = null;
+		if (podList != null) {
+			List<Pod> pods = podList.getItems();
+			if (CollectionUtils.isNotEmpty(pods)) {
+				for (Pod pod : pods) {
+					podIP = pod.getStatus().getPodIP();
+					containerId = pod.getStatus().getContainerStatuses().get(0).getContainerID();
+					nodeIP = pod.getStatus().getHostIP();
+					imageName = pod.getStatus().getContainerStatuses().get(0).getImage();
+					break;
+				}
+			}
+		}
 
 		// 建立SFTP connect
-    	ChannelSftp sftp = SFTPUtil.connect(SFTP_HOST, port, SFTP_USER, SFTP_PASSWORD);
-    	sftpPool.put(SFTP_HOST+":"+ port, sftp);
-    	
+		ChannelSftp sftp = SFTPUtil.connect(SFTP_HOST, port, SFTP_USER, SFTP_PASSWORD);
+		sftpPool.put(SFTP_HOST + ":" + port, sftp);
+
 		try {
 			// 跳转至初始目录
 			sftp.cd(ROOT);
@@ -197,20 +198,20 @@ public class ServiceDebugController {
 		model.addAttribute("podip", podIP);
 		model.addAttribute("service", service);
 		model.addAttribute("containerId", containerId);
-		model.addAttribute("nodeIP",nodeIP);
+		model.addAttribute("nodeIP", nodeIP);
 		model.addAttribute("userName", user.getUserName());
 		model.addAttribute("shrotImageName", shrotImageName);
 		model.addAttribute("imageName", imageName);
 		model.addAttribute("menu_flag", "service");
 		model.addAttribute("sshhost", SSH_HOST);
-		model.addAttribute("hostkey", SFTP_HOST+":"+ port);
+		model.addAttribute("hostkey", SFTP_HOST + ":" + port);
 		return "service/service-debug.jsp";
 	}
 
 	/**
-	 * 
+	 *
 	 * Description:展示文件列表
-	 * 
+	 *
 	 * @param path
 	 *            文件夹路径
 	 * @param dirName
@@ -225,7 +226,7 @@ public class ServiceDebugController {
 	@ResponseBody
 	public String fileList(String dirName, String path, String hostkey) {
 		Map<String, Object> map = new HashMap<String, Object>();
-	
+
 		ChannelSftp sftp = sftpPool.get(hostkey);
 		if (sftp == null || !sftp.isConnected()) {
 			// 连接已经断开
@@ -241,7 +242,7 @@ public class ServiceDebugController {
 				directory = ROOT;
 			} else {
 				// 有目标目录时，cd到目标目录获取pwd绝对路径
-//				System.out.println(sftp.pwd());
+				// System.out.println(sftp.pwd());
 				sftp.cd(path);
 				sftp.cd(dirName);
 				directory = sftp.pwd();
@@ -260,7 +261,7 @@ public class ServiceDebugController {
 
 	/**
 	 * 手动删除文件或文件夹
-	 * 
+	 *
 	 * @param storageName
 	 * @param isVolReadOnly
 	 * @return
@@ -318,7 +319,7 @@ public class ServiceDebugController {
 
 	/**
 	 * 手动创建文件夹
-	 * 
+	 *
 	 * @param isVolReadOnly
 	 * @return
 	 * @see
@@ -345,9 +346,9 @@ public class ServiceDebugController {
 	}
 
 	/**
-	 * 
+	 *
 	 * Description: 下载文件
-	 * 
+	 *
 	 * @param downfiles
 	 *            需要下载的文件
 	 * @param request
@@ -358,7 +359,8 @@ public class ServiceDebugController {
 	 */
 
 	@RequestMapping(value = { "service/downloadFile" }, method = RequestMethod.GET)
-	public void downloadFile(String downfiles, String hostkey, HttpServletRequest request, HttpServletResponse response) throws SftpException, IOException {
+	public void downloadFile(String downfiles, String hostkey, HttpServletRequest request, HttpServletResponse response)
+			throws SftpException, IOException {
 		String path = "";
 		ChannelSftp sftp = sftpPool.get(hostkey);
 		if (sftp == null || !sftp.isConnected()) {
@@ -367,15 +369,15 @@ public class ServiceDebugController {
 		}
 		path = sftp.pwd();
 		List<String> resultList = new ArrayList<String>();
-		
+
 		String[] downfile = downfiles.split(",");
 		byte[] buf = new byte[1024];
-		
+
 		String filename = new String();
 		if (downfile.length == 1) {
-			filename = downfile[0]+".zip"; 
+			filename = downfile[0] + ".zip";
 		} else {
-			filename = "download.zip"; 
+			filename = "download.zip";
 		}
 
 		File zipFile = new File(filename);
@@ -407,7 +409,8 @@ public class ServiceDebugController {
 			e.printStackTrace();
 		}
 
-		response.setHeader("Content-Disposition", "attachment;fileName=" + new String(zipFile.getName().getBytes("GBK"), "ISO8859-1"));
+		response.setHeader("Content-Disposition",
+				"attachment;fileName=" + new String(zipFile.getName().getBytes("GBK"), "ISO8859-1"));
 		response.setContentType(request.getServletContext().getMimeType(zipFile.getName()));
 		OutputStream ot = response.getOutputStream();
 		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(zipFile));
@@ -425,9 +428,9 @@ public class ServiceDebugController {
 	}
 
 	/**
-	 * 
+	 *
 	 * Description: 上传文件
-	 * 
+	 *
 	 * @param file
 	 *            上传文件名
 	 * @param path
@@ -438,9 +441,10 @@ public class ServiceDebugController {
 
 	@RequestMapping(value = { "service/uploadFile" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path, String hostkey, String uuid) {
+	public String handleFileUpload(@RequestParam("file") MultipartFile[] files, String path, String hostkey,
+			String uuid) {
 		Map<String, String> map = new HashMap<String, String>();
-		//获取进度对象
+		// 获取进度对象
 		FileUploadProgress progress = FileUploadProgressManager.createFileUploadProgress(uuid, files[0]);
 		try {
 			ChannelSftp sftp = sftpPool.get(hostkey);
@@ -449,21 +453,21 @@ public class ServiceDebugController {
 				map.put("status", "401");
 				return JSON.toJSONString(map);
 			}
-			
+
 			for (int i = 0; i < files.length; i++) {
-				//获取输入流
+				// 获取输入流
 				InputStream in = files[i].getInputStream();
-				//获取输出流
+				// 获取输出流
 				OutputStream out = sftp.put(files[i].getOriginalFilename());
 
-				//每次读取1024字节到temp中
+				// 每次读取1024字节到temp中
 				byte[] temp = new byte[1024];
-				//每次读取的字节数
+				// 每次读取的字节数
 				int length;
 				while ((length = in.read(temp)) != -1) {
 					out.write(temp, 0, length);
-                    progress.setRead(progress.getRead() + length);
-//                    System.out.println(progress.getProgress());
+					progress.setRead(progress.getRead() + length);
+					// System.out.println(progress.getProgress());
 				}
 				out.flush();
 				out.close();
@@ -477,9 +481,9 @@ public class ServiceDebugController {
 	}
 
 	/**
-	 * 
+	 *
 	 * Description: 上传文件
-	 * 
+	 *
 	 * @param file
 	 *            上传文件名
 	 * @param path
@@ -494,7 +498,7 @@ public class ServiceDebugController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		FileUploadProgress progress = FileUploadProgressManager.getFileUploadProgress(uuid);
 		if (progress != null) {
-			map.put("progress", (int)(progress.getProgress()*100) + "%");
+			map.put("progress", (int) (progress.getProgress() * 100) + "%");
 		} else {
 			map.put("progress", "0%");
 		}
@@ -502,11 +506,10 @@ public class ServiceDebugController {
 		return JSON.toJSONString(map);
 	}
 
-
 	/**
-	 * 
+	 *
 	 * Description: saveAsImage
-	 * 
+	 *
 	 * @param file
 	 *            上传文件名
 	 * @param path
@@ -521,46 +524,47 @@ public class ServiceDebugController {
 
 	@RequestMapping(value = { "service/saveAsImage" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String saveAsImage(@RequestParam String containerId,@RequestParam String nodeIP,@RequestParam String imageName,@RequestParam String version) {
+	public String saveAsImage(@RequestParam String containerId, @RequestParam String nodeIP,
+			@RequestParam String imageName, @RequestParam String version, @RequestParam String cmdString) {
 		Map<String, Object> map = new HashMap<String, Object>();
+		User cuurentUser = CurrentUserUtils.getInstance().getUser();
 		// 去掉containerId开头的"docker://"
 		containerId = containerId.substring(containerId.lastIndexOf('/') + 1);
-		// 去掉imageName末尾的tag
-		imageName = imageName.substring(0, imageName.lastIndexOf(':'));
-		// 去掉imageName前的远程地址名"192.168.0.xx:5000/"
-		String repository = imageName.substring(imageName.indexOf('/') + 1);
-
-		DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
-		// 获取所有的镜像分组名称
-		Images images = client.getImages();
-		if (images != null) {
-			// 判断仓库中是否有重复的镜像名和tag
-			if (images.getRepositories().contains(repository)
-					&& client.getTagsofImage(repository).getTags().contains(version)) {
-				// 仓库中有重名，返回400
-				map.put("status", 400);
-				return JSON.toJSONString(map);
-			}
+		//拼接镜像名
+		String imageNameFirst = "";
+		if (cuurentUser.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+			imageNameFirst = cuurentUser.getNamespace() + "_" + cuurentUser.getUserName();
+		} else {
+			imageNameFirst = cuurentUser.getUserName();
 		}
+		imageName = imageNameFirst + "/" + imageName;
+		//检查是否有重名的镜像
+		if (null != imageDao.findByNameAndVersion(imageName, version)) {
+			map.put("status", 400);
+			return JSON.toJSONString(map);
+		}
+		//拼接仓库的地址
 
+		String fullImageName = dockerClientService.getDockerRegistryAddress() + "/" + imageName;
+		//获取container所在节点的client
 		DockerClient dockerClient = dockerClientService.getSpecifiedDockerClientInstance(nodeIP);
 		// 将container保存为本地镜像
-		String imageId = dockerClientService.commitContainer(containerId, imageName, version, dockerClient);
+		String imageId = dockerClientService.commitContainer(containerId, fullImageName, version, dockerClient, cmdString);
 		if (imageId != null) {
 			// 本地镜像push到仓库
-			if (dockerClientService.pushImage(repository, version, dockerClient)) {
-		        User currentUser = CurrentUserUtils.getInstance().getUser();
-		        //保存当前debug的镜像到数据库中
-		        Image image = new Image();
-		        image.setCreateDate(new Date());
-		        image.setCreateBy(currentUser.getId());
-		        image.setImageId(imageId);
-		        image.setImageType(ImageConstant.privateType);
-		        image.setIsBaseImage(ImageConstant.NotBaseImage);
-		        image.setName(repository);
-		        image.setVersion(version);
-		        image.setIsDelete(CommConstant.TYPE_NO_VALUE);
-		        imageDao.save(image);
+			if (dockerClientService.pushImage(imageName, version, dockerClient)) {
+				User currentUser = CurrentUserUtils.getInstance().getUser();
+				// 保存当前debug的镜像到数据库中
+				Image image = new Image();
+				image.setCreateDate(new Date());
+				image.setCreateBy(currentUser.getId());
+				image.setImageId(imageId);
+				image.setImageType(ImageConstant.privateType);
+				image.setIsBaseImage(ImageConstant.NotBaseImage);
+				image.setName(imageName);
+				image.setVersion(version);
+				image.setIsDelete(CommConstant.TYPE_NO_VALUE);
+				imageDao.save(image);
 				map.put("status", 200);
 				// 删除本地镜像
 				dockerClient.removeImageCmd(imageId).withForce(true).exec();
@@ -569,7 +573,7 @@ public class ServiceDebugController {
 				dockerClient.removeImageCmd(imageId).withForce(true).exec();
 				map.put("status", 402);
 				return JSON.toJSONString(map);
-				
+
 			}
 		} else {
 			// container保存commit为本地镜像失败，返回401
@@ -579,6 +583,5 @@ public class ServiceDebugController {
 
 		return JSON.toJSONString(map);
 	}
-	
-	
+
 }

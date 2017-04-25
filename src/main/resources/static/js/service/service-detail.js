@@ -51,8 +51,8 @@ $(document).ready(function() {
 		$(".containerLog").removeClass("hide");
 	});
 	// $(".CMD").click(function() {
-		// $(".contentMain>div:not('.baseInfo')").addClass("hide");
-		// $(".containerCMD").removeClass("hide");
+	// $(".contentMain>div:not('.baseInfo')").addClass("hide");
+	// $(".containerCMD").removeClass("hide");
 	// });
 
 	$(".historyLOG").click(function() {
@@ -386,20 +386,81 @@ $(document).ready(function() {
 	$(".editEnv").hide();
 
 	//保存镜像
-	$("#saveImage").click(function(){
+	$("#saveImage").click(function() {
 		layer.open({
 			type : 1,
 			title : '保存镜像',
 			content : $("#saveImageCon"),
-			btn : [ '确定', '取消' ],
+			btn : ['确定', '取消'],
 			yes : function(index, layero) {
+				var imageName = $('#imageName').val().trim();
+				if (imageName.length == 0) {
+					layer.tips('对不起，镜像版本名不能为空！', '#imageName', {
+						tips : [1, '#3595CC']
+					});
+					$('#imageName').focus();
+					return;
+				}
+				if (imageName.length > 128) {
+					layer.tips('对不起，镜像版本名过长！', '#imageName', {
+						tips : [1, '#3595CC']
+					});
+					$('#imageName').focus();
+					return;
+				}
+				reg = /^[a-z][a-z0-9-_]*$/;
+				if (!reg.test(imageName)) {
+					layer.tips('镜像名称只能由字母、数字、横线和下划线组成,且首字母只能为字母', '#imageName', {
+						tips : [1, '#3595CC']
+					});
+					$('#imageName').focus();
+					return;
+				}
+				var version = $('#version').val().trim();
+				if (version.length == 0) {
+					layer.tips('对不起，镜像版本名不能为空！', '#version', {
+						tips : [1, '#3595CC']
+					});
+					$('#version').focus();
+					return;
+				}
+				if (version.length > 128) {
+					layer.tips('对不起，镜像版本名过长！', '#version', {
+						tips : [1, '#3595CC']
+					});
+					$('#version').focus();
+					return;
+				}
+				reg = /^[a-zA-Z0-9_.-]+$/;
+				if (!reg.test(version)) {
+					layer.tips('对不起，您输入的镜像版本格式不正确！', '#version', {
+						tips : [1, '#3595CC']
+					});
+					$('#version').focus();
+					return;
+				}
+				var cmdString = $('#cmdString').val().replace(/\s+/g, ' ').trim();
+				if (cmdString.length == 0) {
+					layer.tips('对不起，启动命令不能为空！', '#cmdString', {
+						tips : [1, '#3595CC']
+					});
+					$('#cmdString').focus();
+					return;
+				}
+				if (cmdString.length > 128) {
+					layer.tips('对不起，启动命令过长！', '#cmdString', {
+						tips : [1, '#3595CC']
+					});
+					$('#cmdString').focus();
+					return;
+				}
+				var containerId = $('#containerId').val();
+				var nodeIP = $('#containerIp').val();
+				saveAsImage(containerId, nodeIP, cmdString);
 				layer.close(index);
-				var num = $('#numberChange').val();
-
 			}
 		});
 	});
-
 });
 /*ready*/
 

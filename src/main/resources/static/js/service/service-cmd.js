@@ -6,6 +6,12 @@ function dropdownCMD(object) {
 	$(".contentMain>div:not('.baseInfo')").addClass("hide");
 	$(".containerCMD").removeClass("hide");
 	$("#terminal-container").html("");
+
+	var container = object.getAttribute("containerid");
+	$('#containerId').val(container);
+	var nodeIP = object.getAttribute("dockerServerURL");
+	$('#containerIp').val(nodeIP);
+
 	var containerID = object.getAttribute("containerid").replace('docker://', '');
 	var host = object.getAttribute("entryHost");
 	var dockerServerURL = 'http://' + object.getAttribute("dockerServerURL") + ':' + object.getAttribute("dockerServerPort");
