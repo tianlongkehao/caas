@@ -2,9 +2,11 @@ package com.bonc.epm.paas.docker.util;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -561,17 +563,19 @@ public class DockerClientService {
 	 * @param containerName
 	 * @return
 	 */
-	public String commitContainer(String containerId, String repository, String tag, DockerClient dockerClient){
-		try{
-		    if (null == dockerClient) {
-		         dockerClient = this.getSpecialDockerClientInstance();
-		    }
-			String imageId = dockerClient.commitCmd(containerId).exec();
+	public String commitContainer(String containerId, String repository, String tag, DockerClient dockerClient,
+			String cmdString) {
+		try {
+			if (null == dockerClient) {
+				dockerClient = this.getSpecialDockerClientInstance();
+			}
+			String[] cmd = cmdString.split(" ");
+			String imageId = dockerClient.commitCmd(containerId).withCmd(cmd).exec();
 			dockerClient.tagImageCmd(imageId, repository, tag).exec();
 			return imageId;
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
-			log.error("commitContainer error:"+e.getMessage());
+			log.error("commitContainer error:" + e.getMessage());
 			return null;
 		}
 	}

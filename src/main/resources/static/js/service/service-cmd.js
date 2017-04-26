@@ -1,4 +1,4 @@
-var term, protocol, socketURL, socket, pid, charWidth, charHeight, alive;
+var term, socket, alive;
 
 var terminalContainer = document.getElementById('terminal-container');
 
@@ -6,15 +6,18 @@ function dropdownCMD(object) {
 	$(".contentMain>div:not('.baseInfo')").addClass("hide");
 	$(".containerCMD").removeClass("hide");
 	$("#terminal-container").html("");
+
+	var container = object.getAttribute("containerid");
+	$('#containerId').val(container);
+	var nodeIP = object.getAttribute("dockerServerURL");
+	$('#containerIp').val(nodeIP);
+
 	var containerID = object.getAttribute("containerid").replace('docker://', '');
 	var host = object.getAttribute("entryHost");
 	var dockerServerURL = 'http://' + object.getAttribute("dockerServerURL") + ':' + object.getAttribute("dockerServerPort");
 
 	var soc = "ws://" + host + "/enter?method=web&containerID=" + containerID + "&dockerServerURL=" + dockerServerURL;
 	socket = new WebSocket(soc);
-	//todo
-	protocol = (location.protocol === 'https:') ? 'wss://' : 'ws://';
-	socketURL = protocol + location.hostname + ((location.port) ? (':' + location.port) : '') + '/terminals/';
 	term = new Terminal();
 	term.open(terminalContainer);
 	socket.onopen = runRealTerminal;
@@ -51,7 +54,7 @@ function runRealTerminal() {
 	term.attach(socket);
 	term._initialized = true;
 	term.fit();
-	alive = setInterval("keepAlive()",10);
+	alive = setInterval("keepAlive()",3000);
 }
 
 function keepAlive() {
@@ -63,6 +66,7 @@ function keepAlive() {
 }
 
 $(window).resize(function() {
+	if(alive != null)
 	term.fit();
 });
 

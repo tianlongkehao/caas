@@ -751,17 +751,21 @@ i.pushOrg {
 }
 
 
-.containerLog .weblogtitle {
+.containerLog .weblogtitle, .containerCMD .weblogtitle{
     height: 40px;
     background: #1C2022;
     padding-left: 2%;
     padding-right: 2%;
 }
-.historycontainerLog .weblogtitle {
+.historycontainerLog .weblogtitle, .containerCMD .weblogtitle{
     height: 40px;
     background: #1C2022;
     padding-left: 2%;
     padding-right: 2%;
+}
+.containerCMD .weblogtitle{
+	width:98%;
+	margin: 0 auto;
 }
 
 .weblogtitle .pull_left {
@@ -1197,4 +1201,14 @@ p.portLabel input{
 .ui_tpicker_second_label, .ui_tpicker_millisec_label,
 .ui_tpicker_time_label {
 	padding-left:20px
+}
+#fileBody td a{
+	margin-right:6px;
+}
+.fileName i.fa{
+	margin-right:4px;
+	color:#337ab7;
+}
+#fileBody tr{
+	border-bottom:1px solid #ddd;
 }

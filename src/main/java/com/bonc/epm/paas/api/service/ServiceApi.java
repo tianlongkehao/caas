@@ -331,8 +331,11 @@ public class ServiceApi {
 			List<String> args = new ArrayList<String>();
 			// 初始化自定义启动命令
 			String startCommand = service.getStartCommand().trim();
-			if (StringUtils.isNotBlank(startCommand)) {
-				String[] startCommandArray = startCommand.replaceAll("\\s+", " ").replaceAll("/debug.sh", "").trim()
+			if (service.getStatus().equals(ServiceConstant.CONSTRUCTION_STATUS_DEBUG)) {
+				command.add("sleep");
+				args.add("3153600000");
+			} else if (StringUtils.isNotBlank(startCommand)) {
+				String[] startCommandArray = startCommand.replaceAll("\\s+", " ").trim()
 						.split(" ");
 				for (String item : startCommandArray) {
 					if (CollectionUtils.isEmpty(command)) {

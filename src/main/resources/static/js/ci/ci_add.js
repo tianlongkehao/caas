@@ -398,15 +398,15 @@ $(document).ready(function () {
 //	});
 	var sonarCheck = $("#sonarCheck").val();
 	if(sonarCheck == 1){
-		
+
 	}else{
 		$(".sonarInfo").hide();
 		$("#ci-sonarInfo").click(function() {
 		if ($('#ci-sonarInfo').is(":checked")) {
-			//$("#sonarCheck").val("1");
+			$("#sonarCheck").val("1");
 			$(".sonarInfo").show();
 		} else {
-			//$("#sonarCheck").val("0");
+			$("#sonarCheck").val("0");
 			$(".sonarInfo").hide();
 			$("#sources").val("");
 		}

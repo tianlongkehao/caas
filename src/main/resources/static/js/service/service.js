@@ -144,11 +144,11 @@ function loadContainers(obj,serviceId) {
 									+ '">'
 									+ '<td colspan="2">&nbsp;</td>'
 									+ '<td>';
-							if (data.service.status == 6){
-								containersHtml += '<a style="margin-left: 19px;" href="javascript:debug('+serviceID+','+data.containerList[i].containerStatus+')">';
-							} else {
+							//if (data.service.status == 6){
+							//	containersHtml += '<a style="margin-left: 19px;" href="javascript:debug('+serviceID+','+data.containerList[i].containerStatus+')">';
+							//} else {
 								containersHtml += '<a style="margin-left: 19px;">';
-							}
+							//}
 							containersHtml += containerName
 									+ '</a>'
 									+ '</td>'
@@ -1554,17 +1554,17 @@ function loadServicesNoSonar() {
 }
 
 function startdebug(id, status) {
-	if (3 == status) {
+	if (1 != status && 4 != status) {
 		return;
 	}
 
-	$.ajax({
-		url : "" + ctx + "/service/isDebugService.do?id=" + id,
-		success : function(data) {
-			data = eval("(" + data + ")");
-			if (data.status != "200") {
-				layer.alert("该服务不支持调试");
-			} else {
+//	$.ajax({
+//		url : "" + ctx + "/service/isDebugService.do?id=" + id,
+//		success : function(data) {
+//			data = eval("(" + data + ")");
+//			if (data.status != "200") {
+//				layer.alert("该服务不支持调试");
+//			} else {
 				$.ajax({
 					url : "" + ctx + "/service/createContainer.do?id=" + id + "&isDebug=" + true,
 					success : function(data) {
@@ -1588,9 +1588,9 @@ function startdebug(id, status) {
 					}
 				});
 
-			}
-		}
-	});
+//			}
+//		}
+//	});
 
 }
 

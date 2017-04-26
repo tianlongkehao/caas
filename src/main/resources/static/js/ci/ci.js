@@ -83,23 +83,23 @@ function addCiInfo(type) {
 						success : function(data){
 							data = eval("("+data+")");
 							if (data.status == "200") {
-								$.ajax({
-									url : ctx + "/ci/getSonarConfig.do",
-									async : false,
-									success : function(data) {
-										data = eval("(" + data + ")");
-										if (data.status == "200") {
+//								$.ajax({
+//									url : ctx + "/ci/getSonarConfig.do",
+//									async : false,
+//									success : function(data) {
+//										data = eval("(" + data + ")");
+//										if (data.status == "200") {
 											window.location.href = ctx + "/ci/add";
-										}
-										if (data.status == "400") {
-											layer.open({
-												title : '提示',
-												content : '当前租户没有配置sonar环境',
-												btn : ['确定', '取消']
-											});
-										}
-									}
-								});
+//										}
+//										if (data.status == "400") {
+//											layer.open({
+//												title : '提示',
+//												content : '当前租户没有配置sonar环境',
+//												btn : ['确定', '取消']
+//											});
+//										}
+//									}
+//								});
 							}
 							if (data.status == "400") {
 								layer.open({
