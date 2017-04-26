@@ -5,7 +5,7 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-menu.css">
     <script type="text/javascript" src="<%=path %>/js/customer/bcm-menu.js"></script>
-    
+
     <title>BCM</title>
 </head>
 <body>
@@ -182,6 +182,7 @@
 						<c:if test="${cur_user.user_autority == 1}">
 						<li id="li_management"><a class="J_menuItem" href="<%=path %>/cluster/management"><i class="fa fa_circle"></i>集群管理</a></li>
 						<li id="li_node"><a class="J_menuItem" href="<%=path %>/cluster/node"><i class="fa fa_circle"></i>节点管理</a></li>
+						<li id="li_test"><a class="J_menuItem" href="<%=path %>/cluster/test"><i class="fa fa_circle"></i>集群测试</a></li>
 						</c:if>
 						<li id="li_topo"><a class="J_menuItem" href="<%=path %>/cluster/topo"><i class="fa fa_circle"></i>集群拓扑</a></li>
 						<c:if test="${cur_user.user_autority == 1}">

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tools.ant.taskdefs.Sleep;
 import org.influxdb.InfluxDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,20 +39,28 @@ import com.bonc.epm.paas.cluster.util.InfluxdbSearchService;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.dao.UserDao;
+import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
 import com.bonc.epm.paas.entity.PodTopo;
 import com.bonc.epm.paas.entity.ServiceTopo;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Node;
 import com.bonc.epm.paas.kubernetes.model.NodeList;
+import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
+import com.bonc.epm.paas.kubernetes.model.PodSpec;
+import com.bonc.epm.paas.kubernetes.model.PodStatus;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
+import com.bonc.epm.paas.kubernetes.model.ServicePort;
+import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.net.api.NetAPIClientInterface;
 import com.bonc.epm.paas.net.model.Diff;
@@ -60,6 +69,9 @@ import com.bonc.epm.paas.net.util.NetClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.InfoCmd;
+import com.github.dockerjava.api.model.Info;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.jcraft.jsch.ChannelSftp;
@@ -69,8 +81,8 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 /**
- * ClusterController
- * 集群监控控制器
+ * ClusterController 集群监控控制器
+ *
  * @author zhoutao
  * @version 2016年9月5日
  * @since
@@ -79,131 +91,146 @@ import com.jcraft.jsch.SftpException;
 @RequestMapping(value = "/cluster")
 public class ClusterController {
 
-    /**
-     * ClusterController日志实例
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(ClusterController.class);
-
-    /**
-     * KubernetesClientService 服务接口
-     */
-    @Autowired
-	private KubernetesClientService kubernetesClientService;
-
-    /**
-     * ClusterDao 数据库操作Dao接口
-     */
-    @Autowired
-	private ClusterDao clusterDao;
-
-    /**
-     * userDao 数据库操作接口
-     */
-    @Autowired
-    private UserDao userDao;
-
-    /**
-     * 获取配置文件中的 yumConf.io.address 的数据信息；
-     */
-    @Value("${yumConf.io.address}")
-	private String yumSource;
-    /**
-     * master主节点地址信息
-     */
-    @Value("${kubernetes.api.address}")
-    private String masterAddress;
-
-    @Autowired
-    InfluxdbSearchService influxdbSearchService;
-
-    @Autowired
-    NetClientService netClientService;
-
-    /**
-     *
-     * Description: <br>
-     * 跳转进入cluster.jsp页面
-     * @param model  添加返回页面数据
-     * @return String
-     */
-    @RequestMapping(value = { "/resource" }, method = RequestMethod.GET)
-	public String resourceCluster(Model model) {
-        model.addAttribute("menu_flag", "cluster");
-        model.addAttribute("li_flag", "cluster");
-        return "cluster/cluster.jsp";
-    }
-
-    /**
-     *
-     * Description: <br>
-     *  跳转进入containers.jsp页面；
-     * @param model  添加返回页面数据；
-     * @return  String
-     */
-    @RequestMapping(value = { "/containers" }, method = RequestMethod.GET)
-	public String resourceContainers(Model model) {
-        model.addAttribute("menu_flag", "cluster");
-        model.addAttribute("li_flag", "container");
-        return "cluster/containers.jsp";
-    }
+	/**
+	 * ClusterController日志实例
+	 */
+	private static final Logger LOG = LoggerFactory.getLogger(ClusterController.class);
 
 	/**
-     *
-     * Description: <br>
-     *  跳转进入集群管理页面 cluster-management.jsp
-     * @param model 添加返回页面的数据；
-     * @return String
-     */
-    @RequestMapping(value = { "/management" }, method = RequestMethod.GET)
+	 * KubernetesClientService 服务接口
+	 */
+	@Autowired
+	private KubernetesClientService kubernetesClientService;
+
+	/**
+	 * ClusterDao 数据库操作Dao接口
+	 */
+	@Autowired
+	private ClusterDao clusterDao;
+
+	/**
+	 * userDao 数据库操作接口
+	 */
+	@Autowired
+	private UserDao userDao;
+
+	/**
+	 * 获取配置文件中的 yumConf.io.address 的数据信息；
+	 */
+	@Value("${yumConf.io.address}")
+	private String yumSource;
+	/**
+	 * master主节点地址信息
+	 */
+	@Value("${kubernetes.api.address}")
+	private String masterAddress;
+
+	@Autowired
+	InfluxdbSearchService influxdbSearchService;
+
+	@Autowired
+	NetClientService netClientService;
+
+	/**
+	 * DockerClientService接口
+	 */
+	@Autowired
+	private DockerClientService dockerClientService;
+
+	/**
+	 *
+	 * Description: <br>
+	 * 跳转进入cluster.jsp页面
+	 *
+	 * @param model
+	 *            添加返回页面数据
+	 * @return String
+	 */
+	@RequestMapping(value = { "/resource" }, method = RequestMethod.GET)
+	public String resourceCluster(Model model) {
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "cluster");
+		return "cluster/cluster.jsp";
+	}
+
+	/**
+	 *
+	 * Description: <br>
+	 * 跳转进入containers.jsp页面；
+	 *
+	 * @param model
+	 *            添加返回页面数据；
+	 * @return String
+	 */
+	@RequestMapping(value = { "/containers" }, method = RequestMethod.GET)
+	public String resourceContainers(Model model) {
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "container");
+		return "cluster/containers.jsp";
+	}
+
+	/**
+	 *
+	 * Description: <br>
+	 * 跳转进入集群管理页面 cluster-management.jsp
+	 *
+	 * @param model
+	 *            添加返回页面的数据；
+	 * @return String
+	 */
+	@RequestMapping(value = { "/management" }, method = RequestMethod.GET)
 	public String clusterList(Model model) {
-        List<Cluster> lstClusters = new ArrayList<>();
-        for (Cluster cluster : clusterDao.findAll()) {
-            lstClusters.add(cluster);
-        }
-        model.addAttribute("lstClusters", lstClusters);
-        model.addAttribute("menu_flag", "cluster");
-        model.addAttribute("li_flag", "management");
-        return "cluster/cluster-management.jsp";
-    }
+		List<Cluster> lstClusters = new ArrayList<>();
+		for (Cluster cluster : clusterDao.findAll()) {
+			lstClusters.add(cluster);
+		}
+		model.addAttribute("lstClusters", lstClusters);
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "management");
+		return "cluster/cluster-management.jsp";
+	}
 
-    /**
-     * Description: <br>
-     * 进入cluster-topo.jsp
-     * @param model 添加返回页面的数据
-     * @return String
-     */
-    @RequestMapping(value = { "/topo" }, method = RequestMethod.GET)
+	/**
+	 * Description: <br>
+	 * 进入cluster-topo.jsp
+	 *
+	 * @param model
+	 *            添加返回页面的数据
+	 * @return String
+	 */
+	@RequestMapping(value = { "/topo" }, method = RequestMethod.GET)
 	public String clusterTopo(Model model) {
-        User currentUser = CurrentUserUtils.getInstance().getUser();
-        //判断是否是超级用户
-        if (!currentUser.getUser_autority().equals("1")) {
-            List<ServiceTopo> serviceTopoList = new ArrayList<>();
-            addServiceTopo(currentUser.getNamespace(),serviceTopoList);
-            model.addAttribute("serviceTopo",serviceTopoList);
-            model.addAttribute("user", "user");
-        }
-        else {
-            List<User> userList = userDao.checkUser(currentUser.getId());
-            model.addAttribute("userList", userList);
-            model.addAttribute("user", "root");
-        }
-        model.addAttribute("menu_flag", "cluster");
-        model.addAttribute("li_flag", "topo");
-        return "cluster/cluster-topo.jsp";
-    }
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		// 判断是否是超级用户
+		if (!currentUser.getUser_autority().equals("1")) {
+			List<ServiceTopo> serviceTopoList = new ArrayList<>();
+			addServiceTopo(currentUser.getNamespace(), serviceTopoList);
+			model.addAttribute("serviceTopo", serviceTopoList);
+			model.addAttribute("user", "user");
+		} else {
+			List<User> userList = userDao.checkUser(currentUser.getId());
+			model.addAttribute("userList", userList);
+			model.addAttribute("user", "root");
+		}
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "topo");
+		return "cluster/cluster-topo.jsp";
+	}
 
-    /**
-     * Description: <br>
-     * 进入cluster-route.jsp
-     * @param model 添加返回页面的数据
-     * @return String
-     */
-    @RequestMapping(value = { "/route" }, method = RequestMethod.GET)
+	/**
+	 * Description: <br>
+	 * 进入cluster-route.jsp
+	 *
+	 * @param model
+	 *            添加返回页面的数据
+	 * @return String
+	 */
+	@RequestMapping(value = { "/route" }, method = RequestMethod.GET)
 	public String clusterRoute(Model model) {
-    	KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-    	NodeList allNodes = client.getAllNodes();
-    	List<Object> nodeList = new ArrayList<>();
-    	if (allNodes != null) {
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		NodeList allNodes = client.getAllNodes();
+		List<Object> nodeList = new ArrayList<>();
+		if (allNodes != null) {
 			for (Node node : allNodes.getItems()) {
 				Map<String, String> nodeMap = new HashMap<>();
 				nodeList.add(nodeMap);
@@ -211,11 +238,11 @@ public class ClusterController {
 				nodeMap.put("nodeIp", node.getStatus().getAddresses().get(0).getAddress());
 			}
 		}
-    	model.addAttribute("nodeList", nodeList);
-        model.addAttribute("menu_flag", "cluster");
-        model.addAttribute("li_flag", "route");
-        return "cluster/cluster-route.jsp";
-    }
+		model.addAttribute("nodeList", nodeList);
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "route");
+		return "cluster/cluster-route.jsp";
+	}
 
 	/**
 	 * Description: <br>
@@ -241,441 +268,454 @@ public class ClusterController {
 		return "cluster/cluster-iptables.jsp";
 	}
 
-    @RequestMapping(value = { "/topo/data.do" }, method = RequestMethod.GET)
-    @ResponseBody
-    public String clusterTopoData(String nameSpace){
-        // 创建client
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
-        //以node节点名称为key，node节点中包含的pod信息为value；
-        Map<String,Object> jsonData = new HashMap<String,Object>();
-        Map<String, List> nodeMap = new HashMap<String, List>();
-        List<ServiceTopo> serviceTopoList = new ArrayList<>();
+	@RequestMapping(value = { "/topo/data.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String clusterTopoData(String nameSpace) {
+		// 创建client
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
+		// 以node节点名称为key，node节点中包含的pod信息为value；
+		Map<String, Object> jsonData = new HashMap<String, Object>();
+		Map<String, List> nodeMap = new HashMap<String, List>();
+		List<ServiceTopo> serviceTopoList = new ArrayList<>();
 
-        // 取得所有node
-        NodeList nodeList = client.getAllNodes();
-        for (Node node : nodeList.getItems()) {
-            String minionName = node.getMetadata().getName();
-            //String hostIp = node.getStatus().getAddresses().get(0).getAddress();
-            List<PodTopo> podTopoList = new ArrayList<PodTopo>();
-            nodeMap.put(minionName, podTopoList);
-        }
-        if (nameSpace != null) {
-            //添加pod数据
-            addPodTopo(nameSpace,nodeMap);
-            //添加service数据
-            addServiceTopo(nameSpace,serviceTopoList);
-        }
-        else {
-            User currentUser = CurrentUserUtils.getInstance().getUser();
-            //判断当前用户是否是超级管理员权限
-            if (currentUser.getUser_autority().equals("1")) {
-                // 取得所有NAMESPACE
-                NamespaceList namespaceList = client.getAllNamespaces();
-                for (Namespace namespace : namespaceList.getItems()) {
-                    String name = namespace.getMetadata().getName();
-                    //添加pod数据
-                    addPodTopo(name,nodeMap);
-                    //添加service数据
-                    addServiceTopo(name,serviceTopoList);
-                }
-            } else {
-                //添加pod数据
-                addPodTopo(currentUser.getNamespace(),nodeMap);
-                //添加service数据
-                addServiceTopo(currentUser.getNamespace(),serviceTopoList);
-            }
-        }
+		// 取得所有node
+		NodeList nodeList = client.getAllNodes();
+		for (Node node : nodeList.getItems()) {
+			String minionName = node.getMetadata().getName();
+			// String hostIp =
+			// node.getStatus().getAddresses().get(0).getAddress();
+			List<PodTopo> podTopoList = new ArrayList<PodTopo>();
+			nodeMap.put(minionName, podTopoList);
+		}
+		if (nameSpace != null) {
+			// 添加pod数据
+			addPodTopo(nameSpace, nodeMap);
+			// 添加service数据
+			addServiceTopo(nameSpace, serviceTopoList);
+		} else {
+			User currentUser = CurrentUserUtils.getInstance().getUser();
+			// 判断当前用户是否是超级管理员权限
+			if (currentUser.getUser_autority().equals("1")) {
+				// 取得所有NAMESPACE
+				NamespaceList namespaceList = client.getAllNamespaces();
+				for (Namespace namespace : namespaceList.getItems()) {
+					String name = namespace.getMetadata().getName();
+					// 添加pod数据
+					addPodTopo(name, nodeMap);
+					// 添加service数据
+					addServiceTopo(name, serviceTopoList);
+				}
+			} else {
+				// 添加pod数据
+				addPodTopo(currentUser.getNamespace(), nodeMap);
+				// 添加service数据
+				addServiceTopo(currentUser.getNamespace(), serviceTopoList);
+			}
+		}
 
-        System.out.println(nodeMap.toString());
-        System.out.println(serviceTopoList.toString());
-        jsonData.put("master", "master/"+masterAddress);
-        jsonData.put("nodes", nodeMap);
-        jsonData.put("services", serviceTopoList);
-        return JSON.toJSONString(jsonData);
-    }
+		System.out.println(nodeMap.toString());
+		System.out.println(serviceTopoList.toString());
+		jsonData.put("master", "master/" + masterAddress);
+		jsonData.put("nodes", nodeMap);
+		jsonData.put("services", serviceTopoList);
+		return JSON.toJSONString(jsonData);
+	}
 
-    /**
-     * Description: <br>
-     * 通过服务名称查询当前服务的pod，展示当前的pod拓扑图；
-     * @param serviceName 服务名称；
-     * @return String
-     */
-    @RequestMapping(value = { "/topo/findPod.do" }, method = RequestMethod.GET)
-    @ResponseBody
-    public String findPodByService(String serviceName,String nameSpace) {
-        KubernetesAPIClientInterface client = null;
-        if (StringUtils.isNotEmpty(nameSpace)) {
-            client = kubernetesClientService.getClient(nameSpace);
-        } else {
-            client = kubernetesClientService.getClient();
-        }
-        Map<String,Object> map = new HashMap<String, Object>();
-        List<PodTopo> podTopoList = new ArrayList<>();
-        serviceName = serviceName.substring(serviceName.indexOf("/")+1);
-        Service service = client.getService(serviceName);
-        Map<String,String> labelSelector = service.getSpec().getSelector();
-        PodList podList = client.getLabelSelectorPods(labelSelector);
-        for (Pod pod : podList.getItems()) {
-            PodTopo podTopo = new PodTopo();
-            String podName = pod.getMetadata().getName();
-            if (podName.length() > 32) {
-                podName = podName.substring(0, podName.indexOf("-")+6);
-            }
-            podTopo.setPodName(podName);
-            podTopo.setNodeName(pod.getSpec().getNodeName());
-            podTopo.setHostIp(pod.getStatus().getHostIP());
-            podTopo.setServiceName(nameSpace +"/"+serviceName);
-            podTopoList.add(podTopo);
-        }
-        map.put("master", "master/"+masterAddress);
-        map.put("podTopoList", podTopoList);
-        return JSON.toJSONString(map);
-    }
+	/**
+	 * Description: <br>
+	 * 通过服务名称查询当前服务的pod，展示当前的pod拓扑图；
+	 *
+	 * @param serviceName
+	 *            服务名称；
+	 * @return String
+	 */
+	@RequestMapping(value = { "/topo/findPod.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String findPodByService(String serviceName, String nameSpace) {
+		KubernetesAPIClientInterface client = null;
+		if (StringUtils.isNotEmpty(nameSpace)) {
+			client = kubernetesClientService.getClient(nameSpace);
+		} else {
+			client = kubernetesClientService.getClient();
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<PodTopo> podTopoList = new ArrayList<>();
+		serviceName = serviceName.substring(serviceName.indexOf("/") + 1);
+		Service service = client.getService(serviceName);
+		Map<String, String> labelSelector = service.getSpec().getSelector();
+		PodList podList = client.getLabelSelectorPods(labelSelector);
+		for (Pod pod : podList.getItems()) {
+			PodTopo podTopo = new PodTopo();
+			String podName = pod.getMetadata().getName();
+			if (podName.length() > 32) {
+				podName = podName.substring(0, podName.indexOf("-") + 6);
+			}
+			podTopo.setPodName(podName);
+			podTopo.setNodeName(pod.getSpec().getNodeName());
+			podTopo.setHostIp(pod.getStatus().getHostIP());
+			podTopo.setServiceName(nameSpace + "/" + serviceName);
+			podTopoList.add(podTopo);
+		}
+		map.put("master", "master/" + masterAddress);
+		map.put("podTopoList", podTopoList);
+		return JSON.toJSONString(map);
+	}
 
-    /**
-     * Description: <br>
-     * 查询当前namespace中的pod数据，添加到相关联的Node集合中
-     * @param namespace 命名空间；
-     * @param nodeMap Node
-     * @see
-     */
-    @SuppressWarnings("unchecked")
-    public void addPodTopo(String namespace,Map<String, List> nodeMap) {
-        try {
-            KubernetesAPIClientInterface clientName = kubernetesClientService.getClient(namespace);
-            // 取得所有此NAMESPACE下的POD
-            PodList podList = clientName.getAllPods();
-            if (podList != null) {
-                for (Pod pod : podList.getItems()) {
-                    try {
-                        PodTopo podTopo = new PodTopo();
-                        podTopo.setNamespace(namespace);
-                        String podName = pod.getMetadata().getName();
-                        if (podName.length() > 32) {
-                            podName = podName.substring(0, podName.indexOf("-")+6);
-                        }
-                        podTopo.setPodName(podName);
-                        podTopo.setNodeName(pod.getSpec().getNodeName());
-                        podTopo.setHostIp(pod.getStatus().getHostIP());
-//                      podTopo.setServiceName(namespace +"/"+ pod.getMetadata().getLabels().get("app"));
-                        String serviceName = "";
-                        Iterator<Map.Entry<String, String>> it = pod.getMetadata().getLabels().entrySet().iterator();
-                        while (it.hasNext() && StringUtils.isBlank(serviceName)) {
-                            Map.Entry<String, String> entry = it.next();
-                            Service service = clientName.getService(entry.getValue());
-                            if (null != service) {
-                                serviceName =  service.getMetadata().getName();
-                            }
-                        }
-                        podTopo.setServiceName(serviceName);
-                        String key = podTopo.getNodeName();
-                        List<PodTopo> podTopoList = nodeMap.get(key);
-                        podTopoList.add(podTopo);
-                        nodeMap.replace(key, podTopoList);
-                    }
-                    catch (Exception e) {
-                        LOG.debug(e.getMessage());
-                    }
-                }
-            }
-        }
-        catch (Exception e) {
-            LOG.debug(e.getMessage());
-        }
-    }
+	/**
+	 * Description: <br>
+	 * 查询当前namespace中的pod数据，添加到相关联的Node集合中
+	 *
+	 * @param namespace
+	 *            命名空间；
+	 * @param nodeMap
+	 *            Node
+	 * @see
+	 */
+	@SuppressWarnings("unchecked")
+	public void addPodTopo(String namespace, Map<String, List> nodeMap) {
+		try {
+			KubernetesAPIClientInterface clientName = kubernetesClientService.getClient(namespace);
+			// 取得所有此NAMESPACE下的POD
+			PodList podList = clientName.getAllPods();
+			if (podList != null) {
+				for (Pod pod : podList.getItems()) {
+					try {
+						PodTopo podTopo = new PodTopo();
+						podTopo.setNamespace(namespace);
+						String podName = pod.getMetadata().getName();
+						if (podName.length() > 32) {
+							podName = podName.substring(0, podName.indexOf("-") + 6);
+						}
+						podTopo.setPodName(podName);
+						podTopo.setNodeName(pod.getSpec().getNodeName());
+						podTopo.setHostIp(pod.getStatus().getHostIP());
+						// podTopo.setServiceName(namespace +"/"+
+						// pod.getMetadata().getLabels().get("app"));
+						String serviceName = "";
+						Iterator<Map.Entry<String, String>> it = pod.getMetadata().getLabels().entrySet().iterator();
+						while (it.hasNext() && StringUtils.isBlank(serviceName)) {
+							Map.Entry<String, String> entry = it.next();
+							Service service = clientName.getService(entry.getValue());
+							if (null != service) {
+								serviceName = service.getMetadata().getName();
+							}
+						}
+						podTopo.setServiceName(serviceName);
+						String key = podTopo.getNodeName();
+						List<PodTopo> podTopoList = nodeMap.get(key);
+						podTopoList.add(podTopo);
+						nodeMap.replace(key, podTopoList);
+					} catch (Exception e) {
+						LOG.debug(e.getMessage());
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOG.debug(e.getMessage());
+		}
+	}
 
-    /**
-     * Description: <br>
-     *  将当前命名空间中的所有服务名称添加到集合中；
-     * @param namespace
-     * @param serviceTopoList
-     * @see
-     */
-    public void addServiceTopo(String namespace, List<ServiceTopo> serviceTopoList){
-        try {
-            KubernetesAPIClientInterface clientName = kubernetesClientService.getClient(namespace);
-            // 取得所有此NAMESPACE下的service
-            ServiceList serviceList = clientName.getAllServices();
-            for (Service service : serviceList.getItems()) {
-                try {
-                    ServiceTopo serviceTopo = new ServiceTopo();
-                    List<String> podName = new ArrayList<>();
-                    Map<String,String> labelSelector = service.getSpec().getSelector();
-                    PodList podList = clientName.getLabelSelectorPods(labelSelector);
-                    if (podList != null) {
-                        for (Pod pod : podList.getItems()) {
-                            podName.add(pod.getMetadata().getName());
-                        }
-                    }
-                    serviceTopo.setPodName(podName);
-                    serviceTopo.setNamespace(service.getMetadata().getNamespace());
-//                  serviceTopo.setServiceName(namespace +"/"+service.getMetadata().getName());
-                    serviceTopo.setServiceName(service.getMetadata().getName());
-                    serviceTopoList.add(serviceTopo);
-                } catch (Exception e) {
-                    LOG.debug(e.getMessage());
-                }
-            }
-        }
-        catch (Exception e) {
-            LOG.debug(e.getMessage());
-        }
-    }
+	/**
+	 * Description: <br>
+	 * 将当前命名空间中的所有服务名称添加到集合中；
+	 *
+	 * @param namespace
+	 * @param serviceTopoList
+	 * @see
+	 */
+	public void addServiceTopo(String namespace, List<ServiceTopo> serviceTopoList) {
+		try {
+			KubernetesAPIClientInterface clientName = kubernetesClientService.getClient(namespace);
+			// 取得所有此NAMESPACE下的service
+			ServiceList serviceList = clientName.getAllServices();
+			for (Service service : serviceList.getItems()) {
+				try {
+					ServiceTopo serviceTopo = new ServiceTopo();
+					List<String> podName = new ArrayList<>();
+					Map<String, String> labelSelector = service.getSpec().getSelector();
+					PodList podList = clientName.getLabelSelectorPods(labelSelector);
+					if (podList != null) {
+						for (Pod pod : podList.getItems()) {
+							podName.add(pod.getMetadata().getName());
+						}
+					}
+					serviceTopo.setPodName(podName);
+					serviceTopo.setNamespace(service.getMetadata().getNamespace());
+					// serviceTopo.setServiceName(namespace
+					// +"/"+service.getMetadata().getName());
+					serviceTopo.setServiceName(service.getMetadata().getName());
+					serviceTopoList.add(serviceTopo);
+				} catch (Exception e) {
+					LOG.debug(e.getMessage());
+				}
+			}
+		} catch (Exception e) {
+			LOG.debug(e.getMessage());
+		}
+	}
 
-    /**
-     * Description: <br>
-     *  跳转进入cluster-deltail.jsp页面
-     * @param hostIps  hostIps
-     * @param model 添加返回页面的数据
-     * @return String
-     */
-    @RequestMapping(value = { "/detail" }, method = RequestMethod.GET)
+	/**
+	 * Description: <br>
+	 * 跳转进入cluster-deltail.jsp页面
+	 *
+	 * @param hostIps
+	 *            hostIps
+	 * @param model
+	 *            添加返回页面的数据
+	 * @return String
+	 */
+	@RequestMapping(value = { "/detail" }, method = RequestMethod.GET)
 	public String clusterDetail(@RequestParam String hostIps, Model model) {
-        List<ClusterUse> lstClustersUse = new ArrayList<>();
-        String[] strHostIps = hostIps.split(",");
-        for (String hostIp : strHostIps) {
-            ClusterUse clusterUse = getClustersUse("");
-            clusterUse.setHost(hostIp);
-            lstClustersUse.add(clusterUse);
-        }
-        model.addAttribute("lstClustersUse", lstClustersUse);
-        model.addAttribute("menu_flag", "cluster");
-        model.addAttribute("li_flag", "management");
-        return "cluster/cluster-detail.jsp";
-    }
+		List<ClusterUse> lstClustersUse = new ArrayList<>();
+		String[] strHostIps = hostIps.split(",");
+		for (String hostIp : strHostIps) {
+			ClusterUse clusterUse = getClustersUse("");
+			clusterUse.setHost(hostIp);
+			lstClustersUse.add(clusterUse);
+		}
+		model.addAttribute("lstClustersUse", lstClustersUse);
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "management");
+		return "cluster/cluster-detail.jsp";
+	}
 
-    /**
-     * Description: <br>
-     *  取得单一主机资源使用情况
-     * @param timePeriod String
-     * @deprecated
-     * @return ClusterUse
-     */
-    private ClusterUse getClustersUse(String timePeriod) {
-        try {
-        }
-        catch (Exception e) {
-            LOG.debug(e.getMessage());
-        }
-        return null;
-    }
+	/**
+	 * Description: <br>
+	 * 取得单一主机资源使用情况
+	 *
+	 * @param timePeriod
+	 *            String
+	 * @deprecated
+	 * @return ClusterUse
+	 */
+	private ClusterUse getClustersUse(String timePeriod) {
+		try {
+		} catch (Exception e) {
+			LOG.debug(e.getMessage());
+		}
+		return null;
+	}
 
-    /**
-     * Description:
-     * 取得集群监控数据 包含master节点和node节点
-     * 包含的信息内容有cpu、mem、disk、network等
-     * @param timePeriod String
-     * @return clusterResources JOSNString
-     */
-    @RequestMapping(value={ "/getClusterMonitor" }, method = RequestMethod.GET)
+	/**
+	 * Description: 取得集群监控数据 包含master节点和node节点 包含的信息内容有cpu、mem、disk、network等
+	 *
+	 * @param timePeriod
+	 *            String
+	 * @return clusterResources JOSNString
+	 */
+	@RequestMapping(value = { "/getClusterMonitor" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getClusterMonitor(String timePeriod) {
-        ClusterResources clusterResources =  new ClusterResources();
-        try {
-            InfluxDB influxDB = influxdbSearchService.getInfluxdbClient();
-            List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
-            clusterResources.setxValue(xValue);
+		ClusterResources clusterResources = new ClusterResources();
+		try {
+			InfluxDB influxDB = influxdbSearchService.getInfluxdbClient();
+			List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
+			clusterResources.setxValue(xValue);
 
-            List<CatalogResource> yValue = new ArrayList<CatalogResource>();
-            yValue.add(influxdbSearchService.generateYValueOfCluster(influxDB, timePeriod));
-            yValue.add(influxdbSearchService.generateYValueOfMinmon(influxDB, timePeriod));
-            clusterResources.setyValue(yValue);
-        }
-        catch (Exception e) {
-            LOG.error("get cluster monitor data failed. error message:-" + e.getMessage());
-            e.printStackTrace();
-        }
-        return JSON.toJSONString(clusterResources);
-    }
+			List<CatalogResource> yValue = new ArrayList<CatalogResource>();
+			yValue.add(influxdbSearchService.generateYValueOfCluster(influxDB, timePeriod));
+			yValue.add(influxdbSearchService.generateYValueOfMinmon(influxDB, timePeriod));
+			clusterResources.setyValue(yValue);
+		} catch (Exception e) {
+			LOG.error("get cluster monitor data failed. error message:-" + e.getMessage());
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(clusterResources);
+	}
 
-    /**
-     *
-     * Description:
-     * 取得所有的namespace
-     * @return rtnValue String
-     */
-    @RequestMapping(value={"/getAllNamespace"}, method=RequestMethod.GET)
+	/**
+	 *
+	 * Description: 取得所有的namespace
+	 *
+	 * @return rtnValue String
+	 */
+	@RequestMapping(value = { "/getAllNamespace" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getAllNamespace() {
 		// 以用户名(登陆帐号)为name，创建client，查询以登陆名命名的 NAMESPACE 资源详情
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		// 取得所有NAMESPACE
-        NamespaceList namespaceLst = client.getAllNamespaces();
-        List<String> namespaceArray = new ArrayList<String>();
-        if (namespaceLst != null) {
-        	for (int i = 0; i < namespaceLst.size(); i++) {
-        	    namespaceArray.add(namespaceLst.get(i).getMetadata().getName());
-        	}
+		NamespaceList namespaceLst = client.getAllNamespaces();
+		List<String> namespaceArray = new ArrayList<String>();
+		if (namespaceLst != null) {
+			for (int i = 0; i < namespaceLst.size(); i++) {
+				namespaceArray.add(namespaceLst.get(i).getMetadata().getName());
+			}
 		} else {
 			LOG.error("Get all Namespaces failed");
 		}
-        return JSON.toJSONString(namespaceArray);
-    }
+		return JSON.toJSONString(namespaceArray);
+	}
 
-    /**
-     *
-     * Description: <br>
-     * 获取Pod资源的使用情况
-     * @param nameSpace String
-     * @param podName String
-     * @param timePeriod String
-     * @return String
-     */
-    @RequestMapping(value = { "/getContainerMonitor" }, method = RequestMethod.GET)
+	/**
+	 *
+	 * Description: <br>
+	 * 获取Pod资源的使用情况
+	 *
+	 * @param nameSpace
+	 *            String
+	 * @param podName
+	 *            String
+	 * @param timePeriod
+	 *            String
+	 * @return String
+	 */
+	@RequestMapping(value = { "/getContainerMonitor" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getContainerMonitor(String nameSpace, String podName, String timePeriod) {
-        ClusterResources clusterResources =  new ClusterResources();
+		ClusterResources clusterResources = new ClusterResources();
 		// 当前登陆用户是租户
-        User curUser = CurrentUserUtils.getInstance().getUser();
-        if (UserConstant.AUTORITY_TENANT.equals(curUser.getUser_autority())) {
-            nameSpace = curUser.getNamespace();
-        }
-        try {
-            InfluxDB influxDB = influxdbSearchService.getInfluxdbClient();
-            List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
-            List<CatalogResource> yValue = influxdbSearchService.generateContainerMonitorYValue(influxDB, timePeriod,nameSpace,podName);
-            clusterResources.setxValue(xValue);
-            clusterResources.setyValue(yValue);
-        }
-        catch (Exception e) {
-            LOG.error(e.getMessage());
-            System.out.println(e.getMessage());
-        }
-        return JSON.toJSONString(clusterResources);
-    }
+		User curUser = CurrentUserUtils.getInstance().getUser();
+		if (UserConstant.AUTORITY_TENANT.equals(curUser.getUser_autority())) {
+			nameSpace = curUser.getNamespace();
+		}
+		try {
+			InfluxDB influxDB = influxdbSearchService.getInfluxdbClient();
+			List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
+			List<CatalogResource> yValue = influxdbSearchService.generateContainerMonitorYValue(influxDB, timePeriod,
+					nameSpace, podName);
+			clusterResources.setxValue(xValue);
+			clusterResources.setyValue(yValue);
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+			System.out.println(e.getMessage());
+		}
+		return JSON.toJSONString(clusterResources);
+	}
 
-
-    /**
-     * Description: <br>
-     * 跳转进入cluster-create.jsp页面；
-     * @return String
-     */
-    @RequestMapping(value = { "/add" }, method = RequestMethod.GET)
+	/**
+	 * Description: <br>
+	 * 跳转进入cluster-create.jsp页面；
+	 *
+	 * @return String
+	 */
+	@RequestMapping(value = { "/add" }, method = RequestMethod.GET)
 	public String clusterAdd(Model model) {
-    	model.addAttribute("menu_flag", "cluster");
-        model.addAttribute("li_flag", "management");
-        return "cluster/cluster-create.jsp";
-    }
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "management");
+		return "cluster/cluster-create.jsp";
+	}
 
-    /**
-     *
-     * Description: <br>
-     * 跳转进入cluster-management.jsp页面
-     * @param searchIP  serarchIP
-     * @param model  添加返回页面数据
-     * @return  String
-     */
-    @RequestMapping(value = { "/searchCluster" }, method = RequestMethod.POST)
+	/**
+	 *
+	 * Description: <br>
+	 * 跳转进入cluster-management.jsp页面
+	 *
+	 * @param searchIP
+	 *            serarchIP
+	 * @param model
+	 *            添加返回页面数据
+	 * @return String
+	 */
+	@RequestMapping(value = { "/searchCluster" }, method = RequestMethod.POST)
 	public String searchCluster(@RequestParam String searchIP, Model model) {
 
-        List<Cluster> lstClusters = clusterDao.findByHostLike(searchIP);
-        model.addAttribute("lstClusters", lstClusters);
-        model.addAttribute("menu_flag", "cluster");
-        model.addAttribute("li_flag", "management");
-        return "cluster/cluster-management.jsp";
-    }
+		List<Cluster> lstClusters = clusterDao.findByHostLike(searchIP);
+		model.addAttribute("lstClusters", lstClusters);
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "management");
+		return "cluster/cluster-management.jsp";
+	}
 
-    /**
-     *
-     * Description: <br>
-     * 跳转进入cluster-create.jsp
-     * @param ipRange ipRange
-     * @param model  添加返回页面的数据
-     * @return String
-     */
-    @RequestMapping(value = { "/getClusters" }, method = RequestMethod.POST)
+	/**
+	 *
+	 * Description: <br>
+	 * 跳转进入cluster-create.jsp
+	 *
+	 * @param ipRange
+	 *            ipRange
+	 * @param model
+	 *            添加返回页面的数据
+	 * @return String
+	 */
+	@RequestMapping(value = { "/getClusters" }, method = RequestMethod.POST)
 	public String getClusters(@RequestParam String ipRange, Model model) {
-        List<String> lstIps = new ArrayList<>();
-        List<Cluster> lstClusters = new ArrayList<>();
-        List<String> existIps = new ArrayList<>();
-        int index = ipRange.indexOf("[");
-        if (index != -1) {
-            String ipHalf = ipRange.substring(0, index);
-            String ipSect = ipRange.substring(index + 1, ipRange.length() - 1);
-            if (ipSect.contains("-")) {
-                String[] ipsArray = ipSect.split("-");
-                int ipStart = Integer.valueOf(ipsArray[0]);
-                int ipEnd = Integer.valueOf(ipsArray[1]);
-                for (int i = ipStart; i < ipEnd + 1; i++) {
-                    lstIps.add(ipHalf + i);
-                }
-            }
-            else {
-                String[] ipsArray = ipSect.split(",");
-                for (String ipSon : ipsArray) {
-                    lstIps.add(ipHalf + ipSon);
-                }
-            }
-        }
-        else {
-            String[] ipsArray = ipRange.split(",");
-            Collections.addAll(lstIps, ipsArray);
-        }
-        Iterable<Cluster> a = clusterDao.findAll();
-        for (Cluster b : a) {
-            existIps.add(b.getHost());
-        }
-        for (String ipSon : lstIps) {
+		List<String> lstIps = new ArrayList<>();
+		List<Cluster> lstClusters = new ArrayList<>();
+		List<String> existIps = new ArrayList<>();
+		int index = ipRange.indexOf("[");
+		if (index != -1) {
+			String ipHalf = ipRange.substring(0, index);
+			String ipSect = ipRange.substring(index + 1, ipRange.length() - 1);
+			if (ipSect.contains("-")) {
+				String[] ipsArray = ipSect.split("-");
+				int ipStart = Integer.valueOf(ipsArray[0]);
+				int ipEnd = Integer.valueOf(ipsArray[1]);
+				for (int i = ipStart; i < ipEnd + 1; i++) {
+					lstIps.add(ipHalf + i);
+				}
+			} else {
+				String[] ipsArray = ipSect.split(",");
+				for (String ipSon : ipsArray) {
+					lstIps.add(ipHalf + ipSon);
+				}
+			}
+		} else {
+			String[] ipsArray = ipRange.split(",");
+			Collections.addAll(lstIps, ipsArray);
+		}
+		Iterable<Cluster> a = clusterDao.findAll();
+		for (Cluster b : a) {
+			existIps.add(b.getHost());
+		}
+		for (String ipSon : lstIps) {
 			// 增加数据库中是否存在的验证
-            if (!existIps.contains(ipSon)) {
-                try {
-                    Socket socket = new Socket(ipSon, 22);
-                    if (socket.isConnected()) {
-                        Cluster conCluster = new Cluster();
-                        conCluster.setHost(ipSon);
-                        conCluster.setPort(22);
-                        lstClusters.add(conCluster);
-                        socket.close();
-                    }
-                }
-                catch (NoRouteToHostException e) {
-                    LOG.error("无法SSH到目标主机:" + ipSon);
-                }
-                catch (UnknownHostException e) {
-                    LOG.error("未知主机:" + ipSon);
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        model.addAttribute("lstClusters", lstClusters);
-        model.addAttribute("ipRange", ipRange);
-        return "cluster/cluster-create.jsp";
-    }
+			if (!existIps.contains(ipSon)) {
+				try {
+					Socket socket = new Socket(ipSon, 22);
+					if (socket.isConnected()) {
+						Cluster conCluster = new Cluster();
+						conCluster.setHost(ipSon);
+						conCluster.setPort(22);
+						lstClusters.add(conCluster);
+						socket.close();
+					}
+				} catch (NoRouteToHostException e) {
+					LOG.error("无法SSH到目标主机:" + ipSon);
+				} catch (UnknownHostException e) {
+					LOG.error("未知主机:" + ipSon);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		model.addAttribute("lstClusters", lstClusters);
+		model.addAttribute("ipRange", ipRange);
+		return "cluster/cluster-create.jsp";
+	}
 
-    /**
-     *
-     * Description: <br>
-     * installCluster
-     * @param user
-     * @param pass
-     * @param ip
-     * @param port
-     * @param type
-     * @return  String
-     * @see
-     */
-    @RequestMapping(value = { "/installCluster" }, method = RequestMethod.GET)
+	/**
+	 *
+	 * Description: <br>
+	 * installCluster
+	 *
+	 * @param user
+	 * @param pass
+	 * @param ip
+	 * @param port
+	 * @param type
+	 * @return String
+	 * @see
+	 */
+	@RequestMapping(value = { "/installCluster" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String installCluster(@RequestParam String user, @RequestParam String pass, @RequestParam String ip,
 			@RequestParam Integer port, @RequestParam String type) {
 
-        try {
+		try {
 			// 拷贝安装脚本
-            copyFile(user, pass, ip, port);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            LOG.error(e.getMessage());
-            return "拷贝安装脚本失败";
-        }
+			copyFile(user, pass, ip, port);
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOG.error(e.getMessage());
+			return "拷贝安装脚本失败";
+		}
 		// 读取私有仓库地址
-        DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
-        String imageHostPort = config.getRegistryUsername();
+		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
+		String imageHostPort = config.getRegistryUsername();
 		// ssh连接
-        try {
-            SshConnect.connect(user, pass, ip, port);
+		try {
+			SshConnect.connect(user, pass, ip, port);
 			// 获取主机的内存大小
 			/*
 			 * Integer memLimit = 1000000; String memCmd =
@@ -685,79 +725,83 @@ public class ClusterController {
 			 * 2].trim());
 			 */
 			// 安装环境
-            String masterName = "master";
-            String hostName = "minion" + ip.split("\\.")[3];
-            String cmd = "cd /opt/;chmod +x ./envInstall.sh;nohup ./envInstall.sh " + imageHostPort + " " + yumSource
+			String masterName = "master";
+			String hostName = "minion" + ip.split("\\.")[3];
+			String cmd = "cd /opt/;chmod +x ./envInstall.sh;nohup ./envInstall.sh " + imageHostPort + " " + yumSource
 					+ " " + type + " " + masterName + " " + hostName;
-            Boolean endFlg = false;
-            SshConnect.exec(cmd, 10000);
-            while (!endFlg) {
-                String strRtn = SshConnect.exec("echo $?", 1000);
-                endFlg = strRtn.endsWith("#");
-            }
+			Boolean endFlg = false;
+			SshConnect.exec(cmd, 10000);
+			while (!endFlg) {
+				String strRtn = SshConnect.exec("echo $?", 1000);
+				endFlg = strRtn.endsWith("#");
+			}
 			// 插入主机数据
-            Cluster cluster = clusterDao.findByHost(ip);
-            if (cluster == null) {
-                Cluster newCluster = new Cluster();
-                newCluster.setUsername(user);
-                newCluster.setPassword(pass);
-                newCluster.setHost(ip);
-                newCluster.setPort(port);
-                newCluster.setHostType(type);
-                clusterDao.save(newCluster);
-            }
-            String ins_detail = SshConnect.exec("tail -n 5 /opt/nohup.out", 1000);
-            return ins_detail.split("nohup.out")[1].trim().split("\\[root")[0].trim();
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-            LOG.error(e.getMessage());
-            return "执行command失败";
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            LOG.error(e.getMessage());
-            return "ssh连接失败";
-        }
-        finally {
+			Cluster cluster = clusterDao.findByHost(ip);
+			if (cluster == null) {
+				Cluster newCluster = new Cluster();
+				newCluster.setUsername(user);
+				newCluster.setPassword(pass);
+				newCluster.setHost(ip);
+				newCluster.setPort(port);
+				newCluster.setHostType(type);
+				clusterDao.save(newCluster);
+			}
+			String ins_detail = SshConnect.exec("tail -n 5 /opt/nohup.out", 1000);
+			return ins_detail.split("nohup.out")[1].trim().split("\\[root")[0].trim();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			LOG.error(e.getMessage());
+			return "执行command失败";
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOG.error(e.getMessage());
+			return "ssh连接失败";
+		} finally {
 			// 关闭SSH连接
-            SshConnect.disconnect();
-        }
-    }
+			SshConnect.disconnect();
+		}
+	}
 
-    /**
-     *
-     * Description: <br>
-     * copyFile
-     * @param user user
-     * @param pass pass
-     * @param ip ip
-     * @param port port
-     * @throws IOException IOException
-     * @throws JSchException JSchException
-     * @throws InterruptedException  InterruptedException
-     */
-    private void copyFile(String user, String pass, String ip, Integer port)
+	/**
+	 *
+	 * Description: <br>
+	 * copyFile
+	 *
+	 * @param user
+	 *            user
+	 * @param pass
+	 *            pass
+	 * @param ip
+	 *            ip
+	 * @param port
+	 *            port
+	 * @throws IOException
+	 *             IOException
+	 * @throws JSchException
+	 *             JSchException
+	 * @throws InterruptedException
+	 *             InterruptedException
+	 */
+	private void copyFile(String user, String pass, String ip, Integer port)
 			throws IOException, JSchException, InterruptedException {
-        JSch jsch = new JSch();
-        System.out.print("++++++++++++++++" + user + "+++++" + ip + "+++++" + port + "++" + pass);
-        Session session = jsch.getSession(user, ip, port);
-        session.setPassword(pass);
-        Properties sshConfig = new Properties();
-        sshConfig.put("StrictHostKeyChecking", "no");
-        session.setConfig(sshConfig);
-        session.connect(30000);
-        ChannelSftp sftpConn = (ChannelSftp) session.openChannel("sftp");
-        sftpConn.connect(1000);
-        try {
-            String lpwdPath = sftpConn.lpwd();
+		JSch jsch = new JSch();
+		System.out.print("++++++++++++++++" + user + "+++++" + ip + "+++++" + port + "++" + pass);
+		Session session = jsch.getSession(user, ip, port);
+		session.setPassword(pass);
+		Properties sshConfig = new Properties();
+		sshConfig.put("StrictHostKeyChecking", "no");
+		session.setConfig(sshConfig);
+		session.connect(30000);
+		ChannelSftp sftpConn = (ChannelSftp) session.openChannel("sftp");
+		sftpConn.connect(1000);
+		try {
+			String lpwdPath = sftpConn.lpwd();
 			// 创建目录并拷贝文件
-            sftpConn.put(lpwdPath + "/src/main/resources/static/bin/envInstall.sh", "/opt/");
-        }
-        catch (SftpException e) {
-            e.printStackTrace();
-        }
-    }
+			sftpConn.put(lpwdPath + "/src/main/resources/static/bin/envInstall.sh", "/opt/");
+		} catch (SftpException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * @param ip
@@ -806,91 +850,90 @@ public class ClusterController {
 	public String getAllNode(Model model) {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		NodeList nodes = client.getAllNodes();
-	    List<Node> nodeList	= nodes.getItems();
+		List<Node> nodeList = nodes.getItems();
 		model.addAttribute("nodeList", nodeList);
-        model.addAttribute("menu_flag", "cluster");
-        model.addAttribute("li_flag", "node");
-        return "cluster/node.jsp";
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "node");
+		return "cluster/node.jsp";
 	}
 
 	/**
-	 * @param
-	 *       根据查询条件，返回node信息
+	 * @param 根据查询条件，返回node信息
 	 * @return
 	 * @see
 	 */
 	@RequestMapping(value = { "/nodeinfo" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String getNodeInfo(String clusterstatus,String nodestatus, String ip) {
+	public String getNodeInfo(String clusterstatus, String nodestatus, String ip) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		NodeList nodes = client.getAllNodes();
-	    List<Node> tempList	= nodes.getItems();
-	    List<Node> nodeList1 = new ArrayList<Node>();
+		List<Node> tempList = nodes.getItems();
+		List<Node> nodeList1 = new ArrayList<Node>();
 
-	    if(clusterstatus.equals("1")){
-	    	for(Node node:tempList){
-	            //if(node.getSpec().getunschedulable()==false){\
-	            if(node.getSpec().getUnschedulable()==null){
-	            	nodeList1.add(node);
-	            }
-		    }
-        }else if(clusterstatus.equals("2")){
-        	for(Node node:tempList){
-	            if(node.getSpec().getUnschedulable()!=null){
-	            	nodeList1.add(node);
-	            }
-		    }
-        }else{
-        	for(Node node:tempList){
-	            nodeList1.add(node);
-		    }
-        }
+		if (clusterstatus.equals("1")) {
+			for (Node node : tempList) {
+				// if(node.getSpec().getunschedulable()==false){\
+				if (node.getSpec().getUnschedulable() == null) {
+					nodeList1.add(node);
+				}
+			}
+		} else if (clusterstatus.equals("2")) {
+			for (Node node : tempList) {
+				if (node.getSpec().getUnschedulable() != null) {
+					nodeList1.add(node);
+				}
+			}
+		} else {
+			for (Node node : tempList) {
+				nodeList1.add(node);
+			}
+		}
 
-	    tempList.clear();
-	    tempList=null;
-	    List<Node> nodeList2 = new ArrayList<Node>();
+		tempList.clear();
+		tempList = null;
+		List<Node> nodeList2 = new ArrayList<Node>();
 
-	    if(nodestatus.equals("1")){
-	    	for(Node node:nodeList1){
-	            if(node.getStatus().getConditions().get(1).getStatus().equals("True")){
-	            	nodeList2.add(node);
-	            }
-		    }
-	    }else if(nodestatus.equals("2")){
-	    	for(Node node:nodeList1){
-	            if(!node.getStatus().getConditions().get(1).getStatus().equals("True")){
-	            	nodeList2.add(node);
-	            }
-		    }
-	    }else{
-	    	for(Node node:nodeList1){
-	            	nodeList2.add(node);
-		    }
-	    }
+		if (nodestatus.equals("1")) {
+			for (Node node : nodeList1) {
+				if (node.getStatus().getConditions().get(1).getStatus().equals("True")) {
+					nodeList2.add(node);
+				}
+			}
+		} else if (nodestatus.equals("2")) {
+			for (Node node : nodeList1) {
+				if (!node.getStatus().getConditions().get(1).getStatus().equals("True")) {
+					nodeList2.add(node);
+				}
+			}
+		} else {
+			for (Node node : nodeList1) {
+				nodeList2.add(node);
+			}
+		}
 
-	    nodeList1.clear();
-	    nodeList1=null;
-	    List<Node> nodeList3 = new ArrayList<Node>();
+		nodeList1.clear();
+		nodeList1 = null;
+		List<Node> nodeList3 = new ArrayList<Node>();
 
-	    if(!ip.equals("")){
-	    	for(Node node:nodeList2){
-	            if(node.getStatus().getAddresses().get(0).getAddress().equals(ip)){
-	            	nodeList3.add(node);
-	            }
-		    }
-	    }else{
-	    	for(Node node:nodeList2){
-	            	nodeList3.add(node);
-		    }
-	    }
+		if (!ip.equals("")) {
+			for (Node node : nodeList2) {
+				if (node.getStatus().getAddresses().get(0).getAddress().equals(ip)) {
+					nodeList3.add(node);
+				}
+			}
+		} else {
+			for (Node node : nodeList2) {
+				nodeList3.add(node);
+			}
+		}
 
-	    nodeList2.clear();
-	    nodeList2=null;
+		nodeList2.clear();
+		nodeList2 = null;
 
-	    map.put("status", "200");
+		map.put("status", "200");
 		map.put("nodelist", nodeList3);
-        String result = JSON.toJSONString(map);
+		// String result = JSON.toJSONString(map);
 		return JSON.toJSONString(map);
 	}
 
@@ -905,10 +948,10 @@ public class ClusterController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		Node node = client.getSpecifiedNode(nodename);
 		node.getSpec().setUnschedulable(false);
-		//node.getSpec().setunschedulable("false");
+		// node.getSpec().setunschedulable("false");
 		client.updateNode(nodename, node);
 
-	    map.put("status", "200");
+		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
 
@@ -922,11 +965,11 @@ public class ClusterController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		Node node = client.getSpecifiedNode(nodename);
-		//node.getSpec().setunschedulable("true");
+		// node.getSpec().setunschedulable("true");
 		node.getSpec().setUnschedulable(true);
 		client.updateNode(nodename, node);
-        deletePodsOfNode(nodename);//隔离节点之后，将节点上的pod全部删除掉
-	    map.put("status", "200");
+		deletePodsOfNode(nodename);// 隔离节点之后，将节点上的pod全部删除掉
+		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
 
@@ -940,23 +983,23 @@ public class ClusterController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		Node node = client.getSpecifiedNode(nodename);
-		//node.getSpec().setunschedulable("true");
+		// node.getSpec().setunschedulable("true");
 		node.getSpec().setUnschedulable(true);
 		client.updateNode(nodename, node);
-        //deletePodsOfNode(nodename);
-	    map.put("status", "200");
+		// deletePodsOfNode(nodename);
+		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
 
 	/*
 	 * 删除指定Node上的所有pod
 	 */
-	private void deletePodsOfNode(String name){
+	private void deletePodsOfNode(String name) {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<Pod> pods = client.getPods().getItems();
-		if(!CollectionUtils.isEmpty(pods)){
-			for(Pod pod:pods){
-				if(pod.getSpec().getNodeName().equals(name)){
+		if (!CollectionUtils.isEmpty(pods)) {
+			for (Pod pod : pods) {
+				if (pod.getSpec().getNodeName().equals(name)) {
 					client.deletePodOfNamespace(pod.getMetadata().getNamespace(), pod.getMetadata().getName());
 				}
 			}
@@ -973,21 +1016,329 @@ public class ClusterController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		Node node = client.getSpecifiedNode(nodename);
-        List<Pod> tempPods = client.getPods().getItems();
-        List<Pod> pods = new ArrayList<Pod>();
+		List<Pod> tempPods = client.getPods().getItems();
+		List<Pod> pods = new ArrayList<Pod>();
 
-        if(!CollectionUtils.isEmpty(tempPods)){
-        	for(Pod pod:tempPods){
-        		if(pod.getSpec().getNodeName().equals(nodename)){
-        			pods.add(pod);
-        		}
-        	}
-        }
-        Boolean status = node.getSpec().getUnschedulable();
+		if (!CollectionUtils.isEmpty(tempPods)) {
+			for (Pod pod : tempPods) {
+				if (pod.getSpec().getNodeName().equals(nodename)) {
+					pods.add(pod);
+				}
+			}
+		}
+		Boolean status = node.getSpec().getUnschedulable();
 
-        map.put("status", status);
+		map.put("status", status);
 		map.put("node", node);
 		map.put("pods", pods);
-	    return JSON.toJSONString(map);
+		return JSON.toJSONString(map);
 	}
+
+	/**
+	 * 集群测试，获得集群中所有的node
+	 *
+	 * @param
+	 * @return
+	 */
+	@RequestMapping(value = { "/test" }, method = RequestMethod.GET)
+	public String getAllNodeForTest(Model model) {
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		NodeList nodes = client.getAllNodes();
+		List<Node> nodeList = nodes.getItems();
+		List<Node> resultList = new ArrayList<Node>();
+
+		// 讲节点状态为Ready的节点返回，用于测试
+		for (Node node : nodeList) {
+			if (node.getStatus().getConditions().get(1).getStatus().equals("True")) {
+				resultList.add(node);
+			}
+		}
+
+		model.addAttribute("nodeList", resultList);
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "test");
+		return "cluster/test.jsp";
+	}
+
+	/**
+	 * @param 节点名称字符串（node1,node2,node3....）
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = { "/deploypodfortest" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String generateServiceAndPodForClusterTest(String nodenames) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+
+		// 清空集群中所有node上的测试pod,pod的名称与node的名称相同
+		NodeList nodes = client.getAllNodes();
+		List<Node> nodeList = nodes.getItems();
+
+		PodList podList = client.getPods();
+		List<Pod> pods = podList.getItems();
+
+		for (Node node : nodeList) {
+			for (Pod pod : pods) {
+				if (pod.getMetadata().getName().equals(node.getMetadata().getName())) {
+					client.deletePodOfNamespace("default", node.getMetadata().getName());
+					System.out.println("pod:" + node.getMetadata().getName() + "被删除！");
+					break;
+				}
+			}
+		}
+
+		// 为localhealthy服务创建pod,在所有的每个node中创建一个pod,pod名称与container名称与node名称相同
+		String[] names = nodenames.split(",");
+		for (int i = 0; i < names.length; i++) {
+			Pod pod = new Pod();
+			ObjectMeta objectMeta = new ObjectMeta();
+			Map<String, String> labels = new HashMap<String, String>();
+			labels.put("test", "localhealthy");
+			objectMeta.setName(names[i]);
+			objectMeta.setLabels(labels);
+			pod.setMetadata(objectMeta);
+			PodSpec podSpec = new PodSpec();
+			List<Container> containers = new ArrayList<Container>();
+			Container container = new Container();
+			container.setName(names[i]);
+			container.setImage("192.168.0.76:5000/qperf");
+			List<String> commands = new ArrayList<String>();
+			commands.add("python");
+			commands.add("-m");
+			commands.add("SimpleHTTPServer");
+			commands.add("9000");
+			container.setCommand(commands);
+			containers.add(container);
+			podSpec.setContainers(containers);
+			podSpec.setNodeName(names[i]);
+			pod.setSpec(podSpec);
+			client.createPodOfDefaultNamespace(pod);
+			System.out.println("pod:" + names[i] + "被创建！");
+		}
+
+		boolean exist = false;
+		for (Pod pod : pods) {
+			if (pod.getMetadata().getName().equals("clusterhealthy")) {
+				exist = true;
+				break;
+			}
+		}
+		// 为clusterhealthy服务创建一个pod
+		if (!exist) {
+			Pod pod = new Pod();
+			ObjectMeta objectMeta = new ObjectMeta();
+			Map<String, String> labels = new HashMap<String, String>();
+			labels.put("test", "clusterhealthy");
+			objectMeta.setName("clusterhealthy");
+			objectMeta.setLabels(labels);
+			pod.setMetadata(objectMeta);
+			PodSpec podSpec = new PodSpec();
+			List<Container> containers = new ArrayList<Container>();
+			Container container = new Container();
+			container.setName("clusterhealthy");
+			container.setImage("192.168.0.76:5000/qperf");
+			List<String> commands = new ArrayList<String>();
+			commands.add("python");
+			commands.add("-m");
+			commands.add("SimpleHTTPServer");
+			commands.add("9000");
+			container.setCommand(commands);
+			containers.add(container);
+			podSpec.setContainers(containers);
+			pod.setSpec(podSpec);
+			client.createPodOfDefaultNamespace(pod);
+			System.out.println("pod:clusterhealthy被创建！");
+		}
+
+		boolean localhealthy = false;
+		boolean clusterhealthy = false;
+
+		List<Service> services = client.getAllServicesOfDefaultNamespace().getItems();
+		for (Service service : services) {
+			if (service.getMetadata().getName().equals("localhealthy")) {
+				localhealthy = true;
+				continue;
+			} else if (service.getMetadata().getName().equals("clusterhealthy")) {
+				clusterhealthy = true;
+				continue;
+			}
+		}
+
+		// 创建两个服务localhealthy与clusterhealthy
+		if (!localhealthy) {
+			Service service1 = new Service();
+			ObjectMeta serviceObjectMeta = new ObjectMeta();
+			serviceObjectMeta.setName("localhealthy");
+			service1.setMetadata(serviceObjectMeta);
+			ServiceSpec serviceSpec = new ServiceSpec();
+
+			List<ServicePort> servicePorts = new ArrayList<ServicePort>();
+			ServicePort servicePort = new ServicePort();
+			servicePort.setPort(19765);
+			servicePort.setProtocol("TCP");
+			servicePort.setTargetPort(19765);
+			servicePorts.add(servicePort);
+			serviceSpec.setPorts(servicePorts);
+			Map<String, String> selector1 = new HashMap<String, String>();
+			selector1.put("test", "localhealthy");
+			serviceSpec.setSelector(selector1);
+
+			service1.setSpec(serviceSpec);
+			client.createServiceOfDefaultNamespace(service1);
+			System.out.println("service:localhealthy被创建！");
+		}
+
+		if (!clusterhealthy) {
+			Service service2 = new Service();
+			ObjectMeta serviceObjectMeta2 = new ObjectMeta();
+			serviceObjectMeta2.setName("clusterhealthy");
+			service2.setMetadata(serviceObjectMeta2);
+			ServiceSpec serviceSpec2 = new ServiceSpec();
+
+			List<ServicePort> servicePorts2 = new ArrayList<ServicePort>();
+			ServicePort servicePort2 = new ServicePort();
+			servicePort2.setPort(19765);
+			servicePort2.setProtocol("TCP");
+			servicePort2.setTargetPort(19765);
+			servicePorts2.add(servicePort2);
+			serviceSpec2.setPorts(servicePorts2);
+			Map<String, String> selector2 = new HashMap<String, String>();
+			selector2.put("test", "clusterhealthy");
+			serviceSpec2.setSelector(selector2);
+
+			service2.setSpec(serviceSpec2);
+			client.createServiceOfDefaultNamespace(service2);
+			System.out.println("service:clusterhealthy被创建！");
+		}
+
+		long start =System.currentTimeMillis();
+		while (true) {
+			try {
+				//Thread.sleep(2000);
+				boolean flag =true;
+				for(String name:names){
+					Pod pod = client.getPodOfDefaultNamespace(name);
+					if(!pod.getStatus().getPhase().equals("Running")){
+						flag=false;
+						break;
+					}
+				}
+				if(flag){//pod状态都是Running
+                    break;
+				}
+				long end = System.currentTimeMillis();
+				if((end - start)>60000){//1分钟即为超时
+					System.out.println("部署超时");
+					deletePodsForTest();
+					map.put("status", 500);
+					return JSON.toJSONString(map);
+				}
+				System.out.println("正在准备....已经用时："+(end-start)+"ms");
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				deletePodsForTest();
+				e.printStackTrace();
+				map.put("status", 500);
+				return JSON.toJSONString(map);
+			}
+		}
+
+		map.put("status", 200);
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 清除用于集群测试的所有pod和service
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = { "/deployclear" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String deletePodsForTest() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+
+		// 清空集群中所有用于测试的Pod和Service
+		NodeList nodes = client.getAllNodes();
+		List<Node> nodeList = nodes.getItems();
+
+		PodList podList = client.getPods();
+		List<Pod> pods = podList.getItems();
+
+		for (Node node : nodeList) {
+			for (Pod pod : pods) {
+				if (pod.getMetadata().getName().equals(node.getMetadata().getName())) {
+					client.deletePodOfNamespace("default", node.getMetadata().getName());
+					System.out.println("pod:" + node.getMetadata().getName() + "被删除！");
+					break;
+				}
+			}
+		}
+
+		for (Pod pod : pods) {
+			if (pod.getMetadata().getName().equals("clusterhealthy")) {
+				client.deletePodOfNamespace("default", "clusterhealthy");
+				System.out.println("pod:clusterhealthy被删除！");
+				break;
+			}
+		}
+
+		List<Service> services = client.getAllServicesOfDefaultNamespace().getItems();
+		for (Service service : services) {
+			if (service.getMetadata().getName().equals("localhealthy")) {
+				client.deleteServiceOfDefaultNamespace("localhealthy");
+				System.out.println("Service:localhealthy被删除！");
+				continue;
+			} else if (service.getMetadata().getName().equals("clusterhealthy")) {
+				client.deleteServiceOfDefaultNamespace("clusterhealthy");
+				System.out.println("Service:clusterhealthy被删除！");
+				continue;
+			}
+		}
+
+		map.put("status", 200);
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 执行测试
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = { "/excutetest" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String excuteTest(String nodenames) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+
+		if(StringUtils.isEmpty(nodenames)){
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		String[] names = nodenames.split(",");
+		//List<>
+		for(String name:names){
+			try {
+				Pod pod = client.getPodOfDefaultNamespace(name);
+				if(pod!=null){
+					DockerClient dockerClient = dockerClientService
+							.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
+					InfoCmd infoCmd = dockerClient.infoCmd();
+					Info info = infoCmd.exec();
+				}
+			} catch (Exception e) {
+				map.put("status", 500);
+				return JSON.toJSONString(map);
+			}
+		}
+
+		map.put("status", 200);
+		return JSON.toJSONString(map);
+	}
+}
+
+class dockerinfo{
+
 }

@@ -494,4 +494,53 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
 	}
+
+	@Override
+	public Pod createPodOfDefaultNamespace(Pod pod) throws KubernetesClientException {
+		 try {
+	            return api.createPod("default",pod);
+	        } catch (WebApplicationException e) {
+	            throw new KubernetesClientException(e);
+	        }
+	}
+
+	@Override
+	public Service createServiceOfDefaultNamespace(Service service) throws KubernetesClientException {
+		try {
+            return api.createService("default",service);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	@Override
+	public Status deleteServiceOfDefaultNamespace(String name) throws KubernetesClientException {
+		try {
+            return api.deleteService("default",name);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	@Override
+	public ServiceList getAllServicesOfDefaultNamespace() throws KubernetesClientException {
+		try {
+            return api.getAllServices("default");
+        } catch (NotFoundException e) {
+            return new ServiceList();
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	@Override
+	public Pod getPodOfDefaultNamespace(String name) throws KubernetesClientException {
+		try {
+            return api.getPod("default",name);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
 }
