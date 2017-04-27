@@ -85,7 +85,8 @@ $(document).ready(function() {
 	}).on('changeDate', function(ev) {
 		alert(1);
 	});
-	dateTimePickerFrom.datetimepicker('setDate', (new Date()));
+	var fullDate = $('#serviceCreateDate').val().replace(/-/g,"/");
+	dateTimePickerFrom.datetimepicker('setDate', (new Date(fullDate)));
 
 	var dateTimePickerTo = $('#dateTimePickerTo');
 	dateTimePickerTo.datetimepicker({

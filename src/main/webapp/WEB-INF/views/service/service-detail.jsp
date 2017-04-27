@@ -87,6 +87,7 @@
 								<i id="canclEdit1" style="margin-left:6px" class="fa fa-times"></i>
 								</li>
 							<li>创建时间：${service.createDate }</li>
+							<input id="serviceCreateDate" type="hidden" value="${service.createDate }">
 							<li>更新时间：${service.updateDate }</li>
 						</ul>
 						<div class="applocation">
