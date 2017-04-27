@@ -12,19 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.el.ArrayELResolver;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tools.ant.taskdefs.Sleep;
 import org.influxdb.InfluxDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,8 +27,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.cluster.api.LocalHealthyClient;
 import com.bonc.epm.paas.cluster.entity.CatalogResource;
 import com.bonc.epm.paas.cluster.entity.ClusterResources;
+import com.bonc.epm.paas.cluster.entity.DockerInfo;
+import com.bonc.epm.paas.cluster.entity.Response;
 import com.bonc.epm.paas.cluster.util.InfluxdbSearchService;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
@@ -46,7 +43,6 @@ import com.bonc.epm.paas.entity.PodTopo;
 import com.bonc.epm.paas.entity.ServiceTopo;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
-import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
@@ -56,7 +52,6 @@ import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
-import com.bonc.epm.paas.kubernetes.model.PodStatus;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServiceList;
 import com.bonc.epm.paas.kubernetes.model.ServicePort;
@@ -66,8 +61,8 @@ import com.bonc.epm.paas.net.api.NetAPIClientInterface;
 import com.bonc.epm.paas.net.model.Diff;
 import com.bonc.epm.paas.net.model.RouteTable;
 import com.bonc.epm.paas.net.util.NetClientService;
+import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.CurrentUserUtils;
-import com.bonc.epm.paas.util.ResultPager;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InfoCmd;
@@ -1047,13 +1042,28 @@ public class ClusterController {
 		List<Node> nodeList = nodes.getItems();
 		List<Node> resultList = new ArrayList<Node>();
 
-		// 讲节点状态为Ready的节点返回，用于测试
+		List<Pod> pods = client.getPods().getItems();
+        String deployedpod="";//已经部署的用于集群检测的pod名称，pod名称与node名称相同
+
+        // 讲节点状态为Ready的节点返回，用于测试
 		for (Node node : nodeList) {
 			if (node.getStatus().getConditions().get(1).getStatus().equals("True")) {
 				resultList.add(node);
 			}
+			for(Pod pod:pods){
+				if(node.getMetadata().getName().equals(pod.getMetadata().getName())){
+					if(deployedpod.equals("")){
+						deployedpod+=node.getMetadata().getName();
+					}else{
+						deployedpod+=","+node.getMetadata().getName();
+					}
+					break;
+				}
+			}
 		}
 
+		System.out.println(deployedpod);
+		model.addAttribute("deployedpod", deployedpod);
 		model.addAttribute("nodeList", resultList);
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "test");
@@ -1212,29 +1222,29 @@ public class ClusterController {
 			System.out.println("service:clusterhealthy被创建！");
 		}
 
-		long start =System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		while (true) {
 			try {
-				//Thread.sleep(2000);
-				boolean flag =true;
-				for(String name:names){
+				// Thread.sleep(2000);
+				boolean flag = true;
+				for (String name : names) {
 					Pod pod = client.getPodOfDefaultNamespace(name);
-					if(!pod.getStatus().getPhase().equals("Running")){
-						flag=false;
+					if (!pod.getStatus().getPhase().equals("Running")) {
+						flag = false;
 						break;
 					}
 				}
-				if(flag){//pod状态都是Running
-                    break;
+				if (flag) {// pod状态都是Running
+					break;
 				}
 				long end = System.currentTimeMillis();
-				if((end - start)>60000){//1分钟即为超时
+				if ((end - start) > 60000) {// 1分钟即为超时
 					System.out.println("部署超时");
 					deletePodsForTest();
 					map.put("status", 500);
 					return JSON.toJSONString(map);
 				}
-				System.out.println("正在准备....已经用时："+(end-start)+"ms");
+				System.out.println("正在准备....已经用时：" + (end - start) + "ms");
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				deletePodsForTest();
@@ -1308,25 +1318,37 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/excutetest" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String excuteTest(String nodenames) {
+	public String excuteTest(String nodenames,String pingIp,String tracepathIp) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
-		if(StringUtils.isEmpty(nodenames)){
+		if (StringUtils.isEmpty(nodenames)) {
 			map.put("status", 500);
 			return JSON.toJSONString(map);
 		}
 
 		String[] names = nodenames.split(",");
-		//List<>
-		for(String name:names){
+
+		//检测docker项
+		List<DockerInfo> dockerInfos = new ArrayList<DockerInfo>();
+		for (String name : names) {
 			try {
 				Pod pod = client.getPodOfDefaultNamespace(name);
-				if(pod!=null){
+				if (pod != null) {
 					DockerClient dockerClient = dockerClientService
 							.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
+
 					InfoCmd infoCmd = dockerClient.infoCmd();
 					Info info = infoCmd.exec();
+
+                    long memory = info.getMemTotal()/(1024*1024*1024);//转换成GiB
+                    /*BigDecimal bigDecimal = new BigDecimal(memory);
+                    memory = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).longValue();*/
+					DockerInfo dockerInfo = new DockerInfo();
+					dockerInfo.setNodename(name);
+					dockerInfo.setCpu(info.getNCPU());
+					dockerInfo.setMemory(memory);
+					dockerInfos.add(dockerInfo);
 				}
 			} catch (Exception e) {
 				map.put("status", 500);
@@ -1334,11 +1356,19 @@ public class ClusterController {
 			}
 		}
 
+		//检测ping
+		for(String name:names){
+			Pod pod = client.getPodOfDefaultNamespace(name);
+			LocalHealthyClient localHealthyClient = new LocalHealthyClient(pod.getStatus().getHostIP(), new RestFactory());
+			Response response = localHealthyClient.ping(pingIp);
+		}
+
+		LocalHealthyClient localHealthyClient = new LocalHealthyClient("192.168.0.82", new RestFactory());
+		Response response = localHealthyClient.ping("192.168.0.81");
+		//System.out.println(response.isResult()+response.getOutmsg());
+
+		map.put("dockerList", dockerInfos);
 		map.put("status", 200);
 		return JSON.toJSONString(map);
 	}
-}
-
-class dockerinfo{
-
 }
