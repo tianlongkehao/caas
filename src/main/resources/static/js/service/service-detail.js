@@ -466,6 +466,66 @@ $(document).ready(function() {
 	});
 });
 /*ready*/
+//导出container为image
+function saveAsImage(containerId, nodeIP, cmdString) {
+	$('.progress-bar-info').text("容器保存中...");
+	$('#myModal').modal('show');
+	$.when(getdata(containerId, nodeIP, cmdString)).done(function(data) {
+		$('#myModal').modal('hide');
+	});
+}
+
+function getdata(containerId, nodeIP, cmdString) {
+	var defer = $.Deferred();
+	var imageName = $('#imageName').val();
+	var version = $('#version').val().trim();
+	$.ajax({
+		url : ctx + "/service/saveAsImage",
+		type : "POST",
+		data : {
+			"containerId" : containerId,
+			"nodeIP" : nodeIP,
+			"imageName" : imageName,
+			"version" : version,
+			"cmdString" : cmdString
+		},
+		success : function(data) {
+			defer.resolve(data);
+			data = eval("(" + data + ")");
+			if (data.status == "200") {
+				layer.msg('容器已成功保存为镜像', {
+					icon : 1,
+					btn : ['確定'],
+					time : 0, // 不自动关闭
+					yes : function(index) {
+						layer.closeAll();
+					}
+				});
+			} else if (data.status == "400") {
+				failedMSG("对不起，仓库中已存在该版本名！");
+			} else if (data.status == "401") {
+				failedMSG("对不起，container保存为本地镜像失败！");
+			} else if (data.status == "402") {
+				failedMSG("对不起，本地镜像推送到仓库时失败！");
+			} else if (data.status == "403") {
+				failedMSG("对不起，获取数据库中原始镜像的信息失败！");
+			}
+		}
+	});
+	return defer.promise();
+}
+
+// 弹出失败消息
+function failedMSG(title) {
+	layer.msg(title, {
+		icon : 5,
+		btn : ['確定'],
+		time : 0, // 不自动关闭
+		yes : function(index) {
+			layer.close(index);
+		}
+	});
+}
 
 function editPortComm(portConfigId, containerPort) {
 	alert(portConfigId);

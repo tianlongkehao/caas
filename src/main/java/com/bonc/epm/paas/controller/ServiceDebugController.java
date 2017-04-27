@@ -1,7 +1,9 @@
 package com.bonc.epm.paas.controller;
 
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,16 +28,16 @@ import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.util.CurrentUserUtils;
+import com.bonc.epm.paas.util.FileUtils;
 import com.github.dockerjava.api.DockerClient;
-import com.jcraft.jsch.SftpException;
 
 /**
- * ServiceDebugController
+ * ClassName: ServiceDebugController <br/>
+ * Function: 服务文件的操作. <br/>
+ * date: 2017年4月26日 下午1:44:47 <br/>
  *
- * @author longkx
- * @version 2016年11月1日
- * @see ServiceDebugController
- * @since
+ * @author longkaixiang
+ * @version
  */
 @Controller
 public class ServiceDebugController {
@@ -53,87 +55,40 @@ public class ServiceDebugController {
 	private DockerClientService dockerClientService;
 
 	/**
+	 * downloadFile:下载容器中的文件. <br/>
 	 *
-	 * Description: 下载文件
-	 *
-	 * @param downfiles
-	 *            需要下载的文件
+	 * @author longkaixiang
 	 * @param request
 	 * @param response
-	 * @throws SftpException
-	 * @throws IOException
-	 * @see
+	 * @param nodeIp
+	 * @param containerId
+	 * @param path
+	 * @param fileName
+	 *            void
 	 */
-
 	@RequestMapping(value = { "service/downloadFile" }, method = RequestMethod.GET)
-	public void downloadFile(String downfiles, String hostkey, HttpServletRequest request, HttpServletResponse response)
-			throws SftpException, IOException {
-		// String path = "";
-		// ChannelSftp sftp = sftpPool.get(hostkey);
-		// if (sftp == null || !sftp.isConnected()) {
-		// System.out.println("连接已经断开");
-		// return;
-		// }
-		// path = sftp.pwd();
-		// List<String> resultList = new ArrayList<String>();
-		//
-		// String[] downfile = downfiles.split(",");
-		// byte[] buf = new byte[1024];
-		//
-		// String filename = new String();
-		// if (downfile.length == 1) {
-		// filename = downfile[0] + ".zip";
-		// } else {
-		// filename = "download.zip";
-		// }
-		//
-		// File zipFile = new File(filename);
-		// ZipOutputStream out;
-		//
-		// try {
-		// out = new ZipOutputStream(new FileOutputStream(zipFile));
-		// for (String fileName : downfile) {
-		// if (fileName != null) {
-		// InputStream in = null;
-		// try {
-		// in = sftp.get(path + "/" + fileName);
-		// } catch (SftpException e) {
-		// e.printStackTrace();
-		// resultList.add(fileName + "下载失败,文件不存在!");
-		// return;
-		// }
-		// out.putNextEntry(new ZipEntry(fileName));
-		// int len;
-		// while ((len = in.read(buf)) > 0) {
-		// out.write(buf, 0, len);
-		// }
-		// out.closeEntry();
-		// in.close();
-		// }
-		// }
-		// out.close();
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-		//
-		// response.setHeader("Content-Disposition",
-		// "attachment;fileName=" + new
-		// String(zipFile.getName().getBytes("GBK"), "ISO8859-1"));
-		// response.setContentType(request.getServletContext().getMimeType(zipFile.getName()));
-		// OutputStream ot = response.getOutputStream();
-		// BufferedInputStream bis = new BufferedInputStream(new
-		// FileInputStream(zipFile));
-		// BufferedOutputStream bos = new BufferedOutputStream(ot);
-		// int length = 0;
-		// while ((length = bis.read(buf)) > 0) {
-		// bos.write(buf, 0, length);
-		// }
-		// bos.flush();
-		// ot.flush();
-		// bos.close();
-		// bis.close();
-		// ot.close();
-		// zipFile.delete();
+	public void downloadFile(HttpServletRequest request, HttpServletResponse response, String nodeIp,
+			String containerId, String path, String fileName) {
+		// 获取container所在节点的client
+		DockerClient dockerClient = dockerClientService.getSpecifiedDockerClientInstance(nodeIp);
+
+		try {
+			response.setHeader("Content-Disposition",
+					"attachment;fileName=" + new String((fileName + ".tar").getBytes("GBK"), "ISO8859-1"));
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+		response.setContentType(request.getServletContext().getMimeType(fileName + ".tar"));
+		try (InputStream inputStream = dockerClient.copyArchiveFromContainerCmd(containerId, path + "/" + fileName)
+				.exec(); OutputStream outputStream = response.getOutputStream()) {
+			byte[] b = new byte[1024];
+			int num;
+			while ((num = inputStream.read(b)) != -1) {
+				outputStream.write(b, 0, num);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -141,24 +96,31 @@ public class ServiceDebugController {
 	 *
 	 * @author longkaixiang
 	 * @param files
-	 * @param path
-	 * @param nodeIp
-	 * @param containerId
+	 * @param currentFilePath
+	 * @param currentContainerIp
+	 * @param currentContainerId
 	 * @return String
 	 */
 	@RequestMapping(value = { "service/uploadFile" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String uploadFile(@RequestParam("file") MultipartFile[] files, String path, String nodeIp,
-			String containerId) {
+	public String uploadFile(@RequestParam("file") MultipartFile[] files, String currentFilePath,
+			String currentContainerIp, String currentContainerId) {
 		Map<String, String> map = new HashMap<String, String>();
 		try {
 			// 获取container所在节点的client
-			DockerClient dockerClient = dockerClientService.getSpecifiedDockerClientInstance(nodeIp);
+			DockerClient dockerClient = dockerClientService.getSpecifiedDockerClientInstance(currentContainerIp);
 			if (files != null && files.length > 0) {
-				// 获取输入流
-				InputStream in = files[0].getInputStream();
+				File file = new File(
+						"../containerFile" + "/" + CurrentUserUtils.getInstance().getUser().getNamespace());
+				if (!file.exists()) {
+					file.mkdirs();
+				}
+				String path = "../containerFile" + "/" + CurrentUserUtils.getInstance().getUser().getNamespace() + "/"
+						+ files[0].getOriginalFilename();
+				FileUtils.storeFile(files[0].getInputStream(), path);
 				// 获取输出流
-				dockerClient.copyArchiveToContainerCmd(containerId).withRemotePath(path).withTarInputStream(in).exec();
+				dockerClient.copyArchiveToContainerCmd(currentContainerId).withRemotePath(currentFilePath)
+						.withHostResource(path).exec().wait();
 			} else {
 				map.put("status", "300");
 				return JSON.toJSONString(map);
