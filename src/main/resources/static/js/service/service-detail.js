@@ -100,9 +100,6 @@ $(document).ready(function() {
 		 maxDate: "+1M +10D"*/
 	});
 	dateTimePickerTo.datetimepicker('setDate', (new Date()));
-	$('#refreshLog').click(function(event) {
-		getServiceLogs();
-	});
 	$('#refreshLog1').click(function(event) {
 		clearLog();
 	});
@@ -558,10 +555,8 @@ $(function() {
 	$(".podName").on("click", execCommand);
 });
 
-var sinceTime;
 var interval;
 function clearLog() {
-	sinceTime = new Date().Format("yyyy-MM-ddThh:mm:ss.000000000Z");
 	getCurrentPodlogs();
 	clearInterval(interval);
 	interval = setInterval("getCurrentPodlogs()", 5000);
@@ -600,7 +595,7 @@ function dropdownLog(obj) {
 function getCurrentPodlogs() {
 	var podName = $('#podName').val();
 	$.ajax({
-		url : ctx + "/service/detail/getCurrentPodlogs.do?&podName=" + podName + "&sinceTime=" + sinceTime,
+		url : ctx + "/service/detail/getCurrentPodlogs.do?&podName=" + podName,
 		success : function(data) {
 			data = $.parseJSON(data);
 			if (data.status == '200' && data.logStr != "") {
@@ -615,7 +610,26 @@ function getCurrentPodlogs() {
 		}
 	});
 }
-
+function getPodLogByPeriod(){
+	var podName = $('#podName').val();
+	var since = $('#dateTimePickerFrom').val();
+	var until = $('#dateTimePickerTo').val();
+	$.ajax({
+		url : ctx + "/service/detail/getPodLogByPeriod.do?&podName=" + podName + "&since=" + since + "&until=" + until,
+		success : function(data) {
+			data = $.parseJSON(data);
+			if (data.status == '200' && data.logStr != "") {
+				var containerlog = data.logStr;
+				$(".printLogSpan").html(containerlog);
+			} else if (data.logStr != ""){
+				$(".printLogSpan").html(data.logStr);
+			} else {
+				$(".printLogSpan").html("该时段没有产生日志。");
+			}
+			$(".printLogSpan").parent().parent().scrollTop($(".printLogSpan").parent().parent()[0].scrollHeight);
+		}
+	});
+}
 function ServiceEvent(obj) {
 	if ($(obj).hasClass("lives")) {
 		$(obj).parent().parent().children(".time-line-message").css("display", "none");

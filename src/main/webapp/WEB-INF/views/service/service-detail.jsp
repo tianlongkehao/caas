@@ -682,7 +682,7 @@
 							<div class="pull_right">
 								<input type="text" id="dateTimePickerFrom" value="" readonly="readonly" style="width: 126px;"/>~
 								<input type="text" id="dateTimePickerTo" value="" readonly="readonly" style="width: 126px;"/>
-								<i id="datePicker" class="fa fa-calendar margin cursor" data-toggle="tooltip" data-placement="top" title="选择日期" data-original-title="选择日期"></i>
+								<a id="getPodLogByPeriod" href="javascript:getPodLogByPeriod()"><i id="getPodLogByPeriod" class="fa fa-calendar margin cursor" style="color:#2FBA66" title="选择日期"></i></a>
 								<a id="getPodlogFile" href="" style="color:#2FBA66"><i id="download" class="fa fa-download margin cursor" ></i></a>
 								<input type="hidden" id="podName" name="podName" value=""></input>
 								<i id="refreshLog1" class="fa fa-refresh margin cursor" title="获取实时日志" ></i>
