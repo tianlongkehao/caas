@@ -1221,6 +1221,15 @@ function loadServices() {
 									'href="javascript:oneChangeContainerConf('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.instanceNum +','+row.cpuNum +','+row.ram +','+row.status +');" title="更改配置"'+
 									'><i class="fa fa-cog"></i>更改配置</a> '	;
 								}
+								if ( row.status != 3 && row.status != 6){
+									html += '<a id="'+row.id+'_autoFlex" class="no-drop autoFlex_a " '+
+									'href="javascript:void(0);" title="自动伸缩"'+
+									'><i class="fa fa-arrows-h self_a"></i>自动伸缩</a> ';
+								} else {
+									html += '<a id="'+row.id+'_autoFlex" class="a-live autoFlex_a " '+
+									'href="javascript:oneSetAutoFlexInfo('+row.id+',&apos;'+ row.serviceName +'&apos;,'+row.minReplicas +','+row.maxReplicas +','+row.targetCPUUtilizationPercentage +','+row.status +');" title="自动伸缩"'+
+									'><i class="fa fa-arrows-h"></i>自动伸缩</a> '	;
+								}
 								html +=	'</li>'+
 									'</ul>'+
 								'</li>'+
@@ -1344,6 +1353,97 @@ function oneStopContainerUpdate(id, serviceName) {
 					}
 				}
 			});
+		}
+	});
+}
+
+//响应每一行上自动伸缩
+function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetCPUUtilizationPercentage, status) {
+	$('#autoServiceName').val(containerName);
+	$("#minReplicas").val(minReplicas);
+	$("#maxReplicas").val(maxReplicas);
+	$("#targetCPUUtilizationPercentage").val(targetCPUUtilizationPercentage);
+//	var leftcpu = $("#leftcpu").html();
+//	var leftram = $("#leftram").html();
+//
+//	var maxcpu = parseInt(leftcpu) / parseInt(cpu);
+//	var maxram = parseInt(leftram) / (parseInt(ram) / 1024);
+//
+//	var total = 0;
+//	if (parseInt(maxcpu) > parseInt(maxram)) {
+//		total = maxram;
+//	} else {
+//		total = maxcpu;
+//	}
+
+//	total += parseInt(nums);
+//	$('#numberChange').attr("max", parseInt(total));
+//	$('#leftpod').text(total);
+	
+	layer.open({
+		type : 1,
+		title : '自动伸缩',
+		content : $("#autoFlexInfo"),
+		area: ['500px'],
+		btn : ['创建','删除', '取消'],
+		yes : function(index, layero) {
+			var minReplicasChange = $("#minReplicas").val();
+			var maxReplicasChange = $("#maxReplicas").val();
+			var targetCPUUtilizationPercentageChange = $("#targetCPUUtilizationPercentage").val();
+			layer.close(index);
+			$.ajax({
+				url : "" + ctx + "/services/"+containerName+"/hpa",
+				type : 'put',
+				data:{
+					"ServiceName":containerName,
+					"minReplicas":minReplicasChange,
+					"maxReplicas":maxReplicasChange,
+					"targetCPUUtilizationPercentage":targetCPUUtilizationPercentageChange
+				},
+				success : function(data) {
+					data = eval("(" + data + ")");
+
+					if (data.status == "200") {
+						layer.msg("自动伸缩创建成功", {
+							icon : 6
+						});
+						setTimeout('window.location.reload()', 1500);
+					} else if (data.status == "401") {
+						layer.alert("自动伸缩失败，请检查服务器连接");
+					} else if (data.status == "400") {
+						layer.alert("未查询到该服务！", function() {
+							window.location.reload();
+						});
+					}
+
+				}
+			});
+		},
+		btn2: function(index, layero){
+			$.ajax({
+				url : "" + ctx + "/services/"+containerName+"/hpa",
+				type : 'delete',
+				success : function(data) {
+					data = eval("(" + data + ")");
+
+					if (data.status == "200") {
+						layer.msg("删除成功", {
+							icon : 6
+						});
+						setTimeout('window.location.reload()', 1500);
+					} else if (data.status == "401") {
+						layer.alert("删除失败，请检查服务器连接");
+					} else if (data.status == "400") {
+						layer.alert("未查询到该服务！", function() {
+							window.location.reload();
+						});
+					}
+
+				}
+			});
+		},
+		cancel : function(index) {//或者使用btn2
+			//按钮【按钮二】的回调
 		}
 	});
 }
