@@ -1451,7 +1451,6 @@ function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetC
 				url : "" + ctx + "/services/" + containerName + "/hpa",
 				type : 'put',
 				data : {
-					"ServiceName" : containerName,
 					"minReplicas" : minReplicasChange,
 					"maxReplicas" : maxReplicasChange,
 					"targetCPUUtilizationPercentage" : targetCPUUtilizationPercentageChange

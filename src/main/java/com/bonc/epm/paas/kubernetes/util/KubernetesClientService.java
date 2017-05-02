@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.util.packed.DirectMonotonicReader.Meta;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.bonc.epm.paas.entity.EnvVariable;
@@ -18,7 +17,6 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesApisClient;
-import com.bonc.epm.paas.kubernetes.model.CPUTargetUtilization;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
 import com.bonc.epm.paas.kubernetes.model.CrossVersionObjectReference;

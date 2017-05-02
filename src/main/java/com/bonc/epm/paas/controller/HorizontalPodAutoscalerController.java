@@ -36,6 +36,12 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
 public class HorizontalPodAutoscalerController {
 
 	/**
+	 * 调用服务controller
+	 */
+	@Autowired
+	private ServiceController serviceController;
+
+	/**
 	 * serviceDao:service数据接口.
 	 */
 	@Autowired
@@ -113,7 +119,7 @@ public class HorizontalPodAutoscalerController {
 	 */
 	@RequestMapping(value = { "/services/{service}/hpa" }, method = RequestMethod.PUT)
 	@ResponseBody
-	public String replaceHPA(String ServiceName, Integer minReplicas, Integer maxReplicas,
+	public String replaceHPA(@PathVariable("service") String ServiceName, Integer minReplicas, Integer maxReplicas,
 			Integer targetCPUUtilizationPercentage) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = CurrentUserUtils.getInstance().getUser();
@@ -176,7 +182,7 @@ public class HorizontalPodAutoscalerController {
 	 */
 	@RequestMapping(value = { "/services/{service}/hpa" }, method = RequestMethod.DELETE)
 	@ResponseBody
-	public String deleteHPA(String ServiceName) {
+	public String deleteHPA(@PathVariable("service") String ServiceName) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = CurrentUserUtils.getInstance().getUser();
 		//判断服务是否存在
@@ -192,17 +198,16 @@ public class HorizontalPodAutoscalerController {
 			LOG.info("deleteHPA:[" + ServiceName + "]");
 			apisClient.deleteHorizontalPodAutoscaler(ServiceName);
 		} catch (KubernetesClientException e) {
-			map.put("status", "401");
-			map.put("exception", e);
-			e.printStackTrace();
-			return JSON.toJSONString(map);
+			LOG.info(e.getStatus().getMessage());
 		}
+		//将副本数改为默认副本数
+		serviceController.modifyServiceNum(services.get(0).getId(), services.get(0).getInstanceNum());
 
 		// 保存service
 		Service service = services.get(0);
-		service.setMinReplicas(0);
-		service.setMaxReplicas(0);
-		service.setTargetCPUUtilizationPercentage(0);
+		service.setMinReplicas(-1);
+		service.setMaxReplicas(-1);
+		service.setTargetCPUUtilizationPercentage(-1);
 		serviceDao.save(service);
 
 		map.put("status", "200");
