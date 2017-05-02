@@ -751,27 +751,31 @@ i.pushOrg {
 }
 
 
-.containerLog .weblogtitle {
+.containerLog .weblogtitle, .containerCMD .weblogtitle{
     height: 40px;
     background: #1C2022;
     padding-left: 2%;
     padding-right: 2%;
 }
-.historycontainerLog .weblogtitle {
+.historycontainerLog .weblogtitle, .containerCMD .weblogtitle{
     height: 40px;
     background: #1C2022;
     padding-left: 2%;
     padding-right: 2%;
+}
+.containerCMD .weblogtitle{
+	width:98%;
+	margin: 0 auto;
 }
 
 .weblogtitle .pull_left {
-    width: 59%;
+    width: 49%;
     line-height: 40px;
     display: inline-block;
 }
 
 .weblogtitle .pull_right {
-    width: 40%;
+    width: 49%;
     text-align: right;
     line-height: 40px;
     display: inline-block;
@@ -1151,11 +1155,17 @@ p.portLabel input{
     margin-top: 3px;
 }
 /* 日期 */
-#dateTimePicker{
+#dateTimePickerFrom, #dateTimePickerTo {
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 118px;
 	background-color: #1C2022;
-    height: 37px;
-    border: none;
+	height: 37px;
+	border: none;
+	padding-right: 0px;
+	width: 118px;
 }
+
 #ui-datepicker-div{
 	width:224px;
 }
@@ -1193,7 +1203,7 @@ p.portLabel input{
 	padding-left:20px
 }
 .autoFlexInfoInput{
-	margin-top: 10px; 
+	margin-top: 10px;
 	width: 78%;
 	line-height: 30px;
     border-radius: 5px;
@@ -1201,3 +1211,13 @@ p.portLabel input{
     text-indent:6px;
 }
 
+#fileBody td a{
+	margin-right:6px;
+}
+.fileName i.fa{
+	margin-right:4px;
+	color:#337ab7;
+}
+#fileBody tr{
+	border-bottom:1px solid #ddd;
+}

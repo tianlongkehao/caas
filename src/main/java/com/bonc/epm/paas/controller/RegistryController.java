@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.api.DockerRegistryAPIClientInterface;
 import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
 import com.bonc.epm.paas.docker.exception.ErrorList;
-import com.bonc.epm.paas.docker.model.Images;
+import com.bonc.epm.paas.docker.model.Tags;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.docker.util.DockerRegistryService;
 import com.bonc.epm.paas.entity.CiRecord;
@@ -645,23 +646,24 @@ public class RegistryController {
     @ResponseBody
 	public String refresh() {
 		Map<String, Object> maps = new HashMap<String, Object>();
-
-        DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
-        //获取数据库中所有的镜像
-        ArrayList<Image> imageList = (ArrayList<Image>) imageDao.findAll();
-        //获取所有的镜像分组名称
-        Images images = client.getImages();
-        if (images != null) {
-        	//遍历数据库中的镜像
-	        for (Image image : imageList) {
-	        	//判断仓库中是否有对应的镜像名和tag
-				if (!images.getRepositories().contains(image.getName()) ||
-						!client.getTagsofImage(image.getName()).getTags().contains(image.getVersion())) {
-					//将数据库中的镜像的isDelete字段设置为1
-					image.setIsDelete(1);
-					imageDao.save(image);
-					LOG.info(image.getName()+":"+image.getVersion()+" is deleted");
-				};
+		DockerRegistryAPIClientInterface client = dockerRegistryService.getClient();
+		// 获取数据库中所有的镜像
+		Iterable<Image> images = imageDao.findIsNotDeleted();
+		Iterator<Image> iterator = images.iterator();
+		while (iterator.hasNext()) {
+			Image image = iterator.next();
+			// 判断仓库中是否有对应的镜像名和tag
+			Tags tags = null;
+			try {
+				tags = client.getTagsofImage(image.getName());
+			} catch (DokcerRegistryClientException e) {
+				tags = null;
+			}
+			if (tags == null || tags.getTags() == null || !tags.getTags().contains(image.getVersion())) {
+				// 将数据库中的镜像的isDelete字段设置为1
+				image.setIsDelete(1);
+				imageDao.save(image);
+				LOG.info(image.getName() + ":" + image.getVersion() + " is deleted");
 			}
 		}
 		maps.put("status", "200");

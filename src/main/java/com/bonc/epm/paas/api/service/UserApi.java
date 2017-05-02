@@ -1,7 +1,9 @@
 package com.bonc.epm.paas.api.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.controller.CephController;
 import com.bonc.epm.paas.controller.ServiceController;
 import com.bonc.epm.paas.controller.UserController;
@@ -30,6 +33,7 @@ import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
@@ -250,7 +254,7 @@ public class UserApi {
 
 				if (!createCeph(user)) {
 					client.deleteNamespace(user.getNamespace());
-					//client.deleteResourceQuota(user.getNamespace());
+					// client.deleteResourceQuota(user.getNamespace());
 					map.put("message", "创建ceph失败");
 					map.put("flag", "400");
 					return JSON.toJSONString(map);
@@ -490,4 +494,104 @@ public class UserApi {
 		quota.setSpec(spec);
 		return quota;
 	}
+
+	/**
+	 * buildUsers:根据数据库创建用户的namespace，quota，ceph. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return String
+	 */
+	@RequestMapping(value = { "/user/build" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String buildUsers() {
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		Iterable<User> allUsers = userDao.findAllTenant();
+		Iterator<User> iterator = allUsers.iterator();
+		while (iterator.hasNext()) {
+			messages = createUserResource(iterator.next(), messages);
+		}
+		map.put("status", "200");
+		if (messages.size() > 0) {
+			map.replace("status", "400");
+			map.put("message", messages);
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * buildUsers:根据用户名查找数据库创建用户的namespace，quota，ceph. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return String
+	 */
+	@RequestMapping(value = { "/user/{user}/build" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String buildSpecifiedUser(@PathVariable("user") String userName) {
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		User user = userDao.findByUserName(userName);
+		if (null == user) {
+			messages.add("未找到用户[userName=" + userName + "]");
+		}
+		messages = createUserResource(user, messages);
+		map.put("status", "200");
+		if (messages.size() > 0) {
+			map.replace("status", "400");
+			map.put("message", messages);
+		}
+		return JSON.toJSONString(map);
+	}
+
+	private List<String> createUserResource(User user, List<String> messages) {
+		if (null == messages) {
+			messages = new ArrayList<>();
+		}
+		if (user.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
+			UserResource userResource = userResourceDao.findByUserId(user.getId());
+
+			KubernetesAPIClientInterface client = kubernetesClientService.getClient(user.getNamespace());
+			Namespace namespace = null;
+			try {
+				namespace = client.getNamespace(user.getNamespace());
+			} catch (KubernetesClientException e1) {
+				namespace = null;
+			}
+			if (namespace != null) {
+				messages.add("namespace已存在[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
+				return messages;
+			}
+			namespace = kubernetesClientService.generateSimpleNamespace(user.getNamespace());
+			try {
+				if (!createNsAndSec(user, namespace, client)) {
+					client.deleteNamespace(user.getNamespace());
+					messages.add("创建namespace或者secret失败！[userName=" + user.getUserName() + ",nameSpace="
+							+ user.getNamespace() + "]");
+				}
+
+				// 根据资源是否存在，判断操作为新增还是更新
+				if (userResource != null) {
+					if (!createQuota(user, userResource, client)) {
+						client.deleteNamespace(user.getNamespace());
+						messages.add(
+								"创建quota失败[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
+					}
+				}
+
+//				if (!createCeph(user)) {
+//					client.deleteNamespace(user.getNamespace());
+//					messages.add(
+//							"创建ceph失败！[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
+//				}
+			} catch (Exception e) {
+				client.deleteNamespace(user.getNamespace());
+				e.printStackTrace();
+				messages.add("创建失败！[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
+			}
+		} else {
+			messages.add("不是租户：[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
+		}
+		return messages;
+	}
+
 }

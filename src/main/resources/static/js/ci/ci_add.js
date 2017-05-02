@@ -385,8 +385,23 @@ $(document).ready(function () {
 		$(this).parent().next().toggle();
 	});
 
-	$(".sonarInfo").hide();
-	$("#ci-sonarInfo").click(function() {
+	//$(".sonarInfo").hide();
+//	$("#ci-sonarInfo").click(function() {
+//		if ($('#ci-sonarInfo').is(":checked")) {
+//			$("#sonarCheck").val("1");
+//			$(".sonarInfo").show();
+//		} else {
+//			$("#sonarCheck").val("0");
+//			$(".sonarInfo").hide();
+//			$("#sources").val("");
+//		}
+//	});
+	var sonarCheck = $("#sonarCheck").val();
+	if(sonarCheck == 1){
+
+	}else{
+		$(".sonarInfo").hide();
+		$("#ci-sonarInfo").click(function() {
 		if ($('#ci-sonarInfo').is(":checked")) {
 			$("#sonarCheck").val("1");
 			$(".sonarInfo").show();
@@ -396,6 +411,7 @@ $(document).ready(function () {
 			$("#sources").val("");
 		}
 	});
+	}
 
 });/*ready*/
 

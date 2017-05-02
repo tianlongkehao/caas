@@ -1,6 +1,20 @@
 $(document).ready(function () {
 	$("#delItemcfg").hide();
-	findImages();
+	$.ajax({
+	 	url:ctx+"/ci/getSonarConfig.do",
+		async:false,
+		success:function(data){
+			data = eval("(" + data + ")");
+			if(data.status == 200 && data.sonarConfig.hidden == false){
+				findImages();
+			}else{
+				$(".sonarTh").hide();
+				findImagesNoSonar();
+			}
+
+		}
+	});
+
 	imageTypeSrc();
     /*$(".images-panel").mouseover(function () {
         $(this).children(".create-item").css("opacity", "1");
@@ -187,8 +201,117 @@ function findImages(){
 								} else if (row.codeRating == 5) {
 									html = '<a href="'+ row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_e">E</span></a>';
 								} else {
-									html = '<span class="fa_level fa_level_a">无</span>';
+									html = '<span class="fa_level fa_level_n">无</span>';
 								}
+	                    		return html;
+	                    	}
+	                    },
+	                    {
+	                    	data : null ,
+	                    	render : function ( data, type, row ) {
+	                    		var html = '<a href="'+ctx+'/registry/detail/'+row.id+'" title="查看详细信息" >'+row.name+'</a>';
+	                    		return html;
+	                    	}
+	                    },
+	                    {
+	                    	data : "version" ,
+                    		render : function ( data, type, row ) {
+	                    		if (data == null || data == "") {
+	                    			return "";
+	                    		}
+	                    		return data;
+	                    	}
+	                    },
+	                    {
+	                    	data : "remark",
+	                    	render : function ( data, type, row ) {
+	                    		if (data == null || data == "") {
+	                    			return "";
+	                    		}
+	                    		return data;
+	                    	}
+
+	                    },
+	                    {
+	                    	data : "creatorName" ,
+                    		render : function ( data, type, row ) {
+	                    		if (data == null || data == "") {
+	                    			return "租户已注销";
+	                    		}
+	                    		return data;
+	                    	}
+	                    },
+	                    {
+	                    	data : 'createDate',
+	                    	render : function ( data, type, row ) {
+	                    		var date = calendarFormat(data);
+	                    		return date;
+	                        }
+	                    },
+	                    {
+	                    	data: null,
+	                    	render: function ( data, type, row ) {
+	                    		var html = "";
+	                    		if (row.isDelete == 1 ) {
+	                    			if (row.currUserFavor == 0) {
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' +
+	                    						'<i class="fa fa-star-o star-style" style="color: #e8504f;margin-left:55px;"></i>'+
+	                    					'</a>';
+	                    			} else {
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' +
+                									'<i class="fa fa-star star-style" style="color: #e8504f;margin-left:35px;"></i>'+
+                								'</a>';
+	                    			}
+	                    		} else {
+	                    			html += '<a class="no-drop" href="'+ctx+'/service/add?imageName='+row.name+'&imageVersion='+row.version+'&imgID='+row.id+'&resourceName='+row.resourceName+'"'+
+										 		'imageversion="'+row.version+'" imagename="'+row.name+'" title="部署">'+
+										 		'<i class="fa fa-wrench"></i>'+
+										 	'</a>'+
+										 	'<a class="no-drop a-oper downloadImage" imageversion="'+row.version+'" imagename="'+row.name+'" imgID="'+row.id+'" resourcename= "'+row.resourceName+'" title="导出">'+
+										 		'<i class="fa fa-share-square-o"></i>'+
+										 	'</a>' ;
+							 		if (row.currUserFavor == 0) {
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' +
+	                    						'<i class="fa fa-star-o star-style" style="color: #e8504f;"></i>'+
+	                    					'</a>';
+	                    			} else {
+	                    				html += '<a class="no-drop a-oper forkquick" imageId="'+row.id+'">' +
+                									'<i class="fa fa-star star-style" style="color: #e8504f;"></i>'+
+                								'</a>';
+	                    			}
+
+	                    			if (userId == row.createBy) {
+	                    				html +=	'<a class="no-drop a-oper" href="javascript:void(0)" onclick="deleteImage(this)"'+
+													'title="删除" imageversion="'+row.version+'" imagename="'+row.name+'" imageid="'+row.id+'">' +
+													'<i class="fa fa-trash"></i>'+
+												'</a>';
+	                    			}
+	                    		}
+
+	                    		return html;
+	                    	}
+	                    }
+	                ]
+	  });
+
+}
+function findImagesNoSonar(){
+	var index = $("#index").val();
+	var userId = $("#userId").val();
+	$('.dataTables-example').dataTable({
+		 	"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }],
+		 	"autoWidth": false,
+	        "processing": true,
+	        "serverSide": true,
+	        "ordering":false,
+	        "stateSave":true,
+//	        "bStateSave":true,
+	        "ajax": ctx+"/registry/pager/"+index,
+	        "columns": [
+	                    {
+	                    	data : null,
+	                    	render : function ( data, type, row ) {
+	                    		var html = '<input type="checkbox" class="chkItem" name="ids" style="margin-left:22px;"  value="'+row.id+'">';
 	                    		return html;
 	                    	}
 	                    },

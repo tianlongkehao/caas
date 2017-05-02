@@ -64,17 +64,20 @@ public class SheraClientService {
     @Autowired
     private SheraDao sheraDao;
 
-    public SheraAPIClientInterface getClient() {
-        User user = CurrentUserUtils.getInstance().getUser();
-        Shera shera = new Shera();
-        if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-            shera = sheraDao.findByUserId(user.getParent_id());
-        }
-        else {
-            shera = sheraDao.findByUserId(user.getId());
-        }
-        return getClient(shera);
-    }
+	public SheraAPIClientInterface getClient() {
+		User user = CurrentUserUtils.getInstance().getUser();
+		Shera shera = new Shera();
+		if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+			shera = sheraDao.findByUserId(user.getParent_id());
+		} else {
+			shera = sheraDao.findByUserId(user.getId());
+		}
+		//找不到shera时候，使用默认shera
+		if (null == shera) {
+			shera = sheraDao.findAll().iterator().next();
+		}
+		return getClient(shera);
+	}
 
     public SheraAPIClientInterface getClient(Shera shera){
         String namespace = CurrentUserUtils.getInstance().getUser().getUserName();
@@ -108,7 +111,7 @@ public class SheraClientService {
     public Job generateJob(String id ,String jdkVersion,String branch,String url,
                            String codeName,String refspec,String dockerFileContent,String dockerFile,
                            String imgNamePre,String imgName,List<CiInvoke> ciInvokeList,String userName,
-			Integer type, Integer codeType, String uuid, boolean check, String sources, String ciTools) {
+			Integer type, Integer codeType, String uuid, Integer check, String sources, String ciTools) {
 		Job job = new Job();
 		job.setId(id);
 		job.setJdkVersion(jdkVersion);
@@ -146,12 +149,13 @@ public class SheraClientService {
 		}
 		job.setCodeManager(codeManager);
         SonarManager sonarManager = new SonarManager();
-        sonarManager.setCheck(check);
-        sonarManager.setSources(sources);
-
-        sonarManager.setCheck(true);
-        sonarManager.setSources("src");
-
+        if (null != check && null != sources) {
+        	sonarManager.setCheck(check.equals(CiConstant.CODE_CHECK_TRUE));
+        	sonarManager.setSources(sources);
+		} else {
+        	sonarManager.setCheck(false);
+        	sonarManager.setSources("");
+		}
 
         job.setSonarManager(sonarManager);
 

@@ -34,6 +34,16 @@ $(document).ready(function(){
 	      $('#serviceName').focus();
 	      return;
 	    }
+
+		var responsiblePerson = $('#responsiblePerson').val();
+		if (responsiblePerson.length > 24 || responsiblePerson.length < 1) {
+			layer.tips('责任人为1~24个字符', '#responsiblePerson', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#responsiblePerson').focus();
+			return;
+		}
 		reg = /^((\d{11})|((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})))$/;
 		var responsiblePersonTelephone = $('#responsiblePersonTelephone').val();
 		if (!reg.test(responsiblePersonTelephone)) {
