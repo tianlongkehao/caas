@@ -362,7 +362,7 @@
 			<li class="line-h-3" id="instsizeChange">
 				<div class="param-set">
 					<span class="edit-name-c" style="margin-top: 5px;">CPU使用率：</span> <input
-						value="1" id="targetCPUUtilizationPercentage" min="1" max="100" class="autoFlexInfoInput"
+						value="" id="targetCPUUtilizationPercentage" min="1" max="100" class="autoFlexInfoInput"
 						type="number"> <span
 						class="unit">%</span>
 				</div>
@@ -370,7 +370,7 @@
 			<li class="line-h-3" id="instsizeChange">
 				<div class="param-set">
 					<span class="edit-name-c" style="margin-top: 5px;">最小副本数：</span> <input
-						value="1" id="minReplicas" min="1" max="" class="autoFlexInfoInput"
+						value="" id="minReplicas" min="1" max="" class="autoFlexInfoInput"
 						type="number"> <span
 						class="unit">个</span>
 				</div>
@@ -378,7 +378,7 @@
 			<li class="line-h-3" id="instsizeChange">
 				<div class="param-set">
 					<span class="edit-name-c" style="margin-top: 5px;">最大副本数：</span> <input
-						value="1" id="maxReplicas" min="1" max="" class="autoFlexInfoInput"
+						value="" id="maxReplicas" min="1" max="" class="autoFlexInfoInput"
 						type="number"> <span
 						class="unit">个</span>
 				</div>
