@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +72,11 @@ public class HorizontalPodAutoscalerController {
 			map.put("status", "400");
 			return JSON.toJSONString(map);
 		}
+		if (minReplicas >= maxReplicas) {
+			//最小pod数大于最大pod数
+			map.put("status", "402");
+			return JSON.toJSONString(map);
+		}
 		//创建hpa
 		HorizontalPodAutoscaler hpa = kubernetesClientService.generateHorizontalPodAutoscaler(ServiceName, maxReplicas,
 				minReplicas, Kind.REPLICATIONCONTROLLER, targetCPUUtilizationPercentage);
@@ -118,6 +122,11 @@ public class HorizontalPodAutoscalerController {
 		if (services.size() != 1) {
 			//找不到该服务
 			map.put("status", "400");
+			return JSON.toJSONString(map);
+		}
+		if (minReplicas >= maxReplicas) {
+			//最小pod数大于最大pod数
+			map.put("status", "402");
 			return JSON.toJSONString(map);
 		}
 		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
