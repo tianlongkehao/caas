@@ -33,8 +33,11 @@ import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
+import com.bonc.epm.paas.kubernetes.model.Kind;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
@@ -352,6 +355,34 @@ public class ServiceApi {
 			messages.add("rc创建失败[ServiceName="+service.getServiceName()+", Message="+e.getStatus().getMessage()+"]");
 			return messages;
 		}
+		/*************************************
+		 * 创建一个新的autoscaler
+		 *************************************/
+		if (service.getTargetCPUUtilizationPercentage() != null && !service.getTargetCPUUtilizationPercentage().equals(0)) {
+			//初始化新的hpa
+			KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
+			//获取已存在的hpa
+			HorizontalPodAutoscaler hpa = null;
+			try {
+				hpa = apisClient.getHorizontalPodAutoscaler(service.getServiceName());
+			} catch (KubernetesClientException e) {
+			}
+			HorizontalPodAutoscaler newHPA = kubernetesClientService.generateHorizontalPodAutoscaler(service.getServiceName(), service.getMaxReplicas(),
+					service.getMinReplicas(), Kind.REPLICATIONCONTROLLER, service.getTargetCPUUtilizationPercentage());
+			try {
+				if(null == hpa){
+					//不存在旧的hpa时，创建新的hpa
+					newHPA = apisClient.createHorizontalPodAutoscaler(newHPA);
+				} else {
+					//存在旧的hpa时，替换为新的hpa
+					newHPA = apisClient.replaceHorizontalPodAutoscaler(service.getServiceName(), newHPA);
+				}
+			} catch (KubernetesClientException e) {
+				messages.add("hpa创建失败[ServiceName="+service.getServiceName()+", Message="+e.getStatus().getMessage()+"]");
+			}
+		}
+
+
 		return messages;
 	}
 

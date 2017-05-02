@@ -76,6 +76,7 @@ import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavor;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
@@ -2276,6 +2277,15 @@ public class ServiceController {
 		if (null == service) {
 			map.put("status", "501");
 			return JSON.toJSONString(map);
+		}
+		//如果服务有hpa，则删除hpa
+		if (service.getTargetCPUUtilizationPercentage() != null) {
+			KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
+			try {
+				apisClient.deleteHorizontalPodAutoscaler(service.getServiceName());
+			} catch (KubernetesClientException e) {
+				LOG.error(e.getMessage());
+			}
 		}
 		try {
 			if (service.getStatus() != 1) {
