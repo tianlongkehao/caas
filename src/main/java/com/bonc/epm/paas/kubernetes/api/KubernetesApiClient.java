@@ -496,36 +496,36 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	}
 
 	@Override
-	public Pod createPodOfDefaultNamespace(Pod pod) throws KubernetesClientException {
+	public Pod createPodOfNamespace(String namespace,Pod pod) throws KubernetesClientException {
 		 try {
-	            return api.createPod("default",pod);
+	            return api.createPod(namespace,pod);
 	        } catch (WebApplicationException e) {
 	            throw new KubernetesClientException(e);
 	        }
 	}
 
 	@Override
-	public Service createServiceOfDefaultNamespace(Service service) throws KubernetesClientException {
+	public Service createServiceOfNamespace(String namespace,Service service) throws KubernetesClientException {
 		try {
-            return api.createService("default",service);
+            return api.createService(namespace,service);
         } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
         }
 	}
 
 	@Override
-	public Status deleteServiceOfDefaultNamespace(String name) throws KubernetesClientException {
+	public Status deleteServiceOfNamespace(String namespace,String name) throws KubernetesClientException {
 		try {
-            return api.deleteService("default",name);
+            return api.deleteService(namespace,name);
         } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
         }
 	}
 
 	@Override
-	public ServiceList getAllServicesOfDefaultNamespace() throws KubernetesClientException {
+	public ServiceList getAllServicesOfNamespace(String namespace) throws KubernetesClientException {
 		try {
-            return api.getAllServices("default");
+            return api.getAllServices(namespace);
         } catch (NotFoundException e) {
             return new ServiceList();
         } catch (WebApplicationException e) {
@@ -534,13 +534,25 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	}
 
 	@Override
-	public Pod getPodOfDefaultNamespace(String name) throws KubernetesClientException {
+	public Pod getPodOfNamespace(String namespace,String name) throws KubernetesClientException {
 		try {
-            return api.getPod("default",name);
+            return api.getPod(namespace,name);
         } catch (NotFoundException e) {
             return null;
         } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
         }
 	}
+
+	@Override
+	public Service getServiceOfNamespace(String namespace, String name) throws KubernetesClientException {
+		try {
+            return api.getService(namespace,name);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
 }

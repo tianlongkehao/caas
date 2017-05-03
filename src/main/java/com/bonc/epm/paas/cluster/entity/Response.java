@@ -4,18 +4,7 @@ public class Response {
 
 	private boolean result;
 	private String outmsg;
-	/*public boolean isResult() {
-		return Result;
-	}
-	public void setResult(boolean result) {
-		Result = result;
-	}
-	public String getOutMsg() {
-		return OutMsg;
-	}
-	public void setOutMsg(String outMsg) {
-		OutMsg = outMsg;
-	}*/
+
 	public boolean isResult() {
 		return result;
 	}

@@ -216,7 +216,7 @@ public interface KubernetesAPIClientInterface {
      * @return {@link Pod}
      * @throws KubernetesClientException
      */
-    public Pod getPodOfDefaultNamespace(String name) throws KubernetesClientException;
+    public Pod getPodOfNamespace(String namespace,String name) throws KubernetesClientException;
 
     /**
      * Get all Pods
@@ -252,7 +252,7 @@ public interface KubernetesAPIClientInterface {
      * @return
      * @throws KubernetesClientException
      */
-    public Pod createPodOfDefaultNamespace(Pod pod) throws KubernetesClientException;
+    public Pod createPodOfNamespace(String namespace,Pod pod) throws KubernetesClientException;
 
     /**
      * Delete a Pod
@@ -433,6 +433,16 @@ public interface KubernetesAPIClientInterface {
     public Service getService(String name) throws KubernetesClientException;
 
     /**
+     * Get the Service with the given id.
+     *
+     * @param name
+     *            id of the service.
+     * @return {@link Service}
+     * @throws KubernetesClientException
+     */
+    public Service getServiceOfNamespace(String namespace,String name) throws KubernetesClientException;
+
+    /**
      * Get all the services.
      *
      * @return array of {@link Service}s
@@ -446,7 +456,7 @@ public interface KubernetesAPIClientInterface {
      * @return array of {@link Service}s
      * @throws KubernetesClientException
      */
-    public ServiceList getAllServicesOfDefaultNamespace() throws KubernetesClientException;
+    public ServiceList getAllServicesOfNamespace(String namespace) throws KubernetesClientException;
 
     /**
      * Create a new Kubernetes service.
@@ -464,7 +474,7 @@ public interface KubernetesAPIClientInterface {
      *            service to be created.
      * @throws KubernetesClientException
      */
-    public Service createServiceOfDefaultNamespace(Service service) throws KubernetesClientException;
+    public Service createServiceOfNamespace(String namespace,Service service) throws KubernetesClientException;
 
     /**
      * update a new Kubernetes service.
@@ -491,7 +501,7 @@ public interface KubernetesAPIClientInterface {
      *            service id to be deleted.
      * @throws KubernetesClientException
      */
-    public Status deleteServiceOfDefaultNamespace(String name) throws KubernetesClientException;
+    public Status deleteServiceOfNamespace(String namespace,String name) throws KubernetesClientException;
 
     /** Endpoints API**/
     /**
