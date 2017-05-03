@@ -3,7 +3,7 @@ package com.bonc.epm.paas.shera.model;
 public class SshKey {
 	private String user;
 	private String key;
-	private String path;
+	private String keyPrivate;
 
 	public String getUser() {
 		return user;
@@ -21,11 +21,12 @@ public class SshKey {
 		this.key = key;
 	}
 
-	public String getPath() {
-		return path;
+	public String getKeyPrivate() {
+		return keyPrivate;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setKeyPrivate(String keyPrivate) {
+		this.keyPrivate = keyPrivate;
 	}
+
 }
