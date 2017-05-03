@@ -1227,7 +1227,7 @@ function loadServicesNoSonar() {
 					if(row.status == 1 || row.status == 4){
 						html += '<span class="number-node">0</span>';
 					}else{
-						if(row.targetCPUUtilizationPercentage == undefined || row.targetCPUUtilizationPercentage == null){
+						if(row.targetCPUUtilizationPercentage == undefined || row.targetCPUUtilizationPercentage == null || row.targetCPUUtilizationPercentage == -1){
 							html += '<span class="number-node">' + row.instanceNum + '</span>';
 						}else{
 							html += '<span class="number-node">auto</span>';
@@ -1464,26 +1464,22 @@ function oneStopContainerUpdate(id, serviceName) {
 //响应每一行上自动伸缩
 function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetCPUUtilizationPercentage, status) {
 	$('#autoServiceName').val(containerName);
-	$("#minReplicas").val(minReplicas);
-	$("#maxReplicas").val(maxReplicas);
-	$("#targetCPUUtilizationPercentage").val(targetCPUUtilizationPercentage);
-	//	var leftcpu = $("#leftcpu").html();
-	//	var leftram = $("#leftram").html();
-	//
-	//	var maxcpu = parseInt(leftcpu) / parseInt(cpu);
-	//	var maxram = parseInt(leftram) / (parseInt(ram) / 1024);
-	//
-	//	var total = 0;
-	//	if (parseInt(maxcpu) > parseInt(maxram)) {
-	//		total = maxram;
-	//	} else {
-	//		total = maxcpu;
-	//	}
-
-	//	total += parseInt(nums);
-	//	$('#numberChange').attr("max", parseInt(total));
-	//	$('#leftpod').text(total);
-
+	if(minReplicas == -1){
+		$("#minReplicas").val('');
+	}else{
+		$("#minReplicas").val(minReplicas);
+	}
+	if(maxReplicas == -1){
+		$("#maxReplicas").val('');
+	}else{
+		$("#maxReplicas").val(maxReplicas);
+	}
+	if(targetCPUUtilizationPercentage == -1){
+		$("#targetCPUUtilizationPercentage").val('');
+	}else{
+		$("#targetCPUUtilizationPercentage").val(targetCPUUtilizationPercentage);
+	}
+	
 	layer.open({
 		type : 1,
 		title : '自动伸缩',

@@ -1,17 +1,26 @@
 var filesocket, fileSocketAlive, msgnum, endString, resultString;
 resultString = "";
-function dropdownFile(object) {
-	$(".contentMain>div:not('.baseInfo')").addClass("hide");
-	$(".containerFile").removeClass("hide");
+$(document).ready(function() {
+	dropdownFile();
+	var windowHeight = window.innerHeight-108;
+	$(".ibox-content div.tableBody").css("height",windowHeight);
+	window.onresize = function(){
+		var windowHeight = window.innerHeight-108;
+		$(".ibox-content div.tableBody").css("height",windowHeight);
+	}
+})
+function dropdownFile() {
+	//$(".contentMain>div:not('.baseInfo')").addClass("hide");
+	//$(".containerFile").removeClass("hide");
 	$("#terminal-container").html("");
 
-	var nodeIP = object.getAttribute("dockerServerURL");
-	$('#containerFileIp').val(nodeIP);
-	var containerID = object.getAttribute("containerid").replace('docker://', '');
-	$('#containerFileId').val(containerID);
-	var host = object.getAttribute("entryHost");
-	var dockerServerURL = 'http://' + object.getAttribute("dockerServerURL") + ':' + object.getAttribute("dockerServerPort");
-
+	var container = $("#containerid").val();
+	var nodeIP = $("#nodeIP").val();
+	var dockerServerPort = $("#dockerIOPort").val();
+	var containerID = container.replace('docker://', '');
+	var host = $("#entryHost").val();
+	var dockerServerURL = 'http://' + nodeIP + ':' + dockerServerPort;
+	
 	var soc = "ws://" + host + "/enter?method=web&containerID=" + containerID + "&dockerServerURL=" + dockerServerURL;
 	filesocket = new WebSocket(soc);
 
@@ -120,13 +129,13 @@ function showFileList(data) {
 			var fileName = fileObjArray[i];
 			fileHtml += '<tr>' + '<td style="width: 5%;text-indent: 14px;"><input type="checkbox"></td>';
 			if (fileName.endsWith("/")) {
-				fileHtml += '<td class="fileName" style="width: 45%;"><a href="javascript:sendChangeDirMsg(\'' + fileName.substring(0, fileName.length - 1) + '\')"><i class="fa fa-folder"></i>';
+				fileHtml += '<td class="fileName" style="width: 45%;"><a href="javascript:sendChangeDirMsg(\'' + fileName.substring(0, fileName.length - 1) + '\')"><i class="fa fa-folder" style="color:#FCB322"></i>';
 			} else if (fileName.endsWith("*")) {
-				fileHtml += '<td class="fileName" style="width: 45%;"><a ><i class="fa fa-file-o"></i>';
+				fileHtml += '<td class="fileName" style="width: 45%;"><a ><i class="fa fa-file-code-o" style="color:#2FBA66"></i>';
 			} else if (fileName.endsWith("@")) {
 				fileHtml += '<td class="fileName" style="width: 45%;"><a href="javascript:sendChangeDirMsg(\'' + fileName.substring(0, fileName.length - 1) + '\')"><i class="fa fa-share-square"></i>';
 			} else {
-				fileHtml += '<td class="fileName" style="width: 45%;"><a ><i class="fa fa-file"></i>';
+				fileHtml += '<td class="fileName" style="width: 45%;"><a ><i class="fa fa-file-text-o"></i>';
 			}
 			var fileRealName;
 			if (fileName.endsWith("/") || fileName.endsWith("@") || fileName.endsWith("*")) {

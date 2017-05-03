@@ -60,11 +60,11 @@ $(document).ready(function() {
 		$(".historycontainerLog").removeClass("hide");
 	});
 
-	$(".execCommand").click(function() {
-		$(".contentMain>div:not('.baseInfo')").addClass("hide");
-		$("#containerexec").removeClass("hide");
-		//$("#execText").val("");
-	});
+//	$(".execCommand").click(function() {
+//		$(".contentMain>div:not('.baseInfo')").addClass("hide");
+//		$("#containerexec").removeClass("hide");
+//		//$("#execText").val("");
+//	});
 
 	$(".EVENT").click(function() {
 
