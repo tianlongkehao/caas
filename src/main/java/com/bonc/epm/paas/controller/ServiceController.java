@@ -3554,4 +3554,89 @@ public class ServiceController {
 		}
 		return true;
 	}
+	//终端
+	@RequestMapping(value = { "service/cmd/{id}/{podName}" }, method = RequestMethod.GET)
+	public String serviceCmd(Model model, @PathVariable long id, @PathVariable String podName) {
+		Service service = serviceDao.findOne(id);
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		List<Pod> podList = new ArrayList<>();
+		String hostIP = null;
+		String containerID = null;
+		Pod pod = null;
+		// 通过服务名获取pod列表
+		if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
+			com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+			try {
+				k8sService = client.getService(service.getServiceName());
+			} catch (Exception e) {
+				k8sService = null;
+			}
+			if (k8sService != null) {
+				PodList pods = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+				if (pods != null) {
+					podList = pods.getItems();
+					if (CollectionUtils.isNotEmpty(podList)) {
+						for (Pod poditem : podList) {
+							if (poditem.getMetadata().getName().equals(podName)) {
+								pod = poditem;
+								hostIP = poditem.getStatus().getHostIP();
+								containerID = poditem.getStatus().getContainerStatuses().get(0).getContainerID();
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		model.addAttribute("pod", pod);
+		model.addAttribute("dockerServerURL", hostIP);
+		model.addAttribute("containerid", containerID);
+		model.addAttribute("entryHost", ENTRY_HOST);
+		model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
+
+		return "service/service-cmd.jsp";
+	}
+
+	// 文件
+	@RequestMapping(value = { "service/file/{id}/{podName}" }, method = RequestMethod.GET)
+	public String serviceFile(Model model, @PathVariable long id, @PathVariable String podName) {
+		Service service = serviceDao.findOne(id);
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		List<Pod> podList = new ArrayList<>();
+		String hostIP = null;
+		String containerID = null;
+		Pod pod = null;
+		// 通过服务名获取pod列表
+		if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
+			com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+			try {
+				k8sService = client.getService(service.getServiceName());
+			} catch (Exception e) {
+				k8sService = null;
+			}
+			if (k8sService != null) {
+				PodList pods = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+				if (pods != null) {
+					podList = pods.getItems();
+					if (CollectionUtils.isNotEmpty(podList)) {
+						for (Pod poditem : podList) {
+							if (poditem.getMetadata().getName().equals(podName)) {
+								pod = poditem;
+								hostIP = poditem.getStatus().getHostIP();
+								containerID = poditem.getStatus().getContainerStatuses().get(0).getContainerID();
+							}
+						}
+					}
+				}
+			}
+		}
+
+		model.addAttribute("pod", pod);
+		model.addAttribute("dockerServerURL", hostIP);
+		model.addAttribute("containerid", containerID);
+		model.addAttribute("entryHost", ENTRY_HOST);
+		model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
+
+		return "service/service-file.jsp";
+	}
 }
