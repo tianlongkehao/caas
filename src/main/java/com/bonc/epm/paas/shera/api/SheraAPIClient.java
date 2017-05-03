@@ -11,6 +11,8 @@
 
 package com.bonc.epm.paas.shera.api;
 
+import java.util.List;
+
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 
@@ -23,6 +25,7 @@ import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.CredentialKey;
 import com.bonc.epm.paas.shera.model.CredentialKeyList;
+import com.bonc.epm.paas.shera.model.ExecConfig;
 import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
@@ -32,6 +35,8 @@ import com.bonc.epm.paas.shera.model.JobExecView;
 import com.bonc.epm.paas.shera.model.JobExecViewList;
 import com.bonc.epm.paas.shera.model.Rating;
 import com.bonc.epm.paas.shera.model.SonarConfig;
+import com.bonc.epm.paas.shera.model.SshConfig;
+import com.bonc.epm.paas.shera.model.SshKey;
 
 /**
  * @author ke_wang
@@ -385,6 +390,135 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 		try {
 			LOG.info("调用shera删除Rating");
 			return api.deleteJobRating(namespace, projectKey);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new SheraClientException(e.getMessage());
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#createExecConfig(com.bonc.epm.paas.shera.model.ExecConfig)
+	 */
+	@Override
+	public ExecConfig createExecConfig(ExecConfig execConfig) throws SheraClientException {
+		try {
+			LOG.info("调用shera创建ExecConfig");
+			return api.createExecConfig(execConfig);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new SheraClientException(e.getMessage());
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteExecConfig(java.lang.String)
+	 */
+	@Override
+	public void deleteExecConfig(String key) throws SheraClientException {
+		try {
+			LOG.info("调用shera删除ExecConfig");
+			api.deleteExecConfig(key);
+		} catch (WebApplicationException e) {
+			throw new SheraClientException(e.getMessage());
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#getExecConfig(java.lang.String)
+	 */
+	@Override
+	public List<ExecConfig> getExecConfig(String kindid) throws SheraClientException {
+		try {
+			LOG.info("调用shera获取ExecConfig");
+			return api.getExecConfig("admin", kindid);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new SheraClientException(e.getMessage());
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#createSshKey(com.bonc.epm.paas.shera.model.SshKey)
+	 */
+	@Override
+	public SshKey createSshKey(SshKey sshKey) throws SheraClientException {
+		try {
+			LOG.info("调用shera创建SshKey");
+			return api.createSshKey(sshKey);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new SheraClientException(e.getMessage());
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteSshKey(java.lang.String)
+	 */
+	@Override
+	public void deleteSshKey(String userid) throws SheraClientException {
+		try {
+			LOG.info("调用shera删除SshKey");
+			api.deleteSshKey(userid);
+		} catch (WebApplicationException e) {
+			throw new SheraClientException(e.getMessage());
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#getSshKey(java.lang.String)
+	 */
+	@Override
+	public SshKey getSshKey(String userid) throws SheraClientException {
+		try {
+			LOG.info("调用shera获取SshKey");
+			return api.getSshKey(userid);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new SheraClientException(e.getMessage());
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#createSshConfig(com.bonc.epm.paas.shera.model.SshConfig)
+	 */
+	@Override
+	public SshConfig createSshConfig(SshConfig sshConfig) throws SheraClientException {
+		try {
+			LOG.info("调用shera创建SshConfig");
+			return api.createSshConfig(sshConfig);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new SheraClientException(e.getMessage());
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteSshConfig(java.lang.String)
+	 */
+	@Override
+	public void deleteSshConfig(String userid) throws SheraClientException {
+		try {
+			LOG.info("调用shera删除SshConfig");
+			api.deleteSshConfig(userid);
+		} catch (WebApplicationException e) {
+			throw new SheraClientException(e.getMessage());
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#getSshConfig(java.lang.String)
+	 */
+	@Override
+	public SshConfig getSshConfig(String userid) throws SheraClientException {
+		try {
+			LOG.info("调用shera获取SshConfig");
+			return api.getSshConfig(userid);
 		} catch (NotFoundException e) {
 			return null;
 		} catch (WebApplicationException e) {

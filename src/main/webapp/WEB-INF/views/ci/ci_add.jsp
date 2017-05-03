@@ -325,24 +325,5 @@
 			            </div>
 			        </div>
                  </div>
-               <!--  <div id="addCredentialsCon">
-                    <div style="width: 345px; margin: 5px 10px 5px 10px">
-                        <div class="infoCred">
-                        	<span class="labelCred">类型：</span>
-	                        <select class="form-control conCred" id="CredentialsType" name = "type">
-	                        	<option value="1">用户名和密码</option>
-	                        	<option value="2">SSH用户名和密钥</option>
-	                        </select></div>
-                        <div class="infoCred">
-	                        <span class="labelCred">用户名：</span>
-	                        <input type="text" class="form-control conCred" id="userNameCred" name="userName" value=""></div>
-                        <div class="infoCred normal">
-	                        <span class="labelCred">密码：</span>
-	                        <input type="password" class="form-control conCred" id="passwordCred" name="password" value=""></div>
-                        <div class="infoCred ssh">
-	                        <span class="labelCred">密钥：</span>
-	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="8" value="" ></textarea></div>
-                    </div>
-                </div> -->
 </body>
 </html>
