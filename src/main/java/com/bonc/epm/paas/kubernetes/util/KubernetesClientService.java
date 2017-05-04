@@ -306,9 +306,11 @@ public class KubernetesClientService {
 		ResourceRequirements requirements = new ResourceRequirements();
 		requirements.getLimits();
 		Map<String, Object> def = new HashMap<String, Object>();
-		// float fcpu = cpu*1024;
-		def.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
-		def.put("memory", ram + "Mi");
+		// float fcpu = cpu*1024; request设置为limit的1/4
+		def.put("cpu", cpu / (Integer.valueOf(RATIO_MEMTOCPU)*4));
+		def.put("memory", Double.parseDouble(ram)/4 + "Mi");
+		/*def.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
+		def.put("memory", ram + "Mi");*/
 		Map<String, Object> limit = new HashMap<String, Object>();
 		// limit = getlimit(limit);
 		limit.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
