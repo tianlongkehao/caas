@@ -79,6 +79,18 @@ public class KubernetesClientService {
 	@Value("${ratio.memtocpu}")
 	public String RATIO_MEMTOCPU = "4";
 
+	/**
+	 * POD request cpu /limit cpu = 1/4
+	 */
+	@Value("${ratio.limittorequestcpu}")
+	public int RATIO_LIMITTOREQUESTCPU;
+
+	/**
+	 * POD request memory /limit memory = 1/4
+	 */
+	@Value("${ratio.limittorequestmemory}")
+	public  int RATIO_LIMITTOREQUESTMEMORY;
+
 	public static final Integer INITIAL_DELAY_SECONDS = 30 * 60;
 	public static final Integer TIME_SECONDS = 5;
 
@@ -307,8 +319,8 @@ public class KubernetesClientService {
 		requirements.getLimits();
 		Map<String, Object> def = new HashMap<String, Object>();
 		// float fcpu = cpu*1024; request设置为limit的1/4
-		def.put("cpu", cpu / (Integer.valueOf(RATIO_MEMTOCPU)*4));
-		def.put("memory", Double.parseDouble(ram)/4 + "Mi");
+		def.put("cpu", cpu / (Integer.valueOf(RATIO_MEMTOCPU)*RATIO_LIMITTOREQUESTCPU));
+		def.put("memory", Double.parseDouble(ram)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
 		/*def.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
 		def.put("memory", ram + "Mi");*/
 		Map<String, Object> limit = new HashMap<String, Object>();
