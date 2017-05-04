@@ -313,11 +313,7 @@
 			                    class="form-control conCred" id="passwordCred" name="password"
 			                    value="">
 			            </div>
-			            <div class="infoCred ssh">
-			                <span class="labelCred">密钥：</span>
-			                <textarea type="text" class="form-control conCred" style="height:100px"
-			                    id="SSHpasswordCred" name="privateKey" row="8" value=""></textarea>
-			            </div>
+		                <input type="hidden" id="privateKey" name="privateKey" value=""></input>
 			            <div class="infoCred">
 			                <span class="labelCred">描述：</span>
 			                <textarea type="text" class="form-control conCred" style="height:100px"
