@@ -123,7 +123,6 @@
 						<li id="li_ci"><a class="J_menuItem" href="<%=path %>/ci"><i class="fa fa_circle"></i>镜像构建</a></li>
 						<c:if test="${cur_user.user_autority == 1}">
 						<li id="li_shera"><a class="J_menuItem" href="<%=path %>/user/shera"><i class="fa fa_circle"></i>Shera管理</a></li>
-						<li id="li_sonar"><a class="J_menuItem" href="<%=path %>/user/sonar"><i class="fa fa_circle"></i>Sonar管理</a></li>
 						</c:if>
 					</ul></li>
 				<li id="menu_registry"><a href="#" class="first-a">

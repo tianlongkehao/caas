@@ -1,3 +1,4 @@
+var isSonar = "";
 $(document).ready(function() {
 	$.ajax({
 		url : ctx + "/ci/getSonarConfig.do",
@@ -5,8 +6,10 @@ $(document).ready(function() {
 		success : function(data) {
 			data = eval("(" + data + ")");
 			if (data.status == 200 && data.sonarConfig.hidden == false) {
+				isSonar = true;
 				loadServices();
 			} else {
+				isSonar = false;
 				$(".sonarTh").hide();
 				loadServicesNoSonar();
 			}
@@ -33,7 +36,11 @@ $(document).ready(function() {
 	$(".dataTables-example tbody").on("click", "tr", function() {
 		var table = $('.dataTables-example').DataTable();
 		var serviceId = table.row(this).data().id;
-		loadContainers(this, serviceId);
+		if(isSonar == true){
+			loadContainers(this, serviceId);
+		}else{
+			loadContainersNoSonar(this, serviceId);
+		}
 	});
 
 	$("#checkallbox").click(function() {
@@ -142,6 +149,40 @@ function loadContainers(obj, serviceId) {
 
 				$(obj).children().eq(2).children("b").css("transform", "rotate(0deg)");
 				$(obj).children().eq(2).children("b").attr("rotate", "show");
+
+			}
+		});
+	}
+}
+function loadContainersNoSonar(obj, serviceId) {
+	var serviceID = serviceId;
+	var aaa = 'tr[serviceidcon = "' + serviceID + '"]';
+	if ($(obj).children().eq(1).children("b").attr("rotate") == "show") {
+		$(aaa).remove();
+		$(obj).children().eq(1).children("b").css("transform", "rotate(-90deg)");
+		$(obj).children().eq(1).children("b").attr("rotate", "hide");
+	} else {
+		$.ajax({
+			url : "" + ctx + "/service/findservice.do?serviceID=" + serviceID,
+			type : "get",
+			success : function(data) {
+				$(aaa).remove();
+				var containersHtml = "";
+				var data = eval("(" + data + ")");
+				var containerLength = data.containerList.length;
+				for (var i = 0; i < containerLength; i++) {
+					var containerName = data.containerList[i].containerName;
+					var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动" : "运行中";
+					var statusClassName = data.containerList[i].containerStatus == 1 ? "fa_stop" : "fa_run";
+					var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide" : "hide";
+					containersHtml += '<tr class="tr-row" serviceidcon="' + serviceID + '">' + '<td colspan="1">&nbsp;</td>' + '<td>';
+					containersHtml += '<a style="margin-left: 19px;">';
+					containersHtml += containerName + '</a>' + '</td>' + '<td colspan="2"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
+				}
+				$(obj).after(containersHtml);
+
+				$(obj).children().eq(1).children("b").css("transform", "rotate(0deg)");
+				$(obj).children().eq(1).children("b").attr("rotate", "show");
 
 			}
 		});
@@ -1181,7 +1222,17 @@ function loadServicesNoSonar() {
 				if (curUserAutority == 1) {
 					html = '<span serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</span>' + '<span class="number-node">' + row.instanceNum + '</span>';
 				} else {
-					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>' + '<span class="number-node">' + row.instanceNum + '</span>';
+					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>';
+					
+					if(row.status == 1 || row.status == 4){
+						html += '<span class="number-node">0</span>';
+					}else{
+						if(row.targetCPUUtilizationPercentage == undefined || row.targetCPUUtilizationPercentage == null || row.targetCPUUtilizationPercentage == -1){
+							html += '<span class="number-node">' + row.instanceNum + '</span>';
+						}else{
+							html += '<span class="number-node">auto</span>';
+						}
+					}
 				}
 				if (row.updateImage == true) {
 					html += '<a id="' + row.id + '_code" class="margin cursor console-code-modal"' + 'href="' + ctx + 'ci/findCodeCiId.do?imgId=' + row.imgID + '"' + 'style="margin-left: 5px" ><img src="' + ctx + '/images/sd.gif" title="代码更新"></a>';
@@ -1413,26 +1464,22 @@ function oneStopContainerUpdate(id, serviceName) {
 //响应每一行上自动伸缩
 function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetCPUUtilizationPercentage, status) {
 	$('#autoServiceName').val(containerName);
-	$("#minReplicas").val(minReplicas);
-	$("#maxReplicas").val(maxReplicas);
-	$("#targetCPUUtilizationPercentage").val(targetCPUUtilizationPercentage);
-	//	var leftcpu = $("#leftcpu").html();
-	//	var leftram = $("#leftram").html();
-	//
-	//	var maxcpu = parseInt(leftcpu) / parseInt(cpu);
-	//	var maxram = parseInt(leftram) / (parseInt(ram) / 1024);
-	//
-	//	var total = 0;
-	//	if (parseInt(maxcpu) > parseInt(maxram)) {
-	//		total = maxram;
-	//	} else {
-	//		total = maxcpu;
-	//	}
-
-	//	total += parseInt(nums);
-	//	$('#numberChange').attr("max", parseInt(total));
-	//	$('#leftpod').text(total);
-
+	if(minReplicas == -1){
+		$("#minReplicas").val('');
+	}else{
+		$("#minReplicas").val(minReplicas);
+	}
+	if(maxReplicas == -1){
+		$("#maxReplicas").val('');
+	}else{
+		$("#maxReplicas").val(maxReplicas);
+	}
+	if(targetCPUUtilizationPercentage == -1){
+		$("#targetCPUUtilizationPercentage").val('');
+	}else{
+		$("#targetCPUUtilizationPercentage").val(targetCPUUtilizationPercentage);
+	}
+	
 	layer.open({
 		type : 1,
 		title : '自动伸缩',

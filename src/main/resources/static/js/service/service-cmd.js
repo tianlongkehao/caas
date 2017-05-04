@@ -1,21 +1,24 @@
 var term, socket, alive;
 
 var terminalContainer = document.getElementById('terminal-container');
-
-function dropdownCMD(object) {
-	$(".contentMain>div:not('.baseInfo')").addClass("hide");
-	$(".containerCMD").removeClass("hide");
+$(document).ready(function() {
+	dropdownCMD();
+	var windowHeight = window.innerHeight-44;
+	$(".xterm-viewport").css("height",windowHeight);
+	window.onresize = function(){
+		
+//		var windowHeight = window.innerHeight-44;
+//		$(".xterm-viewport").css("height",windowHeight);
+	}
+})
+function dropdownCMD() {
 	$("#terminal-container").html("");
-
-	var container = object.getAttribute("containerid");
-	$('#containerId').val(container);
-	var nodeIP = object.getAttribute("dockerServerURL");
-	$('#containerIp').val(nodeIP);
-
-	var containerID = object.getAttribute("containerid").replace('docker://', '');
-	var host = object.getAttribute("entryHost");
-	var dockerServerURL = 'http://' + object.getAttribute("dockerServerURL") + ':' + object.getAttribute("dockerServerPort");
-
+	var container = $("#containerid").val();
+	var nodeIP = $("#nodeIP").val();
+	var dockerServerPort = $("#dockerIOPort").val();
+	var containerID = container.replace('docker://', '');
+	var host = $("#entryHost").val();
+	var dockerServerURL = 'http://' + nodeIP + ':' + dockerServerPort;
 	var soc = "ws://" + host + "/enter?method=web&containerID=" + containerID + "&dockerServerURL=" + dockerServerURL;
 	socket = new WebSocket(soc);
 	term = new Terminal();
