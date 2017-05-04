@@ -510,7 +510,7 @@ function loadAnt(count){
 							'<select id="antVersion-'+count+'" name="antVersion" class="form-control c-project-con" >';
 			if (data != null && data.status == "200") {
 				for (var i in data.antList) {
-					antHtml += '<option value="default">' + data.antList[i].version + '</option>';
+					antHtml += '<option value="' + data.antList[i].version + '">' + data.antList[i].version + '</option>';
 				}
 			}
 			antHtml +=
@@ -600,7 +600,7 @@ function loadMaven(count){
 
 			if (data != null && data.status == "200") {
 				for (var i in data.mavenList) {
-					mavenHtml += '<option value="default">' + data.mavenList[i].version + '</option>';
+					mavenHtml += '<option value="' + data.mavenList[i].version + '">' + data.mavenList[i].version + '</option>';
 				}
 			}
 			mavenHtml +=

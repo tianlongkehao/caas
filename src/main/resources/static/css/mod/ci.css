@@ -651,6 +651,14 @@ textarea.c-project-con{
 	text-align:right;
 	padding-right:26px;
 }
+.labelCred1{
+	width: 14%;
+	margin-left: 20px;
+	float: left;
+	line-height:34px;
+
+}
+
 .conCred{
 	width: 77%;
 }

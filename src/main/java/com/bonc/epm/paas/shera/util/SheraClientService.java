@@ -22,9 +22,11 @@ import org.springframework.stereotype.Service;
 import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.SheraDao;
+import com.bonc.epm.paas.dao.UserAndSheraDao;
 import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserAndShera;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
@@ -64,20 +66,27 @@ public class SheraClientService {
     private String username="";
     private String password="";
 
-    @Autowired
-    private SheraDao sheraDao;
+	@Autowired
+	private SheraDao sheraDao;
+	@Autowired
+	private UserAndSheraDao userAndSheraDao;
 
 	public SheraAPIClientInterface getClient() {
 		User user = CurrentUserUtils.getInstance().getUser();
 		Shera shera = new Shera();
 		if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-			shera = sheraDao.findByUserId(user.getParent_id());
+			shera = sheraDao.findByUserIdInUsed(user.getParent_id());
 		} else {
-			shera = sheraDao.findByUserId(user.getId());
+			shera = sheraDao.findByUserIdInUsed(user.getId());
 		}
 		//找不到shera时候，使用默认shera
 		if (null == shera) {
 			shera = sheraDao.findOne(1L);
+			UserAndShera userAndShera = new UserAndShera();
+			userAndShera.setSheraId(1L);
+			userAndShera.setUserId(user.getId());
+			userAndShera.setInUsed(1);
+			userAndSheraDao.save(userAndShera);
 		}
 		return getClient(shera);
 	}

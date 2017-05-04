@@ -290,32 +290,32 @@
 			     <div id="addCredentialsCon">
 			        <div style="margin: 15px 15px">
 			            <div class="infoCred">
-			                <span class="labelCred">仓库：</span>
+			                <span class="labelCred1">仓库：</span>
 			                <select class="form-control conCred" id="codeType" name="codeType">
 			                    <option value="1">Git</option>
 			                    <option value="2">SVN</option>
 			                </select>
 			            </div>
 			            <div class="infoCred">
-			                <span class="labelCred">认证：</span> <select
+			                <span class="labelCred1">认证：</span> <select
 			                    class="form-control conCred" id="CredentialsType" name="type">
 			                    <option value="1">用户名和密码</option>
 			                    <option value="2">SSH用户名和密钥</option>
 			                </select>
 			            </div>
 			            <div class="infoCred">
-			                <span class="labelCred">用户名：</span> <input type="text"
+			                <span class="labelCred1">用户名：</span> <input type="text"
 			                    class="form-control conCred" id="userNameCred" name="userName"
 			                    value="">
 			            </div>
 			            <div class="infoCred normal">
-			                <span class="labelCred">密码：</span> <input type="password"
+			                <span class="labelCred1">密码：</span> <input type="password"
 			                    class="form-control conCred" id="passwordCred" name="password"
 			                    value="">
 			            </div>
 		                <input type="hidden" id="privateKey" name="privateKey" value=""></input>
 			            <div class="infoCred">
-			                <span class="labelCred">描述：</span>
+			                <span class="labelCred1">描述：</span>
 			                <textarea type="text" class="form-control conCred" style="height:100px"
 			                    id="keyRemark" name="keyRemark" row="8" value=""></textarea>
 			            </div>

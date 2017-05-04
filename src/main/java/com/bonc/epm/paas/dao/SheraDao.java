@@ -23,7 +23,17 @@ import com.bonc.epm.paas.entity.Shera;
  * @since
  */
 public interface SheraDao extends CrudRepository<Shera, Long> {
-    
+
+	/**
+	 * Description: <br>
+	 * 根据userid查询相关联的shera数据
+	 * @param userId id
+	 * @return shera
+	 */
+	@Query("select sh from Shera sh where sh.id = "
+			+ "(select uas.sheraId from UserAndShera uas where uas.userId = ?1 )")
+	Shera findByUserId(long userId);
+
     /**
      * Description: <br>
      * 根据userid查询相关联的shera数据
@@ -31,6 +41,6 @@ public interface SheraDao extends CrudRepository<Shera, Long> {
      * @return shera
      */
     @Query("select sh from Shera sh where sh.id = "
-        + "(select uas.sheraId from UserAndShera uas where uas.userId = ?1 )")
-    Shera findByUserId(long userId);
+        + "(select uas.sheraId from UserAndShera uas where uas.userId = ?1 and uas.inUsed = 1)")
+    Shera findByUserIdInUsed(long userId);
 }
