@@ -39,6 +39,7 @@ import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.CredentialKey;
 import com.bonc.epm.paas.shera.model.GitCredential;
+import com.bonc.epm.paas.shera.model.SshKey;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
@@ -124,7 +125,9 @@ public class CredentialController {
 			GitCredential gitCredential;
 			//使用ssh的时候
 			if (ciCodeCredential.getType() == 2) {
-				gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(),
+				SshKey sshKey = client.createSshKey(ciCodeCredential.getUserName());
+				result.put("sshKey", sshKey.getKey());
+				gitCredential = sheraClientService.generateGitCredential(sshKey.getKeyPrivate(),
 						ciCodeCredential.getUserName(), Credential, ciCodeCredential.getRemark());
 			} else {
 				String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");

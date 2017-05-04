@@ -542,7 +542,7 @@ public interface SheraAPI {
 	@Path("/exec/{userid}/{kindid}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ExecConfig> getExecConfig(@PathParam("userid") String userid, @PathParam("kindid") String kindid);
+	public List<ExecConfig> getExecConfig(@PathParam("userid") String userid, @PathParam("kindid") Integer kindid);
 
 	/**
 	 * createSshKey:create ssh rsa public key and private key. <br/>
@@ -555,7 +555,7 @@ public interface SheraAPI {
 	@Path("/ssh")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public SshKey createSshKey(SshKey sshKey);
+	public SshKey createSshKey(String sshKey);
 
 	/**
 	 * createSshKey:del ssh rsa from db by user id. <br/>

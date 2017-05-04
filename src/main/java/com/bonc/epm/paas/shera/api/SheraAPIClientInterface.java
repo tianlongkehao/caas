@@ -131,10 +131,10 @@ public interface SheraAPIClientInterface {
 
 	public void deleteExecConfig(String key) throws SheraClientException;
 
-	public List<ExecConfig> getExecConfig(String kindid) throws SheraClientException;
+	public List<ExecConfig> getExecConfig(Integer kindid) throws SheraClientException;
 
 	/* ssh key API */
-	public SshKey createSshKey(SshKey sshKey) throws SheraClientException;
+	public SshKey createSshKey(String sshKey) throws SheraClientException;
 
 	public void deleteSshKey(String userid) throws SheraClientException;
 
