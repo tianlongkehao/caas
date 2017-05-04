@@ -444,7 +444,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#createSshKey(com.bonc.epm.paas.shera.model.SshKey)
 	 */
 	@Override
-	public SshKey createSshKey(String sshKey) throws SheraClientException {
+	public SshKey createSshKey(SshKey sshKey) throws SheraClientException {
 		try {
 			LOG.info("调用shera创建SshKey");
 			return api.createSshKey(sshKey);

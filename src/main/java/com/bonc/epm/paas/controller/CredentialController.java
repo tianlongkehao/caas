@@ -125,7 +125,9 @@ public class CredentialController {
 			GitCredential gitCredential;
 			//使用ssh的时候
 			if (ciCodeCredential.getType() == 2) {
-				SshKey sshKey = client.createSshKey(ciCodeCredential.getUserName());
+				String keyName = CurrentUserUtils.getInstance().getUser().getNamespace() + "_" + ciCodeCredential.getUserName();
+				SshKey sshKey = sheraClientService.generateSshKey(keyName);
+				sshKey = client.createSshKey(sshKey);
 				result.put("sshKey", sshKey.getKey());
 				gitCredential = sheraClientService.generateGitCredential(sshKey.getKeyPrivate(),
 						ciCodeCredential.getUserName(), Credential, ciCodeCredential.getRemark());

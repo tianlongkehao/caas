@@ -47,6 +47,7 @@ import com.bonc.epm.paas.shera.model.MvnConfig;
 import com.bonc.epm.paas.shera.model.Repository;
 import com.bonc.epm.paas.shera.model.SonarConfig;
 import com.bonc.epm.paas.shera.model.SonarManager;
+import com.bonc.epm.paas.shera.model.SshKey;
 import com.bonc.epm.paas.shera.model.SvnConfig;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
@@ -356,6 +357,12 @@ public class SheraClientService {
 		execConfig.setUserid("admin");
 		execConfig.setEnv(env);
 		return execConfig;
+	}
+
+	public SshKey generateSshKey(String keyName) {
+		SshKey sshKey = new SshKey();
+		sshKey.setUser(keyName);
+		return sshKey;
 	}
 
 }

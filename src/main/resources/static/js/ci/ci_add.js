@@ -288,10 +288,21 @@ $(document).ready(function () {
 					success : function(data) {
 						data = eval("(" + data + ")");
 						if (data.status == "200") {
-							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
-							$("#codeCredentials").append(html);
-							layer.alert("代码认证导入成功");
-							layer.close(index);
+							if(type == 2){
+								layer.open({
+									type : 1,
+									title : '添加认证',
+									content : '认证已经生成，请添加下面的公钥到对应代码托管平台。/n/n'+data.sshKey,
+									area : ['500px'],
+									btn : ['确认'],
+									scrollbar : false,
+									yes : function(index, layero) {
+										var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+										$("#codeCredentials").append(html);
+										layer.closeAll();
+									}
+								});
+							}
 						} else {
 							layer.alert("代码认证导入失败");
 						}

@@ -555,7 +555,7 @@ public interface SheraAPI {
 	@Path("/ssh")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public SshKey createSshKey(String sshKey);
+	public SshKey createSshKey(SshKey sshKey);
 
 	/**
 	 * createSshKey:del ssh rsa from db by user id. <br/>
