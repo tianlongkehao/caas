@@ -2066,4 +2066,12 @@ public class CiController {
 		map.put("sonarConfig", sonarConfig);
 		return JSON.toJSONString(map);
 	}
+    
+    
+    @RequestMapping(value={"shera/add"},method=RequestMethod.GET)
+   	public String sheraAdd(Model model){
+           model.addAttribute("menu_flag", "ci");
+           model.addAttribute("li_flag", "shera");
+           return "ci/shera-add.jsp";
+       }
 }
