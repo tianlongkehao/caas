@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,12 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
  */
 @Controller
 public class HorizontalPodAutoscalerController {
+
+	/**
+	 * 调用服务controller
+	 */
+	@Autowired
+	private ServiceController serviceController;
 
 	/**
 	 * serviceDao:service数据接口.
@@ -73,6 +78,11 @@ public class HorizontalPodAutoscalerController {
 			map.put("status", "400");
 			return JSON.toJSONString(map);
 		}
+		if (minReplicas >= maxReplicas) {
+			//最小pod数大于最大pod数
+			map.put("status", "402");
+			return JSON.toJSONString(map);
+		}
 		//创建hpa
 		HorizontalPodAutoscaler hpa = kubernetesClientService.generateHorizontalPodAutoscaler(ServiceName, maxReplicas,
 				minReplicas, Kind.REPLICATIONCONTROLLER, targetCPUUtilizationPercentage);
@@ -109,7 +119,7 @@ public class HorizontalPodAutoscalerController {
 	 */
 	@RequestMapping(value = { "/services/{service}/hpa" }, method = RequestMethod.PUT)
 	@ResponseBody
-	public String replaceHPA(String ServiceName, Integer minReplicas, Integer maxReplicas,
+	public String replaceHPA(@PathVariable("service") String ServiceName, Integer minReplicas, Integer maxReplicas,
 			Integer targetCPUUtilizationPercentage) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = CurrentUserUtils.getInstance().getUser();
@@ -118,6 +128,11 @@ public class HorizontalPodAutoscalerController {
 		if (services.size() != 1) {
 			//找不到该服务
 			map.put("status", "400");
+			return JSON.toJSONString(map);
+		}
+		if (minReplicas >= maxReplicas) {
+			//最小pod数大于最大pod数
+			map.put("status", "402");
 			return JSON.toJSONString(map);
 		}
 		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
@@ -167,7 +182,7 @@ public class HorizontalPodAutoscalerController {
 	 */
 	@RequestMapping(value = { "/services/{service}/hpa" }, method = RequestMethod.DELETE)
 	@ResponseBody
-	public String deleteHPA(String ServiceName) {
+	public String deleteHPA(@PathVariable("service") String ServiceName) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = CurrentUserUtils.getInstance().getUser();
 		//判断服务是否存在
@@ -183,17 +198,16 @@ public class HorizontalPodAutoscalerController {
 			LOG.info("deleteHPA:[" + ServiceName + "]");
 			apisClient.deleteHorizontalPodAutoscaler(ServiceName);
 		} catch (KubernetesClientException e) {
-			map.put("status", "401");
-			map.put("exception", e);
-			e.printStackTrace();
-			return JSON.toJSONString(map);
+			LOG.info(e.getStatus().getMessage());
 		}
+		//将副本数改为默认副本数
+		serviceController.modifyServiceNum(services.get(0).getId(), services.get(0).getInstanceNum());
 
 		// 保存service
 		Service service = services.get(0);
-		service.setMinReplicas(0);
-		service.setMaxReplicas(0);
-		service.setTargetCPUUtilizationPercentage(0);
+		service.setMinReplicas(-1);
+		service.setMaxReplicas(-1);
+		service.setTargetCPUUtilizationPercentage(-1);
 		serviceDao.save(service);
 
 		map.put("status", "200");

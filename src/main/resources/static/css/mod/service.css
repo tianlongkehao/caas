@@ -1202,6 +1202,15 @@ p.portLabel input{
 .ui_tpicker_time_label {
 	padding-left:20px
 }
+.autoFlexInfoInput{
+	margin-top: 10px;
+	width: 78%;
+	line-height: 30px;
+    border-radius: 5px;
+    border:1px solid #ddd;
+    text-indent:6px;
+}
+
 #fileBody td a{
 	margin-right:6px;
 }

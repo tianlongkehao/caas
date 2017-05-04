@@ -352,6 +352,39 @@
 			</li>
 		</ul>
 	</div>
+	<!-- 自动伸缩 -->
+	<div id="autoFlexInfo" style="display: none">
+		<ul class="popWin">
+			<li class="line-h-3"><span class="edit-name-c">服&nbsp;务&nbsp;名&nbsp;称：</span> <input
+				id="autoServiceName" disabled="disabled" class="c-con"
+				style="margin-top: 5px; width: 78%;" type="text" value="">
+			</li>
+			<li class="line-h-3" id="instsizeChange">
+				<div class="param-set">
+					<span class="edit-name-c" style="margin-top: 5px;">CPU使用率：</span> <input
+						value="" id="targetCPUUtilizationPercentage" min="1" max="100" class="autoFlexInfoInput"
+						type="number"> <span
+						class="unit">%</span>
+				</div>
+			</li>
+			<li class="line-h-3" id="instsizeChange">
+				<div class="param-set">
+					<span class="edit-name-c" style="margin-top: 5px;">最小副本数：</span> <input
+						value="" id="minReplicas" min="1" max="" class="autoFlexInfoInput"
+						type="number"> <span
+						class="unit">个</span>
+				</div>
+			</li>
+			<li class="line-h-3" id="instsizeChange">
+				<div class="param-set">
+					<span class="edit-name-c" style="margin-top: 5px;">最大副本数：</span> <input
+						value="" id="maxReplicas" min="1" max="" class="autoFlexInfoInput"
+						type="number"> <span
+						class="unit">个</span>
+				</div>
+			</li>
+		</ul>
+	</div>
 	<!--版本升级进度条 -->
 	<div class="modal fade container" id="myModal" tabindex="-1"
 		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
