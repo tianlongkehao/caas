@@ -614,7 +614,7 @@
 													value="${envVariable.envValue }" /></span></td>
 											<c:if test="${service.status==1 or service.status==4}">
 												<c:if
-													test="${envVariable.envKey!='APM' and envVariable.envKey!='namespace' and envVariable.envKey!='service'}">
+													test="${envVariable.envKey!='APM' and envVariable.envKey!='namespace' and envVariable.envKey!='service' and envVariable.envKey!='api_server_ip' and envVariable.envKey!='api_server_port'}">
 													<td style="width: 10%;" class="editBtn"><i
 														onclick="editEnvBtn(this)" type="button" value="修改"
 														class="fa fa-edit oldEnvConfig editEnvBtn"></i> <i

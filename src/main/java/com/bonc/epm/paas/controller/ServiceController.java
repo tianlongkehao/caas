@@ -314,6 +314,18 @@ public class ServiceController {
 	private String ENTRY_HOST;
 
     /**
+     * server api 地址
+     */
+    @Value("${kubernetes.api.address}")
+	private String KUBERNETES_API_ADDRESS;
+
+    /**
+     * server api url
+     */
+    @Value("${kubernetes.api.endpoint}")
+	private String KUBERNETES_API_ENDPOINT;
+
+    /**
 	 * Description: <br>
 	 * 展示container和services
 	 *
@@ -1111,6 +1123,24 @@ public class ServiceController {
 				envVariableDao.save(envVar);
 			}
 		}
+
+		//增加环境变量api_server_ip和api_server_port
+		EnvVariable ipVar = new EnvVariable();
+		ipVar.setCreateBy(currentUser.getId());
+		ipVar.setEnvKey("api_server_ip");
+		ipVar.setEnvValue(KUBERNETES_API_ADDRESS);
+		ipVar.setCreateDate(new Date());
+		ipVar.setServiceId(service.getId());
+		envVariableDao.save(ipVar);
+
+		EnvVariable portVar = new EnvVariable();
+		portVar.setCreateBy(currentUser.getId());
+		portVar.setEnvKey("api_server_port");
+		portVar.setEnvValue(KUBERNETES_API_ENDPOINT.split(":")[2].substring(0, 4));
+		portVar.setCreateDate(new Date());
+		portVar.setServiceId(service.getId());
+		envVariableDao.save(portVar);
+
 		// 增加Pinpoint的相关环境变量
 		if (service.getMonitor() == ServiceConstant.MONITOR_PINPOINT) {
 			// 使用Pinpoint监控时，需增加环境变量[namespace=服务的命名空间,service=服务名]
