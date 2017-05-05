@@ -52,7 +52,7 @@
 											value="">
 									</div>
 									<div class="infoCred">
-										<span class="labelCred">密码：<font color="red">*</font></span> <input type="text"
+										<span class="labelCred">密码：<font color="red">*</font></span> <input type="password"
 											class="form-control conCred" id="shreaPassword"
 											name="shreaPassword" value="">
 									</div>
