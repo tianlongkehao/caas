@@ -11,6 +11,8 @@
 
 package com.bonc.epm.paas.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -43,4 +45,7 @@ public interface SheraDao extends CrudRepository<Shera, Long> {
     @Query("select sh from Shera sh where sh.id = "
         + "(select uas.sheraId from UserAndShera uas where uas.userId = ?1 and uas.inUsed = 1)")
     Shera findByUserIdInUsed(long userId);
+
+    @Query("select sh from Shera sh where sh.createBy = ?1")
+    List<Shera> findByCreateBy(long userId);
 }

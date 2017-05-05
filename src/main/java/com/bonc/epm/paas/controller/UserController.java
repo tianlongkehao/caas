@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.NativeWebRequest;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
@@ -1732,15 +1731,32 @@ public class UserController {
 			return userDel(user.getId() + "");
 		}
 	}
-	
+
 	@RequestMapping("/shera/detail/{id}")
-    public String detailShera(Model model){
-        Iterable<Shera> sheraList = sheraDao.findAll();
-        model.addAttribute("sheraList", sheraList);
+    public String detailShera(Model model, long id){
+        Shera shera = sheraDao.findOne(id);
+        SheraAPIClientInterface client = sheraClientService.getClient(shera);
+        JdkList allJdk = null;
+		List<ExecConfig> mvnConfig = null;
+		List<ExecConfig> antConfig = null;
+		List<ExecConfig> sonarConfig = null;
+		try {
+			allJdk = client.getAllJdk();
+			mvnConfig = client.getExecConfig(SheraConstant.EXEC_MAVEN_CONFIG);
+			antConfig = client.getExecConfig(SheraConstant.EXEC_ANT_CONFIG);
+			sonarConfig = client.getExecConfig(SheraConstant.EXEC_SONAR_CONFIG);
+		} catch (SheraClientException e) {
+			e.printStackTrace();
+		}
+        model.addAttribute("shera", shera);
+        model.addAttribute("allJdk", allJdk);
+        model.addAttribute("mvnConfig", mvnConfig);
+        model.addAttribute("antConfig", antConfig);
+        model.addAttribute("sonarConfig", sonarConfig);
         model.addAttribute("menu_flag", "ci");
         model.addAttribute("li_flag", "shera");
         return "ci/shera-add.jsp";
     }
-	
+
 
 }
