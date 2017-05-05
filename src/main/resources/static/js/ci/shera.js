@@ -2,115 +2,100 @@ var count = 1;
 $(function(){
 	//创建shera
 	$("#saveSheraBtn").click(function(){
-//		delData();
-//		if (!checkShera()){
-//    		return;
-//    	}
-		
-    	var sheraUrl = $("#sheraIp").val();
-    	var port = $("#port").val();
-    	var userName = $("#shreaName").val();
-    	var password= $("#shreaPassword").val();
-    	var sonarInfoList = $("#sonarInfoList").val();
-    	var remark = $("#sheraRemark").val();
-    	var jdkJson = new Array();
-    	var jdkTr = $(".jdktbody").find("tr");
-    	for (var jdkNum=0; jdkNum<jdkTr.length; jdkNum++){
-    		var jdkKey = $(jdkTr[jdkNum]).find(".jdkKey").val();
-    		var jdkVal = $(jdkTr[jdkNum]).find(".jdkVal").val();
-    		var jdkItem = {"key":jdkKey,"val":jdkVal};
-    		jdkJson.push(jdkItem);
-    	}
-    	//maven
-    	var mavenJson = new Array();
-    	var mavensNum = $(".mavens").find(".mavenIbox");
-    	for(var i=0; i<mavensNum.length; i++){
-    		var mavenVersion = $(mavensNum[i]).find(".mavenVersion").val();
-    		
-    		var mavenEnv = new Array();
-        	var mavenTr = $(mavensNum[i]).find(".maventbody").find("tr");
-        	for(var mavNum=0; mavNum<mavenTr.length; mavNum++){
-        		var mavenKey = $(mavenTr[mavNum]).find(".mavenKey").val();
-        		var mavenVal = $(mavenTr[mavNum]).find(".mavenVal").val();
-        		var mavenItem = {"key":mavenKey,"val":mavenVal};
-        		mavenEnv.push(mavenItem);
-        	}
-    		
-    		var mavenItems = {
-        			"proid": 1, 
-            	    "version": mavenVersion,
-            	    "env":mavenEnv
-        	}; 
-    		mavenJson.push(mavenItems);
-    	}
-    	//ant
-    	var antJson = new Array();
-    	var antsNum = $(".ants").find(".antIbox");
-    	for(var i=0; i<antsNum.length; i++){
-    		var antVersion = $(antsNum[i]).find(".antVersion").val();
-    		
-    		var antEnv = new Array();
-        	var antTr = $(antsNum[i]).find(".anttbody").find("tr");
-        	for(var antNum=0; antNum<antTr.length; antNum++){
-        		var antKey = $(antTr[antNum]).find(".antKey").val();
-        		var antVal = $(antTr[antNum]).find(".antVal").val();
-        		var antItem = {"key":antKey,"val":antVal};
-        		antEnv.push(antItem);
-        	}
-    		
-    		var antItems = {
-        			"proid": 2, 
-            	    "version": antVersion,
-            	    "env":antEnv
-        	}; 
-    		antJson.push(antItems);
-    	}
-    	//sonar
-    	var sonarJson = new Array();
-    	var sonarVersion = $(".sonarIbox").find(".sonarVersion").val();
-    	var sonarTr = $(".sonartbody").find("tr");
-    	var sonarEnv = new Array();
-    	for(var sonNum = 0; sonNum < sonarTr.length; sonNum++){
-    		var sonarKey = $(sonarTr[sonNum]).find(".sonarKey").val();
-    		var sonarVal = $(sonarTr[sonNum]).find(".sonarVal").val();
-    		var sonarItem = {"key":sonarKey,"val":sonarVal};
-    		sonarEnv.push(sonarItem);
-    	}
-    	var sonarItems ={
-    			"proid": 3, 
-        	    "version": sonarVersion,
-        	    "env":antEnv
-    	}
-    	sonarJson.push(sonarItems);
-    	//shera
-    	var sheraData = {
-    			"sheraUrl":sheraUrl,
-    			"port":port,
-    			"userName":userName,
-    			"password":password,
-    			"remark":remark,
-    			"jdkJson":jdkJson,
-    			"sonarJson":sonarJson,
-    			"mavenJson":mavenJson,
-    			"antJson":antJson,
-    		};
-//    	$.ajax({
-//    		url :""+ ctx + "/user/shera/creatShera.do",
-//    		type : "POST",
-//    		data:sheraData,
-//    		success : function(data){
-//    			data = eval("(" + data + ")");
-//    			if (data.status=="200") {
-//    				window.location.reload();
-//    			} else if (data.status=="400") {
-//    				layer.alert("创建失败，请您查看Ip地址是否有误");
-//    			}
-//    		}
-//    	});
+		var sheraUrl = $("#sheraIp").val();
+		var port = $("#port").val();
+		var userName = $("#shreaName").val();
+		var password= $("#shreaPassword").val();
+		var sonarInfoList = $("#sonarInfoList").val();
+		var remark = $("#sheraRemark").val();
+		var jdkJson = {};
+		var jdkTr = $(".jdktbody").find("tr");
+		for (var jdkNum=0; jdkNum<jdkTr.length; jdkNum++){
+			var jdkKey = $(jdkTr[jdkNum]).find(".jdkKey").val();
+			var jdkVal = $(jdkTr[jdkNum]).find(".jdkVal").val();
+			jdkJson[jdkKey]=jdkVal;
+		}
+		//maven
+		var mavenJson = new Array();
+		var mavensNum = $(".mavens").find(".mavenIbox");
+		for(var i=0; i<mavensNum.length; i++){
+			var mavenVersion = $(mavensNum[i]).find(".mavenVersion").val();
+
+			var mavenEnv = {};
+			var mavenTr = $(mavensNum[i]).find(".maventbody").find("tr");
+			for(var mavNum=0; mavNum<mavenTr.length; mavNum++){
+				var mavenKey = $(mavenTr[mavNum]).find(".mavenKey").val();
+				var mavenVal = $(mavenTr[mavNum]).find(".mavenVal").val();
+				mavenEnv[mavenKey]=mavenVal;
+			}
+
+			var mavenItems = {
+					"proid": 1,
+					"version": mavenVersion,
+					"env":mavenEnv
+			};
+			mavenJson.push(mavenItems);
+		}
+		//ant
+		var antJson = new Array();
+		var antsNum = $(".ants").find(".antIbox");
+		for(var i=0; i<antsNum.length; i++){
+			var antVersion = $(antsNum[i]).find(".antVersion").val();
+
+			var antEnv = {};
+			var antTr = $(antsNum[i]).find(".anttbody").find("tr");
+			for(var antNum=0; antNum<antTr.length; antNum++){
+				var antKey = $(antTr[antNum]).find(".antKey").val();
+				var antVal = $(antTr[antNum]).find(".antVal").val();
+				antEnv[antKey]=antVal;
+			}
+
+			var antItems = {
+					"proid": 2,
+					"version": antVersion,
+					"env":antEnv
+			};
+			antJson.push(antItems);
+		}
+		//sonar
+		var sonarJson = new Array();
+		var sonarVersion = $(".sonarIbox").find(".sonarVersion").val();
+		var sonarTr = $(".sonartbody").find("tr");
+		var sonarEnv = {};
+		for(var sonNum = 0; sonNum < sonarTr.length; sonNum++){
+			var sonarKey = $(sonarTr[sonNum]).find(".sonarKey").val();
+			var sonarVal = $(sonarTr[sonNum]).find(".sonarVal").val();
+			var sonarItem = {"key":sonarKey,"val":sonarVal};
+			sonarEnv[sonarKey]=sonarVal;
+		}
+		var sonarItems ={
+				"proid": 3,
+				"version": sonarVersion,
+				"env":antEnv
+		};
+		sonarJson.push(sonarItems);
+
+		$.ajax({
+			url : "" + ctx + "/user/shera/creatShera.do",
+			type : "POST",
+			data : {
+				"sheraUrl" : sheraUrl,
+				"port" : port,
+				"userName" : userName,
+				"password" : password,
+				"remark" : remark,
+				"jdkJson" : JSON.stringify(jdkJson),
+				"sonarJson" : JSON.stringify(sonarJson),
+				"mavenJson" : JSON.stringify(mavenJson),
+				"antJson" : JSON.stringify(antJson),
+			},
+			success : function(data) {
+				data = eval("(" + data + ")");
+			}
+		});
 	});
-	
-	
-	//$(".create").click(function(){
+
+
 	$(document).on("click",".create",function(){
 		var createId = this.getAttribute("id");
 		var addHtml = '<tr class="plus-row">'
@@ -124,27 +109,27 @@ $(function(){
 		//var bb = '.'+createId+'tbody';
 		$(this).parent().parent().prev("tbody").append(addHtml);
 	});
-	
+
 	$(document).on("click",".fa-delete",function(){
 		$(this).parents(".conCredIbox").remove();
 	});
-	
+
 	//折叠ibox
-    $(document).on('click','.collapse-link',function(){
-        var ibox = $(this).closest('div.ibox');
-        var button = $(this).find('i');
-        var content = ibox.find('div.ibox-content');
-        content.slideToggle(200);
-        button.toggleClass('fa-chevron-up').toggleClass('fa-chevron-down');
-        ibox.toggleClass('').toggleClass('border-bottom');
-        setTimeout(function () {
-            ibox.resize();
-            ibox.find('[id^=map-]').resize();
-        }, 50);
-        ibox.css("border-bottom","1px solid #dadada");
-    });
-	
-	
+	$(document).on('click','.collapse-link',function(){
+		var ibox = $(this).closest('div.ibox');
+		var button = $(this).find('i');
+		var content = ibox.find('div.ibox-content');
+		content.slideToggle(200);
+		button.toggleClass('fa-chevron-up').toggleClass('fa-chevron-down');
+		ibox.toggleClass('').toggleClass('border-bottom');
+		setTimeout(function () {
+			ibox.resize();
+			ibox.find('[id^=map-]').resize();
+		}, 50);
+		ibox.css("border-bottom","1px solid #dadada");
+	});
+
+
 });
 
 //detail&修改
@@ -153,36 +138,36 @@ function sheraDetail(id){
 	findSheraData(id);
 	layer.open({
 		type: 1,
-        title: '修改',
-        content: $("#createSheraCon"),
-        area:['800px','500px'],
-        scrollbar:false,
-        btn: ['修改', '取消'],
-        yes: function(index, layero){ 
-        	if (!checkShera()){
-        		return;
-        	}
-        	var sheraUrl = $("#sheraIp").val();
-        	var port = $("#port").val();
-        	var userName = $("#shreaName").val();
-        	var password= $("#shreaPassword").val();
-        	var remark = $("#sheraRemark").val();
-        	var jdkJson = $("#arrayJdk").val();
-        	$.ajax({
-        		url :""+ ctx + "/user/shera/updateShera.do",
-        		type : "POST",
-        		data:{"id":id,"sheraUrl":sheraUrl,"port":port,"userName":userName,"password":password,"remark":remark,"jdkJson":jdkJson},
-        		success : function(data){
-        			data = eval("(" + data + ")");
-        			if (data.status=="200") {
-        				window.location.reload();
-        			} else if (data.status=="400") {
-        				layer.alert("修改失败，请您查看Ip地址是否有误");
-        			}
-        		}
-        	});
-        }
-	})
+		title: '修改',
+		content: $("#createSheraCon"),
+		area:['800px','500px'],
+		scrollbar:false,
+		btn: ['修改', '取消'],
+		yes: function(index, layero){
+			if (!checkShera()){
+				return;
+			}
+			var sheraUrl = $("#sheraIp").val();
+			var port = $("#port").val();
+			var userName = $("#shreaName").val();
+			var password= $("#shreaPassword").val();
+			var remark = $("#sheraRemark").val();
+			var jdkJson = $("#arrayJdk").val();
+			$.ajax({
+				url :""+ ctx + "/user/shera/updateShera.do",
+				type : "POST",
+				data:{"id":id,"sheraUrl":sheraUrl,"port":port,"userName":userName,"password":password,"remark":remark,"jdkJson":jdkJson},
+				success : function(data){
+					data = eval("(" + data + ")");
+					if (data.status=="200") {
+						window.location.reload();
+					} else if (data.status=="400") {
+						layer.alert("修改失败，请您查看Ip地址是否有误");
+					}
+				}
+			});
+		}
+	});
 }
 
 //查询当前的shera的详细信息
@@ -218,7 +203,7 @@ function findSheraData(id){
 			}
 		}
 	});
-	
+
 }
 
 //弹窗信息的清理
@@ -239,60 +224,60 @@ function deleteRow(obj){
 
 //批量删除sheras
 function delSheras(){
-    var sheraIds = [];
-    $('input[name="ids"]:checked').each(function(){
+	var sheraIds = [];
+	$('input[name="ids"]:checked').each(function(){
 		 var id = $(this).val();
 		 sheraIds.push(id);
-		 
-	 })
+
+	 });
 	 if ("" == sheraIds) {
 		layer.alert("请选择至少一个Shera", {icon:0});
 		return;
 	 }
-    layer.open({
-        title: '删除shera',
-        content: '确定删除shera？',
-        btn: ['确定', '取消'],
-        yes: function(index, layero){ 
-        	layer.close(index);
-        	$.ajax({
-        		url :""+ ctx + "/user/shera/delsheras.do?sheraIds="+sheraIds,
-        		success : function(data){
-        			data = eval("("+data+")");
-        			if (data.status == "200") {
-        				window.location.reload(true);
-        			}
-        			else {
-        				layer.alert("删除失败,请检出服务器连接");
-        			}
-        		}
-        	});
-        }
-    })
+	layer.open({
+		title: '删除shera',
+		content: '确定删除shera？',
+		btn: ['确定', '取消'],
+		yes: function(index, layero){
+			layer.close(index);
+			$.ajax({
+				url :""+ ctx + "/user/shera/delsheras.do?sheraIds="+sheraIds,
+				success : function(data){
+					data = eval("("+data+")");
+					if (data.status == "200") {
+						window.location.reload(true);
+					}
+					else {
+						layer.alert("删除失败,请检出服务器连接");
+					}
+				}
+			});
+		}
+	});
 }
 
 //删除一个shera
 function delOneTenement(id){
 	layer.open({
-        title: '删除shera',
-        content: '确定删除shera？',
-        btn: ['确定', '取消'],
-        yes: function(index, layero){ 
-        	layer.close(index);
-        	$.ajax({
-        		url :""+ ctx + "/user/shera/deleteShera.do?sheraId="+id,
-        		success : function(data){
-        			data = eval("("+data+")");
-        			if (data.status == "200") {
-        				window.location.reload(true);
-        			}
-        			else {
-        				layer.alert("删除失败,请检出服务器连接");
-        			}
-        		}
-        	});
-        }
-    })
+		title: '删除shera',
+		content: '确定删除shera？',
+		btn: ['确定', '取消'],
+		yes: function(index, layero){
+			layer.close(index);
+			$.ajax({
+				url :""+ ctx + "/user/shera/deleteShera.do?sheraId="+id,
+				success : function(data){
+					data = eval("("+data+")");
+					if (data.status == "200") {
+						window.location.reload(true);
+					}
+					else {
+						layer.alert("删除失败,请检出服务器连接");
+					}
+				}
+			});
+		}
+   });
 }
 
 //验证shera信息
@@ -302,24 +287,24 @@ function checkShera(){
 	var userName = $("#shreaName").val();
 	var password= $("#shreaPassword").val();
 	if (!sheraUrl || sheraUrl.length < 1){
-	      layer.tips('sheraIp地址不能为空','#sheraIp',{tips: [1, '#3595CC']});
-	      $('#sheraIp').focus();
-	      return;
+		  layer.tips('sheraIp地址不能为空','#sheraIp',{tips: [1, '#3595CC']});
+		  $('#sheraIp').focus();
+		  return;
 	}
 	if (!port || port.length < 1){
-	      layer.tips('端口不能为空','#port',{tips: [1, '#3595CC']});
-	      $('#port').focus();
-	      return;
+		  layer.tips('端口不能为空','#port',{tips: [1, '#3595CC']});
+		  $('#port').focus();
+		  return;
 	}
 	if (!userName || userName.length < 1){
-	      layer.tips('账号名称不能为空','#shreaName',{tips: [1, '#3595CC']});
-	      $('#shreaName').focus();
-	      return;
+		  layer.tips('账号名称不能为空','#shreaName',{tips: [1, '#3595CC']});
+		  $('#shreaName').focus();
+		  return;
 	}
 	if (!password || password.length < 1){
-	      layer.tips('账号密码不能为空','#shreaPassword',{tips: [1, '#3595CC']});
-	      $('#shreaPassword').focus();
-	      return;
+		  layer.tips('账号密码不能为空','#shreaPassword',{tips: [1, '#3595CC']});
+		  $('#shreaPassword').focus();
+		  return;
 	}
 	if (!addJdk()) {
 		return;
@@ -411,7 +396,7 @@ function addMaven(){
 						+'</tr>'
 						+'</thead>'
 						+'<tbody class="maventbody">'
-					
+
 						+'</tbody>'
 						+'<tfoot>'
 						+'<tr>'
@@ -457,7 +442,7 @@ function addAnt(){
 						+'</tr>'
 						+'</thead>'
 						+'<tbody class="anttbody">'
-					
+
 						+'</tbody>'
 						+'<tfoot>'
 						+'<tr>'

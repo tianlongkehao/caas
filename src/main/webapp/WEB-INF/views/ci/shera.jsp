@@ -33,12 +33,12 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a id="createSheraBtn" href="/shera/add" title="创建shear"><i
-											class="fa fa-plus"></i></a> 
+										<a id="createSheraBtn" href="/shera/add" title="创建shera"><i
+											class="fa fa-plus"></i></a>
 										<a href="javascript:delSheras()" title="删除"><i
 											class="fa fa-trash"></i></a>
 										<a href="javascript:window.location.reload(true);"
-											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
+											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a>
 									</div>
                             </div>
                             <div class="ibox-content">
@@ -89,12 +89,12 @@
                         </div>
                     </div>
                 </div>
-					
-					
+
+
 				</div>
 
 			</div>
-	
+
 	</article>
 	</div>
 
@@ -104,8 +104,8 @@
 	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
-		
-		
+
+
 	});
 	</script>
 </body>

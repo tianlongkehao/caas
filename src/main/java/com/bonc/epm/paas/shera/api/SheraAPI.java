@@ -504,7 +504,7 @@ public interface SheraAPI {
 	@Path("/exec/{userid}/{kindid}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public void deleteExecConfig(@PathParam("userid") String userid, @PathParam("kindid") String kindid);
+	public void deleteExecConfig(@PathParam("userid") String userid, @PathParam("kindid") Integer kindid);
 
 	/**
 	 * deleteExecConfig:删除shera的工具配置. <br/>

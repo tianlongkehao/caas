@@ -413,6 +413,19 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 	}
 
 	/**
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteExecConfig(java.lang.String, java.lang.Integer)
+	 */
+	@Override
+	public void deleteExecConfig(String userid, Integer kindid) throws SheraClientException {
+		try {
+			LOG.info("调用shera删除ExecConfig");
+			api.deleteExecConfig(userid, kindid);
+		} catch (WebApplicationException e) {
+			throw new SheraClientException(e.getMessage());
+		}
+	}
+
+	/**
 	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteExecConfig(java.lang.String)
 	 */
 	@Override

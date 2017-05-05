@@ -57,13 +57,6 @@
 											name="shreaPassword" value="">
 									</div>
 									<div class="infoCred">
-										<span class="labelCred">sonar：<font color="red">*</font></span>
-										<select class="form-control conCred" id="sonarInfoList"
-											name="sonarInfoList">
-											<option>sonar111111111</option>
-										</select>
-									</div>
-									<div class="infoCred">
 										<span class="labelCred">描述：</span>
 										<textarea class="form-control conCred" style="height: 100px" id="sheraRemark" rows="8"></textarea>
 									</div>
@@ -122,17 +115,17 @@
 										<span class="labelCred">Maven：</span>
 										<input type="button" class="btn btn-info" value="添加 Maven" onclick="addMaven()">
 										<div class="mavens">
-											
+
 										</div>
 									</div>
 									<div class="infoCred">
 										<span class="labelCred">ant：</span>
 										<input type="button" class="btn btn-info" value="添加 Ant" onclick="addAnt()">
 										<div class="ants">
-											
+
 										</div>
 									</div>
-									
+
 								</div>
 							</div>
 							<div class="lastBtns">
@@ -146,12 +139,12 @@
 
 		</article>
 	</div>
-	
+
 
 	<script type="text/javascript">
 	$(document).ready(function(){
-		
-		
+
+
 	});
 	</script>
 </body>

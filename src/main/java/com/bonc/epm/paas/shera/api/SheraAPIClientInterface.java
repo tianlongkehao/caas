@@ -129,6 +129,8 @@ public interface SheraAPIClientInterface {
 	/* exec config API */
 	public ExecConfig createExecConfig(ExecConfig execConfig) throws SheraClientException;
 
+	public void deleteExecConfig(String userid, Integer kindid) throws SheraClientException;
+
 	public void deleteExecConfig(String key) throws SheraClientException;
 
 	public List<ExecConfig> getExecConfig(Integer kindid) throws SheraClientException;
