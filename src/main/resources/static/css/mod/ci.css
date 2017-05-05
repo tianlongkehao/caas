@@ -643,7 +643,15 @@ textarea.c-project-con{
 .infoCred{
 	margin-top: 12px;
 }
-.labelCred{
+.labelCred,{
+	width: 19%;
+	margin-left: 2%;
+	float: left;
+	line-height:34px;
+	text-align:right;
+	padding-right:26px;
+}
+.labelspan{
 	width: 12%;
 	margin-left: 2%;
 	float: left;
@@ -658,9 +666,11 @@ textarea.c-project-con{
 	line-height:34px;
 
 }
-
-.conCred{
+.conCred1{
 	width: 77%;
+}
+.conCred{
+	width: 74%;
 }
 .c-project-checkbox{
 	height: 24px;
@@ -801,6 +811,42 @@ i.fa-telnet{
 }
 i.fa-tomcat{
 	background-position: -1px -161px;
+}
+.questionInfoCon{
+ 	padding:10px;
+ 	border:1px solid #ddd;
+ 	display:none;
+ 	margin-left: 25px;
+     width: 92%;
+ }
+ .fa-questionBtn{
+     line-height: 35px;
+     margin-left: 4px;
+     font-size: 16px;
+     float:right;
+     color:#e8504f;
+ }
+ .fa-questionCon{
+ 	padding:10px;
+ 	border:1px solid #ddd;
+ 	display:none;
+ 	margin-left: 25px;
+     width: 92%;
+ }
+ .registryinfo ul.nav ul.dropdown-menu li{
+ 	cursor:pointer;
+ }
+ .settingfilePath{
+ 	padding-left: 18%;
+ }
+ .settingfilePath-tit{
+ 	width: 12%;
+     float: left;
+     line-height: 34px;
+ }
+ .settingfilePath-con{
+ 	width: 84%;
+     float: left;
 }
 /* shera-add */
 .modalCrealApp .steps-main .progre {

@@ -289,10 +289,11 @@ $(document).ready(function () {
 						data = eval("(" + data + ")");
 						if (data.status == "200") {
 							if(type == 2){
+								$("#sshPassword").val(data.sshKey);
 								layer.open({
 									type : 1,
-									title : '添加认证',
-									content : '认证已经生成，请添加下面的公钥到对应代码托管平台。/n/n'+data.sshKey,
+									title : 'ssh密钥',
+									content : $("#sshPwdInfo"),
 									area : ['500px'],
 									btn : ['确认'],
 									scrollbar : false,
@@ -311,6 +312,7 @@ $(document).ready(function () {
 			}
 		});
 	});
+
 	//选择认证类型
 	$(".ssh").hide();
 	$(document).on('change','#CredentialsType',function(){
@@ -1098,6 +1100,12 @@ function changeMavenSetting(obj){
 		$(obj).parent().find("div.fa-questionCon").css("display","none");
 
 	}
+}
+//复制密钥按钮
+function copySshPwd(){
+	var sshPassword=document.getElementById("sshPassword");
+	sshPassword.select(); // 选择对象
+	document.execCommand("Copy"); // 执行浏览器复制命令
 }
 
 

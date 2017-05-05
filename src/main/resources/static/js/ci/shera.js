@@ -134,40 +134,43 @@ $(function(){
 
 //detail&修改
 function sheraDetail(id){
-	delData();
-	findSheraData(id);
-	layer.open({
-		type: 1,
-		title: '修改',
-		content: $("#createSheraCon"),
-		area:['800px','500px'],
-		scrollbar:false,
-		btn: ['修改', '取消'],
-		yes: function(index, layero){
-			if (!checkShera()){
-				return;
-			}
-			var sheraUrl = $("#sheraIp").val();
-			var port = $("#port").val();
-			var userName = $("#shreaName").val();
-			var password= $("#shreaPassword").val();
-			var remark = $("#sheraRemark").val();
-			var jdkJson = $("#arrayJdk").val();
-			$.ajax({
-				url :""+ ctx + "/user/shera/updateShera.do",
-				type : "POST",
-				data:{"id":id,"sheraUrl":sheraUrl,"port":port,"userName":userName,"password":password,"remark":remark,"jdkJson":jdkJson},
-				success : function(data){
-					data = eval("(" + data + ")");
-					if (data.status=="200") {
-						window.location.reload();
-					} else if (data.status=="400") {
-						layer.alert("修改失败，请您查看Ip地址是否有误");
-					}
-				}
-			});
-		}
-	});
+
+
+
+//	delData();
+//	findSheraData(id);
+//	layer.open({
+//		type: 1,
+//        title: '修改',
+//        content: $("#createSheraCon"),
+//        area:['800px','500px'],
+//        scrollbar:false,
+//        btn: ['修改', '取消'],
+//        yes: function(index, layero){
+//        	if (!checkShera()){
+//        		return;
+//        	}
+//        	var sheraUrl = $("#sheraIp").val();
+//        	var port = $("#port").val();
+//        	var userName = $("#shreaName").val();
+//        	var password= $("#shreaPassword").val();
+//        	var remark = $("#sheraRemark").val();
+//        	var jdkJson = $("#arrayJdk").val();
+//        	$.ajax({
+//        		url :""+ ctx + "/user/shera/updateShera.do",
+//        		type : "POST",
+//        		data:{"id":id,"sheraUrl":sheraUrl,"port":port,"userName":userName,"password":password,"remark":remark,"jdkJson":jdkJson},
+//        		success : function(data){
+//        			data = eval("(" + data + ")");
+//        			if (data.status=="200") {
+//        				window.location.reload();
+//        			} else if (data.status=="400") {
+//        				layer.alert("修改失败，请您查看Ip地址是否有误");
+//        			}
+//        		}
+//        	});
+//        }
+//	})
 }
 
 //查询当前的shera的详细信息

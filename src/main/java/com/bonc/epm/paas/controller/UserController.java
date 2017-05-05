@@ -1732,5 +1732,15 @@ public class UserController {
 			return userDel(user.getId() + "");
 		}
 	}
+	
+	@RequestMapping("/shera/detail/{id}")
+    public String detailShera(Model model){
+        Iterable<Shera> sheraList = sheraDao.findAll();
+        model.addAttribute("sheraList", sheraList);
+        model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li_flag", "shera");
+        return "ci/shera-add.jsp";
+    }
+	
 
 }

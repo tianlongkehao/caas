@@ -37,32 +37,32 @@
 							<div class="host_step1">
 								<div>
 									<div class="infoCred">
-										<span class="labelCred">IP：<font color="red">*</font></span> <input type="text"
-											class="form-control conCred" id="sheraIp" name="sheraIp"
+										<span class="labelspan">IP：<font color="red">*</font></span> <input type="text"
+											class="form-control conCred1" id="sheraIp" name="sheraIp"
 											placeholder="192.168.0.76" value="">
 									</div>
 									<div class="infoCred">
-										<span class="labelCred">端口：<font color="red">*</font></span> <input type="text"
-											class="form-control conCred" id="port" name="port"
+										<span class="labelspan">端口：<font color="red">*</font></span> <input type="text"
+											class="form-control conCred1" id="port" name="port"
 											placeholder="" value="">
 									</div>
 									<div class="infoCred">
-										<span class="labelCred">账号：<font color="red">*</font></span> <input type="text"
-											class="form-control conCred" id="shreaName" name="shreaName"
+										<span class="labelspan">账号：<font color="red">*</font></span> <input type="text"
+											class="form-control conCred1" id="shreaName" name="shreaName"
 											value="">
 									</div>
 									<div class="infoCred">
-										<span class="labelCred">密码：<font color="red">*</font></span> <input type="text"
-											class="form-control conCred" id="shreaPassword"
+										<span class="labelspan">密码：<font color="red">*</font></span> <input type="password"
+											class="form-control conCred1" id="shreaPassword"
 											name="shreaPassword" value="">
 									</div>
 									<div class="infoCred">
-										<span class="labelCred">描述：</span>
-										<textarea class="form-control conCred" style="height: 100px" id="sheraRemark" rows="8"></textarea>
+										<span class="labelspan">描述：</span>
+										<textarea class="form-control conCred1" style="height: 100px" id="sheraRemark" rows="8"></textarea>
 									</div>
 									<div class="infoCred">
-										<span class="labelCred">JDK：</span>
-										<table class="table enabled conCred jdkCon">
+										<span class="labelspan">JDK：</span>
+										<table class="table enabled conCred1 jdkCon">
 											<thead>
 												<tr>
 													<th style="width: 35%">name</th>
@@ -82,15 +82,15 @@
 										<input type="hidden" id="arrayJdk" value="" />
 									</div>
 									<div class="infoCred">
-										<span class="labelCred">sonar：</span>
-										<div class="sonarsCon row conCred conCredIbox sonarIbox">
+										<span class="labelspan">sonar：</span>
+										<div class="sonarsCon row conCred1 conCredIbox sonarIbox">
 											<div class="form-group col-md-12">
-												<label class="labelCred">sonar版本:</label>
-												<input type="text" class="form-control conCred sonarVersion" value="">
+												<label class="labelspan">sonar版本:</label>
+												<input type="text" class="form-control conCred1 sonarVersion" value="">
 											</div>
 											<div class="form-group col-md-12">
-												<span class="labelCred">环境变量：</span>
-												<table class="table enabled conCred jdkCon">
+												<span class="labelspan">环境变量：</span>
+												<table class="table enabled conCred1 jdkCon">
 													<thead>
 														<tr>
 															<th style="width: 35%">key</th>
@@ -112,14 +112,14 @@
 										</div>
 									</div>
 									<div class="infoCred">
-										<span class="labelCred">Maven：</span>
+										<span class="labelspan">Maven：</span>
 										<input type="button" class="btn btn-info" value="添加 Maven" onclick="addMaven()">
 										<div class="mavens">
 
 										</div>
 									</div>
 									<div class="infoCred">
-										<span class="labelCred">ant：</span>
+										<span class="labelspan">ant：</span>
 										<input type="button" class="btn btn-info" value="添加 Ant" onclick="addAnt()">
 										<div class="ants">
 
