@@ -61,7 +61,7 @@
 													<td style="width: 5%; text-indent: 30px;"><input
 														type="checkbox" class="chkItem" name="ids"
 														value="${shera.id }"></td>
-													<td style="width: 20%;cursor:pointer"><a title="查看详细信息" onclick="sheraDetail(${shera.id})" keyName="name"
+													<td style="width: 20%;cursor:pointer"><a title="查看详细信息" href="/user/shera/detail/${shera.id}" onclick="sheraDetail(${shera.id})" keyName="name"
 														onmousemove="style.textDecoration='underline'"
 														onmouseout="style.textDecoration='none'">${shera.sheraUrl }</a></td>
 													<td style="width: 13%;">${shera.port }</td>

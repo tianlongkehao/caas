@@ -643,8 +643,16 @@ textarea.c-project-con{
 .infoCred{
 	margin-top: 12px;
 }
-.labelCred{
+.labelCred,{
 	width: 19%;
+	margin-left: 2%;
+	float: left;
+	line-height:34px;
+	text-align:right;
+	padding-right:26px;
+}
+.labelspan{
+	width: 12%;
 	margin-left: 2%;
 	float: left;
 	line-height:34px;
@@ -658,7 +666,9 @@ textarea.c-project-con{
 	line-height:34px;
 
 }
-
+.conCred1{
+	width: 77%;
+}
 .conCred{
 	width: 74%;
 }
