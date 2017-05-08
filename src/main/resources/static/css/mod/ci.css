@@ -660,7 +660,7 @@ textarea.c-project-con{
 	padding-right:26px;
 }
 .spantest{
-	width:14%!important;
+	width:16%!important;
 }
 .labelCred1{
 	width: 14%;
@@ -888,6 +888,7 @@ i.fa-tomcat{
 .conCredIbox{
 	margin-left: 14%;
 	margin-top:15px;
+	width:77%;
 }
 tfoot tr{
 	height:30px!important;

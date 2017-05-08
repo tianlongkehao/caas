@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1760,12 +1761,15 @@ public class UserController {
 				
 				Map<String, String> env = mvnConfig.getEnv();
 				List<Object> envList = new ArrayList<>();
-				for(String key : env.keySet()){
-					Map<String , String> envItem = new HashMap<>();
-					envItem.put(key, env.get(key));
-					envList.add(envItem);
+				if (MapUtils.isNotEmpty(env)) {
+					for(String key : env.keySet()){
+						Map<String , String> envItem = new HashMap<>();
+						envItem.put("key",key);
+						envItem.put("value", env.get(key));
+						envList.add(envItem);
+					}
 				}
-				map.put("env", env);
+				map.put("env", envList);
 				mvnConfigList.add(map);
 			}
 			
@@ -1776,12 +1780,15 @@ public class UserController {
 				
 				Map<String, String> env = antConfig.getEnv();
 				List<Object> envList = new ArrayList<>();
-				for(String key : env.keySet()){
-					Map<String , String> envItem = new HashMap<>();
-					envItem.put(key, env.get(key));
-					envList.add(envItem);
+				if (MapUtils.isNotEmpty(env)) {
+					for(String key : env.keySet()){
+						Map<String , String> envItem = new HashMap<>();
+						envItem.put("key",key);
+						envItem.put("value", env.get(key));
+						envList.add(envItem);
+					}
 				}
-				map.put("env", env);
+				map.put("env", envList);
 				antConfigList.add(map);
 			}
 			
@@ -1794,12 +1801,15 @@ public class UserController {
 				
 				Map<String, String> env = sonarConfig.getEnv();
 				List<Object> envList = new ArrayList<>();
-				for(String key : env.keySet()){
-					Map<String , String> envItem = new HashMap<>();
-					envItem.put(key, env.get(key));
-					envList.add(envItem);
+				if (MapUtils.isNotEmpty(env)) {
+					for(String key : env.keySet()){
+						Map<String , String> envItem = new HashMap<>();
+						envItem.put("key",key);
+						envItem.put("value", env.get(key));
+						envList.add(envItem);
+					}
 				}
-				map.put("env", env);
+				map.put("env", envList);
 				sonarConfigList.add(map);
 			}
 			

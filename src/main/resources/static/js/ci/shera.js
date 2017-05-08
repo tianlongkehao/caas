@@ -2,11 +2,14 @@ var count = 1;
 $(function(){
 	//创建shera
 	$("#saveSheraBtn").click(function(){
+		var id=0;
+		if($("#sheraId")){
+			id = $("#sheraId").val();
+		}
 		var sheraUrl = $("#sheraIp").val();
 		var port = $("#port").val();
 		var userName = $("#shreaName").val();
 		var password= $("#shreaPassword").val();
-		var sonarInfoList = $("#sonarInfoList").val();
 		var remark = $("#sheraRemark").val();
 		var jdkJson = {};
 		var jdkTr = $(".jdktbody").find("tr");
@@ -85,6 +88,7 @@ $(function(){
 			url : "" + ctx + "/user/shera/creatShera.do",
 			type : "POST",
 			data : {
+				"id":id,
 				"sheraUrl" : sheraUrl,
 				"port" : port,
 				"userName" : userName,
@@ -154,65 +158,7 @@ $(function(){
 
 //detail&修改
 function sheraDetail(id){
-	//$(".ants").append('<input type="hidden" value="'+id+'" id="sheraId">');
-	//antEnv
-//	var antConfig = $("#antConfig").val();
-//	var addAntDetailHtml ="";
-//	var antEnvHtml = "";
-//	for(var antNum = 0; antNum<antConfig.length; antNum++){
-//		addAntDetailHtml += '<div class="row conCred conCredIbox antIbox">'
-//			+'<div class="">'
-//			+'<div class="ibox float-e-margins">'
-//			+'<div class="ibox-title">'
-//			+'<h5>ant</h5>'
-//			+'<div class="ibox-tools">'
-//			+'<a class="collapse-link"> <i class="fa fa-chevron-up"></i>'
-//			+'</a> <a class="close-link"> <i class="fa fa-times fa-delete"></i>'
-//			+'</a>'
-//			+'</div>'
-//			+'</div>'
-//			+'<div class="ibox-content">'
-//			+'<div class="row ant-config">'
-//			+'<div class="form-group col-md-12">'
-//			+'<label class="labelspan spantest">ant版本:</label>'
-//			+'<input type="text" class="form-control conCred antVersion" value="'+antConfig[antNum].version+'">'
-//			+'</div>'
-//			+'<div class="form-group col-md-12">'
-//			+'<span class="labelspan spantest spantest">环境变量：</span>'
-//			+'<table class="table enabled conCred jdkCon">'
-//			+'<thead>'
-//			+'<tr>'
-//			+'<th style="width: 35%">key</th>'
-//			+'<th style="width: 35%">val</th>'
-//			+'<th style="vertical-align: middle; width: 10%">操作</th>'
-//			+'</tr>'
-//			+'</thead>'
-//			+'<tbody class="anttbody">';
-//		for(var key in antConfig.env){
-//			antEnvHtml += '<tr class="plus-row">'
-//							+'<td>'+key+'</td>'
-//							+'<td>'+antConfig.env[key]+'</td>'
-//							+'<td><a onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a></td>'
-//							+'</tr>';
-//		}
-//		addAntDetailHtml += antEnvHtml
-//			+'</tbody>'
-//			+'<tfoot>'
-//			+'<tr>'
-//			+'<td colspan="3" id="ant" class="create"><i class="fa fa-plus margin"></i>添加</td>'
-//			+'</tr>'
-//			+'</tfoot>'
-//			+'</table>'
-//			+'</div>'
-//			+'</div>'
-//			+'</div>'
-//			+'</div>'
-//			+'</div>'
-//			+'</div>';
-//	}
-//	$(".ants").append(addAntDetailHtml);
-
-
+	
 //	delData();
 //	findSheraData(id);
 //	layer.open({
@@ -470,7 +416,7 @@ function addMaven(){
 						+'<thead>'
 						+'<tr>'
 						+'<th style="width: 35%">key</th>'
-						+'<th style="width: 35%">val</th>'
+						+'<th style="width: 35%">value</th>'
 						+'<th style="vertical-align: middle; width: 10%">操作</th>'
 						+'</tr>'
 						+'</thead>'
@@ -516,7 +462,7 @@ function addAnt(){
 						+'<thead>'
 						+'<tr>'
 						+'<th style="width: 35%">key</th>'
-						+'<th style="width: 35%">val</th>'
+						+'<th style="width: 35%">value</th>'
 						+'<th style="vertical-align: middle; width: 10%">操作</th>'
 						+'</tr>'
 						+'</thead>'
