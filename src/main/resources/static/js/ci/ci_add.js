@@ -303,6 +303,10 @@ $(document).ready(function () {
 										layer.closeAll();
 									}
 								});
+							} else {
+								var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+								$("#codeCredentials").append(html);
+								layer.closeAll();
 							}
 						} else {
 							layer.alert("代码认证导入失败");

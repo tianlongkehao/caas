@@ -372,6 +372,10 @@ $(document).ready(function(){
 										layer.closeAll();
 									}
 								});
+							} else {
+								var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+								$("#codeCredentials").append(html);
+								layer.closeAll();
 							}
 						} else {
 							layer.alert("代码认证导入失败");
@@ -394,7 +398,7 @@ $(document).ready(function(){
 //				var codeType = $("#codeType").val();
 //				var username = $("#userNameCred").val();
 //				var password = $("#passwordCred").val();
-//				
+//
 //				var remark = $("#keyRemark").val();
 //				if (!username || username.length < 1) {
 //			    	layer.tips('用户名不能为空','#userNameCred',{tips:[1,'#3595CC']});
