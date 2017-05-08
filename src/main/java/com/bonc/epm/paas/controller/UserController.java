@@ -1432,6 +1432,14 @@ public class UserController {
 	@ResponseBody
 	public String createShera(Shera shera, String jdkJson, String mavenJson, String antJson, String sonarJson) {
 		Map<String, Object> map = new HashMap<>();
+		if (shera.getId() == 0) {
+			List<Shera> sheraList = sheraDao.findByUrlAndPort(shera.getSheraUrl(), shera.getPort());
+			if (CollectionUtils.isNotEmpty(sheraList)) {
+				// 有重复的配置
+				map.put("status", "305");
+				return JSON.toJSONString(map);
+			}
+		}
 		SheraAPIClientInterface client = sheraClientService.getClient(shera);
 		try {
 			// 用任意一个api检测当前配置的shera能否使用
@@ -1742,11 +1750,11 @@ public class UserController {
 		try {
 			allJdk = client.getAllJdk();
 			List<ExecConfig> mvnConfigs = client.getExecConfig(SheraConstant.EXEC_MAVEN_CONFIG);
-			
+
 			for (ExecConfig mvnConfig : mvnConfigs) {
 				Map<String, Object> map = new HashMap<>();
 				map.put("version", mvnConfig.getVersion());
-				
+
 				Map<String, String> env = mvnConfig.getEnv();
 				List<Object> envList = new ArrayList<>();
 				for(String key : env.keySet()){
@@ -1757,12 +1765,12 @@ public class UserController {
 				map.put("env", env);
 				mvnConfigList.add(map);
 			}
-			
+
 			List<ExecConfig> antConfigs = client.getExecConfig(SheraConstant.EXEC_ANT_CONFIG);
 			for (ExecConfig antConfig : antConfigs) {
 				Map<String, Object> map = new HashMap<>();
 				map.put("version", antConfig.getVersion());
-				
+
 				Map<String, String> env = antConfig.getEnv();
 				List<Object> envList = new ArrayList<>();
 				for(String key : env.keySet()){
@@ -1773,14 +1781,14 @@ public class UserController {
 				map.put("env", env);
 				antConfigList.add(map);
 			}
-			
-			
-			
+
+
+
 			List<ExecConfig> sonarConfigs = client.getExecConfig(SheraConstant.EXEC_SONAR_CONFIG);
 			for (ExecConfig sonarConfig : sonarConfigs) {
 				Map<String, Object> map = new HashMap<>();
 				map.put("version", sonarConfig.getVersion());
-				
+
 				Map<String, String> env = sonarConfig.getEnv();
 				List<Object> envList = new ArrayList<>();
 				for(String key : env.keySet()){
@@ -1791,7 +1799,7 @@ public class UserController {
 				map.put("env", env);
 				sonarConfigList.add(map);
 			}
-			
+
 		} catch (SheraClientException e) {
 			e.printStackTrace();
 		}
