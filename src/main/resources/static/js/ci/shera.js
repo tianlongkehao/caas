@@ -109,6 +109,8 @@ $(function(){
 					layer.alert("创建ant配置失败，请确认配置是否正确。");
 				} else if (data.status=="304"){
 					layer.alert("创建sonar配置失败，请确认配置是否正确。");
+				} else if (data.status=="305"){
+					layer.alert("已有相同的shera配置，请确认配置是否正确。");
 				}
 			}
 		});
@@ -148,8 +150,8 @@ $(function(){
 		ibox.css("border-bottom","1px solid #dadada");
 	});
 
-	
-	
+
+
 });
 
 //detail&修改
