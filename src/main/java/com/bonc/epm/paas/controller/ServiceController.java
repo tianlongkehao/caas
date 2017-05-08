@@ -461,8 +461,6 @@ public class ServiceController {
 
 	/**
 	 * Description: <br>
-<<<<<<< HEAD
-=======
 	 * 获取nginxService参数
 	 *
 	 * @param model
@@ -565,7 +563,6 @@ public class ServiceController {
 
 	/**
 	 * Description: <br>
->>>>>>> refs/remotes/origin/develop
 	 * 将字符串重新组装 主要用于proxyZone的重新组装
 	 *
 	 * @param str
@@ -2741,15 +2738,6 @@ public class ServiceController {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Description: <br>
-	 * 获取当前Pod的日志
-	 *
-	 * @param id
-	 *            服务Id
-	 * @param date
-	 *            日期
-=======
 	 * getPodLogByPeriod:根据起止时间获取日志. <br/>
 	 *
 	 * @author longkaixiang
@@ -2843,7 +2831,6 @@ public class ServiceController {
 	 *
 	 * @author longkaixiang
 	 * @param podName
->>>>>>> refs/remotes/origin/develop
 	 * @return String
 	 */
 	@RequestMapping("service/detail/getPodlogs.do")
