@@ -1733,7 +1733,7 @@ public class UserController {
 	}
 
 	@RequestMapping("/shera/detail/{id}")
-    public String detailShera(Model model, long id){
+    public String detailShera(Model model, @PathVariable long id){
         Shera shera = sheraDao.findOne(id);
         SheraAPIClientInterface client = sheraClientService.getClient(shera);
         JdkList allJdk = null;
@@ -1755,7 +1755,7 @@ public class UserController {
         model.addAttribute("sonarConfig", sonarConfig);
         model.addAttribute("menu_flag", "ci");
         model.addAttribute("li_flag", "shera");
-        return "ci/shera-add.jsp";
+        return "ci/shera-detail.jsp";
     }
 
 

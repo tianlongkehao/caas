@@ -36,30 +36,32 @@
 							<%-- 基本信息 --%>
 							<div class="host_step1">
 								<div>
+									<%-- <c:if test="${shera}" var="shera"> --%>
 									<div class="infoCred">
 										<span class="labelspan">IP：<font color="red">*</font></span> <input type="text"
 											class="form-control conCred1" id="sheraIp" name="sheraIp"
-											placeholder="192.168.0.76" value="">
+											placeholder="192.168.0.76" value="${shera.sheraUrl}">
 									</div>
 									<div class="infoCred">
 										<span class="labelspan">端口：<font color="red">*</font></span> <input type="text"
 											class="form-control conCred1" id="port" name="port"
-											placeholder="" value="">
+											placeholder="" value="${shera.port}">
 									</div>
 									<div class="infoCred">
 										<span class="labelspan">账号：<font color="red">*</font></span> <input type="text"
 											class="form-control conCred1" id="shreaName" name="shreaName"
-											value="">
+											value="${shera.userName }">
 									</div>
 									<div class="infoCred">
 										<span class="labelspan">密码：<font color="red">*</font></span> <input type="password"
 											class="form-control conCred1" id="shreaPassword"
-											name="shreaPassword" value="">
+											name="shreaPassword" value="${shera.password }">
 									</div>
 									<div class="infoCred">
 										<span class="labelspan">描述：</span>
-										<textarea class="form-control conCred1" style="height: 100px" id="sheraRemark" rows="8"></textarea>
+										<textarea class="form-control conCred1" style="height: 100px" id="sheraRemark" rows="8" value="${shera.remark }"></textarea>
 									</div>
+									<%-- </c:if> --%>
 									<div class="infoCred">
 										<span class="labelspan">JDK：</span>
 										<table class="table enabled conCred1 jdkCon">
@@ -71,7 +73,13 @@
 												</tr>
 											</thead>
 											<tbody class="jdktbody">
-
+												<c:forEach items="${allJdk.items }" var="jdk">
+													<tr class="plus-row">
+													<td>${jdk.version}</td>
+													<td>${jdk.path}</td>
+													<td><a onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a></td>
+													</tr>
+												</c:forEach>
 											</tbody>
 											<tfoot>
 												<tr>
@@ -99,7 +107,7 @@
 														</tr>
 													</thead>
 													<tbody class="sonartbody">
-
+														
 													</tbody>
 													<tfoot>
 														<tr>
@@ -122,7 +130,60 @@
 										<span class="labelspan">ant：</span>
 										<input type="button" class="btn btn-info" value="添加 Ant" onclick="addAnt()">
 										<div class="ants">
-
+											<c:forEach items="${antConfig }" var="antConfig">
+												<div class="row conCred conCredIbox antIbox">
+													<div class="">
+														<div class="ibox float-e-margins">
+															<div class="ibox-title">
+																<h5>ant</h5>
+																<div class="ibox-tools">
+																	<a class="collapse-link"> <i
+																		class="fa fa-chevron-up"></i>
+																	</a> <a class="close-link"> <i
+																		class="fa fa-times fa-delete"></i>
+																	</a>
+																</div>
+															</div>
+															<div class="ibox-content">
+																<div class="row ant-config">
+																	<div class="form-group col-md-12">
+																		<label class="labelspan spantest">ant版本:</label> <input
+																			type="text" class="form-control conCred antVersion"
+																			value="${antConfig.version }">
+																	</div>
+																	<div class="form-group col-md-12">
+																		<span class="labelspan spantest spantest">环境变量：</span>
+																		<table class="table enabled conCred jdkCon">
+																			<thead>
+																				<tr>
+																					<th style="width: 35%">key</th>
+																					<th style="width: 35%">value</th>
+																					<th style="vertical-align: middle; width: 10%">操作</th>
+																				</tr>
+																			</thead>
+																			<tbody class="anttbody">
+																				<c:forEach items="${antConfig.env }" var="antConfig">
+																					<tr>
+																						<td></td>
+																						<td></td>
+																						<td></td>
+																					</tr>
+																				</c:forEach>
+																			</tbody>
+																			<tfoot>
+																				<tr>
+																					<td colspan="3" id="ant" class="create"><i
+																						class="fa fa-plus margin"></i>添加</td>
+																				</tr>
+																			</tfoot>
+																		</table>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</c:forEach>
 										</div>
 									</div>
 
@@ -130,7 +191,7 @@
 							</div>
 							<div class="lastBtns">
 								<a type="button" class="btn btn-default" href="<%=path %>/user/shera">返回</a>
-								<button id="saveSheraBtn" class="pull-right btn btn-primary btn-color pull_confirm">保存</button>
+								<button id="saveSheraBtn" class="pull-right btn btn-primary btn-color pull_confirm">修改</button>
 							</div>
 						</div>
 					</div>
