@@ -19,6 +19,7 @@ import javax.ws.rs.WebApplicationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.ChangeGit;
@@ -413,7 +414,8 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 	}
 
 	/**
-	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteExecConfig(java.lang.String, java.lang.Integer)
+	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#deleteExecConfig(java.lang.String,
+	 *      java.lang.Integer)
 	 */
 	@Override
 	public void deleteExecConfig(String userid, Integer kindid) throws SheraClientException {
@@ -445,7 +447,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 	public List<ExecConfig> getExecConfig(Integer kindid) throws SheraClientException {
 		try {
 			LOG.info("调用shera获取ExecConfig");
-			return api.getExecConfig("admin", kindid);
+			return JSON.parseArray(api.getExecConfig("admin", kindid), ExecConfig.class);
 		} catch (NotFoundException e) {
 			return null;
 		} catch (WebApplicationException e) {

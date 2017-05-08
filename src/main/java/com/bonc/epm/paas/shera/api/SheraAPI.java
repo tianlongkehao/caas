@@ -11,8 +11,6 @@
 
 package com.bonc.epm.paas.shera.api;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -542,7 +540,7 @@ public interface SheraAPI {
 	@Path("/exec/{userid}/{kindid}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ExecConfig> getExecConfig(@PathParam("userid") String userid, @PathParam("kindid") Integer kindid);
+	public String getExecConfig(@PathParam("userid") String userid, @PathParam("kindid") Integer kindid);
 
 	/**
 	 * createSshKey:create ssh rsa public key and private key. <br/>
