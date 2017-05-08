@@ -9,14 +9,20 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.bonc.epm.paas.controller.ServiceController;
 import com.bonc.epm.paas.entity.EnvVariable;
+import com.bonc.epm.paas.entity.KeyValue;
 import com.bonc.epm.paas.entity.PortConfig;
+import com.bonc.epm.paas.entity.ServiceConfigmap;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesApisClient;
+import com.bonc.epm.paas.kubernetes.model.ConfigMap;
+import com.bonc.epm.paas.kubernetes.model.ConfigMapTemplate;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
 import com.bonc.epm.paas.kubernetes.model.CrossVersionObjectReference;
@@ -46,6 +52,8 @@ import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
+import com.bonc.epm.paas.kubernetes.model.Volume;
+import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
@@ -66,15 +74,24 @@ public class KubernetesClientService {
 	private String address;
 
 	/**
-	 * 内存和cpu的比例大小
+	 * POD request cpu /limit cpu = 1/4
 	 */
-	@Value("${ratio.memtocpu}")
-	public String RATIO_MEMTOCPU = "4";
+	@Value("${ratio.limittorequestcpu}")
+	public int RATIO_LIMITTOREQUESTCPU;
+
+	/**
+	 * POD request memory /limit memory = 1/4
+	 */
+	@Value("${ratio.limittorequestmemory}")
+	public  int RATIO_LIMITTOREQUESTMEMORY;
 
 	public static final Integer INITIAL_DELAY_SECONDS = 30 * 60;
 	public static final Integer TIME_SECONDS = 5;
 
 	public static final String adminNameSpace = "kube-system";
+
+	@Autowired
+	public ServiceController serviceController;
 
 	public int getK8sEndPort() {
 		return Integer.valueOf(endPort);
@@ -153,20 +170,6 @@ public class KubernetesClientService {
 		return limitRange;
 	}
 
-	/*
-	 * public Map<String,Object> getlimit(Map<String,Object> limit){ User
-	 * currentUser = CurrentUserUtils.getInstance().getUser();
-	 * KubernetesAPIClientInterface client = this.getClient(); LimitRange
-	 * limitRange = client.getLimitRange(currentUser.getUserName());
-	 * LimitRangeItem limitRangeItem = limitRange.getSpec().getLimits().get(0);
-	 * double icpuMax = transCpu(limitRangeItem.getMax().get("cpu")); Integer
-	 * imemoryMax = transMemory(limitRangeItem.getMax().get("memory"));
-	 * limit.put("cpu", icpuMax); limit.put("memory", imemoryMax+"Mi"); return
-	 * limit;
-	 *
-	 * }
-	 */
-
 	public Long transMemory(String memory) {
 		if (memory.endsWith("M")) {
 			memory = memory.replace("M", "");
@@ -236,7 +239,7 @@ public class KubernetesClientService {
 	public ReplicationController generateSimpleReplicationController(String name, int replicas, Integer initialDelay,
 			Integer timeoutDetction, Integer periodDetction, String image, List<PortConfig> portConfigs, Double cpu,
 			String ram, String nginxObj, String servicePath, String proxyPath, String checkPath,
-			List<EnvVariable> envVariables, List<String> command, List<String> args) {
+			List<EnvVariable> envVariables, List<String> command, List<String> args,List<ServiceConfigmap> serviceConfigmapList) {
 
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
@@ -256,11 +259,6 @@ public class KubernetesClientService {
 		if (StringUtils.isNotBlank(proxyPath)) {
 			labels.put("proxyPath", proxyPath.replaceAll("/", "LINE"));
 		}
-		// 添加服务检查路径
-		/*
-		 * if (StringUtils.isNotBlank(checkPath)) { labels.put("healthcheck",
-		 * checkPath.replaceAll("/", "---")); }
-		 */
 		if (StringUtils.isNotBlank(nginxObj)) {
 			String[] proxyArray = nginxObj.split(",");
 			for (int i = 0; i < proxyArray.length; i++) {
@@ -314,13 +312,15 @@ public class KubernetesClientService {
 		ResourceRequirements requirements = new ResourceRequirements();
 		requirements.getLimits();
 		Map<String, Object> def = new HashMap<String, Object>();
-		// float fcpu = cpu*1024;
-		def.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
-		def.put("memory", ram + "Mi");
+		// float fcpu = cpu*1024; 页面资源 = 实际资源 * 资源系数
+		def.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
+		def.put("memory", Double.parseDouble(ram)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
+		/*def.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
+		def.put("memory", ram + "Mi");*/
 		Map<String, Object> limit = new HashMap<String, Object>();
 		// limit = getlimit(limit);
-		limit.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
-		limit.put("memory", ram + "Mi");
+		limit.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
+		limit.put("memory", Double.parseDouble(ram)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
 		container.setResources(requirements);
@@ -341,12 +341,48 @@ public class KubernetesClientService {
 		if (CollectionUtils.isNotEmpty(args)) {
 			container.setArgs(args);
 		}
+		if(!CollectionUtils.isEmpty(serviceConfigmapList)){
+			ServiceConfigmap serviceConfigmap = serviceConfigmapList.get(0);
+			List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
+			VolumeMount volumeMount = new VolumeMount();
+			volumeMount.setName(name);
+			volumeMount.setMountPath(serviceConfigmap.getPath());
+			volumeMounts.add(volumeMount);
+			container.setVolumeMounts(volumeMounts);
+
+			List<Volume> volumes = new ArrayList<Volume>();
+			Volume volume = new Volume();
+			ConfigMapTemplate configMapTemplate = new ConfigMapTemplate();
+			configMapTemplate.setName(serviceConfigmap.getName());
+			volume.setName(name);
+			volume.setConfigMap(configMapTemplate);
+			volumes.add(volume);
+			podSpec.setVolumes(volumes);
+		}
 		containers.add(container);
 		podSpec.setContainers(containers);
 		template.setSpec(podSpec);
 		spec.setTemplate(template);
 		replicationController.setSpec(spec);
 		return replicationController;
+	}
+
+	public ConfigMap generateConfigMap(String configMapName, List<KeyValue> keyValues) {
+		ConfigMap configmap = new ConfigMap();
+		Map<String, String> data = new HashMap<String, String>();
+
+		if (!CollectionUtils.isEmpty(keyValues)) {
+			for (KeyValue k : keyValues) {
+				data.put(k.getKey(), k.getValue());
+			}
+		}
+
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setName(configMapName);
+		configmap.setMetadata(metadata);
+		configmap.setData(data);
+
+		return configmap;
 	}
 
 	public ReplicationController generateSimpleReplicationController(String name, int replicas, String image,
@@ -370,15 +406,6 @@ public class KubernetesClientService {
 		Container container = new Container();
 		container.setName(name);
 		container.setImage(image);
-
-		// ResourceRequirements requirements = new ResourceRequirements();
-		// requirements.getLimits();
-		// Map<String,String> def = new HashMap<String,String>();
-		// //float fcpu = cpu*1024;
-		// def.put("cpu", String.valueOf(cpu));
-		// def.put("memory", ram+"Mi");
-		// requirements.setRequests(def);
-		// container.setResources(requirements);
 
 		List<ContainerPort> ports = new ArrayList<ContainerPort>();
 		ContainerPort port = new ContainerPort();
@@ -459,8 +486,10 @@ public class KubernetesClientService {
 	/**
 	 * Description: 创建k8s Service
 	 *
-	 * @param serName
 	 * @param refPort
+	 * @param nameSpace
+	 * @param serAddress
+	 * @param refAddress
 	 * @return
 	 * @see
 	 */
@@ -468,26 +497,15 @@ public class KubernetesClientService {
 		Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(serName);
-		/*
-		 * Map<String,String> labels = new HashMap<String,String>();
-		 * labels.put("app", serName); meta.setLabels(labels);
-		 */
 		service.setMetadata(meta);
 
 		ServiceSpec spec = new ServiceSpec();
-		// spec.setType("NodePort");
 		List<ServicePort> ports = new ArrayList<ServicePort>();
 		ServicePort portObj = new ServicePort();
-		// portObj.setName("http");
 		portObj.setProtocol("TCP");
 		portObj.setPort(refPort);
-		// portObj.setNodePort(serviceController.vailPortSet());
 		ports.add(portObj);
 		spec.setPorts(ports);
-		/*
-		 * Map<String,String> selector = new HashMap<String,String>();
-		 * selector.put("app", serName); spec.setSelector(selector);
-		 */
 		service.setSpec(spec);
 		return service;
 	}
@@ -503,7 +521,7 @@ public class KubernetesClientService {
 	 * @return
 	 * @see
 	 */
-	public Endpoints generateEndpoints(String serName, String refAddress, int refPort, String useProxy) {
+	public Endpoints generateEndpoints(String serName, String refAddress, int refPort, String useProxy,String zone) {
 		Endpoints endpoints = new Endpoints();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(serName);
@@ -511,6 +529,15 @@ public class KubernetesClientService {
 		labels.put("app", serName);
 		if (StringUtils.isNotBlank(useProxy)) {
 			labels.put("useProxy", useProxy);
+			if (StringUtils.isNotBlank(zone)) {
+				switch (zone) {
+					case "0":labels.put("user", "user");break;
+					case "1":labels.put("dmz", "dmz");break;
+					case "2":labels.put("dmz1", "dmz1");break;
+					case "3":labels.put("all", "all");break;
+					default:labels.put("all", "all");break;
+				}
+			}
 		}
 		meta.setLabels(labels);
 		endpoints.setMetadata(meta);
@@ -533,7 +560,6 @@ public class KubernetesClientService {
 		endpoints.setSubsets(subsets);
 		return endpoints;
 	}
-
 	/**
 	 * Description: create a new HorizontalPodAutoscaler Object
 	 * @param maxReplicas
@@ -552,11 +578,11 @@ public class KubernetesClientService {
 	public HorizontalPodAutoscaler generateHorizontalPodAutoscaler(String name, Integer maxReplicas,
 			Integer minReplicas, Kind kind, Integer targetCPUUtilizationPercentage) {
 		HorizontalPodAutoscaler hpa = new HorizontalPodAutoscaler();
-		// 设置metadata
+		// 璁剧疆metadata
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(name);
 		hpa.setMetadata(meta);
-		// 设置spec
+		// 璁剧疆spec
 		HorizontalPodAutoscalerSpec spec = new HorizontalPodAutoscalerSpec();
 		spec.setMaxReplicas(maxReplicas);
 		spec.setMinReplicas(minReplicas);
@@ -580,14 +606,10 @@ public class KubernetesClientService {
 	 */
 	public ReplicationController updateSimpleReplicationController(ReplicationController controller,
 			com.bonc.epm.paas.entity.Service service, List<String> command, int flag) {
-
 		if (flag == 0) {
 			controller.getMetadata().setName(service.getServiceName());
 			controller.getMetadata().getLabels().put("app", service.getServiceName());
 			controller.getSpec().getTemplate().getSpec().getContainers().get(0).setCommand(command);
-			// if(!StringUtils.isNotBlank(service.getVolName())){
-			// controller.getSpec().getTemplate().getSpec().getContainers().get(0).setVolumeMounts(null);
-			// }
 		}
 		controller.getMetadata().getLabels().remove("dmz");
 		controller.getMetadata().getLabels().remove("user");
@@ -598,8 +620,6 @@ public class KubernetesClientService {
 			}
 			controller.getMetadata().getLabels().put("proxyPath", service.getProxyPath());
 			controller.getMetadata().getLabels().put("servicePath", service.getServicePath());
-			// controller.getSpec().setSelector(controller.getMetadata().getLabels());
-			// controller.getSpec().getTemplate().getMetadata().setLabels(controller.getMetadata().getLabels());
 		}
 		if (StringUtils.isNotBlank(service.getCheckPath())) {
 			Probe livenessProbe = new Probe();

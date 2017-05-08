@@ -5,7 +5,7 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-menu.css">
     <script type="text/javascript" src="<%=path %>/js/customer/bcm-menu.js"></script>
-    
+
     <title>BCM</title>
 </head>
 <body>
@@ -179,7 +179,10 @@
 						<li id="li_cluster"><a class="J_menuItem" href="<%=path %>/cluster/resource"><i class="fa fa_circle"></i>集群监控</a></li></c:if>
 						<li id="li_container"><a class="J_menuItem" href="<%=path %>/cluster/containers"><i class="fa fa_circle"></i>容器监控</a></li>
 						<c:if test="${cur_user.user_autority == 1}">
-						<li id="li_management"><a class="J_menuItem" href="<%=path %>/cluster/management"><i class="fa fa_circle"></i>集群管理</a></li></c:if>
+						<li id="li_management"><a class="J_menuItem" href="<%=path %>/cluster/management"><i class="fa fa_circle"></i>集群管理</a></li>
+						<li id="li_node"><a class="J_menuItem" href="<%=path %>/cluster/node"><i class="fa fa_circle"></i>节点管理</a></li>
+						<li id="li_test"><a class="J_menuItem" href="<%=path %>/cluster/test"><i class="fa fa_circle"></i>集群测试</a></li>
+						</c:if>
 						<li id="li_topo"><a class="J_menuItem" href="<%=path %>/cluster/topo"><i class="fa fa_circle"></i>集群拓扑</a></li>
 						<c:if test="${cur_user.user_autority == 1}">
 						<li id="li_route"><a class="J_menuItem" href="<%=path %>/cluster/route"><i class="fa fa_circle"></i>route</a></li>
@@ -193,6 +196,7 @@
 					<ul class="nav nav-second-level">
 						<li id="li_dockerfile"><a class="J_menuItem" href="<%=path %>/template/dockerfile"><i class="fa fa_circle"></i>dockerfile</a></li>
 						<li id="li_env"><a class="J_menuItem" href="<%=path %>/template/env"><i class="fa fa_circle"></i>环境变量</a></li>
+						<li id="li_configmap"><a class="J_menuItem" href="<%=path %>/configmap/list"><i class="fa fa_circle"></i>配置文件</a></li>
 					</ul></li>
 				<c:if test="${cur_user.user_autority == 1}">
 				<li id="menu_log"><a href="#" class="first-a">

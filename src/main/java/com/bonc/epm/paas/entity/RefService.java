@@ -92,7 +92,18 @@ public class RefService {
      */
     private String useProxy;
 
-    public String getUseProxy() {
+    /**
+     * ngix代理区域
+     */
+    private String zone;
+
+    public String getZone() {
+		return zone;
+	}
+	public void setZone(String zone) {
+		this.zone = zone;
+	}
+	public String getUseProxy() {
         return useProxy;
     }
     public void setUseProxy(String useProxy) {

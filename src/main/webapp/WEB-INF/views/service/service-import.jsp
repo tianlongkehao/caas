@@ -38,7 +38,7 @@
 									<div class="ibox-tools">
 										<c:if test="${cur_user.user_autority != 1}">
 											<a href="javascript:void(0)" id="importServiceBtn" title="新建"><i
-												class="fa fa-plus"></i></a>  
+												class="fa fa-plus"></i></a>
 										    <a  id="delImportSers"
 												onclick="delImportSers()" title="删除"><i
 												class="fa fa-trash"></i></a>
@@ -67,8 +67,8 @@
 												<c:if test="${cur_user.user_autority != 1}">
 													<th style="width: 10%;" class="del-operation">操作</th>
 												</c:if>
-												
-												
+
+
 											</tr>
 										</thead>
 										<tbody id="importSerList">
@@ -96,7 +96,7 @@
 				style="width: 580px; padding: 5px; margin: 10px">
 				<tbody class="importSerTable">
 					<tr>
-						<th style="width: 25%">服务名称：</th>
+						<th style="width: 25%">服务名称：<font color="red">*</font></th>
 						<td><input class="" type="text" id="import-ser-name" value=""></td>
 					</tr>
  					<!-- <tr>
@@ -104,11 +104,11 @@
 						<td><input class="" type="text" id="import-ser-in" value=""></td>
 					</tr> -->
 					<tr>
-						<th style="width: 25%">外部服务地址：</th>
+						<th style="width: 25%">外部服务地址：<font color="red">*</font></th>
 						<td><input class="" type="text" id="import-ser-out" value=""></td>
 					</tr>
 					<tr>
-          <th style="width: 25%">外部服务端口：</th>
+          <th style="width: 25%">外部服务端口：<font color="red">*</font></th>
           <td><input class="" type="text" id="import-ser-out-port" value=""></td>
       </tr>
       <tr>
@@ -134,6 +134,15 @@
           <td><select class="" id="useProxyFlag">
                   <option value="0">不使用</option>
                   <option value="1">nginx代理</option>
+          </select></td>
+      </tr>
+      <tr id="zonetool">
+      <th style="width: 25%">nginx代理区域：</th>
+          <td><select class="" id="zone">
+                  <option value="0">user</option>
+                  <option value="1">dmz</option>
+                  <option value="2">dmz1</option>
+                  <option value="3">all</option>
           </select></td>
       </tr>
 				</tbody>

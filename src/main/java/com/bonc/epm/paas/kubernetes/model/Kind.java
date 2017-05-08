@@ -12,7 +12,7 @@ public enum Kind {
 											"LimitRangeList"), RESOURCEQUOTA("ResourceQuota"), RESOURCEQUOTALIST(
 													"ResourceQuotaList"), SECRET("Secret"), HORIZONTALPODAUTOSCALERLIST(
 															"HorizontalPodAutoscalerList"), HORIZONTALPODAUTOSCALER(
-																	"HorizontalPodAutoscaler");
+																	"HorizontalPodAutoscaler"),CONFIGMAP("ConfigMap"),CONFIGMAPLIST("ConfigMapList");
 
 	private final String text;
 

@@ -46,12 +46,6 @@ import com.bonc.epm.paas.util.EncryptUtils;
 public class UserApi {
 
 	/**
-	 * 内存和cpu的比例大小
-	 */
-	@Value("${ratio.memtocpu}")
-	private String RATIO_MEMTOCPU = "4";
-
-	/**
 	 * CEPH_KEY ${ceph.key}
 	 */
 	@Value("${ceph.key}")
@@ -431,7 +425,7 @@ public class UserApi {
 		try {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("memory", resource.getMemory() + "G"); // 内存
-			map.put("cpu", Double.valueOf(resource.getCpu()) / Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量(个)
+			map.put("cpu", Double.valueOf(resource.getCpu())+"");// CPU数量(个)
 			map.put("persistentvolumeclaims", resource.getVol_size() + "");// 卷组数量
 			ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getNamespace(), map);
 			quota = client.createResourceQuota(quota);
@@ -488,7 +482,7 @@ public class UserApi {
 
 		Map<String, String> hard = quota.getSpec().getHard();
 		hard.put("memory", resource.getMemory() + "G"); // 内存
-		hard.put("cpu", Double.valueOf(resource.getCpu()) / Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量
+		hard.put("cpu", Double.valueOf(resource.getCpu())  + "");// CPU数量
 		hard.put("persistentvolumeclaims", resource.getVol_size() + "");// 卷组数量
 		spec.setHard(hard);
 		quota.setSpec(spec);

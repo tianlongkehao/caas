@@ -1,11 +1,15 @@
  $(document).ready(function () {
-	
+
+	 $('#useProxyFlag').change(selectionChanged) ;
+
+
+
 	$(document).on('click','.no-drop',function(){
 		  return false;
 		});
-	
+
 	creatable();
-	
+
 	_refreshCreateTime(60000);
 	//添加外部服务地址
 	$("#importServiceBtn").click(function(){
@@ -15,6 +19,11 @@
 		 $("#import-ser-out").val("");
 		 $("#import-ser-out-port").val("");
 		 $("#import-ser-desc").val("");
+
+		 $("#import-ser-mode option:first").prop("selected", 'selected');
+		 $("#import-ser-visibility option:first").prop("selected", 'selected');
+		 $("#useProxyFlag option:last").prop("selected", 'selected');
+		 $("#zone option:first").prop("selected", 'selected');
 		 layer.open({
 		 	type:1,
 	        title: '引入外部服务',
@@ -32,6 +41,7 @@
 	       	 var importSerMode = $("#import-ser-mode").val();
 	       	 var importSerDesc =$("#import-ser-desc").val();
 	       	 var useNginx =$("#useProxyFlag").val();
+	       	 var zone = $("#zone").val();
 	       	 if(!checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort,importSerVis,importSerMode,importSerDesc)){
 	       		 return;
 	       	 }
@@ -57,7 +67,7 @@
 	   		         		data: {"serName":importSerName,"serAddress":importSerIn,
 	   		         			   "refAddress":importSerOut,"refPort":importSerOutPort,
 	   		         			   "viDomain":importSerVis,"importSerMode":importSerMode,
-	   		         			   "refSerDesc":importSerDesc,"useNginx":useNginx
+	   		         			   "refSerDesc":importSerDesc,"useNginx":useNginx,"zone":zone
 	   		         		},
 	   		         		success: function(data) {
 	   		         			creatable();
@@ -70,7 +80,7 @@
 	});
  });
 
-	 
+
 
 	function checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort,importSerVis,importSerMode,importSerDesc){
 	 if (importSerName.length === 0) {
@@ -79,22 +89,22 @@
          });
          $('#import-ser-name').focus();
          return ;
-     } 
-	 
+     }
+
 	 if(importSerName.search(/^[a-z0-9-]*$/) === -1){
 		 layer.tips('服务名称只能由小写字母、数字及横线组成','#import-ser-name',{tips: [1, '#3595CC'],time: 3000});
 		 $('#import-ser-name').focus();
 		 return;
 	     }
-	
+
 	 if (importSerName.length < 1) {
          layer.tips('服务名称过短', '#import-ser-name', {
              tips: [1, '#0FA6D8']
          });
          $('#import-ser-name').focus();
          return ;
-     } 
-     
+     }
+
      if (importSerIn.length === 0) {
          layer.tips('服务访问地址不能为空', '#import-ser-in', {
              tips: [1, '#0FA6D8']
@@ -109,15 +119,23 @@
          $('#import-ser-out').focus();
          return ;
      }
-     
-	 if (importSerOut.search(/((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)/) === -1 ) {
+
+	/* if (importSerOut.search(/((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)/) === -1 ) {
+         layer.tips('你的外部服务地址格式不是xxx.xxx.xxx.xxx', '#import-ser-out', {
+             tips: [1, '#0FA6D8']
+         });
+         $('#import-ser-out').focus();
+         return ;
+     }*/
+
+	 if (importSerOut.search(/^([1-9]|[1-9]\d|1\d\d|2[0-1]\d|22[0-3])(\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])){3}$/ig) === -1 ) {
          layer.tips('你的外部服务地址格式不是xxx.xxx.xxx.xxx', '#import-ser-out', {
              tips: [1, '#0FA6D8']
          });
          $('#import-ser-out').focus();
          return ;
      }
-     
+
      if (importSerOutPort.length === 0) {
     	 layer.tips('外部服务端口不能为空', '#import-ser-out-port', {
              tips: [1, '#0FA6D8']
@@ -132,7 +150,7 @@
          $('#import-ser-out-port').focus();
          return ;
      }
-     
+
      if (importSerOutPort.search(/^[0-9]*$/) === -1) {
     	 layer.tips('外部服务端口只能为数字', '#import-ser-out-port', {
              tips: [1, '#0FA6D8']
@@ -146,11 +164,11 @@
          });
          $('#import-ser-desc').focus();
          return ;
-     } 
+     }
     return true;
  }
  //展示列表
- 
+
  function  creatable(){
  	var tr="";
  	var context =$('#importSerList');
@@ -167,7 +185,7 @@
 			     			'<td style="width: 5%; text-indent: 30px;">'+
 			     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
 					     		'<td style="width: 18%; padding-left: 5px;"><a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
-					     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'">'+refservice.serName+'</a><i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
+					     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'" zone="'+refservice.zone+'">'+refservice.serName+'</a><i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
 					     		'<td style="width: 17%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
 					     		'<td style="width: 17%;">'+refservice.refAddress+'</td>';
 					     		if(undefined == refservice.useProxy){
@@ -187,13 +205,13 @@
 				     		'<a class="deleteButton" href="javascript:void(0)" onclick="delImportSer(this,'+refservice.id+')"> <i class="fa fa-trash"></i></a></td>'+
 				     	'</tr>';
 			     		}
-			     		
+
          	}
             $("#importSerList").append(tr);
             showDataTable();
-        	
+
          }
- 	
+
        })
  }
  function showDataTable(){
@@ -201,16 +219,16 @@
 	     "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
 		});
 	 $("#checkallbox").parent().removeClass("sorting_asc");
-	 
+
  }
  //删除某一行
  function delImportSer(obj,id){
-	 
+
 		layer.open({
 		        title: '删除外部引入服务',
 		        content: '确定删除外部引入服务？',
 		        btn: ['删除', '取消'],
-		        yes: function(index, layero){ 
+		        yes: function(index, layero){
 		        	$(obj).parent().parent().remove();
 		        	//refservice/delete.do
 		        	$.ajax({
@@ -221,7 +239,7 @@
 		                 	if (data.status == 200) {
 		                 		layer.msg("删除外部服务成功！",{icon: 6});
 		                 		window.location.reload();
-		                 	} 
+		                 	}
 		                 	else {
 		                 		layer.alert("删除外部服务失败！请检查服务器连接");
 		                 	}
@@ -230,9 +248,9 @@
 		        	layer.close(index);
 		        }
 	 })
-	 
+
  }
- 
+
  //修改
  function editImportSer(obj,id){
 	 $("#import-ser-name").val($(obj).attr("serName"));
@@ -243,11 +261,19 @@
 	 $("#import-ser-desc").val($(obj).attr("serDesc"));
 	 $("#import-ser-name").attr("disabled","disabled");
 	 var usePxy =$(obj).attr('usePxy');
-	 if("undefined"==usePxy){ 
-		 $("#useProxyFlag option[value=0]").attr("selected", true); 
+	 if("undefined"==usePxy){
+		 $("#useProxyFlag option[value=0]").attr("selected", true);
 	 }else{
-		 $("#useProxyFlag option[value=1]").attr("selected", true); 
+		 $("#useProxyFlag option[value=1]").attr("selected", true);
 	 }
+	 selectionChanged();
+	 var zone=$(obj).attr('zone');
+	 if(zone=="undefined"){
+		 $("#zone").val(0);
+	 }else{
+		 $("#zone").val($(obj).attr('zone'));
+	 }
+
 	 var creatorNameValue = $("#creatorNameValue").val();
 	 if(creatorNameValue == 1){
 		 layer.open({
@@ -273,6 +299,7 @@
 		        	 var importSerMode = $("#import-ser-mode").val();
 		        	 var importSerDesc =$("#import-ser-desc").val();
 		        	 var useNginx =$("#useProxyFlag").val();
+		        	 var zone =$("#zone").val();
 			       	 if(!checkndCommit(importSerName,importSerIn,importSerOut,importSerOutPort,importSerVis,importSerMode,importSerDesc)){
 			       		 return;
 			       	 }
@@ -282,25 +309,25 @@
 			         		type: "POST",
 			         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
 			         			,"refAddress":importSerOut,"viDomain":importSerVis
-			         			,"refPort":importSerOutPort,"importSerMode":importSerMode,"refSerDesc":importSerDesc,"useNginx":useNginx},
+			         			,"refPort":importSerOutPort,"importSerMode":importSerMode,"refSerDesc":importSerDesc,"useNginx":useNginx,"zone":zone},
 			         		success: function(data) {
 			         			var data = eval("("+data+")");
 			                 	if (data.status == 200) {
 			                 		layer.msg("修改外部服务参数成功！",{icon: 6});
 			                 		creatable();
-			                 	} 
+			                 	}
 			                 	else {
 			                 		layer.alert("修改外部服务参数失败！请检查服务器连接");
 			                 	}
 			         		}
-			         	}); 
+			         	});
 
 		        }
 		 })
 	 }
-	 
+
  }
- 
+
  //批量删除
  function delImportSers(){
 		obj = document.getElementsByName("chkItem");
@@ -318,7 +345,7 @@
 	        title: '删除外部引入服务',
 	        content: '确定批量删除外部引入服务？',
 	        btn: ['确定', '取消'],
-	        yes: function(index, layero){ 
+	        yes: function(index, layero){
 	        	layer.close(index);
 				$.ajax({
 					url:""+ctx+"/refservice/delete.do?ids="+ids,
@@ -330,18 +357,18 @@
 						}else{
 							layer.alert("服务删除失败，请检查服务器连接");
 						}
-	
+
 					}
 				})
 	        }
 	 })
-	 
+
  }
- 
+
  function refresh(){
 	 window.location.reload();//刷新当前页面.
  }
- 
+
  function checkbox(){
 	 $('input[name="chkItem"]').click(function(){
 			if($(this).prop("checked")){
@@ -392,7 +419,7 @@
 				$('#changeConfiguration').removeClass('a-live').addClass('no-drop');
 				$('#deleteButton').removeClass('a-live').addClass('no-drop');
 			}
-	
+
 	})
  }
  // Refresh create time
@@ -410,15 +437,22 @@
      });
    }, interval);
  }
- 
+
  function refresh1(id){
-	
+
 	var url = "service/" + Math.random();
 	//create random number
 	setTimeout(function() {
 	$("#inst_"+id).load(url+id,"");
 		  }, 500); //wait one second to run function
-	
+
  }
- 
- 
+
+ function selectionChanged(){
+	 var p=$('#useProxyFlag').val();
+	 if(p==0){
+		 $('#zonetool').hide();
+	 }else{
+		 $("#zonetool").show();
+	 }
+ }
