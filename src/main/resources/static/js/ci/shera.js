@@ -32,6 +32,8 @@ $(function(){
 			var mavenItems = {
 					"proid": 1,
 					"version": mavenVersion,
+					"userid":"",
+					"key":"",
 					"env":mavenEnv
 			};
 			mavenJson.push(mavenItems);
@@ -53,6 +55,8 @@ $(function(){
 			var antItems = {
 					"proid": 2,
 					"version": antVersion,
+					"userid":"",
+					"key":"",
 					"env":antEnv
 			};
 			antJson.push(antItems);
@@ -71,7 +75,9 @@ $(function(){
 		var sonarItems ={
 				"proid": 3,
 				"version": sonarVersion,
-				"env":antEnv
+					"userid":"",
+					"key":"",
+				"env":sonarEnv
 		};
 		sonarJson.push(sonarItems);
 
@@ -91,6 +97,19 @@ $(function(){
 			},
 			success : function(data) {
 				data = eval("(" + data + ")");
+				if(data.status=="200"){
+					window.location.href= ""+ ctx + "/user/shera";
+				} else if (data.status=="300"){
+					layer.alert("找不到shera，请确认配置是否正确。");
+				} else if (data.status=="301"){
+					layer.alert("创建jdk配置失败，请确认配置是否正确。");
+				} else if (data.status=="302"){
+					layer.alert("创建mvn配置失败，请确认配置是否正确。");
+				} else if (data.status=="303"){
+					layer.alert("创建ant配置失败，请确认配置是否正确。");
+				} else if (data.status=="304"){
+					layer.alert("创建sonar配置失败，请确认配置是否正确。");
+				}
 			}
 		});
 	});
