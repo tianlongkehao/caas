@@ -32,6 +32,8 @@ $(function(){
 			var mavenItems = {
 					"proid": 1,
 					"version": mavenVersion,
+					"userid":"",
+					"key":"",
 					"env":mavenEnv
 			};
 			mavenJson.push(mavenItems);
@@ -53,6 +55,8 @@ $(function(){
 			var antItems = {
 					"proid": 2,
 					"version": antVersion,
+					"userid":"",
+					"key":"",
 					"env":antEnv
 			};
 			antJson.push(antItems);
@@ -71,7 +75,9 @@ $(function(){
 		var sonarItems ={
 				"proid": 3,
 				"version": sonarVersion,
-				"env":antEnv
+					"userid":"",
+					"key":"",
+				"env":sonarEnv
 		};
 		sonarJson.push(sonarItems);
 

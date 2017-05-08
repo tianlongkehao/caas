@@ -1485,7 +1485,7 @@ public class UserController {
 		// 创建ant的配置
 		if (StringUtils.isNoneBlank(antJson)) {
 			try {
-				client.deleteExecConfig("admin", SheraConstant.EXEC_MAVEN_CONFIG);
+				client.deleteExecConfig("admin", SheraConstant.EXEC_ANT_CONFIG);
 				if (!createExecConfig(client, "admin", antJson)) {
 					map.put("status", "303");
 					map.put("message", "创建ant配置失败:[antJson:" + antJson + "]");
@@ -1502,7 +1502,7 @@ public class UserController {
 		// 创建sonar的配置
 		if (StringUtils.isNoneBlank(sonarJson)) {
 			try {
-				client.deleteExecConfig("admin", SheraConstant.EXEC_MAVEN_CONFIG);
+				client.deleteExecConfig("admin", SheraConstant.EXEC_SONAR_CONFIG);
 				if (!createExecConfig(client, "admin", sonarJson)) {
 					map.put("status", "304");
 					map.put("message", "创建sonar配置失败:[sonarJson:" + sonarJson + "]");
@@ -1539,10 +1539,9 @@ public class UserController {
 	 * @param jsonString
 	 * @return boolean
 	 */
-	@SuppressWarnings("unchecked")
 	private boolean createExecConfig(SheraAPIClientInterface client, String userid, String jsonString) {
 		List<ExecConfig> configList = new ArrayList<>();
-		configList = JSON.parseObject(jsonString, configList.getClass());
+		configList = JSON.parseArray(jsonString, ExecConfig.class);
 		for (ExecConfig config : configList) {
 			config.setUserid("admin");
 			try {
