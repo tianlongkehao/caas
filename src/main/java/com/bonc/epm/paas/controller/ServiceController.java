@@ -2419,7 +2419,7 @@ public class ServiceController {
 					if (controller != null) {
 						controller = client.updateReplicationController(service.getTempName(), 0);
 						if (controller != null && controller.getSpec().getReplicas() == 0) {
-							Status status = client.deleteReplicationController(service.getServiceName());
+							Status status = client.deleteReplicationController(service.getTempName());
 							if (!status.getStatus().equals("Success")) {
 								map.put("status", "400");
 								map.put("msg", "Delete a Replication Controller failed:ServiceName["
