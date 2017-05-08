@@ -259,11 +259,11 @@ public class ServiceController {
 	@Value("${ceph.monitor}")
 	private String CEPH_MONITOR;
 
-	/**
-	 * 内存和cpu的比例大小
-	 */
-	@Value("${ratio.memtocpu}")
-	private String RATIO_MEMTOCPU = "4";
+	@Value ("${ratio.limittorequestcpu}")
+    private int RATIO_LIMITTOREQUESTCPU;
+
+	@Value ("${ratio.limittorequestmemory}")
+    private int RATIO_LIMITTOREQUESTMEMORY;
 
 	/**
 	 * 获取nginx中的服务分区
@@ -837,7 +837,10 @@ public class ServiceController {
 
 				long leftmemory = hard - used;
 
-				model.addAttribute("leftcpu", leftCpu * Integer.valueOf(RATIO_MEMTOCPU));
+				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
+				leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
+
+				model.addAttribute("leftcpu", leftCpu);
 				model.addAttribute("leftmemory", leftmemory / 1024);
 			} else {
 				LOG.info("用户 " + currentUser.getUserName() + " 没有定义名称为 " + currentUser.getNamespace() + " 的Namespace ");
@@ -1035,9 +1038,28 @@ public class ServiceController {
 						args.add(item);
 					}
 				}
+
+				double cpu =service.getCpuNum();
+				String memory = service.getRam();
 				for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
 					container.setCommand(command);
 					container.setArgs(args);
+
+					//重启服务时，重新设置container的资源，使得配置文件中的资源系数更改之后，能够生效
+					ResourceRequirements requirements = new ResourceRequirements();
+
+					Map<String, Object> def = new HashMap<String, Object>();
+					def.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
+					def.put("memory", Double.parseDouble(memory)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
+
+					Map<String, Object> limit = new HashMap<String, Object>();
+					limit.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
+					limit.put("memory", Double.parseDouble(memory)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
+
+					requirements.setRequests(def);
+					requirements.setLimits(limit);
+
+					container.setResources(requirements);
 				}
 				// 设置实例数量
 				if (isDebug) {
@@ -2311,11 +2333,11 @@ public class ServiceController {
 		ResourceRequirements requirements = new ResourceRequirements();
 		requirements.getLimits();
 		Map<String, Object> def = new HashMap<String, Object>();
-		def.put("cpu", cpus / Integer.valueOf(RATIO_MEMTOCPU));
-		def.put("memory", rams + "Mi");
+		def.put("cpu", cpus / Integer.valueOf(RATIO_LIMITTOREQUESTCPU));
+		def.put("memory", Double.parseDouble(rams) / Integer.valueOf(RATIO_LIMITTOREQUESTMEMORY)+ "Mi");
 		Map<String, Object> limit = new HashMap<String, Object>();
 		// limit = kubernetesClientService.getlimit(limit);
-		limit.put("cpu", cpus / Integer.valueOf(RATIO_MEMTOCPU));
+		limit.put("cpu", cpus );
 		limit.put("memory", rams + "Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);

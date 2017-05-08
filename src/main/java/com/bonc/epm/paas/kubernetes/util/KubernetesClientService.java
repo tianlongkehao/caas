@@ -74,12 +74,6 @@ public class KubernetesClientService {
 	private String address;
 
 	/**
-	 * 内存和cpu的比例大小
-	 */
-	@Value("${ratio.memtocpu}")
-	public String RATIO_MEMTOCPU = "4";
-
-	/**
 	 * POD request cpu /limit cpu = 1/4
 	 */
 	@Value("${ratio.limittorequestcpu}")
@@ -318,15 +312,15 @@ public class KubernetesClientService {
 		ResourceRequirements requirements = new ResourceRequirements();
 		requirements.getLimits();
 		Map<String, Object> def = new HashMap<String, Object>();
-		// float fcpu = cpu*1024; request设置为limit的1/4
-		def.put("cpu", cpu / (Integer.valueOf(RATIO_MEMTOCPU)*RATIO_LIMITTOREQUESTCPU));
+		// float fcpu = cpu*1024; 页面资源 = 实际资源 * 资源系数
+		def.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
 		def.put("memory", Double.parseDouble(ram)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
 		/*def.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
 		def.put("memory", ram + "Mi");*/
 		Map<String, Object> limit = new HashMap<String, Object>();
 		// limit = getlimit(limit);
-		limit.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
-		limit.put("memory", ram + "Mi");
+		limit.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
+		limit.put("memory", Double.parseDouble(ram)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
 		container.setResources(requirements);
