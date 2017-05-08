@@ -1736,26 +1736,73 @@ public class UserController {
         Shera shera = sheraDao.findOne(id);
         SheraAPIClientInterface client = sheraClientService.getClient(shera);
         JdkList allJdk = null;
-		List<ExecConfig> mvnConfig = null;
-		List<ExecConfig> antConfig = null;
-		List<ExecConfig> sonarConfig = null;
+		List<Map<String, Object>> mvnConfigList = new ArrayList<>();
+		List<Map<String, Object>> antConfigList = new ArrayList<>();
+		List<Map<String, Object>> sonarConfigList = new ArrayList<>();
 		try {
 			allJdk = client.getAllJdk();
-			mvnConfig = client.getExecConfig(SheraConstant.EXEC_MAVEN_CONFIG);
-			antConfig = client.getExecConfig(SheraConstant.EXEC_ANT_CONFIG);
-			sonarConfig = client.getExecConfig(SheraConstant.EXEC_SONAR_CONFIG);
+			List<ExecConfig> mvnConfigs = client.getExecConfig(SheraConstant.EXEC_MAVEN_CONFIG);
+			
+			for (ExecConfig mvnConfig : mvnConfigs) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("version", mvnConfig.getVersion());
+				
+				Map<String, String> env = mvnConfig.getEnv();
+				List<Object> envList = new ArrayList<>();
+				for(String key : env.keySet()){
+					Map<String , String> envItem = new HashMap<>();
+					envItem.put(key, env.get(key));
+					envList.add(envItem);
+				}
+				map.put("env", env);
+				mvnConfigList.add(map);
+			}
+			
+			List<ExecConfig> antConfigs = client.getExecConfig(SheraConstant.EXEC_ANT_CONFIG);
+			for (ExecConfig antConfig : antConfigs) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("version", antConfig.getVersion());
+				
+				Map<String, String> env = antConfig.getEnv();
+				List<Object> envList = new ArrayList<>();
+				for(String key : env.keySet()){
+					Map<String , String> envItem = new HashMap<>();
+					envItem.put(key, env.get(key));
+					envList.add(envItem);
+				}
+				map.put("env", env);
+				antConfigList.add(map);
+			}
+			
+			
+			
+			List<ExecConfig> sonarConfigs = client.getExecConfig(SheraConstant.EXEC_SONAR_CONFIG);
+			for (ExecConfig sonarConfig : sonarConfigs) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("version", sonarConfig.getVersion());
+				
+				Map<String, String> env = sonarConfig.getEnv();
+				List<Object> envList = new ArrayList<>();
+				for(String key : env.keySet()){
+					Map<String , String> envItem = new HashMap<>();
+					envItem.put(key, env.get(key));
+					envList.add(envItem);
+				}
+				map.put("env", env);
+				sonarConfigList.add(map);
+			}
+			
 		} catch (SheraClientException e) {
 			e.printStackTrace();
 		}
         model.addAttribute("shera", shera);
         model.addAttribute("allJdk", allJdk);
-        model.addAttribute("mvnConfig", mvnConfig);
-        model.addAttribute("antConfig", antConfig);
-        model.addAttribute("sonarConfig", sonarConfig);
+        model.addAttribute("mvnConfig", mvnConfigList);
+        model.addAttribute("antConfig", antConfigList);
+        model.addAttribute("sonarConfig", sonarConfigList);
         model.addAttribute("menu_flag", "ci");
         model.addAttribute("li_flag", "shera");
         return "ci/shera-detail.jsp";
     }
-
 
 }

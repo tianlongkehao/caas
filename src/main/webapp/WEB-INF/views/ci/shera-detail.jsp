@@ -6,6 +6,7 @@
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
 <script type="text/javascript" src="<%=path%>/js/ci/shera.js"></script>
+<script type="text/javascript" src="<%=path%>/js/ci/shera-detail.js"></script>
 </head>
 <body>
 	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
@@ -129,8 +130,10 @@
 									<div class="infoCred">
 										<span class="labelspan">ant：</span>
 										<input type="button" class="btn btn-info" value="添加 Ant" onclick="addAnt()">
+										<input type="hidden" value="${antConfig }" id="antConfig">
 										<div class="ants">
-											<c:forEach items="${antConfig }" var="antConfig">
+											<%-- <c:forEach items="${antConfig }" var="antConfig">
+												<input type="hidden" value="${antConfig.env }" id="antEnv">
 												<div class="row conCred conCredIbox antIbox">
 													<div class="">
 														<div class="ibox float-e-margins">
@@ -162,13 +165,7 @@
 																				</tr>
 																			</thead>
 																			<tbody class="anttbody">
-																				<c:forEach items="${antConfig.env }" var="antConfig">
-																					<tr>
-																						<td></td>
-																						<td></td>
-																						<td></td>
-																					</tr>
-																				</c:forEach>
+																				
 																			</tbody>
 																			<tfoot>
 																				<tr>
@@ -183,7 +180,7 @@
 														</div>
 													</div>
 												</div>
-											</c:forEach>
+											</c:forEach> --%>
 										</div>
 									</div>
 
@@ -204,7 +201,62 @@
 
 	<script type="text/javascript">
 	$(document).ready(function(){
-
+		//antEnv
+		var antConfig = $("#antConfig").val();
+		var addAntDetailHtml ="";
+		var antEnvHtml = "";
+		for(var antNum = 0; antNum<antConfig.length; antNum++){
+			addAntDetailHtml += '<div class="row conCred conCredIbox antIbox">'
+				+'<div class="">'
+				+'<div class="ibox float-e-margins">'
+				+'<div class="ibox-title">'
+				+'<h5>ant</h5>'
+				+'<div class="ibox-tools">'
+				+'<a class="collapse-link"> <i class="fa fa-chevron-up"></i>'
+				+'</a> <a class="close-link"> <i class="fa fa-times fa-delete"></i>'
+				+'</a>'
+				+'</div>'
+				+'</div>'
+				+'<div class="ibox-content">'
+				+'<div class="row ant-config">'
+				+'<div class="form-group col-md-12">'
+				+'<label class="labelspan spantest">ant版本:</label>'
+				+'<input type="text" class="form-control conCred antVersion" value="'+antConfig[antNum].version+'">'
+				+'</div>'
+				+'<div class="form-group col-md-12">'
+				+'<span class="labelspan spantest spantest">环境变量：</span>'
+				+'<table class="table enabled conCred jdkCon">'
+				+'<thead>'
+				+'<tr>'
+				+'<th style="width: 35%">key</th>'
+				+'<th style="width: 35%">val</th>'
+				+'<th style="vertical-align: middle; width: 10%">操作</th>'
+				+'</tr>'
+				+'</thead>'
+				+'<tbody class="anttbody">';
+			for(var key in antConfig.env){
+				antEnvHtml += '<tr class="plus-row">'
+								+'<td>'+key+'</td>'
+								+'<td>'+antConfig.env[key]+'</td>'
+								+'<td><a onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a></td>'
+								+'</tr>';
+			}
+			addAntDetailHtml += antEnvHtml
+				+'</tbody>'
+				+'<tfoot>'
+				+'<tr>'
+				+'<td colspan="3" id="ant" class="create"><i class="fa fa-plus margin"></i>添加</td>'
+				+'</tr>'
+				+'</tfoot>'
+				+'</table>'
+				+'</div>'
+				+'</div>'
+				+'</div>'
+				+'</div>'
+				+'</div>'
+				+'</div>';
+		}
+		$(".ants").append(addAntDetailHtml);
 
 	});
 	</script>
