@@ -237,6 +237,7 @@ public class RefServiceController {
         oldRefService.setRefSerDesc(refService.getRefSerDesc());
         oldRefService.setViDomain(refService.getViDomain());
         oldRefService.setimprotSerMode(refService.getimprotSerMode());
+        oldRefService.setZone(refService.getZone());
         if (RefServiceConstant.ALL_TENANT == oldRefService.getViDomain()) {
             nameSpace = "default";
             //判断是否使用nginx代理
@@ -372,13 +373,14 @@ public class RefServiceController {
 
             }
 
-            Endpoints k8sEndpointsTmp = kubernetesClientService.generateEndpoints(refService.getSerName(),refService.getRefAddress(),refService.getRefPort(),refService.getUseProxy());
+            Endpoints k8sEndpointsTmp = kubernetesClientService.generateEndpoints(refService.getSerName(),refService.getRefAddress(),refService.getRefPort(),refService.getUseProxy(),refService.getZone());
             if (null == k8sEndpoints) {
                 k8sEndpoints = client.createEndpoints(k8sEndpointsTmp);
             } /*else {
                 k8sEndpoints = client.updateEndpoints(refService.getSerAddress(), k8sEndpointsTmp);
             }*/
             if (k8sService == null || null == k8sEndpoints) {
+            	client.deleteService(refService.getSerName());//出错则删除服务
                 map.put("status", "500");
             }
             else {

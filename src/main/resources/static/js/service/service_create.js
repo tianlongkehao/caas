@@ -15,6 +15,13 @@ $(document).ready(function(){
 		if(!saveEnvVariable()) {
 			return;
 		}
+		var configmap = $('#configmap option:selected').val();
+		var configmapPath = $('#configmapPath').val();
+		if(configmap!=-1&&configmapPath==''){
+			  layer.tips('配置文件路径不能为空','#configmapPath',{tips: [1, '#3595CC']});
+		      $('#configmapPath').focus();
+		      return;
+		}
 		//判断服务名称
 		var name = $('#serviceName').val();
 		// check the name of container

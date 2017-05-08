@@ -90,13 +90,8 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      */
     @Value("${resourceMmanage.address}")
     private String resManUrl;
-    /**
-     * 内存和cpu的比例大小
-     */
-    @Value("${ratio.memtocpu}")
-    private String RATIO_MEMTOCPU = "4";
 
-	/**
+    /**
 	 * CEPH_KEY ${ceph.key}
 	 */
 	@Value("${ceph.key}")
@@ -431,7 +426,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             // 为client创建资源配额
             Map<String, String> openMap = new HashMap<String, String>();
             openMap.put("memory", openMem + "G");// 内存（G）
-            openMap.put("cpu", Double.valueOf(openCpu)/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量(个)
+            openMap.put("cpu", Double.valueOf(openCpu) + "");// CPU数量(个)
             openMap.put("persistentvolumeclaims", userResource.getVol_size() + "");// 卷组数量
 
             userResource.setCpu(openCpu);

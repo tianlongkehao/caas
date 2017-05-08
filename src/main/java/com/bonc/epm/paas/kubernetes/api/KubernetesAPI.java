@@ -33,6 +33,8 @@ import javax.ws.rs.core.MediaType;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.ConfigMap;
+import com.bonc.epm.paas.kubernetes.model.ConfigMapList;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.EndpointsList;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
@@ -284,6 +286,18 @@ public interface KubernetesAPI {
     public PodList getAllPods(@PathParam("namespace")String namespace) throws KubernetesClientException;
 
     /**
+     * Get all Pods
+     *
+     * @return Pods
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/pods")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PodList getPods() throws KubernetesClientException;
+
+    /**
      * Get labelSelector Pods
      *
      * @return Pods
@@ -400,6 +414,64 @@ public interface KubernetesAPI {
     public String getPodLog(@PathParam("namespace")String namespace,@PathParam("name")String name,
     		@QueryParam("limitBytes")Integer limitBytes)
     		throws KubernetesClientException;
+
+    /* ConfigMap API */
+    /**
+     * Create a new ConfigMap
+     *
+     * @param configMap
+     *            ConfigMap to be created
+     * @throws KubernetesClientException
+     */
+    @POST
+    @Path("/namespaces/{namespace}/configmaps")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public ConfigMap createConfigMap(@PathParam("namespace")String namespace,ConfigMap configMap) throws KubernetesClientException;
+
+    /**
+     * Delete a ConfigMap
+     *
+     * @throws KubernetesClientException
+     */
+    @DELETE
+    @Path("/namespaces/{namespace}/configmaps/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Status deleteConfigMap(@PathParam("namespace")String namespace,@PathParam("name") String name) throws KubernetesClientException;
+
+    /**
+     * Get a ConfigMap Info
+     *
+     * @return {@link ConfigMap}
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/configmaps/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ConfigMap getConfigMap(@PathParam("namespace")String namespace,@PathParam("name") String name)
+            throws KubernetesClientException;
+
+    /**
+     *  update a ConfigMap
+     * @throws KubernetesClientException
+     */
+    @PUT
+    @Path("/namespaces/{namespace}/configmaps/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ConfigMap updateConfigMap(@PathParam("namespace")String namespace,@PathParam("name") String name,ConfigMap configMap)
+            throws KubernetesClientException;
+
+    /**
+     * Get all the configmaps.
+     *
+     * @return array of {@link configmaps}
+     * @throws KubernetesClientException
+     */
+    @GET
+    @Path("/namespaces/{namespace}/configmaps")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ConfigMapList getAllConfigMaps(@PathParam("namespace")String namespace) throws KubernetesClientException;
+
     /* Replication Controller API */
 
     /**
@@ -607,5 +679,10 @@ public interface KubernetesAPI {
 	@Path("/nodes/{name}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Node getSpecifiedNode(@PathParam("name") String name) throws KubernetesClientException;
+
+    @PUT
+    @Path("/nodes/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Node updateSpecifiedNode(@PathParam("name") String name,Node node) throws KubernetesClientException;
 
 }

@@ -24,6 +24,8 @@ import java.util.Map;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.ConfigMap;
+import com.bonc.epm.paas.kubernetes.model.ConfigMapList;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.EndpointsList;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
@@ -207,6 +209,16 @@ public interface KubernetesAPIClientInterface {
     public Pod getPod(String name) throws KubernetesClientException;
 
     /**
+     * Get information of a Pod given the PodID
+     *
+     * @param name
+     *            id of the pod
+     * @return {@link Pod}
+     * @throws KubernetesClientException
+     */
+    public Pod getPodOfNamespace(String namespace,String name) throws KubernetesClientException;
+
+    /**
      * Get all Pods
      *
      * @return Pods
@@ -233,6 +245,16 @@ public interface KubernetesAPIClientInterface {
     public Pod createPod(Pod pod) throws KubernetesClientException;
 
     /**
+     * Create a new Pod Of Default Namespace
+     *
+     * @param pod
+     *            Pod to be created
+     * @return
+     * @throws KubernetesClientException
+     */
+    public Pod createPodOfNamespace(String namespace,Pod pod) throws KubernetesClientException;
+
+    /**
      * Delete a Pod
      *
      * @param name
@@ -240,6 +262,16 @@ public interface KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     public Pod deletePod(String name) throws KubernetesClientException;
+
+    /**
+     * Delete a Pod of Specified Namespace
+     *
+     * @param namespace
+     * @param name
+     *            Id of the Pod to be deleted
+     * @throws KubernetesClientException
+     */
+    public Pod deletePodOfNamespace(String namespace,String name) throws KubernetesClientException;
 
     /**
      * get pod log
@@ -286,6 +318,47 @@ public interface KubernetesAPIClientInterface {
     		String sinceTime,
     		Boolean timestamps,
     		Integer limitBytes) throws KubernetesClientException;
+
+    /* ConfigMap API*/
+
+    /**
+     * @param configMap
+     * @return
+     * @throws KubernetesClientException
+     */
+    public ConfigMap createConfigMap(ConfigMap configMap)throws KubernetesClientException;
+
+    /**
+     *
+     * @param name
+     * @return
+     * @throws KubernetesClientException
+     */
+    public Status deleteConfigMap(String name)throws KubernetesClientException;
+
+    /**
+     *
+     * @param name
+     * @return
+     * @throws KubernetesClientException
+     */
+    public ConfigMap getConfigMap(String name)throws KubernetesClientException;
+
+    /**
+     *
+     * @param name
+     * @param configMap
+     * @return
+     * @throws KubernetesClientException
+     */
+    public ConfigMap updateConfigMap(String name,ConfigMap configMap)throws KubernetesClientException;
+
+    /**
+     *
+     * @return
+     * @throws KubernetesClientException
+     */
+    public ConfigMapList getAllConfigMaps()throws KubernetesClientException;
 
     /* Replication Controller API */
 
@@ -360,12 +433,30 @@ public interface KubernetesAPIClientInterface {
     public Service getService(String name) throws KubernetesClientException;
 
     /**
+     * Get the Service with the given id.
+     *
+     * @param name
+     *            id of the service.
+     * @return {@link Service}
+     * @throws KubernetesClientException
+     */
+    public Service getServiceOfNamespace(String namespace,String name) throws KubernetesClientException;
+
+    /**
      * Get all the services.
      *
      * @return array of {@link Service}s
      * @throws KubernetesClientException
      */
     public ServiceList getAllServices() throws KubernetesClientException;
+
+    /**
+     * Get all the services of default namespace.
+     *
+     * @return array of {@link Service}s
+     * @throws KubernetesClientException
+     */
+    public ServiceList getAllServicesOfNamespace(String namespace) throws KubernetesClientException;
 
     /**
      * Create a new Kubernetes service.
@@ -375,6 +466,15 @@ public interface KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     public Service createService(Service service) throws KubernetesClientException;
+
+    /**
+     * Create a new Kubernetes service Of Default Namespace.
+     *
+     * @param service
+     *            service to be created.
+     * @throws KubernetesClientException
+     */
+    public Service createServiceOfNamespace(String namespace,Service service) throws KubernetesClientException;
 
     /**
      * update a new Kubernetes service.
@@ -393,6 +493,15 @@ public interface KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     public Status deleteService(String name) throws KubernetesClientException;
+
+    /**
+     * Delete a Service Of Default Namespace.
+     *
+     * @param name
+     *            service id to be deleted.
+     * @throws KubernetesClientException
+     */
+    public Status deleteServiceOfNamespace(String namespace,String name) throws KubernetesClientException;
 
     /** Endpoints API**/
     /**
@@ -453,4 +562,14 @@ public interface KubernetesAPIClientInterface {
 	 */
     public Node getSpecifiedNode(String name) throws KubernetesClientException;
 
+    /**
+	 * update the specified Node
+	 *
+	 * @param name name of the node
+	 * @param node
+	 * @throws KubernetesClientException
+	 */
+    public Node updateNode(String name,Node node) throws KubernetesClientException;
+
+    public PodList getPods() throws KubernetesClientException;
 }

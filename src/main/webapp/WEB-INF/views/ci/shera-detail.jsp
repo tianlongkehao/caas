@@ -6,7 +6,6 @@
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/ci.css" />
 <script type="text/javascript" src="<%=path%>/js/ci/shera.js"></script>
-<script type="text/javascript" src="<%=path%>/js/ci/shera-detail.js"></script>
 </head>
 <body>
 	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
@@ -37,7 +36,6 @@
 							<%-- 基本信息 --%>
 							<div class="host_step1">
 								<div>
-									<%-- <c:if test="${shera}" var="shera"> --%>
 									<div class="infoCred">
 										<span class="labelspan">IP：<font color="red">*</font></span> <input type="text"
 											class="form-control conCred1" id="sheraIp" name="sheraIp"
@@ -60,9 +58,8 @@
 									</div>
 									<div class="infoCred">
 										<span class="labelspan">描述：</span>
-										<textarea class="form-control conCred1" style="height: 100px" id="sheraRemark" rows="8" value="${shera.remark }"></textarea>
+										<textarea class="form-control conCred1" style="height: 100px" id="sheraRemark" rows="8">${shera.remark }</textarea>
 									</div>
-									<%-- </c:if> --%>
 									<div class="infoCred">
 										<span class="labelspan">JDK：</span>
 										<table class="table enabled conCred1 jdkCon">
@@ -76,8 +73,8 @@
 											<tbody class="jdktbody">
 												<c:forEach items="${allJdk.items }" var="jdk">
 													<tr class="plus-row">
-													<td>${jdk.version}</td>
-													<td>${jdk.path}</td>
+													<td><input class="jdkKey addKey" type="text" value="${jdk.version }"></td>
+													<td><input class="jdkVal addVal" type="text" value="${jdk.path }"></td>
 													<td><a onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a></td>
 													</tr>
 												</c:forEach>
@@ -93,9 +90,13 @@
 									<div class="infoCred">
 										<span class="labelspan">sonar：</span>
 										<div class="sonarsCon row conCred1 conCredIbox sonarIbox">
-											<div class="form-group col-md-12">
+											<div class="form-group col-md-12 sonarVersionDiv">
 												<label class="labelspan spantest">sonar版本:</label>
-												<input type="text" class="form-control conCred1 sonarVersion" value="">
+												<input type="hidden" value="${sonarConfig }" id="sonarConfig">
+												<c:forEach items="${sonarConfig }" var="sonarConfig">
+													<input type="hidden" value="${sonarConfig.version }" id="sonarConfigVersion">
+													
+												</c:forEach>
 											</div>
 											<div class="form-group col-md-12">
 												<span class="labelspan spantest">环境变量：</span>
@@ -103,12 +104,21 @@
 													<thead>
 														<tr>
 															<th style="width: 35%">key</th>
-															<th style="width: 35%">val</th>
+															<th style="width: 35%">value</th>
 															<th style="vertical-align: middle; width: 10%">操作</th>
 														</tr>
 													</thead>
 													<tbody class="sonartbody">
-														
+														<c:forEach items="${sonarConfig }" var="sonarConfig">
+															<c:forEach items="${sonarConfig.env }" var="env">
+																<tr>
+																	<td><input class="sonarKey addKey" type="text" value="${env.key }"></td>
+																	<td><input class="sonarVal addVal" type="text" value="${env.value }"></td>
+																	<td><a onclick="deleteRow(this)" class="gray"><i
+																			class="fa fa-trash-o fa-lg"></i></a></td>
+																</tr>
+															</c:forEach>
+														</c:forEach>
 													</tbody>
 													<tfoot>
 														<tr>
@@ -124,7 +134,61 @@
 										<span class="labelspan">Maven：</span>
 										<input type="button" class="btn btn-info" value="添加 Maven" onclick="addMaven()">
 										<div class="mavens">
-
+										<input type="hidden" value="${mvnConfig }">
+											<c:forEach items="${mvnConfig }" var="mvnConfig">
+												<div class="row conCred conCredIbox mavenIbox">
+													<div class="">
+														<div class="ibox float-e-margins">
+															<div class="ibox-title">
+																<h5>maven</h5>
+																<div class="ibox-tools">
+																	<a class="collapse-link"> <i
+																		class="fa fa-chevron-up"></i>
+																	</a> <a class="close-link"> <i
+																		class="fa fa-times fa-delete"></i>
+																	</a>
+																</div>
+															</div>
+															<div class="ibox-content">
+																<div class="row ant-config">
+																	<div class="form-group col-md-12">
+																		<label class="labelspan spantest">maven版本:</label> <input
+																			type="text" class="form-control conCred mavenVersion"
+																			value="${mvnConfig.version }">
+																	</div>
+																	<div class="form-group col-md-12">
+																		<span class="labelspan spantest spantest">环境变量：</span>
+																		<table class="table enabled conCred jdkCon">
+																			<thead>
+																				<tr>
+																					<th style="width: 35%">key</th>
+																					<th style="width: 35%">value</th>
+																					<th style="vertical-align: middle; width: 10%">操作</th>
+																				</tr>
+																			</thead>
+																			<tbody class="maventbody">
+																				<c:forEach items="${mvnConfig.env }" var="env">
+																					<tr>
+																						<td><input class="mavenKey addKey" type="text" value="${env.key }"></td>
+																						<td><input class="mavenVal addVal" type="text" value="${env.value }"></td>
+																						<td><a onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a></td>
+																					</tr>
+																				</c:forEach>
+																			</tbody>
+																			<tfoot>
+																				<tr>
+																					<td colspan="3" id="maven" class="create"><i
+																						class="fa fa-plus margin"></i>添加</td>
+																				</tr>
+																			</tfoot>
+																		</table>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</c:forEach>
 										</div>
 									</div>
 									<div class="infoCred">
@@ -132,8 +196,7 @@
 										<input type="button" class="btn btn-info" value="添加 Ant" onclick="addAnt()">
 										<input type="hidden" value="${antConfig }" id="antConfig">
 										<div class="ants">
-											<%-- <c:forEach items="${antConfig }" var="antConfig">
-												<input type="hidden" value="${antConfig.env }" id="antEnv">
+											<c:forEach items="${antConfig }" var="antConfig">
 												<div class="row conCred conCredIbox antIbox">
 													<div class="">
 														<div class="ibox float-e-margins">
@@ -165,7 +228,13 @@
 																				</tr>
 																			</thead>
 																			<tbody class="anttbody">
-																				
+																				<c:forEach items="${antConfig.env }" var="env">
+																					<tr>
+																						<td><input class="antKey addKey" type="text" value="${env.key }"></td>
+																						<td><input class="antVal addVal" type="text" value="${env.value }"></td>
+																						<td><a onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a></td>
+																					</tr>
+																				</c:forEach>
 																			</tbody>
 																			<tfoot>
 																				<tr>
@@ -180,7 +249,7 @@
 														</div>
 													</div>
 												</div>
-											</c:forEach> --%>
+											</c:forEach>
 										</div>
 									</div>
 
@@ -189,6 +258,7 @@
 							<div class="lastBtns">
 								<a type="button" class="btn btn-default" href="<%=path %>/user/shera">返回</a>
 								<button id="saveSheraBtn" class="pull-right btn btn-primary btn-color pull_confirm">修改</button>
+								<input type="hidden" value="${shera.id }" id="sheraId">
 							</div>
 						</div>
 					</div>
@@ -201,62 +271,15 @@
 
 	<script type="text/javascript">
 	$(document).ready(function(){
-		//antEnv
-		var antConfig = $("#antConfig").val();
-		var addAntDetailHtml ="";
-		var antEnvHtml = "";
-		for(var antNum = 0; antNum<antConfig.length; antNum++){
-			addAntDetailHtml += '<div class="row conCred conCredIbox antIbox">'
-				+'<div class="">'
-				+'<div class="ibox float-e-margins">'
-				+'<div class="ibox-title">'
-				+'<h5>ant</h5>'
-				+'<div class="ibox-tools">'
-				+'<a class="collapse-link"> <i class="fa fa-chevron-up"></i>'
-				+'</a> <a class="close-link"> <i class="fa fa-times fa-delete"></i>'
-				+'</a>'
-				+'</div>'
-				+'</div>'
-				+'<div class="ibox-content">'
-				+'<div class="row ant-config">'
-				+'<div class="form-group col-md-12">'
-				+'<label class="labelspan spantest">ant版本:</label>'
-				+'<input type="text" class="form-control conCred antVersion" value="'+antConfig[antNum].version+'">'
-				+'</div>'
-				+'<div class="form-group col-md-12">'
-				+'<span class="labelspan spantest spantest">环境变量：</span>'
-				+'<table class="table enabled conCred jdkCon">'
-				+'<thead>'
-				+'<tr>'
-				+'<th style="width: 35%">key</th>'
-				+'<th style="width: 35%">val</th>'
-				+'<th style="vertical-align: middle; width: 10%">操作</th>'
-				+'</tr>'
-				+'</thead>'
-				+'<tbody class="anttbody">';
-			for(var key in antConfig.env){
-				antEnvHtml += '<tr class="plus-row">'
-								+'<td>'+key+'</td>'
-								+'<td>'+antConfig.env[key]+'</td>'
-								+'<td><a onclick="deleteRow(this)" class="gray"><i class="fa fa-trash-o fa-lg"></i></a></td>'
-								+'</tr>';
-			}
-			addAntDetailHtml += antEnvHtml
-				+'</tbody>'
-				+'<tfoot>'
-				+'<tr>'
-				+'<td colspan="3" id="ant" class="create"><i class="fa fa-plus margin"></i>添加</td>'
-				+'</tr>'
-				+'</tfoot>'
-				+'</table>'
-				+'</div>'
-				+'</div>'
-				+'</div>'
-				+'</div>'
-				+'</div>'
-				+'</div>';
+		var sonarConfig = $("#sonarConfig").val();
+		var sonarVersionhtml="";
+		if(sonarConfig=="[]"){
+			sonarVersionhtml = '<input type="text" class="form-control conCred1 sonarVersion" value="">';
+		}else{
+			var sonarConfigVersion = $("#sonarConfigVersion").val();
+			sonarVersionhtml = '<input type="text" class="form-control conCred1 sonarVersion" value="'+sonarConfigVersion+'">';
 		}
-		$(".ants").append(addAntDetailHtml);
+		$(".sonarVersionDiv").append(sonarVersionhtml);
 
 	});
 	</script>

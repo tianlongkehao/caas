@@ -22,6 +22,24 @@
 		}
 	});
 </script>
+<style type="text/css">
+.self-define {
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+</style>
 </head>
 <body>
 
@@ -270,6 +288,17 @@
 													<span class="mountTips"></span>
 												<input type="hidden" id = "serviceType" name ="serviceType" value = "1"/>
 											</span></li>
+
+											<li id="configmap" class="line-h-3" ><span class="ve_top">配置文件模板：</span>
+												  <select class="selectVolume self-define " id="configmap" name="configmap" style="height: 34px; width: 230px;">
+                                                    <option value="-1" >NONE</option>
+                                                    <c:forEach items="${configmapList}" var="configmap">
+                                                       <option value="${configmap.id}">${configmap.name}</option>
+                                                    </c:forEach>
+                                                  </select>
+                                                  <span> 挂载路径：</span>
+                                                  <input type="text" class="self-define " style="width: 330px;" id = "configmapPath" name ="configmapPath" value="/configfiles" />
+											</li>
 
 											<li class="hide-set" id="save_roll_dev"><span class="ve_top">挂载地址：</span>
 												<ol id="mountPathList">

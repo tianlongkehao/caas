@@ -47,12 +47,14 @@ import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
+import com.bonc.epm.paas.dao.ConfigmapDao;
 import com.bonc.epm.paas.dao.EnvTemplateDao;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.RefServiceDao;
 import com.bonc.epm.paas.dao.ServiceAndStorageDao;
+import com.bonc.epm.paas.dao.ServiceConfigmapDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
 import com.bonc.epm.paas.dao.StorageDao;
@@ -65,6 +67,7 @@ import com.bonc.epm.paas.entity.Ci;
 import com.bonc.epm.paas.entity.CiCodeHook;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+import com.bonc.epm.paas.entity.Configmap;
 import com.bonc.epm.paas.entity.Container;
 import com.bonc.epm.paas.entity.EnvTemplate;
 import com.bonc.epm.paas.entity.EnvVariable;
@@ -72,6 +75,7 @@ import com.bonc.epm.paas.entity.Image;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.ServiceAndStorage;
+import com.bonc.epm.paas.entity.ServiceConfigmap;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavor;
@@ -166,6 +170,18 @@ public class ServiceController {
 	private EnvVariableDao envVariableDao;
 
 	/**
+	 * 配置文件数据层接口
+	 */
+	@Autowired
+	private ConfigmapDao configmapDao;
+
+	/**
+	 * 服务与配置文件数据层接口
+	 */
+	@Autowired
+	private ServiceConfigmapDao serviceConfigmapDao;
+
+	/**
 	 * portConfig数据层接口
 	 */
 	@Autowired
@@ -243,11 +259,11 @@ public class ServiceController {
 	@Value("${ceph.monitor}")
 	private String CEPH_MONITOR;
 
-	/**
-	 * 内存和cpu的比例大小
-	 */
-	@Value("${ratio.memtocpu}")
-	private String RATIO_MEMTOCPU = "4";
+	@Value ("${ratio.limittorequestcpu}")
+    private int RATIO_LIMITTOREQUESTCPU;
+
+	@Value ("${ratio.limittorequestmemory}")
+    private int RATIO_LIMITTOREQUESTMEMORY;
 
 	/**
 	 * 获取nginx中的服务分区
@@ -303,7 +319,19 @@ public class ServiceController {
 	@Value("${entry.host}")
 	private String ENTRY_HOST;
 
-	/**
+    /**
+     * server api 地址
+     */
+    @Value("${kubernetes.api.address}")
+	private String KUBERNETES_API_ADDRESS;
+
+    /**
+     * server api url
+     */
+    @Value("${kubernetes.api.endpoint}")
+	private String KUBERNETES_API_ENDPOINT;
+
+    /**
 	 * Description: <br>
 	 * 展示container和services
 	 *
@@ -428,6 +456,8 @@ public class ServiceController {
 		}
 		return listService;
 	}
+
+
 
 	/**
 	 * Description: <br>
@@ -640,6 +670,9 @@ public class ServiceController {
 			memorySizeList.add(map);
 		}
 
+		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
+
+		model.addAttribute("configmapList", configmapList);
 		model.addAttribute("cpuSizeList", cpuSizeList);
 		model.addAttribute("memorySizeList", memorySizeList);
 		model.addAttribute("userName", currentUser.getUserName());
@@ -698,6 +731,7 @@ public class ServiceController {
 	// }
 	// return startCommand.toString();
 	// }
+
 
 	/**
 	 * Description: <br>
@@ -800,7 +834,10 @@ public class ServiceController {
 
 				long leftmemory = hard - used;
 
-				model.addAttribute("leftcpu", leftCpu * Integer.valueOf(RATIO_MEMTOCPU));
+				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
+				leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
+
+				model.addAttribute("leftcpu", leftCpu);
 				model.addAttribute("leftmemory", leftmemory / 1024);
 			} else {
 				LOG.info("用户 " + currentUser.getUserName() + " 没有定义名称为 " + currentUser.getNamespace() + " 的Namespace ");
@@ -935,6 +972,11 @@ public class ServiceController {
 		}
 
 		/*************************************
+		 * 根据serviceId,查找ServiceConfigmap
+		 *************************************/
+		List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(service.getId());
+
+		/*************************************
 		 * 先查询rc是否已经创建，如果没有找到则创建一个新的rc
 		 *************************************/
 		try {
@@ -962,7 +1004,7 @@ public class ServiceController {
 						service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 						service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
 						service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-						service.getCheckPath(), envVariables, command, args);
+						service.getCheckPath(), envVariables, command, args,serviceConfigmapList);
 				// 给controller设置卷组挂载的信息
 				LOG.debug("给rc添加存储卷信息");
 				if (service.getServiceType().equals("1")) {
@@ -993,9 +1035,28 @@ public class ServiceController {
 						args.add(item);
 					}
 				}
+
+				double cpu =service.getCpuNum();
+				String memory = service.getRam();
 				for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
 					container.setCommand(command);
 					container.setArgs(args);
+
+					//重启服务时，重新设置container的资源，使得配置文件中的资源系数更改之后，能够生效
+					ResourceRequirements requirements = new ResourceRequirements();
+
+					Map<String, Object> def = new HashMap<String, Object>();
+					def.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
+					def.put("memory", Double.parseDouble(memory)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
+
+					Map<String, Object> limit = new HashMap<String, Object>();
+					limit.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
+					limit.put("memory", Double.parseDouble(memory)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
+
+					requirements.setRequests(def);
+					requirements.setLimits(limit);
+
+					container.setResources(requirements);
 				}
 				// 设置实例数量
 				if (isDebug) {
@@ -1057,7 +1118,7 @@ public class ServiceController {
 	 */
 	@RequestMapping("service/constructContainer.do")
 	public String constructContainer(Service service, String resourceName, String envVariable, String portConfig,
-			String cephAds) {
+			String cephAds,String configmap,String configmapPath) {
 		Date currentDate = new Date();
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		// 保存服务信息
@@ -1073,6 +1134,18 @@ public class ServiceController {
 			service.setSessionAffinity(null);
 		}
 
+		if(Long.parseLong(configmap)!=-1){//选择了configmap
+		   Configmap configmap2 = configmapDao.findOne(Long.parseLong(configmap));
+           ServiceConfigmap serviceConfigmap = new ServiceConfigmap();
+           serviceConfigmap.setConfigmapId(Long.parseLong(configmap));
+           serviceConfigmap.setServiceId(service.getId());
+           serviceConfigmap.setCreateDate(currentDate);
+           serviceConfigmap.setCreateBy(currentUser.getId());
+           serviceConfigmap.setPath(configmapPath);
+           serviceConfigmap.setName(configmap2.getName());
+           serviceConfigmapDao.save(serviceConfigmap);
+		}
+
 		// 将服务中的环境变量循环遍历，保存到相关联的实体类中；
 		if (StringUtils.isNotEmpty(envVariable)) {
 			String[] envKeyAndValues = envVariable.split(";");
@@ -1086,6 +1159,24 @@ public class ServiceController {
 				envVariableDao.save(envVar);
 			}
 		}
+
+		//增加环境变量api_server_ip和api_server_port
+		EnvVariable ipVar = new EnvVariable();
+		ipVar.setCreateBy(currentUser.getId());
+		ipVar.setEnvKey("api_server_ip");
+		ipVar.setEnvValue(KUBERNETES_API_ADDRESS);
+		ipVar.setCreateDate(new Date());
+		ipVar.setServiceId(service.getId());
+		envVariableDao.save(ipVar);
+
+		EnvVariable portVar = new EnvVariable();
+		portVar.setCreateBy(currentUser.getId());
+		portVar.setEnvKey("api_server_port");
+		portVar.setEnvValue(KUBERNETES_API_ENDPOINT.split(":")[2].substring(0, 4));
+		portVar.setCreateDate(new Date());
+		portVar.setServiceId(service.getId());
+		envVariableDao.save(portVar);
+
 		// 增加Pinpoint的相关环境变量
 		if (service.getMonitor() == ServiceConstant.MONITOR_PINPOINT) {
 			// 使用Pinpoint监控时，需增加环境变量[namespace=服务的命名空间,service=服务名]
@@ -2239,11 +2330,11 @@ public class ServiceController {
 		ResourceRequirements requirements = new ResourceRequirements();
 		requirements.getLimits();
 		Map<String, Object> def = new HashMap<String, Object>();
-		def.put("cpu", cpus / Integer.valueOf(RATIO_MEMTOCPU));
-		def.put("memory", rams + "Mi");
+		def.put("cpu", cpus / Integer.valueOf(RATIO_LIMITTOREQUESTCPU));
+		def.put("memory", Double.parseDouble(rams) / Integer.valueOf(RATIO_LIMITTOREQUESTMEMORY)+ "Mi");
 		Map<String, Object> limit = new HashMap<String, Object>();
 		// limit = kubernetesClientService.getlimit(limit);
-		limit.put("cpu", cpus / Integer.valueOf(RATIO_MEMTOCPU));
+		limit.put("cpu", cpus );
 		limit.put("memory", rams + "Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
@@ -2370,6 +2461,7 @@ public class ServiceController {
 			map.put("status", "200");
 			serviceDao.delete(id);
 			envVariableDao.deleteByServiceId(id);
+			serviceConfigmapDao.deleteByServiceId(id);//删除serviceConfigmap记录
 			// 保存服务操作信息
 			serviceOperationLogDao.save(service.getServiceName(), service.toString(),
 					ServiceConstant.OPERATION_TYPE_DELETE);
@@ -2770,9 +2862,7 @@ public class ServiceController {
 			datamap.put("status", "400");
 			LOG.error("日志读取错误：" + e);
 		}
-
 		return JSON.toJSONString(datamap);
-
 	}
 
 	/**
@@ -3096,6 +3186,63 @@ public class ServiceController {
 
 	}
 
+
+	/**
+	 *
+	 * Description: 编辑端口配置信息
+	 *
+	 * @param portConfig
+	 * @param serviceName
+	 * @param serviceId
+	 * @return String
+	 * @see
+	 */
+	@RequestMapping(value = "service/detail/editConfigmap.do")
+	@ResponseBody
+	public String editConfigmap(String serviceId,String configmapPath, String configmap) {
+		Map<String, String> map = new HashMap<String, String>();
+		Service service = serviceDao.findOne(Long.parseLong(serviceId));
+		// 服务状态判断
+		if (null == service) {
+			map.put("status", "501");
+			return JSON.toJSONString(map);
+		} else {
+			if (service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_WAITING
+					&& service.getStatus() != ServiceConstant.CONSTRUCTION_STATUS_STOPPED) {
+				map.put("status", "502");
+				return JSON.toJSONString(map);
+			}
+		}
+		Date currentDate = new Date();
+		User currentUser = CurrentUserUtils.getInstance().getUser();
+		//保存serviceConfigmap
+
+		serviceConfigmapDao.deleteByServiceId(service.getId());
+		ServiceConfigmap serviceConfigmap =null;
+		if(!configmap.equals("-1")){
+			Configmap configmap2 = configmapDao.findOne(Long.parseLong(configmap));
+			serviceConfigmap = new ServiceConfigmap();
+			serviceConfigmap.setConfigmapId(Long.parseLong(configmap));
+			serviceConfigmap.setCreateBy(currentUser.getId());
+			serviceConfigmap.setCreateDate(currentDate);
+			serviceConfigmap.setName(configmap2.getName());
+			serviceConfigmap.setPath(configmapPath);
+			serviceConfigmap.setServiceId(service.getId());
+			serviceConfigmapDao.save(serviceConfigmap);
+		}
+
+		// 保存服务信息
+		service.setIsModify(ServiceConstant.MODIFY_TRUE);
+		service.setUpdateDate(currentDate);
+		service.setUpdateBy(currentUser.getId());
+		serviceDao.save(service);
+		// 保存服务操作信息
+		serviceOperationLogDao.save(service.getServiceName(), serviceConfigmap !=null?serviceConfigmap.toString():"没选择configmap",
+				ServiceConstant.OPERATION_TYPE_UPDATE);
+		map.put("status", "200");
+
+		return JSON.toJSONString(map);
+	}
 	/**
 	 *
 	 * Description: 编辑端口配置信息
@@ -3587,7 +3734,7 @@ public class ServiceController {
 				}
 			}
 		}
-		
+
 		model.addAttribute("pod", pod);
 		model.addAttribute("dockerServerURL", hostIP);
 		model.addAttribute("containerid", containerID);

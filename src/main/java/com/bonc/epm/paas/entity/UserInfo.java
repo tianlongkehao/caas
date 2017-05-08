@@ -168,7 +168,7 @@ public class UserInfo {
 	}
 	public float getRestCpuNum() {
 		try {
-			return (float)(Math.round(servCpuNum - usedCpuNum)*100)/100;
+			return (float)(Math.round((servCpuNum - usedCpuNum)*100))/100;
 		} catch (Exception e) {
 			return 0;
 		}
