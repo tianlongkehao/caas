@@ -1,4 +1,13 @@
 $(document).ready(function(){
+
+	$("#podmutex").change(function() {
+		if ($(this).prop('checked')) {
+			$("#podmutexlabel").show();
+		} else {
+			$("#podmutexlabel").hide();
+		}
+	});
+
 	// 控制环境变量的参数
 	var count=1;
 	loadImageList();
@@ -135,6 +144,13 @@ $(document).ready(function(){
 	    } else {
 	    	$("#monitor").val("0");
 	    }
+	    //Pod调度方式
+	    if($("#podmutex").prop("checked")==true){
+	    	$("#ispodmutex").val("true");
+	    } else {
+	    	$("#ispodmutex").val("false");
+	    }
+
 	    //服务路径的判断
 	    var servicePath = $("#webPath").val();
 	    if(!servicePath || servicePath.length < 1){

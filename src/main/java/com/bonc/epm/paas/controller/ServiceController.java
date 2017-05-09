@@ -682,6 +682,10 @@ public class ServiceController {
 
 		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
 
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        int nodecount = client.getAllNodes().getItems().size();
+
+        model.addAttribute("nodecount",nodecount);
 		model.addAttribute("configmapList", configmapList);
 		model.addAttribute("cpuSizeList", cpuSizeList);
 		model.addAttribute("memorySizeList", memorySizeList);
@@ -844,8 +848,8 @@ public class ServiceController {
 
 				long leftmemory = hard - used;
 
-				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
-				leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
+				//leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
+				//leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
 
 				model.addAttribute("leftcpu", leftCpu);
 				model.addAttribute("leftmemory", leftmemory / 1024);
@@ -1014,7 +1018,7 @@ public class ServiceController {
 						service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 						service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
 						service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-						service.getCheckPath(), envVariables, command, args,serviceConfigmapList);
+						service.getCheckPath(), envVariables, command, args,serviceConfigmapList,service.isIspodmutex());
 				// 给controller设置卷组挂载的信息
 				LOG.debug("给rc添加存储卷信息");
 				if (service.getServiceType().equals("1")) {
@@ -3163,6 +3167,9 @@ public class ServiceController {
 		ser.setNodeIpAffinity(service.getNodeIpAffinity());
 		// 检查服务状态填写的路径
 		ser.setCheckPath(service.getCheckPath());
+		// Pod互斥
+		ser.setIspodmutex(service.isIspodmutex());
+
 		if (StringUtils.isNotBlank(service.getCheckPath())) {
 			// 服务检测超时
 			ser.setTimeoutDetction(
