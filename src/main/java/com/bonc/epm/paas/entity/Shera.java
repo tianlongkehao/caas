@@ -11,6 +11,9 @@
 
 package com.bonc.epm.paas.entity;
 
+
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,27 +27,36 @@ public class Shera {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
-    
+
+    /**
+     * 创建者
+     */
+    private long createBy;
+
+    /**
+     * 创建时间
+     */
+    private Date createDate;
     /**
      * shera地址
      */
     private String sheraUrl;
-    
+
     /**
      * 访问端口
      */
     private String port;
-    
+
     /**
      * 用户名
      */
     private String userName;
-    
+
     /**
      * 密码
      */
     private String password;
-    
+
     /**
      * 描述
      */
@@ -58,7 +70,23 @@ public class Shera {
         this.id = id;
     }
 
-    public String getSheraUrl() {
+    public long getCreateBy() {
+		return createBy;
+	}
+
+	public void setCreateBy(long createBy) {
+		this.createBy = createBy;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public String getSheraUrl() {
         return sheraUrl;
     }
 
@@ -97,5 +125,5 @@ public class Shera {
     public void setRemark(String remark) {
         this.remark = remark;
     }
-    
+
 }

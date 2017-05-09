@@ -2429,7 +2429,7 @@ public class ServiceController {
 					if (controller != null) {
 						controller = client.updateReplicationController(service.getTempName(), 0);
 						if (controller != null && controller.getSpec().getReplicas() == 0) {
-							Status status = client.deleteReplicationController(service.getServiceName());
+							Status status = client.deleteReplicationController(service.getTempName());
 							if (!status.getStatus().equals("Success")) {
 								map.put("status", "400");
 								map.put("msg", "Delete a Replication Controller failed:ServiceName["
@@ -3652,7 +3652,12 @@ public class ServiceController {
 		LOG.info("************************before starting Service, delete garbage pod first*********************");
 		try {
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
+			com.bonc.epm.paas.kubernetes.model.Service k8sService;
+			try {
+				k8sService = client.getService(serviceName);
+			} catch (Exception e1) {
+				return;
+			}
 			Map<String, String> labelSelector = new HashMap<String, String>();
 			labelSelector.put("app", k8sService.getSpec().getSelector().get("app"));
 			PodList podList = client.getLabelSelectorPods(labelSelector);
