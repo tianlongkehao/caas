@@ -13,6 +13,7 @@ package com.bonc.epm.paas.shera.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,11 @@ import org.springframework.stereotype.Service;
 import com.bonc.epm.paas.constant.CiConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.SheraDao;
+import com.bonc.epm.paas.dao.UserAndSheraDao;
 import com.bonc.epm.paas.entity.CiInvoke;
 import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserAndShera;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.shera.api.SheraAPIClient;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
@@ -33,6 +36,7 @@ import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.model.CodeManager;
 import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.CredentialKey;
+import com.bonc.epm.paas.shera.model.ExecConfig;
 import com.bonc.epm.paas.shera.model.GitAdvancedConfig;
 import com.bonc.epm.paas.shera.model.GitConfig;
 import com.bonc.epm.paas.shera.model.GitCredential;
@@ -45,6 +49,7 @@ import com.bonc.epm.paas.shera.model.MvnConfig;
 import com.bonc.epm.paas.shera.model.Repository;
 import com.bonc.epm.paas.shera.model.SonarConfig;
 import com.bonc.epm.paas.shera.model.SonarManager;
+import com.bonc.epm.paas.shera.model.SshKey;
 import com.bonc.epm.paas.shera.model.SvnConfig;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
@@ -61,20 +66,27 @@ public class SheraClientService {
     private String username="";
     private String password="";
 
-    @Autowired
-    private SheraDao sheraDao;
+	@Autowired
+	private SheraDao sheraDao;
+	@Autowired
+	private UserAndSheraDao userAndSheraDao;
 
 	public SheraAPIClientInterface getClient() {
 		User user = CurrentUserUtils.getInstance().getUser();
 		Shera shera = new Shera();
 		if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-			shera = sheraDao.findByUserId(user.getParent_id());
+			shera = sheraDao.findByUserIdInUsed(user.getParent_id());
 		} else {
-			shera = sheraDao.findByUserId(user.getId());
+			shera = sheraDao.findByUserIdInUsed(user.getId());
 		}
 		//找不到shera时候，使用默认shera
 		if (null == shera) {
-			shera = sheraDao.findAll().iterator().next();
+			shera = sheraDao.findOne(1L);
+			UserAndShera userAndShera = new UserAndShera();
+			userAndShera.setSheraId(1L);
+			userAndShera.setUserId(user.getId());
+			userAndShera.setInUsed(1);
+			userAndSheraDao.save(userAndShera);
 		}
 		return getClient(shera);
 	}
@@ -338,32 +350,28 @@ public class SheraClientService {
 		return sonarConfig;
 	}
 
-//    public static void main(String[] args) {
-//        SheraClientService sheraClientService = new SheraClientService();
-//        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
-//        ChangeGit chengeGit = client.getChangeGit("test-wxwl1");
-//        chengeGit = client.deleteGitHooks("test-wxwl1", chengeGit);
-//        System.err.println(chengeGit);
-//    }
+	/**
+	 * generateExecConfig:初始化ExecConfig. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param proid
+	 * @param version
+	 * @param env
+	 * @return ExecConfig
+	 */
+	public ExecConfig generateExecConfig(Integer proid, String version, Map<String, String> env) {
+		ExecConfig execConfig = new ExecConfig();
+		execConfig.setProid(proid);
+		execConfig.setVersion(version);
+		execConfig.setUserid("admin");
+		execConfig.setEnv(env);
+		return execConfig;
+	}
 
-//    public static void main(String[] args) {
-//        SheraClientService sheraClientService = new SheraClientService();
-//        SheraAPIClientInterface client = sheraClientService.getclient("testbonc");
-//        try {
-//            JdkList jdkList  = client.getAllJdk();
-//            for (Jdk jdk : jdkList) {
-//                System.out.println(jdk.toString());
-//            }
-//
-////            JobExecView jobExecView = client.getExecution("testdemo1",1);
-////            System.out.println(jobExecView);
-//
-////            JobExecView jobExecView2 = client.killExecution("testdemo1",2);
-////            System.out.println(jobExecView2);
-//
-//        }
-//        catch (SheraClientException e) {
-//           e.printStackTrace();
-//        }
-//    }
+	public SshKey generateSshKey(String keyName) {
+		SshKey sshKey = new SshKey();
+		sshKey.setUser(keyName);
+		return sshKey;
+	}
+
 }

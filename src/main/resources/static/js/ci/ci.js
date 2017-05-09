@@ -77,12 +77,12 @@ function addCiInfo(type) {
 				});
 			}else{
 				if (type == 0) {
-					$.ajax({
-						url:ctx + "/ci/judgeShera.do",
-						async : false,
-						success : function(data){
-							data = eval("("+data+")");
-							if (data.status == "200") {
+//					$.ajax({
+//						url:ctx + "/ci/judgeShera.do",
+//						async : false,
+//						success : function(data){
+//							data = eval("("+data+")");
+//							if (data.status == "200") {
 //								$.ajax({
 //									url : ctx + "/ci/getSonarConfig.do",
 //									async : false,
@@ -100,16 +100,16 @@ function addCiInfo(type) {
 //										}
 //									}
 //								});
-							}
-							if (data.status == "400") {
-								layer.open({
-							        title: '提示',
-							        content: '当前租户没有添加shera环境，请您联系管理员',
-							        btn: ['确定', '取消']
-								});
-							}
-						}
-					});
+//							}
+//							if (data.status == "400") {
+//								layer.open({
+//							        title: '提示',
+//							        content: '当前租户没有添加shera环境，请您联系管理员',
+//							        btn: ['确定', '取消']
+//								});
+//							}
+//						}
+//					});
 				}
 				if (type == 1) {
 					window.location.href = ctx + "/ci/addCodeSource";

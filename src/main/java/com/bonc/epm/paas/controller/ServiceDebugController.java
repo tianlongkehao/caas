@@ -79,7 +79,7 @@ public class ServiceDebugController {
 			e1.printStackTrace();
 		}
 		response.setContentType(request.getServletContext().getMimeType(fileName + ".tar"));
-		try (InputStream inputStream = dockerClient.copyArchiveFromContainerCmd(containerId, path + "/" + fileName)
+		try (InputStream inputStream = dockerClient.copyArchiveFromContainerCmd(containerId.replace("docker://", ""), path + "/" + fileName)
 				.exec(); OutputStream outputStream = response.getOutputStream()) {
 			byte[] b = new byte[1024];
 			int num;
@@ -119,7 +119,7 @@ public class ServiceDebugController {
 						+ files[0].getOriginalFilename();
 				FileUtils.storeFile(files[0].getInputStream(), path);
 				// 获取输出流
-				dockerClient.copyArchiveToContainerCmd(currentContainerId).withRemotePath(currentFilePath)
+				dockerClient.copyArchiveToContainerCmd(currentContainerId.replace("docker://", "")).withRemotePath(currentFilePath)
 						.withHostResource(path).exec().wait();
 			} else {
 				map.put("status", "300");

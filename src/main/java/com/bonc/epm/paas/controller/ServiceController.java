@@ -508,6 +508,14 @@ public class ServiceController {
 		Service service = serviceDao.findOne(id);
 		List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
 		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+
+		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
+		List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(id);
+		ServiceConfigmap serviceConfigmap = null;
+		if(!CollectionUtils.isEmpty(serviceConfigmapList)){
+			serviceConfigmap = serviceConfigmapList.get(0);
+		}
+
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
 		List<Container> containerList = new ArrayList<Container>();
@@ -547,6 +555,8 @@ public class ServiceController {
 
 		model.addAttribute("entryHost", ENTRY_HOST);
 		model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
+		model.addAttribute("configmapList", configmapList);
+		model.addAttribute("serviceConfigmap", serviceConfigmap);
 		model.addAttribute("storageList", storageList);
 		model.addAttribute("namespace", currentUser.getNamespace());
 		model.addAttribute("id", id);
@@ -2422,7 +2432,7 @@ public class ServiceController {
 					if (controller != null) {
 						controller = client.updateReplicationController(service.getTempName(), 0);
 						if (controller != null && controller.getSpec().getReplicas() == 0) {
-							Status status = client.deleteReplicationController(service.getServiceName());
+							Status status = client.deleteReplicationController(service.getTempName());
 							if (!status.getStatus().equals("Success")) {
 								map.put("status", "400");
 								map.put("msg", "Delete a Replication Controller failed:ServiceName["
@@ -3645,7 +3655,12 @@ public class ServiceController {
 		LOG.info("************************before starting Service, delete garbage pod first*********************");
 		try {
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
+			com.bonc.epm.paas.kubernetes.model.Service k8sService;
+			try {
+				k8sService = client.getService(serviceName);
+			} catch (Exception e1) {
+				return;
+			}
 			Map<String, String> labelSelector = new HashMap<String, String>();
 			labelSelector.put("app", k8sService.getSpec().getSelector().get("app"));
 			PodList podList = client.getLabelSelectorPods(labelSelector);

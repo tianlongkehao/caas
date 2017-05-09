@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.constant.SheraConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.ServiceDao;
@@ -56,6 +58,8 @@ import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
 import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.ExecConfig;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.SonarConfig;
@@ -1424,43 +1428,153 @@ public class UserController {
         return "ci/shera.jsp";
     }
 
-    /**
-     * Description: <br>
-     * 创建shera路由信息
-     * @param shera shera
-     * @param jdkData jdk数据
-     * @return jsp
-     */
-    @RequestMapping("/shera/creatShera.do")
-    @ResponseBody
-    public String createShera(Shera shera,String jdkJson){
-        Map<String,Object> map = new HashMap<>();
-        try {
-            SheraAPIClientInterface client = sheraClientService.getClient(shera);
-            if (StringUtils.isNotEmpty(jdkJson)) {
-                String[] jdkData = jdkJson.split(";");
-                for (String jdkRow : jdkData ) {
-                    String jdkVersion = jdkRow.substring(0,jdkRow.indexOf(","));
-                    String jdkPath = jdkRow.substring(jdkRow.indexOf(",")+1);
-                    Jdk jdk = sheraClientService.generateJdk(jdkVersion, jdkPath);
-                    client.createJdk(jdk);
-                }
-            }
-            sheraDao.save(shera);
+	/**
+	 * createShera:创建shera. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param shera
+	 * @param jdkJson
+	 * @param mavenJson
+	 * @param antJson
+	 * @param sonarJson
+	 * @return String
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = ("/shera/creatShera.do"), method = RequestMethod.POST)
+	@ResponseBody
+	public String createShera(Shera shera, String jdkJson, String mavenJson, String antJson, String sonarJson) {
+		Map<String, Object> map = new HashMap<>();
+		if (shera.getId() == 0) {
+			List<Shera> sheraList = sheraDao.findByUrlAndPort(shera.getSheraUrl(), shera.getPort());
+			if (CollectionUtils.isNotEmpty(sheraList)) {
+				// 有重复的配置
+				map.put("status", "305");
+				return JSON.toJSONString(map);
+			}
+		}
+		SheraAPIClientInterface client = sheraClientService.getClient(shera);
+		try {
+			// 用任意一个api检测当前配置的shera能否使用
+			client.getAllJdk();
+		} catch (Exception e) {
+			// 配置不能使用的情况下返回300
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
 
-            //记录新增shera操作
-            String extraInfo = "新增shera ： " + shera.getSheraUrl() + "信息：" + JSON.toJSONString(shera);
-            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(shera.getSheraUrl() , extraInfo, CommConstant.SHERA_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
-            commonOperationLogDao.save(log);
+		// 创建jdk
+		if (StringUtils.isNotBlank(jdkJson)) {
+			try {
+				// 删除旧的jdk
+				JdkList allJdk = client.getAllJdk();
+				if (null != allJdk && null != allJdk.getItems() && allJdk.getItems().size() != 0) {
+					for (Jdk jdk : allJdk.getItems()) {
+						client.deleteJdk(jdk.getVersion());
+					}
+				}
+				Map<String, String> jdkMap = new HashMap<>();
+				jdkMap = JSON.parseObject(jdkJson, jdkMap.getClass());
+				for (String key : jdkMap.keySet()) {
+					Jdk jdk = sheraClientService.generateJdk(key, jdkMap.get(key));
+					client.createJdk(jdk);
+				}
+			} catch (Exception e) {
+				map.put("status", "301");
+				map.put("message", "创建jdk配置失败:[jdkJson:" + jdkJson + "]");
+				return JSON.toJSONString(map);
+			}
+		}
 
-            map.put("status", "200");
-        }
-        catch (Exception e) {
-           LOG.error("create shera error : " + e.getMessage());
-           map.put("status", "400");
-        }
-        return JSON.toJSONString(map);
-    }
+		// 创建mvn的配置
+		if (StringUtils.isNoneBlank(mavenJson)) {
+			try {
+				client.deleteExecConfig("admin", SheraConstant.EXEC_MAVEN_CONFIG);
+				if (!createExecConfig(client, "admin", mavenJson)) {
+					map.put("status", "302");
+					map.put("message", "创建mvn配置失败:[mavenJson:" + mavenJson + "]");
+					return JSON.toJSONString(map);
+				}
+			} catch (Exception e) {
+				map.put("status", "302");
+				map.put("message", "创建mvn配置失败");
+				e.printStackTrace();
+				return JSON.toJSONString(map);
+			}
+		}
+
+		// 创建ant的配置
+		if (StringUtils.isNoneBlank(antJson)) {
+			try {
+				client.deleteExecConfig("admin", SheraConstant.EXEC_ANT_CONFIG);
+				if (!createExecConfig(client, "admin", antJson)) {
+					map.put("status", "303");
+					map.put("message", "创建ant配置失败:[antJson:" + antJson + "]");
+					return JSON.toJSONString(map);
+				}
+			} catch (Exception e) {
+				map.put("status", "303");
+				map.put("message", "创建ant配置失败");
+				e.printStackTrace();
+				return JSON.toJSONString(map);
+			}
+		}
+
+		// 创建sonar的配置
+		if (StringUtils.isNoneBlank(sonarJson)) {
+			try {
+				client.deleteExecConfig("admin", SheraConstant.EXEC_SONAR_CONFIG);
+				if (!createExecConfig(client, "admin", sonarJson)) {
+					map.put("status", "304");
+					map.put("message", "创建sonar配置失败:[sonarJson:" + sonarJson + "]");
+					return JSON.toJSONString(map);
+				}
+			} catch (Exception e) {
+				map.put("status", "304");
+				map.put("message", "创建sonar配置失败");
+				e.printStackTrace();
+				return JSON.toJSONString(map);
+			}
+		}
+
+		// 创建成功的情况,保存shera
+		shera.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+		shera.setCreateDate(new Date());
+		sheraDao.save(shera);
+		// 记录新增shera操作
+		String extraInfo = "新增shera ： " + shera.getSheraUrl() + "信息：" + JSON.toJSONString(shera);
+		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(shera.getSheraUrl(), extraInfo,
+				CommConstant.SHERA_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
+		commonOperationLogDao.save(log);
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
+
+	/**
+	 * createExecConfig:更具json字符串创建ExecConfig. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param client
+	 * @param userid
+	 * @param jsonString
+	 * @return boolean
+	 */
+	private boolean createExecConfig(SheraAPIClientInterface client, String userid, String jsonString) {
+		List<ExecConfig> configList = new ArrayList<>();
+		configList = JSON.parseArray(jsonString, ExecConfig.class);
+		for (ExecConfig config : configList) {
+			config.setUserid("admin");
+			try {
+				client.createExecConfig(config);
+			} catch (SheraClientException e) {
+				LOG.error("创建execConfig异常：[jsonString:" + jsonString + "]");
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
+
 
     /**
      * 删除shera
@@ -1616,17 +1730,6 @@ public class UserController {
         return JSON.toJSONString(map);
     }
 
-    /**
-     * Description: <br>
-     * 查询所有的sonar
-     * @return jsp
-     */
-    @RequestMapping("/sonar")
-    public String findSonar(Model model){
-        model.addAttribute("menu_flag", "ci");
-        model.addAttribute("li_flag", "sonar");
-        return "ci/sonar.jsp";
-    }
 
 	/**
 	 * Description: <br>
@@ -1647,5 +1750,88 @@ public class UserController {
 			return userDel(user.getId() + "");
 		}
 	}
+
+	@RequestMapping("/shera/detail/{id}")
+    public String detailShera(Model model, @PathVariable long id){
+        Shera shera = sheraDao.findOne(id);
+        SheraAPIClientInterface client = sheraClientService.getClient(shera);
+        JdkList allJdk = null;
+		List<Map<String, Object>> mvnConfigList = new ArrayList<>();
+		List<Map<String, Object>> antConfigList = new ArrayList<>();
+		List<Map<String, Object>> sonarConfigList = new ArrayList<>();
+		try {
+			allJdk = client.getAllJdk();
+			List<ExecConfig> mvnConfigs = client.getExecConfig(SheraConstant.EXEC_MAVEN_CONFIG);
+
+			for (ExecConfig mvnConfig : mvnConfigs) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("version", mvnConfig.getVersion());
+
+				Map<String, String> env = mvnConfig.getEnv();
+				List<Object> envList = new ArrayList<>();
+				if (MapUtils.isNotEmpty(env)) {
+					for(String key : env.keySet()){
+						Map<String , String> envItem = new HashMap<>();
+						envItem.put("key",key);
+						envItem.put("value", env.get(key));
+						envList.add(envItem);
+					}
+				}
+				map.put("env", envList);
+				mvnConfigList.add(map);
+			}
+
+			List<ExecConfig> antConfigs = client.getExecConfig(SheraConstant.EXEC_ANT_CONFIG);
+			for (ExecConfig antConfig : antConfigs) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("version", antConfig.getVersion());
+
+				Map<String, String> env = antConfig.getEnv();
+				List<Object> envList = new ArrayList<>();
+				if (MapUtils.isNotEmpty(env)) {
+					for(String key : env.keySet()){
+						Map<String , String> envItem = new HashMap<>();
+						envItem.put("key",key);
+						envItem.put("value", env.get(key));
+						envList.add(envItem);
+					}
+				}
+				map.put("env", envList);
+				antConfigList.add(map);
+			}
+
+
+
+			List<ExecConfig> sonarConfigs = client.getExecConfig(SheraConstant.EXEC_SONAR_CONFIG);
+			for (ExecConfig sonarConfig : sonarConfigs) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("version", sonarConfig.getVersion());
+
+				Map<String, String> env = sonarConfig.getEnv();
+				List<Object> envList = new ArrayList<>();
+				if (MapUtils.isNotEmpty(env)) {
+					for(String key : env.keySet()){
+						Map<String , String> envItem = new HashMap<>();
+						envItem.put("key",key);
+						envItem.put("value", env.get(key));
+						envList.add(envItem);
+					}
+				}
+				map.put("env", envList);
+				sonarConfigList.add(map);
+			}
+
+		} catch (SheraClientException e) {
+			e.printStackTrace();
+		}
+        model.addAttribute("shera", shera);
+        model.addAttribute("allJdk", allJdk);
+        model.addAttribute("mvnConfig", mvnConfigList);
+        model.addAttribute("antConfig", antConfigList);
+        model.addAttribute("sonarConfig", sonarConfigList);
+        model.addAttribute("menu_flag", "ci");
+        model.addAttribute("li_flag", "shera");
+        return "ci/shera-detail.jsp";
+    }
 
 }

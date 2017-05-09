@@ -33,12 +33,12 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a id="createSheraBtn" title="创建shear"><i
-											class="fa fa-plus"></i></a> 
+										<a id="createSheraBtn" href="/shera/add" title="创建shera"><i
+											class="fa fa-plus"></i></a>
 										<a href="javascript:delSheras()" title="删除"><i
 											class="fa fa-trash"></i></a>
 										<a href="javascript:window.location.reload(true);"
-											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
+											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a>
 									</div>
                             </div>
                             <div class="ibox-content">
@@ -61,7 +61,7 @@
 													<td style="width: 5%; text-indent: 30px;"><input
 														type="checkbox" class="chkItem" name="ids"
 														value="${shera.id }"></td>
-													<td style="width: 20%;cursor:pointer"><a title="查看详细信息" onclick="sheraDetail(${shera.id})" keyName="name"
+													<td style="width: 20%;cursor:pointer"><a title="查看详细信息" href="/user/shera/detail/${shera.id}" onclick="sheraDetail(${shera.id})" keyName="name"
 														onmousemove="style.textDecoration='underline'"
 														onmouseout="style.textDecoration='none'">${shera.sheraUrl }</a></td>
 													<td style="width: 13%;">${shera.port }</td>
@@ -89,70 +89,13 @@
                         </div>
                     </div>
                 </div>
-					
-					
+
+
 				</div>
 
 			</div>
-	
+
 	</article>
-	</div>
-	<div id="createSheraCon" style="display: none">
-		<div style="margin: 15px 20px">
-			<div class="infoCred">
-				<span class="labelCred">IP：</span> <input type="text"
-					class="form-control conCred" id="sheraIp" name="sheraIp" placeholder="192.168.0.76"
-					value="">
-			</div>
-		    <div class="infoCred">
-                <span class="labelCred">端口：</span> <input type="text"
-                    class="form-control conCred" id="port" name="port" placeholder=""
-                    value="">
-            </div>
-			<div class="infoCred">
-				<span class="labelCred">账号：</span> <input type="text"
-					class="form-control conCred" id="shreaName" name="shreaName"
-					value="">
-			</div>
-			<div class="infoCred">
-				<span class="labelCred">密码：</span> <input type="text"
-					class="form-control conCred" id="shreaPassword" name="shreaPassword"
-					value="">
-			</div>
-			<div class="infoCred">
-				<span class="labelCred">sonar：</span> 
-				<!-- <input type="text"
-					class="form-control conCred" id="shreaPassword" name="shreaPassword"
-					value=""> -->
-				<select class="form-control conCred" id="sonarInfoList" name="sonarInfoList">
-					<option>sonar111111111</option>
-				</select>
-			</div>
-			<div class="infoCred">
-                <span class="labelCred">描述：</span> 
-                <textarea class="form-control conCred" style="height:100px"
-                    id="sheraRemark" name="sheraRemark" row="8" value=""></textarea>
-            </div>
-			<div class="infoCred">
-				<span class="labelCred">JDK：</span>
-				<table class="table enabled conCred jdkCon">
-					<thead>
-						<tr>
-							<th style="width: 35%">name</th>
-							<th style="width: 35%">path</th>
-							<th style="vertical-align: middle; width: 10%">操作</th>
-						</tr>
-					</thead>
-					<tbody class="jdktbody">
-					
-					</tbody>
-				</table>
-				<div class="createjdk" style="background: #fafafa">
-					<span id="createjdk"><i class="fa fa-plus margin"></i>添加JDK</span>
-				</div>
-				<input type="hidden" id="arrayJdk" value="" />
-			</div>
-		</div>
 	</div>
 
 	<script type="text/javascript">
@@ -161,8 +104,8 @@
 	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,6] }]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
-		
-		
+
+
 	});
 	</script>
 </body>

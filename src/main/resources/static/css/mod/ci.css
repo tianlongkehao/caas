@@ -643,15 +643,37 @@ textarea.c-project-con{
 .infoCred{
 	margin-top: 12px;
 }
-.labelCred{
+.labelCred,{
+	width: 19%;
+	margin-left: 2%;
+	float: left;
+	line-height:34px;
+	text-align:right;
+	padding-right:26px;
+}
+.labelspan{
+	width: 12%;
+	margin-left: 2%;
+	float: left;
+	line-height:34px;
+	text-align:right;
+	padding-right:26px;
+}
+.spantest{
+	width:16%!important;
+}
+.labelCred1{
 	width: 14%;
 	margin-left: 20px;
 	float: left;
 	line-height:34px;
 
 }
-.conCred{
+.conCred1{
 	width: 77%;
+}
+.conCred{
+	width: 74%;
 }
 .c-project-checkbox{
 	height: 24px;
@@ -691,7 +713,7 @@ textarea.c-project-con{
 .jdkCon thead{
 	background: #E4EAEC;
 }
-.jdkName, .jdkPath{
+.addKey, .addVal{
 	width:96%;
 }
 td.autocut{
@@ -793,3 +815,104 @@ i.fa-telnet{
 i.fa-tomcat{
 	background-position: -1px -161px;
 }
+.questionInfoCon{
+ 	padding:10px;
+ 	border:1px solid #ddd;
+ 	display:none;
+ 	margin-left: 25px;
+     width: 92%;
+ }
+ .fa-questionBtn{
+     line-height: 35px;
+     margin-left: 4px;
+     font-size: 16px;
+     float:right;
+     color:#e8504f;
+ }
+ .fa-questionCon{
+ 	padding:10px;
+ 	border:1px solid #ddd;
+ 	display:none;
+ 	margin-left: 25px;
+     width: 92%;
+ }
+ .registryinfo ul.nav ul.dropdown-menu li{
+ 	cursor:pointer;
+ }
+ .settingfilePath{
+ 	padding-left: 18%;
+ }
+ .settingfilePath-tit{
+ 	width: 12%;
+     float: left;
+     line-height: 34px;
+ }
+ .settingfilePath-con{
+ 	width: 84%;
+     float: left;
+}
+/* shera-add */
+.modalCrealApp .steps-main .progre {
+    width: 100%;
+    border: 0;
+}
+.progre {
+    text-align: center;
+    border-bottom: 2px solid #e2e2e4;
+    width: 570px;
+    margin: 30px auto;
+    height: 45px;
+}
+.modalCrealApp .steps-main .progre .radius_step.action {
+    border-bottom: 2px solid #e8504f;
+    color: #e8504f;
+}
+.modalCrealApp .steps-main .progre .radius_step {
+    color: #999;
+    height: 32px;
+    width: 100%;
+    float: left;
+    border-bottom: 2px solid #e2e2e4;
+}
+
+.radius_step.action span {
+    background: #e8504f;
+}
+.radius_step span {
+    margin: 3px auto;
+    padding: 6px 10px;
+    border-radius: 30px;
+    background: #cbcbcb;
+    color: #fff;
+}
+.conCredIbox{
+	margin-left: 14%;
+	margin-top:15px;
+	width:77%;
+}
+tfoot tr{
+	height:30px!important;
+	background: #fafafa;
+}
+tfoot tr td{
+	text-align: center;
+    font-size: 14px;
+    color:#3f8ec3;
+    cursor:pointer;
+}
+.lastBtns{
+	width: 89%;
+    margin: 50px auto;
+}
+.sonarsCon{
+	background-color: #fff;
+    padding-top: 20px;
+    border:1px solid #ddd;
+    border-radius:4px;
+}
+.conCredIbox div.ibox{
+	border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+

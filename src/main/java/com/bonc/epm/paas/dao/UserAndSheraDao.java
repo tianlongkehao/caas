@@ -11,13 +11,11 @@
 
 package com.bonc.epm.paas.dao;
 
-import java.util.List;
-
 import org.springframework.data.repository.CrudRepository;
 
 import com.bonc.epm.paas.entity.UserAndShera;
 /**
- * 
+ *
  * 租户和shera关联表接口
  * @author zhoutao
  * @version 2016年12月8日
@@ -32,6 +30,6 @@ public interface UserAndSheraDao extends CrudRepository<UserAndShera, Long> {
      * @see
      */
     void deleteBySheraId(long sheraId);
-    
+
     UserAndShera findByUserId(long userId);
 }
