@@ -1121,6 +1121,9 @@ public class ServiceController {
 			String cephAds,String configmap,String configmapPath) {
 		Date currentDate = new Date();
 		User currentUser = CurrentUserUtils.getInstance().getUser();
+		if(1==1){
+			return "";
+		}
 		// 保存服务信息
 		service.setStatus(ServiceConstant.CONSTRUCTION_STATUS_WAITING);
 		service.setCreateDate(currentDate);

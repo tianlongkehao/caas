@@ -172,6 +172,13 @@
 													</c:if> <label for="monitorStatus"><font color="blue">Pinpoint监控</font></label>
 													<input type="hidden" id="monitor" name="monitor" value="">
 											</span></li>
+											<!-- Pod互斥 -->
+											<li class="line-h-3"  id="pod_mutex_type"><span class="ve_top">Pod调度方式：</span>
+												<span><input type="checkbox"
+												id="podmutex"> <label for="podmutex"><font
+												         color="blue">Pod互斥</font></label>
+												<input type="hidden" id="ispodmutex" name="ispodmutex" value="">
+											</span></li>
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
 													color="red">*</font></span>
 												<input type="text" value="" class="in_style form-control" id="webPath" name="servicePath">
