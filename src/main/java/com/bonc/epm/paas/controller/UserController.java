@@ -1751,58 +1751,55 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * detailShera:shera detail页面. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param model
+	 * @param id
+	 * @return String
+	 */
 	@RequestMapping("/shera/detail/{id}")
-    public String detailShera(Model model, @PathVariable long id){
-        Shera shera = sheraDao.findOne(id);
-        SheraAPIClientInterface client = sheraClientService.getClient(shera);
-        JdkList allJdk = null;
-		List<Map<String, Object>> mvnConfigList = new ArrayList<>();
-		List<Map<String, Object>> antConfigList = new ArrayList<>();
-		List<Map<String, Object>> sonarConfigList = new ArrayList<>();
+	public String detailShera(Model model, @PathVariable long id) {
+		Shera shera = sheraDao.findOne(id);
+		SheraAPIClientInterface client = sheraClientService.getClient(shera);
+		JdkList allJdk = null;
 		try {
 			allJdk = client.getAllJdk();
-			List<ExecConfig> mvnConfigs = client.getExecConfig(SheraConstant.EXEC_MAVEN_CONFIG);
+		} catch (SheraClientException e) {
+			e.printStackTrace();
+		}
+		List<Map<String, Object>> mvnConfigList = getFormatExecConfig(client, SheraConstant.EXEC_MAVEN_CONFIG);
+		List<Map<String, Object>> antConfigList = getFormatExecConfig(client, SheraConstant.EXEC_ANT_CONFIG);
+		List<Map<String, Object>> sonarConfigList = getFormatExecConfig(client, SheraConstant.EXEC_SONAR_CONFIG);
 
-			for (ExecConfig mvnConfig : mvnConfigs) {
-				Map<String, Object> map = new HashMap<>();
-				map.put("version", mvnConfig.getVersion());
+		model.addAttribute("shera", shera);
+		model.addAttribute("allJdk", allJdk);
+		model.addAttribute("mvnConfig", mvnConfigList);
+		model.addAttribute("antConfig", antConfigList);
+		model.addAttribute("sonarConfig", sonarConfigList);
+		model.addAttribute("menu_flag", "ci");
+		model.addAttribute("li_flag", "shera");
+		return "ci/shera-detail.jsp";
+	}
 
-				Map<String, String> env = mvnConfig.getEnv();
-				List<Object> envList = new ArrayList<>();
-				if (MapUtils.isNotEmpty(env)) {
-					for(String key : env.keySet()){
-						Map<String , String> envItem = new HashMap<>();
-						envItem.put("key",key);
-						envItem.put("value", env.get(key));
-						envList.add(envItem);
-					}
-				}
-				map.put("env", envList);
-				mvnConfigList.add(map);
-			}
-
-			List<ExecConfig> antConfigs = client.getExecConfig(SheraConstant.EXEC_ANT_CONFIG);
-			for (ExecConfig antConfig : antConfigs) {
-				Map<String, Object> map = new HashMap<>();
-				map.put("version", antConfig.getVersion());
-
-				Map<String, String> env = antConfig.getEnv();
-				List<Object> envList = new ArrayList<>();
-				if (MapUtils.isNotEmpty(env)) {
-					for(String key : env.keySet()){
-						Map<String , String> envItem = new HashMap<>();
-						envItem.put("key",key);
-						envItem.put("value", env.get(key));
-						envList.add(envItem);
-					}
-				}
-				map.put("env", envList);
-				antConfigList.add(map);
-			}
-
-
-
-			List<ExecConfig> sonarConfigs = client.getExecConfig(SheraConstant.EXEC_SONAR_CONFIG);
+	/**
+	 * getFormatExecConfig:获取格式化的ExecConfig. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param client
+	 * @param Kind
+	 * @return List<Map<String,Object>>
+	 */
+	private List<Map<String, Object>> getFormatExecConfig(SheraAPIClientInterface client, Integer Kind){
+		List<Map<String, Object>> resultList = new ArrayList<>();
+		List<ExecConfig> sonarConfigs;
+		try {
+			sonarConfigs = client.getExecConfig(Kind);
+		} catch (Exception e) {
+			sonarConfigs = null;
+		}
+		if (sonarConfigs != null) {
 			for (ExecConfig sonarConfig : sonarConfigs) {
 				Map<String, Object> map = new HashMap<>();
 				map.put("version", sonarConfig.getVersion());
@@ -1818,20 +1815,9 @@ public class UserController {
 					}
 				}
 				map.put("env", envList);
-				sonarConfigList.add(map);
+				resultList.add(map);
 			}
-
-		} catch (SheraClientException e) {
-			e.printStackTrace();
 		}
-        model.addAttribute("shera", shera);
-        model.addAttribute("allJdk", allJdk);
-        model.addAttribute("mvnConfig", mvnConfigList);
-        model.addAttribute("antConfig", antConfigList);
-        model.addAttribute("sonarConfig", sonarConfigList);
-        model.addAttribute("menu_flag", "ci");
-        model.addAttribute("li_flag", "shera");
-        return "ci/shera-detail.jsp";
-    }
-
+		return resultList;
+	}
 }
