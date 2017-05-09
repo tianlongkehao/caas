@@ -20,7 +20,7 @@ function dropdownFile() {
 	var containerID = container.replace('docker://', '');
 	var host = $("#entryHost").val();
 	var dockerServerURL = 'http://' + nodeIP + ':' + dockerServerPort;
-	
+
 	var soc = "ws://" + host + "/enter?method=web&containerID=" + containerID + "&dockerServerURL=" + dockerServerURL;
 	filesocket = new WebSocket(soc);
 
@@ -268,8 +268,8 @@ function keepFileSocketAlive() {
 //下载容器内的文件
 function downloadContainerFile(fileName) {
 	var path = $('#path').val();
-	var nodeIp = $('#containerFileIp').val();
-	var containerId = $('#containerFileId').val();
+	var nodeIp = $('#nodeIP').val();
+	var containerId = $('#containerid').val();
 	location.href = ctx + "/service/downloadFile?" + "nodeIp=" + nodeIp + "&containerId=" + containerId + "&path=" + path + "&fileName=" + encodeURIComponent(fileName);
 }
 
@@ -313,8 +313,8 @@ function fileUpload() {
 };
 function UpladFile() {
 	var path = $('#path').val();
-	var nodeIp = $('#containerFileIp').val();
-	var containerId = $('#containerFileId').val();
+	var nodeIp = $('#nodeIP').val();
+	var containerId = $('#containerid').val();
 
 	$('#currentContainerId').val(containerId);
 	$('#currentContainerIp').val(nodeIp);
