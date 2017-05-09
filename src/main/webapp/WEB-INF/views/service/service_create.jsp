@@ -178,6 +178,7 @@
 												id="podmutex"> <label for="podmutex"><font
 												         color="blue">Pod互斥</font></label>
 												<input type="hidden" id="ispodmutex" name="ispodmutex" value="">
+												<label id="podmutexlabel" style="display: none;float:right" ><font color="red">注意：为了满足pod互斥，实例数量不应大于集群节点数量${nodecount }</font></label>
 											</span></li>
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
 													color="red">*</font></span>

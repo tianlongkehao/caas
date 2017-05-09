@@ -357,7 +357,7 @@ public class ServiceApi {
 					service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 					service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
 					service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-					service.getCheckPath(), envVariables, command, args, serviceConfigmapList);
+					service.getCheckPath(), envVariables, command, args, serviceConfigmapList,service.isIspodmutex());
 			// 给rc设置卷组挂载的信息
 			if (service.getServiceType().equals("1")) {
 				rc = setVolumeStorage(namespace, rc, service.getId());

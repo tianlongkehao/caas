@@ -703,8 +703,8 @@ public class UserController {
                 	//用户真实的资源*资源系数 = 页面显示资源
                     Map<String, String> map = quota.getSpec().getHard();
                     String leftCpu = String.valueOf(kubernetesClientService.transCpu(map.get("cpu")) );
-                    resource.setCpu_account(String.valueOf(Double.parseDouble(leftCpu)*RATIO_LIMITTOREQUESTCPU));// CPU数量
-                    resource.setRam(String.valueOf(Double.parseDouble(map.get("memory").replace("G", "").replace("i", ""))*RATIO_LIMITTOREQUESTMEMORY));// 内存
+                    resource.setCpu_account(String.valueOf(Double.parseDouble(leftCpu)));// CPU数量
+                    resource.setRam(String.valueOf(Double.parseDouble(map.get("memory").replace("G", "").replace("i", ""))));// 内存
                     LOG.info("+++++++++++++" + leftCpu + "------" + map.get("memory"));
                     /* resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
                     resource.setPod_count(map.get("pods"));//POD数量
@@ -1145,8 +1145,8 @@ public class UserController {
 
         Map<String, String> hard = quota.getSpec().getHard();
         //资源按照系数调整
-        hard.put("memory", Double.parseDouble(resource.getRam())/RATIO_LIMITTOREQUESTMEMORY + "G"); // 内存
-        hard.put("cpu", Double.valueOf(resource.getCpu_account())/RATIO_LIMITTOREQUESTCPU + "");// CPU数量
+        hard.put("memory", resource.getRam() + "G"); // 内存
+        hard.put("cpu", resource.getCpu_account() + "");// CPU数量
         hard.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
 		// hard.put("pods", resource.getPod_count() + "");//POD数量
 		// hard.put("services", resource.getServer_count() + "");//服务
@@ -1211,8 +1211,8 @@ public class UserController {
             //map.put("memory", resource.getRam() + "G"); // 内存
             //map.put("cpu", Double.valueOf(resource.getCpu_account()) + "");// CPU数量(个)
             //实际分配资源=页面分配资源/分配系数
-            map.put("memory", Double.parseDouble(resource.getRam())/RATIO_LIMITTOREQUESTMEMORY + "G"); // 内存
-            map.put("cpu", Double.valueOf(resource.getCpu_account())/RATIO_LIMITTOREQUESTCPU + "");// CPU数量(个)
+            map.put("memory", resource.getRam() + "G"); // 内存
+            map.put("cpu", resource.getCpu_account() + "");// CPU数量(个)
             map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
             //map.put("pods", resource.getPod_count() + "");//POD数量
             //map.put("services", resource.getServer_count() + "");//服务

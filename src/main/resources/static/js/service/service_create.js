@@ -1,4 +1,13 @@
 $(document).ready(function(){
+
+	$("#podmutex").change(function() {
+		if ($(this).prop('checked')) {
+			$("#podmutexlabel").show();
+		} else {
+			$("#podmutexlabel").hide();
+		}
+	});
+
 	// 控制环境变量的参数
 	var count=1;
 	loadImageList();
