@@ -508,6 +508,14 @@ public class ServiceController {
 		Service service = serviceDao.findOne(id);
 		List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
 		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+
+		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
+		List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(id);
+		ServiceConfigmap serviceConfigmap = null;
+		if(!CollectionUtils.isEmpty(serviceConfigmapList)){
+			serviceConfigmap = serviceConfigmapList.get(0);
+		}
+
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
 		List<Container> containerList = new ArrayList<Container>();
@@ -547,6 +555,8 @@ public class ServiceController {
 
 		model.addAttribute("entryHost", ENTRY_HOST);
 		model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
+		model.addAttribute("configmapList", configmapList);
+		model.addAttribute("serviceConfigmap", serviceConfigmap);
 		model.addAttribute("storageList", storageList);
 		model.addAttribute("namespace", currentUser.getNamespace());
 		model.addAttribute("id", id);
