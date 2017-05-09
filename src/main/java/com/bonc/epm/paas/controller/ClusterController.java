@@ -1528,4 +1528,20 @@ public class ClusterController {
 		map.put("status", 200);
 		return JSON.toJSONString(map);
 	}
+	
+	/**
+	 * 集群测试，获得集群中所有的node
+	 *
+	 * @param
+	 * @return
+	 */
+	@RequestMapping(value = { "/dns" }, method = RequestMethod.GET)
+	public String clusterDns(Model model) {
+		
+		
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "dns");
+		return "cluster/cluster-dns.jsp";
+	}
+
 }

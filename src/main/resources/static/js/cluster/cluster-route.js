@@ -84,5 +84,55 @@ function searchRouteNode(){
 	loadRoute();
 }
 
+function nodeTargetIPDetail(obj){
+	var thisobj = $(obj);
+	var flag = thisobj.find("i").attr("flag");
+	var nodeIP = thisobj.attr("nodeIp");
+	var targetTrClass = 'targetDetail'+nodeIP.substring(nodeIP.length-2,nodeIP.length);
+	if(flag == "1"){
+		thisobj.find("i").removeClass("fa-caret-right").addClass("fa-caret-down").attr("flag","2");
+		$.ajax({
+			 url : ctx + "/cluster/getRouteTable.do?ip="+nodeIP,
+			 type : "get",
+			 success : function(data){
+				 var data = eval("(" + data + ")");
+				 var targetNum = data.items;
+				 
+				 var htmlTr = '<tr class="targetDetail '+targetTrClass+'">'
+						+'<td>&nbsp;</td>'
+						+'<td>targetIP</td>'
+						+'<td>期望网关</td>'
+						+'<td >实际网关</td>'
+						+'<td colspan="2">结果</td>'
+						+'</tr>';;
+				 for(var i=0; i<targetNum.length; i++){
+					 var targetIP = targetNum[i].targetIP;
+					 var success = targetNum[i].success;
+					 var successResult = "";
+					 if(success){
+						 successResult = "成功";
+					 }else{
+						 successResult = "失败";
+					 }
+					 htmlTr += '<tr class="targetDetail '+targetTrClass+'">'
+						+'<td>&nbsp;</td>'
+						+'<td>'+targetIP+'</td>'
+						+'<td>期望网管</td>'
+						+'<td >实际网管</td>'
+						+'<td colspan="2">'+successResult+'</td>'
+						+'</tr>';
+				 }
+				 thisobj.parent().parent().after(htmlTr);
+			 }
+		 });
+	}else{
+		thisobj.find("i").removeClass("fa-caret-down").addClass("fa-caret-right").attr("flag","1");
+		var removeTr = 'tr.'+targetTrClass;
+		$(removeTr).remove();
+	}
+	
+	
+}
+
 
 

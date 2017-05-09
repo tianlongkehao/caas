@@ -7,6 +7,30 @@ $(document).ready(function () {
 	}else{
 		$("#search_service").attr("disabled",false);
 	}
+	
+	$("#checkIptables").click(function(){
+		$(this).addClass("active");
+		$("#compIptables").removeClass("active");
+		$(".checkIptablesCon").show();
+		$(".compIptablesCon").hide();
+	});
+	
+	$("#compIptables").click(function(){
+		$(this).addClass("active");
+		$("#checkIptables").removeClass("active");
+		$(".checkIptablesCon").hide();
+		$(".compIptablesCon").show();
+	});
+	
+	$(".btnDanger").click(function(){
+		$(this).addClass("btn-danger").removeClass("btn-default");
+		$(".btnDefault").addClass("btn-default").removeClass("btn-danger");
+	});
+	
+	$(".btnDefault").click(function(){
+		$(this).addClass("btn-danger").removeClass("btn-default");
+		$(".btnDanger").addClass("btn-default").removeClass("btn-danger");
+	});
 
 });
 
@@ -768,18 +792,25 @@ function loadDiff(data){
 												'</tr>';
 						}
 					}
-
 				}
 			}
-
-
 			diffNodeHtml +='</tbody></table>';
-
 		}
-
 		$("#diffTable").append(diffNodeHtml);
-
 	}
+}
+
+function checkResultDetail(obj){
+	layer.open({
+		type:1,
+		title : '转发规则详细信息',
+		content : $(".checkResultDetailInfo"),
+		area:['1000px'],
+		btn : ['关闭'],
+		yes : function(index, layero) {
+			layer.close(index);
+		}
+	})
 }
 
 

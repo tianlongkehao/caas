@@ -50,7 +50,7 @@
 									class="fa fa-repeat"></i>
 							</a></li>
 						</ul>
-						<form id="search_form" class="form-inline" action="" method="post">
+						<%-- <form id="search_form" class="form-inline" action="" method="post">
 							<div class="searchFun"
 								style="float: left; text-align: center; margin: 0px 10px; float: right"
 								align="right">
@@ -62,9 +62,9 @@
 									</c:forEach>
 								</select>
 							</div>
-						</form>
+						</form> --%>
 						<div class="" style="margin-bottom:15px">
-							<table class="table table-striped table-hover dataTables-example">
+							<!-- <table class="table table-striped table-hover dataTables-example">
 								<thead>
 									<tr>
 										<th>&nbsp;</th>
@@ -75,13 +75,33 @@
 								<tbody id="routeList">
 									
 								</tbody>
-								<!-- <tfoot class="hide">
+							</table> -->
+							<table class="table table-striped table-hover dataTables-example">
+								<thead>
 									<tr>
-										<td colspan="3">
-											<ul class="pagination pull-right"></ul>
-										</td>
+										<th><input type="checkbox" class="chkAll" id="checkallbox" /></th>
+										<th colspan="3">集群节点</th>
+										<th>是否成功</th>
+										<th>操作</th>
 									</tr>
-								</tfoot> -->
+								</thead>
+								<tbody id="routeList">
+									<c:forEach items="${nodeList }" var="nodeList">
+										<tr>
+											<td><input type="checkbox" class="chkAll" id="checkallbox" /></td>
+											<td colspan="3"><a class="fa-caret" nodeIp="${nodeList.nodeIp }" onclick="nodeTargetIPDetail(this)"><i class="fa fa-caret-right" flag="1"></i></a>${nodeList.nodeName }（${nodeList.nodeIp }）</td>
+											<td>成功</td>
+											<td><a><i>测试</i></a><a><i>恢复</i></a></td>
+										</tr>
+										<!-- <tr>
+											<td>&nbsp;</td>
+											<td>targetIP</td>
+											<td>期望网管</td>
+											<td >实际网管</td>
+											<td colspan="2">结果</td>
+										</tr> -->
+									</c:forEach>
+								</tbody>
 							</table>
 						</div>
 						
@@ -93,12 +113,12 @@
     </article>
 </div>
 <script type="text/javascript">
-	/* $('.dataTables-example').dataTable({
-	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0] }],
+	$('.dataTables-example').dataTable({
+	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
 	    "searching":false
 	    //"aaSorting": [[ 2, "desc" ]]
-	}); */
-	//$("#checkallbox").parent().removeClass("sorting_asc");
+	}); 
+	$("#checkallbox").parent().removeClass("sorting_asc");
 </script>
 
 </body>
