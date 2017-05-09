@@ -122,6 +122,10 @@ public class ClusterController {
 	@Value("${kubernetes.api.address}")
 	private String masterAddress;
 
+	//镜像仓库地址
+	@Value("${docker.io.username}")
+	private String DOCKER_IO_USERNAME;
+
 	@Autowired
 	InfluxdbSearchService influxdbSearchService;
 
@@ -1122,7 +1126,7 @@ public class ClusterController {
 				ports.add(port);
 				Container container = new Container();
 				container.setName(names[i]);
-				container.setImage("192.168.0.76:5000/localhealthy");
+				container.setImage(DOCKER_IO_USERNAME+"/localhealthy");
 				container.setPorts(ports);
 				containers.add(container);
 				podSpec.setContainers(containers);
@@ -1158,7 +1162,7 @@ public class ClusterController {
 				ports.add(port);
 				Container container = new Container();
 				container.setName("clusterhealthy");
-				container.setImage("192.168.0.76:5000/clusterhealthy");
+				container.setImage(DOCKER_IO_USERNAME+"/clusterhealthy");
 				container.setPorts(ports);
 				containers.add(container);
 				podSpec.setContainers(containers);
