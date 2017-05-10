@@ -43,6 +43,48 @@
 					<div class="ibox-content" style="padding: 0px"></div>
 					<div class="caption clearfix"
 						style="overflow: auto; width: 100%; height: 100%; float: left;">
+						<div class="" style="margin-bottom:15px">
+							<table class="table table-striped table-hover dataTables-example">
+								<thead>
+									<tr>
+										<th style="width:5%;text-indent:20px"><input id="selectnode" type="checkbox" value=""></th>
+										<th>集群节点</th>
+										<th>测试进度</th>
+										<th>测试结果</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody id="routeList">
+									<c:forEach items="${nodeList}" var="node">
+										<tr>
+											<td style="width:5%;text-indent:20px"><input name="node" type="checkbox"
+										value="${node.metadata.name }"></td>
+											<td>${node.metadata.name }</td>
+											<td></td>
+											
+											<td><a id="${node.metadata.name }" style="float: right"
+												href="javascript:void(0)" nodename="${node.metadata.name }"
+												onclick="detail(this)" title="查看详细信息"
+												onmousemove="style.textDecoration='underline'"
+												onmouseout="style.textDecoration='none'"></a>
+											</td>
+											<td></td>
+										</tr>
+									</c:forEach>
+								</tbody>
+							</table>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
 						<%-- <c:if test="${not empty nodeList}"> --%>
 						<div class="checkbox">
 							<input id="selectnode" type="checkbox" value="">全选
@@ -412,5 +454,13 @@
 			</div>
 		</article>
 	</div>
+	<script type="text/javascript">
+	$('.dataTables-example').dataTable({
+	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
+	    //"searching":false
+	    //"aaSorting": [[ 2, "desc" ]]
+	}); 
+	$("#selectnode").parent().removeClass("sorting_asc");
+</script>
 </body>
 </html>
