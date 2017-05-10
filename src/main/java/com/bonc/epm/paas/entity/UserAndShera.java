@@ -32,11 +32,6 @@ public class UserAndShera {
 	 */
 	private long sheraId;
 
-	/**
-	 * inUsed:是否正在使用.
-	 */
-	private Integer inUsed;
-
 	public long getId() {
 		return id;
 	}
@@ -59,14 +54,6 @@ public class UserAndShera {
 
 	public void setSheraId(long sheraId) {
 		this.sheraId = sheraId;
-	}
-
-	public Integer getInUsed() {
-		return inUsed;
-	}
-
-	public void setInUsed(Integer inUsed) {
-		this.inUsed = inUsed;
 	}
 
 }
