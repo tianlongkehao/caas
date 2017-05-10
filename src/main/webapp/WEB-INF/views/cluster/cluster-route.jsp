@@ -89,9 +89,17 @@
 									<c:forEach items="${nodeList }" var="nodeList">
 										<tr>
 											<td><input type="checkbox" class="chkAll" id="checkallbox" /></td>
-											<td colspan="3"><a class="fa-caret" nodeIp="${nodeList.nodeIp }" onclick="nodeTargetIPDetail(this)"><i class="fa fa-caret-right" flag="1"></i></a>${nodeList.nodeName }（${nodeList.nodeIp }）</td>
+											<td colspan="3">${nodeList.nodeName }（${nodeList.nodeIp }）</td>
+											<c:if test="${nodeList.problem == 'unknown' }">
+											<td>未知</td>
+											</c:if>
+											<c:if test="${nodeList.problem == 'false' }">
+											<td>失败</td>
+											</c:if>
+											<c:if test="${nodeList.problem == 'true' }">
 											<td>成功</td>
-											<td><a><i>测试</i></a><a><i>恢复</i></a></td>
+											</c:if>
+											<td class="routeBtns"><a class="fa-caret" nodeIp="${nodeList.nodeIp }" onclick="nodeTargetIPDetail(this)"><i class="fa fa-caret-right" flag="1">测试</i></a><a><i>恢复</i></a></td>
 										</tr>
 										<!-- <tr>
 											<td>&nbsp;</td>
