@@ -239,7 +239,7 @@ public class KubernetesClientService {
 	public ReplicationController generateSimpleReplicationController(String name, int replicas, Integer initialDelay,
 			Integer timeoutDetction, Integer periodDetction, String image, List<PortConfig> portConfigs, Double cpu,
 			String ram, String nginxObj, String servicePath, String proxyPath, String checkPath,
-			List<EnvVariable> envVariables, List<String> command, List<String> args,List<ServiceConfigmap> serviceConfigmapList) {
+			List<EnvVariable> envVariables, List<String> command, List<String> args,List<ServiceConfigmap> serviceConfigmapList,boolean ispodmutex) {
 
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
@@ -266,6 +266,13 @@ public class KubernetesClientService {
 			}
 		}
 		podMeta.setLabels(labels);
+		if(ispodmutex){
+			Map<String, String> annotations = new HashMap<String, String>();
+			String value ="{\"podAntiAffinity\": {\"requiredDuringSchedulingIgnoredDuringExecution\": [{ \"labelSelector\": {\"matchExpressions\": ["
+                         +"{\"key\": \"app\",\"operator\": \"In\",\"values\": [\""+name+"\"]}]},\"topologyKey\": \"kubernetes.io/hostname\"}]}}";
+			annotations.put("scheduler.alpha.kubernetes.io/affinity", value);
+			podMeta.setAnnotations(annotations);
+		}
 		template.setMetadata(podMeta);
 		PodSpec podSpec = new PodSpec();
 		List<Container> containers = new ArrayList<Container>();
@@ -319,8 +326,8 @@ public class KubernetesClientService {
 		def.put("memory", ram + "Mi");*/
 		Map<String, Object> limit = new HashMap<String, Object>();
 		// limit = getlimit(limit);
-		limit.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
-		limit.put("memory", Double.parseDouble(ram)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
+		limit.put("cpu", cpu );
+		limit.put("memory", ram + "Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
 		container.setResources(requirements);

@@ -508,6 +508,14 @@ public class ServiceController {
 		Service service = serviceDao.findOne(id);
 		List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
 		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+
+		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
+		List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(id);
+		ServiceConfigmap serviceConfigmap = null;
+		if(!CollectionUtils.isEmpty(serviceConfigmapList)){
+			serviceConfigmap = serviceConfigmapList.get(0);
+		}
+
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
 		List<Container> containerList = new ArrayList<Container>();
@@ -547,6 +555,8 @@ public class ServiceController {
 
 		model.addAttribute("entryHost", ENTRY_HOST);
 		model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
+		model.addAttribute("configmapList", configmapList);
+		model.addAttribute("serviceConfigmap", serviceConfigmap);
 		model.addAttribute("storageList", storageList);
 		model.addAttribute("namespace", currentUser.getNamespace());
 		model.addAttribute("id", id);
@@ -672,6 +682,10 @@ public class ServiceController {
 
 		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
 
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        int nodecount = client.getAllNodes().getItems().size();
+
+        model.addAttribute("nodecount",nodecount);
 		model.addAttribute("configmapList", configmapList);
 		model.addAttribute("cpuSizeList", cpuSizeList);
 		model.addAttribute("memorySizeList", memorySizeList);
@@ -834,8 +848,8 @@ public class ServiceController {
 
 				long leftmemory = hard - used;
 
-				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
-				leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
+				//leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
+				//leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
 
 				model.addAttribute("leftcpu", leftCpu);
 				model.addAttribute("leftmemory", leftmemory / 1024);
@@ -1004,7 +1018,7 @@ public class ServiceController {
 						service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 						service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
 						service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-						service.getCheckPath(), envVariables, command, args,serviceConfigmapList);
+						service.getCheckPath(), envVariables, command, args,serviceConfigmapList,service.isIspodmutex());
 				// 给controller设置卷组挂载的信息
 				LOG.debug("给rc添加存储卷信息");
 				if (service.getServiceType().equals("1")) {
@@ -3153,6 +3167,9 @@ public class ServiceController {
 		ser.setNodeIpAffinity(service.getNodeIpAffinity());
 		// 检查服务状态填写的路径
 		ser.setCheckPath(service.getCheckPath());
+		// Pod互斥
+		ser.setIspodmutex(service.isIspodmutex());
+
 		if (StringUtils.isNotBlank(service.getCheckPath())) {
 			// 服务检测超时
 			ser.setTimeoutDetction(

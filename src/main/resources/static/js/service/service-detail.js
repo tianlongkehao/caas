@@ -305,6 +305,14 @@ $(document).ready(function() {
 				}
 			});
 		}
+
+		//Pod调度方式
+	    if($("#podmutex").prop("checked")==true){
+	    	$("#ispodmutex").val("true");
+	    } else {
+	    	$("#ispodmutex").val("false");
+	    }
+
 		if (commitFlag) {
 			commBaseSerForm();
 			$(".editBaseCon").hide();
