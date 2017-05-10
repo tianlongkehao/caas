@@ -124,23 +124,28 @@ var items = "";
 $(document)
 		.ready(
 				function() {
-
+					var deployHtml = '<div class="progress-bar progress-bar-warning" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: 15%;">'
+						 +'<span >部署完成</span>'
+						 +'</div>';
 					var deployedpod = $("#deployednodes").val().split(',');
 					for (var i = 0; i < deployedpod.length; i++) {
 						if (deployedpod[i] != '') {
-							$("input[value='" + deployedpod[i] + "']").prop(
-									"checked", true);
+//							$("input[value='" + deployedpod[i] + "']").prop(
+//									"checked", true);
+							$("td[nodeName='" + deployedpod[i] + "']").find(".nodeProgress").empty().append(deployHtml);
 						}
 					}
 
-					$("#selectnode").change(function() {
-						if ($(this).prop('checked')) {
-							$("input[name='node']").prop("checked", true);
-						} else {
-							$("input[name='node']").prop("checked", false);
-						}
-					});
-
+//					$("#checkallbox").change(function() {
+//						if ($(this).prop('checked')) {
+//							$("input[name='node']").prop("checked", true);
+//						} else {
+//							$("input[name='node']").prop("checked", false);
+//						}
+//					});
+//
 					$("#selectitem").change(function() {
 						if ($(this).prop('checked')) {
 							$("input[name='item']").prop("checked", true);
@@ -150,73 +155,52 @@ $(document)
 					});
 
 					// 测试部署，部署pod和service
-					$("#deployBtn")
-							.click(
-									function() {
-										var selectednodes = "";
-										$("input:checkbox[name='node']:checked")
-												.each(
-														function(i) {
-															if (0 == i) {
-																selectednodes = $(
-																		this)
-																		.val();
-															} else {
-																selectednodes += ("," + $(
-																		this)
-																		.val());
-															}
-														});
-										// alert(selectednodes);
-										if (selectednodes == "") {
-											layer.tips('请选择至少一个集群节点',
-													'#selectnode', {
-														tips : [ 1, '#3595CC' ]
-													});
-											$('#selectnode').focus();
-											return;
-										}
-										$('.checkbox a').empty();
-										var index = layer.load(0, {
-											shade : [ 0.3, '#000' ]
-										});
-										$
-												.ajax({
-													url : ctx
-															+ "/cluster/deploypodfortest?nodenames="
-															+ selectednodes,
-													success : function(data) {
-														var data = eval("("
-																+ data + ")");
-														layer
-																.closeAll("loading");
-														if (data.status == '200') {
-															$('#deployednodes')
-																	.val(
-																			selectednodes);
-															layer
-																	.msg(
-																			"部署成功！",
-																			{
-																				icon : 6
-																			});
-														} else {
-															$('#deployednodes')
-																	.val("");
-															layer
-																	.msg(
-																			"部署失败！",
-																			{
-																				icon : 5
-																			});
-														}
-													}
-												});
-									});
+					$("#deployBtn").click(function() {
+						var selectednodes = "";
+						$("input:checkbox[name='node']:checked").each(function(i) {
+							if (0 == i) {
+								selectednodes = $(this).val();
+							} else {
+								selectednodes += ("," + $(this).val());
+							}
+						});
+						// alert(selectednodes);
+						if (selectednodes == "") {
+							layer.tips('请选择至少一个集群节点','#checkallbox', {
+								tips : [ 1, '#3595CC' ]
+							});
+							$('#checkallbox').focus();
+							return;
+						}
+						$('.checkbox a').empty();
+						var index = layer.load(0, {
+							shade : [ 0.3, '#000' ]
+						});
+						$.ajax({
+							url : ctx + "/cluster/deploypodfortest?nodenames=" + selectednodes,
+							success : function(data) {
+								var data = eval("(" + data + ")");
+								layer.closeAll("loading");
+								if (data.status == '200') {
+									$('#deployednodes').val(selectednodes);
+//									var deployHtml = '<div class="progress-bar progress-bar-warning" role="progressbar"'
+//													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+//													 +'style="width: 15%;">'
+//													 +'<span >部署完成</span>'
+//													 +'</div>';
+									$("input:checkbox[name='node']:checked").parent().parent().find(".nodeProgress").empty().append(deployHtml);
+									//layer.msg("部署成功！",{icon : 6});
+								} else {
+									$('#deployednodes').val("");
+									layer.msg("部署失败！",{icon : 5});
+								}
+							}
+						});
+					});
 
 					// 清除部署
 					$("#deleteBtn").click(function() {
-						$('.checkbox a').empty();
+						//$('.checkbox a').empty();
 						$.ajax({
 							url : ctx + "/cluster/deployclear",
 							success : function(data) {
@@ -302,8 +286,9 @@ $(document)
 													layer.msg("检测成功！", {
 														icon : 6
 													});
+													layer.close(index);
 												} else {
-													layer.msg(data.msg, {
+													layer.alert(data.msg, {
 														icon : 5
 													});
 												}
@@ -321,11 +306,11 @@ $(document)
 							if (data.nodeInfos[i].allpass) {
 								$('#' + data.nodeInfos[i].nodename)
 										.append(
-												'<font color="#33CC33" style="font-weight:bold">通过</font>');
+												'<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
 							} else {
 								$('#' + data.nodeInfos[i].nodename)
 										.append(
-												'<font color="#FF0033" style="font-weight:bold">未通过</font>');
+												'<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
 							}
 						}
 					}

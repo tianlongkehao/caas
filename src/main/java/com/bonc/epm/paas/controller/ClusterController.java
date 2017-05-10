@@ -246,6 +246,14 @@ public class ClusterController {
 				nodeList.add(nodeMap);
 				nodeMap.put("nodeName", node.getMetadata().getName());
 				nodeMap.put("nodeIp", node.getStatus().getAddresses().get(0).getAddress());
+				NetAPIClientInterface netAPIClient = netClientService.getSpecifiedClient(nodeMap.get("nodeIp"));
+				try {
+					RouteTable checkRoutetable = netAPIClient.checkRoutetable();
+					nodeMap.put("problem", String.valueOf(checkRoutetable.isProblem()));
+				} catch (Exception e) {
+					nodeMap.put("problem", "unknown");
+				}
+
 			}
 		}
 		model.addAttribute("nodeList", nodeList);
@@ -285,7 +293,7 @@ public class ClusterController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
 		// 以node节点名称为key，node节点中包含的pod信息为value；
 		Map<String, Object> jsonData = new HashMap<String, Object>();
-		Map<String, List> nodeMap = new HashMap<String, List>();
+		Map<String, List<PodTopo>> nodeMap = new HashMap<>();
 		List<ServiceTopo> serviceTopoList = new ArrayList<>();
 
 		// 取得所有node
@@ -381,8 +389,7 @@ public class ClusterController {
 	 *            Node
 	 * @see
 	 */
-	@SuppressWarnings("unchecked")
-	public void addPodTopo(String namespace, Map<String, List> nodeMap) {
+	public void addPodTopo(String namespace, Map<String, List<PodTopo>> nodeMap) {
 		try {
 			KubernetesAPIClientInterface clientName = kubernetesClientService.getClient(namespace);
 			// 取得所有此NAMESPACE下的POD
@@ -820,9 +827,18 @@ public class ClusterController {
 	@RequestMapping(value = { "/getRouteTable.do" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getRouteTable(String ip) {
+		Map<String, Object> map = new HashMap<>();
 		NetAPIClientInterface client = netClientService.getSpecifiedClient(ip);
-		RouteTable checkRoutetable = client.checkRoutetable();
-		return JSON.toJSONString(checkRoutetable);
+		RouteTable checkRoutetable;
+		try {
+			checkRoutetable = client.checkRoutetable();
+			map.put("status", "200");
+			map.put("checkRoutetable", checkRoutetable);
+		} catch (Exception e) {
+			map.put("status", "400");
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
 	}
 
 	/**
@@ -1593,4 +1609,20 @@ public class ClusterController {
 		map.put("status", 200);
 		return JSON.toJSONString(map);
 	}
+
+	/**
+	 * 集群测试，获得集群中所有的node
+	 *
+	 * @param
+	 * @return
+	 */
+	@RequestMapping(value = { "/dns" }, method = RequestMethod.GET)
+	public String clusterDns(Model model) {
+
+
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "dns");
+		return "cluster/cluster-dns.jsp";
+	}
+
 }
