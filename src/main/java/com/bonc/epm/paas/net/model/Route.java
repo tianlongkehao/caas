@@ -2,6 +2,8 @@ package com.bonc.epm.paas.net.model;
 
 public class Route {
 	private String targetIP;
+	private String expectedGW;
+	private String realGW;
 	private String success;
 
 	public String getTargetIP() {
@@ -12,6 +14,22 @@ public class Route {
 		this.targetIP = targetIP;
 	}
 
+	public String getExpectedGW() {
+		return expectedGW;
+	}
+
+	public void setExpectedGW(String expectedGW) {
+		this.expectedGW = expectedGW;
+	}
+
+	public String getRealGW() {
+		return realGW;
+	}
+
+	public void setRealGW(String realGW) {
+		this.realGW = realGW;
+	}
+
 	public String getSuccess() {
 		return success;
 	}
@@ -19,5 +37,4 @@ public class Route {
 	public void setSuccess(String success) {
 		this.success = success;
 	}
-
 }
