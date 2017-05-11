@@ -2636,7 +2636,11 @@ public class ServiceController {
 				String creatresult = CreateContainer(id, false);
 				if (!creatresult.contains("200")) {
 					if(creatresult.contains("504")){
-						maps.put("msg", "cpu或内存不足，请调整资源大小或申请更多资源！");
+						if(ResourceService.STATUS == ResourceService.CPU_LACK){
+							maps.put("msg", "cpu不足，请调整服务的cpu大小或申请更多cpu!");
+						}else{
+							maps.put("msg", "ram不足，请调整服务的ram大小或申请更多ram!");
+						}
 						maps.put("status", "504");
 						break;
 					}else{

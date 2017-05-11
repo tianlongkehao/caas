@@ -459,7 +459,7 @@ public class UserController {
         	//设置存储卷余量
         	userResource.setVol_surplus_size(userResource.getVol_surplus_size()+resource.getVol()-userResource.getVol_size());
             userResource.setCpu(Double.valueOf(resource.getCpu_account()));
-            userResource.setMemory(Long.parseLong(resource.getRam()));
+            userResource.setMemory(new Double(resource.getRam()).longValue());
             userResource.setVol_size(resource.getVol());
             userResource.setImage_count(resource.getImage_count());
             userResource.setUpdateDate(new Date());
@@ -1835,10 +1835,13 @@ public class UserController {
 		}
 		memory = memory.replaceAll("i", "");
 		if (memory.contains("K")) {
-			Float a1 = Float.valueOf(memory.replace("K", "")) / 1024 / 1024;
+			//Float a1 = Float.valueOf(memory.replace("K", "")) / 1024 / 1024;
+			Float a1 = Float.valueOf(memory.replace("K", "")) / 1000 / 1000;
 			return a1;
 		} else if (memory.contains("M")) {
-			Float a1 = Float.valueOf(memory.replace("M", "")) / 1024;
+			//quota分配memory为浮点数时，单位为M,进制为1000,例 12.5G 在集群中显示 12500M
+			//Float a1 = Float.valueOf(memory.replace("M", "")) / 1024;
+			Float a1 = Float.valueOf(memory.replace("M", "")) / 1000;
 			return a1;
 		} else {
 			return Float.parseFloat(memory.replace("G", ""));

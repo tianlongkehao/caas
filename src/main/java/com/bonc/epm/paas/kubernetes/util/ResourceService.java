@@ -43,6 +43,10 @@ public class ResourceService {
 	@Autowired
 	private KubernetesClientService kubernetesClientService;
 
+	public static byte STATUS = -1;
+	public static byte CPU_LACK = 1;
+	public static byte MEMORY_LACK = 2;
+
 	public  boolean checkRestResource(Service service) {
 		return checkRestResource(service.getCpuNum(), service.getRam());
 	}
@@ -71,11 +75,13 @@ public class ResourceService {
 
 				if (leftCpu - cpu < REST_RESOURCE_CPU) {
 					LOG.info("本次服务请求cpu:"+cpu+",用户剩余cpu："+leftCpu+",需要预留cpu:"+REST_RESOURCE_CPU);
+					STATUS =  CPU_LACK;
 					return false;
 				}
 
 				if (leftmemory - serviceMemory < REST_RESOURCE_MEMORY) {
 					LOG.info("本次服务请求memory:"+serviceMemory+",用户剩余memory："+leftmemory+",需要预留memory:"+REST_RESOURCE_MEMORY);
+					STATUS = MEMORY_LACK;
 					return false;
 				}
 			} else {

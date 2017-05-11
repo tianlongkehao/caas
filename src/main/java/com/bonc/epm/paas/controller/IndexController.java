@@ -364,10 +364,13 @@ public class IndexController {
 		String memVal = val.get("memory");
 		memVal = memVal.replaceAll("i", "");
 		if (memVal.contains("K")) {
-			Float a1 = Float.valueOf(memVal.replace("K", "")) / 1024 / 1024;
+			//Float a1 = Float.valueOf(memVal.replace("K", "")) / 1024 / 1024;
+			Float a1 = Float.valueOf(memVal.replace("K", "")) / 1000 / 1000;
 			return a1.toString();
 		} else if (memVal.contains("M")) {
-			Float a1 = Float.valueOf(memVal.replace("M", ""))/ 1024;
+			//Kubernetes采用的进制为1000
+			//Float a1 = Float.valueOf(memVal.replace("M", ""))/ 1024;
+			Float a1 = Float.valueOf(memVal.replace("M", ""))/ 1000;
 			return a1.toString();
 		} else {
 			return memVal.replace("G", "");
