@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.influxdb.InfluxDB;
 import org.slf4j.Logger;
@@ -60,8 +61,12 @@ import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.net.api.NetAPIClientInterface;
+import com.bonc.epm.paas.net.exceptions.NetClientException;
 import com.bonc.epm.paas.net.model.Diff;
+import com.bonc.epm.paas.net.model.Iptable;
+import com.bonc.epm.paas.net.model.RecoverResult;
 import com.bonc.epm.paas.net.model.RouteTable;
+import com.bonc.epm.paas.net.model.ServiceProblems;
 import com.bonc.epm.paas.net.util.NetClientService;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -272,6 +277,15 @@ public class ClusterController {
 			List<Service> services = allServices.getItems();
 			model.addAttribute("services", services);
 		}
+
+		NetAPIClientInterface netClient = netClientService.getClient();
+		List<Iptable> checkIptable = null;
+		try {
+			checkIptable = netClient.checkIptable();
+		} catch (NetClientException e) {
+			LOG.error(e.getMessage());
+		}
+		model.addAttribute("checkIptable", checkIptable);
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "iptables");
 		return "cluster/cluster-iptables.jsp";
@@ -1562,6 +1576,114 @@ public class ClusterController {
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "dns");
 		return "cluster/cluster-dns.jsp";
+	}
+
+	/**
+	 * checkIptables:检查iptable. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return String
+	 */
+	@RequestMapping(value = { "/checkIptables.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String checkIptables(){
+		Map<String, Object> map = new HashMap<>();
+		NetAPIClientInterface client = netClientService.getClient();
+		List<Iptable> checkIptable = null;
+		List<Map<String, Object>> resultList = new ArrayList<>();
+		try {
+			checkIptable = client.checkIptable();
+			for (Iptable iptable : checkIptable) {
+				//创建用于存放节点所有信息的map
+				Map<String, Object> nodeMap = new HashMap<>();
+				//节点名
+				nodeMap.put("nodeName", iptable.getNodeName());
+				//节点的所有服务
+				nodeMap.put("allServices", iptable.getProblems());
+				//创建用于存放异常服务的map
+				Map<String, Object> problemServices = new HashMap<>();
+				//遍历所有的服务
+				for (String serviceName : iptable.getProblems().keySet()) {
+					ServiceProblems serviceProblems = iptable.getProblems().get(serviceName);
+					if (CollectionUtils.isNotEmpty(serviceProblems.getExternalAccess()) ||
+							CollectionUtils.isNotEmpty(serviceProblems.getInternalAccess()) ||
+							CollectionUtils.isNotEmpty(serviceProblems.getOthers())) {
+						problemServices.put(serviceName, serviceProblems);
+					}
+				}
+				nodeMap.put("problemServices", problemServices);
+				//节点是否有问题
+				if (MapUtils.isEmpty(problemServices)) {
+					nodeMap.put("problem", true);
+				} else {
+					nodeMap.put("problem", false);
+				}
+				resultList.add(nodeMap);
+			}
+		} catch (NetClientException e) {
+			LOG.error(e.getMessage());
+			map.put("status", "400");
+			return JSON.toJSONString(map);
+		}
+		map.put("status", "200");
+		map.put("resultList", resultList);
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * recoverRoutetable:恢复Routetable. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param node
+	 * @return String
+	 */
+	@RequestMapping(value = { "/recoverRoutetable.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String recoverRoutetable(com.bonc.epm.paas.net.model.NodeInfo node) {
+		Map<String, Object> map = new HashMap<>();
+		NetAPIClientInterface client = netClientService.getSpecifiedClient(node.getIp());
+		try {
+			RecoverResult recoverResult = client.recoverRoutetable(node);
+			if (recoverResult.isCordon() && recoverResult.isDrain() && recoverResult.isRestart()
+					&& recoverResult.isUncordon()) {
+				map.put("status", "200");
+				return JSON.toJSONString(map);
+			} else {
+				map.put("status", "300");
+				return JSON.toJSONString(map);
+			}
+		} catch (NetClientException e) {
+			LOG.error(e.getMessage());
+			map.put("status", "400");
+			return JSON.toJSONString(map);
+		}
+	}
+
+	/**
+	 * recoverRoutetable:修复Iptables. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return String
+	 */
+	@RequestMapping(value = { "/recoverIptables.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String recoverIptables() {
+		Map<String, Object> map = new HashMap<>();
+		NetAPIClientInterface client = netClientService.getClient();
+		try {
+			RecoverResult recoverResult = client.recoverIptables();
+			if (recoverResult.isRestart()) {
+				map.put("status", "200");
+				return JSON.toJSONString(map);
+			} else {
+				map.put("status", "300");
+				return JSON.toJSONString(map);
+			}
+		} catch (NetClientException e) {
+			LOG.error(e.getMessage());
+			map.put("status", "400");
+			return JSON.toJSONString(map);
+		}
 	}
 
 }
