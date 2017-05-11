@@ -1273,7 +1273,10 @@ i.pushOrg {
 	padding-right:10px;
 }
 .targetDetail{
-	background-color:#ddd;
+	background-color:#ddd!important;
+}
+.routeBtns a{
+	cursor:pointer;
 }
 /* dns */
 .timedTaskInfo table tr td{
@@ -1290,10 +1293,33 @@ i.pushOrg {
 	max-height:240px;
 	overflow-y:auto;
 }
-
-
-
-
+/* test */
+.clusterTestBtns{
+	height: 40px;
+	margin-top:-10px;
+	margin-bottom:10px;
+}
+.clusterTestTable tr {
+    border-bottom: 1px solid #eee;
+    text-indent: 5px;
+    text-align: left;
+}
+.clusterTestTable tr input{
+	border:1px solid #ddd;
+	border-radius: 2px;
+}
+.clusterTestTable tr input:checkbox{
+	margin-right:6px;
+}
+.clusterTestOpr a:hover{
+	text-decoration: underline;
+}
+font i.fa-question-circle{
+	margin-left:-15px;
+}
+.clusterTestOprBtns a{
+	cursor:pointer;
+}
 
 
 

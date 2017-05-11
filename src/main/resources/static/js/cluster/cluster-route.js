@@ -96,33 +96,36 @@ function nodeTargetIPDetail(obj){
 			 type : "get",
 			 success : function(data){
 				 var data = eval("(" + data + ")");
-				 var targetNum = data.items;
-
-				 var htmlTr = '<tr class="targetDetail '+targetTrClass+'">'
-						+'<td>&nbsp;</td>'
-						+'<td>targetIP</td>'
-						+'<td>期望网关</td>'
-						+'<td >实际网关</td>'
-						+'<td colspan="2">结果</td>'
-						+'</tr>';;
-				 for(var i=0; i<targetNum.length; i++){
-					 var targetIP = targetNum[i].targetIP;
-					 var success = targetNum[i].success;
-					 var successResult = "";
-					 if(success){
-						 successResult = "成功";
-					 }else{
-						 successResult = "失败";
+				 if(data.status == "200"){
+					 var targetNum = data.checkRoutetable.items;
+					 var htmlTr = '<tr class="targetDetail '+targetTrClass+'">'
+							+'<td>&nbsp;</td>'
+							+'<td>targetIP</td>'
+							+'<td>期望网关</td>'
+							+'<td >实际网关</td>'
+							+'<td colspan="2">结果</td>'
+							+'</tr>';;
+					 for(var i=0; i<targetNum.length; i++){
+						 var targetIP = targetNum[i].targetIP;
+						 var expectedGW = targetNum[i].expectedGW;
+						 var realGW = targetNum[i].realGW;
+						 var success = targetNum[i].success;
+						 var successResult = "";
+						 if(success == 'true'){
+							 successResult = "成功";
+						 }else{
+							 successResult = "失败";
+						 }
+						 htmlTr += '<tr class="targetDetail '+targetTrClass+'">'
+							+'<td>&nbsp;</td>'
+							+'<td>'+targetIP+'</td>'
+							+'<td>'+expectedGW+'</td>'
+							+'<td >'+realGW+'</td>'
+							+'<td colspan="2">'+successResult+'</td>'
+							+'</tr>';
 					 }
-					 htmlTr += '<tr class="targetDetail '+targetTrClass+'">'
-						+'<td>&nbsp;</td>'
-						+'<td>'+targetIP+'</td>'
-						+'<td>期望网管</td>'
-						+'<td >实际网管</td>'
-						+'<td colspan="2">'+successResult+'</td>'
-						+'</tr>';
+					 thisobj.parent().parent().after(htmlTr);
 				 }
-				 thisobj.parent().parent().after(htmlTr);
 			 }
 		 });
 	}else{
