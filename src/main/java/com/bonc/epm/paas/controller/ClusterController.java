@@ -1639,24 +1639,29 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/recoverRoutetable.do" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String recoverRoutetable(com.bonc.epm.paas.net.model.NodeInfo node) {
+	public String recoverRoutetable(List<com.bonc.epm.paas.net.model.NodeInfo> nodeList) {
 		Map<String, Object> map = new HashMap<>();
-		NetAPIClientInterface client = netClientService.getSpecifiedClient(node.getIp());
-		try {
-			RecoverResult recoverResult = client.recoverRoutetable(node);
-			if (recoverResult.isCordon() && recoverResult.isDrain() && recoverResult.isRestart()
-					&& recoverResult.isUncordon()) {
-				map.put("status", "200");
-				return JSON.toJSONString(map);
-			} else {
-				map.put("status", "300");
-				return JSON.toJSONString(map);
+		List<String> messages = new ArrayList<>();
+		for (com.bonc.epm.paas.net.model.NodeInfo nodeInfo : nodeList) {
+			NetAPIClientInterface client = netClientService.getSpecifiedClient(nodeInfo.getIp());
+			try {
+				RecoverResult recoverResult = client.recoverRoutetable(nodeInfo);
+				if (!recoverResult.isCordon() || !recoverResult.isDrain() || !recoverResult.isRestart()
+						|| !recoverResult.isUncordon()) {
+					messages.add(nodeInfo.getIp() + "修复异常");
+				}
+			} catch (NetClientException e) {
+				LOG.error(e.getMessage());
+				messages.add(nodeInfo.getIp() + "修复异常");
 			}
-		} catch (NetClientException e) {
-			LOG.error(e.getMessage());
-			map.put("status", "400");
-			return JSON.toJSONString(map);
 		}
+		if (CollectionUtils.isEmpty(messages)) {
+			map.put("status", 200);
+		} else {
+			map.put("status", "300");
+			map.put("messages", messages);
+		}
+		return JSON.toJSONString(map);
 	}
 
 	/**
@@ -1667,23 +1672,29 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/recoverIptables.do" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String recoverIptables() {
+	public String recoverIptables(List<String> nodeIps) {
 		Map<String, Object> map = new HashMap<>();
-		NetAPIClientInterface client = netClientService.getClient();
-		try {
-			RecoverResult recoverResult = client.recoverIptables();
-			if (recoverResult.isRestart()) {
-				map.put("status", "200");
-				return JSON.toJSONString(map);
-			} else {
-				map.put("status", "300");
-				return JSON.toJSONString(map);
+		List<String> messages = new ArrayList<>();
+		for (String nodeIp : nodeIps) {
+			NetAPIClientInterface client = netClientService.getSpecifiedClient(nodeIp);
+			try {
+				RecoverResult recoverResult = client.recoverIptables();
+				if (!recoverResult.isRestart()) {
+					messages.add(nodeIp + "修复异常");
+				}
+			} catch (NetClientException e) {
+				LOG.error(e.getMessage());
+				messages.add(nodeIp + "修复异常");
 			}
-		} catch (NetClientException e) {
-			LOG.error(e.getMessage());
-			map.put("status", "400");
-			return JSON.toJSONString(map);
+
 		}
+		if (CollectionUtils.isEmpty(messages)) {
+			map.put("status", 200);
+		} else {
+			map.put("status", "300");
+			map.put("messages", messages);
+		}
+		return JSON.toJSONString(map);
 	}
 
 }
