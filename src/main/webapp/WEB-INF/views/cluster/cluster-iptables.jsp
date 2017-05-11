@@ -57,13 +57,9 @@
 									<th >操作</th>
 								</tr>
 							</thead>
-								<tr>
-									<td><input type="checkbox" class="chkItems"/></td>
-									<td><a class="checkResult" onclick="checkResultDetail(this)">192.168.0.0</a></td>
-									<td>失败</td>
-									<td><i>测试</i><i>恢复</i></td>
-								</tr>
-							<tbody id="compIptablesList"></tbody>
+							<tbody id="compIptablesList">
+							    
+							</tbody>
 						</table>
 					</div>
 
@@ -255,10 +251,10 @@
 		<span>显示：</span>
 		<div class="btn-group" data-toggle="buttons">
 		    <label class="btn btn-danger btnDanger">
-		        <input type="radio" name="options" id="option1"> 失败
+		        <input type="radio" name="options" id="option1" class="optionBtn"> 失败
 		    </label>
 		    <label class="btn btn-default btnDefault">
-		        <input type="radio" name="options" id="option2"> 全部
+		        <input type="radio" name="options" id="option2" class="optionBtn"> 全部
 		    </label>
 		</div>
 	</div>
@@ -266,7 +262,7 @@
 		<table class="table">
 			<thead>
 				<tr>
-					<th style="width:15%;text-indent:20px">服务</th>
+					<th style="width:17%;padding-left:20px">服务</th>
 					<th style="width:10%;">检查结果</th>
 					<th>详细信息</th>
 				</tr>			
@@ -274,8 +270,8 @@
 		</table>
 		<div class="checkResultDiv">
 			<table class="table table-hover table-striped">
-				<tbody class="checkResultList">
-					<tr>
+				<tbody id="checkResultList">
+					<!-- <tr>
 						<td style="width:15%;text-indent:20px">test/alot </td>
 						<td style="width:10%;">失败 </td>
 						<td><p>"internalAccess": [],</p>
@@ -294,7 +290,7 @@
 						       "test/alot does not have -A KUBE-SVC rule in the nat table",
 						       "test/alot does not have -A KUBE-SEP rule in the nat table"
 						  ]</p></td>
-					</tr>
+					</tr> -->
 					
 				</tbody>
 			</table>

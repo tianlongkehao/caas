@@ -26,10 +26,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 
-import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.net.exceptions.NetClientException;
 import com.bonc.epm.paas.net.model.Diff;
+import com.bonc.epm.paas.net.model.NodeInfo;
 import com.bonc.epm.paas.net.model.Nodes;
+import com.bonc.epm.paas.net.model.RecoverResult;
 import com.bonc.epm.paas.net.model.RouteTable;
 import com.bonc.epm.paas.net.model.Service;
 
@@ -57,18 +58,53 @@ public interface NetAPI {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public RouteTable checkRoutetable() throws NetClientException;
 
-    /**
-     * Update a limitrange
-     *
-     * @param controllerId
-     *            id of the controller to be updated
-     * @param controller
-     *            controller to update (only the number of replicas can be
-     *            updated).
-     * @throws KubernetesClientException
-     */
-    @PUT
-    @Path("/get/Diff")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Diff getDiff(Service service) throws NetClientException;
+	/**
+	 * getDiff:获取iptable的不同. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param service
+	 * @return
+	 * @throws NetClientException Diff
+	 */
+	@PUT
+	@Path("/get/Diff")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Diff getDiff(Service service) throws NetClientException;
+
+	/**
+	 * checkIptable:检查当前节点的Iptable. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return
+	 * @throws NetClientException RecoverResult
+	 */
+	@PUT
+	@Path("/check/iptables")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String checkIptable() throws NetClientException;
+
+	/**
+	 * recoverRoutetable:恢复当前节点的Routetable. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param node
+	 * @return
+	 * @throws NetClientException RecoverResult
+	 */
+	@PUT
+	@Path("/recover/routetable")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public RecoverResult recoverRoutetable(NodeInfo node) throws NetClientException;
+
+	/**
+	 * recoverIptables:恢复当前节点的Iptables. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return
+	 * @throws NetClientException RecoverResult
+	 */
+	@PUT
+	@Path("/recover/iptables")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public RecoverResult recoverIptables() throws NetClientException;
 }
