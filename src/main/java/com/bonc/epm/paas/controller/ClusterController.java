@@ -1639,9 +1639,18 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/recoverRoutetable.do" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String recoverRoutetable(List<com.bonc.epm.paas.net.model.NodeInfo> nodeList) {
+	public String recoverRoutetable(String nodeListString) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
+		List<com.bonc.epm.paas.net.model.NodeInfo> nodeList;
+		try {
+			nodeList = JSON.parseArray(nodeListString, com.bonc.epm.paas.net.model.NodeInfo.class);
+		} catch (Exception e) {
+			map.put("status", "400");
+			messages.add("解析错误：[Message:" + e.getMessage() + "nodeListString:" + nodeListString + "]");
+			map.put("messages", e.getMessage());
+			return JSON.toJSONString(map);
+		}
 		for (com.bonc.epm.paas.net.model.NodeInfo nodeInfo : nodeList) {
 			NetAPIClientInterface client = netClientService.getSpecifiedClient(nodeInfo.getIp());
 			try {
@@ -1656,7 +1665,7 @@ public class ClusterController {
 			}
 		}
 		if (CollectionUtils.isEmpty(messages)) {
-			map.put("status", 200);
+			map.put("status", "200");
 		} else {
 			map.put("status", "300");
 			map.put("messages", messages);
@@ -1672,9 +1681,18 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/recoverIptables.do" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String recoverIptables(List<String> nodeIps) {
+	public String recoverIptables(String nodeIpString) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
+		List<String> nodeIps;
+		try {
+			nodeIps = JSON.parseArray(nodeIpString, String.class);
+		} catch (Exception e) {
+			map.put("status", "400");
+			messages.add("解析错误：[Message:" + e.getMessage() + "nodeIpString:" + nodeIpString + "]");
+			map.put("messages", e.getMessage());
+			return JSON.toJSONString(map);
+		}
 		for (String nodeIp : nodeIps) {
 			NetAPIClientInterface client = netClientService.getSpecifiedClient(nodeIp);
 			try {
@@ -1689,7 +1707,7 @@ public class ClusterController {
 
 		}
 		if (CollectionUtils.isEmpty(messages)) {
-			map.put("status", 200);
+			map.put("status", "200");
 		} else {
 			map.put("status", "300");
 			map.put("messages", messages);
