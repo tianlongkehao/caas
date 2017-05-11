@@ -133,8 +133,53 @@ function nodeTargetIPDetail(obj){
 		var removeTr = 'tr.'+targetTrClass;
 		$(removeTr).remove();
 	}
-
-
+}
+//单独操作 恢复一个节点路由
+function recoverOneRoute(obj){
+	var nodeIp = $(obj).attr("nodeIp");
+	var nodeName = $(obj).attr("nodeName");
+	var oneNodeData = new Array();
+	var oneNode = {"name":nodeName, "ip":nodeIp};
+	oneNodeData.push(oneNode);
+	$.ajax({
+		url: ctx + "/cluster/recoverRoutetable.do",
+		type:"POST",
+		dataType: "json",
+        contentType: "text/html; charset=UTF-8",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+		data:JSON.stringify(oneNodeData),
+		success:function(data){
+			var data = data;
+		}
+	})
+}
+//批量恢复
+function recoverRoutes(){
+	var checkNodes = $(".chkItem:checked");
+	var nodesData = new Array();
+	for(var i = 0; i < checkNodes.length; i++){
+		var nodeIp = $(checkNodes[i]).attr("nodeIp");
+		var nodeName = $(checkNodes[i]).attr("nodeName");
+		var nodeInfo = {"name":nodeName, "ip":nodeIp};
+		nodesData.push(nodeInfo);
+	}
+	$.ajax({
+		url: ctx + "/cluster/recoverRoutetable.do",
+		type:"POST",
+		dataType: "json",
+        contentType: "text/html; charset=UTF-8",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+		data:JSON.stringify(nodesData),
+		success:function(data){
+			var data = data;
+		}
+	})
 }
 
 

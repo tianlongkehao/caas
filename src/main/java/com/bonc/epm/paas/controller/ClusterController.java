@@ -1612,7 +1612,7 @@ public class ClusterController {
 					}
 				}
 				nodeMap.put("problemServices", problemServices);
-				//节点是否有问题
+				//节点是否有问题 true正常
 				if (MapUtils.isEmpty(problemServices)) {
 					nodeMap.put("problem", true);
 				} else {
@@ -1637,7 +1637,7 @@ public class ClusterController {
 	 * @param node
 	 * @return String
 	 */
-	@RequestMapping(value = { "/recoverRoutetable.do" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/recoverRoutetable.do" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String recoverRoutetable(List<com.bonc.epm.paas.net.model.NodeInfo> nodeList) {
 		Map<String, Object> map = new HashMap<>();

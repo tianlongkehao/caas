@@ -34,11 +34,11 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>路由监控
 									</h5>
 									<div class="ibox-tools">
+										<a onclick="recoverRoutes()" title="恢复"><i>恢复</i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>
 								</div>
-
 							</div>
 						</div>
 					</div>
@@ -50,32 +50,7 @@
 									class="fa fa-repeat"></i>
 							</a></li>
 						</ul>
-						<%-- <form id="search_form" class="form-inline" action="" method="post">
-							<div class="searchFun"
-								style="float: left; text-align: center; margin: 0px 10px; float: right"
-								align="right">
-								<label style="line-height: 35px">node:</label> <select
-									name="search_routeNode" id="search_routeNode" onchange="searchRouteNode()"
-									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
-									<c:forEach items="${nodeList }" var="nodeList">
-										<option value="${nodeList.nodeIp }">${nodeList.nodeName }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</form> --%>
 						<div class="" style="margin-bottom:15px">
-							<!-- <table class="table table-striped table-hover dataTables-example">
-								<thead>
-									<tr>
-										<th>&nbsp;</th>
-										<th>targetIP</th>
-										<th>是否成功</th>
-									</tr>
-								</thead>
-								<tbody id="routeList">
-									
-								</tbody>
-							</table> -->
 							<table class="table table-striped table-hover dataTables-example">
 								<thead>
 									<tr>
@@ -88,34 +63,27 @@
 								<tbody id="routeList">
 									<c:forEach items="${nodeList }" var="nodeList">
 										<tr>
-											<td><input type="checkbox" class="chkAll" id="checkallbox" /></td>
+											<td><input type="checkbox" class="chkItem" nodeIp="${nodeList.nodeIp }" nodeName="${nodeList.nodeName }"/></td>
 											<td colspan="3">${nodeList.nodeName }（${nodeList.nodeIp }）</td>
 											<c:if test="${nodeList.problem == 'unknown' }">
 											<td>未知</td>
 											</c:if>
 											<c:if test="${nodeList.problem == 'false' }">
-											<td>失败</td>
-											</c:if>
-											<c:if test="${nodeList.problem == 'true' }">
 											<td>成功</td>
 											</c:if>
-											<td class="routeBtns"><a class="fa-caret" nodeIp="${nodeList.nodeIp }" onclick="nodeTargetIPDetail(this)"><i class="fa fa-caret-right" flag="1">测试</i></a><a><i>恢复</i></a></td>
+											<c:if test="${nodeList.problem == 'true' }">
+											<td>失败</td>
+											</c:if>
+											<td class="routeBtns">
+												<a class="fa-caret" nodeIp="${nodeList.nodeIp }" onclick="nodeTargetIPDetail(this)"><i class="fa fa-caret-right" flag="1">测试</i></a>
+												<a onclick="recoverOneRoute(this)" nodeIp="${nodeList.nodeIp }" nodeName="${nodeList.nodeName }"><i>恢复</i></a>
+											</td>
 										</tr>
-										<!-- <tr>
-											<td>&nbsp;</td>
-											<td>targetIP</td>
-											<td>期望网管</td>
-											<td >实际网管</td>
-											<td colspan="2">结果</td>
-										</tr> -->
 									</c:forEach>
 								</tbody>
 							</table>
 						</div>
-						
 					</div>
-					
-
 				</div>
 			</div>
     </article>
