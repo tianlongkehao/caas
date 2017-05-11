@@ -1265,9 +1265,13 @@ i.pushOrg {
 	border-bottom: 1px solid #ddd;
 }
 .checkResultDiv{
-	max-height:335px;
+	max-height:350px;
 	overflow-y:auto;
 }
+.resultInfo p span:not(:first-child){
+	margin-left:55px;
+}
+
 /* route */
 #routeList a.fa-caret{
 	padding-right:10px;

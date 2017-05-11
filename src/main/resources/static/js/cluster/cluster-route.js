@@ -141,18 +141,25 @@ function recoverOneRoute(obj){
 	var oneNodeData = new Array();
 	var oneNode = {"name":nodeName, "ip":nodeIp};
 	oneNodeData.push(oneNode);
+	var nodeListString = {"nodeListString":JSON.stringify(oneNodeData)};
+	var loading = layer.load(0, {
+		shade : [ 0.3, '#000' ]
+	});
 	$.ajax({
 		url: ctx + "/cluster/recoverRoutetable.do",
 		type:"POST",
-		dataType: "json",
-        contentType: "text/html; charset=UTF-8",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-		data:JSON.stringify(oneNodeData),
+		data:nodeListString,
 		success:function(data){
-			var data = data;
+			var data = eval('('+data+')');
+			var status = data.status;
+			if(status == '200'){
+				layer.msg("恢复成功！",{icon : 1});
+			}else if(status == '300'){
+				layer.msg( data.messages+"恢复失败!",{icon : 2});
+			}else if(status == '400'){
+				layer.msg("恢复失败，链接异常！",{icon : 2});
+			}
+			layer.close(loading);
 		}
 	})
 }
@@ -166,18 +173,23 @@ function recoverRoutes(){
 		var nodeInfo = {"name":nodeName, "ip":nodeIp};
 		nodesData.push(nodeInfo);
 	}
+	var nodeListString = {"nodeListString":JSON.stringify(nodesData)};
+	var loading = layer.load(0, {shade: false});
 	$.ajax({
 		url: ctx + "/cluster/recoverRoutetable.do",
 		type:"POST",
-		dataType: "json",
-        contentType: "text/html; charset=UTF-8",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-		data:JSON.stringify(nodesData),
+		data:nodeListString,
 		success:function(data){
-			var data = data;
+			var data = eval('('+data+')');
+			layer.close(loading);
+			var status = data.status;
+			if(status == "200"){
+				layer.msg("恢复成功！",{icon : 1});
+			}else if(status == "300"){
+				layer.msg( data.messages+"恢复失败!",{icon : 2});
+			}else if(status == "400"){
+				layer.msg("恢复失败，链接异常！",{icon : 2});
+			}
 		}
 	})
 }

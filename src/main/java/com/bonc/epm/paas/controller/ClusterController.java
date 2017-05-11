@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.bonc.epm.paas.cluster.api.ClusterHealthyClient;
 import com.bonc.epm.paas.cluster.api.LocalHealthyClient;
 import com.bonc.epm.paas.cluster.entity.CatalogResource;
@@ -1627,14 +1628,14 @@ public class ClusterController {
 		}
 		map.put("status", "200");
 		map.put("resultList", resultList);
-		return JSON.toJSONString(map);
+		return JSON.toJSONString(map, SerializerFeature.DisableCircularReferenceDetect);
 	}
 
 	/**
 	 * recoverRoutetable:恢复Routetable. <br/>
 	 *
 	 * @author longkaixiang
-	 * @param node
+	 * @param nodeListString
 	 * @return String
 	 */
 	@RequestMapping(value = { "/recoverRoutetable.do" }, method = RequestMethod.POST)
@@ -1677,6 +1678,7 @@ public class ClusterController {
 	 * recoverRoutetable:修复Iptables. <br/>
 	 *
 	 * @author longkaixiang
+	 * @param nodeIpString
 	 * @return String
 	 */
 	@RequestMapping(value = { "/recoverIptables.do" }, method = RequestMethod.GET)

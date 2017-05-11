@@ -1,4 +1,5 @@
 $(document).ready(function () {
+	showCompIptablesList();
 	//首次加载界面，若是admin登录，没选择租户时服务为disabled
 	var userAutority = $("#userAutority").val();
 	if(userAutority == 1){
@@ -21,17 +22,78 @@ $(document).ready(function () {
 		$(".checkIptablesCon").hide();
 		$(".compIptablesCon").show();
 	});
-	
+	//失败
 	$(".btnDanger").click(function(){
 		$(this).addClass("btn-danger").removeClass("btn-default");
 		$(".btnDefault").addClass("btn-default").removeClass("btn-danger");
+		var problemServicesHtml = "";
+		for(var Key in problemServices){
+			var externalAccess = problemServices[Key].externalAccess;
+			var internalAccess = problemServices[Key].internalAccess;
+			var others = problemServices[Key].others;
+			var externalAccessHtml = "";
+			for(var m in externalAccess){
+				externalAccessHtml += '<span>'+externalAccess[m]+'</span><br>'
+			}
+			var internalAccessHtml = "";
+			for(var n in internalAccess){
+				internalAccessHtml += '<span>'+internalAccess[n]+'</span><br>'
+			}
+			var othersHtml="";
+			for(var i in others){
+				othersHtml += '<span>'+others[i]+'</span><br>'
+			}
+			problemServicesHtml += '<tr>'
+				+'<td style="width:15%;padding-left:20px">'+Key+'</td>'
+				+'<td style="width:10%;">失败 </td>'
+				+'<td class="resultInfo"><p>externalAccess:[&nbsp;'+externalAccessHtml+']</p>'
+				+'<p>internalAccess:[&nbsp;'+internalAccessHtml+']</p>'
+				+'<p>others:[&nbsp;'+othersHtml+']</p></td>'
+				+'</tr>';
+		}
+		$("#checkResultList").empty().append(problemServicesHtml);
 	});
 	
+	//all
 	$(".btnDefault").click(function(){
 		$(this).addClass("btn-danger").removeClass("btn-default");
 		$(".btnDanger").addClass("btn-default").removeClass("btn-danger");
+		var allServicesHtml = "";
+		for(var Key in allServices){
+			var externalAccess = problemServices[Key].externalAccess;
+			var internalAccess = problemServices[Key].internalAccess;
+			var others = problemServices[Key].others;
+			var status = "";
+			if(externalAccess.length==0 && internalAccess.length ==0 && others.length == 0){
+				status ="成功";
+			}else{
+				status ="失败";
+			}
+			var externalAccessHtml = "";
+			for(var m in externalAccess){
+				externalAccessHtml += '<span>'+externalAccess[m]+'</span><br>'
+			}
+			var internalAccessHtml = "";
+			for(var n in internalAccess){
+				internalAccessHtml += '<span>'+internalAccess[n]+'</span><br>'
+			}
+			var othersHtml="";
+			for(var i in others){
+				othersHtml += '<span>'+others[i]+'</span><br>'
+			}
+			allServicesHtml += '<tr>'
+				+'<td style="width:15%;padding-left:20px">'+Key+'</td>'
+				+'<td style="width:10%;">'+status+'</td>'
+				+'<td class="resultInfo"><p>externalAccess:[&nbsp;'+externalAccessHtml+']</p>'
+				+'<p>internalAccess:[&nbsp;'+internalAccessHtml+']</p>'
+				+'<p>others:[&nbsp;'+othersHtml+']</p></td>'
+				+'</tr>';
+			
+			
+		}
+		$("#checkResultList").empty().append(allServicesHtml);
 	});
-
+	
 });
 
 //admin登录时选择租户；对应显示该租户下的服务下拉列表
@@ -800,17 +862,89 @@ function loadDiff(data){
 	}
 }
 
+var resultData = "";
+function showCompIptablesList(){
+	$.ajax({
+		url:ctx + "/cluster/checkIptables.do",
+		type:'get',
+		success:function(data){
+			var data = eval('('+data+')');
+			if(data.status == '200'){
+				resultData = data.resultList;
+				var tableHtml ="";
+				for(var i=0; i<resultData.length; i++){
+					var nodeName = resultData[i].nodeName;
+					var problem = resultData[i].problem;
+					var problemHtml = "";
+					if(problem == true){
+						problemHtml = "正常";
+					}else{
+						problemHtml = "有问题";
+					}
+					tableHtml += '<tr>'
+									+'<td><input type="checkbox" class="chkItems"/></td>'
+									+'<td><a class="checkResult" onclick="checkResultDetail(this)" nodeName="'+nodeName+'">'+nodeName+'</a></td>'
+									+'<td>'+problemHtml+'</td>'
+									+'<td>'
+									+'<a><i>测试</i></a>'
+									+'<a><i>恢复</i></a>'
+									+'</td>'
+									+'</tr>';
+				}
+				$("#compIptablesList").append(tableHtml);
+			}
+		}
+	})
+}
+var problemServices = "";
+var allServices ="";
 function checkResultDetail(obj){
 	layer.open({
 		type:1,
 		title : '转发规则详细信息',
 		content : $(".checkResultDetailInfo"),
-		area:['1000px'],
+		area:['1000px','600px'],
 		btn : ['关闭'],
 		yes : function(index, layero) {
 			layer.close(index);
 		}
-	})
+	});
+	var nodeName = $(obj).attr("nodeName");
+	var problemServicesHtml = "";
+	for(var j = 0; j< resultData.length; j++){
+		if(resultData[j].nodeName == nodeName){
+			problemServices = resultData[j].problemServices;
+			allServices = resultData[j].allServices;
+			//$("#option1").val(problemServices);
+			//$("#option2").val(allServices);
+			var problemServicesHtml = "";
+			for(var Key in problemServices){
+				var externalAccess = problemServices[Key].externalAccess;
+				var internalAccess = problemServices[Key].internalAccess;
+				var others = problemServices[Key].others;
+				var externalAccessHtml = "";
+				for(var m in externalAccess){
+					externalAccessHtml += '<span>'+externalAccess[m]+'</span><br>'
+				}
+				var internalAccessHtml = "";
+				for(var n in internalAccess){
+					internalAccessHtml += '<span>'+internalAccess[n]+'</span><br>'
+				}
+				var othersHtml="";
+				for(var i in others){
+					othersHtml += '<span>'+others[i]+'</span><br>'
+				}
+				problemServicesHtml += '<tr>'
+					+'<td style="width:15%;padding-left:20px">'+Key+'</td>'
+					+'<td style="width:10%;">失败 </td>'
+					+'<td class="resultInfo"><p>externalAccess:[&nbsp;'+externalAccessHtml+']</p>'
+					+'<p>internalAccess:[&nbsp;'+internalAccessHtml+']</p>'
+					+'<p>others:[&nbsp;'+othersHtml+']</p></td>'
+					+'</tr>';
+			}
+		}
+	}
+	$("#checkResultList").empty().append(problemServicesHtml);
 }
 
 
