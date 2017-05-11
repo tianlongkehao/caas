@@ -12,34 +12,50 @@ public class NodeTestInfo {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
+	//节点名称
 	private String nodename;
+
+	//测试项目是否全部通过
     private boolean allpass;
 
+    //是否测试ping项目
 	private boolean ping;
 	private String pingoutmsg;
 	private double pingtime;
+    //ping是否通过
 	private boolean pingpass;
+	private String pingIp;
+	private int pingtimetarget;
 
+	//是否测试trace项目
 	private boolean tracepath;
 	private String tracepathoutmsg;
 	private double tracetime;
 	private boolean tracepass;
+	private String traceIp;
+	private int tracetimetarget;
 
 	private boolean qperf;
 	private String qperfoutmsg;
 	private double speed;
 	private double latency;
 	private boolean qperfpass;
+	private int speedtarget;
+	private int latencytarget;
 
 	private boolean curl;
 	private String curloutmsg;
 	private double curltime;
     private boolean curlpass;
+    private int curltimetarget;
 
+    private boolean docker;
 	private int cpu;
 	private long memory;
 	private boolean dockerpass;
+	private int memorytarget;
 
+	private boolean dns;
 	private String masterdnsoutmsg;
 	private String standbydnsoutmsg;
 	private boolean masterdns;
@@ -47,6 +63,72 @@ public class NodeTestInfo {
 	private boolean dnspass;
 
 
+	public String getPingIp() {
+		return pingIp;
+	}
+	public void setPingIp(String pingIp) {
+		this.pingIp = pingIp;
+	}
+	public int getPingtimetarget() {
+		return pingtimetarget;
+	}
+	public void setPingtimetarget(int pingtimetarget) {
+		this.pingtimetarget = pingtimetarget;
+	}
+	public String getTraceIp() {
+		return traceIp;
+	}
+	public void setTraceIp(String traceIp) {
+		this.traceIp = traceIp;
+	}
+	public int getTracetimetarget() {
+		return tracetimetarget;
+	}
+	public void setTracetimetarget(int tracetimetarget) {
+		this.tracetimetarget = tracetimetarget;
+	}
+	public int getSpeedtarget() {
+		return speedtarget;
+	}
+	public void setSpeedtarget(int speedtarget) {
+		this.speedtarget = speedtarget;
+	}
+	public int getLatencytarget() {
+		return latencytarget;
+	}
+	public void setLatencytarget(int latencytarget) {
+		this.latencytarget = latencytarget;
+	}
+	public int getCurltimetarget() {
+		return curltimetarget;
+	}
+	public void setCurltimetarget(int curltimetarget) {
+		this.curltimetarget = curltimetarget;
+	}
+	public int getMemorytarget() {
+		return memorytarget;
+	}
+	public void setMemorytarget(int memorytarget) {
+		this.memorytarget = memorytarget;
+	}
+	public boolean isDns() {
+		return dns;
+	}
+	public void setDns(boolean dns) {
+		this.dns = dns;
+	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	public boolean isDocker() {
+		return docker;
+	}
+	public void setDocker(boolean docker) {
+		this.docker = docker;
+	}
 	public boolean isDockerpass() {
 		return dockerpass;
 	}
