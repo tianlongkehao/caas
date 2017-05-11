@@ -129,6 +129,7 @@ public class CredentialController {
 				SshKey sshKey = sheraClientService.generateSshKey(keyName);
 				sshKey = client.createSshKey(sshKey);
 				result.put("sshKey", sshKey.getKey());
+				ciCodeCredential.setPrivateKey(sshKey.getKey());
 				gitCredential = sheraClientService.generateGitCredential(sshKey.getKeyPrivate(),
 						ciCodeCredential.getUserName(), Credential, ciCodeCredential.getRemark());
 			} else {
