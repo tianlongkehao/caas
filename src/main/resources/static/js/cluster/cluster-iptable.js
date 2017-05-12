@@ -882,7 +882,7 @@ function showCompIptablesList(){
 						problemHtml = "有问题";
 					}
 					tableHtml += '<tr>'
-									+'<td><input type="checkbox" class="chkItems" nodeName="'+nodeName+'"/></td>'
+									+'<td><input type="checkbox" class="chkItem" nodeName="'+nodeName+'"/></td>'
 									+'<td><a class="checkResult" onclick="checkResultDetail(this)" nodeName="'+nodeName+'">'+nodeName+'</a></td>'
 									+'<td>'+problemHtml+'</td>'
 									+'<td class="iptableOpr">'
@@ -946,7 +946,7 @@ function checkResultDetail(obj){
 	}
 	$("#checkResultList").empty().append(problemServicesHtml);
 }
-//恢复一个iptable
+//单独恢复一个iptable
 function recoverOneIptables(obj){
 	var nodeName = $(obj).attr("nodeName");
 	var nodeNameArray = new Array();
@@ -959,15 +959,23 @@ function recoverOneIptables(obj){
 		success:function(data){
 			var data = eval('('+data+')');
 			var status = data.status;
+			if(status == '200'){
+				layer.msg("恢复成功！",{icon : 1});
+			}else if(status == '300'){
+				layer.alert( "节点修复异常："+data.messages,{icon : 2});
+			}else if(status == '400'){
+				layer.alert( "查找对应ip失败："+data.messages,{icon : 2});
+			}else{
+				layer.alert( "恢复失败!",{icon : 2});
+			}
 		}
 	})
 }
 
 //批量恢复iptable
 function recoverIptables(){
-	
 	var nodeData = new Array();
-	var checkIptable = $(".chkItems:checked");
+	var checkIptable = $(".chkItem:checked");
 	if(checkIptable.length == 0){
 		layer.tips('请选择至少一个集群节点','#checkallbox', {
 			tips : [ 1, '#3595CC' ]
@@ -976,15 +984,25 @@ function recoverIptables(){
 		return;
 	}else{
 		for(var i=0; i<checkIptable.length; i++){
-			nodeData.push(checkIptable[i]);
+			nodeData.push($(checkIptable[i]).attr("nodeName"));
 		}
-		var oneNodeData = {"nodeNameListString":JSON.stringify(nodeData)};
+		var nodeData = {"nodeNameListString":JSON.stringify(nodeData)};
 		$.ajax({
 			url:ctx + "/cluster/recoverIptables.do",
 			type:'post',
-			data:oneNodeData,
+			data:nodeData,
 			success:function(data){
+				var data = eval('('+data+')');
 				var status = data.status;
+				if(status == '200'){
+					layer.msg("恢复成功！",{icon : 1});
+				}else if(status == '300'){
+					layer.alert( "节点修复异常："+data.messages,{icon : 2});
+				}else if(status == '400'){
+					layer.alert( "查找对应ip失败："+data.messages,{icon : 2});
+				}else{
+					layer.alert( "恢复失败!",{icon : 2});
+				}
 			}
 		})
 	}
