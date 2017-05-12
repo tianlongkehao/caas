@@ -891,7 +891,7 @@ function showCompIptablesList(){
 									+'</td>'
 									+'</tr>';
 				}
-				$("#compIptablesList").append(tableHtml);
+				$("#compIptablesList").empty().append(tableHtml);
 			}
 		}
 	})
@@ -991,6 +991,11 @@ function recoverIptables(){
 	
 }
 
+//测试iptable
+function checkIptables(){
+	showCompIptablesList();
+	layer.msg('测试完成！');
+}
 
 
 
