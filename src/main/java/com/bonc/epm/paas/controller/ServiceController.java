@@ -2313,7 +2313,12 @@ public class ServiceController {
 			 */
 			boolean chkresult = resourceService.checkRestResource(cpus - service.getCpuNum(),String.valueOf(Double.parseDouble(rams)-Double.parseDouble(service.getRam())));
 			if(!chkresult){
-				map.put("msg", "cpu或内存不足，请调整资源大小或申请更多资源！");
+				//map.put("msg", "cpu或内存不足，请调整资源大小或申请更多资源！");
+				if(ResourceService.STATUS == ResourceService.CPU_LACK){
+					map.put("msg", "cpu不足，请调整服务的cpu大小或申请更多cpu!");
+				}else{
+					map.put("msg", "ram不足，请调整服务的ram大小或申请更多ram!");
+				}
 				map.put("status", "504");
 				return JSON.toJSONString(map);
 			}

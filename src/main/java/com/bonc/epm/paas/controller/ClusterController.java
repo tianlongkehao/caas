@@ -1099,36 +1099,34 @@ public class ClusterController {
 				nodeInfo.setNodename(node.getMetadata().getName());
 				for (Pod pod : pods) {
 					if (node.getMetadata().getName().equals(pod.getMetadata().getName())) {
-                        nodeInfo.setDeploystatus(true);
+						nodeInfo.setDeploystatus(true);
 						break;
 					}
 				}
 				List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(node.getMetadata().getName());
-				if(!CollectionUtils.isEmpty(nodeTestInfos)){
+				if (!CollectionUtils.isEmpty(nodeTestInfos)) {
 					nodeInfo.setTeststatus(true);
-			    	nodeInfo.setNodeTestInfo(nodeTestInfos.get(0));
+					nodeInfo.setNodeTestInfo(nodeTestInfos.get(0));
 				}
 				nodeInfos.add(nodeInfo);
 			}
 		}
 
 		List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename("all");
-		if(!CollectionUtils.isEmpty(nodeTestInfos)){
-			model.addAttribute("testparam", nodeTestInfos.get(0));//执行过批量测试，则返回测试参数信息
+		if (!CollectionUtils.isEmpty(nodeTestInfos)) {
+			model.addAttribute("testparam", nodeTestInfos.get(0));// 执行过批量测试，则返回测试参数信息
 		}
 
-		model.addAttribute("nodeList", nodeInfos);//节点信息list
+		model.addAttribute("nodeList", nodeInfos);// 节点信息list
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "test");
 		return "cluster/test.jsp";
 	}
 
 	/**
-	 * nodenames：节点名字符串,逗号隔开
-	 *             例："node1,node2,...."
-	 * @return map：
-	 *            status(200 :成功 , 500 :失败 )
-	 *            msg(错误消息)
+	 * nodenames：节点名字符串,逗号隔开 例："node1,node2,...."
+	 *
+	 * @return map： status(200 :成功 , 500 :失败 ) msg(错误消息)
 	 */
 	@RequestMapping(value = { "/deploypodfortest" }, method = RequestMethod.GET)
 	@ResponseBody
@@ -1293,7 +1291,7 @@ public class ClusterController {
 				LOG.info("service:clusterhealthy被创建！");
 			}
 		} catch (Exception e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 			LOG.info("******************************部署失败************************************");
 			deletePodsForTest();
 			map.put("msg", "部署失败！");
@@ -1329,7 +1327,7 @@ public class ClusterController {
 			} catch (InterruptedException e) {
 				LOG.info("******************************部署失败************************************");
 				deletePodsForTest();
-				//e.printStackTrace();
+				// e.printStackTrace();
 				map.put("msg", "部署失败！");
 				map.put("status", 500);
 				return JSON.toJSONString(map);
@@ -1341,12 +1339,9 @@ public class ClusterController {
 	}
 
 	/**
-	 * 清除指定的集群测试Pods
-	 * nodenames ：节点名字符串,逗号隔开
-	 *             例："node1,node2,...."
-	 * @return map：
-	 *            status(200 :成功 , 500 :失败 )
-	 *            msg(错误消息)
+	 * 清除指定的集群测试Pods nodenames ：节点名字符串,逗号隔开 例："node1,node2,...."
+	 *
+	 * @return map： status(200 :成功 , 500 :失败 ) msg(错误消息)
 	 */
 	@RequestMapping(value = { "/clearspecifiedpod" }, method = RequestMethod.GET)
 	@ResponseBody
@@ -1357,7 +1352,7 @@ public class ClusterController {
 
 		String msg = "";
 		if (StringUtils.isEmpty(nodenames)) {
-			msg ="没有选择节点！";
+			msg = "没有选择节点！";
 			map.put("msg", msg);
 			map.put("status", 500);
 			return JSON.toJSONString(map);
@@ -1378,7 +1373,7 @@ public class ClusterController {
 						LOG.info("Pod：" + name + "被删除！");
 					} catch (KubernetesClientException e) {
 						LOG.info("Pod：" + name + "删除失败！");
-						msg = msg +"Pod：" + name + "删除失败！";
+						msg = msg + "Pod：" + name + "删除失败！";
 						map.put("status", 500);
 					}
 
@@ -1389,10 +1384,10 @@ public class ClusterController {
 			}
 		}
 
-		if(!StringUtils.isEmpty(msg)){
+		if (!StringUtils.isEmpty(msg)) {
 			map.put("msg", msg);
 			LOG.info("********************************清理异常***************************************");
-		}else{
+		} else {
 			LOG.info("********************************清理完成***************************************");
 		}
 
@@ -1400,11 +1395,7 @@ public class ClusterController {
 	}
 
 	/**
-	 * 清除用于集群测试的所有pod和service
-	 * 返回码：
-	 *     status:200 - 成功
-	 *            500 - 失败
-	 *     msg: 错误消息
+	 * 清除用于集群测试的所有pod和service 返回码： status:200 - 成功 500 - 失败 msg: 错误消息
 	 */
 	@RequestMapping(value = { "/deployclear" }, method = RequestMethod.GET)
 	@ResponseBody
@@ -1420,21 +1411,21 @@ public class ClusterController {
 		PodList podList = client.getPods();
 		List<Pod> pods = podList.getItems();
 
-		boolean clear = true;//是否清楚干净标记
-		String msg ="";
+		boolean clear = true;// 是否清楚干净标记
+		String msg = "";
 
 		for (Node node : nodeList) {
 			for (Pod pod : pods) {
 				if (pod.getMetadata().getName().equals(node.getMetadata().getName())) {
 					try {
 						client.deletePodOfNamespace("kube-system", node.getMetadata().getName());
-	                    LOG.info("pod:"+ node.getMetadata().getName()+ "被删除！");
+						LOG.info("pod:" + node.getMetadata().getName() + "被删除！");
 					} catch (KubernetesClientException e) {
-						LOG.info("pod:"+ node.getMetadata().getName()+ "删除失败！");
-						msg = msg +"pod:"+ node.getMetadata().getName()+ "删除失败！";
+						LOG.info("pod:" + node.getMetadata().getName() + "删除失败！");
+						msg = msg + "pod:" + node.getMetadata().getName() + "删除失败！";
 						clear = false;
 					}
-                    // ************************数据库中删除检测记录************
+					// ************************数据库中删除检测记录************
 					nodeInfoDao.deleteByNodename(node.getMetadata().getName());
 					break;
 				}
@@ -1448,7 +1439,7 @@ public class ClusterController {
 					LOG.info("pod:clusterhealthy被删除！");
 				} catch (KubernetesClientException e) {
 					LOG.info("pod:clusterhealthy删除失败！");
-					msg = msg +"pod:clusterhealthy删除失败！";
+					msg = msg + "pod:clusterhealthy删除失败！";
 					clear = false;
 				}
 				break;
@@ -1463,7 +1454,7 @@ public class ClusterController {
 					LOG.info("Service:localhealthy被删除！");
 				} catch (KubernetesClientException e) {
 					LOG.info("Service:localhealthy删除失败！");
-					msg = msg +"Service:localhealthy删除失败！";
+					msg = msg + "Service:localhealthy删除失败！";
 					clear = false;
 				}
 				continue;
@@ -1473,18 +1464,18 @@ public class ClusterController {
 					LOG.info("Service:clusterhealthy被删除！");
 				} catch (Exception e) {
 					LOG.info("Service:clusterhealthy删除失败！");
-					msg = msg +"Service:clusterhealthy删除失败！";
+					msg = msg + "Service:clusterhealthy删除失败！";
 					clear = false;
 				}
 				continue;
 			}
 		}
 
-		nodeInfoDao.deleteByNodename("all");//删除批量测试的测试参数记录
+		nodeInfoDao.deleteByNodename("all");// 删除批量测试的测试参数记录
 
-		if(clear){
+		if (clear) {
 			LOG.info("Service:clusterhealthy删除失败！");
-		}else{
+		} else {
 			LOG.info("Service:clusterhealthy删除失败！");
 			map.put("msg", msg);
 			map.put("status", 500);
@@ -1494,15 +1485,10 @@ public class ClusterController {
 	}
 
 	/**
-	 * 执行测试
-	 * nodenames : 节点名字符串,逗号隔开
-	 *             例："node1,node2,...."
-	 * items: 检测项目字符串，逗号隔开
-	 *             例："item1,item2,....."
-	 * @return map:
-	 *             status:200 - 成功
-	 *                    500 - 失败
-	 *             msg:错误信息
+	 * 执行测试 nodenames : 节点名字符串,逗号隔开 例："node1,node2,...." items: 检测项目字符串，逗号隔开
+	 * 例："item1,item2,....."
+	 *
+	 * @return map: status:200 - 成功 500 - 失败 msg:错误信息
 	 */
 	@RequestMapping(value = { "/excutetest" }, method = RequestMethod.GET)
 	@ResponseBody
@@ -1513,7 +1499,7 @@ public class ClusterController {
 		map.put("status", 200);
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
-		String msg= "";
+		String msg = "";
 
 		if (StringUtils.isEmpty(nodenames)) {
 			msg = "没有选择要检测的节点！";
@@ -1532,7 +1518,7 @@ public class ClusterController {
 
 		Service localservice = null;
 		try {
-			localservice= client.getServiceOfNamespace("kube-system", "localhealthy");
+			localservice = client.getServiceOfNamespace("kube-system", "localhealthy");
 		} catch (KubernetesClientException e) {
 			msg = "找不到localhealthy服务！";
 			LOG.info(msg);
@@ -1543,7 +1529,7 @@ public class ClusterController {
 
 		Service clusterservice = null;
 		try {
-			clusterservice= client.getServiceOfNamespace("kube-system", "clusterhealthy");
+			clusterservice = client.getServiceOfNamespace("kube-system", "clusterhealthy");
 		} catch (KubernetesClientException e) {
 			msg = "找不到clusterhealthy服务！";
 			LOG.info(msg);
@@ -1554,7 +1540,7 @@ public class ClusterController {
 
 		Pod clusterpod = null;
 		try {
-			clusterpod= client.getPodOfNamespace("kube-system", "clusterhealthy");
+			clusterpod = client.getPodOfNamespace("kube-system", "clusterhealthy");
 		} catch (KubernetesClientException e) {
 			msg = "找不到clusterhealthy Pod！";
 			LOG.info(msg);
@@ -1624,8 +1610,9 @@ public class ClusterController {
 				if (pingitem) {
 					Response pingresponse = localHealthyClient.ping(pingIp);
 					nodeInfo.setPingoutmsg(pingresponse.getOutmsg());
-					//nodeInfo.setPing(pingresponse.getOutmsg().contains("Unreachable") ? false : true);
-                    nodeInfo.setPing(pingitem);
+					// nodeInfo.setPing(pingresponse.getOutmsg().contains("Unreachable")
+					// ? false : true);
+					nodeInfo.setPing(pingitem);
 					if (!pingresponse.getOutmsg().contains("Unreachable")) {
 						String[] outmsg = pingresponse.getOutmsg().split("/");
 						nodeInfo.setPingtime(Double.parseDouble(outmsg[outmsg.length - 3]));
@@ -1638,7 +1625,8 @@ public class ClusterController {
 					Response traceresponse = localHealthyClient.tracepath(tracepathIp);
 					nodeInfo.setTracepathoutmsg(traceresponse.getOutmsg());
 					String tracemsg = traceresponse.getOutmsg();
-					//nodeInfo.setTracepath(tracemsg.contains("hops") ? true : false);
+					// nodeInfo.setTracepath(tracemsg.contains("hops") ? true :
+					// false);
 					nodeInfo.setTracepath(traceitem);
 					tracemsg = tracemsg.subSequence(tracemsg.indexOf("real"), tracemsg.indexOf("user")).toString()
 							.trim();
@@ -1654,7 +1642,8 @@ public class ClusterController {
 					Response qperfresponse = clusterHealthyClient.qperf(pod.getStatus().getPodIP());
 					String qperfmsg = qperfresponse.getOutmsg();
 					nodeInfo.setQperfoutmsg(qperfmsg);
-					//nodeInfo.setQperf(qperfmsg.contains("failed") ? false : true);
+					// nodeInfo.setQperf(qperfmsg.contains("failed") ? false :
+					// true);
 					nodeInfo.setQperf(qperfitem);
 					if (!qperfmsg.contains("failed")) {
 						String unit = "";
@@ -1691,7 +1680,8 @@ public class ClusterController {
 					Response curlresponse = clusterHealthyClient.curl(pod.getStatus().getPodIP() + ":8011");
 					String curlmsg = curlresponse.getOutmsg();
 					nodeInfo.setCurloutmsg(curlmsg);
-					//nodeInfo.setCurl(curlmsg.contains("Failed") ? false : true);
+					// nodeInfo.setCurl(curlmsg.contains("Failed") ? false :
+					// true);
 					nodeInfo.setCurl(curlitem);
 					curlmsg = curlmsg.split("real")[1].split("user")[0].trim().split("0m")[1].split("s")[0].trim();
 					nodeInfo.setCurltime(Double.parseDouble(curlmsg));
@@ -1742,13 +1732,13 @@ public class ClusterController {
 				nodeInfoDao.deleteByNodename(name);
 				msg = msg + "节点：" + name + "故障!";
 				map.put("status", 500);
-				//return JSON.toJSONString(map);
+				// return JSON.toJSONString(map);
 				continue;
 			}
 		}
 
-		//批量测试，保存测试参数
-		if(names.length>1){
+		// 批量测试，保存测试参数
+		if (names.length > 1) {
 			NodeTestInfo nodeTestInfo = new NodeTestInfo();
 			nodeTestInfo.setNodename("all");
 
@@ -1776,13 +1766,44 @@ public class ClusterController {
 			nodeInfoDao.save(nodeTestInfo);
 		}
 
-		if(!StringUtils.isEmpty(msg)){
+		if (!StringUtils.isEmpty(msg)) {
 			LOG.info("***************************检测异常**********************************");
-		}else{
+		} else {
 			LOG.info("***************************检测完成**********************************");
 		}
 
 		map.put("nodeInfos", nodeInfos);
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 *
+	 * @param nodename 节点名称
+	 * @return 节点测试结果
+	 *        status：500 错误
+	 *                404 没有测试结果
+	 *                200 成功
+	 */
+	public String getClusterTestResult(String nodename) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+		String msg = "";
+
+		if (StringUtils.isEmpty(nodename)) {
+			msg="节点名称为空！";
+			map.put("status", 500);
+			map.put("msg", msg);
+			return JSON.toJSONString(map);
+		}
+        List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(nodename);
+        if(CollectionUtils.isEmpty(nodeTestInfos)){
+        	msg="节点"+nodename+"没有测试结果！";
+			map.put("status", 404);
+			map.put("msg", msg);
+			return JSON.toJSONString(map);
+        }
+
+        map.put("nodetestresult", nodeTestInfos.get(0));
 		return JSON.toJSONString(map);
 	}
 
@@ -1794,7 +1815,6 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/dns" }, method = RequestMethod.GET)
 	public String clusterDns(Model model) {
-
 
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "dns");
@@ -1809,7 +1829,7 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/checkIptables.do" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String checkIptables(){
+	public String checkIptables() {
 		Map<String, Object> map = new HashMap<>();
 		NetAPIClientInterface client = netClientService.getClient();
 		List<Iptable> checkIptable = null;
@@ -1817,25 +1837,25 @@ public class ClusterController {
 		try {
 			checkIptable = client.checkIptable();
 			for (Iptable iptable : checkIptable) {
-				//创建用于存放节点所有信息的map
+				// 创建用于存放节点所有信息的map
 				Map<String, Object> nodeMap = new HashMap<>();
-				//节点名
+				// 节点名
 				nodeMap.put("nodeName", iptable.getNodeName());
-				//节点的所有服务
+				// 节点的所有服务
 				nodeMap.put("allServices", iptable.getProblems());
-				//创建用于存放异常服务的map
+				// 创建用于存放异常服务的map
 				Map<String, Object> problemServices = new HashMap<>();
-				//遍历所有的服务
+				// 遍历所有的服务
 				for (String serviceName : iptable.getProblems().keySet()) {
 					ServiceProblems serviceProblems = iptable.getProblems().get(serviceName);
-					if (CollectionUtils.isNotEmpty(serviceProblems.getExternalAccess()) ||
-							CollectionUtils.isNotEmpty(serviceProblems.getInternalAccess()) ||
-							CollectionUtils.isNotEmpty(serviceProblems.getOthers())) {
+					if (CollectionUtils.isNotEmpty(serviceProblems.getExternalAccess())
+							|| CollectionUtils.isNotEmpty(serviceProblems.getInternalAccess())
+							|| CollectionUtils.isNotEmpty(serviceProblems.getOthers())) {
 						problemServices.put(serviceName, serviceProblems);
 					}
 				}
 				nodeMap.put("problemServices", problemServices);
-				//节点是否有问题 true正常
+				// 节点是否有问题 true正常
 				if (MapUtils.isEmpty(problemServices)) {
 					nodeMap.put("problem", true);
 				} else {
