@@ -1681,7 +1681,7 @@ public class ClusterController {
 	 * @param nodeIpString
 	 * @return String
 	 */
-	@RequestMapping(value = { "/recoverIptables.do" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/recoverIptables.do" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String recoverIptables(String nodeIpString) {
 		Map<String, Object> map = new HashMap<>();

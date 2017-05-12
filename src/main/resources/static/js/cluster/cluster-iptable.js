@@ -882,12 +882,12 @@ function showCompIptablesList(){
 						problemHtml = "有问题";
 					}
 					tableHtml += '<tr>'
-									+'<td><input type="checkbox" class="chkItems"/></td>'
+									+'<td><input type="checkbox" class="chkItems" nodeName="'+nodeName+'"/></td>'
 									+'<td><a class="checkResult" onclick="checkResultDetail(this)" nodeName="'+nodeName+'">'+nodeName+'</a></td>'
 									+'<td>'+problemHtml+'</td>'
 									+'<td>'
-									+'<a><i>测试</i></a>'
-									+'<a><i>恢复</i></a>'
+									//+'<a><i>测试</i></a>'
+									+'<a onclick="recoverOneIptables(this)" nodeName="'+nodeName+'"><i>恢复</i></a>'
 									+'</td>'
 									+'</tr>';
 				}
@@ -946,5 +946,58 @@ function checkResultDetail(obj){
 	}
 	$("#checkResultList").empty().append(problemServicesHtml);
 }
+//恢复一个iptable
+function recoverOneIptables(obj){
+	var nodeIp = $(obj).attr("nodeName");
+	var oneNodeData = {"nodeNameListString":JSON.stringify([nodeName])};
+	$.ajax({
+		url:ctx + "/cluster/recoverIptables.do",
+		type:'post',
+		data:oneNodeData,
+		success:function(data){
+			var status = data.status;
+		}
+	})
+}
+
+//批量恢复iptable
+function recoverOneIptables(obj){
+	var nodeIp = $(obj).attr("nodeName");
+	var nodeData = new Array();
+	var checkIptable = $(".chkItems:checked");
+	if(checkIptable.length == 0){
+		layer.tips('请选择至少一个集群节点','#checkallbox', {
+			tips : [ 1, '#3595CC' ]
+		});
+		$('#checkallbox').focus();
+		return;
+	}else{
+		for(var i=0; i<checkIptable.length; i++){
+			nodeData.push(checkIptable[i]);
+		}
+		var oneNodeData = {"nodeNameListString":JSON.stringify(nodeData)};
+		$.ajax({
+			url:ctx + "/cluster/recoverIptables.do",
+			type:'post',
+			data:oneNodeData,
+			success:function(data){
+				var status = data.status;
+			}
+		})
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 

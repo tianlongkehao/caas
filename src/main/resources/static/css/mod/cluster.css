@@ -1251,6 +1251,9 @@ i.pushOrg {
     padding-left: 25px!important;
     cursor: pointer!important;
 }
+.checkResult{
+	color: #e8504f;
+}
 .checkResult:hover{
 	text-decoration: underline;
 	cursor:pointer;
