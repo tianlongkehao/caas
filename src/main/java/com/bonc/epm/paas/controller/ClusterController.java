@@ -1635,7 +1635,7 @@ public class ClusterController {
 	 * recoverRoutetable:恢复Routetable. <br/>
 	 *
 	 * @author longkaixiang
-	 * @param nodeNameListString
+	 * @param nodeListString
 	 * @return String
 	 */
 	@RequestMapping(value = { "/recoverRoutetable.do" }, method = RequestMethod.POST)
