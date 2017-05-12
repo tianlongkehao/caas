@@ -7,8 +7,8 @@
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/cluster.css" />
 <script type="text/javascript" src="<%=path%>/js/cluster/test.js"></script>
-</head>
 
+</head>
 <body>
 	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="cluster" value="" />
@@ -67,6 +67,7 @@
 								</thead>
 								<tbody id="routeList">
 									<c:forEach items="${nodeList}" var="node">
+									<input type="hidden" value="${node.nodeTestInfo}">
 										<tr>
 											<td style="width:5%;text-indent:20px">
 												<input class="chkItem" name="node" type="checkbox" value="${node.nodename }">
@@ -77,24 +78,45 @@
 									        		<div class="progress-bar" role="progressbar"
 														 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
 													</div>
-													<!-- <div class="progress-bar progress-bar-warning" role="progressbar"
-														 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-														 style="width: 15%;">
-														<span >部署完成</span>
-													</div>
-
-													<div class="progress-bar progress-bar-success" role="progressbar"
-														 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-														 style="width: 85%;">
-														<span>执行完成</span>
-													</div> -->
+													<c:if test="${node.deploystatus ==true}">
+														<div class="progress-bar progress-bar-warning" role="progressbar"
+															 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+															 style="width: 15%;">
+															<span >部署完成</span>
+														</div>
+														<c:if test="${node.teststatus == true}">
+															<div class="progress-bar progress-bar-success" role="progressbar"
+																 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+																 style="width: 85%;">
+																<span>执行完成</span>
+															</div>
+														</c:if>
+														<c:if test="${node.teststatus == false}">
+															<div class="progress-bar progress-bar-danger" role="progressbar"
+																 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+																 style="width: 85%;">
+																<span>执行失败</span>
+															</div>
+														</c:if>
+													</c:if>
+													<c:if test="${node.deploystatus ==false}">
+														<div class="progress-bar progress-bar-warning" role="progressbar"
+															 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+															 style="width: 0%;">
+														</div>
+													</c:if>
 												</div>
 									        </td>
 
 											<td class="clusterTestOpr" style="width:20%;text-indent:20px">
 												<a id="${node.nodename }"  nodename="${node.nodename }"
 													onclick="detail(this)" title="查看详细信息">
-
+													<c:if test="${node.teststatus == true}">
+														<font color="#33CC33" style="font-weight:bold;cursor:pointer" id="nodeTestInfo" nodeTestInfo="${node.nodeTestInfo}">通过<i class="fa fa-question-circle"></i></font>
+													</c:if>
+													<c:if test="${node.teststatus == false}">
+														<font color="#FF0033" style="font-weight:bold;cursor:pointer">未通过<i class="fa fa-question-circle"></i></font>
+													</c:if>
 												</a>
 											</td>
 											<td class="clusterTestOprBtns">
@@ -277,48 +299,47 @@
 					</ul>
 					<div id="myTabContent" class="tab-content">
 						<div class="tab-pane fade in active" id="pingTab">
-							<table class="table enabled"
-								style="width: 580px; padding: 5px; margin: 10px">
+							<table class="table">
 								<tbody class="pingTable">
 									<tr>
-										<th style="width: 25%">ping操作：</th>
-										<td><input class="" type="text" id="pingstatus" readOnly
+										<th style="width: 20%">ping操作：</th>
+										<td class="tableInput"><input type="text" id="pingstatus" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">检测状态：</th>
-										<td><input class="" type="text" id="pingpass" readOnly
+										<th style="width: 20%">检测状态：</th>
+										<td class="tableInput"><input type="text" id="pingpass" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">平均响应时间：</th>
-										<td><input class="" type="text" id="pingavg" readOnly
+										<th style="width: 20%">平均响应时间：</th>
+										<td class="tableInput"><input type="text" id="pingavg" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<td colspan="2"><textarea id="pingdetail"
-												style="width: 100%; height: 100px;"></textarea></td>
+										<td colspan="2">
+											<textarea id="pingdetail" style="width: 100%; height: 100px;"></textarea>
+										</td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
 						<div class="tab-pane fade" id="traceTab">
-							<table class="table enabled"
-								style="width: 580px; padding: 5px; margin: 10px">
+							<table class="table">
 								<tbody class="traceTable">
 									<tr>
-										<th style="width: 25%">trace操作：</th>
-										<td><input class="" type="text" id="tracestatus" readOnly
+										<th style="width: 20%">trace操作：</th>
+										<td class="tableInput"><input class="" type="text" id="tracestatus" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">检测状态：</th>
-										<td><input class="" type="text" id="tracepass" readOnly
+										<th style="width: 20%">检测状态：</th>
+										<td class="tableInput"><input class="" type="text" id="tracepass" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">平均响应时间：</th>
-										<td><input class="" type="text" id="tracetime" readOnly
+										<th style="width: 20%">平均响应时间：</th>
+										<td class="tableInput"><input class="" type="text" id="tracetime" readOnly
 											value=""></td>
 									</tr>
 									<tr>
@@ -329,27 +350,26 @@
 							</table>
 						</div>
 						<div class="tab-pane fade" id="qperfTab">
-							<table class="table enabled"
-								style="width: 580px; padding: 5px; margin: 10px">
+							<table class="table">
 								<tbody class="qperfTable">
 									<tr>
-										<th style="width: 25%">qperf操作：</th>
-										<td><input class="" type="text" id="qperfstatus" readOnly
+										<th style="width: 20%">qperf操作：</th>
+										<td class="tableInput"><input class="" type="text" id="qperfstatus" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">检测状态：</th>
-										<td><input class="" type="text" id="qperfpass" readOnly
+										<th style="width: 20%">检测状态：</th>
+										<td class="tableInput"><input class="" type="text" id="qperfpass" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">带宽：</th>
-										<td><input class="" type="text" id="speed" readOnly
+										<th style="width: 20%">带宽：</th>
+										<td class="tableInput"><input class="" type="text" id="speed" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">延迟：</th>
-										<td><input class="" type="text" id="latency" readOnly
+										<th style="width: 20%">延迟：</th>
+										<td class="tableInput"><input class="" type="text" id="latency" readOnly
 											value=""></td>
 									</tr>
 									<tr>
@@ -360,22 +380,21 @@
 							</table>
 						</div>
 						<div class="tab-pane fade" id="curlTab">
-							<table class="table enabled"
-								style="width: 580px; padding: 5px; margin: 10px">
+							<table class="table">
 								<tbody class="curlTable">
 									<tr>
-										<th style="width: 25%">curl操作：</th>
-										<td><input class="" type="text" id="curlstatus" readOnly
+										<th style="width: 20%">curl操作：</th>
+										<td class="tableInput"><input class="" type="text" id="curlstatus" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">检测状态：</th>
-										<td><input class="" type="text" id="curlpass" readOnly
+										<th style="width: 20%">检测状态：</th>
+										<td class="tableInput"><input class="" type="text" id="curlpass" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">响应时间：</th>
-										<td><input class="" type="text" id="curlavg" readOnly
+										<th style="width: 20%">响应时间：</th>
+										<td class="tableInput"><input class="" type="text" id="curlavg" readOnly
 											value=""></td>
 									</tr>
 									<tr>
@@ -386,39 +405,37 @@
 							</table>
 						</div>
 						<div class="tab-pane fade" id="dockerTab">
-							<table class="table enabled"
-								style="width: 580px; padding: 5px; margin: 10px">
+							<table class="table">
 								<tbody class="dockerTable">
 									<tr>
-										<th style="width: 25%">cpu：</th>
-										<td><input class="" type="text" id="cpu" readOnly
+										<th style="width: 20%">cpu：</th>
+										<td class="tableInput"><input class="" type="text" id="cpu" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">memory：</th>
-										<td><input class="" type="text" id="memory" readOnly
+										<th style="width: 20%">memory：</th>
+										<td class="tableInput"><input class="" type="text" id="memory" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">检测状态：</th>
-										<td><input class="" type="text" id="dockerpass" readOnly
+										<th style="width: 20%">检测状态：</th>
+										<td class="tableInput"><input class="" type="text" id="dockerpass" readOnly
 											value=""></td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
 						<div class="tab-pane fade" id="dnsTab">
-							<table class="table enabled"
-								style="width: 580px; padding: 5px; margin: 10px">
+							<table class="table">
 								<tbody class="curlTable">
 								    <tr>
-										<th style="width: 25%">检测状态：</th>
-										<td><input class="" type="text" id="dnspass" readOnly
+										<th style="width: 20%">检测状态：</th>
+										<td class="tableInput"><input class="" type="text" id="dnspass" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">主dns操作：</th>
-										<td><input class="" type="text" id="masterstatus" readOnly
+										<th style="width: 20%">主dns操作：</th>
+										<td class="tableInput"><input class="" type="text" id="masterstatus" readOnly
 											value=""></td>
 									</tr>
 									<tr>
@@ -426,8 +443,8 @@
 												style="width: 100%; height: 100px;"></textarea></td>
 									</tr>
 									<tr>
-										<th style="width: 25%">备dns操作：</th>
-										<td><input class="" type="text" id="standbystatus" readOnly
+										<th style="width: 20%">备dns操作：</th>
+										<td class="tableInput"><input class="" type="text" id="standbystatus" readOnly
 											value=""></td>
 									</tr>
 									<tr>

@@ -114,7 +114,7 @@ function detail(obj) {
 		title : nodename + '节点检测信息',
 		content : $("#detail"),
 		area : [ '600px' ],
-		btn : false,
+		btn : ['关闭']
 	})
 }
 
