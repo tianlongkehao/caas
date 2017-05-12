@@ -1274,6 +1274,9 @@ i.pushOrg {
 .resultInfo p span:not(:first-child){
 	margin-left:55px;
 }
+.iptableOpr a{
+	cursor:pointer;
+}
 
 /* route */
 #routeList a.fa-caret{

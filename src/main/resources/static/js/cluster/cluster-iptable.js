@@ -885,7 +885,7 @@ function showCompIptablesList(){
 									+'<td><input type="checkbox" class="chkItems" nodeName="'+nodeName+'"/></td>'
 									+'<td><a class="checkResult" onclick="checkResultDetail(this)" nodeName="'+nodeName+'">'+nodeName+'</a></td>'
 									+'<td>'+problemHtml+'</td>'
-									+'<td>'
+									+'<td class="iptableOpr">'
 									//+'<a><i>测试</i></a>'
 									+'<a onclick="recoverOneIptables(this)" nodeName="'+nodeName+'"><i>恢复</i></a>'
 									+'</td>'
@@ -948,21 +948,24 @@ function checkResultDetail(obj){
 }
 //恢复一个iptable
 function recoverOneIptables(obj){
-	var nodeIp = $(obj).attr("nodeName");
-	var oneNodeData = {"nodeNameListString":JSON.stringify([nodeName])};
+	var nodeName = $(obj).attr("nodeName");
+	var nodeNameArray = new Array();
+	nodeNameArray.push(nodeName);
+	var oneNodeData = {"nodeNameListString":JSON.stringify(nodeNameArray)};
 	$.ajax({
 		url:ctx + "/cluster/recoverIptables.do",
 		type:'post',
 		data:oneNodeData,
 		success:function(data){
+			var data = eval('('+data+')');
 			var status = data.status;
 		}
 	})
 }
 
 //批量恢复iptable
-function recoverOneIptables(obj){
-	var nodeIp = $(obj).attr("nodeName");
+function recoverIptables(){
+	
 	var nodeData = new Array();
 	var checkIptable = $(".chkItems:checked");
 	if(checkIptable.length == 0){
