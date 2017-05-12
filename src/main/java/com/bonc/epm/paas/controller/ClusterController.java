@@ -1640,34 +1640,19 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/recoverRoutetable.do" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String recoverRoutetable(String nodeNameListString) {
+	public String recoverRoutetable(String nodeListString) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
-		List<String> nodeNameList;
+		List<com.bonc.epm.paas.net.model.NodeInfo> nodeList;
 		try {
-			nodeNameList = JSON.parseArray(nodeNameListString, String.class);
+			nodeList = JSON.parseArray(nodeListString, com.bonc.epm.paas.net.model.NodeInfo.class);
 		} catch (Exception e) {
 			map.put("status", "400");
-			messages.add("解析错误：[Message:" + e.getMessage() + "nodeNameListString:" + nodeNameListString + "]");
+			messages.add("解析错误：[Message:" + e.getMessage() + "nodeListString:" + nodeListString + "]");
 			map.put("messages", e.getMessage());
 			return JSON.toJSONString(map);
 		}
-		KubernetesAPIClientInterface k8sclient = kubernetesClientService.getClient();
-		for (String nodeName : nodeNameList) {
-			String address = "";
-			try {
-				Node node = k8sclient.getSpecifiedNode(nodeName);
-				address = node.getStatus().getAddresses().get(0).getAddress();
-			} catch (Exception e) {
-				LOG.error("查找对应ip失败：[nodeName:" + nodeName + "]" + e.getMessage());
-				messages.add("查找对应ip失败：[nodeName:" + nodeName + "]" + e.getMessage());
-				map.put("status", "400");
-				map.put("messages", e.getMessage());
-				return JSON.toJSONString(map);
-			}
-			com.bonc.epm.paas.net.model.NodeInfo nodeInfo = new com.bonc.epm.paas.net.model.NodeInfo();
-			nodeInfo.setIp(address);
-			nodeInfo.setName(nodeName);
+		for (com.bonc.epm.paas.net.model.NodeInfo nodeInfo : nodeList) {
 			NetAPIClientInterface client = netClientService.getSpecifiedClient(nodeInfo.getIp());
 			try {
 				RecoverResult recoverResult = client.recoverRoutetable(nodeInfo);
@@ -1693,33 +1678,47 @@ public class ClusterController {
 	 * recoverRoutetable:修复Iptables. <br/>
 	 *
 	 * @author longkaixiang
-	 * @param nodeIpString
+	 * @param nodeNameListString
 	 * @return String
 	 */
 	@RequestMapping(value = { "/recoverIptables.do" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String recoverIptables(String nodeIpString) {
+	public String recoverIptables(String nodeNameListString) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
-		List<String> nodeIps;
+		List<String> nodeNameList;
 		try {
-			nodeIps = JSON.parseArray(nodeIpString, String.class);
+			nodeNameList = JSON.parseArray(nodeNameListString, String.class);
 		} catch (Exception e) {
 			map.put("status", "400");
-			messages.add("解析错误：[Message:" + e.getMessage() + "nodeIpString:" + nodeIpString + "]");
+			messages.add("解析错误：[Message:" + e.getMessage() + "nodeNameListString:" + nodeNameListString + "]");
 			map.put("messages", e.getMessage());
 			return JSON.toJSONString(map);
 		}
-		for (String nodeIp : nodeIps) {
+		KubernetesAPIClientInterface k8sclient = kubernetesClientService.getClient();
+
+		for (String nodeName : nodeNameList) {
+			String nodeIp = "";
+			try {
+				// 依据nodename获取nodeip
+				Node node = k8sclient.getSpecifiedNode(nodeName);
+				nodeIp = node.getStatus().getAddresses().get(0).getAddress();
+			} catch (Exception e) {
+				LOG.error("查找对应ip失败：[nodeName:" + nodeName + "]" + e.getMessage());
+				messages.add("查找对应ip失败：[nodeName:" + nodeName + "]" + e.getMessage());
+				map.put("status", "400");
+				map.put("messages", e.getMessage());
+				return JSON.toJSONString(map);
+			}
 			NetAPIClientInterface client = netClientService.getSpecifiedClient(nodeIp);
 			try {
 				RecoverResult recoverResult = client.recoverIptables();
 				if (!recoverResult.isRestart()) {
-					messages.add(nodeIp + "修复异常");
+					messages.add(nodeName + "修复异常");
 				}
 			} catch (NetClientException e) {
 				LOG.error(e.getMessage());
-				messages.add(nodeIp + "修复异常");
+				messages.add(nodeName + "修复异常");
 			}
 
 		}
