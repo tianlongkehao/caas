@@ -29,11 +29,11 @@
 						<span id="deployBtn" class="btn btn-primary btn-color pull-left"
 							style="margin-right: 10px; cursor: pointer">部署</span>
 						<span id="excuteBtn" class="btn btn-primary btn-color pull-left"
-							style="margin-right: 10px; cursor: pointer">执行</span> 
+							style="margin-right: 10px; cursor: pointer">执行</span>
 						<span id="deleteBtn" class="btn btn-primary btn-color pull-left"
-							style="margin-right: 10px; cursor: pointer">清除部署</span> 
+							style="margin-right: 10px; cursor: pointer">清除部署</span>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-md-12">
 							<div class="ibox float-e-margins">
@@ -69,10 +69,10 @@
 									<c:forEach items="${nodeList}" var="node">
 										<tr>
 											<td style="width:5%;text-indent:20px">
-												<input class="chkItem" name="node" type="checkbox" value="${node.metadata.name }">
+												<input class="chkItem" name="node" type="checkbox" value="${node.nodename }">
 											</td>
-											<td style="width:15%;">${node.metadata.name }</td>
-											<td style="width:40%;" nodeName="${node.metadata.name }">
+											<td style="width:15%;">${node.nodename }</td>
+											<td style="width:40%;" nodeName="${node.nodename }">
 									        	<div class="progress nodeProgress" style="margin:0 auto">
 									        		<div class="progress-bar" role="progressbar"
 														 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
@@ -82,7 +82,7 @@
 														 style="width: 15%;">
 														<span >部署完成</span>
 													</div>
-													
+
 													<div class="progress-bar progress-bar-success" role="progressbar"
 														 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
 														 style="width: 85%;">
@@ -90,11 +90,11 @@
 													</div> -->
 												</div>
 									        </td>
-											
+
 											<td class="clusterTestOpr" style="width:20%;text-indent:20px">
-												<a id="${node.metadata.name }"  nodename="${node.metadata.name }"
+												<a id="${node.nodename }"  nodename="${node.nodename }"
 													onclick="detail(this)" title="查看详细信息">
-													
+
 												</a>
 											</td>
 											<td class="clusterTestOprBtns">
@@ -107,7 +107,7 @@
 								</tbody>
 							</table>
 						</div>
-						
+
 					</div>
 					<!-- <div class="caption clearfix"
 						style="width: 75%; float: left; height: 100%;">
@@ -164,7 +164,7 @@
 						</div>
 					</div> -->
 					<input type="hidden" id="deployednodes" value="${deployedpod}">
-					
+
 				</div>
 
                 <div id="chkitem" style="display: none; text-align: center">
@@ -447,7 +447,7 @@
 	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
 	    //"searching":false
 	    //"aaSorting": [[ 2, "desc" ]]
-	}); 
+	});
 	$("#checkallbox").parent().removeClass("sorting_asc");
 </script>
 </body>

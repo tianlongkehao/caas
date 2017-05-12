@@ -289,13 +289,6 @@
 													<input type="hidden" id = "leftmemory" value = "${leftmemory * 1024 }"/>
 												</div>
 											</li>
-											<li id="service_type"><span class="ve_top">服务类型：</span>
-												<span class="update-mi"> <input type="checkbox"
-													id="state_service" stateless="0"> <label
-													for="state_service"><font color="blue">有状态服务</font></label>
-													<span class="mountTips"></span>
-												<input type="hidden" id = "serviceType" name ="serviceType" value = "1"/>
-											</span></li>
 
 											<li id="configmap" class="line-h-3" ><span class="ve_top">配置文件模板：</span>
 												  <select class="selectVolume self-define " id="configmap" name="configmap" style="height: 34px; width: 230px;">
@@ -307,6 +300,14 @@
                                                   <span> 挂载路径：</span>
                                                   <input type="text" class="self-define " style="width: 330px;" id = "configmapPath" name ="configmapPath" value="/configfiles" />
 											</li>
+
+											<li id="service_type"><span class="ve_top">服务类型：</span>
+												<span class="update-mi"> <input type="checkbox"
+													id="state_service" stateless="0"> <label
+													for="state_service"><font color="blue">有状态服务</font></label>
+													<span class="mountTips"></span>
+												<input type="hidden" id = "serviceType" name ="serviceType" value = "1"/>
+											</span></li>
 
 											<li class="hide-set" id="save_roll_dev"><span class="ve_top">挂载地址：</span>
 												<ol id="mountPathList">

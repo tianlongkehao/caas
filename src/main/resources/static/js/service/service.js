@@ -506,7 +506,9 @@ function oneStartContainer(id, status) {
 				layer.alert("服务状态异常！", function() {
 					window.location.reload();
 				});
-			} else {
+			} else if (data.status == "504") {
+				layer.alert(data.msg);
+			}else {
 				layer.alert("服务启动失败");
 			}
 		}
@@ -807,7 +809,9 @@ function oneChangeContainerConf(id, containerName, instanceNum, cpu, ram, status
 						layer.alert("服务状态异常！", function() {
 							window.location.reload();
 						});
-					} else {
+					} else if (data.status == "504") {
+						layer.alert(data.msg);
+					}else {
 						layer.alert("更改失败，请检查服务器连接");
 					}
 
@@ -1223,7 +1227,7 @@ function loadServicesNoSonar() {
 					html = '<span serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</span>' + '<span class="number-node">' + row.instanceNum + '</span>';
 				} else {
 					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>';
-					
+
 					if(row.status == 1 || row.status == 4){
 						html += '<span class="number-node">0</span>';
 					}else{
@@ -1398,7 +1402,6 @@ function startdebug(id, status) {
 	if (1 != status && 4 != status) {
 		return;
 	}
-
 	$.ajax({
 		url : "" + ctx + "/service/createContainer.do?id=" + id + "&isDebug=" + true,
 		success : function(data) {
@@ -1416,7 +1419,9 @@ function startdebug(id, status) {
 				layer.alert("服务状态异常！", function() {
 					window.location.reload();
 				});
-			} else {
+			} else if(data.status == "504"){
+				layer.alert(data.msg);
+			}else {
 				layer.alert("服务启动失败");
 			}
 		}
@@ -1479,7 +1484,7 @@ function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetC
 	}else{
 		$("#targetCPUUtilizationPercentage").val(targetCPUUtilizationPercentage);
 	}
-	
+
 	layer.open({
 		type : 1,
 		title : '自动伸缩',
