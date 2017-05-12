@@ -1635,24 +1635,39 @@ public class ClusterController {
 	 * recoverRoutetable:恢复Routetable. <br/>
 	 *
 	 * @author longkaixiang
-	 * @param nodeListString
+	 * @param nodeNameListString
 	 * @return String
 	 */
 	@RequestMapping(value = { "/recoverRoutetable.do" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String recoverRoutetable(String nodeListString) {
+	public String recoverRoutetable(String nodeNameListString) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
-		List<com.bonc.epm.paas.net.model.NodeInfo> nodeList;
+		List<String> nodeNameList;
 		try {
-			nodeList = JSON.parseArray(nodeListString, com.bonc.epm.paas.net.model.NodeInfo.class);
+			nodeNameList = JSON.parseArray(nodeNameListString, String.class);
 		} catch (Exception e) {
 			map.put("status", "400");
-			messages.add("解析错误：[Message:" + e.getMessage() + "nodeListString:" + nodeListString + "]");
+			messages.add("解析错误：[Message:" + e.getMessage() + "nodeNameListString:" + nodeNameListString + "]");
 			map.put("messages", e.getMessage());
 			return JSON.toJSONString(map);
 		}
-		for (com.bonc.epm.paas.net.model.NodeInfo nodeInfo : nodeList) {
+		KubernetesAPIClientInterface k8sclient = kubernetesClientService.getClient();
+		for (String nodeName : nodeNameList) {
+			String address = "";
+			try {
+				Node node = k8sclient.getSpecifiedNode(nodeName);
+				address = node.getStatus().getAddresses().get(0).getAddress();
+			} catch (Exception e) {
+				LOG.error("查找对应ip失败：[nodeName:" + nodeName + "]" + e.getMessage());
+				messages.add("查找对应ip失败：[nodeName:" + nodeName + "]" + e.getMessage());
+				map.put("status", "400");
+				map.put("messages", e.getMessage());
+				return JSON.toJSONString(map);
+			}
+			com.bonc.epm.paas.net.model.NodeInfo nodeInfo = new com.bonc.epm.paas.net.model.NodeInfo();
+			nodeInfo.setIp(address);
+			nodeInfo.setName(nodeName);
 			NetAPIClientInterface client = netClientService.getSpecifiedClient(nodeInfo.getIp());
 			try {
 				RecoverResult recoverResult = client.recoverRoutetable(nodeInfo);
