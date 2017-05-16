@@ -39,11 +39,13 @@ import com.bonc.epm.paas.cluster.entity.Response;
 import com.bonc.epm.paas.cluster.util.InfluxdbSearchService;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
+import com.bonc.epm.paas.dao.DNSServiceDao;
 import com.bonc.epm.paas.dao.NodeInfoDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
+import com.bonc.epm.paas.entity.DNSService;
 import com.bonc.epm.paas.entity.PodTopo;
 import com.bonc.epm.paas.entity.ServiceTopo;
 import com.bonc.epm.paas.entity.User;
@@ -125,6 +127,9 @@ public class ClusterController {
 	 */
 	@Autowired
 	private UserDao userDao;
+
+	@Autowired
+	DNSServiceDao dnsServiceDao;
 
 	/**
 	 * 获取配置文件中的 yumConf.io.address 的数据信息；
@@ -1157,7 +1162,7 @@ public class ClusterController {
 			// 为localhealthy服务创建pod,在所有的每个node中创建一个pod,pod名称与container名称与node名称相同
 			for (int i = 0; i < names.length; i++) {
 				try {
-					Pod temppod = client.getPodOfNamespace("kube-system", names[i]);
+					client.getPodOfNamespace("kube-system", names[i]);
 					// 没有出现异常，则已经部署过
 					LOG.info("节点：" + names[i] + "已经部署过...");
 					continue;
@@ -1826,6 +1831,8 @@ public class ClusterController {
 	@RequestMapping(value = { "/dns" }, method = RequestMethod.GET)
 	public String clusterDns(Model model) {
 
+		List<DNSService> DNSServiceList = (List<DNSService>) dnsServiceDao.findAll();
+		model.addAttribute("DNSServiceList", DNSServiceList);
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "dns");
 		return "cluster/cluster-dns.jsp";

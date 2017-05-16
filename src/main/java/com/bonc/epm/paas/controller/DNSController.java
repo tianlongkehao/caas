@@ -214,10 +214,21 @@ public class DNSController {
 	 */
 	@RequestMapping(value = ("deleteDNSMonitor.do"), method = RequestMethod.GET)
 	@ResponseBody
-	public String deleteDNSMonitor(List<Long> ids) {
+	public String deleteDNSMonitor(String ids) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
-		for (Long id : ids) {
+		List<Long> idList;
+		try {
+			idList = JSON.parseArray(ids, Long.class);
+		} catch (Exception e2) {
+			messages.add("id解析失败：[ids:" + ids + "]");
+			LOG.error("id解析失败：[ids:" + ids + "]");
+			map.put("status", "400");
+			map.put("messages", messages);
+			return JSON.toJSONString(map);
+		}
+
+		for (Long id : idList) {
 			DNSService service = dnsServiceDao.findOne(id);
 			// 查找不到的时候返回异常
 			if (service == null) {
@@ -290,7 +301,7 @@ public class DNSController {
 				}
 				portConfigDao.deleteByDnsServiceId(id);
 			}
-
+			pingResultDao.deleteByHost(service.getAddress());
 		}
 
 		if (CollectionUtils.isEmpty(messages)) {
@@ -311,6 +322,8 @@ public class DNSController {
 	 * @param time
 	 * @return String
 	 */
+	@RequestMapping(value = ("getDNSMonitorResultList.do"), method = RequestMethod.GET)
+	@ResponseBody
 	public String getDNSMonitorResultList(long id, int time) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
@@ -329,12 +342,22 @@ public class DNSController {
 		Iterator<PingResult> iterator = pingIterable.iterator();
 		int index = 0;
 		int count = 0;
-		while (iterator.hasNext() && index % time == 0 && count < MONITOR_COUNT) {
+		while (iterator.hasNext() && count < MONITOR_COUNT) {
+
 			PingResult pingResult = iterator.next();
-			String pingResultString = pingResult.getPingResult();
-			dnsMonitorResultList.add(pingResult);
+			if (index % time == 0) {
+				String pingResultString = pingResult.getPingResult();
+				if (pingResultString.contains("Address 1: ")) {
+					int addressIndex = pingResultString.indexOf("Address 1: ");
+					pingResult.setIp(pingResultString.substring(addressIndex + 11));
+					pingResult.setSuccess(true);
+				} else {
+					pingResult.setSuccess(false);
+				}
+				dnsMonitorResultList.add(pingResult);
+				count++;
+			}
 			index++;
-			count++;
 		}
 		map.put("dnsMonitorResultList", dnsMonitorResultList);
 
