@@ -3,6 +3,7 @@ package com.bonc.epm.paas.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +20,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.dao.DNSServiceDao;
+import com.bonc.epm.paas.dao.PingResultDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.entity.DNSService;
+import com.bonc.epm.paas.entity.PingResult;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -42,12 +45,12 @@ public class DNSController {
 	@Value("${monitor.image.name}")
 	public String MONITOR_IMAGE_NAME;
 
+	// 展示的记录数
+	@Value("${monitor.count}")
+	public int MONITOR_COUNT;
+
 	@Value("${monitor.command}")
 	public String MONITOR_COMMAND;
-
-	// ping的次数
-	@Value("${monitor.num}")
-	public String MONITOR_NUM;
 
 	// 频率
 	@Value("${monitor.frequency}")
@@ -73,6 +76,9 @@ public class DNSController {
 
 	@Autowired
 	DNSServiceDao dnsServiceDao;
+
+	@Autowired
+	PingResultDao pingResultDao;
 
 	/**
 	 * 调用服务controller
@@ -134,7 +140,6 @@ public class DNSController {
 
 		List<String> args = new ArrayList<>();
 		args.add(address);
-		args.add(MONITOR_NUM);
 		args.add(MYSQL_HOST);
 		args.add(MYSQL_PORT);
 		args.add(MYSQL_USER);
@@ -150,7 +155,7 @@ public class DNSController {
 		portCon.setProtocol("TCP");
 		portConfigs.add(portCon);
 
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient("longlong");
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
 		// 创建Service
 		Service k8sService = kubernetesClientService.generateService(serviceName, portConfigs, null, serviceName,
 				serviceName, "", "");
@@ -167,7 +172,7 @@ public class DNSController {
 		}
 		// 创建ReplicationController
 		ReplicationController replicationController = kubernetesClientService.generateSimpleReplicationController(
-				serviceName, 1, null, null, null, MONITOR_IMAGE_NAME, portConfigs, 1.0, "2048.0", null, serviceName,
+				serviceName, 1, null, null, null, MONITOR_IMAGE_NAME, portConfigs, 1.0, "1024.0", null, serviceName,
 				serviceName, "", new ArrayList<>(), command, args, new ArrayList<>(), false);
 		try {
 			replicationController = client.createReplicationController(replicationController);
@@ -209,7 +214,104 @@ public class DNSController {
 	 */
 	@RequestMapping(value = ("deleteDNSMonitor.do"), method = RequestMethod.GET)
 	@ResponseBody
-	public String deleteDNSMonitor(long id) {
+	public String deleteDNSMonitor(List<Long> ids) {
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		for (Long id : ids) {
+			DNSService service = dnsServiceDao.findOne(id);
+			// 查找不到的时候返回异常
+			if (service == null) {
+				messages.add("查找监控失败：[id:" + id + "]");
+				LOG.error("查找监控失败：[id:" + id + "]");
+				map.put("status", "400");
+				map.put("messages", messages);
+				return JSON.toJSONString(map);
+			}
+
+			KubernetesAPIClientInterface client = kubernetesClientService
+					.getClient(KubernetesClientService.adminNameSpace);
+			// 删除rc
+			ReplicationController controller = null;
+			try {
+				// 查询ReplicationController是否已经创建
+				controller = client.getReplicationController(service.getServiceName());
+			} catch (Exception e1) {
+				controller = null;
+			}
+			if (controller != null) {
+				controller = client.updateReplicationController(service.getServiceName(), 0);
+				if (controller != null && controller.getSpec().getReplicas() == 0) {
+					Status status = client.deleteReplicationController(service.getServiceName());
+					if (!status.getStatus().equals("Success")) {
+						LOG.error("Delete a Replication Controller failed:DNSServiceName[" + service.getServiceName()
+								+ "]");
+						messages.add("Delete a Replication Controller failed:DNSServiceName[" + service.getServiceName()
+								+ "]");
+						map.put("status", "400");
+						map.put("messages", messages);
+						return JSON.toJSONString(map);
+					}
+				} else {
+					LOG.error("Update a Replication Controller (update the number of replicas) failed:DNSServiceName["
+							+ service.getServiceName() + "]");
+					messages.add(
+							"Update a Replication Controller (update the number of replicas) failed:DNSServiceName["
+									+ service.getServiceName() + "]");
+					map.put("status", "400");
+					map.put("messages", messages);
+					return JSON.toJSONString(map);
+				}
+			}
+
+			// 删除svc
+			Service k8sService = null;
+			try {
+				// 查询svc是否已经创建
+				k8sService = client.getService(service.getServiceName());
+			} catch (KubernetesClientException e) {
+				k8sService = null;
+			}
+			if (null != k8sService) {
+				Status status = client.deleteService(service.getServiceName());
+				if (!status.getStatus().equals("Success")) {
+					LOG.error("Delete a Service failed:ServiceName[" + service.getServiceName() + "]");
+					messages.add("Delete a Service failed:ServiceName[" + service.getServiceName() + "]");
+					map.put("status", "400");
+					map.put("messages", messages);
+					return JSON.toJSONString(map);
+				}
+			}
+			// 持久化
+			dnsServiceDao.delete(service);
+			List<PortConfig> portConfigs = portConfigDao.findByDnsServiceId(id);
+			if (CollectionUtils.isNotEmpty(portConfigs)) {
+				for (PortConfig oneRow : portConfigs) {
+					serviceController.removeSet(Integer.valueOf(oneRow.getMapPort().trim()));
+				}
+				portConfigDao.deleteByDnsServiceId(id);
+			}
+
+		}
+
+		if (CollectionUtils.isEmpty(messages)) {
+			map.put("status", "200");
+		} else {
+			map.put("status", "400");
+			map.put("messages", messages);
+		}
+		return JSON.toJSONString(map);
+
+	}
+
+	/**
+	 * getDNSMonitorResultList:获取监控结果信息列表. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param id
+	 * @param time
+	 * @return String
+	 */
+	public String getDNSMonitorResultList(long id, int time) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
 		DNSService service = dnsServiceDao.findOne(id);
@@ -222,59 +324,20 @@ public class DNSController {
 			return JSON.toJSONString(map);
 		}
 
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
-		// 删除rc
-		ReplicationController controller = null;
-		try {
-			// 查询ReplicationController是否已经创建
-			controller = client.getReplicationController(service.getServiceName());
-		} catch (Exception e1) {
-			controller = null;
+		Iterable<PingResult> pingIterable = pingResultDao.findByHost(service.getAddress());
+		List<PingResult> dnsMonitorResultList = new ArrayList<>();
+		Iterator<PingResult> iterator = pingIterable.iterator();
+		int index = 0;
+		int count = 0;
+		while (iterator.hasNext() && index % time == 0 && count < MONITOR_COUNT) {
+			PingResult pingResult = iterator.next();
+			String pingResultString = pingResult.getPingResult();
+			dnsMonitorResultList.add(pingResult);
+			index++;
+			count++;
 		}
-		if (controller != null) {
-			controller = client.updateReplicationController(service.getServiceName(), 0);
-			if (controller != null && controller.getSpec().getReplicas() == 0) {
-				Status status = client.deleteReplicationController(service.getServiceName());
-				if (!status.getStatus().equals("Success")) {
-					LOG.error(
-							"Delete a Replication Controller failed:DNSServiceName[" + service.getServiceName() + "]");
-					messages.add(
-							"Delete a Replication Controller failed:DNSServiceName[" + service.getServiceName() + "]");
-					map.put("status", "400");
-					map.put("messages", messages);
-					return JSON.toJSONString(map);
-				}
-			} else {
-				LOG.error("Update a Replication Controller (update the number of replicas) failed:DNSServiceName["
-						+ service.getServiceName() + "]");
-				messages.add("Update a Replication Controller (update the number of replicas) failed:DNSServiceName["
-						+ service.getServiceName() + "]");
-				map.put("status", "400");
-				map.put("messages", messages);
-				return JSON.toJSONString(map);
-			}
-		}
+		map.put("dnsMonitorResultList", dnsMonitorResultList);
 
-		// 删除svc
-		Service k8sService = null;
-		try {
-			// 查询svc是否已经创建
-			k8sService = client.getService(service.getServiceName());
-		} catch (KubernetesClientException e) {
-			k8sService = null;
-		}
-		if (null != k8sService) {
-			Status status = client.deleteService(service.getServiceName());
-			if (!status.getStatus().equals("Success")) {
-				LOG.error("Delete a Service failed:ServiceName[" + service.getServiceName() + "]");
-				messages.add("Delete a Service failed:ServiceName[" + service.getServiceName() + "]");
-				map.put("status", "400");
-				map.put("messages", messages);
-				return JSON.toJSONString(map);
-			}
-		}
-		// 持久化
-		dnsServiceDao.delete(service);
 		if (CollectionUtils.isEmpty(messages)) {
 			map.put("status", "200");
 		} else {
@@ -284,5 +347,4 @@ public class DNSController {
 		return JSON.toJSONString(map);
 
 	}
-
 }
