@@ -1330,6 +1330,24 @@ font i.fa-question-circle{
 .clusterTestOprBtns a{
 	cursor:pointer;
 }
-
-
-
+#detail{
+	padding:10px;
+}
+.tableInput{
+	width:78%;
+}
+.tableInput input{
+	width:100%;
+	border-radius:4px;
+}
+#pingdetail,#tracedetail,#qperfdetail,#curldetail,#masterdetail,#standbydetail{
+	border:1px solid #ddd;
+}
+#myTabContent .fade table{
+	width: 96%;
+	margin: 10px auto
+}
+#myTab li.active a{
+	background-color:#e8504f;
+	color:#fff;
+}
