@@ -1613,6 +1613,8 @@ public class ClusterController {
 					// nodeInfo.setPing(pingresponse.getOutmsg().contains("Unreachable")
 					// ? false : true);
 					nodeInfo.setPing(pingitem);
+					nodeInfo.setPingIp(pingIp);
+					nodeInfo.setPingtimetarget(pingtime);
 					if (!pingresponse.getOutmsg().contains("Unreachable")) {
 						String[] outmsg = pingresponse.getOutmsg().split("/");
 						nodeInfo.setPingtime(Double.parseDouble(outmsg[outmsg.length - 3]));
@@ -1628,6 +1630,8 @@ public class ClusterController {
 					// nodeInfo.setTracepath(tracemsg.contains("hops") ? true :
 					// false);
 					nodeInfo.setTracepath(traceitem);
+					nodeInfo.setTraceIp(tracepathIp);
+					nodeInfo.setTracetimetarget(tracetime);
 					tracemsg = tracemsg.subSequence(tracemsg.indexOf("real"), tracemsg.indexOf("user")).toString()
 							.trim();
 					tracemsg = tracemsg.split("0m")[1].split("s")[0];
@@ -1661,6 +1665,7 @@ public class ClusterController {
 							sp = sp * 1024;
 						}
 						nodeInfo.setSpeed(sp);
+						nodeInfo.setSpeedtarget(speed);
 						qperfmsg = qperfresponse.getOutmsg();
 						qperfmsg = qperfmsg.split("latency")[1].split("conf")[0].split("=")[1].trim();
 						unit = qperfmsg.substring(qperfmsg.length() - 3, qperfmsg.length()).trim();
@@ -1671,6 +1676,7 @@ public class ClusterController {
 							lcy = lcy * 1000;
 						}
 						nodeInfo.setLatency(lcy);
+						nodeInfo.setLatencytarget(latency);
 						nodeInfo.setQperfpass(sp >= speed && lcy <= latency);// qperf通过
 					}
 					allpass = allpass && nodeInfo.isQperfpass();
@@ -1683,6 +1689,7 @@ public class ClusterController {
 					// nodeInfo.setCurl(curlmsg.contains("Failed") ? false :
 					// true);
 					nodeInfo.setCurl(curlitem);
+					nodeInfo.setCurltimetarget(curltime);
 					curlmsg = curlmsg.split("real")[1].split("user")[0].trim().split("0m")[1].split("s")[0].trim();
 					nodeInfo.setCurltime(Double.parseDouble(curlmsg));
 					if (!curlmsg.contains("Failed")) {
@@ -1701,6 +1708,7 @@ public class ClusterController {
 					nodeInfo.setDocker(dockeritem);
 					nodeInfo.setCpu(info.getNCPU());
 					nodeInfo.setMemory(mem);
+					nodeInfo.setMemorytarget(memory);
 					nodeInfo.setDockerpass(mem == memory);// docker通过
 					allpass = allpass && nodeInfo.isDockerpass();
 				}
