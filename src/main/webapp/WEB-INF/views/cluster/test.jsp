@@ -25,14 +25,14 @@
 					</ol>
 				</div>
 				<div class="contentMain" style="height: 400px;">
-					<div class="clusterTestBtns">
+					<!-- <div class="clusterTestBtns hide">
 						<span id="deployBtn" class="btn btn-primary btn-color pull-left"
 							style="margin-right: 10px; cursor: pointer">部署</span>
 						<span id="excuteBtn" class="btn btn-primary btn-color pull-left"
 							style="margin-right: 10px; cursor: pointer">执行</span>
 						<span id="deleteBtn" class="btn btn-primary btn-color pull-left"
 							style="margin-right: 10px; cursor: pointer">清除部署</span>
-					</div>
+					</div> -->
 
 					<div class="row">
 						<div class="col-md-12">
@@ -42,6 +42,9 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>集群测试
 									</h5>
 									<div class="ibox-tools">
+										<a id="deployBtn" style="cursor: pointer"><i>部署</i></a>
+										<a id="excuteBtn" style="cursor: pointer"><i>执行</i></a>
+										<a id="deleteBtn" style="cursor: pointer"><i>清除部署</i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>
@@ -466,7 +469,7 @@
 	</div>
 	<script type="text/javascript">
 	$('.dataTables-example').dataTable({
-	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
+	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,4] }],
 	    //"searching":false
 	    //"aaSorting": [[ 2, "desc" ]]
 	});
