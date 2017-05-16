@@ -150,9 +150,10 @@ public class DNSController {
 		portCon.setProtocol("TCP");
 		portConfigs.add(portCon);
 
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient("default");
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient("longlong");
 		// 创建Service
-		Service k8sService = kubernetesClientService.generateService(serviceName, portConfigs, null, serviceName, serviceName, null, null);
+		Service k8sService = kubernetesClientService.generateService(serviceName, portConfigs, null, serviceName,
+				serviceName, "", "");
 		try {
 			k8sService = client.createService(k8sService);
 		} catch (KubernetesClientException e) {
@@ -165,8 +166,9 @@ public class DNSController {
 			return JSON.toJSONString(map);
 		}
 		// 创建ReplicationController
-		ReplicationController replicationController = kubernetesClientService
-				.generateSimpleReplicationController(serviceName, 1, null, null, null, MONITOR_IMAGE_NAME, portConfigs, 1.0, "2048.0", null, serviceName, serviceName, null, null, command, args, null, false);
+		ReplicationController replicationController = kubernetesClientService.generateSimpleReplicationController(
+				serviceName, 1, null, null, null, MONITOR_IMAGE_NAME, portConfigs, 1.0, "2048.0", null, serviceName,
+				serviceName, "", new ArrayList<>(), command, args, new ArrayList<>(), false);
 		try {
 			replicationController = client.createReplicationController(replicationController);
 		} catch (KubernetesClientException e) {
@@ -224,7 +226,7 @@ public class DNSController {
 		// 删除rc
 		ReplicationController controller = null;
 		try {
-			//查询ReplicationController是否已经创建
+			// 查询ReplicationController是否已经创建
 			controller = client.getReplicationController(service.getServiceName());
 		} catch (Exception e1) {
 			controller = null;
@@ -271,7 +273,7 @@ public class DNSController {
 				return JSON.toJSONString(map);
 			}
 		}
-		//持久化
+		// 持久化
 		dnsServiceDao.delete(service);
 		if (CollectionUtils.isEmpty(messages)) {
 			map.put("status", "200");
