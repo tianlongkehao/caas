@@ -342,19 +342,22 @@ public class DNSController {
 		Iterator<PingResult> iterator = pingIterable.iterator();
 		int index = 0;
 		int count = 0;
-		while (iterator.hasNext() && index % time == 0 && count < MONITOR_COUNT) {
+		while (iterator.hasNext() && count < MONITOR_COUNT) {
+
 			PingResult pingResult = iterator.next();
-			String pingResultString = pingResult.getPingResult();
-			if (pingResultString.contains("Address 1: ")) {
-				int addressIndex = pingResultString.indexOf("Address 1: ");
-				pingResult.setIp(pingResultString.substring(addressIndex+11));
-				pingResult.setSuccess(true);
-			} else {
-				pingResult.setSuccess(false);
+			if (index % time == 0) {
+				String pingResultString = pingResult.getPingResult();
+				if (pingResultString.contains("Address 1: ")) {
+					int addressIndex = pingResultString.indexOf("Address 1: ");
+					pingResult.setIp(pingResultString.substring(addressIndex + 11));
+					pingResult.setSuccess(true);
+				} else {
+					pingResult.setSuccess(false);
+				}
+				dnsMonitorResultList.add(pingResult);
+				count++;
 			}
-			dnsMonitorResultList.add(pingResult);
 			index++;
-			count++;
 		}
 		map.put("dnsMonitorResultList", dnsMonitorResultList);
 
