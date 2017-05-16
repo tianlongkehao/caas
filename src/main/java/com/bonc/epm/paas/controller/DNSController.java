@@ -97,7 +97,7 @@ public class DNSController {
 	 * @param address
 	 * @return String
 	 */
-	@RequestMapping(value = ("createDNSMonitor.do"), method = RequestMethod.GET)
+	@RequestMapping(value = ("createDNSMonitor.do"), method = RequestMethod.POST)
 	@ResponseBody
 	public String createDNSMonitor(String serviceName, String address) {
 		Map<String, Object> map = new HashMap<>();
