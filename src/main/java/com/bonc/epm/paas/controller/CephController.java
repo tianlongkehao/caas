@@ -92,7 +92,12 @@ public class CephController {
      */
     public void connectCephFS() throws Exception {
         LOGGER.info("进入方法：connectCephFS");
-        cephMount = new CephMount("admin");
+        try {
+			cephMount = new CephMount("admin");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         cephMount.conf_read_file("/etc/ceph/ceph.conf");
         cephMount.mount("/");
         cephMount.chmod("/", mode);
