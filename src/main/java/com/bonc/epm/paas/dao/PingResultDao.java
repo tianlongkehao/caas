@@ -17,4 +17,6 @@ import com.bonc.epm.paas.entity.PingResult;
 public interface PingResultDao extends CrudRepository<PingResult, Long> {
 	@Query("select i from PingResult i where i.host = ?1 order by createDate desc")
 	Iterable<PingResult> findByHost(String host);
+
+	void deleteByHost(String host);
 }

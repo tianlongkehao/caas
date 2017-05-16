@@ -301,7 +301,7 @@ public class DNSController {
 				}
 				portConfigDao.deleteByDnsServiceId(id);
 			}
-
+			pingResultDao.deleteByHost(service.getAddress());
 		}
 
 		if (CollectionUtils.isEmpty(messages)) {
