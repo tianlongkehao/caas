@@ -34,6 +34,8 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>集群DNS
 									</h5>
 									<div class="ibox-tools">
+										<a title="创建监控" onclick="createDNSMonitor()"><i
+											class="fa fa-plus"></i></a>
 										<a title="定时" onclick="timedTask()"><i
 											class="fa fa-clock-o"></i></a> 
 										<a title="定时日志" onclick="timedLog()"><i
@@ -58,15 +60,27 @@
 						<div class="" style="margin-bottom:15px">
 							<table class="table table-striped table-hover dataTables-example">
 								<thead>
-									<tr>
+									<tr>	
+										<th style="width:5%;text-indent:20px">
+											<input type="checkbox" class="chkAll" id="checkallbox" />
+										</th>
+										<th style="text-indent:10px">服务名称</th>
 										<th style="text-indent:10px">域名</th>
 										<th>解析IP</th>
+										<th>创建时间</th>
+										<th>操作</th>
 									</tr>
 								</thead>
 								<tbody id="routeList">
 									<tr>
+										<td style="width:5%;text-indent:20px">
+											<input class="chkItem" type="checkbox">
+										</td>
+										<td style="text-indent:10px">ddd</td>
 										<td style="text-indent:10px">portal.clyxys.svc.cluster.local</td>
 										<td>192.168.0.1</td>
+										<td>2017-12-12 15:55</td>
+										<td><a onclick="delOneDns(this)"><i class="fa fa-trash"></i></a></td>
 									</tr>
 								</tbody>
 							</table>
@@ -105,13 +119,25 @@
 		</div>
 	</div>
 </div>
+<div class="createDnsInfo" style="display:none">
+	<div style="padding:15px">
+		<div style="height:50px">
+			<span style="width:15%;float:left;line-height:34px;">服务名称：</span>
+			<input style="width:80%;float:left;" class="form-control" id="serviceName" value="">
+		</div>
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">域名：</span>
+			<input style="width:80%;float:left;" class="form-control" id="address" value="">
+		</div>
+	</div>
+</div>
 <script type="text/javascript">
 	$('.dataTables-example').dataTable({
-	    //"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
+	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,5] }],
 	    //"searching":false
-	    //"aaSorting": [[ 2, "desc" ]]
+	    "aaSorting": [[ 4, "desc" ]]
 	}); 
-	//$("#checkallbox").parent().removeClass("sorting_asc");
+	$("#checkallbox").parent().removeClass("sorting_asc");
 </script>
 
 </body>
