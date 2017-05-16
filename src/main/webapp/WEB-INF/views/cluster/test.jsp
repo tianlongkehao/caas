@@ -68,13 +68,13 @@
 								<tbody id="routeList">
 									<c:forEach items="${nodeList}" var="node">
 									<input type="hidden" value="${node.nodeTestInfo}">
-										<tr>
+										<tr class="thisTr">
 											<td style="width:5%;text-indent:20px">
-												<input class="chkItem" name="node" type="checkbox" value="${node.nodename }">
+												<input class="chkItem" name="node" type="checkbox" value="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">
 											</td>
 											<td style="width:15%;">${node.nodename }</td>
-											<td style="width:40%;" nodeName="${node.nodename }">
-									        	<div class="progress nodeProgress" style="margin:0 auto">
+											<td style="width:40%;" nodeName="${node.nodename }" class="nodeProgressBar">
+									        	<div id="progress_${node.nodename }" class="progress nodeProgress" style="margin:0 auto">
 									        		<div class="progress-bar" role="progressbar"
 														 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
 													</div>
@@ -85,18 +85,20 @@
 															<span >部署完成</span>
 														</div>
 														<c:if test="${node.teststatus == true}">
-															<div class="progress-bar progress-bar-success" role="progressbar"
-																 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-																 style="width: 85%;">
-																<span>执行完成</span>
-															</div>
-														</c:if>
-														<c:if test="${node.teststatus == false}">
-															<div class="progress-bar progress-bar-danger" role="progressbar"
-																 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-																 style="width: 85%;">
-																<span>执行失败</span>
-															</div>
+															<c:if test="${node.nodeTestInfo.allpass == true}">
+																<div class="progress-bar progress-bar-success" role="progressbar"
+																	 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+																	 style="width: 85%;">
+																	<span>执行完成</span>
+																</div>
+															</c:if>
+															<c:if test="${node.nodeTestInfo.allpass == false}">
+																<div class="progress-bar progress-bar-danger" role="progressbar"
+																	 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+																	 style="width: 85%;">
+																	<span>执行失败</span>
+																</div>
+															</c:if>
 														</c:if>
 													</c:if>
 													<c:if test="${node.deploystatus ==false}">
@@ -111,18 +113,22 @@
 											<td class="clusterTestOpr" style="width:20%;text-indent:20px">
 												<a id="${node.nodename }"  nodename="${node.nodename }"
 													onclick="detail(this)" title="查看详细信息">
-													<c:if test="${node.teststatus == true}">
-														<font color="#33CC33" style="font-weight:bold;cursor:pointer" id="nodeTestInfo" nodeTestInfo="${node.nodeTestInfo}">通过<i class="fa fa-question-circle"></i></font>
-													</c:if>
-													<c:if test="${node.teststatus == false}">
-														<font color="#FF0033" style="font-weight:bold;cursor:pointer">未通过<i class="fa fa-question-circle"></i></font>
+													<c:if test="${node.deploystatus == true}">
+														<c:if test="${node.teststatus == true}">
+															<c:if test="${node.nodeTestInfo.allpass == true}">
+																<font color="#33CC33" style="font-weight:bold;cursor:pointer" id="nodeTestInfo" nodeTestInfo="${node.nodeTestInfo}">通过<i class="fa fa-question-circle"></i></font>
+															</c:if>
+															<c:if test="${node.nodeTestInfo.allpass == false}">
+																<font color="#FF0033" style="font-weight:bold;cursor:pointer">未通过<i class="fa fa-question-circle"></i></font>
+															</c:if>
+														</c:if>
 													</c:if>
 												</a>
 											</td>
-											<td class="clusterTestOprBtns">
-												<a><i>部署</i></a>
-												<a><i>执行</i></a>
-												<a><i>清理部署</i></a>
+											<td class="clusterTestOprBtns" nodeName="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">
+												<a onclick="deployOneNode(this)"><i>部署</i></a>
+												<a onclick="testOneNode(this)"><i>执行</i></a>
+												<a onclick="clearOneNode(this)"><i>清理部署</i></a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -199,7 +205,7 @@
 							</tr>
 							<tr>
 								<th style="width: 20%">
-									<input name="item" type="checkbox" value="pingitem">&nbsp;ping地址：
+									<input name="item" class="checkItem" type="checkbox" value="pingitem" id="pingitem">&nbsp;ping地址：
 								</th>
 								<td>
 									<input type="text" id="pingip" placeholder="主机IP" value="192.168.0.75" />
@@ -214,7 +220,7 @@
 								</td>
 							</tr>
 							<tr>
-								<th style="width: 20%"><input name="item" type="checkbox" value="traceitem">&nbsp;trace地址：</th>
+								<th style="width: 20%"><input name="item" class="checkItem" type="checkbox" value="traceitem" id="traceitem">&nbsp;trace地址：</th>
 								<td>
 									<input type="text" id="tracepathip" placeholder="主机IP" value="192.168.0.75" />
 								</td>
@@ -229,7 +235,7 @@
 							</tr>
 							<tr>
 								<th style="width: 20%">
-									<input name="item" type="checkbox" value="curlitem">&nbsp;curl响应时间：
+									<input name="item" class="checkItem" type="checkbox" value="curlitem" id="curlitem">&nbsp;curl响应时间：
 								</th>
 								<td colspan="3" style="width: 80%">
 									<input type="number" style="width: 80%;" value="2" class="number"
@@ -240,7 +246,7 @@
 							</tr>
 							<tr>
 								<th style="width: 20%">
-									<input name="item" type="checkbox" value="qperfitem">&nbsp;qperf带宽：
+									<input name="item" class="checkItem" type="checkbox" value="qperfitem" id="qperfitem">&nbsp;qperf带宽：
 								</th>
 								<td>
 									<input style="width: 80%" type="number" value="2000" class="number"
@@ -259,18 +265,7 @@
 								</tr>
 								<tr>
 									<th style="width: 25%">
-										<input name="item" type="checkbox" value="dockeritem">&nbsp;docker磁盘大小：
-									</th>
-									<td colspan="3" style="width: 75%">
-										<input style="width: 80%" type="number" value="15" class="number" min="1"
-											autocomplete="off" max="" placeholder="1" id="docker"
-											onkeyup="this.value=this.value.replace(/\D/g,'')"
-											name="instanceNum"><span class="s-unit">GB</span>
-									</td>
-								</tr>
-								<tr>
-									<th style="width: 25%">
-										<input name="item" type="checkbox" value="dockeritem">&nbsp;docker磁盘大小：
+										<input name="item" class="checkItem" type="checkbox" value="dockeritem" id="dockeritem">&nbsp;docker磁盘大小：
 									</th>
 									<td colspan="3" style="width: 75%">
 										<input style="width: 80%" type="number" value="15" class="number" min="1"
@@ -281,7 +276,7 @@
 								</tr>
 								<tr>
 									<th colspan="4" style="width: 25%">
-										<input name="item" type="checkbox" value="dnsitem">&nbsp;dns
+										<input name="item" class="checkItem" type="checkbox" value="dnsitem" id="dnsitem">&nbsp;dns
 									</th>
 								</tr>
 						</tbody>
@@ -318,7 +313,7 @@
 									</tr>
 									<tr>
 										<td colspan="2">
-											<textarea id="pingdetail" style="width: 100%; height: 100px;"></textarea>
+											<textarea id="pingdetail" style="width: 100%; height: 200px;"></textarea>
 										</td>
 									</tr>
 								</tbody>
@@ -344,7 +339,7 @@
 									</tr>
 									<tr>
 										<td colspan="2"><textarea id="tracedetail"
-												style="width: 100%; height: 100px;"></textarea></td>
+												style="width: 100%; height: 200px;"></textarea></td>
 									</tr>
 								</tbody>
 							</table>
@@ -374,7 +369,7 @@
 									</tr>
 									<tr>
 										<td colspan="2"><textarea id="qperfdetail"
-												style="width: 100%; height: 100px;"></textarea></td>
+												style="width: 100%; height: 160px;"></textarea></td>
 									</tr>
 								</tbody>
 							</table>
@@ -399,7 +394,7 @@
 									</tr>
 									<tr>
 										<td colspan="2"><textarea id="curldetail"
-												style="width: 100%; height: 100px;"></textarea></td>
+												style="width: 100%; height: 200px;"></textarea></td>
 									</tr>
 								</tbody>
 							</table>
@@ -407,6 +402,16 @@
 						<div class="tab-pane fade" id="dockerTab">
 							<table class="table">
 								<tbody class="dockerTable">
+									<tr>
+										<th style="width: 20%">docker操作：</th>
+										<td class="tableInput"><input class="" type="text" id="dockerstatus" readOnly
+											value=""></td>
+									</tr>
+									<tr>
+										<th style="width: 20%">检测状态：</th>
+										<td class="tableInput"><input class="" type="text" id="dockerpass" readOnly
+											value=""></td>
+									</tr>
 									<tr>
 										<th style="width: 20%">cpu：</th>
 										<td class="tableInput"><input class="" type="text" id="cpu" readOnly
@@ -417,17 +422,17 @@
 										<td class="tableInput"><input class="" type="text" id="memory" readOnly
 											value=""></td>
 									</tr>
-									<tr>
-										<th style="width: 20%">检测状态：</th>
-										<td class="tableInput"><input class="" type="text" id="dockerpass" readOnly
-											value=""></td>
-									</tr>
 								</tbody>
 							</table>
 						</div>
 						<div class="tab-pane fade" id="dnsTab">
 							<table class="table">
 								<tbody class="curlTable">
+									<tr>
+										<th style="width: 20%">dns操作：</th>
+										<td class="tableInput"><input type="text" id="dnsstatus" readOnly
+											value=""></td>
+									</tr>
 								    <tr>
 										<th style="width: 20%">检测状态：</th>
 										<td class="tableInput"><input class="" type="text" id="dnspass" readOnly

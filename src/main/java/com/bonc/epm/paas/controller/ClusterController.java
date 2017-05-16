@@ -1784,6 +1784,8 @@ public class ClusterController {
 	 *                404 没有测试结果
 	 *                200 成功
 	 */
+	@RequestMapping(value = { "/excutetestResult" }, method = RequestMethod.GET)
+	@ResponseBody
 	public String getClusterTestResult(String nodename) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 200);
