@@ -40,6 +40,8 @@
 											class="fa fa-clock-o"></i></a> 
 										<a title="定时日志" onclick="timedLog()"><i
 											class="fa fa-history"></i></a> 
+										<a title="删除" onclick="delDns()"><i
+											class="fa fa-trash"></i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>
@@ -74,7 +76,7 @@
 								<tbody id="routeList">
 									<tr>
 										<td style="width:5%;text-indent:20px">
-											<input class="chkItem" type="checkbox">
+											<input class="chkItem" type="checkbox" id="">
 										</td>
 										<td style="text-indent:10px">ddd</td>
 										<td style="text-indent:10px">portal.clyxys.svc.cluster.local</td>

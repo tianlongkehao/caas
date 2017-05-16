@@ -64,15 +64,53 @@ function createDNSMonitor(){
 
 //删除一个dns
 function delOneDns(obj){
-	var id="1";
+	var id=1;
+	var idArray = new Array();
+	idArray.push(id);
+	var ids = {ids:JSON.stringify(idArray)};
 	layer.open({
 		title: "删除",
 		content: "确定删除？",
 		btn: ["确定","取消"],
 		yes: function(index,layero){
 			$.ajax({
-				url:ctx + "/deleteDNSMonitor.do?id="+id,
-				type:"get",
+				url:ctx + "/deleteDNSMonitor.do",
+				type:"delete",
+				data:ids,
+				success:function(data){
+					var data = eval("("+data+")");
+					var status = data.status;
+					layer.close(index);
+					if(status=='200'){
+						layer.msg("删除成功！",{icon : 1});
+					}else if(status=='400'){
+						layer.alert(data.messages[0],{icon : 2});
+					}
+				}
+			})
+		}
+	})
+}
+
+//批量删除dns
+function delDns(){
+	var chkItem = $(".chkItem:checked");
+	var idArray = new Array();
+	for(var i=0; i<chkItem.length; i++){
+		var id = $(chkItem[i]).attr("id");
+		idArray.push(id);
+	}
+	idArray.push(id);
+	var ids = {ids:JSON.stringify(idArray)};
+	layer.open({
+		title: "删除",
+		content: "确定删除？",
+		btn: ["确定","取消"],
+		yes: function(index,layero){
+			$.ajax({
+				url:ctx + "/deleteDNSMonitor.do",
+				type:"delete",
+				data:ids,
 				success:function(data){
 					var data = eval("("+data+")");
 					var status = data.status;
