@@ -80,4 +80,20 @@ public class PingResult {
 	public void setPingResult(String pingResult) {
 		this.pingResult = pingResult;
 	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
 }
