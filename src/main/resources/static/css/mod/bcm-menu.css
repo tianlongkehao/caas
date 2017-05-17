@@ -350,6 +350,18 @@ i.fa-nav{
 	background: url(../../images/bg-nav2.png) no-repeat;
 	background-position: 0 -163px;
 }
+#menu_storage a i.fa-nav-storage{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -182px;
+}
+#menu_storage a:hover i.fa-nav-storage{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -183px;
+}
+#menu_storage.active a i.fa-nav-storage{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -183px;
+}
 
 
 
