@@ -73,17 +73,20 @@
 										<th>操作</th>
 									</tr>
 								</thead>
-								<tbody id="routeList">
-									<tr>
-										<td style="width:5%;text-indent:20px">
-											<input class="chkItem" type="checkbox" id="">
-										</td>
-										<td style="text-indent:10px">ddd</td>
-										<td style="text-indent:10px">portal.clyxys.svc.cluster.local</td>
-										<td>192.168.0.1</td>
-										<td>2017-12-12 15:55</td>
-										<td><a onclick="delOneDns(this)"><i class="fa fa-trash"></i></a></td>
-									</tr>
+								<tbody id="dnsList">
+									<c:forEach items="${DNSServiceList }" var="dns">
+										<tr>
+											<td style="width:5%;text-indent:20px">
+												<input class="chkItem" type="checkbox" id="${dns.id }">
+											</td>
+											<td style="text-indent:10px"><a class="link" onclick="getDnsResult(this,${dns.id })" serviceName="${dns.serviceName }">${dns.serviceName }</a></td>
+											<td style="text-indent:10px">${dns.address }</td>
+											<td></td>
+											<td>${dns.createDate }</td>
+											<td><a onclick="delOneDns(${dns.id })"><i class="fa fa-trash"></i></a>
+											<a onclick="dnsOneHistory(${dns.id })"><i class="fa fa-history"></i></a></td>
+										</tr>
+									</c:forEach>
 								</tbody>
 							</table>
 						</div>
@@ -131,6 +134,50 @@
 			<span style="width:15%;float:left;line-height:34px;">域名：</span>
 			<input style="width:80%;float:left;" class="form-control" id="address" value="">
 		</div>
+	</div>
+</div>
+<div class="dnsResultInfo" style="display:none">
+	<div style="padding:15px">
+		<div style="height:50px">
+			<span style="width:15%;float:left;line-height:34px;">服务名称：</span>
+			<input style="width:80%;float:left;" class="form-control" id="serviceNameInfo" value="">
+		</div>
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">域名：</span>
+			<input style="width:80%;float:left;" class="form-control" id="addressInfo" value="">
+		</div>
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">解析结果：</span>
+			<input style="width:80%;float:left;" class="form-control" id="resultInfo" value="">
+		</div>
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">解析IP：</span>
+			<input style="width:80%;float:left;" class="form-control" id="ipInfo" value="">
+		</div>
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">时间间隔：</span>
+			<input style="width:80%;float:left;" class="form-control" id="timeInfo" value="">
+		</div>
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">日志：</span>
+			<textarea style="width:80%;float:left;" class="form-control" id="logInfo" value="" rows="4"></textarea>
+		</div>
+	</div>
+</div>
+<div class="dnshistoryInfo" style="display:none">
+	<div style="padding:15px">
+		<div style="height:50px">
+			<p><span style="width:15%;float:left;line-height:34px;">时间间隔：</span>
+				<select>
+					<option>1m</option>
+					<option>3m</option>
+					<option>5m</option>
+					<option>10m</option>
+				</select>
+			</p>
+			<div id="hisrotyInfos"></div>
+		</div>
+		
 	</div>
 </div>
 <script type="text/javascript">

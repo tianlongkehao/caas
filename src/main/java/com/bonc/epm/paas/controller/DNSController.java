@@ -212,7 +212,7 @@ public class DNSController {
 	 * @param id
 	 * @return String
 	 */
-	@RequestMapping(value = ("deleteDNSMonitor.do"), method = RequestMethod.GET)
+	@RequestMapping(value = ("deleteDNSMonitor.do"), method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteDNSMonitor(String ids) {
 		Map<String, Object> map = new HashMap<>();

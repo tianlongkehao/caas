@@ -2,6 +2,7 @@ $(document).ready(function () {
 	
 })
 
+
 function timedTask(){
 	layer.open({
 		type: 1,
@@ -63,8 +64,7 @@ function createDNSMonitor(){
 }
 
 //删除一个dns
-function delOneDns(obj){
-	var id=1;
+function delOneDns(id){
 	var idArray = new Array();
 	idArray.push(id);
 	var ids = {ids:JSON.stringify(idArray)};
@@ -75,7 +75,7 @@ function delOneDns(obj){
 		yes: function(index,layero){
 			$.ajax({
 				url:ctx + "/deleteDNSMonitor.do",
-				type:"delete",
+				type:"post",
 				data:ids,
 				success:function(data){
 					var data = eval("("+data+")");
@@ -126,5 +126,72 @@ function delDns(){
 	})
 }
 
-
+//获得dns当前监控
+function getDnsResult(obj,id){
+	var serviceName = $(obj).attr("serviceName");
+	$.ajax({
+		url:ctx + "/getDNSMonitorResultList.do?id="+id+"&time=1",
+		type:"get",
+		success:function(data){
+			var data = eval("("+data+")");
+			if(data.status == '200'){
+				var dnsMonitorResultListNow = data.dnsMonitorResultList[0];
+				$("#serviceNameInfo").val(serviceName);
+				$("#addressInfo").val(dnsMonitorResultListNow.host);
+				var resultInfo = "";
+				if(dnsMonitorResultListNow.success){
+					resultInfo = "成功";
+				}else{
+					resultInfo = "失败";
+				}
+				$("#resultInfo").val(resultInfo);
+				$("#ipInfo").val(dnsMonitorResultListNow.ip);
+				$("#timeInfo").val("1");
+				$("#logInfo").val(dnsMonitorResultListNow.pingResult);
+				layer.open({
+					type: 1,
+					title: "DNS监控信息",
+					content: $(".dnsResultInfo"),
+					area: ["500px"],
+					btn: ["关闭"],
+					yes: function(index,layero){
+						layer.close(index);
+					}
+				})
+			}else if(status=='400'){
+				layer.alert(data.messages[0],{icon : 2});
+			}
+		}
+	})
+}
+//dns监控日志
+function dnsOneHistory(id){
+	var time = 1;
+	$.ajax({
+		url:ctx + "/getDNSMonitorResultList.do?id="+id+"&time="+time,
+		type:"get",
+		success:function(data){
+			var data = eval("("+data+")");
+			if(data.status == '200'){
+				var dnsMonitorResultList = data.dnsMonitorResultList;
+				var historyHtml ="";
+				for(var i=0; i<dnsMonitorResultList.length; i++){
+					historyHtml += '<p>'+dnsMonitorResultList[i].createDate+'</p>'
+									+'<p>'+dnsMonitorResultList[i].pingResult+'</p>';
+				}
+				$("#hisrotyInfos").append(historyHtml);
+				layer.open({
+					type: 1,
+					title: "DNS监控信息",
+					content: $(".dnshistoryInfo"),
+					area: ["1000px","600px"],
+					btn: ["关闭"],
+					yes: function(index,layero){
+						layer.close(index);
+					}
+				})
+			}
+		}
+	})
+}
 
