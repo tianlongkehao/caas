@@ -446,6 +446,7 @@ public class DNSController {
 		if (resultIterator.hasNext()) {
 			PingResult next = resultIterator.next();
 			String pingResultString = next.getPingResult();
+			service.setPingResult(pingResultString);
 			if (pingResultString.contains("Address 1: ")) {
 				int addressIndex = pingResultString.indexOf("Address 1: ");
 				service.setIp(pingResultString.substring(addressIndex + 11));
