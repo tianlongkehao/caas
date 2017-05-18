@@ -27,6 +27,7 @@ import com.bonc.epm.paas.entity.PingResult;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -369,5 +370,37 @@ public class DNSController {
 		}
 		return JSON.toJSONString(map);
 
+	}
+	public String getDNSMonitorResultStatus(long id){
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		DNSService service = dnsServiceDao.findOne(id);
+		// 查找不到的时候返回异常
+		if (service == null) {
+			messages.add("查找监控失败：[id:" + id + "]");
+			LOG.error("查找监控失败：[id:" + id + "]");
+			map.put("status", "400");
+			map.put("messages", messages);
+			return JSON.toJSONString(map);
+		}
+
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
+		try {
+			client.getService(service.getServiceName());
+		} catch (KubernetesClientException e) {
+			messages.add("查找监控失败：[id:" + id + "]");
+			LOG.error("查找监控失败：[id:" + id + "]");
+			map.put("status", "400");
+			map.put("messages", messages);
+			return JSON.toJSONString(map);
+		}
+
+		if (CollectionUtils.isEmpty(messages)) {
+			map.put("status", "200");
+		} else {
+			map.put("status", "400");
+			map.put("messages", messages);
+		}
+		return JSON.toJSONString(map);
 	}
 }
