@@ -8,14 +8,65 @@ $(function(){
 			content: $("#storageQuickAddInfo"),
 			btn: ['确定', '取消'],
 			yes: function(index, layero){
-				$.ajax({
-					url:""+ctx+"/service/createcephrbd",
-					type:"get",
-					data:"",
-					success:function(data){
+				var blockname = $("#q-storageName").val();
+				if(blockname==""){
+					alert("磁盘名称不能为空！");
+					return;
+				}
+				var size=$('input:radio[name="updateStorageSize"]:checked').val();
+				if(size ==null){
+					alert("请至少选中一个磁盘大小选项！");
+					return;
+				}
+				var disksize;
+				if(size="20480"){
+					disksize =20;
+				}else if(size="51200"){
+					disksize =50;
+				}else if(size="102400"){
+					disksize =100;
+				}
+				disksize = $("#updatedefVol").val();
 
+				if($("#restVol").html()!=""&&disksize>$("#restVol").html()){
+					alert("剩余磁盘空间不足，请重新分配磁盘大小！");
+					return;
+				}
+				var unload = $("#unloadBtn").val();
+				var disktype=$("#disktype").val();
+				if(disktype==0){
+					alert("请选择磁盘属性！");
+					return;
+				}
+				var distdetail= $("#storage-mark").html();
+
+				//先检查磁盘名称是否存在，然后新建
+				$.ajax({
+					url:""+ctx+"/service/ceph/checkrbd?imgname="+blockname,
+					type:"get",
+					success:function(data){
+                        if(data.status==500){
+                        	alert("ceph异常！")
+                        	return;
+                        }
+                        if(data.status==200){
+                        	if(data.exist==1){
+                        		alert("磁盘名称重复，请重命名！")
+                        		return;
+                        	}else{
+                        		$.ajax({
+                					url:""+ctx+"/service/createcephrbd?imgname="+blockname+"&disksize="+disksize+"&unload="+unload
+                					     +"&disktype="+disktype+"&distdetail="+distdetail,
+                					type:"get",
+                					success:function(data){
+
+                					}
+                				});
+                        	}
+                        }
 					}
 				});
+
 				}
 		})
 	});

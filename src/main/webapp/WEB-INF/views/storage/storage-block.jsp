@@ -5,7 +5,7 @@
     <title>云存储</title>
     <%@include file="../frame/header.jsp"%>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/storage.css"/>
-  	<script type="text/javascript" src="<%=path %>/js/storage/storage-block.js"></script> 
+  	<script type="text/javascript" src="<%=path %>/js/storage/storage-block.js"></script>
 </head>
 <body>
 <jsp:include page="../frame/bcm-menu.jsp" flush="true">
@@ -101,7 +101,7 @@
 							</div>
 						</div>
 				</div>
-          		
+
             </div>
         </div>
     </article>
@@ -119,7 +119,7 @@
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20"><label for="size20">20<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="size50"><label for="size50">50<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="size100"><label for="size100">100<span>G</span></label>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" id="updatedefVolNum">
+                <input type="radio" name="updateStorageSize" class="updateStorageSize" value ="selfdefine" id="updatedefVolNum">
                 	<label for="updatedefVolNum"><input type="number" id="updatedefVol" placeholder="自定义大小"><span>G</span></label>
                 <div>
                 <span style="color:#1E90FF; padding-left:84px">总量:<span id="totalVol">${userResource.vol_size}</span>G</span>
@@ -132,7 +132,7 @@
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">磁盘属性：</span>
-            <select class="form-control q-storage">
+            <select id="disktype" class="form-control q-storage">
             	<option value="0">--请选择磁盘属性--</option>
             	<option value="1">数据盘</option>
             	<option value="2">系统盘</option>
@@ -275,7 +275,7 @@
 </div>
 
 <script type="text/javascript">
-	
+
 </script>
 
 </body>
