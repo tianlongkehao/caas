@@ -135,7 +135,7 @@
 </div>
 <div class="dnsResultInfo" style="display:none">
 	<div style="padding:15px">
-		<div style="height:50px">
+		<div style="height:40px">
 			<span style="width:15%;float:left;line-height:34px;">服务名称：</span>
 			<input style="width:80%;float:left;" class="form-control" id="serviceNameInfo" value="">
 		</div>
@@ -144,17 +144,14 @@
 			<input style="width:80%;float:left;" class="form-control" id="addressInfo" value="">
 		</div>
 		<div style="height:40px">
-			<span style="width:15%;float:left;line-height:34px;">解析结果：</span>
+			<span style="width:15%;float:left;line-height:34px;">服务状态：</span>
 			<input style="width:80%;float:left;" class="form-control" id="resultInfo" value="">
 		</div>
 		<div style="height:40px">
 			<span style="width:15%;float:left;line-height:34px;">解析IP：</span>
 			<input style="width:80%;float:left;" class="form-control" id="ipInfo" value="">
 		</div>
-		<div style="height:40px">
-			<span style="width:15%;float:left;line-height:34px;">时间间隔：</span>
-			<input style="width:80%;float:left;" class="form-control" id="timeInfo" value="">
-		</div>
+		
 		<div style="height:40px">
 			<span style="width:15%;float:left;line-height:34px;">日志：</span>
 			<textarea style="width:80%;float:left;" class="form-control" id="logInfo" value="" rows="4"></textarea>
