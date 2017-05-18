@@ -278,3 +278,19 @@ function dilatationStorage() {
 
 	});
 }
+
+
+function storageAdd(){
+	layer.open({
+		type:1,
+		title: '创建磁盘',
+		area: ['500px', '300px'],
+		content: $("#storageAdd"),
+		btn: ['确定', '取消'],
+		yes: function(index, layero){
+
+
+		}
+	})
+
+}
