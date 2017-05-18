@@ -1841,7 +1841,7 @@ public class ClusterController {
 		Iterator<DNSService> iterator = DNSServices.iterator();
 		while (iterator.hasNext()) {
 			DNSService dnsService = iterator.next();
-			Iterable<PingResult> resultIterable = pingResultDao.findLastResultByHost(dnsService.getAddress());
+			Iterable<PingResult> resultIterable = pingResultDao.findByHost(dnsService.getAddress());
 			Iterator<PingResult> resultIterator = resultIterable.iterator();
 			if (resultIterator.hasNext()) {
 				PingResult next = resultIterator.next();
