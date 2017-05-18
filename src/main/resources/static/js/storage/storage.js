@@ -1,5 +1,41 @@
 $(function() {
 	loadStorageList();
+	$("#defVolNum").click(function() {
+		$("#defVol").focus();
+	});
+	$("#defVol").blur(function() {
+		$("#defVolNum").val($("#defVol").val());
+	});
+	$("#defVol").click(function() {
+		$("#defVolNum").prop("checked", true);
+
+	});
+	$("#addStorageName").blur(function() {
+		var addStorageName = $("#addStorageName").val();
+		if (addStorageName === '') {
+			layer.tips('存储名称不能为空', $('#addStorageName'), {
+				tips : [1, '#EF6578']
+			});
+			$('#addStorageName').focus();
+			return;
+		}
+		var url = "" + ctx + "/service/storage/build/validate";
+		$.post(url, {
+			'storageName' : addStorageName
+		}, function(data) {
+			data = eval("(" + data + ")");
+			if (data.status == "200") {
+				return;
+			} else {
+
+				layer.tips('存储名称重复', $('#addStorageName'), {
+					tips : [1, '#EF6578']
+				});
+				$('#addStorageName').focus();
+				return;
+			}
+		});
+	});
 });
 
 function loadStorageList() {
@@ -55,7 +91,7 @@ $(document).ready(function() {
 	});
 
 	$("#updatedefVol").click(function() {
-		$("#updatedefVolNum").attr("checked", "checked");
+		$("#updatedefVolNum").prop("checked", "checked");
 	});
 	$("#updatedefVol").blur(function() {
 		$("#updatedefVolNum").val($("#updatedefVol").val());
@@ -225,6 +261,16 @@ function dilatationStorage() {
 		var storageName = $(this).attr("storageName");
 
 		$("#upgradeStorageName").val(storageName);
+		if(storageSize/1024 == 20){
+			$("#usize20").prop("checked",true);
+		}else if(storageSize/1024 == 50){
+			$("#usize50").prop("checked",true);
+		}else if(storageSize/1024 == 100){
+			$("#usize100").prop("checked",true);
+		}else{
+			$("#updatedefVolNum").prop("checked",true);
+			$("#updatedefVol").val(storageSize/1024);
+		}
 		//$("#storageSizeUpdateSlider_input").val(storageSize);
 		//var storageSizeUpdateSlider = sliderFn('storageSizeUpdateSlider', 1024, 0, parseInt(storageSize));
 		layer.open({
@@ -288,7 +334,59 @@ function storageAdd(){
 		content: $("#storageAdd"),
 		btn: ['确定', '取消'],
 		yes: function(index, layero){
+			var addStorageName = $("#addStorageName").val();
+			$("#defVolNum")[0].value = $("#defVol").val() * 1024;
+			var storageSize = $(".storageSize:checked").val();
+			if ($("#defVol").val().search(/^[1-9]\d*$/) === -1) {
+				layer.tips('自定义大小请填写正整数', $('#defVolNum'), {
+					tips : [1, '#EF6578']
+				});
+				return;
+			}
+			//var options=$("#format option:selected");
+			//var format = options.text();
 
+			var leftstorage = $("#restVol").text();
+			if (storageSize / 1024 > leftstorage) {
+				layer.tips('存储大小不能大于剩余卷组容量', $('#restVol'), {
+					tips : [1, '#EF6578']
+				});
+				return;
+			}
+
+			if (addStorageName === '') {
+				layer.tips('存储名称不能为空', $('#addStorageName'), {
+					tips : [1, '#EF6578']
+				});
+				$('#addStorageName').focus();
+				return;
+			}
+			if (storageSize == 0) {
+				layer.tips('存储大小只能为数字并且不能为0', $('#storageSize_input'), {
+					tips : [1, '#EF6578']
+				});
+				$('#storageSize').focus();
+				return;
+			}
+
+			var url = "" + ctx + "/service/storage/build";
+			$.post(url, {
+				'storageName' : addStorageName,
+				'storageSize' : storageSize
+			}, function(data) {
+				data = eval("(" + data + ")");
+				if (data.status == "200") {
+					layer.msg("创建成功！", {
+						icon : 1
+					}, function() {
+						window.location.href = "" + ctx + "/service/storage";
+					});
+				} else {
+					layer.msg("创建失败", {
+						icon : 2
+					});
+				}
+			});
 
 		}
 	})

@@ -83,16 +83,16 @@
     <ul class="popWin">
         <li class="line-h-3">
             <span class="edit-name-c">名称：</span>
-            <input id="upgradeStorageName" style="margin-top: 5px;width: 165px;" type="text" value="">
+            <input id="addStorageName" style="margin-top: 5px;width: 165px;" type="text" value="">
         </li>
         <li class="line-h-3">
             <div class="param-set">
                 <span class="edit-name-c">存储大小：</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20"><label for="size20">20<span>G</span></label>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="size50"><label for="size50">50<span>G</span></label>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="size100"><label for="size100">100<span>G</span></label>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" id="updatedefVolNum">
-                	<label for="updatedefVolNum"><input type="number" id="updatedefVol" style="width:80px; font-size:8px" placeholder="自定义大小"><span>G</span></label>
+                <label for="size20"><input type="radio" name="storageSize" class="storageSize" value="20480" id="size20">20<span>G</span></label>
+                <label for="size50"><input type="radio" name="storageSize" class="storageSize" value="51200" id="size50">50<span>G</span></label>
+                <label for="size100"><input type="radio" name="storageSize" class="storageSize" value="102400" id="size100">100<span>G</span></label>
+                <input type="radio" name="storageSize" class="storageSize" id="defVolNum">
+                	<label for="defVolNum"><input type="number" id="defVol" style="width:80px; font-size:8px" placeholder="自定义大小"><span>G</span></label>
                 <div>
                 <span style="color:#1E90FF; padding-left:84px">总量:<span id="totalVol">${userResource.vol_size}</span>G</span>
                 <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">${userResource.vol_surplus_size }</span>G 可用</span></div>
@@ -109,9 +109,9 @@
         <li class="line-h-3">
             <div class="param-set">
                 <span class="edit-name-c">存储大小：</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20"><label for="size20">20<span>G</span></label>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="size50"><label for="size50">50<span>G</span></label>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="size100"><label for="size100">100<span>G</span></label>
+                <label for="usize20"><input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="usize20">20<span>G</span></label>
+                <label for="usize50"><input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="usize50">50<span>G</span></label>
+                <label for="usize100"><input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="usize100">100<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" id="updatedefVolNum">
                 	<label for="updatedefVolNum"><input type="number" id="updatedefVol" style="width:80px; font-size:8px" placeholder="自定义大小"><span>G</span></label>
                 <div>
