@@ -1849,7 +1849,11 @@ public class ClusterController {
 				if (pingResultString.contains("Address 1: ")) {
 					int addressIndex = pingResultString.indexOf("Address 1: ");
 					dnsService.setIp(pingResultString.substring(addressIndex + 11));
+				} else {
+					dnsService.setIp("解析失败");
 				}
+			} else {
+				dnsService.setIp("正在解析");
 			}
 
 			DNSServiceList.add(dnsService);
