@@ -36,10 +36,6 @@
 									<div class="ibox-tools">
 										<a title="创建监控" onclick="createDNSMonitor()"><i
 											class="fa fa-plus"></i></a>
-										<a title="定时" onclick="timedTask()"><i
-											class="fa fa-clock-o"></i></a> 
-										<a title="定时日志" onclick="timedLog()"><i
-											class="fa fa-history"></i></a> 
 										<a title="删除" onclick="delDns()"><i
 											class="fa fa-trash"></i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
@@ -81,10 +77,11 @@
 											</td>
 											<td style="text-indent:10px"><a class="link" onclick="getDnsResult(this,${dns.id })" serviceName="${dns.serviceName }">${dns.serviceName }</a></td>
 											<td style="text-indent:10px">${dns.address }</td>
-											<td></td>
+											<td>${dns.ip }</td>
 											<td>${dns.createDate }</td>
-											<td><a onclick="delOneDns(${dns.id })"><i class="fa fa-trash"></i></a>
-											<a onclick="dnsOneHistory(${dns.id })"><i class="fa fa-history"></i></a></td>
+											<td><a onclick="dnsOneHistory(${dns.id })" title="日志"><i class="fa fa-history"></i></a>
+											<a onclick="delOneDns(${dns.id })" title="批量删除"><i class="fa fa-trash"></i></a>
+											</td>
 										</tr>
 									</c:forEach>
 								</tbody>
@@ -167,15 +164,17 @@
 <div class="dnshistoryInfo" style="display:none">
 	<div style="padding:15px">
 		<div style="height:50px">
-			<p><span style="width:15%;float:left;line-height:34px;">时间间隔：</span>
-				<select>
-					<option>1m</option>
-					<option>3m</option>
-					<option>5m</option>
-					<option>10m</option>
+		<input type="hidden" id="thisDnsId" value="">
+			<div class="dnsChangeTimeTit" style="width:100%"><span style="width:10%;float:left;line-height:36px;height:36px"><strong>时间间隔：</strong></span>
+				<select class="changeTime form-control" id="dnsChangetime" onchange="dnsChangeTime()" style="width:80%;">
+					<option value="1">1m</option>
+					<option value="5">5m</option>
+					<option value="10">10m</option>
+					<option value="30">30m</option>
+					<option value="60">60m</option>
 				</select>
-			</p>
-			<div id="hisrotyInfos"></div>
+			</div>
+			<div id="hisrotyInfos" style="margin-top:15px;"></div>
 		</div>
 		
 	</div>

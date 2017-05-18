@@ -97,7 +97,7 @@
 						</ul>
 						<div class="applocation">
 							<a href="${service.serviceAddr}/${service.proxyPath}"
-								target="_blank" class="open">打开应用</a>
+								target="_blank" class="open" id="openService">打开应用</a>
 						</div>
 					</section>
 					<div class="baseInfo center-style">
