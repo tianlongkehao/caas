@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -25,6 +26,12 @@ public class DNSService {
 	 * 检测地址
 	 */
 	private String address;
+
+	/**
+	 * ip
+	 */
+	@Transient
+	private String ip;
 
 	/**
 	 * 服务名
@@ -61,6 +68,14 @@ public class DNSService {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 	public String getServiceName() {

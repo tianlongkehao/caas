@@ -41,11 +41,13 @@ import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
 import com.bonc.epm.paas.dao.DNSServiceDao;
 import com.bonc.epm.paas.dao.NodeInfoDao;
+import com.bonc.epm.paas.dao.PingResultDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
 import com.bonc.epm.paas.entity.DNSService;
+import com.bonc.epm.paas.entity.PingResult;
 import com.bonc.epm.paas.entity.PodTopo;
 import com.bonc.epm.paas.entity.ServiceTopo;
 import com.bonc.epm.paas.entity.User;
@@ -157,6 +159,9 @@ public class ClusterController {
 	 */
 	@Autowired
 	private DockerClientService dockerClientService;
+
+	@Autowired
+	private PingResultDao pingResultDao;
 
 	/**
 	 *
@@ -1830,9 +1835,26 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/dns" }, method = RequestMethod.GET)
 	public String clusterDns(Model model) {
+		Iterable<DNSService> DNSServices = dnsServiceDao.findAll();
+		List<DNSService> DNSServiceList = new ArrayList<>();
 
-		List<DNSService> DNSServiceList = (List<DNSService>) dnsServiceDao.findAll();
-		model.addAttribute("DNSServiceList", DNSServiceList);
+		Iterator<DNSService> iterator = DNSServices.iterator();
+		while (iterator.hasNext()) {
+			DNSService dnsService = iterator.next();
+			Iterable<PingResult> resultIterable = pingResultDao.findLastResultByHost(dnsService.getAddress());
+			Iterator<PingResult> resultIterator = resultIterable.iterator();
+			if (resultIterator.hasNext()) {
+				PingResult next = resultIterator.next();
+				String pingResultString = next.getPingResult();
+				if (pingResultString.contains("Address 1: ")) {
+					int addressIndex = pingResultString.indexOf("Address 1: ");
+					dnsService.setIp(pingResultString.substring(addressIndex + 11));
+				}
+			}
+
+			DNSServiceList.add(dnsService);
+		}
+		model.addAttribute("DNSServiceList", DNSServiceList );
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "dns");
 		return "cluster/cluster-dns.jsp";
