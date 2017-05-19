@@ -39,11 +39,15 @@ import com.bonc.epm.paas.cluster.entity.Response;
 import com.bonc.epm.paas.cluster.util.InfluxdbSearchService;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
+import com.bonc.epm.paas.dao.DNSServiceDao;
 import com.bonc.epm.paas.dao.NodeInfoDao;
+import com.bonc.epm.paas.dao.PingResultDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
+import com.bonc.epm.paas.entity.DNSService;
+import com.bonc.epm.paas.entity.PingResult;
 import com.bonc.epm.paas.entity.PodTopo;
 import com.bonc.epm.paas.entity.ServiceTopo;
 import com.bonc.epm.paas.entity.User;
@@ -126,6 +130,9 @@ public class ClusterController {
 	@Autowired
 	private UserDao userDao;
 
+	@Autowired
+	DNSServiceDao dnsServiceDao;
+
 	/**
 	 * 获取配置文件中的 yumConf.io.address 的数据信息；
 	 */
@@ -152,6 +159,9 @@ public class ClusterController {
 	 */
 	@Autowired
 	private DockerClientService dockerClientService;
+
+	@Autowired
+	private PingResultDao pingResultDao;
 
 	/**
 	 *
@@ -1157,7 +1167,7 @@ public class ClusterController {
 			// 为localhealthy服务创建pod,在所有的每个node中创建一个pod,pod名称与container名称与node名称相同
 			for (int i = 0; i < names.length; i++) {
 				try {
-					Pod temppod = client.getPodOfNamespace("kube-system", names[i]);
+					client.getPodOfNamespace("kube-system", names[i]);
 					// 没有出现异常，则已经部署过
 					LOG.info("节点：" + names[i] + "已经部署过...");
 					continue;
@@ -1792,6 +1802,8 @@ public class ClusterController {
 	 *                404 没有测试结果
 	 *                200 成功
 	 */
+	@RequestMapping(value = { "/excutetestResult" }, method = RequestMethod.GET)
+	@ResponseBody
 	public String getClusterTestResult(String nodename) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 200);
@@ -1823,7 +1835,26 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/dns" }, method = RequestMethod.GET)
 	public String clusterDns(Model model) {
+		Iterable<DNSService> DNSServices = dnsServiceDao.findAll();
+		List<DNSService> DNSServiceList = new ArrayList<>();
 
+		Iterator<DNSService> iterator = DNSServices.iterator();
+		while (iterator.hasNext()) {
+			DNSService dnsService = iterator.next();
+			Iterable<PingResult> resultIterable = pingResultDao.findByHost(dnsService.getAddress());
+			Iterator<PingResult> resultIterator = resultIterable.iterator();
+			if (resultIterator.hasNext()) {
+				PingResult next = resultIterator.next();
+				String pingResultString = next.getPingResult();
+				if (pingResultString.contains("Address 1: ")) {
+					int addressIndex = pingResultString.indexOf("Address 1: ");
+					dnsService.setIp(pingResultString.substring(addressIndex + 11));
+				}
+			}
+
+			DNSServiceList.add(dnsService);
+		}
+		model.addAttribute("DNSServiceList", DNSServiceList );
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "dns");
 		return "cluster/cluster-dns.jsp";
@@ -1928,33 +1959,47 @@ public class ClusterController {
 	 * recoverRoutetable:修复Iptables. <br/>
 	 *
 	 * @author longkaixiang
-	 * @param nodeIpString
+	 * @param nodeNameListString
 	 * @return String
 	 */
-	@RequestMapping(value = { "/recoverIptables.do" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/recoverIptables.do" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String recoverIptables(String nodeIpString) {
+	public String recoverIptables(String nodeNameListString) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
-		List<String> nodeIps;
+		List<String> nodeNameList;
 		try {
-			nodeIps = JSON.parseArray(nodeIpString, String.class);
+			nodeNameList = JSON.parseArray(nodeNameListString, String.class);
 		} catch (Exception e) {
 			map.put("status", "400");
-			messages.add("解析错误：[Message:" + e.getMessage() + "nodeIpString:" + nodeIpString + "]");
+			messages.add("解析错误：[Message:" + e.getMessage() + "nodeNameListString:" + nodeNameListString + "]");
 			map.put("messages", e.getMessage());
 			return JSON.toJSONString(map);
 		}
-		for (String nodeIp : nodeIps) {
+		KubernetesAPIClientInterface k8sclient = kubernetesClientService.getClient();
+
+		for (String nodeName : nodeNameList) {
+			String nodeIp = "";
+			try {
+				// 依据nodename获取nodeip
+				Node node = k8sclient.getSpecifiedNode(nodeName);
+				nodeIp = node.getStatus().getAddresses().get(0).getAddress();
+			} catch (Exception e) {
+				LOG.error("查找对应ip失败：[nodeName:" + nodeName + "]" + e.getMessage());
+				messages.add("查找对应ip失败：[nodeName:" + nodeName + "]" + e.getMessage());
+				map.put("status", "400");
+				map.put("messages", e.getMessage());
+				return JSON.toJSONString(map);
+			}
 			NetAPIClientInterface client = netClientService.getSpecifiedClient(nodeIp);
 			try {
 				RecoverResult recoverResult = client.recoverIptables();
 				if (!recoverResult.isRestart()) {
-					messages.add(nodeIp + "修复异常");
+					messages.add(nodeName + "修复异常");
 				}
 			} catch (NetClientException e) {
 				LOG.error(e.getMessage());
-				messages.add(nodeIp + "修复异常");
+				messages.add(nodeName + "修复异常");
 			}
 
 		}

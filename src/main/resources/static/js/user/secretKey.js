@@ -27,6 +27,7 @@ $(function(){
 			type: 1,
 			title: '创建',
 			content: $("#createKeyCon"),
+			area: ['450px'],
 			scrollbar:false,
 			btn: ['确定', '取消'],
 			yes: function(index, layero){
@@ -166,46 +167,48 @@ function delData(){
 	$("#SSHpasswordCred").val("");
 }
 
-//detail&修改
+//detail&修改 
 function keyDetail(obj){
 	var id = $(obj).attr("id");
 	findCredData(id);
 	layer.open({
 		type: 1,
-		title: '修改',
-		content: $("#createKeyCon"),
+		title: '密钥详情',
+		content: $("#secretKeyDetail"),
+		area:['450px'],
 		scrollbar:false,
-		btn: ['修改', '取消'],
+		btn: ['关闭'],
 		yes: function(index, layero){
-			if (!judgeCredData()) {
-				return;
-			}
-			var type = $("#CredentialsType").val();
-			var codeType = $("#codeType").val();
-			var username = $("#userNameCred").val();
-			var password = $("#passwordCred").val();
-			var privateKey = $("#SSHpasswordCred").val();
-			var remark = $("#keyRemark").val();
-			$.ajax({
-				url : ctx + "/secret/updateCredential.do",
-				data : {
-					"id" : id,
-					"type" : type,
-					"codeType" : codeType,
-					"userName" : username,
-					"password" : password,
-					"privateKey" : privateKey,
-					"remark" : remark
-				},
-				success : function(data) {
-					data = eval("(" + data + ")");
-					if (data.status=="200") {
-						window.location.reload();
-					} else if (data.status=="400") {
-						layer.alert("代码认证修改失败，请您检查服务路径");
-					}
-				}
-			});
+			layer.close(index);
+//			if (!judgeCredData()) {
+//				return;
+//			}
+//			var type = $("#CredentialsType").val();
+//			var codeType = $("#codeType").val();
+//			var username = $("#userNameCred").val();
+//			var password = $("#passwordCred").val();
+//			var privateKey = $("#SSHpasswordCred").val();
+//			var remark = $("#keyRemark").val();
+//			$.ajax({
+//				url : ctx + "/secret/updateCredential.do",
+//				data : {
+//					"id" : id,
+//					"type" : type,
+//					"codeType" : codeType,
+//					"userName" : username,
+//					"password" : password,
+//					"privateKey" : privateKey,
+//					"remark" : remark
+//				},
+//				success : function(data) {
+//					data = eval("(" + data + ")");
+//					if (data.status=="200") {
+//						window.location.reload();
+//					} else if (data.status=="400") {
+//						layer.alert("代码认证修改失败，请您检查服务路径");
+//					}
+//				}
+//			});
 		}
 	});
 }
@@ -218,18 +221,20 @@ function findCredData(id){
 		success : function (data) {
 			data = eval("("+data+")");
 			var cred = data.credential;
-			$("#userNameCred").val(cred.userName);
-			$("#keyRemark").val(cred.remark);
-			$("#CredentialsType").val(cred.type);
-			$("#codeType").val(cred.codeType);
+			$("#userNameCredDetail").val(cred.userName);
+			$("#keyRemarkDetail").val(cred.remark);
+			$("#CredentialsTypeDetail").val(cred.type);
+			$("#codeTypeDetail").val(cred.codeType);
+			$("#SSHpasswordCredDetail").val(cred.privateKey);
 			if(cred.type == 1){
+				//type=1 normal  type=2 ssh
 				$(".normal").show();
 				$(".ssh").hide();
-				$("#passwordCred").val(cred.password);
+				$("#passwordCredDetail").val(cred.password);
 			}else{
 				$(".normal").hide();
 				$(".ssh").show();
-				$("#SSHpasswordCred").val(cred.privateKey);
+				$("#SSHpasswordCredDetail").val(cred.privateKey);
 			}
 		}
 	});
@@ -273,8 +278,9 @@ function judgeCredData(){
 }
 
 //复制密钥按钮
-function copySshPwd(){
-	var sshPassword=document.getElementById("sshPassword");
+function copySshPwd(obj){
+	//var sshPassword=document.getElementById("sshPassword");
+	var sshPassword = $(obj).parent().next("textarea");
 	sshPassword.select(); // 选择对象
 	document.execCommand("Copy"); // 执行浏览器复制命令
 }
