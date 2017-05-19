@@ -72,7 +72,7 @@
 															autocomplete="off" id="checkboxID" value="${envTemplate.templateName }" />
 													</td>
 													<td style="width: 60%;text-indent:30px;">
-														<a href="<%=path %>/template/env/detail/${envTemplate.templateName }" style="float:left;line-height:40px"
+														<a class="link" href="<%=path %>/template/env/detail/${envTemplate.templateName }" style="float:left;line-height:40px"
                                                             title="查看${envTemplate.templateName }详细信息" 
                                                             onmousemove="style.textDecoration='underline'"
                                                             onmouseout="style.textDecoration='none'">${envTemplate.templateName }</a>

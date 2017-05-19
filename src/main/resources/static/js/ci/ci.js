@@ -207,7 +207,7 @@ function loadCi() {
 					{
 						data : null,
 						render : function ( data, type, row ) {
-							var html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息">'+row.projectName+'</a>';
+							var html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="link" href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息">'+row.projectName+'</a>';
 							return html;
 						}
 					},
@@ -260,10 +260,10 @@ function loadCi() {
 						render : function (data,type,row) {
 							var html = '';
 							if (row.imgId == null || row.imgId == 0) {
-								html += '<a target="_blank" title="" class="cursor-no-drop">'+row.imgNameFirst+'/'+row.imgNameLast+':'+row.imgNameVersion+'</a>';
+								html += '<a target="_blank" title="" class="cursor-no-drop link">'+row.imgNameFirst+'/'+row.imgNameLast+':'+row.imgNameVersion+'</a>';
 							}
 							else {
-								html += '<a target="_blank" title="" class="" href="'+ctx+'/registry/detail/'+row.imgId +'">'+row.imgNameFirst+'/'+row.imgNameLast+':'+row.imgNameVersion+'</a>';
+								html += '<a target="_blank" title="" class="link" href="'+ctx+'/registry/detail/'+row.imgId +'">'+row.imgNameFirst+'/'+row.imgNameLast+':'+row.imgNameVersion+'</a>';
 							}
 							return html;
 						}
@@ -325,7 +325,7 @@ function loadCiCode() {
 					{
 						data : null,
 						render : function ( data, type, row ) {
-							var html = '<a href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息">'+row.projectName+'</a>';
+							var html = '<a class="link" href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息">'+row.projectName+'</a>';
 							return html;
 						}
 					},
@@ -424,7 +424,7 @@ function loadCiCodeNoSonar() {
 					{
 						data : null,
 						render : function ( data, type, row ) {
-							var html = '<a href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息" style="padding-left:20px">'+row.projectName+'</a>';
+							var html = '<a class="link" href="'+ctx+'/ci/detail/'+row.id+'" title="查看详细信息" style="padding-left:20px">'+row.projectName+'</a>';
 							return html;
 						}
 					},

@@ -113,7 +113,7 @@
 												name="imgVersion" readOnly="readOnly"></li>
 											<li class="line-h-3"><span class="ve_top">服务名称：<font
 													color="red">*</font></span><input type="text" value=""
-												class="in_style form-control" id="serviceName" name="serviceName" oninput="javascript:onEditServiceName()">
+												class="in_style form-control" id="serviceName" name="serviceName">
 												<input type="hidden" value="" class="in_style"
 												id="resourceName" name="resourceName"></li>
 											<li class="line-h-3"><span class="ve_top">服务中文名称：
@@ -313,8 +313,8 @@
 												<ol id="mountPathList">
 												
 													<li class="hide-select hide">
-														<select class="selectVolume form-control" id="selectVolume"
-																		style="height: 34px; width: 230px;">
+														<select class="selectVolumeAddItme form-control"
+																		style="height: 30px; width: 98%;margin:0 auto;padding-top:4px;margin-left:4px">
 																<option  value="">选择一个存储卷</option>
 																<c:forEach items="${storageList }" var = "storage">
 																    <option  value="${storage.id }">${storage.storageName }  ${storage.storageSize }M</option>

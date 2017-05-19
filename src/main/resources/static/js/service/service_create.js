@@ -460,9 +460,9 @@ $(document).ready(function(){
 //			$('#mountPath').focus();
 //			return;
 //		}
-		var selectItem = $("#selectVolume")[0];
+		var selectItem = $(".selectVolumeAddItme")[0].outerHTML;
 		var tr = '<tr>'
-				+'<td class="keys'+count+'">'
+				+'<td class="keys'+count+'"></td>'
 				+'<td class="vals"><input type="text" id = "mountPoint_'+count+'" style="width: 98%"></td>'
 				+'<td class="func"><a href="javascript:void(0)" onclick="deleteCephRow(this)" class="gray">'
 				+'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" id = "id_'+count+'">'
@@ -500,27 +500,27 @@ $(document).ready(function(){
     		success : function(data) {
 	    		data = eval("(" + data + ")");
 	    		if(!data.mapPort||"error"==(data.ERROR)){
-	    				alert("可用映射端口已经用尽，请联系管理员。");
+	    				layer.alert("可用映射端口已经用尽，请联系管理员。");
 	    		}else{
-		    		var portTr ='<tr class="plus-row">'+
-		    					'<td>'+
-		    						'<input class="port" type="text">'+
-									'</td>'+
-									'<td>'+
-											'<select class="T-http">'+
-												  '<option>TCP</option>'+
-													'<option>UDP</option>'+
-											'</select>'+
-									'</td>'+
-									'<td>'+
-											'<i>'+data.mapPort+'</i>'+
-									'</td>'+
-									'<td>'+
-											'<a href="javascript:void(0)" onclick="deletePortRow(this,'+data.mapPort+')" class="gray">'+
-														'<i class="fa fa-trash-o fa-lg"></i>'+
-											'</a>'+
-								  '</td>'+
-						'</tr>';
+		    		var portTr ='<tr class="plus-row">'
+				    			+'<td>'
+				    			+'<input class="port" type="text">'
+				    			+'</td>'
+				    			+'<td>'
+				    			+'<select class="T-http">'
+				    			+'<option>TCP</option>'
+				    			+'<option>UDP</option>'
+				    			+'</select>'
+				    			+'</td>'
+				    			+'<td>'
+				    			+'<i>'+data.mapPort+'</i>'
+				    			+'</td>'
+				    			+'<td>'
+				    			+'<a href="javascript:void(0)" onclick="deletePortRow(this,'+data.mapPort+')" class="gray">'
+				    			+'<i class="fa fa-trash-o fa-lg"></i>'
+				    			+'</a>'
+				    			+'</td>'
+				    			+'</tr>';
 		    			$("#pushPrptpcol").append(portTr);
 		        	}
 	    		//调节界面高度
@@ -565,14 +565,14 @@ $(document).ready(function(){
 	    	                	for (var i in data.data) {
 	    	                		var html = "";
 	    	                		var envTemplate = data.data[i];
-	    	                		html = '<tr>'+
-		    	    	    					'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'+
-		    	    	    					'<td class="vals"><input id="value_'+count+'" type="text" style="width: 98%"></td>'+
-		    	    	    					'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-		    	    	    						'<i class="fa fa-trash-o fa-lg"></i>'+
-		    	    	    						'</a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
-		    	    	    					'</td>'+
-		    	    	    				'</tr>';
+	    	                		html = '<tr>'
+	    	                			+'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'
+	    	                			+'<td class="vals"><input id="value_'+count+'" type="text" style="width: 98%"></td>'
+	    	                			+'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'
+	    	                			+'<i class="fa fa-trash-o fa-lg"></i>'
+	    	                			+'</a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'
+	    	                			+'</td>'
+	    	                			+'</tr>';
 
 	    	                		$("#Path-oper1").append(html);
 	    	                		$("#key_"+count).val(envTemplate.envKey);
@@ -897,14 +897,16 @@ function saveCephData(){
     $("#volList tr").each(function (index, domEle){
     	 var id = "";
          var mountPoint = "";
-         $(domEle).find("input").each(function(index,data){
-             if (index == 1){
-             	mountPoint = $(data).val();
-             }
-             if(index == 2){
-             	id = $(data).val();
-             }
-         });
+//         $(domEle).find("input").each(function(index,data){
+//             if (index == 1){
+//             	mountPoint = $(data).val();
+//             }
+//             if(index == 2){
+//             	id = $(data).val();
+//             }
+//         });
+        id = $(domEle).find("select").val();
+        mountPoint = $(domEle).find(".vals").find("input").val();
 
  		for (var i = 0; i<arrayKey.length;i++) {
  			if (id == arrayKey[i]) {
