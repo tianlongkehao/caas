@@ -145,46 +145,34 @@ function delDns(){
 //获得dns当前监控
 function getDnsResult(obj,id){
 	var serviceName = $(obj).attr("serviceName");
-//	var loading = layer.load(0, {
-//		shade : [ 0.3, '#000' ]
-//	});
 	$.ajax({
-		url:ctx + "/getDNSMonitorResultList.do?id="+id+"&time=1",
+		url:ctx + "/getDNSMonitorResultStatus.do?id="+id,
 		type:"get",
 		success:function(data){
 			var data = eval("("+data+")");
 			if(data.status == '200'){
-				if(data.dnsMonitorResultList.length !=0){
-					//layer.close(loading);
-					var dnsMonitorResultListNow = data.dnsMonitorResultList[0];
-					$("#serviceNameInfo").val(serviceName);
-					$("#addressInfo").val(dnsMonitorResultListNow.host);
-					var resultInfo = "";
-					if(dnsMonitorResultListNow.success){
-						resultInfo = "成功";
-					}else{
-						resultInfo = "失败";
+				var dnsMonitorResultListNow = data.DNSMonitorResultStatus;
+				$("#serviceNameInfo").val(serviceName);
+				$("#addressInfo").val(dnsMonitorResultListNow.address);
+				$("#resultInfo").val(dnsMonitorResultListNow.status);
+				$("#ipInfo").val(dnsMonitorResultListNow.ip);
+				$("#timeInfo").val("1");
+				$("#logInfo").val(dnsMonitorResultListNow.pingResult);
+				layer.open({
+					type: 1,
+					title: "DNS监控信息",
+					content: $(".dnsResultInfo"),
+					area: ["500px"],
+					btn: ["关闭"],
+					yes: function(index,layero){
+						layer.close(index);
 					}
-					$("#resultInfo").val(resultInfo);
-					$("#ipInfo").val(dnsMonitorResultListNow.ip);
-					$("#timeInfo").val("1");
-					$("#logInfo").val(dnsMonitorResultListNow.pingResult);
-					layer.open({
-						type: 1,
-						title: "DNS监控信息",
-						content: $(".dnsResultInfo"),
-						area: ["500px"],
-						btn: ["关闭"],
-						yes: function(index,layero){
-							layer.close(index);
-						}
-					})
-				}
+				})
 			}else if(status=='400'){
 				layer.alert(data.messages[0],{icon : 2});
 			}
 		}
-	})
+	});
 }
 //dns监控日志
 function dnsOneHistory(id){

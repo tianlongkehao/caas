@@ -34,6 +34,18 @@ public class DNSService {
 	private String ip;
 
 	/**
+	 * status
+	 */
+	@Transient
+	private String status;
+
+	/**
+	 * pingResult
+	 */
+	@Transient
+	private String pingResult;
+
+	/**
 	 * 服务名
 	 */
 	private String serviceName;
@@ -76,6 +88,22 @@ public class DNSService {
 
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getPingResult() {
+		return pingResult;
+	}
+
+	public void setPingResult(String pingResult) {
+		this.pingResult = pingResult;
 	}
 
 	public String getServiceName() {

@@ -29,6 +29,8 @@ import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.Pod;
+import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
@@ -369,5 +371,99 @@ public class DNSController {
 		}
 		return JSON.toJSONString(map);
 
+	}
+
+	/**
+	 * getDNSMonitorResultStatus:获取监控服务的状态. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param id
+	 * @return String
+	 */
+	@RequestMapping(value = ("getDNSMonitorResultStatus.do"), method = RequestMethod.GET)
+	@ResponseBody
+	public String getDNSMonitorResultStatus(long id){
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		DNSService service = dnsServiceDao.findOne(id);
+		// 查找不到的时候返回异常
+		if (service == null) {
+			messages.add("查找监控失败：[id:" + id + "]");
+			LOG.error("查找监控失败：[id:" + id + "]");
+			map.put("status", "400");
+			map.put("messages", messages);
+			return JSON.toJSONString(map);
+		}
+
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
+		Service k8sService = null;
+		try {
+			k8sService = client.getService(service.getServiceName());
+		} catch (KubernetesClientException e) {
+			messages.add("监控Service没有创建：[ServiceName:" + service.getServiceName() + "]");
+			LOG.error("监控Service没有创建：[ServiceName:" + service.getServiceName() + "]");
+			map.put("status", "400");
+			map.put("messages", messages);
+			return JSON.toJSONString(map);
+		}
+
+		try {
+			client.getReplicationController(service.getServiceName());
+		} catch (KubernetesClientException e) {
+			messages.add("监控ReplicationController没有创建：[ServiceName:" + service.getServiceName() + "]");
+			LOG.error("监控ReplicationController没有创建：[ServiceName:" + service.getServiceName() + "]");
+			map.put("status", "400");
+			map.put("messages", messages);
+			return JSON.toJSONString(map);
+		}
+
+		try {
+			if (k8sService != null) {
+				PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+				if (podList != null) {
+					List<Pod> pods = podList.getItems();
+					if (CollectionUtils.isNotEmpty(pods)) {
+						service.setStatus(pods.get(0).getStatus().getPhase());
+					}
+				} else {
+					messages.add("监控pod没有创建：[ServiceName:" + service.getServiceName() + "]");
+					LOG.error("监控pod没有创建：[ServiceName:" + service.getServiceName() + "]");
+					map.put("status", "400");
+					map.put("messages", messages);
+					return JSON.toJSONString(map);
+				}
+			}
+		} catch (KubernetesClientException e) {
+			messages.add("监控pod没有创建：[ServiceName:" + service.getServiceName() + "]");
+			LOG.error("监控pod没有创建：[ServiceName:" + service.getServiceName() + "]");
+			map.put("status", "400");
+			map.put("messages", messages);
+			return JSON.toJSONString(map);
+		}
+
+		Iterable<PingResult> resultIterable = pingResultDao.findByHost(service.getAddress());
+		Iterator<PingResult> resultIterator = resultIterable.iterator();
+		if (resultIterator.hasNext()) {
+			PingResult next = resultIterator.next();
+			String pingResultString = next.getPingResult();
+			service.setPingResult(pingResultString);
+			if (pingResultString.contains("Address 1: ")) {
+				int addressIndex = pingResultString.indexOf("Address 1: ");
+				service.setIp(pingResultString.substring(addressIndex + 11));
+			} else {
+				service.setIp("解析失败");
+			}
+		} else {
+			service.setIp("正在解析");
+		}
+
+		map.put("DNSMonitorResultStatus", service);
+		if (CollectionUtils.isEmpty(messages)) {
+			map.put("status", "200");
+		} else {
+			map.put("status", "400");
+			map.put("messages", messages);
+		}
+		return JSON.toJSONString(map);
 	}
 }
