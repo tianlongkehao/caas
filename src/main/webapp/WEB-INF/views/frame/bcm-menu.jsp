@@ -224,7 +224,7 @@
 			</li>
 		</ul>
 	</div>
-	<div class="helpDoc hide"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn" value="新手入门"></a></div>
+	<div class="helpDoc"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn btn-danger" value="新手入门"></a></div>
 	<div class="sideBoxBtn hide" onclick="navHide()"><i class="fa fa-step-backward"></i><div class="btn-background"></div></div>
 </div><!-- navAll -->
 
