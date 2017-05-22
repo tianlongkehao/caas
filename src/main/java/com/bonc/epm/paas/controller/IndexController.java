@@ -382,11 +382,15 @@ public class IndexController {
      * 跳转登录页面
      * @return login.jsp
      */
-    @RequestMapping(value={"login"},method=RequestMethod.GET)
-	public String login(Model model){
-        model.addAttribute("showAuthCode", showAuthCode);
-        return "login.jsp";
-    }
+	@RequestMapping(value = { "login" }, method = RequestMethod.GET)
+	public String login(Model model) {
+		if (configProps.getEnable()) {
+			return "redirect:home";
+		}
+		model.addAttribute("showAuthCode", showAuthCode);
+		return "login.jsp";
+	}
+
     /**
      * Description: <br>
      * 跳转镜像广场
