@@ -164,7 +164,6 @@ public class DNSController {
 		try {
 			k8sService = client.createService(k8sService);
 		} catch (KubernetesClientException e) {
-			client.deleteReplicationController(serviceName);
 			LOG.error("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
 			messages.add("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
 			e.printStackTrace();
@@ -179,6 +178,7 @@ public class DNSController {
 		try {
 			replicationController = client.createReplicationController(replicationController);
 		} catch (KubernetesClientException e) {
+			client.deleteService(serviceName);
 			LOG.error("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
 			messages.add("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
 			e.printStackTrace();
