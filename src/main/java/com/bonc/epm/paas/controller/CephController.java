@@ -28,8 +28,6 @@ import com.ceph.rados.Rados;
 import com.ceph.rados.exceptions.RadosException;
 import com.ceph.rbd.Rbd;
 import com.ceph.rbd.RbdException;
-import com.ceph.rbd.RbdImage;
-import com.ceph.rbd.jna.RbdImageInfo;
 
 /**
  * CephController
@@ -39,6 +37,7 @@ import com.ceph.rbd.jna.RbdImageInfo;
  * @see CephController
  * @since
  */
+@SuppressWarnings("restriction")
 @Controller
 public class CephController {
 	/**
@@ -48,8 +47,11 @@ public class CephController {
 	/**
 	 * 簇
 	 */
-	private Rados cluster;
+	//private Rados cluster;
 
+	//private IoCTX ioctx;
+	
+	private static File f = new File("/etc/ceph/ceph.conf");
 	/**
 	 * 连接url
 	 */
@@ -272,7 +274,7 @@ public class CephController {
 	public void conCeph(String radosName) {
 		try {
 			LOGGER.info("radosName:" + radosName);
-			cluster = new Rados(radosName); // Created cluster handle
+			Rados cluster = new Rados(radosName); // Created cluster handle
 
 			File f = new File("/etc/ceph/ceph.conf");
 			cluster.confReadFile(f); // Read the configuration file.
@@ -284,18 +286,18 @@ public class CephController {
 		}
 	}
 
-	/**
+/*	*//**
 	 *
 	 * Description: 根据命名空间创建POOL
 	 *
 	 * @see
-	 */
+	 *//*
 	public void createPoolByNSpace() {
 		try {
 			LOGGER.info("进入方法：createPoolByNameSpace");
 			// 获取NAMESPACE
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-
+            
 			// 获取所有pool
 			String[] pools = cluster.poolList();
 			boolean poolExist = false;
@@ -312,14 +314,14 @@ public class CephController {
 		} catch (RadosException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
-	/**
+/*	*//**
 	 * 创建image
 	 *
 	 * @param conName
 	 *            conName
-	 */
+	 *//*
 	public void createCephImage(String conName) {
 		try {
 			LOGGER.info("进入方法：createCephImage,conName:-" + conName);
@@ -341,7 +343,6 @@ public class CephController {
 			if (!imageExist) {
 				// 创建image并指定空间大小以及feature和format
 				long size_1G = 1024 * 1024 * 1024;
-				// TODO feature的值，还没弄明白
 				long feature_layering = 8 * 8;
 				int order = 22;
 				rbd.create(conName, size_1G, feature_layering, order);
@@ -361,11 +362,11 @@ public class CephController {
 			LOGGER.error(e.getMessage());
 			e.printStackTrace();
 		}
-	}
+	}*/
 
-	/**
+/*	*//**
 	 * 关闭连结
-	 */
+	 *//*
 	public void clusterShutDown() {
 		try {
 			// 关闭连结
@@ -375,60 +376,50 @@ public class CephController {
 			e.printStackTrace();
 		}
 
-	}
+	}*/
 
 	/**
-	 * 创建Ceph块存储
-	 * rbd大小的单位是B
+	 * 创建Ceph块存储 rbd大小的单位是B
 	 */
 	public void createCephRbd(String imgname) {
+		Rados cluster = new Rados("admin");
 		try {
-			cluster = new Rados("admin");
-			File f = new File("/etc/ceph/ceph.conf");
-			// cluster.confSet("mon_host",
-			// "192.168.0.71,192.168.0.72,192.168.0.73");
-			// cluster.confSet("key", CEPH_KEY);
 			cluster.confReadFile(f);
 			cluster.connect();
-
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+
 			// 获取所有pool
 			String[] pools = cluster.poolList();
 			boolean poolExist = false;
 			for (String pool : pools) {
 				if (namespace.equals(pool)) {
 					poolExist = true;
+					break;
 				}
-			}
-			// 如果pool不存在，创建pool
+			} 
+			
 			if (!poolExist) {
-				// 创建pool
 				cluster.poolCreate(namespace); // 创建pool:namespace
 			}
-
-			IoCTX ioctx = cluster.ioCtxCreate(namespace); // 创建ioCtx
-			Rbd rbd = new Rbd(ioctx); // RBD
-
-			long size_1G = 1024 * 1024 * 1024;
-			//feature的值，还没弄明白
-			int feature_layering = (1<<0);
-			//long feature_layering = 8 * 8;
-			//int order = 22;
-			int order = 0;
-			rbd.create(imgname, size_1G, feature_layering, order);
-
-			//RbdImage rbdImage =rbd.open("");
-			//RbdImageInfo rbdImageInfo = rbdImage.stat();
-			//rbdImageInfo.
-			cluster.ioCtxDestroy(ioctx);
+			
+			IoCTX ioctx = cluster.ioCtxCreate("longlong"); // 创建ioCtx
+			try {
+				Rbd rbd = new Rbd(ioctx); // RBD
+				rbd.create(imgname, 1024);
+			} catch (RbdException e) {
+				//LOGGER.error(e.getMessage());
+				e.printStackTrace();
+			} finally {
+				cluster.ioCtxDestroy(ioctx);
+				//ioctx = null;
+			}
+			
 		} catch (RadosException e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
-		} catch (RbdException e) {
 			LOGGER.error(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			cluster.shutDown();
+			//cluster = null;
 		}
 	}
 
@@ -436,9 +427,8 @@ public class CephController {
 	@ResponseBody
 	public String checkrbd(String imgname) {
 		Map<String, Integer> map = new HashMap<>();
+		Rados	cluster = new Rados("admin");
 		try {
-			cluster = new Rados("admin");
-			File f = new File("/etc/ceph/ceph.conf");
 			cluster.confReadFile(f);
 			cluster.connect();
 

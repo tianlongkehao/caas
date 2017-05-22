@@ -720,9 +720,9 @@ public class StorageController {
 
     @RequestMapping(value = { "service/createcephrbd" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String createCephRbd() {
+	public String createCephRbd(String imgname,String disksize ,String unload,String disttype,String diskdetail) {
 		Map<String, List<Storage>> map = new HashMap<>();
-        cephController.createCephRbd("longimage");
+        cephController.createCephRbd(imgname);
 		return JSON.toJSONString(map);
 	}
 }
