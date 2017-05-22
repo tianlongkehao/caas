@@ -334,6 +334,7 @@ function storageAdd(){
 		content: $("#storageAdd"),
 		btn: ['确定', '取消'],
 		yes: function(index, layero){
+			layer.close(index);
 			var addStorageName = $("#addStorageName").val();
 			$("#defVolNum")[0].value = $("#defVol").val() * 1024;
 			var storageSize = $(".storageSize:checked").val();
