@@ -28,8 +28,6 @@ import com.ceph.rados.Rados;
 import com.ceph.rados.exceptions.RadosException;
 import com.ceph.rbd.Rbd;
 import com.ceph.rbd.RbdException;
-import com.ceph.rbd.RbdImage;
-import com.ceph.rbd.jna.RbdImageInfo;
 
 /**
  * CephController
@@ -48,7 +46,9 @@ public class CephController {
 	/**
 	 * 簇
 	 */
-	private Rados cluster;
+	private static Rados cluster;
+	private static IoCTX ioctx;
+    private static Rbd rbd;
 
 	/**
 	 * 连接url
@@ -410,8 +410,8 @@ public class CephController {
 				cluster.poolCreate(namespace); // 创建pool:namespace
 			}
 
-			IoCTX ioctx = cluster.ioCtxCreate(namespace); // 创建ioCtx
-			Rbd rbd = new Rbd(ioctx); // RBD
+			ioctx = cluster.ioCtxCreate(namespace); // 创建ioCtx
+			rbd = new Rbd(ioctx); // RBD
 
 			long size_1G = 1024 * 1024 * 1024;
 			//feature的值，还没弄明白
@@ -462,8 +462,8 @@ public class CephController {
 				cluster.poolCreate(namespace); // 创建pool:namespace
 			}
 
-			IoCTX ioctx = cluster.ioCtxCreate(namespace); // 创建ioCtx
-			Rbd rbd = new Rbd(ioctx); // RBD
+			ioctx = cluster.ioCtxCreate(namespace); // 创建ioCtx
+			rbd = new Rbd(ioctx); // RBD
 
 			// 获取所有images
 			String[] images = rbd.list();
