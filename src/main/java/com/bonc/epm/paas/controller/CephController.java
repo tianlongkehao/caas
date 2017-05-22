@@ -37,7 +37,6 @@ import com.ceph.rbd.RbdException;
  * @see CephController
  * @since
  */
-@SuppressWarnings("restriction")
 @Controller
 public class CephController {
 	/**
@@ -47,48 +46,34 @@ public class CephController {
 	/**
 	 * 簇
 	 */
-	private static Rados cluster;
-	private static IoCTX ioctx;
-    private static Rbd rbd;
-
-	//private IoCTX ioctx;
-
-	private static File f = new File("/etc/ceph/ceph.conf");
-	/**
-	 * 连接url
-	 */
-	// @Value("${ceph.ssh.url}")
-	// private String url;
+	private Rados cluster;
 
 	/**
 	 * 用户名
 	 */
-	// @Value("${ceph.ssh.username}")
-	// private String username;
-
-	/**
-	 * 密码
-	 */
-	// @Value("${ceph.ssh.password}")
-	// private String password;
+	 @Value("${ceph.name}")
+	 private String CEPH_NAME;
 
 	/**
 	 * 挂载指令
 	 */
 	@Value("${ceph.ssh.mountexec}")
-	private String mountexec;
+	private String MOUNT_EXEC;
 
 	/**
 	 * 挂载点
 	 */
 	@Value("${ceph.ssh.mountpoint}")
-	private String mountpoint;
+	private String MOUNT_POINT;
 
 	/**
 	 * 执行前挂载需要cd到的目录
 	 */
 	@Value("${ceph.ssh.cephdir}")
-	private String cephDir;
+	private String CEPH_DIR;
+
+	@Value("${ceph.conf}")
+	private String CEPH_CONF;
 
 	@Value("${ceph.key}")
 	private String CEPH_KEY;
@@ -108,11 +93,11 @@ public class CephController {
 	public void connectCephFS() throws Exception {
 		LOGGER.info("进入方法：connectCephFS");
 		try {
-			cephMount = new CephMount("admin");
+			cephMount = new CephMount(CEPH_NAME);
 		} catch (Exception e) {
 			throw e;
 		}
-		cephMount.conf_read_file("/etc/ceph/ceph.conf");
+		cephMount.conf_read_file(CEPH_DIR+CEPH_CONF);
 		cephMount.mount("/");
 		cephMount.chmod("/", mode);
 		LOGGER.info("打印根目录下的所有目录");
@@ -271,37 +256,80 @@ public class CephController {
 		FileUtils.delAllFile(path.toString());
 	}
 
+	/*	*//**
+			 *
+			 * Description: 根据命名空间创建POOL
+			 *
+			 * @see
+			 *//*
+			 * public void createPoolByNSpace() { try {
+			 * LOGGER.info("进入方法：createPoolByNameSpace"); // 获取NAMESPACE String
+			 * namespace =
+			 * CurrentUserUtils.getInstance().getUser().getNamespace();
+			 *
+			 * // 获取所有pool String[] pools = cluster.poolList(); boolean
+			 * poolExist = false; for (String pool : pools) { if
+			 * (namespace.equals(pool)) { poolExist = true; } } //
+			 * 如果pool不存在，创建pool if (!poolExist) { // 创建pool
+			 * cluster.poolCreate(namespace); // 创建pool:namespace } } catch
+			 * (RadosException e) { e.printStackTrace(); } }
+			 */
+
+	/*	*//**
+			 * 创建image
+			 *
+			 * @param conName
+			 *            conName
+			 *//*
+			 * public void createCephImage(String conName) { try {
+			 * LOGGER.info("进入方法：createCephImage,conName:-" + conName); String
+			 * namespace =
+			 * CurrentUserUtils.getInstance().getUser().getNamespace(); //
+			 * 获取NAMESPACE
+			 *
+			 * IoCTX ioctx = cluster.ioCtxCreate(namespace); // 创建ioCtx
+			 *
+			 * Rbd rbd = new Rbd(ioctx); // RBD
+			 *
+			 * // 获取所有images String[] images = rbd.list(); boolean imageExist =
+			 * false; for (String image : images) { if (conName.equals(image)) {
+			 * imageExist = true; } } // 如果image不存在，创建image if (!imageExist) {
+			 * // 创建image并指定空间大小以及feature和format long size_1G = 1024 * 1024 *
+			 * 1024; long feature_layering = 8 * 8; int order = 22;
+			 * rbd.create(conName, size_1G, feature_layering, order); }
+			 *
+			 * // 打开image // RbdImage rbdImage = rbd.open(conName); // 关闭image
+			 * // rbd.close(rbdImage);
+			 *
+			 * // 清除ioCtx cluster.ioCtxDestroy(ioctx); } catch (RadosException
+			 * e) { LOGGER.error(e.getMessage()); e.printStackTrace(); } catch
+			 * (RbdException e) { LOGGER.error(e.getMessage());
+			 * e.printStackTrace(); } }
+			 */
+
+	/*	*//**
+			 * 关闭连结
+			 *//*
+			 * public void clusterShutDown() { try { // 关闭连结 cluster.shutDown();
+			 * } catch (Exception e) { LOGGER.error(e.getMessage());
+			 * e.printStackTrace(); }
+			 *
+			 * }
+			 */
+
 	/**
-	 * 连接Ceph
-	 *
-	 * @param radosName
-	 * @see
+	 * 创建Ceph块存储 rbd大小的单位是B
 	 */
-	public void conCeph(String radosName) {
+	@RequestMapping(value = { "ceph/createcephrbd" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String createCephRbd(String imgname, String disksize, String unload, String disttype, String diskdetail) {
+		Map<String, Integer> map = new HashMap<>();
 		try {
-			LOGGER.info("radosName:" + radosName);
-			Rados cluster = new Rados(radosName); // Created cluster handle
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR+CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
 
-			File f = new File("/etc/ceph/ceph.conf");
-			cluster.confReadFile(f); // Read the configuration file.
-
-			cluster.connect(); // Connected to the cluster.
-		} catch (RadosException e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
-/*	*//**
-	 *
-	 * Description: 根据命名空间创建POOL
-	 *
-	 * @see
-	 *//*
-	public void createPoolByNSpace() {
-		try {
-			LOGGER.info("进入方法：createPoolByNameSpace");
-			// 获取NAMESPACE
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 
 			// 获取所有pool
@@ -310,86 +338,53 @@ public class CephController {
 			for (String pool : pools) {
 				if (namespace.equals(pool)) {
 					poolExist = true;
+					break;
 				}
 			}
-			// 如果pool不存在，创建pool
+
 			if (!poolExist) {
-				// 创建pool
-				cluster.poolCreate(namespace); // 创建pool:namespace
+				cluster.poolCreate(namespace);
 			}
-		} catch (RadosException e) {
-			e.printStackTrace();
-		}
-	}*/
 
-/*	*//**
-	 * 创建image
-	 *
-	 * @param conName
-	 *            conName
-	 *//*
-	public void createCephImage(String conName) {
-		try {
-			LOGGER.info("进入方法：createCephImage,conName:-" + conName);
-			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace(); // 获取NAMESPACE
-
-			IoCTX ioctx = cluster.ioCtxCreate(namespace); // 创建ioCtx
-
-			Rbd rbd = new Rbd(ioctx); // RBD
-
-			// 获取所有images
-			String[] images = rbd.list();
-			boolean imageExist = false;
-			for (String image : images) {
-				if (conName.equals(image)) {
-					imageExist = true;
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+			try {
+				Rbd rbd = new Rbd(ioctx); // RBD
+				rbd.create(imgname, 1024);
+				map.put("status", 200);
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				LOGGER.error(e.getMessage());
+				map.put("status", 500);
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
 				}
 			}
-			// 如果image不存在，创建image
-			if (!imageExist) {
-				// 创建image并指定空间大小以及feature和format
-				long size_1G = 1024 * 1024 * 1024;
-				long feature_layering = 8 * 8;
-				int order = 22;
-				rbd.create(conName, size_1G, feature_layering, order);
-			}
 
-			// 打开image
-			// RbdImage rbdImage = rbd.open(conName);
-			// 关闭image
-			// rbd.close(rbdImage);
-
-			// 清除ioCtx
-			cluster.ioCtxDestroy(ioctx);
 		} catch (RadosException e) {
 			LOGGER.error(e.getMessage());
-			e.printStackTrace();
-		} catch (RbdException e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
 		}
-	}*/
-
-/*	*//**
-	 * 关闭连结
-	 *//*
-	public void clusterShutDown() {
-		try {
-			// 关闭连结
-			cluster.shutDown();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
-		}
-
-	}*/
+	}
 
 	/**
-	 * 创建Ceph块存储 rbd大小的单位是B
+	 * 查看镜像是否存在
+	 * @param imgname
+	 * @return
 	 */
-	public void createCephRbd(String imgname) {
-		Rados cluster = new Rados("admin");
+	@RequestMapping(value = { "ceph/checkrbd" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String checkrbd(String imgname) {
+		Map<String, Integer> map = new HashMap<>();
 		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR+CEPH_CONF);
 			cluster.confReadFile(f);
 			cluster.connect();
 			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
@@ -405,90 +400,108 @@ public class CephController {
 			}
 
 			if (!poolExist) {
-				cluster.poolCreate(namespace); // 创建pool:namespace
+				cluster.poolCreate(namespace);
 			}
 
-			IoCTX ioctx = cluster.ioCtxCreate("longlong"); // 创建ioCtx
-			try {
-				Rbd rbd = new Rbd(ioctx); // RBD
-				rbd.create(imgname, 1024);
-			} catch (RbdException e) {
-				//LOGGER.error(e.getMessage());
-				e.printStackTrace();
-			} finally {
-				cluster.ioCtxDestroy(ioctx);
-				//ioctx = null;
-			}
-
-		} catch (RadosException e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
-		} finally {
-			cluster.shutDown();
-			//cluster = null;
-		}
-	}
-
-	@RequestMapping(value = { "service/ceph/checkrbd" }, method = RequestMethod.GET)
-	@ResponseBody
-	public String checkrbd(String imgname) {
-		Map<String, Integer> map = new HashMap<>();
-		Rados	cluster = new Rados("admin");
-		try {
-			cluster.confReadFile(f);
-			cluster.connect();
-
-			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-
-			// 获取所有pool
-			String[] pools = cluster.poolList();
-			boolean poolExist = false;
-			for (String pool : pools) {
-				if (namespace.equals(pool)) {
-					poolExist = true;
-				}
-			}
-			// 如果pool不存在，创建pool
-			if (!poolExist) {
-				// 创建pool
-				cluster.poolCreate(namespace); // 创建pool:namespace
-			}
-
-			ioctx = cluster.ioCtxCreate(namespace); // 创建ioCtx
-			rbd = new Rbd(ioctx); // RBD
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
 
 			// 获取所有images
-			String[] images = rbd.list();
-			boolean imageExist = false;
-			for (String image : images) {
-				if (imgname.equals(image)) {
-					imageExist = true;
+			Rbd rbd = new Rbd(ioctx);
+			String[] images;
+			try {
+				images = rbd.list();
+				boolean imageExist = false;
+				for (String image : images) {
+					if (imgname.equals(image)) {
+						imageExist = true;
+					}
+				}
+
+				if (imageExist) {
+					map.put("exist", 1);
+				} else {
+					map.put("exist", 0);
+				}
+
+				map.put("status", 200);
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				LOGGER.error(e.getMessage());
+				map.put("status", 500);
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
 				}
 			}
-			if (imageExist) {
-				map.put("exist", 1);
-			} else {
-				map.put("exist", 0);
-			}
-
-			cluster.ioCtxDestroy(ioctx);
-			map.put("status", 200);
-			return JSON.toJSONString(map);
 		} catch (RadosException e) {
 			LOGGER.error(e.getMessage());
-			e.printStackTrace();
-			map.put("status", 500);
-			return JSON.toJSONString(map);
-		} catch (RbdException e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
 			map.put("status", 500);
 			return JSON.toJSONString(map);
 		} finally {
-			cluster.shutDown();
+			if (cluster != null) {
+				cluster.shutDown();
+			}
 		}
-
 	}
+
+	/**
+	 * 删除cephrbd镜像
+	 * @param imgname
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/checkrbd" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String deleteCephRbd(String imgname){
+		Map<String, Integer> map = new HashMap<>();
+		map.put("status", 200);
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR+CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+
+			// 获取所有images
+			Rbd rbd = new Rbd(ioctx);
+			String[] images;
+			try {
+				images = rbd.list();
+				boolean imageExist = false;
+				for (String image : images) {
+					if (imgname.equals(image)) {
+						imageExist = true;
+					}
+				}
+
+				//删除rbd
+				if (imageExist) {
+					rbd.remove(imgname);
+				}
+
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				LOGGER.error(e.getMessage());
+				map.put("status", 500);
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
+				}
+			}
+		} catch (RadosException e) {
+			LOGGER.error(e.getMessage());
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
+
 
 	/**
 	 *
@@ -570,15 +583,14 @@ public class CephController {
 	}
 
 	public String getMountexec() {
-		return mountexec;
+		return MOUNT_EXEC;
 	}
 
 	public String getMountpoint() {
-		return mountpoint;
+		return MOUNT_POINT;
 	}
 
-	public String getCephDir() {
-		return cephDir;
+	public String getCephDir(){
+		return CEPH_DIR;
 	}
-
 }
