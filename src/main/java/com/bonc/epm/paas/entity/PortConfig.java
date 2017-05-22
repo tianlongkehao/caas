@@ -1,13 +1,9 @@
 package com.bonc.epm.paas.entity;
 
-import java.util.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * 映射端口类
@@ -25,7 +21,7 @@ public class PortConfig {
     @Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long portId;
-	
+
 	/**
 	 * 容器端口
 	 */
@@ -43,8 +39,13 @@ public class PortConfig {
 	 * 关联服务Id
 	 */
     private long serviceId;
-    
-    
+
+	/**
+	 * 关联DNS服务Id
+	 */
+    private long dnsServiceId;
+
+
     public long getPortId() {
     	return portId;
     }
@@ -75,7 +76,13 @@ public class PortConfig {
     public void setServiceId(long serviceId) {
     	this.serviceId = serviceId;
     }
-    @Override
+    public long getDnsServiceId() {
+		return dnsServiceId;
+	}
+	public void setDnsServiceId(long dnsServiceId) {
+		this.dnsServiceId = dnsServiceId;
+	}
+	@Override
 	public String toString() {
 		return "portId:" + portId + ",containerPort:" + containerPort + ",protocol:" + protocol + ",mapPort:" + mapPort
 				+ ",serviceId:" + serviceId;

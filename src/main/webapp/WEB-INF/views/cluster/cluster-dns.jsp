@@ -34,10 +34,10 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>集群DNS
 									</h5>
 									<div class="ibox-tools">
-										<a title="定时" onclick="timedTask()"><i
-											class="fa fa-clock-o"></i></a> 
-										<a title="定时日志" onclick="timedLog()"><i
-											class="fa fa-history"></i></a> 
+										<a title="创建监控" onclick="createDNSMonitor()"><i
+											class="fa fa-plus"></i></a>
+										<a title="删除" onclick="delDns()"><i
+											class="fa fa-trash"></i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>
@@ -58,16 +58,32 @@
 						<div class="" style="margin-bottom:15px">
 							<table class="table table-striped table-hover dataTables-example">
 								<thead>
-									<tr>
+									<tr>	
+										<th style="width:5%;text-indent:20px">
+											<input type="checkbox" class="chkAll" id="checkallbox" />
+										</th>
+										<th style="text-indent:10px">服务名称</th>
 										<th style="text-indent:10px">域名</th>
 										<th>解析IP</th>
+										<th>创建时间</th>
+										<th>操作</th>
 									</tr>
 								</thead>
-								<tbody id="routeList">
-									<tr>
-										<td style="text-indent:10px">portal.clyxys.svc.cluster.local</td>
-										<td>192.168.0.1</td>
-									</tr>
+								<tbody id="dnsList">
+									<c:forEach items="${DNSServiceList }" var="dns">
+										<tr>
+											<td style="width:5%;text-indent:20px">
+												<input class="chkItem" type="checkbox" id="${dns.id }">
+											</td>
+											<td style="text-indent:10px"><a class="link" onclick="getDnsResult(this,${dns.id })" serviceName="${dns.serviceName }">${dns.serviceName }</a></td>
+											<td style="text-indent:10px">${dns.address }</td>
+											<td>${dns.ip }</td>
+											<td>${dns.createDate }</td>
+											<td><a onclick="dnsOneHistory(${dns.id })" title="日志"><i class="fa fa-history"></i></a>
+											<a onclick="delOneDns(${dns.id })" title="批量删除"><i class="fa fa-trash"></i></a>
+											</td>
+										</tr>
+									</c:forEach>
 								</tbody>
 							</table>
 						</div>
@@ -105,13 +121,68 @@
 		</div>
 	</div>
 </div>
+<div class="createDnsInfo" style="display:none">
+	<div style="padding:15px">
+		<div style="height:50px">
+			<span style="width:15%;float:left;line-height:34px;">服务名称：</span>
+			<input style="width:80%;float:left;" class="form-control" id="serviceName" value="">
+		</div>
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">域名：</span>
+			<input style="width:80%;float:left;" class="form-control" id="address" value="">
+		</div>
+	</div>
+</div>
+<div class="dnsResultInfo" style="display:none">
+	<div style="padding:15px">
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">服务名称：</span>
+			<input style="width:80%;float:left;" class="form-control" id="serviceNameInfo" value="">
+		</div>
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">域名：</span>
+			<input style="width:80%;float:left;" class="form-control" id="addressInfo" value="">
+		</div>
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">服务状态：</span>
+			<input style="width:80%;float:left;" class="form-control" id="resultInfo" value="">
+		</div>
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">解析IP：</span>
+			<input style="width:80%;float:left;" class="form-control" id="ipInfo" value="">
+		</div>
+		
+		<div style="height:40px">
+			<span style="width:15%;float:left;line-height:34px;">日志：</span>
+			<textarea style="width:80%;float:left;" class="form-control" id="logInfo" value="" rows="4"></textarea>
+		</div>
+	</div>
+</div>
+<div class="dnshistoryInfo" style="display:none">
+	<div style="padding:15px">
+		<div style="height:50px">
+		<input type="hidden" id="thisDnsId" value="">
+			<div class="dnsChangeTimeTit" style="width:100%"><span style="width:10%;float:left;line-height:36px;height:36px"><strong>时间间隔：</strong></span>
+				<select class="changeTime form-control" id="dnsChangetime" onchange="dnsChangeTime()" style="width:80%;">
+					<option value="1">1m</option>
+					<option value="5">5m</option>
+					<option value="10">10m</option>
+					<option value="30">30m</option>
+					<option value="60">60m</option>
+				</select>
+			</div>
+			<div id="hisrotyInfos" style="margin-top:15px;"></div>
+		</div>
+		
+	</div>
+</div>
 <script type="text/javascript">
 	$('.dataTables-example').dataTable({
-	    //"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
+	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,5] }],
 	    //"searching":false
-	    //"aaSorting": [[ 2, "desc" ]]
+	    "aaSorting": [[ 4, "desc" ]]
 	}); 
-	//$("#checkallbox").parent().removeClass("sorting_asc");
+	$("#checkallbox").parent().removeClass("sorting_asc");
 </script>
 
 </body>

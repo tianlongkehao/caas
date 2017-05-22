@@ -37,6 +37,8 @@
 										<h5 class="ci-h5"><i class="fa fa-map-marker" style="margin-right: 6px;"></i>对比</h5>
 									</div>
 									<div class="ibox-tools">
+										<a onclick="checkIptables()"><i>测试</i></a>
+										<a onclick="recoverIptables()"><i>恢复</i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>

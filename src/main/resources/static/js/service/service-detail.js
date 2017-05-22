@@ -359,6 +359,8 @@ $(document).ready(function() {
 		$(".editCon").hide();
 		editSerAddr();
 		$(".oldCon").show();
+		var newHref = $("#editServiceAddr").val()+'/'+$("#editProxyPath").val();
+		$("#openService").attr("href",newHref);
 	});
 	$("#canclEdit").click(function() {
 		$("#editServiceAddrBtn").show();
