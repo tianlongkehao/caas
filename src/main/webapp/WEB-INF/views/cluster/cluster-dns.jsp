@@ -125,11 +125,11 @@
 	<div style="padding:15px">
 		<div style="height:50px">
 			<span style="width:15%;float:left;line-height:34px;">服务名称：</span>
-			<input style="width:80%;float:left;" class="form-control" id="serviceName" value="">
+			<input style="width:80%;float:left;" class="form-control" id="serviceName" placeholder="服务名必须是小写字母开头，且是小写字母加数字的4-20个字符组成" value="">
 		</div>
 		<div style="height:40px">
 			<span style="width:15%;float:left;line-height:34px;">域名：</span>
-			<input style="width:80%;float:left;" class="form-control" id="address" value="">
+			<input style="width:80%;float:left;" class="form-control" id="address" placeholder="域名就是 网址+端口，例如:192.168.0.1:8080" value="">
 		</div>
 	</div>
 </div>
