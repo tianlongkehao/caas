@@ -182,12 +182,13 @@
 						<li id="li_management"><a class="J_menuItem" href="<%=path %>/cluster/management"><i class="fa fa_circle"></i>集群管理</a></li>
 						<li id="li_node"><a class="J_menuItem" href="<%=path %>/cluster/node"><i class="fa fa_circle"></i>节点管理</a></li>
 						<li id="li_test"><a class="J_menuItem" href="<%=path %>/cluster/test"><i class="fa fa_circle"></i>集群测试</a></li>
+						<li id="li_dns"><a class="J_menuItem" href="<%=path %>/cluster/dns"><i class="fa fa_circle"></i>集群DNS</a></li>
 						</c:if>
 						<li id="li_topo"><a class="J_menuItem" href="<%=path %>/cluster/topo"><i class="fa fa_circle"></i>集群拓扑</a></li>
 						<c:if test="${cur_user.user_autority == 1}">
-						<li id="li_route"><a class="J_menuItem" href="<%=path %>/cluster/route"><i class="fa fa_circle"></i>route</a></li>
+						<li id="li_route"><a class="J_menuItem" href="<%=path %>/cluster/route"><i class="fa fa_circle"></i>路由监控</a></li>
 						</c:if>
-						<li id="li_iptables"><a class="J_menuItem" href="<%=path %>/cluster/iptables"><i class="fa fa_circle"></i>iptables</a></li>
+						<li id="li_iptables"><a class="J_menuItem" href="<%=path %>/cluster/iptables"><i class="fa fa_circle"></i>转发规则</a></li>
 					</ul></li>
 				<li id="menu_template"><a href="#" class="first-a">
 					<i class="fa-nav fa-nav-template"></i>
@@ -223,7 +224,7 @@
 			</li>
 		</ul>
 	</div>
-	<div class="helpDoc hide"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn" value="新手入门"></a></div>
+	<div class="helpDoc"><a href="<%=path %>/product/help" target="_blank"><input type="button" class="btn help-btn btn-danger" value="新手入门"></a></div>
 	<div class="sideBoxBtn hide" onclick="navHide()"><i class="fa fa-step-backward"></i><div class="btn-background"></div></div>
 </div><!-- navAll -->
 

@@ -97,7 +97,7 @@
 						</ul>
 						<div class="applocation">
 							<a href="${service.serviceAddr}/${service.proxyPath}"
-								target="_blank" class="open">打开应用</a>
+								target="_blank" class="open" id="openService">打开应用</a>
 						</div>
 					</section>
 					<div class="baseInfo center-style">
@@ -378,6 +378,30 @@
 													<option name="nodeIpAffinity" value="nodeIpAffinity"
 														<c:if test="${service.nodeIpAffinity == 'nodeIpAffinity' }">selected</c:if>>nodeIpAffinity</option>
 											</select>
+										</span>
+										</td>
+									</tr>
+									<tr>
+									    <td>Pod调度方式：
+									     <span class="oldBaseCon_Run oldBaseCon">
+									            <c:if test="${service.ispodmutex == true}">
+									               Pod互斥
+					                    		</c:if>
+					                    		<c:if test="${service.ispodmutex == false}">
+					                    		   Pod亲和
+					                    		</c:if>
+										 </span>
+										 <span id="editPodMutex" hidden="true"
+											class="editBaseCon_Run editBaseCon">
+												<c:if test="${service.ispodmutex == true}">
+													<input type="checkbox" id="podmutex" checked />
+													<input type="hidden" id="ispodmutex" name="ispodmutex" value="true"/>
+					                    		</c:if>
+					                    		<c:if test="${service.ispodmutex == false}">
+													<input type="checkbox" id="podmutex"/>
+													<input type="hidden" id="ispodmutex" name="ispodmutex" value="false"/>
+					                    		</c:if>
+										<span>Pod互斥</span>
 										</span>
 										</td>
 									</tr>
@@ -823,18 +847,18 @@
 						<div
 							style="text-align: center; margin-top: 40px; font-size: 12px;">结果为空</div>
 					</div>
-					
+
 				</div>
 			</div>
 		</article>
 	</div>
-	
+
 	<!--进度条 -->
 	<div class="modal fade container" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 30%">
 		<div class="progress progress-striped active" id="loading" style="margin-top: 87%;">
 			<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;font-size:130%;"></div>
 		</div>
 	</div>
-	
+
 </body>
 </html>

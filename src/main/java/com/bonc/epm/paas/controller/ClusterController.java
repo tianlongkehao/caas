@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.influxdb.InfluxDB;
 import org.slf4j.Logger;
@@ -27,23 +28,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.bonc.epm.paas.cluster.api.ClusterHealthyClient;
 import com.bonc.epm.paas.cluster.api.LocalHealthyClient;
 import com.bonc.epm.paas.cluster.entity.CatalogResource;
 import com.bonc.epm.paas.cluster.entity.ClusterResources;
 import com.bonc.epm.paas.cluster.entity.NodeInfo;
+import com.bonc.epm.paas.cluster.entity.NodeTestInfo;
 import com.bonc.epm.paas.cluster.entity.Response;
 import com.bonc.epm.paas.cluster.util.InfluxdbSearchService;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.ClusterDao;
+import com.bonc.epm.paas.dao.DNSServiceDao;
+import com.bonc.epm.paas.dao.NodeInfoDao;
+import com.bonc.epm.paas.dao.PingResultDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Cluster;
 import com.bonc.epm.paas.entity.ClusterUse;
+import com.bonc.epm.paas.entity.DNSService;
+import com.bonc.epm.paas.entity.PingResult;
 import com.bonc.epm.paas.entity.PodTopo;
 import com.bonc.epm.paas.entity.ServiceTopo;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
@@ -60,8 +69,12 @@ import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.net.api.NetAPIClientInterface;
+import com.bonc.epm.paas.net.exceptions.NetClientException;
 import com.bonc.epm.paas.net.model.Diff;
+import com.bonc.epm.paas.net.model.Iptable;
+import com.bonc.epm.paas.net.model.RecoverResult;
 import com.bonc.epm.paas.net.model.RouteTable;
+import com.bonc.epm.paas.net.model.ServiceProblems;
 import com.bonc.epm.paas.net.util.NetClientService;
 import com.bonc.epm.paas.rest.util.RestFactory;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -106,10 +119,19 @@ public class ClusterController {
 	private ClusterDao clusterDao;
 
 	/**
+	 * NodeInfoDao 集群检测NodeInfoDao接口
+	 */
+	@Autowired
+	private NodeInfoDao nodeInfoDao;
+
+	/**
 	 * userDao 数据库操作接口
 	 */
 	@Autowired
 	private UserDao userDao;
+
+	@Autowired
+	DNSServiceDao dnsServiceDao;
 
 	/**
 	 * 获取配置文件中的 yumConf.io.address 的数据信息；
@@ -122,6 +144,10 @@ public class ClusterController {
 	@Value("${kubernetes.api.address}")
 	private String masterAddress;
 
+	// 镜像仓库地址
+	@Value("${docker.io.username}")
+	private String DOCKER_IO_USERNAME;
+
 	@Autowired
 	InfluxdbSearchService influxdbSearchService;
 
@@ -133,6 +159,9 @@ public class ClusterController {
 	 */
 	@Autowired
 	private DockerClientService dockerClientService;
+
+	@Autowired
+	private PingResultDao pingResultDao;
 
 	/**
 	 *
@@ -225,7 +254,16 @@ public class ClusterController {
 	@RequestMapping(value = { "/route" }, method = RequestMethod.GET)
 	public String clusterRoute(Model model) {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-		NodeList allNodes = client.getAllNodes();
+		NodeList allNodes;
+		try {
+			allNodes = client.getAllNodes();
+		} catch (KubernetesClientException e) {
+			LOG.error(e.getStatus().getReason());
+			allNodes = null;
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+			allNodes = null;
+		}
 		List<Object> nodeList = new ArrayList<>();
 		if (allNodes != null) {
 			for (Node node : allNodes.getItems()) {
@@ -233,6 +271,14 @@ public class ClusterController {
 				nodeList.add(nodeMap);
 				nodeMap.put("nodeName", node.getMetadata().getName());
 				nodeMap.put("nodeIp", node.getStatus().getAddresses().get(0).getAddress());
+				NetAPIClientInterface netAPIClient = netClientService.getSpecifiedClient(nodeMap.get("nodeIp"));
+				try {
+					RouteTable checkRoutetable = netAPIClient.checkRoutetable();
+					nodeMap.put("problem", String.valueOf(checkRoutetable.isProblem()));
+				} catch (Exception e) {
+					nodeMap.put("problem", "unknown");
+				}
+
 			}
 		}
 		model.addAttribute("nodeList", nodeList);
@@ -260,6 +306,15 @@ public class ClusterController {
 			List<Service> services = allServices.getItems();
 			model.addAttribute("services", services);
 		}
+
+		NetAPIClientInterface netClient = netClientService.getClient();
+		List<Iptable> checkIptable = null;
+		try {
+			checkIptable = netClient.checkIptable();
+		} catch (NetClientException e) {
+			LOG.error(e.getMessage());
+		}
+		model.addAttribute("checkIptable", checkIptable);
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "iptables");
 		return "cluster/cluster-iptables.jsp";
@@ -272,7 +327,7 @@ public class ClusterController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
 		// 以node节点名称为key，node节点中包含的pod信息为value；
 		Map<String, Object> jsonData = new HashMap<String, Object>();
-		Map<String, List> nodeMap = new HashMap<String, List>();
+		Map<String, List<PodTopo>> nodeMap = new HashMap<>();
 		List<ServiceTopo> serviceTopoList = new ArrayList<>();
 
 		// 取得所有node
@@ -368,8 +423,7 @@ public class ClusterController {
 	 *            Node
 	 * @see
 	 */
-	@SuppressWarnings("unchecked")
-	public void addPodTopo(String namespace, Map<String, List> nodeMap) {
+	public void addPodTopo(String namespace, Map<String, List<PodTopo>> nodeMap) {
 		try {
 			KubernetesAPIClientInterface clientName = kubernetesClientService.getClient(namespace);
 			// 取得所有此NAMESPACE下的POD
@@ -807,9 +861,18 @@ public class ClusterController {
 	@RequestMapping(value = { "/getRouteTable.do" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getRouteTable(String ip) {
+		Map<String, Object> map = new HashMap<>();
 		NetAPIClientInterface client = netClientService.getSpecifiedClient(ip);
-		RouteTable checkRoutetable = client.checkRoutetable();
-		return JSON.toJSONString(checkRoutetable);
+		RouteTable checkRoutetable;
+		try {
+			checkRoutetable = client.checkRoutetable();
+			map.put("status", "200");
+			map.put("checkRoutetable", checkRoutetable);
+		} catch (Exception e) {
+			map.put("status", "400");
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
 	}
 
 	/**
@@ -1042,40 +1105,47 @@ public class ClusterController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		NodeList nodes = client.getAllNodes();
 		List<Node> nodeList = nodes.getItems();
-		List<Node> resultList = new ArrayList<Node>();
+
+		List<NodeInfo> nodeInfos = new ArrayList<NodeInfo>();
 
 		List<Pod> pods = client.getPods().getItems();
-		String deployedpod = "";// 已经部署的用于集群检测的pod名称，pod名称与node名称相同
 
 		// 讲节点状态为Ready的节点返回，用于测试
 		for (Node node : nodeList) {
+
 			if (node.getStatus().getConditions().get(1).getStatus().equals("True")) {
-				resultList.add(node);
-			}
-			for (Pod pod : pods) {
-				if (node.getMetadata().getName().equals(pod.getMetadata().getName())) {
-					if (deployedpod.equals("")) {
-						deployedpod += node.getMetadata().getName();
-					} else {
-						deployedpod += "," + node.getMetadata().getName();
+				NodeInfo nodeInfo = new NodeInfo();
+				nodeInfo.setNodename(node.getMetadata().getName());
+				for (Pod pod : pods) {
+					if (node.getMetadata().getName().equals(pod.getMetadata().getName())) {
+						nodeInfo.setDeploystatus(true);
+						break;
 					}
-					break;
 				}
+				List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(node.getMetadata().getName());
+				if (!CollectionUtils.isEmpty(nodeTestInfos)) {
+					nodeInfo.setTeststatus(true);
+					nodeInfo.setNodeTestInfo(nodeTestInfos.get(0));
+				}
+				nodeInfos.add(nodeInfo);
 			}
 		}
 
-		System.out.println(deployedpod);
-		model.addAttribute("deployedpod", deployedpod);
-		model.addAttribute("nodeList", resultList);
+		List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename("all");
+		if (!CollectionUtils.isEmpty(nodeTestInfos)) {
+			model.addAttribute("testparam", nodeTestInfos.get(0));// 执行过批量测试，则返回测试参数信息
+		}
+
+		model.addAttribute("nodeList", nodeInfos);// 节点信息list
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "test");
 		return "cluster/test.jsp";
 	}
 
 	/**
-	 * @param 节点名称字符串（node1,node2,node3....）
+	 * nodenames：节点名字符串,逗号隔开 例："node1,node2,...."
 	 *
-	 * @return
+	 * @return map： status(200 :成功 , 500 :失败 ) msg(错误消息)
 	 */
 	@RequestMapping(value = { "/deploypodfortest" }, method = RequestMethod.GET)
 	@ResponseBody
@@ -1084,52 +1154,60 @@ public class ClusterController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
 		// 清空集群中所有node上的测试pod,pod的名称与node的名称相同
-		NodeList nodes = client.getAllNodes();
-		List<Node> nodeList = nodes.getItems();
+		/*
+		 * NodeList nodes = client.getAllNodes(); List<Node> nodeList =
+		 * nodes.getItems();
+		 */
 
 		PodList podList = client.getPods();
 		List<Pod> pods = podList.getItems();
 
-		for (Node node : nodeList) {
-			for (Pod pod : pods) {
-				if (pod.getMetadata().getName().equals(node.getMetadata().getName())) {
-					client.deletePodOfNamespace("kube-system", node.getMetadata().getName());
-					System.out.println("pod:" + node.getMetadata().getName() + "被删除！");
-					break;
-				}
-			}
-		}
+		/*
+		 * for (Node node : nodeList) { for (Pod pod : pods) { if
+		 * (pod.getMetadata().getName().equals(node.getMetadata().getName())) {
+		 * client.deletePodOfNamespace("kube-system",
+		 * node.getMetadata().getName()); System.out.println("pod:" +
+		 * node.getMetadata().getName() + "被删除！"); break; } } }
+		 */
+		LOG.info("**********************开始部署：" + nodenames + "**************************");
 
 		String[] names = nodenames.split(",");
 		try {
 			// 为localhealthy服务创建pod,在所有的每个node中创建一个pod,pod名称与container名称与node名称相同
-
 			for (int i = 0; i < names.length; i++) {
-				Pod pod = new Pod();
-				ObjectMeta objectMeta = new ObjectMeta();
-				Map<String, String> labels = new HashMap<String, String>();
-				labels.put("name", "localhealthy");
-				objectMeta.setName(names[i]);
-				objectMeta.setLabels(labels);
-				objectMeta.setNamespace("kube-system");
-				pod.setMetadata(objectMeta);
-				PodSpec podSpec = new PodSpec();
-				List<Container> containers = new ArrayList<Container>();
-				List<ContainerPort> ports = new ArrayList<ContainerPort>();
-				ContainerPort port = new ContainerPort();
-				port.setContainerPort(8011);
-				port.setProtocol("TCP");
-				ports.add(port);
-				Container container = new Container();
-				container.setName(names[i]);
-				container.setImage("192.168.0.76:5000/localhealthy");
-				container.setPorts(ports);
-				containers.add(container);
-				podSpec.setContainers(containers);
-				podSpec.setNodeName(names[i]);
-				pod.setSpec(podSpec);
-				client.createPodOfNamespace("kube-system", pod);
-				System.out.println("pod:" + names[i] + "被创建！");
+				try {
+					client.getPodOfNamespace("kube-system", names[i]);
+					// 没有出现异常，则已经部署过
+					LOG.info("节点：" + names[i] + "已经部署过...");
+					continue;
+				} catch (KubernetesClientException e) {
+					// 如果没有部署过，则新部署此Pod
+					Pod pod = new Pod();
+					ObjectMeta objectMeta = new ObjectMeta();
+					Map<String, String> labels = new HashMap<String, String>();
+					labels.put("name", "localhealthy");
+					objectMeta.setName(names[i]);
+					objectMeta.setLabels(labels);
+					objectMeta.setNamespace("kube-system");
+					pod.setMetadata(objectMeta);
+					PodSpec podSpec = new PodSpec();
+					List<Container> containers = new ArrayList<Container>();
+					List<ContainerPort> ports = new ArrayList<ContainerPort>();
+					ContainerPort port = new ContainerPort();
+					port.setContainerPort(8011);
+					port.setProtocol("TCP");
+					ports.add(port);
+					Container container = new Container();
+					container.setName(names[i]);
+					container.setImage(DOCKER_IO_USERNAME + "/localhealthy");
+					container.setPorts(ports);
+					containers.add(container);
+					podSpec.setContainers(containers);
+					podSpec.setNodeName(names[i]);
+					pod.setSpec(podSpec);
+					client.createPodOfNamespace("kube-system", pod);
+					LOG.info("Pod:" + names[i] + "被创建！");
+				}
 			}
 
 			boolean exist = false;
@@ -1158,13 +1236,13 @@ public class ClusterController {
 				ports.add(port);
 				Container container = new Container();
 				container.setName("clusterhealthy");
-				container.setImage("192.168.0.76:5000/clusterhealthy");
+				container.setImage(DOCKER_IO_USERNAME + "/clusterhealthy");
 				container.setPorts(ports);
 				containers.add(container);
 				podSpec.setContainers(containers);
 				pod.setSpec(podSpec);
 				client.createPodOfNamespace("kube-system", pod);
-				System.out.println("pod:clusterhealthy被创建！");
+				LOG.info("pod:clusterhealthy被创建！");
 			}
 
 			boolean localhealthy = false;
@@ -1204,7 +1282,7 @@ public class ClusterController {
 
 				service1.setSpec(serviceSpec);
 				client.createServiceOfNamespace("kube-system", service1);
-				System.out.println("service:localhealthy被创建！");
+				LOG.info("service:localhealthy被创建！");
 			}
 
 			if (!clusterhealthy) {
@@ -1229,10 +1307,11 @@ public class ClusterController {
 
 				service2.setSpec(serviceSpec2);
 				client.createServiceOfNamespace("kube-system", service2);
-				System.out.println("service:clusterhealthy被创建！");
+				LOG.info("service:clusterhealthy被创建！");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
+			LOG.info("******************************部署失败************************************");
 			deletePodsForTest();
 			map.put("msg", "部署失败！");
 			map.put("status", 500);
@@ -1256,16 +1335,19 @@ public class ClusterController {
 				}
 				long end = System.currentTimeMillis();
 				if ((end - start) > 60000) {// 1分钟即为超时
-					System.out.println("部署超时");
+					LOG.info("******************************部署超时************************************");
 					deletePodsForTest();
+					map.put("msg", "部署超时！");
 					map.put("status", 500);
 					return JSON.toJSONString(map);
 				}
 				System.out.println("正在准备....已经用时：" + (end - start) + "ms");
 
 			} catch (InterruptedException e) {
+				LOG.info("******************************部署失败************************************");
 				deletePodsForTest();
-				e.printStackTrace();
+				// e.printStackTrace();
+				map.put("msg", "部署失败！");
 				map.put("status", 500);
 				return JSON.toJSONString(map);
 			}
@@ -1276,15 +1358,70 @@ public class ClusterController {
 	}
 
 	/**
-	 * 清除用于集群测试的所有pod和service
+	 * 清除指定的集群测试Pods nodenames ：节点名字符串,逗号隔开 例："node1,node2,...."
 	 *
-	 * @return
+	 * @return map： status(200 :成功 , 500 :失败 ) msg(错误消息)
+	 */
+	@RequestMapping(value = { "/clearspecifiedpod" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String deleteSpecifiedPodsForTest(String nodenames) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		map.put("status", 200);
+
+		String msg = "";
+		if (StringUtils.isEmpty(nodenames)) {
+			msg = "没有选择节点！";
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		// 清空指定的Pods,并不删除clusterhealthy Pod，以及测试服务
+		PodList podList = client.getPods();
+		List<Pod> pods = podList.getItems();
+		String[] nodenamesarray = nodenames.split(",");
+
+		LOG.info("********************************清理开始***************************************");
+
+		for (String name : nodenamesarray) {
+			for (Pod pod : pods) {
+				if (pod.getMetadata().getName().equals(name)) {
+					try {
+						client.deletePodOfNamespace("kube-system", name);
+						LOG.info("Pod：" + name + "被删除！");
+					} catch (KubernetesClientException e) {
+						LOG.info("Pod：" + name + "删除失败！");
+						msg = msg + "Pod：" + name + "删除失败！";
+						map.put("status", 500);
+					}
+
+					// ************************数据库中删除记录************
+					nodeInfoDao.deleteByNodename(name);
+					break;
+				}
+			}
+		}
+
+		if (!StringUtils.isEmpty(msg)) {
+			map.put("msg", msg);
+			LOG.info("********************************清理异常***************************************");
+		} else {
+			LOG.info("********************************清理完成***************************************");
+		}
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 清除用于集群测试的所有pod和service 返回码： status:200 - 成功 500 - 失败 msg: 错误消息
 	 */
 	@RequestMapping(value = { "/deployclear" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String deletePodsForTest() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		map.put("status", 200);
 
 		// 清空集群中所有用于测试的Pod和Service
 		NodeList nodes = client.getAllNodes();
@@ -1293,11 +1430,22 @@ public class ClusterController {
 		PodList podList = client.getPods();
 		List<Pod> pods = podList.getItems();
 
+		boolean clear = true;// 是否清楚干净标记
+		String msg = "";
+
 		for (Node node : nodeList) {
 			for (Pod pod : pods) {
 				if (pod.getMetadata().getName().equals(node.getMetadata().getName())) {
-					client.deletePodOfNamespace("kube-system", node.getMetadata().getName());
-					System.out.println("pod:" + node.getMetadata().getName() + "被删除！");
+					try {
+						client.deletePodOfNamespace("kube-system", node.getMetadata().getName());
+						LOG.info("pod:" + node.getMetadata().getName() + "被删除！");
+					} catch (KubernetesClientException e) {
+						LOG.info("pod:" + node.getMetadata().getName() + "删除失败！");
+						msg = msg + "pod:" + node.getMetadata().getName() + "删除失败！";
+						clear = false;
+					}
+					// ************************数据库中删除检测记录************
+					nodeInfoDao.deleteByNodename(node.getMetadata().getName());
 					break;
 				}
 			}
@@ -1305,8 +1453,14 @@ public class ClusterController {
 
 		for (Pod pod : pods) {
 			if (pod.getMetadata().getName().equals("clusterhealthy")) {
-				client.deletePodOfNamespace("kube-system", "clusterhealthy");
-				System.out.println("pod:clusterhealthy被删除！");
+				try {
+					client.deletePodOfNamespace("kube-system", "clusterhealthy");
+					LOG.info("pod:clusterhealthy被删除！");
+				} catch (KubernetesClientException e) {
+					LOG.info("pod:clusterhealthy删除失败！");
+					msg = msg + "pod:clusterhealthy删除失败！";
+					clear = false;
+				}
 				break;
 			}
 		}
@@ -1314,24 +1468,46 @@ public class ClusterController {
 		List<Service> services = client.getAllServicesOfNamespace("kube-system").getItems();
 		for (Service service : services) {
 			if (service.getMetadata().getName().equals("localhealthy")) {
-				client.deleteServiceOfNamespace("kube-system", "localhealthy");
-				System.out.println("Service:localhealthy被删除！");
+				try {
+					client.deleteServiceOfNamespace("kube-system", "localhealthy");
+					LOG.info("Service:localhealthy被删除！");
+				} catch (KubernetesClientException e) {
+					LOG.info("Service:localhealthy删除失败！");
+					msg = msg + "Service:localhealthy删除失败！";
+					clear = false;
+				}
 				continue;
 			} else if (service.getMetadata().getName().equals("clusterhealthy")) {
-				client.deleteServiceOfNamespace("kube-system", "clusterhealthy");
-				System.out.println("Service:clusterhealthy被删除！");
+				try {
+					client.deleteServiceOfNamespace("kube-system", "clusterhealthy");
+					LOG.info("Service:clusterhealthy被删除！");
+				} catch (Exception e) {
+					LOG.info("Service:clusterhealthy删除失败！");
+					msg = msg + "Service:clusterhealthy删除失败！";
+					clear = false;
+				}
 				continue;
 			}
 		}
 
-		map.put("status", 200);
+		nodeInfoDao.deleteByNodename("all");// 删除批量测试的测试参数记录
+
+		if (clear) {
+			LOG.info("Service:clusterhealthy删除失败！");
+		} else {
+			LOG.info("Service:clusterhealthy删除失败！");
+			map.put("msg", msg);
+			map.put("status", 500);
+		}
+
 		return JSON.toJSONString(map);
 	}
 
 	/**
-	 * 执行测试
+	 * 执行测试 nodenames : 节点名字符串,逗号隔开 例："node1,node2,...." items: 检测项目字符串，逗号隔开
+	 * 例："item1,item2,....."
 	 *
-	 * @return
+	 * @return map: status:200 - 成功 500 - 失败 msg:错误信息
 	 */
 	@RequestMapping(value = { "/excutetest" }, method = RequestMethod.GET)
 	@ResponseBody
@@ -1339,15 +1515,73 @@ public class ClusterController {
 			int tracetime, int curltime, int speed, int latency, int memory) {
 
 		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
+		String msg = "";
+
 		if (StringUtils.isEmpty(nodenames)) {
+			msg = "没有选择要检测的节点！";
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+		if (StringUtils.isEmpty(items)) {
+			msg = "没有选择要检测的项目！";
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		LOG.info("***************************检测开始**********************************");
+
+		Service localservice = null;
+		try {
+			localservice = client.getServiceOfNamespace("kube-system", "localhealthy");
+		} catch (KubernetesClientException e) {
+			msg = "找不到localhealthy服务！";
+			LOG.info(msg);
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		Service clusterservice = null;
+		try {
+			clusterservice = client.getServiceOfNamespace("kube-system", "clusterhealthy");
+		} catch (KubernetesClientException e) {
+			msg = "找不到clusterhealthy服务！";
+			LOG.info(msg);
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		Pod clusterpod = null;
+		try {
+			clusterpod = client.getPodOfNamespace("kube-system", "clusterhealthy");
+		} catch (KubernetesClientException e) {
+			msg = "找不到clusterhealthy Pod！";
+			LOG.info(msg);
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		ClusterHealthyClient clusterHealthyClient;
+		try {
+			clusterHealthyClient = new ClusterHealthyClient(clusterpod.getStatus().getHostIP(),
+					clusterservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
+		} catch (Exception e) {
+			msg = "ClusterhealthyClient创建失败!";
+			LOG.info(msg);
+			map.put("msg", msg);
 			map.put("status", 500);
 			return JSON.toJSONString(map);
 		}
 
 		String[] names = nodenames.split(",");
-		List<NodeInfo> nodeInfos = new ArrayList<NodeInfo>();
+		List<NodeTestInfo> nodeInfos = new ArrayList<NodeTestInfo>();
 
 		boolean pingitem = false;
 		boolean traceitem = false;
@@ -1383,149 +1617,412 @@ public class ClusterController {
 			}
 		}
 
-		Service localservice = client.getServiceOfNamespace("kube-system", "localhealthy");
-		Service clusterservice = client.getServiceOfNamespace("kube-system", "clusterhealthy");
-		Pod clusterpod = client.getPodOfNamespace("kube-system", "clusterhealthy");
-		ClusterHealthyClient clusterHealthyClient;
-		try {
-			clusterHealthyClient = new ClusterHealthyClient(clusterpod.getStatus().getHostIP(),
-					clusterservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
-		} catch (Exception e) {
-			e.printStackTrace();
-			LOG.info("ClusterhealthyClient创建失败");
-			map.put("status", 500);
-			return JSON.toJSONString(map);
-		}
-
 		for (String name : names) {
 			Pod pod = client.getPodOfNamespace("kube-system", name);
 			LocalHealthyClient localHealthyClient;
 			try {
 				localHealthyClient = new LocalHealthyClient(pod.getStatus().getHostIP(),
 						localservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
-				NodeInfo nodeInfo = new NodeInfo();
+				NodeTestInfo nodeInfo = new NodeTestInfo();
 				nodeInfo.setNodename(name);
-                boolean allpass=true;
+				boolean allpass = true;
 				if (pingitem) {
 					Response pingresponse = localHealthyClient.ping(pingIp);
 					nodeInfo.setPingoutmsg(pingresponse.getOutmsg());
-					nodeInfo.setPing(pingresponse.getOutmsg().contains("Unreachable") ? false : true);
-					if (nodeInfo.isPing()) {
+					// nodeInfo.setPing(pingresponse.getOutmsg().contains("Unreachable")
+					// ? false : true);
+					nodeInfo.setPing(pingitem);
+					nodeInfo.setPingIp(pingIp);
+					nodeInfo.setPingtimetarget(pingtime);
+					if (!pingresponse.getOutmsg().contains("Unreachable")) {
 						String[] outmsg = pingresponse.getOutmsg().split("/");
 						nodeInfo.setPingtime(Double.parseDouble(outmsg[outmsg.length - 3]));
 						nodeInfo.setPingpass(nodeInfo.getPingtime() <= pingtime);// ping通过
 					}
-					allpass = allpass&&nodeInfo.isPingpass();
+					allpass = allpass && nodeInfo.isPingpass();
 				}
 
-				if(traceitem){
+				if (traceitem) {
 					Response traceresponse = localHealthyClient.tracepath(tracepathIp);
 					nodeInfo.setTracepathoutmsg(traceresponse.getOutmsg());
 					String tracemsg = traceresponse.getOutmsg();
-					nodeInfo.setTracepath(tracemsg.contains("hops") ? true : false);
-					tracemsg = tracemsg.subSequence(tracemsg.indexOf("real"), tracemsg.indexOf("user")).toString().trim();
+					// nodeInfo.setTracepath(tracemsg.contains("hops") ? true :
+					// false);
+					nodeInfo.setTracepath(traceitem);
+					nodeInfo.setTraceIp(tracepathIp);
+					nodeInfo.setTracetimetarget(tracetime);
+					tracemsg = tracemsg.subSequence(tracemsg.indexOf("real"), tracemsg.indexOf("user")).toString()
+							.trim();
 					tracemsg = tracemsg.split("0m")[1].split("s")[0];
 					nodeInfo.setTracetime(Double.parseDouble(tracemsg));
-					if (nodeInfo.isTracepath()) {
+					if (tracemsg.contains("hops")) {
 						nodeInfo.setTracepass(nodeInfo.getTracetime() <= tracetime);// trace通过
 					}
-					allpass = allpass&&nodeInfo.isTracepass();
+					allpass = allpass && nodeInfo.isTracepass();
 				}
 
-                if(qperfitem){
-                	Response qperfresponse = clusterHealthyClient.qperf(pod.getStatus().getPodIP());
-                	String qperfmsg = qperfresponse.getOutmsg();
-                	nodeInfo.setQperfoutmsg(qperfmsg);
-                	nodeInfo.setQperf(qperfmsg.contains("failed") ? false : true);
-                	if (nodeInfo.isQperf()) {
-                		String unit = "";
-                		double sp;
-                		double lcy;
-                		qperfmsg = qperfmsg.substring(0, qperfmsg.indexOf("/sec")).trim();
-                		qperfmsg = qperfmsg.split("=")[1].trim();
-                		unit = qperfmsg.substring(qperfmsg.length() - 3, qperfmsg.length()).trim();
-                		sp = Double.parseDouble(qperfmsg.substring(0, qperfmsg.length() - 3).trim());
-                		if (unit.equals("GB")) {// 前台单位为MB
-                			sp = sp * 1024;
-                		} else if (unit.equals("KB")) {
-                			sp = sp / 1024;
-                		} else if (unit.equals("TB")) {
-                			sp = sp * 1024;
-                		}
-                		nodeInfo.setSpeed(sp);
-                		qperfmsg = qperfresponse.getOutmsg();
-                		qperfmsg = qperfmsg.split("latency")[1].split("conf")[0].split("=")[1].trim();
-                		unit = qperfmsg.substring(qperfmsg.length() - 3, qperfmsg.length()).trim();
-                		lcy = Double.parseDouble(qperfmsg.substring(0, qperfmsg.length() - 3).trim());
-                		if (unit.equals("us")) {// 前台单位为ms
-                			lcy = lcy / 1000;
-                		} else if (unit.equals("s")) {
-                			lcy = lcy * 1000;
-                		}
-                		nodeInfo.setLatency(lcy);
-                		nodeInfo.setQperfpass(sp >= speed && lcy <= latency);// qperf通过
-                	}
-                	allpass = allpass&&nodeInfo.isQperfpass();
-                }
+				if (qperfitem) {
+					Response qperfresponse = clusterHealthyClient.qperf(pod.getStatus().getPodIP());
+					String qperfmsg = qperfresponse.getOutmsg();
+					nodeInfo.setQperfoutmsg(qperfmsg);
+					// nodeInfo.setQperf(qperfmsg.contains("failed") ? false :
+					// true);
+					nodeInfo.setQperf(qperfitem);
+					if (!qperfmsg.contains("failed")) {
+						String unit = "";
+						double sp;
+						double lcy;
+						qperfmsg = qperfmsg.substring(0, qperfmsg.indexOf("/sec")).trim();
+						qperfmsg = qperfmsg.split("=")[1].trim();
+						unit = qperfmsg.substring(qperfmsg.length() - 3, qperfmsg.length()).trim();
+						sp = Double.parseDouble(qperfmsg.substring(0, qperfmsg.length() - 3).trim());
+						if (unit.equals("GB")) {// 前台单位为MB
+							sp = sp * 1024;
+						} else if (unit.equals("KB")) {
+							sp = sp / 1024;
+						} else if (unit.equals("TB")) {
+							sp = sp * 1024;
+						}
+						nodeInfo.setSpeed(sp);
+						nodeInfo.setSpeedtarget(speed);
+						qperfmsg = qperfresponse.getOutmsg();
+						qperfmsg = qperfmsg.split("latency")[1].split("conf")[0].split("=")[1].trim();
+						unit = qperfmsg.substring(qperfmsg.length() - 3, qperfmsg.length()).trim();
+						lcy = Double.parseDouble(qperfmsg.substring(0, qperfmsg.length() - 3).trim());
+						if (unit.equals("us")) {// 前台单位为ms
+							lcy = lcy / 1000;
+						} else if (unit.equals("s")) {
+							lcy = lcy * 1000;
+						}
+						nodeInfo.setLatency(lcy);
+						nodeInfo.setLatencytarget(latency);
+						nodeInfo.setQperfpass(sp >= speed && lcy <= latency);// qperf通过
+					}
+					allpass = allpass && nodeInfo.isQperfpass();
+				}
 
-                if(curlitem){
-                	Response curlresponse = clusterHealthyClient.curl(pod.getStatus().getPodIP() + ":8011");
-                	String curlmsg = curlresponse.getOutmsg();
-                	nodeInfo.setCurloutmsg(curlmsg);
-                	nodeInfo.setCurl(curlmsg.contains("Failed") ? false : true);
-                	curlmsg = curlmsg.split("real")[1].split("user")[0].trim().split("0m")[1].split("s")[0].trim();
-                	nodeInfo.setCurltime(Double.parseDouble(curlmsg));
-                	if (nodeInfo.isCurl()) {
-                		nodeInfo.setCurlpass(nodeInfo.getCurltime() <= curltime);// curl通过
-                	}
-                	allpass = allpass&&nodeInfo.isCurlpass();
-                }
+				if (curlitem) {
+					Response curlresponse = clusterHealthyClient.curl(pod.getStatus().getPodIP() + ":8011");
+					String curlmsg = curlresponse.getOutmsg();
+					nodeInfo.setCurloutmsg(curlmsg);
+					// nodeInfo.setCurl(curlmsg.contains("Failed") ? false :
+					// true);
+					nodeInfo.setCurl(curlitem);
+					nodeInfo.setCurltimetarget(curltime);
+					curlmsg = curlmsg.split("real")[1].split("user")[0].trim().split("0m")[1].split("s")[0].trim();
+					nodeInfo.setCurltime(Double.parseDouble(curlmsg));
+					if (!curlmsg.contains("Failed")) {
+						nodeInfo.setCurlpass(nodeInfo.getCurltime() <= curltime);// curl通过
+					}
+					allpass = allpass && nodeInfo.isCurlpass();
+				}
 
-                if(dockeritem){
-                	DockerClient dockerClient = dockerClientService
-    						.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
-    				InfoCmd infoCmd = dockerClient.infoCmd();
-    				Info info = infoCmd.exec();
+				if (dockeritem) {
+					DockerClient dockerClient = dockerClientService
+							.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
+					InfoCmd infoCmd = dockerClient.infoCmd();
+					Info info = infoCmd.exec();
 
-                	long mem = info.getMemTotal() / (1024 * 1024 * 1024);// 转换成GiB
-                	nodeInfo.setCpu(info.getNCPU());
-                	nodeInfo.setMemory(mem);
-                	nodeInfo.setDockerpass(mem == memory);// docker通过
-                	allpass = allpass&&nodeInfo.isDockerpass();
-                }
+					long mem = info.getMemTotal() / (1024 * 1024 * 1024);// 转换成GiB
+					nodeInfo.setDocker(dockeritem);
+					nodeInfo.setCpu(info.getNCPU());
+					nodeInfo.setMemory(mem);
+					nodeInfo.setMemorytarget(memory);
+					nodeInfo.setDockerpass(mem == memory);// docker通过
+					allpass = allpass && nodeInfo.isDockerpass();
+				}
 
-                if(dnsitem){
-                	Response masterdnsresponse = localHealthyClient.dns("master");
-    				Response standbydnsresponse = localHealthyClient.dns("standby");
+				if (dnsitem) {
+					Response masterdnsresponse = localHealthyClient.dns("master");
+					Response standbydnsresponse = localHealthyClient.dns("standby");
 
-                	String dnString = masterdnsresponse.getOutmsg();
-                	nodeInfo.setMasterdnsoutmsg(dnString);
-                	nodeInfo.setMasterdns(
-                			dnString.contains("timed out") || dnString.contains("failed") || dnString.contains("resolved")
-                			? false : true);
-                	dnString = standbydnsresponse.getOutmsg();
-                	nodeInfo.setStandbydnsoutmsg(dnString);
-                	nodeInfo.setStandbydns(
-                			dnString.contains("timed out") || dnString.contains("failed") || dnString.contains("resolved")
-                			? false : true);
-                	nodeInfo.setDnspass(nodeInfo.isMasterdns() && nodeInfo.isStandbydns());
-                	allpass = allpass&&nodeInfo.isDnspass();
-                }
+					nodeInfo.setDns(dnsitem);
+					String dnString = masterdnsresponse.getOutmsg();
+					nodeInfo.setMasterdnsoutmsg(dnString);
+					nodeInfo.setMasterdns(dnString.contains("timed out") || dnString.contains("failed")
+							|| dnString.contains("resolved") ? false : true);
+					dnString = standbydnsresponse.getOutmsg();
+					nodeInfo.setStandbydnsoutmsg(dnString);
+					nodeInfo.setStandbydns(dnString.contains("timed out") || dnString.contains("failed")
+							|| dnString.contains("resolved") ? false : true);
+					nodeInfo.setDnspass(nodeInfo.isMasterdns() && nodeInfo.isStandbydns());
+					allpass = allpass && nodeInfo.isDnspass();
+				}
 
-                nodeInfo.setAllpass(allpass);
+				nodeInfo.setAllpass(allpass);
 				nodeInfos.add(nodeInfo);
+
+				nodeInfoDao.deleteByNodename(name);
+				nodeInfoDao.save(nodeInfo);
 			} catch (Exception e) {
-				e.printStackTrace();
 				LOG.info("节点：" + name + "检测故障！");
-				map.put("msg", "节点：" + name + "故障，" + e.getMessage());
+				nodeInfoDao.deleteByNodename(name);
+				msg = msg + "节点：" + name + "故障!";
 				map.put("status", 500);
-				return JSON.toJSONString(map);
-				// continue;
+				// return JSON.toJSONString(map);
+				continue;
 			}
 		}
 
+		// 批量测试，保存测试参数
+		if (names.length > 1) {
+			NodeTestInfo nodeTestInfo = new NodeTestInfo();
+			nodeTestInfo.setNodename("all");
+
+			nodeTestInfo.setPing(pingitem);
+			nodeTestInfo.setPingIp(pingIp);
+			nodeTestInfo.setPingtimetarget(pingtime);
+
+			nodeTestInfo.setCurl(curlitem);
+			nodeTestInfo.setCurltimetarget(curltime);
+
+			nodeTestInfo.setTracepath(traceitem);
+			nodeTestInfo.setTraceIp(tracepathIp);
+			nodeTestInfo.setTracetimetarget(tracetime);
+
+			nodeTestInfo.setQperf(qperfitem);
+			nodeTestInfo.setSpeedtarget(speed);
+			nodeTestInfo.setLatencytarget(latency);
+
+			nodeTestInfo.setDocker(dockeritem);
+			nodeTestInfo.setMemorytarget(memory);
+
+			nodeTestInfo.setDns(dnsitem);
+
+			nodeInfoDao.deleteByNodename("all");
+			nodeInfoDao.save(nodeTestInfo);
+		}
+
+		if (!StringUtils.isEmpty(msg)) {
+			LOG.info("***************************检测异常**********************************");
+		} else {
+			LOG.info("***************************检测完成**********************************");
+		}
+
 		map.put("nodeInfos", nodeInfos);
-		map.put("status", 200);
 		return JSON.toJSONString(map);
 	}
+
+	/**
+	 *
+	 * @param nodename 节点名称
+	 * @return 节点测试结果
+	 *        status：500 错误
+	 *                404 没有测试结果
+	 *                200 成功
+	 */
+	@RequestMapping(value = { "/excutetestResult" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getClusterTestResult(String nodename) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+		String msg = "";
+
+		if (StringUtils.isEmpty(nodename)) {
+			msg="节点名称为空！";
+			map.put("status", 500);
+			map.put("msg", msg);
+			return JSON.toJSONString(map);
+		}
+        List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(nodename);
+        if(CollectionUtils.isEmpty(nodeTestInfos)){
+        	msg="节点"+nodename+"没有测试结果！";
+			map.put("status", 404);
+			map.put("msg", msg);
+			return JSON.toJSONString(map);
+        }
+
+        map.put("nodetestresult", nodeTestInfos.get(0));
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 集群测试，获得集群中所有的node
+	 *
+	 * @param
+	 * @return
+	 */
+	@RequestMapping(value = { "/dns" }, method = RequestMethod.GET)
+	public String clusterDns(Model model) {
+		Iterable<DNSService> DNSServices = dnsServiceDao.findAll();
+		List<DNSService> DNSServiceList = new ArrayList<>();
+
+		Iterator<DNSService> iterator = DNSServices.iterator();
+		while (iterator.hasNext()) {
+			DNSService dnsService = iterator.next();
+			Iterable<PingResult> resultIterable = pingResultDao.findByHost(dnsService.getAddress());
+			Iterator<PingResult> resultIterator = resultIterable.iterator();
+			if (resultIterator.hasNext()) {
+				PingResult next = resultIterator.next();
+				String pingResultString = next.getPingResult();
+				if (pingResultString.contains("Address 1: ")) {
+					int addressIndex = pingResultString.indexOf("Address 1: ");
+					dnsService.setIp(pingResultString.substring(addressIndex + 11));
+				} else {
+					dnsService.setIp("解析失败");
+				}
+			} else {
+				dnsService.setIp("正在解析");
+			}
+
+			DNSServiceList.add(dnsService);
+		}
+		model.addAttribute("DNSServiceList", DNSServiceList );
+		model.addAttribute("menu_flag", "cluster");
+		model.addAttribute("li_flag", "dns");
+		return "cluster/cluster-dns.jsp";
+	}
+
+	/**
+	 * checkIptables:检查iptable. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return String
+	 */
+	@RequestMapping(value = { "/checkIptables.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String checkIptables() {
+		Map<String, Object> map = new HashMap<>();
+		NetAPIClientInterface client = netClientService.getClient();
+		List<Iptable> checkIptable = null;
+		List<Map<String, Object>> resultList = new ArrayList<>();
+		try {
+			checkIptable = client.checkIptable();
+			for (Iptable iptable : checkIptable) {
+				// 创建用于存放节点所有信息的map
+				Map<String, Object> nodeMap = new HashMap<>();
+				// 节点名
+				nodeMap.put("nodeName", iptable.getNodeName());
+				// 节点的所有服务
+				nodeMap.put("allServices", iptable.getProblems());
+				// 创建用于存放异常服务的map
+				Map<String, Object> problemServices = new HashMap<>();
+				// 遍历所有的服务
+				for (String serviceName : iptable.getProblems().keySet()) {
+					ServiceProblems serviceProblems = iptable.getProblems().get(serviceName);
+					if (CollectionUtils.isNotEmpty(serviceProblems.getExternalAccess())
+							|| CollectionUtils.isNotEmpty(serviceProblems.getInternalAccess())
+							|| CollectionUtils.isNotEmpty(serviceProblems.getOthers())) {
+						problemServices.put(serviceName, serviceProblems);
+					}
+				}
+				nodeMap.put("problemServices", problemServices);
+				// 节点是否有问题 true正常
+				if (MapUtils.isEmpty(problemServices)) {
+					nodeMap.put("problem", true);
+				} else {
+					nodeMap.put("problem", false);
+				}
+				resultList.add(nodeMap);
+			}
+		} catch (NetClientException e) {
+			LOG.error(e.getMessage());
+			map.put("status", "400");
+			return JSON.toJSONString(map);
+		}
+		map.put("status", "200");
+		map.put("resultList", resultList);
+		return JSON.toJSONString(map, SerializerFeature.DisableCircularReferenceDetect);
+	}
+
+	/**
+	 * recoverRoutetable:恢复Routetable. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param nodeListString
+	 * @return String
+	 */
+	@RequestMapping(value = { "/recoverRoutetable.do" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String recoverRoutetable(String nodeListString) {
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		List<com.bonc.epm.paas.net.model.NodeInfo> nodeList;
+		try {
+			nodeList = JSON.parseArray(nodeListString, com.bonc.epm.paas.net.model.NodeInfo.class);
+		} catch (Exception e) {
+			map.put("status", "400");
+			messages.add("解析错误：[Message:" + e.getMessage() + "nodeListString:" + nodeListString + "]");
+			map.put("messages", e.getMessage());
+			return JSON.toJSONString(map);
+		}
+		for (com.bonc.epm.paas.net.model.NodeInfo nodeInfo : nodeList) {
+			NetAPIClientInterface client = netClientService.getSpecifiedClient(nodeInfo.getIp());
+			try {
+				RecoverResult recoverResult = client.recoverRoutetable(nodeInfo);
+				if (!recoverResult.isCordon() || !recoverResult.isDrain() || !recoverResult.isRestart()
+						|| !recoverResult.isUncordon()) {
+					messages.add(nodeInfo.getIp() + "修复异常");
+				}
+			} catch (NetClientException e) {
+				LOG.error(e.getMessage());
+				messages.add(nodeInfo.getIp() + "修复异常");
+			}
+		}
+		if (CollectionUtils.isEmpty(messages)) {
+			map.put("status", "200");
+		} else {
+			map.put("status", "300");
+			map.put("messages", messages);
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * recoverRoutetable:修复Iptables. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param nodeNameListString
+	 * @return String
+	 */
+	@RequestMapping(value = { "/recoverIptables.do" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String recoverIptables(String nodeNameListString) {
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		List<String> nodeNameList;
+		try {
+			nodeNameList = JSON.parseArray(nodeNameListString, String.class);
+		} catch (Exception e) {
+			map.put("status", "400");
+			messages.add("解析错误：[Message:" + e.getMessage() + "nodeNameListString:" + nodeNameListString + "]");
+			map.put("messages", e.getMessage());
+			return JSON.toJSONString(map);
+		}
+		KubernetesAPIClientInterface k8sclient = kubernetesClientService.getClient();
+
+		for (String nodeName : nodeNameList) {
+			String nodeIp = "";
+			try {
+				// 依据nodename获取nodeip
+				Node node = k8sclient.getSpecifiedNode(nodeName);
+				nodeIp = node.getStatus().getAddresses().get(0).getAddress();
+			} catch (Exception e) {
+				LOG.error("查找对应ip失败：[nodeName:" + nodeName + "]" + e.getMessage());
+				messages.add("查找对应ip失败：[nodeName:" + nodeName + "]" + e.getMessage());
+				map.put("status", "400");
+				map.put("messages", e.getMessage());
+				return JSON.toJSONString(map);
+			}
+			NetAPIClientInterface client = netClientService.getSpecifiedClient(nodeIp);
+			try {
+				RecoverResult recoverResult = client.recoverIptables();
+				if (!recoverResult.isRestart()) {
+					messages.add(nodeName + "修复异常");
+				}
+			} catch (NetClientException e) {
+				LOG.error(e.getMessage());
+				messages.add(nodeName + "修复异常");
+			}
+
+		}
+		if (CollectionUtils.isEmpty(messages)) {
+			map.put("status", "200");
+		} else {
+			map.put("status", "300");
+			map.put("messages", messages);
+		}
+		return JSON.toJSONString(map);
+	}
+
 }

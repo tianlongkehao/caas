@@ -20,9 +20,14 @@
  */
 package com.bonc.epm.paas.net.api;
 
+import java.util.List;
+
 import com.bonc.epm.paas.net.exceptions.NetClientException;
 import com.bonc.epm.paas.net.model.Diff;
+import com.bonc.epm.paas.net.model.Iptable;
+import com.bonc.epm.paas.net.model.NodeInfo;
 import com.bonc.epm.paas.net.model.Nodes;
+import com.bonc.epm.paas.net.model.RecoverResult;
 import com.bonc.epm.paas.net.model.RouteTable;
 import com.bonc.epm.paas.net.model.Service;
 
@@ -52,5 +57,33 @@ public interface NetAPIClientInterface {
 	 * @throws NetClientException
 	 */
 	public Diff getDiff(Service service) throws NetClientException;
+
+	/**
+	 * checkIptable:检查Iptable. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return
+	 * @throws NetClientException List<String>
+	 */
+	public List<Iptable> checkIptable() throws NetClientException;
+
+	/**
+	 * recoverRoutetable:修复Routetable. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param node
+	 * @return
+	 * @throws NetClientException RecoverResult
+	 */
+	public RecoverResult recoverRoutetable(NodeInfo node) throws NetClientException;
+
+	/**
+	 * recoverIptables:修复Iptable. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return
+	 * @throws NetClientException RecoverResult
+	 */
+	public RecoverResult recoverIptables() throws NetClientException;
 
 }

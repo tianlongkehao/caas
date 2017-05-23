@@ -19,11 +19,18 @@ import com.bonc.epm.paas.entity.PortConfig;
 public interface PortConfigDao extends CrudRepository<PortConfig, Long>{
     /**
      * 根据id查找映射端口信息
-     * @param id 
+     * @param id
      * @return List<PortConfig>
      * @see
      */
     List<PortConfig> findByServiceId (long id);
+    /**
+     * 根据id查找映射端口信息
+     * @param id
+     * @return List<PortConfig>
+     * @see
+     */
+    List<PortConfig> findByDnsServiceId (long id);
     /**
      * 根据id删除映射端口信息
      * @param serviceId long
@@ -31,11 +38,17 @@ public interface PortConfigDao extends CrudRepository<PortConfig, Long>{
      */
     void deleteByServiceId(long serviceId);
     /**
+     * 根据id删除映射端口信息
+     * @param serviceId long
+     * @see
+     */
+    void deleteByDnsServiceId(long dnsServiceId);
+    /**
      * 查询所有的映射端口信息
      * @return HashSet
      * @see
      */
-    @Query("select i.mapPort from PortConfig i") 
+    @Query("select i.mapPort from PortConfig i")
     HashSet<Integer> findPortSets();
     /**
      * 通过通过mapport查找记录

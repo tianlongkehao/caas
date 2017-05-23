@@ -75,9 +75,9 @@ public class SheraClientService {
 		User user = CurrentUserUtils.getInstance().getUser();
 		Shera shera = new Shera();
 		if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-			shera = sheraDao.findByUserIdInUsed(user.getParent_id());
+			shera = sheraDao.findByUserId(user.getParent_id());
 		} else {
-			shera = sheraDao.findByUserIdInUsed(user.getId());
+			shera = sheraDao.findByUserId(user.getId());
 		}
 		//找不到shera时候，使用默认shera
 		if (null == shera) {
@@ -85,7 +85,6 @@ public class SheraClientService {
 			UserAndShera userAndShera = new UserAndShera();
 			userAndShera.setSheraId(1L);
 			userAndShera.setUserId(user.getId());
-			userAndShera.setInUsed(1);
 			userAndSheraDao.save(userAndShera);
 		}
 		return getClient(shera);

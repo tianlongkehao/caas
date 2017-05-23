@@ -1234,4 +1234,121 @@ i.pushOrg {
 .diffTitle{
 	margin-top:20px;
 }
+.tab-title {
+    width: 100px;
+    height: 48px;
+    line-height: 40px;
+    float: left;
+    margin-top: -18px;
+    border-top: 4px solid #dadada;
+}
+.tab-title h5{
+    font-size: 15px;
+    line-height: 44px;
+}
+.ci-h5 {
+    padding-right: 10px!important;
+    padding-left: 25px!important;
+    cursor: pointer!important;
+}
+.checkResult{
+	color: #e8504f;
+}
+.checkResult:hover{
+	text-decoration: underline;
+	cursor:pointer;
+}
+.checkResultDetailInfo .tableInfo, .checkResultDetailInfo .labelInfo{
+	padding: 10px;
+}
+.labelInfo{
+	margin-left:10px;
+}
+.checkResultDetailInfo .tableInfo table tr{
+	border-bottom: 1px solid #ddd;
+}
+.checkResultDiv{
+	max-height:350px;
+	overflow-y:auto;
+}
+.resultInfo p span:not(:first-child){
+	margin-left:55px;
+}
+.iptableOpr a{
+	cursor:pointer;
+}
+
+/* route */
+#routeList a.fa-caret{
+	padding-right:10px;
+}
+.targetDetail{
+	background-color:#ddd!important;
+}
+.routeBtns a{
+	cursor:pointer;
+}
+/* dns */
+.timedTaskInfo table tr td{
+	text-indent: 16px;	
+}
+.timedTaskInfo table tr td i.fa-check{
+	float:right;
+	margin-right:15px;
+	font-size:16px;
+	color:#1dd2af;
+	display:none;	
+}
+.domainTable{
+	max-height:240px;
+	overflow-y:auto;
+}
+/* test */
+.clusterTestBtns{
+	height: 40px;
+	margin-top:-10px;
+	margin-bottom:10px;
+}
+.clusterTestTable tr {
+    border-bottom: 1px solid #eee;
+    text-indent: 5px;
+    text-align: left;
+}
+.clusterTestTable tr input{
+	border:1px solid #ddd;
+	border-radius: 2px;
+}
+.clusterTestTable tr input:checkbox{
+	margin-right:6px;
+}
+.clusterTestOpr a:hover{
+	text-decoration: underline;
+}
+font i.fa-question-circle{
+	margin-left:-15px;
+}
+.clusterTestOprBtns a{
+	cursor:pointer;
+}
+#detail{
+	padding:10px;
+}
+.tableInput{
+	width:78%;
+}
+.tableInput input{
+	width:100%;
+	border-radius:4px;
+}
+#pingdetail,#tracedetail,#qperfdetail,#curldetail,#masterdetail,#standbydetail{
+	border:1px solid #ddd;
+}
+#myTabContent .fade table{
+	width: 96%;
+	margin: 10px auto
+}
+#myTab li.active a{
+	background-color:#e8504f;
+	color:#fff;
+}
 

@@ -184,7 +184,7 @@
             		tr+='<tr>'+
 			     			'<td style="width: 5%; text-indent: 30px;">'+
 			     			'<input type="checkbox" name="chkItem" class="chkItem" value='+refservice.id+' /></td>'+
-					     		'<td style="width: 18%; padding-left: 5px;"><a class="editButton" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
+					     		'<td style="width: 18%; padding-left: 5px;"><a class="editButton link" onclick="editImportSer(this,'+refservice.id+')" serName="'+refservice.serName+'" serIn="'+refservice.serAddress+'" rePort="'+refservice.refPort
 					     		+'" serOut="'+refservice.refAddress+'" serDesc="'+refservice.refSerDesc+'" serVi="'+refservice.viDomain+'" usePxy="'+refservice.useProxy+'" zone="'+refservice.zone+'">'+refservice.serName+'</a><i class="fa fa-info-circle info-importService" title="'+refservice.refSerDesc+'"></i></td>'+
 					     		'<td style="width: 17%; text-indent: 8px;">'+refservice.serAddress+'</td>'+
 					     		'<td style="width: 17%;">'+refservice.refAddress+'</td>';

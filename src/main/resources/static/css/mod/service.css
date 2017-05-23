@@ -96,6 +96,9 @@
     /* background: #418ac7; */
     /* background: #e8504f; */
 }
+.radius_step.action a {
+    color:#e8504f;
+}
 
 .step-inner {
     position: relative;
@@ -1220,4 +1223,10 @@ p.portLabel input{
 }
 #fileBody tr{
 	border-bottom:1px solid #ddd;
+}
+.addTfootBtn{
+	background: #fafafa;
+	text-align:center;
+	color:#3f8ec3;
+	cursor:pointer
 }

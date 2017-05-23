@@ -83,7 +83,7 @@ public class KubernetesClientService {
 	 * POD request memory /limit memory = 1/4
 	 */
 	@Value("${ratio.limittorequestmemory}")
-	public  int RATIO_LIMITTOREQUESTMEMORY;
+	public int RATIO_LIMITTOREQUESTMEMORY;
 
 	public static final Integer INITIAL_DELAY_SECONDS = 30 * 60;
 	public static final Integer TIME_SECONDS = 5;
@@ -239,7 +239,8 @@ public class KubernetesClientService {
 	public ReplicationController generateSimpleReplicationController(String name, int replicas, Integer initialDelay,
 			Integer timeoutDetction, Integer periodDetction, String image, List<PortConfig> portConfigs, Double cpu,
 			String ram, String nginxObj, String servicePath, String proxyPath, String checkPath,
-			List<EnvVariable> envVariables, List<String> command, List<String> args,List<ServiceConfigmap> serviceConfigmapList) {
+			List<EnvVariable> envVariables, List<String> command, List<String> args,
+			List<ServiceConfigmap> serviceConfigmapList, boolean ispodmutex) {
 
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
@@ -266,6 +267,14 @@ public class KubernetesClientService {
 			}
 		}
 		podMeta.setLabels(labels);
+		if (ispodmutex) {
+			Map<String, String> annotations = new HashMap<String, String>();
+			String value = "{\"podAntiAffinity\": {\"requiredDuringSchedulingIgnoredDuringExecution\": [{ \"labelSelector\": {\"matchExpressions\": ["
+					+ "{\"key\": \"app\",\"operator\": \"In\",\"values\": [\"" + name
+					+ "\"]}]},\"topologyKey\": \"kubernetes.io/hostname\"}]}}";
+			annotations.put("scheduler.alpha.kubernetes.io/affinity", value);
+			podMeta.setAnnotations(annotations);
+		}
 		template.setMetadata(podMeta);
 		PodSpec podSpec = new PodSpec();
 		List<Container> containers = new ArrayList<Container>();
@@ -314,13 +323,15 @@ public class KubernetesClientService {
 		Map<String, Object> def = new HashMap<String, Object>();
 		// float fcpu = cpu*1024; 页面资源 = 实际资源 * 资源系数
 		def.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
-		def.put("memory", Double.parseDouble(ram)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
-		/*def.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
-		def.put("memory", ram + "Mi");*/
+		def.put("memory", Double.parseDouble(ram) / RATIO_LIMITTOREQUESTMEMORY + "Mi");
+		/*
+		 * def.put("cpu", cpu / Integer.valueOf(RATIO_MEMTOCPU));
+		 * def.put("memory", ram + "Mi");
+		 */
 		Map<String, Object> limit = new HashMap<String, Object>();
 		// limit = getlimit(limit);
-		limit.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
-		limit.put("memory", Double.parseDouble(ram)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
+		limit.put("cpu", cpu);
+		limit.put("memory", ram + "Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
 		container.setResources(requirements);
@@ -341,7 +352,7 @@ public class KubernetesClientService {
 		if (CollectionUtils.isNotEmpty(args)) {
 			container.setArgs(args);
 		}
-		if(!CollectionUtils.isEmpty(serviceConfigmapList)){
+		if (!CollectionUtils.isEmpty(serviceConfigmapList)) {
 			ServiceConfigmap serviceConfigmap = serviceConfigmapList.get(0);
 			List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
 			VolumeMount volumeMount = new VolumeMount();
@@ -412,6 +423,43 @@ public class KubernetesClientService {
 		port.setContainerPort(containerPort);
 		ports.add(port);
 		container.setPorts(ports);
+		containers.add(container);
+		podSpec.setContainers(containers);
+		template.setSpec(podSpec);
+		spec.setTemplate(template);
+		replicationController.setSpec(spec);
+		return replicationController;
+	}
+
+	public ReplicationController generateSimpleReplicationController(String name, int replicas, String image,
+			List<String> command, List<String> args) {
+		ReplicationController replicationController = new ReplicationController();
+		ObjectMeta meta = new ObjectMeta();
+		meta.setName(name);
+		replicationController.setMetadata(meta);
+		ReplicationControllerSpec spec = new ReplicationControllerSpec();
+		spec.setReplicas(replicas);
+
+		PodTemplateSpec template = new PodTemplateSpec();
+		ObjectMeta podMeta = new ObjectMeta();
+		podMeta.setName(name);
+		Map<String, String> labels = new HashMap<String, String>();
+		labels.put("app", name);
+		podMeta.setLabels(labels);
+		template.setMetadata(podMeta);
+		PodSpec podSpec = new PodSpec();
+		List<Container> containers = new ArrayList<Container>();
+		Container container = new Container();
+		container.setName(name);
+		container.setImage(image);
+
+		if (CollectionUtils.isNotEmpty(command)) {
+			container.setCommand(command);
+		}
+		if (CollectionUtils.isNotEmpty(args)) {
+			container.setArgs(args);
+		}
+
 		containers.add(container);
 		podSpec.setContainers(containers);
 		template.setSpec(podSpec);
@@ -521,7 +569,7 @@ public class KubernetesClientService {
 	 * @return
 	 * @see
 	 */
-	public Endpoints generateEndpoints(String serName, String refAddress, int refPort, String useProxy,String zone) {
+	public Endpoints generateEndpoints(String serName, String refAddress, int refPort, String useProxy, String zone) {
 		Endpoints endpoints = new Endpoints();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(serName);
@@ -531,11 +579,21 @@ public class KubernetesClientService {
 			labels.put("useProxy", useProxy);
 			if (StringUtils.isNotBlank(zone)) {
 				switch (zone) {
-					case "0":labels.put("user", "user");break;
-					case "1":labels.put("dmz", "dmz");break;
-					case "2":labels.put("dmz1", "dmz1");break;
-					case "3":labels.put("all", "all");break;
-					default:labels.put("all", "all");break;
+				case "0":
+					labels.put("user", "user");
+					break;
+				case "1":
+					labels.put("dmz", "dmz");
+					break;
+				case "2":
+					labels.put("dmz1", "dmz1");
+					break;
+				case "3":
+					labels.put("all", "all");
+					break;
+				default:
+					labels.put("all", "all");
+					break;
 				}
 			}
 		}
@@ -560,8 +618,10 @@ public class KubernetesClientService {
 		endpoints.setSubsets(subsets);
 		return endpoints;
 	}
+
 	/**
 	 * Description: create a new HorizontalPodAutoscaler Object
+	 *
 	 * @param maxReplicas
 	 * @param minReplicas
 	 * @param kind

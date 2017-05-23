@@ -97,6 +97,7 @@ import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
+import com.bonc.epm.paas.kubernetes.util.ResourceService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.util.SheraClientService;
@@ -332,6 +333,12 @@ public class ServiceController {
 	private String KUBERNETES_API_ENDPOINT;
 
     /**
+	 * resourcecontroller接口
+	 */
+	@Autowired
+	private ResourceService resourceService;
+
+    /**
 	 * Description: <br>
 	 * 展示container和services
 	 *
@@ -508,6 +515,14 @@ public class ServiceController {
 		Service service = serviceDao.findOne(id);
 		List<EnvVariable> envVariableList = envVariableDao.findByServiceId(id);
 		List<PortConfig> portConfigList = portConfigDao.findByServiceId(service.getId());
+
+		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
+		List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(id);
+		ServiceConfigmap serviceConfigmap = null;
+		if(!CollectionUtils.isEmpty(serviceConfigmapList)){
+			serviceConfigmap = serviceConfigmapList.get(0);
+		}
+
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<com.bonc.epm.paas.entity.Pod> podNameList = new ArrayList<com.bonc.epm.paas.entity.Pod>();
 		List<Container> containerList = new ArrayList<Container>();
@@ -547,6 +562,8 @@ public class ServiceController {
 
 		model.addAttribute("entryHost", ENTRY_HOST);
 		model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
+		model.addAttribute("configmapList", configmapList);
+		model.addAttribute("serviceConfigmap", serviceConfigmap);
 		model.addAttribute("storageList", storageList);
 		model.addAttribute("namespace", currentUser.getNamespace());
 		model.addAttribute("id", id);
@@ -672,6 +689,10 @@ public class ServiceController {
 
 		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
 
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        int nodecount = client.getAllNodes().getItems().size();
+
+        model.addAttribute("nodecount",nodecount);
 		model.addAttribute("configmapList", configmapList);
 		model.addAttribute("cpuSizeList", cpuSizeList);
 		model.addAttribute("memorySizeList", memorySizeList);
@@ -838,7 +859,7 @@ public class ServiceController {
 				leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
 
 				model.addAttribute("leftcpu", leftCpu);
-				model.addAttribute("leftmemory", leftmemory / 1024);
+				model.addAttribute("leftmemory", Math.ceil(leftmemory / 1024.0));
 			} else {
 				LOG.info("用户 " + currentUser.getUserName() + " 没有定义名称为 " + currentUser.getNamespace() + " 的Namespace ");
 			}
@@ -909,6 +930,17 @@ public class ServiceController {
 				return JSON.toJSONString(map);
 			}
 		}
+
+		/**
+		 * 检查运行该服务之后，剩余的cpu和memory是否满足预留条件
+		 */
+		boolean chkresult = resourceService.checkRestResource(service);
+		if(!chkresult){
+			map.put("msg", "cpu或内存不足，请调整资源大小或申请更多资源！");
+			map.put("status", "504");
+			return JSON.toJSONString(map);
+		}
+
 		delPods(service.getServiceName());
 		List<EnvVariable> envVariables = envVariableDao.findByServiceId(id);
 		List<PortConfig> portConfigs = portConfigDao.findByServiceId(service.getId()); // 获取服务对应的端口映射
@@ -1004,7 +1036,7 @@ public class ServiceController {
 						service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 						service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
 						service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-						service.getCheckPath(), envVariables, command, args,serviceConfigmapList);
+						service.getCheckPath(), envVariables, command, args,serviceConfigmapList,service.isIspodmutex());
 				// 给controller设置卷组挂载的信息
 				LOG.debug("给rc添加存储卷信息");
 				if (service.getServiceType().equals("1")) {
@@ -1050,8 +1082,8 @@ public class ServiceController {
 					def.put("memory", Double.parseDouble(memory)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
 
 					Map<String, Object> limit = new HashMap<String, Object>();
-					limit.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
-					limit.put("memory", Double.parseDouble(memory)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
+					limit.put("cpu", cpu);
+					limit.put("memory", Double.parseDouble(memory) + "Mi");
 
 					requirements.setRequests(def);
 					requirements.setLimits(limit);
@@ -2275,6 +2307,22 @@ public class ServiceController {
 			}
 		}
 		try {
+
+			/**
+			 * 检查运行该服务之后，剩余的cpu和memory是否满足预留条件
+			 */
+			boolean chkresult = resourceService.checkRestResource(cpus - service.getCpuNum(),String.valueOf(Double.parseDouble(rams)-Double.parseDouble(service.getRam())));
+			if(!chkresult){
+				//map.put("msg", "cpu或内存不足，请调整资源大小或申请更多资源！");
+				if(ResourceService.STATUS == ResourceService.CPU_LACK){
+					map.put("msg", "cpu不足，请调整服务的cpu大小或申请更多cpu!");
+				}else{
+					map.put("msg", "ram不足，请调整服务的ram大小或申请更多ram!");
+				}
+				map.put("status", "504");
+				return JSON.toJSONString(map);
+			}
+
 			service.setCpuNum(cpus);
 			service.setRam(rams);
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -2590,8 +2638,19 @@ public class ServiceController {
 		try {
 			maps.put("status", "200");
 			for (long id : ids) {
-				if (!CreateContainer(id, false).contains("200")) {
-					maps.put("status", "400");
+				String creatresult = CreateContainer(id, false);
+				if (!creatresult.contains("200")) {
+					if(creatresult.contains("504")){
+						if(ResourceService.STATUS == ResourceService.CPU_LACK){
+							maps.put("msg", "cpu不足，请调整服务的cpu大小或申请更多cpu!");
+						}else{
+							maps.put("msg", "ram不足，请调整服务的ram大小或申请更多ram!");
+						}
+						maps.put("status", "504");
+						break;
+					}else{
+						maps.put("status", "400");
+					}
 				}
 				;
 			}
@@ -3153,6 +3212,9 @@ public class ServiceController {
 		ser.setNodeIpAffinity(service.getNodeIpAffinity());
 		// 检查服务状态填写的路径
 		ser.setCheckPath(service.getCheckPath());
+		// Pod互斥
+		ser.setIspodmutex(service.isIspodmutex());
+
 		if (StringUtils.isNotBlank(service.getCheckPath())) {
 			// 服务检测超时
 			ser.setTimeoutDetction(
@@ -3642,7 +3704,12 @@ public class ServiceController {
 		LOG.info("************************before starting Service, delete garbage pod first*********************");
 		try {
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(serviceName);
+			com.bonc.epm.paas.kubernetes.model.Service k8sService;
+			try {
+				k8sService = client.getService(serviceName);
+			} catch (Exception e1) {
+				return;
+			}
 			Map<String, String> labelSelector = new HashMap<String, String>();
 			labelSelector.put("app", k8sService.getSpec().getSelector().get("app"));
 			PodList podList = client.getLabelSelectorPods(labelSelector);

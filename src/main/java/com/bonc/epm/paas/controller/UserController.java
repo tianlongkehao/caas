@@ -459,7 +459,7 @@ public class UserController {
         	//设置存储卷余量
         	userResource.setVol_surplus_size(userResource.getVol_surplus_size()+resource.getVol()-userResource.getVol_size());
             userResource.setCpu(Double.valueOf(resource.getCpu_account()));
-            userResource.setMemory(Long.parseLong(resource.getRam()));
+            userResource.setMemory(new Double(resource.getRam()).longValue());
             userResource.setVol_size(resource.getVol());
             userResource.setImage_count(resource.getImage_count());
             userResource.setUpdateDate(new Date());
@@ -704,7 +704,7 @@ public class UserController {
                     Map<String, String> map = quota.getSpec().getHard();
                     String leftCpu = String.valueOf(kubernetesClientService.transCpu(map.get("cpu")) );
                     resource.setCpu_account(String.valueOf(Double.parseDouble(leftCpu)*RATIO_LIMITTOREQUESTCPU));// CPU数量
-                    resource.setRam(String.valueOf(Double.parseDouble(map.get("memory").replace("G", "").replace("i", ""))*RATIO_LIMITTOREQUESTMEMORY));// 内存
+                    resource.setRam(String.valueOf(computeMemoryOut(map.get("memory"))*RATIO_LIMITTOREQUESTMEMORY));// 内存
                     LOG.info("+++++++++++++" + leftCpu + "------" + map.get("memory"));
                     /* resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
                     resource.setPod_count(map.get("pods"));//POD数量
@@ -1146,7 +1146,7 @@ public class UserController {
         Map<String, String> hard = quota.getSpec().getHard();
         //资源按照系数调整
         hard.put("memory", Double.parseDouble(resource.getRam())/RATIO_LIMITTOREQUESTMEMORY + "G"); // 内存
-        hard.put("cpu", Double.valueOf(resource.getCpu_account())/RATIO_LIMITTOREQUESTCPU + "");// CPU数量
+        hard.put("cpu", Double.parseDouble(resource.getCpu_account())/RATIO_LIMITTOREQUESTCPU + "");// CPU数量
         hard.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
 		// hard.put("pods", resource.getPod_count() + "");//POD数量
 		// hard.put("services", resource.getServer_count() + "");//服务
@@ -1212,7 +1212,7 @@ public class UserController {
             //map.put("cpu", Double.valueOf(resource.getCpu_account()) + "");// CPU数量(个)
             //实际分配资源=页面分配资源/分配系数
             map.put("memory", Double.parseDouble(resource.getRam())/RATIO_LIMITTOREQUESTMEMORY + "G"); // 内存
-            map.put("cpu", Double.valueOf(resource.getCpu_account())/RATIO_LIMITTOREQUESTCPU + "");// CPU数量(个)
+            map.put("cpu", Double.parseDouble(resource.getCpu_account())/RATIO_LIMITTOREQUESTCPU + "");// CPU数量(个)
             map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
             //map.put("pods", resource.getPod_count() + "");//POD数量
             //map.put("services", resource.getServer_count() + "");//服务
@@ -1751,58 +1751,55 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * detailShera:shera detail页面. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param model
+	 * @param id
+	 * @return String
+	 */
 	@RequestMapping("/shera/detail/{id}")
-    public String detailShera(Model model, @PathVariable long id){
-        Shera shera = sheraDao.findOne(id);
-        SheraAPIClientInterface client = sheraClientService.getClient(shera);
-        JdkList allJdk = null;
-		List<Map<String, Object>> mvnConfigList = new ArrayList<>();
-		List<Map<String, Object>> antConfigList = new ArrayList<>();
-		List<Map<String, Object>> sonarConfigList = new ArrayList<>();
+	public String detailShera(Model model, @PathVariable long id) {
+		Shera shera = sheraDao.findOne(id);
+		SheraAPIClientInterface client = sheraClientService.getClient(shera);
+		JdkList allJdk = null;
 		try {
 			allJdk = client.getAllJdk();
-			List<ExecConfig> mvnConfigs = client.getExecConfig(SheraConstant.EXEC_MAVEN_CONFIG);
+		} catch (SheraClientException e) {
+			e.printStackTrace();
+		}
+		List<Map<String, Object>> mvnConfigList = getFormatExecConfig(client, SheraConstant.EXEC_MAVEN_CONFIG);
+		List<Map<String, Object>> antConfigList = getFormatExecConfig(client, SheraConstant.EXEC_ANT_CONFIG);
+		List<Map<String, Object>> sonarConfigList = getFormatExecConfig(client, SheraConstant.EXEC_SONAR_CONFIG);
 
-			for (ExecConfig mvnConfig : mvnConfigs) {
-				Map<String, Object> map = new HashMap<>();
-				map.put("version", mvnConfig.getVersion());
+		model.addAttribute("shera", shera);
+		model.addAttribute("allJdk", allJdk);
+		model.addAttribute("mvnConfig", mvnConfigList);
+		model.addAttribute("antConfig", antConfigList);
+		model.addAttribute("sonarConfig", sonarConfigList);
+		model.addAttribute("menu_flag", "ci");
+		model.addAttribute("li_flag", "shera");
+		return "ci/shera-detail.jsp";
+	}
 
-				Map<String, String> env = mvnConfig.getEnv();
-				List<Object> envList = new ArrayList<>();
-				if (MapUtils.isNotEmpty(env)) {
-					for(String key : env.keySet()){
-						Map<String , String> envItem = new HashMap<>();
-						envItem.put("key",key);
-						envItem.put("value", env.get(key));
-						envList.add(envItem);
-					}
-				}
-				map.put("env", envList);
-				mvnConfigList.add(map);
-			}
-
-			List<ExecConfig> antConfigs = client.getExecConfig(SheraConstant.EXEC_ANT_CONFIG);
-			for (ExecConfig antConfig : antConfigs) {
-				Map<String, Object> map = new HashMap<>();
-				map.put("version", antConfig.getVersion());
-
-				Map<String, String> env = antConfig.getEnv();
-				List<Object> envList = new ArrayList<>();
-				if (MapUtils.isNotEmpty(env)) {
-					for(String key : env.keySet()){
-						Map<String , String> envItem = new HashMap<>();
-						envItem.put("key",key);
-						envItem.put("value", env.get(key));
-						envList.add(envItem);
-					}
-				}
-				map.put("env", envList);
-				antConfigList.add(map);
-			}
-
-
-
-			List<ExecConfig> sonarConfigs = client.getExecConfig(SheraConstant.EXEC_SONAR_CONFIG);
+	/**
+	 * getFormatExecConfig:获取格式化的ExecConfig. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param client
+	 * @param Kind
+	 * @return List<Map<String,Object>>
+	 */
+	private List<Map<String, Object>> getFormatExecConfig(SheraAPIClientInterface client, Integer Kind){
+		List<Map<String, Object>> resultList = new ArrayList<>();
+		List<ExecConfig> sonarConfigs;
+		try {
+			sonarConfigs = client.getExecConfig(Kind);
+		} catch (Exception e) {
+			sonarConfigs = null;
+		}
+		if (sonarConfigs != null) {
 			for (ExecConfig sonarConfig : sonarConfigs) {
 				Map<String, Object> map = new HashMap<>();
 				map.put("version", sonarConfig.getVersion());
@@ -1818,20 +1815,36 @@ public class UserController {
 					}
 				}
 				map.put("env", envList);
-				sonarConfigList.add(map);
+				resultList.add(map);
 			}
-
-		} catch (SheraClientException e) {
-			e.printStackTrace();
 		}
-        model.addAttribute("shera", shera);
-        model.addAttribute("allJdk", allJdk);
-        model.addAttribute("mvnConfig", mvnConfigList);
-        model.addAttribute("antConfig", antConfigList);
-        model.addAttribute("sonarConfig", sonarConfigList);
-        model.addAttribute("menu_flag", "ci");
-        model.addAttribute("li_flag", "shera");
-        return "ci/shera-detail.jsp";
-    }
+		return resultList;
+	}
 
+	/**
+    *
+    * Description:
+    * computeMemoryOut
+    * @param val Map<String, String>
+    * @return memVal String
+    * @see
+    */
+	private Float computeMemoryOut(String memory) {
+		if(StringUtils.isEmpty(memory)){
+			return null;
+		}
+		memory = memory.replaceAll("i", "");
+		if (memory.contains("K")) {
+			//Float a1 = Float.valueOf(memory.replace("K", "")) / 1024 / 1024;
+			Float a1 = Float.valueOf(memory.replace("K", "")) / 1000 / 1000;
+			return a1;
+		} else if (memory.contains("M")) {
+			//quota分配memory为浮点数时，单位为M,进制为1000,例 12.5G 在集群中显示 12500M
+			//Float a1 = Float.valueOf(memory.replace("M", "")) / 1024;
+			Float a1 = Float.valueOf(memory.replace("M", "")) / 1000;
+			return a1;
+		} else {
+			return Float.parseFloat(memory.replace("G", ""));
+		}
+	}
 }
