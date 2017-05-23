@@ -554,7 +554,7 @@ public interface KubernetesAPI {
     @DELETE
     @Path("/namespaces/{namespace}/replicationcontrollers/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Status deleteReplicationController(@PathParam("namespace")String namespace,@PathParam("name") String name)
+    public ReplicationController deleteReplicationController(@PathParam("namespace")String namespace,@PathParam("name") String name)
             throws KubernetesClientException;
 
     /* Services API */

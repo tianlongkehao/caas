@@ -418,7 +418,7 @@ public interface KubernetesAPIClientInterface {
      *            controller id controller id to be deleted.
      * @throws KubernetesClientException
      */
-    public Status deleteReplicationController(String name) throws KubernetesClientException;
+    public ReplicationController deleteReplicationController(String name) throws KubernetesClientException;
 
     /* Services API */
 
