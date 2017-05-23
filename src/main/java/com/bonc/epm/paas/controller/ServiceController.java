@@ -1798,6 +1798,9 @@ public class ServiceController {
 		service.setUpdateDate(currentDate);
 		service.setUpdateBy(currentUser.getId());
 		serviceDao.save(service);
+		// 保存服务操作信息
+		serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+				ServiceConstant.OPERATION_TYPE_CANCELUPDATE);
 
 		try {
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -1906,9 +1909,6 @@ public class ServiceController {
 		service.setUpdateDate(currentDate);
 		service.setUpdateBy(currentUser.getId());
 		serviceDao.save(service);
-		// 保存服务操作信息
-		serviceOperationLogDao.save(service.getServiceName(), service.toString(),
-				ServiceConstant.OPERATION_TYPE_CANCELUPDATE);
 
 		map.put("status", "200");
 		LOG.info("replicationController:" + serviceName + " rolling update canceled.");
