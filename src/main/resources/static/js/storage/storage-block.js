@@ -41,7 +41,7 @@ $(function(){
 				var distdetail= $("#storage-mark").html();
 
                                     $.ajax({
-                					url:""+ctx+"/service/createcephrbd?imgname="+blockname+"&disksize="+disksize+"&unload="+unload
+                					url:""+ctx+"/ceph/createcephrbd?imgname="+blockname+"&disksize="+disksize+"&unload="+unload
                 					     +"&disktype="+disktype+"&distdetail="+distdetail,
                 					type:"get",
                 					success:function(data){
@@ -50,7 +50,7 @@ $(function(){
                 				});
 				//先检查磁盘名称是否存在，然后新建
 				/*$.ajax({
-					url:""+ctx+"/service/ceph/checkrbd?imgname="+blockname,
+					url:""+ctx+"/ceph/checkrbd?imgname="+blockname,
 					type:"get",
 					success:function(data){
                          var data = eval("("+data+")");

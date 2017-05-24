@@ -34,6 +34,8 @@ $(document).ready(function () {
 //}
 //创建DNS监控
 function createDNSMonitor(){
+	$("#serviceName").val("");
+	$("#address").val("");
 	layer.open({
 		type: 1,
 		title: "创建DNS监控",
@@ -43,23 +45,76 @@ function createDNSMonitor(){
 		yes: function(index,layero){
 			var serviceName = $("#serviceName").val();
 			var address = $("#address").val();
-			$.ajax({
-				url:ctx + "/createDNSMonitor.do?serviceName="+serviceName+"&address="+address,
-				type:"post",
-				success:function(data){
-					var data = eval("("+data+")");
-					var status = data.status;
-					layer.close(index);
-					if(status=='200'){
-						layer.msg("创建成功！",{icon : 1});
-					}else if(status=='400'){
-						layer.alert(data.messages[0],{icon : 2});
+			if(!checkDns(serviceName,address)){
+				return;
+			}else{
+				$.ajax({
+					url:ctx + "/createDNSMonitor.do?serviceName="+serviceName+"&address="+address,
+					type:"post",
+					success:function(data){
+						var data = eval("("+data+")");
+						var status = data.status;
+						layer.close(index);
+						if(status=='200'){
+							layer.msg("创建成功！",{icon : 1});
+							setTimeout("location.reload(true)", 1000 );
+						}else if(status=='400'){
+							layer.alert(data.messages[0],{
+								icon : 2,
+								btn:['关闭'],
+								yes:function(){
+									layer.closeAll();
+									setTimeout("location.reload(true)", 100 );
+								}
+							});
+						}
+						
 					}
-					location.reload(true);
-				}
-			})
+				})
+			}
 		}
 	});
+}
+//创建DNS的验证
+function checkDns(serviceName,address){
+	var flag = true;
+	//serviceName服务名只能是小写字母开头，只能小写字母加数字
+	if (serviceName == "" ) {
+		layer.tips('服务名不能为空！', '#serviceName', {
+			tips : [1, '#3595CC']
+		});
+		$('#serviceName').focus();
+		flag = false;
+		return;
+	}
+	var check = /^[a-z](?!\d{3,20}$)[a-z\d]{3,20}$/ ;
+	if (!check.test(serviceName)) {
+		layer.tips('服务名必须是小写字母开头，只能是小写字母和数字的4-20个字符组成！', '#serviceName', {
+			tips : [1, '#3595CC']
+		});
+		$('#serviceName').focus();
+		flag = false;
+		return;
+	}
+	//address域名就是网址 网址+端口 ip ip加端口
+	if (address == "") {
+		layer.tips('域名不能为空！', '#address', {
+			tips : [1, '#3595CC']
+		});
+		$('#address').focus();
+		flag = false;
+		return;
+	}
+	var checkAddress =/^((?:2[0-5]{2}|1\d{2}|[1-9]\d|[1-9])\.(?:(?:2[0-5]{2}|1\d{2}|[1-9]\d|\d)\.){2}(?:2[0-5]{2}|1\d{2}|[1-9]\d|\d)):(\d|[1-9]\d|[1-9]\d{2,3}|[1-5]\d{4}|6[0-4]\d{3}|654\d{2}|655[0-2]\d|6553[0-5])$/;
+	if (!checkAddress.test(address)) {
+		layer.tips('域名就是 网址+端口，例如:192.168.0.1:8080！', '#address', {
+			tips : [1, '#3595CC']
+		});
+		$('#address').focus();
+		flag = false;
+		return;
+	}
+	return flag;
 }
 
 //删除一个dns

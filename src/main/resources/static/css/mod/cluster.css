@@ -1351,10 +1351,4 @@ font i.fa-question-circle{
 	background-color:#e8504f;
 	color:#fff;
 }
-.link{
-	color:#e8504f;
-}
-.link:hover{
-	text-decoration: underline;
-	cursor:pointer;
-}
+

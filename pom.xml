@@ -214,6 +214,12 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
+		<profile>
+            <id>local</id>
+            <properties>
+                <profileActive>local</profileActive>
+            </properties>
+        </profile>
         <profile>
             <id>test</id>
             <properties>
@@ -242,6 +248,7 @@
                 <excludes>
                     <exclude>application.properties</exclude>
                     <exclude>application-dev.properties</exclude>
+                    <exclude>application-local.properties</exclude>
                     <exclude>application-test.properties</exclude>
                     <exclude>application-prepare.properties</exclude>
                     <exclude>application-profile.properties</exclude>

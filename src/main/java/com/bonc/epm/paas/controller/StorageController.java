@@ -718,11 +718,11 @@ public class StorageController {
         return "storage/storage-snapStrategy.jsp";
     }
 
-    @RequestMapping(value = { "service/createcephrbd" }, method = RequestMethod.GET)
+    /*@RequestMapping(value = { "service/createcephrbd" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String createCephRbd(String imgname,String disksize ,String unload,String disttype,String diskdetail) {
 		Map<String, List<Storage>> map = new HashMap<>();
         cephController.createCephRbd(imgname);
 		return JSON.toJSONString(map);
-	}
+	}*/
 }

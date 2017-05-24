@@ -27,7 +27,7 @@
 	 var nodename = $(obj).attr('nodename');
      layer.open({
 			title : '节点强制隔离',
-			content : '强制隔离将删除节点上的所有Pod，确定将节点从集群中强制隔离吗？',
+			content : '<p><span style="color:#e8504f">强制隔离</span><strong>将删除节点上的所有Pod</strong>&nbsp;！</p><p>确定将节点从集群中强制隔离吗？</p>',
 			btn : [ '确定', '取消' ],
 			yes : function(index, layero) {
 				layer.close(index);
@@ -51,7 +51,7 @@
 	 var nodename = $(obj).attr('nodename');
      layer.open({
 			title : '节点软隔离',
-			content : '软隔离，将保留节点上已有的Pod,确定将节点从集群中软隔离吗？',
+			content : '<p><span style="color:#e8504f">软隔离</span><strong>将保留节点上已有的Pod</strong>&nbsp;！</p><p>确定将节点从集群中软隔离吗？</p>',
 			btn : [ '确定', '取消' ],
 			yes : function(index, layero) {
 				layer.close(index);

@@ -1663,14 +1663,15 @@ function checkQuickCiAdd() {
 
 //加载工具集的勾选项
 function loadCiToolsChecked(){
-	var ciToolsVal = $("#ciToolsCheckedVal").val();
-	var ciTools = ciToolsVal.split(",");
-	var toolChkInput = $(".toolChk");
-	toolChkInput.prop("checked") == true;
-	//toolChkInput.attr("checked",false);
-	for(var i=0; i<ciTools.length; i++){
-		$("#"+ciTools[i].replace(/\//g, '\\/')).prop("checked",true);
-
+	if($("#ciToolsCheckedVal").val()){
+		var ciToolsVal = $("#ciToolsCheckedVal").val();
+		var ciTools = ciToolsVal.split(",");
+		var toolChkInput = $(".toolChk");
+		toolChkInput.prop("checked") == true;
+		//toolChkInput.attr("checked",false);
+		for(var i=0; i<ciTools.length; i++){
+			$("#"+ciTools[i].replace(/\//g, '\\/')).prop("checked",true);
+		}
 	}
 }
 

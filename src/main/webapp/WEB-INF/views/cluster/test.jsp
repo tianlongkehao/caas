@@ -467,7 +467,7 @@
 			</div>
 		</article>
 	</div>
-	<script type="text/javascript">
+<script type="text/javascript">
 	$('.dataTables-example').dataTable({
 	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,4] }],
 	    //"searching":false
