@@ -91,11 +91,9 @@
 <script type="text/javascript">
 	$('.dataTables-example').dataTable({
 	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
-	    "searching":false
-	    //"aaSorting": [[ 2, "desc" ]]
-	}); 
+	    "aaSorting": [[ 2, "desc" ]]
+	});
 	$("#checkallbox").parent().removeClass("sorting_asc");
 </script>
-
 </body>
 </html>

@@ -47,37 +47,43 @@ $(document).ready(function () {
 });
 
 
-///**
-// * 加载路由监控数据
-// */
-//function loadRoute() {
-//	var nodeIP = $("#search_routeNode").val();
-//	$.ajax({
-//		 url : ctx + "/cluster/getRouteTable.do?ip="+nodeIP,
-//		 type : "get",
-//		 success : function(data){
-//			 var data = eval("(" + data + ")");
-//			 var targetNum = data.items;
-//			 var htmlTr = "";
-//			 for(var i=0; i<targetNum.length; i++){
-//				 var targetIP = targetNum[i].targetIP;
-//				 var success = targetNum[i].success;
-//				 var successResult = "";
-//				 if(success){
-//					 successResult = "成功";
-//				 }else{
-//					 successResult = "失败";
-//				 }
-//				 htmlTr += '<tr>'+
-//								'<th>&nbsp;</th>'+
-//								'<th>'+targetIP+'</th>'+
-//								'<th>'+successResult+'</th>'+
-//							'</tr>';
-//			 }
-//			 $("#routeList").append(htmlTr);
-//		 }
-//	 });
-//}
+/**
+ * 加载路由监控数据
+ */
+function loadRoute() {
+	var nodeIP = $("#search_routeNode").val();
+	$.ajax({
+		 url : ctx + "/cluster/getRouteTable.do?ip="+nodeIP,
+		 type : "get",
+		 success : function(data){
+			 var data = eval("(" + data + ")");
+			 var targetNum = data.items;
+			 var htmlTr = "";
+			 for(var i=0; i<targetNum.length; i++){
+				 var targetIP = targetNum[i].targetIP;
+				 var success = targetNum[i].success;
+				 var successResult = "";
+				 if(success == 'false'){
+					 successResult = "成功";
+				 }else if(success == 'true'){
+					 successResult = "失败";
+				 }else if(success == 'unknown'){
+					 successResult = "未知";
+				 }
+				 htmlTr += '<tr>'
+					+'<td><input type="checkbox" class="chkItem" nodeIp="${nodeList.nodeIp }" nodeName="${nodeList.nodeName }"/></td>'
+					+'<td colspan="3">${nodeList.nodeName }（${nodeList.nodeIp }）</td>';
+					+'<td>'+successResult+'</td>';
+					+'<td class="routeBtns">'
+					+'<a class="fa-caret" nodeIp="${nodeList.nodeIp }" onclick="nodeTargetIPDetail(this)"><i class="fa fa-caret-right" flag="1">测试</i></a>'
+					+'<a onclick="recoverOneRoute(this)" nodeIp="${nodeList.nodeIp }" nodeName="${nodeList.nodeName }"><i>恢复</i></a>'
+					+'</td>'
+					+'</tr>';
+			 }
+			 $("#routeList").append(htmlTr);
+		 }
+	 });
+}
 
 //function searchRouteNode(){
 //	$("#routeList").empty();
