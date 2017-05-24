@@ -113,7 +113,7 @@
 												name="imgVersion" readOnly="readOnly"></li>
 											<li class="line-h-3"><span class="ve_top">服务名称：<font
 													color="red">*</font></span><input type="text" value=""
-												class="in_style form-control" id="serviceName" name="serviceName" oninput="javascript:onEditServiceName()">
+												class="in_style form-control" id="serviceName" name="serviceName">
 												<input type="hidden" value="" class="in_style"
 												id="resourceName" name="resourceName"></li>
 											<li class="line-h-3"><span class="ve_top">服务中文名称：
@@ -309,18 +309,19 @@
 												<input type="hidden" id = "serviceType" name ="serviceType" value = "1"/>
 											</span></li>
 
-											<li class="hide-set" id="save_roll_dev"><span class="ve_top">挂载地址：</span>
+											<li class="hide-set" id="save_roll_dev">
 												<ol id="mountPathList">
-													<li class="hide-select">
-														<select class="selectVolume form-control" id="selectVolume"
-																		style="height: 34px; width: 230px;">
+												
+													<li class="hide-select hide">
+														<select class="selectVolumeAddItme form-control"
+																		style="height: 30px; width: 98%;margin:0 auto;padding-top:4px;margin-left:4px">
 																<option  value="">选择一个存储卷</option>
 																<c:forEach items="${storageList }" var = "storage">
 																    <option  value="${storage.id }">${storage.storageName }  ${storage.storageSize }M</option>
 																</c:forEach>
 													    </select>
 														<input type="text" id="mountPath" class="form-control" value="" />
-														<a id="addVolume"><i class="fa fa-plus"></i>添加</a>
+														<!-- <a id="addVolume"><i class="fa fa-plus"></i>添加</a> -->
 													</li>
 													<li>
 														<table class="table table-hover enabled" id="volPath">
@@ -333,6 +334,11 @@
 															</thead>
 															<tbody id="volList">
 															</tbody>
+															<tfoot class="addTfootBtn">
+																<tr id="addVolume">
+																	<td colspan="3"><i class="fa fa-plus margin"></i>添加挂载</td>
+																</tr>
+															</tfoot>
 														</table>
 														<input type="hidden" id="cephAds" name = "cephAds" value="" />
 													</li>
@@ -341,10 +347,10 @@
 												<input type = "hidden" id = "userName" value="${userName }"/>
 												<ol>
 													<li class="hide-select">
-												       <input type="text" class="form-control" placeholder="name" id="Name">
+												       <!-- <input type="text" class="form-control" placeholder="name" id="Name">
 												       <input type="text" class="form-control" placeholder="value" id="Value">
-												       <a id="cratePATH"><i class="fa fa-plus"></i>添加</a>
-														<div style="float: right;margin-top:7px;">
+												       <a id="cratePATH"><i class="fa fa-plus"></i>添加</a> -->
+														<div style="float: left;">
 															<span id="importBtn" class=" btn-info btn-sm"
 																style="cursor: pointer">导入模板</span> <span id="exportBtn"
 																class=" btn-info btn-sm" style="cursor: pointer">另存为模板</span>
@@ -362,6 +368,11 @@
 															<tbody id="Path-oper1">
 																<input type="hidden" id="arrayKey" value="APM,id,name" />
 															</tbody>
+															<tfoot class="addTfootBtn">
+																<tr id="cratePATH">
+																	<td colspan="3"><i class="fa fa-plus margin"></i>添加环境变量</td>
+																</tr>
+															</tfoot>
 														</table>
 													</li>
 												</ol></li>
@@ -389,10 +400,13 @@
 															</a></td>
 														</tr> -->
 													</tbody>
+													<tfoot class="addTfootBtn">
+														<tr id="createPort">
+															<td colspan="4"><i class="fa fa-plus margin"></i>添加端口</td>
+														</tr>
+													</tfoot>
 												</table>
-												<div class="createPort" style="background: #fafafa">
-													<span id="createPort"><i class="fa fa-plus margin"></i>添加端口</span>
-												</div></li>
+											</li>
 										</ul>
 									</div>
 								</form>

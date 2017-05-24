@@ -214,6 +214,13 @@ nav.navbar-downSide{
 #serviceList tr td a.a-live{
 	color:#e8504f;
 }
+.link{
+	color:#e8504f;
+}
+.link:hover{
+	text-decoration: underline;
+	cursor:pointer;
+}
 
 
 

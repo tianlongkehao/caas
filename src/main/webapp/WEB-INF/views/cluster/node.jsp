@@ -73,35 +73,35 @@
 							</div>
 						</form>
 						</div>
-						<table class="table">
+						<table class="table table-striped table-hover dataTables-example">
 							<thead>
 								<tr>
-									<th style="width: 20%; text-align: center;">节点名称</th>
-									<th style="width: 20%; text-align: center;">IP</th>
-									<th style="width: 20%;text-align: center;">集群状态</th>
-									<th style="width: 20%;text-align: center;">节点状态</th>
-									<th style="width: 20%; text-align: center;">操作</th>
+									<th style="width: 20%;text-indent:30px">节点名称</th>
+									<th style="width: 20%;">IP</th>
+									<th style="width: 20%;">集群状态</th>
+									<th style="width: 20%;">节点状态</th>
+									<th style="width: 20%;">操作</th>
 								</tr>
 							</thead>
 							<tbody id="nodelisttable">
 								<c:forEach items="${nodeList}" var="node">
 									<tr class="clusterTr" id="${node.metadata.name }">
-										<td style="width: 20%; text-align: center;"
-											value="${node.metadata.name }"><a href="javascript:void(0)"
+										<td style="width: 20%;text-indent:30px"
+											value="${node.metadata.name }"><a class="link" href="javascript:void(0)"
 											onclick="nodedetail(this)" nodename="${node.metadata.name }"
 											title="查看详细信息" onmousemove="style.textDecoration='underline'"
 											onmouseout="style.textDecoration='none'">${node.metadata.name }</a>
 										</td>
-										<td style="width: 20%; text-align: center;">${node.status.addresses[0].address}</td>
-										<td style="width: 20%;text-align: center;"><c:choose>
+										<td style="width: 20%;">${node.status.addresses[0].address}</td>
+										<td style="width: 20%;"><c:choose>
 												<c:when test="${node.spec.unschedulable==true}">隔离</c:when>
 												<c:otherwise>正常</c:otherwise>
 											</c:choose></td>
-										<td style="width: 20%;text-align: center;"><c:choose>
+										<td style="width: 20%;"><c:choose>
 												<c:when test="${node.status.conditions[1].status==true}">Ready</c:when>
 												<c:otherwise>NotReady</c:otherwise>
 											</c:choose></td>
-										<td style="width: 20%; text-align: center;"><c:choose>
+										<td style="width: 20%;"><c:choose>
 												<c:when test="${node.spec.unschedulable==true}">
 													<a class="no-drop a-oper" href="javascript:void(0)"
 														onclick="addNode(this)" title="加入"
@@ -121,7 +121,8 @@
 														class="fa fa-trash"></i>
 													</a>
 												</c:otherwise>
-											</c:choose></td>
+											</c:choose>
+										</td>
 									</tr>
 								</c:forEach>
 							</tbody>
@@ -187,6 +188,13 @@
 			</div>
 		</article>
 	</div>
-
+<script type="text/javascript">
+	$('.dataTables-example').dataTable({
+	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [4] }],
+	    "searching":false
+	    //"aaSorting": [[ 2, "desc" ]]
+	});
+	$("#checkallbox").parent().removeClass("sorting_asc");
+</script>
 </body>
 </html>

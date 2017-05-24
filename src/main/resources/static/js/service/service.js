@@ -142,8 +142,8 @@ function loadContainers(obj, serviceId) {
 					var statusClassName = data.containerList[i].containerStatus == 1 ? "fa_stop" : "fa_run";
 					var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide" : "hide";
 					containersHtml += '<tr class="tr-row" serviceidcon="' + serviceID + '">' + '<td colspan="2">&nbsp;</td>' + '<td>';
-					containersHtml += '<a style="margin-left: 19px;">';
-					containersHtml += containerName + '</a>' + '</td>' + '<td colspan="2"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
+					containersHtml += '<span style="margin-left: 19px;">';
+					containersHtml += containerName + '</span>' + '</td>' + '<td colspan="2"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
 				}
 				$(obj).after(containersHtml);
 
@@ -668,7 +668,7 @@ function oneUpGradeContainer(id, containerName, nums, cpu, ram) {
 }
 
 // 响应每一行上的版本升级
-function oneVersionUpgrade(id, serviceName, imgName, obj) {
+function oneVersionUpgrade(id, serviceName, imgName,imgVersion, obj) {
 	$('#upgradeVersionServiceName').val(serviceName);
 	//查询镜像版本
 	findImageVersion(imgName);
@@ -679,14 +679,16 @@ function oneVersionUpgrade(id, serviceName, imgName, obj) {
 		content : $("#versionUpgrade"),
 		btn : ['确定', '取消'],
 		yes : function(index, layero) {
-			var cStatusHtml = "<i class='fa_success'></i>" + "升级中" + "<img src='" + ctx + "/images/loading4.gif' alt=''/><a href=\"javascript:oneStopContainerUpdate(" + id + ",&apos;" + serviceName + "&apos;)\"><i class='fa fa-times fa-stopUpdate'></i></a>";
-			$("#" + id + "_upgradeCluster").parent().parent().parent().parent().parent().parent().find(".cStatusColumn").html(cStatusHtml);
-			$("#" + id + "_moreFun").removeClass('a-live').addClass('no-drop');
-			$("#" + id + "_moreFun").find('.fa-gears').addClass('self_a');
-			$("#" + id + "_stop").find('.fa-power-off').addClass('self_a');
-			$("#" + id + "_dropdown").remove();
 			layer.close(index);
 			var imgVersion1 = $('#imgVersionName').val();
+			if(imgVersion != imgVersion1){
+				var cStatusHtml = "<i class='fa_success'></i>" + "升级中" + "<img src='" + ctx + "/images/loading4.gif' alt=''/><a href=\"javascript:oneStopContainerUpdate(" + id + ",&apos;" + serviceName + "&apos;)\"><i class='fa fa-times fa-stopUpdate'></i></a>";
+				$("#" + id + "_upgradeCluster").parent().parent().parent().parent().parent().parent().find(".cStatusColumn").html(cStatusHtml);
+				$("#" + id + "_moreFun").removeClass('a-live').addClass('no-drop');
+				$("#" + id + "_moreFun").find('.fa-gears').addClass('self_a');
+				$("#" + id + "_stop").find('.fa-power-off').addClass('self_a');
+				$("#" + id + "_dropdown").remove();
+			}
 			$.ajax({
 				url : ctx + "/service/modifyimgVersion.do?id=" + id + "&serviceName=" + serviceName + "&imgVersion=" + imgVersion1 + "&imgName=" + imgName,
 				success : function(data) {
@@ -694,8 +696,11 @@ function oneVersionUpgrade(id, serviceName, imgName, obj) {
 					if (data.status == "200") {
 						window.location.reload();
 					} else if (data.status == "500") {
-						layer.alert("请选择需要升级的版本号！", function() {
-							window.location.reload();
+						layer.alert("所选版本为当前版本，请选择其他需要升级的版本！",{
+							btn:['关闭'],
+							yes:function(){
+								layer.closeAll();
+							}
 						});
 					} else if (data.status == "201") {
 					} else if (data.status == "501") {
@@ -1026,7 +1031,7 @@ function loadServices() {
 				if (curUserAutority == 1) {
 					html = '<span serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</span>' + '<span class="number-node">' + row.instanceNum + '</span>';
 				} else {
-					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>' + '<span class="number-node">' + row.instanceNum + '</span>';
+					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name link" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>' + '<span class="number-node">' + row.instanceNum + '</span>';
 				}
 				if (row.updateImage == true) {
 					html += '<a id="' + row.id + '_code" class="margin cursor console-code-modal"' + 'href="' + ctx + 'ci/findCodeCiId.do?imgId=' + row.imgID + '"' + 'style="margin-left: 5px" ><img src="' + ctx + '/images/sd.gif" title="代码更新"></a>';
@@ -1072,7 +1077,7 @@ function loadServices() {
 				if (curUserAutority == 1) {
 					html = '<span class="cluster_mirrer">' + row.imgName + '</span>';
 				} else {
-					html = '<span class="cluster_mirrer">' + '<a title="点击查看镜像" target="_blank"' + 'href="' + ctx + '/registry/detail/' + row.imgID + '">' + row.imgName + '</a>' + '</span>';
+					html = '<span class="cluster_mirrer">' + '<a class="link" title="点击查看镜像" target="_blank"' + 'href="' + ctx + '/registry/detail/' + row.imgID + '">' + row.imgName + '</a>' + '</span>';
 				}
 
 				return html;
@@ -1093,7 +1098,7 @@ function loadServices() {
 					}
 				} else {
 					if (row.serviceAddr != null && row.serviceAddr != '') {
-						html += '<a href="' + row.serviceAddr + '/' + row.proxyPath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.proxyPath + '">';
+						html += '<a class="link" href="' + row.serviceAddr + '/' + row.proxyPath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.proxyPath + '">';
 						if (row.serviceChName != null && row.serviceChName != '') {
 							html += row.serviceChName;
 						} else {
@@ -1157,9 +1162,9 @@ function loadServices() {
 						}
 						html += '</li>' + '<li>';
 						if (row.status == 3) {
-							html += '<a id="' + row.id + '_upgradeCluster" class="a-live upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName + '&apos;)" title="版本升级"' + '><i class="fa fa-arrow-up"></i>版本升级</a> ';
+							html += '<a id="' + row.id + '_upgradeCluster" class="a-live upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName +'&apos;,&apos;'+ row.imgVersion + '&apos;)" title="版本升级"' + '><i class="fa fa-arrow-up"></i>版本升级</a> ';
 						} else {
-							html += ' <a id="' + row.id + '_upgradeCluster" class="no-drop upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName + '&apos;,this)" title="版本升级"' + '><i class="fa fa-arrow-up self_a"></i>版本升级</a>';
+							html += ' <a id="' + row.id + '_upgradeCluster" class="no-drop upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName +'&apos;,&apos;'+ row.imgVersion + '&apos;,this)" title="版本升级"' + '><i class="fa fa-arrow-up self_a"></i>版本升级</a>';
 						}
 						html += '</li>' + '<li>';
 
@@ -1226,7 +1231,7 @@ function loadServicesNoSonar() {
 				if (curUserAutority == 1) {
 					html = '<span serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</span>' + '<span class="number-node">' + row.instanceNum + '</span>';
 				} else {
-					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>';
+					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a class="link" href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>';
 
 					if(row.status == 1 || row.status == 4){
 						html += '<span class="number-node">0</span>';
@@ -1282,7 +1287,7 @@ function loadServicesNoSonar() {
 				if (curUserAutority == 1) {
 					html = '<span class="cluster_mirrer">' + row.imgName + '</span>';
 				} else {
-					html = '<span class="cluster_mirrer">' + '<a title="点击查看镜像" target="_blank"' + 'href="' + ctx + '/registry/detail/' + row.imgID + '">' + row.imgName + '</a>' + '</span>';
+					html = '<span class="cluster_mirrer">' + '<a class="link" title="点击查看镜像" target="_blank"' + 'href="' + ctx + '/registry/detail/' + row.imgID + '">' + row.imgName + '</a>' + '</span>';
 				}
 
 				return html;
@@ -1303,7 +1308,7 @@ function loadServicesNoSonar() {
 					}
 				} else {
 					if (row.serviceAddr != null && row.serviceAddr != '') {
-						html += '<a href="' + row.serviceAddr + '/' + row.proxyPath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.proxyPath + '">';
+						html += '<a class="link" href="' + row.serviceAddr + '/' + row.proxyPath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.proxyPath + '">';
 						if (row.serviceChName != null && row.serviceChName != '') {
 							html += row.serviceChName;
 						} else {
@@ -1367,9 +1372,9 @@ function loadServicesNoSonar() {
 						}
 						html += '</li>' + '<li>';
 						if (row.status == 3) {
-							html += '<a id="' + row.id + '_upgradeCluster" class="a-live upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName + '&apos;)" title="版本升级"' + '><i class="fa fa-arrow-up"></i>版本升级</a> ';
+							html += '<a id="' + row.id + '_upgradeCluster" class="a-live upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName + '&apos;,&apos;'+ row.imgVersion + '&apos;)" title="版本升级"' + '><i class="fa fa-arrow-up"></i>版本升级</a> ';
 						} else {
-							html += ' <a id="' + row.id + '_upgradeCluster" class="no-drop upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName + '&apos;,this)" title="版本升级"' + '><i class="fa fa-arrow-up self_a"></i>版本升级</a>';
+							html += ' <a id="' + row.id + '_upgradeCluster" class="no-drop upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName +'&apos;,&apos;'+ row.imgVersion + '&apos;,this)" title="版本升级"' + '><i class="fa fa-arrow-up self_a"></i>版本升级</a>';
 						}
 						html += '</li>' + '<li>';
 

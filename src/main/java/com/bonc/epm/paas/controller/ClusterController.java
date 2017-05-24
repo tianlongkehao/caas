@@ -254,7 +254,16 @@ public class ClusterController {
 	@RequestMapping(value = { "/route" }, method = RequestMethod.GET)
 	public String clusterRoute(Model model) {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-		NodeList allNodes = client.getAllNodes();
+		NodeList allNodes;
+		try {
+			allNodes = client.getAllNodes();
+		} catch (KubernetesClientException e) {
+			LOG.error(e.getStatus().getReason());
+			allNodes = null;
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+			allNodes = null;
+		}
 		List<Object> nodeList = new ArrayList<>();
 		if (allNodes != null) {
 			for (Node node : allNodes.getItems()) {
