@@ -307,14 +307,6 @@ public class ClusterController {
 			model.addAttribute("services", services);
 		}
 
-		NetAPIClientInterface netClient = netClientService.getClient();
-		List<Iptable> checkIptable = null;
-		try {
-			checkIptable = netClient.checkIptable();
-		} catch (NetClientException e) {
-			LOG.error(e.getMessage());
-		}
-		model.addAttribute("checkIptable", checkIptable);
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "iptables");
 		return "cluster/cluster-iptables.jsp";
@@ -852,27 +844,6 @@ public class ClusterController {
 		} catch (SftpException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * @param ip
-	 * @return
-	 */
-	@RequestMapping(value = { "/getRouteTable.do" }, method = RequestMethod.GET)
-	@ResponseBody
-	public String getRouteTable(String ip) {
-		Map<String, Object> map = new HashMap<>();
-		NetAPIClientInterface client = netClientService.getSpecifiedClient(ip);
-		RouteTable checkRoutetable;
-		try {
-			checkRoutetable = client.checkRoutetable();
-			map.put("status", "200");
-			map.put("checkRoutetable", checkRoutetable);
-		} catch (Exception e) {
-			map.put("status", "400");
-			e.printStackTrace();
-		}
-		return JSON.toJSONString(map);
 	}
 
 	/**
@@ -1874,6 +1845,73 @@ public class ClusterController {
 	}
 
 	/**
+	 * checkRoute:获取所有节点的route. <br/>
+	 *
+	 * @author longkaixiang
+	 * @return String
+	 */
+	@RequestMapping(value=("/checkRoute.do"), method=RequestMethod.GET)
+	@ResponseBody
+	public String checkRoute() {
+		Map<String, Object> map = new HashMap<>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		NodeList allNodes;
+		try {
+			allNodes = client.getAllNodes();
+		} catch (KubernetesClientException e) {
+			LOG.error(e.getStatus().getReason());
+			allNodes = null;
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+			allNodes = null;
+		}
+		List<Object> nodeList = new ArrayList<>();
+		if (allNodes != null) {
+			for (Node node : allNodes.getItems()) {
+				Map<String, String> nodeMap = new HashMap<>();
+				nodeList.add(nodeMap);
+				nodeMap.put("nodeName", node.getMetadata().getName());
+				nodeMap.put("nodeIp", node.getStatus().getAddresses().get(0).getAddress());
+				NetAPIClientInterface netAPIClient = netClientService.getSpecifiedClient(nodeMap.get("nodeIp"));
+				try {
+					RouteTable checkRoutetable = netAPIClient.checkRoutetable();
+					nodeMap.put("problem", String.valueOf(checkRoutetable.isProblem()));
+				} catch (Exception e) {
+					nodeMap.put("problem", "unknown");
+				}
+
+			}
+		}
+		map.put("status", "200");
+		map.put("nodeList", nodeList);
+		return "cluster/cluster-route.jsp";
+	}
+
+	/**
+	 * checkRouteTable:获取指定节点的route. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param ip
+	 * @return String
+	 */
+	@RequestMapping(value = { "/getRouteTable.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String checkRouteTable(String ip) {
+		Map<String, Object> map = new HashMap<>();
+		NetAPIClientInterface client = netClientService.getSpecifiedClient(ip);
+		RouteTable checkRoutetable;
+		try {
+			checkRoutetable = client.checkRoutetable();
+			map.put("status", "200");
+			map.put("checkRoutetable", checkRoutetable);
+		} catch (Exception e) {
+			map.put("status", "400");
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
 	 * checkIptables:检查iptable. <br/>
 	 *
 	 * @author longkaixiang
@@ -1886,6 +1924,7 @@ public class ClusterController {
 		NetAPIClientInterface client = netClientService.getClient();
 		List<Iptable> checkIptable = null;
 		List<Map<String, Object>> resultList = new ArrayList<>();
+
 		try {
 			checkIptable = client.checkIptable();
 			for (Iptable iptable : checkIptable) {
