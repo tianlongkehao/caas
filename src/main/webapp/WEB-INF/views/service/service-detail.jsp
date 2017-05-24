@@ -126,7 +126,7 @@
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podList}" var="pod" >
-								 		<li class="CMD"><a target="_blank" href="/service/cmd/${service.id }/${pod.metadata.name }" class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }"
+								 		<li class="CMD"><a target="_blank" href="<%=path%>/service/cmd/${service.id }/${pod.metadata.name }" class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }"
 								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.metadata.name }">${pod.metadata.name }</a></li>
 								 	</c:forEach>
 
@@ -138,7 +138,7 @@
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podList}" var="pod" >
-								 		<li class="File"><a target="_blank" href="/service/file/${service.id }/${pod.metadata.name }" class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }"
+								 		<li class="File"><a target="_blank" href="<%=path%>/service/file/${service.id }/${pod.metadata.name }" class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }"
 								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.metadata.name }">${pod.metadata.name }</a></li>
 								 	</c:forEach>
 								</ul>

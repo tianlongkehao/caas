@@ -60,9 +60,9 @@ $(document).ready(function () {
 		$(".btnDanger").addClass("btn-default").removeClass("btn-danger");
 		var allServicesHtml = "";
 		for(var Key in allServices){
-			var externalAccess = problemServices[Key].externalAccess;
-			var internalAccess = problemServices[Key].internalAccess;
-			var others = problemServices[Key].others;
+			var externalAccess = allServices[Key].externalAccess;
+			var internalAccess = allServices[Key].internalAccess;
+			var others = allServices[Key].others;
 			var status = "";
 			if(externalAccess.length==0 && internalAccess.length ==0 && others.length == 0){
 				status ="成功";
@@ -877,9 +877,9 @@ function showCompIptablesList(){
 					var problem = resultData[i].problem;
 					var problemHtml = "";
 					if(problem == true){
-						problemHtml = "正常";
+						problemHtml = '正常';
 					}else{
-						problemHtml = "有问题";
+						problemHtml = '有问题<i class="fa fa-question" style="color:red;margin-left:8px;font-size:20px;"></i>';
 					}
 					tableHtml += '<tr>'
 									+'<td><input type="checkbox" class="chkItem" nodeName="'+nodeName+'"/></td>'
@@ -892,6 +892,11 @@ function showCompIptablesList(){
 									+'</tr>';
 				}
 				$("#compIptablesList").empty().append(tableHtml);
+				$('.dataTables-checkIptables').dataTable({
+				    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
+				    "aaSorting": [[ 1, "desc" ]]
+				});
+				$("#checkallbox").parent().removeClass("sorting_asc");
 			}
 		}
 	})
