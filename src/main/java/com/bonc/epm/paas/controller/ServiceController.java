@@ -2009,7 +2009,11 @@ public class ServiceController {
 						}
 					}
 				}
-
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					LOG.error(e.getMessage());
+				}
 				if (podStatus) {
 					podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
 				}
