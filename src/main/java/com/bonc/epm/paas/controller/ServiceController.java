@@ -1560,6 +1560,12 @@ public class ServiceController {
 			}
 			if (controller != null) {
 				controller = client.updateReplicationController(service.getServiceName(), 0);
+				try {
+					client.deleteReplicationController(service.getServiceName());
+					client.deleteService(service.getServiceName());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			map.put("status", "200");
 			// 保存服务信息
