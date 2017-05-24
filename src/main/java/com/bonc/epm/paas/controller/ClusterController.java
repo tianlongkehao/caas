@@ -253,35 +253,35 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/route" }, method = RequestMethod.GET)
 	public String clusterRoute(Model model) {
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-		NodeList allNodes;
-		try {
-			allNodes = client.getAllNodes();
-		} catch (KubernetesClientException e) {
-			LOG.error(e.getStatus().getReason());
-			allNodes = null;
-		} catch (Exception e) {
-			LOG.error(e.getMessage());
-			allNodes = null;
-		}
-		List<Object> nodeList = new ArrayList<>();
-		if (allNodes != null) {
-			for (Node node : allNodes.getItems()) {
-				Map<String, String> nodeMap = new HashMap<>();
-				nodeList.add(nodeMap);
-				nodeMap.put("nodeName", node.getMetadata().getName());
-				nodeMap.put("nodeIp", node.getStatus().getAddresses().get(0).getAddress());
-				NetAPIClientInterface netAPIClient = netClientService.getSpecifiedClient(nodeMap.get("nodeIp"));
-				try {
-					RouteTable checkRoutetable = netAPIClient.checkRoutetable();
-					nodeMap.put("problem", String.valueOf(checkRoutetable.isProblem()));
-				} catch (Exception e) {
-					nodeMap.put("problem", "unknown");
-				}
-
-			}
-		}
-		model.addAttribute("nodeList", nodeList);
+//		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+//		NodeList allNodes;
+//		try {
+//			allNodes = client.getAllNodes();
+//		} catch (KubernetesClientException e) {
+//			LOG.error(e.getStatus().getReason());
+//			allNodes = null;
+//		} catch (Exception e) {
+//			LOG.error(e.getMessage());
+//			allNodes = null;
+//		}
+//		List<Object> nodeList = new ArrayList<>();
+//		if (allNodes != null) {
+//			for (Node node : allNodes.getItems()) {
+//				Map<String, String> nodeMap = new HashMap<>();
+//				nodeList.add(nodeMap);
+//				nodeMap.put("nodeName", node.getMetadata().getName());
+//				nodeMap.put("nodeIp", node.getStatus().getAddresses().get(0).getAddress());
+//				NetAPIClientInterface netAPIClient = netClientService.getSpecifiedClient(nodeMap.get("nodeIp"));
+//				try {
+//					RouteTable checkRoutetable = netAPIClient.checkRoutetable();
+//					nodeMap.put("problem", String.valueOf(checkRoutetable.isProblem()));
+//				} catch (Exception e) {
+//					nodeMap.put("problem", "unknown");
+//				}
+//
+//			}
+//		}
+//		model.addAttribute("nodeList", nodeList);
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "route");
 		return "cluster/cluster-route.jsp";
@@ -1884,7 +1884,7 @@ public class ClusterController {
 		}
 		map.put("status", "200");
 		map.put("nodeList", nodeList);
-		return "cluster/cluster-route.jsp";
+		return JSON.toJSONString(map);
 	}
 
 	/**

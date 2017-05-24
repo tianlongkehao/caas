@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	//loadRoute();
+	loadRoute();
 	/*var nodeIP = $("#search_routeNode").val();
 	$('.dataTables-example').dataTable({
 	 	//"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ] }],
@@ -47,37 +47,53 @@ $(document).ready(function () {
 });
 
 
-///**
-// * 加载路由监控数据
-// */
-//function loadRoute() {
-//	var nodeIP = $("#search_routeNode").val();
-//	$.ajax({
-//		 url : ctx + "/cluster/getRouteTable.do?ip="+nodeIP,
-//		 type : "get",
-//		 success : function(data){
-//			 var data = eval("(" + data + ")");
-//			 var targetNum = data.items;
-//			 var htmlTr = "";
-//			 for(var i=0; i<targetNum.length; i++){
-//				 var targetIP = targetNum[i].targetIP;
-//				 var success = targetNum[i].success;
-//				 var successResult = "";
-//				 if(success){
-//					 successResult = "成功";
-//				 }else{
-//					 successResult = "失败";
-//				 }
-//				 htmlTr += '<tr>'+
-//								'<th>&nbsp;</th>'+
-//								'<th>'+targetIP+'</th>'+
-//								'<th>'+successResult+'</th>'+
-//							'</tr>';
-//			 }
-//			 $("#routeList").append(htmlTr);
-//		 }
-//	 });
-//}
+/**
+ * 加载路由监控数据
+ */
+function loadRoute() {
+	$.ajax({
+		 url : ctx + "/cluster/checkRoute.do",
+		 type : "get",
+		 success : function(data){
+			 var data = eval("(" + data + ")");
+			 var status = data.status;
+			 if(status == '200'){
+				 var nodeList = data.nodeList;
+				 var routeHtmlTr = "";
+				 for(var i=0; i<nodeList.length; i++){
+					 var nodeIp = nodeList[i].nodeIp;
+					 var nodeName = nodeList[i].nodeName;
+					 var problem = nodeList[i].problem;
+					 var problemHtml = "";
+					 if(problem == 'false'){
+						 problemHtml = "成功";
+					 }else if(problem == 'true'){
+						 problemHtml = "失败";
+					 }else if(problem == 'unknown'){
+						 problemHtml = "未知";
+					 }
+					 routeHtmlTr += '<tr>'
+						+'<td><input type="checkbox" class="chkItem" nodeIp="'+nodeIp+'" nodeName="'+nodeName+'"/></td>'
+						+'<td>'+nodeName+'（'+nodeIp+'）</td>'
+						+'<th>&nbsp;</th>'
+						+'<th>&nbsp;</th>'
+						+'<td>'+problemHtml+'</td>'
+						+'<td class="routeBtns">'
+						+'<a class="fa-caret" nodeIp="'+nodeIp+'" onclick="nodeTargetIPDetail(this)"><i class="fa fa-caret-right" flag="1">测试</i></a>'
+						+'<a onclick="recoverOneRoute(this)" nodeIp="'+nodeIp+'" nodeName="'+nodeName+'"><i>恢复</i></a>'
+						+'</td>'
+						+'</tr>';
+				 }
+				 $("#routeList").append(routeHtmlTr);
+				 $('.dataTables-example').dataTable({
+					    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,2,3,5] }],
+					    "aaSorting": [[ 1, "desc" ]]
+				 });
+				$("#checkallbox").parent().removeClass("sorting_asc");
+			 }
+		 }
+	 });
+}
 
 //function searchRouteNode(){
 //	$("#routeList").empty();
@@ -102,8 +118,9 @@ function nodeTargetIPDetail(obj){
 							+'<td>&nbsp;</td>'
 							+'<td>targetIP</td>'
 							+'<td>期望网关</td>'
-							+'<td >实际网关</td>'
-							+'<td colspan="2">结果</td>'
+							+'<td>实际网关</td>'
+							+'<td>结果</td>'
+							+'<td>&nbsp;</td>'
 							+'</tr>';;
 					 for(var i=0; i<targetNum.length; i++){
 						 var targetIP = targetNum[i].targetIP;
@@ -120,8 +137,9 @@ function nodeTargetIPDetail(obj){
 							+'<td>&nbsp;</td>'
 							+'<td>'+targetIP+'</td>'
 							+'<td>'+expectedGW+'</td>'
-							+'<td >'+realGW+'</td>'
-							+'<td colspan="2">'+successResult+'</td>'
+							+'<td>'+realGW+'</td>'
+							+'<td>'+successResult+'</td>'
+							+'<td>&nbsp;</td>'
 							+'</tr>';
 					 }
 					 thisobj.parent().parent().after(htmlTr);

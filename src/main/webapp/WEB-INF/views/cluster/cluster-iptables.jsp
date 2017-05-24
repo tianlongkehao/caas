@@ -50,7 +50,7 @@
 					<div class="ibox-content" style="padding: 0px"></div>
 					<div class="caption clearfix checkIptablesCon" style="padding-bottom: 0px;">
 						<table
-							class="table table-stripped table-hover dataTables-example1">
+							class="table table-stripped table-hover dataTables-checkIptables">
 							<thead>
 								<tr style="height: 40px;">
 									<th ><input type="checkbox" class="chkAll" id="checkallbox" /></th>
