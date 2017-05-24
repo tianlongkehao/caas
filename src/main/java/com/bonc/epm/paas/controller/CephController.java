@@ -450,7 +450,7 @@ public class CephController {
 	 * @param imgname
 	 * @return
 	 */
-	@RequestMapping(value = { "ceph/checkrbd" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "ceph/deleterbd" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String deleteCephRbd(String imgname){
 		Map<String, Integer> map = new HashMap<>();
@@ -474,7 +474,6 @@ public class CephController {
 						imageExist = true;
 					}
 				}
-
 				//删除rbd
 				if (imageExist) {
 					rbd.remove(imgname);
@@ -500,8 +499,6 @@ public class CephController {
 			}
 		}
 	}
-
-
 
 	/**
 	 *
