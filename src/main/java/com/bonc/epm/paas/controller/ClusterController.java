@@ -90,6 +90,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
+import springfox.documentation.spring.web.json.Json;
+
 /**
  * ClusterController 集群监控控制器
  *
@@ -1629,8 +1631,6 @@ public class ClusterController {
 				if (pingitem) {
 					Response pingresponse = localHealthyClient.ping(pingIp);
 					nodeInfo.setPingoutmsg(pingresponse.getOutmsg());
-					// nodeInfo.setPing(pingresponse.getOutmsg().contains("Unreachable")
-					// ? false : true);
 					nodeInfo.setPing(pingitem);
 					nodeInfo.setPingIp(pingIp);
 					nodeInfo.setPingtimetarget(pingtime);
@@ -1639,6 +1639,7 @@ public class ClusterController {
 						nodeInfo.setPingtime(Double.parseDouble(outmsg[outmsg.length - 3]));
 						nodeInfo.setPingpass(nodeInfo.getPingtime() <= pingtime);// ping通过
 					}
+					nodeInfo.setPingoutmsg("ping -c 10 "+pingIp+"\n"+nodeInfo.getPingoutmsg());
 					allpass = allpass && nodeInfo.isPingpass();
 				}
 
@@ -1646,8 +1647,6 @@ public class ClusterController {
 					Response traceresponse = localHealthyClient.tracepath(tracepathIp);
 					nodeInfo.setTracepathoutmsg(traceresponse.getOutmsg());
 					String tracemsg = traceresponse.getOutmsg();
-					// nodeInfo.setTracepath(tracemsg.contains("hops") ? true :
-					// false);
 					nodeInfo.setTracepath(traceitem);
 					nodeInfo.setTraceIp(tracepathIp);
 					nodeInfo.setTracetimetarget(tracetime);
@@ -1655,9 +1654,10 @@ public class ClusterController {
 							.trim();
 					tracemsg = tracemsg.split("0m")[1].split("s")[0];
 					nodeInfo.setTracetime(Double.parseDouble(tracemsg));
-					if (tracemsg.contains("hops")) {
+					if (nodeInfo.getTracepathoutmsg().contains("hops")) {
 						nodeInfo.setTracepass(nodeInfo.getTracetime() <= tracetime);// trace通过
 					}
+					nodeInfo.setTracepathoutmsg("time (tracepath "+tracepathIp+" -b)"+"\n"+nodeInfo.getTracepathoutmsg());
 					allpass = allpass && nodeInfo.isTracepass();
 				}
 
@@ -1665,8 +1665,6 @@ public class ClusterController {
 					Response qperfresponse = clusterHealthyClient.qperf(pod.getStatus().getPodIP());
 					String qperfmsg = qperfresponse.getOutmsg();
 					nodeInfo.setQperfoutmsg(qperfmsg);
-					// nodeInfo.setQperf(qperfmsg.contains("failed") ? false :
-					// true);
 					nodeInfo.setQperf(qperfitem);
 					if (!qperfmsg.contains("failed")) {
 						String unit = "";
@@ -1698,6 +1696,7 @@ public class ClusterController {
 						nodeInfo.setLatencytarget(latency);
 						nodeInfo.setQperfpass(sp >= speed && lcy <= latency);// qperf通过
 					}
+					nodeInfo.setQperfoutmsg("qperf  "+pod.getStatus().getPodIP()+" tcp_bw  tcp_lat  conf"+"\n"+nodeInfo.getQperfoutmsg());
 					allpass = allpass && nodeInfo.isQperfpass();
 				}
 
@@ -1705,15 +1704,14 @@ public class ClusterController {
 					Response curlresponse = clusterHealthyClient.curl(pod.getStatus().getPodIP() + ":8011");
 					String curlmsg = curlresponse.getOutmsg();
 					nodeInfo.setCurloutmsg(curlmsg);
-					// nodeInfo.setCurl(curlmsg.contains("Failed") ? false :
-					// true);
 					nodeInfo.setCurl(curlitem);
 					nodeInfo.setCurltimetarget(curltime);
 					curlmsg = curlmsg.split("real")[1].split("user")[0].trim().split("0m")[1].split("s")[0].trim();
 					nodeInfo.setCurltime(Double.parseDouble(curlmsg));
-					if (!curlmsg.contains("Failed")) {
+					if (!nodeInfo.getCurloutmsg().contains("Failed")) {
 						nodeInfo.setCurlpass(nodeInfo.getCurltime() <= curltime);// curl通过
 					}
+					nodeInfo.setCurloutmsg("curl -s -o /dev/null -w %{time_total}\"\n\" \"http://"+pod.getStatus().getPodIP()+":8011\""+"\n"+nodeInfo.getCurloutmsg());
 					allpass = allpass && nodeInfo.isCurlpass();
 				}
 
@@ -1722,13 +1720,24 @@ public class ClusterController {
 							.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
 					InfoCmd infoCmd = dockerClient.infoCmd();
 					Info info = infoCmd.exec();
+					String dockermsg="";
+					List<List<String>> list=info.getDriverStatuses();
+					for(List<String> l:list){
+						dockermsg=dockermsg+l.toString()+"\n";
+					}
+                    nodeInfo.setDockermsg(dockermsg);
 
-					long mem = info.getMemTotal() / (1024 * 1024 * 1024);// 转换成GiB
+                    if(dockermsg.indexOf("Data Space Total,")!=-1){
+                    	dockermsg = dockermsg.substring(dockermsg.indexOf("Data Space Total,"),dockermsg.length());
+                        dockermsg = dockermsg.split("]")[0].split(",")[1].trim();
+                        dockermsg = convert(dockermsg);
+                        int mem = Math.round(Float.parseFloat(dockermsg));
+                        nodeInfo.setDisk(mem);
+                        nodeInfo.setDockerpass(mem == memory);// docker通过
+                    }
+
 					nodeInfo.setDocker(dockeritem);
-					nodeInfo.setCpu(info.getNCPU());
-					nodeInfo.setMemory(mem);
 					nodeInfo.setMemorytarget(memory);
-					nodeInfo.setDockerpass(mem == memory);// docker通过
 					allpass = allpass && nodeInfo.isDockerpass();
 				}
 
@@ -1741,11 +1750,13 @@ public class ClusterController {
 					nodeInfo.setMasterdnsoutmsg(dnString);
 					nodeInfo.setMasterdns(dnString.contains("timed out") || dnString.contains("failed")
 							|| dnString.contains("resolved") ? false : true);
+					nodeInfo.setMasterdnsoutmsg("busybox nslookup localhealthy.kube-system.svc.cluster.local 10.245.100.100"+"\n"+nodeInfo.getMasterdnsoutmsg());
 					dnString = standbydnsresponse.getOutmsg();
 					nodeInfo.setStandbydnsoutmsg(dnString);
 					nodeInfo.setStandbydns(dnString.contains("timed out") || dnString.contains("failed")
 							|| dnString.contains("resolved") ? false : true);
 					nodeInfo.setDnspass(nodeInfo.isMasterdns() && nodeInfo.isStandbydns());
+					nodeInfo.setStandbydnsoutmsg("busybox nslookup localhealthy.kube-system.svc.cluster.local 10.245.100.101"+"\n"+nodeInfo.getStandbydnsoutmsg());
 					allpass = allpass && nodeInfo.isDnspass();
 				}
 
@@ -2025,4 +2036,16 @@ public class ClusterController {
 		return JSON.toJSONString(map);
 	}
 
+	private String convert(String val) {
+		val = val.replaceAll("i", "");
+		if (val.contains("KB")) {
+			Float a1 = Float.valueOf(val.replace("KB", "")) / 1024 / 1024;
+			return a1.toString();
+		} else if (val.contains("MB")) {
+			Float a1 = Float.valueOf(val.replace("MB", ""))/ 1024;
+			return a1.toString();
+		} else {
+			return val.replace("GB", "").trim();
+		}
+	}
 }

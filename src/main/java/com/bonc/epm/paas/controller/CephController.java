@@ -7,12 +7,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +24,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.dao.CephRbdInfoDao;
+import com.bonc.epm.paas.dao.CephSnapDao;
+import com.bonc.epm.paas.dao.CommonOperationLogDao;
+import com.bonc.epm.paas.entity.CommonOperationLog;
+import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+import com.bonc.epm.paas.entity.ceph.CephRbdInfo;
+import com.bonc.epm.paas.entity.ceph.CephSnap;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.FileUtils;
 import com.ceph.fs.CephMount;
@@ -28,6 +40,8 @@ import com.ceph.rados.Rados;
 import com.ceph.rados.exceptions.RadosException;
 import com.ceph.rbd.Rbd;
 import com.ceph.rbd.RbdException;
+import com.ceph.rbd.RbdImage;
+import com.ceph.rbd.jna.RbdSnapInfo;
 
 /**
  * CephController
@@ -51,8 +65,8 @@ public class CephController {
 	/**
 	 * 用户名
 	 */
-	 @Value("${ceph.name}")
-	 private String CEPH_NAME;
+	@Value("${ceph.name}")
+	private String CEPH_NAME;
 
 	/**
 	 * 挂载指令
@@ -88,6 +102,24 @@ public class CephController {
 	private int mode = 511;
 
 	/**
+	 * 通用操作记录信息层接口
+	 */
+	@Autowired
+	private CommonOperationLogDao commonOperationLogDao;
+
+	/**
+	 * ceph块存储信息持久化接口
+	 */
+	@Autowired
+	private CephRbdInfoDao cephRbdInfoDao;
+
+	/**
+	 * 快照信息持久化接口
+	 */
+	@Autowired
+	private CephSnapDao cephSnapDao;
+
+	/**
 	 * connectCephFS
 	 */
 	public void connectCephFS() throws Exception {
@@ -97,7 +129,7 @@ public class CephController {
 		} catch (Exception e) {
 			throw e;
 		}
-		cephMount.conf_read_file(CEPH_DIR+CEPH_CONF);
+		cephMount.conf_read_file(CEPH_DIR + CEPH_CONF);
 		cephMount.mount("/");
 		cephMount.chmod("/", mode);
 		LOGGER.info("打印根目录下的所有目录");
@@ -322,15 +354,15 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "ceph/createcephrbd" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String createCephRbd(String imgname, String disksize, String unload, String disttype, String diskdetail) {
-		Map<String, Integer> map = new HashMap<>();
+	public String createCephRbd(String imgname, int disksize, String diskdetail) {
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		String msg = "";
 		try {
 			cluster = new Rados(CEPH_NAME);
-			File f = new File(CEPH_DIR+CEPH_CONF);
+			File f = new File(CEPH_DIR + CEPH_CONF);
 			cluster.confReadFile(f);
 			cluster.connect();
-
-			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 
 			// 获取所有pool
 			String[] pools = cluster.poolList();
@@ -349,12 +381,24 @@ public class CephController {
 			IoCTX ioctx = cluster.ioCtxCreate(namespace);
 			try {
 				Rbd rbd = new Rbd(ioctx); // RBD
-				rbd.create(imgname, 1024);
-				map.put("status", 200);
+				int size = disksize * 1024 * 1024;
+				rbd.create(imgname, size);
+				CephRbdInfo cephRbdInfo = saveCephRbdInfo(imgname, disksize, diskdetail);
+
+				// 记录日志
+				String extraInfo = "新增ceph块存储 " + JSON.toJSONString(cephRbdInfo);
+				LOGGER.info(extraInfo);
+				CommonOperationLog log = CommonOprationLogUtils.getOprationLog(imgname, extraInfo,
+						CommConstant.CEPH_RBD, CommConstant.OPERATION_TYPE_CREATED);
+				commonOperationLogDao.save(log);
+
+				map.put("status", "200");
 				return JSON.toJSONString(map);
 			} catch (RbdException e) {
 				LOGGER.error(e.getMessage());
-				map.put("status", 500);
+				msg = "镜像" + imgname + "创建失败!";
+				map.put("msg", msg);
+				map.put("status", "500");
 				return JSON.toJSONString(map);
 			} finally {
 				if (cluster != null) {
@@ -364,7 +408,9 @@ public class CephController {
 
 		} catch (RadosException e) {
 			LOGGER.error(e.getMessage());
-			map.put("status", 500);
+			msg = "pool" + namespace + "创建失败!";
+			map.put("msg", msg);
+			map.put("status", "500");
 			return JSON.toJSONString(map);
 		} finally {
 			if (cluster != null) {
@@ -374,20 +420,277 @@ public class CephController {
 	}
 
 	/**
+	 * 创建快照
+	 *
+	 * @param imgname
+	 * @param snapname
+	 * @param snapdetail
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/createsnap" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String createSnap(String imgname, String snapname, String snapdetail) {
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		String msg = "";
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+
+			// 获取所有pool
+			String[] pools = cluster.poolList();
+			boolean poolExist = false;
+			for (String pool : pools) {
+				if (namespace.equals(pool)) {
+					poolExist = true;
+					break;
+				}
+			}
+
+			if (!poolExist) {
+				cluster.poolCreate(namespace);
+			}
+
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+			Rbd rbd = new Rbd(ioctx); // RBD
+			RbdImage rbdImage = null;
+			try {
+				rbdImage = rbd.open(imgname);
+				rbdImage.snapCreate(snapname);
+				rbd.close(rbdImage);
+				CephSnap cephSnap = saveSnapInfo(imgname, snapname, snapdetail);
+				// 记录日志
+				String extraInfo = "新增快照 " + JSON.toJSONString(cephSnap);
+				LOGGER.info(extraInfo);
+				CommonOperationLog log = CommonOprationLogUtils.getOprationLog(snapname, extraInfo,
+						CommConstant.CEPH_SNAP, CommConstant.OPERATION_TYPE_CREATED);
+				commonOperationLogDao.save(log);
+
+				map.put("status", "200");
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				LOGGER.error(e.getMessage());
+				msg = "快照" + snapname + "创建失败!";
+				map.put("msg", msg);
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
+				}
+			}
+
+		} catch (RadosException e) {
+			LOGGER.error(e.getMessage());
+			msg = "pool" + namespace + "创建失败!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
+	/**
+	 * 检查指定镜像的快照是否存在
+	 *
+	 * @param imgname
+	 * @param snapname
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/checksnap" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String checksnap(String imgname, String snapname) {
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		String msg = "";
+
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+
+			// 获取所有images
+			Rbd rbd = new Rbd(ioctx);
+			try {
+				RbdImage rbdImage = rbd.open(imgname);
+				List<RbdSnapInfo> snaplist = rbdImage.snapList();
+				rbd.close(rbdImage);
+
+				boolean snapexist = false;
+				for (RbdSnapInfo snap : snaplist) {
+					if (imgname.equals(snap.name)) {
+						snapexist = true;
+						break;
+					}
+				}
+
+				if (snapexist) {
+					map.put("exist", "1");
+				} else {
+					map.put("exist", "0");
+				}
+
+				map.put("status", "200");
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				LOGGER.error(e.getMessage());
+				msg = "ceph集群异常！";
+				map.put("msg", msg);
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
+				}
+			}
+		} catch (RadosException e) {
+			LOGGER.error(e.getMessage());
+			msg = "ceph集群异常！";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
+	/**
+	 * 删除指定快照
+	 *
+	 * @param imgname
+	 * @param snapname
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/deletesnap" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String deletesnap(String imgname, String snapname) {
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		map.put("status", "200");
+		String msg = "";
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+
+			// 获取所有images
+			Rbd rbd = new Rbd(ioctx);
+			try {
+				RbdImage rbdImage = rbd.open(imgname);
+				List<RbdSnapInfo> snaplist = rbdImage.snapList();
+				boolean snapExist = false;
+				for (RbdSnapInfo info : snaplist) {
+					if (snapname.equals(info.name)) {
+						snapExist = true;
+						break;
+					}
+				}
+
+				// 删除快照
+				if (snapExist) {
+					rbdImage.snapRemove(snapname);
+				}
+				rbd.close(rbdImage);
+
+				// 数据库中删除快照
+				cephSnapDao.deleteByNameAndImgname(snapname, imgname);
+
+				// 记录日志
+				String extraInfo = "删除快照 :" + imgname + "@" + snapname;
+				LOGGER.info(extraInfo);
+				CommonOperationLog log = CommonOprationLogUtils.getOprationLog(snapname, extraInfo,
+						CommConstant.CEPH_SNAP, CommConstant.OPERATION_TYPE_DELETE);
+				commonOperationLogDao.save(log);
+
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				msg = "快照" + snapname + "删除失败！";
+				map.put("msg", msg);
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
+				}
+			}
+		} catch (RadosException e) {
+			msg = "ceph集群异常！";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
+	/**
+	 * 保存cephrbdinfo到数据库
+	 *
+	 * @param imgname
+	 * @param disksize
+	 * @param diskdetail
+	 * @return
+	 */
+	private CephRbdInfo saveCephRbdInfo(String imgname, int disksize, String diskdetail) {
+		CephRbdInfo info = new CephRbdInfo();
+		info.setName(imgname);
+		info.setPool(CurrentUserUtils.getInstance().getUser().getNamespace());
+		info.setSize(disksize);
+		info.setDetail(diskdetail);
+		info.setCreateDate(new Date());
+		info.setUpdateDate(new Date());
+		return cephRbdInfoDao.save(info);
+	}
+
+	/**
+	 * 创建快照
+	 *
+	 * @param imgname
+	 * @param snapname
+	 * @param snapdetail
+	 * @return
+	 */
+	private CephSnap saveSnapInfo(String imgname, String snapname, String snapdetail) {
+		CephSnap snap = new CephSnap();
+		snap.setImgname(imgname);
+		snap.setName(snapname);
+		snap.setSnapdetail(snapdetail);
+		snap.setCreateDate(new Date());
+		return snap;
+	}
+
+	/**
 	 * 查看镜像是否存在
+	 *
 	 * @param imgname
 	 * @return
 	 */
 	@RequestMapping(value = { "ceph/checkrbd" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String checkrbd(String imgname) {
-		Map<String, Integer> map = new HashMap<>();
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		String msg = "";
+
 		try {
 			cluster = new Rados(CEPH_NAME);
-			File f = new File(CEPH_DIR+CEPH_CONF);
+			File f = new File(CEPH_DIR + CEPH_CONF);
 			cluster.confReadFile(f);
 			cluster.connect();
-			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 
 			// 获取所有pool
 			String[] pools = cluster.poolList();
@@ -418,16 +721,17 @@ public class CephController {
 				}
 
 				if (imageExist) {
-					map.put("exist", 1);
+					map.put("exist", "1");
 				} else {
-					map.put("exist", 0);
+					map.put("exist", "0");
 				}
 
-				map.put("status", 200);
+				map.put("status", "200");
 				return JSON.toJSONString(map);
 			} catch (RbdException e) {
-				LOGGER.error(e.getMessage());
-				map.put("status", 500);
+				msg = "读取pool" + namespace + "中的镜像失败！";
+				map.put("msg", msg);
+				map.put("status", "500");
 				return JSON.toJSONString(map);
 			} finally {
 				if (cluster != null) {
@@ -435,8 +739,9 @@ public class CephController {
 				}
 			}
 		} catch (RadosException e) {
-			LOGGER.error(e.getMessage());
-			map.put("status", 500);
+			msg = "ceph异常！";
+			map.put("msg", msg);
+			map.put("status", "500");
 			return JSON.toJSONString(map);
 		} finally {
 			if (cluster != null) {
@@ -447,20 +752,22 @@ public class CephController {
 
 	/**
 	 * 删除cephrbd镜像
+	 *
 	 * @param imgname
 	 * @return
 	 */
 	@RequestMapping(value = { "ceph/deleterbd" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String deleteCephRbd(String imgname){
-		Map<String, Integer> map = new HashMap<>();
-		map.put("status", 200);
+	public String deleteCephRbd(String imgname) {
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		map.put("status", "200");
+		String msg = "";
 		try {
 			cluster = new Rados(CEPH_NAME);
-			File f = new File(CEPH_DIR+CEPH_CONF);
+			File f = new File(CEPH_DIR + CEPH_CONF);
 			cluster.confReadFile(f);
 			cluster.connect();
-			String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 			IoCTX ioctx = cluster.ioCtxCreate(namespace);
 
 			// 获取所有images
@@ -472,17 +779,50 @@ public class CephController {
 				for (String image : images) {
 					if (imgname.equals(image)) {
 						imageExist = true;
+						break;
 					}
 				}
-				//删除rbd
+
+				// 删除rbd
 				if (imageExist) {
+					// 删除镜像下所有的快照
+					RbdImage rbdImage = rbd.open(imgname);
+					List<RbdSnapInfo> snapInfos = rbdImage.snapList();
+					for (RbdSnapInfo snapInfo : snapInfos) {
+						rbdImage.snapRemove(snapInfo.name);
+
+						// 数据库中删除快照
+						cephSnapDao.deleteByName(snapInfo.name);
+						LOGGER.error("快照" + imgname + "@" + snapInfo.name + "被删除！");
+					}
+					rbd.close(rbdImage);
+
 					rbd.remove(imgname);
+
+					// 数据库中删除镜像
+					CephRbdInfo cephRbdInfo = cephRbdInfoDao.deleteByName(imgname);
+
+					// 记录日志
+					String extraInfo = "删除镜像 " + JSON.toJSONString(cephRbdInfo);
+					;
+					LOGGER.info(extraInfo);
+					CommonOperationLog log = CommonOprationLogUtils.getOprationLog(imgname, extraInfo,
+							CommConstant.CEPH_RBD, CommConstant.OPERATION_TYPE_DELETE);
+					commonOperationLogDao.save(log);
+				} else {
+					msg = "镜像" + imgname + "在集群中不存在！";
+					LOGGER.info(msg);
+					map.put("msg", msg);
+					map.put("status", "500");
+
+					cephRbdInfoDao.deleteByName(imgname);
 				}
 
 				return JSON.toJSONString(map);
 			} catch (RbdException e) {
-				LOGGER.error(e.getMessage());
-				map.put("status", 500);
+				msg = "镜像" + imgname + "删除失败！";
+				map.put("msg", msg);
+				map.put("status", "500");
 				return JSON.toJSONString(map);
 			} finally {
 				if (cluster != null) {
@@ -490,8 +830,239 @@ public class CephController {
 				}
 			}
 		} catch (RadosException e) {
-			LOGGER.error(e.getMessage());
-			map.put("status", 500);
+			msg = "ceph集群异常！";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
+	/**
+	 * 更改rbd块存储的大小
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/updaterbdsize" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String updateRbdSize(String imgname, int size) {
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		map.put("status", "200");
+		String msg = "";
+
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+
+			// 获取所有images
+			Rbd rbd = new Rbd(ioctx);
+			String[] images;
+			try {
+				images = rbd.list();
+				boolean imageExist = false;
+				for (String image : images) {
+					if (imgname.equals(image)) {
+						imageExist = true;
+						break;
+					}
+				}
+
+				if (imageExist) {
+					RbdImage rbdImage = rbd.open(imgname);
+					size = size * 1024 * 1024;
+					rbdImage.resize(size);
+					rbd.close(rbdImage);
+
+					// 更改数据库
+					List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByName(imgname);
+					cephRbdInfos.get(0).setSize(size);
+					cephRbdInfos.get(0).setUpdateDate(new Date());
+					cephRbdInfoDao.save(cephRbdInfos.get(0));
+
+					// 记录日志
+					String extraInfo = "更改镜像大小 " + JSON.toJSONString(cephRbdInfos.get(0));
+					LOGGER.info(extraInfo);
+					CommonOperationLog log = CommonOprationLogUtils.getOprationLog(imgname, extraInfo,
+							CommConstant.CEPH_RBD, CommConstant.OPERATION_TYPE_UPDATE);
+					commonOperationLogDao.save(log);
+				} else {
+					msg = "镜像" + imgname + "不存在！";
+					map.put("msg", msg);
+					map.put("status", "500");
+				}
+
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				msg = "ceph集群异常！";
+				map.put("msg", msg);
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
+				}
+			}
+		} catch (RadosException e) {
+			msg = "ceph集群异常！";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
+	/**
+	 * 更改rbd块存储的描述
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/updaterbddetail" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String updateRbdDetail(String imgname,String detail){
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		map.put("status", "200");
+		String msg = "";
+
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+
+			// 获取所有images
+			Rbd rbd = new Rbd(ioctx);
+			String[] images;
+			try {
+				images = rbd.list();
+				boolean imageExist = false;
+				for (String image : images) {
+					if (imgname.equals(image)) {
+						imageExist = true;
+						break;
+					}
+				}
+
+				if (imageExist) {
+					// 更改数据库
+					List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByName(imgname);
+					cephRbdInfos.get(0).setDetail(detail);
+					cephRbdInfos.get(0).setUpdateDate(new Date());
+					cephRbdInfoDao.save(cephRbdInfos.get(0));
+
+					// 记录日志
+					String extraInfo = "更改镜像描述 " + JSON.toJSONString(cephRbdInfos.get(0));
+					LOGGER.info(extraInfo);
+					CommonOperationLog log = CommonOprationLogUtils.getOprationLog(imgname, extraInfo,
+							CommConstant.CEPH_RBD, CommConstant.OPERATION_TYPE_UPDATE);
+					commonOperationLogDao.save(log);
+				} else {
+					msg = "镜像" + imgname + "不存在！";
+					map.put("msg", msg);
+					map.put("status", "500");
+				}
+
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				msg = "ceph集群异常！";
+				map.put("msg", msg);
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
+				}
+			}
+		} catch (RadosException e) {
+			msg = "ceph集群异常！";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
+	/**
+	 * 快照回滚
+	 * @param imgname
+	 * @param snapname
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/rollback" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String snapRollBack(String imgname,String snapname){
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		map.put("status", "200");
+		String msg = "";
+
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+
+			// 获取所有images
+			Rbd rbd = new Rbd(ioctx);
+			String[] images;
+			try {
+				images = rbd.list();
+				boolean imageExist = false;
+				for (String image : images) {
+					if (imgname.equals(image)) {
+						imageExist = true;
+						break;
+					}
+				}
+
+				if (imageExist) {
+					RbdImage rbdImage = rbd.open(imgname);
+					rbd.close(rbdImage);
+					// 记录日志
+					String extraInfo = "更改镜像大小 ";
+					LOGGER.info(extraInfo);
+					CommonOperationLog log = CommonOprationLogUtils.getOprationLog(imgname, extraInfo,
+							CommConstant.CEPH_RBD, CommConstant.OPERATION_TYPE_UPDATE);
+					commonOperationLogDao.save(log);
+				} else {
+					msg = "镜像" + imgname + "不存在！";
+					map.put("msg", msg);
+					map.put("status", "500");
+				}
+
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				msg = "ceph集群异常！";
+				map.put("msg", msg);
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
+				}
+			}
+		} catch (RadosException e) {
+			msg = "ceph集群异常！";
+			map.put("msg", msg);
+			map.put("status", "500");
 			return JSON.toJSONString(map);
 		} finally {
 			if (cluster != null) {
@@ -587,7 +1158,7 @@ public class CephController {
 		return MOUNT_POINT;
 	}
 
-	public String getCephDir(){
+	public String getCephDir() {
 		return CEPH_DIR;
 	}
 }

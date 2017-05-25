@@ -288,12 +288,12 @@
 
 				<div id="detail" style="display: none; text-align: center">
 					<ul id="myTab" class="nav nav-tabs">
-						<li class="active"><a href="#pingTab" data-toggle="tab">Ping</a></li>
-						<li><a href="#traceTab" data-toggle="tab">Trace</a></li>
-						<li><a href="#qperfTab" data-toggle="tab">Qperf</a></li>
-						<li><a href="#curlTab" data-toggle="tab">Curl</a></li>
-						<li><a href="#dockerTab" data-toggle="tab">Docker</a></li>
-						<li><a href="#dnsTab" data-toggle="tab">Dns</a></li>
+						<li id="ptab" class="active"><a href="#pingTab" data-toggle="tab">Ping</a></li>
+						<li id="ttab"><a href="#traceTab" data-toggle="tab">Trace</a></li>
+						<li id="qtab"><a href="#qperfTab" data-toggle="tab">Qperf</a></li>
+						<li id="ctab"><a href="#curlTab" data-toggle="tab">Curl</a></li>
+						<li id="dtab"><a href="#dockerTab" data-toggle="tab">Docker</a></li>
+						<li id="dstab" ><a href="#dnsTab" data-toggle="tab">Dns</a></li>
 					</ul>
 					<div id="myTabContent" class="tab-content">
 						<div class="tab-pane fade in active" id="pingTab">
@@ -310,13 +310,13 @@
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 20%">平均响应时间：</th>
+										<th style="width: 20%">平均响应时间(ms)：</th>
 										<td class="tableInput"><input type="text" id="pingavg" readOnly
 											value=""></td>
 									</tr>
 									<tr>
 										<td colspan="2">
-											<textarea id="pingdetail" style="width: 100%; height: 200px;"></textarea>
+											<textarea id="pingdetail" style="width: 100%; height: 200px;"  readOnly></textarea>
 										</td>
 									</tr>
 								</tbody>
@@ -336,13 +336,13 @@
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 20%">平均响应时间：</th>
+										<th style="width: 20%">平均响应时间(s)：</th>
 										<td class="tableInput"><input class="" type="text" id="tracetime" readOnly
 											value=""></td>
 									</tr>
 									<tr>
 										<td colspan="2"><textarea id="tracedetail"
-												style="width: 100%; height: 200px;"></textarea></td>
+												style="width: 100%; height: 200px;" readOnly></textarea></td>
 									</tr>
 								</tbody>
 							</table>
@@ -361,18 +361,18 @@
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 20%">带宽：</th>
+										<th style="width: 20%">带宽(MB)：</th>
 										<td class="tableInput"><input class="" type="text" id="speed" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 20%">延迟：</th>
+										<th style="width: 20%">延迟(ms)：</th>
 										<td class="tableInput"><input class="" type="text" id="latency" readOnly
 											value=""></td>
 									</tr>
 									<tr>
 										<td colspan="2"><textarea id="qperfdetail"
-												style="width: 100%; height: 160px;"></textarea></td>
+												style="width: 100%; height: 160px;" readOnly></textarea></td>
 									</tr>
 								</tbody>
 							</table>
@@ -391,13 +391,13 @@
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 20%">响应时间：</th>
+										<th style="width: 20%">响应时间(ms)：</th>
 										<td class="tableInput"><input class="" type="text" id="curlavg" readOnly
 											value=""></td>
 									</tr>
 									<tr>
 										<td colspan="2"><textarea id="curldetail"
-												style="width: 100%; height: 200px;"></textarea></td>
+												style="width: 100%; height: 200px;" readOnly></textarea></td>
 									</tr>
 								</tbody>
 							</table>
@@ -416,14 +416,13 @@
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 20%">cpu：</th>
-										<td class="tableInput"><input class="" type="text" id="cpu" readOnly
+										<th style="width: 20%">磁盘大小(G)：</th>
+										<td class="tableInput"><input class="" type="text" id="memory" readOnly
 											value=""></td>
 									</tr>
 									<tr>
-										<th style="width: 20%">memory：</th>
-										<td class="tableInput"><input class="" type="text" id="memory" readOnly
-											value=""></td>
+										<td colspan="2"><textarea id="dockerdetail"
+												style="width: 100%; height: 200px;" readOnly></textarea></td>
 									</tr>
 								</tbody>
 							</table>
@@ -448,7 +447,7 @@
 									</tr>
 									<tr>
 										<td colspan="2"><textarea id="masterdetail"
-												style="width: 100%; height: 100px;"></textarea></td>
+												style="width: 100%; height: 100px;" readOnly></textarea></td>
 									</tr>
 									<tr>
 										<th style="width: 20%">备dns操作：</th>
@@ -457,7 +456,7 @@
 									</tr>
 									<tr>
 										<td colspan="2"><textarea id="standbydetail"
-												style="width: 100%; height: 100px;"></textarea></td>
+												style="width: 100%; height: 100px;"  readOnly></textarea></td>
 									</tr>
 								</tbody>
 							</table>

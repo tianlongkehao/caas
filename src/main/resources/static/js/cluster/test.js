@@ -18,47 +18,58 @@ function detail(obj) {
 					btn : ['关闭']
 				})
 				if(nodetestresult.ping){
+					$('#ptab').show();
 					$('#pingstatus').val('已设置');
 					$('#pingpass').val(nodetestresult.pingpass ? '通过' : '未通过');
 					$('#pingavg').val(nodetestresult.pingtime);
 					$('#pingdetail').html(nodetestresult.pingoutmsg);
 				}else{
+					$('#ptab').hide();
 					$('#pingstatus').val('未设置');
 				}
 				if(nodetestresult.tracepath){
+					$('#ttab').show();
 					$('#tracestatus').val('已设置');
 					$('#tracepass').val(nodetestresult.tracepass ? '通过' : '未通过');
 					$('#tracetime').val(nodetestresult.tracetime);
 					$('#tracedetail').html(nodetestresult.tracepathoutmsg);
 				}else{
+					$('#ttab').hide();
 					$('#tracestatus').val('未设置');
 				}
 				if(nodetestresult.qperf){
+					$('#qtab').show();
 					$('#qperfstatus').val('已设置');
 					$('#qperfpass').val(nodetestresult.qperfpass ? '通过' : '未通过');
 					$('#speed').val(nodetestresult.speed);
 					$('#latency').val(nodetestresult.latency);
 					$('#qperfdetail').html(nodetestresult.qperfoutmsg);
 				}else{
+					$('#qtab').hide();
 					$('#qperfstatus').val('未设置');
 				}
 				if(nodetestresult.curl){
+					$('#ctab').show();
 					$('#curlstatus').val('已设置');
 					$('#curlpass').val(nodetestresult.curlpass ? '通过' : '未通过');
 					$('#curlavg').val(nodetestresult.curltime);
 					$('#curldetail').html(nodetestresult.curloutmsg);
 				}else{
+					$('#ctab').hide();
 					$('#curlstatus').val('未设置');
 				}
 				if(nodetestresult.docker){
+					$('#dtab').show();
 					$('#dockerstatus').val('已设置');
-					$('#cpu').val(nodetestresult.cpu);
-					$('#memory').val(nodetestresult.memory);
+					$('#memory').val(nodetestresult.disk);
 					$('#dockerpass').val(nodetestresult.dockerpass ? '通过' : '未通过');
+					$('#dockerdetail').html(nodetestresult.dockermsg);
 				}else{
+					$('#dtab').hide();
 					$('#dockerstatus').val('未设置');
 				}
 				if(nodetestresult.dns){
+					$('#dstab').show();
 					$('#dnsstatus').val('已设置');
 					$('#dnspass').val(nodetestresult.dnspass ? '通过' : '未通过');
 					$('#masterstatus').val(nodetestresult.masterdns ? '成功' : '失败');
@@ -66,16 +77,20 @@ function detail(obj) {
 					$('#standbystatus').val(nodetestresult.standbydns ? '成功' : '失败');
 					$('#standbydetail').html(nodetestresult.standbydnsoutmsg);
 				}else{
+					$('#dstab').hide();
 					$('#dnsstatus').val('未设置');
 				}
-				
-				
+				$('#myTab li').each(function(){
+					$(this).attr('class','active');
+				});
+				$($('#myTab li:visible')[0]).attr('class','active');
+
 			}else{
 				layer.msg(data.msg);
 			}
 		}
 	})
-	
+
 }
 function  clearDetailData(){
 	$('#pingstatus').val('');
@@ -100,9 +115,9 @@ function  clearDetailData(){
 	$('#curldetail').html('');
 
 	$('#dockerstatus').val('');
-	$('#cpu').val('');
 	$('#memory').val('');
 	$('#dockerpass').val('');
+	$('#dockerdetail').html('');
 
 	$('#dnsstatus').val('');
 	$('#dnspass').val('');
@@ -129,7 +144,7 @@ function deployOneNode(obj){
 								 +'style="width: 15%;">'
 								 +'<span >部署完成</span>'
 								 +'</div>';
-				
+
 				$(obj).parents(".thisTr").find(".nodeProgress").empty().append(deployHtmlSuccess);
 				$(obj).parents(".thisTr").find(".clusterTestOpr").children("a").empty();
 				$(obj).parent().attr("deployStatus","true");
@@ -198,7 +213,7 @@ function testOneNode(obj){
 				var curlitem = nodetestresult.curl;
 				var dockeritem = nodetestresult.docker;
 				var dnsitem = nodetestresult.dns;
-				
+
 				$("#pingitem").prop("checked",pingitem);
 				$("#traceitem").prop("checked",traceitem);
 				$("#curlitem").prop("checked",curlitem);
@@ -250,7 +265,7 @@ function testOneNode(obj){
 			items = selecteditems;
 			// 显示正在执行中
 			var loading = layer.load(0, {shade : [ 0.3, '#000' ]});
-	
+
 			$('.checkbox a').empty();
 			var pingIp = $("#pingip").val();
 			var tracepathIp = $("#tracepathip").val();
@@ -288,7 +303,7 @@ function testOneNode(obj){
 											 +'style="width: 85%;">'
 											 +'<span>执行完成</span>'
 											 +'</div>';
-							
+
 							$(obj).parents(".thisTr").find(".nodeProgress").empty().append(testHtmlSuccess);
 							$(obj).parents(".thisTr").find(".clusterTestOpr").children("a").empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
 						}else{
@@ -327,9 +342,9 @@ function initDetail(data) {
 							 +'style="width: 85%;">'
 							 +'<span>执行完成</span>'
 							 +'</div>';
-			
+
 			$('#progress_'+data.nodeInfos[i].nodename).empty().append(testHtmlSuccess);
-			
+
 			$('#' + data.nodeInfos[i].nodename).empty()
 					.append(
 							'<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
@@ -411,7 +426,7 @@ function checkitems() {
 	}
 	return true;
 }
-			
+
 var nodeInfos = {};
 var items = "";
 
@@ -460,7 +475,7 @@ $(document).ready(function() {
         }
     });
 
-	// 批量部署，部署pod和service   
+	// 批量部署，部署pod和service
 	$("#deployBtn").click(function() {
 		var selectednodes = "";
 		$("input:checkbox[name='node']:checked").each(function(i) {
@@ -518,7 +533,7 @@ $(document).ready(function() {
 		var index = layer.load(0, {
 			shade : [ 0.3, '#000' ]
 		});
-						
+
 		$.ajax({
 			url : ctx + "/cluster/clearspecifiedpod?nodenames=" + selectednodes,
 			success : function(data) {
@@ -589,7 +604,7 @@ $(document).ready(function() {
 				items = selecteditems;
 				// 显示正在执行中
 				var idx = layer.load(0, {shade : [ 0.3, '#000' ]});
-		
+
 				$('.checkbox a').empty();
 				var pingIp = $("#pingip").val();
 				var tracepathIp = $("#tracepathip").val();
