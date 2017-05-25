@@ -1,4 +1,6 @@
+var loading = "";
 $(document).ready(function () {
+	loading = layer.load(0, {shade: false});
 	showCompIptablesList();
 	//首次加载界面，若是admin登录，没选择租户时服务为disabled
 	var userAutority = $("#userAutority").val();
@@ -868,6 +870,7 @@ function showCompIptablesList(){
 		url:ctx + "/cluster/checkIptables.do",
 		type:'get',
 		success:function(data){
+			layer.close(loading);
 			var data = eval('('+data+')');
 			if(data.status == '200'){
 				resultData = data.resultList;
@@ -975,49 +978,6 @@ function recoverOneIptables(obj){
 			}
 		}
 	})
-}
-
-//批量恢复iptable
-function recoverIptables(){
-	var nodeData = new Array();
-	var checkIptable = $(".chkItem:checked");
-	if(checkIptable.length == 0){
-		layer.tips('请选择至少一个集群节点','#checkallbox', {
-			tips : [ 1, '#3595CC' ]
-		});
-		$('#checkallbox').focus();
-		return;
-	}else{
-		for(var i=0; i<checkIptable.length; i++){
-			nodeData.push($(checkIptable[i]).attr("nodeName"));
-		}
-		var nodeData = {"nodeNameListString":JSON.stringify(nodeData)};
-		$.ajax({
-			url:ctx + "/cluster/recoverIptables.do",
-			type:'post',
-			data:nodeData,
-			success:function(data){
-				var data = eval('('+data+')');
-				var status = data.status;
-				if(status == '200'){
-					layer.msg("恢复成功！",{icon : 1});
-				}else if(status == '300'){
-					layer.alert( "节点修复异常："+data.messages,{icon : 2});
-				}else if(status == '400'){
-					layer.alert( "查找对应ip失败："+data.messages,{icon : 2});
-				}else{
-					layer.alert( "恢复失败!",{icon : 2});
-				}
-			}
-		})
-	}
-	
-}
-
-//测试iptable
-function checkIptables(){
-	showCompIptablesList();
-	layer.msg('测试完成！');
 }
 
 
