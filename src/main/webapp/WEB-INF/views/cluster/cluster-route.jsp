@@ -34,7 +34,6 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>路由监控
 									</h5>
 									<div class="ibox-tools">
-										<a onclick="recoverRoutes()" title="恢复"><i>恢复</i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>

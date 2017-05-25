@@ -1,4 +1,6 @@
+var loading = "";
 $(document).ready(function () {
+	loading = layer.load(0, {shade: false});
 	loadRoute();
 	/*var nodeIP = $("#search_routeNode").val();
 	$('.dataTables-example').dataTable({
@@ -55,6 +57,7 @@ function loadRoute() {
 		 url : ctx + "/cluster/checkRoute.do",
 		 type : "get",
 		 success : function(data){
+			 layer.close(loading);
 			 var data = eval("(" + data + ")");
 			 var status = data.status;
 			 if(status == '200'){
@@ -181,46 +184,3 @@ function recoverOneRoute(obj){
 		}
 	})
 }
-//批量恢复
-function recoverRoutes(){
-	var checkNodes = $(".chkItem:checked");
-	var nodesData = new Array();
-	if(checkNodes.length == 0){
-		layer.tips('请选择至少一个集群节点','#checkallbox', {
-			tips : [ 1, '#3595CC' ]
-		});
-		$('#checkallbox').focus();
-		return;
-	}else{
-		for(var i = 0; i < checkNodes.length; i++){
-			var nodeIp = $(checkNodes[i]).attr("nodeIp");
-			var nodeName = $(checkNodes[i]).attr("nodeName");
-			var nodeInfo = {"name":nodeName, "ip":nodeIp};
-			nodesData.push(nodeInfo);
-		}
-		var nodeListString = {"nodeListString":JSON.stringify(nodesData)};
-		var loading = layer.load(0, {
-			shade : [ 0.3, '#000' ]
-		});
-		$.ajax({
-			url: ctx + "/cluster/recoverRoutetable.do",
-			type:"POST",
-			data:nodeListString,
-			success:function(data){
-				var data = eval('('+data+')');
-				layer.close(loading);
-				var status = data.status;
-				if(status == "200"){
-					layer.msg("恢复成功！",{icon : 1});
-				}else if(status == "300"){
-					layer.msg( data.messages+"恢复失败!",{icon : 2});
-				}else if(status == "400"){
-					layer.msg("恢复失败，链接异常！",{icon : 2});
-				}
-			}
-		})
-	}
-}
-
-
-
