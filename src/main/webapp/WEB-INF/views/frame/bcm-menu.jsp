@@ -209,6 +209,13 @@
 						<li id="li_logCommon"><a class="J_menuItem" href="<%=path %>/logCommon"><i class="fa fa_circle"></i>通用操作日志</a></li>
 					</ul></li>
 				</c:if>
+				<li id="menu_database"><a href="#" class="first-a">
+					<i class="fa-nav fa-nav-log"></i>
+					<span class="nav-label">数据库服务</span>
+				</a>
+					<ul class="nav nav-second-level">
+						<li id="li_redis"><a class="J_menuItem" href="<%=path %>/db/redis"><i class="fa fa_circle"></i>redis</a></li>
+					</ul></li>
 				<%-- <li id="menu_product"><a href="<%=path %>/product/help" target="_blank"> <img alt="image" class="tit-image"
 						src="<%=path%>/images/help-red.png"
 						style="width: 14px; margin-left: 3px;" /> <span class="nav-label">帮助文档</span>
