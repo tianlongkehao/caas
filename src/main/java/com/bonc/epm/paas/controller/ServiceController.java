@@ -2758,10 +2758,11 @@ public class ServiceController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Service service = serviceDao.findOne(serviceID);
 		// 服务状态判断
-		if (null == service) {
+		if (null == service || service.getStatus() == ServiceConstant.CONSTRUCTION_STATUS_WAITING) {
 			map.put("status", "501");
 			return JSON.toJSONString(map);
 		}
+
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		List<Container> containerList = new ArrayList<Container>();
 		// 获取特殊条件的pods
