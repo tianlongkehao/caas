@@ -8,6 +8,16 @@ public class Volume {
 
 	private ConfigMapTemplate configMap;
 
+	private CephRbd rbd;
+
+	public CephRbd getRbd() {
+		return rbd;
+	}
+
+	public void setRbd(CephRbd rbd) {
+		this.rbd = rbd;
+	}
+
 	public String getName() {
 		return name;
 	}

@@ -332,12 +332,17 @@ public class ServiceController {
     @Value("${kubernetes.api.endpoint}")
 	private String KUBERNETES_API_ENDPOINT;
 
-    /**
-	 * resourcecontroller接口
-	 */
-	@Autowired
-	private ResourceService resourceService;
+	/*
+     * 预留的cpu资源
+     */
+    @Value("${rest.resource.cpu}")
+    private int REST_RESOURCE_CPU;
 
+    /*
+     * 预留的memory资源
+     */
+    @Value("${rest.resource.memory}")
+    private int REST_RESOURCE_MEMORY;
     /**
 	 * Description: <br>
 	 * 展示container和services
@@ -855,11 +860,11 @@ public class ServiceController {
 
 				long leftmemory = hard - used;
 
-				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
+				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU - REST_RESOURCE_CPU;
 				leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
 
 				model.addAttribute("leftcpu", leftCpu);
-				model.addAttribute("leftmemory", Math.ceil(leftmemory / 1024.0));
+				model.addAttribute("leftmemory", Math.ceil(leftmemory / 1000.0 - REST_RESOURCE_MEMORY));
 			} else {
 				LOG.info("用户 " + currentUser.getUserName() + " 没有定义名称为 " + currentUser.getNamespace() + " 的Namespace ");
 			}
@@ -929,16 +934,6 @@ public class ServiceController {
 				map.put("status", "502");
 				return JSON.toJSONString(map);
 			}
-		}
-
-		/**
-		 * 检查运行该服务之后，剩余的cpu和memory是否满足预留条件
-		 */
-		boolean chkresult = resourceService.checkRestResource(service);
-		if(!chkresult){
-			map.put("msg", "cpu或内存不足，请调整资源大小或申请更多资源！");
-			map.put("status", "504");
-			return JSON.toJSONString(map);
 		}
 
 		delPods(service.getServiceName());
@@ -2318,21 +2313,6 @@ public class ServiceController {
 		}
 		try {
 
-			/**
-			 * 检查运行该服务之后，剩余的cpu和memory是否满足预留条件
-			 */
-			boolean chkresult = resourceService.checkRestResource(cpus - service.getCpuNum(),String.valueOf(Double.parseDouble(rams)-Double.parseDouble(service.getRam())));
-			if(!chkresult){
-				//map.put("msg", "cpu或内存不足，请调整资源大小或申请更多资源！");
-				if(ResourceService.STATUS == ResourceService.CPU_LACK){
-					map.put("msg", "cpu不足，请调整服务的cpu大小或申请更多cpu!");
-				}else{
-					map.put("msg", "ram不足，请调整服务的ram大小或申请更多ram!");
-				}
-				map.put("status", "504");
-				return JSON.toJSONString(map);
-			}
-
 			service.setCpuNum(cpus);
 			service.setRam(rams);
 			KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -2650,17 +2630,7 @@ public class ServiceController {
 			for (long id : ids) {
 				String creatresult = CreateContainer(id, false);
 				if (!creatresult.contains("200")) {
-					if(creatresult.contains("504")){
-						if(ResourceService.STATUS == ResourceService.CPU_LACK){
-							maps.put("msg", "cpu不足，请调整服务的cpu大小或申请更多cpu!");
-						}else{
-							maps.put("msg", "ram不足，请调整服务的ram大小或申请更多ram!");
-						}
-						maps.put("status", "504");
-						break;
-					}else{
 						maps.put("status", "400");
-					}
 				}
 				;
 			}

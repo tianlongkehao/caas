@@ -177,18 +177,22 @@ public class KubernetesClientService {
 			memory = memory.replace("Mi", "");
 		} else if (memory.endsWith("G")) {
 			memory = memory.replace("G", "");
-			long memoryG = Long.valueOf(memory) * 1024;
+			//long memoryG = Long.valueOf(memory) * 1024;
+			long memoryG = Long.valueOf(memory) * 1000;
 			return memoryG;
 		} else if (memory.endsWith("Gi")) {
 			memory = memory.replace("Gi", "");
-			long memoryG = Long.valueOf(memory) * 1024;
+			//long memoryG = Long.valueOf(memory) * 1024;
+			long memoryG = Long.valueOf(memory) * 1000;
 			return memoryG;
 		} else if (isNumeric(memory)) {
-			long memoryBit = Long.valueOf(memory) / (1024 * 1024);
+			//long memoryBit = Long.valueOf(memory) / (1024 * 1024);
+			long memoryBit = Long.valueOf(memory) / (1000 * 1000);
 			return memoryBit;
 		} else if (memory.endsWith("k")) {
 			memory = memory.replace("k", "");
-			long memoryk = Long.valueOf(memory) / 1024;
+			//long memoryk = Long.valueOf(memory) / 1024;
+			long memoryk = Long.valueOf(memory) / 1000;
 			return memoryk;
 		}
 		return Long.valueOf(memory);
