@@ -24,9 +24,15 @@ public class DatabaseController {
 	 * @return String
 	 */
 	@RequestMapping(value = "/redis", method = RequestMethod.GET)
-	public String index(Model model) {
+	public String indexRedis(Model model) {
         model.addAttribute("menu_flag", "database");
         model.addAttribute("li_flag", "redis");
         return "database/redis.jsp";
+    }
+	@RequestMapping(value = "/redis/create", method = RequestMethod.GET)
+	public String redisCreate(Model model) {
+        model.addAttribute("menu_flag", "database");
+        model.addAttribute("li_flag", "redis");
+        return "database/redis-create.jsp";
     }
 }

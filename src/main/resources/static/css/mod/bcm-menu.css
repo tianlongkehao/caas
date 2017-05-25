@@ -357,6 +357,18 @@ i.fa-nav{
 	background: url(../../images/bg-nav2.png) no-repeat;
 	background-position: 0 -163px;
 }
+#menu_database a i.fa-nav-log{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -207px;
+}
+#menu_database a:hover i.fa-nav-log{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -205px;
+}
+#menu_database.active a i.fa-nav-log{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -205px;
+}
 
 
 
