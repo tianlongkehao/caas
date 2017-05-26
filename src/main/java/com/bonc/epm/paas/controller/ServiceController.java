@@ -85,6 +85,7 @@ import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
 import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
+import com.bonc.epm.paas.kubernetes.model.EventList;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
@@ -97,7 +98,6 @@ import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
-import com.bonc.epm.paas.kubernetes.util.ResourceService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.util.SheraClientService;
@@ -2747,6 +2747,7 @@ public class ServiceController {
 						Container container = new Container();
 						container
 								.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+						container.setServiceAddr(pod.getMetadata().getName());
 						container.setServiceid(service.getId());
 						// 默认状态为0
 						container.setContainerStatus(0);
@@ -2763,6 +2764,53 @@ public class ServiceController {
 						}
 
 						containerList.add(container);
+					}
+				}
+			}
+
+			/**********************************
+			 * 查询升级服务的相关信息
+			 * ********************************/
+			if (StringUtils.isNoneBlank(service.getTempName())) {
+				//升级服务rc
+				ReplicationController newReplicationController;
+				try {
+					newReplicationController = client.getReplicationController(service.getTempName());
+				} catch (KubernetesClientException e) {
+					newReplicationController = null;
+				}
+				if (newReplicationController != null) {
+					// 获取所有的pod
+					Map<String, String> selector = newReplicationController.getSpec().getSelector();
+					PodList newPodList = client.getLabelSelectorPods(selector);
+					List<Pod> pods = newPodList.getItems();
+					// 遍历获取所有pod的events
+					if (CollectionUtils.isNotEmpty(pods)) {
+						int i = 1;
+						for (Pod pod : pods) {
+							Container container = new Container();
+							String image = pod.getSpec().getContainers().get(0).getImage();
+							String version = image.substring(image.lastIndexOf(":") + 1);
+							container
+									.setContainerName(service.getServiceName() + "-" + version + "-" + i++);
+							container.setServiceAddr(pod.getMetadata().getName());
+							container.setServiceid(service.getId());
+							// 默认状态为0
+							container.setContainerStatus(0);
+							// pod状态不是Running时候
+							if (!pod.getStatus().getPhase().equals("Running")) {
+								container.setContainerStatus(1);
+							} else {
+								// container状态
+								for (ContainerStatus status : pod.getStatus().getContainerStatuses()) {
+									if (status.getState().getRunning() == null) {
+										container.setContainerStatus(1);
+									}
+								}
+							}
+
+							containerList.add(container);
+						}
 					}
 				}
 			}
@@ -3834,4 +3882,152 @@ public class ServiceController {
 
 		return "service/service-file.jsp";
 	}
+
+	/**
+	 * getServiceEvents:获取服务的详细状态信息. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param id
+	 * @return String
+	 */
+	@RequestMapping(value = ("service/getServiceEvents.do"), method = RequestMethod.GET)
+	@ResponseBody
+	public String getServiceEvents(long id) {
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		Service service = serviceDao.findOne(id);
+		if (service == null) {
+			messages.add("找不到对应服务[id:" + id + "]");
+			map.put("status", "400");
+			map.put("messages", messages);
+			return JSON.toJSONString(map);
+		}
+
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		/**********************************
+		 * 查询当前服务的相关信息
+		 * ********************************/
+		//当前服务rc
+		ReplicationController replicationController;
+		//当前服务podlist
+		PodList podList = null;
+		//当前服务event
+		EventList replicationControllerEvents = null;
+		//当前服务pod event
+		List<EventList> podsEventList = new ArrayList<>();
+		try {
+			replicationController = client.getReplicationController(service.getServiceName());
+		} catch (KubernetesClientException e) {
+			replicationController = null;
+		}
+		if (replicationController != null) {
+			// 获取replicationController的events
+			replicationControllerEvents = client
+					.getReplicationControllerEvents(replicationController.getMetadata().getName());
+			// 获取所有的pod
+			Map<String, String> selector = replicationController.getSpec().getSelector();
+			podList = client.getLabelSelectorPods(selector);
+			List<Pod> pods = podList.getItems();
+			// 遍历获取所有pod的events
+			if (CollectionUtils.isNotEmpty(pods)) {
+				for (Pod pod : pods) {
+					EventList podEvents;
+					try {
+						podEvents = client.getPodEvents(pod.getMetadata().getName());
+						podsEventList.add(podEvents);
+					} catch (KubernetesClientException e) {
+						LOG.error(e.getStatus().getReason());
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		map.put("replicationController", replicationController);
+		map.put("podList", podList);
+		map.put("replicationControllerEvents", replicationControllerEvents);
+		map.put("podsEventList", podsEventList);
+
+		/**********************************
+		 * 查询升级服务的相关信息
+		 * ********************************/
+		if (StringUtils.isNoneBlank(service.getTempName())) {
+			//升级服务rc
+			ReplicationController newReplicationController;
+			//升级服务podlist
+			PodList newPodList = null;
+			//升级服务event
+			EventList newReplicationControllerEvents = null;
+			//升级服务pod event
+			List<EventList> newPodsEventList = new ArrayList<>();
+			try {
+				newReplicationController = client.getReplicationController(service.getTempName());
+			} catch (KubernetesClientException e) {
+				newReplicationController = null;
+			}
+			if (newReplicationController != null) {
+				// 获取replicationController的events
+				newReplicationControllerEvents = client
+						.getReplicationControllerEvents(newReplicationController.getMetadata().getName());
+				// 获取所有的pod
+				Map<String, String> selector = newReplicationController.getSpec().getSelector();
+				newPodList = client.getLabelSelectorPods(selector);
+				List<Pod> pods = newPodList.getItems();
+				// 遍历获取所有pod的events
+				if (CollectionUtils.isNotEmpty(pods)) {
+					for (Pod pod : pods) {
+						EventList podEvents;
+						try {
+							podEvents = client.getPodEvents(pod.getMetadata().getName());
+							newPodsEventList.add(podEvents);
+						} catch (KubernetesClientException e) {
+							LOG.error(e.getStatus().getReason());
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			map.put("newReplicationController", newReplicationController);
+			map.put("newPodList", newPodList);
+			map.put("newReplicationControllerEvents", newReplicationControllerEvents);
+			map.put("newPodsEventList", newPodsEventList);
+		}
+
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * getServiceEvents:获取服务的详细状态信息. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param id
+	 * @return String
+	 */
+	@RequestMapping(value = ("service/getPodEvents.do"), method = RequestMethod.GET)
+	@ResponseBody
+	public String getPodEvents(String podName) {
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		/**********************************
+		 * 查询当前服务的相关信息
+		 ********************************/
+		// 当前服务pod event
+		EventList eventList = null;
+		try {
+			eventList = client.getPodEvents(podName);
+		} catch (KubernetesClientException e) {
+			LOG.error(e.getStatus().getReason());
+			messages.add("未找到指定PodEvents[podName:" + podName + ",reason:" + e.getStatus().getReason() + "]");
+			map.put("status", "400");
+			map.put("messages", messages);
+			e.printStackTrace();
+			return JSON.toJSONString(map);
+		}
+		map.put("eventList", eventList);
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
 }
