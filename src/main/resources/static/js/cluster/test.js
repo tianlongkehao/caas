@@ -304,6 +304,27 @@ function testOneNode(obj){
 		success:function(data){
 			var data = eval("(" + data + ")");
 			var status = data.status;
+			if(status == '500'){
+				layer.msg(data.msg,{icon : 5});
+				return;
+			}
+
+			$("#pingitem").prop("checked",false);
+			$("#traceitem").prop("checked",false);
+			$("#curlitem").prop("checked",false);
+			$("#qperfitem").prop("checked",false);
+			$("#dockeritem").prop("checked",false);
+			$("#dnsitem").prop("checked",false);
+
+			$("#pingip").val("");
+			$("#tracepathip").val("");
+			$("#pingtime").val("");
+			$("#tracepathtime").val("");
+			$("#qperf").val("");
+			$("#qperftime").val("");
+			$("#curltime").val("");
+			$("#docker").val("");
+
 			if(status == '200'){
 				var nodetestresult = data.nodetestresult;
 				var pingitem = nodetestresult.ping;
@@ -341,92 +362,93 @@ function testOneNode(obj){
 					$("#docker").val(nodetestresult.memorytarget);
 				}
 			}
+			layer.open({
+				type : 1,
+				title : '检测项信息',
+				content : $("#chkitem"),
+				area : [ '600px' ],
+				btn :  [ '确定', '取消' ],
+				yes : function(index, layero) {
+					if (!checkitems()) {
+						return;// 校验没通过
+					}
+					var selecteditems = "";
+					$("input:checkbox[name='item']:checked").each(function(i) {
+							if (0 == i) {
+								selecteditems = $(this).val();
+							} else {
+								selecteditems += ("," + $(this).val());
+							}
+					});
+					items = selecteditems;
+					// 显示正在执行中
+					var loading = layer.load(0, {shade : [ 0.3, '#000' ]});
+
+					$('.checkbox a').empty();
+					var pingIp = $("#pingip").val();
+					var tracepathIp = $("#tracepathip").val();
+					var pingtime = $("#pingtime").val();
+					var tracetime = $("#tracepathtime").val();
+					var curltime = $("#curltime").val();
+					var speed = $("#qperf").val();
+					var latency = $("#qperftime").val();
+					var memory = $("#docker").val();
+					$.ajax({
+						url : ctx
+							+ "/cluster/excutetest?nodenames="
+							+ selectednode + "&items="
+							+ selecteditems + "&pingIp="
+							+ pingIp + "&pingtime=" + pingtime
+							+ "&tracepathIp=" + tracepathIp
+							+ "&tracetime=" + tracetime
+							+ "&curltime=" + curltime
+							+ "&speed=" + speed + "&latency="
+							+ latency + "&memory=" + memory,
+						success : function(data) {
+							var data = eval("(" + data + ")");
+							layer.closeAll("loading");
+							if (data.status == '200') {
+								//initDetail(data);
+								nodeInfos = data.nodeInfos;
+								if(data.nodeInfos[0].allpass){
+									var testHtmlSuccess = '<div class="progress-bar progress-bar-warning" role="progressbar"'
+													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+													 +'style="width: 15%;">'
+													 +'<span >部署完成</span>'
+													 +'</div>'
+													 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+													 +'style="width: 85%;">'
+													 +'<span>执行完成</span>'
+													 +'</div>';
+
+									$(obj).parents(".thisTr").find(".nodeProgress").empty().append(testHtmlSuccess);
+									$(obj).parents(".thisTr").find(".clusterTestOpr").children("a").empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
+								}else{
+									var testHtmlFailure = '<div class="progress-bar progress-bar-warning" role="progressbar"'
+										 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+										 +'style="width: 15%;">'
+										 +'<span >部署完成</span>'
+										 +'</div>'
+										 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+										 +' aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+										 +'style="width: 85%;">'
+										 +'<span>执行失败</span>'
+										 +'</div>';
+									$(obj).parents(".thisTr").find(".nodeProgress").empty().append(testHtmlFailure);
+									$(obj).parents(".thisTr").find(".clusterTestOpr").children("a").empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
+								}
+								layer.close(index);
+							} else {
+								layer.alert(data.msg,{icon: 2});
+							}
+						}
+					});
+				}
+			})
 		}
 	});
-	layer.open({
-		type : 1,
-		title : '检测项信息',
-		content : $("#chkitem"),
-		area : [ '600px' ],
-		btn :  [ '确定', '取消' ],
-		yes : function(index, layero) {
-			if (!checkitems()) {
-				return;// 校验没通过
-			}
-			var selecteditems = "";
-			$("input:checkbox[name='item']:checked").each(function(i) {
-					if (0 == i) {
-						selecteditems = $(this).val();
-					} else {
-						selecteditems += ("," + $(this).val());
-					}
-			});
-			items = selecteditems;
-			// 显示正在执行中
-			var loading = layer.load(0, {shade : [ 0.3, '#000' ]});
 
-			$('.checkbox a').empty();
-			var pingIp = $("#pingip").val();
-			var tracepathIp = $("#tracepathip").val();
-			var pingtime = $("#pingtime").val();
-			var tracetime = $("#tracepathtime").val();
-			var curltime = $("#curltime").val();
-			var speed = $("#qperf").val();
-			var latency = $("#qperftime").val();
-			var memory = $("#docker").val();
-			$.ajax({
-				url : ctx
-					+ "/cluster/excutetest?nodenames="
-					+ selectednode + "&items="
-					+ selecteditems + "&pingIp="
-					+ pingIp + "&pingtime=" + pingtime
-					+ "&tracepathIp=" + tracepathIp
-					+ "&tracetime=" + tracetime
-					+ "&curltime=" + curltime
-					+ "&speed=" + speed + "&latency="
-					+ latency + "&memory=" + memory,
-				success : function(data) {
-					var data = eval("(" + data + ")");
-					layer.closeAll("loading");
-					if (data.status == '200') {
-						//initDetail(data);
-						nodeInfos = data.nodeInfos;
-						if(data.nodeInfos[0].allpass){
-							var testHtmlSuccess = '<div class="progress-bar progress-bar-warning" role="progressbar"'
-											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-											 +'style="width: 15%;">'
-											 +'<span >部署完成</span>'
-											 +'</div>'
-											 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-											 +'style="width: 85%;">'
-											 +'<span>执行完成</span>'
-											 +'</div>';
-
-							$(obj).parents(".thisTr").find(".nodeProgress").empty().append(testHtmlSuccess);
-							$(obj).parents(".thisTr").find(".clusterTestOpr").children("a").empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
-						}else{
-							var testHtmlFailure = '<div class="progress-bar progress-bar-warning" role="progressbar"'
-								 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-								 +'style="width: 15%;">'
-								 +'<span >部署完成</span>'
-								 +'</div>'
-								 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-								 +' aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-								 +'style="width: 85%;">'
-								 +'<span>执行失败</span>'
-								 +'</div>';
-							$(obj).parents(".thisTr").find(".nodeProgress").empty().append(testHtmlFailure);
-							$(obj).parents(".thisTr").find(".clusterTestOpr").children("a").empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
-						}
-						layer.close(index);
-					} else {
-						layer.alert(data.msg,{icon: 2});
-					}
-				}
-			});
-		}
-	})
 }
 function initDetail(data) {
 	for (var i = 0; i < data.nodeInfos.length; i++) {
