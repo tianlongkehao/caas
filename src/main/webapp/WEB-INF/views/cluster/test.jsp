@@ -217,7 +217,7 @@
 								<td>
 									<input type="number" style="width: 80%"
 									value="10" class="number" min="1" autocomplete="off" max=""
-									placeholder="1" id="pingtime"
+									 id="pingtime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">ms</span>
 								</td>
@@ -231,7 +231,7 @@
 								<td>
 									<input style="width: 80%"
 									type="number" value="2" class="number" min="1"
-									autocomplete="off" max="" placeholder="1" id="tracepathtime"
+									autocomplete="off" max=""  id="tracepathtime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">s</span>
 								</td>
@@ -242,7 +242,7 @@
 								</th>
 								<td colspan="3" style="width: 80%">
 									<input type="number" style="width: 80%;" value="2" class="number"
-									min="1" autocomplete="off" max="" placeholder="1" id="curltime"
+									min="1" autocomplete="off" max=""  id="curltime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">s</span>
 								</td>
@@ -253,7 +253,7 @@
 								</th>
 								<td>
 									<input style="width: 80%" type="number" value="2000" class="number"
-											min="1" autocomplete="off" max="" placeholder="1" id="qperf"
+											min="1" autocomplete="off" max=""  id="qperf"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">MB</span>
 								</td>
@@ -261,7 +261,7 @@
 								<td>
 									<input style="width: 80%"
 										type="number" value="10" class="number" min="1"
-										autocomplete="off" max="" placeholder="1" id="qperftime"
+										autocomplete="off" max=""  id="qperftime"
 										onkeyup="this.value=this.value.replace(/\D/g,'')"
 										name="instanceNum"><span class="s-unit">ms</span>
 								</td>
@@ -272,7 +272,7 @@
 									</th>
 									<td colspan="3" style="width: 75%">
 										<input style="width: 80%" type="number" value="" class="number" min="1"
-											autocomplete="off" max="" placeholder="1" id="docker"
+											autocomplete="off" max="" id="docker"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
