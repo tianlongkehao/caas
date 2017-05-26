@@ -1,5 +1,7 @@
+var loading = "";
 $(document).ready(function () {
-	//loadRoute();
+	loading = layer.load(0, {shade: false});
+	loadRoute();
 	/*var nodeIP = $("#search_routeNode").val();
 	$('.dataTables-example').dataTable({
 	 	//"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ] }],
@@ -47,37 +49,54 @@ $(document).ready(function () {
 });
 
 
-///**
-// * 加载路由监控数据
-// */
-//function loadRoute() {
-//	var nodeIP = $("#search_routeNode").val();
-//	$.ajax({
-//		 url : ctx + "/cluster/getRouteTable.do?ip="+nodeIP,
-//		 type : "get",
-//		 success : function(data){
-//			 var data = eval("(" + data + ")");
-//			 var targetNum = data.items;
-//			 var htmlTr = "";
-//			 for(var i=0; i<targetNum.length; i++){
-//				 var targetIP = targetNum[i].targetIP;
-//				 var success = targetNum[i].success;
-//				 var successResult = "";
-//				 if(success){
-//					 successResult = "成功";
-//				 }else{
-//					 successResult = "失败";
-//				 }
-//				 htmlTr += '<tr>'+
-//								'<th>&nbsp;</th>'+
-//								'<th>'+targetIP+'</th>'+
-//								'<th>'+successResult+'</th>'+
-//							'</tr>';
-//			 }
-//			 $("#routeList").append(htmlTr);
-//		 }
-//	 });
-//}
+/**
+ * 加载路由监控数据
+ */
+function loadRoute() {
+	$.ajax({
+		 url : ctx + "/cluster/checkRoute.do",
+		 type : "get",
+		 success : function(data){
+			 layer.close(loading);
+			 var data = eval("(" + data + ")");
+			 var status = data.status;
+			 if(status == '200'){
+				 var nodeList = data.nodeList;
+				 var routeHtmlTr = "";
+				 for(var i=0; i<nodeList.length; i++){
+					 var nodeIp = nodeList[i].nodeIp;
+					 var nodeName = nodeList[i].nodeName;
+					 var problem = nodeList[i].problem;
+					 var problemHtml = "";
+					 if(problem == 'false'){
+						 problemHtml = "成功";
+					 }else if(problem == 'true'){
+						 problemHtml = "失败";
+					 }else if(problem == 'unknown'){
+						 problemHtml = "未知";
+					 }
+					 routeHtmlTr += '<tr>'
+						+'<td><input type="checkbox" class="chkItem" nodeIp="'+nodeIp+'" nodeName="'+nodeName+'"/></td>'
+						+'<td>'+nodeName+'（'+nodeIp+'）</td>'
+						+'<th>&nbsp;</th>'
+						+'<th>&nbsp;</th>'
+						+'<td>'+problemHtml+'</td>'
+						+'<td class="routeBtns">'
+						+'<a class="fa-caret" nodeIp="'+nodeIp+'" onclick="nodeTargetIPDetail(this)"><i class="fa fa-caret-right" flag="1">测试</i></a>'
+						+'<a onclick="recoverOneRoute(this)" nodeIp="'+nodeIp+'" nodeName="'+nodeName+'"><i>恢复</i></a>'
+						+'</td>'
+						+'</tr>';
+				 }
+				 $("#routeList").append(routeHtmlTr);
+				 $('.dataTables-example').dataTable({
+					    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,2,3,5] }],
+					    "aaSorting": [[ 1, "desc" ]]
+				 });
+				$("#checkallbox").parent().removeClass("sorting_asc");
+			 }
+		 }
+	 });
+}
 
 //function searchRouteNode(){
 //	$("#routeList").empty();
@@ -102,8 +121,9 @@ function nodeTargetIPDetail(obj){
 							+'<td>&nbsp;</td>'
 							+'<td>targetIP</td>'
 							+'<td>期望网关</td>'
-							+'<td >实际网关</td>'
-							+'<td colspan="2">结果</td>'
+							+'<td>实际网关</td>'
+							+'<td>结果</td>'
+							+'<td>&nbsp;</td>'
 							+'</tr>';;
 					 for(var i=0; i<targetNum.length; i++){
 						 var targetIP = targetNum[i].targetIP;
@@ -120,8 +140,9 @@ function nodeTargetIPDetail(obj){
 							+'<td>&nbsp;</td>'
 							+'<td>'+targetIP+'</td>'
 							+'<td>'+expectedGW+'</td>'
-							+'<td >'+realGW+'</td>'
-							+'<td colspan="2">'+successResult+'</td>'
+							+'<td>'+realGW+'</td>'
+							+'<td>'+successResult+'</td>'
+							+'<td>&nbsp;</td>'
 							+'</tr>';
 					 }
 					 thisobj.parent().parent().after(htmlTr);
@@ -163,46 +184,3 @@ function recoverOneRoute(obj){
 		}
 	})
 }
-//批量恢复
-function recoverRoutes(){
-	var checkNodes = $(".chkItem:checked");
-	var nodesData = new Array();
-	if(checkNodes.length == 0){
-		layer.tips('请选择至少一个集群节点','#checkallbox', {
-			tips : [ 1, '#3595CC' ]
-		});
-		$('#checkallbox').focus();
-		return;
-	}else{
-		for(var i = 0; i < checkNodes.length; i++){
-			var nodeIp = $(checkNodes[i]).attr("nodeIp");
-			var nodeName = $(checkNodes[i]).attr("nodeName");
-			var nodeInfo = {"name":nodeName, "ip":nodeIp};
-			nodesData.push(nodeInfo);
-		}
-		var nodeListString = {"nodeListString":JSON.stringify(nodesData)};
-		var loading = layer.load(0, {
-			shade : [ 0.3, '#000' ]
-		});
-		$.ajax({
-			url: ctx + "/cluster/recoverRoutetable.do",
-			type:"POST",
-			data:nodeListString,
-			success:function(data){
-				var data = eval('('+data+')');
-				layer.close(loading);
-				var status = data.status;
-				if(status == "200"){
-					layer.msg("恢复成功！",{icon : 1});
-				}else if(status == "300"){
-					layer.msg( data.messages+"恢复失败!",{icon : 2});
-				}else if(status == "400"){
-					layer.msg("恢复失败，链接异常！",{icon : 2});
-				}
-			}
-		})
-	}
-}
-
-
-

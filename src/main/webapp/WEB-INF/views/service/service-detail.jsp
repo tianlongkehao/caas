@@ -21,7 +21,7 @@
 <script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-slide.min.js"></script>
 <script type="text/javascript" src="<%=path%>/plugins/datetimepicker/js/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="<%=path%>/js/service/service-detail.js"></script>
-<script type="text/javascript" src="<%=path%>/js/service/service-file.js" defer ></script>
+<%-- <script type="text/javascript" src="<%=path%>/js/service/service-file.js" defer ></script> --%>
 <%-- <script type="text/javascript" src="<%=path%>/js/service/service-debug.js" defer ></script> --%>
 <%-- <script type="text/javascript" src="<%=path%>/js/service/service-cmd.js" defer ></script> --%>
 </head>
@@ -126,7 +126,7 @@
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podList}" var="pod" >
-								 		<li class="CMD"><a target="_blank" href="/service/cmd/${service.id }/${pod.metadata.name }" class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }"
+								 		<li class="CMD"><a target="_blank" href="<%=path%>/service/cmd/${service.id }/${pod.metadata.name }" class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }"
 								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.metadata.name }">${pod.metadata.name }</a></li>
 								 	</c:forEach>
 
@@ -138,7 +138,7 @@
 								</a>
 								<ul class="dropdown-menu">
 								 	<c:forEach items="${podList}" var="pod" >
-								 		<li class="File"><a target="_blank" href="/service/file/${service.id }/${pod.metadata.name }" class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }"
+								 		<li class="File"><a target="_blank" href="<%=path%>/service/file/${service.id }/${pod.metadata.name }" class="dropdown-pod" entryHost="${entryHost }" podName="${pod.metadata.name }" containerId="${pod.status.containerStatuses[0].containerID }" dockerServerURL="${pod.status.hostIP }" dockerServerPort="${dockerIOPort }"
 								 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.metadata.name }">${pod.metadata.name }</a></li>
 								 	</c:forEach>
 								</ul>
@@ -852,13 +852,5 @@
 			</div>
 		</article>
 	</div>
-
-	<!--进度条 -->
-	<div class="modal fade container" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 30%">
-		<div class="progress progress-striped active" id="loading" style="margin-top: 87%;">
-			<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;font-size:130%;"></div>
-		</div>
-	</div>
-
 </body>
 </html>

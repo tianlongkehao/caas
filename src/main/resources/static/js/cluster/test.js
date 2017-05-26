@@ -304,6 +304,27 @@ function testOneNode(obj){
 		success:function(data){
 			var data = eval("(" + data + ")");
 			var status = data.status;
+			if(status == '500'){
+				layer.msg(data.msg,{icon : 5});
+				return;
+			}
+
+			$("#pingitem").prop("checked",false);
+			$("#traceitem").prop("checked",false);
+			$("#curlitem").prop("checked",false);
+			$("#qperfitem").prop("checked",false);
+			$("#dockeritem").prop("checked",false);
+			$("#dnsitem").prop("checked",false);
+
+			$("#pingip").val("");
+			$("#tracepathip").val("");
+			$("#pingtime").val("");
+			$("#tracepathtime").val("");
+			$("#qperf").val("");
+			$("#qperftime").val("");
+			$("#curltime").val("");
+			$("#docker").val("");
+
 			if(status == '200'){
 				var nodetestresult = data.nodetestresult;
 				var pingitem = nodetestresult.ping;
@@ -341,6 +362,90 @@ function testOneNode(obj){
 					$("#docker").val(nodetestresult.memorytarget);
 				}
 			}
+			layer.open({
+				type : 1,
+				title : '检测项信息',
+				content : $("#chkitem"),
+				area : [ '600px' ],
+				btn :  [ '确定', '取消' ],
+				yes : function(index, layero) {
+					if (!checkitems()) {
+						return;// 校验没通过
+					}
+					var selecteditems = "";
+					$("input:checkbox[name='item']:checked").each(function(i) {
+							if (0 == i) {
+								selecteditems = $(this).val();
+							} else {
+								selecteditems += ("," + $(this).val());
+							}
+					});
+					items = selecteditems;
+					// 显示正在执行中
+					var loading = layer.load(0, {shade : [ 0.3, '#000' ]});
+
+					$('.checkbox a').empty();
+					var pingIp = $("#pingip").val();
+					var tracepathIp = $("#tracepathip").val();
+					var pingtime = $("#pingtime").val();
+					var tracetime = $("#tracepathtime").val();
+					var curltime = $("#curltime").val();
+					var speed = $("#qperf").val();
+					var latency = $("#qperftime").val();
+					var memory = $("#docker").val();
+					$.ajax({
+						url : ctx
+							+ "/cluster/excutetest?nodenames="
+							+ selectednode + "&items="
+							+ selecteditems + "&pingIp="
+							+ pingIp + "&pingtime=" + pingtime
+							+ "&tracepathIp=" + tracepathIp
+							+ "&tracetime=" + tracetime
+							+ "&curltime=" + curltime
+							+ "&speed=" + speed + "&latency="
+							+ latency + "&memory=" + memory,
+						success : function(data) {
+							var data = eval("(" + data + ")");
+							layer.closeAll("loading");
+							if (data.status == '200') {
+								//initDetail(data);
+								nodeInfos = data.nodeInfos;
+								if(data.nodeInfos[0].allpass){
+									var testHtmlSuccess = '<div class="progress-bar progress-bar-warning" role="progressbar"'
+													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+													 +'style="width: 15%;">'
+													 +'<span >部署完成</span>'
+													 +'</div>'
+													 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+													 +'style="width: 85%;">'
+													 +'<span>执行完成</span>'
+													 +'</div>';
+
+									$(obj).parents(".thisTr").find(".nodeProgress").empty().append(testHtmlSuccess);
+									$(obj).parents(".thisTr").find(".clusterTestOpr").children("a").empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
+								}else{
+									var testHtmlFailure = '<div class="progress-bar progress-bar-warning" role="progressbar"'
+										 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+										 +'style="width: 15%;">'
+										 +'<span >部署完成</span>'
+										 +'</div>'
+										 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+										 +' aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+										 +'style="width: 85%;">'
+										 +'<span>执行失败</span>'
+										 +'</div>';
+									$(obj).parents(".thisTr").find(".nodeProgress").empty().append(testHtmlFailure);
+									$(obj).parents(".thisTr").find(".clusterTestOpr").children("a").empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
+								}
+								layer.close(index);
+							} else {
+								layer.alert(data.msg,{icon: 2});
+							}
+						}
+					});
+				}
+			})
 		}
 	});
 	layer.open({
@@ -503,6 +608,14 @@ function checkitems() {
 			$('#pingip').focus();
 			return;
 		}
+		var pingtime = $("#pingtime").val();
+		if(pingtime == ''||pingtime<=0){
+			layer.tips('平均响应时间不能为空，且应是正数！', '#pingtime', {
+				tips : [ 1, '#0FA6D8' ]
+			});
+			$('#pingtime').focus();
+			return;
+		}
 	}
 	// 校验tracepathchk项的输入
 	if ($("input:checkbox[value='traceitem']").prop('checked')) {
@@ -522,6 +635,59 @@ function checkitems() {
 			$('#tracepathip').focus();
 			return;
 		}
+		var tracepathtime = $("#tracepathtime").val();
+		if(tracepathtime == ''||tracepathtime<=0){
+			layer.tips('平均响应时间不能为空，且应是正数！', '#tracepathtime', {
+				tips : [ 1, '#0FA6D8' ]
+			});
+			$('#tracepathtime').focus();
+			return;
+		}
+	}
+	// 校验tracepathchk项的输入
+	if ($("input:checkbox[value='qperfitem']").prop('checked')) {
+		var qperf = $("#qperf").val();
+		if(qperf == ''||qperf<=0){
+			layer.tips('qperf带宽不能为空，且应是正数！', '#qperf', {
+				tips : [ 1, '#0FA6D8' ]
+			});
+			$('#qperf').focus();
+			return;
+		}
+
+		var qperftime = $("#qperftime").val();
+		if(qperftime == ''||qperftime<=0){
+			layer.tips('延迟不能为空，且应是正数！', '#qperftime', {
+				tips : [ 1, '#0FA6D8' ]
+			});
+			$('#qperftime').focus();
+			return;
+		}
+	}
+	// 校验tracepathchk项的输入
+	if ($("input:checkbox[value='curlitem']").prop('checked')) {
+		var curltime = $("#curltime").val();
+		if(curltime == ''||curltime<=0){
+			layer.tips('curl响应时间不能为空，且应是正数！', '#curltime', {
+				tips : [ 1, '#0FA6D8' ]
+			});
+			$('#curltime').focus();
+			return;
+		}
+
+	}
+
+	// 校验tracepathchk项的输入
+	if ($("input:checkbox[value='dockeritem']").prop('checked')) {
+		var docker = $("#docker").val();
+		if(docker == ''||docker<=0){
+			layer.tips('docker磁盘大小不能为空，且应是正数！', '#docker', {
+				tips : [ 1, '#0FA6D8' ]
+			});
+			$('#docker').focus();
+			return;
+		}
+
 	}
 	return true;
 }

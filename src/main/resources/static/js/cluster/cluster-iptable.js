@@ -1,4 +1,6 @@
+var loading = "";
 $(document).ready(function () {
+	loading = layer.load(0, {shade: false});
 	showCompIptablesList();
 	//首次加载界面，若是admin登录，没选择租户时服务为disabled
 	var userAutority = $("#userAutority").val();
@@ -60,9 +62,9 @@ $(document).ready(function () {
 		$(".btnDanger").addClass("btn-default").removeClass("btn-danger");
 		var allServicesHtml = "";
 		for(var Key in allServices){
-			var externalAccess = problemServices[Key].externalAccess;
-			var internalAccess = problemServices[Key].internalAccess;
-			var others = problemServices[Key].others;
+			var externalAccess = allServices[Key].externalAccess;
+			var internalAccess = allServices[Key].internalAccess;
+			var others = allServices[Key].others;
 			var status = "";
 			if(externalAccess.length==0 && internalAccess.length ==0 && others.length == 0){
 				status ="成功";
@@ -868,6 +870,7 @@ function showCompIptablesList(){
 		url:ctx + "/cluster/checkIptables.do",
 		type:'get',
 		success:function(data){
+			layer.close(loading);
 			var data = eval('('+data+')');
 			if(data.status == '200'){
 				resultData = data.resultList;
@@ -877,9 +880,9 @@ function showCompIptablesList(){
 					var problem = resultData[i].problem;
 					var problemHtml = "";
 					if(problem == true){
-						problemHtml = "正常";
+						problemHtml = '正常';
 					}else{
-						problemHtml = "有问题";
+						problemHtml = '有问题<i class="fa fa-question" style="color:red;margin-left:8px;font-size:20px;"></i>';
 					}
 					tableHtml += '<tr>'
 									+'<td><input type="checkbox" class="chkItem" nodeName="'+nodeName+'"/></td>'
@@ -892,6 +895,11 @@ function showCompIptablesList(){
 									+'</tr>';
 				}
 				$("#compIptablesList").empty().append(tableHtml);
+				$('.dataTables-checkIptables').dataTable({
+				    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
+				    "aaSorting": [[ 1, "desc" ]]
+				});
+				$("#checkallbox").parent().removeClass("sorting_asc");
 			}
 		}
 	})
@@ -970,49 +978,6 @@ function recoverOneIptables(obj){
 			}
 		}
 	})
-}
-
-//批量恢复iptable
-function recoverIptables(){
-	var nodeData = new Array();
-	var checkIptable = $(".chkItem:checked");
-	if(checkIptable.length == 0){
-		layer.tips('请选择至少一个集群节点','#checkallbox', {
-			tips : [ 1, '#3595CC' ]
-		});
-		$('#checkallbox').focus();
-		return;
-	}else{
-		for(var i=0; i<checkIptable.length; i++){
-			nodeData.push($(checkIptable[i]).attr("nodeName"));
-		}
-		var nodeData = {"nodeNameListString":JSON.stringify(nodeData)};
-		$.ajax({
-			url:ctx + "/cluster/recoverIptables.do",
-			type:'post',
-			data:nodeData,
-			success:function(data){
-				var data = eval('('+data+')');
-				var status = data.status;
-				if(status == '200'){
-					layer.msg("恢复成功！",{icon : 1});
-				}else if(status == '300'){
-					layer.alert( "节点修复异常："+data.messages,{icon : 2});
-				}else if(status == '400'){
-					layer.alert( "查找对应ip失败："+data.messages,{icon : 2});
-				}else{
-					layer.alert( "恢复失败!",{icon : 2});
-				}
-			}
-		})
-	}
-	
-}
-
-//测试iptable
-function checkIptables(){
-	showCompIptablesList();
-	layer.msg('测试完成！');
 }
 
 

@@ -283,7 +283,7 @@
     });
 
     //分页插件中的时间格式的转换;
-    /* function calendarFormat(data){
+     function calendarFormat(data){
     	 var date = new Date(data);
          var y = date.getFullYear();
          var m = date.getMonth() + 1;
@@ -297,7 +297,7 @@
          var second=date.getSeconds();
          second=second < 10 ? ('0' + second) : second;
          return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second; s
-    } */
+    }
 
 
 

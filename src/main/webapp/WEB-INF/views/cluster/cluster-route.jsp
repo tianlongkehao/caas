@@ -34,7 +34,6 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>路由监控
 									</h5>
 									<div class="ibox-tools">
-										<a onclick="recoverRoutes()" title="恢复"><i>恢复</i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>
@@ -55,13 +54,15 @@
 								<thead>
 									<tr>
 										<th><input type="checkbox" class="chkAll" id="checkallbox" /></th>
-										<th colspan="3">集群节点</th>
+										<th style="width:40%">集群节点</th>
+										<th style="width:15%">&nbsp;</th>
+										<th style="width:15%">&nbsp;</th>
 										<th>是否成功</th>
 										<th>操作</th>
 									</tr>
 								</thead>
 								<tbody id="routeList">
-									<c:forEach items="${nodeList }" var="nodeList">
+									<%-- <c:forEach items="${nodeList }" var="nodeList">
 										<tr>
 											<td><input type="checkbox" class="chkItem" nodeIp="${nodeList.nodeIp }" nodeName="${nodeList.nodeName }"/></td>
 											<td colspan="3">${nodeList.nodeName }（${nodeList.nodeIp }）</td>
@@ -79,7 +80,7 @@
 												<a onclick="recoverOneRoute(this)" nodeIp="${nodeList.nodeIp }" nodeName="${nodeList.nodeName }"><i>恢复</i></a>
 											</td>
 										</tr>
-									</c:forEach>
+									</c:forEach> --%>
 								</tbody>
 							</table>
 						</div>
@@ -88,14 +89,6 @@
 			</div>
     </article>
 </div>
-<script type="text/javascript">
-	$('.dataTables-example').dataTable({
-	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
-	    "searching":false
-	    //"aaSorting": [[ 2, "desc" ]]
-	}); 
-	$("#checkallbox").parent().removeClass("sorting_asc");
-</script>
 
 </body>
 </html>
