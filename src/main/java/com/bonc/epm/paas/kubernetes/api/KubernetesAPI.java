@@ -37,6 +37,7 @@ import com.bonc.epm.paas.kubernetes.model.ConfigMap;
 import com.bonc.epm.paas.kubernetes.model.ConfigMapList;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.EndpointsList;
+import com.bonc.epm.paas.kubernetes.model.EventList;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
@@ -684,5 +685,22 @@ public interface KubernetesAPI {
     @Path("/nodes/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Node updateSpecifiedNode(@PathParam("name") String name,Node node) throws KubernetesClientException;
+
+	/**
+	 * getFieldSelectorEvents:根据fieldSelector获取对应的Events. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param namespace
+	 * @param fieldSelector
+	 * @return
+	 * @throws KubernetesClientException
+	 *             PodList
+	 */
+	@GET
+	@Path("/namespaces/{namespace}/events")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public EventList getFieldSelectorEvents(@PathParam("namespace") String namespace,
+			@QueryParam("fieldSelector") String fieldSelector) throws KubernetesClientException;
 
 }
