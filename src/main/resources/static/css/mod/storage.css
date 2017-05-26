@@ -754,3 +754,215 @@ span.i {
 .volNumber{
 	padding-top: 14px;
 }
+/* storage-quick.jsp */
+.q-storage{
+	width: 80%;
+	float:left;
+}
+.s-edit-name{
+	width:18%;
+	float:left;
+	line-height:34px;
+	dispaly:inline-block;
+}
+i.fa-toggle-onORoff{
+	background:url(../../images/off_on.png) no-repeat;
+	width:56px;
+	height: 22px;
+	margin-top: 6px;
+    float: left;
+}
+i.fa-on{
+	background-position: 2px -23px;
+}
+i.fa-off{
+	background-position: 2px 0px;
+}
+.toggle-text{
+	line-height:35px;
+}
+#storage-mark{
+	margin-top:10px;
+}
+#updatedefVol{
+	width: 80px;
+    font-size: 8px;
+    height: 25px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+.fa-opr{
+	float:left;
+	line-height:40px;
+	margin-left:6px;
+}
+.createTimeInfo{
+	width: 358px;
+    height: 110px;
+    float: right;
+    padding-top:6px;
+}
+.createTimeInfo li,.repeatDateInfo li{
+	float:left;
+	margin-right:8px;
+}
+.repeatDateInfo,.retainTimeInfo,.releaseStorageInfo{
+	width: 358px;
+    height: 40px;
+    float: right;
+    padding-top:6px;
+}
+.retainTimeInput{
+	width:50px;
+	border-radius:4px;
+}
+.storageUnit{
+	line-height:40px;
+	height:40px;
+	position:absolute;
+	right:48px;
+}
+ul.dropdown-menu li{
+	cursor:pointer;
+}
+a{
+	cursor:pointer;
+}
+.setTab {
+    width: 100%;
+    height: 45px;
+    background: #EFF4F5;
+    line-height: 45px;
+}
+
+.setTab a {
+    text-align: center;
+    color: #666;
+    cursor: pointer;
+}
+
+.setTab a.Record {
+    width: 110px;
+    height: 100%;
+    display: inline-block;
+}
+
+.setTab a.active {
+    font-weight: 500;
+    border-bottom: 1px solid #B8C4CE;
+    background: #e4ebee;
+}
+
+.account_table {
+    background: #fff;
+    min-height: calc(100% - 130px);
+}
+/* quickDetail */
+.center-style {
+    width: 98%;
+    margin: 0px auto;
+    margin-bottom:20px;
+}
+.baseInfo .navbar-nav li a {
+    padding-top: 20px;
+    padding-bottom: 18px;
+}
+.contentMain .baseInfo {
+    height: 60px;
+    line-height: 60px;
+    border: 1px solid #DDDDDD;
+    background: #fff;
+    border-radius: 4px;
+    /* overflow: hidden; */
+}
+
+.contentMain .baseInfo a {
+    width: 110px;
+    text-align: center;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.containerInfo {
+    overflow: hidden;
+    width: 98%;
+    margin-left: 1%;
+    min-height: 200px;
+    background: #fff;
+    margin-bottom: 40px;
+}
+
+.table {
+    margin: 0px;
+    background: #fff;
+}
+
+.containerInstances table thead,
+.containerInfo .table thead {
+    background: #e4eaec;
+}
+
+.containerInfo .table tr,
+.containerInstances .table tr {
+    text-indent: 10px;
+}
+
+table.w50 thead tr th {
+    border: 1px solid #e4eaec;
+}
+
+.table .BORDER td {
+    border: 1px solid #eee;
+}
+
+.contentMain table.w50 td {
+    width: 50%;
+}
+
+.containerInstances {
+    overflow: hidden;
+    width: 98%;
+    margin-left: 1%;
+}
+/* storage-snap-strategy */
+.s-first-li{
+	width:20%;
+	float:left;
+}
+.s-second-li{
+	width:78%;
+	float:left;
+}
+#notSet,#haveSet{
+	padding:20px 10px;
+}
+.dataTables-notset tr{
+	border-bottom:1px solid #ddd;
+}
+.textBtn{
+	color:#e8504f;
+}
+.navTab{
+	height: 42px;
+    line-height: 42px;
+    margin-top:4px;
+}
+.navTab>li>a {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+}
+.navTab>li.active>a{
+    color:#e8504f!important;
+}
+
+
+
+
+
+
+
+
+
+
+

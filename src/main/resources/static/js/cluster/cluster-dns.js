@@ -106,8 +106,9 @@ function checkDns(serviceName,address){
 		return;
 	}
 	var checkAddress =/^((?:2[0-5]{2}|1\d{2}|[1-9]\d|[1-9])\.(?:(?:2[0-5]{2}|1\d{2}|[1-9]\d|\d)\.){2}(?:2[0-5]{2}|1\d{2}|[1-9]\d|\d)):(\d|[1-9]\d|[1-9]\d{2,3}|[1-5]\d{4}|6[0-4]\d{3}|654\d{2}|655[0-2]\d|6553[0-5])$/;
-	if (!checkAddress.test(address)) {
-		layer.tips('域名就是 网址+端口，例如:192.168.0.1:8080！', '#address', {
+	var checkAddr = /[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?/;
+	if (checkAddress.test(address)==false && checkAddr.test(address)==false) {
+		layer.tips('域名就是 网址+端口，例如:clyxys.bonc.com:50或者192.168.0.1:8080！', '#address', {
 			tips : [1, '#3595CC']
 		});
 		$('#address').focus();

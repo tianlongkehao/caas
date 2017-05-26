@@ -68,9 +68,9 @@ public class ResourceService {
 				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
 				leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
 
-				leftmemory = Math.round(Math.ceil(leftmemory / 1024.0));
+				leftmemory = Math.round(Math.ceil(leftmemory / 1000.0));
 
-				long serviceMemory = Math.round(Math.ceil(Double.parseDouble(ram)/1024.0));
+				long serviceMemory = Math.round(Math.ceil(Double.parseDouble(ram)/1000.0));
 
 
 				if (leftCpu - cpu < REST_RESOURCE_CPU) {

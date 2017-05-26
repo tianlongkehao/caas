@@ -11,6 +11,8 @@ import com.bonc.epm.paas.kubernetes.model.ConfigMap;
 import com.bonc.epm.paas.kubernetes.model.ConfigMapList;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.EndpointsList;
+import com.bonc.epm.paas.kubernetes.model.EventList;
+import com.bonc.epm.paas.kubernetes.model.Kind;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
@@ -553,6 +555,36 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         } catch (WebApplicationException e) {
             throw new KubernetesClientException(e);
         }
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface#getReplicationControllerEvents()
+	 */
+	@Override
+	public EventList getReplicationControllerEvents(String name) throws KubernetesClientException {
+		String fieldSelector = "involvedObject.kind=" + Kind.REPLICATIONCONTROLLER + ",involvedObject.name=" + name;
+		try {
+			return api.getFieldSelectorEvents(namespace, fieldSelector);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface#getPodEvents()
+	 */
+	@Override
+	public EventList getPodEvents(String name) throws KubernetesClientException {
+		String fieldSelector = "involvedObject.kind=" + Kind.POD + ",involvedObject.name=" + name;
+		try {
+			return api.getFieldSelectorEvents(namespace, fieldSelector);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
 	}
 
 }

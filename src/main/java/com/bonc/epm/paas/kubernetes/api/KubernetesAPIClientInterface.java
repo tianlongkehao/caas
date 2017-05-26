@@ -28,6 +28,7 @@ import com.bonc.epm.paas.kubernetes.model.ConfigMap;
 import com.bonc.epm.paas.kubernetes.model.ConfigMapList;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.EndpointsList;
+import com.bonc.epm.paas.kubernetes.model.EventList;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
@@ -569,7 +570,27 @@ public interface KubernetesAPIClientInterface {
 	 * @param node
 	 * @throws KubernetesClientException
 	 */
-    public Node updateNode(String name,Node node) throws KubernetesClientException;
+	public Node updateNode(String name, Node node) throws KubernetesClientException;
 
-    public PodList getPods() throws KubernetesClientException;
+	public PodList getPods() throws KubernetesClientException;
+
+	/**
+	 * getReplicationControllerEvents:获取指定rc的events. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param name
+	 * @return
+	 * @throws KubernetesClientException EventList
+	 */
+	public EventList getReplicationControllerEvents(String name) throws KubernetesClientException;
+
+	/**
+	 * getPodEvents:获取指定pod的events. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param name
+	 * @return
+	 * @throws KubernetesClientException EventList
+	 */
+	public EventList getPodEvents(String name) throws KubernetesClientException;
 }

@@ -5,7 +5,6 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/bcm-menu.css">
     <script type="text/javascript" src="<%=path %>/js/customer/bcm-menu.js" defer ></script>
-
     <title>BCM</title>
 </head>
 <body>
@@ -112,7 +111,7 @@
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_service"><a class="J_menuItem" href="<%=path %>/service"><i class="fa fa_circle"></i>服务管理</a></li>
-						<li id="li_storage"><a class="J_menuItem" href="<%=path %>/service/storage"><i class="fa fa_circle"></i>存储与备份</a></li>
+						<%-- <li id="li_storage"><a class="J_menuItem" href="<%=path %>/service/storage"><i class="fa fa_circle"></i>存储与备份</a></li> --%>
 						<li id="li_import"><a class="J_menuItem" href="<%=path %>/service/import"><i class="fa fa_circle"></i>引入外部服务</a></li>
 					</ul></li>
 				<li id="menu_ci"><a href="#" class="first-a">
@@ -209,6 +208,18 @@
 						<li id="li_logCommon"><a class="J_menuItem" href="<%=path %>/logCommon"><i class="fa fa_circle"></i>通用操作日志</a></li>
 					</ul></li>
 				</c:if>
+				<li id="menu_storage"><a href="#" class="first-a">
+					<i class="fa-nav fa-nav-storage"></i>
+					<span class="nav-label">云存储</span>
+				</a>
+					<ul class="nav nav-second-level">
+						<li id="li_storageFile"><a class="J_menuItem" href="<%=path %>/storage/storageFile"><i class="fa fa_circle"></i>文件存储</a></li>
+						<li id="li_storageBlock"><a class="J_menuItem" href="<%=path %>/storage/storageBlock"><i class="fa fa_circle"></i>块存储</a></li>
+						<li id="li_storageObj"><a class="J_menuItem" href="<%=path %>/storage/storageObj"><i class="fa fa_circle"></i>对象存储</a></li>
+						<li id="li_storageSnap"><a class="J_menuItem" href="<%=path %>/storage/storageSnap"><i class="fa fa_circle"></i>快照</a></li>
+						<li id="li_snapStrategy"><a class="J_menuItem" href="<%=path %>/storage/snapStrategy"><i class="fa fa_circle"></i>快照策略</a></li>
+					</ul>
+				</li>
 				<%-- <li id="menu_product"><a href="<%=path %>/product/help" target="_blank"> <img alt="image" class="tit-image"
 						src="<%=path%>/images/help-red.png"
 						style="width: 14px; margin-left: 3px;" /> <span class="nav-label">帮助文档</span>
@@ -232,7 +243,8 @@
 	<nav class="navbar-downSide" ></nav>
 	<div class="sideBoxBtn sideBoxBtnShow" onclick="navShow()"><i class="fa fa-step-forward"></i><div class="btn-background"></div></div>
 </div>
-
+<script type="text/javascript" src="<%=path %>/js/customer/bcm-menu.js"></script>
+<script type="text/javascript" src="<%=path %>/plugins/nicescroll/jquery.nicescroll.js"></script>
 
 </body>
 
@@ -271,7 +283,7 @@
     });
 
     //分页插件中的时间格式的转换;
-    function calendarFormat(data){
+     function calendarFormat(data){
     	 var date = new Date(data);
          var y = date.getFullYear();
          var m = date.getMonth() + 1;
