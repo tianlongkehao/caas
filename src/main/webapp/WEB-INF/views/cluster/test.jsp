@@ -211,7 +211,7 @@
 									<input name="item" class="checkItem" type="checkbox" value="pingitem" id="pingitem">&nbsp;ping地址：
 								</th>
 								<td>
-									<input type="text" id="pingip" placeholder="主机IP" value="192.168.0.75" />
+									<input type="text" id="pingip" placeholder="主机IP" value="" />
 								</td>
 								<th style="width: 20%">平均响应时间：</th>
 								<td>
@@ -225,7 +225,7 @@
 							<tr>
 								<th style="width: 20%"><input name="item" class="checkItem" type="checkbox" value="traceitem" id="traceitem">&nbsp;trace地址：</th>
 								<td>
-									<input type="text" id="tracepathip" placeholder="主机IP" value="192.168.0.75" />
+									<input type="text" id="tracepathip" placeholder="主机IP" value="" />
 								</td>
 								<th style="width: 20%">平均响应时间：</th>
 								<td>
@@ -271,7 +271,7 @@
 										<input name="item" class="checkItem" type="checkbox" value="dockeritem" id="dockeritem">&nbsp;docker磁盘大小：
 									</th>
 									<td colspan="3" style="width: 75%">
-										<input style="width: 80%" type="number" value="15" class="number" min="1"
+										<input style="width: 80%" type="number" value="" class="number" min="1"
 											autocomplete="off" max="" placeholder="1" id="docker"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">GB</span>

@@ -613,7 +613,7 @@ $(document).ready(function() {
 
 	// 批量 清除部署
 	$("#deleteBtn").click(function() {
-		var selectednodes = "";
+		/*var selectednodes = "";
 		$("input:checkbox[name='node']:checked").each(function(i) {
 			if (0 == i) {
 				selectednodes = $(this).val();
@@ -627,14 +627,15 @@ $(document).ready(function() {
 			});
 			$('#checkallbox').focus();
 			return;
-		}
+		}*/
 		$('.checkbox a').empty();
 		var index = layer.load(0, {
 			shade : [ 0.3, '#000' ]
 		});
 
 		$.ajax({
-			url : ctx + "/cluster/clearspecifiedpod?nodenames=" + selectednodes,
+			//url : ctx + "/cluster/clearspecifiedpod?nodenames=" + selectednodes,
+			url : ctx + "/cluster/deployclear",
 			success : function(data) {
 				var data = eval("(" + data + ")");
 				layer.closeAll("loading");
