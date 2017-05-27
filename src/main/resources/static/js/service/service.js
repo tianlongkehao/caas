@@ -144,7 +144,7 @@ function loadContainers(obj, serviceId) {
 					var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide" : "hide";
 					containersHtml += '<tr class="tr-row" serviceidcon="' + serviceID + '">' + '<td colspan="2">&nbsp;</td>' + '<td>';
 					containersHtml += '<span style="margin-left: 19px;">';
-					containersHtml += containerName + '</span>' + '</td>' + '<td colspan="2"><a class="link" onclick="onePodEvent('+podName+')"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></a></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
+					containersHtml += containerName + '</span>' + '</td>' + '<td colspan="2"><a class="link" onclick="onePodEvent(this)" podName="'+podName+'"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></a></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
 				}
 				$(obj).after(containersHtml);
 
