@@ -16,6 +16,26 @@ public class ServiceCephRbd {
 
 	private long serviceId;
 
+	private String servicename;
+
+	private String rbdname;
+
+	public String getServicename() {
+		return servicename;
+	}
+
+	public void setServicename(String servicename) {
+		this.servicename = servicename;
+	}
+
+	public String getRbdname() {
+		return rbdname;
+	}
+
+	public void setRbdname(String rbdname) {
+		this.rbdname = rbdname;
+	}
+
 	public long getId() {
 		return id;
 	}

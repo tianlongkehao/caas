@@ -12,9 +12,13 @@ public interface CephSnapDao extends CrudRepository<CephSnap, Long>{
 
 	public List<CephSnap> findByImgname(String imgname);
 
+	public List<CephSnap> findByPool(String pool);
+
 	public void deleteByName(String name);
 
 	public void deleteByImgname(String imgname);
 
 	public void deleteByNameAndImgname(String name,String imgname);
+
+
 }

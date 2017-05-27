@@ -22,11 +22,21 @@ public class CephSnap {
 
 	private String snapdetail;
 
+	private String pool;
+
 	/**
 	 * 创建时间
 	 */
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
+
+	public String getPool() {
+		return pool;
+	}
+
+	public void setPool(String pool) {
+		this.pool = pool;
+	}
 
 	public long getId() {
 		return id;

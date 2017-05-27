@@ -14,12 +14,12 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.elasticsearch.index.engine.Engine.Create;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,10 +29,12 @@ import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.CephRbdInfoDao;
 import com.bonc.epm.paas.dao.CephSnapDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
+import com.bonc.epm.paas.dao.ServiceRbdDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.ceph.CephRbdInfo;
 import com.bonc.epm.paas.entity.ceph.CephSnap;
+import com.bonc.epm.paas.entity.ceph.ServiceCephRbd;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.FileUtils;
 import com.ceph.fs.CephMount;
@@ -119,6 +121,12 @@ public class CephController {
 	 */
 	@Autowired
 	private CephSnapDao cephSnapDao;
+
+	/**
+	 * 快照与服务关联持久化接口
+	 */
+	@Autowired
+	private ServiceRbdDao serviceRbdDao;
 
 	/**
 	 * connectCephFS
@@ -643,6 +651,7 @@ public class CephController {
 		CephSnap snap = new CephSnap();
 		snap.setImgname(imgname);
 		snap.setName(snapname);
+		snap.setPool(CurrentUserUtils.getInstance().getUser().getNamespace());
 		snap.setSnapdetail(snapdetail);
 		snap.setCreateDate(new Date());
 		return snap;
@@ -1069,6 +1078,44 @@ public class CephController {
 	}
 
 	/**
+	 * 快照是否可以回滚（判断是否有实例在使用块设备）
+	 *
+	 * @param imgname
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/snapability" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String canRollBack(String imgname){
+		Map<String, String> map = new HashMap<>();
+		String msg ="";
+		map.put("status", "200");
+		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPoolAndName(CurrentUserUtils.getInstance().getUser().getNamespace(), imgname);
+
+		if(CollectionUtils.isEmpty(cephRbdInfos)){
+			msg = "找不到块设备: "+imgname+"!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		long rbdId = cephRbdInfos.get(0).getId();
+        List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(rbdId);
+        if(CollectionUtils.isEmpty(cephRbdInfos)){
+			return JSON.toJSONString(map);
+        }
+
+        if(!cephRbdInfos.get(0).isUsed()){
+        	return JSON.toJSONString(map);
+        }else{
+        	msg = "服务: "+serviceCephRbds.get(0).getServicename()+"正在使用磁盘: "+imgname+","
+        			+"请先停止服务，再进行回滚操作，回滚成功后，重启服务生效！";
+			map.put("msg", msg);
+        	map.put("status", "500");
+			return JSON.toJSONString(map);
+        }
+	}
+
+	/**
 	 *
 	 * 文件转byte[]
 	 *
@@ -1157,5 +1204,39 @@ public class CephController {
 
 	public String getCephDir() {
 		return CEPH_DIR;
+	}
+
+	/**
+	 * 块存储主页面
+	 *
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = { "storage/storageBlock" }, method = RequestMethod.GET)
+	public String storageQuick(Model model) {
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPool(namespace);
+
+		model.addAttribute("cephRbdInfos", cephRbdInfos);
+		model.addAttribute("menu_flag", "storage");
+		model.addAttribute("li_flag", "storageBlock");
+		return "storage/storage-block.jsp";
+	}
+
+	/**
+	 * 快照主页面
+	 *
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = { "storage/storageSnap" }, method = RequestMethod.GET)
+	public String storageSnap(Model model) {
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		List<CephSnap> cephSnaps = cephSnapDao.findByPool(namespace);
+
+		model.addAttribute("cephSnaps", cephSnaps);
+		model.addAttribute("menu_flag", "storage");
+		model.addAttribute("li_flag", "storageSnap");
+		return "storage/storage-snap.jsp";
 	}
 }

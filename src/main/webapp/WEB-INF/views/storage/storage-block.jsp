@@ -51,43 +51,46 @@
 													type="checkbox" autocomplete="off" class="chkAll"
 													id="checkallbox" /></th>
 												<th>磁盘名称/磁盘ID</th>
-	                                            <th>磁盘大小</th>
+	                                            <th>磁盘大小(G)</th>
 	                                            <th>磁盘状态</th>
-	                                            <th>可卸载</th>
-	                                            <th>磁盘属性</th>
 	                                            <th>描述</th>
 	                                            <th class="item-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="storageList">
+										   <c:forEach items="${cephRbdInfos}" var="rbd">
 											<tr>
 												<td text-indent: 30px;"><input
 													type="checkbox" autocomplete="off" class="chkAll"
 													id="checkallbox" /></td>
-												<td><span class="storageName"><a href="<%=path %>/storage/storage-quickDetail">adbde-dffds</a></span></td>
-	                                            <td>5G</td>
-	                                            <td>待挂载</td>
-	                                            <td>支持</td>
-	                                            <td>数据盘</td>
-	                                            <td>测试</td>
-	                                            <td class="item-operation">
-	                                            	<a onclick="createSnapshoot()"><i class="fa fa-camera fa-opr" title="创建快照" style="margin-left:0px"></i></a>
-	                                            	<a onclick="createStrategy()"><i class="fa fa-tasks fa-opr" title="设置自动快照策略"></i></a>
-	                                            	<a onclick="formatStrategy()"><i class="fa fa-eraser fa-opr" title="重新初始化磁盘"></i></a>
+												<td><span class="storageName">${rbd.name }</span></td>
+	                                            <td>${rbd.size }</td>
+	                                            <c:if test="${rbd.used ==true}">
+	                                                <td>已挂载</td>
+	                                            </c:if>
+	                                            <c:if test="${rbd.used ==false}">
+	                                                <td>未挂载</td>
+	                                            </c:if>
+	                                            <td>${rbd.detail }</td>
+	                                            <td class="item-operation" rbd="${rbd.name }">
+	                                            	<a onclick="createSnapshoot(this)"><i class="fa fa-camera fa-opr" title="创建快照" style="margin-left:0px"></i></a>
+	                                            	<a onclick="createStrategy(this)"><i class="fa fa-tasks fa-opr" title="设置自动快照策略"></i></a>
+	                                            	<a onclick="formatStrategy(this)"><i class="fa fa-eraser fa-opr" title="重新初始化磁盘"></i></a>
 	                                            	<ul class="moreFun" style="margin-bottom:0px;line-height:40px;">
 														<li class="dropdown ">
 															<a class="dropdown-toggle a-live" data-toggle="dropdown">
 															<i class="fa fa-gears fa-opr"></i></a>
 															<ul class="dropdown-menu" style="margin-left:-20px;margin-top:40px">
-																<li onclick="releaseStorage()"><a>释放</a></li>
-																<li onclick="changeDescribe()"><a>修改磁盘描述</a></li>
-																<li onclick="changeProperty()"><a>修改属性</a></li>
-																<li onclick="changeStorageSize()"><a>磁盘扩容</a></li>
+																<li onclick="releaseStorage(this)"><a>释放</a></li>
+																<li onclick="changeDescribe(this)"><a>修改磁盘描述</a></li>
+																<li onclick="changeProperty(this)"><a>修改属性</a></li>
+																<li onclick="changeStorageSize(this)"><a>磁盘扩容</a></li>
 															</ul>
 														</li>
 													</ul>
 	                                            </td>
 											</tr>
+											</c:forEach>
 										</tbody>
 										<tfoot class="hide">
 											<tr>
@@ -127,18 +130,6 @@
             </div>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">可卸载：</span>
-            <span><i class="fa fa-toggle-onORoff fa-on" id="unloadBtn" value="1"></i><span class="toggle-text">支持</span></span>
-        </li>
-        <li class="line-h-3">
-            <span class="s-edit-name">磁盘属性：</span>
-            <select id="disktype" class="form-control q-storage">
-            	<option value="0">--请选择磁盘属性--</option>
-            	<option value="1">数据盘</option>
-            	<option value="2">系统盘</option>
-            </select>
-        </li>
-        <li class="line-h-3">
             <span class="s-edit-name">磁盘描述：</span>
             <textarea type="text" row="3" class="form-control q-storage" id="storage-mark"></textarea>
         </li>
@@ -160,7 +151,6 @@
             <span class="s-edit-name">释放行为：</span>
             <ul class="releaseStorageInfo">
             	<li><label><input type="checkbox">磁盘随实例释放</label></li>
-            	<li><label><input type="checkbox">自动快照随磁盘释放</label></li>
             </ul>
         </li>
     </ul>
@@ -170,7 +160,7 @@
     <ul class="popWin">
         <li class="line-h-3">
             <span class="s-edit-name">磁盘名称：<font color="red">*</font></span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="">
+            <input id="q-storageName" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">磁盘描述：<font color="red">*</font></span>
@@ -186,16 +176,12 @@
             <input id="q-storageName" class="form-control q-storage" type="text" value="sdgg" disabled>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">磁盘ID：</span>
-            <input id="q-storageID" class="form-control q-storage" type="text" value="1234" disabled>
-        </li>
-        <li class="line-h-3">
-            <span class="s-edit-name">磁盘属性：</span>
-            <input id="q-storagePro" class="form-control q-storage" type="text" value="系统盘" disabled>
-        </li>
-        <li class="line-h-3">
             <span class="s-edit-name">快照名称：<font color="red">*</font></span>
             <input id="snapshootName" class="form-control q-storage" type="text" value="">
+        </li>
+        <li class="line-h-3">
+            <span class="s-edit-name">快照描述：<font color="red">*</font></span>
+            <textarea type="text" row="3" class="form-control q-storage" id="snap-mark"></textarea>
         </li>
     </ul>
 </div>

@@ -1,5 +1,5 @@
 $(function(){
-	loadStorageList();
+	//loadStorageList();
 	$("#storageQuickAdd").click(function(){
 		layer.open({
 			type:1,
@@ -32,49 +32,45 @@ $(function(){
 					alert("剩余磁盘空间不足，请重新分配磁盘大小！");
 					return;
 				}
-				var unload = $("#unloadBtn").val();
-				var disktype=$("#disktype").val();
-				if(disktype==0){
-					alert("请选择磁盘属性！");
-					return;
-				}
+
 				var distdetail= $("#storage-mark").html();
 
-                                    $.ajax({
-                					url:""+ctx+"/ceph/createcephrbd?imgname="+blockname+"&disksize="+disksize+"&unload="+unload
-                					     +"&disktype="+disktype+"&distdetail="+distdetail,
-                					type:"get",
-                					success:function(data){
-
-                					}
-                				});
+				layer.close(index);
 				//先检查磁盘名称是否存在，然后新建
-				/*$.ajax({
+				$.ajax({
 					url:""+ctx+"/ceph/checkrbd?imgname="+blockname,
 					type:"get",
 					success:function(data){
                          var data = eval("("+data+")");
-                        if(data.status==500){
+                        if(data.status=='500'){
                         	alert("ceph异常！")
                         	return;
                         }
-                        if(data.status==200){
+                        if(data.status=='200'){
                         	if(data.exist==1){
                         		alert("磁盘名称重复，请重命名！")
                         		return;
                         	}else{
                         		$.ajax({
-                					url:""+ctx+"/service/createcephrbd?imgname="+blockname+"&disksize="+disksize+"&unload="+unload
-                					     +"&disktype="+disktype+"&distdetail="+distdetail,
+                					url:""+ctx+"/service/createcephrbd?imgname="+blockname+"&disksize="+disksize
+                					     +"&distdetail="+distdetail,
                 					type:"get",
                 					success:function(data){
-
+                						var data = eval("("+data+")");
+                						if(data.status=='500'){
+                							layer.msg("磁盘创建失败！",{icon : 5});
+                						}
+                						if(data.status=='200'){
+                							layer.msg("磁盘创建成功！",{icon: 6});
+                							refresh();
+                						}
+                						return;
                 					}
                 				});
                         	}
                         }
 					}
-				});*/
+				});
 
 				}
 		})
@@ -98,23 +94,9 @@ $(function(){
         $(".contentMain>div:not('.baseInfo')").addClass("hide");
         $(".containerInstances").removeClass("hide");
     });
-	//是否支持卸载 按钮  1支持2不支持
-	$("#unloadBtn").click(function(){
-		var $this = $(this);
-		var unloadVal =  $this.attr("value");
-		if(unloadVal == 1){
-			$this.removeClass("fa-on").addClass("fa-off");
-			$this.next().empty().html("不支持");
-			$this.attr("value","2");
-		}else{
-			$this.removeClass("fa-off").addClass("fa-on");
-			$this.next().empty().html("支持");
-			$this.attr("value","1");
-		}
-	});
 })
 
-function loadStorageList(){
+/*function loadStorageList(){
 	$.ajax({
 		url:""+ctx+"/service/storageList",
 		type:"post",
@@ -161,7 +143,8 @@ function loadStorageList(){
 		$("#checkallbox").parent().removeClass("sorting_asc");
 		}
 	});
-}
+}*/
+
 //释放
 function releaseStorage(obj){
 	layer.open({
@@ -208,7 +191,14 @@ function changeDescribe(){
 				}
 	})
 }
-function createSnapshoot(){
+
+//创建快照
+function createSnapshoot(obj){
+	var rbdname = $(obj).parent().attr("rbd");
+	if(rbdname ==''){
+		layer.msg("未获取到块设备名称！",{icon : 5});
+		return;
+	}
 	layer.open({
 		type:1,
 			title: '创建快照',
@@ -216,6 +206,26 @@ function createSnapshoot(){
 			content: $("#createSnapshoot"),
 			btn: ['确定', '取消'],
 			yes: function(index, layero){
+				var snapname = $("#snapshootName").val();
+				var detail = $("#snap-mark").html();
+				if(snapname ==''){
+					layer.msg("快照名称不能为空！",{icon : 5});
+					return;
+				}
+				layer.close(index);
+				$.ajax({
+ 					url:""+ctx+"/ceph/createsnap?imgname="+rbdname+"&snapname="+snapname+"&snapdetail="+detail,
+ 					type:"get",
+ 					success:function(data){
+ 						var data = eval("(" + data + ")");
+ 						if(data.status =='500'){
+ 							layer.msg("快照名称创建失败！",{icon : 5});
+ 						}else{
+ 							layer.msg("快照名称创建成功！",{icon : 6});
+ 						}
+ 						return;
+ 					}
+ 				});
 
 				}
 	})

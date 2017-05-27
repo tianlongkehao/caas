@@ -14,6 +14,8 @@ public interface CephRbdInfoDao extends CrudRepository<CephRbdInfo, Long>{
 
 	public List<CephRbdInfo> findByName(String name);
 
+	public List<CephRbdInfo> findByPoolAndName(String pool,String name);
+
 	public CephRbdInfo deleteByName(String name);
 
 }

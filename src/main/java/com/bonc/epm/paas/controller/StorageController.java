@@ -673,19 +673,7 @@ public class StorageController {
         model.addAttribute("li_flag", "storageFile");
         return "storage/storage.jsp";
     }
-    /**
-     * storage-file.jsp
-     *
-     * @param model Model
-     * @return String
-     */
 
-    @RequestMapping(value = { "storage/storageBlock" }, method = RequestMethod.GET)
-    public String storageQuick(Model model) {
-        model.addAttribute("menu_flag", "storage");
-        model.addAttribute("li_flag", "storageBlock");
-        return "storage/storage-block.jsp";
-    }
     @RequestMapping(value = { "storage/storage-blockDetail" }, method = RequestMethod.GET)
     public String storageQuickDetail(Model model) {
         model.addAttribute("menu_flag", "storage");
