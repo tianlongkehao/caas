@@ -411,11 +411,29 @@
 							<th>信息</th>
 						</tr>
 					</thead>
-					<tbody id="rcItemsInfo">
+					<tbody id="rcItemsInfo" class="serviceTbody">
 						
 					</tbody>
 				</table>
 			</div>
+			<div id="podEvents" class="tab-pane fade">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>状态</th>
+							<th>信息</th>
+						</tr>
+					</thead>
+					<tbody id="podItemsInfo" class="serviceTbody">
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<!-- pod事件 -->
+	<div id="podEventInfo" style="display: none; text-align: center">
+		<div id="serviceTabContent">
 			<div id="podEvents">
 				<table class="table">
 					<thead>
@@ -424,14 +442,13 @@
 							<th>信息</th>
 						</tr>
 					</thead>
-					<tbody id="podItemsInfo">
+					<tbody id="onepodItemsInfo" class="serviceTbody">
 						
 					</tbody>
 				</table>
 			</div>
 		</div>
 	</div>
-
 	${msg}
 	<c:if test="${msg!= null} ">
 		<input type="hidden" id="errorMsg" value="${msg}">
