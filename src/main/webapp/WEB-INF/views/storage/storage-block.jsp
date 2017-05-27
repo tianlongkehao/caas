@@ -131,7 +131,7 @@
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">磁盘描述：</span>
-            <textarea type="text" row="3" class="form-control q-storage" id="storage-mark"></textarea>
+            <textarea row="3" class="form-control q-storage" id="storage-mark"></textarea>
         </li>
     </ul>
 </div>
@@ -164,7 +164,7 @@
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">磁盘描述：<font color="red">*</font></span>
-            <textarea type="text" row="3" class="form-control q-storage" id="storage-mark"></textarea>
+            <textarea  row="3" class="form-control q-storage" id="update-detail"></textarea>
         </li>
     </ul>
 </div>
@@ -181,7 +181,7 @@
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">快照描述：<font color="red">*</font></span>
-            <textarea type="text" row="3" class="form-control q-storage" id="snap-mark"></textarea>
+            <textarea row="3" class="form-control q-storage" id="snap-mark"></textarea>
         </li>
     </ul>
 </div>

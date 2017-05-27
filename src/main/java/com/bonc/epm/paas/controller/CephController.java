@@ -337,7 +337,7 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "ceph/createcephrbd" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String createCephRbd(String imgname, int disksize, String diskdetail) {
+	public String createCephRbd(String imgname, String disksize, String diskdetail) {
 		Map<String, String> map = new HashMap<>();
 		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 		String msg = "";
@@ -362,11 +362,12 @@ public class CephController {
 			}
 
 			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+			long temp = Long.parseLong(disksize);
 			try {
 				Rbd rbd = new Rbd(ioctx); // RBD
-				int size = disksize * 1024 * 1024;
-				rbd.create(imgname, size);
-				CephRbdInfo cephRbdInfo = saveCephRbdInfo(imgname, disksize, diskdetail);
+				long size = temp * 1024l * 1024l * 1024l;
+				rbd.create(imgname, size, 1l);
+				CephRbdInfo cephRbdInfo = saveCephRbdInfo(imgname, temp, diskdetail);
 
 				// 记录日志
 				String extraInfo = "新增ceph块存储 " + JSON.toJSONString(cephRbdInfo);
@@ -628,7 +629,7 @@ public class CephController {
 	 * @param diskdetail
 	 * @return
 	 */
-	private CephRbdInfo saveCephRbdInfo(String imgname, int disksize, String diskdetail) {
+	private CephRbdInfo saveCephRbdInfo(String imgname,long disksize, String diskdetail) {
 		CephRbdInfo info = new CephRbdInfo();
 		info.setName(imgname);
 		info.setPool(CurrentUserUtils.getInstance().getUser().getNamespace());
@@ -654,6 +655,7 @@ public class CephController {
 		snap.setPool(CurrentUserUtils.getInstance().getUser().getNamespace());
 		snap.setSnapdetail(snapdetail);
 		snap.setCreateDate(new Date());
+		cephSnapDao.save(snap);
 		return snap;
 	}
 
@@ -1232,7 +1234,7 @@ public class CephController {
 	@RequestMapping(value = { "storage/storageSnap" }, method = RequestMethod.GET)
 	public String storageSnap(Model model) {
 		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-		List<CephSnap> cephSnaps = cephSnapDao.findByPool(namespace);
+		List<CephSnap> cephSnaps = cephSnapDao.findByPoolDesc(namespace);
 
 		model.addAttribute("cephSnaps", cephSnaps);
 		model.addAttribute("menu_flag", "storage");

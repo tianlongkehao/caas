@@ -4,7 +4,7 @@ $(function(){
 
 function storageRollBack(obj){
 	var snap = $(obj).attr("snap");
-    var rbd = $(obj).attr("rbd");
+      var rbd = $(obj).attr("rbd");
 
     //判断是否可以回滚
     $.ajax({

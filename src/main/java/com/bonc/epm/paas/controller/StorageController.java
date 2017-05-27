@@ -693,12 +693,12 @@ public class StorageController {
         model.addAttribute("li_flag", "storageObj");
         return "storage/storage-obj.jsp";
     }
-    @RequestMapping(value = { "storage/storageSnap" }, method = RequestMethod.GET)
+   /* @RequestMapping(value = { "storage/storageSnap" }, method = RequestMethod.GET)
     public String storageSnap(Model model) {
         model.addAttribute("menu_flag", "storage");
         model.addAttribute("li_flag", "storageSnap");
         return "storage/storage-snap.jsp";
-    }
+    }*/
     @RequestMapping(value = { "storage/snapStrategy" }, method = RequestMethod.GET)
     public String storageSnapStrategy(Model model) {
         model.addAttribute("menu_flag", "storage");
@@ -706,11 +706,4 @@ public class StorageController {
         return "storage/storage-snapStrategy.jsp";
     }
 
-    /*@RequestMapping(value = { "service/createcephrbd" }, method = RequestMethod.GET)
-	@ResponseBody
-	public String createCephRbd(String imgname,String disksize ,String unload,String disttype,String diskdetail) {
-		Map<String, List<Storage>> map = new HashMap<>();
-        cephController.createCephRbd(imgname);
-		return JSON.toJSONString(map);
-	}*/
 }

@@ -33,7 +33,7 @@ $(function(){
 					return;
 				}
 
-				var distdetail= $("#storage-mark").html();
+				var diskdetail= $("#storage-mark").val();
 
 				layer.close(index);
 				//先检查磁盘名称是否存在，然后新建
@@ -52,8 +52,8 @@ $(function(){
                         		return;
                         	}else{
                         		$.ajax({
-                					url:""+ctx+"/service/createcephrbd?imgname="+blockname+"&disksize="+disksize
-                					     +"&distdetail="+distdetail,
+                					url:""+ctx+"/ceph/createcephrbd?imgname="+blockname+"&disksize="+disksize
+                					     +"&diskdetail="+diskdetail,
                 					type:"get",
                 					success:function(data){
                 						var data = eval("("+data+")");
@@ -62,7 +62,7 @@ $(function(){
                 						}
                 						if(data.status=='200'){
                 							layer.msg("磁盘创建成功！",{icon: 6});
-                							refresh();
+                							location.reload();
                 						}
                 						return;
                 					}
@@ -207,7 +207,7 @@ function createSnapshoot(obj){
 			btn: ['确定', '取消'],
 			yes: function(index, layero){
 				var snapname = $("#snapshootName").val();
-				var detail = $("#snap-mark").html();
+				var detail = $("#snap-mark").val();
 				if(snapname ==''){
 					layer.msg("快照名称不能为空！",{icon : 5});
 					return;
@@ -219,9 +219,9 @@ function createSnapshoot(obj){
  					success:function(data){
  						var data = eval("(" + data + ")");
  						if(data.status =='500'){
- 							layer.msg("快照名称创建失败！",{icon : 5});
+ 							layer.msg("快照创建失败！",{icon : 5});
  						}else{
- 							layer.msg("快照名称创建成功！",{icon : 6});
+ 							layer.msg("快照创建成功！",{icon : 6});
  						}
  						return;
  					}

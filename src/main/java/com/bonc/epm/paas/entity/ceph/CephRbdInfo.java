@@ -20,7 +20,7 @@ public class CephRbdInfo {
 
 	private String pool;
 
-	private int size;
+	private long size;
 
 	private String detail;
 
@@ -60,11 +60,12 @@ public class CephRbdInfo {
 		this.name = name;
 	}
 
-	public int getSize() {
+
+	public long getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
+	public void setSize(long size) {
 		this.size = size;
 	}
 

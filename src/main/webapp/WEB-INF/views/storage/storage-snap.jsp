@@ -46,20 +46,20 @@
 										class="table table-stripped table-hover dataTables-example">
 										<thead>
 											<tr>
-												<th style="width: 10%; text-indent: 20px;">快照名称</th>
-												<th style="width: 10%">磁盘名称</th>
-												<th style="width: 10%;">创建时间</th>
-												<th style="width: 10%;">快照描述</th>
+												<th style="width: 20%; text-indent: 20px;">快照名称</th>
+												<th style="width: 20%">磁盘名称</th>
+												<th style="width: 20%;">创建时间</th>
+												<th style="width: 20%;">快照描述</th>
 												<th style="text-indent: 5px;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="snapList">
 											<c:forEach items="${cephSnaps}" var="snap">
 												<tr>
-													<td style="width: 10%; text-indent: 20px;">${snap.name}</td>
-													<td style="width: 10%">${snap.imgname}</td>
-													<td style="width: 10%;">${snap.createDate}</td>
-													<td style="width: 10%;">${snap.snapdetail}</td>
+													<td style="width: 20%; text-indent: 20px;">${snap.name}</td>
+													<td style="width: 20%">${snap.imgname}</td>
+													<td style="width: 20%;">${snap.createDate}</td>
+													<td style="width: 20%;">${snap.snapdetail}</td>
 													<td style="text-indent: 5px;" class="del-operation"><a
 														onclick="storageRollBack(this)" rbd="${snap.imgname}" snap="${snap.name}" title="回滚磁盘"><i
 															class="fa fa-history"></i></a></td>
