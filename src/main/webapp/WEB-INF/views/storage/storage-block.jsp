@@ -72,7 +72,7 @@
 	                                                <td>未挂载</td>
 	                                            </c:if>
 	                                            <td>${rbd.detail }</td>
-	                                            <td class="item-operation" rbd="${rbd.name }">
+	                                            <td class="item-operation" rbd="${rbd.name }" size="${rbd.size }" detail="${rbd.detail }" release="${rbd.releaseWhenServiceDown }">
 	                                            	<a onclick="createSnapshoot(this)"><i class="fa fa-camera fa-opr" title="创建快照" style="margin-left:0px"></i></a>
 	                                            	<a onclick="createStrategy(this)"><i class="fa fa-tasks fa-opr" title="设置自动快照策略"></i></a>
 	                                            	<a onclick="formatStrategy(this)"><i class="fa fa-eraser fa-opr" title="重新初始化磁盘"></i></a>
@@ -118,7 +118,7 @@
         </li>
         <li class="line-h-3">
             <div class="param-set">
-                <span class="">磁盘大小：</span>
+                <span class="">磁盘大小(G)：</span>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20"><label for="size20">20<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="size50"><label for="size50">50<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="size100"><label for="size100">100<span>G</span></label>
@@ -141,26 +141,27 @@
     <ul class="popWin">
     	<li class="line-h-3">
             <span class="s-edit-name">磁盘名称：</span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="asdfg" disabled>
+            <input id="rbd" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">磁盘大小：</span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="50G" disabled>
+            <span class="s-edit-name">磁盘大小(G)：</span>
+            <input id="size" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">释放行为：</span>
             <ul class="releaseStorageInfo">
-            	<li><label><input type="checkbox">磁盘随实例释放</label></li>
+            	<li><label><input id="release" type="checkbox"/>磁盘随实例释放</label></li>
             </ul>
         </li>
     </ul>
 </div>
+
 <!-- 修改磁盘描述 -->
 <div id="changeDescribe" style="display:none">
     <ul class="popWin">
         <li class="line-h-3">
-            <span class="s-edit-name">磁盘名称：<font color="red">*</font></span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="" disabled>
+            <span class="s-edit-name">磁盘名称：<font color="red"></font></span>
+            <input id="rbd2" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">磁盘描述：<font color="red">*</font></span>
@@ -247,15 +248,15 @@
     <ul class="popWin">
     	<li class="line-h-3">
             <span class="s-edit-name">磁盘名称：</span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="adfg" disabled>
+            <input id="rbd3" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">磁盘大小：</span>
-            <input id="q-storageSize" class="form-control q-storage" type="text" value="50G" disabled>
+            <span class="s-edit-name">磁盘大小(G)：</span>
+            <input id="size3" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">磁盘扩容：<font color="red">*</font></span>
-            <input id="q-storageChangeSize" class="form-control q-storage" type="number" value=""><span class="storageUnit">GB</span>
+            <input id="extendsize" class="form-control q-storage" type="number" value=""><span class="storageUnit">G</span>
         </li>
     </ul>
 </div>

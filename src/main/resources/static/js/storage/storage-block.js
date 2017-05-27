@@ -10,7 +10,10 @@ $(function(){
 			yes: function(index, layero){
 				var blockname = $("#q-storageName").val();
 				if(blockname==""){
-					alert("磁盘名称不能为空！");
+					layer.tips('磁盘名称不能为空！', '#q-storageName', {
+						tips : [ 1, '#0FA6D8' ]
+					});
+					$('#q-storageName').focus();
 					return;
 				}
 				var size=$('input:radio[name="updateStorageSize"]:checked').val();
@@ -145,28 +148,22 @@ $(function(){
 	});
 }*/
 
-//释放
-function releaseStorage(obj){
-	layer.open({
-			title: '释放',
-			content: "是否确定删除该磁盘？",
-			btn: ['确定', '取消'],
-			yes: function(index, layero){
 
-				}
-	})
-}
-function formatStrategy(){
-	layer.open({
-		title: '格式化磁盘',
-		content: "是否确定格式化该磁盘？",
-		btn: ['确定', '取消'],
-		yes: function(index, layero){
 
-			}
-})
-}
-function changeProperty(){
+//修改磁盘属性
+function changeProperty(obj){
+    var rbd = $(obj).parent().parent().parent().parent().attr("rbd");
+    var size =$(obj).parent().parent().parent().parent().attr("size");
+    var release = $(obj).parent().parent().parent().parent().attr("release");
+
+    $("#rbd").val(rbd);
+	$("#size").val(size);
+    if(release =='true'){
+    	$("#release").prop("checked", true);
+    }else{
+    	$("#release").prop("checked", false);
+    }
+
 	layer.open({
 		type:1,
 			title: '修改磁盘属性',
@@ -174,12 +171,34 @@ function changeProperty(){
 			content: $("#changeProperty"),
 			btn: ['确定', '取消'],
 			yes: function(index, layero){
+                 var release = $("#release").prop('checked');
+                 layer.close(index);
 
-				}
+                 $.ajax({
+  					url:""+ctx+"/ceph/updaterbdproperty?imgname="+rbd+"&release="+release,
+  					type:"get",
+  					success:function(data){
+  						var data = eval("(" + data + ")");
+  						if(data.status =='500'){
+  							layer.msg(data.msg,{icon : 5});
+  						}else{
+  							layer.msg("修改磁盘属性成功！",{icon : 6});
+  							location.reload();
+  						}
+  						return;
+  					}
+  				});
+			}
 	})
 }
 
-function changeDescribe(){
+//修改磁盘描述
+function changeDescribe(obj){
+	var rbd = $(obj).parent().parent().parent().parent().attr("rbd");
+	var detail = $(obj).parent().parent().parent().parent().attr("detail");
+	$("#rbd2").val(rbd);
+	$("#update-detail").html(detail);
+
 	layer.open({
 		type:1,
 			title: '修改磁盘描述',
@@ -187,9 +206,27 @@ function changeDescribe(){
 			content: $("#changeDescribe"),
 			btn: ['确定', '取消'],
 			yes: function(index, layero){
+				var detail =$("#update-detail").val();
+				layer.close(index);
 
-				}
+				$.ajax({
+ 					url:""+ctx+"/ceph/updaterbddetail?imgname="+rbd+"&detail="+detail,
+ 					type:"get",
+ 					success:function(data){
+ 						var data = eval("(" + data + ")");
+ 						if(data.status =='500'){
+ 							layer.msg(data.msg,{icon : 5});
+ 						}else{
+ 							layer.msg("修改描述成功！",{icon : 6});
+ 							location.reload();
+ 						}
+ 						return;
+ 					}
+ 				});
+
+			}
 	})
+
 }
 
 //创建快照
@@ -209,7 +246,10 @@ function createSnapshoot(obj){
 				var snapname = $("#snapshootName").val();
 				var detail = $("#snap-mark").val();
 				if(snapname ==''){
-					layer.msg("快照名称不能为空！",{icon : 5});
+					layer.tips('快照名称不能为空！', '#snapshootName', {
+						tips : [ 1, '#0FA6D8' ]
+					});
+					$('#snapshootName').focus();
 					return;
 				}
 				layer.close(index);
@@ -219,7 +259,7 @@ function createSnapshoot(obj){
  					success:function(data){
  						var data = eval("(" + data + ")");
  						if(data.status =='500'){
- 							layer.msg("快照创建失败！",{icon : 5});
+ 							layer.msg(data.msg,{icon : 5});
  						}else{
  							layer.msg("快照创建成功！",{icon : 6});
  						}
@@ -230,6 +270,95 @@ function createSnapshoot(obj){
 				}
 	})
 }
+
+
+
+//修改磁盘大小
+function changeStorageSize(obj){
+	var rbd = $(obj).parent().parent().parent().parent().attr("rbd");
+    var size =$(obj).parent().parent().parent().parent().attr("size");
+    $("#rbd3").val(rbd);
+	$("#size3").val(size);
+
+	layer.open({
+		type:1,
+			title: '磁盘扩容',
+			area: ['500px'],
+			content: $("#changeStorageSize"),
+			btn: ['确定', '取消'],
+			yes: function(index, layero){
+				var size =  $("#extendsize").val();
+				if(size==''){
+					layer.tips('磁盘扩容不能为空！', '#extendsize', {
+						tips : [ 1, '#0FA6D8' ]
+					});
+					$('#extendsize').focus();
+					return;
+				}
+
+				layer.close(index);
+				$.ajax({
+ 					url:""+ctx+"/ceph/updaterbdsize?imgname="+rbd+"&size="+size,
+ 					type:"get",
+ 					success:function(data){
+ 						var data = eval("(" + data + ")");
+ 						if(data.status =='500'){
+ 							layer.msg(data.msg,{icon : 5});
+ 						}else{
+ 							layer.msg("修改磁盘大小成功！",{icon : 6});
+ 							location.reload();
+ 						}
+ 						return;
+ 					}
+ 				});
+
+				}
+	})
+}
+
+//释放块设备
+function releaseStorage(obj){
+	var rbd = $(obj).parent().parent().parent().parent().attr("rbd");
+
+	layer.open({
+			title: '释放',
+			content: "删除磁盘将不可恢复，是否确定删除该磁盘？",
+			btn: ['确定', '取消'],
+			yes: function(index, layero){
+				   layer.close(index);
+				   var loading = layer.load(0, {shade : [ 0.3, '#000' ]});
+					$.ajax({
+	 					url:""+ctx+"/ceph/deleterbd?imgname="+rbd,
+	 					type:"get",
+	 					success:function(data){
+
+	 						layer.closeAll("loading");
+
+	 						var data = eval("(" + data + ")");
+	 						if(data.status =='500'){
+	 							layer.msg(data.msg,{icon : 5});
+	 						}else{
+	 							layer.msg("磁盘删除成功！",{icon : 6});
+	 							location.reload();
+	 						}
+	 						return;
+	 					}
+	 				});
+			}
+	})
+}
+
+function formatStrategy(){
+	layer.open({
+		title: '格式化磁盘',
+		content: "是否确定格式化该磁盘？",
+		btn: ['确定', '取消'],
+		yes: function(index, layero){
+
+			}
+})
+}
+
 function createStrategy(){
 	layer.open({
 		type:1,
@@ -243,27 +372,6 @@ function createStrategy(){
 	})
 
 }
-function changeStorageSize(){
-	layer.open({
-		type:1,
-			title: '磁盘扩容',
-			area: ['500px'],
-			content: $("#changeStorageSize"),
-			btn: ['确定', '取消'],
-			yes: function(index, layero){
-
-				}
-	})
-}
-/*磁盘详细信息*/
-function storageDetail(obj){
-
-}
-
-
-
-
-
 
 
 

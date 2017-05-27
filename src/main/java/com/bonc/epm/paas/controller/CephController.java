@@ -834,7 +834,7 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "ceph/updaterbdsize" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String updateRbdSize(String imgname, int size) {
+	public String updateRbdSize(String imgname, String size) {
 		Map<String, String> map = new HashMap<>();
 		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 		map.put("status", "200");
@@ -863,13 +863,13 @@ public class CephController {
 
 				if (imageExist) {
 					RbdImage rbdImage = rbd.open(imgname);
-					size = size * 1024 * 1024;
-					rbdImage.resize(size);
+					long temp = Long.parseLong(size);
+					rbdImage.resize(temp * 1024l * 1024l * 1024l);
 					rbd.close(rbdImage);
 
 					// 更改数据库
-					List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByName(imgname);
-					cephRbdInfos.get(0).setSize(size);
+					List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPoolAndName(namespace, imgname);
+					cephRbdInfos.get(0).setSize(temp);
 					cephRbdInfos.get(0).setUpdateDate(new Date());
 					cephRbdInfoDao.save(cephRbdInfos.get(0));
 
@@ -944,8 +944,84 @@ public class CephController {
 
 				if (imageExist) {
 					// 更改数据库
-					List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByName(imgname);
+					List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPoolAndName(namespace, imgname);
 					cephRbdInfos.get(0).setDetail(detail);
+					cephRbdInfos.get(0).setUpdateDate(new Date());
+					cephRbdInfoDao.save(cephRbdInfos.get(0));
+
+					// 记录日志
+					String extraInfo = "更改镜像描述 " + JSON.toJSONString(cephRbdInfos.get(0));
+					LOGGER.info(extraInfo);
+					CommonOperationLog log = CommonOprationLogUtils.getOprationLog(imgname, extraInfo,
+							CommConstant.CEPH_RBD, CommConstant.OPERATION_TYPE_UPDATE);
+					commonOperationLogDao.save(log);
+				} else {
+					msg = "镜像" + imgname + "不存在！";
+					map.put("msg", msg);
+					map.put("status", "500");
+				}
+
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				msg = "ceph集群异常！";
+				map.put("msg", msg);
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
+				}
+			}
+		} catch (RadosException e) {
+			msg = "ceph集群异常！";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
+	/**
+	 * 更改rbd块存储的属性
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/updaterbdproperty" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String updateRbdProperty(String imgname, boolean release) {
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		map.put("status", "200");
+		String msg = "";
+
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+
+			// 获取所有images
+			Rbd rbd = new Rbd(ioctx);
+			String[] images;
+			try {
+				images = rbd.list();
+				boolean imageExist = false;
+				for (String image : images) {
+					if (imgname.equals(image)) {
+						imageExist = true;
+						break;
+					}
+				}
+
+				if (imageExist) {
+					// 更改数据库
+					List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPoolAndName(namespace, imgname);
+					cephRbdInfos.get(0).setReleaseWhenServiceDown(release);
 					cephRbdInfos.get(0).setUpdateDate(new Date());
 					cephRbdInfoDao.save(cephRbdInfos.get(0));
 

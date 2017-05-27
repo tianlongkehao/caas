@@ -60,9 +60,14 @@
 													<td style="width: 20%">${snap.imgname}</td>
 													<td style="width: 20%;">${snap.createDate}</td>
 													<td style="width: 20%;">${snap.snapdetail}</td>
-													<td style="text-indent: 5px;" class="del-operation"><a
-														onclick="storageRollBack(this)" rbd="${snap.imgname}" snap="${snap.name}" title="回滚磁盘"><i
-															class="fa fa-history"></i></a></td>
+													<td style="text-indent: 5px;" class="del-operation">
+														<a onclick="storageRollBack(this)" rbd="${snap.imgname}" snap="${snap.name}" title="回滚磁盘">
+													    	<i class="fa fa-history"></i>
+													    </a>
+													    <a onclick="deletesnap(this)" rbd="${snap.imgname}" snap="${snap.name}">
+													   		 <i class="fa fa-trash fa-opr" title="删除快照"></i>
+													    </a>
+													</td>
 												</tr>
 											</c:forEach>
 										</tbody>
