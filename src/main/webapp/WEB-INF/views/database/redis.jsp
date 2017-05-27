@@ -59,8 +59,8 @@
 												<th style="">使用者</th>
 												<th style="">节点个数</th>
 												<th style="">集群模式</th>
-												<th style="">redis内存/容器内存</th>
-												<th style="">CPU资源</th>
+												<th style="">redis内存(G)</th>
+												<th style="">CPU(个)</th>
 												<th style="">集群状态</th>
 												<th style="">创建时间</th>
 												<th style="width: 10%;" class="del-operation">操作</th>
@@ -77,16 +77,16 @@
 													<td style="">me</td>
 													<td style="">2</td>
 													<td style="">集群</td>
-													<td style="">2/12</td>
-													<td style="">10</td>
+													<td style="">12</td>
+													<td style="">2</td>
 													<td style="">运行中</td>
 													<td style="">2017-02-01 12:12</td>
 		                                            <td style="width: 10%;" >
-		                                            	<a class="no-drop"><i class="fa fa-play"></i></a>
-		                                            	<a class="no-drop"><i class="fa fa-power-off"></i></a>
-		                                            	<a onclick="changeCluster()" class="no-drop"><i class="fa fa-edit"></i></a>
-		                                            	<a onclick="cfgCluster()" class="no-drop"><i class="fa fa-cog"></i></a>
-														<a id="deleteButton" class="no-drop" href="javascript:oneDeleteEnvTemplate('${envTemplate.templateName }')" title="删除" >
+		                                            	<a class="no-drop" title="启动"><i class="fa fa-play"></i></a>
+		                                            	<a class="no-drop" title="停止"><i class="fa fa-power-off"></i></a>
+		                                            	<a href="<%=path %>/db/redis/create" class="no-drop" title="查看配置"><i class="fa fa-cog"></i></a>
+														<a onclick="changeCfg(this)" clusterType="1" redisMem="32" class="no-drop" title="修改"><i class="fa fa-edit"></i></a>
+														<a id="deleteButton" class="no-drop" title="删除" href="javascript:oneDeleteEnvTemplate('${envTemplate.templateName }')" title="删除" >
 														<i class="fa fa-trash"></i></a>
 		                                            </td>
 												</tr>
@@ -158,10 +158,41 @@
 			</div>
 		</div>
 	</div>
-	<!-- 创建集群 -->
+	<!-- 日志 -->
 	<div class="oneNodeLogsInfo" style="display: none">
-		<textarea style="margin:20px 15px;width:95%;height:500px"></textarea>
+		<textarea></textarea>
 	</div>
+	<!-- 修改集群配置 内存 cpu port 内存消除策略 -->
+	<div class="changeCfgInfo" style="display: none">
+		<div style="margin: 25px 15px" class="createRedisStep1">
+			<div class="infoCred">
+				<span class="labelCred">redis内存：</span> 
+				<div id="changeRedisMemSec"></div>
+			</div>
+			<div class="infoCred">
+				<span class="labelCred">端口：</span> <input type="text"
+					class="form-control conCred" id="" name=""
+						value="">
+			</div>
+			<div class="infoCred">   
+				<span class="labelCred">内存消除策略：</span> 
+					<select class="form-control conCred" id="" name="" >
+						<option value="1">allkeys_lru</option>
+						<option value="2">Volatile_lruG</option>
+						<option value="1">Volatile_random</option>
+						<option value="2">allkeys_random</option>
+						<option value="1">Volatile_ttl</option>
+						<option value="2">noeviction</option>
+					</select>
+			</div>
+			<div class="infoCred">
+				<p class="pExplain">内存消除策略，默认allkeys-lru(优先移除主键中最近未使用的key), noeviction(不清除，超出最大内存报错),
+				volatile-lru(优先移除过期键中最近未使用的key),allkeys-random(随机移除主键中某个key),
+				volatile-random(随机移除过期键中某个key),volatile-ttl(过期键中，优先移除过期时间更早的key)</p>
+			</div>					   
+		</div>
+	</div>
+	
 	<script type="text/javascript">
 		$('.dataTables-example').dataTable({
 	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,5,6,9] }],
