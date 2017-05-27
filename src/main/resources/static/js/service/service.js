@@ -1047,28 +1047,28 @@ function loadServices() {
 			render : function(data, type, row) {
 				var html = '';
 				if (row.status == 1) {
-					html = '<a class="link"><i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ')"><i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 2) {
-					html = '<a class="link"><i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ')"><i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 3) {
-					html = '<a class="link"><i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ')"><i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 4) {
-					html = '<i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<i class="fa_stop" onclick="serviceEvent(' + row.id + ')"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
 				}
 				if (row.status == 5) {
-					html = '<i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<i class="fa_stop" onclick="serviceEvent(' + row.id + ')"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
 				}
 				if (row.status == 6) {
-					html = '<i class="fa_run"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<i class="fa_run" onclick="serviceEvent(' + row.id + ')"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
 				}
 				if (row.status == 7) {
-					html = '<i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+					html = '<i class="fa_success" onclick="serviceEvent(' + row.id + ')"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
 				}
 				if (row.status == 8) {
-					html = '<i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+					html = '<i class="fa_success" onclick="serviceEvent(' + row.id + ')"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
 				}
 				return html;
 			}
@@ -1257,28 +1257,28 @@ function loadServicesNoSonar() {
 			render : function(data, type, row) {
 				var html = '';
 				if (row.status == 1) {
-					html = '<i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<i class="fa_stop" onclick="serviceEvent(' + row.id + ')"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
 				}
 				if (row.status == 2) {
-					html = '<i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<i class="fa_success" onclick="serviceEvent(' + row.id + ')"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
 				}
 				if (row.status == 3) {
 					html = '<a class="link" onclick="serviceEvent(' + row.id + ')"><i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 4) {
-					html = '<a class="link"><i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ')"><i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 5) {
-					html = '<a class="link"><i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ')"><i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 6) {
-					html = '<i class="fa_run"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<i class="fa_run" onclick="serviceEvent(' + row.id + ')"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
 				}
 				if (row.status == 7) {
-					html = '<i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+					html = '<i class="fa_success" onclick="serviceEvent(' + row.id + ')"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
 				}
 				if (row.status == 8) {
-					html = '<i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+					html = '<i class="fa_success" onclick="serviceEvent(' + row.id + ')"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
 				}
 				return html;
 			}
