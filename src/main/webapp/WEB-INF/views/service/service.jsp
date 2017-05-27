@@ -396,7 +396,59 @@
 				style="width: 100%;"></div>
 		</div>
 	</div>
-
+	<!-- 服务事件 -->
+	<div id="serviceEventInfo" style="display: none; text-align: center">
+		<ul id="serviceTab" class="nav nav-tabs">
+			<li class="active"><a href="#rcEvents" data-toggle="tab">RC</a></li>
+			<li><a href="#podEvents" data-toggle="tab">Pod</a></li>
+		</ul>
+		<div id="serviceTabContent" class="tab-content">
+			<div id="rcEvents" class="tab-pane fade in active">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>状态</th>
+							<th>信息</th>
+						</tr>
+					</thead>
+					<tbody id="rcItemsInfo" class="serviceTbody">
+						
+					</tbody>
+				</table>
+			</div>
+			<div id="podEvents" class="tab-pane fade">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>状态</th>
+							<th>信息</th>
+						</tr>
+					</thead>
+					<tbody id="podItemsInfo" class="serviceTbody">
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<!-- pod事件 -->
+	<div id="podEventInfo" style="display: none; text-align: center">
+		<div id="serviceTabContent">
+			<div id="podEvents">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>状态</th>
+							<th>信息</th>
+						</tr>
+					</thead>
+					<tbody id="onepodItemsInfo" class="serviceTbody">
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 	${msg}
 	<c:if test="${msg!= null} ">
 		<input type="hidden" id="errorMsg" value="${msg}">

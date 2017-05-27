@@ -33,7 +33,7 @@ $(document).ready(function() {
 	});
 
 	_refreshCreateTime(60000);
-	$(".dataTables-example tbody").on("click", "tr", function() {
+	$(".dataTables-example tbody").on("click", "tr.clusterId", function() {
 		var table = $('.dataTables-example').DataTable();
 		var serviceId = table.row(this).data().id;
 		if(isSonar == true){
@@ -138,12 +138,13 @@ function loadContainers(obj, serviceId) {
 				var containerLength = data.containerList.length;
 				for (var i = 0; i < containerLength; i++) {
 					var containerName = data.containerList[i].containerName;
+					var podName = data.containerList[i].serviceAddr;
 					var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动" : "运行中";
 					var statusClassName = data.containerList[i].containerStatus == 1 ? "fa_stop" : "fa_run";
 					var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide" : "hide";
 					containersHtml += '<tr class="tr-row" serviceidcon="' + serviceID + '">' + '<td colspan="2">&nbsp;</td>' + '<td>';
 					containersHtml += '<span style="margin-left: 19px;">';
-					containersHtml += containerName + '</span>' + '</td>' + '<td colspan="2"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
+					containersHtml += containerName + '</span>' + '</td>' + '<td colspan="2"><a class="link" onclick="onePodEvent('+podName+')"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></a></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
 				}
 				$(obj).after(containersHtml);
 
@@ -172,12 +173,13 @@ function loadContainersNoSonar(obj, serviceId) {
 				var containerLength = data.containerList.length;
 				for (var i = 0; i < containerLength; i++) {
 					var containerName = data.containerList[i].containerName;
+					var podName = data.containerList[i].serviceAddr;
 					var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动" : "运行中";
 					var statusClassName = data.containerList[i].containerStatus == 1 ? "fa_stop" : "fa_run";
 					var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide" : "hide";
 					containersHtml += '<tr class="tr-row" serviceidcon="' + serviceID + '">' + '<td colspan="1">&nbsp;</td>' + '<td>';
 					containersHtml += '<a style="margin-left: 19px;">';
-					containersHtml += containerName + '</a>' + '</td>' + '<td colspan="2"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
+					containersHtml += containerName + '</a>' + '</td>' + '<td colspan="2"><a class="link" onclick="onePodEvent(this)" podName="'+podName+'"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></a></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
 				}
 				$(obj).after(containersHtml);
 
@@ -1045,13 +1047,13 @@ function loadServices() {
 			render : function(data, type, row) {
 				var html = '';
 				if (row.status == 1) {
-					html = '<i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link"><i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 2) {
-					html = '<i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link"><i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 3) {
-					html = '<i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link"><i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 4) {
 					html = '<i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
@@ -1261,13 +1263,13 @@ function loadServicesNoSonar() {
 					html = '<i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
 				}
 				if (row.status == 3) {
-					html = '<i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ')"><i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 4) {
-					html = '<i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link"><i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 5) {
-					html = '<i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link"><i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 6) {
 					html = '<i class="fa_run"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
@@ -1562,4 +1564,107 @@ function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetC
 		}
 	});
 }
+//服务事件
+function serviceEvent(serviceId){
+	$.ajax({
+		url : "" + ctx + "/service/getServiceEvents.do?id="+serviceId,
+		type : 'get',
+		success : function(data) {
+			var data = eval("(" + data + ")");
+			var status = data.status;
+			if(status=='200'){
+				var rcItems = data.replicationControllerEvents.items;
+				var podItems = data.podsEventList[0].items;
+				var rcHtml = "";
+				var podHtml = "";
+				if(rcItems.length == 0){
+					rcHtml += '<tr>'
+						+'<td>无服务事件</td>'
+						+'<td></td>'
+						+'</tr>';
+				}else{
+					for(var i=0; i<rcItems.length; i++){
+						var rctype = rcItems[i].type;
+						var rcmsg = rcItems[i].message;
+						rcHtml += '<tr>'
+								+'<td>'+rctype+'</td>'
+								+'<td>'+rcmsg+'</td>'
+								+'</tr>';
+					}
+				}
+				$("#rcItemsInfo").empty().append(rcHtml);
+				if(podItems.length == 0){
+					podHtml += '<tr>'
+						+'<td>无服务事件</td>'
+						+'<td></td>'
+						+'</tr>';
+				}else{
+					for(var j=0; j<podItems.length; j++){
+						var podtype = podItems[j].type;
+						var podmsg = podItems[j].message;
+						podHtml += '<tr>'
+								+'<td>'+podtype+'</td>'
+								+'<td>'+podmsg+'</td>'
+								+'</tr>';
+					}
+				}
+				$("#podItemsInfo").empty().append(podHtml);
+				layer.open({
+					type : 1,
+					title : '服务事件',
+					content : $("#serviceEventInfo"),
+					area : ['800px','550px'],
+					btn : ['关闭'],
+					yes : function(index, layero) {
+						layer.close(index);
+					}
+				})
+			}
+		}
+	})
+}
+function onePodEvent(obj){
+	var podName = $(obj).attr("podName");
+	$.ajax({
+		url : "" + ctx + "/service/getPodEvents.do?podName="+podName,
+		type : 'get',
+		success : function(data) {
+			var data = eval("(" + data + ")");
+			var status = data.status;
+			if(status=='200'){
+				var onepodItems = data.eventList.items;
+				var onepodHtml = "";
+				if(onepodItems.length == 0){
+					onepodHtml += '<tr>'
+						+'<td>无服务事件</td>'
+						+'<td></td>'
+						+'</tr>';
+				}else{
+					for(var j=0; j<onepodItems.length; j++){
+						var onepodtype = onepodItems[j].type;
+						var onepodmsg = onepodItems[j].message;
+						onepodHtml += '<tr>'
+								+'<td>'+onepodtype+'</td>'
+								+'<td>'+onepodmsg+'</td>'
+								+'</tr>';
+					}
+				}
+				$("#onepodItemsInfo").empty().append(onepodHtml);
+				layer.open({
+					type : 1,
+					title : 'pod事件',
+					content : $("#podEventInfo"),
+					area : ['800px','550px'],
+					btn : ['关闭'],
+					yes : function(index, layero) {
+						layer.close(index);
+					}
+				})
+			}
+		}
+	})
+}
+
+
+
 
