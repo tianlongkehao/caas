@@ -15,6 +15,7 @@ import java.util.Properties;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tools.ant.taskdefs.Execute;
 import org.influxdb.InfluxDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
+import retrofit.http.Streaming;
 import springfox.documentation.spring.web.json.Json;
 
 /**
@@ -255,35 +257,38 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/route" }, method = RequestMethod.GET)
 	public String clusterRoute(Model model) {
-//		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-//		NodeList allNodes;
-//		try {
-//			allNodes = client.getAllNodes();
-//		} catch (KubernetesClientException e) {
-//			LOG.error(e.getStatus().getReason());
-//			allNodes = null;
-//		} catch (Exception e) {
-//			LOG.error(e.getMessage());
-//			allNodes = null;
-//		}
-//		List<Object> nodeList = new ArrayList<>();
-//		if (allNodes != null) {
-//			for (Node node : allNodes.getItems()) {
-//				Map<String, String> nodeMap = new HashMap<>();
-//				nodeList.add(nodeMap);
-//				nodeMap.put("nodeName", node.getMetadata().getName());
-//				nodeMap.put("nodeIp", node.getStatus().getAddresses().get(0).getAddress());
-//				NetAPIClientInterface netAPIClient = netClientService.getSpecifiedClient(nodeMap.get("nodeIp"));
-//				try {
-//					RouteTable checkRoutetable = netAPIClient.checkRoutetable();
-//					nodeMap.put("problem", String.valueOf(checkRoutetable.isProblem()));
-//				} catch (Exception e) {
-//					nodeMap.put("problem", "unknown");
-//				}
-//
-//			}
-//		}
-//		model.addAttribute("nodeList", nodeList);
+		// KubernetesAPIClientInterface client =
+		// kubernetesClientService.getClient();
+		// NodeList allNodes;
+		// try {
+		// allNodes = client.getAllNodes();
+		// } catch (KubernetesClientException e) {
+		// LOG.error(e.getStatus().getReason());
+		// allNodes = null;
+		// } catch (Exception e) {
+		// LOG.error(e.getMessage());
+		// allNodes = null;
+		// }
+		// List<Object> nodeList = new ArrayList<>();
+		// if (allNodes != null) {
+		// for (Node node : allNodes.getItems()) {
+		// Map<String, String> nodeMap = new HashMap<>();
+		// nodeList.add(nodeMap);
+		// nodeMap.put("nodeName", node.getMetadata().getName());
+		// nodeMap.put("nodeIp",
+		// node.getStatus().getAddresses().get(0).getAddress());
+		// NetAPIClientInterface netAPIClient =
+		// netClientService.getSpecifiedClient(nodeMap.get("nodeIp"));
+		// try {
+		// RouteTable checkRoutetable = netAPIClient.checkRoutetable();
+		// nodeMap.put("problem", String.valueOf(checkRoutetable.isProblem()));
+		// } catch (Exception e) {
+		// nodeMap.put("problem", "unknown");
+		// }
+		//
+		// }
+		// }
+		// model.addAttribute("nodeList", nodeList);
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "route");
 		return "cluster/cluster-route.jsp";
@@ -1095,18 +1100,27 @@ public class ClusterController {
 						break;
 					}
 				}
-				List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(node.getMetadata().getName());
+				/*List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(node.getMetadata().getName());
 				if (!CollectionUtils.isEmpty(nodeTestInfos)) {
 					nodeInfo.setTeststatus(true);
 					nodeInfo.setNodeTestInfo(nodeTestInfos.get(0));
+				}*/
+				NodeTestInfo nodeTestInfo = nodeInfoDao.findByNodename(node.getMetadata().getName());
+				if (nodeTestInfo==null) {
+					nodeInfo.setTeststatus(true);
+					nodeInfo.setNodeTestInfo(nodeTestInfo);
 				}
 				nodeInfos.add(nodeInfo);
 			}
 		}
 
-		List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename("all");
+		/*List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename("all");
 		if (!CollectionUtils.isEmpty(nodeTestInfos)) {
 			model.addAttribute("testparam", nodeTestInfos.get(0));// 执行过批量测试，则返回测试参数信息
+		}*/
+		NodeTestInfo nodeTestInfo = nodeInfoDao.findByNodename("all");
+		if (null!=nodeTestInfo) {
+			model.addAttribute("testparam", nodeTestInfo);// 执行过批量测试，则返回测试参数信息
 		}
 
 		model.addAttribute("nodeList", nodeInfos);// 节点信息list
@@ -1477,6 +1491,497 @@ public class ClusterController {
 	}
 
 	/**
+	 * 删除指定节点的测试记录，测试某节点时，先执行此方法。
+	 * @param nodename
+	 */
+	@RequestMapping(value = { "/deleteTestInfo" }, method = RequestMethod.GET)
+	@ResponseBody
+	public void deleteNodeTestInfo(String nodename){
+          nodeInfoDao.deleteByNodename(nodename);
+	}
+
+	/**
+	 * 测试ping
+	 *
+	 *   200成功，500失败且有msg返回
+	 * @param nodename
+	 * @param pingIp
+	 * @param pingtime
+	 * @return
+	 */
+	@RequestMapping(value = { "/testPing" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String excutePing(String nodename, String pingIp, String pingtime) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		String msg = "";
+
+		if (StringUtils.isEmpty(nodename)) {
+			msg = "节点名称为空！";
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		Service localservice = null;
+		try {
+			localservice = client.getServiceOfNamespace("kube-system", "localhealthy");
+		} catch (KubernetesClientException e) {
+			msg = "找不到localhealthy服务！";
+			LOG.info(msg);
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		try {
+			Pod pod = client.getPodOfNamespace("kube-system", nodename);
+
+			LocalHealthyClient localHealthyClient = new LocalHealthyClient(pod.getStatus().getHostIP(),
+					localservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
+
+			NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			if(nodeInfo == null){
+				nodeInfo = new NodeTestInfo();
+				nodeInfo.setNodename(nodename);
+			}
+
+			Response pingresponse = localHealthyClient.ping(pingIp);
+
+			nodeInfo.setPing(true);
+			nodeInfo.setPingIp(pingIp);
+			nodeInfo.setPingtimetarget(Integer.parseInt(pingtime));
+			nodeInfo.setPingoutmsg(pingresponse.getOutmsg());
+			if (!pingresponse.getOutmsg().contains("Unreachable")) {
+				String[] outmsg = pingresponse.getOutmsg().split("/");
+				nodeInfo.setPingtime(Double.parseDouble(outmsg[outmsg.length - 3]));
+				nodeInfo.setPingpass(nodeInfo.getPingtime() <= Integer.parseInt(pingtime));// ping通过
+			}
+			nodeInfo.setPingoutmsg("ping -c 10 " + pingIp + "\n" + nodeInfo.getPingoutmsg());
+
+			nodeInfoDao.save(nodeInfo);
+			map.put("nodeInfo", nodeInfo);
+		} catch (KubernetesClientException e) {
+			msg = "找不到Pod: " + nodename + "！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		} catch (Exception e) {
+			msg = "Node: " + nodename + "异常！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		}
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 测试tracepath
+	 *
+	 *   200成功，500失败且有msg返回
+	 * @param nodename
+	 * @param tracepathIp
+	 * @param tracetime
+	 * @return
+	 */
+	@RequestMapping(value = { "/testTrace" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String excuteTrace(String nodename, String tracepathIp, String tracetime) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		String msg = "";
+
+		if (StringUtils.isEmpty(nodename)) {
+			msg = "节点名称为空！";
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		Service localservice = null;
+		try {
+			localservice = client.getServiceOfNamespace("kube-system", "localhealthy");
+		} catch (KubernetesClientException e) {
+			msg = "找不到localhealthy服务！";
+			LOG.info(msg);
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		try {
+			Pod pod = client.getPodOfNamespace("kube-system", nodename);
+
+			LocalHealthyClient localHealthyClient = new LocalHealthyClient(pod.getStatus().getHostIP(),
+					localservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
+
+			NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			if(nodeInfo == null){
+				nodeInfo = new NodeTestInfo();
+				nodeInfo.setNodename(nodename);
+			}
+
+			Response traceresponse = localHealthyClient.tracepath(tracepathIp);
+
+			nodeInfo.setTracepath(true);
+			nodeInfo.setTraceIp(tracepathIp);
+			nodeInfo.setTracetimetarget(Integer.parseInt(tracetime));
+
+			nodeInfo.setTracepathoutmsg(traceresponse.getOutmsg());
+			String tracemsg = traceresponse.getOutmsg();
+			tracemsg = tracemsg.subSequence(tracemsg.indexOf("real"), tracemsg.indexOf("user")).toString()
+					.trim();
+			tracemsg = tracemsg.split("0m")[1].split("s")[0];
+			nodeInfo.setTracetime(Double.parseDouble(tracemsg));
+			if (nodeInfo.getTracepathoutmsg().contains("hops")) {
+				nodeInfo.setTracepass(nodeInfo.getTracetime() <= Integer.parseInt(tracetime));// trace通过
+			}
+			nodeInfo.setTracepathoutmsg("time (tracepath " + tracepathIp + " -b)" + "\n" + nodeInfo.getTracepathoutmsg());
+
+			nodeInfoDao.save(nodeInfo);
+			map.put("nodeInfo", nodeInfo);
+		} catch (KubernetesClientException e) {
+			msg = "找不到Pod: " + nodename + "！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		} catch (Exception e) {
+			msg = "Node: " + nodename + "异常！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		}
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 指定节点的Curl测试
+	 * @param nodename
+	 * @param curltime
+	 * @return
+	 */
+	@RequestMapping(value = { "/testCurl" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String excuteCurl(String nodename,String curltime){
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		String msg = "";
+
+		if (StringUtils.isEmpty(nodename)) {
+			msg = "节点名称为空！";
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		Service clusterservice = null;
+		try {
+			clusterservice = client.getServiceOfNamespace("kube-system", "clusterhealthy");
+		} catch (KubernetesClientException e) {
+			msg = "找不到clusterhealthy服务！";
+			LOG.info(msg);
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		Pod clusterpod = null;
+		try {
+			clusterpod = client.getPodOfNamespace("kube-system", "clusterhealthy");
+		} catch (KubernetesClientException e) {
+			msg = "找不到clusterhealthy Pod！";
+			LOG.info(msg);
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		try {
+			Pod pod = client.getPodOfNamespace("kube-system", nodename);
+			ClusterHealthyClient clusterHealthyClient = new ClusterHealthyClient(clusterpod.getStatus().getHostIP(),
+					clusterservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
+
+			NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			if(nodeInfo == null){
+				nodeInfo = new NodeTestInfo();
+				nodeInfo.setNodename(nodename);
+			}
+
+			Response curlresponse = clusterHealthyClient.curl(pod.getStatus().getPodIP() + ":8011");
+			nodeInfo.setCurl(true);
+			nodeInfo.setCurltimetarget(Integer.parseInt(curltime));
+
+			String curlmsg = curlresponse.getOutmsg();
+			nodeInfo.setCurloutmsg(curlmsg);
+			curlmsg = curlmsg.split("real")[1].split("user")[0].trim().split("0m")[1].split("s")[0].trim();
+			nodeInfo.setCurltime(Double.parseDouble(curlmsg));
+			if (!nodeInfo.getCurloutmsg().contains("Failed")) {
+				nodeInfo.setCurlpass(nodeInfo.getCurltime() <= Integer.parseInt(curltime));// curl通过
+			}
+			nodeInfo.setCurloutmsg("curl -s -o /dev/null -w %{time_total}\"\n\" \"http://"
+					+ pod.getStatus().getPodIP() + ":8011\"" + "\n" + nodeInfo.getCurloutmsg());
+
+			nodeInfoDao.save(nodeInfo);
+			map.put("nodeInfo", nodeInfo);
+		} catch (KubernetesClientException e) {
+			msg = "找不到Pod: " + nodename + "！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		} catch (Exception e) {
+			msg = "Node: " + nodename + "异常！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		}
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 测试qperf
+	 * @param nodename
+	 * @param speed
+	 * @param latency
+	 * @return
+	 */
+	@RequestMapping(value = { "/testQperf" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String excuteQperf(String nodename,String speed,String latency){
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		String msg = "";
+
+		if (StringUtils.isEmpty(nodename)) {
+			msg = "节点名称为空！";
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		Service clusterservice = null;
+		try {
+			clusterservice = client.getServiceOfNamespace("kube-system", "clusterhealthy");
+		} catch (KubernetesClientException e) {
+			msg = "找不到clusterhealthy服务！";
+			LOG.info(msg);
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		Pod clusterpod = null;
+		try {
+			clusterpod = client.getPodOfNamespace("kube-system", "clusterhealthy");
+		} catch (KubernetesClientException e) {
+			msg = "找不到clusterhealthy Pod！";
+			LOG.info(msg);
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		try {
+			Pod pod = client.getPodOfNamespace("kube-system", nodename);
+			ClusterHealthyClient clusterHealthyClient = new ClusterHealthyClient(clusterpod.getStatus().getHostIP(),
+					clusterservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
+
+			NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			if(nodeInfo == null){
+				nodeInfo = new NodeTestInfo();
+				nodeInfo.setNodename(nodename);
+			}
+
+			Response qperfresponse = clusterHealthyClient.qperf(pod.getStatus().getPodIP());
+			nodeInfo.setQperf(true);
+
+			String qperfmsg = qperfresponse.getOutmsg();
+			nodeInfo.setQperfoutmsg(qperfmsg);
+			nodeInfo.setSpeedtarget(Integer.parseInt(speed));
+			nodeInfo.setLatencytarget(Integer.parseInt(latency));
+			if (!qperfmsg.contains("failed")) {
+				String unit = "";
+				double sp;
+				double lcy;
+				qperfmsg = qperfmsg.substring(0, qperfmsg.indexOf("/sec")).trim();
+				qperfmsg = qperfmsg.split("=")[1].trim();
+				unit = qperfmsg.substring(qperfmsg.length() - 3, qperfmsg.length()).trim();
+				sp = Double.parseDouble(qperfmsg.substring(0, qperfmsg.length() - 3).trim());
+				if (unit.equals("GB")) {// 前台单位为MB
+					sp = sp * 1024;
+				} else if (unit.equals("KB")) {
+					sp = sp / 1024;
+				} else if (unit.equals("TB")) {
+					sp = sp * 1024;
+				}
+				nodeInfo.setSpeed(sp);
+				qperfmsg = qperfresponse.getOutmsg();
+				qperfmsg = qperfmsg.split("latency")[1].split("conf")[0].split("=")[1].trim();
+				unit = qperfmsg.substring(qperfmsg.length() - 3, qperfmsg.length()).trim();
+				lcy = Double.parseDouble(qperfmsg.substring(0, qperfmsg.length() - 3).trim());
+				if (unit.equals("us")) {// 前台单位为ms
+					lcy = lcy / 1000;
+				} else if (unit.equals("s")) {
+					lcy = lcy * 1000;
+				}
+				nodeInfo.setLatency(lcy);
+				nodeInfo.setQperfpass(sp >= Integer.parseInt(speed) && lcy <= Integer.parseInt(latency));// qperf通过
+			}
+			nodeInfo.setQperfoutmsg("qperf  " + pod.getStatus().getPodIP() + " tcp_bw  tcp_lat  conf" + "\n"
+					+ nodeInfo.getQperfoutmsg());
+
+			nodeInfoDao.save(nodeInfo);
+			map.put("nodeInfo", nodeInfo);
+		} catch (KubernetesClientException e) {
+			msg = "找不到Pod: " + nodename + "！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		} catch (Exception e) {
+			msg = "Node: " + nodename + "异常！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		}
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 测试指定节点的docker
+	 * @param nodename
+	 * @param memory
+	 * @return
+	 */
+	@RequestMapping(value = { "/testDocker" }, method = RequestMethod.GET)
+	@ResponseBody
+    public String excuteDocker(String nodename,String memory){
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		String msg = "";
+
+		if (StringUtils.isEmpty(nodename)) {
+			msg = "节点名称为空！";
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		try {
+			Pod pod = client.getPodOfNamespace("kube-system", nodename);
+
+			NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			if(nodeInfo == null){
+				nodeInfo = new NodeTestInfo();
+				nodeInfo.setNodename(nodename);
+			}
+
+			DockerClient dockerClient = dockerClientService.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
+			InfoCmd infoCmd = dockerClient.infoCmd();
+			Info info = infoCmd.exec();
+			nodeInfo.setDocker(true);
+			nodeInfo.setMemorytarget(Integer.parseInt(memory));
+
+			String dockermsg = "";
+			List<List<String>> list = info.getDriverStatuses();
+			for (List<String> l : list) {
+				dockermsg = dockermsg + l.toString() + "\n";
+			}
+			nodeInfo.setDockermsg(dockermsg);
+			if (dockermsg.indexOf("Data Space Total,") != -1) {
+				dockermsg = dockermsg.substring(dockermsg.indexOf("Data Space Total,"), dockermsg.length());
+				dockermsg = dockermsg.split("]")[0].split(",")[1].trim();
+				dockermsg = convert(dockermsg);
+				int mem = Math.round(Float.parseFloat(dockermsg));
+				nodeInfo.setDisk(mem);
+				nodeInfo.setDockerpass(mem == Integer.parseInt(memory));// docker通过
+			}
+
+			nodeInfoDao.save(nodeInfo);
+			map.put("nodeInfo", nodeInfo);
+		} catch (KubernetesClientException e) {
+			msg = "找不到Pod: " + nodename + "！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		} catch (Exception e) {
+			msg = "Node: " + nodename + "异常！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		}
+
+		return JSON.toJSONString(map);
+    }
+
+	/**
+	 * 测试dns
+	 * @return
+	 */
+	@RequestMapping(value = { "/testDns" }, method = RequestMethod.GET)
+	@ResponseBody
+    public String excuteDns(String nodename){
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		String msg = "";
+
+		Service localservice = null;
+		try {
+			localservice = client.getServiceOfNamespace("kube-system", "localhealthy");
+		} catch (KubernetesClientException e) {
+			msg = "找不到localhealthy服务！";
+			LOG.info(msg);
+			map.put("msg", msg);
+			map.put("status", 500);
+			return JSON.toJSONString(map);
+		}
+
+		try {
+			Pod pod = client.getPodOfNamespace("kube-system", nodename);
+
+			LocalHealthyClient localHealthyClient = new LocalHealthyClient(pod.getStatus().getHostIP(),
+					localservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
+
+			NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			if(nodeInfo == null){
+				nodeInfo = new NodeTestInfo();
+				nodeInfo.setNodename(nodename);
+			}
+
+			Response masterdnsresponse = localHealthyClient.dns("master");
+			Response standbydnsresponse = localHealthyClient.dns("standby");
+
+			nodeInfo.setDns(true);
+			String dnString = masterdnsresponse.getOutmsg();
+			nodeInfo.setMasterdnsoutmsg(dnString);
+			nodeInfo.setMasterdns(dnString.contains("timed out") || dnString.contains("failed")
+					|| dnString.contains("resolved") ? false : true);
+			nodeInfo.setMasterdnsoutmsg(
+					"busybox nslookup localhealthy.kube-system.svc.cluster.local 10.245.100.100" + "\n"
+							+ nodeInfo.getMasterdnsoutmsg());
+			dnString = standbydnsresponse.getOutmsg();
+			nodeInfo.setStandbydnsoutmsg(dnString);
+			nodeInfo.setStandbydns(dnString.contains("timed out") || dnString.contains("failed")
+					|| dnString.contains("resolved") ? false : true);
+			nodeInfo.setDnspass(nodeInfo.isMasterdns() && nodeInfo.isStandbydns());
+			nodeInfo.setStandbydnsoutmsg(
+					"busybox nslookup localhealthy.kube-system.svc.cluster.local 10.245.100.101" + "\n"
+							+ nodeInfo.getStandbydnsoutmsg());
+
+			nodeInfoDao.save(nodeInfo);
+			map.put("nodeInfo", nodeInfo);
+		} catch (KubernetesClientException e) {
+			msg = "找不到Pod: " + nodename + "！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		} catch (Exception e) {
+			msg = "Node: " + nodename + "异常！";
+			map.put("msg", msg);
+			map.put("status", 500);
+		}
+
+		return JSON.toJSONString(map);
+    }
+
+	/**
 	 * 执行测试 nodenames : 节点名字符串,逗号隔开 例："node1,node2,...." items: 检测项目字符串，逗号隔开
 	 * 例："item1,item2,....."
 	 *
@@ -1816,15 +2321,23 @@ public class ClusterController {
 			map.put("msg", msg);
 			return JSON.toJSONString(map);
 		}
-		List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(nodename);
+		/*List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(nodename);
 		if (CollectionUtils.isEmpty(nodeTestInfos)) {
+			msg = "节点" + nodename + "没有测试结果！";
+			map.put("status", 404);
+			map.put("msg", msg);
+			return JSON.toJSONString(map);
+		}*/
+
+		NodeTestInfo nodeTestInfo = nodeInfoDao.findByNodename(nodename);
+		if (null!=nodeTestInfo) {
 			msg = "节点" + nodename + "没有测试结果！";
 			map.put("status", 404);
 			map.put("msg", msg);
 			return JSON.toJSONString(map);
 		}
 
-		map.put("nodetestresult", nodeTestInfos.get(0));
+		map.put("nodetestresult", nodeTestInfo);
 		return JSON.toJSONString(map);
 	}
 
@@ -1871,7 +2384,7 @@ public class ClusterController {
 	 * @author longkaixiang
 	 * @return String
 	 */
-	@RequestMapping(value=("/checkRoute.do"), method=RequestMethod.GET)
+	@RequestMapping(value = ("/checkRoute.do"), method = RequestMethod.GET)
 	@ResponseBody
 	public String checkRoute() {
 		Map<String, Object> map = new HashMap<>();

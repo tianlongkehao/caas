@@ -8,11 +8,11 @@ import javax.persistence.Id;
 @Entity
 public class NodeTestInfo {
 
-	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
 	//节点名称
+	@Id
 	private String nodename;
 
 	//测试项目是否全部通过
