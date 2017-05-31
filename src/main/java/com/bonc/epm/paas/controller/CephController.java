@@ -480,6 +480,69 @@ public class CephController {
 	}
 
 	/**
+	 * 快照策略定时创建快照
+	 * @param poolname
+	 * @param imgname
+	 * @param snapname
+	 * @param snapdetail
+	 */
+	public boolean autoCreateSnap(String poolname,String imgname,String snapname,String snapdetail){
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+
+			// 获取所有pool
+			String[] pools = cluster.poolList();
+			boolean poolExist = false;
+			for (String pool : pools) {
+				if (poolname.equals(pool)) {
+					poolExist = true;
+					break;
+				}
+			}
+
+			if (!poolExist) {
+				return false;
+			}
+
+			IoCTX ioctx = cluster.ioCtxCreate(poolname);
+			Rbd rbd = new Rbd(ioctx); // RBD
+			RbdImage rbdImage = null;
+			try {
+				rbdImage = rbd.open(imgname);
+				rbdImage.snapCreate(snapname);
+				rbd.close(rbdImage);
+				CephSnap cephSnap = saveSnapInfo(imgname, snapname, snapdetail);
+				// 记录日志
+				String extraInfo = "新增快照 " + JSON.toJSONString(cephSnap);
+				LOGGER.info(extraInfo);
+				CommonOperationLog log = CommonOprationLogUtils.getOprationLog(snapname, extraInfo,
+						CommConstant.CEPH_SNAP, CommConstant.OPERATION_TYPE_CREATED);
+				commonOperationLogDao.save(log);
+
+				return true;
+			} catch (RbdException e) {
+				LOGGER.error(e.getMessage());
+				return false;
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
+				}
+			}
+
+		} catch (RadosException e) {
+			LOGGER.error(e.getMessage());
+			return false;
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
+	/**
 	 * 检查指定镜像的快照是否存在
 	 *
 	 * @param imgname

@@ -16,6 +16,8 @@ public class CephRbdInfo {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
+	private long strategyId;
+
 	private String name;
 
 	private String pool;
@@ -31,6 +33,14 @@ public class CephRbdInfo {
 	private String mountpath;
 
 	private String mappath;
+
+	public long getStrategyId() {
+		return strategyId;
+	}
+
+	public void setStrategyId(long strategyId) {
+		this.strategyId = strategyId;
+	}
 
 	/**
 	 * 创建时间
