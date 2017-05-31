@@ -8,7 +8,6 @@ import javax.persistence.Id;
 @Entity
 public class NodeTestInfo {
 
-	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
