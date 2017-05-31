@@ -1,5 +1,7 @@
 package com.bonc.epm.paas.dao;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,7 +12,7 @@ public interface NodeInfoDao extends CrudRepository<NodeTestInfo, Long>{
 
 	public NodeTestInfo findById(long id);
 
-	public NodeTestInfo findByNodename(String nodename);
+	public List<NodeTestInfo> findByNodename(String nodename);
 
     public void deleteById(long id);
 
