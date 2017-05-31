@@ -62,9 +62,9 @@
 										<th style="width:5%;text-indent:20px">
 											<input type="checkbox" class="chkAll" id="checkallbox" />
 										</th>
-										<th style="width:15%;">集群节点</th>
-										<th style="width:40%;">测试进度</th>
-										<th style="width:20%;text-indent:20px">测试结果</th>
+										<th style="width:12%;">集群节点</th>
+										<th style="width:55%;">测试进度</th>
+										<th style="width:12%;text-indent:20px">测试结果</th>
 										<th>操作</th>
 									</tr>
 								</thead>
@@ -75,8 +75,8 @@
 											<td style="width:5%;text-indent:20px">
 												<input class="chkItem" name="node" type="checkbox" value="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">
 											</td>
-											<td style="width:15%;">${node.nodename }</td>
-											<td style="width:40%;" nodeName="${node.nodename }" class="nodeProgressBar">
+											<td style="width:12%;">${node.nodename }</td>
+											<td style="width:55%;" nodeName="${node.nodename }" class="nodeProgressBar">
 									        	<div id="progress_${node.nodename }" class="progress nodeProgress" style="margin:0 auto">
 									        		<div class="progress-bar" role="progressbar"
 														 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
@@ -84,7 +84,7 @@
 													<c:if test="${node.deploystatus ==true}">
 														<div class="progress-bar progress-bar-warning" role="progressbar"
 															 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-															 style="width: 15%;">
+															 style="width: 40%;">
 															<span >部署完成</span>
 														</div>
 														<c:if test="${node.teststatus == true}">
@@ -113,7 +113,7 @@
 												</div>
 									        </td>
 
-											<td class="clusterTestOpr" style="width:20%;text-indent:20px">
+											<td class="clusterTestOpr" style="width:12%;text-indent:20px">
 												<a id="${node.nodename }"  nodename="${node.nodename }"
 													onclick="detail(this)" title="查看详细信息">
 													<c:if test="${node.deploystatus == true}">
@@ -208,10 +208,10 @@
 							</tr>
 							<tr>
 								<th style="width: 20%">
-									<input name="item" class="checkItem" type="checkbox" value="pingitem" id="pingitem">&nbsp;ping地址：
+									<input name="item" class="checkItem" type="checkbox" value="pingitem" id="ping">&nbsp;ping地址：
 								</th>
 								<td>
-									<input type="text" id="pingip" placeholder="主机IP" value="" />
+									<input type="text" id="pingip" placeholder="主机IP" value="192.168.0.1" />
 								</td>
 								<th style="width: 20%">平均响应时间：</th>
 								<td>
@@ -223,7 +223,7 @@
 								</td>
 							</tr>
 							<tr>
-								<th style="width: 20%"><input name="item" class="checkItem" type="checkbox" value="traceitem" id="traceitem">&nbsp;trace地址：</th>
+								<th style="width: 20%"><input name="item" class="checkItem" type="checkbox" value="traceitem" id="trace">&nbsp;trace地址：</th>
 								<td>
 									<input type="text" id="tracepathip" placeholder="主机IP" value="" />
 								</td>
@@ -238,7 +238,7 @@
 							</tr>
 							<tr>
 								<th style="width: 20%">
-									<input name="item" class="checkItem" type="checkbox" value="curlitem" id="curlitem">&nbsp;curl响应时间：
+									<input name="item" class="checkItem" type="checkbox" value="curlitem" id="curl">&nbsp;curl响应时间：
 								</th>
 								<td colspan="3" style="width: 80%">
 									<input type="number" style="width: 80%;" value="2" class="number"
@@ -249,7 +249,7 @@
 							</tr>
 							<tr>
 								<th style="width: 20%">
-									<input name="item" class="checkItem" type="checkbox" value="qperfitem" id="qperfitem">&nbsp;qperf带宽：
+									<input name="item" class="checkItem" type="checkbox" value="qperfitem" id="qperf">&nbsp;qperf带宽：
 								</th>
 								<td>
 									<input style="width: 80%" type="number" value="2000" class="number"
@@ -268,7 +268,7 @@
 								</tr>
 								<tr>
 									<th style="width: 25%">
-										<input name="item" class="checkItem" type="checkbox" value="dockeritem" id="dockeritem">&nbsp;docker磁盘大小：
+										<input name="item" class="checkItem" type="checkbox" value="dockeritem" id="docker">&nbsp;docker磁盘大小：
 									</th>
 									<td colspan="3" style="width: 75%">
 										<input style="width: 80%" type="number" value="" class="number" min="1"
@@ -279,7 +279,7 @@
 								</tr>
 								<tr>
 									<th colspan="4" style="width: 25%">
-										<input name="item" class="checkItem" type="checkbox" value="dnsitem" id="dnsitem">&nbsp;dns
+										<input name="item" class="checkItem" type="checkbox" value="dnsitem" id="dns">&nbsp;dns
 									</th>
 								</tr>
 						</tbody>
