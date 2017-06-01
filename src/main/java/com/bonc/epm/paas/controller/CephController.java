@@ -1358,6 +1358,11 @@ public class CephController {
 		return JSON.toJSONString(map);
 	}
 
+	/*@RequestMapping(value = { "ceph/createSnapStrategy" }, method = RequestMethod.GET)
+	@ResponseBody
+    public String excuteSnapStrategy(long imgId,long strategyId){
+
+    }*/
 
 	/**
 	 *
