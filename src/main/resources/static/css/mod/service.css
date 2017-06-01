@@ -1236,7 +1236,8 @@ p.portLabel input{
 	padding-top:6px!important;
 	padding-bottom:6px!important;
 }
-#rcEvents table thead tr th, #podEvents table thead tr th{
+#rcEvents table thead tr th, #podEvents table thead tr th,
+#newRcEvents table thead tr th, #newpPodEvents table thead tr th{
 	padding-left:15px;
 }
 #serviceTabContent{
@@ -1253,3 +1254,4 @@ p.portLabel input{
 	background-color:#e8504f;
 	color:#fff;
 }
+
