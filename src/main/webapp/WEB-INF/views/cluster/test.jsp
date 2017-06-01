@@ -69,9 +69,8 @@
 									</tr>
 								</thead>
 								<tbody id="routeList">
-									<c:forEach items="${nodeList}" var="node">
-									<input type="hidden" value="${node.nodeTestInfo}">
-										<tr class="thisTr">
+									
+										<tr class="thisTr hide">
 											<td style="width:5%;text-indent:20px">
 												<input class="chkItem" name="node" type="checkbox" value="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">
 											</td>
@@ -134,7 +133,7 @@
 												<a onclick="clearOneNode(this)"><i>清理部署</i></a>
 											</td>
 										</tr>
-									</c:forEach>
+									
 								</tbody>
 							</table>
 						</div>

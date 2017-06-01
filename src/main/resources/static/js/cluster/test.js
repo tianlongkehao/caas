@@ -876,6 +876,7 @@ var nodeInfos = {};
 var items = "";
 
 $(document).ready(function() {
+	showTestList();
 	$("#selectitem").prop("checked",false);
 	var deployHtmlSuccess = '<div class="progress-bar progress-bar-warning" role="progressbar"'
 						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
@@ -1090,3 +1091,163 @@ $(document).ready(function() {
 		return;
 		});
 });
+
+function showTestList(){
+	$.ajax({
+		url:ctx + "/cluster/excutetestResultForAll",
+		type:"get",
+		success:function(data){
+			var data = eval("(" + data + ")");
+			var nodetestresult = data.nodetestresult;
+			for(var i=0; i<nodetestresult.length; i++){
+				var testCount = 0;
+				var allpass = data.nodetestresult[i].allpass;
+				var nodeName = data.nodetestresult[i].nodename;
+				var pingpass = nodetestresult[i].pingpass;
+				var tracepass = nodetestresult[i].tracepass;
+				var qpertpass = nodetestresult[i].qpertpass;
+				var curlpass = nodetestresult[i].curlpass;
+				var dockerpass = nodetestresult[i].dockerpass;
+				var dnspass = nodetestresult[i].dnspass;
+				if(pingpass == true){
+					testCount++;
+				}else if(pingpass == true){
+					testCount++;
+				}else if(tracepass == true){
+					testCount++;
+				}else if(qpertpass == true){
+					testCount++;
+				}else if(curlpass == true){
+					testCount++;
+				}else if(dockerpass == true){
+					testCount++;
+				}else if(dnspass == true){
+					testCount++;
+				}
+				var progressWidth = 60/testCount+'%';
+				
+				var testListHtml = '<tr class="thisTr">'
+				+'<td style="width:5%;text-indent:20px">'
+				+'<input class="chkItem" name="node" type="checkbox" value="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">'
+				+'</td>'
+				+'<td style="width:12%;">${node.nodename }</td>'
+				+'<td style="width:55%;" nodeName="${node.nodename }" class="nodeProgressBar">'
+				+'<div id="progress_${node.nodename }" class="progress nodeProgress" style="margin:0 auto">'
+				+'<div class="progress-bar" role="progressbar"'
+				+'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">'
+				+'</div>';
+//						<div class="progress-bar progress-bar-warning" role="progressbar"
+//							 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+//							 style="width: 40%;">
+//							<span >部署完成</span>
+//						</div>
+//				<div class="progress-bar progress-bar-warning" role="progressbar"
+//					 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+//					 style="width: 0%;">
+//				</div>
+				if(pingpass == true){
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>ping成功</span>'
+						 +'</div>';
+				}else{
+					testListHtml += '<div class="progress-bar progress-bar-danger" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>ping失败</span>'
+						 +'</div>';
+				} 
+				
+				if(tracepass == true){
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>trace成功</span>'
+						 +'</div>';
+				}else{
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>trace失败</span>'
+						 +'</div>';
+				} 
+				if(qpertpass == true){
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>qpert成功</span>'
+						 +'</div>';
+				}else{
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>qpert失败</span>'
+						 +'</div>';
+				} 
+				if(curlpass == true){
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>curl成功</span>'
+						 +'</div>';
+				}else{
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>curl失败</span>'
+						 +'</div>';
+				} 
+				if(dockerpass == true){
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>docker成功</span>'
+						 +'</div>';
+				}else{
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>docker失败</span>'
+						 +'</div>';
+				} 
+				if(dnspass == true){
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>dns成功</span>'
+						 +'</div>';
+				}else{
+					testListHtml += '<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>dns失败</span>'
+						 +'</div>';
+				}
+						
+								
+						
+				testListHtml += '</div>'
+						+'</td>'
+						+'<td class="clusterTestOpr" style="width:12%;text-indent:20px">'
+						+'<a id="${node.nodename }"  nodename="${node.nodename }"'
+						+'onclick="detail(this)" title="查看详细信息">';
+				if(allpass == true){
+					testListHtml +='<font color="#33CC33" style="font-weight:bold;cursor:pointer" id="nodeTestInfo" nodeTestInfo="${node.nodeTestInfo}">通过<i class="fa fa-question-circle"></i></font>';
+				}else{
+					testListHtml +='<font color="#FF0033" style="font-weight:bold;cursor:pointer">未通过<i class="fa fa-question-circle"></i></font>';
+				}
+				testListHtml +='</a>'
+						+'</td>'
+						+'<td class="clusterTestOprBtns" nodeName="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">'
+						+'<a onclick="deployOneNode(this)"><i>部署</i></a>'
+						+'<a onclick="testOneNode(this)"><i>执行</i></a>'
+						+'<a onclick="clearOneNode(this)"><i>清理部署</i></a>'
+						+'</td>'
+						+'</tr>';	
+				
+				$("#routeList").empty().append(testListHtml);
+			}
+		}
+	})
+}
