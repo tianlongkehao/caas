@@ -414,7 +414,7 @@
 						</tr>
 					</thead>
 					<tbody id="rcItemsInfo" class="serviceTbody">
-						
+
 					</tbody>
 				</table>
 			</div>
@@ -422,12 +422,13 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<th>状态</th>
-							<th>信息</th>
+							<th style="width: 10%;">实例</th>
+							<th style="width: 10%;">状态</th>
+							<th style="width: 80%;">信息</th>
 						</tr>
 					</thead>
 					<tbody id="podItemsInfo" class="serviceTbody">
-						
+
 					</tbody>
 				</table>
 			</div>
@@ -440,7 +441,7 @@
 						</tr>
 					</thead>
 					<tbody id="newRcItemsInfo" class="serviceTbody">
-						
+
 					</tbody>
 				</table>
 			</div>
@@ -448,12 +449,13 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<th>状态</th>
-							<th>信息</th>
+							<th style="width: 10%;">实例</th>
+							<th style="width: 10%;">状态</th>
+							<th style="width: 80%;">信息</th>
 						</tr>
 					</thead>
 					<tbody id="newPodItemsInfo" class="serviceTbody">
-						
+
 					</tbody>
 				</table>
 			</div>
@@ -471,7 +473,7 @@
 						</tr>
 					</thead>
 					<tbody id="onepodItemsInfo" class="serviceTbody">
-						
+
 					</tbody>
 				</table>
 			</div>

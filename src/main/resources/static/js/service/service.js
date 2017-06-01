@@ -1567,6 +1567,8 @@ function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetC
 //服务事件
 function serviceEvent(serviceId,serviceStatus){
 	$(".newItems").addClass("hide");
+	$("#serviceTab li").removeClass('active');
+	$("#serviceTab li:first-child").addClass('active');
 	$.ajax({
 		url : "" + ctx + "/service/getServiceEvents.do?id="+serviceId,
 		type : 'get',
@@ -1586,7 +1588,7 @@ function serviceEvent(serviceId,serviceStatus){
 			if(status=='200'){
 				//当前服务的rc事件
 				var rcHtml = "";
-				if(data.replicationControllerEvents==null || data.replicationControllerEvents.length == 0){
+				if(data.replicationControllerEvents==null || data.replicationControllerEvents.items.length == 0){
 					rcHtml += '<tr>'
 						+'<td>无服务事件</td>'
 						+'<td></td>'
@@ -1612,15 +1614,17 @@ function serviceEvent(serviceId,serviceStatus){
 						+'<td></td>'
 						+'</tr>';
 				}else{
-					var podItems = data.podsEventList[0].items;
-					for(var j=0; j<podItems.length; j++){
-						var podtype = podItems[j].type;
-						var podmsg = podItems[j].message;
-						podHtml += '<tr>'
-								+'<td>'+podtype+'</td>'
-								+'<td>'+podmsg+'</td>'
-								+'</tr>';
-					}
+					for (var i=0; i < data.podsEventList.length; i++) {
+						for(var j=0; j<data.podsEventList[i].items.length; j++){
+							var podtype = data.podsEventList[i].items[j].type;
+							var podmsg = data.podsEventList[i].items[j].message;
+							podHtml += '<tr>'
+									+'<td>'+(i+1)+'</td>'
+									+'<td>'+podtype+'</td>'
+									+'<td>'+podmsg+'</td>'
+									+'</tr>';
+						}
+					};
 				}
 				$("#podItemsInfo").empty().append(podHtml);
 
@@ -1629,7 +1633,7 @@ function serviceEvent(serviceId,serviceStatus){
 
 					//当前升级服务的rc事件
 					var newRcHtml="";
-					if(data.newReplicationControllerEvents==null || data.newReplicationControllerEvents.length == 0){
+					if(data.newReplicationControllerEvents==null || data.newReplicationControllerEvents.items.length == 0){
 						newRcHtml += '<tr>'
 							+'<td>无服务事件</td>'
 							+'<td></td>'
@@ -1655,15 +1659,17 @@ function serviceEvent(serviceId,serviceStatus){
 							+'<td></td>'
 							+'</tr>';
 					}else{
-						newPodItems = data.newPodsEventList[0].items;
-						for(var n=0; n<newPodItems.length; n++){
-							var newPodtype = newPodItems[n].type;
-							var newPodmsg = newPodItems[n].message;
-							newPodHtml += '<tr>'
-									+'<td>'+newPodtype+'</td>'
-									+'<td>'+newPodmsg+'</td>'
-									+'</tr>';
-						}
+						for (var i=0; i < data.newPodsEventList.length; i++) {
+							for(var j=0; j<data.newPodsEventList[i].items.length; j++){
+								var podtype = data.newPodsEventList[i].items[j].type;
+								var podmsg = data.newPodsEventList[i].items[j].message;
+								newPodHtml += '<tr>'
+										+'<td>'+(i+1)+'</td>'
+										+'<td>'+podtype+'</td>'
+										+'<td>'+podmsg+'</td>'
+										+'</tr>';
+							}
+						};
 					}
 					$("#newPodItemsInfo").empty().append(newPodHtml);
 				}
