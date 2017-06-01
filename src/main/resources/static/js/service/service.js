@@ -1584,16 +1584,15 @@ function serviceEvent(serviceId,serviceStatus){
 			var data = eval("(" + data + ")");
 			var status = data.status;
 			if(status=='200'){
-				var rcItems = data.replicationControllerEvents.items;
-				var podItems = data.podsEventList[0].items;
+				//当前服务的rc事件
 				var rcHtml = "";
-				var podHtml = "";
-				if(rcItems.length == 0){
+				if(data.replicationControllerEvents==null || data.replicationControllerEvents.length == 0){
 					rcHtml += '<tr>'
 						+'<td>无服务事件</td>'
 						+'<td></td>'
 						+'</tr>';
 				}else{
+					var rcItems = data.replicationControllerEvents.items;
 					for(var i=0; i<rcItems.length; i++){
 						var rctype = rcItems[i].type;
 						var rcmsg = rcItems[i].message;
@@ -1604,12 +1603,16 @@ function serviceEvent(serviceId,serviceStatus){
 					}
 				}
 				$("#rcItemsInfo").empty().append(rcHtml);
-				if(podItems.length == 0){
+
+				//当前服务的pod事件
+				var podHtml = "";
+				if(data.podsEventList==null || data.podsEventList.length == 0){
 					podHtml += '<tr>'
 						+'<td>无服务事件</td>'
 						+'<td></td>'
 						+'</tr>';
 				}else{
+					var podItems = data.podsEventList[0].items;
 					for(var j=0; j<podItems.length; j++){
 						var podtype = podItems[j].type;
 						var podmsg = podItems[j].message;
@@ -1620,18 +1623,19 @@ function serviceEvent(serviceId,serviceStatus){
 					}
 				}
 				$("#podItemsInfo").empty().append(podHtml);
-				if(serviceStatus == 7 || serviceStatus == 8){
+
+				if(data.newPodsEventList!=null || data.newReplicationControllerEvents !=null){
 					$(".newItems").removeClass("hide");
-					newPodItems = data.newPodsEventList[0].items;
-					newRcItems = data.newReplicationControllerEvents.items;
+
+					//当前升级服务的rc事件
 					var newRcHtml="";
-					var newPodHtml="";
-					if(newRcItems.length == 0){
+					if(data.newReplicationControllerEvents==null || data.newReplicationControllerEvents.length == 0){
 						newRcHtml += '<tr>'
 							+'<td>无服务事件</td>'
 							+'<td></td>'
 							+'</tr>';
 					}else{
+						newRcItems = data.newReplicationControllerEvents.items;
 						for(var m=0; m<newRcItems.length; m++){
 							var newRctype = newRcItems[m].type;
 							var newRcmsg = newRcItems[m].message;
@@ -1642,12 +1646,16 @@ function serviceEvent(serviceId,serviceStatus){
 						}
 					}
 					$("#newRcItemsInfo").empty().append(newRcHtml);
-					if(newPodItems.length == 0){
+
+					//当前升级服务的pod事件
+					var newPodHtml="";
+					if(data.newPodsEventList==null || data.newPodsEventList.length == 0){
 						newPodHtml += '<tr>'
 							+'<td>无服务事件</td>'
 							+'<td></td>'
 							+'</tr>';
 					}else{
+						newPodItems = data.newPodsEventList[0].items;
 						for(var n=0; n<newPodItems.length; n++){
 							var newPodtype = newPodItems[n].type;
 							var newPodmsg = newPodItems[n].message;
@@ -1659,11 +1667,10 @@ function serviceEvent(serviceId,serviceStatus){
 					}
 					$("#newPodItemsInfo").empty().append(newPodHtml);
 				}
-				
-				
+
 			}
 		}
-	})
+	});
 }
 function onePodEvent(obj){
 	var podName = $(obj).attr("podName");
@@ -1701,10 +1708,10 @@ function onePodEvent(obj){
 					yes : function(index, layero) {
 						layer.close(index);
 					}
-				})
+				});
 			}
 		}
-	})
+	});
 }
 
 
