@@ -2406,7 +2406,7 @@ public class ClusterController {
 		map.put("status", 200);
 		String msg = "";
 
-		Iterable<NodeTestInfo> nodeTestInfos = nodeInfoDao.findAll();
+		/*Iterable<NodeTestInfo> nodeTestInfos = nodeInfoDao.findAll();
 		if(nodeTestInfos!=null){
 			Iterator<NodeTestInfo> iterator = nodeTestInfos.iterator();
 			List<NodeTestInfo> nodeTestInfos2 = new ArrayList<NodeTestInfo>();
@@ -2423,8 +2423,44 @@ public class ClusterController {
 			map.put("status", 500);
 			map.put("msg", msg);
 			return JSON.toJSONString(map);
+		}*/
+
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		NodeList nodes = client.getAllNodes();
+		List<Node> nodeList = nodes.getItems();
+
+		List<NodeInfo> nodeInfos = new ArrayList<NodeInfo>();
+
+		List<Pod> pods = client.getPods().getItems();
+
+		// 讲节点状态为Ready的节点返回，用于测试
+		for (Node node : nodeList) {
+
+			if (node.getStatus().getConditions().get(1).getStatus().equals("True")) {
+				NodeInfo nodeInfo = new NodeInfo();
+				nodeInfo.setNodename(node.getMetadata().getName());
+				for (Pod pod : pods) {
+					if (node.getMetadata().getName().equals(pod.getMetadata().getName())) {
+						nodeInfo.setDeploystatus(true);
+						break;
+					}
+				}
+				List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(node.getMetadata().getName());
+				if (!CollectionUtils.isEmpty(nodeTestInfos)) {
+					nodeInfo.setTeststatus(true);
+					nodeInfo.setNodeTestInfo(nodeTestInfos.get(0));
+				}
+				nodeInfos.add(nodeInfo);
+			}
 		}
 
+		List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename("all");
+		if (!CollectionUtils.isEmpty(nodeTestInfos)) {
+			map.put("testparam", nodeTestInfos.get(0));// 执行过批量测试，则返回测试参数信息
+		}
+
+		map.put("nodetestresult", nodeInfos);
+		return JSON.toJSONString(map);
 	}
 
 	/**
