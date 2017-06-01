@@ -401,20 +401,7 @@ function testOneNode(obj){
 					var speed = $("#qperf").val();
 					var latency = $("#qperftime").val();
 					var memory = $("#docker").val();
-					
-					var nodeProgressDiv = $(obj).parents(".thisTr").find(".nodeProgress");
-					var nodeTestOpr = $(obj).parents(".thisTr").find(".clusterTestOpr").children("a");
-					var ids = new Array();
-					var checkedItems = $("input:checkbox[name='item']:checked");
-					for(var i=0; i<checkedItems.length; i++){
-						var itemId = $(checkedItems[i]).attr("id");
-						ids.push(itemId);
-					}
-					
-					
-					$.ajax({
-						url : ctx+"/cluster/excute"+testExcu,
-						data:{
+					var testData = {
 							nodename:selectednode,
 							pingIp:pingIp,
 							pingtime:pingtime,
@@ -424,9 +411,277 @@ function testOneNode(obj){
 							speed:speed,
 							latency:latency,
 							memory:memory
-						},
+						};
+					
+					var nodeProgressDiv = $(obj).parents(".thisTr").find(".nodeProgress");
+					var nodeTestOpr = $(obj).parents(".thisTr").find(".clusterTestOpr").children("a");
+					var progressLength = $("input[name='item']:checked").length;
+					var progressWidth = 60/progressLength+'%';
+					var testprogressWidth = 60/progressLength-2+'%';
+					var count = 0;
+					var failNum = 0;
+					
+					var ids = new Array();
+					var checkedItems = $("input:checkbox[name='item']:checked");
+					for(var i=0; i<checkedItems.length; i++){
+						var itemId = $(checkedItems[i]).attr("id");
+						ids.push(itemId);
+					}
+					//1
+					var testHtmlResule = '<div class="progress-bar progress-bar-warning" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: 40%;">'
+						 +'<span >部署完成</span>'
+						 +'</div>';
+					var testPingHtml = testHtmlResule+'<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+testprogressWidth+';">'
+						 +'<span>'+ids[count]+'测试中</span>'
+						 +'</div>';
+					nodeProgressDiv.empty().append(testPingHtml);
+					$.ajax({
+						url : ctx+"/cluster/test"+ids[count],
+						tpe:'post',
+						data:testData,
 						success : function(data) {
 							var data = eval("(" + data + ")");
+							if (data.status == '200') {
+								testHtmlResule = testHtmlResule
+									 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+									 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+									 +'style="width: '+progressWidth+'">'
+									 +'<span>'+ids[count]+'成功</span>'
+									 +'</div>';
+							}else{
+								testHtmlResule = testHtmlResule
+									 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+									 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+									 +'style="width: '+progressWidth+'">'
+									 +'<span>'+ids[count]+'失败</span>'
+									 +'</div>';
+								failNum++;
+							}
+							count++;
+							nodeProgressDiv.empty().append(testHtmlResule);
+							if(count == progressLength){
+								if(failNum == 0){
+									nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
+								}else{
+									nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
+								}
+								layer.close(loading);
+							}
+							//2
+							var testTraceHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+									 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+									 +'style="width: '+testprogressWidth+'">'
+									 +'<span>'+ids[count]+'测试中</span>'
+									 +'</div>';
+							nodeProgressDiv.append(testTraceHtml);
+							$.ajax({
+								url : ctx+"/cluster/test"+ids[count],
+								tpe:'post',
+								data:testData,
+								success : function(data) {
+									var data = eval("(" + data + ")");
+									if (data.status == '200') {
+										testHtmlResule = testHtmlResule
+											 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+											 +'style="width: '+progressWidth+'">'
+											 +'<span>'+ids[count]+'成功</span>'
+											 +'</div>';
+									}else{
+										testHtmlResule = testHtmlResule
+											 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+											 +'style="width: '+progressWidth+'">'
+											 +'<span>'+ids[count]+'失败</span>'
+											 +'</div>';
+										failNum++;
+									}
+									count++;
+									nodeProgressDiv.empty().append(testHtmlResule);
+									if(count == progressLength){
+										if(failNum == 0){
+											nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
+										}else{
+											nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
+										}
+										layer.close(loading);
+									}
+									//curl
+									var testCurlHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+											 +'style="width: '+testprogressWidth+'">'
+											 +'<span>'+ids[count]+'测试中</span>'
+											 +'</div>';
+									nodeProgressDiv.append(testCurlHtml);
+									$.ajax({
+										url : ctx+"/cluster/test"+ids[count],
+										tpe:'post',
+										data:testData,
+										success : function(data) {
+											var data = eval("(" + data + ")");
+											
+												if (data.status == '200') {
+													testHtmlResule = testHtmlResule
+														 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+														 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+														 +'style="width: '+progressWidth+'">'
+														 +'<span>'+ids[count]+'成功</span>'
+														 +'</div>';
+												}else{
+													testHtmlResule = testHtmlResule
+														 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+														 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+														 +'style="width: '+progressWidth+'">'
+														 +'<span>'+ids[count]+'失败</span>'
+														 +'</div>';
+													failNum++;
+												}
+												count++;
+											
+											nodeProgressDiv.empty().append(testHtmlResule);
+											if(count == progressLength){
+												if(failNum == 0){
+													nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
+												}else{
+													nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
+												}
+												layer.close(loading);
+											}
+											//qperf
+											var testQperfHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+													 +'style="width: '+testprogressWidth+'">'
+													 +'<span>'+ids[count]+'测试中</span>'
+													 +'</div>';
+											nodeProgressDiv.append(testQperfHtml);
+											$.ajax({
+												url : ctx+"/cluster/test"+ids[count],
+												tpe:'post',
+												data:testData,
+												success : function(data) {
+													var data = eval("(" + data + ")");
+													
+														if (data.status == '200') {
+															testHtmlResule = testHtmlResule
+																 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+																 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+																 +'style="width: '+progressWidth+'">'
+																 +'<span>'+ids[count]+'成功</span>'
+																 +'</div>';
+														}else{
+															testHtmlResule = testHtmlResule
+																 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+																 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+																 +'style="width: '+progressWidth+'">'
+																 +'<span>'+ids[count]+'失败</span>'
+																 +'</div>';
+															failNum++;
+														}
+														count++;
+													
+													nodeProgressDiv.empty().append(testHtmlResule);
+													if(count == progressLength){
+														if(failNum == 0){
+															nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
+														}else{
+															nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
+														}
+														layer.close(loading);
+													}
+													//docker
+													var testDockerHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+															 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+															 +'style="width: '+testprogressWidth+'">'
+															 +'<span>'+ids[count]+'测试中</span>'
+															 +'</div>';
+													nodeProgressDiv.append(testDockerHtml);
+													$.ajax({
+														url : ctx+"/cluster/test"+ids[count],
+														tpe:'post',
+														data:testData,
+														success : function(data) {
+															var data = eval("(" + data + ")");
+																if (data.status == '200') {
+																	testHtmlResule = testHtmlResule
+																		 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+																		 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+																		 +'style="width: '+progressWidth+'">'
+																		 +'<span>'+ids[count]+'成功</span>'
+																		 +'</div>';
+																}else{
+																	testHtmlResule = testHtmlResule
+																		 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+																		 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+																		 +'style="width: '+progressWidth+'">'
+																		 +'<span>'+ids[count]+'失败</span>'
+																		 +'</div>';
+																	failNum++;
+																}
+																count++;
+															
+															nodeProgressDiv.empty().append(testHtmlResule);
+															if(count == progressLength){
+																if(failNum == 0){
+																	nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
+																}else{
+																	nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
+																}
+																layer.close(loading);
+															}
+															//dns
+															var testDnsHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+																	 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+																	 +'style="width: '+testprogressWidth+'">'
+																	 +'<span>'+ids[count]+'测试中</span>'
+																	 +'</div>';
+															nodeProgressDiv.append(testDnsHtml);
+															$.ajax({
+																url : ctx+"/cluster/test"+ids[count],
+																tpe:'post',
+																data:testData,
+																success : function(data) {
+																	var data = eval("(" + data + ")");
+																		if($("#dnsitem:checked").length != 0){
+																			testHtmlResule = testHtmlResule
+																				 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+																				 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+																				 +'style="width: '+progressWidth+'">'
+																				 +'<span>'+ids[count]+'成功</span>'
+																				 +'</div>';
+																		}else{
+																			testHtmlResule = testHtmlResule
+																				 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+																				 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+																				 +'style="width: '+progressWidth+'">'
+																				 +'<span>'+ids[count]+'失败</span>'
+																				 +'</div>';
+																			failNum++;
+																		}
+																		count++;
+																	
+																	nodeProgressDiv.empty().append(testHtmlResule);
+																	if(count == progressLength){
+																		if(failNum == 0){
+																			nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
+																		}else{
+																			nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
+																		}
+																		layer.close(loading);
+																	}
+																}
+															})
+														}
+													})
+												}
+											})
+										}
+									})
+								}
+							})
 							
 						}
 					
