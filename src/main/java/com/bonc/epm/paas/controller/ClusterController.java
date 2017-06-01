@@ -2396,6 +2396,38 @@ public class ClusterController {
 	}
 
 	/**
+	 * 得到所有的测试结果
+	 * @return 节点测试结果 status：500  没有测试结果 200 成功
+	 */
+	@RequestMapping(value = { "/excutetestResultForAll" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getClusterTestResultForAllNode() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+		String msg = "";
+
+		Iterable<NodeTestInfo> nodeTestInfos = nodeInfoDao.findAll();
+		if(nodeTestInfos!=null){
+			Iterator<NodeTestInfo> iterator = nodeTestInfos.iterator();
+			List<NodeTestInfo> nodeTestInfos2 = new ArrayList<NodeTestInfo>();
+			while (iterator.hasNext()) {
+				NodeTestInfo nodeTestInfo = iterator.next();
+				if(!nodeTestInfo.getNodename().equals("all")){
+					nodeTestInfos2.add(nodeTestInfo);
+				}
+			}
+			map.put("nodetestresult", nodeTestInfos2);
+			return JSON.toJSONString(map);
+		}else{
+			msg = "没有测试结果！";
+			map.put("status", 500);
+			map.put("msg", msg);
+			return JSON.toJSONString(map);
+		}
+
+	}
+
+	/**
 	 * 集群测试，获得集群中所有的node
 	 *
 	 * @param
