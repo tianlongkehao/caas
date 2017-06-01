@@ -401,16 +401,16 @@ function testOneNode(obj){
 					var speed = $("#qperf").val();
 					var latency = $("#qperftime").val();
 					var memory = $("#docker").val();
-					var testData = {
-							nodename:selectednode,
-							pingIp:pingIp,
-							pingtime:pingtime,
-							tracepathIp:tracepathIp,
-							tracetime:tracetime,
-							curltime:curltime,
-							speed:speed,
-							latency:latency,
-							memory:memory
+					var nodeTestInfo = {
+							"nodename":selectednode,
+							"pingIp":pingIp,
+							"pingtimetarget":pingtime,
+							"traceIp":tracepathIp,
+							"tracetimetarget":tracetime,
+							"curltimetarget":curltime,
+							"speed":speed,
+							"latency":latency,
+							"memorytarget":memory
 						};
 					
 					var nodeProgressDiv = $(obj).parents(".thisTr").find(".nodeProgress");
@@ -441,11 +441,12 @@ function testOneNode(obj){
 					nodeProgressDiv.empty().append(testPingHtml);
 					$.ajax({
 						url : ctx+"/cluster/test"+ids[count],
-						tpe:'post',
-						data:testData,
+						//type:'get',
+						data:nodeTestInfo,
 						success : function(data) {
 							var data = eval("(" + data + ")");
-							if (data.status == '200') {
+							var passStatus = passStatusFun(ids[count],data.nodeInfo);
+							if (passStatus == true) {
 								testHtmlResule = testHtmlResule
 									 +'<div class="progress-bar progress-bar-success" role="progressbar"'
 									 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
@@ -470,6 +471,7 @@ function testOneNode(obj){
 									nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
 								}
 								layer.close(loading);
+								return;
 							}
 							//2
 							var testTraceHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
@@ -480,11 +482,11 @@ function testOneNode(obj){
 							nodeProgressDiv.append(testTraceHtml);
 							$.ajax({
 								url : ctx+"/cluster/test"+ids[count],
-								tpe:'post',
-								data:testData,
+								data:nodeTestInfo,
 								success : function(data) {
 									var data = eval("(" + data + ")");
-									if (data.status == '200') {
+									var passStatus = 'data.nodeInfo.'+ids[count]+'paas';
+									if (passStatus == true) {
 										testHtmlResule = testHtmlResule
 											 +'<div class="progress-bar progress-bar-success" role="progressbar"'
 											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
@@ -509,8 +511,9 @@ function testOneNode(obj){
 											nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
 										}
 										layer.close(loading);
+										return;
 									}
-									//curl
+									//3
 									var testCurlHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
 											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
 											 +'style="width: '+testprogressWidth+'">'
@@ -519,12 +522,12 @@ function testOneNode(obj){
 									nodeProgressDiv.append(testCurlHtml);
 									$.ajax({
 										url : ctx+"/cluster/test"+ids[count],
-										tpe:'post',
-										data:testData,
+										data:nodeTestInfo,
 										success : function(data) {
 											var data = eval("(" + data + ")");
 											
-												if (data.status == '200') {
+											var passStatus = ids[count]+'paas';
+												if (data.nodeInfo.passStatus == true) {
 													testHtmlResule = testHtmlResule
 														 +'<div class="progress-bar progress-bar-success" role="progressbar"'
 														 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
@@ -550,8 +553,9 @@ function testOneNode(obj){
 													nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
 												}
 												layer.close(loading);
+												return;
 											}
-											//qperf
+											//4
 											var testQperfHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
 													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
 													 +'style="width: '+testprogressWidth+'">'
@@ -560,12 +564,12 @@ function testOneNode(obj){
 											nodeProgressDiv.append(testQperfHtml);
 											$.ajax({
 												url : ctx+"/cluster/test"+ids[count],
-												tpe:'post',
-												data:testData,
+												data:nodeTestInfo,
 												success : function(data) {
 													var data = eval("(" + data + ")");
 													
-														if (data.status == '200') {
+													var passStatus = ids[count]+'paas';
+														if (data.nodeInfo.passStatus == true) {
 															testHtmlResule = testHtmlResule
 																 +'<div class="progress-bar progress-bar-success" role="progressbar"'
 																 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
@@ -591,8 +595,9 @@ function testOneNode(obj){
 															nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
 														}
 														layer.close(loading);
+														return;
 													}
-													//docker
+													//5
 													var testDockerHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
 															 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
 															 +'style="width: '+testprogressWidth+'">'
@@ -601,11 +606,11 @@ function testOneNode(obj){
 													nodeProgressDiv.append(testDockerHtml);
 													$.ajax({
 														url : ctx+"/cluster/test"+ids[count],
-														tpe:'post',
-														data:testData,
+														data:nodeTestInfo,
 														success : function(data) {
 															var data = eval("(" + data + ")");
-																if (data.status == '200') {
+															var passStatus = ids[count]+'paas';
+																if (data.nodeInfo.passStatus == true) {
 																	testHtmlResule = testHtmlResule
 																		 +'<div class="progress-bar progress-bar-success" role="progressbar"'
 																		 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
@@ -631,8 +636,9 @@ function testOneNode(obj){
 																	nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
 																}
 																layer.close(loading);
+																return;
 															}
-															//dns
+															//6
 															var testDnsHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
 																	 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
 																	 +'style="width: '+testprogressWidth+'">'
@@ -641,11 +647,11 @@ function testOneNode(obj){
 															nodeProgressDiv.append(testDnsHtml);
 															$.ajax({
 																url : ctx+"/cluster/test"+ids[count],
-																tpe:'post',
-																data:testData,
+																data:nodeTestInfo,
 																success : function(data) {
 																	var data = eval("(" + data + ")");
-																		if($("#dnsitem:checked").length != 0){
+																	var passStatus = ids[count]+'paas';
+																		if (data.nodeInfo.passStatus == true) {
 																			testHtmlResule = testHtmlResule
 																				 +'<div class="progress-bar progress-bar-success" role="progressbar"'
 																				 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
@@ -671,6 +677,7 @@ function testOneNode(obj){
 																			nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
 																		}
 																		layer.close(loading);
+																		return;
 																	}
 																}
 															})
@@ -682,330 +689,29 @@ function testOneNode(obj){
 									})
 								}
 							})
-							
 						}
-					
 					})
-					
-					
-					
-					
-					
-//					var progressLength = $("input[name='item']:checked").length;
-//					var progressWidth = 60/progressLength+'%';
-//					var testprogressWidth = 60/progressLength-2+'%';
-//					var count = 0;
-//					var failNum = 0;
-//					
-//					var testHtmlResule = '<div class="progress-bar progress-bar-warning" role="progressbar"'
-//						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//						 +'style="width: 40%;">'
-//						 +'<span >部署完成</span>'
-//						 +'</div>';
-					//ping
-//					var testPingHtml = testHtmlResule+'<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-//						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//						 +'style="width: '+testprogressWidth+';">'
-//						 +'<span>ping测试中</span>'
-//						 +'</div>';
-//					nodeProgressDiv.empty().append(testPingHtml);
-//					$.ajax({
-//						url : ctx + "/cluster/testPing?nodename="+selectednode+"&pingIp="+ pingIp + "&pingtime=" + pingtime,
-//						success : function(data) {
-//							var data = eval("(" + data + ")");
-//							if($("#pingitem:checked").length != 0){
-//								if (data.status == '200') {
-//									testHtmlResule = testHtmlResule
-//										 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-//										 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//										 +'style="width: '+progressWidth+'">'
-//										 +'<span>ping成功</span>'
-//										 +'</div>';
-//								}else{
-//									testHtmlResule = testHtmlResule
-//										 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-//										 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//										 +'style="width: '+progressWidth+'">'
-//										 +'<span>ping失败</span>'
-//										 +'</div>';
-//									failNum++;
-//								}
-//								count++;
-//							}
-//							nodeProgressDiv.empty().append(testHtmlResule);
-//							if(count == progressLength){
-//								if(failNum == 0){
-//									nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
-//								}else{
-//									nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
-//								}
-//								layer.close(loading);
-//							}
-//							//testTrace
-//							var testTraceHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-//									 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//									 +'style="width: '+testprogressWidth+'">'
-//									 +'<span>Trace测试中</span>'
-//									 +'</div>';
-//							nodeProgressDiv.append(testTraceHtml);
-//							$.ajax({
-//								url : ctx + "/cluster/testPing?nodename="+selectednode+"&tracepathIp="+ tracepathIp + "&tracetime=" + tracetime,
-//								success : function(data) {
-//									var data = eval("(" + data + ")");
-//									if($("#traceitem:checked").length != 0){
-//										if (data.status == '200') {
-//											testHtmlResule = testHtmlResule
-//												 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-//												 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//												 +'style="width: '+progressWidth+'">'
-//												 +'<span>trace成功</span>'
-//												 +'</div>';
-//										}else{
-//											testHtmlResule = testHtmlResule
-//												 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-//												 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//												 +'style="width: '+progressWidth+'">'
-//												 +'<span>trace失败</span>'
-//												 +'</div>';
-//											failNum++;
-//										}
-//										count++;
-//									}
-//									nodeProgressDiv.empty().append(testHtmlResule);
-//									if(count == progressLength){
-//										if(failNum == 0){
-//											nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
-//										}else{
-//											nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
-//										}
-//										layer.close(loading);
-//									}
-//									//curl
-//									var testCurlHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-//											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//											 +'style="width: '+testprogressWidth+'">'
-//											 +'<span>curl测试中</span>'
-//											 +'</div>';
-//									nodeProgressDiv.append(testCurlHtml);
-//									$.ajax({
-//										url : ctx + "/cluster/testCurl?nodename="+selectednode+"&curltime=" + curltime,
-//										success : function(data) {
-//											var data = eval("(" + data + ")");
-//											if($("#curlitem:checked").length != 0){
-//												if (data.status == '200') {
-//													testHtmlResule = testHtmlResule
-//														 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-//														 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//														 +'style="width: '+progressWidth+'">'
-//														 +'<span>curl成功</span>'
-//														 +'</div>';
-//												}else{
-//													testHtmlResule = testHtmlResule
-//														 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-//														 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//														 +'style="width: '+progressWidth+'">'
-//														 +'<span>curl失败</span>'
-//														 +'</div>';
-//													failNum++;
-//												}
-//												count++;
-//											}
-//											nodeProgressDiv.empty().append(testHtmlResule);
-//											if(count == progressLength){
-//												if(failNum == 0){
-//													nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
-//												}else{
-//													nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
-//												}
-//												layer.close(loading);
-//											}
-//											//qperf
-//											var testQperfHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-//													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//													 +'style="width: '+testprogressWidth+'">'
-//													 +'<span>qperf测试中</span>'
-//													 +'</div>';
-//											nodeProgressDiv.append(testQperfHtml);
-//											$.ajax({
-//												url : ctx + "/cluster/testQperf?nodename="+selectednode+"&speed="+speed+"&latency="+latency,
-//												success : function(data) {
-//													var data = eval("(" + data + ")");
-//													if($("#qperfitem:checked").length != 0){
-//														if (data.status == '200') {
-//															testHtmlResule = testHtmlResule
-//																 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-//																 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//																 +'style="width: '+progressWidth+'">'
-//																 +'<span>qperf成功</span>'
-//																 +'</div>';
-//														}else{
-//															testHtmlResule = testHtmlResule
-//																 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-//																 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//																 +'style="width: '+progressWidth+'">'
-//																 +'<span>qperf失败</span>'
-//																 +'</div>';
-//															failNum++;
-//														}
-//														count++;
-//													}
-//													nodeProgressDiv.empty().append(testHtmlResule);
-//													if(count == progressLength){
-//														if(failNum == 0){
-//															nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
-//														}else{
-//															nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
-//														}
-//														layer.close(loading);
-//													}
-//													//docker
-//													var testDockerHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-//															 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//															 +'style="width: '+testprogressWidth+'">'
-//															 +'<span>docker测试中</span>'
-//															 +'</div>';
-//													nodeProgressDiv.append(testDockerHtml);
-//													$.ajax({
-//														url : ctx + "/cluster/testDocker?nodename="+selectednode+"&memory="+memory,
-//														success : function(data) {
-//															var data = eval("(" + data + ")");
-//															if($("#dockeritem:checked").length != 0){
-//																if (data.status == '200') {
-//																	testHtmlResule = testHtmlResule
-//																		 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-//																		 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//																		 +'style="width: '+progressWidth+'">'
-//																		 +'<span>docker成功</span>'
-//																		 +'</div>';
-//																}else{
-//																	testHtmlResule = testHtmlResule
-//																		 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-//																		 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//																		 +'style="width: '+progressWidth+'">'
-//																		 +'<span>docker失败</span>'
-//																		 +'</div>';
-//																	failNum++;
-//																}
-//																count++;
-//															}
-//															nodeProgressDiv.empty().append(testHtmlResule);
-//															if(count == progressLength){
-//																if(failNum == 0){
-//																	nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
-//																}else{
-//																	nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
-//																}
-//																layer.close(loading);
-//															}
-//															//dns
-//															var testDnsHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-//																	 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//																	 +'style="width: '+testprogressWidth+'">'
-//																	 +'<span>dns测试中</span>'
-//																	 +'</div>';
-//															nodeProgressDiv.append(testDnsHtml);
-//															$.ajax({
-//																url : ctx + "/cluster/testDns?nodename="+selectednode,
-//																success : function(data) {
-//																	var data = eval("(" + data + ")");
-//																	if($("#dnsitem:checked").length != 0){
-//																		if (data.status == '200') {
-//																			testHtmlResule = testHtmlResule
-//																				 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-//																				 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//																				 +'style="width: '+progressWidth+'">'
-//																				 +'<span>dns成功</span>'
-//																				 +'</div>';
-//																		}else{
-//																			testHtmlResule = testHtmlResule
-//																				 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-//																				 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//																				 +'style="width: '+progressWidth+'">'
-//																				 +'<span>dns失败</span>'
-//																				 +'</div>';
-//																			failNum++;
-//																		}
-//																		count++;
-//																	}
-//																	nodeProgressDiv.empty().append(testHtmlResule);
-//																	if(count == progressLength){
-//																		if(failNum == 0){
-//																			nodeTestOpr.empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
-//																		}else{
-//																			nodeTestOpr.empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
-//																		}
-//																		layer.close(loading);
-//																	}
-//																}
-//															})
-//														}
-//													})
-//												}
-//											})
-//										}
-//									})
-//								}
-//							})
-//							
-//						}
-//					})
-					
-//					$.ajax({
-//						url : ctx
-//							+ "/cluster/excutetest?nodenames="
-//							+ selectednode + "&items="
-//							+ selecteditems + "&pingIp="
-//							+ pingIp + "&pingtime=" + pingtime
-//							+ "&tracepathIp=" + tracepathIp
-//							+ "&tracetime=" + tracetime
-//							+ "&curltime=" + curltime
-//							+ "&speed=" + speed + "&latency="
-//							+ latency + "&memory=" + memory,
-//						success : function(data) {
-//							var data = eval("(" + data + ")");
-//							layer.closeAll("loading");
-//							if (data.status == '200') {
-//								//initDetail(data);
-//								nodeInfos = data.nodeInfos;
-//								if(data.nodeInfos[0].allpass){
-//									var testHtmlSuccess = '<div class="progress-bar progress-bar-warning" role="progressbar"'
-//													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//													 +'style="width: 15%;">'
-//													 +'<span >部署完成</span>'
-//													 +'</div>'
-//													 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-//													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//													 +'style="width: 85%;">'
-//													 +'<span>执行完成</span>'
-//													 +'</div>';
-//
-//									$(obj).parents(".thisTr").find(".nodeProgress").empty().append(testHtmlSuccess);
-//									$(obj).parents(".thisTr").find(".clusterTestOpr").children("a").empty().append('<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font>');
-//								}else{
-//									var testHtmlFailure = '<div class="progress-bar progress-bar-warning" role="progressbar"'
-//										 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//										 +'style="width: 15%;">'
-//										 +'<span >部署完成</span>'
-//										 +'</div>'
-//										 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-//										 +' aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-//										 +'style="width: 85%;">'
-//										 +'<span>执行失败</span>'
-//										 +'</div>';
-//									$(obj).parents(".thisTr").find(".nodeProgress").empty().append(testHtmlFailure);
-//									$(obj).parents(".thisTr").find(".clusterTestOpr").children("a").empty().append('<font color="#FF0033" style="font-weight:bold">未通过<i class="fa fa-question-circle"></i></font>');
-//								}
-//								layer.close(index);
-//							} else {
-//								layer.alert(data.msg,{icon: 2});
-//							}
-//						}
-//					});
 				}
 			})
 		}
 	});
-
+}
+function passStatusFun(id,dataNodeInfo){
+	var passStatusStr = "";
+	if(id == 'ping'){
+		passStatusStr = dataNodeInfo.pingpass;
+	}else if(id == 'trace'){
+		passStatusStr = dataNodeInfo.tracepass;
+	}else if(id == 'qperf'){
+		passStatusStr = dataNodeInfo.qperfpass;
+	}else if(id == 'curl'){
+		passStatusStr = dataNodeInfo.curlpass;
+	}else if(id == 'docker'){
+		passStatusStr = dataNodeInfo.dockerpass;
+	}else if(id == 'dns'){
+		passStatusStr = dataNodeInfo.dnspass;
+	}
+	return passStatusStr;
 }
 function initDetail(data) {
 	for (var i = 0; i < data.nodeInfos.length; i++) {

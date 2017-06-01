@@ -1509,7 +1509,7 @@ public class ClusterController {
 	 * @param pingtime
 	 * @return
 	 */
-	@RequestMapping(value = { "/testping" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/testping" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String excutePing(NodeTestInfo nodeTestInfo) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -1593,7 +1593,7 @@ public class ClusterController {
 	 * @param tracetime
 	 * @return
 	 */
-	@RequestMapping(value = { "/testtrace" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/testtrace" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String excuteTrace(NodeTestInfo nodeTestInfo) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -1678,7 +1678,7 @@ public class ClusterController {
 	 * @param curltime
 	 * @return
 	 */
-	@RequestMapping(value = { "/testcurl" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/testcurl" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String excuteCurl(NodeTestInfo nodeTestInfo){
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -1771,7 +1771,7 @@ public class ClusterController {
 	 * @param latency
 	 * @return
 	 */
-	@RequestMapping(value = { "/testqperf" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/testqperf" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String excuteQperf(NodeTestInfo nodeTestInfo){
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -1887,7 +1887,7 @@ public class ClusterController {
 	 * @param memory
 	 * @return
 	 */
-	@RequestMapping(value = { "/testdocker" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/testdocker" }, method = RequestMethod.GET)
 	@ResponseBody
     public String excuteDocker(NodeTestInfo nodeTestInfo){
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -1960,7 +1960,7 @@ public class ClusterController {
 	 * 测试dns
 	 * @return
 	 */
-	@RequestMapping(value = { "/testdns" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/testdns" }, method = RequestMethod.GET)
 	@ResponseBody
     public String excuteDns(NodeTestInfo nodeTestInfo){
 		Map<String, Object> map = new HashMap<String, Object>();
