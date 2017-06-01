@@ -52,16 +52,23 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 	}
 
 	// 删除快照任务
-	public static void removeTimer(CephRbdInfo cephRbdInfo) {
+	public static boolean removeTimer(CephRbdInfo cephRbdInfo) {
 		if (map != null) {
-			Timer timer = map.get(cephRbdInfo);
-			timer.cancel();
-			map.remove(cephRbdInfo);
+			if (map.containsKey(cephRbdInfo)) {
+				Timer timer = map.get(cephRbdInfo);
+				timer.cancel();
+				map.remove(cephRbdInfo);
+			} else {
+				return false;
+			}
+		} else {
+			return false;
 		}
+		return true;
 	}
 
-	//增加快照任务
-	public static void addTimer(CephRbdInfo cephRbdInfo, SnapStrategy snapStrategy) {
+	// 增加快照任务
+	public static boolean addTimer(CephRbdInfo cephRbdInfo, SnapStrategy snapStrategy) {
 		if (map.containsKey(cephRbdInfo)) {
 			Timer timer = map.get(cephRbdInfo);
 			timer.cancel();
@@ -79,8 +86,29 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 						timer.scheduleAtFixedRate(snapTask, date, 24 * 3600 * 1000);// 第一次时间是今天某一刻，周期为一天
 					}
 					map.put(cephRbdInfo, timer);
+				} else {
+					return false;
 				}
+				return true;
+			} else {
+				return false;
 			}
+		} else {
+			return false;
 		}
+	}
+
+	public static boolean containRbd(CephRbdInfo cephRbdInfo){
+		if(map==null){
+			return false;
+		}
+		return map.containsKey(cephRbdInfo);
+	}
+
+	public static boolean containStrategy(SnapStrategy snapStrategy){
+		if(map==null){
+			return false;
+		}
+		return map.containsValue(snapStrategy);
 	}
 }

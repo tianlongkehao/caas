@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.SnapListener;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.CephRbdInfoDao;
 import com.bonc.epm.paas.dao.CephSnapDao;
@@ -487,12 +488,13 @@ public class CephController {
 
 	/**
 	 * 快照策略定时创建快照
+	 *
 	 * @param poolname
 	 * @param imgname
 	 * @param snapname
 	 * @param snapdetail
 	 */
-	public boolean autoCreateSnap(String poolname,String imgname,String snapname,String snapdetail){
+	public boolean autoCreateSnap(String poolname, String imgname, String snapname, String snapdetail) {
 		try {
 			cluster = new Rados(CEPH_NAME);
 			File f = new File(CEPH_DIR + CEPH_CONF);
@@ -698,7 +700,7 @@ public class CephController {
 	 * @param diskdetail
 	 * @return
 	 */
-	private CephRbdInfo saveCephRbdInfo(String imgname,long disksize, String diskdetail) {
+	private CephRbdInfo saveCephRbdInfo(String imgname, long disksize, String diskdetail) {
 		CephRbdInfo info = new CephRbdInfo();
 		info.setName(imgname);
 		info.setPool(CurrentUserUtils.getInstance().getUser().getNamespace());
@@ -1232,49 +1234,51 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "ceph/snapability" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String canRollBack(String imgname){
+	public String canRollBack(String imgname) {
 		Map<String, String> map = new HashMap<>();
-		String msg ="";
+		String msg = "";
 		map.put("status", "200");
-		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPoolAndName(CurrentUserUtils.getInstance().getUser().getNamespace(), imgname);
+		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao
+				.findByPoolAndName(CurrentUserUtils.getInstance().getUser().getNamespace(), imgname);
 
-		if(CollectionUtils.isEmpty(cephRbdInfos)){
-			msg = "找不到块设备: "+imgname+"!";
+		if (CollectionUtils.isEmpty(cephRbdInfos)) {
+			msg = "找不到块设备: " + imgname + "!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
 
 		long rbdId = cephRbdInfos.get(0).getId();
-        List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(rbdId);
-        if(CollectionUtils.isEmpty(cephRbdInfos)){
+		List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(rbdId);
+		if (CollectionUtils.isEmpty(cephRbdInfos)) {
 			return JSON.toJSONString(map);
-        }
+		}
 
-        if(!cephRbdInfos.get(0).isUsed()){
-        	return JSON.toJSONString(map);
-        }else{
-        	msg = "服务: "+serviceCephRbds.get(0).getServicename()+"正在使用磁盘: "+imgname+","
-        			+"请先停止服务，再进行回滚操作，回滚成功后，重启服务生效！";
-			map.put("msg", msg);
-        	map.put("status", "500");
+		if (!cephRbdInfos.get(0).isUsed()) {
 			return JSON.toJSONString(map);
-        }
+		} else {
+			msg = "服务: " + serviceCephRbds.get(0).getServicename() + "正在使用磁盘: " + imgname + ","
+					+ "请先停止服务，再进行回滚操作，回滚成功后，重启服务生效！";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
 	}
 
 	/**
 	 * 检查快照策略是否存在
+	 *
 	 * @param name
 	 * @return
 	 */
 	@RequestMapping(value = { "ceph/checkSnapStrategy" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String checkSnapStrategy(String name){
+	public String checkSnapStrategy(String name) {
 		Map<String, String> map = new HashMap<>();
-		String msg ="";
+		String msg = "";
 		map.put("status", "200");
 
-		if(StringUtils.isEmpty(name)){
+		if (StringUtils.isEmpty(name)) {
 			msg = "快照策略名称为空!";
 			map.put("msg", msg);
 			map.put("status", "500");
@@ -1282,7 +1286,7 @@ public class CephController {
 		}
 
 		List<SnapStrategy> snapStrategies = snapStrategyDao.findByName(name);
-		if(!CollectionUtils.isEmpty(snapStrategies)){
+		if (!CollectionUtils.isEmpty(snapStrategies)) {
 			msg = "快照策略名称已经存在!";
 			map.put("msg", msg);
 			map.put("status", "500");
@@ -1291,9 +1295,9 @@ public class CephController {
 		return JSON.toJSONString(map);
 	}
 
-
 	/**
 	 * 创建快照策略
+	 *
 	 * @param name
 	 * @param time
 	 * @param week
@@ -1302,33 +1306,33 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "ceph/createSnapStrategy" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String createSnapStrategy(String name,String time,String week,String keep){
+	public String createSnapStrategy(String name, String time, String week, String keep) {
 		Map<String, String> map = new HashMap<>();
-		String msg ="";
+		String msg = "";
 		map.put("status", "200");
 
-		if(StringUtils.isEmpty(name)){
+		if (StringUtils.isEmpty(name)) {
 			msg = "快照策略名称为空!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
 
-		if(StringUtils.isEmpty(time)){
+		if (StringUtils.isEmpty(time)) {
 			msg = "创建时间为空!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
 
-		if(StringUtils.isEmpty(week)){
+		if (StringUtils.isEmpty(week)) {
 			msg = "重复日期为空!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
 
-		if(StringUtils.isEmpty(keep)){
+		if (StringUtils.isEmpty(keep)) {
 			msg = "保留时间为空!";
 			map.put("msg", msg);
 			map.put("status", "500");
@@ -1339,30 +1343,141 @@ public class CephController {
 		snapStrategy.setCreateDate(new Date());
 		snapStrategy.setName(name);
 		snapStrategy.setNamespace(CurrentUserUtils.getInstance().getUser().getNamespace());
-        snapStrategy.setTime(time);
-        snapStrategy.setWeek(week);
-        snapStrategy.setUserId(CurrentUserUtils.getInstance().getUser().getId());
-        Calendar calendar =Calendar.getInstance();
-        calendar.add(Calendar.DATE, Integer.parseInt(keep));
-        snapStrategy.setEndData(calendar.getTime());
+		snapStrategy.setTime(time);
+		snapStrategy.setWeek(week);
+		snapStrategy.setUserId(CurrentUserUtils.getInstance().getUser().getId());
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DATE, Integer.parseInt(keep));
+		snapStrategy.setEndData(calendar.getTime());
 
-        snapStrategyDao.save(snapStrategy);
+		snapStrategyDao.save(snapStrategy);
 
-        // 记录日志
+		// 记录日志
 		String extraInfo = "新建快照策略 " + JSON.toJSONString(snapStrategy);
 		LOGGER.info(extraInfo);
-		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(name, extraInfo,
-				CommConstant.CEPH_SNAP_STRATEGY, CommConstant.OPERATION_TYPE_CREATED);
+		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(name, extraInfo, CommConstant.CEPH_SNAP_STRATEGY,
+				CommConstant.OPERATION_TYPE_CREATED);
 		commonOperationLogDao.save(log);
 
 		return JSON.toJSONString(map);
 	}
 
-	/*@RequestMapping(value = { "ceph/createSnapStrategy" }, method = RequestMethod.GET)
+	/**
+	 * 删除快照策略
+	 *
+	 * @param strategyId
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/removeSnapStrategy" }, method = RequestMethod.GET)
 	@ResponseBody
-    public String excuteSnapStrategy(long imgId,long strategyId){
+	public String removeSnapStrategy(long strategyId) {
+		Map<String, String> map = new HashMap<>();
+		String msg = "";
+		map.put("status", "200");
 
-    }*/
+		SnapStrategy snapStrategy = snapStrategyDao.findById(strategyId);
+		if (snapStrategy == null) {
+			msg = "找不到指定的快照策略!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		boolean result = SnapListener.containStrategy(snapStrategy);
+		if (result) {
+			msg = "快照策略仍被块存储执行，请先取消执行再删除!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByStrategyId(strategyId);
+		if (!CollectionUtils.isEmpty(cephRbdInfos)) {
+			msg = "快照策略仍被块存储绑定，请先解除绑定再删除!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		SnapStrategy strategy = snapStrategyDao.findById(strategyId);
+		snapStrategyDao.delete(snapStrategy);
+
+		// 记录日志
+		String extraInfo = "删除快照策略 " + JSON.toJSONString(strategy);
+		LOGGER.info(extraInfo);
+		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(strategy.getName(), extraInfo,
+				CommConstant.CEPH_SNAP_STRATEGY, CommConstant.OPERATION_TYPE_DELETE);
+		commonOperationLogDao.save(log);
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 执行快照策略
+	 *
+	 * @param imgId
+	 * @param strategyId
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/excuteSnapStrategy" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String excuteSnapStrategy(long imgId, long strategyId) {
+		Map<String, String> map = new HashMap<>();
+		String msg = "";
+		map.put("status", "200");
+
+		CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(imgId);
+		SnapStrategy snapStrategy = snapStrategyDao.findOne(strategyId);
+		boolean result = SnapListener.addTimer(cephRbdInfo, snapStrategy);
+		if (!result) {
+			msg = "快照策略执行失败!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		// 记录日志
+		String extraInfo = cephRbdInfo.getName() + "执行快照策略: " + JSON.toJSONString(snapStrategy);
+		LOGGER.info(extraInfo);
+		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(
+				cephRbdInfo.getName() + ":" + snapStrategy.getName(), extraInfo, CommConstant.CEPH_SNAP_STRATEGY,
+				CommConstant.OPERATION_TYPE_DEPLOY);
+		commonOperationLogDao.save(log);
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 取消快照策略的执行
+	 *
+	 * @param imgId
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/cancelSnapStrategy" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String cancelSnapStrategy(long imgId) {
+		Map<String, String> map = new HashMap<>();
+		String msg = "";
+		map.put("status", "200");
+
+		CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(imgId);
+		boolean result = SnapListener.removeTimer(cephRbdInfo);
+		if (!result) {
+			msg = "取消快照策略失败!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		// 记录日志
+		String extraInfo = "取消快照策略: " + JSON.toJSONString(cephRbdInfo);
+		LOGGER.info(extraInfo);
+		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(cephRbdInfo.getName(), extraInfo,
+				CommConstant.CEPH_SNAP_STRATEGY, CommConstant.OPERATION_TYPE_DEPLOY);
+		commonOperationLogDao.save(log);
+
+		return JSON.toJSONString(map);
+	}
 
 	/**
 	 *
