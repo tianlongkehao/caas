@@ -24,4 +24,6 @@ public interface SnapStrategyDao extends CrudRepository<SnapStrategy,Long>{
 
 	public List<SnapStrategy> findByUserId(long userId);
 
+	public List<SnapStrategy> findByName(String name);
+
 }

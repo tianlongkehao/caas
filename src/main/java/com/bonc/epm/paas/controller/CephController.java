@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,11 +31,13 @@ import com.bonc.epm.paas.dao.CephRbdInfoDao;
 import com.bonc.epm.paas.dao.CephSnapDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.ServiceRbdDao;
+import com.bonc.epm.paas.dao.SnapStrategyDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.ceph.CephRbdInfo;
 import com.bonc.epm.paas.entity.ceph.CephSnap;
 import com.bonc.epm.paas.entity.ceph.ServiceCephRbd;
+import com.bonc.epm.paas.entity.ceph.SnapStrategy;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.FileUtils;
 import com.ceph.fs.CephMount;
@@ -127,6 +130,9 @@ public class CephController {
 	 */
 	@Autowired
 	private ServiceRbdDao serviceRbdDao;
+
+	@Autowired
+	private SnapStrategyDao snapStrategyDao;
 
 	/**
 	 * connectCephFS
@@ -1255,6 +1261,103 @@ public class CephController {
 			return JSON.toJSONString(map);
         }
 	}
+
+	/**
+	 * 检查快照策略是否存在
+	 * @param name
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/checkSnapStrategy" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String checkSnapStrategy(String name){
+		Map<String, String> map = new HashMap<>();
+		String msg ="";
+		map.put("status", "200");
+
+		if(StringUtils.isEmpty(name)){
+			msg = "快照策略名称为空!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		List<SnapStrategy> snapStrategies = snapStrategyDao.findByName(name);
+		if(!CollectionUtils.isEmpty(snapStrategies)){
+			msg = "快照策略名称已经存在!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+		return JSON.toJSONString(map);
+	}
+
+
+	/**
+	 * 创建快照策略
+	 * @param name
+	 * @param time
+	 * @param week
+	 * @param keep
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/createSnapStrategy" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String createSnapStrategy(String name,String time,String week,String keep){
+		Map<String, String> map = new HashMap<>();
+		String msg ="";
+		map.put("status", "200");
+
+		if(StringUtils.isEmpty(name)){
+			msg = "快照策略名称为空!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		if(StringUtils.isEmpty(time)){
+			msg = "创建时间为空!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		if(StringUtils.isEmpty(week)){
+			msg = "重复日期为空!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		if(StringUtils.isEmpty(keep)){
+			msg = "保留时间为空!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		SnapStrategy snapStrategy = new SnapStrategy();
+		snapStrategy.setCreateDate(new Date());
+		snapStrategy.setName(name);
+		snapStrategy.setNamespace(CurrentUserUtils.getInstance().getUser().getNamespace());
+        snapStrategy.setTime(time);
+        snapStrategy.setWeek(week);
+        snapStrategy.setUserId(CurrentUserUtils.getInstance().getUser().getId());
+        Calendar calendar =Calendar.getInstance();
+        calendar.add(Calendar.DATE, Integer.parseInt(keep));
+        snapStrategy.setEndData(calendar.getTime());
+
+        snapStrategyDao.save(snapStrategy);
+
+        // 记录日志
+		String extraInfo = "新建快照策略 " + JSON.toJSONString(snapStrategy);
+		LOGGER.info(extraInfo);
+		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(name, extraInfo,
+				CommConstant.CEPH_SNAP_STRATEGY, CommConstant.OPERATION_TYPE_CREATED);
+		commonOperationLogDao.save(log);
+
+		return JSON.toJSONString(map);
+	}
+
 
 	/**
 	 *
