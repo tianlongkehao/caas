@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.constant.SheraConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.ServiceDao;
@@ -56,6 +58,8 @@ import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
 import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
+import com.bonc.epm.paas.shera.model.ExecConfig;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
 import com.bonc.epm.paas.shera.model.SonarConfig;
@@ -153,17 +157,34 @@ public class UserController {
     @Value("${ceph.key}")
     private String CEPH_KEY;
 
-    /**
-     * 内存和cpu的比例大小
+    /*
+     * cpu系数
      */
-    @Value("${ratio.memtocpu}")
-    private String RATIO_MEMTOCPU = "4";
+    @Value("${ratio.limittorequestcpu}")
+    private int RATIO_LIMITTOREQUESTCPU;
+
+    /*
+     * memory系数
+     */
+    @Value("${ratio.limittorequestmemory}")
+    private int RATIO_LIMITTOREQUESTMEMORY;
 
     /**
      * Model
      */
     public Model model;
 
+    /*
+     * 预留的cpu资源
+     */
+    @Value("${rest.resource.cpu}")
+    private int REST_RESOURCE_CPU;
+
+    /*
+     * 预留的memory资源
+     */
+    @Value("${rest.resource.memory}")
+    private int REST_RESOURCE_MEMORY;
     /**
      *
      * Description:
@@ -449,7 +470,7 @@ public class UserController {
         	//设置存储卷余量
         	userResource.setVol_surplus_size(userResource.getVol_surplus_size()+resource.getVol()-userResource.getVol_size());
             userResource.setCpu(Double.valueOf(resource.getCpu_account()));
-            userResource.setMemory(Long.parseLong(resource.getRam()));
+            userResource.setMemory(new Double(resource.getRam()).longValue());
             userResource.setVol_size(resource.getVol());
             userResource.setImage_count(resource.getImage_count());
             userResource.setUpdateDate(new Date());
@@ -690,11 +711,12 @@ public class UserController {
             if (null != ns) {
                 ResourceQuota quota = client.getResourceQuota(user.getNamespace());
                 if (null != quota) {
+                	//用户真实的资源*资源系数 = 页面显示资源
                     Map<String, String> map = quota.getSpec().getHard();
-                    String leftCpu = String.valueOf(kubernetesClientService.transCpu(map.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU));
-                    resource.setCpu_account(leftCpu);// CPU数量
-                    resource.setRam(map.get("memory").replace("G", "").replace("i", ""));// 内存
-                    LOG.info("+++++++++++++" + map.get("cpu") + "------" + map.get("memory"));
+                    String leftCpu = String.valueOf(kubernetesClientService.transCpu(map.get("cpu")) );
+                    resource.setCpu_account(String.valueOf(Double.parseDouble(leftCpu)*RATIO_LIMITTOREQUESTCPU-REST_RESOURCE_CPU));// CPU数量
+                    resource.setRam(String.valueOf(computeMemoryOut(map.get("memory"))*RATIO_LIMITTOREQUESTMEMORY-REST_RESOURCE_MEMORY));// 内存
+                    LOG.info("+++++++++++++" + leftCpu + "------" + map.get("memory"));
                     /* resource.setImage_control(map.get("replicationcontrollers"));//副本控制器
                     resource.setPod_count(map.get("pods"));//POD数量
                     resource.setServer_count(map.get("services"));//服务 */
@@ -1133,8 +1155,9 @@ public class UserController {
         ResourceQuotaSpec spec = quota.getSpec();
 
         Map<String, String> hard = quota.getSpec().getHard();
-        hard.put("memory", resource.getRam() + "G"); // 内存
-        hard.put("cpu", Double.valueOf(resource.getCpu_account())/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量
+        //资源按照系数调整
+        hard.put("memory", (Double.parseDouble(resource.getRam())+REST_RESOURCE_MEMORY)/RATIO_LIMITTOREQUESTMEMORY + "G"); // 内存
+        hard.put("cpu", (Double.parseDouble(resource.getCpu_account())+REST_RESOURCE_CPU)/RATIO_LIMITTOREQUESTCPU + "");// CPU数量
         hard.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
 		// hard.put("pods", resource.getPod_count() + "");//POD数量
 		// hard.put("services", resource.getServer_count() + "");//服务
@@ -1196,8 +1219,11 @@ public class UserController {
     public boolean createQuota(User user, Resource resource, KubernetesAPIClientInterface client) {
         try {
             Map<String, String> map = new HashMap<String, String>();
-            map.put("memory", resource.getRam() + "G"); // 内存
-            map.put("cpu", Double.valueOf(resource.getCpu_account())/Double.valueOf(RATIO_MEMTOCPU) + "");// CPU数量(个)
+            //map.put("memory", resource.getRam() + "G"); // 内存
+            //map.put("cpu", Double.valueOf(resource.getCpu_account()) + "");// CPU数量(个)
+            //实际分配资源=页面分配资源/分配系数
+            map.put("memory", (Double.parseDouble(resource.getRam())+REST_RESOURCE_MEMORY)/RATIO_LIMITTOREQUESTMEMORY + "G"); // 内存
+            map.put("cpu", (Double.parseDouble(resource.getCpu_account())+REST_RESOURCE_CPU)/RATIO_LIMITTOREQUESTCPU + "");// CPU数量(个)
             map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
             //map.put("pods", resource.getPod_count() + "");//POD数量
             //map.put("services", resource.getServer_count() + "");//服务
@@ -1348,7 +1374,7 @@ public class UserController {
             model.addAttribute("userResource", userResource);
             model.addAttribute("user", user);
             Map<String, String> hard = quota.getStatus().getHard();
-            model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
+            model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) ); // cpu个数
             model.addAttribute("servMemoryNum", kubernetesClientService.computeMemoryOut(hard.get("memory")));// 内存个数
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
@@ -1357,7 +1383,7 @@ public class UserController {
             Map<String, String> used = quota.getStatus().getUsed();
             ReplicationControllerList rcList = client.getAllReplicationControllers();
             PodList podList = client.getAllPods();
-            model.addAttribute("usedCpuNum", kubernetesClientService.transCpu(used.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
+            model.addAttribute("usedCpuNum", kubernetesClientService.transCpu(used.get("cpu")) ); // 已使用CPU个数
             model.addAttribute("usedMemoryNum", kubernetesClientService.computeMemoryOut(used.get("memory")));// 已使用内存
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
             model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
@@ -1413,43 +1439,153 @@ public class UserController {
         return "ci/shera.jsp";
     }
 
-    /**
-     * Description: <br>
-     * 创建shera路由信息
-     * @param shera shera
-     * @param jdkData jdk数据
-     * @return jsp
-     */
-    @RequestMapping("/shera/creatShera.do")
-    @ResponseBody
-    public String createShera(Shera shera,String jdkJson){
-        Map<String,Object> map = new HashMap<>();
-        try {
-            SheraAPIClientInterface client = sheraClientService.getClient(shera);
-            if (StringUtils.isNotEmpty(jdkJson)) {
-                String[] jdkData = jdkJson.split(";");
-                for (String jdkRow : jdkData ) {
-                    String jdkVersion = jdkRow.substring(0,jdkRow.indexOf(","));
-                    String jdkPath = jdkRow.substring(jdkRow.indexOf(",")+1);
-                    Jdk jdk = sheraClientService.generateJdk(jdkVersion, jdkPath);
-                    client.createJdk(jdk);
-                }
-            }
-            sheraDao.save(shera);
+	/**
+	 * createShera:创建shera. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param shera
+	 * @param jdkJson
+	 * @param mavenJson
+	 * @param antJson
+	 * @param sonarJson
+	 * @return String
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = ("/shera/creatShera.do"), method = RequestMethod.POST)
+	@ResponseBody
+	public String createShera(Shera shera, String jdkJson, String mavenJson, String antJson, String sonarJson) {
+		Map<String, Object> map = new HashMap<>();
+		if (shera.getId() == 0) {
+			List<Shera> sheraList = sheraDao.findByUrlAndPort(shera.getSheraUrl(), shera.getPort());
+			if (CollectionUtils.isNotEmpty(sheraList)) {
+				// 有重复的配置
+				map.put("status", "305");
+				return JSON.toJSONString(map);
+			}
+		}
+		SheraAPIClientInterface client = sheraClientService.getClient(shera);
+		try {
+			// 用任意一个api检测当前配置的shera能否使用
+			client.getAllJdk();
+		} catch (Exception e) {
+			// 配置不能使用的情况下返回300
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
 
-            //记录新增shera操作
-            String extraInfo = "新增shera ： " + shera.getSheraUrl() + "信息：" + JSON.toJSONString(shera);
-            CommonOperationLog log=CommonOprationLogUtils.getOprationLog(shera.getSheraUrl() , extraInfo, CommConstant.SHERA_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
-            commonOperationLogDao.save(log);
+		// 创建jdk
+		if (StringUtils.isNotBlank(jdkJson)) {
+			try {
+				// 删除旧的jdk
+				JdkList allJdk = client.getAllJdk();
+				if (null != allJdk && null != allJdk.getItems() && allJdk.getItems().size() != 0) {
+					for (Jdk jdk : allJdk.getItems()) {
+						client.deleteJdk(jdk.getVersion());
+					}
+				}
+				Map<String, String> jdkMap = new HashMap<>();
+				jdkMap = JSON.parseObject(jdkJson, jdkMap.getClass());
+				for (String key : jdkMap.keySet()) {
+					Jdk jdk = sheraClientService.generateJdk(key, jdkMap.get(key));
+					client.createJdk(jdk);
+				}
+			} catch (Exception e) {
+				map.put("status", "301");
+				map.put("message", "创建jdk配置失败:[jdkJson:" + jdkJson + "]");
+				return JSON.toJSONString(map);
+			}
+		}
 
-            map.put("status", "200");
-        }
-        catch (Exception e) {
-           LOG.error("create shera error : " + e.getMessage());
-           map.put("status", "400");
-        }
-        return JSON.toJSONString(map);
-    }
+		// 创建mvn的配置
+		if (StringUtils.isNoneBlank(mavenJson)) {
+			try {
+				client.deleteExecConfig("admin", SheraConstant.EXEC_MAVEN_CONFIG);
+				if (!createExecConfig(client, "admin", mavenJson)) {
+					map.put("status", "302");
+					map.put("message", "创建mvn配置失败:[mavenJson:" + mavenJson + "]");
+					return JSON.toJSONString(map);
+				}
+			} catch (Exception e) {
+				map.put("status", "302");
+				map.put("message", "创建mvn配置失败");
+				e.printStackTrace();
+				return JSON.toJSONString(map);
+			}
+		}
+
+		// 创建ant的配置
+		if (StringUtils.isNoneBlank(antJson)) {
+			try {
+				client.deleteExecConfig("admin", SheraConstant.EXEC_ANT_CONFIG);
+				if (!createExecConfig(client, "admin", antJson)) {
+					map.put("status", "303");
+					map.put("message", "创建ant配置失败:[antJson:" + antJson + "]");
+					return JSON.toJSONString(map);
+				}
+			} catch (Exception e) {
+				map.put("status", "303");
+				map.put("message", "创建ant配置失败");
+				e.printStackTrace();
+				return JSON.toJSONString(map);
+			}
+		}
+
+		// 创建sonar的配置
+		if (StringUtils.isNoneBlank(sonarJson)) {
+			try {
+				client.deleteExecConfig("admin", SheraConstant.EXEC_SONAR_CONFIG);
+				if (!createExecConfig(client, "admin", sonarJson)) {
+					map.put("status", "304");
+					map.put("message", "创建sonar配置失败:[sonarJson:" + sonarJson + "]");
+					return JSON.toJSONString(map);
+				}
+			} catch (Exception e) {
+				map.put("status", "304");
+				map.put("message", "创建sonar配置失败");
+				e.printStackTrace();
+				return JSON.toJSONString(map);
+			}
+		}
+
+		// 创建成功的情况,保存shera
+		shera.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+		shera.setCreateDate(new Date());
+		sheraDao.save(shera);
+		// 记录新增shera操作
+		String extraInfo = "新增shera ： " + shera.getSheraUrl() + "信息：" + JSON.toJSONString(shera);
+		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(shera.getSheraUrl(), extraInfo,
+				CommConstant.SHERA_MANAGER, CommConstant.OPERATION_TYPE_CREATED);
+		commonOperationLogDao.save(log);
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
+
+	/**
+	 * createExecConfig:更具json字符串创建ExecConfig. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param client
+	 * @param userid
+	 * @param jsonString
+	 * @return boolean
+	 */
+	private boolean createExecConfig(SheraAPIClientInterface client, String userid, String jsonString) {
+		List<ExecConfig> configList = new ArrayList<>();
+		configList = JSON.parseArray(jsonString, ExecConfig.class);
+		for (ExecConfig config : configList) {
+			config.setUserid("admin");
+			try {
+				client.createExecConfig(config);
+			} catch (SheraClientException e) {
+				LOG.error("创建execConfig异常：[jsonString:" + jsonString + "]");
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
+
 
     /**
      * 删除shera
@@ -1605,17 +1741,6 @@ public class UserController {
         return JSON.toJSONString(map);
     }
 
-    /**
-     * Description: <br>
-     * 查询所有的sonar
-     * @return jsp
-     */
-    @RequestMapping("/sonar")
-    public String findSonar(Model model){
-        model.addAttribute("menu_flag", "ci");
-        model.addAttribute("li_flag", "sonar");
-        return "ci/sonar.jsp";
-    }
 
 	/**
 	 * Description: <br>
@@ -1637,4 +1762,100 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * detailShera:shera detail页面. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param model
+	 * @param id
+	 * @return String
+	 */
+	@RequestMapping("/shera/detail/{id}")
+	public String detailShera(Model model, @PathVariable long id) {
+		Shera shera = sheraDao.findOne(id);
+		SheraAPIClientInterface client = sheraClientService.getClient(shera);
+		JdkList allJdk = null;
+		try {
+			allJdk = client.getAllJdk();
+		} catch (SheraClientException e) {
+			e.printStackTrace();
+		}
+		List<Map<String, Object>> mvnConfigList = getFormatExecConfig(client, SheraConstant.EXEC_MAVEN_CONFIG);
+		List<Map<String, Object>> antConfigList = getFormatExecConfig(client, SheraConstant.EXEC_ANT_CONFIG);
+		List<Map<String, Object>> sonarConfigList = getFormatExecConfig(client, SheraConstant.EXEC_SONAR_CONFIG);
+
+		model.addAttribute("shera", shera);
+		model.addAttribute("allJdk", allJdk);
+		model.addAttribute("mvnConfig", mvnConfigList);
+		model.addAttribute("antConfig", antConfigList);
+		model.addAttribute("sonarConfig", sonarConfigList);
+		model.addAttribute("menu_flag", "ci");
+		model.addAttribute("li_flag", "shera");
+		return "ci/shera-detail.jsp";
+	}
+
+	/**
+	 * getFormatExecConfig:获取格式化的ExecConfig. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param client
+	 * @param Kind
+	 * @return List<Map<String,Object>>
+	 */
+	private List<Map<String, Object>> getFormatExecConfig(SheraAPIClientInterface client, Integer Kind){
+		List<Map<String, Object>> resultList = new ArrayList<>();
+		List<ExecConfig> sonarConfigs;
+		try {
+			sonarConfigs = client.getExecConfig(Kind);
+		} catch (Exception e) {
+			sonarConfigs = null;
+		}
+		if (sonarConfigs != null) {
+			for (ExecConfig sonarConfig : sonarConfigs) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("version", sonarConfig.getVersion());
+
+				Map<String, String> env = sonarConfig.getEnv();
+				List<Object> envList = new ArrayList<>();
+				if (MapUtils.isNotEmpty(env)) {
+					for(String key : env.keySet()){
+						Map<String , String> envItem = new HashMap<>();
+						envItem.put("key",key);
+						envItem.put("value", env.get(key));
+						envList.add(envItem);
+					}
+				}
+				map.put("env", envList);
+				resultList.add(map);
+			}
+		}
+		return resultList;
+	}
+
+	/**
+    *
+    * Description:
+    * computeMemoryOut
+    * @param val Map<String, String>
+    * @return memVal String
+    * @see
+    */
+	private Float computeMemoryOut(String memory) {
+		if(StringUtils.isEmpty(memory)){
+			return null;
+		}
+		memory = memory.replaceAll("i", "");
+		if (memory.contains("K")) {
+			//Float a1 = Float.valueOf(memory.replace("K", "")) / 1024 / 1024;
+			Float a1 = Float.valueOf(memory.replace("K", "")) / 1000 / 1000;
+			return a1;
+		} else if (memory.contains("M")) {
+			//quota分配memory为浮点数时，单位为M,进制为1000,例 12.5G 在集群中显示 12500M
+			//Float a1 = Float.valueOf(memory.replace("M", "")) / 1024;
+			Float a1 = Float.valueOf(memory.replace("M", "")) / 1000;
+			return a1;
+		} else {
+			return Float.parseFloat(memory.replace("G", ""));
+		}
+	}
 }

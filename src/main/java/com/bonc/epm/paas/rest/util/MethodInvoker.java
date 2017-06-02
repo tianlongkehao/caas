@@ -36,15 +36,15 @@ import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 public class MethodInvoker {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(MethodInvoker.class);
-	
+
 	private String url;
 	private String userName;
 	private String password;
-	
+
 	private Method method;
-	
+
 	public MethodInvoker(String url, String userName, String password,Method method) {
 		super();
 		this.url = url;
@@ -60,7 +60,7 @@ public class MethodInvoker {
     		    .nonPreemptive().credentials(userName, password).build();
     	Path path = method.getAnnotation(Path.class);
     	String pathValue = path.value();
-    	
+
     	Entity<?> entity = null;
     	Map<String,String> queryParamMap = new HashMap<String,String>();
     	Parameter[] parameters = method.getParameters();
@@ -78,8 +78,10 @@ public class MethodInvoker {
     				queryParamMap.put(queryParam.value(), String.valueOf(args[i]));
     			}
     		}
+    	} else {
+    		entity = Entity.entity("", MediaType.APPLICATION_JSON_TYPE);
     	}
-    	
+
     	WebTarget pathWebTarget = webTarget.path(pathValue);
     	if(queryParamMap.size()>0){
     		for(Entry<String,String> queryParam:queryParamMap.entrySet()){
@@ -88,7 +90,7 @@ public class MethodInvoker {
     	}
     	Invocation.Builder invocationBuilder =
     			pathWebTarget.request(MediaType.APPLICATION_JSON_TYPE);
-    	
+
     	GET get = method.getAnnotation(GET.class);
     	POST post = method.getAnnotation(POST.class);
     	DELETE delete = method.getAnnotation(DELETE.class);
@@ -97,7 +99,7 @@ public class MethodInvoker {
     	if(get!=null){
     		response = invocationBuilder.get();
     	}else if(post!=null){
-    		response = invocationBuilder.post(entity);  
+    		response = invocationBuilder.post(entity);
     	}else if(delete!=null){
     		response = invocationBuilder.delete();
     	}else if(put!=null){
@@ -124,12 +126,12 @@ public class MethodInvoker {
                 if (status.getCode() < 0 || StringUtils.isBlank(status.getMessage())) {
                     throw new ProcessingException("is not a k8s exception");
                 }
-                throw new KubernetesClientException("unexpect k8s response",status);  
+                throw new KubernetesClientException("unexpect k8s response",status);
             }
             catch (ProcessingException | IllegalStateException dockerReg) {
                 try {
                     ErrorList errors = response.readEntity(ErrorList.class);
-                    throw new DokcerRegistryClientException("unexpect docker registry api response", errors); 
+                    throw new DokcerRegistryClientException("unexpect docker registry api response", errors);
                 }
                 catch (ProcessingException | IllegalStateException shera) {
                     throw new SheraClientException("unexpect shera response");

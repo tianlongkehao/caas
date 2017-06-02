@@ -138,33 +138,34 @@ $(document).ready(function () {
 		   $("#progressBar").val(0);
 	     $("#time").empty();
 	}
-    }
-    //上传失败
-    function uploadFailed(evt) {
-        alert("上传失败！");
-    }
-      //取消上传
-    function cancleUploadFile(){
-        xhr.abort();
-    }
+}
+//上传失败
+function uploadFailed(evt) {
+	alert("上传失败！");
+}
+
+//取消上传
+function cancleUploadFile() {
+	xhr.abort();
+}
 
 
 /**
  * 总用量
  */
-function hasUsed(){
-	var storageName=$('#storageName').html();
-	var totalSize =$('#totalSize').html();
+function hasUsed() {
+	var storageName = $('#storageName').html();
+	var totalSize = $('#totalSize').html();
 	$.ajax({
-		type: "GET",
-    url: ctx + "/hasUsed.do?storageName=/"+storageName+"&totalSize="+totalSize,
-    success : function(data) {
-    	data = eval('('+data+')');
-    	if("500"!=data.status){
-    		var hasUsed =data.length;
-    		$('#hasUsed').html(hasUsed);
-    		}
-    	}
+		type : "GET",
+		url : ctx + "/hasUsed.do?storageName=/" + storageName + "&totalSize=" + totalSize,
+		success : function(data) {
+			data = eval('(' + data + ')');
+			if ("400" != data.status) {
+				var hasUsed = data.length;
+				$('#hasUsed').html(hasUsed);
+			}
+		}
 	});
 }
 
@@ -183,16 +184,16 @@ function refreshtable(){
  * @param path
  * @param dirName
  */
-function  creatable(isDir,path,dirName){
+function creatable(isDir, path, dirName) {
 
-	if(null==isDir ||"true"==isDir ){
-		var tbody="";
-		var context =$('#mybody');
-		var param="";
-		var storageName=$('#storageName').html();
-		if(null==path||null==path){
-		 param="path=&dirName=&storageName=/"+storageName+"/";
-		}else{
+	if (null == isDir || "true" == isDir) {
+		var tbody = "";
+		var context = $('#mybody');
+		var param = "";
+		var storageName = $('#storageName').html();
+		if (null == path || null == path) {
+			param = "path=&dirName=&storageName=/" + storageName + "/";
+		} else {
 			if (null == dirName) {
 				dirName = "";
 			} else {
@@ -203,78 +204,56 @@ function  creatable(isDir,path,dirName){
 		context.empty();
 
 		$.ajax({
-	        type: "GET",
-	        url: ctx + "/listFile?"+param,
-	        success : function(data) {
-	        	//alert(data);
-	        	var data = eval("("+data+")");
-	        	if(data.status=="500"){
-	        		layer.alert("您没有权限浏览上一级内容");
-	        		creatable(null,null,null);
-	        		return;
-	        			}
-	        	if(data.status=="400"){
-	        		layer.alert("对不起，没有找到相应的目录");
-	        		return;
-	        			}
-	        	for (i in data.fileList) {
-	        		var	fileInfo =	JSON.stringify(data.fileList[i]);
-	    				fileInfo = eval("(" + fileInfo + ")");
-	    				$('#downfilepath').val(fileInfo.path);
-   					 fileInfo.path = encodeURI(fileInfo.path);
-   					 fileInfo.fileNameEnc=encodeURI(fileInfo.fileName);
-	    				//alert(fileInfo.day);
-	    				if(fileInfo.fileName=='..'){
-			    				tbody+='<tr class="vol_list" style="cursor:pointer">'+
-									'<td style="width: 5%;text-indent: 14px;">'+
-									'</td>'+
-									'<td style="width: 25%; text-indent: 30px;"  onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileNameEnc+'") >'+
-									'<a hrer="">';
-									if(true==fileInfo.dir){
-										tbody+='<img src="'+ctx+'/images/img-file.png ">';
-									}else{
-										tbody+='<img src="'+ctx+'/images/file-f.png ">';
-;									 }
-									tbody+='<span style="margin-left:5px"  >'+
-									fileInfo.fileName+'</span>'+
-									'</a>'+
-									'</td>'+
-									'<td style="width: 20%;">'+fileInfo.size+'</td>'+
-									'<td style="width: 25%;"></td>'+
-									'<td style="width: 10%;text-indent: 56px;"></td>'+
-								'</tr>';
-	    				}else{
-			    				tbody+='<tr class="vol_list" style="cursor:pointer">'+
-									'<td style="width: 5%;text-indent: 14px;">'+
-									'<input type="checkbox" class="chkItem" name="downfiles" value="'+fileInfo.fileName+'" >'+
-									'</td>'+
-									'<td style="width: 25%;text-indent: 30px;" onclick=creatable("'+fileInfo.dir+'","'+fileInfo.path+'","'+fileInfo.fileNameEnc+'") >'+
-									'<a hrer="">';
-									if(true==fileInfo.dir){
-										tbody+='<img src="'+ctx+'/images/img-file.png ">';
-									}else{
-										tbody+='<img src="'+ctx+'/images/file-f.png ">';
-;									 }
-			    				tbody+='<span style="margin-left:5px"  >'+
-									fileInfo.fileName+'</span>'+
-									'</a>'+
-									'</td>'+
-									'<td style="width: 20%;">'+fileInfo.size+'KB</td>'+
-									'<td style="width: 25%;">'+fileInfo.modifiedTime+'</td>'+
-									'<td style="width: 10%;text-indent: 56px;">'+'<a class="deleteButton" href="javascript:void(0)" onclick="delfile(this)"  fileName="'+fileInfo.fileName+'"> <i class="fa fa-trash fa-lg"></i></a>'+'</td>'+
-								'</tr>';
-	    				}
+			type : "GET",
+			url : ctx + "/listFile?" + param,
+			success : function(data) {
+				//alert(data);
+				var data = eval("(" + data + ")");
+				if (data.status == "500") {
+					layer.alert("您没有权限浏览上一级内容");
+					creatable(null, null, null);
+					return;
+				}
+				if (data.status == "400") {
+					layer.alert("对不起，没有找到相应的目录");
+					return;
+				}
+				for (i in data.fileList) {
+					var fileInfo = JSON.stringify(data.fileList[i]);
+					fileInfo = eval("(" + fileInfo + ")");
+					$('#downfilepath').val(fileInfo.path);
+					fileInfo.path = encodeURI(fileInfo.path);
+					fileInfo.fileNameEnc = encodeURI(fileInfo.fileName);
+					//alert(fileInfo.day);
+					if (fileInfo.fileName == '..') {
+						tbody += '<tr class="vol_list" style="cursor:pointer">' + '<td style="width: 5%;text-indent: 14px;">' + '</td>' + '<td style="width: 25%; text-indent: 30px;"  onclick=creatable("' + fileInfo.dir + '","' + fileInfo.path + '","' + fileInfo.fileNameEnc + '") >' + '<a hrer="">';
+						if (true == fileInfo.dir) {
+							tbody += '<img src="' + ctx + '/images/img-file.png ">';
+						} else {
+							tbody += '<img src="' + ctx + '/images/file-f.png ">';
+							;
+						}
+						tbody += '<span style="margin-left:5px"  >' + fileInfo.fileName + '</span>' + '</a>' + '</td>' + '<td style="width: 20%;">' + fileInfo.size + '</td>' + '<td style="width: 25%;"></td>' + '<td style="width: 10%;text-indent: 56px;"></td>' + '</tr>';
+					} else {
+						tbody += '<tr class="vol_list" style="cursor:pointer">' + '<td style="width: 5%;text-indent: 14px;">' + '<input type="checkbox" class="chkItem" name="downfiles" value="' + fileInfo.fileName + '" >' + '</td>' + '<td style="width: 25%;text-indent: 30px;" onclick=creatable("' + fileInfo.dir + '","' + fileInfo.path + '","' + fileInfo.fileNameEnc + '") >' + '<a hrer="">';
+						if (true == fileInfo.dir) {
+							tbody += '<img src="' + ctx + '/images/img-file.png ">';
+						} else {
+							tbody += '<img src="' + ctx + '/images/file-f.png ">';
+							;
+						}
+						tbody += '<span style="margin-left:5px"  >' + fileInfo.fileName + '</span>' + '</a>' + '</td>' + '<td style="width: 20%;">' + fileInfo.size + 'KB</td>' + '<td style="width: 25%;">' + fileInfo.modifiedTime + '</td>' + '<td style="width: 10%;text-indent: 56px;">' + '<a class="deleteButton" href="javascript:void(0)" onclick="delfile(this)"  fileName="' + fileInfo.fileName + '"> <i class="fa fa-trash fa-lg"></i></a>' + '</td>' + '</tr>';
+					}
 
-
-	        	}
-	        	$('#mybody').html($(tbody));
-	  	      //showDataTable();
-	        }
-
-	      });
+				}
+				$('#mybody').html($(tbody));
+				//showDataTable();
+			}
+		});
 
 	}
 }
+
 
 function showDataTable(){
 	$('.dataTables-example').dataTable({

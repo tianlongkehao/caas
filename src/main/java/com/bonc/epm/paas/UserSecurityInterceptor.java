@@ -3,64 +3,39 @@ package com.bonc.epm.paas;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.entity.User;
+
 /**
  * 拦截未登录的用户信息
- * @author fengtao
- * 2015-12-21
+ *
+ * @author fengtao 2015-12-21
  */
 public class UserSecurityInterceptor implements HandlerInterceptor {
 
-   /**
-    *  portConfigDao
-    */
-    @Autowired
-    public PortConfigDao portConfigDao;
-
-    @Value("${cas.enable}")
-    private boolean CAS_ENABLE;
-
-    @Override
-	public boolean preHandle(HttpServletRequest request,
-			HttpServletResponse response, Object handler) throws Exception {
-		 //验证用户是否登陆
-        Object obj = request.getSession().getAttribute("cur_user");
-        if (obj == null || !(obj instanceof User)) {
-        	if (CAS_ENABLE) {
-        		response.sendRedirect(request.getContextPath() + "/home");
-			} else {
-				response.sendRedirect(request.getContextPath() + "/login");
-			}
-
-/*          ServiceController.smalSet.clear();
-            if (portConfigDao == null) {//解决service为null无法注入问题
-               BeanFactory factory = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getServletContext());
-               portConfigDao = (PortConfigDao) factory.getBean("portConfigDao");
-               }
-            ServiceController.smalSet.addAll(portConfigDao.findPortSets());
-            ServiceController.smalSet.remove(null);*/
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-	public void postHandle(HttpServletRequest request,
-			HttpServletResponse response, Object handler,
-			ModelAndView modelAndView) throws Exception {
-    }
-
-    @Override
-	public void afterCompletion(HttpServletRequest request,
-			HttpServletResponse response, Object handler, Exception ex)
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-    }
+		// 验证用户是否登陆
+		Object obj = request.getSession().getAttribute("cur_user");
+		if (obj == null || !(obj instanceof User)) {
+			response.sendRedirect(request.getContextPath() + "/login");
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+	}
 
 }

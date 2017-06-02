@@ -48,8 +48,9 @@
 												<th style="width: 5%; text-indent: 30px;"><input
 													type="checkbox" class="chkAll" id="checkallbox" /></th>
 												<th style="width: 15%;">名称</th>
-												<th style="width: 15%;">仓库类型</th>
+												<th style="width: 15%;text-indent:20px">仓库类型</th>
 												<th style="width: 10%;">认证方式</th>
+												<th style="width: 15%;">创建时间</th>
 												<th style="width: 10%;" class="del-operation">操作</th>
 											</tr>
 										</thead>
@@ -63,25 +64,26 @@
 														onmousemove="style.textDecoration='underline'"
 														onmouseout="style.textDecoration='none'">${cre.userName }  (${cre.remark })</a></td>
 	                                                <c:if test="${cre.codeType == 1}">
-                                                        <td style="width: 10%; text-indent: 0;"
+                                                        <td style="width: 10%; text-indent: 20px;"
                                                             id="key-codeType" name="key-codeType">Git
                                                         </td>
                                                     </c:if>
                                                     <c:if test="${cre.codeType == 2}">
-                                                        <td style="width: 10%; text-indent: 0;"
+                                                        <td style="width: 10%; text-indent: 20px;"
                                                             id="key-codeType" name="key-codeType">SVN
                                                         </td>
                                                     </c:if>
 	                                                <c:if test="${cre.type == 1}">
-														<td style="width: 10%; text-indent: 0;"
+														<td style="width: 10%;"
 															id="key-type" name="key-type">HTTP
 													    </td>
 	                                                </c:if>
 	                                                <c:if test="${cre.type == 2}">
-                                                        <td style="width: 10%; text-indent: 0;"
+                                                        <td style="width: 10%;"
                                                             id="key-type" name="key-type">SSH
                                                         </td>
                                                     </c:if>
+                                                    <td style="width: 15%;">${cre.createDate }</td>
 													<td style="width: 10%;"><a id="deleteKeyBtn"
 														class="no-drop"
 														href="javascript:delOneSecretKey(${cre.id })"
@@ -89,7 +91,6 @@
 													</a></td>
 												</tr>
 											</c:forEach>
-
 										</tbody>
 										<tfoot class="hide">
 											<tr>
@@ -113,7 +114,7 @@
 	</article>
 	</div>
 	<div id="createKeyCon" style="display: none">
-		<div style="width:345px;margin: 15px 15px">
+		<div style="margin: 15px 15px">
 		    <div class="infoCred">
                 <span class="labelCred">仓库：</span> 
                 <select class="form-control conCred" id="codeType" name="codeType">
@@ -138,23 +139,64 @@
 					class="form-control conCred" id="passwordCred" name="password"
 					value="">
 			</div>
-			<div class="infoCred ssh">
-				<span class="labelCred">密钥：</span>
-				<textarea type="text" class="form-control conCred" style="height:100px"
-					id="SSHpasswordCred" name="privateKey" row="8" value=""></textarea>
+			<div class="infoCred">
+				<span class="labelCred">描述：</span>
+				<textarea type="text" class="form-control conCred"
+					id="keyRemark" name="keyRemark" rows="4" value=""></textarea>
+			</div>
+		</div>
+	</div>
+	<div id="secretKeyDetail" style="display: none">
+		<div style="margin: 15px 15px">
+		    <div class="infoCred">
+                <span class="labelCred">仓库：</span> 
+                <select class="form-control conCred" id="codeTypeDetail" name="codeType" disabled>
+                    <option value="1">Git</option>
+                    <option value="2">SVN</option>
+                </select>
+            </div>
+			<div class="infoCred">   
+				<span class="labelCred">认证：</span> 
+				<select class="form-control conCred" id="CredentialsTypeDetail" name="type" disabled>
+					<option value="1">用户名和密码</option>
+					<option value="2">SSH用户名和密钥</option>
+				</select>
+			</div>
+			<div class="infoCred">
+				<span class="labelCred">用户名：</span> <input type="text"
+					class="form-control conCred" id="userNameCredDetail" name="userName"
+					value="" readonly="readonly">
+			</div>
+			<div class="infoCred normal">
+				<span class="labelCred">密码：</span> <input type="password"
+					class="form-control conCred" id="passwordCredDetail" name="password"
+					value="" readonly="readonly">
 			</div>
 			<div class="infoCred">
 				<span class="labelCred">描述：</span>
-				<textarea type="text" class="form-control conCred" style="height:100px"
-					id="keyRemark" name="keyRemark" row="8" value=""></textarea>
+				<textarea type="text" class="form-control conCred"
+					id="keyRemarkDetail" name="keyRemark" rows="2" value="" readonly="readonly"></textarea>
 			</div>
+			<div class="infoCred ssh">
+				<span class="labelCred">公钥：<br><i class="fa fa-clipboard" onclick="copySshPwd(this)" style="margin-left:10px;cursor:pointer;color:#36C"></i>&nbsp;(复制)</span> 
+				<textarea type="text" class="form-control conCred"
+					id="SSHpasswordCredDetail" rows="4" value="" readonly="readonly"></textarea>
+			</div>
+		</div>
+	</div>
+	<!-- ssh认证密钥 -->
+	<div id="sshPwdInfo" style="display:none">
+		<div style="width: 90%; margin: 0 auto;margin-top:10px">
+			<span>认证已经生成，请添加下面的公钥到对应代码托管平台。<i class="fa fa-clipboard" onclick="copySshPwd(this)" style="margin-left:10px;cursor:pointer;color:#36C"></i>&nbsp;(复制)</span>
+			<textarea rows="8" id="sshPassword" style="width:100%;margin-top:10px;border:1px solid #ddd"></textarea>
 		</div>
 	</div>
 
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$('.dataTables-example').dataTable({
-	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,4] }]
+	        "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ,5] }],
+	        "aaSorting": [[ 4, "desc" ]]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
 		

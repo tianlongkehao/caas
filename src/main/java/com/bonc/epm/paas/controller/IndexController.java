@@ -118,6 +118,12 @@ public class IndexController {
 
     @Value("${login.showAuthCode}")
     private boolean showAuthCode;
+
+    @Value ("${ratio.limittorequestcpu}")
+    private int RATIO_LIMITTOREQUESTCPU;
+
+    @Value ("${ratio.limittorequestmemory}")
+    private int RATIO_LIMITTOREQUESTMEMORY;
     /**
      * KubernetesClientService
      */
@@ -134,11 +140,6 @@ public class IndexController {
      */
     @Autowired
     private SheraDao sheraDao;
-    /**
-     * 内存和cpu的比例大小
-     */
-    @Value("${ratio.memtocpu}")
-    private String RATIO_MEMTOCPU = "4";
 
     /**
      * service操作日志dao接口
@@ -163,6 +164,17 @@ public class IndexController {
         return "home.jsp";
     }
 
+    /*
+     * 预留的cpu资源
+     */
+    @Value("${rest.resource.cpu}")
+    private int REST_RESOURCE_CPU;
+
+    /*
+     * 预留的memory资源
+     */
+    @Value("${rest.resource.memory}")
+    private int REST_RESOURCE_MEMORY;
 	/**
 	 * Description: <br>
 	 * 总览页面
@@ -208,8 +220,8 @@ public class IndexController {
 				double memoryCount = 0;
 				for (Node node : allNodes.getItems()) {
 					Map<String, String> capacity = node.getStatus().getCapacity();
-					cpuCount += Float.valueOf(this.computeCpuOut(capacity)) * Integer.valueOf(RATIO_MEMTOCPU);
-					memoryCount += Float.valueOf(this.computeMemoryOut(capacity));
+					cpuCount += Float.valueOf(this.computeCpuOut(capacity)) ;
+					memoryCount += Float.valueOf(Float.parseFloat(this.computeMemoryOut(capacity)));
 				}
 				//获取所有quota
 				double usedCpuCount = 0;
@@ -218,7 +230,7 @@ public class IndexController {
 				ResourceQuotaList allResourceQuotas = client.getAllResourceQuotas();
 				for (ResourceQuota resourceQuota : allResourceQuotas.getItems()) {
 					Map<String, String> used = resourceQuota.getStatus().getUsed();
-					usedCpuCount += Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU);
+					usedCpuCount += Float.valueOf(this.computeCpuOut(used));
 					usedMemoryCount += Float.valueOf(this.computeMemoryOut(used));
 				}
 				model.addAttribute("cpuCount", df.format(cpuCount));
@@ -315,8 +327,8 @@ public class IndexController {
 
         if (null != quota) {
             Map<String, String> hard = quota.getStatus().getHard();
-            model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
-            model.addAttribute("servMemoryNum", hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
+            model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu"))*RATIO_LIMITTOREQUESTCPU - REST_RESOURCE_CPU); // cpu个数
+            model.addAttribute("servMemoryNum", Math.ceil(Float.parseFloat(computeMemoryOut(hard))*RATIO_LIMITTOREQUESTMEMORY - REST_RESOURCE_MEMORY));// 内存个数
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
             model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数
@@ -324,8 +336,8 @@ public class IndexController {
             Map<String, String> used = quota.getStatus().getUsed();
             ReplicationControllerList rcList = client.getAllReplicationControllers();
             PodList podList = client.getAllPods();
-            model.addAttribute("usedCpuNum", Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
-            model.addAttribute("usedMemoryNum", Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
+            model.addAttribute("usedCpuNum", Double.parseDouble(this.computeCpuOut(used))*RATIO_LIMITTOREQUESTCPU); // 已使用CPU个数
+            model.addAttribute("usedMemoryNum", Double.parseDouble(this.computeMemoryOut(used))*RATIO_LIMITTOREQUESTMEMORY);// 已使用内存
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
             model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
             // model.addAttribute("usedControllerNum", usedControllerNum);
@@ -361,14 +373,18 @@ public class IndexController {
      */
 	private String computeMemoryOut(Map<String, String> val) {
 		String memVal = val.get("memory");
-		if (memVal.contains("Ki")) {
-			Float a1 = Float.valueOf(memVal.replace("Ki", "")) / 1024 / 1024;
+		memVal = memVal.replaceAll("i", "");
+		if (memVal.contains("K")) {
+			//Float a1 = Float.valueOf(memVal.replace("K", "")) / 1024 / 1024;
+			Float a1 = Float.valueOf(memVal.replace("K", "")) / 1000 / 1000;
 			return a1.toString();
-		} else if (memVal.contains("Mi")) {
-			Float a1 = Float.valueOf(memVal.replace("Mi", "")) / 1024;
+		} else if (memVal.contains("M")) {
+			//Kubernetes采用的进制为1000
+			//Float a1 = Float.valueOf(memVal.replace("M", ""))/ 1024;
+			Float a1 = Float.valueOf(memVal.replace("M", ""))/ 1000;
 			return a1.toString();
 		} else {
-			return memVal.replace("Gi", "");
+			return memVal.replace("G", "");
 		}
 	}
 
@@ -377,11 +393,15 @@ public class IndexController {
      * 跳转登录页面
      * @return login.jsp
      */
-    @RequestMapping(value={"login"},method=RequestMethod.GET)
-	public String login(Model model){
-        model.addAttribute("showAuthCode", showAuthCode);
-        return "login.jsp";
-    }
+	@RequestMapping(value = { "login" }, method = RequestMethod.GET)
+	public String login(Model model) {
+		if (configProps.getEnable()) {
+			return "redirect:home";
+		}
+		model.addAttribute("showAuthCode", showAuthCode);
+		return "login.jsp";
+	}
+
     /**
      * Description: <br>
      * 跳转镜像广场
@@ -661,7 +681,7 @@ public class IndexController {
 
 		if (null != quota) {
 			Map<String, String> hard = quota.getStatus().getHard();
-			userInfo.setServCpuNum(kubernetesClientService.transCpu(hard.get("cpu")) * Integer.valueOf(RATIO_MEMTOCPU)); // cpu个数
+			userInfo.setServCpuNum(kubernetesClientService.transCpu(hard.get("cpu"))); // cpu个数
 			userInfo.setServMemoryNum(hard.get("memory").replace("i", "").replace("G", ""));// 内存个数
 			userInfo.setServPodNum(hard.get("pods"));// pod个数
 			userInfo.setServServiceNum(hard.get("services")); // 服务个数
@@ -670,7 +690,7 @@ public class IndexController {
 			Map<String, String> used = quota.getStatus().getUsed();
 			ReplicationControllerList rcList = client.getAllReplicationControllers();
 			PodList podList = client.getAllPods();
-			userInfo.setUsedCpuNum(Float.valueOf(this.computeCpuOut(used)) * Integer.valueOf(RATIO_MEMTOCPU)); // 已使用CPU个数
+			userInfo.setUsedCpuNum(Float.valueOf(this.computeCpuOut(used))); // 已使用CPU个数
 			userInfo.setUsedMemoryNum(Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
 			userInfo.setUsedPodNum((null != podList) ? podList.size() : 0); // 已经使用的POD个数
 			userInfo.setUsedServiceNum((null != rcList) ? rcList.size() : 0);// 已经使用的服务个数

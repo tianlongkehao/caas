@@ -96,6 +96,9 @@
     /* background: #418ac7; */
     /* background: #e8504f; */
 }
+.radius_step.action a {
+    color:#e8504f;
+}
 
 .step-inner {
     position: relative;
@@ -751,27 +754,31 @@ i.pushOrg {
 }
 
 
-.containerLog .weblogtitle {
+.containerLog .weblogtitle, .containerCMD .weblogtitle{
     height: 40px;
     background: #1C2022;
     padding-left: 2%;
     padding-right: 2%;
 }
-.historycontainerLog .weblogtitle {
+.historycontainerLog .weblogtitle, .containerCMD .weblogtitle{
     height: 40px;
     background: #1C2022;
     padding-left: 2%;
     padding-right: 2%;
+}
+.containerCMD .weblogtitle{
+	width:98%;
+	margin: 0 auto;
 }
 
 .weblogtitle .pull_left {
-    width: 59%;
+    width: 49%;
     line-height: 40px;
     display: inline-block;
 }
 
 .weblogtitle .pull_right {
-    width: 40%;
+    width: 49%;
     text-align: right;
     line-height: 40px;
     display: inline-block;
@@ -1151,11 +1158,17 @@ p.portLabel input{
     margin-top: 3px;
 }
 /* 日期 */
-#dateTimePicker{
+#dateTimePickerFrom, #dateTimePickerTo {
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 118px;
 	background-color: #1C2022;
-    height: 37px;
-    border: none;
+	height: 37px;
+	border: none;
+	padding-right: 0px;
+	width: 118px;
 }
+
 #ui-datepicker-div{
 	width:224px;
 }
@@ -1193,7 +1206,7 @@ p.portLabel input{
 	padding-left:20px
 }
 /* .BORDER td{
-	line-height:40px!important;	
+	line-height:40px!important;
 } */
 .editSerChName{
 	float:right;
@@ -1211,4 +1224,57 @@ p.portLabel input{
 	float:right;
 	color:#337ab7;
 	margin-top:8px;
+}
+.autoFlexInfoInput{
+	margin-top: 10px;
+	width: 78%;
+	line-height: 30px;
+    border-radius: 5px;
+    border:1px solid #ddd;
+    text-indent:6px;
+}
+
+#fileBody td a{
+	margin-right:6px;
+}
+.fileName i.fa{
+	margin-right:4px;
+	color:#337ab7;
+}
+#fileBody tr{
+	border-bottom:1px solid #ddd;
+}
+.addTfootBtn{
+	background: #fafafa;
+	text-align:center;
+	color:#3f8ec3;
+	cursor:pointer
+}
+.serviceTbody tr td:not(:first-child){
+	text-align:left;
+	padding-left:15px!important;
+	padding-top:6px!important;
+	padding-bottom:6px!important;
+}
+#rcEvents table thead tr th:not(:first-child), #podEvents table thead tr th:not(:first-child),
+#newRcEvents table thead tr th:not(:first-child), #newpPodEvents table thead tr th:not(:first-child){
+	padding-left:15px;
+}
+#rcEvents table thead tr th:first-child, #podEvents table thead tr th:first-child,
+#newRcEvents table thead tr th:first-child, #newpPodEvents table thead tr th:first-child{
+	text-align:center;
+}
+#serviceTabContent{
+	padding:2px 10px;
+}
+#rcEvents table thead tr, #podEvents table thead tr,
+#rcEvents table tbody tr, #podEvents table tbody tr{
+	border-bottom:1px solid #ddd;
+}
+#serviceEventInfo{
+	padding:10px 15px;;
+}
+#serviceEventInfo ul li.active a{
+	background-color:#e8504f;
+	color:#fff;
 }

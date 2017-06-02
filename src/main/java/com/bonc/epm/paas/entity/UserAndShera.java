@@ -18,42 +18,42 @@ import javax.persistence.Id;
 
 @Entity
 public class UserAndShera {
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private long id;
-    
-    /**
-     * 租户Id
-     */
-    private long userId;
-    
-    /**
-     * sheraId
-     */
-    private long sheraId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
 
-    public long getId() {
-        return id;
-    }
+	/**
+	 * 租户Id
+	 */
+	private long userId;
 
-    public void setId(long id) {
-        this.id = id;
-    }
+	/**
+	 * sheraId
+	 */
+	private long sheraId;
 
-    public long getUserId() {
-        return userId;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public long getSheraId() {
-        return sheraId;
-    }
+	public long getUserId() {
+		return userId;
+	}
 
-    public void setSheraId(long sheraId) {
-        this.sheraId = sheraId;
-    }
-    
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+
+	public long getSheraId() {
+		return sheraId;
+	}
+
+	public void setSheraId(long sheraId) {
+		this.sheraId = sheraId;
+	}
+
 }

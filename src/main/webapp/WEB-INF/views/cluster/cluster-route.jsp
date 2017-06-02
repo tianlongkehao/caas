@@ -38,7 +38,6 @@
 											class="fa fa-repeat"></i></a>
 									</div>
 								</div>
-
 							</div>
 						</div>
 					</div>
@@ -50,56 +49,46 @@
 									class="fa fa-repeat"></i>
 							</a></li>
 						</ul>
-						<form id="search_form" class="form-inline" action="" method="post">
-							<div class="searchFun"
-								style="float: left; text-align: center; margin: 0px 10px; float: right"
-								align="right">
-								<label style="line-height: 35px">node:</label> <select
-									name="search_routeNode" id="search_routeNode" onchange="searchRouteNode()"
-									style="height: 30px; display: inline; width: 140px; border-radius: 5px;">
-									<c:forEach items="${nodeList }" var="nodeList">
-										<option value="${nodeList.nodeIp }">${nodeList.nodeName }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</form>
 						<div class="" style="margin-bottom:15px">
 							<table class="table table-striped table-hover dataTables-example">
 								<thead>
 									<tr>
-										<th>&nbsp;</th>
-										<th>targetIP</th>
+										<th><input type="checkbox" class="chkAll" id="checkallbox" /></th>
+										<th style="width:40%">集群节点</th>
+										<th style="width:15%">&nbsp;</th>
+										<th style="width:15%">&nbsp;</th>
 										<th>是否成功</th>
+										<th>操作</th>
 									</tr>
 								</thead>
 								<tbody id="routeList">
-									
+									<%-- <c:forEach items="${nodeList }" var="nodeList">
+										<tr>
+											<td><input type="checkbox" class="chkItem" nodeIp="${nodeList.nodeIp }" nodeName="${nodeList.nodeName }"/></td>
+											<td colspan="3">${nodeList.nodeName }（${nodeList.nodeIp }）</td>
+											<c:if test="${nodeList.problem == 'unknown' }">
+											<td>未知</td>
+											</c:if>
+											<c:if test="${nodeList.problem == 'false' }">
+											<td>成功</td>
+											</c:if>
+											<c:if test="${nodeList.problem == 'true' }">
+											<td>失败</td>
+											</c:if>
+											<td class="routeBtns">
+												<a class="fa-caret" nodeIp="${nodeList.nodeIp }" onclick="nodeTargetIPDetail(this)"><i class="fa fa-caret-right" flag="1">测试</i></a>
+												<a onclick="recoverOneRoute(this)" nodeIp="${nodeList.nodeIp }" nodeName="${nodeList.nodeName }"><i>恢复</i></a>
+											</td>
+										</tr>
+									</c:forEach> --%>
 								</tbody>
-								<!-- <tfoot class="hide">
-									<tr>
-										<td colspan="3">
-											<ul class="pagination pull-right"></ul>
-										</td>
-									</tr>
-								</tfoot> -->
 							</table>
 						</div>
-						
 					</div>
-					
-
 				</div>
 			</div>
     </article>
 </div>
-<script type="text/javascript">
-	/* $('.dataTables-example').dataTable({
-	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0] }],
-	    "searching":false
-	    //"aaSorting": [[ 2, "desc" ]]
-	}); */
-	//$("#checkallbox").parent().removeClass("sorting_asc");
-</script>
 
 </body>
 </html>

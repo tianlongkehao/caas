@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>服务</title>
+    <title>云存储</title>
     <%@include file="../frame/header.jsp"%>
     <link rel="stylesheet" type="text/css" href="<%=path %>/css/mod/storage.css"/>
   	<script type="text/javascript" src="<%=path %>/js/storage/storage.js"></script> 
@@ -20,7 +20,9 @@
                     <li><a href="<%=path %>/bcm/${cur_user.id }"><i class="fa fa-home"></i>&nbsp;&nbsp;<span
                             id="nav1">控制台</span></a></li>
                     <li><i class="fa fa-angle-right"></i></li>
-                    <li class="active">存储和备份</li>
+                    <li class="active">云存储</li>
+                    <li><i class="fa fa-angle-right"></i></li>
+                    <li class="active">文件存储</li>
                 </ol>
             </div>
             <div class="contentMain">
@@ -33,7 +35,7 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a href="<%=path %>/service/storage/add" id="storageAdd" title="创建存储卷"><i
+										<a id="storageAddBtn" title="创建存储卷" onclick="storageAdd()"><i
 											class="fa fa-plus"></i></a>
 										<a id="storagedel" title="删除存储卷"  onclick="delStorages()"><i
 											class="fa fa-trash"></i></a>
@@ -77,7 +79,27 @@
         </div>
     </article>
 </div>
-
+<div id="storageAdd" style="display:none">
+    <ul class="popWin">
+        <li class="line-h-3">
+            <span class="edit-name-c">名称：</span>
+            <input id="addStorageName" style="margin-top: 5px;width: 165px;" type="text" value="">
+        </li>
+        <li class="line-h-3">
+            <div class="param-set">
+                <span class="edit-name-c">存储大小：</span>
+                <label for="size20"><input type="radio" name="storageSize" class="storageSize" value="20480" id="size20">20<span>G</span></label>
+                <label for="size50"><input type="radio" name="storageSize" class="storageSize" value="51200" id="size50">50<span>G</span></label>
+                <label for="size100"><input type="radio" name="storageSize" class="storageSize" value="102400" id="size100">100<span>G</span></label>
+                <input type="radio" name="storageSize" class="storageSize" id="defVolNum">
+                	<label for="defVolNum"><input type="number" id="defVol" style="width:80px; font-size:8px" placeholder="自定义大小"><span>G</span></label>
+                <div>
+                <span style="color:#1E90FF; padding-left:84px">总量:<span id="totalVol">${userResource.vol_size}</span>G</span>
+                <span style="color:#1E90FF; padding-left:15px">剩余:<span id="restVol">${userResource.vol_surplus_size }</span>G 可用</span></div>
+            </div>
+        </li>
+    </ul>
+</div>
 <div id="storageUpdate" style="display:none">
     <ul class="popWin">
         <li class="line-h-3">
@@ -87,9 +109,9 @@
         <li class="line-h-3">
             <div class="param-set">
                 <span class="edit-name-c">存储大小：</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20"><label for="size20">20<span>G</span></label>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="size50"><label for="size50">50<span>G</span></label>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="size100"><label for="size100">100<span>G</span></label>
+                <label for="usize20"><input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="usize20">20<span>G</span></label>
+                <label for="usize50"><input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="usize50">50<span>G</span></label>
+                <label for="usize100"><input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="usize100">100<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" id="updatedefVolNum">
                 	<label for="updatedefVolNum"><input type="number" id="updatedefVol" style="width:80px; font-size:8px" placeholder="自定义大小"><span>G</span></label>
                 <div>
@@ -103,9 +125,6 @@
         </li>
     </ul>
 </div>
-<script type="text/javascript">
-	
-</script>
 
 </body>
 </html>

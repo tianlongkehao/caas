@@ -139,33 +139,35 @@
                                 </div>
                             </section>
                             <!--   质量管理：如果配置的是必选 则checkbox自动勾选且不可更改，若选择可选则CheckBox可选 -->
-                            <c:if test="${sonarConfig.mandatory == true}">
-                            <h4 class="c-title"><label><strong>质量管理</strong><input type="checkbox" id="ci-sonarInfo" checked="checked" disabled></label></h4>
-							<input id="sonarCheck" name="sonarCheck" type="hidden" value="1">
-                            <section class="registryinfo sonarInfo" >
-	                            <div class="row">
-	                                <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">源码所在目录</label>
-	                                    <input id="sources" name="sources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔">
-<!-- 	                                    <textarea id="sonarProjectSources" autocomplete = 'off' name="sonarProjectSources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔" -->
-<!-- 	                                           required="" row="5"></textarea> -->
-	                                </div>
-	                            </div>
-                        	</section>
-                        	</c:if>
-                        	<c:if test="${sonarConfig.mandatory == false}">
-                            <h4 class="c-title"><label><strong>质量管理</strong><input type="checkbox" id="ci-sonarInfo"></label></h4>
-							<input id="sonarCheck" name="sonarCheck" type="hidden" value="0">
-                            <section class="registryinfo sonarInfo" >
-	                            <div class="row">
-	                                <div class="form-group col-md-12">
-	                                    <label class="c-project-tit">源码所在目录</label>
-	                                    <input id="sources" name="sources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔">
-<!-- 	                                    <textarea id="sonarProjectSources" autocomplete = 'off' name="sonarProjectSources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔" -->
-<!-- 	                                           required="" row="5"></textarea> -->
-	                                </div>
-	                            </div>
-                        	</section>
+                            <c:if test="${not empty sonarConfig}">
+	                            <c:if test="${sonarConfig.mandatory == true}">
+	                            <h4 class="c-title"><label><strong>质量管理</strong><input type="checkbox" id="ci-sonarInfo" checked="checked" disabled></label></h4>
+								<input id="sonarCheck" name="sonarCheck" type="hidden" value="1">
+	                            <section class="registryinfo sonarInfo" >
+		                            <div class="row">
+		                                <div class="form-group col-md-12">
+		                                    <label class="c-project-tit">源码所在目录</label>
+		                                    <input id="sources" name="sources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔">
+	<!-- 	                                    <textarea id="sonarProjectSources" autocomplete = 'off' name="sonarProjectSources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔" -->
+	<!-- 	                                           required="" row="5"></textarea> -->
+		                                </div>
+		                            </div>
+	                        	</section>
+	                        	</c:if>
+	                        	<c:if test="${sonarConfig.mandatory == false}">
+	                            <h4 class="c-title"><label><strong>质量管理</strong><input type="checkbox" id="ci-sonarInfo"></label></h4>
+								<input id="sonarCheck" name="sonarCheck" type="hidden" value="0">
+	                            <section class="registryinfo sonarInfo" >
+		                            <div class="row">
+		                                <div class="form-group col-md-12">
+		                                    <label class="c-project-tit">源码所在目录</label>
+		                                    <input id="sources" name="sources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔">
+	<!-- 	                                    <textarea id="sonarProjectSources" autocomplete = 'off' name="sonarProjectSources" class="form-control c-project-con" type="text" placeholder="质量检查目录逗号分隔" -->
+	<!-- 	                                           required="" row="5"></textarea> -->
+		                                </div>
+		                            </div>
+	                        	</section>
+	                        	</c:if>
                         	</c:if>
                             <h4 class="c-title">构建</h4>
                             <section class="registryinfo">
@@ -268,79 +270,65 @@
         </div>
     </article>
 </div>
-				<!--dockerfile导入模板 -->
-                <div id="dockerfile-import" style="max-height:170px;overflow-y:scroll;overflow-x:hidden;">
-                    <table class="table table-hover enabled" id="Path-table-doc"
-                        style="width: 326px; margin: 5px 10px 5px 10px">
-                        <tbody id="dockerfile-body">
+	<!--dockerfile导入模板 -->
+	<div id="dockerfile-import"
+		style="max-height: 170px; overflow-y: scroll; overflow-x: hidden;">
+		<table class="table table-hover enabled" id="Path-table-doc"
+			style="width: 326px; margin: 5px 10px 5px 10px">
+			<tbody id="dockerfile-body">
 
-                        </tbody>
-                    </table>
-                </div>
-                <!-- dockerfile另存为模板 -->
-                <div id="dockerfile-export">
-                    <div style="width: 345px; margin: 5px 10px 5px 10px">
-                        <span>模板名称：</span><input type="text" id="dockerFileTemplateName"
-                            style="width: 77%" autofocus="autofocus" />
-                    </div>
-                </div>
-                <!-- 添加证书 -->
-			     <div id="addCredentialsCon">
-			        <div style="margin: 15px 15px">
-			            <div class="infoCred">
-			                <span class="labelCred">仓库：</span>
-			                <select class="form-control conCred" id="codeType" name="codeType">
-			                    <option value="1">Git</option>
-			                    <option value="2">SVN</option>
-			                </select>
-			            </div>
-			            <div class="infoCred">
-			                <span class="labelCred">认证：</span> <select
-			                    class="form-control conCred" id="CredentialsType" name="type">
-			                    <option value="1">用户名和密码</option>
-			                    <option value="2">SSH用户名和密钥</option>
-			                </select>
-			            </div>
-			            <div class="infoCred">
-			                <span class="labelCred">用户名：</span> <input type="text"
-			                    class="form-control conCred" id="userNameCred" name="userName"
-			                    value="">
-			            </div>
-			            <div class="infoCred normal">
-			                <span class="labelCred">密码：</span> <input type="password"
-			                    class="form-control conCred" id="passwordCred" name="password"
-			                    value="">
-			            </div>
-			            <div class="infoCred ssh">
-			                <span class="labelCred">密钥：</span>
-			                <textarea type="text" class="form-control conCred" style="height:100px"
-			                    id="SSHpasswordCred" name="privateKey" row="8" value=""></textarea>
-			            </div>
-			            <div class="infoCred">
-			                <span class="labelCred">描述：</span>
-			                <textarea type="text" class="form-control conCred" style="height:100px"
-			                    id="keyRemark" name="keyRemark" row="8" value=""></textarea>
-			            </div>
-			        </div>
-                 </div>
-               <!--  <div id="addCredentialsCon">
-                    <div style="width: 345px; margin: 5px 10px 5px 10px">
-                        <div class="infoCred">
-                        	<span class="labelCred">类型：</span>
-	                        <select class="form-control conCred" id="CredentialsType" name = "type">
-	                        	<option value="1">用户名和密码</option>
-	                        	<option value="2">SSH用户名和密钥</option>
-	                        </select></div>
-                        <div class="infoCred">
-	                        <span class="labelCred">用户名：</span>
-	                        <input type="text" class="form-control conCred" id="userNameCred" name="userName" value=""></div>
-                        <div class="infoCred normal">
-	                        <span class="labelCred">密码：</span>
-	                        <input type="password" class="form-control conCred" id="passwordCred" name="password" value=""></div>
-                        <div class="infoCred ssh">
-	                        <span class="labelCred">密钥：</span>
-	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="8" value="" ></textarea></div>
-                    </div>
-                </div> -->
+			</tbody>
+		</table>
+	</div>
+	<!-- dockerfile另存为模板 -->
+	<div id="dockerfile-export">
+		<div style="width: 345px; margin: 5px 10px 5px 10px">
+			<span>模板名称：</span><input type="text" id="dockerFileTemplateName"
+				style="width: 77%" autofocus="autofocus" />
+		</div>
+	</div>
+	<!-- 添加证书 -->
+	<div id="addCredentialsCon">
+		<div style="margin: 15px 15px">
+			<div class="infoCred">
+				<span class="labelCred1">仓库：</span> <select
+					class="form-control conCred" id="codeType" name="codeType">
+					<option value="1">Git</option>
+					<option value="2">SVN</option>
+				</select>
+			</div>
+			<div class="infoCred">
+				<span class="labelCred1">认证：</span> <select
+					class="form-control conCred" id="CredentialsType" name="type">
+					<option value="1">用户名和密码</option>
+					<option value="2">SSH用户名和密钥</option>
+				</select>
+			</div>
+			<div class="infoCred">
+				<span class="labelCred1">用户名：</span> <input type="text"
+					class="form-control conCred" id="userNameCred" name="userName"
+					value="">
+			</div>
+			<div class="infoCred normal">
+				<span class="labelCred1">密码：</span> <input type="password"
+					class="form-control conCred" id="passwordCred" name="password"
+					value="">
+			</div>
+			<input type="hidden" id="privateKey" name="privateKey" value=""></input>
+			<div class="infoCred">
+				<span class="labelCred1">描述：</span>
+				<textarea type="text" class="form-control conCred"
+					style="height: 100px" id="keyRemark" name="keyRemark" rows="8"
+					value=""></textarea>
+			</div>
+		</div>
+	</div>
+	<!-- ssh认证密钥 -->
+	<div id="sshPwdInfo" style="display:none">
+		<div style="width: 90%; margin: 0 auto;margin-top:10px">
+			<span>认证已经生成，请添加下面的公钥到对应代码托管平台。<i class="fa fa-clipboard" onclick="copySshPwd()" style="margin-left:10px"></i>&nbsp;(复制)</span>
+			<textarea rows="8" id="sshPassword" style="width:100%;margin-top:10px;border:1px solid #ddd"></textarea>
+		</div>
+	</div>
 </body>
 </html>

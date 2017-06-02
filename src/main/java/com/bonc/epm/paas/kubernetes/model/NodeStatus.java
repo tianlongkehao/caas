@@ -4,12 +4,19 @@ import java.util.List;
 import java.util.Map;
 
 public class NodeStatus {
-	
+
 	private Map<String,String> capacity;
+	private Map<String,String> allocatable;
 	private List<NodeCondition> conditions;
 	private List<NodeAddress> addresses;
 	private Map<String,String> nodeInfo;
-	
+
+	public Map<String, String> getAllocatable() {
+		return allocatable;
+	}
+	public void setAllocatable(Map<String, String> allocatable) {
+		this.allocatable = allocatable;
+	}
 	public Map<String, String> getCapacity() {
 		return capacity;
 	}

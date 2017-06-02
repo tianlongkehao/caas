@@ -92,6 +92,11 @@ public class Service {
 	private Integer monitor;
 
 	/**
+	 * Pod调度方式
+	 */
+	private boolean ispodmutex;
+
+	/**
 	 * 服务访问路径
 	 */
 	private String servicePath;
@@ -506,4 +511,13 @@ public class Service {
 	public void setResponsiblePersonTelephone(String responsiblePersonTelephone) {
 		this.responsiblePersonTelephone = responsiblePersonTelephone;
 	}
+
+	public boolean isIspodmutex() {
+		return ispodmutex;
+	}
+
+	public void setIspodmutex(boolean ispodmutex) {
+		this.ispodmutex = ispodmutex;
+	}
+
 }

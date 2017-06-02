@@ -1,4 +1,13 @@
 $(document).ready(function(){
+
+	$("#podmutex").change(function() {
+		if ($(this).prop('checked')) {
+			$("#podmutexlabel").show();
+		} else {
+			$("#podmutexlabel").hide();
+		}
+	});
+
 	// 控制环境变量的参数
 	var count=1;
 	loadImageList();
@@ -14,6 +23,13 @@ $(document).ready(function(){
 	$("#createButton").click(function(){
 		if(!saveEnvVariable()) {
 			return;
+		}
+		var configmap = $('#configmap option:selected').val();
+		var configmapPath = $('#configmapPath').val();
+		if(configmap!=-1&&configmapPath==''){
+			  layer.tips('配置文件路径不能为空','#configmapPath',{tips: [1, '#3595CC']});
+		      $('#configmapPath').focus();
+		      return;
 		}
 		//判断服务名称
 		var name = $('#serviceName').val();
@@ -144,6 +160,13 @@ $(document).ready(function(){
 	    } else {
 	    	$("#monitor").val("0");
 	    }
+	    //Pod调度方式
+	    if($("#podmutex").prop("checked")==true){
+	    	$("#ispodmutex").val("true");
+	    } else {
+	    	$("#ispodmutex").val("false");
+	    }
+
 	    //服务路径的判断
 	    var servicePath = $("#webPath").val();
 	    if(!servicePath || servicePath.length < 1){
@@ -376,40 +399,40 @@ $(document).ready(function(){
 
 	// 添加环境变量
 	$("#cratePATH").click(function(){
-		var addName = $("#Name").val();
-		var addValue = $("#Value").val();
-		//环境变量Key只能是字母数字下划线；
-		reg=/^[A-Za-z_][A-Za-z0-9_]*$/;
-		if(!reg.test(addName)){
-			layer.tips('环境变量key只能是字母数字下划线，不能以数字开头','#Name',{tips: [1, '#3595CC']});
-			$('#Name').focus();
-			return;
-		}
-		//判断addName长度
-		if(addName.length >= 4096){
-	    	layer.tips('value字符长度不能超过4096','#Value',{tips: [1, '#3595CC']});
-		      $('#Value').focus();
-		      return;
-	    }
-		//判断key是否重复，
-		var arrayKey = $("#arrayKey").val().split(",");
-		for(var i = 0; i<arrayKey.length; i++){
-			if(addName == arrayKey[i]){
-				layer.tips('环境变量key不能重复','#Name',{tips: [1, '#3595CC']});
-				$('#Name').focus();
-				return;
-			}
-		}
-		//判断value长度
-		if(addValue.length >= 4096){
-	    	layer.tips('value字符长度不能超过4096','#Value',{tips: [1, '#3595CC']});
-		      $('#Value').focus();
-		      return;
-	    }
-		arrayKey.push(addName);
-		$("#arrayKey").attr("value",arrayKey);
+//		var addName = $("#Name").val();
+//		var addValue = $("#Value").val();
+//		//环境变量Key只能是字母数字下划线；
+//		reg=/^[A-Za-z_][A-Za-z0-9_]*$/;
+//		if(!reg.test(addName)){
+//			layer.tips('环境变量key只能是字母数字下划线，不能以数字开头','#Name',{tips: [1, '#3595CC']});
+//			$('#Name').focus();
+//			return;
+//		}
+//		//判断addName长度
+//		if(addName.length >= 4096){
+//	    	layer.tips('value字符长度不能超过4096','#Value',{tips: [1, '#3595CC']});
+//		      $('#Value').focus();
+//		      return;
+//	    }
+//		//判断key是否重复，
+//		var arrayKey = $("#arrayKey").val().split(",");
+//		for(var i = 0; i<arrayKey.length; i++){
+//			if(addName == arrayKey[i]){
+//				layer.tips('环境变量key不能重复','#Name',{tips: [1, '#3595CC']});
+//				$('#Name').focus();
+//				return;
+//			}
+//		}
+//		//判断value长度
+//		if(addValue.length >= 4096){
+//	    	layer.tips('value字符长度不能超过4096','#Value',{tips: [1, '#3595CC']});
+//		      $('#Value').focus();
+//		      return;
+//	    }
+//		arrayKey.push(addName);
+//		$("#arrayKey").attr("value",arrayKey);
 
-		if(addName != "" && addValue != ""){
+		
 			var tr = '<tr>'+
 						'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'+
 						'<td class="vals"><input id="value_'+count+'" type="text" style="width: 98%"></td>'+
@@ -417,14 +440,14 @@ $(document).ready(function(){
 							'<a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
 								'<i class="fa fa-trash-o fa-lg"></i>'+
 							'</a>'+
-							'<input type="hidden" class="oldValue" value="'+addName+'">'+
+							//'<input type="hidden" class="oldValue" value="'+addName+'">'+
 						'</td>'+
 					'</tr>';
 			$("#Path-oper1").append(tr);
-			$("#key_"+count).val(addName);
-			$("#value_"+count).val(addValue);
+			//$("#key_"+count).val(addName);
+			//$("#value_"+count).val(addValue);
 			count++;
-		}
+		
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
     	$(".step-inner").height(imagePage_height+100);
@@ -433,38 +456,40 @@ $(document).ready(function(){
 	// 添加挂载卷
 	var size = 0;
 	$("#addVolume").click(function(){
-		var id = $("#selectVolume").val();
-		var selectVolume = $("#selectVolume option:selected").text();
-		var mountPath = $("#mountPath").val();
-
-		if (id == null || id == "") {
-    		layer.tips('请选择存储卷','#selectVolume',{tips: [1, '#3595CC']});
-			$('#selectVolume').focus();
-			return;
-    	}
-
-		if (mountPath == null || mountPath == "") {
-    		layer.tips('挂载地址不能为空','#mountPath',{tips: [1, '#3595CC']});
-			$('#mountPath').focus();
-			return;
-    	}
-		if(mountPath.search(/^[0-9a-zA-Z_/]+$/) === -1){
-			layer.tips('挂载地址只能是字母数字下划线斜线','#mountPath',{tips: [1, '#3595CC']});
-			$('#mountPath').focus();
-			return;
-		}
-
-		var tr = '<tr>'+
-					'<td class="keys"><input type="text" id = "storageName_'+count+'" style="width: 98% " readonly="readonly"></td>'+
-					'<td class="vals"><input type="text" id = "mountPoint_'+count+'" style="width: 98%"></td>'+
-					'<td class="func"><a href="javascript:void(0)" onclick="deleteCephRow(this)" class="gray">'+
-						'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" id = "id_'+count+'">'+
-					'</td>'+
-				'</tr>';
+//		var id = $("#selectVolume").val();
+//		var selectVolume = $("#selectVolume option:selected").text();
+//		var mountPath = $("#mountPath").val();
+//
+//		if (id == null || id == "") {
+//    		layer.tips('请选择存储卷','#selectVolume',{tips: [1, '#3595CC']});
+//			$('#selectVolume').focus();
+//			return;
+//    	}
+//
+//		if (mountPath == null || mountPath == "") {
+//    		layer.tips('挂载地址不能为空','#mountPath',{tips: [1, '#3595CC']});
+//			$('#mountPath').focus();
+//			return;
+//    	}
+//		if(mountPath.search(/^[0-9a-zA-Z_/]+$/) === -1){
+//			layer.tips('挂载地址只能是字母数字下划线斜线','#mountPath',{tips: [1, '#3595CC']});
+//			$('#mountPath').focus();
+//			return;
+//		}
+		var selectItem = $(".selectVolumeAddItme")[0].outerHTML;
+		var tr = '<tr>'
+				+'<td class="keys'+count+'"></td>'
+				+'<td class="vals"><input type="text" id = "mountPoint_'+count+'" style="width: 98%"></td>'
+				+'<td class="func"><a href="javascript:void(0)" onclick="deleteCephRow(this)" class="gray">'
+				+'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" id = "id_'+count+'">'
+				+'</td>'
+				+'</tr>';
 		$("#volList").append(tr);
-		$("#storageName_"+count).val(selectVolume);
-		$("#mountPoint_"+count).val(mountPath);
-		$("#id_"+count).val(id);
+		var keyTd = '.keys'+count;
+		$(keyTd).append(selectItem);
+//		$("#storageName_"+count).val(selectVolume);
+//		$("#mountPoint_"+count).val(mountPath);
+//		$("#id_"+count).val(id);
 		count++;
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
@@ -491,28 +516,27 @@ $(document).ready(function(){
     		success : function(data) {
 	    		data = eval("(" + data + ")");
 	    		if(!data.mapPort||"error"==(data.ERROR)){
-	    				alert("可用映射端口已经用尽，请联系管理员。");
+	    				layer.alert("可用映射端口已经用尽，请联系管理员。");
 	    		}else{
-		    		var portTr =''+
-						'<tr class="plus-row">'+
-		    					'<td>'+
-		    						'<input class="port" type="text">'+
-									'</td>'+
-									'<td>'+
-											'<select class="T-http">'+
-												  '<option>TCP</option>'+
-													'<option>UDP</option>'+
-											'</select>'+
-									'</td>'+
-									'<td>'+
-											'<i>'+data.mapPort+'</i>'+
-									'</td>'+
-									'<td>'+
-											'<a href="javascript:void(0)" onclick="deletePortRow(this,'+data.mapPort+')" class="gray">'+
-														'<i class="fa fa-trash-o fa-lg"></i>'+
-											'</a>'+
-								  '</td>'+
-						'</tr>';
+		    		var portTr ='<tr class="plus-row">'
+				    			+'<td>'
+				    			+'<input class="port" type="text">'
+				    			+'</td>'
+				    			+'<td>'
+				    			+'<select class="T-http">'
+				    			+'<option>TCP</option>'
+				    			+'<option>UDP</option>'
+				    			+'</select>'
+				    			+'</td>'
+				    			+'<td>'
+				    			+'<i>'+data.mapPort+'</i>'
+				    			+'</td>'
+				    			+'<td>'
+				    			+'<a href="javascript:void(0)" onclick="deletePortRow(this,'+data.mapPort+')" class="gray">'
+				    			+'<i class="fa fa-trash-o fa-lg"></i>'
+				    			+'</a>'
+				    			+'</td>'
+				    			+'</tr>';
 		    			$("#pushPrptpcol").append(portTr);
 		        	}
 	    		//调节界面高度
@@ -557,14 +581,14 @@ $(document).ready(function(){
 	    	                	for (var i in data.data) {
 	    	                		var html = "";
 	    	                		var envTemplate = data.data[i];
-	    	                		html = '<tr>'+
-		    	    	    					'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'+
-		    	    	    					'<td class="vals"><input id="value_'+count+'" type="text" style="width: 98%"></td>'+
-		    	    	    					'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'+
-		    	    	    						'<i class="fa fa-trash-o fa-lg"></i>'+
-		    	    	    						'</a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'+
-		    	    	    					'</td>'+
-		    	    	    				'</tr>';
+	    	                		html = '<tr>'
+	    	                			+'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'
+	    	                			+'<td class="vals"><input id="value_'+count+'" type="text" style="width: 98%"></td>'
+	    	                			+'<td class="func"><a href="javascript:void(0)" onclick="deleteRow(this)" class="gray">'
+	    	                			+'<i class="fa fa-trash-o fa-lg"></i>'
+	    	                			+'</a><input type="hidden" class="oldValue" value="'+envTemplate.envKey+'">'
+	    	                			+'</td>'
+	    	                			+'</tr>';
 
 	    	                		$("#Path-oper1").append(html);
 	    	                		$("#key_"+count).val(envTemplate.envKey);
@@ -889,14 +913,16 @@ function saveCephData(){
     $("#volList tr").each(function (index, domEle){
     	 var id = "";
          var mountPoint = "";
-         $(domEle).find("input").each(function(index,data){
-             if (index == 1){
-             	mountPoint = $(data).val();
-             }
-             if(index == 2){
-             	id = $(data).val();
-             }
-         });
+//         $(domEle).find("input").each(function(index,data){
+//             if (index == 1){
+//             	mountPoint = $(data).val();
+//             }
+//             if(index == 2){
+//             	id = $(data).val();
+//             }
+//         });
+        id = $(domEle).find("select").val();
+        mountPoint = $(domEle).find(".vals").find("input").val();
 
  		for (var i = 0; i<arrayKey.length;i++) {
  			if (id == arrayKey[i]) {
@@ -1040,27 +1066,27 @@ function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
 			portConfigs = eval("(" + portConfigs + ")");
 			$("#pushPrptpcol").empty();
         	$.each(portConfigs,function(i,n){
-        		var portTr = '<tr class="plus-row">'+
-				  									'<td>'+
-        												'<input class="port" type="text" value="'+n.containerPort+'">'+
-				  									'</td>'+
-				  									'<td>' +
-				  											'<select class="T-http">'+
-				  													'<option>TCP</option>'+
-				  													'<option>UDP</option>'+
-				  											'</select>'+
-				  									'</td>'+
-				  									'<td>'+
-				  										'<i>'+n.mapPort +'</i>'+
-				  									'</td>'+
-				  									'<td>'+
-				  											'<a href="javascript:void(0)" onclick="deletePortRow(this,'+n.mapPort+')" class="gray">'+
-				  											'<i class="fa fa-trash-o fa-lg"></i>'+
-				  											'</a>'+
-				  									'</td>'+
-				  								'</tr>';
+        		var portTr = '<tr class="plus-row">'
+        			+'<td>'
+        			+'<input class="port" type="text" value="'+n.containerPort+'">'
+        			+'</td>'
+        			+'<td>' 
+        			+'<select class="T-http">'
+        			+'<option>TCP</option>'
+        			+'<option>UDP</option>'
+        			+'</select>'
+        			+'</td>'
+        			+'<td>'
+        			+'<i>'+n.mapPort +'</i>'
+        			+'</td>'
+        			+'<td>'
+        			+'<a href="javascript:void(0)" onclick="deletePortRow(this,'+n.mapPort+')" class="gray">'
+        			+'<i class="fa fa-trash-o fa-lg"></i>'
+        			+'</a>'
+        			+'</td>'
+        			+'</tr>';
         		$("#pushPrptpcol").append(portTr);
-    				});
+    		});
 		}
 	    $("#imgName").val(imageName);
 	    $("#imgVersion").val(imageVersion);

@@ -7,8 +7,12 @@ import javax.ws.rs.WebApplicationException;
 
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.ConfigMap;
+import com.bonc.epm.paas.kubernetes.model.ConfigMapList;
 import com.bonc.epm.paas.kubernetes.model.Endpoints;
 import com.bonc.epm.paas.kubernetes.model.EndpointsList;
+import com.bonc.epm.paas.kubernetes.model.EventList;
+import com.bonc.epm.paas.kubernetes.model.Kind;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeList;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
@@ -82,6 +86,62 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         try {
             return api.deletePod(namespace,name);
         } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    /*
+     * 管理员在删除pod时,通过此方法删除指定namespace上的pod
+     */
+    public Pod deletePodOfNamespace(String namespace,String name)throws KubernetesClientException {
+        try {
+            return api.deletePod(namespace,name);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public ConfigMap createConfigMap(ConfigMap configMap)throws KubernetesClientException{
+    	try {
+            return api.createConfigMap(namespace, configMap);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public Status deleteConfigMap(String name) throws KubernetesClientException{
+    	try {
+            return api.deleteConfigMap(namespace, name);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public ConfigMap updateConfigMap(String name,ConfigMap configMap)throws KubernetesClientException{
+    	try {
+            return api.updateConfigMap(namespace, name,configMap);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+    public ConfigMap getConfigMap(String name) throws KubernetesClientException {
+        try {
+            return api.getConfigMap(namespace, name);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+    }
+
+    public ConfigMapList getAllConfigMaps() throws KubernetesClientException {
+        try {
+            return api.getAllConfigMaps(namespace);
+        } catch (NotFoundException e) {
+            return new ConfigMapList();
+        } catch (WebApplicationException e) {
+        	e.printStackTrace();
             throw new KubernetesClientException(e);
         }
     }
@@ -416,4 +476,115 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throw new KubernetesClientException(e);
         }
     }
+
+	@Override
+	public Node updateNode(String name, Node node) throws KubernetesClientException {
+		try {
+    		return api.updateSpecifiedNode(name, node);
+    	} catch (WebApplicationException e) {
+    		throw new KubernetesClientException(e);
+    	}
+	}
+
+	@Override
+	public PodList getPods() throws KubernetesClientException {
+		try {
+            return api.getPods();
+        } catch (NotFoundException e) {
+            return new PodList();
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	@Override
+	public Pod createPodOfNamespace(String namespace,Pod pod) throws KubernetesClientException {
+		 try {
+	            return api.createPod(namespace,pod);
+	        } catch (WebApplicationException e) {
+	            throw new KubernetesClientException(e);
+	        }
+	}
+
+	@Override
+	public Service createServiceOfNamespace(String namespace,Service service) throws KubernetesClientException {
+		try {
+            return api.createService(namespace,service);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	@Override
+	public Status deleteServiceOfNamespace(String namespace,String name) throws KubernetesClientException {
+		try {
+            return api.deleteService(namespace,name);
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	@Override
+	public ServiceList getAllServicesOfNamespace(String namespace) throws KubernetesClientException {
+		try {
+            return api.getAllServices(namespace);
+        } catch (NotFoundException e) {
+            return new ServiceList();
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	@Override
+	public Pod getPodOfNamespace(String namespace,String name) throws KubernetesClientException {
+		try {
+            return api.getPod(namespace,name);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	@Override
+	public Service getServiceOfNamespace(String namespace, String name) throws KubernetesClientException {
+		try {
+            return api.getService(namespace,name);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (WebApplicationException e) {
+            throw new KubernetesClientException(e);
+        }
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface#getReplicationControllerEvents()
+	 */
+	@Override
+	public EventList getReplicationControllerEvents(String name) throws KubernetesClientException {
+		String fieldSelector = "involvedObject.kind=" + Kind.REPLICATIONCONTROLLER + ",involvedObject.name=" + name;
+		try {
+			return api.getFieldSelectorEvents(namespace, fieldSelector);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface#getPodEvents()
+	 */
+	@Override
+	public EventList getPodEvents(String name) throws KubernetesClientException {
+		String fieldSelector = "involvedObject.kind=" + Kind.POD + ",involvedObject.name=" + name;
+		try {
+			return api.getFieldSelectorEvents(namespace, fieldSelector);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
 }

@@ -533,9 +533,6 @@
                         <div class="infoCred normal">
 	                        <span class="labelCred">密码：</span>
 	                        <input type="password" class="form-control conCred" id="passwordCred" name="password" value=""></div>
-                        <div class="infoCred ssh">
-	                        <span class="labelCred">密钥：</span>
-	                        <textarea type="text" class="form-control conCred" id="SSHpasswordCred" name="privateKey" row="5" value="" ></textarea></div>
 	                    <div class="infoCred">
                             <span class="labelCred">描述：</span>
                             <textarea type="text" class="form-control conCred" style="height:100px"
@@ -543,6 +540,13 @@
                         </div>
                     </div>
                 </div>
+                <!-- ssh认证密钥 -->
+				<div id="sshPwdInfo" style="display:none">
+					<div style="width: 90%; margin: 0 auto;margin-top:10px">
+						<span>认证已经生成，请添加下面的公钥到对应代码托管平台。<i class="fa fa-clipboard" onclick="copySshPwd()" style="margin-left:10px"></i>&nbsp;(复制)</span>
+						<textarea rows="8" id="sshPassword" style="width:100%;margin-top:10px;border:1px solid #ddd"></textarea>
+					</div>
+				</div>
             </div>
         </div>
     </article>
