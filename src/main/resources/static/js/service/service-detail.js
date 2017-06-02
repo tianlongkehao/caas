@@ -241,23 +241,23 @@ $(document).ready(function() {
 			$('#webPath').focus();
 			return;
 		}
-		//nginx代理路径的判断
-		var proxyPath = $("#nginxPath").val();
-		if (!proxyPath || proxyPath.length < 1) {
-			layer.tips('nginx代理路径不能为空', '#nginxPath', {
-				tips : [1, '#3595CC']
-			});
-			$('#nginxPath').focus();
-			return;
-		}
-		if (proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1) {
-			layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。', '#nginxPath', {
-				tips : [1, '#3595CC'],
-				time : 3000
-			});
-			$('#nginxPath').focus();
-			return;
-		}
+//		//nginx代理路径的判断
+//		var proxyPath = $("#nginxPath").val();
+//		if (!proxyPath || proxyPath.length < 1) {
+//			layer.tips('nginx代理路径不能为空', '#nginxPath', {
+//				tips : [1, '#3595CC']
+//			});
+//			$('#nginxPath').focus();
+//			return;
+//		}
+//		if (proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1) {
+//			layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。', '#nginxPath', {
+//				tips : [1, '#3595CC'],
+//				time : 3000
+//			});
+//			$('#nginxPath').focus();
+//			return;
+//		}
 		var commitFlag = true;
 		//判断是否已存在该服务名
 		if ($("#oldSerName").text() != name) {
@@ -282,29 +282,29 @@ $(document).ready(function() {
 				}
 			});
 		}
-		//判断是否已存在该代理路径
-		if ($("#oldProxyPath").text() != proxyPath) {
-			$.ajax({
-				url : ctx + "/service/matchProxyPath.do",
-				type : "POST",
-				async : false,
-				data : {
-					"proxyPath" : proxyPath,
-				},
-				success : function(data) {
-					data = eval("(" + data + ")");
-					if (data.status != "200") {
-						layer.tips('nginx路径名称重复，请重新输入！', '#nginxPath', {
-							tips : [1, '#3595CC'],
-							time : 3000
-						});
-						$('#nginxPath').focus();
-						commitFlag = false;
-						return;
-					}
-				}
-			});
-		}
+//		//判断是否已存在该代理路径
+//		if ($("#oldProxyPath").text() != proxyPath) {
+//			$.ajax({
+//				url : ctx + "/service/matchProxyPath.do",
+//				type : "POST",
+//				async : false,
+//				data : {
+//					"proxyPath" : proxyPath,
+//				},
+//				success : function(data) {
+//					data = eval("(" + data + ")");
+//					if (data.status != "200") {
+//						layer.tips('nginx路径名称重复，请重新输入！', '#nginxPath', {
+//							tips : [1, '#3595CC'],
+//							time : 3000
+//						});
+//						$('#nginxPath').focus();
+//						commitFlag = false;
+//						return;
+//					}
+//				}
+//			});
+//		}
 
 		//Pod调度方式
 	    if($("#podmutex").prop("checked")==true){

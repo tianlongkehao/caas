@@ -195,24 +195,12 @@
 												</c:forEach>
 											    <input type="hidden" value="" class="in_style" id="proxyZone" name="proxyZone">
                                             </li>
-											<li class="line-h-3"><span class="ve_top">nginx代理路径：<font
-													color="red">*</font></span>
-												<input type="text" value="" class="in_style form-control" id="nginxPath" name="proxyPath">
-												<span style="color:#1dd2af" id="proxy-path"><i class="fa fa-info-circle"></i></span>
-											</li>
 											<li class="line-h-3"> <span class="ve_top">ClientIP黏连方式：</span>
 	                                            <select class="selectVolume form-control" id="sessionAffinity" name="sessionAffinity"
 	                                                style="height: 34px; width: 230px;">
 	                                                <option name="sessionAffinity" value="" >NONE</option>
 	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
 	                                            </select>
-                                            </li>
-                    						<li class="line-h-3"> <span class="ve_top">NodeIp黏连方式：</span>
-                                                <select class="selectVolume form-control" id="nodeIpAffinity" name="nodeIpAffinity"
-                                                    style="height: 34px; width: 230px;">
-                                                    <option name="nodeIpAffinity" value="" >NONE</option>
-                                                    <option name="nodeIpAffinity" value="nodeIpAffinity">nodeIpAffinity</option>
-                                                </select>
                                             </li>
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
@@ -312,7 +300,7 @@
 
 											<li class="hide-set" id="save_roll_dev">
 												<ol id="mountPathList">
-												
+
 													<li class="hide-select hide">
 														<select class="selectVolumeAddItme form-control"
 																		style="height: 30px; width: 98%;margin:0 auto;padding-top:4px;margin-left:4px">

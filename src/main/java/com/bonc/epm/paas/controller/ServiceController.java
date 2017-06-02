@@ -980,8 +980,7 @@ public class ServiceController {
 		if (k8sService == null) {
 			try {
 				k8sService = kubernetesClientService.generateService(service.getServiceName(), portConfigs,
-						service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-						service.getSessionAffinity(), service.getNodeIpAffinity());
+						service.getProxyZone(), service.getServicePath(), service.getSessionAffinity());
 				k8sService = client.createService(k8sService);
 			} catch (KubernetesClientException e) {
 				e.printStackTrace();
@@ -1029,8 +1028,8 @@ public class ServiceController {
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 						service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 						service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
-						service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-						service.getCheckPath(), envVariables, command, args,serviceConfigmapList,service.isIspodmutex());
+						service.getRam(), service.getProxyZone(), service.getServicePath(), service.getCheckPath(),
+						envVariables, command, args, serviceConfigmapList, service.isIspodmutex());
 				// 给controller设置卷组挂载的信息
 				LOG.debug("给rc添加存储卷信息");
 				if (service.getServiceType().equals("1")) {
@@ -3104,7 +3103,6 @@ public class ServiceController {
 				return JSON.toJSONString(map);
 			}
 			service.setServiceAddr(serviceAddr);
-			service.setProxyPath(proxyPath);
 			try {
 				Date currentDate = new Date();
 				User currentUser = CurrentUserUtils.getInstance().getUser();
@@ -3199,12 +3197,8 @@ public class ServiceController {
 		ser.setServicePath(service.getServicePath());
 		// nginx代理区域
 		ser.setProxyZone(service.getProxyZone());
-		// nginx代理路径
-		ser.setProxyPath(service.getProxyPath());
 		// 服务会话黏连方式
 		ser.setSessionAffinity(service.getSessionAffinity());
-		// 黏连
-		ser.setNodeIpAffinity(service.getNodeIpAffinity());
 		// 检查服务状态填写的路径
 		ser.setCheckPath(service.getCheckPath());
 		// Pod互斥
@@ -3588,7 +3582,7 @@ public class ServiceController {
 			}
 			String[] service = { serviceObj.getServiceName(), serviceObj.getServiceChName(),
 					mapStatus(serviceObj.getStatus()), serviceObj.getImgName(),
-					new StringBuffer(serviceAddr).append("/").append(serviceObj.getProxyPath()).toString(),
+					new StringBuffer(serviceAddr).append("/").append(serviceObj.getServicePath()).toString(),
 					serviceObj.getCreateDate().toString(), serviceObj.getCreatorName() };
 			context.add(service);
 		}

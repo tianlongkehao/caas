@@ -185,18 +185,18 @@ $(document).ready(function(){
 //	      return;
 //	    }
 
-	    //nginx代理路径的判断
-	    var proxyPath = $("#nginxPath").val();
-	    if(!proxyPath || proxyPath.length < 1){
-		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
-		      $('#nginxPath').focus();
-		      return;
-		}
-	    if(proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
-		      layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
-		      $('#nginxPath').focus();
-		      return;
-	    }
+//	    //nginx代理路径的判断
+//	    var proxyPath = $("#nginxPath").val();
+//	    if(!proxyPath || proxyPath.length < 1){
+//		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
+//		      $('#nginxPath').focus();
+//		      return;
+//		}
+//	    if(proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
+//		      layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
+//		      $('#nginxPath').focus();
+//		      return;
+//	    }
 //	    if(proxyPath.length > 64 || proxyPath.length < 3){
 //		      layer.tips('nginx代理路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
 //		      $('#nginxPath').focus();
@@ -432,7 +432,7 @@ $(document).ready(function(){
 //		arrayKey.push(addName);
 //		$("#arrayKey").attr("value",arrayKey);
 
-		
+
 			var tr = '<tr>'+
 						'<td class="keys"><input id="key_'+count+'" type="text" style="width: 98%"></td>'+
 						'<td class="vals"><input id="value_'+count+'" type="text" style="width: 98%"></td>'+
@@ -447,7 +447,7 @@ $(document).ready(function(){
 			//$("#key_"+count).val(addName);
 			//$("#value_"+count).val(addValue);
 			count++;
-		
+
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
     	$(".step-inner").height(imagePage_height+100);
@@ -1070,7 +1070,7 @@ function deploy(imgID,imageName, imageVersion,resourceName,portConfigs){
         			+'<td>'
         			+'<input class="port" type="text" value="'+n.containerPort+'">'
         			+'</td>'
-        			+'<td>' 
+        			+'<td>'
         			+'<select class="T-http">'
         			+'<option>TCP</option>'
         			+'<option>UDP</option>'
