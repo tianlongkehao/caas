@@ -1036,27 +1036,6 @@ function checkRepEnv(obj, id, envKey) {
 		flag = 1;
 		return flag;
 	}
-<<<<<<< HEAD
-	//端口信息验重
-	function checkRepPortCfg(obj,id,port){
-			 var flag =0;
-			 $('#editPortCfgBody tr').each(function(index,domEle){
-				   var pcp= $(domEle).find("input.containerPort").val();
-				   var pi= $(domEle).find("input.portId").val();
-				   if(null==id & port==pcp){flag=1; return false;}
-				   if(id==pi){
-					   return true;}
-				   if(port==pcp){
-					   layer.tips('容器端口不能重复',$(obj).parent().parent().find("input.containerPort"),{tips: [1, '#3595CC']});
-					   $(obj).parent().parent().find("input.containerPort").focus();
-					   flag=1;
-					   return false;
-				   }
-			   });
-			 return flag;
-	}
-
-=======
 	$('#editEnvBody tr').each(function(index, domEle) {
 		var ek = $(domEle).find("input.envKey").val();
 		var ei = $(domEle).find("input.envId").val();
@@ -1096,5 +1075,3 @@ function checkRepPortCfg(obj, id, port) {
 	});
 	return flag;
 }
-
->>>>>>> refs/heads/develop

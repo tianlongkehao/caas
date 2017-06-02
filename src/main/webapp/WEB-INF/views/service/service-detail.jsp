@@ -158,80 +158,6 @@
 					<!-- Dlag -->
 
 					<div class="containerInfo">
-<<<<<<< HEAD
-					<form id="BaseSerForm" name="BaseSerForm"
-					 action="<%=path%>/service/detail/editBaseSerForm.do" >
-					  <input hidden="true" value="${service.id }"  name="id"/>
-						<table class="table w50">
-							<thead>
-								<tr>
-									<th>基本信息</th>
-									<th>
-										<div style="float:right; margin-right:30px; color:#337ab7; font-size:19px">
-											<c:if test="${service.status==1 or service.status==4}">
-												<i class="fa fa-edit" id="editSerBtn" name="editSerBtn" title="修改"></i>
-											</c:if>
-											<i class="fa fa-reply" id="restSerBtn" name="restSerBtn" title="还原"></i>
-											<i class="fa fa-save" id="saveSerBtn" name="saveSerBtn" title="保存"></i>
-											<i class="fa fa-times" id="canclSerBtn" name="canclSerBtn" title="取消"></i>
-										</div>
-									</th>
-								</tr>
-							</thead>
-							<tbody class="BORDER">
-								<tr>
-									<td>服务名称：
-									<span id="oldSerName" class="oldBaseCon">${service.serviceName }</span>
-									<span id="editSerName" hidden="true" class="editBaseCon">
-									   <input id="serviceName" name="serviceName" type="text" value=${service.serviceName } />
-									</span>
-									</td>
-									<c:if test="${service.serviceChName == '' }">
-									<td class="editAfter">服务中文名称：未设置<i class="fa fa-edit editSerChName"></i></td>
-									<td style="display:none">服务中文名称：<input type="text" id="serChName" value=""><i class="fa fa-times canclEditSerChName"></i><i class="fa fa-save saveSerChName"></i></td>
-									</c:if>
-									<c:if test="${service.serviceChName != '' }">
-									<td class="editAfter">服务中文名称：${service.serviceChName }<i class="fa fa-edit editSerChName"></i></td>
-									<td style="display:none">服务中文名称：<input type="text" id="serChName" value="${service.serviceChName }"><i class="fa fa-times canclEditSerChName"></i><i class="fa fa-save saveSerChName"></i></td>
-									</c:if>
-								</tr>
-								<tr>
-									<c:if test="${service.status==1 }">
-										<td>运行状态：未启动</td>
-									</c:if>
-									<c:if test="${service.status==2||service.status==3 }">
-										<td>运行状态：正在运行</td>
-									</c:if>
-									<c:if test="${service.status==4 }">
-										<td>运行状态：已停止</td>
-									</c:if>
-									<c:if test="${service.status==6 }">
-										<td>运行状态：调试中</td>
-									</c:if>
-									<td>镜像名称：${service.imgName } : ${service.imgVersion }</td>
-								</tr>
-								<tr>
-									<td>创建时间：${service.createDate }</td>
-								</tr>
-							</tbody>
-						</table>
-						<table class="table basicInfo w50">
-							<thead>
-								<tr>
-									<th>配置信息</th>
-									<th>&nbsp;</th>
-								</tr>
-							</thead>
-							<tbody class="BORDER">
-								<tr>
-									<td>CPU：${service.cpuNum }</td>
-									<td>内存：${service.ram }MB</td>
-								</tr>
-								<tr>
-									<td>启动命令：
-										<c:if test="${service.startCommand == '' }">
-											<span id="oldStartComm" class="oldBaseCon">默认</span>
-=======
 						<form id="BaseSerForm" name="BaseSerForm"
 							action="<%=path%>/service/detail/editBaseSerForm.do">
 							<input hidden="true" value="${service.id }" name="id" />
@@ -264,7 +190,6 @@
 										</td>
 										<c:if test="${service.serviceChName == '' }">
 											<td>服务中文名称：未设置</td>
->>>>>>> refs/heads/develop
 										</c:if>
 										<c:if test="${service.serviceChName != '' }">
 											<td>服务中文名称：${service.serviceChName }</td>
