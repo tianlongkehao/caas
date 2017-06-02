@@ -1569,6 +1569,9 @@ function serviceEvent(serviceId,serviceStatus){
 	$(".newItems").addClass("hide");
 	$("#serviceTab li").removeClass('active');
 	$("#serviceTab li:first-child").addClass('active');
+
+	$("#serviceTabContent div").removeClass('active in');
+	$("#serviceTabContent div:first-child").addClass('active in');
 	$.ajax({
 		url : "" + ctx + "/service/getServiceEvents.do?id="+serviceId,
 		type : 'get',
