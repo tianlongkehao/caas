@@ -25,6 +25,7 @@ import com.bonc.epm.paas.kubernetes.model.ConfigMap;
 import com.bonc.epm.paas.kubernetes.model.ConfigMapTemplate;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
+import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
 import com.bonc.epm.paas.kubernetes.model.CrossVersionObjectReference;
 import com.bonc.epm.paas.kubernetes.model.EndpointAddress;
 import com.bonc.epm.paas.kubernetes.model.EndpointPort;
@@ -40,6 +41,7 @@ import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
+import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.Probe;
@@ -215,6 +217,23 @@ public class KubernetesClientService {
 		}
 		return Double.valueOf(cpu);
 	}
+
+	public boolean isRunning(Pod pod) {
+		if (pod.getStatus().getPhase().equals("Running")
+				&& pod.getStatus().getConditions().get(0).getType().equals("Ready")
+				&& pod.getStatus().getConditions().get(0).getStatus().equals("True")
+				&& pod.getStatus().getContainerStatuses().get(0).getState().getRunning() != null) {
+			for (ContainerStatus containerStatus : pod.getStatus().getContainerStatuses()) {
+				if (containerStatus.getState().getRunning() == null) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 
 	/**
 	 * Description: computeMemoryOut

@@ -84,7 +84,6 @@ import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
-import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
 import com.bonc.epm.paas.kubernetes.model.EventList;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
@@ -1979,25 +1978,8 @@ public class ServiceController {
 				}
 				if (null != podList && null != podList.getItems() && podList.getItems().size() == i) {
 					for (Pod pod : podList.getItems()) {
-						if (pod.getStatus().getPhase().equals("Running")) {
-							List<ContainerStatus> containerStatuses = pod.getStatus().getContainerStatuses();
-							if (CollectionUtils.isNotEmpty(containerStatuses)) {
-								boolean conStatus = true;
-								for (ContainerStatus containerStatus : containerStatuses) {
-									if (null != containerStatus.getState().getRunning()) {
-										conStatus = false;
-									} else {
-										conStatus = true;
-										break;
-									}
-								}
-								if (conStatus) {
-									podStatus = true;
-									break;
-								} else {
-									podStatus = false;
-								}
-							}
+						if (kubernetesClientService.isRunning(pod)) {
+							podStatus = false;
 						} else {
 							podStatus = true;
 							break;
@@ -2753,18 +2735,10 @@ public class ServiceController {
 								.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
 						container.setServiceAddr(pod.getMetadata().getName());
 						container.setServiceid(service.getId());
-						// 默认状态为0
-						container.setContainerStatus(0);
-						// pod状态不是Running时候
-						if (!pod.getStatus().getPhase().equals("Running")) {
-							container.setContainerStatus(1);
+						if (kubernetesClientService.isRunning(pod)) {
+							container.setContainerStatus(0);
 						} else {
-							// container状态
-							for (ContainerStatus status : pod.getStatus().getContainerStatuses()) {
-								if (status.getState().getRunning() == null) {
-									container.setContainerStatus(1);
-								}
-							}
+							container.setContainerStatus(1);
 						}
 
 						containerList.add(container);
@@ -2799,18 +2773,10 @@ public class ServiceController {
 									.setContainerName(service.getServiceName() + "-" + version + "-" + i++);
 							container.setServiceAddr(pod.getMetadata().getName());
 							container.setServiceid(service.getId());
-							// 默认状态为0
-							container.setContainerStatus(0);
-							// pod状态不是Running时候
-							if (!pod.getStatus().getPhase().equals("Running")) {
-								container.setContainerStatus(1);
+							if (kubernetesClientService.isRunning(pod)) {
+								container.setContainerStatus(0);
 							} else {
-								// container状态
-								for (ContainerStatus status : pod.getStatus().getContainerStatuses()) {
-									if (status.getState().getRunning() == null) {
-										container.setContainerStatus(1);
-									}
-								}
+								container.setContainerStatus(1);
 							}
 
 							containerList.add(container);

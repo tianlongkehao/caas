@@ -1230,3 +1230,32 @@ p.portLabel input{
 	color:#3f8ec3;
 	cursor:pointer
 }
+.serviceTbody tr td:not(:first-child){
+	text-align:left;
+	padding-left:15px!important;
+	padding-top:6px!important;
+	padding-bottom:6px!important;
+}
+#rcEvents table thead tr th:not(:first-child), #podEvents table thead tr th:not(:first-child),
+#newRcEvents table thead tr th:not(:first-child), #newpPodEvents table thead tr th:not(:first-child){
+	padding-left:15px;
+}
+#rcEvents table thead tr th:first-child, #podEvents table thead tr th:first-child,
+#newRcEvents table thead tr th:first-child, #newpPodEvents table thead tr th:first-child{
+	text-align:center;
+}
+#serviceTabContent{
+	padding:2px 10px;
+}
+#rcEvents table thead tr, #podEvents table thead tr,
+#rcEvents table tbody tr, #podEvents table tbody tr{
+	border-bottom:1px solid #ddd;
+}
+#serviceEventInfo{
+	padding:10px 15px;;
+}
+#serviceEventInfo ul li.active a{
+	background-color:#e8504f;
+	color:#fff;
+}
+

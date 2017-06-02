@@ -33,7 +33,7 @@ $(document).ready(function() {
 	});
 
 	_refreshCreateTime(60000);
-	$(".dataTables-example tbody").on("click", "tr", function() {
+	$(".dataTables-example tbody").on("click", "tr.clusterId", function() {
 		var table = $('.dataTables-example').DataTable();
 		var serviceId = table.row(this).data().id;
 		if(isSonar == true){
@@ -138,12 +138,13 @@ function loadContainers(obj, serviceId) {
 				var containerLength = data.containerList.length;
 				for (var i = 0; i < containerLength; i++) {
 					var containerName = data.containerList[i].containerName;
+					var podName = data.containerList[i].serviceAddr;
 					var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动" : "运行中";
 					var statusClassName = data.containerList[i].containerStatus == 1 ? "fa_stop" : "fa_run";
 					var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide" : "hide";
 					containersHtml += '<tr class="tr-row" serviceidcon="' + serviceID + '">' + '<td colspan="2">&nbsp;</td>' + '<td>';
 					containersHtml += '<span style="margin-left: 19px;">';
-					containersHtml += containerName + '</span>' + '</td>' + '<td colspan="2"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
+					containersHtml += containerName + '</span>' + '</td>' + '<td colspan="2"><a class="link" onclick="onePodEvent(this)" podName="'+podName+'"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></a></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
 				}
 				$(obj).after(containersHtml);
 
@@ -172,12 +173,13 @@ function loadContainersNoSonar(obj, serviceId) {
 				var containerLength = data.containerList.length;
 				for (var i = 0; i < containerLength; i++) {
 					var containerName = data.containerList[i].containerName;
+					var podName = data.containerList[i].serviceAddr;
 					var containerStatus = data.containerList[i].containerStatus == 1 ? "未启动" : "运行中";
 					var statusClassName = data.containerList[i].containerStatus == 1 ? "fa_stop" : "fa_run";
 					var loadingImgShowClass = data.containerList[i].containerStatus == 1 ? "hide" : "hide";
 					containersHtml += '<tr class="tr-row" serviceidcon="' + serviceID + '">' + '<td colspan="1">&nbsp;</td>' + '<td>';
 					containersHtml += '<a style="margin-left: 19px;">';
-					containersHtml += containerName + '</a>' + '</td>' + '<td colspan="2"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
+					containersHtml += containerName + '</a>' + '</td>' + '<td colspan="2"><a class="link" onclick="onePodEvent(this)" podName="'+podName+'"><i class="' + statusClassName + '"></i>' + containerStatus + '<img src=" ' + ctx + '/images/loading4.gif" alt="" class="' + loadingImgShowClass + '"/></a></td>' + '<td></td>' + '<td colspan="2" style="width: 32%"></td>' + '</tr>';
 				}
 				$(obj).after(containersHtml);
 
@@ -682,7 +684,7 @@ function oneVersionUpgrade(id, serviceName, imgName,imgVersion, obj) {
 			layer.close(index);
 			var imgVersion1 = $('#imgVersionName').val();
 			if(imgVersion != imgVersion1){
-				var cStatusHtml = "<i class='fa_success'></i>" + "升级中" + "<img src='" + ctx + "/images/loading4.gif' alt=''/><a href=\"javascript:oneStopContainerUpdate(" + id + ",&apos;" + serviceName + "&apos;)\"><i class='fa fa-times fa-stopUpdate'></i></a>";
+				var cStatusHtml = "<a class='link' onclick='serviceEvent(" + id + ",7)'><i class='fa_success'></i>" + "升级中" + "<img src='" + ctx + "/images/loading4.gif' alt=''/></a><a href=\"javascript:oneStopContainerUpdate(" + id + ",&apos;" + serviceName + "&apos;)\"><i class='fa fa-times fa-stopUpdate'></i></a>";
 				$("#" + id + "_upgradeCluster").parent().parent().parent().parent().parent().parent().find(".cStatusColumn").html(cStatusHtml);
 				$("#" + id + "_moreFun").removeClass('a-live').addClass('no-drop');
 				$("#" + id + "_moreFun").find('.fa-gears').addClass('self_a');
@@ -1045,28 +1047,28 @@ function loadServices() {
 			render : function(data, type, row) {
 				var html = '';
 				if (row.status == 1) {
-					html = '<i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 2) {
-					html = '<i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 3) {
-					html = '<i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 4) {
-					html = '<i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 5) {
-					html = '<i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 6) {
-					html = '<i class="fa_run"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_run"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 7) {
-					html = '<i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /></a><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
 				}
 				if (row.status == 8) {
-					html = '<i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /></a><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
 				}
 				return html;
 			}
@@ -1255,28 +1257,28 @@ function loadServicesNoSonar() {
 			render : function(data, type, row) {
 				var html = '';
 				if (row.status == 1) {
-					html = '<i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 2) {
-					html = '<i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 3) {
-					html = '<i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 4) {
-					html = '<i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 5) {
-					html = '<i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 6) {
-					html = '<i class="fa_run"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" />';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_run"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
 				}
 				if (row.status == 7) {
-					html = '<i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /></a><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
 				}
 				if (row.status == 8) {
-					html = '<i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /></a><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
 				}
 				return html;
 			}
@@ -1562,4 +1564,165 @@ function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetC
 		}
 	});
 }
+//服务事件
+function serviceEvent(serviceId,serviceStatus){
+	$(".newItems").addClass("hide");
+	$("#serviceTab li").removeClass('active');
+	$("#serviceTab li:first-child").addClass('active');
+
+	$("#serviceTabContent div").removeClass('active in');
+	$("#serviceTabContent div:first-child").addClass('active in');
+	$.ajax({
+		url : "" + ctx + "/service/getServiceEvents.do?id="+serviceId,
+		type : 'get',
+		success : function(data) {
+			layer.open({
+				type : 1,
+				title : '服务事件',
+				content : $("#serviceEventInfo"),
+				area : ['800px','550px'],
+				btn : ['关闭'],
+				yes : function(index, layero) {
+					layer.close(index);
+				}
+			});
+			var data = eval("(" + data + ")");
+			var status = data.status;
+			if(status=='200'){
+				//当前服务的rc事件
+				var rcHtml = "";
+				if(data.replicationControllerEvents==null || data.replicationControllerEvents.items.length == 0){
+					rcHtml += '<tr>'
+						+'<td>无服务事件</td>'
+						+'<td></td>'
+						+'</tr>';
+				}else{
+					var rcItems = data.replicationControllerEvents.items;
+					for(var i=0; i<rcItems.length; i++){
+						var rctype = rcItems[i].type;
+						var rcmsg = rcItems[i].message;
+						rcHtml += '<tr>'
+								+'<td>'+rctype+'</td>'
+								+'<td>'+rcmsg+'</td>'
+								+'</tr>';
+					}
+				}
+				$("#rcItemsInfo").empty().append(rcHtml);
+
+				//当前服务的pod事件
+				var podHtml = "";
+				if(data.podsEventList==null || data.podsEventList.length == 0){
+					podHtml += '<tr>'
+						+'<td>无服务事件</td>'
+						+'<td></td>'
+						+'</tr>';
+				}else{
+					for (var i=0; i < data.podsEventList.length; i++) {
+						for(var j=0; j<data.podsEventList[i].items.length; j++){
+							var podtype = data.podsEventList[i].items[j].type;
+							var podmsg = data.podsEventList[i].items[j].message;
+							podHtml += '<tr>'
+									+'<td>'+(i+1)+'</td>'
+									+'<td>'+podtype+'</td>'
+									+'<td>'+podmsg+'</td>'
+									+'</tr>';
+						}
+					};
+				}
+				$("#podItemsInfo").empty().append(podHtml);
+
+				if(data.newPodsEventList!=null || data.newReplicationControllerEvents !=null){
+					$(".newItems").removeClass("hide");
+
+					//当前升级服务的rc事件
+					var newRcHtml="";
+					if(data.newReplicationControllerEvents==null || data.newReplicationControllerEvents.items.length == 0){
+						newRcHtml += '<tr>'
+							+'<td>无服务事件</td>'
+							+'<td></td>'
+							+'</tr>';
+					}else{
+						newRcItems = data.newReplicationControllerEvents.items;
+						for(var m=0; m<newRcItems.length; m++){
+							var newRctype = newRcItems[m].type;
+							var newRcmsg = newRcItems[m].message;
+							newRcHtml += '<tr>'
+									+'<td>'+newRctype+'</td>'
+									+'<td>'+newRcmsg+'</td>'
+									+'</tr>';
+						}
+					}
+					$("#newRcItemsInfo").empty().append(newRcHtml);
+
+					//当前升级服务的pod事件
+					var newPodHtml="";
+					if(data.newPodsEventList==null || data.newPodsEventList.length == 0){
+						newPodHtml += '<tr>'
+							+'<td>无服务事件</td>'
+							+'<td></td>'
+							+'</tr>';
+					}else{
+						for (var i=0; i < data.newPodsEventList.length; i++) {
+							for(var j=0; j<data.newPodsEventList[i].items.length; j++){
+								var podtype = data.newPodsEventList[i].items[j].type;
+								var podmsg = data.newPodsEventList[i].items[j].message;
+								newPodHtml += '<tr>'
+										+'<td>'+(i+1)+'</td>'
+										+'<td>'+podtype+'</td>'
+										+'<td>'+podmsg+'</td>'
+										+'</tr>';
+							}
+						};
+					}
+					$("#newPodItemsInfo").empty().append(newPodHtml);
+				}
+
+			}
+		}
+	});
+}
+function onePodEvent(obj){
+	var podName = $(obj).attr("podName");
+	$.ajax({
+		url : "" + ctx + "/service/getPodEvents.do?podName="+podName,
+		type : 'get',
+		success : function(data) {
+			var data = eval("(" + data + ")");
+			var status = data.status;
+			if(status=='200'){
+				var onepodItems = data.eventList.items;
+				var onepodHtml = "";
+				if(onepodItems.length == 0){
+					onepodHtml += '<tr>'
+						+'<td>无服务事件</td>'
+						+'<td></td>'
+						+'</tr>';
+				}else{
+					for(var j=0; j<onepodItems.length; j++){
+						var onepodtype = onepodItems[j].type;
+						var onepodmsg = onepodItems[j].message;
+						onepodHtml += '<tr>'
+								+'<td>'+onepodtype+'</td>'
+								+'<td>'+onepodmsg+'</td>'
+								+'</tr>';
+					}
+				}
+				$("#onepodItemsInfo").empty().append(onepodHtml);
+				layer.open({
+					type : 1,
+					title : 'pod事件',
+					content : $("#podEventInfo"),
+					area : ['800px','550px'],
+					btn : ['关闭'],
+					yes : function(index, layero) {
+						layer.close(index);
+					}
+				});
+			}
+		}
+	});
+}
+
+
+
 

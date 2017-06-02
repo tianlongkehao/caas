@@ -669,7 +669,8 @@ public class StorageController {
         }
         //获取存储卷剩余容量
         model.addAttribute("userResource", userResource);
-        model.addAttribute("menu_flag", "storage");
+        /*model.addAttribute("menu_flag", "storage");*/
+        model.addAttribute("menu_flag", "service");
         model.addAttribute("li_flag", "storageFile");
         return "storage/storage.jsp";
     }
