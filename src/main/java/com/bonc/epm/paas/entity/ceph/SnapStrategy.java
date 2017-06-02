@@ -22,9 +22,13 @@ public class SnapStrategy {
 
 	private long userId;
 
+	private int keep;
+
 	private String time;
 
 	private String week;
+
+	private int bindCount;
 
 	/**
 	 * 创建时间
@@ -37,6 +41,22 @@ public class SnapStrategy {
 	 */
 	@JSONField(format = "yyyy-MM-dd")
 	private Date endData;
+
+	public int getKeep() {
+		return keep;
+	}
+
+	public void setKeep(int keep) {
+		this.keep = keep;
+	}
+
+	public int getBindCount() {
+		return bindCount;
+	}
+
+	public void setBindCount(int bindCount) {
+		this.bindCount = bindCount;
+	}
 
 	public String getNamespace() {
 		return namespace;

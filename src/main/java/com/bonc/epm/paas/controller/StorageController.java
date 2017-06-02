@@ -693,17 +693,5 @@ public class StorageController {
         model.addAttribute("li_flag", "storageObj");
         return "storage/storage-obj.jsp";
     }
-   /* @RequestMapping(value = { "storage/storageSnap" }, method = RequestMethod.GET)
-    public String storageSnap(Model model) {
-        model.addAttribute("menu_flag", "storage");
-        model.addAttribute("li_flag", "storageSnap");
-        return "storage/storage-snap.jsp";
-    }*/
-    @RequestMapping(value = { "storage/snapStrategy" }, method = RequestMethod.GET)
-    public String storageSnapStrategy(Model model) {
-        model.addAttribute("menu_flag", "storage");
-        model.addAttribute("li_flag", "snapStrategy");
-        return "storage/storage-snapStrategy.jsp";
-    }
 
 }

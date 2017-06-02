@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -1298,56 +1299,48 @@ public class CephController {
 	/**
 	 * 创建快照策略
 	 *
-	 * @param name
-	 * @param time
-	 * @param week
-	 * @param keep
-	 * @return
+	 *
 	 */
 	@RequestMapping(value = { "ceph/createSnapStrategy" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String createSnapStrategy(String name, String time, String week, String keep) {
+	public String createSnapStrategy(SnapStrategy snapStrategy) {
 		Map<String, String> map = new HashMap<>();
 		String msg = "";
 		map.put("status", "200");
 
-		if (StringUtils.isEmpty(name)) {
+		if (StringUtils.isEmpty(snapStrategy.getName())) {
 			msg = "快照策略名称为空!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
 
-		if (StringUtils.isEmpty(time)) {
+		if (StringUtils.isEmpty(snapStrategy.getTime())) {
 			msg = "创建时间为空!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
 
-		if (StringUtils.isEmpty(week)) {
+		if (StringUtils.isEmpty(snapStrategy.getWeek())) {
 			msg = "重复日期为空!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
 
-		if (StringUtils.isEmpty(keep)) {
+		if (snapStrategy.getKeep() == 0) {
 			msg = "保留时间为空!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
 
-		SnapStrategy snapStrategy = new SnapStrategy();
 		snapStrategy.setCreateDate(new Date());
-		snapStrategy.setName(name);
 		snapStrategy.setNamespace(CurrentUserUtils.getInstance().getUser().getNamespace());
-		snapStrategy.setTime(time);
-		snapStrategy.setWeek(week);
 		snapStrategy.setUserId(CurrentUserUtils.getInstance().getUser().getId());
 		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.DATE, Integer.parseInt(keep));
+		calendar.add(Calendar.DATE, snapStrategy.getKeep());
 		snapStrategy.setEndData(calendar.getTime());
 
 		snapStrategyDao.save(snapStrategy);
@@ -1355,8 +1348,91 @@ public class CephController {
 		// 记录日志
 		String extraInfo = "新建快照策略 " + JSON.toJSONString(snapStrategy);
 		LOGGER.info(extraInfo);
-		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(name, extraInfo, CommConstant.CEPH_SNAP_STRATEGY,
-				CommConstant.OPERATION_TYPE_CREATED);
+		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(snapStrategy.getName(), extraInfo,
+				CommConstant.CEPH_SNAP_STRATEGY, CommConstant.OPERATION_TYPE_CREATED);
+		commonOperationLogDao.save(log);
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 更新快照策略
+	 *
+	 * @param snapStrategy
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/updateSnapStrategy" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String updateSnapStrategy(SnapStrategy snapStrategy) {
+		Map<String, String> map = new HashMap<>();
+		String msg = "";
+		map.put("status", "200");
+
+		long strategyId = snapStrategy.getId();
+		if (strategyId == 0) {
+			msg = "快照策略的Id为空!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByStrategyId(strategyId);
+		if (!CollectionUtils.isEmpty(cephRbdInfos)) {
+			for (CephRbdInfo cephRbdInfo : cephRbdInfos) {
+				if (cephRbdInfo.isStrategyexcuting()) {
+					msg = "快照策略正在执行，请取消执行后再更新!";
+					map.put("msg", msg);
+					map.put("status", "500");
+					return JSON.toJSONString(map);
+				}
+			}
+		}
+
+		if (StringUtils.isEmpty(snapStrategy.getName())) {
+			msg = "快照策略名称为空!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		if (StringUtils.isEmpty(snapStrategy.getTime())) {
+			msg = "创建时间为空!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		if (StringUtils.isEmpty(snapStrategy.getWeek())) {
+			msg = "重复日期为空!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		if (snapStrategy.getKeep() == 0) {
+			msg = "保留时间为空!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		SnapStrategy orginSnapStrategy = snapStrategyDao.findOne(strategyId);
+		orginSnapStrategy.setName(snapStrategy.getName());
+		orginSnapStrategy.setTime(snapStrategy.getTime());
+		orginSnapStrategy.setWeek(snapStrategy.getWeek());
+		orginSnapStrategy.setKeep(snapStrategy.getKeep());
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(orginSnapStrategy.getCreateDate());
+		calendar.add(Calendar.DATE, snapStrategy.getKeep());
+		orginSnapStrategy.setEndData(calendar.getTime());
+
+		snapStrategyDao.save(orginSnapStrategy);
+
+		// 记录日志
+		String extraInfo = "更新快照策略 " + JSON.toJSONString(orginSnapStrategy);
+		LOGGER.info(extraInfo);
+		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(orginSnapStrategy.getName(), extraInfo,
+				CommConstant.CEPH_SNAP_STRATEGY, CommConstant.OPERATION_TYPE_UPDATE);
 		commonOperationLogDao.save(log);
 
 		return JSON.toJSONString(map);
@@ -1436,6 +1512,9 @@ public class CephController {
 			return JSON.toJSONString(map);
 		}
 
+		cephRbdInfo.setStrategyexcuting(true);
+		cephRbdInfoDao.save(cephRbdInfo);
+
 		// 记录日志
 		String extraInfo = cephRbdInfo.getName() + "执行快照策略: " + JSON.toJSONString(snapStrategy);
 		LOGGER.info(extraInfo);
@@ -1469,12 +1548,70 @@ public class CephController {
 			return JSON.toJSONString(map);
 		}
 
+		cephRbdInfo.setStrategyexcuting(false);
+		cephRbdInfoDao.save(cephRbdInfo);
+
 		// 记录日志
 		String extraInfo = "取消快照策略: " + JSON.toJSONString(cephRbdInfo);
 		LOGGER.info(extraInfo);
 		CommonOperationLog log = CommonOprationLogUtils.getOprationLog(cephRbdInfo.getName(), extraInfo,
 				CommConstant.CEPH_SNAP_STRATEGY, CommConstant.OPERATION_TYPE_DEPLOY);
 		commonOperationLogDao.save(log);
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 块存储绑定快照策略
+	 *
+	 * @param imgId
+	 * @param strategyId
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/bindSnapStrategy" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String bindSnapStrategy(long imgId, long strategyId) {
+		Map<String, String> map = new HashMap<>();
+		String msg = "";
+		map.put("status", "200");
+
+		CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(imgId);
+		if (cephRbdInfo == null) {
+			msg = "块存储绑定快照策略失败!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		cephRbdInfo.setStrategyId(strategyId);
+		cephRbdInfoDao.save(cephRbdInfo);
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 将指定块存储的快照策略解除绑定
+	 *
+	 * @param imgId
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/unbindSnapStrategy" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String unbindSnapStrategy(long imgId) {
+		Map<String, String> map = new HashMap<>();
+		String msg = "";
+		map.put("status", "200");
+
+		CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(imgId);
+		if (cephRbdInfo == null) {
+			msg = "找不到指定的块存储!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		cephRbdInfo.setStrategyId(0);
+		cephRbdInfoDao.save(cephRbdInfo);
 
 		return JSON.toJSONString(map);
 	}
@@ -1602,5 +1739,65 @@ public class CephController {
 		model.addAttribute("menu_flag", "storage");
 		model.addAttribute("li_flag", "storageSnap");
 		return "storage/storage-snap.jsp";
+	}
+
+	/**
+	 * 快照策略主页面
+	 *
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = { "storage/snapStrategy" }, method = RequestMethod.GET)
+	public String storageSnapStrategy(Model model) {
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		List<SnapStrategy> snapStrategies = snapStrategyDao.findByNamespace(namespace);
+
+		if (!CollectionUtils.isEmpty(snapStrategies)) {
+			for (SnapStrategy strategy : snapStrategies) {
+				List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByStrategyId(strategy.getId());
+				if (CollectionUtils.isEmpty(cephRbdInfos)) {
+					strategy.setBindCount(0);
+				} else {
+					strategy.setBindCount(cephRbdInfos.size());
+				}
+			}
+		}
+
+		model.addAttribute("snapStrategies", snapStrategies);
+		model.addAttribute("menu_flag", "storage");
+		model.addAttribute("li_flag", "snapStrategy");
+		return "storage/storage-snapStrategy.jsp";
+	}
+
+	/**
+	 * 获取指定快照策略的块存储信息
+	 *
+	 * @param model
+	 * @param strategyId
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/snapStrategyInfo" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getSnapStrategyBinded( long strategyId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("status", "200");
+
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPool(namespace);
+		List<CephRbdInfo> bindedRbd = new ArrayList<CephRbdInfo>();
+		List<CephRbdInfo> unbindedRbd = new ArrayList<CephRbdInfo>();
+		if (!CollectionUtils.isEmpty(cephRbdInfos)) {
+			for (CephRbdInfo cephRbdInfo : cephRbdInfos) {
+				if (cephRbdInfo.getStrategyId() == strategyId) {
+					bindedRbd.add(cephRbdInfo);
+				} else {
+					unbindedRbd.add(cephRbdInfo);
+				}
+			}
+		}
+
+        map.put("bindedRbd", bindedRbd);
+        map.put("unbindedRbd", unbindedRbd);
+		return JSON.toJSONString(map);
 	}
 }

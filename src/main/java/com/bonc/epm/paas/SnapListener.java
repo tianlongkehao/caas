@@ -42,7 +42,7 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 							SnapTask snapTask = new SnapTask(cephRbdInfo, snapStrategy);
 							Date date = new Date();
 							date.setTime(Integer.parseInt(time));
-							timer.scheduleAtFixedRate(snapTask, date, 24 * 3600 * 1000);// 第一次时间是今天某一刻，周期为一天
+							timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
 						}
 						map.put(cephRbdInfo, timer);
 					}
@@ -83,7 +83,7 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 						SnapTask snapTask = new SnapTask(cephRbdInfo, snapStrategy);
 						Date date = new Date();
 						date.setTime(Integer.parseInt(time));
-						timer.scheduleAtFixedRate(snapTask, date, 24 * 3600 * 1000);// 第一次时间是今天某一刻，周期为一天
+						timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
 					}
 					map.put(cephRbdInfo, timer);
 				} else {

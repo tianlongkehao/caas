@@ -30,6 +30,8 @@ public class CephRbdInfo {
 
 	private boolean releaseWhenServiceDown;
 
+	private boolean strategyexcuting;
+
 	private String mountpath;
 
 	private String mappath;
@@ -40,6 +42,14 @@ public class CephRbdInfo {
 
 	public void setStrategyId(long strategyId) {
 		this.strategyId = strategyId;
+	}
+
+	public boolean isStrategyexcuting() {
+		return strategyexcuting;
+	}
+
+	public void setStrategyexcuting(boolean strategyexcuting) {
+		this.strategyexcuting = strategyexcuting;
 	}
 
 	/**
