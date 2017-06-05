@@ -7,11 +7,12 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.bonc.epm.paas.SpringApplicationContext;
 import com.bonc.epm.paas.controller.CephController;
+import com.bonc.epm.paas.dao.SnapStrategyDao;
 
 public class SnapTask extends TimerTask {
 
-	@Autowired
 	private CephController cephController;
 
 	private CephRbdInfo cephRbdInfo;
@@ -25,6 +26,7 @@ public class SnapTask extends TimerTask {
 
 	@Override
 	public void run() {
+		cephController = SpringApplicationContext.getBean(CephController.class);
 		Date date = new Date();
 		Date endDate = snapStrategy.getEndData();
 		if (endDate.compareTo(date) >= 0) {

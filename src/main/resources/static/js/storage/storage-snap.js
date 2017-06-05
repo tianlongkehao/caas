@@ -58,6 +58,7 @@ function deletesnap(obj){
 			}
 			if(data.status =='200'){
 				layer.msg("快照删除成功！",{icon : 6});
+                                location.reload();
 			}
 			return;
 		}

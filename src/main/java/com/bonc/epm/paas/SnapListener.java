@@ -88,6 +88,7 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 					for (String time : times) {
 						SnapTask snapTask = new SnapTask(cephRbdInfo, snapStrategy);
 						Calendar calendar = Calendar.getInstance();
+						
 						calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time));
 						calendar.set(Calendar.MINUTE, 0);
 						calendar.set(Calendar.SECOND, 0);

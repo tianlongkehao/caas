@@ -523,13 +523,10 @@ public class CephController {
 				rbdImage = rbd.open(imgname);
 				rbdImage.snapCreate(snapname);
 				rbd.close(rbdImage);
-				CephSnap cephSnap = saveSnapInfo(imgname, snapname, snapdetail);
+				CephSnap cephSnap = saveSnapInfo(poolname,imgname, snapname, snapdetail);
 				// 记录日志
-				String extraInfo = "新增快照 " + JSON.toJSONString(cephSnap);
+				String extraInfo = "快照策略自动拍照，新增快照 " + JSON.toJSONString(cephSnap);
 				LOGGER.info(extraInfo);
-				CommonOperationLog log = CommonOprationLogUtils.getOprationLog(snapname, extraInfo,
-						CommConstant.CEPH_SNAP, CommConstant.OPERATION_TYPE_CREATED);
-				commonOperationLogDao.save(log);
 
 				return true;
 			} catch (RbdException e) {
@@ -731,6 +728,25 @@ public class CephController {
 		return snap;
 	}
 
+	/**
+	 * 创建快照
+	 *
+	 * @param imgname
+	 * @param snapname
+	 * @param snapdetail
+	 * @return
+	 */
+	private CephSnap saveSnapInfo(String poolname,String imgname, String snapname, String snapdetail) {
+		CephSnap snap = new CephSnap();
+		snap.setImgname(imgname);
+		snap.setName(snapname);
+		snap.setPool(poolname);
+		snap.setSnapdetail(snapdetail);
+		snap.setCreateDate(new Date());
+		cephSnapDao.save(snap);
+		return snap;
+	}
+	
 	/**
 	 * 查看镜像是否存在
 	 *
