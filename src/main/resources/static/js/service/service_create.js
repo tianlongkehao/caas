@@ -16,7 +16,6 @@ $(document).ready(function(){
 	$(".ram")[0].setAttribute("checked",true);
 	//调节高度
 	var imagePage_height = $(".host_step1").height();
-	//$(".step-inner").height(imagePage_height +100);
 
 	$(".createPadding").addClass("hide");
 
@@ -94,16 +93,6 @@ $(document).ready(function(){
 			      $('#startCommand_input').focus();
 			      return;
 		    }
-/*		    if(startCommand_input.search(/^[a-zA-Z][a-zA-Z0-9-]*$/) === -1){
-		    	layer.tips('自定义启动命令只能由字母、数字及横线组成，且首字母不能为数字及横线。','#startCommand_input',{tips: [1, '#3595CC'],time: 3000});
-		    	$('#startCommand_input').focus();
-		    	return;
-		    }
-		    if(startCommand_input.length > 64 || startCommand_input.length < 3){
-		    	layer.tips('自定义启动命令为3~64个字符','#startCommand_input',{tips: [1, '#3595CC'],time: 3000});
-		    	$('#startCommand_input').focus();
-		    	return;
-		    }*/
 	    } else {
 	    	$("#startCommand_input").val(null);
 	    }
@@ -179,29 +168,6 @@ $(document).ready(function(){
 	      $('#webPath').focus();
 	      return;
 	    }
-//	    if(servicePath.length > 64 || servicePath.length < 3){
-//	      layer.tips('服务路径为3~64个字符','#webPath',{tips: [1, '#3595CC'],time: 3000});
-//	      $('#webPath').focus();
-//	      return;
-//	    }
-
-//	    //nginx代理路径的判断
-//	    var proxyPath = $("#nginxPath").val();
-//	    if(!proxyPath || proxyPath.length < 1){
-//		      layer.tips('nginx代理路径不能为空','#nginxPath',{tips: [1, '#3595CC']});
-//		      $('#nginxPath').focus();
-//		      return;
-//		}
-//	    if(proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1){
-//		      layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
-//		      $('#nginxPath').focus();
-//		      return;
-//	    }
-//	    if(proxyPath.length > 64 || proxyPath.length < 3){
-//		      layer.tips('nginx代理路径为3~64个字符','#nginxPath',{tips: [1, '#3595CC'],time: 3000});
-//		      $('#nginxPath').focus();
-//		      return;
-//	    }
 
 	    //判断实例数量是否超过上限
 	    var cpuNum = $("input[name='cpuNum']:checked").val();
@@ -323,23 +289,51 @@ $(document).ready(function(){
         }
         $('#portConfig').val(portJson);
 
-        var serviceName = $("#serviceName").val();
-        $.ajax({
-    		url : ctx + "/service/matchPath.do",
-    		type: "POST",
-    		data:{"proxyPath":proxyPath,"serviceName":serviceName},
-    		success : function(data) {
-    			data = eval("(" + data + ")");
-    			if (data.status=="400") {
-    				layer.alert("nginx路径名称重复，请重新输入！");
-    			} else if (data.status=="500") {
-    				layer.alert("服务名称重复，请重新输入！");
-    			}else {
-    				$("#buildService").submit();
-    			}
-    		}
-    	});
-    });
+
+
+		var commitFlag = true;
+		//服务路径的判断
+		$.ajax({
+			url : ctx + "/service/matchServicePath.do",
+			type : "POST",
+			async : false,
+			data : {
+				"servicePath" : servicePath,
+			},
+			success : function(data) {
+				data = eval("(" + data + ")");
+				if (data.status != "200") {
+					layer.alert("服务访问路径重复，请重新输入！");
+					commitFlag = false;
+					return;
+				}
+			}
+		});
+		//服务名称的判断
+		if(commitFlag){
+			var serviceName = $("#serviceName").val();
+			$.ajax({
+				url : ctx + "/service/matchServiceName.do",
+				type : "POST",
+				async : false,
+				data : {
+					"serviceName" : serviceName,
+				},
+				success : function(data) {
+					data = eval("(" + data + ")");
+					if (data.status != "200") {
+						layer.alert("服务名称重复，请重新输入！");
+						commitFlag = false;
+						return;
+					}
+				}
+			});
+		}
+
+		if(commitFlag){
+			$("#buildService").submit();
+		}
+	});
 
 	$("#service-path").click(function(){
     	layer.tips('内容必须和上传的项目名一致！', '#service-path', {
@@ -352,18 +346,6 @@ $(document).ready(function(){
             tips: [2, '#0FA6D8']
         });
     });
-
-	//选择cpu数量之后，默认选择相对应的内存大小；
-	/*$(".cpuNum").change(function(){
-		var cpuNum = $("input[name='cpuNum']:checked").val();
-		var ramId = "ram"+cpuNum;
-		document.getElementById(ramId).checked=true;
-    });*/
-
-	/*
-	 * $(".cpuNum").click(function(){ var tips = $(this).attr("placeholder");
-	 * layer.tips(tips,'.cpuNum',{tips: [1, '#3595CC']}); })
-	 */
 
 	// 控制checkbook后输入框是否可填写
 	$("#save_roll_dev").hide();

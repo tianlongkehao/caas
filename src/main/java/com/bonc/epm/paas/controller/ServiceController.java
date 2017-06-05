@@ -1293,19 +1293,20 @@ public class ServiceController {
 	}
 
 	/**
-	 * 当前用户修改服务时服务名称不重复
+	 * matchServiceName:服务名称不可重复. <br/>
 	 *
+	 * @author longkaixiang
 	 * @param serviceName
 	 * @return String
 	 */
 	@RequestMapping("service/matchServiceName.do")
 	@ResponseBody
-	public String matchServicePath(String serviceName) {
+	public String matchServiceName(String serviceName) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		long createBy = CurrentUserUtils.getInstance().getUser().getId();
 		int refsize = refServiceDao.findByCreateByAndSerName(createBy, serviceName).size();
 		int serSize = serviceDao.findByNameOf(createBy, serviceName).size();
-		if (0 < refsize | 0 < serSize) {
+		if (0 < refsize || 0 < serSize) {
 			map.put("status", "500");
 		} else {
 			map.put("status", "200");
@@ -1314,43 +1315,20 @@ public class ServiceController {
 	}
 
 	/**
-	 * 当前用户创建服务时nginx路径不重复
+	 * matchServicePath:服务访问路径不可重复. <br/>
 	 *
-	 * @param proxyPath
+	 * @author longkaixiang
+	 * @param servicePath
 	 * @return String
 	 */
-	@RequestMapping("service/matchProxyPath.do")
+	@RequestMapping("service/matchServicePath.do")
 	@ResponseBody
-	public String matchProxyPath(String proxyPath) {
+	public String matchServicePath(String servicePath) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		long createBy = CurrentUserUtils.getInstance().getUser().getId();
-		int proxySize = serviceDao.findByCreateByAndProxyPath(createBy, proxyPath).size();
-		if (0 < proxySize) {
-			map.put("status", "400");
-		} else {
-			map.put("status", "200");
-		}
-		return JSON.toJSONString(map);
-	}
-
-	/**
-	 * 当前用户创建服务时匹配服务路径和nginx路径 和服务名称不重复
-	 *
-	 * @param proxyPath
-	 * @param serviceName
-	 * @return String
-	 */
-	@RequestMapping("service/matchPath.do")
-	@ResponseBody
-	public String matchServicePathAndProxyPath(String proxyPath, String serviceName) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		long createBy = CurrentUserUtils.getInstance().getUser().getId();
-		int refsize = refServiceDao.findByCreateByAndSerName(createBy, serviceName).size();
-		int serSize = serviceDao.findByNameOf(createBy, serviceName).size();
-		int proxySize = serviceDao.findByCreateByAndProxyPath(createBy, proxyPath).size();
-		if (0 < refsize | 0 < serSize) {
-			map.put("status", "500");
-		} else if (0 < proxySize) {
+		int refsize = refServiceDao.findByCreateByAndSerName(createBy, servicePath).size();
+		int size = serviceDao.findByCreateByAndServicePath(createBy, servicePath).size();
+		if (0 < refsize || 0 < size) {
 			map.put("status", "400");
 		} else {
 			map.put("status", "200");
@@ -3084,16 +3062,16 @@ public class ServiceController {
 	 * 修改服务地址
 	 *
 	 * @param serviceAddr
-	 * @param proxyPath
+	 * @param servicePath
 	 * @param serId
 	 * @return status
 	 * @see
 	 */
 	@RequestMapping("service/detail/editSerAddr.do")
 	@ResponseBody
-	public String editSerAddr(String serviceAddr, String proxyPath, Long serId) {
+	public String editSerAddr(String serviceAddr, String servicePath, Long serId) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		if (serviceDao.findByServiceAddrAndProxyPath(serviceAddr, proxyPath).size() > 0) {
+		if (serviceDao.findByServiceAddrAndServicePath(serviceAddr, servicePath).size() > 0) {
 			map.put("status", "500");
 		} else {
 			Service service = serviceDao.findOne(serId);
@@ -3103,6 +3081,7 @@ public class ServiceController {
 				return JSON.toJSONString(map);
 			}
 			service.setServiceAddr(serviceAddr);
+			service.setServicePath(servicePath);
 			try {
 				Date currentDate = new Date();
 				User currentUser = CurrentUserUtils.getInstance().getUser();
@@ -3110,7 +3089,8 @@ public class ServiceController {
 				service.setUpdateBy(currentUser.getId());
 				service = serviceDao.save(service);
 				// 保存服务操作信息
-				serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+				serviceOperationLogDao.save(service.getServiceName(),
+						"editSerAddr:[serviceAddr:" + serviceAddr + ",servicePath:" + servicePath + "]",
 						ServiceConstant.OPERATION_TYPE_UPDATE);
 				map.put("status", "200");
 			} catch (Exception e) {

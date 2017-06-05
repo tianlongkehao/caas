@@ -65,13 +65,10 @@
 							<c:if test="${service.status==4 }">
 								<li>运行状态：已停止</li>
 							</c:if>
-							<%-- <li>服务地址：<a
-								href="${service.serviceAddr}/${service.proxyPath}"
-								target="_blank">${service.serviceAddr}/${service.proxyPath}</a></li> --%>
 							<li class="oldCon">服务地址：<a
-								href="${service.serviceAddr}/${service.proxyPath}"
+								href="${service.serviceAddr}/${service.servicePath}"
 								target="_blank"> <span id="oldServiceAddr">${service.serviceAddr}</span>/<span
-									id="oldProxyPath">${service.proxyPath}</span>
+									id="oldServicePath">${service.servicePath}</span>
 							</a> <a id="editServiceAddrBtn" style="margin-left: 20px"
 								class="fa fa-edit"></a>
 							</li>
@@ -79,7 +76,7 @@
 							  <prex id=addrPrex ></prex>
 <%-- 							  	<input id="editServiceAddrValue" type="hidden" value="${service.serviceAddr}"> --%>
 								<input id="editServiceAddr" type="text" value="${service.serviceAddr}">/
-								<input id="editProxyPath" type="text" value="${service.proxyPath}">
+								<input id="editServicePath" type="text" value="${service.servicePath}">
 								<i id="saveEdit" style="margin-left:20px" class="fa fa-save"></i>
 								<i id="canclEdit" style="margin-left:6px" class="fa fa-times"></i>
 								</li>
@@ -96,7 +93,7 @@
 							<li>更新时间：${service.updateDate }</li>
 						</ul>
 						<div class="applocation">
-							<a href="${service.serviceAddr}/${service.proxyPath}"
+							<a href="${service.serviceAddr}/${service.servicePath}"
 								target="_blank" class="open" id="openService">打开应用</a>
 						</div>
 					</section>
@@ -237,10 +234,10 @@
 												type="text" value="${service.startCommand }" />
 										</span>
 										</td>
-										<td>服务访问路径： <span class="oldBaseCon_Run oldBaseCon">${service.servicePath }</span>
+										<td>服务访问路径： <span id="oldServicePath" class="oldBaseCon_Run oldBaseCon">${service.servicePath }</span>
 											<span id="editSerPath" hidden="true"
 											class="editBaseCon editBaseCon_Run"> <input
-												id="webPath" name="servicePath" type="text"
+												id="servicePath" name="servicePath" type="text"
 												value="${service.servicePath }" />
 										</span>
 										</td>
@@ -335,14 +332,6 @@
 											</span>
 											</td>
 										</c:if>
-										<td>nginx代理路径： <span id="oldProxyPath"
-											class="oldBaseCon_Run oldBaseCon">${service.proxyPath }</span>
-											<span id="editProxyPath" hidden="true"
-											class="editBaseCon_Run editBaseCon"> <input
-												id="nginxPath" name="proxyPath" type="text"
-												value="${service.proxyPath }" />
-										</span>
-										</td>
 									</tr>
 									<tr>
 										<td>会话黏连方式： <span class="oldBaseCon_Run oldBaseCon">
@@ -361,22 +350,6 @@
 													<option name="sessionAffinity" value="ClientIP"
 														<c:if test="${service.sessionAffinity == 'ClientIP'}">selected</c:if>>ClientIP</option>
 
-											</select>
-										</span>
-										</td>
-										<td>NodeIp黏连方式： <span class="oldBaseCon_Run oldBaseCon">
-												<c:if
-													test="${service.nodeIpAffinity == '' || service.nodeIpAffinity == null}">
-										未配置
-										</c:if> <c:if test="${service.nodeIpAffinity == 'nodeIpAffinity' }">
-						                  ${service.nodeIpAffinity }
-						                 </c:if>
-										</span> <span id="editNodAffy" hidden="true"
-											class="editBaseCon_Run editBaseCon"> <%-- <input id="newNodAffy" name="nodeIpAffinity" type="text" value=${service.nodeIpAffinity } /> --%>
-												<select id="newNodAffy" name="nodeIpAffinity">
-													<option name="nodeIpAffinity" value="">NONE</option>
-													<option name="nodeIpAffinity" value="nodeIpAffinity"
-														<c:if test="${service.nodeIpAffinity == 'nodeIpAffinity' }">selected</c:if>>nodeIpAffinity</option>
 											</select>
 										</span>
 										</td>
@@ -530,8 +503,8 @@
 
 										<td>${service.imgName }</td>
 										<td>bonc:8080</td>
-										<td><a href="${service.serviceAddr}/${service.proxyPath}"
-											target="_blank">${service.serviceAddr}/${service.proxyPath}</a></td>
+										<td><a href="${service.serviceAddr}/${service.servicePath}"
+											target="_blank">${service.serviceAddr}/${service.servicePath}</a></td>
 										<td>${service.createDate }</td>
 									</tr>
 								</c:forEach>
@@ -748,9 +721,9 @@
 											<td style="width: 10%;">${portConfig.protocol }</td>
 											<td style="width: 10%;">${portConfig.mapPort }</td>
 											<td style="width: 50%;"><a
-												href="${service.serviceAddr}/${service.proxyPath}"
+												href="${service.serviceAddr}/${service.servicePath}"
 												target="_blank">
-													${service.serviceAddr}/${service.proxyPath} </a></td>
+													${service.serviceAddr}/${service.servicePath} </a></td>
 											<c:if test="${service.status==1 or service.status==4}">
 												<td style="width: 10%;" class="editBtn"><i
 													onclick="editPortAddrBtn(this)" type="button" value="修改"

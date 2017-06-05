@@ -1090,21 +1090,21 @@ function loadServices() {
 				var html = '<span class="url">';
 				if (curUserAutority == 1) {
 					if (row.serviceAddr != null && row.serviceAddr != '') {
-						html += '<span href="' + row.serviceAddr + '/' + row.proxyPath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.proxyPath + '">';
+						html += '<span href="' + row.serviceAddr + '/' + row.servicePath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.servicePath + '">';
 						if (row.serviceChName != null && row.serviceChName != '') {
 							html += row.serviceChName;
 						} else {
-							html += row.serviceAddr + '/' + row.proxyPath;
+							html += row.serviceAddr + '/' + row.servicePath;
 						}
 						html += '</span>';
 					}
 				} else {
 					if (row.serviceAddr != null && row.serviceAddr != '') {
-						html += '<a class="link" href="' + row.serviceAddr + '/' + row.proxyPath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.proxyPath + '">';
+						html += '<a class="link" href="' + row.serviceAddr + '/' + row.servicePath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.servicePath + '">';
 						if (row.serviceChName != null && row.serviceChName != '') {
 							html += row.serviceChName;
 						} else {
-							html += row.serviceAddr + '/' + row.proxyPath;
+							html += row.serviceAddr + '/' + row.servicePath;
 						}
 						html += '</a>';
 					}
@@ -1300,21 +1300,21 @@ function loadServicesNoSonar() {
 				var html = '<span class="url">';
 				if (curUserAutority == 1) {
 					if (row.serviceAddr != null && row.serviceAddr != '') {
-						html += '<span href="' + row.serviceAddr + '/' + row.proxyPath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.proxyPath + '">';
+						html += '<span href="' + row.serviceAddr + '/' + row.servicePath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.servicePath + '">';
 						if (row.serviceChName != null && row.serviceChName != '') {
 							html += row.serviceChName;
 						} else {
-							html += row.serviceAddr + '/' + row.proxyPath;
+							html += row.serviceAddr + '/' + row.servicePath;
 						}
 						html += '</span>';
 					}
 				} else {
 					if (row.serviceAddr != null && row.serviceAddr != '') {
-						html += '<a class="link" href="' + row.serviceAddr + '/' + row.proxyPath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.proxyPath + '">';
+						html += '<a class="link" href="' + row.serviceAddr + '/' + row.servicePath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.servicePath + '">';
 						if (row.serviceChName != null && row.serviceChName != '') {
 							html += row.serviceChName;
 						} else {
-							html += row.serviceAddr + '/' + row.proxyPath;
+							html += row.serviceAddr + '/' + row.servicePath;
 						}
 						html += '</a>';
 					}
