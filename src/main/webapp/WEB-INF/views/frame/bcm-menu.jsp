@@ -187,8 +187,8 @@
 						<li id="li_topo"><a class="J_menuItem" href="<%=path %>/cluster/topo"><i class="fa fa_circle"></i>集群拓扑</a></li>
 						<c:if test="${cur_user.user_autority == 1}">
 						<li id="li_route"><a class="J_menuItem" href="<%=path %>/cluster/route"><i class="fa fa_circle"></i>路由监控</a></li>
-						</c:if>
 						<li id="li_iptables"><a class="J_menuItem" href="<%=path %>/cluster/iptables"><i class="fa fa_circle"></i>转发规则</a></li>
+						</c:if>
 					</ul></li>
 				<li id="menu_template"><a href="#" class="first-a">
 					<i class="fa-nav fa-nav-template"></i>
