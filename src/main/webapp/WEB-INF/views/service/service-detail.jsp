@@ -332,8 +332,6 @@
 											</span>
 											</td>
 										</c:if>
-									</tr>
-									<tr>
 										<td>会话黏连方式： <span class="oldBaseCon_Run oldBaseCon">
 												<c:if
 													test="${service.sessionAffinity == '' || service.sessionAffinity == null}">

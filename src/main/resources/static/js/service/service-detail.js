@@ -226,7 +226,7 @@ $(document).ready(function() {
 		var commitFlag = true;
 		//服务路径的判断
 		var servicePath = $("#servicePath").val();
-		if($("#oldSservicePath").text() != servicePath){
+		if($("#oldServicePath").text() != servicePath){
 			if (!servicePath || servicePath.length < 1) {
 				layer.tips('服务路径不能为空', '#webPath', {
 					tips : [1, '#3595CC']
